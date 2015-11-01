@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [30])
-m4_define([libguestfs_release], [0])
+m4_define([libguestfs_release], [1])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -47,7 +47,7 @@ m4_define([serial_tests], [
                      }'
     ])
 ])
-AM_INIT_AUTOMAKE(foreign serial_tests) dnl NB: Do not [quote] this parameter.
+AM_INIT_AUTOMAKE(foreign serial_tests subdir-objects) dnl NB: Do not [quote] this parameter.
 
 m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes]) # make --enable-silent-rules the default.

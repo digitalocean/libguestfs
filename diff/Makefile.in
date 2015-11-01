@@ -288,9 +288,13 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_1 = virt_diff-visit.$(OBJEXT) virt_diff-domain.$(OBJEXT) \
-	virt_diff-inspect.$(OBJEXT) virt_diff-keys.$(OBJEXT) \
-	virt_diff-options.$(OBJEXT) virt_diff-uri.$(OBJEXT)
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = ../cat/virt_diff-visit.$(OBJEXT) \
+	../fish/virt_diff-domain.$(OBJEXT) \
+	../fish/virt_diff-inspect.$(OBJEXT) \
+	../fish/virt_diff-keys.$(OBJEXT) \
+	../fish/virt_diff-options.$(OBJEXT) \
+	../fish/virt_diff-uri.$(OBJEXT)
 am_virt_diff_OBJECTS = $(am__objects_1) virt_diff-diff.$(OBJEXT)
 virt_diff_OBJECTS = $(am_virt_diff_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -1673,6 +1677,30 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+../cat/$(am__dirstamp):
+	@$(MKDIR_P) ../cat
+	@: > ../cat/$(am__dirstamp)
+../cat/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../cat/$(DEPDIR)
+	@: > ../cat/$(DEPDIR)/$(am__dirstamp)
+../cat/virt_diff-visit.$(OBJEXT): ../cat/$(am__dirstamp) \
+	../cat/$(DEPDIR)/$(am__dirstamp)
+../fish/$(am__dirstamp):
+	@$(MKDIR_P) ../fish
+	@: > ../fish/$(am__dirstamp)
+../fish/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../fish/$(DEPDIR)
+	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_diff-domain.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_diff-inspect.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_diff-keys.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_diff-options.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_diff-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
 
 virt-diff$(EXEEXT): $(virt_diff_OBJECTS) $(virt_diff_DEPENDENCIES) $(EXTRA_virt_diff_DEPENDENCIES) 
 	@rm -f virt-diff$(EXEEXT)
@@ -1680,122 +1708,127 @@ virt-diff$(EXEEXT): $(virt_diff_OBJECTS) $(virt_diff_DEPENDENCIES) $(EXTRA_virt_
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../cat/*.$(OBJEXT)
+	-rm -f ../fish/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../cat/$(DEPDIR)/virt_diff-visit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_diff-domain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_diff-inspect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_diff-keys.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_diff-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_diff-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_diff-diff.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_diff-domain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_diff-inspect.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_diff-keys.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_diff-options.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_diff-uri.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_diff-visit.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-virt_diff-visit.o: ../cat/visit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-visit.o -MD -MP -MF $(DEPDIR)/virt_diff-visit.Tpo -c -o virt_diff-visit.o `test -f '../cat/visit.c' || echo '$(srcdir)/'`../cat/visit.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-visit.Tpo $(DEPDIR)/virt_diff-visit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../cat/visit.c' object='virt_diff-visit.o' libtool=no @AMDEPBACKSLASH@
+../cat/virt_diff-visit.o: ../cat/visit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../cat/virt_diff-visit.o -MD -MP -MF ../cat/$(DEPDIR)/virt_diff-visit.Tpo -c -o ../cat/virt_diff-visit.o `test -f '../cat/visit.c' || echo '$(srcdir)/'`../cat/visit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../cat/$(DEPDIR)/virt_diff-visit.Tpo ../cat/$(DEPDIR)/virt_diff-visit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../cat/visit.c' object='../cat/virt_diff-visit.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-visit.o `test -f '../cat/visit.c' || echo '$(srcdir)/'`../cat/visit.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../cat/virt_diff-visit.o `test -f '../cat/visit.c' || echo '$(srcdir)/'`../cat/visit.c
 
-virt_diff-visit.obj: ../cat/visit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-visit.obj -MD -MP -MF $(DEPDIR)/virt_diff-visit.Tpo -c -o virt_diff-visit.obj `if test -f '../cat/visit.c'; then $(CYGPATH_W) '../cat/visit.c'; else $(CYGPATH_W) '$(srcdir)/../cat/visit.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-visit.Tpo $(DEPDIR)/virt_diff-visit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../cat/visit.c' object='virt_diff-visit.obj' libtool=no @AMDEPBACKSLASH@
+../cat/virt_diff-visit.obj: ../cat/visit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../cat/virt_diff-visit.obj -MD -MP -MF ../cat/$(DEPDIR)/virt_diff-visit.Tpo -c -o ../cat/virt_diff-visit.obj `if test -f '../cat/visit.c'; then $(CYGPATH_W) '../cat/visit.c'; else $(CYGPATH_W) '$(srcdir)/../cat/visit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../cat/$(DEPDIR)/virt_diff-visit.Tpo ../cat/$(DEPDIR)/virt_diff-visit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../cat/visit.c' object='../cat/virt_diff-visit.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-visit.obj `if test -f '../cat/visit.c'; then $(CYGPATH_W) '../cat/visit.c'; else $(CYGPATH_W) '$(srcdir)/../cat/visit.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../cat/virt_diff-visit.obj `if test -f '../cat/visit.c'; then $(CYGPATH_W) '../cat/visit.c'; else $(CYGPATH_W) '$(srcdir)/../cat/visit.c'; fi`
 
-virt_diff-domain.o: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-domain.o -MD -MP -MF $(DEPDIR)/virt_diff-domain.Tpo -c -o virt_diff-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-domain.Tpo $(DEPDIR)/virt_diff-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_diff-domain.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_diff-domain.o: ../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../fish/virt_diff-domain.o -MD -MP -MF ../fish/$(DEPDIR)/virt_diff-domain.Tpo -c -o ../fish/virt_diff-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_diff-domain.Tpo ../fish/$(DEPDIR)/virt_diff-domain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/virt_diff-domain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../fish/virt_diff-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
 
-virt_diff-domain.obj: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-domain.obj -MD -MP -MF $(DEPDIR)/virt_diff-domain.Tpo -c -o virt_diff-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-domain.Tpo $(DEPDIR)/virt_diff-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_diff-domain.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_diff-domain.obj: ../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../fish/virt_diff-domain.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_diff-domain.Tpo -c -o ../fish/virt_diff-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_diff-domain.Tpo ../fish/$(DEPDIR)/virt_diff-domain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/virt_diff-domain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../fish/virt_diff-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
 
-virt_diff-inspect.o: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-inspect.o -MD -MP -MF $(DEPDIR)/virt_diff-inspect.Tpo -c -o virt_diff-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-inspect.Tpo $(DEPDIR)/virt_diff-inspect.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='virt_diff-inspect.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_diff-inspect.o: ../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../fish/virt_diff-inspect.o -MD -MP -MF ../fish/$(DEPDIR)/virt_diff-inspect.Tpo -c -o ../fish/virt_diff-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_diff-inspect.Tpo ../fish/$(DEPDIR)/virt_diff-inspect.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='../fish/virt_diff-inspect.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../fish/virt_diff-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
 
-virt_diff-inspect.obj: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-inspect.obj -MD -MP -MF $(DEPDIR)/virt_diff-inspect.Tpo -c -o virt_diff-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-inspect.Tpo $(DEPDIR)/virt_diff-inspect.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='virt_diff-inspect.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_diff-inspect.obj: ../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../fish/virt_diff-inspect.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_diff-inspect.Tpo -c -o ../fish/virt_diff-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_diff-inspect.Tpo ../fish/$(DEPDIR)/virt_diff-inspect.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='../fish/virt_diff-inspect.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../fish/virt_diff-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
 
-virt_diff-keys.o: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-keys.o -MD -MP -MF $(DEPDIR)/virt_diff-keys.Tpo -c -o virt_diff-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-keys.Tpo $(DEPDIR)/virt_diff-keys.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='virt_diff-keys.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_diff-keys.o: ../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../fish/virt_diff-keys.o -MD -MP -MF ../fish/$(DEPDIR)/virt_diff-keys.Tpo -c -o ../fish/virt_diff-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_diff-keys.Tpo ../fish/$(DEPDIR)/virt_diff-keys.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/virt_diff-keys.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../fish/virt_diff-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
 
-virt_diff-keys.obj: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-keys.obj -MD -MP -MF $(DEPDIR)/virt_diff-keys.Tpo -c -o virt_diff-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-keys.Tpo $(DEPDIR)/virt_diff-keys.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='virt_diff-keys.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_diff-keys.obj: ../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../fish/virt_diff-keys.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_diff-keys.Tpo -c -o ../fish/virt_diff-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_diff-keys.Tpo ../fish/$(DEPDIR)/virt_diff-keys.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/virt_diff-keys.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../fish/virt_diff-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
 
-virt_diff-options.o: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-options.o -MD -MP -MF $(DEPDIR)/virt_diff-options.Tpo -c -o virt_diff-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-options.Tpo $(DEPDIR)/virt_diff-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_diff-options.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_diff-options.o: ../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../fish/virt_diff-options.o -MD -MP -MF ../fish/$(DEPDIR)/virt_diff-options.Tpo -c -o ../fish/virt_diff-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_diff-options.Tpo ../fish/$(DEPDIR)/virt_diff-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/virt_diff-options.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../fish/virt_diff-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
 
-virt_diff-options.obj: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-options.obj -MD -MP -MF $(DEPDIR)/virt_diff-options.Tpo -c -o virt_diff-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-options.Tpo $(DEPDIR)/virt_diff-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_diff-options.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_diff-options.obj: ../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../fish/virt_diff-options.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_diff-options.Tpo -c -o ../fish/virt_diff-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_diff-options.Tpo ../fish/$(DEPDIR)/virt_diff-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/virt_diff-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../fish/virt_diff-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
 
-virt_diff-uri.o: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-uri.o -MD -MP -MF $(DEPDIR)/virt_diff-uri.Tpo -c -o virt_diff-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-uri.Tpo $(DEPDIR)/virt_diff-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_diff-uri.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_diff-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../fish/virt_diff-uri.o -MD -MP -MF ../fish/$(DEPDIR)/virt_diff-uri.Tpo -c -o ../fish/virt_diff-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_diff-uri.Tpo ../fish/$(DEPDIR)/virt_diff-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_diff-uri.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../fish/virt_diff-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
 
-virt_diff-uri.obj: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-uri.obj -MD -MP -MF $(DEPDIR)/virt_diff-uri.Tpo -c -o virt_diff-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_diff-uri.Tpo $(DEPDIR)/virt_diff-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_diff-uri.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_diff-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT ../fish/virt_diff-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_diff-uri.Tpo -c -o ../fish/virt_diff-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_diff-uri.Tpo ../fish/$(DEPDIR)/virt_diff-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_diff-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o virt_diff-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -c -o ../fish/virt_diff-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 virt_diff-diff.o: diff.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_diff_CPPFLAGS) $(CPPFLAGS) $(virt_diff_CFLAGS) $(CFLAGS) -MT virt_diff-diff.o -MD -MP -MF $(DEPDIR)/virt_diff-diff.Tpo -c -o virt_diff-diff.o `test -f 'diff.c' || echo '$(srcdir)/'`diff.c
@@ -2070,6 +2103,10 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../cat/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../cat/$(am__dirstamp)
+	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../fish/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -2079,7 +2116,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../cat/$(DEPDIR) ../fish/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2125,7 +2162,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../cat/$(DEPDIR) ../fish/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

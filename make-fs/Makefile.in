@@ -288,8 +288,10 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_1 = virt_make_fs-options.$(OBJEXT) \
-	virt_make_fs-domain.$(OBJEXT) virt_make_fs-uri.$(OBJEXT)
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = ../fish/virt_make_fs-options.$(OBJEXT) \
+	../fish/virt_make_fs-domain.$(OBJEXT) \
+	../fish/virt_make_fs-uri.$(OBJEXT)
 am_virt_make_fs_OBJECTS = $(am__objects_1) \
 	virt_make_fs-make-fs.$(OBJEXT)
 virt_make_fs_OBJECTS = $(am_virt_make_fs_OBJECTS)
@@ -1666,6 +1668,18 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+../fish/$(am__dirstamp):
+	@$(MKDIR_P) ../fish
+	@: > ../fish/$(am__dirstamp)
+../fish/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../fish/$(DEPDIR)
+	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_make_fs-options.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_make_fs-domain.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_make_fs-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
 
 virt-make-fs$(EXEEXT): $(virt_make_fs_OBJECTS) $(virt_make_fs_DEPENDENCIES) $(EXTRA_virt_make_fs_DEPENDENCIES) 
 	@rm -f virt-make-fs$(EXEEXT)
@@ -1673,77 +1687,81 @@ virt-make-fs$(EXEEXT): $(virt_make_fs_OBJECTS) $(virt_make_fs_DEPENDENCIES) $(EX
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../fish/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_make_fs-domain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_make_fs-domain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_make_fs-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_make_fs-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_make_fs-make-fs.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_make_fs-options.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_make_fs-uri.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-virt_make_fs-options.o: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT virt_make_fs-options.o -MD -MP -MF $(DEPDIR)/virt_make_fs-options.Tpo -c -o virt_make_fs-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_make_fs-options.Tpo $(DEPDIR)/virt_make_fs-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_make_fs-options.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_make_fs-options.o: ../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT ../fish/virt_make_fs-options.o -MD -MP -MF ../fish/$(DEPDIR)/virt_make_fs-options.Tpo -c -o ../fish/virt_make_fs-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_make_fs-options.Tpo ../fish/$(DEPDIR)/virt_make_fs-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/virt_make_fs-options.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o virt_make_fs-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o ../fish/virt_make_fs-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
 
-virt_make_fs-options.obj: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT virt_make_fs-options.obj -MD -MP -MF $(DEPDIR)/virt_make_fs-options.Tpo -c -o virt_make_fs-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_make_fs-options.Tpo $(DEPDIR)/virt_make_fs-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_make_fs-options.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_make_fs-options.obj: ../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT ../fish/virt_make_fs-options.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_make_fs-options.Tpo -c -o ../fish/virt_make_fs-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_make_fs-options.Tpo ../fish/$(DEPDIR)/virt_make_fs-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/virt_make_fs-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o virt_make_fs-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o ../fish/virt_make_fs-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
 
-virt_make_fs-domain.o: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT virt_make_fs-domain.o -MD -MP -MF $(DEPDIR)/virt_make_fs-domain.Tpo -c -o virt_make_fs-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_make_fs-domain.Tpo $(DEPDIR)/virt_make_fs-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_make_fs-domain.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_make_fs-domain.o: ../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT ../fish/virt_make_fs-domain.o -MD -MP -MF ../fish/$(DEPDIR)/virt_make_fs-domain.Tpo -c -o ../fish/virt_make_fs-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_make_fs-domain.Tpo ../fish/$(DEPDIR)/virt_make_fs-domain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/virt_make_fs-domain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o virt_make_fs-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o ../fish/virt_make_fs-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
 
-virt_make_fs-domain.obj: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT virt_make_fs-domain.obj -MD -MP -MF $(DEPDIR)/virt_make_fs-domain.Tpo -c -o virt_make_fs-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_make_fs-domain.Tpo $(DEPDIR)/virt_make_fs-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_make_fs-domain.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_make_fs-domain.obj: ../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT ../fish/virt_make_fs-domain.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_make_fs-domain.Tpo -c -o ../fish/virt_make_fs-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_make_fs-domain.Tpo ../fish/$(DEPDIR)/virt_make_fs-domain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/virt_make_fs-domain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o virt_make_fs-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o ../fish/virt_make_fs-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
 
-virt_make_fs-uri.o: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT virt_make_fs-uri.o -MD -MP -MF $(DEPDIR)/virt_make_fs-uri.Tpo -c -o virt_make_fs-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_make_fs-uri.Tpo $(DEPDIR)/virt_make_fs-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_make_fs-uri.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_make_fs-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT ../fish/virt_make_fs-uri.o -MD -MP -MF ../fish/$(DEPDIR)/virt_make_fs-uri.Tpo -c -o ../fish/virt_make_fs-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_make_fs-uri.Tpo ../fish/$(DEPDIR)/virt_make_fs-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_make_fs-uri.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o virt_make_fs-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o ../fish/virt_make_fs-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
 
-virt_make_fs-uri.obj: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT virt_make_fs-uri.obj -MD -MP -MF $(DEPDIR)/virt_make_fs-uri.Tpo -c -o virt_make_fs-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_make_fs-uri.Tpo $(DEPDIR)/virt_make_fs-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='virt_make_fs-uri.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_make_fs-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT ../fish/virt_make_fs-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_make_fs-uri.Tpo -c -o ../fish/virt_make_fs-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_make_fs-uri.Tpo ../fish/$(DEPDIR)/virt_make_fs-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_make_fs-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o virt_make_fs-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -c -o ../fish/virt_make_fs-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 virt_make_fs-make-fs.o: make-fs.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_make_fs_CPPFLAGS) $(CPPFLAGS) $(virt_make_fs_CFLAGS) $(CFLAGS) -MT virt_make_fs-make-fs.o -MD -MP -MF $(DEPDIR)/virt_make_fs-make-fs.Tpo -c -o virt_make_fs-make-fs.o `test -f 'make-fs.c' || echo '$(srcdir)/'`make-fs.c
@@ -2018,6 +2036,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../fish/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -2027,7 +2047,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2073,7 +2093,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

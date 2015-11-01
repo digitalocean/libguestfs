@@ -313,10 +313,11 @@ libguestfsocaml_a_AR = $(AR) $(ARFLAGS)
 libguestfsocaml_a_LIBADD =
 am__libguestfsocaml_a_SOURCES_DIST = guestfs-c.c guestfs-c-actions.c \
 	../src/utils.c
+am__dirstamp = $(am__leading_dot)dirstamp
 @HAVE_OCAML_TRUE@am_libguestfsocaml_a_OBJECTS =  \
 @HAVE_OCAML_TRUE@	libguestfsocaml_a-guestfs-c.$(OBJEXT) \
 @HAVE_OCAML_TRUE@	libguestfsocaml_a-guestfs-c-actions.$(OBJEXT) \
-@HAVE_OCAML_TRUE@	libguestfsocaml_a-utils.$(OBJEXT)
+@HAVE_OCAML_TRUE@	../src/libguestfsocaml_a-utils.$(OBJEXT)
 libguestfsocaml_a_OBJECTS = $(am_libguestfsocaml_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -1635,6 +1636,14 @@ META: $(top_builddir)/config.status $(srcdir)/META.in
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+../src/$(am__dirstamp):
+	@$(MKDIR_P) ../src
+	@: > ../src/$(am__dirstamp)
+../src/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../src/$(DEPDIR)
+	@: > ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libguestfsocaml_a-utils.$(OBJEXT): ../src/$(am__dirstamp) \
+	../src/$(DEPDIR)/$(am__dirstamp)
 
 libguestfsocaml.a: $(libguestfsocaml_a_OBJECTS) $(libguestfsocaml_a_DEPENDENCIES) $(EXTRA_libguestfsocaml_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libguestfsocaml.a
@@ -1643,31 +1652,35 @@ libguestfsocaml.a: $(libguestfsocaml_a_OBJECTS) $(libguestfsocaml_a_DEPENDENCIES
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../src/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libguestfsocaml_a-utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfsocaml_a-guestfs-c-actions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfsocaml_a-guestfs-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfsocaml_a-utils.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
@@ -1700,19 +1713,19 @@ libguestfsocaml_a-guestfs-c-actions.obj: guestfs-c-actions.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o libguestfsocaml_a-guestfs-c-actions.obj `if test -f 'guestfs-c-actions.c'; then $(CYGPATH_W) 'guestfs-c-actions.c'; else $(CYGPATH_W) '$(srcdir)/guestfs-c-actions.c'; fi`
 
-libguestfsocaml_a-utils.o: ../src/utils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT libguestfsocaml_a-utils.o -MD -MP -MF $(DEPDIR)/libguestfsocaml_a-utils.Tpo -c -o libguestfsocaml_a-utils.o `test -f '../src/utils.c' || echo '$(srcdir)/'`../src/utils.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfsocaml_a-utils.Tpo $(DEPDIR)/libguestfsocaml_a-utils.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../src/utils.c' object='libguestfsocaml_a-utils.o' libtool=no @AMDEPBACKSLASH@
+../src/libguestfsocaml_a-utils.o: ../src/utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT ../src/libguestfsocaml_a-utils.o -MD -MP -MF ../src/$(DEPDIR)/libguestfsocaml_a-utils.Tpo -c -o ../src/libguestfsocaml_a-utils.o `test -f '../src/utils.c' || echo '$(srcdir)/'`../src/utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libguestfsocaml_a-utils.Tpo ../src/$(DEPDIR)/libguestfsocaml_a-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../src/utils.c' object='../src/libguestfsocaml_a-utils.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o libguestfsocaml_a-utils.o `test -f '../src/utils.c' || echo '$(srcdir)/'`../src/utils.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o ../src/libguestfsocaml_a-utils.o `test -f '../src/utils.c' || echo '$(srcdir)/'`../src/utils.c
 
-libguestfsocaml_a-utils.obj: ../src/utils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT libguestfsocaml_a-utils.obj -MD -MP -MF $(DEPDIR)/libguestfsocaml_a-utils.Tpo -c -o libguestfsocaml_a-utils.obj `if test -f '../src/utils.c'; then $(CYGPATH_W) '../src/utils.c'; else $(CYGPATH_W) '$(srcdir)/../src/utils.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfsocaml_a-utils.Tpo $(DEPDIR)/libguestfsocaml_a-utils.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../src/utils.c' object='libguestfsocaml_a-utils.obj' libtool=no @AMDEPBACKSLASH@
+../src/libguestfsocaml_a-utils.obj: ../src/utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT ../src/libguestfsocaml_a-utils.obj -MD -MP -MF ../src/$(DEPDIR)/libguestfsocaml_a-utils.Tpo -c -o ../src/libguestfsocaml_a-utils.obj `if test -f '../src/utils.c'; then $(CYGPATH_W) '../src/utils.c'; else $(CYGPATH_W) '$(srcdir)/../src/utils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libguestfsocaml_a-utils.Tpo ../src/$(DEPDIR)/libguestfsocaml_a-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../src/utils.c' object='../src/libguestfsocaml_a-utils.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o libguestfsocaml_a-utils.obj `if test -f '../src/utils.c'; then $(CYGPATH_W) '../src/utils.c'; else $(CYGPATH_W) '$(srcdir)/../src/utils.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o ../src/libguestfsocaml_a-utils.obj `if test -f '../src/utils.c'; then $(CYGPATH_W) '../src/utils.c'; else $(CYGPATH_W) '$(srcdir)/../src/utils.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1927,6 +1940,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../src/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../src/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1938,7 +1953,7 @@ clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../src/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1985,7 +2000,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../src/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

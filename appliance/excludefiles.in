@@ -21,15 +21,23 @@ dnl Of course, this may break the appliance, so be careful.
 dnl The right kernel modules are added back by supermin.
 -/boot/*
 -/lib/modules/*
+-/usr/lib/modules/*
+
+dnl Firmware blobs should not be required by a virtual machine.
+dnl Because of UsrMove nonsense, we need to list both directories.
+-/lib/firmware/*
+-/usr/lib/firmware/*
 
 -/usr/lib/locale/*
+-/usr/share/cracklib/*
+-/usr/share/doc/*
+-/usr/share/fonts/*
+-/usr/share/gnome/help/*
+-/usr/share/i18n/*
+-/usr/share/icons/*
+-/usr/share/info/*
 -/usr/share/locale/*
 -/usr/share/man/*
--/usr/share/doc/*
--/usr/share/info/*
--/usr/share/gnome/help/*
--/usr/share/cracklib/*
--/usr/share/i18n/*
 -/usr/share/pkgconfig/*
 
 -/var/log/?tmp

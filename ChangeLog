@@ -1,3 +1,438 @@
+commit d1d0f558bd32a3a45e5d436b269a7a1099be7b8b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 14 15:56:05 2015 +0100
+
+    Version 1.30.1.
+
+commit a14b0667d7c1a547b3db87fa0f9e1a8bcd913231
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 13 10:01:47 2015 -0400
+
+    p2v: Modify some partial match regexps to work with pcre 7.8.
+    
+    pcre < 8 has limitations on the types of partial matching
+    possible.  As noted in the pcrepartial(3) man page, these can
+    be worked around by adding non-capturing parentheses around
+    various subexpressions, as I have done here.
+    
+    (cherry picked from commit c9ad61b37b1efc5e496295117ad5d1614c3862f1)
+
+commit 944e5f1eda34af5587a31259564505a2d9ed517b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 13 09:43:07 2015 -0400
+
+    p2v: For pcre < 8 (RHEL 6), abort if partial matching cannot be used on a regexp.
+    
+    (cherry picked from commit 92e155dbddaafe0cd9f0be13fc0b723522735eff)
+
+commit 9276b45fcfd50aee456b1a5a121745c2884c5849
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 13 14:13:49 2015 +0100
+
+    p2v: Print an error if gtk_init_check fails.
+    
+    Apparently gtk_init_check doesn't (always?) print an error message
+    when it returns false, so virt-p2v just exits without any message.
+    
+    This was observed on RHEL 6 when $DISPLAY was not set.
+    
+    (cherry picked from commit 1d082d127e017d91bc493807a4a488dfa045a79c)
+
+commit 3b28e11ea3858dd2e3c3d97be6e74bbe976624f7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 13 08:40:29 2015 -0400
+
+    p2v: Call g_thread_init with old glib2 as used by RHEL 6.
+    
+    (cherry picked from commit 2bfb9ff9ea7316cfa6a62879f77f6600c91789d9)
+
+commit 1705b242a0a2eae26249e6a5e5c4681dd394423f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 13 08:19:17 2015 -0400
+
+    v2v: Help RHEL 6 OCaml to determine type of class.
+    
+    File input_libvirt_other.ml, line 1, characters 0-1:
+    Error: The implementation input_libvirt_other.ml
+           does not match the interface input_libvirt_other.cmi:
+           Class declarations do not match:
+             class virtual input_libvirt :
+               'a ->
+               string option ->
+               string ->
+               object
+                 method adjust_overlay_parameters : Types.overlay -> unit
+                 method as_options : string
+                 method virtual source : unit -> Types.source
+               end
+           does not match
+             class virtual input_libvirt :
+               string option ->
+               string option ->
+               string ->
+               object
+                 method adjust_overlay_parameters : Types.overlay -> unit
+                 method as_options : string
+                 method virtual source : unit -> Types.source
+               end
+           A parameter has type 'a but is expected to have type string option
+    
+    (cherry picked from commit 00bceec4216da7757acf0aa7174a99fb0b6deeb5)
+
+commit cf679e29f64da3a3074cd741ab40272da12c47ae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 13 08:18:13 2015 -0400
+
+    v2v: Hide StringMap functions we're not actually using.
+    
+    In RHEL 6 OCaml, some of these functions were not part of the Map
+    class, giving an error.  Hide the ones we aren't using.
+    
+    (cherry picked from commit b0cd6917cac7d314e971d90747e053907b48b2f7)
+
+commit f0c31531d40ef705a451c9c44f8e2e0af1a2acef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 13 08:16:50 2015 -0400
+
+    handle: Move #pragma out of functions.
+    
+    RHEL 6 gcc did not support #pragma within functions.
+    
+    (cherry picked from commit 437cb7b6ffcb21a43a7368d4402228f043a62a9c)
+
+commit 7ecf1821f006ce275090a5a4aeeb8282d2d6846e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 13 08:15:07 2015 -0400
+
+    p2v: Add replacement for xmlBufferDetach function not available in RHEL 6.
+    
+    (cherry picked from commit 06e92bffd4b1924bf9b076e44e59d03ea7146db8)
+
+commit 7966b4ea23ca3c02307f4a24570c4e9ed8ac6db6
+Author: John Eckersberg <jeckersb@redhat.com>
+Date:   Wed Aug 12 11:14:21 2015 -0400
+
+    dib: handle unsetting functions in environment
+    
+    If a function name, with its trailing parentheses, is in the
+    environment , trying to unset it will error out with a message of "not
+    a valid identifier".  Handle this as a special case, and unset it with
+    the -f option which can handle the parentheses in the supplied
+    identifier.
+    
+    (cherry picked from commit c2bb87e8f26e75e7ce71748785380b76b6e63658)
+
+commit 7dae944bb6ad3aefb859ff82410d9f03e9cad9cd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 12 10:42:57 2015 +0100
+
+    customize: firstboot: Place firstboot.service file in systemd unit directory (RHBZ#1250955).
+    
+    It turns out that -- some of the time -- systemd ignores unit files
+    which are not placed in one of the official unit directories.  This
+    caused the service to be timed out and killed when the systemd daemon
+    was reloaded, as could happen for long-running package installs at
+    first boot.
+    
+    Thanks: Marius Vollmer for diagnosing the problem and finding the
+    solution.
+    
+    (cherry picked from commit f3a7cf994b5c7350c32fd6011c4224d81f7ee86a)
+
+commit 52badfce594f2e903bb441e80ba0469917b0f4cf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 11 16:27:49 2015 +0100
+
+    p2v: Add mesa-dri-drivers.
+    
+    Requires on Fedora 22 to work around:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1242195
+    
+    (cherry picked from commit 75006fc27ce23531860e1578892b86d139d07a1c)
+
+commit 3f9015f50728e88d850a7173e9f0082568e872f3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 11 15:49:28 2015 +0100
+
+    p2v: Add tar to the kickstart.
+    
+    Work around https://bugzilla.redhat.com/show_bug.cgi?id=1182362
+    
+    (cherry picked from commit bfd151b8bfc7d236aac72ef04f62efbd6e6547d7)
+
+commit 0d7e445e4be307aa082aad43777314091f428ef0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 10 13:22:27 2015 +0200
+
+    builder: improve "converting" message on unknown format
+    
+    If the format of the disk image of the template is not specified in the
+    index, virt-builder would print
+      Converting auto to qcow2
+    when asking to generate a qcow2 image.  Instead, in this case print only
+    the destination format, like
+      Converting to qcow2
+    
+    (cherry picked from commit 4e5d9962cebb96270ac4875a41c56e6b65f588fc)
+
+commit e24c0621170dca4234ec75477be2aee32ef3c3b4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 6 17:29:56 2015 +0100
+
+    v2v: vCenter: Suggest using %20 to escape spaces in Datacenter paths (RHBZ#1250715).
+    
+    (cherry picked from commit 068443843db8a08d2d4a3e0f4e393f7e223311ae)
+
+commit 4e705115bec810501ec491d3b49e5ae030b6634e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 6 16:41:09 2015 +0100
+
+    docs: Document CVE-2015-5745 qemu vulnerability.
+    
+    (cherry picked from commit fc70ea696bbdc29a4c328cc867cc9b95b31921aa)
+
+commit fb1af7f1144c9b648471e54543fcdf446ecd54e2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 6 15:02:02 2015 +0100
+
+    update-bugs.sh: Remove comment.
+    
+    (cherry picked from commit f8a81d6bae9e5b025884947f6e2cce534087c186)
+
+commit 5a11c6e1fce7f20c467e4cd728138a08ad60f462
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 6 15:15:40 2015 +0200
+
+    get-kernel: remove extra progname from error messages
+    
+    error() prints it already
+    
+    (cherry picked from commit 1c43c0800f7429c410d5794232b51a12449c273d)
+
+commit 927de1fb256a385c341db3c92477808f75d1e059
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 4 19:54:02 2015 +0100
+
+    automake: Admit defeat and use 'subdir-objects'.
+    
+    Because this 'feature' is broken (since 2013):
+    
+      https://debbugs.gnu.org/cgi/bugreport.cgi?bug=13928
+    
+    we have to replace all instances of $(top_srcdir) in *_SOURCES lines
+    with a relative path.  According to what I read, this shouldn't break
+    split builds, but I didn't test it.
+    
+    The only things automake moans about now are:
+    
+    * Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/\${ <-- HERE ([^ \t=:+{}]+)}/ at /usr/bin/automake line 3936.
+    
+      - This is another bug in automake
+    
+    * autoreconf: configure.ac: AM_GNU_GETTEXT is used, but not AM_GNU_GETTEXT_VERSION
+    
+      - This is a feature, not a bug.
+    
+    (cherry picked from commit 91c06391c1392d74ea11e7e65dded29122893075)
+
+commit 86dded7689af160ced58cb121defe8f5365904a4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 5 12:55:42 2015 +0100
+
+    p2v: Display full package version (including extra string) in p2v.ks file.
+    
+    (cherry picked from commit f3ed65525c1b0255463a85e3d459debabfbfcfa9)
+
+commit 73c8ebc424cb576e4e5f8a3c0e94929c3126260a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 5 12:39:10 2015 +0100
+
+    p2v: Disable ssh service in the ISO (RHBZ#1248678).
+    
+    We don't want people to be able to ssh into the p2v ISO while it is
+    running, with a simple, known root password.
+    
+    (cherry picked from commit 007004a536c2893d31cf8e2ba3def629dc002203)
+
+commit dabcaee76dc8574a227041eda15091c9209e18c6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Aug 2 17:33:07 2015 +0100
+
+    sysprep: Allow test-virt-sysprep.sh to be skipped.
+    
+    It fails in Fedora Rawhide because LVM is broken (RHBZ#1237136).
+    
+    (cherry picked from commit d9c63708311f9b5c309dd1a17b25329f99bac710)
+
+commit 2331eb1dbde9daa9b903bbc121588edddb9732eb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 31 08:29:18 2015 +0100
+
+    dib: Fix typo in documentation.
+    
+    Thanks: Yuri Chornoivan
+    (cherry picked from commit 12898a8862aeb98fe99561ed0fdd895621d89c39)
+
+commit 6df695e87f1d87e0ecf7cc7a1f35bbcd78ce57cb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 30 14:45:21 2015 +0100
+
+    README: Add the dnf builddep command (for Fedora >= 22).
+    
+    (cherry picked from commit 380002b1330d4e4a9a2b69ab0e0da970e4c4636e)
+
+commit 7854a7a0bffeb0996792fc558a22a717cc461403
+Author: Cédric Bosdonnat <cbosdonnat@suse.com>
+Date:   Wed Jul 29 10:35:00 2015 +0200
+
+    appliance init: find NIC name for dhcpcd
+    
+    dhcpcd requires an interface name as parameter to work. We are now
+    getting it from /proc/sys/net/ipv4/conf/ folder children. dhclient
+    on Debian also has the problem, thus use the guessed interface name
+    for it too.
+    
+    (cherry picked from commit 2d2a65504dca732a398d237565b9778f8ca828b5)
+
+commit 42dc94a90716359cb040e86a31752b02b44db67d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jul 29 13:47:08 2015 +0200
+
+    sysprep: machine_id: handle /var/lib/dbus/machine-id
+    
+    Another machine-id file, used by D-Bus.
+    
+    (cherry picked from commit 37a03785567b90b59f5191d523cf34eab2a758ef)
+
+commit f1c6adce5db140976e7bf0bef62a0cc538c45ffd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jul 29 13:36:23 2015 +0200
+
+    sysprep: machine_id: simplify implementation
+    
+    Instead of rm + touch, just truncate the file if existing.
+    In case there was no file previously, now nothing is created, as most
+    probably the system was fine even without it.
+    
+    Also, turn the single path into a list, so more machine-id files can be
+    handled at once.
+    
+    (cherry picked from commit bc598ff52af415d8acc923402bd6dcfd462f2e4d)
+
+commit 87ce132b7da7531e421211ebfd4ce693b283209c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 27 13:29:40 2015 +0100
+
+    customize: Combine separate -a and -d option synopses (RHBZ#1246882)
+    
+    (cherry picked from commit dbbf4b8afe305a284963675cf640e3f2ac523d98)
+
+commit 95d78ea963f0e9316aa38f8fddc42c4261b34474
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 24 16:40:11 2015 +0200
+
+    customize: password: improve unknown default crypto message
+    
+    When warning that there is no known default password encryption for the
+    current guest, print also its minor version (help debugging unsupported
+    guests).
+    
+    Also, fix wrapping (and indentation) of the message.
+    
+    (cherry picked from commit 6c9ea0471e5c2de4ad360f668ec8079e136cc278)
+
+commit 9d82ec6130f1c4c4b51d27b4a69835545e3c95e2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 24 15:13:00 2015 +0200
+
+    customize: random_seed: add CirrOS location
+    
+    CirrOS has its random-seed file in /etc.
+    
+    (cherry picked from commit 563b388b8e41a5d51a03e0cc9cdd4bacdaadeafc)
+
+commit c0b04ecdafc2bb6e51b5781419ad662b608e664d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 23 16:41:06 2015 +0100
+
+    appliance: Exclude /usr/lib/modules as well as /lib/modules.
+    
+    It normally makes no difference to the final size of the appliance,
+    because 'supermin --build' will copy back the host kernel modules.
+    
+    (cherry picked from commit 7eed43da6c99ed48eac71f29941947ff0e43de0a)
+
+commit 30358523172451abde1c38d2867e76371bff9363
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 23 15:10:00 2015 +0100
+
+    appliance: exclude /lib/firmware
+    
+    Brings the size of the appliance down to 95 MB [xz-compressed], which
+    is the same as for libguestfs 1.28.
+    
+    (cherry picked from commit 0c7b957c1342db210602eea7951f53a44a50e45b)
+
+commit 99a593c223749117f3c7fa766c53549247fc9adc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 23 14:33:52 2015 +0100
+
+    appliance: exclude /usr/share/fonts and /usr/share/icons.
+    
+    I also sorted the list.
+    
+    Between libguestfs 1.28 and 1.30, the appliance grew from 95MB to 213MB.
+    
+    Using guestmount and filelight (see link below) I could see that the
+    main contributor was these two directories, which should not be
+    necessary.
+    
+    With this change, the size goes down to 119MB.
+    
+    See also:
+    https://rwmj.wordpress.com/2015/07/23/why-has-the-libguestfs-appliance-grown-by-118-mb/
+    
+    (cherry picked from commit 46600019b13320d1b8c71427716f38298cd4f04a)
+
+commit eb6c4ef5d96a2ac5fd5f0946344aa7eff20db9d3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 21 17:00:00 2015 +0100
+
+    build: Add virt-dib.1.html and virt-get-kernel.1.html to HTMLFILES.
+    
+    (cherry picked from commit 499678a8a663dccca90f135f797486895d429610)
+
+commit 0a7e8a5b875d56444ee2de55b55382f98e27a08d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jul 21 16:56:00 2015 +0200
+
+    tests/nbd: pass --format to qemu-nbd if possible
+    
+    Run `qemu-nbd --help` to know whether it supports --format, and if so
+    pass it explicitly.  This avoids warnings with newer qemu versions,
+    where they really recommends to explicit the format of disk images being
+    specified on command line.
+    
+    (cherry picked from commit a6433aff70495ef66b8de66b29e58b17aa62076e)
+
+commit 857b43752dc7291f19a05c2118ee7814054c9dd8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jul 21 16:54:29 2015 +0200
+
+    tests/syslinux: add /usr/lib/SYSLINUX as directory for mbr.bin
+    
+    Yet another new location (found on recent Debian/sid) for mbr.bin.
+    
+    (cherry picked from commit 42ff22a90919ca7070850e5bbdb3637ac105ab3d)
+
+commit 59f36f0d56ef4239a32094211905c601323c13fd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 21 13:34:04 2015 +0100
+
+    docs: Finish off release notes for 1.30.
+    
+    (cherry picked from commit 1a9e06b228d7c12202c94290335fdca46c5ee9df)
+
 commit 251c608e481e6e1af6873fcbf404d45581f52503
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Jul 21 13:13:38 2015 +0100

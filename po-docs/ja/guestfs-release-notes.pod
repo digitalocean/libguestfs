@@ -5,16 +5,16 @@ guestfs-release-notes - libguestfs リリースノート
 
 =begin コメント
 
-UPDATED TO 350dfe1fa26015fb0631abc3d3dc01b78dee8ead
+UPDATED TO #commit hash here
 
 =end コメント
 
-=begin HTML
+=begin コメント
 
 <script> document.body.style.backgroundImage = "url('draft.png')";
 document.body.style.backgroundRepeat = "no-repeat"; </script>
 
-=end HTML
+=end コメント
 
 =head1 RELEASE NOTES FOR LIBGUESTFS 1.30
 
@@ -96,6 +96,18 @@ move files inside the guest (Maros Zatko)
 =item I<--ssh-inject>
 
 inject SSH keys into a guest (Pino Toscano)
+
+=item I<--sm-attach>
+
+=item I<--sm-credentials>
+
+=item I<--sm-register>
+
+=item I<--sm-remove>
+
+=item I<--sm-unregister>
+
+register and unregister a guest from subscription-manager (Pino Toscano)
 
 =item I<--touch>
 
@@ -478,6 +490,10 @@ https_proxy= ./bugs-in-changelog.sh 1.28.0..
 
 =over 4
 
+=item L<https://bugzilla.redhat.com/1239053>
+
+virt-v2v error reporting when grub.conf cannot be parsed by Augeas
+
 =item L<https://bugzilla.redhat.com/1238053>
 
 v2v:Duplicate disk target set when convert guest with cdrom attached
@@ -581,6 +597,10 @@ unbootable
 =item L<https://bugzilla.redhat.com/1188866>
 
 Performance regression in virt-builder when uncompressing image
+
+=item L<https://bugzilla.redhat.com/1186800>
+
+virt-v2v should support gzip format ova as input
 
 =item L<https://bugzilla.redhat.com/1185561>
 

@@ -118,6 +118,13 @@ main (int argc, char *argv[])
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
 
+#if ! GLIB_CHECK_VERSION(2,32,0)
+  /* In glib2 < 2.32 you had to call g_thread_init().  In later glib2
+   * that is not required and should not be called.
+   */
+  if (glib_check_version (2, 32, 0) != NULL) /* This checks < 2.32 */
+    g_thread_init (NULL);
+#endif
   gdk_threads_init ();
   gdk_threads_enter ();
   gui_possible = gtk_init_check (&argc, &argv);
@@ -190,9 +197,13 @@ main (int argc, char *argv[])
     kernel_configuration (config, cmdline, cmdline_source);
   else {
   gui:
-    if (!gui_possible)
-      /* Gtk has already printed an error. */
+    if (!gui_possible) {
+      fprintf (stderr,
+               _("%s: gtk_init_check returned false, indicating that\n"
+                 "a GUI is not possible on this host.  Check X11, $DISPLAY etc.\n"),
+               guestfs_int_program_name);
       exit (EXIT_FAILURE);
+    }
     gui_application (config);
   }
 

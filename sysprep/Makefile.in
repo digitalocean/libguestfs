@@ -289,16 +289,16 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__virt_sysprep_SOURCES_DIST = $(top_srcdir)/mllib/uri-c.c \
-	$(top_srcdir)/mllib/mkdtemp-c.c \
-	$(top_srcdir)/customize/crypt-c.c \
-	$(top_srcdir)/customize/perl_edit-c.c $(top_srcdir)/fish/uri.c \
-	$(top_srcdir)/fish/file-edit.c
-am__objects_1 = virt_sysprep-uri-c.$(OBJEXT) \
-	virt_sysprep-mkdtemp-c.$(OBJEXT) \
-	virt_sysprep-crypt-c.$(OBJEXT) \
-	virt_sysprep-perl_edit-c.$(OBJEXT) virt_sysprep-uri.$(OBJEXT) \
-	virt_sysprep-file-edit.$(OBJEXT)
+am__virt_sysprep_SOURCES_DIST = ../mllib/uri-c.c ../mllib/mkdtemp-c.c \
+	../customize/crypt-c.c ../customize/perl_edit-c.c \
+	../fish/uri.c ../fish/file-edit.c
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = ../mllib/virt_sysprep-uri-c.$(OBJEXT) \
+	../mllib/virt_sysprep-mkdtemp-c.$(OBJEXT) \
+	../customize/virt_sysprep-crypt-c.$(OBJEXT) \
+	../customize/virt_sysprep-perl_edit-c.$(OBJEXT) \
+	../fish/virt_sysprep-uri.$(OBJEXT) \
+	../fish/virt_sysprep-file-edit.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_virt_sysprep_OBJECTS = $(am__objects_1)
 virt_sysprep_OBJECTS = $(am_virt_sysprep_OBJECTS)
 virt_sysprep_LDADD = $(LDADD)
@@ -1603,12 +1603,12 @@ SOURCES_ML = \
 	main.ml
 
 SOURCES_C = \
-	$(top_srcdir)/mllib/uri-c.c \
-	$(top_srcdir)/mllib/mkdtemp-c.c \
-	$(top_srcdir)/customize/crypt-c.c \
-	$(top_srcdir)/customize/perl_edit-c.c \
-	$(top_srcdir)/fish/uri.c \
-	$(top_srcdir)/fish/file-edit.c
+	../mllib/uri-c.c \
+	../mllib/mkdtemp-c.c \
+	../customize/crypt-c.c \
+	../customize/perl_edit-c.c \
+	../fish/uri.c \
+	../fish/file-edit.c
 
 @HAVE_OCAML_TRUE@virt_sysprep_SOURCES = $(SOURCES_C)
 @HAVE_OCAML_TRUE@virt_sysprep_CPPFLAGS = \
@@ -1778,6 +1778,38 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+../mllib/$(am__dirstamp):
+	@$(MKDIR_P) ../mllib
+	@: > ../mllib/$(am__dirstamp)
+../mllib/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../mllib/$(DEPDIR)
+	@: > ../mllib/$(DEPDIR)/$(am__dirstamp)
+../mllib/virt_sysprep-uri-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
+../mllib/virt_sysprep-mkdtemp-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
+../customize/$(am__dirstamp):
+	@$(MKDIR_P) ../customize
+	@: > ../customize/$(am__dirstamp)
+../customize/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../customize/$(DEPDIR)
+	@: > ../customize/$(DEPDIR)/$(am__dirstamp)
+../customize/virt_sysprep-crypt-c.$(OBJEXT):  \
+	../customize/$(am__dirstamp) \
+	../customize/$(DEPDIR)/$(am__dirstamp)
+../customize/virt_sysprep-perl_edit-c.$(OBJEXT):  \
+	../customize/$(am__dirstamp) \
+	../customize/$(DEPDIR)/$(am__dirstamp)
+../fish/$(am__dirstamp):
+	@$(MKDIR_P) ../fish
+	@: > ../fish/$(am__dirstamp)
+../fish/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../fish/$(DEPDIR)
+	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_sysprep-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_sysprep-file-edit.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
 
 virt-sysprep$(EXEEXT): $(virt_sysprep_OBJECTS) $(virt_sysprep_DEPENDENCIES) $(EXTRA_virt_sysprep_DEPENDENCIES) 
 	@rm -f virt-sysprep$(EXEEXT)
@@ -1785,121 +1817,127 @@ virt-sysprep$(EXEEXT): $(virt_sysprep_OBJECTS) $(virt_sysprep_DEPENDENCIES) $(EX
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../customize/*.$(OBJEXT)
+	-rm -f ../fish/*.$(OBJEXT)
+	-rm -f ../mllib/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sysprep-crypt-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sysprep-file-edit.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sysprep-mkdtemp-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sysprep-perl_edit-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sysprep-uri-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_sysprep-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../customize/$(DEPDIR)/virt_sysprep-crypt-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../customize/$(DEPDIR)/virt_sysprep-perl_edit-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_sysprep-file-edit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_sysprep-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_sysprep-mkdtemp-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_sysprep-uri-c.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-virt_sysprep-uri-c.o: $(top_srcdir)/mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-uri-c.o -MD -MP -MF $(DEPDIR)/virt_sysprep-uri-c.Tpo -c -o virt_sysprep-uri-c.o `test -f '$(top_srcdir)/mllib/uri-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-uri-c.Tpo $(DEPDIR)/virt_sysprep-uri-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/uri-c.c' object='virt_sysprep-uri-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_sysprep-uri-c.o: ../mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../mllib/virt_sysprep-uri-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_sysprep-uri-c.Tpo -c -o ../mllib/virt_sysprep-uri-c.o `test -f '../mllib/uri-c.c' || echo '$(srcdir)/'`../mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_sysprep-uri-c.Tpo ../mllib/$(DEPDIR)/virt_sysprep-uri-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/uri-c.c' object='../mllib/virt_sysprep-uri-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-uri-c.o `test -f '$(top_srcdir)/mllib/uri-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/uri-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_sysprep-uri-c.o `test -f '../mllib/uri-c.c' || echo '$(srcdir)/'`../mllib/uri-c.c
 
-virt_sysprep-uri-c.obj: $(top_srcdir)/mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-uri-c.obj -MD -MP -MF $(DEPDIR)/virt_sysprep-uri-c.Tpo -c -o virt_sysprep-uri-c.obj `if test -f '$(top_srcdir)/mllib/uri-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/uri-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-uri-c.Tpo $(DEPDIR)/virt_sysprep-uri-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/uri-c.c' object='virt_sysprep-uri-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_sysprep-uri-c.obj: ../mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../mllib/virt_sysprep-uri-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_sysprep-uri-c.Tpo -c -o ../mllib/virt_sysprep-uri-c.obj `if test -f '../mllib/uri-c.c'; then $(CYGPATH_W) '../mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/uri-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_sysprep-uri-c.Tpo ../mllib/$(DEPDIR)/virt_sysprep-uri-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/uri-c.c' object='../mllib/virt_sysprep-uri-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-uri-c.obj `if test -f '$(top_srcdir)/mllib/uri-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/uri-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_sysprep-uri-c.obj `if test -f '../mllib/uri-c.c'; then $(CYGPATH_W) '../mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/uri-c.c'; fi`
 
-virt_sysprep-mkdtemp-c.o: $(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-mkdtemp-c.o -MD -MP -MF $(DEPDIR)/virt_sysprep-mkdtemp-c.Tpo -c -o virt_sysprep-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-mkdtemp-c.Tpo $(DEPDIR)/virt_sysprep-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='virt_sysprep-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_sysprep-mkdtemp-c.o: ../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../mllib/virt_sysprep-mkdtemp-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_sysprep-mkdtemp-c.Tpo -c -o ../mllib/virt_sysprep-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_sysprep-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/virt_sysprep-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/virt_sysprep-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-mkdtemp-c.o `test -f '$(top_srcdir)/mllib/mkdtemp-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/mkdtemp-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_sysprep-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
 
-virt_sysprep-mkdtemp-c.obj: $(top_srcdir)/mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-mkdtemp-c.obj -MD -MP -MF $(DEPDIR)/virt_sysprep-mkdtemp-c.Tpo -c -o virt_sysprep-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-mkdtemp-c.Tpo $(DEPDIR)/virt_sysprep-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/mkdtemp-c.c' object='virt_sysprep-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_sysprep-mkdtemp-c.obj: ../mllib/mkdtemp-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../mllib/virt_sysprep-mkdtemp-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_sysprep-mkdtemp-c.Tpo -c -o ../mllib/virt_sysprep-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_sysprep-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/virt_sysprep-mkdtemp-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/virt_sysprep-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-mkdtemp-c.obj `if test -f '$(top_srcdir)/mllib/mkdtemp-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/mkdtemp-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_sysprep-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
 
-virt_sysprep-crypt-c.o: $(top_srcdir)/customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-crypt-c.o -MD -MP -MF $(DEPDIR)/virt_sysprep-crypt-c.Tpo -c -o virt_sysprep-crypt-c.o `test -f '$(top_srcdir)/customize/crypt-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-crypt-c.Tpo $(DEPDIR)/virt_sysprep-crypt-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/crypt-c.c' object='virt_sysprep-crypt-c.o' libtool=no @AMDEPBACKSLASH@
+../customize/virt_sysprep-crypt-c.o: ../customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../customize/virt_sysprep-crypt-c.o -MD -MP -MF ../customize/$(DEPDIR)/virt_sysprep-crypt-c.Tpo -c -o ../customize/virt_sysprep-crypt-c.o `test -f '../customize/crypt-c.c' || echo '$(srcdir)/'`../customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_sysprep-crypt-c.Tpo ../customize/$(DEPDIR)/virt_sysprep-crypt-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/crypt-c.c' object='../customize/virt_sysprep-crypt-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-crypt-c.o `test -f '$(top_srcdir)/customize/crypt-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/crypt-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../customize/virt_sysprep-crypt-c.o `test -f '../customize/crypt-c.c' || echo '$(srcdir)/'`../customize/crypt-c.c
 
-virt_sysprep-crypt-c.obj: $(top_srcdir)/customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-crypt-c.obj -MD -MP -MF $(DEPDIR)/virt_sysprep-crypt-c.Tpo -c -o virt_sysprep-crypt-c.obj `if test -f '$(top_srcdir)/customize/crypt-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/crypt-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-crypt-c.Tpo $(DEPDIR)/virt_sysprep-crypt-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/crypt-c.c' object='virt_sysprep-crypt-c.obj' libtool=no @AMDEPBACKSLASH@
+../customize/virt_sysprep-crypt-c.obj: ../customize/crypt-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../customize/virt_sysprep-crypt-c.obj -MD -MP -MF ../customize/$(DEPDIR)/virt_sysprep-crypt-c.Tpo -c -o ../customize/virt_sysprep-crypt-c.obj `if test -f '../customize/crypt-c.c'; then $(CYGPATH_W) '../customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/crypt-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_sysprep-crypt-c.Tpo ../customize/$(DEPDIR)/virt_sysprep-crypt-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/crypt-c.c' object='../customize/virt_sysprep-crypt-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-crypt-c.obj `if test -f '$(top_srcdir)/customize/crypt-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/crypt-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../customize/virt_sysprep-crypt-c.obj `if test -f '../customize/crypt-c.c'; then $(CYGPATH_W) '../customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/crypt-c.c'; fi`
 
-virt_sysprep-perl_edit-c.o: $(top_srcdir)/customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-perl_edit-c.o -MD -MP -MF $(DEPDIR)/virt_sysprep-perl_edit-c.Tpo -c -o virt_sysprep-perl_edit-c.o `test -f '$(top_srcdir)/customize/perl_edit-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-perl_edit-c.Tpo $(DEPDIR)/virt_sysprep-perl_edit-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/perl_edit-c.c' object='virt_sysprep-perl_edit-c.o' libtool=no @AMDEPBACKSLASH@
+../customize/virt_sysprep-perl_edit-c.o: ../customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../customize/virt_sysprep-perl_edit-c.o -MD -MP -MF ../customize/$(DEPDIR)/virt_sysprep-perl_edit-c.Tpo -c -o ../customize/virt_sysprep-perl_edit-c.o `test -f '../customize/perl_edit-c.c' || echo '$(srcdir)/'`../customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_sysprep-perl_edit-c.Tpo ../customize/$(DEPDIR)/virt_sysprep-perl_edit-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/perl_edit-c.c' object='../customize/virt_sysprep-perl_edit-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-perl_edit-c.o `test -f '$(top_srcdir)/customize/perl_edit-c.c' || echo '$(srcdir)/'`$(top_srcdir)/customize/perl_edit-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../customize/virt_sysprep-perl_edit-c.o `test -f '../customize/perl_edit-c.c' || echo '$(srcdir)/'`../customize/perl_edit-c.c
 
-virt_sysprep-perl_edit-c.obj: $(top_srcdir)/customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-perl_edit-c.obj -MD -MP -MF $(DEPDIR)/virt_sysprep-perl_edit-c.Tpo -c -o virt_sysprep-perl_edit-c.obj `if test -f '$(top_srcdir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/perl_edit-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-perl_edit-c.Tpo $(DEPDIR)/virt_sysprep-perl_edit-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/customize/perl_edit-c.c' object='virt_sysprep-perl_edit-c.obj' libtool=no @AMDEPBACKSLASH@
+../customize/virt_sysprep-perl_edit-c.obj: ../customize/perl_edit-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../customize/virt_sysprep-perl_edit-c.obj -MD -MP -MF ../customize/$(DEPDIR)/virt_sysprep-perl_edit-c.Tpo -c -o ../customize/virt_sysprep-perl_edit-c.obj `if test -f '../customize/perl_edit-c.c'; then $(CYGPATH_W) '../customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/perl_edit-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_sysprep-perl_edit-c.Tpo ../customize/$(DEPDIR)/virt_sysprep-perl_edit-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/perl_edit-c.c' object='../customize/virt_sysprep-perl_edit-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-perl_edit-c.obj `if test -f '$(top_srcdir)/customize/perl_edit-c.c'; then $(CYGPATH_W) '$(top_srcdir)/customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/customize/perl_edit-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../customize/virt_sysprep-perl_edit-c.obj `if test -f '../customize/perl_edit-c.c'; then $(CYGPATH_W) '../customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/perl_edit-c.c'; fi`
 
-virt_sysprep-uri.o: $(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-uri.o -MD -MP -MF $(DEPDIR)/virt_sysprep-uri.Tpo -c -o virt_sysprep-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-uri.Tpo $(DEPDIR)/virt_sysprep-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='virt_sysprep-uri.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_sysprep-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../fish/virt_sysprep-uri.o -MD -MP -MF ../fish/$(DEPDIR)/virt_sysprep-uri.Tpo -c -o ../fish/virt_sysprep-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_sysprep-uri.Tpo ../fish/$(DEPDIR)/virt_sysprep-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_sysprep-uri.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../fish/virt_sysprep-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
 
-virt_sysprep-uri.obj: $(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-uri.obj -MD -MP -MF $(DEPDIR)/virt_sysprep-uri.Tpo -c -o virt_sysprep-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-uri.Tpo $(DEPDIR)/virt_sysprep-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='virt_sysprep-uri.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_sysprep-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../fish/virt_sysprep-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_sysprep-uri.Tpo -c -o ../fish/virt_sysprep-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_sysprep-uri.Tpo ../fish/$(DEPDIR)/virt_sysprep-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_sysprep-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../fish/virt_sysprep-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
-virt_sysprep-file-edit.o: $(top_srcdir)/fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-file-edit.o -MD -MP -MF $(DEPDIR)/virt_sysprep-file-edit.Tpo -c -o virt_sysprep-file-edit.o `test -f '$(top_srcdir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-file-edit.Tpo $(DEPDIR)/virt_sysprep-file-edit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/file-edit.c' object='virt_sysprep-file-edit.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_sysprep-file-edit.o: ../fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../fish/virt_sysprep-file-edit.o -MD -MP -MF ../fish/$(DEPDIR)/virt_sysprep-file-edit.Tpo -c -o ../fish/virt_sysprep-file-edit.o `test -f '../fish/file-edit.c' || echo '$(srcdir)/'`../fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_sysprep-file-edit.Tpo ../fish/$(DEPDIR)/virt_sysprep-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/file-edit.c' object='../fish/virt_sysprep-file-edit.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-file-edit.o `test -f '$(top_srcdir)/fish/file-edit.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/file-edit.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../fish/virt_sysprep-file-edit.o `test -f '../fish/file-edit.c' || echo '$(srcdir)/'`../fish/file-edit.c
 
-virt_sysprep-file-edit.obj: $(top_srcdir)/fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT virt_sysprep-file-edit.obj -MD -MP -MF $(DEPDIR)/virt_sysprep-file-edit.Tpo -c -o virt_sysprep-file-edit.obj `if test -f '$(top_srcdir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/file-edit.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_sysprep-file-edit.Tpo $(DEPDIR)/virt_sysprep-file-edit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/file-edit.c' object='virt_sysprep-file-edit.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_sysprep-file-edit.obj: ../fish/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -MT ../fish/virt_sysprep-file-edit.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_sysprep-file-edit.Tpo -c -o ../fish/virt_sysprep-file-edit.obj `if test -f '../fish/file-edit.c'; then $(CYGPATH_W) '../fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../fish/file-edit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_sysprep-file-edit.Tpo ../fish/$(DEPDIR)/virt_sysprep-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/file-edit.c' object='../fish/virt_sysprep-file-edit.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o virt_sysprep-file-edit.obj `if test -f '$(top_srcdir)/fish/file-edit.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/file-edit.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_sysprep_CPPFLAGS) $(CPPFLAGS) $(virt_sysprep_CFLAGS) $(CFLAGS) -c -o ../fish/virt_sysprep-file-edit.obj `if test -f '../fish/file-edit.c'; then $(CYGPATH_W) '../fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../fish/file-edit.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2160,6 +2198,12 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../customize/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../customize/$(am__dirstamp)
+	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../fish/$(am__dirstamp)
+	-rm -f ../mllib/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../mllib/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2170,7 +2214,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../customize/$(DEPDIR) ../fish/$(DEPDIR) ../mllib/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2216,7 +2260,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../customize/$(DEPDIR) ../fish/$(DEPDIR) ../mllib/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

@@ -291,13 +291,14 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__virt_resize_SOURCES_DIST = $(top_srcdir)/mllib/fsync-c.c \
-	$(top_srcdir)/fish/progress.c $(top_srcdir)/mllib/progress-c.c \
-	$(top_srcdir)/fish/uri.c $(top_srcdir)/mllib/uri-c.c
-am__objects_1 = virt_resize-fsync-c.$(OBJEXT) \
-	virt_resize-progress.$(OBJEXT) \
-	virt_resize-progress-c.$(OBJEXT) virt_resize-uri.$(OBJEXT) \
-	virt_resize-uri-c.$(OBJEXT)
+am__virt_resize_SOURCES_DIST = ../mllib/fsync-c.c ../fish/progress.c \
+	../mllib/progress-c.c ../fish/uri.c ../mllib/uri-c.c
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = ../mllib/virt_resize-fsync-c.$(OBJEXT) \
+	../fish/virt_resize-progress.$(OBJEXT) \
+	../mllib/virt_resize-progress-c.$(OBJEXT) \
+	../fish/virt_resize-uri.$(OBJEXT) \
+	../mllib/virt_resize-uri-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_virt_resize_OBJECTS = $(am__objects_1)
 virt_resize_OBJECTS = $(am_virt_resize_OBJECTS)
 virt_resize_LDADD = $(LDADD)
@@ -1551,11 +1552,11 @@ SOURCES_ML = \
 	resize.ml
 
 SOURCES_C = \
-	$(top_srcdir)/mllib/fsync-c.c \
-	$(top_srcdir)/fish/progress.c \
-	$(top_srcdir)/mllib/progress-c.c \
-	$(top_srcdir)/fish/uri.c \
-	$(top_srcdir)/mllib/uri-c.c
+	../mllib/fsync-c.c \
+	../fish/progress.c \
+	../mllib/progress-c.c \
+	../fish/uri.c \
+	../mllib/uri-c.c
 
 @HAVE_OCAML_TRUE@virt_resize_SOURCES = $(SOURCES_C)
 @HAVE_OCAML_TRUE@virt_resize_CPPFLAGS = \
@@ -1701,6 +1702,28 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+../mllib/$(am__dirstamp):
+	@$(MKDIR_P) ../mllib
+	@: > ../mllib/$(am__dirstamp)
+../mllib/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../mllib/$(DEPDIR)
+	@: > ../mllib/$(DEPDIR)/$(am__dirstamp)
+../mllib/virt_resize-fsync-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
+../fish/$(am__dirstamp):
+	@$(MKDIR_P) ../fish
+	@: > ../fish/$(am__dirstamp)
+../fish/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../fish/$(DEPDIR)
+	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_resize-progress.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../mllib/virt_resize-progress-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_resize-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../mllib/virt_resize-uri-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
+	../mllib/$(DEPDIR)/$(am__dirstamp)
 
 virt-resize$(EXEEXT): $(virt_resize_OBJECTS) $(virt_resize_DEPENDENCIES) $(EXTRA_virt_resize_DEPENDENCIES) 
 	@rm -f virt-resize$(EXEEXT)
@@ -1708,106 +1731,111 @@ virt-resize$(EXEEXT): $(virt_resize_OBJECTS) $(virt_resize_DEPENDENCIES) $(EXTRA
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../fish/*.$(OBJEXT)
+	-rm -f ../mllib/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_resize-fsync-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_resize-progress-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_resize-progress.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_resize-uri-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_resize-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_resize-progress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_resize-uri.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_resize-fsync-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_resize-progress-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_resize-uri-c.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-virt_resize-fsync-c.o: $(top_srcdir)/mllib/fsync-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT virt_resize-fsync-c.o -MD -MP -MF $(DEPDIR)/virt_resize-fsync-c.Tpo -c -o virt_resize-fsync-c.o `test -f '$(top_srcdir)/mllib/fsync-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/fsync-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_resize-fsync-c.Tpo $(DEPDIR)/virt_resize-fsync-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/fsync-c.c' object='virt_resize-fsync-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_resize-fsync-c.o: ../mllib/fsync-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT ../mllib/virt_resize-fsync-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_resize-fsync-c.Tpo -c -o ../mllib/virt_resize-fsync-c.o `test -f '../mllib/fsync-c.c' || echo '$(srcdir)/'`../mllib/fsync-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_resize-fsync-c.Tpo ../mllib/$(DEPDIR)/virt_resize-fsync-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/fsync-c.c' object='../mllib/virt_resize-fsync-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o virt_resize-fsync-c.o `test -f '$(top_srcdir)/mllib/fsync-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/fsync-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_resize-fsync-c.o `test -f '../mllib/fsync-c.c' || echo '$(srcdir)/'`../mllib/fsync-c.c
 
-virt_resize-fsync-c.obj: $(top_srcdir)/mllib/fsync-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT virt_resize-fsync-c.obj -MD -MP -MF $(DEPDIR)/virt_resize-fsync-c.Tpo -c -o virt_resize-fsync-c.obj `if test -f '$(top_srcdir)/mllib/fsync-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/fsync-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_resize-fsync-c.Tpo $(DEPDIR)/virt_resize-fsync-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/fsync-c.c' object='virt_resize-fsync-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_resize-fsync-c.obj: ../mllib/fsync-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT ../mllib/virt_resize-fsync-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_resize-fsync-c.Tpo -c -o ../mllib/virt_resize-fsync-c.obj `if test -f '../mllib/fsync-c.c'; then $(CYGPATH_W) '../mllib/fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/fsync-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_resize-fsync-c.Tpo ../mllib/$(DEPDIR)/virt_resize-fsync-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/fsync-c.c' object='../mllib/virt_resize-fsync-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o virt_resize-fsync-c.obj `if test -f '$(top_srcdir)/mllib/fsync-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/fsync-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_resize-fsync-c.obj `if test -f '../mllib/fsync-c.c'; then $(CYGPATH_W) '../mllib/fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/fsync-c.c'; fi`
 
-virt_resize-progress.o: $(top_srcdir)/fish/progress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT virt_resize-progress.o -MD -MP -MF $(DEPDIR)/virt_resize-progress.Tpo -c -o virt_resize-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_resize-progress.Tpo $(DEPDIR)/virt_resize-progress.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/progress.c' object='virt_resize-progress.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_resize-progress.o: ../fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT ../fish/virt_resize-progress.o -MD -MP -MF ../fish/$(DEPDIR)/virt_resize-progress.Tpo -c -o ../fish/virt_resize-progress.o `test -f '../fish/progress.c' || echo '$(srcdir)/'`../fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_resize-progress.Tpo ../fish/$(DEPDIR)/virt_resize-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/progress.c' object='../fish/virt_resize-progress.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o virt_resize-progress.o `test -f '$(top_srcdir)/fish/progress.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/progress.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o ../fish/virt_resize-progress.o `test -f '../fish/progress.c' || echo '$(srcdir)/'`../fish/progress.c
 
-virt_resize-progress.obj: $(top_srcdir)/fish/progress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT virt_resize-progress.obj -MD -MP -MF $(DEPDIR)/virt_resize-progress.Tpo -c -o virt_resize-progress.obj `if test -f '$(top_srcdir)/fish/progress.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/progress.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_resize-progress.Tpo $(DEPDIR)/virt_resize-progress.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/progress.c' object='virt_resize-progress.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_resize-progress.obj: ../fish/progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT ../fish/virt_resize-progress.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_resize-progress.Tpo -c -o ../fish/virt_resize-progress.obj `if test -f '../fish/progress.c'; then $(CYGPATH_W) '../fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/../fish/progress.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_resize-progress.Tpo ../fish/$(DEPDIR)/virt_resize-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/progress.c' object='../fish/virt_resize-progress.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o virt_resize-progress.obj `if test -f '$(top_srcdir)/fish/progress.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/progress.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o ../fish/virt_resize-progress.obj `if test -f '../fish/progress.c'; then $(CYGPATH_W) '../fish/progress.c'; else $(CYGPATH_W) '$(srcdir)/../fish/progress.c'; fi`
 
-virt_resize-progress-c.o: $(top_srcdir)/mllib/progress-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT virt_resize-progress-c.o -MD -MP -MF $(DEPDIR)/virt_resize-progress-c.Tpo -c -o virt_resize-progress-c.o `test -f '$(top_srcdir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/progress-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_resize-progress-c.Tpo $(DEPDIR)/virt_resize-progress-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/progress-c.c' object='virt_resize-progress-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_resize-progress-c.o: ../mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT ../mllib/virt_resize-progress-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_resize-progress-c.Tpo -c -o ../mllib/virt_resize-progress-c.o `test -f '../mllib/progress-c.c' || echo '$(srcdir)/'`../mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_resize-progress-c.Tpo ../mllib/$(DEPDIR)/virt_resize-progress-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/progress-c.c' object='../mllib/virt_resize-progress-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o virt_resize-progress-c.o `test -f '$(top_srcdir)/mllib/progress-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/progress-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_resize-progress-c.o `test -f '../mllib/progress-c.c' || echo '$(srcdir)/'`../mllib/progress-c.c
 
-virt_resize-progress-c.obj: $(top_srcdir)/mllib/progress-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT virt_resize-progress-c.obj -MD -MP -MF $(DEPDIR)/virt_resize-progress-c.Tpo -c -o virt_resize-progress-c.obj `if test -f '$(top_srcdir)/mllib/progress-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/progress-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_resize-progress-c.Tpo $(DEPDIR)/virt_resize-progress-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/progress-c.c' object='virt_resize-progress-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_resize-progress-c.obj: ../mllib/progress-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT ../mllib/virt_resize-progress-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_resize-progress-c.Tpo -c -o ../mllib/virt_resize-progress-c.obj `if test -f '../mllib/progress-c.c'; then $(CYGPATH_W) '../mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/progress-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_resize-progress-c.Tpo ../mllib/$(DEPDIR)/virt_resize-progress-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/progress-c.c' object='../mllib/virt_resize-progress-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o virt_resize-progress-c.obj `if test -f '$(top_srcdir)/mllib/progress-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/progress-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_resize-progress-c.obj `if test -f '../mllib/progress-c.c'; then $(CYGPATH_W) '../mllib/progress-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/progress-c.c'; fi`
 
-virt_resize-uri.o: $(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT virt_resize-uri.o -MD -MP -MF $(DEPDIR)/virt_resize-uri.Tpo -c -o virt_resize-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_resize-uri.Tpo $(DEPDIR)/virt_resize-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='virt_resize-uri.o' libtool=no @AMDEPBACKSLASH@
+../fish/virt_resize-uri.o: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT ../fish/virt_resize-uri.o -MD -MP -MF ../fish/$(DEPDIR)/virt_resize-uri.Tpo -c -o ../fish/virt_resize-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_resize-uri.Tpo ../fish/$(DEPDIR)/virt_resize-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_resize-uri.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o virt_resize-uri.o `test -f '$(top_srcdir)/fish/uri.c' || echo '$(srcdir)/'`$(top_srcdir)/fish/uri.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o ../fish/virt_resize-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
 
-virt_resize-uri.obj: $(top_srcdir)/fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT virt_resize-uri.obj -MD -MP -MF $(DEPDIR)/virt_resize-uri.Tpo -c -o virt_resize-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_resize-uri.Tpo $(DEPDIR)/virt_resize-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/fish/uri.c' object='virt_resize-uri.obj' libtool=no @AMDEPBACKSLASH@
+../fish/virt_resize-uri.obj: ../fish/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT ../fish/virt_resize-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_resize-uri.Tpo -c -o ../fish/virt_resize-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_resize-uri.Tpo ../fish/$(DEPDIR)/virt_resize-uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_resize-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o virt_resize-uri.obj `if test -f '$(top_srcdir)/fish/uri.c'; then $(CYGPATH_W) '$(top_srcdir)/fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/fish/uri.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o ../fish/virt_resize-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
-virt_resize-uri-c.o: $(top_srcdir)/mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT virt_resize-uri-c.o -MD -MP -MF $(DEPDIR)/virt_resize-uri-c.Tpo -c -o virt_resize-uri-c.o `test -f '$(top_srcdir)/mllib/uri-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_resize-uri-c.Tpo $(DEPDIR)/virt_resize-uri-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/uri-c.c' object='virt_resize-uri-c.o' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_resize-uri-c.o: ../mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT ../mllib/virt_resize-uri-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_resize-uri-c.Tpo -c -o ../mllib/virt_resize-uri-c.o `test -f '../mllib/uri-c.c' || echo '$(srcdir)/'`../mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_resize-uri-c.Tpo ../mllib/$(DEPDIR)/virt_resize-uri-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/uri-c.c' object='../mllib/virt_resize-uri-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o virt_resize-uri-c.o `test -f '$(top_srcdir)/mllib/uri-c.c' || echo '$(srcdir)/'`$(top_srcdir)/mllib/uri-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_resize-uri-c.o `test -f '../mllib/uri-c.c' || echo '$(srcdir)/'`../mllib/uri-c.c
 
-virt_resize-uri-c.obj: $(top_srcdir)/mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT virt_resize-uri-c.obj -MD -MP -MF $(DEPDIR)/virt_resize-uri-c.Tpo -c -o virt_resize-uri-c.obj `if test -f '$(top_srcdir)/mllib/uri-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/uri-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_resize-uri-c.Tpo $(DEPDIR)/virt_resize-uri-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/mllib/uri-c.c' object='virt_resize-uri-c.obj' libtool=no @AMDEPBACKSLASH@
+../mllib/virt_resize-uri-c.obj: ../mllib/uri-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -MT ../mllib/virt_resize-uri-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_resize-uri-c.Tpo -c -o ../mllib/virt_resize-uri-c.obj `if test -f '../mllib/uri-c.c'; then $(CYGPATH_W) '../mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/uri-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_resize-uri-c.Tpo ../mllib/$(DEPDIR)/virt_resize-uri-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/uri-c.c' object='../mllib/virt_resize-uri-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o virt_resize-uri-c.obj `if test -f '$(top_srcdir)/mllib/uri-c.c'; then $(CYGPATH_W) '$(top_srcdir)/mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/mllib/uri-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_resize_CPPFLAGS) $(CPPFLAGS) $(virt_resize_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_resize-uri-c.obj `if test -f '../mllib/uri-c.c'; then $(CYGPATH_W) '../mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/uri-c.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2068,6 +2096,10 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../fish/$(am__dirstamp)
+	-rm -f ../mllib/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../mllib/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2078,7 +2110,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../fish/$(DEPDIR) ../mllib/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2124,7 +2156,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ../fish/$(DEPDIR) ../mllib/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
