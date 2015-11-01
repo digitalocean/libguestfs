@@ -30,8 +30,8 @@ $| = 1;
 # Filled in by autoconf.
 my %var;
 $var{top_builddir} = "../..";
-$var{abs_top_srcdir} = "/tmp/goaljobstmp2ac3eec9e6aaa4e407eb027c2b3846d7/libguestfs";
-$var{abs_top_builddir} = "/tmp/goaljobstmp2ac3eec9e6aaa4e407eb027c2b3846d7/libguestfs";
+$var{abs_top_srcdir} = "/tmp/goaljobstmp61efe6e02c94999d06db375d4ec7dfec/libguestfs";
+$var{abs_top_builddir} = "/tmp/goaljobstmp61efe6e02c94999d06db375d4ec7dfec/libguestfs";
 $var{VALGRIND} = "valgrind";
 
 # Now we have to substitute the above variables into this one:

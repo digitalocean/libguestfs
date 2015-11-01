@@ -823,6 +823,9 @@
 /* Define to 1 if you have the `gethostbyname' function. */
 #undef HAVE_GETHOSTBYNAME
 
+/* Define to 1 if you have the `getlocalename_l' function. */
+#undef HAVE_GETLOCALENAME_L
+
 /* Define to 1 if you have the 'getlogin_r' function. */
 #undef HAVE_GETLOGIN_R
 

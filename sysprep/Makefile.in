@@ -1640,6 +1640,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/firstboot.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/perl_edit.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/ssh_key.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/customize/subscription_manager.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_cmdline.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_run.cmo \
 @HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo)

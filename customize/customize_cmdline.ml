@@ -74,6 +74,14 @@ and op = [
       (* --run-command 'CMD+ARGS' *)
   | `Scrub of string
       (* --scrub FILE *)
+  | `SMAttach of Subscription_manager.sm_pool
+      (* --sm-attach SELECTOR *)
+  | `SMRegister
+      (* --sm-register *)
+  | `SMRemove
+      (* --sm-remove *)
+  | `SMUnregister
+      (* --sm-unregister *)
   | `SSHInject of string * Ssh_key.ssh_key_selector
       (* --ssh-inject USER[:SELECTOR] *)
   | `Truncate of string
@@ -98,6 +106,8 @@ and flags = {
       (* --password-crypto md5|sha256|sha512 *)
   selinux_relabel : bool;
       (* --selinux-relabel *)
+  sm_credentials : Subscription_manager.sm_credentials option;
+      (* --sm-credentials SELECTOR *)
 }
 
 type argspec = Arg.key * Arg.spec * Arg.doc
@@ -107,6 +117,7 @@ let rec argspec () =
   let scrub_logfile = ref false in
   let password_crypto = ref None in
   let selinux_relabel = ref false in
+  let sm_credentials = ref None in
 
   let rec get_ops () = {
     ops = List.rev !ops;
@@ -116,6 +127,7 @@ let rec argspec () =
     scrub_logfile = !scrub_logfile;
     password_crypto = !password_crypto;
     selinux_relabel = !selinux_relabel;
+    sm_credentials = !sm_credentials;
   }
   in
 
@@ -300,6 +312,34 @@ let rec argspec () =
     ),
     Some "FILE", "Scrub a file from the guest.  This is like I<--delete> except that:\n\n=over 4\n\n=item *\n\nIt scrubs the data so a guest could not recover it.\n\n=item *\n\nIt cannot delete directories, only regular files.\n\n=back";
     (
+      "--sm-attach",
+      Arg.String (
+        fun s ->
+          let sel = Subscription_manager.parse_pool_selector s in
+          ops := `SMAttach sel :: !ops
+      ),
+      s_"SELECTOR" ^ " " ^ s_"Attach to a subscription-manager pool"
+    ),
+    Some "SELECTOR", "Attach to a pool using C<subscription-manager>.\n\nSee L<virt-builder(1)/SUBSCRIPTION-MANAGER> for the format of\nthe C<SELECTOR> field.";
+    (
+      "--sm-register",
+      Arg.Unit (fun () -> ops := `SMRegister :: !ops),
+      " " ^ s_"Register using subscription-manager"
+    ),
+    None, "Register the guest using C<subscription-manager>.\n\nThis requires credentials being set using I<--sm-credentials>.";
+    (
+      "--sm-remove",
+      Arg.Unit (fun () -> ops := `SMRemove :: !ops),
+      " " ^ s_"Remove all the subscriptions"
+    ),
+    None, "Remove all the subscriptions from the guest using\nC<subscription-manager>.";
+    (
+      "--sm-unregister",
+      Arg.Unit (fun () -> ops := `SMUnregister :: !ops),
+      " " ^ s_"Unregister using subscription-manager"
+    ),
+    None, "Unregister the guest using C<subscription-manager>.";
+    (
       "--ssh-inject",
       Arg.String (
         fun s ->
@@ -381,6 +421,15 @@ let rec argspec () =
       " " ^ s_"Relabel files with correct SELinux labels"
     ),
     None, "Relabel files in the guest so that they have the correct SELinux label.\n\nYou should only use this option for guests which support SELinux.";
+    (
+      "--sm-credentials",
+      Arg.String (
+        fun s ->
+          sm_credentials := Some (Subscription_manager.parse_credentials_selector s)
+      ),
+      "SELECTOR" ^ " " ^ s_"credentials for subscription-manager"
+    ),
+    Some "SELECTOR", "Set the credentials for C<subscription-manager>.\n\nSee L<virt-builder(1)/SUBSCRIPTION-MANAGER> for the format of\nthe C<SELECTOR> field.";
   ]
   and customize_read_from_file filename =
     let forbidden_commands = [

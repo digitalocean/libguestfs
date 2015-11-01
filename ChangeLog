@@ -1,3 +1,126 @@
+commit 251c608e481e6e1af6873fcbf404d45581f52503
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 21 13:13:38 2015 +0100
+
+    Version 1.30.0.
+
+commit 95fde969eab57b7290c98031b52cf8aed57e47ce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 21 12:19:13 2015 +0100
+
+    Pull translations from Zanata.
+
+commit 5a28634bdc4e4833a3aca83d0383faec8cc9f986
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 21 11:55:01 2015 +0100
+
+    Update gnulib to latest.
+
+commit 83a0b4b37cc438196621a5a2c05383631e6e1399
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 21 10:48:36 2015 +0100
+
+    p2v: tests: Don't fail when test machine has only a single hard disk.
+    
+    virt-p2v looks in /sys/block to find disks, and ignores the hard disk
+    containing the root device.  This is correct when virt-p2v runs off
+    the ISO, but when running the tests on a machine that has a single
+    hard disk, all_disks would be NULL, resulting in a test failure.
+    
+    Fix this by allowing all_disks to be NULL, but adding an extra check
+    later so that we don't perform the conversion with no hard disks (the
+    gui.c path already has this check, so it is only needed in the
+    kernel.c path).
+
+commit 7c470c11799edbe5a1c7c79309fd31ef83c24b54
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jul 21 11:13:45 2015 +0200
+
+    tests: fix string comparison
+    
+    Use 'eq' for comparing strings instead of '=='.
+
+commit 19020ea3f80c11884784feab09b72301fd242abe
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jul 21 09:38:11 2015 +0200
+
+    appliance: adding qemu-img and which dependencies for more distros
+    
+    In particular, add them for Archlinux, openSUSE, Frugalware, and Mageia.
+
+commit 44f71d0782ce9a16d414842608ec02d835061680
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 17 15:28:18 2015 +0200
+
+    customize: add basic subscription-manager operations
+    
+    Add simple operations for RHEL guests using subscription-manager, so it
+    is possible to e.g. install software on them.
+
+commit b357553cd656894e0b20e00abb76738f55a14b72
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 17 15:04:27 2015 +0200
+
+    mllib: add and use read_first_line_from_file
+    
+    Move the read_password_from_file helper in Password to mllib with a more
+    generic name, and use it in place of the former.
+    
+    Also, use it in v2v instead of reading the whole file contaning a
+    password: given that the documentation says that the whole content is
+    used, there will not be newlines in the password file, so the behaviour
+    will be preserved. The oly difference is that newline is no more an
+    acceptable character for passwords, but that is a really unlikely
+    (if not impossible at all) situation.
+
+commit d29337605aa7f461cb14595dab43430013e2e2b5
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Fri Jul 17 17:24:22 2015 +0800
+
+    daemon: add a space after func/macro to fit code-style
+    
+    more daemon codes covered
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 9d3447ad7ae20d96262b431fcb98ca7da61b4cad
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jul 14 11:11:29 2015 +0200
+
+    dib: handle --name with path
+    
+    Make sure to write in the directory of the specified image name, using
+    just the basename where needed (e.g. for $IMAGE_NAME).
+
+commit c3edd076b9c0a735f80bae5dcc5613a09d4cfa02
+Author: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+Date:   Mon Jul 13 11:08:38 2015 +0800
+
+    daemon: add a space after func name to fit code-style
+    
+    Signed-off-by: Chen Hanxiao <chenhanxiao@cn.fujitsu.com>
+
+commit 08bfad986a4288defd4b994f8f2c74da3193e3a2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 13 10:11:35 2015 +0100
+
+    v2v: windows: Set gcaps_video correctly (RHBZ#1233093).
+    
+    Depending on whether we found a QXL driver and installed it in the
+    guest, set gcaps_video to either Cirrus or QXL.
+
+commit b7fcfb59ef583df46d6033c0538c7dfea83dd42f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 13 10:11:14 2015 +0100
+
+    v2v: OVF: Add a comment about always using QXL.
+
+commit ad4067a5088627bb1754e5c08822039e0b42426c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 10 14:41:08 2015 +0200
+
+    Improvements to the 1.30 release notes
+
 commit e6404be6eea4ef102fbb9e1a554b5ed1ee108598
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Jul 9 18:31:47 2015 +0100
