@@ -98,7 +98,7 @@ if HAVE_OCAMLDOC
 noinst_DATA += html/index.html
 
 html/index.html: $(srcdir)/guestfs.mli $(srcdir)/guestfs.ml
-	-$(OCAMLDOC) -d html -html $^
+	-$(OCAMLFIND) ocamldoc -d html -html $^
 
 endif
 
@@ -142,9 +142,9 @@ endif
 
 TESTS = run-bindtests $(test_progs_all)
 
-noinst_DATA += bindtests.bc $(test_progs_all)
+check_DATA = bindtests.bc $(test_progs_all)
 if HAVE_OCAMLOPT
-noinst_DATA += bindtests.opt
+check_DATA += bindtests.opt
 endif
 
 %.bc: %.cmo mlguestfs.cma
@@ -201,9 +201,9 @@ install-data-hook:
 	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
 	  guestfs \
 	  $(data_hook_files)
-	rm $(DESTDIR)$(OCAMLLIB)/guestfs/bindtests.*
+	rm -f $(DESTDIR)$(OCAMLLIB)/guestfs/bindtests.*
 	rm $(DESTDIR)$(OCAMLLIB)/guestfs/libguestfsocaml.a
 
-CLEANFILES += $(noinst_DATA)
+CLEANFILES += $(noinst_DATA) $(check_DATA)
 
 endif

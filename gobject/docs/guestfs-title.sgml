@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<chapter>
+  <title>Libguestfs GObject Bindings</title>
+  <xi:include href="xml/session.xml"/>
+  <xi:include href="xml/tristate.xml"/>
+  <xi:include href="xml/struct-application.xml"/>
+  <xi:include href="xml/struct-application2.xml"/>
+  <xi:include href="xml/struct-btrfsbalance.xml"/>
+  <xi:include href="xml/struct-btrfsqgroup.xml"/>
+  <xi:include href="xml/struct-btrfsscrub.xml"/>
+  <xi:include href="xml/struct-btrfssubvolume.xml"/>
+  <xi:include href="xml/struct-dirent.xml"/>
+  <xi:include href="xml/struct-hivex_node.xml"/>
+  <xi:include href="xml/struct-hivex_value.xml"/>
+  <xi:include href="xml/struct-inotify_event.xml"/>
+  <xi:include href="xml/struct-int_bool.xml"/>
+  <xi:include href="xml/struct-isoinfo.xml"/>
+  <xi:include href="xml/struct-lvm_lv.xml"/>
+  <xi:include href="xml/struct-lvm_pv.xml"/>
+  <xi:include href="xml/struct-lvm_vg.xml"/>
+  <xi:include href="xml/struct-mdstat.xml"/>
+  <xi:include href="xml/struct-partition.xml"/>
+  <xi:include href="xml/struct-stat.xml"/>
+  <xi:include href="xml/struct-statns.xml"/>
+  <xi:include href="xml/struct-statvfs.xml"/>
+  <xi:include href="xml/struct-utsname.xml"/>
+  <xi:include href="xml/struct-version.xml"/>
+  <xi:include href="xml/struct-xattr.xml"/>
+  <xi:include href="xml/struct-xfsinfo.xml"/>
+  <xi:include href="xml/optargs-add_domain.xml"/>
+  <xi:include href="xml/optargs-add_drive.xml"/>
+  <xi:include href="xml/optargs-add_drive_scratch.xml"/>
+  <xi:include href="xml/optargs-add_libvirt_dom.xml"/>
+  <xi:include href="xml/optargs-btrfs_filesystem_defragment.xml"/>
+  <xi:include href="xml/optargs-btrfs_filesystem_resize.xml"/>
+  <xi:include href="xml/optargs-btrfs_fsck.xml"/>
+  <xi:include href="xml/optargs-btrfs_image.xml"/>
+  <xi:include href="xml/optargs-btrfs_subvolume_create.xml"/>
+  <xi:include href="xml/optargs-btrfs_subvolume_snapshot.xml"/>
+  <xi:include href="xml/optargs-compress_device_out.xml"/>
+  <xi:include href="xml/optargs-compress_out.xml"/>
+  <xi:include href="xml/optargs-copy_attributes.xml"/>
+  <xi:include href="xml/optargs-copy_device_to_device.xml"/>
+  <xi:include href="xml/optargs-copy_device_to_file.xml"/>
+  <xi:include href="xml/optargs-copy_file_to_device.xml"/>
+  <xi:include href="xml/optargs-copy_file_to_file.xml"/>
+  <xi:include href="xml/optargs-cpio_out.xml"/>
+  <xi:include href="xml/optargs-disk_create.xml"/>
+  <xi:include href="xml/optargs-e2fsck.xml"/>
+  <xi:include href="xml/optargs-fstrim.xml"/>
+  <xi:include href="xml/optargs-grep.xml"/>
+  <xi:include href="xml/optargs-hivex_open.xml"/>
+  <xi:include href="xml/optargs-inspect_get_icon.xml"/>
+  <xi:include href="xml/optargs-internal_test.xml"/>
+  <xi:include href="xml/optargs-internal_test_63_optargs.xml"/>
+  <xi:include href="xml/optargs-internal_test_only_optargs.xml"/>
+  <xi:include href="xml/optargs-is_blockdev.xml"/>
+  <xi:include href="xml/optargs-is_chardev.xml"/>
+  <xi:include href="xml/optargs-is_dir.xml"/>
+  <xi:include href="xml/optargs-is_fifo.xml"/>
+  <xi:include href="xml/optargs-is_file.xml"/>
+  <xi:include href="xml/optargs-is_socket.xml"/>
+  <xi:include href="xml/optargs-md_create.xml"/>
+  <xi:include href="xml/optargs-mke2fs.xml"/>
+  <xi:include href="xml/optargs-mkfs.xml"/>
+  <xi:include href="xml/optargs-mkfs_btrfs.xml"/>
+  <xi:include href="xml/optargs-mkswap.xml"/>
+  <xi:include href="xml/optargs-mktemp.xml"/>
+  <xi:include href="xml/optargs-mount_9p.xml"/>
+  <xi:include href="xml/optargs-mount_local.xml"/>
+  <xi:include href="xml/optargs-ntfsclone_out.xml"/>
+  <xi:include href="xml/optargs-ntfsfix.xml"/>
+  <xi:include href="xml/optargs-ntfsresize.xml"/>
+  <xi:include href="xml/optargs-remount.xml"/>
+  <xi:include href="xml/optargs-rsync.xml"/>
+  <xi:include href="xml/optargs-rsync_in.xml"/>
+  <xi:include href="xml/optargs-rsync_out.xml"/>
+  <xi:include href="xml/optargs-set_e2attrs.xml"/>
+  <xi:include href="xml/optargs-syslinux.xml"/>
+  <xi:include href="xml/optargs-tar_in.xml"/>
+  <xi:include href="xml/optargs-tar_out.xml"/>
+  <xi:include href="xml/optargs-tune2fs.xml"/>
+  <xi:include href="xml/optargs-umount.xml"/>
+  <xi:include href="xml/optargs-umount_local.xml"/>
+  <xi:include href="xml/optargs-xfs_admin.xml"/>
+  <xi:include href="xml/optargs-xfs_growfs.xml"/>
+  <xi:include href="xml/optargs-xfs_repair.xml"/>
+</chapter>

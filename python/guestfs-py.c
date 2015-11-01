@@ -122,6 +122,7 @@ put_table (char * const * const argv)
   return list;
 }
 
+#ifdef GUESTFS_HAVE_STRUCT_APPLICATION
 static PyObject *
 put_application (struct guestfs_application *application)
 {
@@ -198,7 +199,9 @@ put_application (struct guestfs_application *application)
 #endif
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_APPLICATION2
 static PyObject *
 put_application2 (struct guestfs_application2 *application2)
 {
@@ -305,7 +308,9 @@ put_application2 (struct guestfs_application2 *application2)
 #endif
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_BTRFSBALANCE
 static PyObject *
 put_btrfsbalance (struct guestfs_btrfsbalance *btrfsbalance)
 {
@@ -328,7 +333,9 @@ put_btrfsbalance (struct guestfs_btrfsbalance *btrfsbalance)
                         PyLong_FromUnsignedLongLong (btrfsbalance->btrfsbalance_left));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_BTRFSQGROUP
 static PyObject *
 put_btrfsqgroup (struct guestfs_btrfsqgroup *btrfsqgroup)
 {
@@ -347,7 +354,9 @@ put_btrfsqgroup (struct guestfs_btrfsqgroup *btrfsqgroup)
                         PyLong_FromUnsignedLongLong (btrfsqgroup->btrfsqgroup_excl));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_BTRFSSCRUB
 static PyObject *
 put_btrfsscrub (struct guestfs_btrfsscrub *btrfsscrub)
 {
@@ -386,7 +395,9 @@ put_btrfsscrub (struct guestfs_btrfsscrub *btrfsscrub)
                         PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_last_physical));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_BTRFSSUBVOLUME
 static PyObject *
 put_btrfssubvolume (struct guestfs_btrfssubvolume *btrfssubvolume)
 {
@@ -405,7 +416,9 @@ put_btrfssubvolume (struct guestfs_btrfssubvolume *btrfssubvolume)
 #endif
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_DIRENT
 static PyObject *
 put_dirent (struct guestfs_dirent *dirent)
 {
@@ -429,7 +442,9 @@ put_dirent (struct guestfs_dirent *dirent)
 #endif
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_HIVEX_NODE
 static PyObject *
 put_hivex_node (struct guestfs_hivex_node *hivex_node)
 {
@@ -440,7 +455,9 @@ put_hivex_node (struct guestfs_hivex_node *hivex_node)
                         PyLong_FromLongLong (hivex_node->hivex_node_h));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_HIVEX_VALUE
 static PyObject *
 put_hivex_value (struct guestfs_hivex_value *hivex_value)
 {
@@ -451,7 +468,9 @@ put_hivex_value (struct guestfs_hivex_value *hivex_value)
                         PyLong_FromLongLong (hivex_value->hivex_value_h));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_INOTIFY_EVENT
 static PyObject *
 put_inotify_event (struct guestfs_inotify_event *inotify_event)
 {
@@ -472,7 +491,9 @@ put_inotify_event (struct guestfs_inotify_event *inotify_event)
 #endif
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_INT_BOOL
 static PyObject *
 put_int_bool (struct guestfs_int_bool *int_bool)
 {
@@ -485,7 +506,9 @@ put_int_bool (struct guestfs_int_bool *int_bool)
                         PyLong_FromLong (int_bool->b));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_ISOINFO
 static PyObject *
 put_isoinfo (struct guestfs_isoinfo *isoinfo)
 {
@@ -564,7 +587,9 @@ put_isoinfo (struct guestfs_isoinfo *isoinfo)
                         PyLong_FromLongLong (isoinfo->iso_volume_effective_t));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_LVM_LV
 static PyObject *
 put_lvm_lv (struct guestfs_lvm_lv *lvm_lv)
 {
@@ -647,7 +672,9 @@ put_lvm_lv (struct guestfs_lvm_lv *lvm_lv)
 #endif
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_LVM_PV
 static PyObject *
 put_lvm_pv (struct guestfs_lvm_pv *lvm_pv)
 {
@@ -704,7 +731,9 @@ put_lvm_pv (struct guestfs_lvm_pv *lvm_pv)
                         PyLong_FromUnsignedLongLong (lvm_pv->pv_mda_free));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_LVM_VG
 static PyObject *
 put_lvm_vg (struct guestfs_lvm_vg *lvm_vg)
 {
@@ -775,7 +804,9 @@ put_lvm_vg (struct guestfs_lvm_vg *lvm_vg)
                         PyLong_FromUnsignedLongLong (lvm_vg->vg_mda_free));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_MDSTAT
 static PyObject *
 put_mdstat (struct guestfs_mdstat *mdstat)
 {
@@ -798,7 +829,9 @@ put_mdstat (struct guestfs_mdstat *mdstat)
 #endif
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_PARTITION
 static PyObject *
 put_partition (struct guestfs_partition *partition)
 {
@@ -815,7 +848,9 @@ put_partition (struct guestfs_partition *partition)
                         PyLong_FromUnsignedLongLong (partition->part_size));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_STAT
 static PyObject *
 put_stat (struct guestfs_stat *stat)
 {
@@ -850,7 +885,9 @@ put_stat (struct guestfs_stat *stat)
                         PyLong_FromLongLong (stat->ctime));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_STATNS
 static PyObject *
 put_statns (struct guestfs_statns *statns)
 {
@@ -903,7 +940,9 @@ put_statns (struct guestfs_statns *statns)
                         PyLong_FromLongLong (statns->st_spare6));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_STATVFS
 static PyObject *
 put_statvfs (struct guestfs_statvfs *statvfs)
 {
@@ -934,7 +973,9 @@ put_statvfs (struct guestfs_statvfs *statvfs)
                         PyLong_FromLongLong (statvfs->namemax));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_UTSNAME
 static PyObject *
 put_utsname (struct guestfs_utsname *utsname)
 {
@@ -967,7 +1008,9 @@ put_utsname (struct guestfs_utsname *utsname)
 #endif
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_VERSION
 static PyObject *
 put_version (struct guestfs_version *version)
 {
@@ -988,7 +1031,9 @@ put_version (struct guestfs_version *version)
 #endif
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_XATTR
 static PyObject *
 put_xattr (struct guestfs_xattr *xattr)
 {
@@ -1009,7 +1054,9 @@ put_xattr (struct guestfs_xattr *xattr)
 #endif
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_XFSINFO
 static PyObject *
 put_xfsinfo (struct guestfs_xfsinfo *xfsinfo)
 {
@@ -1080,7 +1127,9 @@ put_xfsinfo (struct guestfs_xfsinfo *xfsinfo)
                         PyLong_FromUnsignedLongLong (xfsinfo->xfs_rtextents));
   return dict;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_LVM_LV
 static PyObject *
 put_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
 {
@@ -1092,7 +1141,9 @@ put_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
     PyList_SetItem (list, i, put_lvm_lv (&lvm_lvs->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_DIRENT
 static PyObject *
 put_dirent_list (struct guestfs_dirent_list *dirents)
 {
@@ -1104,7 +1155,9 @@ put_dirent_list (struct guestfs_dirent_list *dirents)
     PyList_SetItem (list, i, put_dirent (&dirents->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_BTRFSQGROUP
 static PyObject *
 put_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *btrfsqgroups)
 {
@@ -1116,7 +1169,9 @@ put_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *btrfsqgroups)
     PyList_SetItem (list, i, put_btrfsqgroup (&btrfsqgroups->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_PARTITION
 static PyObject *
 put_partition_list (struct guestfs_partition_list *partitions)
 {
@@ -1128,7 +1183,9 @@ put_partition_list (struct guestfs_partition_list *partitions)
     PyList_SetItem (list, i, put_partition (&partitions->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_STATNS
 static PyObject *
 put_statns_list (struct guestfs_statns_list *statnss)
 {
@@ -1140,7 +1197,9 @@ put_statns_list (struct guestfs_statns_list *statnss)
     PyList_SetItem (list, i, put_statns (&statnss->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_APPLICATION2
 static PyObject *
 put_application2_list (struct guestfs_application2_list *application2s)
 {
@@ -1152,7 +1211,9 @@ put_application2_list (struct guestfs_application2_list *application2s)
     PyList_SetItem (list, i, put_application2 (&application2s->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_INOTIFY_EVENT
 static PyObject *
 put_inotify_event_list (struct guestfs_inotify_event_list *inotify_events)
 {
@@ -1164,7 +1225,9 @@ put_inotify_event_list (struct guestfs_inotify_event_list *inotify_events)
     PyList_SetItem (list, i, put_inotify_event (&inotify_events->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_APPLICATION
 static PyObject *
 put_application_list (struct guestfs_application_list *applications)
 {
@@ -1176,7 +1239,9 @@ put_application_list (struct guestfs_application_list *applications)
     PyList_SetItem (list, i, put_application (&applications->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_HIVEX_VALUE
 static PyObject *
 put_hivex_value_list (struct guestfs_hivex_value_list *hivex_values)
 {
@@ -1188,7 +1253,9 @@ put_hivex_value_list (struct guestfs_hivex_value_list *hivex_values)
     PyList_SetItem (list, i, put_hivex_value (&hivex_values->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_XATTR
 static PyObject *
 put_xattr_list (struct guestfs_xattr_list *xattrs)
 {
@@ -1200,7 +1267,9 @@ put_xattr_list (struct guestfs_xattr_list *xattrs)
     PyList_SetItem (list, i, put_xattr (&xattrs->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_LVM_PV
 static PyObject *
 put_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
 {
@@ -1212,7 +1281,9 @@ put_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
     PyList_SetItem (list, i, put_lvm_pv (&lvm_pvs->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_LVM_VG
 static PyObject *
 put_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
 {
@@ -1224,7 +1295,9 @@ put_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
     PyList_SetItem (list, i, put_lvm_vg (&lvm_vgs->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_BTRFSSUBVOLUME
 static PyObject *
 put_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *btrfssubvolumes)
 {
@@ -1236,7 +1309,9 @@ put_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *btrfssubvolumes)
     PyList_SetItem (list, i, put_btrfssubvolume (&btrfssubvolumes->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_MDSTAT
 static PyObject *
 put_mdstat_list (struct guestfs_mdstat_list *mdstats)
 {
@@ -1248,7 +1323,9 @@ put_mdstat_list (struct guestfs_mdstat_list *mdstats)
     PyList_SetItem (list, i, put_mdstat (&mdstats->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_HIVEX_NODE
 static PyObject *
 put_hivex_node_list (struct guestfs_hivex_node_list *hivex_nodes)
 {
@@ -1260,7 +1337,9 @@ put_hivex_node_list (struct guestfs_hivex_node_list *hivex_nodes)
     PyList_SetItem (list, i, put_hivex_node (&hivex_nodes->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_STRUCT_STAT
 static PyObject *
 put_stat_list (struct guestfs_stat_list *stats)
 {
@@ -1272,7 +1351,9 @@ put_stat_list (struct guestfs_stat_list *stats)
     PyList_SetItem (list, i, put_stat (&stats->val[i]));
   return list;
 };
+#endif
 
+#ifdef GUESTFS_HAVE_ACL_DELETE_DEF_FILE
 static PyObject *
 py_guestfs_acl_delete_def_file (PyObject *self, PyObject *args)
 {
@@ -1308,7 +1389,9 @@ py_guestfs_acl_delete_def_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ACL_GET_FILE
 static PyObject *
 py_guestfs_acl_get_file (PyObject *self, PyObject *args)
 {
@@ -1350,7 +1433,9 @@ py_guestfs_acl_get_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ACL_SET_FILE
 static PyObject *
 py_guestfs_acl_set_file (PyObject *self, PyObject *args)
 {
@@ -1388,7 +1473,9 @@ py_guestfs_acl_set_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ADD_CDROM
 static PyObject *
 py_guestfs_add_cdrom (PyObject *self, PyObject *args)
 {
@@ -1417,7 +1504,9 @@ py_guestfs_add_cdrom (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ADD_DOMAIN
 static PyObject *
 py_guestfs_add_domain (PyObject *self, PyObject *args)
 {
@@ -1446,6 +1535,7 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK
   if (py_libvirturi != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1456,11 +1546,15 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
     optargs_s.libvirturi = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DOMAIN_READONLY_BITMASK
   if (py_readonly != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_READONLY_BITMASK;
     optargs_s.readonly = PyLong_AsLong (py_readonly);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_ADD_DOMAIN_IFACE_BITMASK
   if (py_iface != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_IFACE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1471,16 +1565,22 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
     optargs_s.iface = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DOMAIN_LIVE_BITMASK
   if (py_live != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_LIVE_BITMASK;
     optargs_s.live = PyLong_AsLong (py_live);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK
   if (py_allowuuid != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
     optargs_s.allowuuid = PyLong_AsLong (py_allowuuid);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK
   if (py_readonlydisk != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1491,6 +1591,8 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
     optargs_s.readonlydisk = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK
   if (py_cachemode != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1501,6 +1603,8 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
     optargs_s.cachemode = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DOMAIN_DISCARD_BITMASK
   if (py_discard != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1511,11 +1615,14 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
     optargs_s.discard = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK
   if (py_copyonread != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
     optargs_s.copyonread = PyLong_AsLong (py_copyonread);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -1536,7 +1643,9 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ADD_DRIVE
 static PyObject *
 py_guestfs_add_drive (PyObject *self, PyObject *args)
 {
@@ -1567,11 +1676,14 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK
   if (py_readonly != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK;
     optargs_s.readonly = PyLong_AsLong (py_readonly);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK
   if (py_format != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1582,6 +1694,8 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     optargs_s.format = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK
   if (py_iface != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1592,6 +1706,8 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     optargs_s.iface = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK
   if (py_name != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1602,6 +1718,8 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     optargs_s.name = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK
   if (py_label != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1612,6 +1730,8 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     optargs_s.label = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK
   if (py_protocol != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1622,11 +1742,15 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     optargs_s.protocol = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK
   if (py_server != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
     optargs_s.server = get_string_list (py_server);
     if (!optargs_s.server) goto out;
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK
   if (py_username != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1637,6 +1761,8 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     optargs_s.username = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK
   if (py_secret != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1647,6 +1773,8 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     optargs_s.secret = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK
   if (py_cachemode != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1657,6 +1785,8 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     optargs_s.cachemode = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK
   if (py_discard != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1667,11 +1797,14 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     optargs_s.discard = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK
   if (py_copyonread != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
     optargs_s.copyonread = PyLong_AsLong (py_copyonread);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
 
@@ -1685,11 +1818,15 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
 
   PyErr_Clear ();
  out:
+#ifdef GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK
   if (py_server != Py_None && (optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) != 0)
     free ((char **) optargs_s.server);
+#endif
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ADD_DRIVE_RO
 static PyObject *
 py_guestfs_add_drive_ro (PyObject *self, PyObject *args)
 {
@@ -1718,7 +1855,9 @@ py_guestfs_add_drive_ro (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ADD_DRIVE_RO_WITH_IF
 static PyObject *
 py_guestfs_add_drive_ro_with_if (PyObject *self, PyObject *args)
 {
@@ -1748,7 +1887,9 @@ py_guestfs_add_drive_ro_with_if (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ADD_DRIVE_SCRATCH
 static PyObject *
 py_guestfs_add_drive_scratch (PyObject *self, PyObject *args)
 {
@@ -1769,6 +1910,7 @@ py_guestfs_add_drive_scratch (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK
   if (py_name != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1779,6 +1921,8 @@ py_guestfs_add_drive_scratch (PyObject *self, PyObject *args)
     optargs_s.name = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK
   if (py_label != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1789,6 +1933,7 @@ py_guestfs_add_drive_scratch (PyObject *self, PyObject *args)
     optargs_s.label = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   r = guestfs_add_drive_scratch_argv (g, size, optargs);
 
@@ -1804,7 +1949,9 @@ py_guestfs_add_drive_scratch (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ADD_DRIVE_WITH_IF
 static PyObject *
 py_guestfs_add_drive_with_if (PyObject *self, PyObject *args)
 {
@@ -1834,7 +1981,9 @@ py_guestfs_add_drive_with_if (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ADD_LIBVIRT_DOM
 static PyObject *
 py_guestfs_add_libvirt_dom (PyObject *self, PyObject *args)
 {
@@ -1863,11 +2012,14 @@ py_guestfs_add_libvirt_dom (PyObject *self, PyObject *args)
   g = get_handle (py_g);
   dom = PyLong_AsVoidPtr (dom_long);
 
+#ifdef GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK
   if (py_readonly != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLY_BITMASK;
     optargs_s.readonly = PyLong_AsLong (py_readonly);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK
   if (py_iface != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1878,11 +2030,15 @@ py_guestfs_add_libvirt_dom (PyObject *self, PyObject *args)
     optargs_s.iface = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK
   if (py_live != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK;
     optargs_s.live = PyLong_AsLong (py_live);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK
   if (py_readonlydisk != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1893,6 +2049,8 @@ py_guestfs_add_libvirt_dom (PyObject *self, PyObject *args)
     optargs_s.readonlydisk = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK
   if (py_cachemode != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1903,6 +2061,8 @@ py_guestfs_add_libvirt_dom (PyObject *self, PyObject *args)
     optargs_s.cachemode = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK
   if (py_discard != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -1913,11 +2073,14 @@ py_guestfs_add_libvirt_dom (PyObject *self, PyObject *args)
     optargs_s.discard = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK
   if (py_copyonread != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK;
     optargs_s.copyonread = PyLong_AsLong (py_copyonread);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -1938,7 +2101,9 @@ py_guestfs_add_libvirt_dom (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_CLEAR
 static PyObject *
 py_guestfs_aug_clear (PyObject *self, PyObject *args)
 {
@@ -1974,7 +2139,9 @@ py_guestfs_aug_clear (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_CLOSE
 static PyObject *
 py_guestfs_aug_close (PyObject *self, PyObject *args)
 {
@@ -2009,7 +2176,9 @@ py_guestfs_aug_close (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_DEFNODE
 static PyObject *
 py_guestfs_aug_defnode (PyObject *self, PyObject *args)
 {
@@ -2047,7 +2216,9 @@ py_guestfs_aug_defnode (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_DEFVAR
 static PyObject *
 py_guestfs_aug_defvar (PyObject *self, PyObject *args)
 {
@@ -2083,7 +2254,9 @@ py_guestfs_aug_defvar (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_GET
 static PyObject *
 py_guestfs_aug_get (PyObject *self, PyObject *args)
 {
@@ -2124,7 +2297,9 @@ py_guestfs_aug_get (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_INIT
 static PyObject *
 py_guestfs_aug_init (PyObject *self, PyObject *args)
 {
@@ -2161,7 +2336,9 @@ py_guestfs_aug_init (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_INSERT
 static PyObject *
 py_guestfs_aug_insert (PyObject *self, PyObject *args)
 {
@@ -2199,7 +2376,9 @@ py_guestfs_aug_insert (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_LABEL
 static PyObject *
 py_guestfs_aug_label (PyObject *self, PyObject *args)
 {
@@ -2240,7 +2419,9 @@ py_guestfs_aug_label (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_LOAD
 static PyObject *
 py_guestfs_aug_load (PyObject *self, PyObject *args)
 {
@@ -2275,7 +2456,9 @@ py_guestfs_aug_load (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_LS
 static PyObject *
 py_guestfs_aug_ls (PyObject *self, PyObject *args)
 {
@@ -2311,7 +2494,9 @@ py_guestfs_aug_ls (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_MATCH
 static PyObject *
 py_guestfs_aug_match (PyObject *self, PyObject *args)
 {
@@ -2347,7 +2532,9 @@ py_guestfs_aug_match (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_MV
 static PyObject *
 py_guestfs_aug_mv (PyObject *self, PyObject *args)
 {
@@ -2384,7 +2571,9 @@ py_guestfs_aug_mv (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_RM
 static PyObject *
 py_guestfs_aug_rm (PyObject *self, PyObject *args)
 {
@@ -2419,7 +2608,9 @@ py_guestfs_aug_rm (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_SAVE
 static PyObject *
 py_guestfs_aug_save (PyObject *self, PyObject *args)
 {
@@ -2454,7 +2645,9 @@ py_guestfs_aug_save (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_SET
 static PyObject *
 py_guestfs_aug_set (PyObject *self, PyObject *args)
 {
@@ -2491,7 +2684,9 @@ py_guestfs_aug_set (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AUG_SETM
 static PyObject *
 py_guestfs_aug_setm (PyObject *self, PyObject *args)
 {
@@ -2528,7 +2723,9 @@ py_guestfs_aug_setm (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AVAILABLE
 static PyObject *
 py_guestfs_available (PyObject *self, PyObject *args)
 {
@@ -2568,7 +2765,9 @@ py_guestfs_available (PyObject *self, PyObject *args)
   free (groups);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_AVAILABLE_ALL_GROUPS
 static PyObject *
 py_guestfs_available_all_groups (PyObject *self, PyObject *args)
 {
@@ -2603,7 +2802,9 @@ py_guestfs_available_all_groups (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BASE64_IN
 static PyObject *
 py_guestfs_base64_in (PyObject *self, PyObject *args)
 {
@@ -2640,7 +2841,9 @@ py_guestfs_base64_in (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BASE64_OUT
 static PyObject *
 py_guestfs_base64_out (PyObject *self, PyObject *args)
 {
@@ -2677,7 +2880,9 @@ py_guestfs_base64_out (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLKDISCARD
 static PyObject *
 py_guestfs_blkdiscard (PyObject *self, PyObject *args)
 {
@@ -2713,7 +2918,9 @@ py_guestfs_blkdiscard (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLKDISCARDZEROES
 static PyObject *
 py_guestfs_blkdiscardzeroes (PyObject *self, PyObject *args)
 {
@@ -2748,7 +2955,9 @@ py_guestfs_blkdiscardzeroes (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLKID
 static PyObject *
 py_guestfs_blkid (PyObject *self, PyObject *args)
 {
@@ -2784,7 +2993,9 @@ py_guestfs_blkid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_FLUSHBUFS
 static PyObject *
 py_guestfs_blockdev_flushbufs (PyObject *self, PyObject *args)
 {
@@ -2820,7 +3031,9 @@ py_guestfs_blockdev_flushbufs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_GETBSZ
 static PyObject *
 py_guestfs_blockdev_getbsz (PyObject *self, PyObject *args)
 {
@@ -2855,7 +3068,9 @@ py_guestfs_blockdev_getbsz (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_GETRO
 static PyObject *
 py_guestfs_blockdev_getro (PyObject *self, PyObject *args)
 {
@@ -2890,7 +3105,9 @@ py_guestfs_blockdev_getro (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_GETSIZE64
 static PyObject *
 py_guestfs_blockdev_getsize64 (PyObject *self, PyObject *args)
 {
@@ -2925,7 +3142,9 @@ py_guestfs_blockdev_getsize64 (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_GETSS
 static PyObject *
 py_guestfs_blockdev_getss (PyObject *self, PyObject *args)
 {
@@ -2960,7 +3179,9 @@ py_guestfs_blockdev_getss (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_GETSZ
 static PyObject *
 py_guestfs_blockdev_getsz (PyObject *self, PyObject *args)
 {
@@ -2995,7 +3216,9 @@ py_guestfs_blockdev_getsz (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_REREADPT
 static PyObject *
 py_guestfs_blockdev_rereadpt (PyObject *self, PyObject *args)
 {
@@ -3031,7 +3254,9 @@ py_guestfs_blockdev_rereadpt (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_SETBSZ
 static PyObject *
 py_guestfs_blockdev_setbsz (PyObject *self, PyObject *args)
 {
@@ -3068,7 +3293,9 @@ py_guestfs_blockdev_setbsz (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_SETRA
 static PyObject *
 py_guestfs_blockdev_setra (PyObject *self, PyObject *args)
 {
@@ -3105,7 +3332,9 @@ py_guestfs_blockdev_setra (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_SETRO
 static PyObject *
 py_guestfs_blockdev_setro (PyObject *self, PyObject *args)
 {
@@ -3141,7 +3370,9 @@ py_guestfs_blockdev_setro (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BLOCKDEV_SETRW
 static PyObject *
 py_guestfs_blockdev_setrw (PyObject *self, PyObject *args)
 {
@@ -3177,7 +3408,9 @@ py_guestfs_blockdev_setrw (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_BALANCE_CANCEL
 static PyObject *
 py_guestfs_btrfs_balance_cancel (PyObject *self, PyObject *args)
 {
@@ -3213,7 +3446,9 @@ py_guestfs_btrfs_balance_cancel (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_BALANCE_PAUSE
 static PyObject *
 py_guestfs_btrfs_balance_pause (PyObject *self, PyObject *args)
 {
@@ -3249,7 +3484,9 @@ py_guestfs_btrfs_balance_pause (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_BALANCE_RESUME
 static PyObject *
 py_guestfs_btrfs_balance_resume (PyObject *self, PyObject *args)
 {
@@ -3285,7 +3522,9 @@ py_guestfs_btrfs_balance_resume (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_BALANCE_STATUS
 static PyObject *
 py_guestfs_btrfs_balance_status (PyObject *self, PyObject *args)
 {
@@ -3321,7 +3560,9 @@ py_guestfs_btrfs_balance_status (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_DEVICE_ADD
 static PyObject *
 py_guestfs_btrfs_device_add (PyObject *self, PyObject *args)
 {
@@ -3362,7 +3603,9 @@ py_guestfs_btrfs_device_add (PyObject *self, PyObject *args)
   free (devices);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_DEVICE_DELETE
 static PyObject *
 py_guestfs_btrfs_device_delete (PyObject *self, PyObject *args)
 {
@@ -3403,7 +3646,9 @@ py_guestfs_btrfs_device_delete (PyObject *self, PyObject *args)
   free (devices);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_BALANCE
 static PyObject *
 py_guestfs_btrfs_filesystem_balance (PyObject *self, PyObject *args)
 {
@@ -3439,7 +3684,9 @@ py_guestfs_btrfs_filesystem_balance (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_DEFRAGMENT
 static PyObject *
 py_guestfs_btrfs_filesystem_defragment (PyObject *self, PyObject *args)
 {
@@ -3461,11 +3708,14 @@ py_guestfs_btrfs_filesystem_defragment (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK
   if (py_flush != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK;
     optargs_s.flush = PyLong_AsLong (py_flush);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK
   if (py_compress != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -3476,6 +3726,7 @@ py_guestfs_btrfs_filesystem_defragment (PyObject *self, PyObject *args)
     optargs_s.compress = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -3497,7 +3748,9 @@ py_guestfs_btrfs_filesystem_defragment (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_RESIZE
 static PyObject *
 py_guestfs_btrfs_filesystem_resize (PyObject *self, PyObject *args)
 {
@@ -3518,11 +3771,13 @@ py_guestfs_btrfs_filesystem_resize (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK
   if (py_size != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK;
     optargs_s.size = PyLong_AsLongLong (py_size);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -3544,7 +3799,9 @@ py_guestfs_btrfs_filesystem_resize (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_SYNC
 static PyObject *
 py_guestfs_btrfs_filesystem_sync (PyObject *self, PyObject *args)
 {
@@ -3580,7 +3837,9 @@ py_guestfs_btrfs_filesystem_sync (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_FSCK
 static PyObject *
 py_guestfs_btrfs_fsck (PyObject *self, PyObject *args)
 {
@@ -3602,16 +3861,20 @@ py_guestfs_btrfs_fsck (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK
   if (py_superblock != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK;
     optargs_s.superblock = PyLong_AsLongLong (py_superblock);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_BTRFS_FSCK_REPAIR_BITMASK
   if (py_repair != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_FSCK_REPAIR_BITMASK;
     optargs_s.repair = PyLong_AsLong (py_repair);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -3633,7 +3896,9 @@ py_guestfs_btrfs_fsck (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_IMAGE
 static PyObject *
 py_guestfs_btrfs_image (PyObject *self, PyObject *args)
 {
@@ -3658,11 +3923,13 @@ py_guestfs_btrfs_image (PyObject *self, PyObject *args)
   source = get_string_list (py_source);
   if (!source) goto out;
 
+#ifdef GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK
   if (py_compresslevel != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK;
     optargs_s.compresslevel = PyLong_AsLong (py_compresslevel);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -3685,7 +3952,9 @@ py_guestfs_btrfs_image (PyObject *self, PyObject *args)
   free (source);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_ASSIGN
 static PyObject *
 py_guestfs_btrfs_qgroup_assign (PyObject *self, PyObject *args)
 {
@@ -3723,7 +3992,9 @@ py_guestfs_btrfs_qgroup_assign (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_CREATE
 static PyObject *
 py_guestfs_btrfs_qgroup_create (PyObject *self, PyObject *args)
 {
@@ -3760,7 +4031,9 @@ py_guestfs_btrfs_qgroup_create (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_DESTROY
 static PyObject *
 py_guestfs_btrfs_qgroup_destroy (PyObject *self, PyObject *args)
 {
@@ -3797,7 +4070,9 @@ py_guestfs_btrfs_qgroup_destroy (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_LIMIT
 static PyObject *
 py_guestfs_btrfs_qgroup_limit (PyObject *self, PyObject *args)
 {
@@ -3834,7 +4109,9 @@ py_guestfs_btrfs_qgroup_limit (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_REMOVE
 static PyObject *
 py_guestfs_btrfs_qgroup_remove (PyObject *self, PyObject *args)
 {
@@ -3872,7 +4149,9 @@ py_guestfs_btrfs_qgroup_remove (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_SHOW
 static PyObject *
 py_guestfs_btrfs_qgroup_show (PyObject *self, PyObject *args)
 {
@@ -3908,7 +4187,9 @@ py_guestfs_btrfs_qgroup_show (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_QUOTA_ENABLE
 static PyObject *
 py_guestfs_btrfs_quota_enable (PyObject *self, PyObject *args)
 {
@@ -3945,7 +4226,9 @@ py_guestfs_btrfs_quota_enable (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_QUOTA_RESCAN
 static PyObject *
 py_guestfs_btrfs_quota_rescan (PyObject *self, PyObject *args)
 {
@@ -3981,7 +4264,9 @@ py_guestfs_btrfs_quota_rescan (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_REPLACE
 static PyObject *
 py_guestfs_btrfs_replace (PyObject *self, PyObject *args)
 {
@@ -4019,7 +4304,9 @@ py_guestfs_btrfs_replace (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_RESCUE_CHUNK_RECOVER
 static PyObject *
 py_guestfs_btrfs_rescue_chunk_recover (PyObject *self, PyObject *args)
 {
@@ -4055,7 +4342,9 @@ py_guestfs_btrfs_rescue_chunk_recover (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_RESCUE_SUPER_RECOVER
 static PyObject *
 py_guestfs_btrfs_rescue_super_recover (PyObject *self, PyObject *args)
 {
@@ -4091,7 +4380,9 @@ py_guestfs_btrfs_rescue_super_recover (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SCRUB_CANCEL
 static PyObject *
 py_guestfs_btrfs_scrub_cancel (PyObject *self, PyObject *args)
 {
@@ -4127,7 +4418,9 @@ py_guestfs_btrfs_scrub_cancel (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SCRUB_RESUME
 static PyObject *
 py_guestfs_btrfs_scrub_resume (PyObject *self, PyObject *args)
 {
@@ -4163,7 +4456,9 @@ py_guestfs_btrfs_scrub_resume (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SCRUB_START
 static PyObject *
 py_guestfs_btrfs_scrub_start (PyObject *self, PyObject *args)
 {
@@ -4199,7 +4494,9 @@ py_guestfs_btrfs_scrub_start (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SCRUB_STATUS
 static PyObject *
 py_guestfs_btrfs_scrub_status (PyObject *self, PyObject *args)
 {
@@ -4235,7 +4532,9 @@ py_guestfs_btrfs_scrub_status (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SET_SEEDING
 static PyObject *
 py_guestfs_btrfs_set_seeding (PyObject *self, PyObject *args)
 {
@@ -4272,7 +4571,9 @@ py_guestfs_btrfs_set_seeding (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE
 static PyObject *
 py_guestfs_btrfs_subvolume_create (PyObject *self, PyObject *args)
 {
@@ -4293,6 +4594,7 @@ py_guestfs_btrfs_subvolume_create (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK
   if (py_qgroupid != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -4303,6 +4605,7 @@ py_guestfs_btrfs_subvolume_create (PyObject *self, PyObject *args)
     optargs_s.qgroupid = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -4324,7 +4627,9 @@ py_guestfs_btrfs_subvolume_create (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_DELETE
 static PyObject *
 py_guestfs_btrfs_subvolume_delete (PyObject *self, PyObject *args)
 {
@@ -4360,7 +4665,9 @@ py_guestfs_btrfs_subvolume_delete (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_GET_DEFAULT
 static PyObject *
 py_guestfs_btrfs_subvolume_get_default (PyObject *self, PyObject *args)
 {
@@ -4395,7 +4702,9 @@ py_guestfs_btrfs_subvolume_get_default (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_LIST
 static PyObject *
 py_guestfs_btrfs_subvolume_list (PyObject *self, PyObject *args)
 {
@@ -4431,7 +4740,9 @@ py_guestfs_btrfs_subvolume_list (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SET_DEFAULT
 static PyObject *
 py_guestfs_btrfs_subvolume_set_default (PyObject *self, PyObject *args)
 {
@@ -4468,7 +4779,9 @@ py_guestfs_btrfs_subvolume_set_default (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SHOW
 static PyObject *
 py_guestfs_btrfs_subvolume_show (PyObject *self, PyObject *args)
 {
@@ -4504,7 +4817,9 @@ py_guestfs_btrfs_subvolume_show (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT
 static PyObject *
 py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
 {
@@ -4527,11 +4842,14 @@ py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK
   if (py_ro != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_RO_BITMASK;
     optargs_s.ro = PyLong_AsLong (py_ro);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK
   if (py_qgroupid != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -4542,6 +4860,7 @@ py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
     optargs_s.qgroupid = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -4563,7 +4882,9 @@ py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS
 static PyObject *
 py_guestfs_btrfstune_enable_extended_inode_refs (PyObject *self, PyObject *args)
 {
@@ -4599,7 +4920,9 @@ py_guestfs_btrfstune_enable_extended_inode_refs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS
 static PyObject *
 py_guestfs_btrfstune_enable_skinny_metadata_extent_refs (PyObject *self, PyObject *args)
 {
@@ -4635,7 +4958,9 @@ py_guestfs_btrfstune_enable_skinny_metadata_extent_refs (PyObject *self, PyObjec
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_BTRFSTUNE_SEEDING
 static PyObject *
 py_guestfs_btrfstune_seeding (PyObject *self, PyObject *args)
 {
@@ -4672,7 +4997,9 @@ py_guestfs_btrfstune_seeding (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_C_POINTER
 static PyObject *
 py_guestfs_c_pointer (PyObject *self, PyObject *args)
 {
@@ -4706,7 +5033,9 @@ py_guestfs_c_pointer (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CANONICAL_DEVICE_NAME
 static PyObject *
 py_guestfs_canonical_device_name (PyObject *self, PyObject *args)
 {
@@ -4747,7 +5076,9 @@ py_guestfs_canonical_device_name (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CAP_GET_FILE
 static PyObject *
 py_guestfs_cap_get_file (PyObject *self, PyObject *args)
 {
@@ -4788,7 +5119,9 @@ py_guestfs_cap_get_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CAP_SET_FILE
 static PyObject *
 py_guestfs_cap_set_file (PyObject *self, PyObject *args)
 {
@@ -4825,7 +5158,9 @@ py_guestfs_cap_set_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CASE_SENSITIVE_PATH
 static PyObject *
 py_guestfs_case_sensitive_path (PyObject *self, PyObject *args)
 {
@@ -4866,7 +5201,9 @@ py_guestfs_case_sensitive_path (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CAT
 static PyObject *
 py_guestfs_cat (PyObject *self, PyObject *args)
 {
@@ -4907,7 +5244,9 @@ py_guestfs_cat (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CHECKSUM
 static PyObject *
 py_guestfs_checksum (PyObject *self, PyObject *args)
 {
@@ -4949,7 +5288,9 @@ py_guestfs_checksum (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CHECKSUM_DEVICE
 static PyObject *
 py_guestfs_checksum_device (PyObject *self, PyObject *args)
 {
@@ -4991,7 +5332,9 @@ py_guestfs_checksum_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CHECKSUMS_OUT
 static PyObject *
 py_guestfs_checksums_out (PyObject *self, PyObject *args)
 {
@@ -5029,7 +5372,9 @@ py_guestfs_checksums_out (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CHMOD
 static PyObject *
 py_guestfs_chmod (PyObject *self, PyObject *args)
 {
@@ -5066,7 +5411,9 @@ py_guestfs_chmod (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CHOWN
 static PyObject *
 py_guestfs_chown (PyObject *self, PyObject *args)
 {
@@ -5104,7 +5451,9 @@ py_guestfs_chown (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CLEAR_BACKEND_SETTING
 static PyObject *
 py_guestfs_clear_backend_setting (PyObject *self, PyObject *args)
 {
@@ -5132,7 +5481,9 @@ py_guestfs_clear_backend_setting (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COMMAND
 static PyObject *
 py_guestfs_command (PyObject *self, PyObject *args)
 {
@@ -5177,7 +5528,9 @@ py_guestfs_command (PyObject *self, PyObject *args)
   free (arguments);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COMMAND_LINES
 static PyObject *
 py_guestfs_command_lines (PyObject *self, PyObject *args)
 {
@@ -5217,7 +5570,9 @@ py_guestfs_command_lines (PyObject *self, PyObject *args)
   free (arguments);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COMPRESS_DEVICE_OUT
 static PyObject *
 py_guestfs_compress_device_out (PyObject *self, PyObject *args)
 {
@@ -5240,11 +5595,13 @@ py_guestfs_compress_device_out (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK
   if (py_level != Py_None) {
     optargs_s.bitmask |= GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK;
     optargs_s.level = PyLong_AsLong (py_level);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -5266,7 +5623,9 @@ py_guestfs_compress_device_out (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COMPRESS_OUT
 static PyObject *
 py_guestfs_compress_out (PyObject *self, PyObject *args)
 {
@@ -5289,11 +5648,13 @@ py_guestfs_compress_out (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_COMPRESS_OUT_LEVEL_BITMASK
   if (py_level != Py_None) {
     optargs_s.bitmask |= GUESTFS_COMPRESS_OUT_LEVEL_BITMASK;
     optargs_s.level = PyLong_AsLong (py_level);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -5315,7 +5676,9 @@ py_guestfs_compress_out (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CONFIG
 static PyObject *
 py_guestfs_config (PyObject *self, PyObject *args)
 {
@@ -5345,7 +5708,9 @@ py_guestfs_config (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COPY_ATTRIBUTES
 static PyObject *
 py_guestfs_copy_attributes (PyObject *self, PyObject *args)
 {
@@ -5370,26 +5735,34 @@ py_guestfs_copy_attributes (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK
   if (py_all != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_ALL_BITMASK;
     optargs_s.all = PyLong_AsLong (py_all);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK
   if (py_mode != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_MODE_BITMASK;
     optargs_s.mode = PyLong_AsLong (py_mode);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK
   if (py_xattributes != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_XATTRIBUTES_BITMASK;
     optargs_s.xattributes = PyLong_AsLong (py_xattributes);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK
   if (py_ownership != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_ATTRIBUTES_OWNERSHIP_BITMASK;
     optargs_s.ownership = PyLong_AsLong (py_ownership);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -5411,7 +5784,9 @@ py_guestfs_copy_attributes (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COPY_DEVICE_TO_DEVICE
 static PyObject *
 py_guestfs_copy_device_to_device (PyObject *self, PyObject *args)
 {
@@ -5437,31 +5812,41 @@ py_guestfs_copy_device_to_device (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK
   if (py_srcoffset != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK;
     optargs_s.srcoffset = PyLong_AsLongLong (py_srcoffset);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK
   if (py_destoffset != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK;
     optargs_s.destoffset = PyLong_AsLongLong (py_destoffset);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK
   if (py_size != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
     optargs_s.size = PyLong_AsLongLong (py_size);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK
   if (py_sparse != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
     optargs_s.sparse = PyLong_AsLong (py_sparse);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK
   if (py_append != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_APPEND_BITMASK;
     optargs_s.append = PyLong_AsLong (py_append);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -5483,7 +5868,9 @@ py_guestfs_copy_device_to_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COPY_DEVICE_TO_FILE
 static PyObject *
 py_guestfs_copy_device_to_file (PyObject *self, PyObject *args)
 {
@@ -5509,31 +5896,41 @@ py_guestfs_copy_device_to_file (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK
   if (py_srcoffset != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK;
     optargs_s.srcoffset = PyLong_AsLongLong (py_srcoffset);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK
   if (py_destoffset != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK;
     optargs_s.destoffset = PyLong_AsLongLong (py_destoffset);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK
   if (py_size != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
     optargs_s.size = PyLong_AsLongLong (py_size);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK
   if (py_sparse != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
     optargs_s.sparse = PyLong_AsLong (py_sparse);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK
   if (py_append != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_APPEND_BITMASK;
     optargs_s.append = PyLong_AsLong (py_append);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -5555,7 +5952,9 @@ py_guestfs_copy_device_to_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COPY_FILE_TO_DEVICE
 static PyObject *
 py_guestfs_copy_file_to_device (PyObject *self, PyObject *args)
 {
@@ -5581,31 +5980,41 @@ py_guestfs_copy_file_to_device (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK
   if (py_srcoffset != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK;
     optargs_s.srcoffset = PyLong_AsLongLong (py_srcoffset);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK
   if (py_destoffset != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK;
     optargs_s.destoffset = PyLong_AsLongLong (py_destoffset);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK
   if (py_size != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
     optargs_s.size = PyLong_AsLongLong (py_size);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK
   if (py_sparse != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
     optargs_s.sparse = PyLong_AsLong (py_sparse);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK
   if (py_append != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_APPEND_BITMASK;
     optargs_s.append = PyLong_AsLong (py_append);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -5627,7 +6036,9 @@ py_guestfs_copy_file_to_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COPY_FILE_TO_FILE
 static PyObject *
 py_guestfs_copy_file_to_file (PyObject *self, PyObject *args)
 {
@@ -5653,31 +6064,41 @@ py_guestfs_copy_file_to_file (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK
   if (py_srcoffset != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK;
     optargs_s.srcoffset = PyLong_AsLongLong (py_srcoffset);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK
   if (py_destoffset != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK;
     optargs_s.destoffset = PyLong_AsLongLong (py_destoffset);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK
   if (py_size != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
     optargs_s.size = PyLong_AsLongLong (py_size);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK
   if (py_sparse != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
     optargs_s.sparse = PyLong_AsLong (py_sparse);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK
   if (py_append != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_APPEND_BITMASK;
     optargs_s.append = PyLong_AsLong (py_append);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -5699,7 +6120,9 @@ py_guestfs_copy_file_to_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COPY_IN
 static PyObject *
 py_guestfs_copy_in (PyObject *self, PyObject *args)
 {
@@ -5736,7 +6159,9 @@ py_guestfs_copy_in (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COPY_OUT
 static PyObject *
 py_guestfs_copy_out (PyObject *self, PyObject *args)
 {
@@ -5773,7 +6198,9 @@ py_guestfs_copy_out (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_COPY_SIZE
 static PyObject *
 py_guestfs_copy_size (PyObject *self, PyObject *args)
 {
@@ -5811,7 +6238,9 @@ py_guestfs_copy_size (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CP
 static PyObject *
 py_guestfs_cp (PyObject *self, PyObject *args)
 {
@@ -5848,7 +6277,9 @@ py_guestfs_cp (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CP_A
 static PyObject *
 py_guestfs_cp_a (PyObject *self, PyObject *args)
 {
@@ -5885,7 +6316,9 @@ py_guestfs_cp_a (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CP_R
 static PyObject *
 py_guestfs_cp_r (PyObject *self, PyObject *args)
 {
@@ -5922,7 +6355,9 @@ py_guestfs_cp_r (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_CPIO_OUT
 static PyObject *
 py_guestfs_cpio_out (PyObject *self, PyObject *args)
 {
@@ -5944,6 +6379,7 @@ py_guestfs_cpio_out (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_CPIO_OUT_FORMAT_BITMASK
   if (py_format != Py_None) {
     optargs_s.bitmask |= GUESTFS_CPIO_OUT_FORMAT_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -5954,6 +6390,7 @@ py_guestfs_cpio_out (PyObject *self, PyObject *args)
     optargs_s.format = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -5975,7 +6412,9 @@ py_guestfs_cpio_out (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DD
 static PyObject *
 py_guestfs_dd (PyObject *self, PyObject *args)
 {
@@ -6012,7 +6451,9 @@ py_guestfs_dd (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DEBUG
 static PyObject *
 py_guestfs_debug (PyObject *self, PyObject *args)
 {
@@ -6058,7 +6499,9 @@ py_guestfs_debug (PyObject *self, PyObject *args)
   free (extraargs);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DEBUG_DRIVES
 static PyObject *
 py_guestfs_debug_drives (PyObject *self, PyObject *args)
 {
@@ -6086,7 +6529,9 @@ py_guestfs_debug_drives (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DEBUG_UPLOAD
 static PyObject *
 py_guestfs_debug_upload (PyObject *self, PyObject *args)
 {
@@ -6124,7 +6569,9 @@ py_guestfs_debug_upload (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DEVICE_INDEX
 static PyObject *
 py_guestfs_device_index (PyObject *self, PyObject *args)
 {
@@ -6159,7 +6606,9 @@ py_guestfs_device_index (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DF
 static PyObject *
 py_guestfs_df (PyObject *self, PyObject *args)
 {
@@ -6199,7 +6648,9 @@ py_guestfs_df (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DF_H
 static PyObject *
 py_guestfs_df_h (PyObject *self, PyObject *args)
 {
@@ -6239,7 +6690,9 @@ py_guestfs_df_h (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DISK_CREATE
 static PyObject *
 py_guestfs_disk_create (PyObject *self, PyObject *args)
 {
@@ -6266,6 +6719,7 @@ py_guestfs_disk_create (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK
   if (py_backingfile != Py_None) {
     optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -6276,6 +6730,8 @@ py_guestfs_disk_create (PyObject *self, PyObject *args)
     optargs_s.backingfile = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK
   if (py_backingformat != Py_None) {
     optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -6286,6 +6742,8 @@ py_guestfs_disk_create (PyObject *self, PyObject *args)
     optargs_s.backingformat = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK
   if (py_preallocation != Py_None) {
     optargs_s.bitmask |= GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -6296,6 +6754,8 @@ py_guestfs_disk_create (PyObject *self, PyObject *args)
     optargs_s.preallocation = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_DISK_CREATE_COMPAT_BITMASK
   if (py_compat != Py_None) {
     optargs_s.bitmask |= GUESTFS_DISK_CREATE_COMPAT_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -6306,11 +6766,14 @@ py_guestfs_disk_create (PyObject *self, PyObject *args)
     optargs_s.compat = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK
   if (py_clustersize != Py_None) {
     optargs_s.bitmask |= GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
     optargs_s.clustersize = PyLong_AsLong (py_clustersize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -6332,7 +6795,9 @@ py_guestfs_disk_create (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DISK_FORMAT
 static PyObject *
 py_guestfs_disk_format (PyObject *self, PyObject *args)
 {
@@ -6373,7 +6838,9 @@ py_guestfs_disk_format (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DISK_HAS_BACKING_FILE
 static PyObject *
 py_guestfs_disk_has_backing_file (PyObject *self, PyObject *args)
 {
@@ -6408,7 +6875,9 @@ py_guestfs_disk_has_backing_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DISK_VIRTUAL_SIZE
 static PyObject *
 py_guestfs_disk_virtual_size (PyObject *self, PyObject *args)
 {
@@ -6443,7 +6912,9 @@ py_guestfs_disk_virtual_size (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DMESG
 static PyObject *
 py_guestfs_dmesg (PyObject *self, PyObject *args)
 {
@@ -6483,7 +6954,9 @@ py_guestfs_dmesg (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DOWNLOAD
 static PyObject *
 py_guestfs_download (PyObject *self, PyObject *args)
 {
@@ -6520,7 +6993,9 @@ py_guestfs_download (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DOWNLOAD_OFFSET
 static PyObject *
 py_guestfs_download_offset (PyObject *self, PyObject *args)
 {
@@ -6559,7 +7034,9 @@ py_guestfs_download_offset (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DROP_CACHES
 static PyObject *
 py_guestfs_drop_caches (PyObject *self, PyObject *args)
 {
@@ -6595,7 +7072,9 @@ py_guestfs_drop_caches (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_DU
 static PyObject *
 py_guestfs_du (PyObject *self, PyObject *args)
 {
@@ -6630,7 +7109,9 @@ py_guestfs_du (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_E2FSCK
 static PyObject *
 py_guestfs_e2fsck (PyObject *self, PyObject *args)
 {
@@ -6652,16 +7133,20 @@ py_guestfs_e2fsck (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_E2FSCK_CORRECT_BITMASK
   if (py_correct != Py_None) {
     optargs_s.bitmask |= GUESTFS_E2FSCK_CORRECT_BITMASK;
     optargs_s.correct = PyLong_AsLong (py_correct);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_E2FSCK_FORCEALL_BITMASK
   if (py_forceall != Py_None) {
     optargs_s.bitmask |= GUESTFS_E2FSCK_FORCEALL_BITMASK;
     optargs_s.forceall = PyLong_AsLong (py_forceall);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -6683,7 +7168,9 @@ py_guestfs_e2fsck (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_E2FSCK_F
 static PyObject *
 py_guestfs_e2fsck_f (PyObject *self, PyObject *args)
 {
@@ -6719,7 +7206,9 @@ py_guestfs_e2fsck_f (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ECHO_DAEMON
 static PyObject *
 py_guestfs_echo_daemon (PyObject *self, PyObject *args)
 {
@@ -6764,7 +7253,9 @@ py_guestfs_echo_daemon (PyObject *self, PyObject *args)
   free (words);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_EGREP
 static PyObject *
 py_guestfs_egrep (PyObject *self, PyObject *args)
 {
@@ -6801,7 +7292,9 @@ py_guestfs_egrep (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_EGREPI
 static PyObject *
 py_guestfs_egrepi (PyObject *self, PyObject *args)
 {
@@ -6838,7 +7331,9 @@ py_guestfs_egrepi (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_EQUAL
 static PyObject *
 py_guestfs_equal (PyObject *self, PyObject *args)
 {
@@ -6874,7 +7369,9 @@ py_guestfs_equal (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_EXISTS
 static PyObject *
 py_guestfs_exists (PyObject *self, PyObject *args)
 {
@@ -6909,7 +7406,9 @@ py_guestfs_exists (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_EXTLINUX
 static PyObject *
 py_guestfs_extlinux (PyObject *self, PyObject *args)
 {
@@ -6945,7 +7444,9 @@ py_guestfs_extlinux (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FALLOCATE
 static PyObject *
 py_guestfs_fallocate (PyObject *self, PyObject *args)
 {
@@ -6982,7 +7483,9 @@ py_guestfs_fallocate (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FALLOCATE64
 static PyObject *
 py_guestfs_fallocate64 (PyObject *self, PyObject *args)
 {
@@ -7019,7 +7522,9 @@ py_guestfs_fallocate64 (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FEATURE_AVAILABLE
 static PyObject *
 py_guestfs_feature_available (PyObject *self, PyObject *args)
 {
@@ -7058,7 +7563,9 @@ py_guestfs_feature_available (PyObject *self, PyObject *args)
   free (groups);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FGREP
 static PyObject *
 py_guestfs_fgrep (PyObject *self, PyObject *args)
 {
@@ -7095,7 +7602,9 @@ py_guestfs_fgrep (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FGREPI
 static PyObject *
 py_guestfs_fgrepi (PyObject *self, PyObject *args)
 {
@@ -7132,7 +7641,9 @@ py_guestfs_fgrepi (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FILE
 static PyObject *
 py_guestfs_file (PyObject *self, PyObject *args)
 {
@@ -7173,7 +7684,9 @@ py_guestfs_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FILE_ARCHITECTURE
 static PyObject *
 py_guestfs_file_architecture (PyObject *self, PyObject *args)
 {
@@ -7214,7 +7727,9 @@ py_guestfs_file_architecture (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FILESIZE
 static PyObject *
 py_guestfs_filesize (PyObject *self, PyObject *args)
 {
@@ -7249,7 +7764,9 @@ py_guestfs_filesize (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FILESYSTEM_AVAILABLE
 static PyObject *
 py_guestfs_filesystem_available (PyObject *self, PyObject *args)
 {
@@ -7284,7 +7801,9 @@ py_guestfs_filesystem_available (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FILL
 static PyObject *
 py_guestfs_fill (PyObject *self, PyObject *args)
 {
@@ -7322,7 +7841,9 @@ py_guestfs_fill (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FILL_DIR
 static PyObject *
 py_guestfs_fill_dir (PyObject *self, PyObject *args)
 {
@@ -7359,7 +7880,9 @@ py_guestfs_fill_dir (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FILL_PATTERN
 static PyObject *
 py_guestfs_fill_pattern (PyObject *self, PyObject *args)
 {
@@ -7397,7 +7920,9 @@ py_guestfs_fill_pattern (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FIND
 static PyObject *
 py_guestfs_find (PyObject *self, PyObject *args)
 {
@@ -7433,7 +7958,9 @@ py_guestfs_find (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FIND0
 static PyObject *
 py_guestfs_find0 (PyObject *self, PyObject *args)
 {
@@ -7470,7 +7997,9 @@ py_guestfs_find0 (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FINDFS_LABEL
 static PyObject *
 py_guestfs_findfs_label (PyObject *self, PyObject *args)
 {
@@ -7511,7 +8040,9 @@ py_guestfs_findfs_label (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FINDFS_UUID
 static PyObject *
 py_guestfs_findfs_uuid (PyObject *self, PyObject *args)
 {
@@ -7552,7 +8083,9 @@ py_guestfs_findfs_uuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FSCK
 static PyObject *
 py_guestfs_fsck (PyObject *self, PyObject *args)
 {
@@ -7588,7 +8121,9 @@ py_guestfs_fsck (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_FSTRIM
 static PyObject *
 py_guestfs_fstrim (PyObject *self, PyObject *args)
 {
@@ -7611,21 +8146,27 @@ py_guestfs_fstrim (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_FSTRIM_OFFSET_BITMASK
   if (py_offset != Py_None) {
     optargs_s.bitmask |= GUESTFS_FSTRIM_OFFSET_BITMASK;
     optargs_s.offset = PyLong_AsLongLong (py_offset);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_FSTRIM_LENGTH_BITMASK
   if (py_length != Py_None) {
     optargs_s.bitmask |= GUESTFS_FSTRIM_LENGTH_BITMASK;
     optargs_s.length = PyLong_AsLongLong (py_length);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_FSTRIM_MINIMUMFREEEXTENT_BITMASK
   if (py_minimumfreeextent != Py_None) {
     optargs_s.bitmask |= GUESTFS_FSTRIM_MINIMUMFREEEXTENT_BITMASK;
     optargs_s.minimumfreeextent = PyLong_AsLongLong (py_minimumfreeextent);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -7647,7 +8188,9 @@ py_guestfs_fstrim (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_APPEND
 static PyObject *
 py_guestfs_get_append (PyObject *self, PyObject *args)
 {
@@ -7680,7 +8223,9 @@ py_guestfs_get_append (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_ATTACH_METHOD
 static PyObject *
 py_guestfs_get_attach_method (PyObject *self, PyObject *args)
 {
@@ -7713,7 +8258,9 @@ py_guestfs_get_attach_method (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_AUTOSYNC
 static PyObject *
 py_guestfs_get_autosync (PyObject *self, PyObject *args)
 {
@@ -7740,7 +8287,9 @@ py_guestfs_get_autosync (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_BACKEND
 static PyObject *
 py_guestfs_get_backend (PyObject *self, PyObject *args)
 {
@@ -7773,7 +8322,9 @@ py_guestfs_get_backend (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_BACKEND_SETTING
 static PyObject *
 py_guestfs_get_backend_setting (PyObject *self, PyObject *args)
 {
@@ -7807,7 +8358,9 @@ py_guestfs_get_backend_setting (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_BACKEND_SETTINGS
 static PyObject *
 py_guestfs_get_backend_settings (PyObject *self, PyObject *args)
 {
@@ -7835,7 +8388,9 @@ py_guestfs_get_backend_settings (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_CACHEDIR
 static PyObject *
 py_guestfs_get_cachedir (PyObject *self, PyObject *args)
 {
@@ -7868,7 +8423,9 @@ py_guestfs_get_cachedir (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_DIRECT
 static PyObject *
 py_guestfs_get_direct (PyObject *self, PyObject *args)
 {
@@ -7895,7 +8452,9 @@ py_guestfs_get_direct (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_E2ATTRS
 static PyObject *
 py_guestfs_get_e2attrs (PyObject *self, PyObject *args)
 {
@@ -7936,7 +8495,9 @@ py_guestfs_get_e2attrs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_E2GENERATION
 static PyObject *
 py_guestfs_get_e2generation (PyObject *self, PyObject *args)
 {
@@ -7971,7 +8532,9 @@ py_guestfs_get_e2generation (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_E2LABEL
 static PyObject *
 py_guestfs_get_e2label (PyObject *self, PyObject *args)
 {
@@ -8012,7 +8575,9 @@ py_guestfs_get_e2label (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_E2UUID
 static PyObject *
 py_guestfs_get_e2uuid (PyObject *self, PyObject *args)
 {
@@ -8053,7 +8618,9 @@ py_guestfs_get_e2uuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_HV
 static PyObject *
 py_guestfs_get_hv (PyObject *self, PyObject *args)
 {
@@ -8086,7 +8653,9 @@ py_guestfs_get_hv (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE
 static PyObject *
 py_guestfs_get_libvirt_requested_credential_challenge (PyObject *self, PyObject *args)
 {
@@ -8120,7 +8689,9 @@ py_guestfs_get_libvirt_requested_credential_challenge (PyObject *self, PyObject 
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_DEFRESULT
 static PyObject *
 py_guestfs_get_libvirt_requested_credential_defresult (PyObject *self, PyObject *args)
 {
@@ -8154,7 +8725,9 @@ py_guestfs_get_libvirt_requested_credential_defresult (PyObject *self, PyObject 
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_PROMPT
 static PyObject *
 py_guestfs_get_libvirt_requested_credential_prompt (PyObject *self, PyObject *args)
 {
@@ -8188,7 +8761,9 @@ py_guestfs_get_libvirt_requested_credential_prompt (PyObject *self, PyObject *ar
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIALS
 static PyObject *
 py_guestfs_get_libvirt_requested_credentials (PyObject *self, PyObject *args)
 {
@@ -8216,7 +8791,9 @@ py_guestfs_get_libvirt_requested_credentials (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_MEMSIZE
 static PyObject *
 py_guestfs_get_memsize (PyObject *self, PyObject *args)
 {
@@ -8243,7 +8820,9 @@ py_guestfs_get_memsize (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_NETWORK
 static PyObject *
 py_guestfs_get_network (PyObject *self, PyObject *args)
 {
@@ -8270,7 +8849,9 @@ py_guestfs_get_network (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_PATH
 static PyObject *
 py_guestfs_get_path (PyObject *self, PyObject *args)
 {
@@ -8302,7 +8883,9 @@ py_guestfs_get_path (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_PGROUP
 static PyObject *
 py_guestfs_get_pgroup (PyObject *self, PyObject *args)
 {
@@ -8329,7 +8912,9 @@ py_guestfs_get_pgroup (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_PID
 static PyObject *
 py_guestfs_get_pid (PyObject *self, PyObject *args)
 {
@@ -8356,7 +8941,9 @@ py_guestfs_get_pid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_PROGRAM
 static PyObject *
 py_guestfs_get_program (PyObject *self, PyObject *args)
 {
@@ -8388,7 +8975,9 @@ py_guestfs_get_program (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_QEMU
 static PyObject *
 py_guestfs_get_qemu (PyObject *self, PyObject *args)
 {
@@ -8420,7 +9009,9 @@ py_guestfs_get_qemu (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_RECOVERY_PROC
 static PyObject *
 py_guestfs_get_recovery_proc (PyObject *self, PyObject *args)
 {
@@ -8447,7 +9038,9 @@ py_guestfs_get_recovery_proc (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_SELINUX
 static PyObject *
 py_guestfs_get_selinux (PyObject *self, PyObject *args)
 {
@@ -8474,7 +9067,9 @@ py_guestfs_get_selinux (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_SMP
 static PyObject *
 py_guestfs_get_smp (PyObject *self, PyObject *args)
 {
@@ -8501,7 +9096,9 @@ py_guestfs_get_smp (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_STATE
 static PyObject *
 py_guestfs_get_state (PyObject *self, PyObject *args)
 {
@@ -8528,7 +9125,9 @@ py_guestfs_get_state (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_TMPDIR
 static PyObject *
 py_guestfs_get_tmpdir (PyObject *self, PyObject *args)
 {
@@ -8561,7 +9160,9 @@ py_guestfs_get_tmpdir (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_TRACE
 static PyObject *
 py_guestfs_get_trace (PyObject *self, PyObject *args)
 {
@@ -8588,7 +9189,9 @@ py_guestfs_get_trace (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_UMASK
 static PyObject *
 py_guestfs_get_umask (PyObject *self, PyObject *args)
 {
@@ -8622,7 +9225,9 @@ py_guestfs_get_umask (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GET_VERBOSE
 static PyObject *
 py_guestfs_get_verbose (PyObject *self, PyObject *args)
 {
@@ -8649,7 +9254,9 @@ py_guestfs_get_verbose (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GETCON
 static PyObject *
 py_guestfs_getcon (PyObject *self, PyObject *args)
 {
@@ -8689,7 +9296,9 @@ py_guestfs_getcon (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GETXATTR
 static PyObject *
 py_guestfs_getxattr (PyObject *self, PyObject *args)
 {
@@ -8732,7 +9341,9 @@ py_guestfs_getxattr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GETXATTRS
 static PyObject *
 py_guestfs_getxattrs (PyObject *self, PyObject *args)
 {
@@ -8768,7 +9379,9 @@ py_guestfs_getxattrs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GLOB_EXPAND
 static PyObject *
 py_guestfs_glob_expand (PyObject *self, PyObject *args)
 {
@@ -8804,7 +9417,9 @@ py_guestfs_glob_expand (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GREP
 static PyObject *
 py_guestfs_grep (PyObject *self, PyObject *args)
 {
@@ -8829,26 +9444,34 @@ py_guestfs_grep (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_GREP_OPTS_EXTENDED_BITMASK
   if (py_extended != Py_None) {
     optargs_s.bitmask |= GUESTFS_GREP_OPTS_EXTENDED_BITMASK;
     optargs_s.extended = PyLong_AsLong (py_extended);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_GREP_OPTS_FIXED_BITMASK
   if (py_fixed != Py_None) {
     optargs_s.bitmask |= GUESTFS_GREP_OPTS_FIXED_BITMASK;
     optargs_s.fixed = PyLong_AsLong (py_fixed);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK
   if (py_insensitive != Py_None) {
     optargs_s.bitmask |= GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK;
     optargs_s.insensitive = PyLong_AsLong (py_insensitive);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_GREP_OPTS_COMPRESSED_BITMASK
   if (py_compressed != Py_None) {
     optargs_s.bitmask |= GUESTFS_GREP_OPTS_COMPRESSED_BITMASK;
     optargs_s.compressed = PyLong_AsLong (py_compressed);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -8870,7 +9493,9 @@ py_guestfs_grep (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GREPI
 static PyObject *
 py_guestfs_grepi (PyObject *self, PyObject *args)
 {
@@ -8907,7 +9532,9 @@ py_guestfs_grepi (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_GRUB_INSTALL
 static PyObject *
 py_guestfs_grub_install (PyObject *self, PyObject *args)
 {
@@ -8944,7 +9571,9 @@ py_guestfs_grub_install (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HEAD
 static PyObject *
 py_guestfs_head (PyObject *self, PyObject *args)
 {
@@ -8980,7 +9609,9 @@ py_guestfs_head (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HEAD_N
 static PyObject *
 py_guestfs_head_n (PyObject *self, PyObject *args)
 {
@@ -9017,7 +9648,9 @@ py_guestfs_head_n (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HEXDUMP
 static PyObject *
 py_guestfs_hexdump (PyObject *self, PyObject *args)
 {
@@ -9058,7 +9691,9 @@ py_guestfs_hexdump (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_CLOSE
 static PyObject *
 py_guestfs_hivex_close (PyObject *self, PyObject *args)
 {
@@ -9093,7 +9728,9 @@ py_guestfs_hivex_close (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_COMMIT
 static PyObject *
 py_guestfs_hivex_commit (PyObject *self, PyObject *args)
 {
@@ -9129,7 +9766,9 @@ py_guestfs_hivex_commit (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_NODE_ADD_CHILD
 static PyObject *
 py_guestfs_hivex_node_add_child (PyObject *self, PyObject *args)
 {
@@ -9165,7 +9804,9 @@ py_guestfs_hivex_node_add_child (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_NODE_CHILDREN
 static PyObject *
 py_guestfs_hivex_node_children (PyObject *self, PyObject *args)
 {
@@ -9201,7 +9842,9 @@ py_guestfs_hivex_node_children (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_NODE_DELETE_CHILD
 static PyObject *
 py_guestfs_hivex_node_delete_child (PyObject *self, PyObject *args)
 {
@@ -9237,7 +9880,9 @@ py_guestfs_hivex_node_delete_child (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_NODE_GET_CHILD
 static PyObject *
 py_guestfs_hivex_node_get_child (PyObject *self, PyObject *args)
 {
@@ -9273,7 +9918,9 @@ py_guestfs_hivex_node_get_child (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_NODE_GET_VALUE
 static PyObject *
 py_guestfs_hivex_node_get_value (PyObject *self, PyObject *args)
 {
@@ -9309,7 +9956,9 @@ py_guestfs_hivex_node_get_value (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_NODE_NAME
 static PyObject *
 py_guestfs_hivex_node_name (PyObject *self, PyObject *args)
 {
@@ -9350,7 +9999,9 @@ py_guestfs_hivex_node_name (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_NODE_PARENT
 static PyObject *
 py_guestfs_hivex_node_parent (PyObject *self, PyObject *args)
 {
@@ -9385,7 +10036,9 @@ py_guestfs_hivex_node_parent (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_NODE_SET_VALUE
 static PyObject *
 py_guestfs_hivex_node_set_value (PyObject *self, PyObject *args)
 {
@@ -9425,7 +10078,9 @@ py_guestfs_hivex_node_set_value (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_NODE_VALUES
 static PyObject *
 py_guestfs_hivex_node_values (PyObject *self, PyObject *args)
 {
@@ -9461,7 +10116,9 @@ py_guestfs_hivex_node_values (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_OPEN
 static PyObject *
 py_guestfs_hivex_open (PyObject *self, PyObject *args)
 {
@@ -9484,21 +10141,27 @@ py_guestfs_hivex_open (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK
   if (py_verbose != Py_None) {
     optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK;
     optargs_s.verbose = PyLong_AsLong (py_verbose);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_HIVEX_OPEN_DEBUG_BITMASK
   if (py_debug != Py_None) {
     optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_DEBUG_BITMASK;
     optargs_s.debug = PyLong_AsLong (py_debug);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_HIVEX_OPEN_WRITE_BITMASK
   if (py_write != Py_None) {
     optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
     optargs_s.write = PyLong_AsLong (py_write);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -9520,7 +10183,9 @@ py_guestfs_hivex_open (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_ROOT
 static PyObject *
 py_guestfs_hivex_root (PyObject *self, PyObject *args)
 {
@@ -9554,7 +10219,9 @@ py_guestfs_hivex_root (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_VALUE_KEY
 static PyObject *
 py_guestfs_hivex_value_key (PyObject *self, PyObject *args)
 {
@@ -9595,7 +10262,9 @@ py_guestfs_hivex_value_key (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_VALUE_TYPE
 static PyObject *
 py_guestfs_hivex_value_type (PyObject *self, PyObject *args)
 {
@@ -9630,7 +10299,9 @@ py_guestfs_hivex_value_type (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_VALUE_UTF8
 static PyObject *
 py_guestfs_hivex_value_utf8 (PyObject *self, PyObject *args)
 {
@@ -9671,7 +10342,9 @@ py_guestfs_hivex_value_utf8 (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_HIVEX_VALUE_VALUE
 static PyObject *
 py_guestfs_hivex_value_value (PyObject *self, PyObject *args)
 {
@@ -9713,7 +10386,9 @@ py_guestfs_hivex_value_value (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INITRD_CAT
 static PyObject *
 py_guestfs_initrd_cat (PyObject *self, PyObject *args)
 {
@@ -9756,7 +10431,9 @@ py_guestfs_initrd_cat (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INITRD_LIST
 static PyObject *
 py_guestfs_initrd_list (PyObject *self, PyObject *args)
 {
@@ -9792,7 +10469,9 @@ py_guestfs_initrd_list (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INOTIFY_ADD_WATCH
 static PyObject *
 py_guestfs_inotify_add_watch (PyObject *self, PyObject *args)
 {
@@ -9828,7 +10507,9 @@ py_guestfs_inotify_add_watch (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INOTIFY_CLOSE
 static PyObject *
 py_guestfs_inotify_close (PyObject *self, PyObject *args)
 {
@@ -9863,7 +10544,9 @@ py_guestfs_inotify_close (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INOTIFY_FILES
 static PyObject *
 py_guestfs_inotify_files (PyObject *self, PyObject *args)
 {
@@ -9898,7 +10581,9 @@ py_guestfs_inotify_files (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INOTIFY_INIT
 static PyObject *
 py_guestfs_inotify_init (PyObject *self, PyObject *args)
 {
@@ -9934,7 +10619,9 @@ py_guestfs_inotify_init (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INOTIFY_READ
 static PyObject *
 py_guestfs_inotify_read (PyObject *self, PyObject *args)
 {
@@ -9969,7 +10656,9 @@ py_guestfs_inotify_read (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INOTIFY_RM_WATCH
 static PyObject *
 py_guestfs_inotify_rm_watch (PyObject *self, PyObject *args)
 {
@@ -10005,7 +10694,9 @@ py_guestfs_inotify_rm_watch (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_ARCH
 static PyObject *
 py_guestfs_inspect_get_arch (PyObject *self, PyObject *args)
 {
@@ -10046,7 +10737,9 @@ py_guestfs_inspect_get_arch (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_DISTRO
 static PyObject *
 py_guestfs_inspect_get_distro (PyObject *self, PyObject *args)
 {
@@ -10087,7 +10780,9 @@ py_guestfs_inspect_get_distro (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_DRIVE_MAPPINGS
 static PyObject *
 py_guestfs_inspect_get_drive_mappings (PyObject *self, PyObject *args)
 {
@@ -10123,7 +10818,9 @@ py_guestfs_inspect_get_drive_mappings (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_FILESYSTEMS
 static PyObject *
 py_guestfs_inspect_get_filesystems (PyObject *self, PyObject *args)
 {
@@ -10159,7 +10856,9 @@ py_guestfs_inspect_get_filesystems (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_FORMAT
 static PyObject *
 py_guestfs_inspect_get_format (PyObject *self, PyObject *args)
 {
@@ -10200,7 +10899,9 @@ py_guestfs_inspect_get_format (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_HOSTNAME
 static PyObject *
 py_guestfs_inspect_get_hostname (PyObject *self, PyObject *args)
 {
@@ -10241,7 +10942,9 @@ py_guestfs_inspect_get_hostname (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_ICON
 static PyObject *
 py_guestfs_inspect_get_icon (PyObject *self, PyObject *args)
 {
@@ -10264,16 +10967,20 @@ py_guestfs_inspect_get_icon (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK
   if (py_favicon != Py_None) {
     optargs_s.bitmask |= GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK;
     optargs_s.favicon = PyLong_AsLong (py_favicon);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK
   if (py_highquality != Py_None) {
     optargs_s.bitmask |= GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK;
     optargs_s.highquality = PyLong_AsLong (py_highquality);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -10300,7 +11007,9 @@ py_guestfs_inspect_get_icon (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_MAJOR_VERSION
 static PyObject *
 py_guestfs_inspect_get_major_version (PyObject *self, PyObject *args)
 {
@@ -10335,7 +11044,9 @@ py_guestfs_inspect_get_major_version (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_MINOR_VERSION
 static PyObject *
 py_guestfs_inspect_get_minor_version (PyObject *self, PyObject *args)
 {
@@ -10370,7 +11081,9 @@ py_guestfs_inspect_get_minor_version (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_MOUNTPOINTS
 static PyObject *
 py_guestfs_inspect_get_mountpoints (PyObject *self, PyObject *args)
 {
@@ -10406,7 +11119,9 @@ py_guestfs_inspect_get_mountpoints (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_PACKAGE_FORMAT
 static PyObject *
 py_guestfs_inspect_get_package_format (PyObject *self, PyObject *args)
 {
@@ -10447,7 +11162,9 @@ py_guestfs_inspect_get_package_format (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_PACKAGE_MANAGEMENT
 static PyObject *
 py_guestfs_inspect_get_package_management (PyObject *self, PyObject *args)
 {
@@ -10488,7 +11205,9 @@ py_guestfs_inspect_get_package_management (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_PRODUCT_NAME
 static PyObject *
 py_guestfs_inspect_get_product_name (PyObject *self, PyObject *args)
 {
@@ -10529,7 +11248,9 @@ py_guestfs_inspect_get_product_name (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_PRODUCT_VARIANT
 static PyObject *
 py_guestfs_inspect_get_product_variant (PyObject *self, PyObject *args)
 {
@@ -10570,7 +11291,9 @@ py_guestfs_inspect_get_product_variant (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_ROOTS
 static PyObject *
 py_guestfs_inspect_get_roots (PyObject *self, PyObject *args)
 {
@@ -10605,7 +11328,9 @@ py_guestfs_inspect_get_roots (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_TYPE
 static PyObject *
 py_guestfs_inspect_get_type (PyObject *self, PyObject *args)
 {
@@ -10646,7 +11371,9 @@ py_guestfs_inspect_get_type (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_CURRENT_CONTROL_SET
 static PyObject *
 py_guestfs_inspect_get_windows_current_control_set (PyObject *self, PyObject *args)
 {
@@ -10687,7 +11414,9 @@ py_guestfs_inspect_get_windows_current_control_set (PyObject *self, PyObject *ar
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SYSTEMROOT
 static PyObject *
 py_guestfs_inspect_get_windows_systemroot (PyObject *self, PyObject *args)
 {
@@ -10728,7 +11457,9 @@ py_guestfs_inspect_get_windows_systemroot (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_IS_LIVE
 static PyObject *
 py_guestfs_inspect_is_live (PyObject *self, PyObject *args)
 {
@@ -10763,7 +11494,9 @@ py_guestfs_inspect_is_live (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_IS_MULTIPART
 static PyObject *
 py_guestfs_inspect_is_multipart (PyObject *self, PyObject *args)
 {
@@ -10798,7 +11531,9 @@ py_guestfs_inspect_is_multipart (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_IS_NETINST
 static PyObject *
 py_guestfs_inspect_is_netinst (PyObject *self, PyObject *args)
 {
@@ -10833,7 +11568,9 @@ py_guestfs_inspect_is_netinst (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_LIST_APPLICATIONS
 static PyObject *
 py_guestfs_inspect_list_applications (PyObject *self, PyObject *args)
 {
@@ -10869,7 +11606,9 @@ py_guestfs_inspect_list_applications (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_LIST_APPLICATIONS2
 static PyObject *
 py_guestfs_inspect_list_applications2 (PyObject *self, PyObject *args)
 {
@@ -10905,7 +11644,9 @@ py_guestfs_inspect_list_applications2 (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INSPECT_OS
 static PyObject *
 py_guestfs_inspect_os (PyObject *self, PyObject *args)
 {
@@ -10940,7 +11681,9 @@ py_guestfs_inspect_os (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_EXIT
 static PyObject *
 py_guestfs_internal_exit (PyObject *self, PyObject *args)
 {
@@ -10975,7 +11718,9 @@ py_guestfs_internal_exit (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST
 static PyObject *
 py_guestfs_internal_test (PyObject *self, PyObject *args)
 {
@@ -11011,21 +11756,28 @@ py_guestfs_internal_test (PyObject *self, PyObject *args)
   strlist = get_string_list (py_strlist);
   if (!strlist) goto out;
 
+#ifdef GUESTFS_INTERNAL_TEST_OBOOL_BITMASK
   if (py_obool != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OBOOL_BITMASK;
     optargs_s.obool = PyLong_AsLong (py_obool);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_OINT_BITMASK
   if (py_oint != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OINT_BITMASK;
     optargs_s.oint = PyLong_AsLong (py_oint);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_OINT64_BITMASK
   if (py_oint64 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OINT64_BITMASK;
     optargs_s.oint64 = PyLong_AsLongLong (py_oint64);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_OSTRING_BITMASK
   if (py_ostring != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRING_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -11036,11 +11788,14 @@ py_guestfs_internal_test (PyObject *self, PyObject *args)
     optargs_s.ostring = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK
   if (py_ostringlist != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK;
     optargs_s.ostringlist = get_string_list (py_ostringlist);
     if (!optargs_s.ostringlist) goto out;
   }
+#endif
 
   r = guestfs_internal_test_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
 
@@ -11055,11 +11810,15 @@ py_guestfs_internal_test (PyObject *self, PyObject *args)
   PyErr_Clear ();
  out:
   free (strlist);
+#ifdef GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK
   if (py_ostringlist != Py_None && (optargs_s.bitmask & GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK) != 0)
     free ((char **) optargs_s.ostringlist);
+#endif
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_63_OPTARGS
 static PyObject *
 py_guestfs_internal_test_63_optargs (PyObject *self, PyObject *args)
 {
@@ -11140,321 +11899,447 @@ py_guestfs_internal_test_63_optargs (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1_BITMASK
   if (py_opt1 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1_BITMASK;
     optargs_s.opt1 = PyLong_AsLong (py_opt1);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2_BITMASK
   if (py_opt2 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2_BITMASK;
     optargs_s.opt2 = PyLong_AsLong (py_opt2);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3_BITMASK
   if (py_opt3 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3_BITMASK;
     optargs_s.opt3 = PyLong_AsLong (py_opt3);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4_BITMASK
   if (py_opt4 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4_BITMASK;
     optargs_s.opt4 = PyLong_AsLong (py_opt4);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5_BITMASK
   if (py_opt5 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5_BITMASK;
     optargs_s.opt5 = PyLong_AsLong (py_opt5);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6_BITMASK
   if (py_opt6 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6_BITMASK;
     optargs_s.opt6 = PyLong_AsLong (py_opt6);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7_BITMASK
   if (py_opt7 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7_BITMASK;
     optargs_s.opt7 = PyLong_AsLong (py_opt7);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8_BITMASK
   if (py_opt8 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8_BITMASK;
     optargs_s.opt8 = PyLong_AsLong (py_opt8);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9_BITMASK
   if (py_opt9 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9_BITMASK;
     optargs_s.opt9 = PyLong_AsLong (py_opt9);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10_BITMASK
   if (py_opt10 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10_BITMASK;
     optargs_s.opt10 = PyLong_AsLong (py_opt10);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11_BITMASK
   if (py_opt11 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11_BITMASK;
     optargs_s.opt11 = PyLong_AsLong (py_opt11);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12_BITMASK
   if (py_opt12 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12_BITMASK;
     optargs_s.opt12 = PyLong_AsLong (py_opt12);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13_BITMASK
   if (py_opt13 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13_BITMASK;
     optargs_s.opt13 = PyLong_AsLong (py_opt13);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14_BITMASK
   if (py_opt14 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14_BITMASK;
     optargs_s.opt14 = PyLong_AsLong (py_opt14);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15_BITMASK
   if (py_opt15 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15_BITMASK;
     optargs_s.opt15 = PyLong_AsLong (py_opt15);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16_BITMASK
   if (py_opt16 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16_BITMASK;
     optargs_s.opt16 = PyLong_AsLong (py_opt16);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17_BITMASK
   if (py_opt17 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17_BITMASK;
     optargs_s.opt17 = PyLong_AsLong (py_opt17);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18_BITMASK
   if (py_opt18 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18_BITMASK;
     optargs_s.opt18 = PyLong_AsLong (py_opt18);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19_BITMASK
   if (py_opt19 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19_BITMASK;
     optargs_s.opt19 = PyLong_AsLong (py_opt19);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20_BITMASK
   if (py_opt20 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20_BITMASK;
     optargs_s.opt20 = PyLong_AsLong (py_opt20);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21_BITMASK
   if (py_opt21 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21_BITMASK;
     optargs_s.opt21 = PyLong_AsLong (py_opt21);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22_BITMASK
   if (py_opt22 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22_BITMASK;
     optargs_s.opt22 = PyLong_AsLong (py_opt22);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23_BITMASK
   if (py_opt23 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23_BITMASK;
     optargs_s.opt23 = PyLong_AsLong (py_opt23);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24_BITMASK
   if (py_opt24 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24_BITMASK;
     optargs_s.opt24 = PyLong_AsLong (py_opt24);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25_BITMASK
   if (py_opt25 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25_BITMASK;
     optargs_s.opt25 = PyLong_AsLong (py_opt25);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26_BITMASK
   if (py_opt26 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26_BITMASK;
     optargs_s.opt26 = PyLong_AsLong (py_opt26);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27_BITMASK
   if (py_opt27 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27_BITMASK;
     optargs_s.opt27 = PyLong_AsLong (py_opt27);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28_BITMASK
   if (py_opt28 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28_BITMASK;
     optargs_s.opt28 = PyLong_AsLong (py_opt28);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29_BITMASK
   if (py_opt29 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29_BITMASK;
     optargs_s.opt29 = PyLong_AsLong (py_opt29);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30_BITMASK
   if (py_opt30 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30_BITMASK;
     optargs_s.opt30 = PyLong_AsLong (py_opt30);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31_BITMASK
   if (py_opt31 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31_BITMASK;
     optargs_s.opt31 = PyLong_AsLong (py_opt31);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32_BITMASK
   if (py_opt32 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32_BITMASK;
     optargs_s.opt32 = PyLong_AsLong (py_opt32);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33_BITMASK
   if (py_opt33 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33_BITMASK;
     optargs_s.opt33 = PyLong_AsLong (py_opt33);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34_BITMASK
   if (py_opt34 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34_BITMASK;
     optargs_s.opt34 = PyLong_AsLong (py_opt34);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35_BITMASK
   if (py_opt35 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35_BITMASK;
     optargs_s.opt35 = PyLong_AsLong (py_opt35);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36_BITMASK
   if (py_opt36 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36_BITMASK;
     optargs_s.opt36 = PyLong_AsLong (py_opt36);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37_BITMASK
   if (py_opt37 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37_BITMASK;
     optargs_s.opt37 = PyLong_AsLong (py_opt37);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38_BITMASK
   if (py_opt38 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38_BITMASK;
     optargs_s.opt38 = PyLong_AsLong (py_opt38);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39_BITMASK
   if (py_opt39 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39_BITMASK;
     optargs_s.opt39 = PyLong_AsLong (py_opt39);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40_BITMASK
   if (py_opt40 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40_BITMASK;
     optargs_s.opt40 = PyLong_AsLong (py_opt40);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41_BITMASK
   if (py_opt41 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41_BITMASK;
     optargs_s.opt41 = PyLong_AsLong (py_opt41);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42_BITMASK
   if (py_opt42 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42_BITMASK;
     optargs_s.opt42 = PyLong_AsLong (py_opt42);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43_BITMASK
   if (py_opt43 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43_BITMASK;
     optargs_s.opt43 = PyLong_AsLong (py_opt43);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44_BITMASK
   if (py_opt44 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44_BITMASK;
     optargs_s.opt44 = PyLong_AsLong (py_opt44);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45_BITMASK
   if (py_opt45 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45_BITMASK;
     optargs_s.opt45 = PyLong_AsLong (py_opt45);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46_BITMASK
   if (py_opt46 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46_BITMASK;
     optargs_s.opt46 = PyLong_AsLong (py_opt46);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47_BITMASK
   if (py_opt47 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47_BITMASK;
     optargs_s.opt47 = PyLong_AsLong (py_opt47);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48_BITMASK
   if (py_opt48 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48_BITMASK;
     optargs_s.opt48 = PyLong_AsLong (py_opt48);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49_BITMASK
   if (py_opt49 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49_BITMASK;
     optargs_s.opt49 = PyLong_AsLong (py_opt49);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50_BITMASK
   if (py_opt50 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50_BITMASK;
     optargs_s.opt50 = PyLong_AsLong (py_opt50);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51_BITMASK
   if (py_opt51 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51_BITMASK;
     optargs_s.opt51 = PyLong_AsLong (py_opt51);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52_BITMASK
   if (py_opt52 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52_BITMASK;
     optargs_s.opt52 = PyLong_AsLong (py_opt52);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53_BITMASK
   if (py_opt53 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53_BITMASK;
     optargs_s.opt53 = PyLong_AsLong (py_opt53);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54_BITMASK
   if (py_opt54 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54_BITMASK;
     optargs_s.opt54 = PyLong_AsLong (py_opt54);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55_BITMASK
   if (py_opt55 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55_BITMASK;
     optargs_s.opt55 = PyLong_AsLong (py_opt55);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56_BITMASK
   if (py_opt56 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56_BITMASK;
     optargs_s.opt56 = PyLong_AsLong (py_opt56);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57_BITMASK
   if (py_opt57 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57_BITMASK;
     optargs_s.opt57 = PyLong_AsLong (py_opt57);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58_BITMASK
   if (py_opt58 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58_BITMASK;
     optargs_s.opt58 = PyLong_AsLong (py_opt58);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59_BITMASK
   if (py_opt59 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59_BITMASK;
     optargs_s.opt59 = PyLong_AsLong (py_opt59);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60_BITMASK
   if (py_opt60 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60_BITMASK;
     optargs_s.opt60 = PyLong_AsLong (py_opt60);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61_BITMASK
   if (py_opt61 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61_BITMASK;
     optargs_s.opt61 = PyLong_AsLong (py_opt61);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62_BITMASK
   if (py_opt62 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62_BITMASK;
     optargs_s.opt62 = PyLong_AsLong (py_opt62);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63_BITMASK
   if (py_opt63 != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63_BITMASK;
     optargs_s.opt63 = PyLong_AsLong (py_opt63);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   r = guestfs_internal_test_63_optargs_argv (g, optargs);
 
@@ -11470,7 +12355,9 @@ py_guestfs_internal_test_63_optargs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_CLOSE_OUTPUT
 static PyObject *
 py_guestfs_internal_test_close_output (PyObject *self, PyObject *args)
 {
@@ -11498,7 +12385,9 @@ py_guestfs_internal_test_close_output (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_ONLY_OPTARGS
 static PyObject *
 py_guestfs_internal_test_only_optargs (PyObject *self, PyObject *args)
 {
@@ -11517,11 +12406,13 @@ py_guestfs_internal_test_only_optargs (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST_BITMASK
   if (py_test != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST_BITMASK;
     optargs_s.test = PyLong_AsLong (py_test);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   r = guestfs_internal_test_only_optargs_argv (g, optargs);
 
@@ -11537,7 +12428,9 @@ py_guestfs_internal_test_only_optargs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RBOOL
 static PyObject *
 py_guestfs_internal_test_rbool (PyObject *self, PyObject *args)
 {
@@ -11565,7 +12458,9 @@ py_guestfs_internal_test_rbool (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RBOOLERR
 static PyObject *
 py_guestfs_internal_test_rboolerr (PyObject *self, PyObject *args)
 {
@@ -11592,7 +12487,9 @@ py_guestfs_internal_test_rboolerr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUT
 static PyObject *
 py_guestfs_internal_test_rbufferout (PyObject *self, PyObject *args)
 {
@@ -11627,7 +12524,9 @@ py_guestfs_internal_test_rbufferout (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUTERR
 static PyObject *
 py_guestfs_internal_test_rbufferouterr (PyObject *self, PyObject *args)
 {
@@ -11661,7 +12560,9 @@ py_guestfs_internal_test_rbufferouterr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRING
 static PyObject *
 py_guestfs_internal_test_rconstoptstring (PyObject *self, PyObject *args)
 {
@@ -11695,7 +12596,9 @@ py_guestfs_internal_test_rconstoptstring (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRINGERR
 static PyObject *
 py_guestfs_internal_test_rconstoptstringerr (PyObject *self, PyObject *args)
 {
@@ -11728,7 +12631,9 @@ py_guestfs_internal_test_rconstoptstringerr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRING
 static PyObject *
 py_guestfs_internal_test_rconststring (PyObject *self, PyObject *args)
 {
@@ -11761,7 +12666,9 @@ py_guestfs_internal_test_rconststring (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRINGERR
 static PyObject *
 py_guestfs_internal_test_rconststringerr (PyObject *self, PyObject *args)
 {
@@ -11793,7 +12700,9 @@ py_guestfs_internal_test_rconststringerr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RHASHTABLE
 static PyObject *
 py_guestfs_internal_test_rhashtable (PyObject *self, PyObject *args)
 {
@@ -11822,7 +12731,9 @@ py_guestfs_internal_test_rhashtable (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RHASHTABLEERR
 static PyObject *
 py_guestfs_internal_test_rhashtableerr (PyObject *self, PyObject *args)
 {
@@ -11850,7 +12761,9 @@ py_guestfs_internal_test_rhashtableerr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT
 static PyObject *
 py_guestfs_internal_test_rint (PyObject *self, PyObject *args)
 {
@@ -11878,7 +12791,9 @@ py_guestfs_internal_test_rint (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT64
 static PyObject *
 py_guestfs_internal_test_rint64 (PyObject *self, PyObject *args)
 {
@@ -11906,7 +12821,9 @@ py_guestfs_internal_test_rint64 (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT64ERR
 static PyObject *
 py_guestfs_internal_test_rint64err (PyObject *self, PyObject *args)
 {
@@ -11933,7 +12850,9 @@ py_guestfs_internal_test_rint64err (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RINTERR
 static PyObject *
 py_guestfs_internal_test_rinterr (PyObject *self, PyObject *args)
 {
@@ -11960,7 +12879,9 @@ py_guestfs_internal_test_rinterr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRING
 static PyObject *
 py_guestfs_internal_test_rstring (PyObject *self, PyObject *args)
 {
@@ -11994,7 +12915,9 @@ py_guestfs_internal_test_rstring (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGERR
 static PyObject *
 py_guestfs_internal_test_rstringerr (PyObject *self, PyObject *args)
 {
@@ -12027,7 +12950,9 @@ py_guestfs_internal_test_rstringerr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGLIST
 static PyObject *
 py_guestfs_internal_test_rstringlist (PyObject *self, PyObject *args)
 {
@@ -12056,7 +12981,9 @@ py_guestfs_internal_test_rstringlist (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGLISTERR
 static PyObject *
 py_guestfs_internal_test_rstringlisterr (PyObject *self, PyObject *args)
 {
@@ -12084,7 +13011,9 @@ py_guestfs_internal_test_rstringlisterr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCT
 static PyObject *
 py_guestfs_internal_test_rstruct (PyObject *self, PyObject *args)
 {
@@ -12113,7 +13042,9 @@ py_guestfs_internal_test_rstruct (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTERR
 static PyObject *
 py_guestfs_internal_test_rstructerr (PyObject *self, PyObject *args)
 {
@@ -12141,7 +13072,9 @@ py_guestfs_internal_test_rstructerr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLIST
 static PyObject *
 py_guestfs_internal_test_rstructlist (PyObject *self, PyObject *args)
 {
@@ -12170,7 +13103,9 @@ py_guestfs_internal_test_rstructlist (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLISTERR
 static PyObject *
 py_guestfs_internal_test_rstructlisterr (PyObject *self, PyObject *args)
 {
@@ -12198,7 +13133,9 @@ py_guestfs_internal_test_rstructlisterr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_SET_OUTPUT
 static PyObject *
 py_guestfs_internal_test_set_output (PyObject *self, PyObject *args)
 {
@@ -12227,7 +13164,9 @@ py_guestfs_internal_test_set_output (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_BLOCKDEV
 static PyObject *
 py_guestfs_is_blockdev (PyObject *self, PyObject *args)
 {
@@ -12248,11 +13187,13 @@ py_guestfs_is_blockdev (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK
   if (py_followsymlinks != Py_None) {
     optargs_s.bitmask |= GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
     optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -12273,7 +13214,9 @@ py_guestfs_is_blockdev (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_BUSY
 static PyObject *
 py_guestfs_is_busy (PyObject *self, PyObject *args)
 {
@@ -12300,7 +13243,9 @@ py_guestfs_is_busy (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_CHARDEV
 static PyObject *
 py_guestfs_is_chardev (PyObject *self, PyObject *args)
 {
@@ -12321,11 +13266,13 @@ py_guestfs_is_chardev (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK
   if (py_followsymlinks != Py_None) {
     optargs_s.bitmask |= GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
     optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -12346,7 +13293,9 @@ py_guestfs_is_chardev (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_CONFIG
 static PyObject *
 py_guestfs_is_config (PyObject *self, PyObject *args)
 {
@@ -12373,7 +13322,9 @@ py_guestfs_is_config (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_DIR
 static PyObject *
 py_guestfs_is_dir (PyObject *self, PyObject *args)
 {
@@ -12394,11 +13345,13 @@ py_guestfs_is_dir (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK
   if (py_followsymlinks != Py_None) {
     optargs_s.bitmask |= GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK;
     optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -12419,7 +13372,9 @@ py_guestfs_is_dir (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_FIFO
 static PyObject *
 py_guestfs_is_fifo (PyObject *self, PyObject *args)
 {
@@ -12440,11 +13395,13 @@ py_guestfs_is_fifo (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK
   if (py_followsymlinks != Py_None) {
     optargs_s.bitmask |= GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK;
     optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -12465,7 +13422,9 @@ py_guestfs_is_fifo (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_FILE
 static PyObject *
 py_guestfs_is_file (PyObject *self, PyObject *args)
 {
@@ -12486,11 +13445,13 @@ py_guestfs_is_file (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK
   if (py_followsymlinks != Py_None) {
     optargs_s.bitmask |= GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK;
     optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -12511,7 +13472,9 @@ py_guestfs_is_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_LAUNCHING
 static PyObject *
 py_guestfs_is_launching (PyObject *self, PyObject *args)
 {
@@ -12538,7 +13501,9 @@ py_guestfs_is_launching (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_LV
 static PyObject *
 py_guestfs_is_lv (PyObject *self, PyObject *args)
 {
@@ -12573,7 +13538,9 @@ py_guestfs_is_lv (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_READY
 static PyObject *
 py_guestfs_is_ready (PyObject *self, PyObject *args)
 {
@@ -12600,7 +13567,9 @@ py_guestfs_is_ready (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_SOCKET
 static PyObject *
 py_guestfs_is_socket (PyObject *self, PyObject *args)
 {
@@ -12621,11 +13590,13 @@ py_guestfs_is_socket (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK
   if (py_followsymlinks != Py_None) {
     optargs_s.bitmask |= GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK;
     optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -12646,7 +13617,9 @@ py_guestfs_is_socket (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_SYMLINK
 static PyObject *
 py_guestfs_is_symlink (PyObject *self, PyObject *args)
 {
@@ -12681,7 +13654,9 @@ py_guestfs_is_symlink (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_WHOLE_DEVICE
 static PyObject *
 py_guestfs_is_whole_device (PyObject *self, PyObject *args)
 {
@@ -12716,7 +13691,9 @@ py_guestfs_is_whole_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_ZERO
 static PyObject *
 py_guestfs_is_zero (PyObject *self, PyObject *args)
 {
@@ -12751,7 +13728,9 @@ py_guestfs_is_zero (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_IS_ZERO_DEVICE
 static PyObject *
 py_guestfs_is_zero_device (PyObject *self, PyObject *args)
 {
@@ -12786,7 +13765,9 @@ py_guestfs_is_zero_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ISOINFO
 static PyObject *
 py_guestfs_isoinfo (PyObject *self, PyObject *args)
 {
@@ -12822,7 +13803,9 @@ py_guestfs_isoinfo (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ISOINFO_DEVICE
 static PyObject *
 py_guestfs_isoinfo_device (PyObject *self, PyObject *args)
 {
@@ -12858,7 +13841,9 @@ py_guestfs_isoinfo_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_JOURNAL_CLOSE
 static PyObject *
 py_guestfs_journal_close (PyObject *self, PyObject *args)
 {
@@ -12893,7 +13878,9 @@ py_guestfs_journal_close (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_JOURNAL_GET
 static PyObject *
 py_guestfs_journal_get (PyObject *self, PyObject *args)
 {
@@ -12928,7 +13915,9 @@ py_guestfs_journal_get (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_JOURNAL_GET_DATA_THRESHOLD
 static PyObject *
 py_guestfs_journal_get_data_threshold (PyObject *self, PyObject *args)
 {
@@ -12962,7 +13951,9 @@ py_guestfs_journal_get_data_threshold (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_JOURNAL_GET_REALTIME_USEC
 static PyObject *
 py_guestfs_journal_get_realtime_usec (PyObject *self, PyObject *args)
 {
@@ -12996,7 +13987,9 @@ py_guestfs_journal_get_realtime_usec (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_JOURNAL_NEXT
 static PyObject *
 py_guestfs_journal_next (PyObject *self, PyObject *args)
 {
@@ -13030,7 +14023,9 @@ py_guestfs_journal_next (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_JOURNAL_OPEN
 static PyObject *
 py_guestfs_journal_open (PyObject *self, PyObject *args)
 {
@@ -13066,7 +14061,9 @@ py_guestfs_journal_open (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_JOURNAL_SET_DATA_THRESHOLD
 static PyObject *
 py_guestfs_journal_set_data_threshold (PyObject *self, PyObject *args)
 {
@@ -13102,7 +14099,9 @@ py_guestfs_journal_set_data_threshold (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_JOURNAL_SKIP
 static PyObject *
 py_guestfs_journal_skip (PyObject *self, PyObject *args)
 {
@@ -13137,7 +14136,9 @@ py_guestfs_journal_skip (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_KILL_SUBPROCESS
 static PyObject *
 py_guestfs_kill_subprocess (PyObject *self, PyObject *args)
 {
@@ -13172,7 +14173,9 @@ py_guestfs_kill_subprocess (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LAUNCH
 static PyObject *
 py_guestfs_launch (PyObject *self, PyObject *args)
 {
@@ -13207,7 +14210,9 @@ py_guestfs_launch (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LCHOWN
 static PyObject *
 py_guestfs_lchown (PyObject *self, PyObject *args)
 {
@@ -13245,7 +14250,9 @@ py_guestfs_lchown (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LDMTOOL_CREATE_ALL
 static PyObject *
 py_guestfs_ldmtool_create_all (PyObject *self, PyObject *args)
 {
@@ -13280,7 +14287,9 @@ py_guestfs_ldmtool_create_all (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_DISKS
 static PyObject *
 py_guestfs_ldmtool_diskgroup_disks (PyObject *self, PyObject *args)
 {
@@ -13316,7 +14325,9 @@ py_guestfs_ldmtool_diskgroup_disks (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_NAME
 static PyObject *
 py_guestfs_ldmtool_diskgroup_name (PyObject *self, PyObject *args)
 {
@@ -13357,7 +14368,9 @@ py_guestfs_ldmtool_diskgroup_name (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_VOLUMES
 static PyObject *
 py_guestfs_ldmtool_diskgroup_volumes (PyObject *self, PyObject *args)
 {
@@ -13393,7 +14406,9 @@ py_guestfs_ldmtool_diskgroup_volumes (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LDMTOOL_REMOVE_ALL
 static PyObject *
 py_guestfs_ldmtool_remove_all (PyObject *self, PyObject *args)
 {
@@ -13428,7 +14443,9 @@ py_guestfs_ldmtool_remove_all (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LDMTOOL_SCAN
 static PyObject *
 py_guestfs_ldmtool_scan (PyObject *self, PyObject *args)
 {
@@ -13463,7 +14480,9 @@ py_guestfs_ldmtool_scan (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LDMTOOL_SCAN_DEVICES
 static PyObject *
 py_guestfs_ldmtool_scan_devices (PyObject *self, PyObject *args)
 {
@@ -13503,7 +14522,9 @@ py_guestfs_ldmtool_scan_devices (PyObject *self, PyObject *args)
   free (devices);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_HINT
 static PyObject *
 py_guestfs_ldmtool_volume_hint (PyObject *self, PyObject *args)
 {
@@ -13545,7 +14566,9 @@ py_guestfs_ldmtool_volume_hint (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_PARTITIONS
 static PyObject *
 py_guestfs_ldmtool_volume_partitions (PyObject *self, PyObject *args)
 {
@@ -13582,7 +14605,9 @@ py_guestfs_ldmtool_volume_partitions (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_TYPE
 static PyObject *
 py_guestfs_ldmtool_volume_type (PyObject *self, PyObject *args)
 {
@@ -13624,7 +14649,9 @@ py_guestfs_ldmtool_volume_type (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LGETXATTR
 static PyObject *
 py_guestfs_lgetxattr (PyObject *self, PyObject *args)
 {
@@ -13667,7 +14694,9 @@ py_guestfs_lgetxattr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LGETXATTRS
 static PyObject *
 py_guestfs_lgetxattrs (PyObject *self, PyObject *args)
 {
@@ -13703,7 +14732,9 @@ py_guestfs_lgetxattrs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LIST_9P
 static PyObject *
 py_guestfs_list_9p (PyObject *self, PyObject *args)
 {
@@ -13738,7 +14769,9 @@ py_guestfs_list_9p (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LIST_DEVICES
 static PyObject *
 py_guestfs_list_devices (PyObject *self, PyObject *args)
 {
@@ -13773,7 +14806,9 @@ py_guestfs_list_devices (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LIST_DISK_LABELS
 static PyObject *
 py_guestfs_list_disk_labels (PyObject *self, PyObject *args)
 {
@@ -13808,7 +14843,9 @@ py_guestfs_list_disk_labels (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LIST_DM_DEVICES
 static PyObject *
 py_guestfs_list_dm_devices (PyObject *self, PyObject *args)
 {
@@ -13843,7 +14880,9 @@ py_guestfs_list_dm_devices (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LIST_FILESYSTEMS
 static PyObject *
 py_guestfs_list_filesystems (PyObject *self, PyObject *args)
 {
@@ -13878,7 +14917,9 @@ py_guestfs_list_filesystems (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LIST_LDM_PARTITIONS
 static PyObject *
 py_guestfs_list_ldm_partitions (PyObject *self, PyObject *args)
 {
@@ -13913,7 +14954,9 @@ py_guestfs_list_ldm_partitions (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LIST_LDM_VOLUMES
 static PyObject *
 py_guestfs_list_ldm_volumes (PyObject *self, PyObject *args)
 {
@@ -13948,7 +14991,9 @@ py_guestfs_list_ldm_volumes (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LIST_MD_DEVICES
 static PyObject *
 py_guestfs_list_md_devices (PyObject *self, PyObject *args)
 {
@@ -13983,7 +15028,9 @@ py_guestfs_list_md_devices (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LIST_PARTITIONS
 static PyObject *
 py_guestfs_list_partitions (PyObject *self, PyObject *args)
 {
@@ -14018,7 +15065,9 @@ py_guestfs_list_partitions (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LL
 static PyObject *
 py_guestfs_ll (PyObject *self, PyObject *args)
 {
@@ -14059,7 +15108,9 @@ py_guestfs_ll (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LLZ
 static PyObject *
 py_guestfs_llz (PyObject *self, PyObject *args)
 {
@@ -14100,7 +15151,9 @@ py_guestfs_llz (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LN
 static PyObject *
 py_guestfs_ln (PyObject *self, PyObject *args)
 {
@@ -14137,7 +15190,9 @@ py_guestfs_ln (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LN_F
 static PyObject *
 py_guestfs_ln_f (PyObject *self, PyObject *args)
 {
@@ -14174,7 +15229,9 @@ py_guestfs_ln_f (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LN_S
 static PyObject *
 py_guestfs_ln_s (PyObject *self, PyObject *args)
 {
@@ -14211,7 +15268,9 @@ py_guestfs_ln_s (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LN_SF
 static PyObject *
 py_guestfs_ln_sf (PyObject *self, PyObject *args)
 {
@@ -14248,7 +15307,9 @@ py_guestfs_ln_sf (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LREMOVEXATTR
 static PyObject *
 py_guestfs_lremovexattr (PyObject *self, PyObject *args)
 {
@@ -14285,7 +15346,9 @@ py_guestfs_lremovexattr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LS
 static PyObject *
 py_guestfs_ls (PyObject *self, PyObject *args)
 {
@@ -14321,7 +15384,9 @@ py_guestfs_ls (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LS0
 static PyObject *
 py_guestfs_ls0 (PyObject *self, PyObject *args)
 {
@@ -14358,7 +15423,9 @@ py_guestfs_ls0 (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LSETXATTR
 static PyObject *
 py_guestfs_lsetxattr (PyObject *self, PyObject *args)
 {
@@ -14397,7 +15464,9 @@ py_guestfs_lsetxattr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LSTAT
 static PyObject *
 py_guestfs_lstat (PyObject *self, PyObject *args)
 {
@@ -14433,7 +15502,9 @@ py_guestfs_lstat (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LSTATLIST
 static PyObject *
 py_guestfs_lstatlist (PyObject *self, PyObject *args)
 {
@@ -14474,7 +15545,9 @@ py_guestfs_lstatlist (PyObject *self, PyObject *args)
   free (names);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LSTATNS
 static PyObject *
 py_guestfs_lstatns (PyObject *self, PyObject *args)
 {
@@ -14510,7 +15583,9 @@ py_guestfs_lstatns (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LSTATNSLIST
 static PyObject *
 py_guestfs_lstatnslist (PyObject *self, PyObject *args)
 {
@@ -14551,7 +15626,9 @@ py_guestfs_lstatnslist (PyObject *self, PyObject *args)
   free (names);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LUKS_ADD_KEY
 static PyObject *
 py_guestfs_luks_add_key (PyObject *self, PyObject *args)
 {
@@ -14590,7 +15667,9 @@ py_guestfs_luks_add_key (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LUKS_CLOSE
 static PyObject *
 py_guestfs_luks_close (PyObject *self, PyObject *args)
 {
@@ -14626,7 +15705,9 @@ py_guestfs_luks_close (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LUKS_FORMAT
 static PyObject *
 py_guestfs_luks_format (PyObject *self, PyObject *args)
 {
@@ -14664,7 +15745,9 @@ py_guestfs_luks_format (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LUKS_FORMAT_CIPHER
 static PyObject *
 py_guestfs_luks_format_cipher (PyObject *self, PyObject *args)
 {
@@ -14703,7 +15786,9 @@ py_guestfs_luks_format_cipher (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LUKS_KILL_SLOT
 static PyObject *
 py_guestfs_luks_kill_slot (PyObject *self, PyObject *args)
 {
@@ -14741,7 +15826,9 @@ py_guestfs_luks_kill_slot (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LUKS_OPEN
 static PyObject *
 py_guestfs_luks_open (PyObject *self, PyObject *args)
 {
@@ -14779,7 +15866,9 @@ py_guestfs_luks_open (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LUKS_OPEN_RO
 static PyObject *
 py_guestfs_luks_open_ro (PyObject *self, PyObject *args)
 {
@@ -14817,7 +15906,9 @@ py_guestfs_luks_open_ro (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVCREATE
 static PyObject *
 py_guestfs_lvcreate (PyObject *self, PyObject *args)
 {
@@ -14855,7 +15946,9 @@ py_guestfs_lvcreate (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVCREATE_FREE
 static PyObject *
 py_guestfs_lvcreate_free (PyObject *self, PyObject *args)
 {
@@ -14893,7 +15986,9 @@ py_guestfs_lvcreate_free (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVM_CANONICAL_LV_NAME
 static PyObject *
 py_guestfs_lvm_canonical_lv_name (PyObject *self, PyObject *args)
 {
@@ -14934,7 +16029,9 @@ py_guestfs_lvm_canonical_lv_name (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVM_CLEAR_FILTER
 static PyObject *
 py_guestfs_lvm_clear_filter (PyObject *self, PyObject *args)
 {
@@ -14969,7 +16066,9 @@ py_guestfs_lvm_clear_filter (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVM_REMOVE_ALL
 static PyObject *
 py_guestfs_lvm_remove_all (PyObject *self, PyObject *args)
 {
@@ -15004,7 +16103,9 @@ py_guestfs_lvm_remove_all (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVM_SET_FILTER
 static PyObject *
 py_guestfs_lvm_set_filter (PyObject *self, PyObject *args)
 {
@@ -15044,7 +16145,9 @@ py_guestfs_lvm_set_filter (PyObject *self, PyObject *args)
   free (devices);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVREMOVE
 static PyObject *
 py_guestfs_lvremove (PyObject *self, PyObject *args)
 {
@@ -15080,7 +16183,9 @@ py_guestfs_lvremove (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVRENAME
 static PyObject *
 py_guestfs_lvrename (PyObject *self, PyObject *args)
 {
@@ -15117,7 +16222,9 @@ py_guestfs_lvrename (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVRESIZE
 static PyObject *
 py_guestfs_lvresize (PyObject *self, PyObject *args)
 {
@@ -15154,7 +16261,9 @@ py_guestfs_lvresize (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVRESIZE_FREE
 static PyObject *
 py_guestfs_lvresize_free (PyObject *self, PyObject *args)
 {
@@ -15191,7 +16300,9 @@ py_guestfs_lvresize_free (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVS
 static PyObject *
 py_guestfs_lvs (PyObject *self, PyObject *args)
 {
@@ -15226,7 +16337,9 @@ py_guestfs_lvs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVS_FULL
 static PyObject *
 py_guestfs_lvs_full (PyObject *self, PyObject *args)
 {
@@ -15261,7 +16374,9 @@ py_guestfs_lvs_full (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LVUUID
 static PyObject *
 py_guestfs_lvuuid (PyObject *self, PyObject *args)
 {
@@ -15302,7 +16417,9 @@ py_guestfs_lvuuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_LXATTRLIST
 static PyObject *
 py_guestfs_lxattrlist (PyObject *self, PyObject *args)
 {
@@ -15343,7 +16460,9 @@ py_guestfs_lxattrlist (PyObject *self, PyObject *args)
   free (names);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MAX_DISKS
 static PyObject *
 py_guestfs_max_disks (PyObject *self, PyObject *args)
 {
@@ -15370,7 +16489,9 @@ py_guestfs_max_disks (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MD_CREATE
 static PyObject *
 py_guestfs_md_create (PyObject *self, PyObject *args)
 {
@@ -15399,26 +16520,35 @@ py_guestfs_md_create (PyObject *self, PyObject *args)
   devices = get_string_list (py_devices);
   if (!devices) goto out;
 
+#ifdef GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK
   if (py_missingbitmap != Py_None) {
     optargs_s.bitmask |= GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK;
     optargs_s.missingbitmap = PyLong_AsLongLong (py_missingbitmap);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MD_CREATE_NRDEVICES_BITMASK
   if (py_nrdevices != Py_None) {
     optargs_s.bitmask |= GUESTFS_MD_CREATE_NRDEVICES_BITMASK;
     optargs_s.nrdevices = PyLong_AsLong (py_nrdevices);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MD_CREATE_SPARE_BITMASK
   if (py_spare != Py_None) {
     optargs_s.bitmask |= GUESTFS_MD_CREATE_SPARE_BITMASK;
     optargs_s.spare = PyLong_AsLong (py_spare);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MD_CREATE_CHUNK_BITMASK
   if (py_chunk != Py_None) {
     optargs_s.bitmask |= GUESTFS_MD_CREATE_CHUNK_BITMASK;
     optargs_s.chunk = PyLong_AsLongLong (py_chunk);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MD_CREATE_LEVEL_BITMASK
   if (py_level != Py_None) {
     optargs_s.bitmask |= GUESTFS_MD_CREATE_LEVEL_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -15429,6 +16559,7 @@ py_guestfs_md_create (PyObject *self, PyObject *args)
     optargs_s.level = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -15451,7 +16582,9 @@ py_guestfs_md_create (PyObject *self, PyObject *args)
   free (devices);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MD_DETAIL
 static PyObject *
 py_guestfs_md_detail (PyObject *self, PyObject *args)
 {
@@ -15487,7 +16620,9 @@ py_guestfs_md_detail (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MD_STAT
 static PyObject *
 py_guestfs_md_stat (PyObject *self, PyObject *args)
 {
@@ -15523,7 +16658,9 @@ py_guestfs_md_stat (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MD_STOP
 static PyObject *
 py_guestfs_md_stop (PyObject *self, PyObject *args)
 {
@@ -15559,7 +16696,9 @@ py_guestfs_md_stop (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKDIR
 static PyObject *
 py_guestfs_mkdir (PyObject *self, PyObject *args)
 {
@@ -15595,7 +16734,9 @@ py_guestfs_mkdir (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKDIR_MODE
 static PyObject *
 py_guestfs_mkdir_mode (PyObject *self, PyObject *args)
 {
@@ -15632,7 +16773,9 @@ py_guestfs_mkdir_mode (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKDIR_P
 static PyObject *
 py_guestfs_mkdir_p (PyObject *self, PyObject *args)
 {
@@ -15668,7 +16811,9 @@ py_guestfs_mkdir_p (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKDTEMP
 static PyObject *
 py_guestfs_mkdtemp (PyObject *self, PyObject *args)
 {
@@ -15709,7 +16854,9 @@ py_guestfs_mkdtemp (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKE2FS
 static PyObject *
 py_guestfs_mke2fs (PyObject *self, PyObject *args)
 {
@@ -15767,76 +16914,105 @@ py_guestfs_mke2fs (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_MKE2FS_BLOCKSCOUNT_BITMASK
   if (py_blockscount != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_BLOCKSCOUNT_BITMASK;
     optargs_s.blockscount = PyLong_AsLongLong (py_blockscount);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_BLOCKSIZE_BITMASK
   if (py_blocksize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_BLOCKSIZE_BITMASK;
     optargs_s.blocksize = PyLong_AsLongLong (py_blocksize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_FRAGSIZE_BITMASK
   if (py_fragsize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_FRAGSIZE_BITMASK;
     optargs_s.fragsize = PyLong_AsLongLong (py_fragsize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_BLOCKSPERGROUP_BITMASK
   if (py_blockspergroup != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_BLOCKSPERGROUP_BITMASK;
     optargs_s.blockspergroup = PyLong_AsLongLong (py_blockspergroup);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_NUMBEROFGROUPS_BITMASK
   if (py_numberofgroups != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_NUMBEROFGROUPS_BITMASK;
     optargs_s.numberofgroups = PyLong_AsLongLong (py_numberofgroups);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_BYTESPERINODE_BITMASK
   if (py_bytesperinode != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_BYTESPERINODE_BITMASK;
     optargs_s.bytesperinode = PyLong_AsLongLong (py_bytesperinode);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_INODESIZE_BITMASK
   if (py_inodesize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_INODESIZE_BITMASK;
     optargs_s.inodesize = PyLong_AsLongLong (py_inodesize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_JOURNALSIZE_BITMASK
   if (py_journalsize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_JOURNALSIZE_BITMASK;
     optargs_s.journalsize = PyLong_AsLongLong (py_journalsize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_NUMBEROFINODES_BITMASK
   if (py_numberofinodes != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_NUMBEROFINODES_BITMASK;
     optargs_s.numberofinodes = PyLong_AsLongLong (py_numberofinodes);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_STRIDESIZE_BITMASK
   if (py_stridesize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_STRIDESIZE_BITMASK;
     optargs_s.stridesize = PyLong_AsLongLong (py_stridesize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_STRIPEWIDTH_BITMASK
   if (py_stripewidth != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_STRIPEWIDTH_BITMASK;
     optargs_s.stripewidth = PyLong_AsLongLong (py_stripewidth);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_MAXONLINERESIZE_BITMASK
   if (py_maxonlineresize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_MAXONLINERESIZE_BITMASK;
     optargs_s.maxonlineresize = PyLong_AsLongLong (py_maxonlineresize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK
   if (py_reservedblockspercentage != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
     optargs_s.reservedblockspercentage = PyLong_AsLong (py_reservedblockspercentage);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_MMPUPDATEINTERVAL_BITMASK
   if (py_mmpupdateinterval != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_MMPUPDATEINTERVAL_BITMASK;
     optargs_s.mmpupdateinterval = PyLong_AsLong (py_mmpupdateinterval);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK
   if (py_journaldevice != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -15847,6 +17023,8 @@ py_guestfs_mke2fs (PyObject *self, PyObject *args)
     optargs_s.journaldevice = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKE2FS_LABEL_BITMASK
   if (py_label != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_LABEL_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -15857,6 +17035,8 @@ py_guestfs_mke2fs (PyObject *self, PyObject *args)
     optargs_s.label = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK
   if (py_lastmounteddir != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -15867,6 +17047,8 @@ py_guestfs_mke2fs (PyObject *self, PyObject *args)
     optargs_s.lastmounteddir = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKE2FS_CREATOROS_BITMASK
   if (py_creatoros != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_CREATOROS_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -15877,6 +17059,8 @@ py_guestfs_mke2fs (PyObject *self, PyObject *args)
     optargs_s.creatoros = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKE2FS_FSTYPE_BITMASK
   if (py_fstype != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_FSTYPE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -15887,6 +17071,8 @@ py_guestfs_mke2fs (PyObject *self, PyObject *args)
     optargs_s.fstype = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKE2FS_USAGETYPE_BITMASK
   if (py_usagetype != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_USAGETYPE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -15897,6 +17083,8 @@ py_guestfs_mke2fs (PyObject *self, PyObject *args)
     optargs_s.usagetype = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKE2FS_UUID_BITMASK
   if (py_uuid != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_UUID_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -15907,91 +17095,126 @@ py_guestfs_mke2fs (PyObject *self, PyObject *args)
     optargs_s.uuid = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKE2FS_FORCECREATE_BITMASK
   if (py_forcecreate != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_FORCECREATE_BITMASK;
     optargs_s.forcecreate = PyLong_AsLong (py_forcecreate);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK
   if (py_writesbandgrouponly != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK;
     optargs_s.writesbandgrouponly = PyLong_AsLong (py_writesbandgrouponly);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK
   if (py_lazyitableinit != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK;
     optargs_s.lazyitableinit = PyLong_AsLong (py_lazyitableinit);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK
   if (py_lazyjournalinit != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK;
     optargs_s.lazyjournalinit = PyLong_AsLong (py_lazyjournalinit);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_TESTFS_BITMASK
   if (py_testfs != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_TESTFS_BITMASK;
     optargs_s.testfs = PyLong_AsLong (py_testfs);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_DISCARD_BITMASK
   if (py_discard != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_DISCARD_BITMASK;
     optargs_s.discard = PyLong_AsLong (py_discard);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_QUOTATYPE_BITMASK
   if (py_quotatype != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_QUOTATYPE_BITMASK;
     optargs_s.quotatype = PyLong_AsLong (py_quotatype);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_EXTENT_BITMASK
   if (py_extent != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_EXTENT_BITMASK;
     optargs_s.extent = PyLong_AsLong (py_extent);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_FILETYPE_BITMASK
   if (py_filetype != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_FILETYPE_BITMASK;
     optargs_s.filetype = PyLong_AsLong (py_filetype);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_FLEXBG_BITMASK
   if (py_flexbg != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_FLEXBG_BITMASK;
     optargs_s.flexbg = PyLong_AsLong (py_flexbg);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_HASJOURNAL_BITMASK
   if (py_hasjournal != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_HASJOURNAL_BITMASK;
     optargs_s.hasjournal = PyLong_AsLong (py_hasjournal);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_JOURNALDEV_BITMASK
   if (py_journaldev != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_JOURNALDEV_BITMASK;
     optargs_s.journaldev = PyLong_AsLong (py_journaldev);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_LARGEFILE_BITMASK
   if (py_largefile != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_LARGEFILE_BITMASK;
     optargs_s.largefile = PyLong_AsLong (py_largefile);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_QUOTA_BITMASK
   if (py_quota != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_QUOTA_BITMASK;
     optargs_s.quota = PyLong_AsLong (py_quota);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_RESIZEINODE_BITMASK
   if (py_resizeinode != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_RESIZEINODE_BITMASK;
     optargs_s.resizeinode = PyLong_AsLong (py_resizeinode);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_SPARSESUPER_BITMASK
   if (py_sparsesuper != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_SPARSESUPER_BITMASK;
     optargs_s.sparsesuper = PyLong_AsLong (py_sparsesuper);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKE2FS_UNINITBG_BITMASK
   if (py_uninitbg != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_UNINITBG_BITMASK;
     optargs_s.uninitbg = PyLong_AsLong (py_uninitbg);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -16013,7 +17236,9 @@ py_guestfs_mke2fs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKE2FS_J
 static PyObject *
 py_guestfs_mke2fs_J (PyObject *self, PyObject *args)
 {
@@ -16052,7 +17277,9 @@ py_guestfs_mke2fs_J (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKE2FS_JL
 static PyObject *
 py_guestfs_mke2fs_JL (PyObject *self, PyObject *args)
 {
@@ -16091,7 +17318,9 @@ py_guestfs_mke2fs_JL (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKE2FS_JU
 static PyObject *
 py_guestfs_mke2fs_JU (PyObject *self, PyObject *args)
 {
@@ -16130,7 +17359,9 @@ py_guestfs_mke2fs_JU (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKE2JOURNAL
 static PyObject *
 py_guestfs_mke2journal (PyObject *self, PyObject *args)
 {
@@ -16167,7 +17398,9 @@ py_guestfs_mke2journal (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKE2JOURNAL_L
 static PyObject *
 py_guestfs_mke2journal_L (PyObject *self, PyObject *args)
 {
@@ -16205,7 +17438,9 @@ py_guestfs_mke2journal_L (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKE2JOURNAL_U
 static PyObject *
 py_guestfs_mke2journal_U (PyObject *self, PyObject *args)
 {
@@ -16243,7 +17478,9 @@ py_guestfs_mke2journal_U (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKFIFO
 static PyObject *
 py_guestfs_mkfifo (PyObject *self, PyObject *args)
 {
@@ -16280,7 +17517,9 @@ py_guestfs_mkfifo (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKFS
 static PyObject *
 py_guestfs_mkfs (PyObject *self, PyObject *args)
 {
@@ -16306,11 +17545,14 @@ py_guestfs_mkfs (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK
   if (py_blocksize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK;
     optargs_s.blocksize = PyLong_AsLong (py_blocksize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKFS_OPTS_FEATURES_BITMASK
   if (py_features != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -16321,16 +17563,22 @@ py_guestfs_mkfs (PyObject *self, PyObject *args)
     optargs_s.features = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKFS_OPTS_INODE_BITMASK
   if (py_inode != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_INODE_BITMASK;
     optargs_s.inode = PyLong_AsLong (py_inode);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK
   if (py_sectorsize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
     optargs_s.sectorsize = PyLong_AsLong (py_sectorsize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKFS_OPTS_LABEL_BITMASK
   if (py_label != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_LABEL_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -16341,6 +17589,7 @@ py_guestfs_mkfs (PyObject *self, PyObject *args)
     optargs_s.label = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -16362,7 +17611,9 @@ py_guestfs_mkfs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKFS_B
 static PyObject *
 py_guestfs_mkfs_b (PyObject *self, PyObject *args)
 {
@@ -16400,7 +17651,9 @@ py_guestfs_mkfs_b (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKFS_BTRFS
 static PyObject *
 py_guestfs_mkfs_btrfs (PyObject *self, PyObject *args)
 {
@@ -16431,16 +17684,21 @@ py_guestfs_mkfs_btrfs (PyObject *self, PyObject *args)
   devices = get_string_list (py_devices);
   if (!devices) goto out;
 
+#ifdef GUESTFS_MKFS_BTRFS_ALLOCSTART_BITMASK
   if (py_allocstart != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_ALLOCSTART_BITMASK;
     optargs_s.allocstart = PyLong_AsLongLong (py_allocstart);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKFS_BTRFS_BYTECOUNT_BITMASK
   if (py_bytecount != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_BYTECOUNT_BITMASK;
     optargs_s.bytecount = PyLong_AsLongLong (py_bytecount);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK
   if (py_datatype != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -16451,11 +17709,15 @@ py_guestfs_mkfs_btrfs (PyObject *self, PyObject *args)
     optargs_s.datatype = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKFS_BTRFS_LEAFSIZE_BITMASK
   if (py_leafsize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_LEAFSIZE_BITMASK;
     optargs_s.leafsize = PyLong_AsLong (py_leafsize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKFS_BTRFS_LABEL_BITMASK
   if (py_label != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_LABEL_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -16466,6 +17728,8 @@ py_guestfs_mkfs_btrfs (PyObject *self, PyObject *args)
     optargs_s.label = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKFS_BTRFS_METADATA_BITMASK
   if (py_metadata != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_METADATA_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -16476,16 +17740,21 @@ py_guestfs_mkfs_btrfs (PyObject *self, PyObject *args)
     optargs_s.metadata = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK
   if (py_nodesize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK;
     optargs_s.nodesize = PyLong_AsLong (py_nodesize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MKFS_BTRFS_SECTORSIZE_BITMASK
   if (py_sectorsize != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_SECTORSIZE_BITMASK;
     optargs_s.sectorsize = PyLong_AsLong (py_sectorsize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -16508,7 +17777,9 @@ py_guestfs_mkfs_btrfs (PyObject *self, PyObject *args)
   free (devices);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKLOST_AND_FOUND
 static PyObject *
 py_guestfs_mklost_and_found (PyObject *self, PyObject *args)
 {
@@ -16544,7 +17815,9 @@ py_guestfs_mklost_and_found (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKMOUNTPOINT
 static PyObject *
 py_guestfs_mkmountpoint (PyObject *self, PyObject *args)
 {
@@ -16580,7 +17853,9 @@ py_guestfs_mkmountpoint (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKNOD
 static PyObject *
 py_guestfs_mknod (PyObject *self, PyObject *args)
 {
@@ -16619,7 +17894,9 @@ py_guestfs_mknod (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKNOD_B
 static PyObject *
 py_guestfs_mknod_b (PyObject *self, PyObject *args)
 {
@@ -16658,7 +17935,9 @@ py_guestfs_mknod_b (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKNOD_C
 static PyObject *
 py_guestfs_mknod_c (PyObject *self, PyObject *args)
 {
@@ -16697,7 +17976,9 @@ py_guestfs_mknod_c (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKSWAP
 static PyObject *
 py_guestfs_mkswap (PyObject *self, PyObject *args)
 {
@@ -16719,6 +18000,7 @@ py_guestfs_mkswap (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_MKSWAP_OPTS_LABEL_BITMASK
   if (py_label != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKSWAP_OPTS_LABEL_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -16729,6 +18011,8 @@ py_guestfs_mkswap (PyObject *self, PyObject *args)
     optargs_s.label = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MKSWAP_OPTS_UUID_BITMASK
   if (py_uuid != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKSWAP_OPTS_UUID_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -16739,6 +18023,7 @@ py_guestfs_mkswap (PyObject *self, PyObject *args)
     optargs_s.uuid = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -16760,7 +18045,9 @@ py_guestfs_mkswap (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKSWAP_L
 static PyObject *
 py_guestfs_mkswap_L (PyObject *self, PyObject *args)
 {
@@ -16797,7 +18084,9 @@ py_guestfs_mkswap_L (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKSWAP_U
 static PyObject *
 py_guestfs_mkswap_U (PyObject *self, PyObject *args)
 {
@@ -16834,7 +18123,9 @@ py_guestfs_mkswap_U (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKSWAP_FILE
 static PyObject *
 py_guestfs_mkswap_file (PyObject *self, PyObject *args)
 {
@@ -16870,7 +18161,9 @@ py_guestfs_mkswap_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MKTEMP
 static PyObject *
 py_guestfs_mktemp (PyObject *self, PyObject *args)
 {
@@ -16891,6 +18184,7 @@ py_guestfs_mktemp (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_MKTEMP_SUFFIX_BITMASK
   if (py_suffix != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKTEMP_SUFFIX_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -16901,6 +18195,7 @@ py_guestfs_mktemp (PyObject *self, PyObject *args)
     optargs_s.suffix = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -16927,7 +18222,9 @@ py_guestfs_mktemp (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MODPROBE
 static PyObject *
 py_guestfs_modprobe (PyObject *self, PyObject *args)
 {
@@ -16963,7 +18260,9 @@ py_guestfs_modprobe (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MOUNT
 static PyObject *
 py_guestfs_mount (PyObject *self, PyObject *args)
 {
@@ -17000,7 +18299,9 @@ py_guestfs_mount (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MOUNT_9P
 static PyObject *
 py_guestfs_mount_9p (PyObject *self, PyObject *args)
 {
@@ -17022,6 +18323,7 @@ py_guestfs_mount_9p (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_MOUNT_9P_OPTIONS_BITMASK
   if (py_options != Py_None) {
     optargs_s.bitmask |= GUESTFS_MOUNT_9P_OPTIONS_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -17032,6 +18334,7 @@ py_guestfs_mount_9p (PyObject *self, PyObject *args)
     optargs_s.options = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -17053,7 +18356,9 @@ py_guestfs_mount_9p (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MOUNT_LOCAL
 static PyObject *
 py_guestfs_mount_local (PyObject *self, PyObject *args)
 {
@@ -17077,11 +18382,14 @@ py_guestfs_mount_local (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_MOUNT_LOCAL_READONLY_BITMASK
   if (py_readonly != Py_None) {
     optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_READONLY_BITMASK;
     optargs_s.readonly = PyLong_AsLong (py_readonly);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MOUNT_LOCAL_OPTIONS_BITMASK
   if (py_options != Py_None) {
     optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_OPTIONS_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -17092,16 +18400,21 @@ py_guestfs_mount_local (PyObject *self, PyObject *args)
     optargs_s.options = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_MOUNT_LOCAL_CACHETIMEOUT_BITMASK
   if (py_cachetimeout != Py_None) {
     optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_CACHETIMEOUT_BITMASK;
     optargs_s.cachetimeout = PyLong_AsLong (py_cachetimeout);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_MOUNT_LOCAL_DEBUGCALLS_BITMASK
   if (py_debugcalls != Py_None) {
     optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_DEBUGCALLS_BITMASK;
     optargs_s.debugcalls = PyLong_AsLong (py_debugcalls);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -17123,7 +18436,9 @@ py_guestfs_mount_local (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MOUNT_LOCAL_RUN
 static PyObject *
 py_guestfs_mount_local_run (PyObject *self, PyObject *args)
 {
@@ -17158,7 +18473,9 @@ py_guestfs_mount_local_run (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MOUNT_LOOP
 static PyObject *
 py_guestfs_mount_loop (PyObject *self, PyObject *args)
 {
@@ -17195,7 +18512,9 @@ py_guestfs_mount_loop (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MOUNT_OPTIONS
 static PyObject *
 py_guestfs_mount_options (PyObject *self, PyObject *args)
 {
@@ -17233,7 +18552,9 @@ py_guestfs_mount_options (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MOUNT_RO
 static PyObject *
 py_guestfs_mount_ro (PyObject *self, PyObject *args)
 {
@@ -17270,7 +18591,9 @@ py_guestfs_mount_ro (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MOUNT_VFS
 static PyObject *
 py_guestfs_mount_vfs (PyObject *self, PyObject *args)
 {
@@ -17309,7 +18632,9 @@ py_guestfs_mount_vfs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MOUNTPOINTS
 static PyObject *
 py_guestfs_mountpoints (PyObject *self, PyObject *args)
 {
@@ -17344,7 +18669,9 @@ py_guestfs_mountpoints (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MOUNTS
 static PyObject *
 py_guestfs_mounts (PyObject *self, PyObject *args)
 {
@@ -17379,7 +18706,9 @@ py_guestfs_mounts (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_MV
 static PyObject *
 py_guestfs_mv (PyObject *self, PyObject *args)
 {
@@ -17416,7 +18745,9 @@ py_guestfs_mv (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_NR_DEVICES
 static PyObject *
 py_guestfs_nr_devices (PyObject *self, PyObject *args)
 {
@@ -17450,7 +18781,9 @@ py_guestfs_nr_devices (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_NTFS_3G_PROBE
 static PyObject *
 py_guestfs_ntfs_3g_probe (PyObject *self, PyObject *args)
 {
@@ -17486,7 +18819,9 @@ py_guestfs_ntfs_3g_probe (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_NTFSCLONE_IN
 static PyObject *
 py_guestfs_ntfsclone_in (PyObject *self, PyObject *args)
 {
@@ -17523,7 +18858,9 @@ py_guestfs_ntfsclone_in (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_NTFSCLONE_OUT
 static PyObject *
 py_guestfs_ntfsclone_out (PyObject *self, PyObject *args)
 {
@@ -17549,31 +18886,41 @@ py_guestfs_ntfsclone_out (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_NTFSCLONE_OUT_METADATAONLY_BITMASK
   if (py_metadataonly != Py_None) {
     optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_METADATAONLY_BITMASK;
     optargs_s.metadataonly = PyLong_AsLong (py_metadataonly);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_NTFSCLONE_OUT_RESCUE_BITMASK
   if (py_rescue != Py_None) {
     optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_RESCUE_BITMASK;
     optargs_s.rescue = PyLong_AsLong (py_rescue);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK_BITMASK
   if (py_ignorefscheck != Py_None) {
     optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK_BITMASK;
     optargs_s.ignorefscheck = PyLong_AsLong (py_ignorefscheck);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS_BITMASK
   if (py_preservetimestamps != Py_None) {
     optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS_BITMASK;
     optargs_s.preservetimestamps = PyLong_AsLong (py_preservetimestamps);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_NTFSCLONE_OUT_FORCE_BITMASK
   if (py_force != Py_None) {
     optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_FORCE_BITMASK;
     optargs_s.force = PyLong_AsLong (py_force);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -17595,7 +18942,9 @@ py_guestfs_ntfsclone_out (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_NTFSFIX
 static PyObject *
 py_guestfs_ntfsfix (PyObject *self, PyObject *args)
 {
@@ -17616,11 +18965,13 @@ py_guestfs_ntfsfix (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK
   if (py_clearbadsectors != Py_None) {
     optargs_s.bitmask |= GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK;
     optargs_s.clearbadsectors = PyLong_AsLong (py_clearbadsectors);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -17642,7 +18993,9 @@ py_guestfs_ntfsfix (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_NTFSRESIZE
 static PyObject *
 py_guestfs_ntfsresize (PyObject *self, PyObject *args)
 {
@@ -17664,16 +19017,20 @@ py_guestfs_ntfsresize (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK
   if (py_size != Py_None) {
     optargs_s.bitmask |= GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK;
     optargs_s.size = PyLong_AsLongLong (py_size);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK
   if (py_force != Py_None) {
     optargs_s.bitmask |= GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK;
     optargs_s.force = PyLong_AsLong (py_force);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -17695,7 +19052,9 @@ py_guestfs_ntfsresize (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_NTFSRESIZE_SIZE
 static PyObject *
 py_guestfs_ntfsresize_size (PyObject *self, PyObject *args)
 {
@@ -17732,7 +19091,9 @@ py_guestfs_ntfsresize_size (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PARSE_ENVIRONMENT
 static PyObject *
 py_guestfs_parse_environment (PyObject *self, PyObject *args)
 {
@@ -17760,7 +19121,9 @@ py_guestfs_parse_environment (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PARSE_ENVIRONMENT_LIST
 static PyObject *
 py_guestfs_parse_environment_list (PyObject *self, PyObject *args)
 {
@@ -17793,7 +19156,9 @@ py_guestfs_parse_environment_list (PyObject *self, PyObject *args)
   free (environment);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_ADD
 static PyObject *
 py_guestfs_part_add (PyObject *self, PyObject *args)
 {
@@ -17832,7 +19197,9 @@ py_guestfs_part_add (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_DEL
 static PyObject *
 py_guestfs_part_del (PyObject *self, PyObject *args)
 {
@@ -17869,7 +19236,9 @@ py_guestfs_part_del (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_DISK
 static PyObject *
 py_guestfs_part_disk (PyObject *self, PyObject *args)
 {
@@ -17906,7 +19275,9 @@ py_guestfs_part_disk (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_GET_BOOTABLE
 static PyObject *
 py_guestfs_part_get_bootable (PyObject *self, PyObject *args)
 {
@@ -17942,7 +19313,9 @@ py_guestfs_part_get_bootable (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_GET_GPT_GUID
 static PyObject *
 py_guestfs_part_get_gpt_guid (PyObject *self, PyObject *args)
 {
@@ -17984,7 +19357,9 @@ py_guestfs_part_get_gpt_guid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_GET_GPT_TYPE
 static PyObject *
 py_guestfs_part_get_gpt_type (PyObject *self, PyObject *args)
 {
@@ -18026,7 +19401,9 @@ py_guestfs_part_get_gpt_type (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_GET_MBR_ID
 static PyObject *
 py_guestfs_part_get_mbr_id (PyObject *self, PyObject *args)
 {
@@ -18062,7 +19439,9 @@ py_guestfs_part_get_mbr_id (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_GET_MBR_PART_TYPE
 static PyObject *
 py_guestfs_part_get_mbr_part_type (PyObject *self, PyObject *args)
 {
@@ -18104,7 +19483,9 @@ py_guestfs_part_get_mbr_part_type (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_GET_NAME
 static PyObject *
 py_guestfs_part_get_name (PyObject *self, PyObject *args)
 {
@@ -18146,7 +19527,9 @@ py_guestfs_part_get_name (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_GET_PARTTYPE
 static PyObject *
 py_guestfs_part_get_parttype (PyObject *self, PyObject *args)
 {
@@ -18187,7 +19570,9 @@ py_guestfs_part_get_parttype (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_INIT
 static PyObject *
 py_guestfs_part_init (PyObject *self, PyObject *args)
 {
@@ -18224,7 +19609,9 @@ py_guestfs_part_init (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_LIST
 static PyObject *
 py_guestfs_part_list (PyObject *self, PyObject *args)
 {
@@ -18260,7 +19647,9 @@ py_guestfs_part_list (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_SET_BOOTABLE
 static PyObject *
 py_guestfs_part_set_bootable (PyObject *self, PyObject *args)
 {
@@ -18298,7 +19687,9 @@ py_guestfs_part_set_bootable (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_SET_GPT_GUID
 static PyObject *
 py_guestfs_part_set_gpt_guid (PyObject *self, PyObject *args)
 {
@@ -18336,7 +19727,9 @@ py_guestfs_part_set_gpt_guid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_SET_GPT_TYPE
 static PyObject *
 py_guestfs_part_set_gpt_type (PyObject *self, PyObject *args)
 {
@@ -18374,7 +19767,9 @@ py_guestfs_part_set_gpt_type (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_SET_MBR_ID
 static PyObject *
 py_guestfs_part_set_mbr_id (PyObject *self, PyObject *args)
 {
@@ -18412,7 +19807,9 @@ py_guestfs_part_set_mbr_id (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_SET_NAME
 static PyObject *
 py_guestfs_part_set_name (PyObject *self, PyObject *args)
 {
@@ -18450,7 +19847,9 @@ py_guestfs_part_set_name (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_TO_DEV
 static PyObject *
 py_guestfs_part_to_dev (PyObject *self, PyObject *args)
 {
@@ -18491,7 +19890,9 @@ py_guestfs_part_to_dev (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PART_TO_PARTNUM
 static PyObject *
 py_guestfs_part_to_partnum (PyObject *self, PyObject *args)
 {
@@ -18526,7 +19927,9 @@ py_guestfs_part_to_partnum (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PING_DAEMON
 static PyObject *
 py_guestfs_ping_daemon (PyObject *self, PyObject *args)
 {
@@ -18561,7 +19964,9 @@ py_guestfs_ping_daemon (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PREAD
 static PyObject *
 py_guestfs_pread (PyObject *self, PyObject *args)
 {
@@ -18605,7 +20010,9 @@ py_guestfs_pread (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PREAD_DEVICE
 static PyObject *
 py_guestfs_pread_device (PyObject *self, PyObject *args)
 {
@@ -18649,7 +20056,9 @@ py_guestfs_pread_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PVCHANGE_UUID
 static PyObject *
 py_guestfs_pvchange_uuid (PyObject *self, PyObject *args)
 {
@@ -18685,7 +20094,9 @@ py_guestfs_pvchange_uuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PVCHANGE_UUID_ALL
 static PyObject *
 py_guestfs_pvchange_uuid_all (PyObject *self, PyObject *args)
 {
@@ -18720,7 +20131,9 @@ py_guestfs_pvchange_uuid_all (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PVCREATE
 static PyObject *
 py_guestfs_pvcreate (PyObject *self, PyObject *args)
 {
@@ -18756,7 +20169,9 @@ py_guestfs_pvcreate (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PVREMOVE
 static PyObject *
 py_guestfs_pvremove (PyObject *self, PyObject *args)
 {
@@ -18792,7 +20207,9 @@ py_guestfs_pvremove (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PVRESIZE
 static PyObject *
 py_guestfs_pvresize (PyObject *self, PyObject *args)
 {
@@ -18828,7 +20245,9 @@ py_guestfs_pvresize (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PVRESIZE_SIZE
 static PyObject *
 py_guestfs_pvresize_size (PyObject *self, PyObject *args)
 {
@@ -18865,7 +20284,9 @@ py_guestfs_pvresize_size (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PVS
 static PyObject *
 py_guestfs_pvs (PyObject *self, PyObject *args)
 {
@@ -18900,7 +20321,9 @@ py_guestfs_pvs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PVS_FULL
 static PyObject *
 py_guestfs_pvs_full (PyObject *self, PyObject *args)
 {
@@ -18935,7 +20358,9 @@ py_guestfs_pvs_full (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PVUUID
 static PyObject *
 py_guestfs_pvuuid (PyObject *self, PyObject *args)
 {
@@ -18976,7 +20401,9 @@ py_guestfs_pvuuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PWRITE
 static PyObject *
 py_guestfs_pwrite (PyObject *self, PyObject *args)
 {
@@ -19014,7 +20441,9 @@ py_guestfs_pwrite (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_PWRITE_DEVICE
 static PyObject *
 py_guestfs_pwrite_device (PyObject *self, PyObject *args)
 {
@@ -19052,7 +20481,9 @@ py_guestfs_pwrite_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_READ_FILE
 static PyObject *
 py_guestfs_read_file (PyObject *self, PyObject *args)
 {
@@ -19094,7 +20525,9 @@ py_guestfs_read_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_READ_LINES
 static PyObject *
 py_guestfs_read_lines (PyObject *self, PyObject *args)
 {
@@ -19130,7 +20563,9 @@ py_guestfs_read_lines (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_READDIR
 static PyObject *
 py_guestfs_readdir (PyObject *self, PyObject *args)
 {
@@ -19166,7 +20601,9 @@ py_guestfs_readdir (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_READLINK
 static PyObject *
 py_guestfs_readlink (PyObject *self, PyObject *args)
 {
@@ -19207,7 +20644,9 @@ py_guestfs_readlink (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_READLINKLIST
 static PyObject *
 py_guestfs_readlinklist (PyObject *self, PyObject *args)
 {
@@ -19248,7 +20687,9 @@ py_guestfs_readlinklist (PyObject *self, PyObject *args)
   free (names);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_REALPATH
 static PyObject *
 py_guestfs_realpath (PyObject *self, PyObject *args)
 {
@@ -19289,7 +20730,9 @@ py_guestfs_realpath (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_REMOUNT
 static PyObject *
 py_guestfs_remount (PyObject *self, PyObject *args)
 {
@@ -19310,11 +20753,13 @@ py_guestfs_remount (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_REMOUNT_RW_BITMASK
   if (py_rw != Py_None) {
     optargs_s.bitmask |= GUESTFS_REMOUNT_RW_BITMASK;
     optargs_s.rw = PyLong_AsLong (py_rw);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -19336,7 +20781,9 @@ py_guestfs_remount (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_REMOVE_DRIVE
 static PyObject *
 py_guestfs_remove_drive (PyObject *self, PyObject *args)
 {
@@ -19365,7 +20812,9 @@ py_guestfs_remove_drive (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_REMOVEXATTR
 static PyObject *
 py_guestfs_removexattr (PyObject *self, PyObject *args)
 {
@@ -19402,7 +20851,9 @@ py_guestfs_removexattr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RENAME
 static PyObject *
 py_guestfs_rename (PyObject *self, PyObject *args)
 {
@@ -19439,7 +20890,9 @@ py_guestfs_rename (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RESIZE2FS
 static PyObject *
 py_guestfs_resize2fs (PyObject *self, PyObject *args)
 {
@@ -19475,7 +20928,9 @@ py_guestfs_resize2fs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RESIZE2FS_M
 static PyObject *
 py_guestfs_resize2fs_M (PyObject *self, PyObject *args)
 {
@@ -19511,7 +20966,9 @@ py_guestfs_resize2fs_M (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RESIZE2FS_SIZE
 static PyObject *
 py_guestfs_resize2fs_size (PyObject *self, PyObject *args)
 {
@@ -19548,7 +21005,9 @@ py_guestfs_resize2fs_size (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RM
 static PyObject *
 py_guestfs_rm (PyObject *self, PyObject *args)
 {
@@ -19584,7 +21043,9 @@ py_guestfs_rm (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RM_F
 static PyObject *
 py_guestfs_rm_f (PyObject *self, PyObject *args)
 {
@@ -19620,7 +21081,9 @@ py_guestfs_rm_f (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RM_RF
 static PyObject *
 py_guestfs_rm_rf (PyObject *self, PyObject *args)
 {
@@ -19656,7 +21119,9 @@ py_guestfs_rm_rf (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RMDIR
 static PyObject *
 py_guestfs_rmdir (PyObject *self, PyObject *args)
 {
@@ -19692,7 +21157,9 @@ py_guestfs_rmdir (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RMMOUNTPOINT
 static PyObject *
 py_guestfs_rmmountpoint (PyObject *self, PyObject *args)
 {
@@ -19728,7 +21195,9 @@ py_guestfs_rmmountpoint (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RSYNC
 static PyObject *
 py_guestfs_rsync (PyObject *self, PyObject *args)
 {
@@ -19751,16 +21220,20 @@ py_guestfs_rsync (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_RSYNC_ARCHIVE_BITMASK
   if (py_archive != Py_None) {
     optargs_s.bitmask |= GUESTFS_RSYNC_ARCHIVE_BITMASK;
     optargs_s.archive = PyLong_AsLong (py_archive);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_RSYNC_DELETEDEST_BITMASK
   if (py_deletedest != Py_None) {
     optargs_s.bitmask |= GUESTFS_RSYNC_DELETEDEST_BITMASK;
     optargs_s.deletedest = PyLong_AsLong (py_deletedest);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -19782,7 +21255,9 @@ py_guestfs_rsync (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RSYNC_IN
 static PyObject *
 py_guestfs_rsync_in (PyObject *self, PyObject *args)
 {
@@ -19805,16 +21280,20 @@ py_guestfs_rsync_in (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_RSYNC_IN_ARCHIVE_BITMASK
   if (py_archive != Py_None) {
     optargs_s.bitmask |= GUESTFS_RSYNC_IN_ARCHIVE_BITMASK;
     optargs_s.archive = PyLong_AsLong (py_archive);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_RSYNC_IN_DELETEDEST_BITMASK
   if (py_deletedest != Py_None) {
     optargs_s.bitmask |= GUESTFS_RSYNC_IN_DELETEDEST_BITMASK;
     optargs_s.deletedest = PyLong_AsLong (py_deletedest);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -19836,7 +21315,9 @@ py_guestfs_rsync_in (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_RSYNC_OUT
 static PyObject *
 py_guestfs_rsync_out (PyObject *self, PyObject *args)
 {
@@ -19859,16 +21340,20 @@ py_guestfs_rsync_out (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK
   if (py_archive != Py_None) {
     optargs_s.bitmask |= GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK;
     optargs_s.archive = PyLong_AsLong (py_archive);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK
   if (py_deletedest != Py_None) {
     optargs_s.bitmask |= GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK;
     optargs_s.deletedest = PyLong_AsLong (py_deletedest);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -19890,7 +21375,9 @@ py_guestfs_rsync_out (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SCRUB_DEVICE
 static PyObject *
 py_guestfs_scrub_device (PyObject *self, PyObject *args)
 {
@@ -19926,7 +21413,9 @@ py_guestfs_scrub_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SCRUB_FILE
 static PyObject *
 py_guestfs_scrub_file (PyObject *self, PyObject *args)
 {
@@ -19962,7 +21451,9 @@ py_guestfs_scrub_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SCRUB_FREESPACE
 static PyObject *
 py_guestfs_scrub_freespace (PyObject *self, PyObject *args)
 {
@@ -19998,7 +21489,9 @@ py_guestfs_scrub_freespace (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_APPEND
 static PyObject *
 py_guestfs_set_append (PyObject *self, PyObject *args)
 {
@@ -20027,7 +21520,9 @@ py_guestfs_set_append (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_ATTACH_METHOD
 static PyObject *
 py_guestfs_set_attach_method (PyObject *self, PyObject *args)
 {
@@ -20056,7 +21551,9 @@ py_guestfs_set_attach_method (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_AUTOSYNC
 static PyObject *
 py_guestfs_set_autosync (PyObject *self, PyObject *args)
 {
@@ -20085,7 +21582,9 @@ py_guestfs_set_autosync (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_BACKEND
 static PyObject *
 py_guestfs_set_backend (PyObject *self, PyObject *args)
 {
@@ -20114,7 +21613,9 @@ py_guestfs_set_backend (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_BACKEND_SETTING
 static PyObject *
 py_guestfs_set_backend_setting (PyObject *self, PyObject *args)
 {
@@ -20144,7 +21645,9 @@ py_guestfs_set_backend_setting (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_BACKEND_SETTINGS
 static PyObject *
 py_guestfs_set_backend_settings (PyObject *self, PyObject *args)
 {
@@ -20177,7 +21680,9 @@ py_guestfs_set_backend_settings (PyObject *self, PyObject *args)
   free (settings);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_CACHEDIR
 static PyObject *
 py_guestfs_set_cachedir (PyObject *self, PyObject *args)
 {
@@ -20206,7 +21711,9 @@ py_guestfs_set_cachedir (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_DIRECT
 static PyObject *
 py_guestfs_set_direct (PyObject *self, PyObject *args)
 {
@@ -20235,7 +21742,9 @@ py_guestfs_set_direct (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_E2ATTRS
 static PyObject *
 py_guestfs_set_e2attrs (PyObject *self, PyObject *args)
 {
@@ -20257,11 +21766,13 @@ py_guestfs_set_e2attrs (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_SET_E2ATTRS_CLEAR_BITMASK
   if (py_clear != Py_None) {
     optargs_s.bitmask |= GUESTFS_SET_E2ATTRS_CLEAR_BITMASK;
     optargs_s.clear = PyLong_AsLong (py_clear);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -20283,7 +21794,9 @@ py_guestfs_set_e2attrs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_E2GENERATION
 static PyObject *
 py_guestfs_set_e2generation (PyObject *self, PyObject *args)
 {
@@ -20320,7 +21833,9 @@ py_guestfs_set_e2generation (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_E2LABEL
 static PyObject *
 py_guestfs_set_e2label (PyObject *self, PyObject *args)
 {
@@ -20357,7 +21872,9 @@ py_guestfs_set_e2label (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_E2UUID
 static PyObject *
 py_guestfs_set_e2uuid (PyObject *self, PyObject *args)
 {
@@ -20394,7 +21911,9 @@ py_guestfs_set_e2uuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_HV
 static PyObject *
 py_guestfs_set_hv (PyObject *self, PyObject *args)
 {
@@ -20423,7 +21942,9 @@ py_guestfs_set_hv (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_LABEL
 static PyObject *
 py_guestfs_set_label (PyObject *self, PyObject *args)
 {
@@ -20460,7 +21981,9 @@ py_guestfs_set_label (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_LIBVIRT_REQUESTED_CREDENTIAL
 static PyObject *
 py_guestfs_set_libvirt_requested_credential (PyObject *self, PyObject *args)
 {
@@ -20491,7 +22014,9 @@ py_guestfs_set_libvirt_requested_credential (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_LIBVIRT_SUPPORTED_CREDENTIALS
 static PyObject *
 py_guestfs_set_libvirt_supported_credentials (PyObject *self, PyObject *args)
 {
@@ -20524,7 +22049,9 @@ py_guestfs_set_libvirt_supported_credentials (PyObject *self, PyObject *args)
   free (creds);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_MEMSIZE
 static PyObject *
 py_guestfs_set_memsize (PyObject *self, PyObject *args)
 {
@@ -20553,7 +22080,9 @@ py_guestfs_set_memsize (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_NETWORK
 static PyObject *
 py_guestfs_set_network (PyObject *self, PyObject *args)
 {
@@ -20582,7 +22111,9 @@ py_guestfs_set_network (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_PATH
 static PyObject *
 py_guestfs_set_path (PyObject *self, PyObject *args)
 {
@@ -20611,7 +22142,9 @@ py_guestfs_set_path (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_PGROUP
 static PyObject *
 py_guestfs_set_pgroup (PyObject *self, PyObject *args)
 {
@@ -20640,7 +22173,9 @@ py_guestfs_set_pgroup (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_PROGRAM
 static PyObject *
 py_guestfs_set_program (PyObject *self, PyObject *args)
 {
@@ -20669,7 +22204,9 @@ py_guestfs_set_program (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_QEMU
 static PyObject *
 py_guestfs_set_qemu (PyObject *self, PyObject *args)
 {
@@ -20698,7 +22235,9 @@ py_guestfs_set_qemu (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_RECOVERY_PROC
 static PyObject *
 py_guestfs_set_recovery_proc (PyObject *self, PyObject *args)
 {
@@ -20727,7 +22266,9 @@ py_guestfs_set_recovery_proc (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_SELINUX
 static PyObject *
 py_guestfs_set_selinux (PyObject *self, PyObject *args)
 {
@@ -20756,7 +22297,9 @@ py_guestfs_set_selinux (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_SMP
 static PyObject *
 py_guestfs_set_smp (PyObject *self, PyObject *args)
 {
@@ -20785,7 +22328,9 @@ py_guestfs_set_smp (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_TMPDIR
 static PyObject *
 py_guestfs_set_tmpdir (PyObject *self, PyObject *args)
 {
@@ -20814,7 +22359,9 @@ py_guestfs_set_tmpdir (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_TRACE
 static PyObject *
 py_guestfs_set_trace (PyObject *self, PyObject *args)
 {
@@ -20843,7 +22390,9 @@ py_guestfs_set_trace (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_UUID
 static PyObject *
 py_guestfs_set_uuid (PyObject *self, PyObject *args)
 {
@@ -20880,7 +22429,9 @@ py_guestfs_set_uuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_UUID_RANDOM
 static PyObject *
 py_guestfs_set_uuid_random (PyObject *self, PyObject *args)
 {
@@ -20916,7 +22467,9 @@ py_guestfs_set_uuid_random (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SET_VERBOSE
 static PyObject *
 py_guestfs_set_verbose (PyObject *self, PyObject *args)
 {
@@ -20945,7 +22498,9 @@ py_guestfs_set_verbose (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SETCON
 static PyObject *
 py_guestfs_setcon (PyObject *self, PyObject *args)
 {
@@ -20981,7 +22536,9 @@ py_guestfs_setcon (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SETXATTR
 static PyObject *
 py_guestfs_setxattr (PyObject *self, PyObject *args)
 {
@@ -21020,7 +22577,9 @@ py_guestfs_setxattr (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SFDISK
 static PyObject *
 py_guestfs_sfdisk (PyObject *self, PyObject *args)
 {
@@ -21064,7 +22623,9 @@ py_guestfs_sfdisk (PyObject *self, PyObject *args)
   free (lines);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SFDISKM
 static PyObject *
 py_guestfs_sfdiskM (PyObject *self, PyObject *args)
 {
@@ -21105,7 +22666,9 @@ py_guestfs_sfdiskM (PyObject *self, PyObject *args)
   free (lines);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SFDISK_N
 static PyObject *
 py_guestfs_sfdisk_N (PyObject *self, PyObject *args)
 {
@@ -21146,7 +22709,9 @@ py_guestfs_sfdisk_N (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SFDISK_DISK_GEOMETRY
 static PyObject *
 py_guestfs_sfdisk_disk_geometry (PyObject *self, PyObject *args)
 {
@@ -21187,7 +22752,9 @@ py_guestfs_sfdisk_disk_geometry (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SFDISK_KERNEL_GEOMETRY
 static PyObject *
 py_guestfs_sfdisk_kernel_geometry (PyObject *self, PyObject *args)
 {
@@ -21228,7 +22795,9 @@ py_guestfs_sfdisk_kernel_geometry (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SFDISK_L
 static PyObject *
 py_guestfs_sfdisk_l (PyObject *self, PyObject *args)
 {
@@ -21269,7 +22838,9 @@ py_guestfs_sfdisk_l (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SH
 static PyObject *
 py_guestfs_sh (PyObject *self, PyObject *args)
 {
@@ -21310,7 +22881,9 @@ py_guestfs_sh (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SH_LINES
 static PyObject *
 py_guestfs_sh_lines (PyObject *self, PyObject *args)
 {
@@ -21346,7 +22919,9 @@ py_guestfs_sh_lines (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SHUTDOWN
 static PyObject *
 py_guestfs_shutdown (PyObject *self, PyObject *args)
 {
@@ -21381,7 +22956,9 @@ py_guestfs_shutdown (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SLEEP
 static PyObject *
 py_guestfs_sleep (PyObject *self, PyObject *args)
 {
@@ -21417,7 +22994,9 @@ py_guestfs_sleep (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_STAT
 static PyObject *
 py_guestfs_stat (PyObject *self, PyObject *args)
 {
@@ -21453,7 +23032,9 @@ py_guestfs_stat (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_STATNS
 static PyObject *
 py_guestfs_statns (PyObject *self, PyObject *args)
 {
@@ -21489,7 +23070,9 @@ py_guestfs_statns (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_STATVFS
 static PyObject *
 py_guestfs_statvfs (PyObject *self, PyObject *args)
 {
@@ -21525,7 +23108,9 @@ py_guestfs_statvfs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_STRINGS
 static PyObject *
 py_guestfs_strings (PyObject *self, PyObject *args)
 {
@@ -21561,7 +23146,9 @@ py_guestfs_strings (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_STRINGS_E
 static PyObject *
 py_guestfs_strings_e (PyObject *self, PyObject *args)
 {
@@ -21598,7 +23185,9 @@ py_guestfs_strings_e (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SWAPOFF_DEVICE
 static PyObject *
 py_guestfs_swapoff_device (PyObject *self, PyObject *args)
 {
@@ -21634,7 +23223,9 @@ py_guestfs_swapoff_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SWAPOFF_FILE
 static PyObject *
 py_guestfs_swapoff_file (PyObject *self, PyObject *args)
 {
@@ -21670,7 +23261,9 @@ py_guestfs_swapoff_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SWAPOFF_LABEL
 static PyObject *
 py_guestfs_swapoff_label (PyObject *self, PyObject *args)
 {
@@ -21706,7 +23299,9 @@ py_guestfs_swapoff_label (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SWAPOFF_UUID
 static PyObject *
 py_guestfs_swapoff_uuid (PyObject *self, PyObject *args)
 {
@@ -21742,7 +23337,9 @@ py_guestfs_swapoff_uuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SWAPON_DEVICE
 static PyObject *
 py_guestfs_swapon_device (PyObject *self, PyObject *args)
 {
@@ -21778,7 +23375,9 @@ py_guestfs_swapon_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SWAPON_FILE
 static PyObject *
 py_guestfs_swapon_file (PyObject *self, PyObject *args)
 {
@@ -21814,7 +23413,9 @@ py_guestfs_swapon_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SWAPON_LABEL
 static PyObject *
 py_guestfs_swapon_label (PyObject *self, PyObject *args)
 {
@@ -21850,7 +23451,9 @@ py_guestfs_swapon_label (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SWAPON_UUID
 static PyObject *
 py_guestfs_swapon_uuid (PyObject *self, PyObject *args)
 {
@@ -21886,7 +23489,9 @@ py_guestfs_swapon_uuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SYNC
 static PyObject *
 py_guestfs_sync (PyObject *self, PyObject *args)
 {
@@ -21921,7 +23526,9 @@ py_guestfs_sync (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_SYSLINUX
 static PyObject *
 py_guestfs_syslinux (PyObject *self, PyObject *args)
 {
@@ -21942,6 +23549,7 @@ py_guestfs_syslinux (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_SYSLINUX_DIRECTORY_BITMASK
   if (py_directory != Py_None) {
     optargs_s.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -21952,6 +23560,7 @@ py_guestfs_syslinux (PyObject *self, PyObject *args)
     optargs_s.directory = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -21973,7 +23582,9 @@ py_guestfs_syslinux (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TAIL
 static PyObject *
 py_guestfs_tail (PyObject *self, PyObject *args)
 {
@@ -22009,7 +23620,9 @@ py_guestfs_tail (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TAIL_N
 static PyObject *
 py_guestfs_tail_n (PyObject *self, PyObject *args)
 {
@@ -22046,7 +23659,9 @@ py_guestfs_tail_n (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TAR_IN
 static PyObject *
 py_guestfs_tar_in (PyObject *self, PyObject *args)
 {
@@ -22068,6 +23683,7 @@ py_guestfs_tar_in (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK
   if (py_compress != Py_None) {
     optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -22078,6 +23694,7 @@ py_guestfs_tar_in (PyObject *self, PyObject *args)
     optargs_s.compress = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -22099,7 +23716,9 @@ py_guestfs_tar_in (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TAR_OUT
 static PyObject *
 py_guestfs_tar_out (PyObject *self, PyObject *args)
 {
@@ -22123,6 +23742,7 @@ py_guestfs_tar_out (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK
   if (py_compress != Py_None) {
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -22133,16 +23753,21 @@ py_guestfs_tar_out (PyObject *self, PyObject *args)
     optargs_s.compress = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK
   if (py_numericowner != Py_None) {
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
     optargs_s.numericowner = PyLong_AsLong (py_numericowner);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK
   if (py_excludes != Py_None) {
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
     optargs_s.excludes = get_string_list (py_excludes);
     if (!optargs_s.excludes) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -22162,11 +23787,15 @@ py_guestfs_tar_out (PyObject *self, PyObject *args)
 
   PyErr_Clear ();
  out:
+#ifdef GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK
   if (py_excludes != Py_None && (optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK) != 0)
     free ((char **) optargs_s.excludes);
+#endif
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TGZ_IN
 static PyObject *
 py_guestfs_tgz_in (PyObject *self, PyObject *args)
 {
@@ -22203,7 +23832,9 @@ py_guestfs_tgz_in (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TGZ_OUT
 static PyObject *
 py_guestfs_tgz_out (PyObject *self, PyObject *args)
 {
@@ -22240,7 +23871,9 @@ py_guestfs_tgz_out (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TOUCH
 static PyObject *
 py_guestfs_touch (PyObject *self, PyObject *args)
 {
@@ -22276,7 +23909,9 @@ py_guestfs_touch (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TRUNCATE
 static PyObject *
 py_guestfs_truncate (PyObject *self, PyObject *args)
 {
@@ -22312,7 +23947,9 @@ py_guestfs_truncate (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TRUNCATE_SIZE
 static PyObject *
 py_guestfs_truncate_size (PyObject *self, PyObject *args)
 {
@@ -22349,7 +23986,9 @@ py_guestfs_truncate_size (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TUNE2FS
 static PyObject *
 py_guestfs_tune2fs (PyObject *self, PyObject *args)
 {
@@ -22379,21 +24018,28 @@ py_guestfs_tune2fs (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_TUNE2FS_FORCE_BITMASK
   if (py_force != Py_None) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_FORCE_BITMASK;
     optargs_s.force = PyLong_AsLong (py_force);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK
   if (py_maxmountcount != Py_None) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK;
     optargs_s.maxmountcount = PyLong_AsLong (py_maxmountcount);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK
   if (py_mountcount != Py_None) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK;
     optargs_s.mountcount = PyLong_AsLong (py_mountcount);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK
   if (py_errorbehavior != Py_None) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -22404,21 +24050,29 @@ py_guestfs_tune2fs (PyObject *self, PyObject *args)
     optargs_s.errorbehavior = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_TUNE2FS_GROUP_BITMASK
   if (py_group != Py_None) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_GROUP_BITMASK;
     optargs_s.group = PyLong_AsLongLong (py_group);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS_BITMASK
   if (py_intervalbetweenchecks != Py_None) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS_BITMASK;
     optargs_s.intervalbetweenchecks = PyLong_AsLong (py_intervalbetweenchecks);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK
   if (py_reservedblockspercentage != Py_None) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
     optargs_s.reservedblockspercentage = PyLong_AsLong (py_reservedblockspercentage);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK
   if (py_lastmounteddirectory != Py_None) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -22429,16 +24083,21 @@ py_guestfs_tune2fs (PyObject *self, PyObject *args)
     optargs_s.lastmounteddirectory = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK
   if (py_reservedblockscount != Py_None) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK;
     optargs_s.reservedblockscount = PyLong_AsLongLong (py_reservedblockscount);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_TUNE2FS_USER_BITMASK
   if (py_user != Py_None) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_USER_BITMASK;
     optargs_s.user = PyLong_AsLongLong (py_user);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -22460,7 +24119,9 @@ py_guestfs_tune2fs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TUNE2FS_L
 static PyObject *
 py_guestfs_tune2fs_l (PyObject *self, PyObject *args)
 {
@@ -22496,7 +24157,9 @@ py_guestfs_tune2fs_l (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TXZ_IN
 static PyObject *
 py_guestfs_txz_in (PyObject *self, PyObject *args)
 {
@@ -22533,7 +24196,9 @@ py_guestfs_txz_in (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_TXZ_OUT
 static PyObject *
 py_guestfs_txz_out (PyObject *self, PyObject *args)
 {
@@ -22570,7 +24235,9 @@ py_guestfs_txz_out (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_UMASK
 static PyObject *
 py_guestfs_umask (PyObject *self, PyObject *args)
 {
@@ -22605,7 +24272,9 @@ py_guestfs_umask (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_UMOUNT
 static PyObject *
 py_guestfs_umount (PyObject *self, PyObject *args)
 {
@@ -22627,16 +24296,20 @@ py_guestfs_umount (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_UMOUNT_OPTS_FORCE_BITMASK
   if (py_force != Py_None) {
     optargs_s.bitmask |= GUESTFS_UMOUNT_OPTS_FORCE_BITMASK;
     optargs_s.force = PyLong_AsLong (py_force);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT_BITMASK
   if (py_lazyunmount != Py_None) {
     optargs_s.bitmask |= GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT_BITMASK;
     optargs_s.lazyunmount = PyLong_AsLong (py_lazyunmount);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -22658,7 +24331,9 @@ py_guestfs_umount (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_UMOUNT_ALL
 static PyObject *
 py_guestfs_umount_all (PyObject *self, PyObject *args)
 {
@@ -22693,7 +24368,9 @@ py_guestfs_umount_all (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_UMOUNT_LOCAL
 static PyObject *
 py_guestfs_umount_local (PyObject *self, PyObject *args)
 {
@@ -22713,11 +24390,13 @@ py_guestfs_umount_local (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_UMOUNT_LOCAL_RETRY_BITMASK
   if (py_retry != Py_None) {
     optargs_s.bitmask |= GUESTFS_UMOUNT_LOCAL_RETRY_BITMASK;
     optargs_s.retry = PyLong_AsLong (py_retry);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -22739,7 +24418,9 @@ py_guestfs_umount_local (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_UPLOAD
 static PyObject *
 py_guestfs_upload (PyObject *self, PyObject *args)
 {
@@ -22776,7 +24457,9 @@ py_guestfs_upload (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_UPLOAD_OFFSET
 static PyObject *
 py_guestfs_upload_offset (PyObject *self, PyObject *args)
 {
@@ -22814,7 +24497,9 @@ py_guestfs_upload_offset (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_USER_CANCEL
 static PyObject *
 py_guestfs_user_cancel (PyObject *self, PyObject *args)
 {
@@ -22842,7 +24527,9 @@ py_guestfs_user_cancel (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_UTIMENS
 static PyObject *
 py_guestfs_utimens (PyObject *self, PyObject *args)
 {
@@ -22882,7 +24569,9 @@ py_guestfs_utimens (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_UTSNAME
 static PyObject *
 py_guestfs_utsname (PyObject *self, PyObject *args)
 {
@@ -22917,7 +24606,9 @@ py_guestfs_utsname (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VERSION
 static PyObject *
 py_guestfs_version (PyObject *self, PyObject *args)
 {
@@ -22945,7 +24636,9 @@ py_guestfs_version (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VFS_LABEL
 static PyObject *
 py_guestfs_vfs_label (PyObject *self, PyObject *args)
 {
@@ -22986,7 +24679,9 @@ py_guestfs_vfs_label (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VFS_TYPE
 static PyObject *
 py_guestfs_vfs_type (PyObject *self, PyObject *args)
 {
@@ -23027,7 +24722,9 @@ py_guestfs_vfs_type (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VFS_UUID
 static PyObject *
 py_guestfs_vfs_uuid (PyObject *self, PyObject *args)
 {
@@ -23068,7 +24765,9 @@ py_guestfs_vfs_uuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VG_ACTIVATE
 static PyObject *
 py_guestfs_vg_activate (PyObject *self, PyObject *args)
 {
@@ -23109,7 +24808,9 @@ py_guestfs_vg_activate (PyObject *self, PyObject *args)
   free (volgroups);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VG_ACTIVATE_ALL
 static PyObject *
 py_guestfs_vg_activate_all (PyObject *self, PyObject *args)
 {
@@ -23145,7 +24846,9 @@ py_guestfs_vg_activate_all (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGCHANGE_UUID
 static PyObject *
 py_guestfs_vgchange_uuid (PyObject *self, PyObject *args)
 {
@@ -23181,7 +24884,9 @@ py_guestfs_vgchange_uuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGCHANGE_UUID_ALL
 static PyObject *
 py_guestfs_vgchange_uuid_all (PyObject *self, PyObject *args)
 {
@@ -23216,7 +24921,9 @@ py_guestfs_vgchange_uuid_all (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGCREATE
 static PyObject *
 py_guestfs_vgcreate (PyObject *self, PyObject *args)
 {
@@ -23257,7 +24964,9 @@ py_guestfs_vgcreate (PyObject *self, PyObject *args)
   free (physvols);
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGLVUUIDS
 static PyObject *
 py_guestfs_vglvuuids (PyObject *self, PyObject *args)
 {
@@ -23293,7 +25002,9 @@ py_guestfs_vglvuuids (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGMETA
 static PyObject *
 py_guestfs_vgmeta (PyObject *self, PyObject *args)
 {
@@ -23335,7 +25046,9 @@ py_guestfs_vgmeta (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGPVUUIDS
 static PyObject *
 py_guestfs_vgpvuuids (PyObject *self, PyObject *args)
 {
@@ -23371,7 +25084,9 @@ py_guestfs_vgpvuuids (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGREMOVE
 static PyObject *
 py_guestfs_vgremove (PyObject *self, PyObject *args)
 {
@@ -23407,7 +25122,9 @@ py_guestfs_vgremove (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGRENAME
 static PyObject *
 py_guestfs_vgrename (PyObject *self, PyObject *args)
 {
@@ -23444,7 +25161,9 @@ py_guestfs_vgrename (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGS
 static PyObject *
 py_guestfs_vgs (PyObject *self, PyObject *args)
 {
@@ -23479,7 +25198,9 @@ py_guestfs_vgs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGS_FULL
 static PyObject *
 py_guestfs_vgs_full (PyObject *self, PyObject *args)
 {
@@ -23514,7 +25235,9 @@ py_guestfs_vgs_full (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGSCAN
 static PyObject *
 py_guestfs_vgscan (PyObject *self, PyObject *args)
 {
@@ -23549,7 +25272,9 @@ py_guestfs_vgscan (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_VGUUID
 static PyObject *
 py_guestfs_vguuid (PyObject *self, PyObject *args)
 {
@@ -23590,7 +25315,9 @@ py_guestfs_vguuid (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_WAIT_READY
 static PyObject *
 py_guestfs_wait_ready (PyObject *self, PyObject *args)
 {
@@ -23618,7 +25345,9 @@ py_guestfs_wait_ready (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_WC_C
 static PyObject *
 py_guestfs_wc_c (PyObject *self, PyObject *args)
 {
@@ -23653,7 +25382,9 @@ py_guestfs_wc_c (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_WC_L
 static PyObject *
 py_guestfs_wc_l (PyObject *self, PyObject *args)
 {
@@ -23688,7 +25419,9 @@ py_guestfs_wc_l (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_WC_W
 static PyObject *
 py_guestfs_wc_w (PyObject *self, PyObject *args)
 {
@@ -23723,7 +25456,9 @@ py_guestfs_wc_w (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_WIPEFS
 static PyObject *
 py_guestfs_wipefs (PyObject *self, PyObject *args)
 {
@@ -23759,7 +25494,9 @@ py_guestfs_wipefs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_WRITE
 static PyObject *
 py_guestfs_write (PyObject *self, PyObject *args)
 {
@@ -23797,7 +25534,9 @@ py_guestfs_write (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_WRITE_APPEND
 static PyObject *
 py_guestfs_write_append (PyObject *self, PyObject *args)
 {
@@ -23835,7 +25574,9 @@ py_guestfs_write_append (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_WRITE_FILE
 static PyObject *
 py_guestfs_write_file (PyObject *self, PyObject *args)
 {
@@ -23873,7 +25614,9 @@ py_guestfs_write_file (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_XFS_ADMIN
 static PyObject *
 py_guestfs_xfs_admin (PyObject *self, PyObject *args)
 {
@@ -23900,31 +25643,42 @@ py_guestfs_xfs_admin (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK
   if (py_extunwritten != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK;
     optargs_s.extunwritten = PyLong_AsLong (py_extunwritten);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_ADMIN_IMGFILE_BITMASK
   if (py_imgfile != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_ADMIN_IMGFILE_BITMASK;
     optargs_s.imgfile = PyLong_AsLong (py_imgfile);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_ADMIN_V2LOG_BITMASK
   if (py_v2log != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_ADMIN_V2LOG_BITMASK;
     optargs_s.v2log = PyLong_AsLong (py_v2log);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK
   if (py_projid32bit != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK;
     optargs_s.projid32bit = PyLong_AsLong (py_projid32bit);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK
   if (py_lazycounter != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK;
     optargs_s.lazycounter = PyLong_AsLong (py_lazycounter);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_ADMIN_LABEL_BITMASK
   if (py_label != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_ADMIN_LABEL_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -23935,6 +25689,8 @@ py_guestfs_xfs_admin (PyObject *self, PyObject *args)
     optargs_s.label = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_XFS_ADMIN_UUID_BITMASK
   if (py_uuid != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_ADMIN_UUID_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -23945,6 +25701,7 @@ py_guestfs_xfs_admin (PyObject *self, PyObject *args)
     optargs_s.uuid = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -23966,7 +25723,9 @@ py_guestfs_xfs_admin (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_XFS_GROWFS
 static PyObject *
 py_guestfs_xfs_growfs (PyObject *self, PyObject *args)
 {
@@ -23994,46 +25753,62 @@ py_guestfs_xfs_growfs (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_XFS_GROWFS_DATASEC_BITMASK
   if (py_datasec != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_GROWFS_DATASEC_BITMASK;
     optargs_s.datasec = PyLong_AsLong (py_datasec);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_GROWFS_LOGSEC_BITMASK
   if (py_logsec != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_GROWFS_LOGSEC_BITMASK;
     optargs_s.logsec = PyLong_AsLong (py_logsec);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_GROWFS_RTSEC_BITMASK
   if (py_rtsec != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_GROWFS_RTSEC_BITMASK;
     optargs_s.rtsec = PyLong_AsLong (py_rtsec);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_GROWFS_DATASIZE_BITMASK
   if (py_datasize != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_GROWFS_DATASIZE_BITMASK;
     optargs_s.datasize = PyLong_AsLongLong (py_datasize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_GROWFS_LOGSIZE_BITMASK
   if (py_logsize != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_GROWFS_LOGSIZE_BITMASK;
     optargs_s.logsize = PyLong_AsLongLong (py_logsize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_GROWFS_RTSIZE_BITMASK
   if (py_rtsize != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_GROWFS_RTSIZE_BITMASK;
     optargs_s.rtsize = PyLong_AsLongLong (py_rtsize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_GROWFS_RTEXTSIZE_BITMASK
   if (py_rtextsize != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_GROWFS_RTEXTSIZE_BITMASK;
     optargs_s.rtextsize = PyLong_AsLongLong (py_rtextsize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_GROWFS_MAXPCT_BITMASK
   if (py_maxpct != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_GROWFS_MAXPCT_BITMASK;
     optargs_s.maxpct = PyLong_AsLong (py_maxpct);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -24055,7 +25830,9 @@ py_guestfs_xfs_growfs (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_XFS_INFO
 static PyObject *
 py_guestfs_xfs_info (PyObject *self, PyObject *args)
 {
@@ -24091,7 +25868,9 @@ py_guestfs_xfs_info (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_XFS_REPAIR
 static PyObject *
 py_guestfs_xfs_repair (PyObject *self, PyObject *args)
 {
@@ -24121,46 +25900,63 @@ py_guestfs_xfs_repair (PyObject *self, PyObject *args)
     goto out;
   g = get_handle (py_g);
 
+#ifdef GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK
   if (py_forcelogzero != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK;
     optargs_s.forcelogzero = PyLong_AsLong (py_forcelogzero);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK
   if (py_nomodify != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK;
     optargs_s.nomodify = PyLong_AsLong (py_nomodify);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK
   if (py_noprefetch != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK;
     optargs_s.noprefetch = PyLong_AsLong (py_noprefetch);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK
   if (py_forcegeometry != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK;
     optargs_s.forcegeometry = PyLong_AsLong (py_forcegeometry);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_REPAIR_MAXMEM_BITMASK
   if (py_maxmem != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_MAXMEM_BITMASK;
     optargs_s.maxmem = PyLong_AsLongLong (py_maxmem);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_REPAIR_IHASHSIZE_BITMASK
   if (py_ihashsize != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_IHASHSIZE_BITMASK;
     optargs_s.ihashsize = PyLong_AsLongLong (py_ihashsize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_REPAIR_BHASHSIZE_BITMASK
   if (py_bhashsize != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_BHASHSIZE_BITMASK;
     optargs_s.bhashsize = PyLong_AsLongLong (py_bhashsize);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_REPAIR_AGSTRIDE_BITMASK
   if (py_agstride != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_AGSTRIDE_BITMASK;
     optargs_s.agstride = PyLong_AsLongLong (py_agstride);
     if (PyErr_Occurred ()) goto out;
   }
+#endif
+#ifdef GUESTFS_XFS_REPAIR_LOGDEV_BITMASK
   if (py_logdev != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_LOGDEV_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -24171,6 +25967,8 @@ py_guestfs_xfs_repair (PyObject *self, PyObject *args)
     optargs_s.logdev = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
+#ifdef GUESTFS_XFS_REPAIR_RTDEV_BITMASK
   if (py_rtdev != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_RTDEV_BITMASK;
 #ifdef HAVE_PYSTRING_ASSTRING
@@ -24181,6 +25979,7 @@ py_guestfs_xfs_repair (PyObject *self, PyObject *args)
     optargs_s.rtdev = PyBytes_AS_STRING (bytes);
 #endif
   }
+#endif
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -24201,7 +26000,9 @@ py_guestfs_xfs_repair (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZEGREP
 static PyObject *
 py_guestfs_zegrep (PyObject *self, PyObject *args)
 {
@@ -24238,7 +26039,9 @@ py_guestfs_zegrep (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZEGREPI
 static PyObject *
 py_guestfs_zegrepi (PyObject *self, PyObject *args)
 {
@@ -24275,7 +26078,9 @@ py_guestfs_zegrepi (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZERO
 static PyObject *
 py_guestfs_zero (PyObject *self, PyObject *args)
 {
@@ -24311,7 +26116,9 @@ py_guestfs_zero (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZERO_DEVICE
 static PyObject *
 py_guestfs_zero_device (PyObject *self, PyObject *args)
 {
@@ -24347,7 +26154,9 @@ py_guestfs_zero_device (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZERO_FREE_SPACE
 static PyObject *
 py_guestfs_zero_free_space (PyObject *self, PyObject *args)
 {
@@ -24383,7 +26192,9 @@ py_guestfs_zero_free_space (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZEROFREE
 static PyObject *
 py_guestfs_zerofree (PyObject *self, PyObject *args)
 {
@@ -24419,7 +26230,9 @@ py_guestfs_zerofree (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZFGREP
 static PyObject *
 py_guestfs_zfgrep (PyObject *self, PyObject *args)
 {
@@ -24456,7 +26269,9 @@ py_guestfs_zfgrep (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZFGREPI
 static PyObject *
 py_guestfs_zfgrepi (PyObject *self, PyObject *args)
 {
@@ -24493,7 +26308,9 @@ py_guestfs_zfgrepi (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZFILE
 static PyObject *
 py_guestfs_zfile (PyObject *self, PyObject *args)
 {
@@ -24535,7 +26352,9 @@ py_guestfs_zfile (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZGREP
 static PyObject *
 py_guestfs_zgrep (PyObject *self, PyObject *args)
 {
@@ -24572,7 +26391,9 @@ py_guestfs_zgrep (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
+#ifdef GUESTFS_HAVE_ZGREPI
 static PyObject *
 py_guestfs_zgrepi (PyObject *self, PyObject *args)
 {
@@ -24609,6 +26430,7 @@ py_guestfs_zgrepi (PyObject *self, PyObject *args)
  out:
   return py_r;
 }
+#endif
 
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
@@ -24619,591 +26441,1761 @@ static PyMethodDef methods[] = {
     py_guestfs_delete_event_callback, METH_VARARGS, NULL },
   { (char *) "event_to_string",
     py_guestfs_event_to_string, METH_VARARGS, NULL },
+#ifdef GUESTFS_HAVE_ACL_DELETE_DEF_FILE
   { (char *) "acl_delete_def_file", py_guestfs_acl_delete_def_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ACL_GET_FILE
   { (char *) "acl_get_file", py_guestfs_acl_get_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ACL_SET_FILE
   { (char *) "acl_set_file", py_guestfs_acl_set_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ADD_CDROM
   { (char *) "add_cdrom", py_guestfs_add_cdrom, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ADD_DOMAIN
   { (char *) "add_domain", py_guestfs_add_domain, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ADD_DRIVE
   { (char *) "add_drive", py_guestfs_add_drive, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ADD_DRIVE_RO
   { (char *) "add_drive_ro", py_guestfs_add_drive_ro, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ADD_DRIVE_RO_WITH_IF
   { (char *) "add_drive_ro_with_if", py_guestfs_add_drive_ro_with_if, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ADD_DRIVE_SCRATCH
   { (char *) "add_drive_scratch", py_guestfs_add_drive_scratch, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ADD_DRIVE_WITH_IF
   { (char *) "add_drive_with_if", py_guestfs_add_drive_with_if, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ADD_LIBVIRT_DOM
   { (char *) "add_libvirt_dom", py_guestfs_add_libvirt_dom, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_CLEAR
   { (char *) "aug_clear", py_guestfs_aug_clear, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_CLOSE
   { (char *) "aug_close", py_guestfs_aug_close, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_DEFNODE
   { (char *) "aug_defnode", py_guestfs_aug_defnode, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_DEFVAR
   { (char *) "aug_defvar", py_guestfs_aug_defvar, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_GET
   { (char *) "aug_get", py_guestfs_aug_get, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_INIT
   { (char *) "aug_init", py_guestfs_aug_init, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_INSERT
   { (char *) "aug_insert", py_guestfs_aug_insert, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_LABEL
   { (char *) "aug_label", py_guestfs_aug_label, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_LOAD
   { (char *) "aug_load", py_guestfs_aug_load, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_LS
   { (char *) "aug_ls", py_guestfs_aug_ls, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_MATCH
   { (char *) "aug_match", py_guestfs_aug_match, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_MV
   { (char *) "aug_mv", py_guestfs_aug_mv, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_RM
   { (char *) "aug_rm", py_guestfs_aug_rm, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_SAVE
   { (char *) "aug_save", py_guestfs_aug_save, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_SET
   { (char *) "aug_set", py_guestfs_aug_set, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AUG_SETM
   { (char *) "aug_setm", py_guestfs_aug_setm, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AVAILABLE
   { (char *) "available", py_guestfs_available, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_AVAILABLE_ALL_GROUPS
   { (char *) "available_all_groups", py_guestfs_available_all_groups, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BASE64_IN
   { (char *) "base64_in", py_guestfs_base64_in, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BASE64_OUT
   { (char *) "base64_out", py_guestfs_base64_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLKDISCARD
   { (char *) "blkdiscard", py_guestfs_blkdiscard, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLKDISCARDZEROES
   { (char *) "blkdiscardzeroes", py_guestfs_blkdiscardzeroes, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLKID
   { (char *) "blkid", py_guestfs_blkid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_FLUSHBUFS
   { (char *) "blockdev_flushbufs", py_guestfs_blockdev_flushbufs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_GETBSZ
   { (char *) "blockdev_getbsz", py_guestfs_blockdev_getbsz, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_GETRO
   { (char *) "blockdev_getro", py_guestfs_blockdev_getro, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_GETSIZE64
   { (char *) "blockdev_getsize64", py_guestfs_blockdev_getsize64, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_GETSS
   { (char *) "blockdev_getss", py_guestfs_blockdev_getss, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_GETSZ
   { (char *) "blockdev_getsz", py_guestfs_blockdev_getsz, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_REREADPT
   { (char *) "blockdev_rereadpt", py_guestfs_blockdev_rereadpt, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_SETBSZ
   { (char *) "blockdev_setbsz", py_guestfs_blockdev_setbsz, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_SETRA
   { (char *) "blockdev_setra", py_guestfs_blockdev_setra, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_SETRO
   { (char *) "blockdev_setro", py_guestfs_blockdev_setro, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BLOCKDEV_SETRW
   { (char *) "blockdev_setrw", py_guestfs_blockdev_setrw, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_BALANCE_CANCEL
   { (char *) "btrfs_balance_cancel", py_guestfs_btrfs_balance_cancel, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_BALANCE_PAUSE
   { (char *) "btrfs_balance_pause", py_guestfs_btrfs_balance_pause, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_BALANCE_RESUME
   { (char *) "btrfs_balance_resume", py_guestfs_btrfs_balance_resume, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_BALANCE_STATUS
   { (char *) "btrfs_balance_status", py_guestfs_btrfs_balance_status, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_DEVICE_ADD
   { (char *) "btrfs_device_add", py_guestfs_btrfs_device_add, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_DEVICE_DELETE
   { (char *) "btrfs_device_delete", py_guestfs_btrfs_device_delete, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_BALANCE
   { (char *) "btrfs_filesystem_balance", py_guestfs_btrfs_filesystem_balance, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_DEFRAGMENT
   { (char *) "btrfs_filesystem_defragment", py_guestfs_btrfs_filesystem_defragment, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_RESIZE
   { (char *) "btrfs_filesystem_resize", py_guestfs_btrfs_filesystem_resize, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_SYNC
   { (char *) "btrfs_filesystem_sync", py_guestfs_btrfs_filesystem_sync, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_FSCK
   { (char *) "btrfs_fsck", py_guestfs_btrfs_fsck, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_IMAGE
   { (char *) "btrfs_image", py_guestfs_btrfs_image, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_ASSIGN
   { (char *) "btrfs_qgroup_assign", py_guestfs_btrfs_qgroup_assign, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_CREATE
   { (char *) "btrfs_qgroup_create", py_guestfs_btrfs_qgroup_create, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_DESTROY
   { (char *) "btrfs_qgroup_destroy", py_guestfs_btrfs_qgroup_destroy, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_LIMIT
   { (char *) "btrfs_qgroup_limit", py_guestfs_btrfs_qgroup_limit, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_REMOVE
   { (char *) "btrfs_qgroup_remove", py_guestfs_btrfs_qgroup_remove, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_QGROUP_SHOW
   { (char *) "btrfs_qgroup_show", py_guestfs_btrfs_qgroup_show, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_QUOTA_ENABLE
   { (char *) "btrfs_quota_enable", py_guestfs_btrfs_quota_enable, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_QUOTA_RESCAN
   { (char *) "btrfs_quota_rescan", py_guestfs_btrfs_quota_rescan, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_REPLACE
   { (char *) "btrfs_replace", py_guestfs_btrfs_replace, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_RESCUE_CHUNK_RECOVER
   { (char *) "btrfs_rescue_chunk_recover", py_guestfs_btrfs_rescue_chunk_recover, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_RESCUE_SUPER_RECOVER
   { (char *) "btrfs_rescue_super_recover", py_guestfs_btrfs_rescue_super_recover, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SCRUB_CANCEL
   { (char *) "btrfs_scrub_cancel", py_guestfs_btrfs_scrub_cancel, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SCRUB_RESUME
   { (char *) "btrfs_scrub_resume", py_guestfs_btrfs_scrub_resume, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SCRUB_START
   { (char *) "btrfs_scrub_start", py_guestfs_btrfs_scrub_start, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SCRUB_STATUS
   { (char *) "btrfs_scrub_status", py_guestfs_btrfs_scrub_status, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SET_SEEDING
   { (char *) "btrfs_set_seeding", py_guestfs_btrfs_set_seeding, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE
   { (char *) "btrfs_subvolume_create", py_guestfs_btrfs_subvolume_create, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_DELETE
   { (char *) "btrfs_subvolume_delete", py_guestfs_btrfs_subvolume_delete, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_GET_DEFAULT
   { (char *) "btrfs_subvolume_get_default", py_guestfs_btrfs_subvolume_get_default, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_LIST
   { (char *) "btrfs_subvolume_list", py_guestfs_btrfs_subvolume_list, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SET_DEFAULT
   { (char *) "btrfs_subvolume_set_default", py_guestfs_btrfs_subvolume_set_default, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SHOW
   { (char *) "btrfs_subvolume_show", py_guestfs_btrfs_subvolume_show, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT
   { (char *) "btrfs_subvolume_snapshot", py_guestfs_btrfs_subvolume_snapshot, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS
   { (char *) "btrfstune_enable_extended_inode_refs", py_guestfs_btrfstune_enable_extended_inode_refs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS
   { (char *) "btrfstune_enable_skinny_metadata_extent_refs", py_guestfs_btrfstune_enable_skinny_metadata_extent_refs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_BTRFSTUNE_SEEDING
   { (char *) "btrfstune_seeding", py_guestfs_btrfstune_seeding, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_C_POINTER
   { (char *) "c_pointer", py_guestfs_c_pointer, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CANONICAL_DEVICE_NAME
   { (char *) "canonical_device_name", py_guestfs_canonical_device_name, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CAP_GET_FILE
   { (char *) "cap_get_file", py_guestfs_cap_get_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CAP_SET_FILE
   { (char *) "cap_set_file", py_guestfs_cap_set_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CASE_SENSITIVE_PATH
   { (char *) "case_sensitive_path", py_guestfs_case_sensitive_path, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CAT
   { (char *) "cat", py_guestfs_cat, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CHECKSUM
   { (char *) "checksum", py_guestfs_checksum, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CHECKSUM_DEVICE
   { (char *) "checksum_device", py_guestfs_checksum_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CHECKSUMS_OUT
   { (char *) "checksums_out", py_guestfs_checksums_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CHMOD
   { (char *) "chmod", py_guestfs_chmod, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CHOWN
   { (char *) "chown", py_guestfs_chown, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CLEAR_BACKEND_SETTING
   { (char *) "clear_backend_setting", py_guestfs_clear_backend_setting, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COMMAND
   { (char *) "command", py_guestfs_command, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COMMAND_LINES
   { (char *) "command_lines", py_guestfs_command_lines, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COMPRESS_DEVICE_OUT
   { (char *) "compress_device_out", py_guestfs_compress_device_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COMPRESS_OUT
   { (char *) "compress_out", py_guestfs_compress_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CONFIG
   { (char *) "config", py_guestfs_config, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COPY_ATTRIBUTES
   { (char *) "copy_attributes", py_guestfs_copy_attributes, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COPY_DEVICE_TO_DEVICE
   { (char *) "copy_device_to_device", py_guestfs_copy_device_to_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COPY_DEVICE_TO_FILE
   { (char *) "copy_device_to_file", py_guestfs_copy_device_to_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COPY_FILE_TO_DEVICE
   { (char *) "copy_file_to_device", py_guestfs_copy_file_to_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COPY_FILE_TO_FILE
   { (char *) "copy_file_to_file", py_guestfs_copy_file_to_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COPY_IN
   { (char *) "copy_in", py_guestfs_copy_in, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COPY_OUT
   { (char *) "copy_out", py_guestfs_copy_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_COPY_SIZE
   { (char *) "copy_size", py_guestfs_copy_size, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CP
   { (char *) "cp", py_guestfs_cp, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CP_A
   { (char *) "cp_a", py_guestfs_cp_a, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CP_R
   { (char *) "cp_r", py_guestfs_cp_r, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_CPIO_OUT
   { (char *) "cpio_out", py_guestfs_cpio_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DD
   { (char *) "dd", py_guestfs_dd, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DEBUG
   { (char *) "debug", py_guestfs_debug, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DEBUG_DRIVES
   { (char *) "debug_drives", py_guestfs_debug_drives, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DEBUG_UPLOAD
   { (char *) "debug_upload", py_guestfs_debug_upload, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DEVICE_INDEX
   { (char *) "device_index", py_guestfs_device_index, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DF
   { (char *) "df", py_guestfs_df, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DF_H
   { (char *) "df_h", py_guestfs_df_h, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DISK_CREATE
   { (char *) "disk_create", py_guestfs_disk_create, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DISK_FORMAT
   { (char *) "disk_format", py_guestfs_disk_format, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DISK_HAS_BACKING_FILE
   { (char *) "disk_has_backing_file", py_guestfs_disk_has_backing_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DISK_VIRTUAL_SIZE
   { (char *) "disk_virtual_size", py_guestfs_disk_virtual_size, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DMESG
   { (char *) "dmesg", py_guestfs_dmesg, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DOWNLOAD
   { (char *) "download", py_guestfs_download, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DOWNLOAD_OFFSET
   { (char *) "download_offset", py_guestfs_download_offset, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DROP_CACHES
   { (char *) "drop_caches", py_guestfs_drop_caches, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_DU
   { (char *) "du", py_guestfs_du, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_E2FSCK
   { (char *) "e2fsck", py_guestfs_e2fsck, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_E2FSCK_F
   { (char *) "e2fsck_f", py_guestfs_e2fsck_f, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ECHO_DAEMON
   { (char *) "echo_daemon", py_guestfs_echo_daemon, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_EGREP
   { (char *) "egrep", py_guestfs_egrep, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_EGREPI
   { (char *) "egrepi", py_guestfs_egrepi, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_EQUAL
   { (char *) "equal", py_guestfs_equal, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_EXISTS
   { (char *) "exists", py_guestfs_exists, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_EXTLINUX
   { (char *) "extlinux", py_guestfs_extlinux, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FALLOCATE
   { (char *) "fallocate", py_guestfs_fallocate, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FALLOCATE64
   { (char *) "fallocate64", py_guestfs_fallocate64, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FEATURE_AVAILABLE
   { (char *) "feature_available", py_guestfs_feature_available, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FGREP
   { (char *) "fgrep", py_guestfs_fgrep, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FGREPI
   { (char *) "fgrepi", py_guestfs_fgrepi, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FILE
   { (char *) "file", py_guestfs_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FILE_ARCHITECTURE
   { (char *) "file_architecture", py_guestfs_file_architecture, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FILESIZE
   { (char *) "filesize", py_guestfs_filesize, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FILESYSTEM_AVAILABLE
   { (char *) "filesystem_available", py_guestfs_filesystem_available, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FILL
   { (char *) "fill", py_guestfs_fill, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FILL_DIR
   { (char *) "fill_dir", py_guestfs_fill_dir, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FILL_PATTERN
   { (char *) "fill_pattern", py_guestfs_fill_pattern, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FIND
   { (char *) "find", py_guestfs_find, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FIND0
   { (char *) "find0", py_guestfs_find0, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FINDFS_LABEL
   { (char *) "findfs_label", py_guestfs_findfs_label, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FINDFS_UUID
   { (char *) "findfs_uuid", py_guestfs_findfs_uuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FSCK
   { (char *) "fsck", py_guestfs_fsck, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_FSTRIM
   { (char *) "fstrim", py_guestfs_fstrim, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_APPEND
   { (char *) "get_append", py_guestfs_get_append, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_ATTACH_METHOD
   { (char *) "get_attach_method", py_guestfs_get_attach_method, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_AUTOSYNC
   { (char *) "get_autosync", py_guestfs_get_autosync, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_BACKEND
   { (char *) "get_backend", py_guestfs_get_backend, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_BACKEND_SETTING
   { (char *) "get_backend_setting", py_guestfs_get_backend_setting, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_BACKEND_SETTINGS
   { (char *) "get_backend_settings", py_guestfs_get_backend_settings, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_CACHEDIR
   { (char *) "get_cachedir", py_guestfs_get_cachedir, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_DIRECT
   { (char *) "get_direct", py_guestfs_get_direct, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_E2ATTRS
   { (char *) "get_e2attrs", py_guestfs_get_e2attrs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_E2GENERATION
   { (char *) "get_e2generation", py_guestfs_get_e2generation, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_E2LABEL
   { (char *) "get_e2label", py_guestfs_get_e2label, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_E2UUID
   { (char *) "get_e2uuid", py_guestfs_get_e2uuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_HV
   { (char *) "get_hv", py_guestfs_get_hv, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE
   { (char *) "get_libvirt_requested_credential_challenge", py_guestfs_get_libvirt_requested_credential_challenge, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_DEFRESULT
   { (char *) "get_libvirt_requested_credential_defresult", py_guestfs_get_libvirt_requested_credential_defresult, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_PROMPT
   { (char *) "get_libvirt_requested_credential_prompt", py_guestfs_get_libvirt_requested_credential_prompt, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIALS
   { (char *) "get_libvirt_requested_credentials", py_guestfs_get_libvirt_requested_credentials, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_MEMSIZE
   { (char *) "get_memsize", py_guestfs_get_memsize, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_NETWORK
   { (char *) "get_network", py_guestfs_get_network, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_PATH
   { (char *) "get_path", py_guestfs_get_path, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_PGROUP
   { (char *) "get_pgroup", py_guestfs_get_pgroup, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_PID
   { (char *) "get_pid", py_guestfs_get_pid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_PROGRAM
   { (char *) "get_program", py_guestfs_get_program, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_QEMU
   { (char *) "get_qemu", py_guestfs_get_qemu, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_RECOVERY_PROC
   { (char *) "get_recovery_proc", py_guestfs_get_recovery_proc, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_SELINUX
   { (char *) "get_selinux", py_guestfs_get_selinux, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_SMP
   { (char *) "get_smp", py_guestfs_get_smp, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_STATE
   { (char *) "get_state", py_guestfs_get_state, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_TMPDIR
   { (char *) "get_tmpdir", py_guestfs_get_tmpdir, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_TRACE
   { (char *) "get_trace", py_guestfs_get_trace, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_UMASK
   { (char *) "get_umask", py_guestfs_get_umask, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GET_VERBOSE
   { (char *) "get_verbose", py_guestfs_get_verbose, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GETCON
   { (char *) "getcon", py_guestfs_getcon, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GETXATTR
   { (char *) "getxattr", py_guestfs_getxattr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GETXATTRS
   { (char *) "getxattrs", py_guestfs_getxattrs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GLOB_EXPAND
   { (char *) "glob_expand", py_guestfs_glob_expand, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GREP
   { (char *) "grep", py_guestfs_grep, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GREPI
   { (char *) "grepi", py_guestfs_grepi, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_GRUB_INSTALL
   { (char *) "grub_install", py_guestfs_grub_install, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HEAD
   { (char *) "head", py_guestfs_head, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HEAD_N
   { (char *) "head_n", py_guestfs_head_n, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HEXDUMP
   { (char *) "hexdump", py_guestfs_hexdump, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_CLOSE
   { (char *) "hivex_close", py_guestfs_hivex_close, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_COMMIT
   { (char *) "hivex_commit", py_guestfs_hivex_commit, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_NODE_ADD_CHILD
   { (char *) "hivex_node_add_child", py_guestfs_hivex_node_add_child, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_NODE_CHILDREN
   { (char *) "hivex_node_children", py_guestfs_hivex_node_children, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_NODE_DELETE_CHILD
   { (char *) "hivex_node_delete_child", py_guestfs_hivex_node_delete_child, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_NODE_GET_CHILD
   { (char *) "hivex_node_get_child", py_guestfs_hivex_node_get_child, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_NODE_GET_VALUE
   { (char *) "hivex_node_get_value", py_guestfs_hivex_node_get_value, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_NODE_NAME
   { (char *) "hivex_node_name", py_guestfs_hivex_node_name, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_NODE_PARENT
   { (char *) "hivex_node_parent", py_guestfs_hivex_node_parent, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_NODE_SET_VALUE
   { (char *) "hivex_node_set_value", py_guestfs_hivex_node_set_value, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_NODE_VALUES
   { (char *) "hivex_node_values", py_guestfs_hivex_node_values, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_OPEN
   { (char *) "hivex_open", py_guestfs_hivex_open, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_ROOT
   { (char *) "hivex_root", py_guestfs_hivex_root, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_VALUE_KEY
   { (char *) "hivex_value_key", py_guestfs_hivex_value_key, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_VALUE_TYPE
   { (char *) "hivex_value_type", py_guestfs_hivex_value_type, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_VALUE_UTF8
   { (char *) "hivex_value_utf8", py_guestfs_hivex_value_utf8, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_HIVEX_VALUE_VALUE
   { (char *) "hivex_value_value", py_guestfs_hivex_value_value, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INITRD_CAT
   { (char *) "initrd_cat", py_guestfs_initrd_cat, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INITRD_LIST
   { (char *) "initrd_list", py_guestfs_initrd_list, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INOTIFY_ADD_WATCH
   { (char *) "inotify_add_watch", py_guestfs_inotify_add_watch, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INOTIFY_CLOSE
   { (char *) "inotify_close", py_guestfs_inotify_close, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INOTIFY_FILES
   { (char *) "inotify_files", py_guestfs_inotify_files, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INOTIFY_INIT
   { (char *) "inotify_init", py_guestfs_inotify_init, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INOTIFY_READ
   { (char *) "inotify_read", py_guestfs_inotify_read, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INOTIFY_RM_WATCH
   { (char *) "inotify_rm_watch", py_guestfs_inotify_rm_watch, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_ARCH
   { (char *) "inspect_get_arch", py_guestfs_inspect_get_arch, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_DISTRO
   { (char *) "inspect_get_distro", py_guestfs_inspect_get_distro, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_DRIVE_MAPPINGS
   { (char *) "inspect_get_drive_mappings", py_guestfs_inspect_get_drive_mappings, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_FILESYSTEMS
   { (char *) "inspect_get_filesystems", py_guestfs_inspect_get_filesystems, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_FORMAT
   { (char *) "inspect_get_format", py_guestfs_inspect_get_format, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_HOSTNAME
   { (char *) "inspect_get_hostname", py_guestfs_inspect_get_hostname, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_ICON
   { (char *) "inspect_get_icon", py_guestfs_inspect_get_icon, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_MAJOR_VERSION
   { (char *) "inspect_get_major_version", py_guestfs_inspect_get_major_version, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_MINOR_VERSION
   { (char *) "inspect_get_minor_version", py_guestfs_inspect_get_minor_version, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_MOUNTPOINTS
   { (char *) "inspect_get_mountpoints", py_guestfs_inspect_get_mountpoints, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_PACKAGE_FORMAT
   { (char *) "inspect_get_package_format", py_guestfs_inspect_get_package_format, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_PACKAGE_MANAGEMENT
   { (char *) "inspect_get_package_management", py_guestfs_inspect_get_package_management, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_PRODUCT_NAME
   { (char *) "inspect_get_product_name", py_guestfs_inspect_get_product_name, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_PRODUCT_VARIANT
   { (char *) "inspect_get_product_variant", py_guestfs_inspect_get_product_variant, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_ROOTS
   { (char *) "inspect_get_roots", py_guestfs_inspect_get_roots, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_TYPE
   { (char *) "inspect_get_type", py_guestfs_inspect_get_type, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_CURRENT_CONTROL_SET
   { (char *) "inspect_get_windows_current_control_set", py_guestfs_inspect_get_windows_current_control_set, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SYSTEMROOT
   { (char *) "inspect_get_windows_systemroot", py_guestfs_inspect_get_windows_systemroot, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_IS_LIVE
   { (char *) "inspect_is_live", py_guestfs_inspect_is_live, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_IS_MULTIPART
   { (char *) "inspect_is_multipart", py_guestfs_inspect_is_multipart, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_IS_NETINST
   { (char *) "inspect_is_netinst", py_guestfs_inspect_is_netinst, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_LIST_APPLICATIONS
   { (char *) "inspect_list_applications", py_guestfs_inspect_list_applications, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_LIST_APPLICATIONS2
   { (char *) "inspect_list_applications2", py_guestfs_inspect_list_applications2, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_OS
   { (char *) "inspect_os", py_guestfs_inspect_os, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_EXIT
   { (char *) "internal_exit", py_guestfs_internal_exit, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST
   { (char *) "internal_test", py_guestfs_internal_test, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_63_OPTARGS
   { (char *) "internal_test_63_optargs", py_guestfs_internal_test_63_optargs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_CLOSE_OUTPUT
   { (char *) "internal_test_close_output", py_guestfs_internal_test_close_output, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_ONLY_OPTARGS
   { (char *) "internal_test_only_optargs", py_guestfs_internal_test_only_optargs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RBOOL
   { (char *) "internal_test_rbool", py_guestfs_internal_test_rbool, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RBOOLERR
   { (char *) "internal_test_rboolerr", py_guestfs_internal_test_rboolerr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUT
   { (char *) "internal_test_rbufferout", py_guestfs_internal_test_rbufferout, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUTERR
   { (char *) "internal_test_rbufferouterr", py_guestfs_internal_test_rbufferouterr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRING
   { (char *) "internal_test_rconstoptstring", py_guestfs_internal_test_rconstoptstring, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRINGERR
   { (char *) "internal_test_rconstoptstringerr", py_guestfs_internal_test_rconstoptstringerr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRING
   { (char *) "internal_test_rconststring", py_guestfs_internal_test_rconststring, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRINGERR
   { (char *) "internal_test_rconststringerr", py_guestfs_internal_test_rconststringerr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RHASHTABLE
   { (char *) "internal_test_rhashtable", py_guestfs_internal_test_rhashtable, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RHASHTABLEERR
   { (char *) "internal_test_rhashtableerr", py_guestfs_internal_test_rhashtableerr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT
   { (char *) "internal_test_rint", py_guestfs_internal_test_rint, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT64
   { (char *) "internal_test_rint64", py_guestfs_internal_test_rint64, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT64ERR
   { (char *) "internal_test_rint64err", py_guestfs_internal_test_rint64err, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RINTERR
   { (char *) "internal_test_rinterr", py_guestfs_internal_test_rinterr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRING
   { (char *) "internal_test_rstring", py_guestfs_internal_test_rstring, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGERR
   { (char *) "internal_test_rstringerr", py_guestfs_internal_test_rstringerr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGLIST
   { (char *) "internal_test_rstringlist", py_guestfs_internal_test_rstringlist, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGLISTERR
   { (char *) "internal_test_rstringlisterr", py_guestfs_internal_test_rstringlisterr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCT
   { (char *) "internal_test_rstruct", py_guestfs_internal_test_rstruct, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTERR
   { (char *) "internal_test_rstructerr", py_guestfs_internal_test_rstructerr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLIST
   { (char *) "internal_test_rstructlist", py_guestfs_internal_test_rstructlist, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLISTERR
   { (char *) "internal_test_rstructlisterr", py_guestfs_internal_test_rstructlisterr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INTERNAL_TEST_SET_OUTPUT
   { (char *) "internal_test_set_output", py_guestfs_internal_test_set_output, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_BLOCKDEV
   { (char *) "is_blockdev", py_guestfs_is_blockdev, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_BUSY
   { (char *) "is_busy", py_guestfs_is_busy, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_CHARDEV
   { (char *) "is_chardev", py_guestfs_is_chardev, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_CONFIG
   { (char *) "is_config", py_guestfs_is_config, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_DIR
   { (char *) "is_dir", py_guestfs_is_dir, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_FIFO
   { (char *) "is_fifo", py_guestfs_is_fifo, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_FILE
   { (char *) "is_file", py_guestfs_is_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_LAUNCHING
   { (char *) "is_launching", py_guestfs_is_launching, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_LV
   { (char *) "is_lv", py_guestfs_is_lv, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_READY
   { (char *) "is_ready", py_guestfs_is_ready, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_SOCKET
   { (char *) "is_socket", py_guestfs_is_socket, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_SYMLINK
   { (char *) "is_symlink", py_guestfs_is_symlink, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_WHOLE_DEVICE
   { (char *) "is_whole_device", py_guestfs_is_whole_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_ZERO
   { (char *) "is_zero", py_guestfs_is_zero, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_IS_ZERO_DEVICE
   { (char *) "is_zero_device", py_guestfs_is_zero_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ISOINFO
   { (char *) "isoinfo", py_guestfs_isoinfo, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ISOINFO_DEVICE
   { (char *) "isoinfo_device", py_guestfs_isoinfo_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_JOURNAL_CLOSE
   { (char *) "journal_close", py_guestfs_journal_close, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_JOURNAL_GET
   { (char *) "journal_get", py_guestfs_journal_get, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_JOURNAL_GET_DATA_THRESHOLD
   { (char *) "journal_get_data_threshold", py_guestfs_journal_get_data_threshold, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_JOURNAL_GET_REALTIME_USEC
   { (char *) "journal_get_realtime_usec", py_guestfs_journal_get_realtime_usec, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_JOURNAL_NEXT
   { (char *) "journal_next", py_guestfs_journal_next, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_JOURNAL_OPEN
   { (char *) "journal_open", py_guestfs_journal_open, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_JOURNAL_SET_DATA_THRESHOLD
   { (char *) "journal_set_data_threshold", py_guestfs_journal_set_data_threshold, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_JOURNAL_SKIP
   { (char *) "journal_skip", py_guestfs_journal_skip, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_KILL_SUBPROCESS
   { (char *) "kill_subprocess", py_guestfs_kill_subprocess, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LAUNCH
   { (char *) "launch", py_guestfs_launch, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LCHOWN
   { (char *) "lchown", py_guestfs_lchown, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LDMTOOL_CREATE_ALL
   { (char *) "ldmtool_create_all", py_guestfs_ldmtool_create_all, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_DISKS
   { (char *) "ldmtool_diskgroup_disks", py_guestfs_ldmtool_diskgroup_disks, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_NAME
   { (char *) "ldmtool_diskgroup_name", py_guestfs_ldmtool_diskgroup_name, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_VOLUMES
   { (char *) "ldmtool_diskgroup_volumes", py_guestfs_ldmtool_diskgroup_volumes, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LDMTOOL_REMOVE_ALL
   { (char *) "ldmtool_remove_all", py_guestfs_ldmtool_remove_all, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LDMTOOL_SCAN
   { (char *) "ldmtool_scan", py_guestfs_ldmtool_scan, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LDMTOOL_SCAN_DEVICES
   { (char *) "ldmtool_scan_devices", py_guestfs_ldmtool_scan_devices, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_HINT
   { (char *) "ldmtool_volume_hint", py_guestfs_ldmtool_volume_hint, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_PARTITIONS
   { (char *) "ldmtool_volume_partitions", py_guestfs_ldmtool_volume_partitions, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_TYPE
   { (char *) "ldmtool_volume_type", py_guestfs_ldmtool_volume_type, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LGETXATTR
   { (char *) "lgetxattr", py_guestfs_lgetxattr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LGETXATTRS
   { (char *) "lgetxattrs", py_guestfs_lgetxattrs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LIST_9P
   { (char *) "list_9p", py_guestfs_list_9p, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LIST_DEVICES
   { (char *) "list_devices", py_guestfs_list_devices, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LIST_DISK_LABELS
   { (char *) "list_disk_labels", py_guestfs_list_disk_labels, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LIST_DM_DEVICES
   { (char *) "list_dm_devices", py_guestfs_list_dm_devices, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LIST_FILESYSTEMS
   { (char *) "list_filesystems", py_guestfs_list_filesystems, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LIST_LDM_PARTITIONS
   { (char *) "list_ldm_partitions", py_guestfs_list_ldm_partitions, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LIST_LDM_VOLUMES
   { (char *) "list_ldm_volumes", py_guestfs_list_ldm_volumes, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LIST_MD_DEVICES
   { (char *) "list_md_devices", py_guestfs_list_md_devices, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LIST_PARTITIONS
   { (char *) "list_partitions", py_guestfs_list_partitions, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LL
   { (char *) "ll", py_guestfs_ll, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LLZ
   { (char *) "llz", py_guestfs_llz, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LN
   { (char *) "ln", py_guestfs_ln, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LN_F
   { (char *) "ln_f", py_guestfs_ln_f, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LN_S
   { (char *) "ln_s", py_guestfs_ln_s, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LN_SF
   { (char *) "ln_sf", py_guestfs_ln_sf, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LREMOVEXATTR
   { (char *) "lremovexattr", py_guestfs_lremovexattr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LS
   { (char *) "ls", py_guestfs_ls, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LS0
   { (char *) "ls0", py_guestfs_ls0, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LSETXATTR
   { (char *) "lsetxattr", py_guestfs_lsetxattr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LSTAT
   { (char *) "lstat", py_guestfs_lstat, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LSTATLIST
   { (char *) "lstatlist", py_guestfs_lstatlist, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LSTATNS
   { (char *) "lstatns", py_guestfs_lstatns, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LSTATNSLIST
   { (char *) "lstatnslist", py_guestfs_lstatnslist, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LUKS_ADD_KEY
   { (char *) "luks_add_key", py_guestfs_luks_add_key, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LUKS_CLOSE
   { (char *) "luks_close", py_guestfs_luks_close, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LUKS_FORMAT
   { (char *) "luks_format", py_guestfs_luks_format, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LUKS_FORMAT_CIPHER
   { (char *) "luks_format_cipher", py_guestfs_luks_format_cipher, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LUKS_KILL_SLOT
   { (char *) "luks_kill_slot", py_guestfs_luks_kill_slot, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LUKS_OPEN
   { (char *) "luks_open", py_guestfs_luks_open, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LUKS_OPEN_RO
   { (char *) "luks_open_ro", py_guestfs_luks_open_ro, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVCREATE
   { (char *) "lvcreate", py_guestfs_lvcreate, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVCREATE_FREE
   { (char *) "lvcreate_free", py_guestfs_lvcreate_free, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVM_CANONICAL_LV_NAME
   { (char *) "lvm_canonical_lv_name", py_guestfs_lvm_canonical_lv_name, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVM_CLEAR_FILTER
   { (char *) "lvm_clear_filter", py_guestfs_lvm_clear_filter, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVM_REMOVE_ALL
   { (char *) "lvm_remove_all", py_guestfs_lvm_remove_all, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVM_SET_FILTER
   { (char *) "lvm_set_filter", py_guestfs_lvm_set_filter, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVREMOVE
   { (char *) "lvremove", py_guestfs_lvremove, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVRENAME
   { (char *) "lvrename", py_guestfs_lvrename, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVRESIZE
   { (char *) "lvresize", py_guestfs_lvresize, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVRESIZE_FREE
   { (char *) "lvresize_free", py_guestfs_lvresize_free, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVS
   { (char *) "lvs", py_guestfs_lvs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVS_FULL
   { (char *) "lvs_full", py_guestfs_lvs_full, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVUUID
   { (char *) "lvuuid", py_guestfs_lvuuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LXATTRLIST
   { (char *) "lxattrlist", py_guestfs_lxattrlist, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MAX_DISKS
   { (char *) "max_disks", py_guestfs_max_disks, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MD_CREATE
   { (char *) "md_create", py_guestfs_md_create, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MD_DETAIL
   { (char *) "md_detail", py_guestfs_md_detail, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MD_STAT
   { (char *) "md_stat", py_guestfs_md_stat, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MD_STOP
   { (char *) "md_stop", py_guestfs_md_stop, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKDIR
   { (char *) "mkdir", py_guestfs_mkdir, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKDIR_MODE
   { (char *) "mkdir_mode", py_guestfs_mkdir_mode, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKDIR_P
   { (char *) "mkdir_p", py_guestfs_mkdir_p, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKDTEMP
   { (char *) "mkdtemp", py_guestfs_mkdtemp, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKE2FS
   { (char *) "mke2fs", py_guestfs_mke2fs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKE2FS_J
   { (char *) "mke2fs_J", py_guestfs_mke2fs_J, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKE2FS_JL
   { (char *) "mke2fs_JL", py_guestfs_mke2fs_JL, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKE2FS_JU
   { (char *) "mke2fs_JU", py_guestfs_mke2fs_JU, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKE2JOURNAL
   { (char *) "mke2journal", py_guestfs_mke2journal, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKE2JOURNAL_L
   { (char *) "mke2journal_L", py_guestfs_mke2journal_L, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKE2JOURNAL_U
   { (char *) "mke2journal_U", py_guestfs_mke2journal_U, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKFIFO
   { (char *) "mkfifo", py_guestfs_mkfifo, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKFS
   { (char *) "mkfs", py_guestfs_mkfs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKFS_B
   { (char *) "mkfs_b", py_guestfs_mkfs_b, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKFS_BTRFS
   { (char *) "mkfs_btrfs", py_guestfs_mkfs_btrfs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKLOST_AND_FOUND
   { (char *) "mklost_and_found", py_guestfs_mklost_and_found, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKMOUNTPOINT
   { (char *) "mkmountpoint", py_guestfs_mkmountpoint, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKNOD
   { (char *) "mknod", py_guestfs_mknod, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKNOD_B
   { (char *) "mknod_b", py_guestfs_mknod_b, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKNOD_C
   { (char *) "mknod_c", py_guestfs_mknod_c, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKSWAP
   { (char *) "mkswap", py_guestfs_mkswap, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKSWAP_L
   { (char *) "mkswap_L", py_guestfs_mkswap_L, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKSWAP_U
   { (char *) "mkswap_U", py_guestfs_mkswap_U, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKSWAP_FILE
   { (char *) "mkswap_file", py_guestfs_mkswap_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKTEMP
   { (char *) "mktemp", py_guestfs_mktemp, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MODPROBE
   { (char *) "modprobe", py_guestfs_modprobe, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MOUNT
   { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MOUNT_9P
   { (char *) "mount_9p", py_guestfs_mount_9p, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MOUNT_LOCAL
   { (char *) "mount_local", py_guestfs_mount_local, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MOUNT_LOCAL_RUN
   { (char *) "mount_local_run", py_guestfs_mount_local_run, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MOUNT_LOOP
   { (char *) "mount_loop", py_guestfs_mount_loop, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MOUNT_OPTIONS
   { (char *) "mount_options", py_guestfs_mount_options, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MOUNT_RO
   { (char *) "mount_ro", py_guestfs_mount_ro, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MOUNT_VFS
   { (char *) "mount_vfs", py_guestfs_mount_vfs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MOUNTPOINTS
   { (char *) "mountpoints", py_guestfs_mountpoints, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MOUNTS
   { (char *) "mounts", py_guestfs_mounts, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MV
   { (char *) "mv", py_guestfs_mv, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_NR_DEVICES
   { (char *) "nr_devices", py_guestfs_nr_devices, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_NTFS_3G_PROBE
   { (char *) "ntfs_3g_probe", py_guestfs_ntfs_3g_probe, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_NTFSCLONE_IN
   { (char *) "ntfsclone_in", py_guestfs_ntfsclone_in, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_NTFSCLONE_OUT
   { (char *) "ntfsclone_out", py_guestfs_ntfsclone_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_NTFSFIX
   { (char *) "ntfsfix", py_guestfs_ntfsfix, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_NTFSRESIZE
   { (char *) "ntfsresize", py_guestfs_ntfsresize, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_NTFSRESIZE_SIZE
   { (char *) "ntfsresize_size", py_guestfs_ntfsresize_size, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PARSE_ENVIRONMENT
   { (char *) "parse_environment", py_guestfs_parse_environment, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PARSE_ENVIRONMENT_LIST
   { (char *) "parse_environment_list", py_guestfs_parse_environment_list, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_ADD
   { (char *) "part_add", py_guestfs_part_add, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_DEL
   { (char *) "part_del", py_guestfs_part_del, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_DISK
   { (char *) "part_disk", py_guestfs_part_disk, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_GET_BOOTABLE
   { (char *) "part_get_bootable", py_guestfs_part_get_bootable, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_GET_GPT_GUID
   { (char *) "part_get_gpt_guid", py_guestfs_part_get_gpt_guid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_GET_GPT_TYPE
   { (char *) "part_get_gpt_type", py_guestfs_part_get_gpt_type, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_GET_MBR_ID
   { (char *) "part_get_mbr_id", py_guestfs_part_get_mbr_id, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_GET_MBR_PART_TYPE
   { (char *) "part_get_mbr_part_type", py_guestfs_part_get_mbr_part_type, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_GET_NAME
   { (char *) "part_get_name", py_guestfs_part_get_name, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_GET_PARTTYPE
   { (char *) "part_get_parttype", py_guestfs_part_get_parttype, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_INIT
   { (char *) "part_init", py_guestfs_part_init, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_LIST
   { (char *) "part_list", py_guestfs_part_list, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_SET_BOOTABLE
   { (char *) "part_set_bootable", py_guestfs_part_set_bootable, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_SET_GPT_GUID
   { (char *) "part_set_gpt_guid", py_guestfs_part_set_gpt_guid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_SET_GPT_TYPE
   { (char *) "part_set_gpt_type", py_guestfs_part_set_gpt_type, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_SET_MBR_ID
   { (char *) "part_set_mbr_id", py_guestfs_part_set_mbr_id, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_SET_NAME
   { (char *) "part_set_name", py_guestfs_part_set_name, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_TO_DEV
   { (char *) "part_to_dev", py_guestfs_part_to_dev, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_TO_PARTNUM
   { (char *) "part_to_partnum", py_guestfs_part_to_partnum, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PING_DAEMON
   { (char *) "ping_daemon", py_guestfs_ping_daemon, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PREAD
   { (char *) "pread", py_guestfs_pread, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PREAD_DEVICE
   { (char *) "pread_device", py_guestfs_pread_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PVCHANGE_UUID
   { (char *) "pvchange_uuid", py_guestfs_pvchange_uuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PVCHANGE_UUID_ALL
   { (char *) "pvchange_uuid_all", py_guestfs_pvchange_uuid_all, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PVCREATE
   { (char *) "pvcreate", py_guestfs_pvcreate, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PVREMOVE
   { (char *) "pvremove", py_guestfs_pvremove, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PVRESIZE
   { (char *) "pvresize", py_guestfs_pvresize, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PVRESIZE_SIZE
   { (char *) "pvresize_size", py_guestfs_pvresize_size, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PVS
   { (char *) "pvs", py_guestfs_pvs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PVS_FULL
   { (char *) "pvs_full", py_guestfs_pvs_full, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PVUUID
   { (char *) "pvuuid", py_guestfs_pvuuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PWRITE
   { (char *) "pwrite", py_guestfs_pwrite, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PWRITE_DEVICE
   { (char *) "pwrite_device", py_guestfs_pwrite_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_READ_FILE
   { (char *) "read_file", py_guestfs_read_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_READ_LINES
   { (char *) "read_lines", py_guestfs_read_lines, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_READDIR
   { (char *) "readdir", py_guestfs_readdir, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_READLINK
   { (char *) "readlink", py_guestfs_readlink, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_READLINKLIST
   { (char *) "readlinklist", py_guestfs_readlinklist, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_REALPATH
   { (char *) "realpath", py_guestfs_realpath, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_REMOUNT
   { (char *) "remount", py_guestfs_remount, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_REMOVE_DRIVE
   { (char *) "remove_drive", py_guestfs_remove_drive, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_REMOVEXATTR
   { (char *) "removexattr", py_guestfs_removexattr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RENAME
   { (char *) "rename", py_guestfs_rename, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RESIZE2FS
   { (char *) "resize2fs", py_guestfs_resize2fs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RESIZE2FS_M
   { (char *) "resize2fs_M", py_guestfs_resize2fs_M, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RESIZE2FS_SIZE
   { (char *) "resize2fs_size", py_guestfs_resize2fs_size, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RM
   { (char *) "rm", py_guestfs_rm, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RM_F
   { (char *) "rm_f", py_guestfs_rm_f, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RM_RF
   { (char *) "rm_rf", py_guestfs_rm_rf, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RMDIR
   { (char *) "rmdir", py_guestfs_rmdir, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RMMOUNTPOINT
   { (char *) "rmmountpoint", py_guestfs_rmmountpoint, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RSYNC
   { (char *) "rsync", py_guestfs_rsync, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RSYNC_IN
   { (char *) "rsync_in", py_guestfs_rsync_in, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_RSYNC_OUT
   { (char *) "rsync_out", py_guestfs_rsync_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SCRUB_DEVICE
   { (char *) "scrub_device", py_guestfs_scrub_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SCRUB_FILE
   { (char *) "scrub_file", py_guestfs_scrub_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SCRUB_FREESPACE
   { (char *) "scrub_freespace", py_guestfs_scrub_freespace, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_APPEND
   { (char *) "set_append", py_guestfs_set_append, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_ATTACH_METHOD
   { (char *) "set_attach_method", py_guestfs_set_attach_method, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_AUTOSYNC
   { (char *) "set_autosync", py_guestfs_set_autosync, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_BACKEND
   { (char *) "set_backend", py_guestfs_set_backend, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_BACKEND_SETTING
   { (char *) "set_backend_setting", py_guestfs_set_backend_setting, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_BACKEND_SETTINGS
   { (char *) "set_backend_settings", py_guestfs_set_backend_settings, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_CACHEDIR
   { (char *) "set_cachedir", py_guestfs_set_cachedir, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_DIRECT
   { (char *) "set_direct", py_guestfs_set_direct, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_E2ATTRS
   { (char *) "set_e2attrs", py_guestfs_set_e2attrs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_E2GENERATION
   { (char *) "set_e2generation", py_guestfs_set_e2generation, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_E2LABEL
   { (char *) "set_e2label", py_guestfs_set_e2label, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_E2UUID
   { (char *) "set_e2uuid", py_guestfs_set_e2uuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_HV
   { (char *) "set_hv", py_guestfs_set_hv, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_LABEL
   { (char *) "set_label", py_guestfs_set_label, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_LIBVIRT_REQUESTED_CREDENTIAL
   { (char *) "set_libvirt_requested_credential", py_guestfs_set_libvirt_requested_credential, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_LIBVIRT_SUPPORTED_CREDENTIALS
   { (char *) "set_libvirt_supported_credentials", py_guestfs_set_libvirt_supported_credentials, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_MEMSIZE
   { (char *) "set_memsize", py_guestfs_set_memsize, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_NETWORK
   { (char *) "set_network", py_guestfs_set_network, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_PATH
   { (char *) "set_path", py_guestfs_set_path, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_PGROUP
   { (char *) "set_pgroup", py_guestfs_set_pgroup, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_PROGRAM
   { (char *) "set_program", py_guestfs_set_program, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_QEMU
   { (char *) "set_qemu", py_guestfs_set_qemu, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_RECOVERY_PROC
   { (char *) "set_recovery_proc", py_guestfs_set_recovery_proc, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_SELINUX
   { (char *) "set_selinux", py_guestfs_set_selinux, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_SMP
   { (char *) "set_smp", py_guestfs_set_smp, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_TMPDIR
   { (char *) "set_tmpdir", py_guestfs_set_tmpdir, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_TRACE
   { (char *) "set_trace", py_guestfs_set_trace, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_UUID
   { (char *) "set_uuid", py_guestfs_set_uuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_UUID_RANDOM
   { (char *) "set_uuid_random", py_guestfs_set_uuid_random, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SET_VERBOSE
   { (char *) "set_verbose", py_guestfs_set_verbose, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SETCON
   { (char *) "setcon", py_guestfs_setcon, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SETXATTR
   { (char *) "setxattr", py_guestfs_setxattr, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SFDISK
   { (char *) "sfdisk", py_guestfs_sfdisk, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SFDISKM
   { (char *) "sfdiskM", py_guestfs_sfdiskM, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SFDISK_N
   { (char *) "sfdisk_N", py_guestfs_sfdisk_N, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SFDISK_DISK_GEOMETRY
   { (char *) "sfdisk_disk_geometry", py_guestfs_sfdisk_disk_geometry, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SFDISK_KERNEL_GEOMETRY
   { (char *) "sfdisk_kernel_geometry", py_guestfs_sfdisk_kernel_geometry, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SFDISK_L
   { (char *) "sfdisk_l", py_guestfs_sfdisk_l, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SH
   { (char *) "sh", py_guestfs_sh, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SH_LINES
   { (char *) "sh_lines", py_guestfs_sh_lines, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SHUTDOWN
   { (char *) "shutdown", py_guestfs_shutdown, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SLEEP
   { (char *) "sleep", py_guestfs_sleep, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_STAT
   { (char *) "stat", py_guestfs_stat, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_STATNS
   { (char *) "statns", py_guestfs_statns, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_STATVFS
   { (char *) "statvfs", py_guestfs_statvfs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_STRINGS
   { (char *) "strings", py_guestfs_strings, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_STRINGS_E
   { (char *) "strings_e", py_guestfs_strings_e, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SWAPOFF_DEVICE
   { (char *) "swapoff_device", py_guestfs_swapoff_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SWAPOFF_FILE
   { (char *) "swapoff_file", py_guestfs_swapoff_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SWAPOFF_LABEL
   { (char *) "swapoff_label", py_guestfs_swapoff_label, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SWAPOFF_UUID
   { (char *) "swapoff_uuid", py_guestfs_swapoff_uuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SWAPON_DEVICE
   { (char *) "swapon_device", py_guestfs_swapon_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SWAPON_FILE
   { (char *) "swapon_file", py_guestfs_swapon_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SWAPON_LABEL
   { (char *) "swapon_label", py_guestfs_swapon_label, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SWAPON_UUID
   { (char *) "swapon_uuid", py_guestfs_swapon_uuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SYNC
   { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_SYSLINUX
   { (char *) "syslinux", py_guestfs_syslinux, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TAIL
   { (char *) "tail", py_guestfs_tail, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TAIL_N
   { (char *) "tail_n", py_guestfs_tail_n, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TAR_IN
   { (char *) "tar_in", py_guestfs_tar_in, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TAR_OUT
   { (char *) "tar_out", py_guestfs_tar_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TGZ_IN
   { (char *) "tgz_in", py_guestfs_tgz_in, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TGZ_OUT
   { (char *) "tgz_out", py_guestfs_tgz_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TOUCH
   { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TRUNCATE
   { (char *) "truncate", py_guestfs_truncate, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TRUNCATE_SIZE
   { (char *) "truncate_size", py_guestfs_truncate_size, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TUNE2FS
   { (char *) "tune2fs", py_guestfs_tune2fs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TUNE2FS_L
   { (char *) "tune2fs_l", py_guestfs_tune2fs_l, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TXZ_IN
   { (char *) "txz_in", py_guestfs_txz_in, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_TXZ_OUT
   { (char *) "txz_out", py_guestfs_txz_out, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_UMASK
   { (char *) "umask", py_guestfs_umask, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_UMOUNT
   { (char *) "umount", py_guestfs_umount, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_UMOUNT_ALL
   { (char *) "umount_all", py_guestfs_umount_all, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_UMOUNT_LOCAL
   { (char *) "umount_local", py_guestfs_umount_local, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_UPLOAD
   { (char *) "upload", py_guestfs_upload, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_UPLOAD_OFFSET
   { (char *) "upload_offset", py_guestfs_upload_offset, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_USER_CANCEL
   { (char *) "user_cancel", py_guestfs_user_cancel, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_UTIMENS
   { (char *) "utimens", py_guestfs_utimens, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_UTSNAME
   { (char *) "utsname", py_guestfs_utsname, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VERSION
   { (char *) "version", py_guestfs_version, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VFS_LABEL
   { (char *) "vfs_label", py_guestfs_vfs_label, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VFS_TYPE
   { (char *) "vfs_type", py_guestfs_vfs_type, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VFS_UUID
   { (char *) "vfs_uuid", py_guestfs_vfs_uuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VG_ACTIVATE
   { (char *) "vg_activate", py_guestfs_vg_activate, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VG_ACTIVATE_ALL
   { (char *) "vg_activate_all", py_guestfs_vg_activate_all, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGCHANGE_UUID
   { (char *) "vgchange_uuid", py_guestfs_vgchange_uuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGCHANGE_UUID_ALL
   { (char *) "vgchange_uuid_all", py_guestfs_vgchange_uuid_all, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGCREATE
   { (char *) "vgcreate", py_guestfs_vgcreate, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGLVUUIDS
   { (char *) "vglvuuids", py_guestfs_vglvuuids, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGMETA
   { (char *) "vgmeta", py_guestfs_vgmeta, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGPVUUIDS
   { (char *) "vgpvuuids", py_guestfs_vgpvuuids, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGREMOVE
   { (char *) "vgremove", py_guestfs_vgremove, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGRENAME
   { (char *) "vgrename", py_guestfs_vgrename, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGS
   { (char *) "vgs", py_guestfs_vgs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGS_FULL
   { (char *) "vgs_full", py_guestfs_vgs_full, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGSCAN
   { (char *) "vgscan", py_guestfs_vgscan, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VGUUID
   { (char *) "vguuid", py_guestfs_vguuid, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_WAIT_READY
   { (char *) "wait_ready", py_guestfs_wait_ready, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_WC_C
   { (char *) "wc_c", py_guestfs_wc_c, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_WC_L
   { (char *) "wc_l", py_guestfs_wc_l, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_WC_W
   { (char *) "wc_w", py_guestfs_wc_w, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_WIPEFS
   { (char *) "wipefs", py_guestfs_wipefs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_WRITE
   { (char *) "write", py_guestfs_write, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_WRITE_APPEND
   { (char *) "write_append", py_guestfs_write_append, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_WRITE_FILE
   { (char *) "write_file", py_guestfs_write_file, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_XFS_ADMIN
   { (char *) "xfs_admin", py_guestfs_xfs_admin, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_XFS_GROWFS
   { (char *) "xfs_growfs", py_guestfs_xfs_growfs, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_XFS_INFO
   { (char *) "xfs_info", py_guestfs_xfs_info, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_XFS_REPAIR
   { (char *) "xfs_repair", py_guestfs_xfs_repair, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZEGREP
   { (char *) "zegrep", py_guestfs_zegrep, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZEGREPI
   { (char *) "zegrepi", py_guestfs_zegrepi, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZERO
   { (char *) "zero", py_guestfs_zero, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZERO_DEVICE
   { (char *) "zero_device", py_guestfs_zero_device, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZERO_FREE_SPACE
   { (char *) "zero_free_space", py_guestfs_zero_free_space, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZEROFREE
   { (char *) "zerofree", py_guestfs_zerofree, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZFGREP
   { (char *) "zfgrep", py_guestfs_zfgrep, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZFGREPI
   { (char *) "zfgrepi", py_guestfs_zfgrepi, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZFILE
   { (char *) "zfile", py_guestfs_zfile, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZGREP
   { (char *) "zgrep", py_guestfs_zgrep, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_ZGREPI
   { (char *) "zgrepi", py_guestfs_zgrepi, METH_VARARGS, NULL },
+#endif
   { NULL, NULL, 0, NULL }
 };
 

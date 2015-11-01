@@ -182,7 +182,6 @@ EXTRA_DIST = \
 	contrib/intro/vmm-icons-t.png \
 	contrib/intro/vmm-icons.png \
 	contrib/intro/win7.xml \
-	contrib/make-check-on-installed.pl \
 	contrib/README \
 	contrib/visualize-alignment/.gitignore \
 	contrib/visualize-alignment/guestfish-add-mount.qtr \
@@ -376,6 +375,10 @@ install:
 	    exit 1; \
 	fi
 
+# Test installed packages.
+installcheck-local: installcheck.sh
+	$(builddir)/installcheck.sh
+
 # Manual pages in top level directory.
 
 man_MANS = \
@@ -422,6 +425,8 @@ clean-local:
 	-rm -rf tmp/libguestfs??????
 	-rm -rf tmp/guestfs.*
 	-rm -rf tmp/.guestfs-*
+	-rm -rf tmp/null.*
+	-find tmp -type s -delete
 
 # If you don't want to run all of the tests ('make check') then this
 # will just run libguestfs-test-tool for a quick check.  Note this
@@ -602,6 +607,8 @@ help:
 	@echo
 	@echo "make check-all                    Runs all 'check*' rules."
 	@echo "make check-release                Runs 'check*' rules required for release."
+	@echo
+	@echo "make installcheck                 Test installed libguestfs packages."
 	@echo
 	@echo "make syntax-check -j1 -k          Check syntax and style problems in the code."
 	@echo "make print-subdirs                Print subdirectories."

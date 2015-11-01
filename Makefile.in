@@ -339,8 +339,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = php/extension/php-for-tests.sh pick-guests.pl \
-	podwrapper.pl run \
+CONFIG_CLEAN_FILES = installcheck.sh php/extension/php-for-tests.sh \
+	pick-guests.pl podwrapper.pl run \
 	builder/test-config/virt-builder/repos.d/test-index.conf \
 	builder/test-website/virt-builder/repos.d/libguestfs.conf \
 	ruby/ext/guestfs/extconf.rb
@@ -451,8 +451,9 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	dib get-kernel resize sparsify sysprep v2v v2v/test-harness \
 	tools fuse po-docs
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/pick-guests.pl.in $(srcdir)/podwrapper.pl.in \
-	$(srcdir)/run.in $(top_srcdir)/build-aux/compile \
+	$(srcdir)/installcheck.sh.in $(srcdir)/pick-guests.pl.in \
+	$(srcdir)/podwrapper.pl.in $(srcdir)/run.in \
+	$(top_srcdir)/build-aux/compile \
 	$(top_srcdir)/build-aux/config.guess \
 	$(top_srcdir)/build-aux/config.rpath \
 	$(top_srcdir)/build-aux/config.sub \
@@ -1673,7 +1674,6 @@ EXTRA_DIST = \
 	contrib/intro/vmm-icons-t.png \
 	contrib/intro/vmm-icons.png \
 	contrib/intro/win7.xml \
-	contrib/make-check-on-installed.pl \
 	contrib/README \
 	contrib/visualize-alignment/.gitignore \
 	contrib/visualize-alignment/guestfish-add-mount.qtr \
@@ -1844,6 +1844,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+installcheck.sh: $(top_builddir)/config.status $(srcdir)/installcheck.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 php/extension/php-for-tests.sh: $(top_builddir)/config.status $(top_srcdir)/php/extension/php-for-tests.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 pick-guests.pl: $(top_builddir)/config.status $(srcdir)/pick-guests.pl.in
@@ -2294,7 +2296,7 @@ install-ps: install-ps-recursive
 
 install-ps-am:
 
-installcheck-am:
+installcheck-am: installcheck-local
 
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -2332,11 +2334,11 @@ uninstall-man: uninstall-man1
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-man install-man1 \
 	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am uninstall-man \
-	uninstall-man1
+	install-strip installcheck installcheck-am installcheck-local \
+	installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-man uninstall-man1
 
 .PRECIOUS: Makefile
 
@@ -2413,6 +2415,10 @@ install:
 	    exit 1; \
 	fi
 
+# Test installed packages.
+installcheck-local: installcheck.sh
+	$(builddir)/installcheck.sh
+
 guestfs-release-notes.1 guestfs-release-notes.txt $(top_builddir)/html/guestfs-release-notes.1.html: stamp-guestfs-release-notes.pod
 
 stamp-guestfs-release-notes.pod: guestfs-release-notes.pod
@@ -2436,6 +2442,8 @@ clean-local:
 	-rm -rf tmp/libguestfs??????
 	-rm -rf tmp/guestfs.*
 	-rm -rf tmp/.guestfs-*
+	-rm -rf tmp/null.*
+	-find tmp -type s -delete
 
 # If you don't want to run all of the tests ('make check') then this
 # will just run libguestfs-test-tool for a quick check.  Note this
@@ -2599,6 +2607,8 @@ help:
 	@echo
 	@echo "make check-all                    Runs all 'check*' rules."
 	@echo "make check-release                Runs 'check*' rules required for release."
+	@echo
+	@echo "make installcheck                 Test installed libguestfs packages."
 	@echo
 	@echo "make syntax-check -j1 -k          Check syntax and style problems in the code."
 	@echo "make print-subdirs                Print subdirectories."

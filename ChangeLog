@@ -1,3 +1,503 @@
+commit 088a39230ad1afea649b3d52e8b437d2ddf4ac8e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 6 23:19:53 2015 +0100
+
+    Version 1.30.3.
+
+commit a7664d028a6c0df38526bb82f90e3cefb882263c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 5 22:00:13 2015 +0100
+
+    clean: Remove null.* and sockets from builddir tmp/ subdirectory.
+    
+    (cherry picked from commit 540ce6a4e52464843db6c8852307689ddd98e251)
+
+commit ac9fbb9855ad0ed8bb4bd315af8efa02d9cea3f8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 5 14:39:33 2015 +0200
+
+    p2v: fix mode for gtk_label_set_line_wrap_mode
+    
+    Accoding to its documentation [1], it takes as second parameter a
+    PangoWrapMode and not a GtkWrapMode.  While the change should reflect
+    the actual value intended, it should slightly change the label wrap
+    mode: GTK_WRAP_WORD is 2, which corresponds (as int value) to
+    PANGO_WRAP_WORD_CHAR.
+    
+    [1] https://developer.gnome.org/gtk2/stable/GtkLabel.html#gtk-label-set-line-wrap-mode
+    
+    (cherry picked from commit 7c1bb1b40c2a93f8d33ffa3d4d421837c379b8ed)
+
+commit 978c01e055342c4c8ba17574150b8d3e018bace1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 2 15:22:20 2015 +0100
+
+    launch: Change comment.
+    
+    Making -machine configurable would be a really bad idea.
+    
+    (cherry picked from commit 45cc5489b238d9abe2c08e3fcf222700b9287b28)
+
+commit 2e09b96c498f8bdfe765709b380c379f6d70fc7c
+Author: Cédric Bosdonnat <cbosdonnat@suse.com>
+Date:   Fri Oct 2 18:16:48 2015 +0200
+
+    customize: remove zypper's gpg keys auto-import
+    
+    This option was considered unsecure, found a fix on the generated
+    opensuse images instead.
+    
+    (cherry picked from commit bc8e1ff9ae17f623c8518847b8011c0262ca30cb)
+
+commit 787d48f664795a5bb225364b60571c9bb84891f4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 23 14:46:15 2015 +0100
+
+    build: Remove ./configure --enable-valgrind-daemon.
+    
+    If you've ever tried to use this option, you'll know that it didn't
+    work well.  It broke random things (probably RHBZ#1020216, definitely
+    RHBZ#1023630), and caused random failures generally, while often not
+    actually failing when valgrind itself found problems.
+    
+    (cherry picked from commit 7bc6fb245183c040bbda222b92fab495cc951052)
+
+commit 54e1e949fc9a37673a08ccd69787365262e4e8d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 1 14:17:52 2015 +0100
+
+    ocaml: Conditionally remove bindtests.* when doing 'make install'.
+    
+    Commit f6a790b67d7c8f79532f61d20d11ec8d3a4e003b changed the Makefile
+    so it only builds the tests when you run 'make check'.
+    
+    If you didn't run 'make check' then (in particular) bindtests won't be
+    built, and so when you install it cannot be removed.
+    
+    The simple fix for this is to make the removal of bindtests.*
+    conditional.
+    
+    This fixes commit f6a790b67d7c8f79532f61d20d11ec8d3a4e003b.
+    
+    (cherry picked from commit 4414de775ad11624a6263bdbaa200fe5695caebb)
+
+commit 1ac91b728025eb64a16d38ad15a4bbd99402d176
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 1 14:11:40 2015 +0100
+
+    Add missing generated files to generator_built and EXTRA_DIST.
+    
+    Use the generator_built variable to list any files which are built by
+    the generator.  This ensures they get automatically rebuilt.
+    
+    Three files were missing from EXTRA_DIST, so they were not included in
+    the tarball, meaning you would have needed OCaml to build from the
+    tarball.  You would have seen this when building:
+    
+      cd .. && /builddir/build/BUILD/libguestfs-1.31.9/generator/generator
+      written gobject/docs/guestfs-title.sgml
+      written customize/customize-synopsis.pod
+      written customize/customize-options.pod
+      generated 476921 lines of code
+    
+    (cherry picked from commit 2c519cf055cd2f5eb5de2b680e6571a5754e9b8e)
+
+commit 541cbd261a682511aede9c8c3c48df08a8c4be07
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 30 10:01:00 2015 +0100
+
+    ocaml: Use ocamlfind to run ocamldoc.
+    
+    Using 'ocamlfind ocamldoc' is much faster than running 'ocamldoc'
+    directly, because ocamlfind will run the native code program
+    'ocamldoc.opt' if it is available.
+    
+    This change approximately halves the time taken to compile the ocaml
+    bindings.
+    
+    (cherry picked from commit b482593a07a120e81f3a76e200d77ee56aeaffa9)
+
+commit 01ee71bbf9b141d047f10a62860fd06efe06866e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 30 12:06:50 2015 +0100
+
+    daemon: Compile stubs.c first.
+    
+    This shaves about 20% off the compile time for the daemon subdirectory.
+    
+    See also:
+    https://rwmj.wordpress.com/2015/09/30/make-and-queuing-theory/#content
+    
+    (cherry picked from commit 84598ef6f5024349033d03695f56d9737ce6ddc8)
+
+commit 2514e0990a439c3a945659847555903069a8f31b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 29 22:39:23 2015 +0100
+
+    java: Only build the tests when running 'make check'.
+    
+    Make the tests 'check_DATA' so they only get built when running the
+    tests.
+    
+    (cherry picked from commit 538c5d5eb735b39a754f4d27989e5996c8e0cf48)
+
+commit 04197bcd9edb71379b18801da9cb2af516ef0861
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 29 22:28:28 2015 +0100
+
+    ocaml: Only build the tests when running 'make check'.
+    
+    Make the tests 'check_DATA' so they only get built when running the
+    tests.  This saves a couple of seconds on the build time.
+    
+    (cherry picked from commit f6a790b67d7c8f79532f61d20d11ec8d3a4e003b)
+
+commit 54bd309d73a1c8b1dbc7d1e0b122eea0039cb21b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 29 22:44:24 2015 +0100
+
+    haskell: Remove whitespace in Makefile.am.
+    
+    (cherry picked from commit 8571c1298abb0edf09cee7914fe934c28cbc8e4f)
+
+commit 160cb1f481db5f788503ad0ea89b341a65218311
+Author: Cédric Bosdonnat <cbosdonnat@suse.com>
+Date:   Tue Sep 29 15:59:35 2015 +0200
+
+    customize: get zypper to eat licenses and gpg keys
+    
+    Without these flags --install will most likely fail as the GPG key
+    may no be imported in the guest image.
+    
+    (cherry picked from commit 66efad41724c6819f88efb47562c8715c3718df9)
+
+commit 6afe6e7e1587201abdc68869e335bb2264673cd8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 29 12:16:17 2015 +0100
+
+    copy-in/copy-out: Capture errors from tar subprocess (RHBZ#1267032).
+    
+    Modify the copy-in/copy-out APIs to use the new guestfs_int_cmd_pipe
+    internal API.
+    
+    This new API allows us to capture the stderr from the tar subprocess
+    if it fails, fixing RHBZ#1267032.  The user will now see errors like
+    this:
+    
+    $ guestfish -N fs -m /dev/sda1 copy-in '/tmp/d/*' / : ll /
+    libguestfs: error: tar subprocess failed: tar: *: Cannot stat: No such file or directory
+    tar: Exiting with failure status due to previous errors
+    
+    (cherry picked from commit bbc4a649b4d45f098acb1aab2bc7df75a85e8906)
+
+commit df94ee4aa26ff10e2715bc7e18352dafcf41139b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 29 12:10:36 2015 +0100
+
+    cmd: New internal API for read/writing to a subprocess via a pipe.
+    
+    Roughly equivalent to popen(...,"r"|"w") the new internal API allows
+    you to run a subprocess and either read its stdout, or write to its
+    stdin.
+    
+    (cherry picked from commit e98bb8692929a037f3452686719504aea31f311d)
+
+commit 09cc4fcdb1cf83d6b2f92bbe07d9438588001b56
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 29 11:34:19 2015 +0100
+
+    cmd: Move all the common processing code for running the child into a subfunction.
+    
+    Anything that doesn't involve pipes [parent-child communication] is
+    moved into the run_child function, so we can reuse the same code when
+    writing the new pipe APIs (see following commit).  Anything involving
+    setting up pipes stays in the existing run_command function.
+    
+    This is just refactoring.
+    
+    (cherry picked from commit 2fc1e1462576125c7c315a11b220d541702dc11b)
+
+commit 9133a01edbd593accd8c44a5f809532831f2c2d3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 29 12:10:02 2015 +0100
+
+    lib: Move read_whole_file function into separate library.
+    
+    Allow this useful function to be called from elsewhere.
+    
+    This commit is almost, but not completely refactoring.  I made a minor
+    change to the function so that it \0-terminates the returned data,
+    which is convenient for some callers.
+    
+    (cherry picked from commit 60aa4238c40519512cc4767f394201699042bf66)
+
+commit 95995192cc06c11f30b620b81aeee9818ef23ca6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 29 11:16:38 2015 +0100
+
+    lib: Whitespace cleanups.
+    
+    (cherry picked from commit 73928e9e3566faedc5f63718ca1bcd1c81628592)
+
+commit 94ebc04396e1568f33584a0d2d8f43f0edaa8a0e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 29 11:06:10 2015 +0100
+
+    Revert "cmd: add a way to run (and wait) asynchronously commands"
+    
+    This reverts commit c5d3d198dcbceac928f430e2a9450ca58d6c0890.
+    
+    (cherry picked from commit 1b6f0daa9ae7fcc94e389232d0c397816cda973d)
+
+commit 7bbbe34c6ce55558e7f9e680815003a09d5b52da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 29 11:05:07 2015 +0100
+
+    Revert "cmd: add the possibility to get a fd to the process stdin"
+    
+    This reverts commit db055262d4a859cf5d38fef235a117e1fd0b7aff.
+    
+    (cherry picked from commit 3c27f3d91e1566854747bbe844186783fc84f3a8)
+
+commit 9f13751836a1b585137c14c64a975f55e9041dc7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 25 20:24:21 2015 +0100
+
+    v2v: Further information on using ovftool to create OVA files.
+    
+    https://github.com/libguestfs/libguestfs/commit/c9291a91b05a7cae02b09a7891f195d15e4672d9#commitcomment-13440884
+    
+    Thanks: GitHub user https://github.com/angystardust
+    (cherry picked from commit 578619171845a7ef536d34e74fd4e4933000c179)
+
+commit acacc3fe0769bbc61d9966118d51e014594ff80d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 25 13:41:27 2015 +0100
+
+    v2v: Update /etc/sysconfig/kernel DEFAULTKERNEL (RHBZ#1176801).
+    
+    (cherry picked from commit f37d363f1861301a0fee38785e1c7be3f75c3807)
+
+commit f3a52b1aeaced234c06d099b01b9b92477f7245f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 25 10:36:36 2015 +0100
+
+    v2v: Mention ovftool in the man page as a way to create OVA files.
+    
+    (cherry picked from commit c9291a91b05a7cae02b09a7891f195d15e4672d9)
+
+commit dd1b558f8141749f8b4bfbc67646a2d657bb2fea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 22 14:16:54 2015 +0100
+
+    installcheck: Use 'make check -k' option.
+    
+    Run all the tests, even if some of them fail, so you can easily see
+    the complete list of failures.  This still exits with an error if any
+    test fails.
+    
+    (cherry picked from commit 2d1d485265e9fa8a12d4681d4a16eae99927ee8e)
+
+commit 02edd9f295c31a23af29adc8a3000b4e61600123
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 18 17:31:21 2015 +0100
+
+    Remove make-check-on-installed.pl from EXTRA_DIST.
+    
+    Removed in commit f2540d68e4e62c8cf90ac501b378a4e9a2ba89e5.
+    
+    (cherry picked from commit 3fa674df5f613e851138133a01e865731bc713bf)
+
+commit 0f73257c35a8f67dd16a3ca3e31c7740cd5ab502
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 18 14:59:09 2015 +0100
+
+    configure: Require OCaml and findlib if we need to run the generator.
+    
+    When building from git, you need OCaml to compile the generator to
+    build the generated files.  Previously configure didn't detect that
+    situation, resulting in failed builds.  This commit causes the
+    configure script to error out if the generated files are not present
+    and OCaml is not installed.
+    
+    Note that you can still build without OCaml, if you get the generated
+    files from somewhere else.  The source tarballs distributed on the
+    website contain the generated files.
+    
+    (cherry picked from commit dd61872582a03cfba36d0093596fd935965e30f1)
+
+commit ab31a05c01c962570df05bae6d7b8abf81d57f1f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 18 14:10:00 2015 +0100
+
+    v2v: documentation: Add link to import-to-ovirt.pl script.
+    
+    (cherry picked from commit bc0ea5958731adb5ec526d2b2211b417cb25c22e)
+
+commit b31a272423a011ba6feb139364216a1584ce87c9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 16 16:26:34 2015 +0100
+
+    v2v: documentation: Add 'OTHER TOOLS' section.
+    
+    This currently contains just a link to rhevm-image-uploader.
+    
+    (cherry picked from commit dda1a7c37c51029c445977e80df99d5b9fa7979f)
+
+commit 0db05e89482e3671ec16525e21bd05842e8162bc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Sep 13 13:45:32 2015 +0100
+
+    python: Set program name to the true name instead of 'python'.
+    
+    As in commit e102bcf3cfcbcb2b47ad88334f03d5abf636f1e5 (for Perl), any
+    Python program has the handle program name field set to 'python'.  Set
+    it to the true name (derived from sys.argv[0]).
+    
+    (cherry picked from commit 38be2da9bec9311c268d48c385cafa6049f67434)
+
+commit cbb582ab17824e6bf1e7fffb6b5db43b1818aad7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 15 14:51:09 2015 +0100
+
+    python: Allow bindings to be compiled with different version of libguestfs (RHBZ#1262983).
+    
+    When compiling the libguestfs bindings as a pip module, it's helpful
+    if you can compile the bindings with a different version of libguestfs
+    (eg. installed 1.28, pip module 1.30).
+    
+    That broke the previous assumption that we were always compiling
+    against precisely the same version of libguestfs (which made sense
+    because the python bindings are part of the libguestfs source tree).
+    
+    Python distutils has no way to check a C library to find out if
+    functions are defined.  Therefore we have to rely on GUESTFS_HAVE_*
+    macros from <guestfs.h>.
+    
+    (cherry picked from commit bb7d088edaa2ea3a664ae703e002f6297dd1844f)
+
+commit bca8ce4c17561b00a55302d9cb1a5862fa24388c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 15 14:41:04 2015 +0100
+
+    header: Define GUESTFS_HAVE_STRUCT_* for each struct defined in the header.
+    
+    (cherry picked from commit ac5b3a050dbbf85b1430ba81a6e44ad6c08efa1f)
+
+commit 2b919c8b624cba7ae24e8c87f429d4c4d7ef9853
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 15 14:36:48 2015 +0100
+
+    header: Define GUESTFS_HAVE_* for every function.
+    
+    Previously we only defined GUESTFS_HAVE_* macros for functions that
+    were not deprecated, test or debug functions.  The reasoning for that
+    is given in this commit message [note that 'LIBGUESTFS_HAVE_' is the
+    old/deprecated macro]:
+    
+      commit 2d8fd7dacd77361bc385be42112289faafb5c60d
+      Author: Richard Jones <rjones@redhat.com>
+      Date:   Thu Sep 2 22:45:54 2010 +0100
+    
+        Define LIBGUESTFS_HAVE_<shortname> for C API functions.
+    
+        The actions each have a corresponding define, eg:
+    
+          #define LIBGUESTFS_HAVE_VGUUID 1
+          extern char *guestfs_vguuid (guestfs_h *g, const char *vgname);
+    
+        However functions which are for testing, debugging or deprecated do
+        not have the corresponding define.  Also a few functions are so
+        basic (eg. guestfs_create) that there is no point defining a symbol
+        for them.
+    
+    This wasn't in fact carried through very consistently, since when we
+    replaced s/LIBGUESTFS_HAVE_/GUESTFS_HAVE_/, we kept the old
+    LIBGUESTFS_HAVE_* macros, but defined them for every function.  Oops.
+    
+    This commit defines GUESTFS_HAVE_* for every function in <guestfs.h>,
+    making it easier to write the Python language bindings (see following
+    commits).
+    
+    (cherry picked from commit a17627cdd2f06a65d69889fa0289531caf3b9d23)
+
+commit 67d47dcd85ea1c9c91077287a139bea247552000
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 15 12:26:49 2015 +0100
+
+    Add 'make installcheck' rule to test installed packages.
+    
+    Allow the tests to be run on the installed libguestfs.so library and
+    on installed programs (but not installed language bindings, yet).
+    
+    To run the tests, you have to have a copy of the libguestfs source
+    tree with exactly the same version as the installed libguestfs.  You
+    have to build the libguestfs source tree.  Then you do:
+    
+      make installcheck
+    
+    I investigated making automake 'make installcheck' work, but it's
+    basically broken (no surprise there).
+    
+    This is derived from the old 'make-check-on-installed.pl'
+    script (which is also removed in this patch).
+    
+    (cherry picked from commit f2540d68e4e62c8cf90ac501b378a4e9a2ba89e5)
+
+commit a19810a3ee07188785f60e5461c7ba10a7c45898
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 15 10:19:58 2015 +0200
+
+    daemon: initrd: print return value from failing process
+    
+    If either zcat or cpio fails when spawned in initrd-list, pclose will
+    return the actual return value of it, but reply_with_perror still uses
+    errno regardless; thus, the reported error is:
+    
+      libguestfs: error: initrd_list: pclose: Success
+    
+    which is not much helpful.
+    
+    Instead, when pclose returns > 0, extract the actual return value of the
+    subprocess, and print that. Thus now we get for example:
+    
+      libguestfs: error: initrd_list: pclose: command failed with return code 1
+    
+    (cherry picked from commit 59a9101e44f727aef0ffdd11d3270031113baa11)
+
+commit d0824bd258a82abac5c22c3b1e565438e1467964
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Sep 13 13:45:32 2015 +0100
+
+    perl: Set program name to the true name instead of 'perl'.
+    
+    Currently any Perl program has the handle program name field set
+    to 'perl'.  Set it to the true name (derived from $0).
+    
+    (cherry picked from commit e102bcf3cfcbcb2b47ad88334f03d5abf636f1e5)
+
+commit b6bfe8ce7002c43d96a367c806b1852234ac1010
+Author: Shahar Lev <shahar@stratoscale.com>
+Date:   Sat Sep 12 17:52:55 2015 +0300
+
+    v2v: fix provides list whitespace trim
+    
+    Tabs should not be doubly-escaped in regexp.
+    
+    Signed-off-by: Shahar Lev <shahar@stratoscale.com>
+    (cherry picked from commit 1b856a20bae3b3322e66bb74b60e4b360112dad5)
+
+commit 876a721337c18e49ffa42490e0e1f756f7fc5371
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 10 23:06:20 2015 +0100
+
+    launch: libvirt: Better error when bridge / virbr0 doesn't exist (RHBZ#1262127).
+    
+    The current diagnostic is terrible.  This one tells the user how to
+    diagnose and fix the problem.
+    
+    (cherry picked from commit edcd02a965ae6675c0ee9ecd8d98a1a641c6ef60)
+
 commit 84238215c6ab29f858d086179100b34987d4d8e5
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Sep 8 15:45:45 2015 +0100

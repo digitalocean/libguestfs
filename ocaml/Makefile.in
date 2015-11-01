@@ -149,7 +149,8 @@ host_triplet = @host@
 # Note that both calls to ocamlmklib below will create
 # 'libmlguestfs.a' and if run at the same time, they will stomp on or
 # corrupt each others copy.  Hence we have to serialize the calls.
-@HAVE_OCAML_TRUE@am__append_2 = stamp-mlguestfs $(noinst_DATA)
+@HAVE_OCAML_TRUE@am__append_2 = stamp-mlguestfs $(noinst_DATA) \
+@HAVE_OCAML_TRUE@	$(check_DATA)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = guestfs.cmx
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@am__append_4 = html/index.html
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_5 = \
@@ -1549,8 +1550,7 @@ CLEANFILES = *.annot *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so \
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@noinst_DATA = mlguestfs.cma META $(am__append_1) \
-@HAVE_OCAML_TRUE@	$(am__append_4) bindtests.bc \
-@HAVE_OCAML_TRUE@	$(test_progs_all) $(am__append_8)
+@HAVE_OCAML_TRUE@	$(am__append_4)
 
 # Build the C part into a library, so that automake handles the C
 # compilation step for us.  Note that we don't directly use this
@@ -1595,6 +1595,8 @@ CLEANFILES = *.annot *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so \
 @HAVE_OCAML_TRUE@	$(am__append_6)
 @HAVE_OCAML_TRUE@test_progs_all = $(test_progs_bc) $(am__append_7)
 @HAVE_OCAML_TRUE@TESTS = run-bindtests $(test_progs_all)
+@HAVE_OCAML_TRUE@check_DATA = bindtests.bc $(test_progs_all) \
+@HAVE_OCAML_TRUE@	$(am__append_8)
 @HAVE_OCAML_TRUE@SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly
 
 # Do the installation by hand, because we want to run ocamlfind.
@@ -1927,6 +1929,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_DATA)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(LIBRARIES) $(DATA)
@@ -2102,7 +2105,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	touch $@
 
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@html/index.html: $(srcdir)/guestfs.mli $(srcdir)/guestfs.ml
-@HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@	-$(OCAMLDOC) -d html -html $^
+@HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@	-$(OCAMLFIND) ocamldoc -d html -html $^
 
 @HAVE_OCAML_TRUE@%.bc: %.cmo mlguestfs.cma
 @HAVE_OCAML_TRUE@	$(top_builddir)/libtool -dlopen $(top_builddir)/src/.libs/libguestfs.la --mode=execute \
@@ -2146,7 +2149,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
 @HAVE_OCAML_TRUE@	  guestfs \
 @HAVE_OCAML_TRUE@	  $(data_hook_files)
-@HAVE_OCAML_TRUE@	rm $(DESTDIR)$(OCAMLLIB)/guestfs/bindtests.*
+@HAVE_OCAML_TRUE@	rm -f $(DESTDIR)$(OCAMLLIB)/guestfs/bindtests.*
 @HAVE_OCAML_TRUE@	rm $(DESTDIR)$(OCAMLLIB)/guestfs/libguestfsocaml.a
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

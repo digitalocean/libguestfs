@@ -1065,6 +1065,25 @@ VM context menu, or from the File menu).  Either "Folder of files" (OVF) or
 files are really just uncompressed tar files, so you can use commands like
 C<tar tf VM.ova> to view their contents.
 
+=head3 Create OVA with ovftool
+
+You can also use VMware's proprietary C<ovftool>:
+
+ ovftool --noSSLVerify \
+   vi://USER:PASSWORD@esxi.example.com/VM \
+   VM.ova
+
+To connect to vCenter:
+
+ ovftool  --noSSLVerify \
+   vi://USER:PASSWORD@vcenter.example.com/DATACENTER-NAME/vm/VM \
+   VM.ova
+
+For Active Directory-aware authentication, you have to express the C<@>
+character in the form of its ascii hex-code (C<%5c>):
+
+ vi://DOMAIN%5cUSER:PASSWORD@...
+
 =head2 OVA: IMPORTING A GUEST
 
 To import an OVA file called F<VM.ova>, do;
@@ -1596,11 +1615,34 @@ See L<ENABLING VIRTIO>.
 Опис інших змінних середовища наведено у розділі L<guestfs(3)/ENVIRONMENT
 VARIABLES>.
 
+=head1 OTHER TOOLS
+
+=over 4
+
+=item L<engine-image-uploader(8)>
+
+Variously called C<engine-image-uploader>, C<ovirt-image-uploader> or
+C<rhevm-image-uploader>, this tool allows you to copy a guest from one oVirt
+or RHEV Export Storage Domain to another.  It only permits importing a guest
+that was previously exported from another oVirt/RHEV instance.
+
+=item L<import-to-ovirt.pl|http://git.annexia.org/?p=import-to-ovirt.git>
+
+This script can be used to import guests that already run on KVM to oVirt or
+RHEV.  For more information, see this blog posting by the author of
+virt-v2v:
+
+L<https://rwmj.wordpress.com/2015/09/18/importing-kvm-guests-to-ovirt-or-rhev/#content>
+
+=back
+
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<virt-p2v(1)>, L<virt-customize(1)>, L<virt-df(1)>, L<virt-filesystems(1)>,
 L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<guestfs(3)>, L<guestfish(1)>,
 L<qemu-img(1)>, L<fstrim(8)>, L<virt-v2v-test-harness(1)>,
+L<engine-image-uploader(8)>,
+L<import-to-ovirt.pl|http://git.annexia.org/?p=import-to-ovirt.git>,
 L<http://libguestfs.org/>.
 
 =head1 АВТОРИ

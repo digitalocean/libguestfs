@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2012 Red Hat Inc.
+# Copyright (C) 2012-2015 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1430,6 +1430,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+generator_built = guestfs-title.sgml
 
 # The name of the module, e.g. 'glib'.
 DOC_MODULE = guestfs
@@ -1527,7 +1528,7 @@ SETUP_FILES = \
 
 # Other files to distribute
 # e.g. EXTRA_DIST += version.xml.in
-EXTRA_DIST = $(HTML_IMAGES) $(SETUP_FILES)
+EXTRA_DIST = $(HTML_IMAGES) $(SETUP_FILES) $(generator_built)
 DOC_STAMPS = setup-build.stamp scan-build.stamp tmpl-build.stamp sgml-build.stamp \
 	html-build.stamp pdf-build.stamp \
 	tmpl.stamp sgml.stamp html.stamp pdf.stamp

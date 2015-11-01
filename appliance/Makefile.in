@@ -144,7 +144,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@VALGRIND_DAEMON_TRUE@am__append_1 = -DVALGRIND_DAEMON=1
 subdir = appliance
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1465,7 +1464,6 @@ top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	99-guestfs-serial.rules \
 	excludefiles.in \
-	guestfsd.suppressions \
 	guestfs_lvm_conf.aug \
 	guestfs_shadow.aug \
 	hostfiles.in \
@@ -1487,8 +1485,7 @@ superminfs_DATA = \
 	supermin.d/packages \
 	supermin.d/udev-rules.tar.gz
 
-PACKAGELIST_CPP_FLAGS = -D$(DISTRO)=1 \
-	-DEXTRA_PACKAGES="$(EXTRA_PACKAGES)" $(am__append_1)
+PACKAGELIST_CPP_FLAGS = -D$(DISTRO)=1 -DEXTRA_PACKAGES="$(EXTRA_PACKAGES)"
 
 # If installing the daemon, install the udev rules too.
 @INSTALL_DAEMON_TRUE@udevrulesdir = /lib/udev/rules.d
@@ -1917,12 +1914,11 @@ packagelist: packagelist.in Makefile
 	cmp -s $@ $@-t || mv $@-t $@
 	rm -f $@-t
 
-supermin.d/daemon.tar.gz: ../daemon/guestfsd guestfsd.suppressions guestfs_lvm_conf.aug guestfs_shadow.aug
+supermin.d/daemon.tar.gz: ../daemon/guestfsd guestfs_lvm_conf.aug guestfs_shadow.aug
 	rm -f $@ $@-t
 	rm -rf tmp-d
 	mkdir -p tmp-d$(DAEMON_SUPERMIN_DIR) tmp-d/etc tmp-d/usr/share/guestfs
 	ln ../daemon/guestfsd tmp-d$(DAEMON_SUPERMIN_DIR)/guestfsd
-	ln $(srcdir)/guestfsd.suppressions tmp-d/etc/guestfsd.suppressions
 	ln $(srcdir)/guestfs_lvm_conf.aug tmp-d/usr/share/guestfs/guestfs_lvm_conf.aug
 	ln $(srcdir)/guestfs_shadow.aug tmp-d/usr/share/guestfs/guestfs_shadow.aug
 	( cd tmp-d && tar zcf - * ) > $@-t

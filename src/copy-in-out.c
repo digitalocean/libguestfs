@@ -36,7 +36,8 @@
 static int split_path (guestfs_h *g, char *buf, size_t buf_size, const char *path, const char **dirname, const char **basename);
 
 int
-guestfs_impl_copy_in (guestfs_h *g, const char *localpath, const char *remotedir)
+guestfs_impl_copy_in (guestfs_h *g,
+                      const char *localpath, const char *remotedir)
 {
   CLEANUP_CMD_CLOSE struct command *cmd = guestfs_int_new_command (g);
   int fd;
@@ -67,8 +68,10 @@ guestfs_impl_copy_in (guestfs_h *g, const char *localpath, const char *remotedir
   guestfs_int_cmd_add_arg (cmd, "-");
   guestfs_int_cmd_add_arg (cmd, basename);
 
-  r = guestfs_int_cmd_run_async (cmd, NULL, NULL, &fd, NULL);
-  if (r == -1)
+  guestfs_int_cmd_clear_capture_errors (cmd);
+
+  fd = guestfs_int_cmd_pipe_run (cmd, "r");
+  if (fd == -1)
     return -1;
 
   snprintf (fdbuf, sizeof fdbuf, "/dev/fd/%d", fd);
@@ -80,11 +83,16 @@ guestfs_impl_copy_in (guestfs_h *g, const char *localpath, const char *remotedir
     return -1;
   }
 
-  r = guestfs_int_cmd_wait (cmd);
+  r = guestfs_int_cmd_pipe_wait (cmd);
   if (r == -1)
     return -1;
-  if (!(WIFEXITED (r) && WEXITSTATUS (r) == 0))
+  if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
+    CLEANUP_FREE char *errors = guestfs_int_cmd_get_pipe_errors (cmd);
+    if (errors == NULL)
+      return -1;
+    error (g, "tar subprocess failed: %s", errors);
     return -1;
+  }
 
   return 0;
 }
@@ -118,7 +126,8 @@ child_setup (guestfs_h *g, void *data)
 }
 
 int
-guestfs_impl_copy_out (guestfs_h *g, const char *remotepath, const char *localdir)
+guestfs_impl_copy_out (guestfs_h *g,
+                       const char *remotepath, const char *localdir)
 {
   struct stat statbuf;
   int r;
@@ -188,8 +197,10 @@ guestfs_impl_copy_out (guestfs_h *g, const char *remotepath, const char *localdi
     guestfs_int_cmd_add_arg (cmd, "-xf");
     guestfs_int_cmd_add_arg (cmd, "-");
 
-    r = guestfs_int_cmd_run_async (cmd, NULL, &fd, NULL, NULL);
-    if (r == -1)
+    guestfs_int_cmd_clear_capture_errors (cmd);
+
+    fd = guestfs_int_cmd_pipe_run (cmd, "w");
+    if (fd == -1)
       return -1;
 
     snprintf (fdbuf, sizeof fdbuf, "/dev/fd/%d", fd);
@@ -201,11 +212,16 @@ guestfs_impl_copy_out (guestfs_h *g, const char *remotepath, const char *localdi
       return -1;
     }
 
-    r = guestfs_int_cmd_wait (cmd);
+    r = guestfs_int_cmd_pipe_wait (cmd);
     if (r == -1)
       return -1;
-    if (!(WIFEXITED (r) && WEXITSTATUS (r) == 0))
+    if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
+      CLEANUP_FREE char *errors = guestfs_int_cmd_get_pipe_errors (cmd);
+      if (errors == NULL)
+        return -1;
+      error (g, "tar subprocess failed: %s", errors);
       return -1;
+    }
   }
 
   return 0;
