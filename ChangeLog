@@ -1,3 +1,522 @@
+commit 84238215c6ab29f858d086179100b34987d4d8e5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 8 15:45:45 2015 +0100
+
+    Version 1.30.2.
+
+commit bfe597672c50c222d542efec43b6ce22d51f905d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 8 09:11:36 2015 +0100
+
+    v2v: -o rhev, -o vdsm: Use correct DefaultDisplayType for qxl (RHBZ#1260590).
+    
+    This fixes commit 829e3fe7a6ed834939a7a79e453ab873d3328ae1.
+    
+    (cherry picked from commit c4bc8116d9d586085f96da2e5558c9b366e84925)
+
+commit 82072ecf3ffa5267d0a22437066ff93cc3170b77
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 7 22:01:34 2015 +0100
+
+    customize: Create .ssh as 0700 and .ssh/authorized_keys as 0600 (RHBZ#1260778).
+    
+    Both ssh-copy-id and ssh create .ssh as 0700.  ssh-copy-id creates
+    .ssh/authorized_keys as 0600.
+    
+    Thanks: Ryan Sawhill for finding the bug.
+    (cherry picked from commit 5ed4388ecd5fdb7639622ee4fba317c276547257)
+
+commit cebe17bdecda12d130f3e22f64c37f1ad185ccf2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 7 17:18:41 2015 +0100
+
+    v2v: windows: Warn if Group Policy or AV software may result in 7B boot failure (RHBZ#1260689).
+    
+    Check if the Windows guest has Group Policy Objects installed, or one
+    of several popular pieces of anti-virus software.  If we are
+    installing a virtio block driver, then experience has shown this may
+    cause a 7B boot failure.
+    
+    Print a warning when this combination happens.
+    
+    The warnings look like this:
+    
+    [  19.9] Converting Windows Server 2008 R2 Enterprise to run on KVM
+    virt-v2v: warning: this guest has Windows Group Policy Objects (GPO) and a
+    new virtio block device driver was installed.  In some circumstances, Group
+    Policy may prevent new drivers from working (resulting in a 7B boot error).
+     If this happens, try disabling Group Policy before doing the conversion.
+    virt-v2v: warning: this guest has Anti-Virus (AV) software and a new virtio
+    block device driver was installed.  In some circumstances, AV may prevent
+    new drivers from working (resulting in a 7B boot error).  If this happens,
+    try disabling AV before doing the conversion.
+    virt-v2v: This guest has virtio drivers installed.
+    
+    (cherry picked from commit 8e28d6b18860f8ff4e02489317749a723fa145ab)
+
+commit c5926a654d32ba060a058552a93fc78e12175b2a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 7 17:16:24 2015 +0100
+
+    v2v: windows: Refactor Xen uninstaller detection code.
+    
+    No change, just refactoring.
+    
+    (cherry picked from commit 8f889f0c3e65908299d68376b79fbda4fceb2fbe)
+
+commit 7c302da1b3e16ca4e7fe38de7801c8776746f6a0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 7 16:53:17 2015 +0100
+
+    dib: Move 'isdigit' utility function to common code.
+    
+    No change, just simple refactoring.
+    
+    (cherry picked from commit 4335088d74fd0fd3708bd4384a4adf9b5081c759)
+
+commit a31d937f7c7fa6a38030519921ce2498f39c89a2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 7 13:30:04 2015 +0100
+
+    v2v: -o rhev, -o vdsm: Review XML based on oVirt description of format.
+    
+    After reviewing http://www.ovirt.org/images/8/86/Ovirt_ovf_format.odt
+    this commit makes some small revisions to the OVF that we generate.
+    
+    Possible fix for https://bugzilla.redhat.com/show_bug.cgi?id=1260590
+    
+    (cherry picked from commit 829e3fe7a6ed834939a7a79e453ab873d3328ae1)
+
+commit 80a2d870c208a23bc474858746ed5dd9e8936db8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 7 12:10:09 2015 +0100
+
+    v2v: Error if certain options appear twice on the command line.
+    
+    Change the handling of -ic, -if, -oc, -of, -on, -os, --password-file,
+    --vdsm-vm-uuid, --vdsm-ovf-output, --vmtype options, so that if any
+    appear multiple times on the command line we error out:
+    
+    $ virt-v2v -i disk /tmp/centos-6.img -o null -of qcow2 -of raw
+    virt-v2v: error: -of option used more than once on the command line
+    
+    Thanks: Juquin Zhou for finding the bug.
+    (cherry picked from commit e27199274645dad962670bb75f87cc7472d36c4d)
+
+commit 58f5cd275c8b1898d1845b343833b7c8042d51df
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 3 12:20:10 2015 +0100
+
+    v2v: test-harness: Allow test boot at fixed dates in the past.
+    
+    Turns out that some of the Windows guests in the test suite try to
+    reactivate if the date is more than some time delta (maybe 1 year?)
+    after the previous activation.  Just disabling the network wasn't
+    enough to prevent this.
+    
+    qemu allows us to boot guests with the clock set to a particular date
+    in the past, and libvirt exposes this (albeit very clumsily):
+    
+    https://docs.fedoraproject.org/en-US/Fedora/18/html/Virtualization_Administration_Guide/sect-Virtualization-Tips_and_tricks-Libvirt_Managed_Timers.html
+    
+    Allow guests to be booted with the date set to a particular past date,
+    by setting the test_plan.guest_clock field.
+    
+    This required adding some more libxml2 bindings.
+    
+    (cherry picked from commit 7e63d3680f373cd0c61412a30b009edfb2d9104f)
+
+commit 5416e8e89ac0391113a0badb56855838b11e430a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 3 16:12:22 2015 +0100
+
+    p2v: Clear previous version and driver information when testing connection (RHBZ#1227609).
+    
+    When calling test_connection to test the connection to a conversion
+    server, we also query for the remote server's version and driver
+    information (using 'virt-v2v --version' and
+    'virt-v2v --machine-readable').
+    
+    However we didn't clear the existing information from previous runs.
+    
+    One consequence of this was that if you used the back button in the
+    GUI, the list of output drivers would be repopulated two or more
+    times.  https://bugzilla.redhat.com/show_bug.cgi?id=1227609
+    
+    Another is that connecting to a different server could confuse
+    test_connection into thinking the connection was successful (because
+    of data from the previous run) when in fact it was not.
+    
+    Thanks: Tingting Zheng for finding the original bug.
+    (cherry picked from commit 6246bebf82e2bd097aa476dad101416faf03240f)
+
+commit a4319bcf87b4038782b0a082545b965c7e1bf800
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 3 16:06:59 2015 +0100
+
+    p2v: Use gtk_list_store_clear instead of loop.
+    
+    The model implements GtkListStore, so an easier way to clear the list
+    is simply to call the clear method.
+    
+    (cherry picked from commit 302ea2aa5b666d254d2d562210a98825886e1b08)
+
+commit 9736b1da81c1a151143578d5656ee5e4f059e543
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 3 15:56:19 2015 +0100
+
+    p2v: Use GtkComboBoxText instead of deprecated gtk_combo_box_new_text.
+    
+    Requires Gtk >= 2.24, which is the same version that RHEL 6 has.
+    
+    (cherry picked from commit 314713c3b0412713e5d7af4e5bbe2c8613166c04)
+
+commit 632f61f952c556f449efcb16048ee407bfbb4a03
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 1 18:03:12 2015 +0200
+
+    get-kernel: respect -q
+    
+    Now that virt-get-kernel has -q/--quiet, support it by printing the
+    download messages only if not specified.
+    
+    (cherry picked from commit cf3d93c82627279e8c57c0877469f16fc2272ec0)
+
+commit 4a87fd46f64591cfc069036b9c25159e7189088e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 1 17:47:06 2015 +0200
+
+    get-kernel: refactor list and download code
+    
+    Split in an own function the code dong the mounting, the inspection of
+    the kernel files, and the downloading, including a per-OS function for
+    the actual kernel files.  This gives few advantages:
+    - the download phease is not repeated for all the files to fetch
+    - it is easier to eventually support multi-root disk images
+    - it is possible to support OSes different than Linux; virt-get-kernel
+      now will just report the unsupported OS, instead of a generic
+      "no kernel found" message
+    
+    This is mostly code refactoring, with (on Linux) no actual behaviour
+    change.
+    
+    (cherry picked from commit 45f6cfe1a1e73adcc9c423ee396abb7dcb3a7488)
+
+commit d194b8d9ff7babb99fdff525fb1b5f09426a3e0d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 1 16:55:13 2015 +0200
+
+    get-kernel: split command line handling in own function
+    
+    Simple refactoring, no actual behaviour changes.
+    
+    (cherry picked from commit 997c59139e11fcdde44ef32f6314d0c3d0f3c18b)
+
+commit d9bdbca39822171f256ff5ec3d87225413b1c394
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 1 16:28:03 2015 +0200
+
+    builder, dib, get-kernel: document new -q/--quiet options
+    
+    Provided as common options for all the OCaml-based tools.
+    
+    (cherry picked from commit b360e99ff65b5d4fa2c725e90aa12bc33bf3f2a4)
+
+commit eb43a6b740ff0bfeaad46551845f93cdb2fb0634
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 1 16:07:55 2015 +0200
+
+    mllib: move -q/--quiet as common option
+    
+    Most of the OCaml-based tools had it already, except from virt-dib and
+    virt-get-kernel.
+    
+    (cherry picked from commit 2ec0332e5e10d9c03edb11b982d86a05cb6c069f)
+
+commit c8153bd156dbd6c9bae971077b1e1a47fafe5071
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 1 15:40:25 2015 +0200
+
+    mllib: make few command line options stuff private
+    
+    Make print_version_and_exit, long_options, display_short_options, and
+    display_long_options private, as set_standard_options now takes care of
+    handling the job for the common command line options.
+    
+    (cherry picked from commit 875f46fddce873b55a20b26c67da70dcc0ecf1b9)
+
+commit 812f6b95e4b87aee6058ec290454993d5d9eecfb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 1 14:56:10 2015 +0100
+
+    v2v: Fix handling of extra slashes in dcPath calculation (RHBZ#1258342).
+    
+    This updates commit 20f1eb400b13be8733b6586769c4845b99a70722.
+    
+    Thanks: Tingting Zheng
+    (cherry picked from commit 51bc573d0c4e78104a682e7c42d63d701aedd093)
+
+commit 442472795b5d20547ca56b1e3390e955cae456fc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 31 18:34:37 2015 +0200
+
+    mllib: set --debug-gc as common option
+    
+    Move --debug-gc as common option for all the OCaml-based tools, even a
+    couple of them which didn't have it previously.
+    
+    As implementation note, make set_debug_gc private to
+    set_standard_options, as it needed to be moved otherwise, and it is no
+    more required as public function.
+    
+    (cherry picked from commit 4cc3cc3fbd5f8f2478368a8fbf83716f18d95ea8)
+
+commit 5ccdc96232802850bdea8095781403dc139bee57
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 31 18:25:48 2015 +0200
+
+    mllib: add and use set_standard_options
+    
+    Introduce a new common helper to add the common options for libguestfs
+    tools (short/long options, version, verbose, trace), and sort them.
+    All the OCaml-based tools had these options already, so there are no
+    functional changes in the interface they provide.
+    
+    The only difference is that now the options are always sorted, while
+    some tools didn't had them like that previously: because of this, a
+    couple of ditto markers (as descriptions) don't match what's above them
+    anymore, and thus their full description is put instead.
+    
+    (cherry picked from commit 2af6e48ba3658e0c0c912f1a1441ac49698318de)
+
+commit 16d92df4d86fb944a4331870fe7bfd0b8aa57a5e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 31 11:17:45 2015 +0200
+
+    customize: fix running commands on the same architecture
+    
+    Wrap the command around an heredoc only if setarch needs to be used;
+    otherwise the heredoc will not be run at all.
+    
+    Fix commit d875346ad441d4762455ea1b41d57ad6174d9b63.
+    
+    (cherry picked from commit 7bdb3e0df93ef9cdee11b40a85056e609de45414)
+
+commit 42734a3954a4d4eb370dfa051f788812b2b23984
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 27 17:14:49 2015 +0100
+
+    customize: Use setarch when running commands on i686 guest (RHBZ#1256405).
+    
+    When running (eg) dnf on a 32 bit i686 guest when the host is 64 bit
+    x86_64, dnf believes it is running on a 64 bit machine and so tries to
+    install x86_64 packages.  We can 'trick' dnf into believing it's a 32
+    bit machine using the setarch program.
+    
+    $ virt-builder fedora-22 --arch i686 --install 'gperf'
+    ...
+    [  27.4] Installing packages: gperf
+    ...
+    Running transaction test
+    Error: Transaction check error:
+      package libgcc-5.1.1-4.fc22.x86_64 is intended for a different architecture
+    ...
+    
+    The use of a heredoc to solve quoting issues comes from:
+    http://stackoverflow.com/a/3435460
+    
+    Thanks: Jan Sedlák for finding the solution.
+    (cherry picked from commit d875346ad441d4762455ea1b41d57ad6174d9b63)
+
+commit f0274fc4e311f619b373dd1670108a44a8b1f85d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 28 13:57:37 2015 +0100
+
+    v2v: -i libvirtxml: Map empty network or bridge name to default (RHBZ#1257895).
+    
+    As with the -i ova driver, if an unnamed network is found, map it to
+    "eth0", "eth1" etc.
+    
+    (cherry picked from commit 18b019e3dd808393cda510b6d80212ff5bdbed76)
+
+commit 12fc3cb217938fd0f54e4142269fd0db13b3bbcb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 28 13:53:24 2015 +0100
+
+    v2v: Convert xpath_to_* to use xpath convenience functions.
+    
+    In -i libvirtxml, -i ova and -o libvirt drivers, replace the ad hoc
+    xpath_to_* functions with use of the new xpath convenience functions
+    introduced in the previous commit.
+    
+    This is not entirely refactoring because I fixed a few bugs found by
+    type safety.
+    
+    (cherry picked from commit 261d05749fb75e60d56d3c2d92589de9dca7ca09)
+
+commit 9d42083179fd7b911285e29d7a969cdea71e2a1e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 28 13:52:49 2015 +0100
+
+    v2v: Add convenience functions for parsing xpath expressions.
+    
+    (cherry picked from commit 00e1260d343e1f70d6541347ba61ecb072fef799)
+
+commit cfe05ae22300a29cc80a813b41c47d872a820b3f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 28 12:20:45 2015 +0100
+
+    v2v: vcenter: Calculate dcPath correctly (RHBZ#1256823).
+    
+    Previously given a path such as:
+    
+      vpx://vcenter/Folder/Datacenter/esxi
+    
+    we calculated dcPath=Folder.  However this is obviously wrong.  We
+    should chop the path at the final (esxi) element to give
+    dcPath=Folder/Datacenter.
+    
+    (cherry picked from commit 20f1eb400b13be8733b6586769c4845b99a70722)
+
+commit 7f87749e41df1c0886210cdfb98990e9c79a6c36
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 28 12:05:12 2015 +0100
+
+    v2v: vcenter: Change function get_datacenter -> get_dcPath.
+    
+    In vCenter, the datacenter is identified by a path, and the parameter
+    used for this is called 'dcPath'.  Rename the function to avoid any
+    confusion about what we're getting here.
+    
+    This is just renaming function/variable names and has no other effect.
+    
+    (cherry picked from commit 1585bb5beeff8325a950eea6331e42b5df64226d)
+
+commit 9cd60812ca3166aaa6ca0493b3f5d9b73df581c5
+Author: Roman Kagan <rkagan@virtuozzo.com>
+Date:   Fri Aug 28 17:56:04 2015 +0300
+
+    handle --debug-gc universally via at_exit hook
+    
+    Several tools handle --debug-gc command-line option, by explicitly
+    forcing GC on every exit path.  This is tedious and prone to forgetting
+    some of the exit paths.
+    
+    Instead, add a generic handler for --debug-gc, which installs an at_exit
+    hook to do the GC consistency check, and which can be called right in
+    the command-line parser.  Also adjust all users of --debug-gc to use
+    that handler.
+    
+    Signed-off-by: Roman Kagan <rkagan@virtuozzo.com>
+    (cherry picked from commit a628fb65fa977e185fb4c414ea65ba4a6f5207b7)
+
+commit 3080a581acc87128c1aae990007cf1c01404d737
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 25 09:17:00 2015 +0100
+
+    Revert "p2v: Add tip about the root password of the virt-v2v conversion server appliance."
+    
+    This reverts commit 35efaf820870e7498aacc5d4aaa8c952c635b0e0.
+    
+    (cherry picked from commit 3c30fb4a79ecac6eef3c4c8aefb43ab78f860488)
+
+commit b507975fcd767a3f2ff3b70babfb385174c5bf1e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 24 14:56:30 2015 +0100
+
+    p2v: Wait for network to come online before testing connection (RHBZ#1256222).
+    
+    When using the virt-p2v ISO in command line mode, we did not wait for
+    the network to come online before starting virt-p2v.  Therefore
+    virt-p2v could exit with an error when testing the ssh connection (or
+    on the other hand, it might work randomly).  If the user logs in and
+    runs 'launch-virt-p2v' by hand, then it would usually work because the
+    network had been brought online in the meantime.
+    
+    Fix this by waiting for NetworkManager to bring the connection online
+    before calling test_connection().  Note that the obvious way to fix
+    this (changing the systemd service to wait for network-online.target)
+    does *not* work - I added a comment to the service about this.
+    
+    Thanks: Tingting Zheng
+    (cherry picked from commit 4c34d240a1f152ec257a75f148a8e4a1d91a67c5)
+
+commit 0e30924967e438e50e19fa1843445b66af985d82
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 24 18:25:10 2015 +0200
+
+    v2v: ignore missing kernels from grub (RHBZ#1230412)
+    
+    Raise a warning for each kernel specified in grub which does not
+    actually exist, keep going on with the conversion using the remaining
+    (existing) kernels.
+    
+    (cherry picked from commit 74f0b45ddf35f1cb1684702e9d3318d77fc3b520)
+
+commit d4ef6352337fa34f5a41c77ff3b36b3a90c66582
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 24 18:11:18 2015 +0200
+
+    ocaml: Add handling for errno ENOENT.
+    
+    (cherry picked from commit baa4ec6e4536be971d482af76f7dca89e74573a7)
+
+commit 1ebaf1991ce57bf41a443e3a4a3404a31ffe69c5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 24 17:57:10 2015 +0200
+
+    ocaml: dynamically generate the content of Guestfs.Errno
+    
+    Put in a list the errnos to expose, filling the content of the
+    Guestfs.Errno submodule from that.
+    Also, generate a separate guestfs-c-errnos.c with the implementations of
+    the functions returning the errno codes.
+    
+    Only code motion and refactoring, no actual changes on the content of
+    the ocaml Guestfs module.
+    
+    (cherry picked from commit 649f439cb78f12bb04ef90d83b81e1fa23495852)
+
+commit 537f2608853e33c2cf61914887850f5a0f480463
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 20 17:25:34 2015 +0200
+
+    configure: look for "java" as directory for Java in lib64 too
+    
+    On 64-bit openSUSE versions, /usr/lib64/jvm/java provides the symlink to
+    the default Java version.
+    
+    (cherry picked from commit 0dcb862943b3adbe54756acf0e30b4d96f5229ff)
+
+commit 2e7d13d9de3490161b8e22d28e689c542a6f2aa3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 19 14:46:39 2015 +0200
+
+    appliance: explicitly add libyajl on Mageia
+    
+    It seems yajl was bringing it, but seems not on Mageia 5.  Leave yajl
+    for older versions.
+    
+    (cherry picked from commit e6dd9b5d6b66b8eba1c62730c8d5707a7109df27)
+
+commit c3ebcba8378c1e60092d301e48c9f237131503c2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 13 22:54:30 2015 +0100
+
+    FAQ: the -> and in previous commit.
+    
+    This fixes commit 571fca8e71901bb3f1e68d51defb29fac920ffbb.
+    
+    (cherry picked from commit 97bd64f588c7354f659952dcd0664b47a28425c6)
+
+commit b9711e6f3650c3b77c9774640ad8e60b04a6882c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 13 22:51:43 2015 +0100
+
+    FAQ: Further improve debugging section.
+    
+    (cherry picked from commit 571fca8e71901bb3f1e68d51defb29fac920ffbb)
+
 commit d1d0f558bd32a3a45e5d436b269a7a1099be7b8b
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Aug 14 15:56:05 2015 +0100

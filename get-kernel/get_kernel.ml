@@ -23,127 +23,104 @@ module G = Guestfs
 
 open Printf
 
-(* Main program. *)
-let main () =
-  let add, output, unversioned, prefix =
-    let domain = ref None in
-    let file = ref None in
-    let libvirturi = ref "" in
-    let format = ref "" in
-    let output = ref "" in
-    let machine_readable = ref false in
-    let unversioned = ref false in
-    let prefix = ref None in
+let parse_cmdline () =
+  let domain = ref None in
+  let file = ref None in
+  let libvirturi = ref "" in
+  let format = ref "" in
+  let output = ref "" in
+  let machine_readable = ref false in
+  let unversioned = ref false in
+  let prefix = ref None in
 
-    let set_file arg =
-      if !file <> None then
-        error (f_"--add option can only be given once");
-      let uri =
-        try URI.parse_uri arg
-        with Invalid_argument "URI.parse_uri" ->
-          error (f_"error parsing URI '%s'. Look for error messages printed above.") arg in
-      file := Some uri
-    and set_domain dom =
-      if !domain <> None then
-        error (f_"--domain option can only be given once");
-      domain := Some dom
-    and set_prefix p =
-      if !prefix <> None then
-        error (f_"--prefix option can only be given once");
-      prefix := Some p in
+  let set_file arg =
+    if !file <> None then
+      error (f_"--add option can only be given once");
+    let uri =
+      try URI.parse_uri arg
+      with Invalid_argument "URI.parse_uri" ->
+        error (f_"error parsing URI '%s'. Look for error messages printed above.") arg in
+    file := Some uri
+  and set_domain dom =
+    if !domain <> None then
+      error (f_"--domain option can only be given once");
+    domain := Some dom
+  and set_prefix p =
+    if !prefix <> None then
+      error (f_"--prefix option can only be given once");
+    prefix := Some p in
 
-    let ditto = " -\"-" in
-    let argspec = Arg.align [
-      "-a",        Arg.String set_file,       s_"file" ^ " " ^ s_"Add disk image file";
-      "--add",     Arg.String set_file,       s_"file" ^ " " ^ s_"Add disk image file";
-      "-c",        Arg.Set_string libvirturi, s_"uri" ^ " " ^ s_"Set libvirt URI";
-      "--connect", Arg.Set_string libvirturi, s_"uri" ^ " " ^ s_"Set libvirt URI";
-      "-d",        Arg.String set_domain,     s_"domain" ^ " " ^ s_"Set libvirt guest name";
-      "--domain",  Arg.String set_domain,     s_"domain" ^ " " ^ s_"Set libvirt guest name";
-      "--format",  Arg.Set_string format,     s_"format" ^ " " ^ s_"Format of input disk";
-      "--short-options", Arg.Unit display_short_options, " " ^ s_"List short options";
-      "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
-      "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
-      "-o",        Arg.Set_string output, s_"directory" ^ " " ^ s_"Output directory";
-      "--output",  Arg.Set_string output,     ditto;
-      "--unversioned-names", Arg.Set unversioned,
-                                              " " ^ s_"Use unversioned names for files";
-      "--prefix",  Arg.String set_prefix,     "prefix" ^ " " ^ s_"Prefix for files";
-      "-v",        Arg.Unit set_verbose,      " " ^ s_"Enable debugging messages";
-      "--verbose", Arg.Unit set_verbose,      ditto;
-      "-V",        Arg.Unit print_version_and_exit,
-                                              " " ^ s_"Display version and exit";
-      "--version", Arg.Unit print_version_and_exit,  ditto;
-      "-x",        Arg.Unit set_trace,        " " ^ s_"Enable tracing of libguestfs calls";
-    ] in
-    long_options := argspec;
-    let anon_fun _ = raise (Arg.Bad (s_"extra parameter on the command line")) in
-    let usage_msg =
-      sprintf (f_"\
+  let ditto = " -\"-" in
+  let argspec = [
+    "-a",        Arg.String set_file,       s_"file" ^ " " ^ s_"Add disk image file";
+    "--add",     Arg.String set_file,       s_"file" ^ " " ^ s_"Add disk image file";
+    "-c",        Arg.Set_string libvirturi, s_"uri" ^ " " ^ s_"Set libvirt URI";
+    "--connect", Arg.Set_string libvirturi, s_"uri" ^ " " ^ s_"Set libvirt URI";
+    "-d",        Arg.String set_domain,     s_"domain" ^ " " ^ s_"Set libvirt guest name";
+    "--domain",  Arg.String set_domain,     s_"domain" ^ " " ^ s_"Set libvirt guest name";
+    "--format",  Arg.Set_string format,     s_"format" ^ " " ^ s_"Format of input disk";
+    "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
+    "-o",        Arg.Set_string output, s_"directory" ^ " " ^ s_"Output directory";
+    "--output",  Arg.Set_string output,     ditto;
+    "--unversioned-names", Arg.Set unversioned,
+                                            " " ^ s_"Use unversioned names for files";
+    "--prefix",  Arg.String set_prefix,     "prefix" ^ " " ^ s_"Prefix for files";
+  ] in
+  let argspec = set_standard_options argspec in
+  let anon_fun _ = raise (Arg.Bad (s_"extra parameter on the command line")) in
+  let usage_msg =
+    sprintf (f_"\
 %s: extract kernel and ramdisk from a guest
 
 A short summary of the options is given below.  For detailed help please
 read the man page virt-get-kernel(1).
 ")
-        prog in
-    Arg.parse argspec anon_fun usage_msg;
+      prog in
+  Arg.parse argspec anon_fun usage_msg;
 
-    (* Machine-readable mode?  Print out some facts about what
-     * this binary supports.
-     *)
-    if !machine_readable then (
-      printf "virt-get-kernel\n";
-      exit 0
-    );
+  (* Machine-readable mode?  Print out some facts about what
+   * this binary supports.
+   *)
+  if !machine_readable then (
+    printf "virt-get-kernel\n";
+    exit 0
+  );
 
-    (* Check -a and -d options. *)
-    let file = !file in
-    let domain = !domain in
-    let libvirturi = match !libvirturi with "" -> None | s -> Some s in
-    let add =
-      match file, domain with
-      | None, None ->
-        error (f_"you must give either -a or -d options.  Read virt-get-kernel(1) man page for further information.")
-      | Some _, Some _ ->
-        error (f_"you cannot give -a and -d options together.  Read virt-get-kernel(1) man page for further information.")
-      | None, Some dom ->
-        fun (g : Guestfs.guestfs) ->
-          let readonlydisk = "ignore" (* ignore CDs, data drives *) in
-          ignore (g#add_domain
-                    ~readonly:true ~allowuuid:true ~readonlydisk
-                    ?libvirturi dom)
-      | Some uri, None ->
-        fun g ->
-          let { URI.path = path; protocol = protocol;
-                server = server; username = username;
-                password = password } = uri in
-          let format = match !format with "" -> None | s -> Some s in
-          g#add_drive
-            ~readonly:true ?format ~protocol ?server ?username ?secret:password
-            path
-    in
+  (* Check -a and -d options. *)
+  let file = !file in
+  let domain = !domain in
+  let libvirturi = match !libvirturi with "" -> None | s -> Some s in
+  let add =
+    match file, domain with
+    | None, None ->
+      error (f_"you must give either -a or -d options.  Read virt-get-kernel(1) man page for further information.")
+    | Some _, Some _ ->
+      error (f_"you cannot give -a and -d options together.  Read virt-get-kernel(1) man page for further information.")
+    | None, Some dom ->
+      fun (g : Guestfs.guestfs) ->
+        let readonlydisk = "ignore" (* ignore CDs, data drives *) in
+        ignore (g#add_domain
+                  ~readonly:true ~allowuuid:true ~readonlydisk
+                  ?libvirturi dom)
+    | Some uri, None ->
+      fun g ->
+        let { URI.path = path; protocol = protocol;
+              server = server; username = username;
+              password = password } = uri in
+        let format = match !format with "" -> None | s -> Some s in
+        g#add_drive
+          ~readonly:true ?format ~protocol ?server ?username ?secret:password
+          path
+  in
 
-    (* Dereference the rest of the args. *)
-    let output = match !output with "" -> None | str -> Some str in
-    let unversioned = !unversioned in
-    let prefix = !prefix in
+  (* Dereference the rest of the args. *)
+  let output = match !output with "" -> None | str -> Some str in
+  let unversioned = !unversioned in
+  let prefix = !prefix in
 
-    add, output, unversioned, prefix in
+  add, output, unversioned, prefix
 
-  (* Connect to libguestfs. *)
-  let g = new G.guestfs () in
-  if trace () then g#set_trace true;
-  if verbose () then g#set_verbose true;
-  add g;
-  g#launch ();
-
-  let roots = g#inspect_os () in
-  if Array.length roots = 0 then
-    error (f_"no operating system found");
-  if Array.length roots > 1 then
-    error (f_"dual/multi-boot images are not supported by this tool");
-  let root = roots.(0) in
-
+let rec do_fetch ~transform_fn ~outputdir g root =
   (* Mount up the disks. *)
   let mps = g#inspect_get_mountpoints root in
   let cmp (a,_) (b,_) = compare (String.length a) (String.length b) in
@@ -154,6 +131,25 @@ read the man page virt-get-kernel(1).
       with Guestfs.Error msg -> warning (f_"%s (ignored)") msg
   ) mps;
 
+  let files =
+    let typ = g#inspect_get_type root in
+    match typ with
+    | "linux" -> pick_kernel_files_linux g root
+    | typ ->
+      error (f_"operating system '%s' not supported") typ in
+
+  (* Download the files. *)
+  List.iter (
+    fun f ->
+      let dest = outputdir // transform_fn f in
+      if not (quiet ()) then
+        printf "download: %s -> %s\n%!" f dest;
+      g#download f dest;
+  ) files;
+
+  g#umount_all ()
+
+and pick_kernel_files_linux g root =
   (* Get all kernels and initramfses. *)
   let glob w = Array.to_list (g#glob_expand w) in
   let kernels = glob "/boot/vmlinuz-*" in
@@ -170,7 +166,34 @@ read the man page virt-get-kernel(1).
   let initrds = List.rev (List.sort compare_version initrds) in
 
   if kernels = [] then
-    error (f_"no kernel found");
+    error (f_"no kernel found in %s") root;
+
+  (* Pick the latest. *)
+  let kernel = [List.hd kernels] in
+  let initrd =
+    match initrds with
+    | [] -> []
+    | initrd :: _ -> [initrd] in
+
+  kernel @ initrd
+
+(* Main program. *)
+let main () =
+  let add, output, unversioned, prefix = parse_cmdline () in
+
+  (* Connect to libguestfs. *)
+  let g = new G.guestfs () in
+  if trace () then g#set_trace true;
+  if verbose () then g#set_verbose true;
+  add g;
+  g#launch ();
+
+  let roots = g#inspect_os () in
+  if Array.length roots = 0 then
+    error (f_"no operating system found");
+  if Array.length roots > 1 then
+    error (f_"dual/multi-boot images are not supported by this tool");
+  let root = roots.(0) in
 
   let dest_filename fn =
     let fn = Filename.basename fn in
@@ -181,22 +204,12 @@ read the man page virt-get-kernel(1).
     | None -> fn
     | Some p -> p ^ "-" ^ fn in
 
-  (* Download the latest. *)
   let outputdir =
     match output with
     | None -> Filename.current_dir_name
     | Some dir -> dir in
-  let kernel_in = List.hd kernels in
-  let kernel_out = outputdir // dest_filename kernel_in in
-  printf "download: %s -> %s\n%!" kernel_in kernel_out;
-  g#download kernel_in kernel_out;
 
-  if initrds <> [] then (
-    let initrd_in = List.hd initrds in
-    let initrd_out = outputdir // dest_filename initrd_in in
-    printf "download: %s -> %s\n%!" initrd_in initrd_out;
-    g#download initrd_in initrd_out
-  );
+  do_fetch ~transform_fn:dest_filename ~outputdir g root;
 
   (* Shutdown. *)
   g#shutdown ();

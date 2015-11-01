@@ -1629,8 +1629,8 @@ SOURCES_MLI = \
 SOURCES_ML = \
 	stringMap.ml \
 	types.ml \
-	utils.ml \
 	xml.ml \
+	utils.ml \
 	domainxml.ml \
 	DOM.ml \
 	kvmuid.ml \
@@ -1761,6 +1761,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
 @HAVE_OCAML_TRUE@	stringMap.cmo \
 @HAVE_OCAML_TRUE@	types.cmo \
+@HAVE_OCAML_TRUE@	xml.cmo \
 @HAVE_OCAML_TRUE@	utils.cmo \
 @HAVE_OCAML_TRUE@	DOM.cmo \
 @HAVE_OCAML_TRUE@	OVF.cmo \

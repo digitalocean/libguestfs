@@ -59,6 +59,7 @@ let run (g : Guestfs.guestfs) root (ops : ops) =
      * - Pass environment variables through from the host.
      * - Send stdout and stderr to a log file so we capture all output
      *   in error messages.
+     * - Use setarch when running x86_64 host + i686 guest.
      * Also catch errors and dump the log file completely on error.
      *)
     let env_vars =
@@ -68,6 +69,15 @@ let run (g : Guestfs.guestfs) root (ops : ops) =
           with Not_found -> None
       ) [ "http_proxy"; "https_proxy"; "ftp_proxy"; "no_proxy" ] in
     let env_vars = String.concat "\n" env_vars ^ "\n" in
+
+    let cmd =
+      match Config.host_cpu, guest_arch with
+      | "x86_64", ("i386"|"i486"|"i586"|"i686") ->
+        sprintf "setarch i686 <<\"__EOCMD\"
+%s
+__EOCMD
+" cmd
+      | _ -> cmd in
 
     let cmd = sprintf "\
 exec >>%s 2>&1
