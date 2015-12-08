@@ -148,11 +148,12 @@ TESTS = rhbz501893$(EXEEXT) rhbz503169c13.sh rhbz557655.sh \
 	rhbz790721$(EXEEXT) rhbz811649.sh rhbz895904.sh \
 	rhbz914931$(EXEEXT) rhbz957772.sh rhbz975797.sh rhbz1001875.sh \
 	rhbz1054761.sh rhbz1055452$(EXEEXT) rhbz1091803.sh \
-	rhbz1175196.sh rhbz1232192.sh test-noexec-stack.pl \
-	$(am__append_1)
+	rhbz1175196.sh rhbz1232192.sh test-big-heap$(EXEEXT) \
+	test-noexec-stack.pl $(am__append_1)
 @HAVE_LIBVIRT_TRUE@am__append_1 = rhbz1044014.sh
 check_PROGRAMS = rhbz501893$(EXEEXT) rhbz790721$(EXEEXT) \
-	rhbz914931$(EXEEXT) rhbz1055452$(EXEEXT)
+	rhbz914931$(EXEEXT) rhbz1055452$(EXEEXT) \
+	test-big-heap$(EXEEXT)
 subdir = tests/regressions
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -324,6 +325,12 @@ rhbz914931_DEPENDENCIES = $(top_builddir)/src/libutils.la \
 rhbz914931_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rhbz914931_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_test_big_heap_OBJECTS = test_big_heap-test-big-heap.$(OBJEXT)
+test_big_heap_OBJECTS = $(am_test_big_heap_OBJECTS)
+test_big_heap_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
+test_big_heap_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(test_big_heap_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -359,9 +366,11 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(rhbz1055452_SOURCES) $(rhbz501893_SOURCES) \
-	$(rhbz790721_SOURCES) $(rhbz914931_SOURCES)
+	$(rhbz790721_SOURCES) $(rhbz914931_SOURCES) \
+	$(test_big_heap_SOURCES)
 DIST_SOURCES = $(rhbz1055452_SOURCES) $(rhbz501893_SOURCES) \
-	$(rhbz790721_SOURCES) $(rhbz914931_SOURCES)
+	$(rhbz790721_SOURCES) $(rhbz914931_SOURCES) \
+	$(test_big_heap_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1614,6 +1623,17 @@ rhbz1055452_CFLAGS = \
 rhbz1055452_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
+test_big_heap_SOURCES = test-big-heap.c
+test_big_heap_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-DGUESTFS_PRIVATE=1
+
+test_big_heap_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+
+test_big_heap_LDADD = \
+	$(top_builddir)/src/libguestfs.la
+
 all: all-am
 
 .SUFFIXES:
@@ -1674,6 +1694,10 @@ rhbz914931$(EXEEXT): $(rhbz914931_OBJECTS) $(rhbz914931_DEPENDENCIES) $(EXTRA_rh
 	@rm -f rhbz914931$(EXEEXT)
 	$(AM_V_CCLD)$(rhbz914931_LINK) $(rhbz914931_OBJECTS) $(rhbz914931_LDADD) $(LIBS)
 
+test-big-heap$(EXEEXT): $(test_big_heap_OBJECTS) $(test_big_heap_DEPENDENCIES) $(EXTRA_test_big_heap_DEPENDENCIES) 
+	@rm -f test-big-heap$(EXEEXT)
+	$(AM_V_CCLD)$(test_big_heap_LINK) $(test_big_heap_OBJECTS) $(test_big_heap_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -1684,6 +1708,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rhbz501893-rhbz501893.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rhbz790721-rhbz790721.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rhbz914931-rhbz914931.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_big_heap-test-big-heap.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1764,6 +1789,20 @@ rhbz914931-rhbz914931.obj: rhbz914931.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rhbz914931.c' object='rhbz914931-rhbz914931.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rhbz914931_CPPFLAGS) $(CPPFLAGS) $(rhbz914931_CFLAGS) $(CFLAGS) -c -o rhbz914931-rhbz914931.obj `if test -f 'rhbz914931.c'; then $(CYGPATH_W) 'rhbz914931.c'; else $(CYGPATH_W) '$(srcdir)/rhbz914931.c'; fi`
+
+test_big_heap-test-big-heap.o: test-big-heap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_big_heap_CPPFLAGS) $(CPPFLAGS) $(test_big_heap_CFLAGS) $(CFLAGS) -MT test_big_heap-test-big-heap.o -MD -MP -MF $(DEPDIR)/test_big_heap-test-big-heap.Tpo -c -o test_big_heap-test-big-heap.o `test -f 'test-big-heap.c' || echo '$(srcdir)/'`test-big-heap.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_big_heap-test-big-heap.Tpo $(DEPDIR)/test_big_heap-test-big-heap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-big-heap.c' object='test_big_heap-test-big-heap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_big_heap_CPPFLAGS) $(CPPFLAGS) $(test_big_heap_CFLAGS) $(CFLAGS) -c -o test_big_heap-test-big-heap.o `test -f 'test-big-heap.c' || echo '$(srcdir)/'`test-big-heap.c
+
+test_big_heap-test-big-heap.obj: test-big-heap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_big_heap_CPPFLAGS) $(CPPFLAGS) $(test_big_heap_CFLAGS) $(CFLAGS) -MT test_big_heap-test-big-heap.obj -MD -MP -MF $(DEPDIR)/test_big_heap-test-big-heap.Tpo -c -o test_big_heap-test-big-heap.obj `if test -f 'test-big-heap.c'; then $(CYGPATH_W) 'test-big-heap.c'; else $(CYGPATH_W) '$(srcdir)/test-big-heap.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_big_heap-test-big-heap.Tpo $(DEPDIR)/test_big_heap-test-big-heap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-big-heap.c' object='test_big_heap-test-big-heap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_big_heap_CPPFLAGS) $(CPPFLAGS) $(test_big_heap_CFLAGS) $(CFLAGS) -c -o test_big_heap-test-big-heap.obj `if test -f 'test-big-heap.c'; then $(CYGPATH_W) 'test-big-heap.c'; else $(CYGPATH_W) '$(srcdir)/test-big-heap.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
