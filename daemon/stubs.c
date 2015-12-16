@@ -18254,7 +18254,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_name");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->pv_name = strdup (tok);
@@ -18267,7 +18267,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_uuid");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   for (i = j = 0; i < 32; ++j) {
@@ -18282,7 +18282,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_fmt");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->pv_fmt = strdup (tok);
@@ -18295,7 +18295,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_size");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->pv_size) != 1) {
@@ -18307,7 +18307,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "dev_size");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->dev_size) != 1) {
@@ -18319,7 +18319,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_free");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->pv_free) != 1) {
@@ -18331,7 +18331,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_used");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->pv_used) != 1) {
@@ -18343,7 +18343,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_attr");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->pv_attr = strdup (tok);
@@ -18356,7 +18356,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_pe_count");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->pv_pe_count) != 1) {
@@ -18368,7 +18368,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_pe_alloc_count");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->pv_pe_alloc_count) != 1) {
@@ -18380,7 +18380,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_tags");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->pv_tags = strdup (tok);
@@ -18393,7 +18393,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pe_start");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->pe_start) != 1) {
@@ -18405,7 +18405,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_mda_count");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->pv_mda_count) != 1) {
@@ -18417,7 +18417,7 @@ static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_mda_free");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->pv_mda_free) != 1) {
@@ -18453,7 +18453,7 @@ parse_command_line_pvs (void)
   r = command (&out, &err,
 	       "lvm", "pvs",
 	       "-o", lvm_pv_cols, "--unbuffered", "--noheadings",
-	       "--nosuffix", "--separator", ",", "--units", "b", NULL);
+	       "--nosuffix", "--separator", ":", "--units", "b", NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (out);
@@ -18533,7 +18533,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_name");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->vg_name = strdup (tok);
@@ -18546,7 +18546,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_uuid");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   for (i = j = 0; i < 32; ++j) {
@@ -18561,7 +18561,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_fmt");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->vg_fmt = strdup (tok);
@@ -18574,7 +18574,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_attr");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->vg_attr = strdup (tok);
@@ -18587,7 +18587,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_size");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->vg_size) != 1) {
@@ -18599,7 +18599,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_free");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->vg_free) != 1) {
@@ -18611,7 +18611,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_sysid");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->vg_sysid = strdup (tok);
@@ -18624,7 +18624,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_extent_size");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->vg_extent_size) != 1) {
@@ -18636,7 +18636,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_extent_count");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->vg_extent_count) != 1) {
@@ -18648,7 +18648,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_free_count");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->vg_free_count) != 1) {
@@ -18660,7 +18660,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "max_lv");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->max_lv) != 1) {
@@ -18672,7 +18672,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "max_pv");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->max_pv) != 1) {
@@ -18684,7 +18684,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "pv_count");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->pv_count) != 1) {
@@ -18696,7 +18696,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "lv_count");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->lv_count) != 1) {
@@ -18708,7 +18708,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "snap_count");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->snap_count) != 1) {
@@ -18720,7 +18720,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_seqno");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->vg_seqno) != 1) {
@@ -18732,7 +18732,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_tags");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->vg_tags = strdup (tok);
@@ -18745,7 +18745,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_mda_count");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->vg_mda_count) != 1) {
@@ -18757,7 +18757,7 @@ static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "vg_mda_free");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->vg_mda_free) != 1) {
@@ -18793,7 +18793,7 @@ parse_command_line_vgs (void)
   r = command (&out, &err,
 	       "lvm", "vgs",
 	       "-o", lvm_vg_cols, "--unbuffered", "--noheadings",
-	       "--nosuffix", "--separator", ",", "--units", "b", NULL);
+	       "--nosuffix", "--separator", ":", "--units", "b", NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (out);
@@ -18873,7 +18873,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "lv_name");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->lv_name = strdup (tok);
@@ -18886,7 +18886,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "lv_uuid");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   for (i = j = 0; i < 32; ++j) {
@@ -18901,7 +18901,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "lv_attr");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->lv_attr = strdup (tok);
@@ -18914,7 +18914,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "lv_major");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->lv_major) != 1) {
@@ -18926,7 +18926,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "lv_minor");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->lv_minor) != 1) {
@@ -18938,7 +18938,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "lv_kernel_major");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->lv_kernel_major) != 1) {
@@ -18950,7 +18950,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "lv_kernel_minor");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->lv_kernel_minor) != 1) {
@@ -18962,7 +18962,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "lv_size");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->lv_size) != 1) {
@@ -18974,7 +18974,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "seg_count");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (sscanf (tok, "%" SCNi64, &r->seg_count) != 1) {
@@ -18986,7 +18986,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "origin");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->origin = strdup (tok);
@@ -18999,7 +18999,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "snap_percent");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (tok[0] == '\0')
@@ -19013,7 +19013,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "copy_percent");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   if (tok[0] == '\0')
@@ -19027,7 +19027,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "move_pv");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->move_pv = strdup (tok);
@@ -19040,7 +19040,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "lv_tags");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->lv_tags = strdup (tok);
@@ -19053,7 +19053,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "mirror_log");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->mirror_log = strdup (tok);
@@ -19066,7 +19066,7 @@ static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
     fprintf (stderr, "%s: failed: string finished early, around token %s\n", __func__, "modules");
     return -1;
   }
-  p = strchrnul (tok, ',');
+  p = strchrnul (tok, ':');
   if (*p) next = p+1; else next = NULL;
   *p = '\0';
   r->modules = strdup (tok);
@@ -19103,7 +19103,7 @@ parse_command_line_lvs (void)
   r = command (&out, &err,
 	       "lvm", "lvs",
 	       "-o", lvm_lv_cols, "--unbuffered", "--noheadings",
-	       "--nosuffix", "--separator", ",", "--units", "b", NULL);
+	       "--nosuffix", "--separator", ":", "--units", "b", NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (out);

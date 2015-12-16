@@ -53,7 +53,7 @@ let rec main () =
   (* Print the version, easier than asking users to tell us. *)
   if verbose () then
     printf "%s: %s %s (%s)\n%!"
-      prog Config.package_name Config.package_version Config.host_cpu;
+      prog Guestfs_config.package_name Guestfs_config.package_version Guestfs_config.host_cpu;
 
   message (f_"Opening the source %s") input#as_options;
   let source = input#source () in
@@ -174,6 +174,13 @@ let rec main () =
         let dev = "/dev/" ^ sd in
         let vsize = g#blockdev_getsize64 dev in
 
+      (* If the virtual size is 0, then something went badly wrong.
+       * It could be RHBZ#1283588 or some other problem with qemu.
+       *)
+      if vsize = 0L then
+        error (f_"guest disk %s appears to be zero bytes in size.\n\nThere could be several reasons for this:\n\nCheck that the guest doesn't really have a zero-sized disk.  virt-v2v cannot convert such a guest.\n\nIf you are converting a guest from an ssh source and the guest has a disk on a block device (eg. on a host partition or host LVM LV), then conversions of this type are not supported.  See \"XEN OR SSH CONVERSIONS FROM BLOCK DEVICES\" in the virt-v2v(1) manual for a workaround.")
+              sd;
+
         { ov_overlay_file = overlay_file; ov_sd = sd;
           ov_virtual_size = vsize; ov_source = source }
     ) overlays in
@@ -192,7 +199,7 @@ let rec main () =
           | Some format, _ -> format    (* -of overrides everything *)
           | None, Some format -> format (* same as backing format *)
           | None, None ->
-            error (f_"disk %s (%s) has no defined format.\n\nThe input metadata did not define the disk format (eg. raw/qcow2/etc) of this disk, and so virt-v2v will try to autodetect the format when reading it.\n\nHowever because the input format was not defined, we do not know what output format you want to use.  You have two choices: either define the original format in the source metadata, or use the '-of' option to force the output format") ov.ov_sd ov.ov_source.s_qemu_uri in
+            error (f_"disk %s (%s) has no defined format.\n\nThe input metadata did not define the disk format (eg. raw/qcow2/etc) of this disk, and so virt-v2v will try to autodetect the format when reading it.\n\nHowever because the input format was not defined, we do not know what output format you want to use.  You have two choices: either define the original format in the source metadata, or use the '-of' option to force the output format.") ov.ov_sd ov.ov_source.s_qemu_uri in
 
         (* What really happens here is that the call to #disk_create
          * below fails if the format is not raw or qcow2.  We would
@@ -470,7 +477,7 @@ and inspect_source g root_choice =
   let root =
     match roots with
     | [] ->
-      error (f_"no root device found in this operating system image.");
+       error (f_"inspection could not detect the source guest (or physical machine).\n\nAssuming that you are running virt-v2v/virt-p2v on a source which is supported (and not, for example, a blank disk), then this should not happen.  You should run 'virt-v2v -v -x ... >& log' and attach the complete log to a new bug report (see http://libguestfs.org).\n\nNo root device found in this operating system image.");
     | [root] -> root
     | roots ->
       match root_choice with
@@ -599,6 +606,22 @@ and inspect_source g root_choice =
     i_uefi = uefi
   } in
   if verbose () then printf "%s%!" (string_of_inspect inspect);
+
+  (* If some of these fields are "unknown", then that indicates a
+   * failure in inspection, and we shouldn't continue.  For an example
+   * of this, see RHBZ#1278371.  However don't "assert" here, since
+   * the user might have pointed virt-v2v at a blank disk.  Give an
+   * error message instead.
+   *)
+  let error_if_unknown fieldname value =
+    if value = "unknown" then
+      error (f_"inspection could not detect the source guest (or physical machine).\n\nAssuming that you are running virt-v2v/virt-p2v on a source which is supported (and not, for example, a blank disk), then this should not happen.  You should run 'virt-v2v -v -x ... >& log' and attach the complete log to a new bug report (see http://libguestfs.org).\n\nInspection field '%s' was 'unknown'.")
+            fieldname
+  in
+  error_if_unknown "i_type" inspect.i_type;
+  error_if_unknown "i_distro" inspect.i_distro;
+  error_if_unknown "i_arch" inspect.i_arch;
+
   inspect
 
 (* Conversion can fail if there is no space on the guest filesystems

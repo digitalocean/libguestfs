@@ -53,7 +53,6 @@ type partition = {
   p_target_partnum : int;        (* TARGET partition number. *)
   p_target_start : int64;        (* TARGET partition start (sector num). *)
   p_target_end : int64;          (* TARGET partition end (sector num). *)
-  p_mbr_p_type : partition_type  (* Partiton Type (master/extended/logical) *)
 }
 and partition_content =
   | ContentUnknown               (* undetermined *)
@@ -70,11 +69,6 @@ and partition_id =
   | No_ID                        (* No identifier. *)
   | MBR_ID of int                (* MBR ID. *)
   | GPT_Type of string           (* GPT UUID. *)
-and partition_type =
-  | PrimaryPartition
-  | ExtendedPartition
-  | LogicalPartition
-  | NoTypePartition
 
 let rec debug_partition ?(sectsize=512L) p =
   printf "%s:\n" p.p_name;
@@ -103,8 +97,7 @@ let rec debug_partition ?(sectsize=512L) p =
     (match p.p_guid with
     | Some guid -> guid
     | None -> "(none)"
-    );
-  printf "\tpartition type: %s\n" (string_of_partition_type p.p_mbr_p_type)
+    )
 and string_of_partition_content = function
   | ContentUnknown -> "unknown data"
   | ContentPV sz -> sprintf "LVM PV (%Ld bytes)" sz
@@ -115,11 +108,6 @@ and string_of_partition_content_no_size = function
   | ContentPV _ -> "LVM PV"
   | ContentFS (fs, _) -> sprintf "filesystem %s" fs
   | ContentExtendedPartition -> "extended partition"
-and string_of_partition_type = function
-  | PrimaryPartition -> "primary"
-  | ExtendedPartition -> "extended"
-  | LogicalPartition -> "logical"
-  | NoTypePartition -> "none"
 
 (* Data structure describing LVs on the source disk.  This is only
  * used if the user gave the --lv-expand option.
@@ -438,8 +426,16 @@ read the man page virt-resize(1).
     | MBR_ID _ | GPT_Type _ | No_ID -> false
   in
 
-  let find_partitions () =
+  let partitions : partition list =
     let parts = Array.to_list (g#part_list "/dev/sda") in
+
+    if List.length parts = 0 then
+      error (f_"the source disk has no partitions");
+
+    (* Filter out logical partitions.  See note above. *)
+    let parts =
+        List.filter (fun p -> parttype <> MBR || p.G.part_num <= 4_l)
+        parts in
 
     let partitions =
       List.map (
@@ -467,27 +463,18 @@ read the man page virt-resize(1).
             | GPT ->
               try Some (g#part_get_gpt_guid "/dev/sda" part_num)
               with G.Error _ -> None in
-          let mbr_part_type =
-            let mbr_part_type_str = g#part_get_mbr_part_type "/dev/sda" part_num in
-            match mbr_part_type_str with
-            | "primary" -> PrimaryPartition
-            | "extended" -> ExtendedPartition
-            | "logical" -> LogicalPartition
-            | str -> NoTypePartition
-          in
 
           { p_name = name; p_part = part;
             p_bootable = bootable; p_id = id; p_type = typ;
-            p_label = label; p_guid = guid; p_mbr_p_type = mbr_part_type;
+            p_label = label; p_guid = guid;
             p_operation = OpCopy; p_target_partnum = 0;
             p_target_start = 0L; p_target_end = 0L }
       ) parts in
 
-    (* Filter out logical partitions.  See note above. *)
-    let partitions =
-      (* for GPT, all partitions are regarded as Primary Partition,
-       * e.g. there is no Extended Partition or Logical Partition. *)
-      List.filter (fun p -> parttype <> MBR || p.p_mbr_p_type <> LogicalPartition) partitions in
+    if verbose () then (
+      eprintf "%d partitions found\n" (List.length partitions);
+      List.iter debug_partition partitions
+    );
 
     (* Check content isn't larger than partitions.  If it is then
      * something has gone wrong and we shouldn't continue.  Old
@@ -519,13 +506,6 @@ read the man page virt-resize(1).
     loop 0L partitions;
 
     partitions in
-
-  let partitions = find_partitions () in
-
-  if verbose () then (
-    printf "%d partitions found\n" (List.length partitions);
-    List.iter (debug_partition ~sectsize) partitions
-    );
 
   (* Build a data structure describing LVs on the source disk. *)
   let lvs =
@@ -1037,11 +1017,11 @@ read the man page virt-resize(1).
    * the final list just contains partitions that need to be created
    * on the target.
    *)
-  let rec calculate_target_partitions partnum start ~create_surplus = function
+  let partitions =
+    let rec loop partnum start = function
     | p :: ps ->
       (match p.p_operation with
-      | OpDelete ->
-        calculate_target_partitions partnum start ~create_surplus ps (* skip p *)
+      | OpDelete -> loop partnum start ps (* skip p *)
 
       | OpIgnore | OpCopy ->          (* same size *)
         (* Size in sectors. *)
@@ -1055,8 +1035,7 @@ read the man page virt-resize(1).
             partnum start (end_ -^ 1L);
 
         { p with p_target_start = start; p_target_end = end_ -^ 1L;
-          p_target_partnum = partnum } ::
-          calculate_target_partitions (partnum+1) next ~create_surplus ps
+          p_target_partnum = partnum } :: loop (partnum+1) next ps
 
       | OpResize newsize ->           (* resized partition *)
         (* New size in sectors. *)
@@ -1070,13 +1049,12 @@ read the man page virt-resize(1).
             partnum newsize start (next -^ 1L);
 
         { p with p_target_start = start; p_target_end = next -^ 1L;
-          p_target_partnum = partnum } ::
-          calculate_target_partitions (partnum+1) next ~create_surplus ps
+          p_target_partnum = partnum } :: loop (partnum+1) next ps
       )
 
     | [] ->
       (* Create the surplus partition if there is room for it. *)
-      if create_surplus && extra_partition && surplus >= min_extra_partition then (
+      if extra_partition && surplus >= min_extra_partition then (
         [ {
           (* Since this partition has no source, this data is
            * meaningless and not used since the operation is
@@ -1091,15 +1069,12 @@ read the man page virt-resize(1).
           (* Target information is meaningful. *)
           p_operation = OpIgnore;
           p_target_partnum = partnum;
-          p_target_start = start; p_target_end = ~^ 64L;
-          p_mbr_p_type = NoTypePartition
+          p_target_start = start; p_target_end = ~^ 64L
         } ]
       )
       else
-        []
-  in
+        [] in
 
-  let partitions =
     (* Choose the alignment of the first partition based on the
      * '--align-first' option.  Old virt-resize used to always align this
      * to 64 sectors, but this causes boot failures unless we are able to
@@ -1112,27 +1087,40 @@ read the man page virt-resize(1).
         (* Preserve the existing start, but convert to sectors. *)
         (List.hd partitions).p_part.G.part_start /^ sectsize in
 
-    calculate_target_partitions 1 start ~create_surplus:true partitions in
+    loop 1 start partitions in
 
   if verbose () then (
     printf "After calculate target partitions:\n";
     List.iter (debug_partition ~sectsize) partitions
   );
 
-  let mbr_part_type x =
-    match parttype, x.p_part.G.part_num <= 4_l, x.p_type with
-    (* for GPT, all partitions are regarded as Primary Partition. *)
-    | GPT, _, _ -> "primary"
-    | MBR, true, (ContentUnknown|ContentPV _|ContentFS _) -> "primary"
-    | MBR, true, ContentExtendedPartition -> "extended"
-    | MBR, false, _ -> "logical"
-  in
-
   (* Now partition the target disk. *)
   List.iter (
     fun p ->
-      g#part_add "/dev/sdb" (mbr_part_type p) p.p_target_start p.p_target_end
+      g#part_add "/dev/sdb" "primary" p.p_target_start p.p_target_end
   ) partitions;
+
+  (* Set bootable and MBR IDs.  Do this *before* copying over the data,
+   * because the rewritten sfdisk "helpfully" overwrites the partition
+   * table in the first sector of an extended partition if a partition
+   * is changed from primary to extended.  Thus we need to set the
+   * MBR ID before doing the copy so sfdisk doesn't corrupt things.
+   *)
+  let set_partition_bootable_and_id p =
+      if p.p_bootable then
+        g#part_set_bootable "/dev/sdb" p.p_target_partnum true;
+
+      may (g#part_set_name "/dev/sdb" p.p_target_partnum) p.p_label;
+      may (g#part_set_gpt_guid "/dev/sdb" p.p_target_partnum) p.p_guid;
+
+      match parttype, p.p_id with
+      | GPT, GPT_Type gpt_type ->
+        g#part_set_gpt_type "/dev/sdb" p.p_target_partnum gpt_type
+      | MBR, MBR_ID mbr_id ->
+        g#part_set_mbr_id "/dev/sdb" p.p_target_partnum mbr_id
+      | GPT, (No_ID|MBR_ID _) | MBR, (No_ID|GPT_Type _) -> ()
+  in
+  List.iter set_partition_bootable_and_id partitions;
 
   (* Copy over the data. *)
   let copy_partition p =
@@ -1176,35 +1164,6 @@ read the man page virt-resize(1).
       | OpIgnore | OpDelete -> ()
   in
   List.iter copy_partition partitions;
-
-  (* Set bootable and MBR IDs.  Do this *after* copying over the data,
-   * so that we can magically change the primary partition to an extended
-   * partition if necessary.
-   *)
-  let set_partition_bootable_and_id p =
-      if p.p_bootable then
-        g#part_set_bootable "/dev/sdb" p.p_target_partnum true;
-
-      (match p.p_label with
-      | Some label ->
-        g#part_set_name "/dev/sdb" p.p_target_partnum label;
-      | None -> ()
-      );
-
-      (match p.p_guid with
-      | Some guid ->
-        g#part_set_gpt_guid "/dev/sdb" p.p_target_partnum guid;
-      | None -> ()
-      );
-
-      match parttype, p.p_id with
-      | GPT, GPT_Type gpt_type ->
-        g#part_set_gpt_type "/dev/sdb" p.p_target_partnum gpt_type
-      | MBR, MBR_ID mbr_id ->
-        g#part_set_mbr_id "/dev/sdb" p.p_target_partnum mbr_id
-      | GPT, (No_ID|MBR_ID _) | MBR, (No_ID|GPT_Type _) -> ()
-  in
-  List.iter set_partition_bootable_and_id partitions;
 
   (* Fix the bootloader if we aligned the first partition. *)
   if align_first_partition_and_fix_bootloader then (

@@ -1545,7 +1545,7 @@ SOURCES_ML = \
 
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@BOBJECTS = \
-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
+@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/guestfs_config.cmo \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(top_builddir)/v2v/xml.cmo \
@@ -1578,7 +1578,9 @@ SOURCES_ML = \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	../xml-c.c
 
 
-# Do the installation by hand, because we want to run ocamlfind.
+# Run ocamlfind to perform the install.  ocamlfind refuses to install
+# the package if it is already installed, so remove the old package
+# first.
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@data_hook_files = META \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	*.so *.a *.cmi \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(srcdir)/*.mli \
@@ -2008,6 +2010,8 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@install-data-hook:
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	mkdir -p $(DESTDIR)$(OCAMLLIB)
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	mkdir -p $(DESTDIR)$(OCAMLLIB)/stublibs
+@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	rm -rf $(DESTDIR)$(OCAMLLIB)/v2v_test_harness
+@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	rm -rf $(DESTDIR)$(OCAMLLIB)/stublibs/dllv2v_test_harness.so*
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) install \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  v2v_test_harness \

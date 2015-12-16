@@ -53,14 +53,14 @@ let convert ~keep_serial_console (g : G.guestfs) inspect source =
   (* Get the data directory. *)
   let virt_tools_data_dir =
     try Sys.getenv "VIRT_TOOLS_DATA_DIR"
-    with Not_found -> Config.datadir // "virt-tools" in
+    with Not_found -> Guestfs_config.datadir // "virt-tools" in
 
   let virtio_win =
     try Sys.getenv "VIRTIO_WIN"
     with Not_found ->
       try Sys.getenv "VIRTIO_WIN_DIR" (* old name for VIRTIO_WIN *)
       with Not_found ->
-        Config.datadir // "virtio-win" in
+        Guestfs_config.datadir // "virtio-win" in
 
   (* Check if RHEV-APT exists.  This is optional. *)
   let rhev_apt_exe = virt_tools_data_dir // "rhev-apt.exe" in
@@ -717,26 +717,29 @@ echo uninstalling Xen PV driver
     *)
     let rootpart = inspect.i_root in
 
-    (* Check that the root device contains NTFS magic. *)
-    let magic = g#pread_device rootpart 8 3L in
-    if magic = "NTFS    " then (
-      (* Get the size of the whole disk containing the root partition. *)
-      let rootdev = g#part_to_dev rootpart in (* eg. /dev/sda *)
-      let size = g#blockdev_getsize64 rootdev in
+    (* Ignore if the rootpart is something like /dev/sda.  RHBZ#1276540. *)
+    if not (g#is_whole_device rootpart) then (
+      (* Check that the root device contains NTFS magic. *)
+      let magic = g#pread_device rootpart 8 3L in
+      if magic = "NTFS    " then (
+        (* Get the size of the whole disk containing the root partition. *)
+        let rootdev = g#part_to_dev rootpart in (* eg. /dev/sda *)
+        let size = g#blockdev_getsize64 rootdev in
 
-      let heads =                       (* refer to the table above *)
-        if size < 2114445312L then 0x40
-        else if size < 4228374780L then 0x80
-        else 0xff in
+        let heads =             (* refer to the table above *)
+          if size < 2114445312L then 0x40
+          else if size < 4228374780L then 0x80
+          else 0xff in
 
-      (* Update NTFS's idea of the number of heads.  This is an
-       * unsigned 16 bit little-endian integer, offset 0x1a from the
-       * beginning of the partition.
-       *)
-      let bytes = String.create 2 in
-      bytes.[0] <- Char.chr heads;
-      bytes.[1] <- '\000';
-      ignore (g#pwrite_device rootpart bytes 0x1a_L)
+        (* Update NTFS's idea of the number of heads.  This is an
+         * unsigned 16 bit little-endian integer, offset 0x1a from the
+         * beginning of the partition.
+         *)
+        let bytes = String.create 2 in
+        bytes.[0] <- Char.chr heads;
+        bytes.[1] <- '\000';
+        ignore (g#pwrite_device rootpart bytes 0x1a_L)
+      )
     )
   in
 
@@ -774,6 +777,7 @@ echo uninstalling Xen PV driver
 
   guestcaps
 
+(* Register this conversion module. *)
 let () =
   let matching = function
     | { i_type = "windows" } -> true

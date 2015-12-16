@@ -1676,7 +1676,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(LIBVIRT_CFLAGS)
 
 @HAVE_OCAML_TRUE@BOBJECTS = \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/guestfs_config.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmo \
@@ -1756,7 +1756,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	rhel-7.0
 
 @HAVE_OCAML_TRUE@v2v_unit_tests_BOBJECTS = \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/config.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/guestfs_config.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
 @HAVE_OCAML_TRUE@	stringMap.cmo \

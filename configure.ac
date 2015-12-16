@@ -26,7 +26,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [30])
-m4_define([libguestfs_release], [4])
+m4_define([libguestfs_release], [6])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -155,6 +155,8 @@ nw="$nw -Winline"                    # daemon.h's asprintf_nowarn
 nw="$nw -Wshadow"                    # numerous, plus we're not unanimous
 nw="$nw -Wunsafe-loop-optimizations" # just a warning that an optimization
                                      # was not possible, safe to ignore
+nw="$nw -Wstack-protector"           # Useless warning when stack protector
+                                     # cannot being used in a function.
 nw="$nw -Wpacked"                    # Allow attribute((packed)) on structs
 nw="$nw -Wlong-long"                 # Allow long long since it's required
                                      # by Python, Ruby and xstrtoll.
@@ -1754,7 +1756,7 @@ AC_CONFIG_FILES([Makefile
                  lua/examples/Makefile
                  make-fs/Makefile
                  mllib/Makefile
-                 mllib/config.ml
+                 mllib/guestfs_config.ml
                  ocaml/META
                  ocaml/Makefile
                  ocaml/examples/Makefile

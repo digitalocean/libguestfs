@@ -223,16 +223,17 @@ let create_libvirt_xml ?pool source target_buses guestcaps
    * missing from the old metadata.
    *)
   let video, graphics =
-    let video, graphics =
+    let video_model, graphics =
       match guestcaps.gcaps_video with
       | QXL ->
-        e "video" [ "type", "qxl"; "ram", "65536" ] [],
+        e "model" [ "type", "qxl"; "ram", "65536" ] [],
         e "graphics" [ "type", "vnc" ] []
       | Cirrus ->
-        e "video" [ "type", "cirrus"; "vram", "9216" ] [],
+        e "model" [ "type", "cirrus"; "vram", "9216" ] [],
         e "graphics" [ "type", "spice" ] [] in
 
-    append_attr ("heads", "1") video;
+    append_attr ("heads", "1") video_model;
+    let video = e "video" [] [ video_model ] in
 
     (match source.s_display with
     | Some { s_keymap = Some km } -> append_attr ("keymap", km) graphics
@@ -405,6 +406,12 @@ class output_libvirt oc output_pool = object
     let tmpfile, chan = Filename.open_temp_file "v2vlibvirt" ".xml" in
     DOM.doc_to_chan chan doc;
     close_out chan;
+
+    if verbose () then (
+      printf "resulting XML for libvirt:\n%!";
+      DOM.doc_to_chan stdout doc;
+      printf "\n%!";
+    );
 
     (* Define the domain in libvirt. *)
     let cmd =

@@ -1,3 +1,656 @@
+commit 7061441037bd7c0b6c7d74c2a2d696e9505fc339
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 15 12:29:13 2015 +0000
+
+    Version 1.30.6.
+
+commit f159d46dea28ceca8537a66fa543f0a07b296b06
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Dec 14 22:38:52 2015 +0000
+
+    build: Disable -Wstack-protector warning.
+    
+    Fires with gcc 5.3.1 (on Fedora 23).  It's a completely useless
+    warning since it just tells you that a function couldn't use the stack
+    protector.
+    
+    (cherry picked from commit 6c6c3ea67596afd1947f71d4f3f1252f1cc0f2d6)
+
+commit 5cccaf45cbeb5deadb4a346dec6fccca35d64be4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 11 15:48:05 2015 +0000
+
+    customize: Capitalize the first character in --sm-credentials help text.
+    
+    Prior to this commit:
+    
+    $ virt-builder --help
+    [...]
+      --sm-attach SELECTOR         Attach to a subscription-manager pool
+      --sm-credentials SELECTOR    credentials for subscription-manager
+      --sm-register                Register using subscription-manager
+    
+    Really the generator ought to check this.
+    
+    (cherry picked from commit cc717138a96a221e040f96c50d2d176d9e5cdd21)
+
+commit f3861dcb6da308fbdd7f2241c1d5e0a817115ae2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Dec 4 11:02:51 2015 +0100
+
+    builder: create temporary images in the cachedir (RHBZ#1288201)
+    
+    Temporary images can be quite big, more than the space available in
+    $TMPDIR when it's on a tmpfs; hence, place them in our cachedir
+    instead.
+    
+    (cherry picked from commit a090a48f44e8d0c6e3410855b087cc936b1ee1ad)
+
+commit d620b6ce51eec9c546b0b0d3e768f5d53014f509
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 27 09:52:49 2015 +0000
+
+    resize: Add a regression test for RHBZ#1285847.
+    
+    (cherry picked from commit 9d5abaa4b879440b44fc671f5d1b1a702f582397)
+
+commit e62cb9a79648f7de7dc93802f418435b08b6ae72
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 27 10:25:17 2015 +0000
+
+    resize: Work around regression in sfdisk (RHBZ#1285847).
+    
+    'sfdisk --part-type' used to merely set the MBR ID byte in the
+    partition.  However since sfdisk was rewritten, it now "helpfully"
+    corrupts the first sector of the partition if you change the type byte
+    from an ordinary partition to an extended partition.
+    
+    So we need to change the order in which we sets the partition type
+    byte, to do it before copying the partition content.
+    
+    This fixes a major regression in the way that virt-resize handles any
+    guest with logical partitions (specifically Ubuntu guests).
+    
+    (cherry picked from commit abe63eeaf2b1056a7c5d941f4aaecb5a050c3fee)
+
+commit 36027e7c3ee0df6e06b017d059c9bbc760c95ef5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 10 20:34:46 2015 +0000
+
+    resize: Use 'may' pattern in various places.
+    
+    This is upstream commit be1b9315ac79e866c4638b60997a48960959ff15, but
+    only the parts that apply to virt-resize.
+
+commit 08d0136a54edb8066e2c18a004c63ee6846eb1eb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 10 20:07:56 2015 +0000
+
+    mllib: Add Common_utils 'may' function.
+    
+    This higher order function encapsulates the following pattern:
+    
+      match x with
+      | None -> ()
+      | Some x -> f x
+    
+    (replaced with: `may f x`)
+    
+    This is taken from OCaml lablgtk (Gtk bindings) where this pattern is
+    used frequently.
+    
+    See also: https://ocaml.org/learn/tutorials/labels.html
+    
+    (cherry picked from commit 9a2c5b7c4d367aae665ab66f85e463f9d244e465)
+
+commit 940397fb906927fc95cabc95bcb57b69a250ed38
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 27 09:00:01 2015 +0000
+
+    builder: pxzcat: If write fails, display correct error message.
+    
+    If uncompressing a template to a filesystem which is nearly full,
+    virt-builder displays an error which points to the wrong (source) file:
+    
+    $ virt-builder fedora-22
+    [   1.2] Downloading: http://libguestfs.org/download/builder/fedora-22.xz
+    [   1.7] Planning how to build this image
+    [   1.7] Uncompressing
+    /home/rjones/.cache/virt-builder/fedora-22.x86_64.1: No space left on device
+    /home/rjones/.cache/virt-builder/fedora-22.x86_64.1: No space left on device
+    /home/rjones/.cache/virt-builder/fedora-22.x86_64.1: No space left on device
+    /home/rjones/.cache/virt-builder/fedora-22.x86_64.1: No space left on device
+    
+    (The error message is usually printed once by each thread, so it is
+    printed several times.)
+    
+    Change the error message to point to the output file, which might be a
+    temporary or the final file depending on the build plan:
+    
+    $ virt-builder fedora-22
+    [   1.1] Downloading: http://libguestfs.org/download/builder/fedora-22.xz
+    [   1.6] Planning how to build this image
+    [   1.6] Uncompressing
+    fedora-22.img: No space left on device
+    fedora-22.img: No space left on device
+    fedora-22.img: No space left on device
+    fedora-22.img: No space left on device
+    
+    (cherry picked from commit 4085acc67f909877e62ac289888b670e931c9b27)
+
+commit b7ec0f160d3d875f094eccb30314558a264667d5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 24 11:14:37 2015 +0000
+
+    fish: ps_restore is only used when HAVE_LIBREADLINE is defined.
+    
+    Thanks: Keresztes Péter-Zoltán
+    (cherry picked from commit e49680bdd6dfd4a2adf14b5919d466be553280c6)
+
+commit e0b2711d9cba0ec48fe370633fcb5f1448237af4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 20 10:27:53 2015 +0000
+
+    v2v: Add full stop after multi-line error message.
+    
+    (cherry picked from commit 37e145140b08aa62d1ad59029548a74ba93cc8b1)
+
+commit 43d4682b646cf72b11dc975088f53c91ec37e343
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 19 13:08:26 2015 +0000
+
+    v2v: Detect conversions where the source disk has zero size (RHBZ#1283588).
+    
+    If you try to convert a guest that has a zero-sized disk, it
+    will currently fail in a rather strange way.  Usually you will
+    see errors in the debug output:
+    
+      [    0.562714] sd 2:0:0:0: [sda] Read Capacity(16) failed: Result: hostbyte=DID_OK driverbyte=DRIVER_SENSE
+      [    0.563884] sd 2:0:0:0: [sda] Sense Key : Not Ready [current]
+      [    0.564587] sd 2:0:0:0: [sda] Add. Sense: Logical unit not ready, manual intervention required
+    
+    followed by virt-v2v failing with:
+    
+      libguestfs: trace: v2v: inspect_os = []
+      virt-v2v: error: inspection could not detect the source guest (or physical
+      machine).
+    
+    Additionally, because of a problem with the ssh driver in qemu (or
+    perhaps, with sftp-server on the remote side) it is not possible to
+    use the ssh driver to open a block device path on the remote server.
+    The drive will appear as zero-sized, triggering the above error.
+    
+    Therefore detect this situation, and emit an error (see below).  Also
+    add a section to the manual describing the workaround required for
+    converting RHEL 5 Xen guests which are located on block devices.
+    
+      virt-v2v: error: guest disk sda appears to be zero bytes in size.
+    
+      There could be several reasons for this:
+    
+      Check that the guest doesn't really have a zero-sized disk.  virt-v2v
+      cannot convert such a guest.
+    
+      If you are converting a guest from an ssh source and the guest has a disk
+      on a block device (eg. on a host partition or host LVM LV), then
+      conversions of this type are not supported.  See "XEN OR SSH CONVERSIONS
+      FROM BLOCK DEVICES" in the virt-v2v(1) manual for a workaround.
+    
+    (cherry picked from commit 2ea771e4f843f781d2cbc4ecde691cf4e140768e)
+
+commit b955542a94ed40598de77e3b6322439fcbd75534
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 16 21:41:21 2015 +0000
+
+    p2v: Tidy up in man page.
+    
+    (cherry picked from commit 05d08b8d190e58c8a2ef92b35c391d600217f511)
+
+commit 9c5c47c20776d2aa211cbf29b77c82e719365d7e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 16 11:34:00 2015 +0000
+
+    p2v: Send physical server 'dmesg' output to debug dir on conversion server.
+    
+    If the virt-p2v ISO doesn't contain the correct drivers for the
+    hardware on the physical server, that can cause peculiar conversion
+    problems.  This was hard to diagnose because we could not see the
+    'dmesg' output from the physical server.
+    
+    Upload 'dmesg' output from the physical server (more precisely: from
+    the virt-p2v ISO's kernel running on the physical server) to the
+    virt-v2v conversion server debugging directory, so that this
+    information is available for debugging later.
+    
+    Unfortunately this involves yet another copy of the 'read_whole_file'
+    function.
+    
+    (cherry picked from commit 7406c76bcfb0fecda1a5597601ff99f52978ec6c)
+
+commit 47a777941b475d579d0964d1673d9c5d7138911a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Nov 15 21:51:30 2015 +0000
+
+    v2v: Add comment.
+    
+    (cherry picked from commit d2ea61bd1c85a334accdd0737c843a985d2cfa8f)
+
+commit ec4580156121fab912e324b902fd60a216982dea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 17 22:46:29 2015 +0000
+
+    Version 1.30.5.
+
+commit e456130f2e2b2dcc1b007effb3e7343f812209f2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 13 11:46:20 2015 +0000
+
+    inspection: Fix detection of the kernel version of Windows ≥ 10 (RHBZ#1281578).
+    
+    See the description in the bug report:
+    
+    https://bugzilla.redhat.com/show_bug.cgi?id=1281578
+    
+    Thanks: Richard Tollerton for alerting me to this change in the way
+    that Windows version numbers are stored in the Registry starting with
+    Windows ≥ 10.
+    
+    (cherry picked from commit c2d216d1668a0ebff4c356f232c01fb0851be897)
+
+commit 3f33818167102a5b6b0c8319aea52b3650c194e9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 10 12:23:18 2015 +0000
+
+    daemon: lvm: Change the separator character to ':'.
+    
+    The separator character (currently comma) was picked arbitrarily to
+    allow us to parse the output of commands like 'lvs' for APIs such as
+    'lvs-full'.  Unfortunately the choice of comma conflicts with the 'lvs
+    -o modules' column, since the list of modules is separated by commas,
+    breaking our parser.
+    
+    Change the separator to another arbitrary character (colon) which
+    hopefully is not used by any column.
+    
+    See also:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1278878#c11
+    
+    (cherry picked from commit b91b39e06ab7eb9b9b06c8b4dfef2ef9f381ab19)
+
+commit 979b85c992269f6f5a1ef517b71ef39c9dabc7cd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 10 12:03:39 2015 +0000
+
+    daemon: lvm: Only return public LVs from guestfs_lvs API (RHBZ#1278878).
+    
+    When a disk image uses LVM thinp (thin provisioning), the guestfs_lvs
+    API would return the thinp pools.  This confused other APIs because
+    thinp pools don't have corresponding /dev/VG/LV device nodes.
+    
+    Filter the LVs that are returned using "lv_role=public".
+    
+    Thanks: Fabian Deutsch
+    (cherry picked from commit fccd4ee5e846083096554a41fae831240fc72b1d)
+
+commit 4aa793cc5db08b8e7ab52143e09da0564db78487
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Nov 11 16:10:13 2015 +0000
+
+    dib: Turn a few progress messages into info messages.
+    
+    (cherry picked from commit 995ce5f6481c72cb4bd12a74c7c6fa19810c5fa9)
+
+commit 203e7bd4feec76eb3aa4d7e9568e4f15a1f9b69f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 12 22:38:59 2015 +0000
+
+    inspector: --xpath: Copy node to new document (RHBZ#1281577).
+    
+    'virt-inspector --xpath' can segfault.
+    
+    When run under valgrind, it shows this error:
+    
+    ==2254== Invalid free() / delete / delete[] / realloc()
+    ==2254==    at 0x4C29D6A: free (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+    ==2254==    by 0x53BA198: xmlFreeNodeList (tree.c:3690)
+    ==2254==    by 0x53B9F65: xmlFreeDoc (tree.c:1247)
+    ==2254==    by 0x405BFA: do_xpath (inspector.c:808)
+    ==2254==    by 0x405BFA: main (inspector.c:250)
+    ==2254==  Address 0x1030a037 is 311 bytes inside a block of size 1,048 alloc'd
+    ==2254==    at 0x4C28C50: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+    ==2254==    by 0x545DE86: xmlDictAddString.isra.0 (dict.c:270)
+    ==2254==    by 0x545E961: xmlDictLookup (dict.c:923)
+    ==2254==    by 0x539C6DC: xmlDetectSAX2 (parser.c:1067)
+    ==2254==    by 0x53B0B92: xmlParseDocument (parser.c:10725)
+    ==2254==    by 0x53B1276: xmlDoRead (parser.c:15295)
+    ==2254==    by 0x40587D: do_xpath (inspector.c:772)
+    ==2254==    by 0x40587D: main (inspector.c:250)
+    
+    The cause appears to be that when copying the matching node(s) found
+    by the xpath expression, we have to copy them into the new document
+    (using xmlDocCopyNode instead of xmlCopyNode).
+    
+    This bug has existed since this functionality was originally added in
+    commit d1ee71782ace98a11c5aabaf1f9fd5f601e08367.
+    
+    (cherry picked from commit 6f38aff2622a72236cebef5be71af1e564764a3d)
+
+commit 95234424ab5855878021f65ad423009c2e1937af
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 12 22:13:36 2015 +0000
+
+    inspector: Whitespace changes.
+    
+    Just break up a few long source lines.
+    
+    (cherry picked from commit ab48601afd6365861ba7e29c34028efbf41ba00b)
+
+commit dc0589b806ae4e18637dcee2adb101a1324e2d71
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 12 18:12:04 2015 +0000
+
+    builder: Add Fedora 23 aarch64 image.
+    
+    (cherry picked from commit 7747723aa0c91f2ae4dd5b3d0d2252dc68e7d956)
+
+commit dae570b48780e0d251fdedf2a3fed79daf72c222
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 12 16:41:36 2015 +0000
+
+    builder: fedora-aarch64.sh: Switch to using Gerd's edk2.
+    
+    (cherry picked from commit c15b8773100929e38ac62f15c4d30c2a712427a1)
+
+commit ab1bd27251a268e91662f357683729b29adaae98
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Nov 9 18:26:05 2015 +0100
+
+    customize: check for file existence with --edit (RHBZ#1275806)
+    
+    Check that a path provided to --edit exists already; while the is_file
+    call later will fail for non-existing files, with an explicit check a
+    better error message can be provided.
+    
+    (cherry picked from commit 6e41fc5a7f4fc56514dc1f2754db8c2c6eec9417)
+
+commit 2cf5f4c338c1e7f96cedcbfaac550caebdce3384
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Nov 9 16:42:32 2015 +0100
+
+    v2v: test-v2v-i-ova-two-disks.sh: fix sha1 filename
+    
+    Run sha1sum on the compressed filename (with .gz extension, after the
+    gzip run), and reference that file in the .mf file.
+    
+    (cherry picked from commit 78db05a05c1034f95619b958e4a3ce1253ac855a)
+
+commit c6e4ee6f9125f96a15744c9a3fc016284fce2150
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 6 12:12:53 2015 +0000
+
+    inspect: windows: Fail hard if we cannot detect Windows architecture (RHBZ#1278371).
+    
+    The user did not have the 'file' command installed, and when they
+    attempted to do a v2v conversion of a Windows guest, inspection
+    succeeded, but the Types.i_arch field was found to contain "unknown".
+    virt-v2v conversion failed to locate the correct virtio drivers as a
+    result.
+    
+    The 'file' command is required, and there's no other reason we should
+    not be able to detect the architecture of any Windows guest, so fail
+    hard in this situation.
+    
+    (cherry picked from commit 7964e48b5e4c0d0cc2bcf2c2bc027c65fa855d62)
+
+commit 7ccdc8ea9fc6dcdfc142a75a474577342a5f403b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Nov 6 12:09:15 2015 +0000
+
+    generator: Another minor indentation fix in src/actions-*.c files.
+    
+    (cherry picked from commit 32368f25f1640e6af470dd7d5cd3eca5703d8bf9)
+
+commit 934950c2e024f5f4d0b114cf9a4afcd148d22d23
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 5 13:58:12 2015 +0000
+
+    v2v: Improve the error when virt-v2v is run on a blank disk.
+    
+    The error messages changes from:
+    
+      $ virt-v2v -i disk /tmp/blank.img -o null
+      [...]
+      [  14.6] Inspecting the overlay
+      virt-v2v: error: no root device found in this operating system image.
+    
+    to:
+    
+      $ virt-v2v -i disk /tmp/blank.img -o null
+      [...]
+      [  15.2] Inspecting the overlay
+      virt-v2v: error: inspection could not detect the source guest (or physical
+      machine).
+    
+      Assuming that you are running virt-v2v/virt-p2v on a source which is
+      supported (and not, for example, a blank disk), then this should not
+      happen.  You should run 'virt-v2v -v -x ... >& log' and attach the complete
+      log to a new bug report (see http://libguestfs.org).
+    
+      No root device found in this operating system image.
+    
+    (cherry picked from commit 18fbdaaf14ad341c8067d9645df2387093e3f94d)
+
+commit 0ddf9932048bd0888b8ce4c9779e2d497b3c1032
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 5 13:44:07 2015 +0000
+
+    v2v: Check if i_type, i_distro or i_arch contains "unknown".
+    
+    That indicates that inspection failed, so we should error out early.
+    
+    (cherry picked from commit 458d7c09b72e16e41c79081455030d4ca5363328)
+
+commit aa26e6e2e4a2ca51e625d7f290f8fdc9b8f0afa8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Nov 4 13:03:17 2015 +0000
+
+    builder: Add fedora-23 image.
+    
+    (cherry picked from commit 226848762b698ab39a3cc570e003fee5a6e09408)
+
+commit 4a7b0af828aed0802ff08d70a5a60f245512e19b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Nov 4 09:47:12 2015 +0000
+
+    sparsify: Don't mark virt-sparsify --in-place as "experimental".
+    
+    Thanks: Gil Klein.
+    (cherry picked from commit 0c879fcd15990f7b46ea373db85a750319d6e5e8)
+
+commit 9c068dace4d9189cfdfcda405ed23c5b0d2e1f22
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 3 15:36:45 2015 +0000
+
+    builder: Document using 'qemu-img amend' for RHEL 6 compat (RHBZ#1204131).
+    
+    (cherry picked from commit 9f70d71d4af6b2aaf69873a9ab144c8e2d6ae5c4)
+
+commit 587ef49f61384412899741722dbc93c161286a0b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Nov 2 23:30:07 2015 +0000
+
+    p2v: Don't present the vdsm output driver to the user (RHBZ#1277074).
+    
+    Thanks: Ming Xie.
+    (cherry picked from commit c192d99c0903c81174a820fdba4b4f00fa85f22a)
+
+commit cab0f2b92ccc0fd04330b0a673d159539b585ebf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 31 22:53:14 2015 +0000
+
+    df: Close parenthesis in comment.
+    
+    (cherry picked from commit 2c62de52b73f2c3676799342a0e13690463f523b)
+
+commit ffa655629e13e172514ecf93b8d9e25f34d72f0c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 31 22:08:06 2015 +0000
+
+    build: Make 'make clean' remove a few backup files.
+    
+    (cherry picked from commit 88c506767a36c5596b9c5fbdfad7a9b706657e30)
+
+commit 9e14aad7a153d76f37e3eb91d7d174dcf68f8f4e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 29 19:06:19 2015 +0000
+
+    v2v: utils: Remove unused function compare_app2_version_min.
+    
+    (cherry picked from commit 6a688c51196f27d06e3ff0895abd1c2e514a0dd8)
+
+commit 80208030853ec5238a76cc8d7337993666836dc1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 29 18:42:08 2015 +0000
+
+    ocaml: Rename Config module as Guestfs_config.
+    
+    Unfortunately Coccinelle places a Config module in the ocaml libdir,
+    and this confuses ocamlfind (only when Coccinelle is installed).
+    Since this is a private module that only libguestfs tools use
+    internally, just rename it from Config -> Guestfs_config.
+    
+    (cherry picked from commit 63952d966655a545f90a7051386d9814af94e6cb)
+
+commit 77eb55bbbe6940c5e98cc2d414d7fd4b02390cce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 30 09:39:28 2015 +0000
+
+    Revert "resize: add function find_partitions"
+    
+    This reverts commit 5aa7e99cb9bba7eb7ab0d826fe76b29d9b1c9b2e.
+    
+    (cherry picked from commit db5ebecd8a0a762c73de22b67b63f23572a585e2)
+
+commit 2f00600f85ada655baf60df34e179c4a9444a751
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 30 09:17:30 2015 +0000
+
+    Revert "resize: add function calculate_target_partitions"
+    
+    This reverts commit 21677c5b46468609d393a724ea629d948c87aec7.
+    
+    (cherry picked from commit 3258695162f4fa1bbf8499bf604d8d5e51460d93)
+
+commit f74e5b8d8c89e9400d3fef212a3ce5a3ce83bcaa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 30 09:13:01 2015 +0000
+
+    Revert "resize: add function mbr_part_type"
+    
+    This reverts commit fc34e2d16c2d13d6ae7a381ba931e345ab5ae56d.
+    
+    (cherry picked from commit 8ad069c402a451fb40a9c03fe9045f7ef9cc1e69)
+
+commit c6f1572fee9028e035f031707de0ca3dfd6f01eb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 30 09:10:15 2015 +0000
+
+    Revert "resize: add p_mbr_p_type as member of type partition"
+    
+    This reverts commit 6e989fd709fea37430398cbb7c01c52cd44bd1ac.
+    
+    (cherry picked from commit b1a7903fd12f86f64aac8e3829757a2bf949ec6c)
+
+commit 66ea7080bdce6fdd0863eb493b47ae555d52aa91
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 30 08:50:10 2015 +0000
+
+    v2v: windows: Don't do NTFS heads fix if i_root is not a partition (RHBZ#1276540).
+    
+    The error was:
+    
+    libguestfs: trace: pread_device = "NTFS    "
+    libguestfs: trace: part_to_dev "/dev/sda"
+    guestfsd: main_loop: new request, len 0x34
+    guestfsd: error: device name is not a partition
+    guestfsd: main_loop: proc 272 (part_to_dev) took 0.00 seconds
+    libguestfs: trace: part_to_dev = NULL (error)
+    virt-v2v: error: libguestfs error: part_to_dev: device name is not a
+    partition
+    
+    (cherry picked from commit 20ae8bd9ec9fdc3c8ffe939185017fb6ae11f8c1)
+
+commit 777bad3ca0c791baddeb3c71ff54de117d8bbf75
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 27 18:00:45 2015 +0000
+
+    builder: Add Debian 7 sparc64 image.
+    
+    (cherry picked from commit 25fee09a4472e9f11377efe6f5a3b782a5f9d59d)
+
+commit 0a64e88b363d3da133ffa7e09de7610093652980
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 24 12:34:24 2015 +0100
+
+    ocaml: Allow 'make install' to be run twice.
+    
+    'ocamlfind install' doesn't like to install the same package if it is
+    already installed.  It will give errors like:
+    
+      ocamlfind: Package guestfs is already installed
+    
+    or:
+    
+      ocamlfind: Conflict with file: /usr/lib64/ocaml/guestfs/mlguestfs.cmxa
+    
+    Fix this by removing the old installed files before running
+    'ocamlfind install'.  An alternative would be to use
+    'ocamlfind uninstall', but this seems more direct.
+    
+    (cherry picked from commit 1c506aa960f51ae0a059d19cfcd6dec26aa79487)
+
+commit a7bf5ca6e4380277b3983170adc591322fed3896
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Oct 24 12:31:31 2015 +0100
+
+    builder: Allow 'make install' to be run twice.
+    
+    The error is:
+    
+    ln -s xdg/virt-builder /tmp/p/etc/virt-builder
+    ln: failed to create symbolic link '/etc/virt-builder/virt-builder': File exists
+    
+    There is no 'LN_SF' macro, but according to the documentation at
+    least, it should be safe to add a '-f' flag since it will work for
+    both the 'ln' and 'cp' variants of the macro.
+    
+    (cherry picked from commit 905a9c54e615e591fad2b9cf269bfd9742e3a95d)
+
+commit 6d4243c008397adc68decdce2187f0bdd2d766a2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 22 14:39:03 2015 +0200
+
+    v2v: -o libvirt: dump XML for libvirt if verbose
+    
+    When running in verbose mode, dump the XML we created for libvirt:
+    this way it is easier to debug mismatches between what we want to setup
+    in libvirt, and what actually gets defined.
+    
+    (cherry picked from commit a1b7540b780b0855145cd7407963cd2714d03da4)
+
+commit 6b07cf82965a35cfa15422dae75f35ee71ca5cf1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 22 14:10:16 2015 +0200
+
+    v2v: -o libvirt: fix <video> element (RHBZ#1225789)
+    
+    Create the correct tags for <video> in the libvirtxml, so all the
+    attributes are in a <model> child of <video> instead of <video> itself.
+    
+    Adapt the XML of test-v2v-i-ova to the different expected XML.
+    
+    (cherry picked from commit f56031d5493af36e46de7a97f150a8724b6007fa)
+
 commit 59f5fdbb90c9e28c937ec6906e7cc8df78dbf765
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sun Oct 25 20:53:42 2015 +0000
