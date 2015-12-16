@@ -427,7 +427,7 @@ let rec argspec () =
         fun s ->
           sm_credentials := Some (Subscription_manager.parse_credentials_selector s)
       ),
-      "SELECTOR" ^ " " ^ s_"credentials for subscription-manager"
+      "SELECTOR" ^ " " ^ s_"Credentials for subscription-manager"
     ),
     Some "SELECTOR", "Set the credentials for C<subscription-manager>.\n\nSee L<virt-builder(1)/SUBSCRIPTION-MANAGER> for the format of\nthe C<SELECTOR> field.";
   ]

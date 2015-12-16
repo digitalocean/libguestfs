@@ -290,7 +290,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = config.ml
+CONFIG_CLEAN_FILES = guestfs_config.ml
 CONFIG_CLEAN_VPATH_FILES =
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_1 = common_utils_tests$(EXEEXT) \
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@	JSON_tests$(EXEEXT)
@@ -402,7 +402,7 @@ am__tty_colors = { \
     std='[m'; \
   fi; \
 }
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.ml.in \
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/guestfs_config.ml.in \
 	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/common-rules.mk \
 	$(top_srcdir)/subdir-rules.mk
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -1525,7 +1525,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	$(SOURCES_MLI) \
-	$(filter-out config.ml libdir.ml,$(SOURCES_ML)) \
+	$(filter-out guestfs_config.ml libdir.ml,$(SOURCES_ML)) \
 	$(SOURCES_C) \
 	common_utils_tests.ml \
 	JSON_tests.ml
@@ -1542,7 +1542,7 @@ SOURCES_MLI = \
 	uRI.mli
 
 SOURCES_ML = \
-	config.ml \
+	guestfs_config.ml \
 	libdir.ml \
 	common_gettext.ml \
 	common_utils.ml \
@@ -1612,7 +1612,7 @@ SOURCES_C = \
 # Tests.
 @HAVE_OCAML_TRUE@common_utils_tests_SOURCES = dummy.c
 @HAVE_OCAML_TRUE@common_utils_tests_BOBJECTS = \
-@HAVE_OCAML_TRUE@	config.cmo \
+@HAVE_OCAML_TRUE@	guestfs_config.cmo \
 @HAVE_OCAML_TRUE@	common_gettext.cmo \
 @HAVE_OCAML_TRUE@	common_utils.cmo \
 @HAVE_OCAML_TRUE@	common_utils_tests.cmo
@@ -1678,7 +1678,7 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-config.ml: $(top_builddir)/config.status $(srcdir)/config.ml.in
+guestfs_config.ml: $(top_builddir)/config.status $(srcdir)/guestfs_config.ml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 clean-checkPROGRAMS:

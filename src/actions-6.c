@@ -45,7 +45,7 @@ guestfs_internal_test_rint (guestfs_h *g,
   int r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "internal_test_rint", 18);
+                                      "internal_test_rint", 18);
   if (val == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "internal_test_rint", "val");
@@ -86,7 +86,7 @@ guestfs_internal_test_rint64err (guestfs_h *g)
   int64_t r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "internal_test_rint64err", 23);
+                                      "internal_test_rint64err", 23);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "internal_test_rint64err");
@@ -121,7 +121,7 @@ guestfs_internal_test_rconststring (guestfs_h *g,
   const char *r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "internal_test_rconststring", 26);
+                                      "internal_test_rconststring", 26);
   if (val == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "internal_test_rconststring", "val");
@@ -163,7 +163,7 @@ guestfs_internal_test_rstruct (guestfs_h *g,
   struct guestfs_lvm_pv *r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "internal_test_rstruct", 21);
+                                      "internal_test_rstruct", 21);
   if (val == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "internal_test_rstruct", "val");
@@ -204,7 +204,7 @@ guestfs_wait_ready (guestfs_h *g)
   int r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "wait_ready", 10);
+                                      "wait_ready", 10);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "wait_ready");
@@ -238,7 +238,7 @@ guestfs_get_hv (guestfs_h *g)
   char *r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "get_hv", 6);
+                                      "get_hv", 6);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "get_hv");
@@ -272,7 +272,7 @@ guestfs_get_direct (guestfs_h *g)
   int r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "get_direct", 10);
+                                      "get_direct", 10);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "get_direct");
@@ -307,7 +307,7 @@ guestfs_inspect_get_product_name (guestfs_h *g,
   char *r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "inspect_get_product_name", 24);
+                                      "inspect_get_product_name", 24);
   if (root == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "inspect_get_product_name", "root");
@@ -349,7 +349,7 @@ guestfs_inspect_get_mountpoints (guestfs_h *g,
   char **r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "inspect_get_mountpoints", 23);
+                                      "inspect_get_mountpoints", 23);
   if (root == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "inspect_get_mountpoints", "root");
@@ -400,7 +400,7 @@ guestfs_inspect_get_package_management (guestfs_h *g,
   char *r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "inspect_get_package_management", 30);
+                                      "inspect_get_package_management", 30);
   if (root == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "inspect_get_package_management", "root");
@@ -441,7 +441,7 @@ guestfs_max_disks (guestfs_h *g)
   int r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "max_disks", 9);
+                                      "max_disks", 9);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "max_disks");
@@ -476,7 +476,7 @@ guestfs_find (guestfs_h *g,
   char **r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "find", 4);
+                                      "find", 4);
   if (directory == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "find", "directory");
@@ -527,7 +527,7 @@ guestfs_read_lines (guestfs_h *g,
   char **r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "read_lines", 10);
+                                      "read_lines", 10);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "read_lines", "path");
@@ -578,7 +578,7 @@ guestfs_disk_format (guestfs_h *g,
   char *r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "disk_format", 11);
+                                      "disk_format", 11);
   if (filename == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "disk_format", "filename");
@@ -619,7 +619,7 @@ guestfs_get_libvirt_requested_credentials (guestfs_h *g)
   char **r;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "get_libvirt_requested_credentials", 33);
+                                      "get_libvirt_requested_credentials", 33);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "get_libvirt_requested_credentials");
@@ -667,7 +667,7 @@ guestfs_sync (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "sync", 4);
+                                      "sync", 4);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "sync");
@@ -752,7 +752,7 @@ guestfs_lvs (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "lvs", 3);
+                                      "lvs", 3);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "lvs");
@@ -854,7 +854,7 @@ guestfs_aug_mv (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "aug_mv", 6);
+                                      "aug_mv", 6);
   if (src == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "aug_mv", "src");
@@ -957,7 +957,7 @@ guestfs_vgcreate (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "vgcreate", 8);
+                                      "vgcreate", 8);
   if (volgroup == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "vgcreate", "volgroup");
@@ -1069,7 +1069,7 @@ guestfs_file (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "file", 4);
+                                      "file", 4);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "file", "path");
@@ -1166,7 +1166,7 @@ guestfs_blockdev_getro (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "blockdev_getro", 14);
+                                      "blockdev_getro", 14);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "blockdev_getro", "device");
@@ -1263,7 +1263,7 @@ guestfs_blockdev_getbsz (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "blockdev_getbsz", 15);
+                                      "blockdev_getbsz", 15);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "blockdev_getbsz", "device");
@@ -1360,7 +1360,7 @@ guestfs_blockdev_setbsz (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "blockdev_setbsz", 15);
+                                      "blockdev_setbsz", 15);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "blockdev_setbsz", "device");
@@ -1465,7 +1465,7 @@ guestfs_tar_out_opts_argv (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "tar_out", 7);
+                                      "tar_out", 7);
   if (directory == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "tar_out_opts", "directory");
@@ -1627,7 +1627,7 @@ guestfs_mount_vfs (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "mount_vfs", 9);
+                                      "mount_vfs", 9);
   if (options == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "mount_vfs", "options");
@@ -1744,7 +1744,7 @@ guestfs_cp_a (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "cp_a", 4);
+                                      "cp_a", 4);
   if (src == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "cp_a", "src");
@@ -1848,7 +1848,7 @@ guestfs_strings_e (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "strings_e", 9);
+                                      "strings_e", 9);
   if (encoding == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "strings_e", "encoding");
@@ -1966,7 +1966,7 @@ guestfs_sfdisk_kernel_geometry (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "sfdisk_kernel_geometry", 22);
+                                      "sfdisk_kernel_geometry", 22);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "sfdisk_kernel_geometry", "device");
@@ -2062,7 +2062,7 @@ guestfs_sleep (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "sleep", 5);
+                                      "sleep", 5);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "sleep");
@@ -2152,7 +2152,7 @@ guestfs_wc_c (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "wc_c", 4);
+                                      "wc_c", 4);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "wc_c", "path");
@@ -2249,7 +2249,7 @@ guestfs_head (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "head", 4);
+                                      "head", 4);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "head", "path");
@@ -2361,7 +2361,7 @@ guestfs_tail_n (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "tail_n", 6);
+                                      "tail_n", 6);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "tail_n", "path");
@@ -2472,7 +2472,7 @@ guestfs_df (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "df", 2);
+                                      "df", 2);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "df");
@@ -2560,7 +2560,7 @@ guestfs_mount_loop (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "mount_loop", 10);
+                                      "mount_loop", 10);
   if (file == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "mount_loop", "file");
@@ -2669,7 +2669,7 @@ guestfs_mkswap_opts_argv (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "mkswap", 6);
+                                      "mkswap", 6);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "mkswap_opts", "device");
@@ -2799,7 +2799,7 @@ guestfs_mkswap_L (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "mkswap_L", 8);
+                                      "mkswap_L", 8);
   if (label == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "mkswap_L", "label");
@@ -2902,7 +2902,7 @@ guestfs_removexattr (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "removexattr", 11);
+                                      "removexattr", 11);
   if (xattr == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "removexattr", "xattr");
@@ -3006,7 +3006,7 @@ guestfs_fgrep (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "fgrep", 5);
+                                      "fgrep", 5);
   if (pattern == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "fgrep", "pattern");
@@ -3125,7 +3125,7 @@ guestfs_egrepi (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "egrepi", 6);
+                                      "egrepi", 6);
   if (regex == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "egrepi", "regex");
@@ -3244,7 +3244,7 @@ guestfs_zegrep (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "zegrep", 6);
+                                      "zegrep", 6);
   if (regex == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "zegrep", "regex");
@@ -3362,7 +3362,7 @@ guestfs_fallocate (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "fallocate", 9);
+                                      "fallocate", 9);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "fallocate", "path");
@@ -3458,7 +3458,7 @@ guestfs_inotify_read (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "inotify_read", 12);
+                                      "inotify_read", 12);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "inotify_read");
@@ -3548,7 +3548,7 @@ guestfs_mke2journal_L (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "mke2journal_L", 13);
+                                      "mke2journal_L", 13);
   if (label == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "mke2journal_L", "label");
@@ -3653,7 +3653,7 @@ guestfs_vfs_type (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "vfs_type", 8);
+                                      "vfs_type", 8);
   if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "vfs_type", "mountable");
@@ -3751,7 +3751,7 @@ guestfs_internal_readlinklist (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "internal_readlinklist", 21);
+                                      "internal_readlinklist", 21);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "internal_readlinklist", "path");
@@ -3879,7 +3879,7 @@ guestfs_fill (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "fill", 4);
+                                      "fill", 4);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "fill", "path");
@@ -3979,7 +3979,7 @@ guestfs_filesize (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "filesize", 8);
+                                      "filesize", 8);
   if (file == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "filesize", "file");
@@ -4077,7 +4077,7 @@ guestfs_part_set_mbr_id (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "part_set_mbr_id", 15);
+                                      "part_set_mbr_id", 15);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "part_set_mbr_id", "device");
@@ -4178,7 +4178,7 @@ guestfs_checksums_out (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "checksums_out", 13);
+                                      "checksums_out", 13);
   if (csumtype == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "checksums_out", "csumtype");
@@ -4294,7 +4294,7 @@ guestfs_resize2fs_size (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "resize2fs_size", 14);
+                                      "resize2fs_size", 14);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "resize2fs_size", "device");
@@ -4392,7 +4392,7 @@ guestfs_pvresize_size (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "pvresize_size", 13);
+                                      "pvresize_size", 13);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "pvresize_size", "device");
@@ -4488,7 +4488,7 @@ guestfs_available_all_groups (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "available_all_groups", 20);
+                                      "available_all_groups", 20);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "available_all_groups");
@@ -4590,7 +4590,7 @@ guestfs_fallocate64 (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "fallocate64", 11);
+                                      "fallocate64", 11);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "fallocate64", "path");
@@ -4685,7 +4685,7 @@ guestfs_lvm_clear_filter (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "lvm_clear_filter", 16);
+                                      "lvm_clear_filter", 16);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "lvm_clear_filter");
@@ -4774,7 +4774,7 @@ guestfs_luks_format_cipher (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "luks_format_cipher", 18);
+                                      "luks_format_cipher", 18);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "luks_format_cipher", "device");
@@ -4889,7 +4889,7 @@ guestfs_pread_device (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "pread_device", 12);
+                                      "pread_device", 12);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "pread_device", "device");
@@ -5005,7 +5005,7 @@ guestfs_lgetxattr (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "lgetxattr", 9);
+                                      "lgetxattr", 9);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "lgetxattr", "path");
@@ -5119,7 +5119,7 @@ guestfs_internal_autosync (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "internal_autosync", 17);
+                                      "internal_autosync", 17);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "internal_autosync");
@@ -5204,7 +5204,7 @@ guestfs_list_9p (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "list_9p", 7);
+                                      "list_9p", 7);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "list_9p");
@@ -5306,7 +5306,7 @@ guestfs_md_detail (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "md_detail", 9);
+                                      "md_detail", 9);
   if (md == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "md_detail", "md");
@@ -5417,7 +5417,7 @@ guestfs_set_label (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "set_label", 9);
+                                      "set_label", 9);
   if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "set_label", "mountable");
@@ -5520,7 +5520,7 @@ guestfs_isoinfo (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "isoinfo", 7);
+                                      "isoinfo", 7);
   if (isofile == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "isoinfo", "isofile");
@@ -5618,7 +5618,7 @@ guestfs_set_e2generation (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "set_e2generation", 16);
+                                      "set_e2generation", 16);
   if (file == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "set_e2generation", "file");
@@ -5716,7 +5716,7 @@ guestfs_filesystem_available (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "filesystem_available", 20);
+                                      "filesystem_available", 20);
   if (filesystem == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "filesystem_available", "filesystem");
@@ -5812,7 +5812,7 @@ guestfs_pvchange_uuid (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "pvchange_uuid", 13);
+                                      "pvchange_uuid", 13);
   if (device == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "pvchange_uuid", "device");
@@ -5905,7 +5905,7 @@ guestfs_pvchange_uuid_all (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "pvchange_uuid_all", 17);
+                                      "pvchange_uuid_all", 17);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "pvchange_uuid_all");
@@ -5999,7 +5999,7 @@ guestfs_rsync_out_argv (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "rsync_out", 9);
+                                      "rsync_out", 9);
   if (src == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "rsync_out", "src");
@@ -6124,7 +6124,7 @@ guestfs_hivex_node_name (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "hivex_node_name", 15);
+                                      "hivex_node_name", 15);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "hivex_node_name");
@@ -6215,7 +6215,7 @@ guestfs_hivex_node_values (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "hivex_node_values", 17);
+                                      "hivex_node_values", 17);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "hivex_node_values");
@@ -6306,7 +6306,7 @@ guestfs_rm_f (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "rm_f", 4);
+                                      "rm_f", 4);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "rm_f", "path");
@@ -6409,7 +6409,7 @@ guestfs_mktemp_argv (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "mktemp", 6);
+                                      "mktemp", 6);
   if (tmpl == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "mktemp", "tmpl");
@@ -6524,7 +6524,7 @@ guestfs_list_ldm_partitions (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "list_ldm_partitions", 19);
+                                      "list_ldm_partitions", 19);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "list_ldm_partitions");
@@ -6626,7 +6626,7 @@ guestfs_internal_parse_mountable (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "internal_parse_mountable", 24);
+                                      "internal_parse_mountable", 24);
   if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "internal_parse_mountable", "mountable");
@@ -6730,7 +6730,7 @@ guestfs_remount_argv (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "remount", 7);
+                                      "remount", 7);
   if (mountpoint == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "remount", "mountpoint");
@@ -6837,7 +6837,7 @@ guestfs_journal_close (guestfs_h *g)
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "journal_close", 13);
+                                      "journal_close", 13);
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "journal_close");
@@ -6924,7 +6924,7 @@ guestfs_btrfs_quota_enable (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "btrfs_quota_enable", 18);
+                                      "btrfs_quota_enable", 18);
   if (fs == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "btrfs_quota_enable", "fs");
@@ -7023,7 +7023,7 @@ guestfs_btrfs_qgroup_remove (guestfs_h *g,
   const uint64_t progress_hint = 0;
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                    "btrfs_qgroup_remove", 19);
+                                      "btrfs_qgroup_remove", 19);
   if (src == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
            "btrfs_qgroup_remove", "src");

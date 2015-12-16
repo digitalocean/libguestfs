@@ -53,7 +53,7 @@ let run (g : Guestfs.guestfs) root (ops : ops) =
   let do_run ~display cmd =
     if not guest_arch_compatible then
       error (f_"host cpu (%s) and guest arch (%s) are not compatible, so you cannot use command line options that involve running commands in the guest.  Use --firstboot scripts instead.")
-            Config.host_cpu guest_arch;
+            Guestfs_config.host_cpu guest_arch;
 
     (* Add a prologue to the scripts:
      * - Pass environment variables through from the host.
@@ -71,7 +71,7 @@ let run (g : Guestfs.guestfs) root (ops : ops) =
     let env_vars = String.concat "\n" env_vars ^ "\n" in
 
     let cmd =
-      match Config.host_cpu, guest_arch with
+      match Guestfs_config.host_cpu, guest_arch with
       | "x86_64", ("i386"|"i486"|"i586"|"i686") ->
         sprintf "setarch i686 <<\"__EOCMD\"
 %s
@@ -197,6 +197,9 @@ exec >>%s 2>&1
 
     | `Edit (path, expr) ->
       message (f_"Editing: %s") path;
+
+      if not (g#exists path) then
+        error (f_"%s does not exist in the guest") path;
 
       if not (g#is_file path) then
         error (f_"%s is not a regular file in the guest") path;

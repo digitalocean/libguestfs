@@ -1599,7 +1599,9 @@ CLEANFILES = *.annot *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so \
 @HAVE_OCAML_TRUE@	$(am__append_8)
 @HAVE_OCAML_TRUE@SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly
 
-# Do the installation by hand, because we want to run ocamlfind.
+# Run ocamlfind to perform the install.  ocamlfind refuses to install
+# the package if it is already installed, so remove the old package
+# first.
 @HAVE_OCAML_TRUE@data_hook_files = META *.so *.a *.cma *.cmi \
 @HAVE_OCAML_TRUE@	$(srcdir)/*.mli $(am__append_9)
 all: all-am
@@ -2145,6 +2147,8 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@install-data-hook:
 @HAVE_OCAML_TRUE@	mkdir -p $(DESTDIR)$(OCAMLLIB)
 @HAVE_OCAML_TRUE@	mkdir -p $(DESTDIR)$(OCAMLLIB)/stublibs
+@HAVE_OCAML_TRUE@	rm -rf $(DESTDIR)$(OCAMLLIB)/guestfs
+@HAVE_OCAML_TRUE@	rm -rf $(DESTDIR)$(OCAMLLIB)/stublibs/dllmlguestfs.so*
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) install \
 @HAVE_OCAML_TRUE@	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
 @HAVE_OCAML_TRUE@	  guestfs \
