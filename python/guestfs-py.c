@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -8647,6 +8647,40 @@ py_guestfs_get_hv (PyObject *self, PyObject *args)
   py_r = PyUnicode_FromString (r);
 #endif
   free (r);
+  if (py_r == NULL) goto out;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+#endif
+
+#ifdef GUESTFS_HAVE_GET_IDENTIFIER
+static PyObject *
+py_guestfs_get_identifier (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  const char *r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_get_identifier",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_get_identifier (g);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   if (py_r == NULL) goto out;
 
   PyErr_Clear ();
@@ -21944,6 +21978,37 @@ py_guestfs_set_hv (PyObject *self, PyObject *args)
 }
 #endif
 
+#ifdef GUESTFS_HAVE_SET_IDENTIFIER
+static PyObject *
+py_guestfs_set_identifier (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *identifier;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_set_identifier",
+                         &py_g, &identifier))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_set_identifier (g, identifier);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+#endif
+
 #ifdef GUESTFS_HAVE_SET_LABEL
 static PyObject *
 py_guestfs_set_label (PyObject *self, PyObject *args)
@@ -23675,11 +23740,14 @@ py_guestfs_tar_in (PyObject *self, PyObject *args)
   const char *tarfile;
   const char *directory;
   PyObject *py_compress;
+  PyObject *py_xattrs;
+  PyObject *py_selinux;
+  PyObject *py_acls;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssO:guestfs_tar_in",
-                         &py_g, &tarfile, &directory, &py_compress))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_tar_in",
+                         &py_g, &tarfile, &directory, &py_compress, &py_xattrs, &py_selinux, &py_acls))
     goto out;
   g = get_handle (py_g);
 
@@ -23693,6 +23761,27 @@ py_guestfs_tar_in (PyObject *self, PyObject *args)
     bytes = PyUnicode_AsUTF8String (py_compress);
     optargs_s.compress = PyBytes_AS_STRING (bytes);
 #endif
+  }
+#endif
+#ifdef GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK
+  if (py_xattrs != Py_None) {
+    optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK;
+    optargs_s.xattrs = PyLong_AsLong (py_xattrs);
+    if (PyErr_Occurred ()) goto out;
+  }
+#endif
+#ifdef GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK
+  if (py_selinux != Py_None) {
+    optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK;
+    optargs_s.selinux = PyLong_AsLong (py_selinux);
+    if (PyErr_Occurred ()) goto out;
+  }
+#endif
+#ifdef GUESTFS_TAR_IN_OPTS_ACLS_BITMASK
+  if (py_acls != Py_None) {
+    optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_ACLS_BITMASK;
+    optargs_s.acls = PyLong_AsLong (py_acls);
+    if (PyErr_Occurred ()) goto out;
   }
 #endif
 
@@ -23734,11 +23823,14 @@ py_guestfs_tar_out (PyObject *self, PyObject *args)
   PyObject *py_compress;
   PyObject *py_numericowner;
   PyObject *py_excludes;
+  PyObject *py_xattrs;
+  PyObject *py_selinux;
+  PyObject *py_acls;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssOOO:guestfs_tar_out",
-                         &py_g, &directory, &tarfile, &py_compress, &py_numericowner, &py_excludes))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOOOO:guestfs_tar_out",
+                         &py_g, &directory, &tarfile, &py_compress, &py_numericowner, &py_excludes, &py_xattrs, &py_selinux, &py_acls))
     goto out;
   g = get_handle (py_g);
 
@@ -23766,6 +23858,27 @@ py_guestfs_tar_out (PyObject *self, PyObject *args)
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
     optargs_s.excludes = get_string_list (py_excludes);
     if (!optargs_s.excludes) goto out;
+  }
+#endif
+#ifdef GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK
+  if (py_xattrs != Py_None) {
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK;
+    optargs_s.xattrs = PyLong_AsLong (py_xattrs);
+    if (PyErr_Occurred ()) goto out;
+  }
+#endif
+#ifdef GUESTFS_TAR_OUT_OPTS_SELINUX_BITMASK
+  if (py_selinux != Py_None) {
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_SELINUX_BITMASK;
+    optargs_s.selinux = PyLong_AsLong (py_selinux);
+    if (PyErr_Occurred ()) goto out;
+  }
+#endif
+#ifdef GUESTFS_TAR_OUT_OPTS_ACLS_BITMASK
+  if (py_acls != Py_None) {
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_ACLS_BITMASK;
+    optargs_s.acls = PyLong_AsLong (py_acls);
+    if (PyErr_Occurred ()) goto out;
   }
 #endif
 
@@ -24674,6 +24787,43 @@ py_guestfs_vfs_label (PyObject *self, PyObject *args)
 #endif
   free (r);
   if (py_r == NULL) goto out;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+#endif
+
+#ifdef GUESTFS_HAVE_VFS_MINIMUM_SIZE
+static PyObject *
+py_guestfs_vfs_minimum_size (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int64_t r;
+  const char *mountable;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_vfs_minimum_size",
+                         &py_g, &mountable))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_vfs_minimum_size (g, mountable);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLongLong (r);
 
   PyErr_Clear ();
  out:
@@ -26942,6 +27092,9 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_GET_HV
   { (char *) "get_hv", py_guestfs_get_hv, METH_VARARGS, NULL },
 #endif
+#ifdef GUESTFS_HAVE_GET_IDENTIFIER
+  { (char *) "get_identifier", py_guestfs_get_identifier, METH_VARARGS, NULL },
+#endif
 #ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE
   { (char *) "get_libvirt_requested_credential_challenge", py_guestfs_get_libvirt_requested_credential_challenge, METH_VARARGS, NULL },
 #endif
@@ -27875,6 +28028,9 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_SET_HV
   { (char *) "set_hv", py_guestfs_set_hv, METH_VARARGS, NULL },
 #endif
+#ifdef GUESTFS_HAVE_SET_IDENTIFIER
+  { (char *) "set_identifier", py_guestfs_set_identifier, METH_VARARGS, NULL },
+#endif
 #ifdef GUESTFS_HAVE_SET_LABEL
   { (char *) "set_label", py_guestfs_set_label, METH_VARARGS, NULL },
 #endif
@@ -28078,6 +28234,9 @@ static PyMethodDef methods[] = {
 #endif
 #ifdef GUESTFS_HAVE_VFS_LABEL
   { (char *) "vfs_label", py_guestfs_vfs_label, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_VFS_MINIMUM_SIZE
+  { (char *) "vfs_minimum_size", py_guestfs_vfs_minimum_size, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VFS_TYPE
   { (char *) "vfs_type", py_guestfs_vfs_type, METH_VARARGS, NULL },

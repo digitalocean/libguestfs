@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -132,7 +132,7 @@ static void
 usage (void)
 {
   fprintf (stderr,
-    "guestfsd [-r] [-v|--verbose]\n");
+	   "guestfsd [-r] [-v|--verbose]\n");
 }
 
 int
@@ -284,23 +284,29 @@ main (int argc, char *argv[])
 
   int sock;
   if (!listen_mode) {
-    sock = open (channel, O_RDWR|O_CLOEXEC);
-    if (sock == -1) {
-      fprintf (stderr,
-               "\n"
-               "Failed to connect to virtio-serial channel.\n"
-               "\n"
-               "This is a fatal error and the appliance will now exit.\n"
-               "\n"
-               "Usually this error is caused by either QEMU or the appliance\n"
-               "kernel not supporting the vmchannel method that the\n"
-               "libguestfs library chose to use.  Please run\n"
-               "'libguestfs-test-tool' and provide the complete, unedited\n"
-               "output to the libguestfs developers, either in a bug report\n"
-               "or on the libguestfs redhat com mailing list.\n"
-               "\n");
-      perror (channel);
-      exit (EXIT_FAILURE);
+    if (STRPREFIX (channel, "fd:")) {
+      if (sscanf (channel+3, "%d", &sock) != 1)
+        error (EXIT_FAILURE, 0, "cannot parse --channel %s", channel);
+    }
+    else {
+      sock = open (channel, O_RDWR|O_CLOEXEC);
+      if (sock == -1) {
+        fprintf (stderr,
+                 "\n"
+                 "Failed to connect to virtio-serial channel.\n"
+                 "\n"
+                 "This is a fatal error and the appliance will now exit.\n"
+                 "\n"
+                 "Usually this error is caused by either QEMU or the appliance\n"
+                 "kernel not supporting the vmchannel method that the\n"
+                 "libguestfs library chose to use.  Please run\n"
+                 "'libguestfs-test-tool' and provide the complete, unedited\n"
+                 "output to the libguestfs developers, either in a bug report\n"
+                 "or on the libguestfs redhat com mailing list.\n"
+                 "\n");
+        perror (channel);
+        exit (EXIT_FAILURE);
+      }
     }
   }
   else {
@@ -750,7 +756,8 @@ join_strings (const char *separator, char *const *argv)
  * 'commandrvf' below.
  */
 int
-commandf (char **stdoutput, char **stderror, int flags, const char *name, ...)
+commandf (char **stdoutput, char **stderror, unsigned flags,
+          const char *name, ...)
 {
   va_list args;
   /* NB: Mustn't free the strings which are on the stack. */
@@ -795,7 +802,8 @@ commandf (char **stdoutput, char **stderror, int flags, const char *name, ...)
  * We still return -1 if there was some other error.
  */
 int
-commandrf (char **stdoutput, char **stderror, int flags, const char *name, ...)
+commandrf (char **stdoutput, char **stderror, unsigned flags,
+           const char *name, ...)
 {
   va_list args;
   CLEANUP_FREE const char **argv = NULL;
@@ -835,7 +843,7 @@ commandrf (char **stdoutput, char **stderror, int flags, const char *name, ...)
 
 /* Same as 'command', but passing an argv. */
 int
-commandvf (char **stdoutput, char **stderror, int flags,
+commandvf (char **stdoutput, char **stderror, unsigned flags,
            char const *const *argv)
 {
   int r;
@@ -878,13 +886,13 @@ commandvf (char **stdoutput, char **stderror, int flags,
  * example of usage.
  */
 int
-commandrvf (char **stdoutput, char **stderror, int flags,
+commandrvf (char **stdoutput, char **stderror, unsigned flags,
             char const* const *argv)
 {
   size_t so_size = 0, se_size = 0;
   int so_fd[2], se_fd[2];
-  int flag_copy_stdin = flags & COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN;
-  int flag_copy_fd = flags & COMMAND_FLAG_FD_MASK;
+  unsigned flag_copy_stdin = flags & COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN;
+  int flag_copy_fd = (int) (flags & COMMAND_FLAG_FD_MASK);
   pid_t pid;
   int r, quit, i;
   fd_set rset, rset2;
@@ -895,10 +903,32 @@ commandrvf (char **stdoutput, char **stderror, int flags,
   if (stderror) *stderror = NULL;
 
   if (verbose) {
-    printf ("%s", argv[0]);
-    for (i = 1; argv[i] != NULL; ++i)
-      printf (" %s", argv[i]);
-    printf ("\n");
+    printf ("commandrvf: stdout=%s stderr=%s flags=0x%x\n",
+            stdoutput ? "y" : "n", stderror ? "y" : "n", flags);
+    fputs ("commandrvf: ", stdout);
+    fputs (argv[0], stdout);
+    for (i = 1; argv[i] != NULL; ++i) {
+      char quote;
+
+      /* Do simple (and incorrect) quoting of the debug output.  Real
+       * quoting is not necessary because we use execvp to run the
+       * command below.
+       */
+      if (strchr (argv[i], '\''))
+        quote = '"';
+      else if (strchr (argv[i], '"'))
+        quote = '\'';
+      else if (strchr (argv[i], ' '))
+        quote = '"';
+      else
+        quote = 0;
+
+      putchar (' ');
+      if (quote) putchar (quote);
+      fputs (argv[i], stdout);
+      if (quote) putchar (quote);
+    }
+    putchar ('\n');
   }
 
   /* Note: abort is used in a few places along the error paths early
@@ -926,22 +956,48 @@ commandrvf (char **stdoutput, char **stderror, int flags,
     signal (SIGPIPE, SIG_DFL);
     close (0);
     if (flag_copy_stdin) {
-      dup2 (flag_copy_fd, STDIN_FILENO);
+      if (dup2 (flag_copy_fd, STDIN_FILENO) == -1) {
+        perror ("dup2/flag_copy_fd");
+        _exit (EXIT_FAILURE);
+      }
     } else {
-      /* Set stdin to /dev/null (ignore failure) */
-      ignore_value (open ("/dev/null", O_RDONLY|O_CLOEXEC));
+      /* Set stdin to /dev/null. */
+      if (open ("/dev/null", O_RDONLY) == -1) {
+        perror ("open: /dev/null");
+        _exit (EXIT_FAILURE);
+      }
     }
     close (so_fd[PIPE_READ]);
     close (se_fd[PIPE_READ]);
-    if (!(flags & COMMAND_FLAG_FOLD_STDOUT_ON_STDERR))
-      dup2 (so_fd[PIPE_WRITE], STDOUT_FILENO);
-    else
-      dup2 (se_fd[PIPE_WRITE], STDOUT_FILENO);
-    dup2 (se_fd[PIPE_WRITE], STDERR_FILENO);
+    if (!(flags & COMMAND_FLAG_FOLD_STDOUT_ON_STDERR)) {
+      if (dup2 (so_fd[PIPE_WRITE], STDOUT_FILENO) == -1) {
+        perror ("dup2/so_fd[PIPE_WRITE]");
+        _exit (EXIT_FAILURE);
+      }
+    } else {
+      if (dup2 (se_fd[PIPE_WRITE], STDOUT_FILENO) == -1) {
+        perror ("dup2/se_fd[PIPE_WRITE]");
+        _exit (EXIT_FAILURE);
+      }
+    }
+    if (dup2 (se_fd[PIPE_WRITE], STDERR_FILENO) == -1) {
+      perror ("dup2/se_fd[PIPE_WRITE]");
+      _exit (EXIT_FAILURE);
+    }
     close (so_fd[PIPE_WRITE]);
     close (se_fd[PIPE_WRITE]);
 
-    ignore_value (chdir ("/"));
+    if (flags & COMMAND_FLAG_DO_CHROOT && sysroot_len > 0) {
+      if (chroot (sysroot) == -1) {
+        perror ("chroot in sysroot");
+        _exit (EXIT_FAILURE);
+      }
+    }
+
+    if (chdir ("/") == -1) {
+      perror ("chdir");
+      _exit (EXIT_FAILURE);
+    }
 
     execvp (argv[0], (void *) argv);
     perror (argv[0]);
@@ -1189,7 +1245,7 @@ trim (char *str)
 }
 
 /* printf helper function so we can use %Q ("quoted") and %R to print
- * shell-quoted strings.  See guestfs(3)/EXTENDING LIBGUESTFS for more
+ * shell-quoted strings.  See guestfs-hacking(1) for more
  * details.
  */
 static int
@@ -1394,18 +1450,18 @@ mountable_to_string (const mountable_t *mountable)
   char *desc;
 
   switch (mountable->type) {
-    case MOUNTABLE_DEVICE:
-    case MOUNTABLE_PATH:
-      return strdup (mountable->device);
+  case MOUNTABLE_DEVICE:
+  case MOUNTABLE_PATH:
+    return strdup (mountable->device);
 
-    case MOUNTABLE_BTRFSVOL:
-      if (asprintf (&desc, "btrfsvol:%s/%s",
-                    mountable->device, mountable->volume) == -1)
-        return NULL;
-      return desc;
-
-    default:
+  case MOUNTABLE_BTRFSVOL:
+    if (asprintf (&desc, "btrfsvol:%s/%s",
+		  mountable->device, mountable->volume) == -1)
       return NULL;
+    return desc;
+
+  default:
+    return NULL;
   }
 }
 
@@ -1501,7 +1557,8 @@ udev_settle (void)
   char cmd[80];
   int r;
 
-  snprintf (cmd, sizeof cmd, "udevadm%s settle", verbose ? " --debug" : "");
+  snprintf (cmd, sizeof cmd, "%s%s settle",
+            str_udevadm, verbose ? " --debug" : "");
   if (verbose)
     printf ("%s\n", cmd);
   r = system (cmd);

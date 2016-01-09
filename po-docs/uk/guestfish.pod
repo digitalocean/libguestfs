@@ -245,12 +245,13 @@ Read commands from C<file>.  To write pure guestfish scripts, use:
 
  guestfish --format=raw -a disk.img
 
-forces raw format (no auto-detection) for F<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<disk.img>.
 
  guestfish --format=raw -a disk.img --format -a another.img
 
-forces raw format (no auto-detection) for F<disk.img> and reverts to
-auto-detection for F<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<diskimg> і повернення до автоматичного визначення для F<another.img>.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату
@@ -1579,5 +1580,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2015
+Copyright (C) 2009-2016 Red Hat Inc.
 

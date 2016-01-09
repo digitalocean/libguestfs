@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,10 @@ generator_built = tests.c
 BUILT_SOURCES = $(generator_built)
 
 EXTRA_DIST = $(BUILT_SOURCES)
+
+CLEANFILES = \
+	test.log \
+	testdownload.tmp
 
 check_PROGRAMS = \
 	tests \

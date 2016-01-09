@@ -165,12 +165,9 @@ read the man page virt-customize(1).
 
   (* Connect to libguestfs. *)
   let g =
-    let g = new G.guestfs () in
-    if trace () then g#set_trace true;
-    if verbose () then g#set_verbose true;
-
-    (match memsize with None -> () | Some memsize -> g#set_memsize memsize);
-    (match smp with None -> () | Some smp -> g#set_smp smp);
+    let g = open_guestfs () in
+    may g#set_memsize memsize;
+    may g#set_smp smp;
     g#set_network network;
     (* Make sure to turn SELinux off to avoid awkward interactions
      * between the appliance kernel and applications/libraries interacting

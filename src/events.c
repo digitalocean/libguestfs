@@ -20,12 +20,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <inttypes.h>
-#include <unistd.h>
-#include <assert.h>
 #include <string.h>
+#include <assert.h>
 
 #include "c-ctype.h"
 
@@ -109,7 +105,7 @@ guestfs_int_call_callbacks_void (guestfs_h *g, uint64_t event)
 
 void
 guestfs_int_call_callbacks_message (guestfs_h *g, uint64_t event,
-                                  const char *buf, size_t buf_len)
+				    const char *buf, size_t buf_len)
 {
   size_t i, count = 0;
 
@@ -136,12 +132,12 @@ guestfs_int_call_callbacks_message (guestfs_h *g, uint64_t event,
        event == GUESTFS_EVENT_WARNING ||
        event == GUESTFS_EVENT_TRACE)) {
     bool from_appliance = event == GUESTFS_EVENT_APPLIANCE;
-    size_t i, i0;
+    size_t i0;
 
     /* APPLIANCE =>  <buf>
      * LIBRARY =>    libguestfs: <buf>\n
      * WARNING =>    libguestfs: warning: <buf>\n
-     * TRACE =>      libguestfs: trace: <buf>\n  (RHBZ#673479)
+     * TRACE =>      libguestfs: trace: [<ID>:] <buf>\n  (RHBZ#673479)
      */
 
     if (event != GUESTFS_EVENT_APPLIANCE)
@@ -150,8 +146,13 @@ guestfs_int_call_callbacks_message (guestfs_h *g, uint64_t event,
     if (event == GUESTFS_EVENT_WARNING)
       fputs ("warning: ", stderr);
 
-    if (event == GUESTFS_EVENT_TRACE)
+    if (event == GUESTFS_EVENT_TRACE) {
       fputs ("trace: ", stderr);
+      if (STRNEQ (g->identifier, "")) {
+        fputs (g->identifier, stderr);
+        fputs (": ", stderr);
+      }
+    }
 
     /* Special or non-printing characters in the buffer must be
      * escaped (RHBZ#731744).  The buffer can contain any 8 bit
@@ -172,8 +173,8 @@ guestfs_int_call_callbacks_message (guestfs_h *g, uint64_t event,
      * try to send longest possible strings in single fwrite calls
      * (thanks to Jim Meyering for the basic approach).
      */
-#define NO_ESCAPING(c) \
-      (c_isprint ((c)) || (from_appliance && ((c) == '\n' || (c) == '\r')))
+#define NO_ESCAPING(c)							\
+    (c_isprint ((c)) || (from_appliance && ((c) == '\n' || (c) == '\r')))
 
     for (i = 0; i < buf_len; ++i) {
       if (NO_ESCAPING (buf[i])) {
@@ -209,7 +210,7 @@ guestfs_int_call_callbacks_message (guestfs_h *g, uint64_t event,
 
 void
 guestfs_int_call_callbacks_array (guestfs_h *g, uint64_t event,
-                                const uint64_t *array, size_t array_len)
+				  const uint64_t *array, size_t array_len)
 {
   size_t i;
 

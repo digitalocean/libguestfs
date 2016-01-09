@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@ export LANG=C
 set -e
 
 # Read out the test files from the image using virt-cat.
-if [ "$($VG virt-cat ../tests/guests/fedora.img /etc/test1)" != "abcdefg" ]; then
+if [ "$($VG virt-cat ../test-data/phony-guests/fedora.img /etc/test1)" != "abcdefg" ]; then
     echo "$0: error: mismatch in file test1"
     exit 1
 fi
-if [ "$($VG virt-cat ../tests/guests/fedora.img /etc/test2)" != "" ]; then
+if [ "$($VG virt-cat ../test-data/phony-guests/fedora.img /etc/test2)" != "" ]; then
     echo "$0: error: mismatch in file test2"
     exit 1
 fi

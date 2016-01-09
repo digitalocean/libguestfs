@@ -133,7 +133,7 @@ exec >>%s 2>&1
         apt-get $apt_opts upgrade
       "
     | "dnf" ->
-      sprintf "dnf -y update"
+      sprintf "dnf -y --best upgrade"
     | "pisi" ->
       sprintf "pisi upgrade"
     | "pacman" ->
@@ -171,7 +171,7 @@ exec >>%s 2>&1
       (* If the mode string is octal, add the OCaml prefix for octal values
        * so it is properly converted as octal integer.
        *)
-      let mode = if string_prefix mode "0" then "0o" ^ mode else mode in
+      let mode = if String.is_prefix mode "0" then "0o" ^ mode else mode in
       g#chmod (int_of_string mode) path
 
     | `Command cmd ->
@@ -201,7 +201,7 @@ exec >>%s 2>&1
       if not (g#exists path) then
         error (f_"%s does not exist in the guest") path;
 
-      if not (g#is_file path) then
+      if not (g#is_file ~followsymlinks:true path) then
         error (f_"%s is not a regular file in the guest") path;
 
       Perl_edit.edit_file g#ocaml_handle path expr

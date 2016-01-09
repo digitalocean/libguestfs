@@ -2102,6 +2102,12 @@ xdr_guestfs_tar_in_args (XDR *xdrs, guestfs_tar_in_args *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->compress, ~0))
 		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->xattrs))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->selinux))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->acls))
+		 return FALSE;
 	return TRUE;
 }
 
@@ -2118,6 +2124,12 @@ xdr_guestfs_tar_out_args (XDR *xdrs, guestfs_tar_out_args *objp)
 		 return FALSE;
 	 if (!xdr_array (xdrs, (char **)&objp->excludes.excludes_val, (u_int *) &objp->excludes.excludes_len, ~0,
 		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->xattrs))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->selinux))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->acls))
 		 return FALSE;
 	return TRUE;
 }
@@ -4515,17 +4527,6 @@ xdr_guestfs_fill_args (XDR *xdrs, guestfs_fill_args *objp)
 	 if (!xdr_int (xdrs, &objp->len))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->path, ~0))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_guestfs_available_args (XDR *xdrs, guestfs_available_args *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_array (xdrs, (char **)&objp->groups.groups_val, (u_int *) &objp->groups.groups_len, ~0,
-		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
 		 return FALSE;
 	return TRUE;
 }
@@ -7923,27 +7924,6 @@ xdr_guestfs_internal_rhbz914931_args (XDR *xdrs, guestfs_internal_rhbz914931_arg
 }
 
 bool_t
-xdr_guestfs_feature_available_args (XDR *xdrs, guestfs_feature_available_args *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_array (xdrs, (char **)&objp->groups.groups_val, (u_int *) &objp->groups.groups_len, ~0,
-		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_guestfs_feature_available_ret (XDR *xdrs, guestfs_feature_available_ret *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_bool (xdrs, &objp->isavailable))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
 xdr_guestfs_syslinux_args (XDR *xdrs, guestfs_syslinux_args *objp)
 {
 	register int32_t *buf;
@@ -8739,6 +8719,46 @@ xdr_guestfs_set_uuid_random_args (XDR *xdrs, guestfs_set_uuid_random_args *objp)
 	register int32_t *buf;
 
 	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_vfs_minimum_size_args (XDR *xdrs, guestfs_vfs_minimum_size_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->mountable, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_vfs_minimum_size_ret (XDR *xdrs, guestfs_vfs_minimum_size_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int64_t (xdrs, &objp->sizeinbytes))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_internal_feature_available_args (XDR *xdrs, guestfs_internal_feature_available_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->group, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_internal_feature_available_ret (XDR *xdrs, guestfs_internal_feature_available_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->result))
 		 return FALSE;
 	return TRUE;
 }

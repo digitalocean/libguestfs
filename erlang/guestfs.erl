@@ -3,7 +3,7 @@
 %    generator/ *.ml
 %  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 % 
-%  Copyright (C) 2009-2015 Red Hat Inc.
+%  Copyright (C) 2009-2016 Red Hat Inc.
 % 
 %  This library is free software; you can redistribute it and/or
 %  modify it under the terms of the GNU Lesser General Public
@@ -193,6 +193,7 @@
 -export([get_e2label/2]).
 -export([get_e2uuid/2]).
 -export([get_hv/1]).
+-export([get_identifier/1]).
 -export([get_libvirt_requested_credential_challenge/2]).
 -export([get_libvirt_requested_credential_defresult/2]).
 -export([get_libvirt_requested_credential_prompt/2]).
@@ -514,6 +515,7 @@
 -export([set_e2label/3]).
 -export([set_e2uuid/3]).
 -export([set_hv/2]).
+-export([set_identifier/2]).
 -export([set_label/3]).
 -export([set_libvirt_requested_credential/3]).
 -export([set_libvirt_supported_credentials/2]).
@@ -585,6 +587,7 @@
 -export([utsname/1]).
 -export([version/1]).
 -export([vfs_label/2]).
+-export([vfs_minimum_size/2]).
 -export([vfs_type/2]).
 -export([vfs_uuid/2]).
 -export([vg_activate/3]).
@@ -1217,6 +1220,9 @@ get_e2uuid(G, Device) ->
 
 get_hv(G) ->
   call_port(G, {get_hv}).
+
+get_identifier(G) ->
+  call_port(G, {get_identifier}).
 
 get_libvirt_requested_credential_challenge(G, Index) ->
   call_port(G, {get_libvirt_requested_credential_challenge, Index}).
@@ -2247,6 +2253,9 @@ set_e2uuid(G, Device, Uuid) ->
 set_hv(G, Hv) ->
   call_port(G, {set_hv, Hv}).
 
+set_identifier(G, Identifier) ->
+  call_port(G, {set_identifier, Identifier}).
+
 set_label(G, Mountable, Label) ->
   call_port(G, {set_label, Mountable, Label}).
 
@@ -2474,6 +2483,9 @@ version(G) ->
 
 vfs_label(G, Mountable) ->
   call_port(G, {vfs_label, Mountable}).
+
+vfs_minimum_size(G, Mountable) ->
+  call_port(G, {vfs_minimum_size, Mountable}).
 
 vfs_type(G, Mountable) ->
   call_port(G, {vfs_type, Mountable}).

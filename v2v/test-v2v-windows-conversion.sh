@@ -33,19 +33,16 @@ if [ "$(guestfish get-backend)" = "uml" ]; then
 fi
 
 abs_top_builddir="$(cd ..; pwd)"
-libvirt_uri="test://$abs_top_builddir/tests/guests/guests.xml"
+libvirt_uri="test://$abs_top_builddir/test-data/phony-guests/guests.xml"
 
-f=../tests/guests/windows.img
+f=../test-data/phony-guests/windows.img
 if ! test -f $f || ! test -s $f; then
     echo "$0: test skipped because phony Windows image was not created"
     exit 77
 fi
 
-virt_tools_data_dir=${VIRT_TOOLS_DATA_DIR:-/usr/share/virt-tools}
-if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
-    echo "$0: test skipped because rhsrvany.exe is not installed"
-    exit 77
-fi
+export VIRT_TOOLS_DATA_DIR="$srcdir/../test-data/fake-virt-tools"
+export VIRTIO_WIN="$srcdir/../test-data/fake-virtio-win"
 
 # Return a random element from the array 'choices'.
 function random_choice
@@ -71,12 +68,38 @@ test -f $d/windows.xml
 test -f $d/windows-sda
 
 # Test some aspects of the target disk image.
-guestfish --ro -a $d/windows-sda -i <<EOF
-  is-dir "/Program Files/Red Hat/Firstboot"
-  is-file "/Program Files/Red Hat/Firstboot/firstboot.bat"
-  is-dir "/Program Files/Red Hat/Firstboot/scripts"
-  is-dir "/Windows/Drivers/VirtIO"
-EOF
+script="$d/test.fish"
+expected="$d/expected"
+response="$d/response"
+
+mktest ()
+{
+    local cmd="$1" exp="$2"
+
+    echo "echo '$cmd'" >> "$script"
+    echo "$cmd" >> "$expected"
+
+    echo "$cmd" >> "$script"
+    echo "$exp" >> "$expected"
+}
+
+:> "$script"
+:> "$expected"
+
+firstboot_dir="/Program Files/Red Hat/Firstboot"
+mktest "is-dir \"$firstboot_dir\"" true
+mktest "is-file \"$firstboot_dir/firstboot.bat\"" true
+mktest "is-dir \"$firstboot_dir/scripts\"" true
+virtio_dir="/Windows/Drivers/VirtIO"
+mktest "is-dir \"$virtio_dir\"" true
+for drv in netkvm qxl vioscsi viostor; do
+    for sfx in cat inf sys; do
+        mktest "is-file \"$virtio_dir/$drv.$sfx\"" true
+    done
+done
+
+guestfish --ro -a "$d/windows-sda" -i < "$script" > "$response"
+diff -u "$expected" "$response"
 
 # We also update the Registry several times, for firstboot, and (ONLY
 # if the virtio-win drivers are installed locally) the critical device

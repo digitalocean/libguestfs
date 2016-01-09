@@ -58,12 +58,29 @@
 <col width="300px" class="properties_name">
 <col width="200px" class="properties_flags">
 </colgroup>
-<tbody><tr>
+<tbody>
+<tr>
+<td class="property_type"><a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></td>
+<td class="property_name"><a class="link" href="GuestfsTarIn.html#GuestfsTarIn--acls" title="The “acls” property">acls</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
 <td class="property_type">
 <span class="type">gchar</span> *</td>
 <td class="property_name"><a class="link" href="GuestfsTarIn.html#GuestfsTarIn--compress" title="The “compress” property">compress</a></td>
 <td class="property_flags">Read / Write / Construct</td>
-</tr></tbody>
+</tr>
+<tr>
+<td class="property_type"><a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></td>
+<td class="property_name"><a class="link" href="GuestfsTarIn.html#GuestfsTarIn--selinux" title="The “selinux” property">selinux</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type"><a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></td>
+<td class="property_name"><a class="link" href="GuestfsTarIn.html#GuestfsTarIn--xattrs" title="The “xattrs” property">xattrs</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+</tbody>
 </table></div>
 </div>
 <div class="refsect1">
@@ -149,11 +166,35 @@ guestfs_tar_in_new (<em class="parameter"><code><span class="type">void</span></
 <div class="refsect1">
 <a name="GuestfsTarIn.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
+<a name="GuestfsTarIn--acls"></a><h3>The <code class="literal">“acls”</code> property</h3>
+<pre class="programlisting">  “acls”                     <a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></pre>
+<p>A boolean.</p>
+<p>Flags: Read / Write / Construct</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="GuestfsTarIn--compress"></a><h3>The <code class="literal">“compress”</code> property</h3>
 <pre class="programlisting">  “compress”                 <span class="type">gchar</span> *</pre>
 <p>A string.</p>
 <p>Flags: Read / Write / Construct</p>
 <p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTarIn--selinux"></a><h3>The <code class="literal">“selinux”</code> property</h3>
+<pre class="programlisting">  “selinux”                  <a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></pre>
+<p>A boolean.</p>
+<p>Flags: Read / Write / Construct</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTarIn--xattrs"></a><h3>The <code class="literal">“xattrs”</code> property</h3>
+<pre class="programlisting">  “xattrs”                   <a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></pre>
+<p>A boolean.</p>
+<p>Flags: Read / Write / Construct</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
 </div>
 </div>
 </div>

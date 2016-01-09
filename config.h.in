@@ -1333,6 +1333,9 @@
 /* Define to 1 if isatty is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_ISATTY
 
+/* Define to 1 if isblank is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_ISBLANK
+
 /* Define to 1 if iswctype is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_ISWCTYPE
 

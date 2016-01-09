@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,17 +125,18 @@ extern char **empty_list (void);
 #define __external_command __attribute__((__section__(".guestfsd_ext_cmds")))
 #define GUESTFSD_EXT_CMD(___ext_cmd_var, ___ext_cmd_str) static const char ___ext_cmd_var[] __external_command = #___ext_cmd_str
 
-#define COMMAND_FLAG_FD_MASK                   (1024-1)
-#define COMMAND_FLAG_FOLD_STDOUT_ON_STDERR     1024
-#define COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN 2048
+#define COMMAND_FLAG_FD_MASK                   0x0000ffff
+#define COMMAND_FLAG_FOLD_STDOUT_ON_STDERR     0x00010000
+#define COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN 0x00020000
+#define COMMAND_FLAG_DO_CHROOT                 0x00040000
 
-extern int commandf (char **stdoutput, char **stderror, int flags,
+extern int commandf (char **stdoutput, char **stderror, unsigned flags,
                      const char *name, ...) __attribute__((sentinel));
-extern int commandrf (char **stdoutput, char **stderror, int flags,
+extern int commandrf (char **stdoutput, char **stderror, unsigned flags,
                       const char *name, ...) __attribute__((sentinel));
-extern int commandvf (char **stdoutput, char **stderror, int flags,
+extern int commandvf (char **stdoutput, char **stderror, unsigned flags,
                       char const *const *argv);
-extern int commandrvf (char **stdoutput, char **stderror, int flags,
+extern int commandrvf (char **stdoutput, char **stderror, unsigned flags,
                        char const* const *argv);
 
 extern int is_power_of_2 (unsigned long v);
@@ -154,29 +155,7 @@ extern int random_name (char *template);
 
 extern char *get_random_uuid (void);
 
-/* This just stops gcc from giving a warning about our custom printf
- * formatters %Q and %R.  See guestfs(3)/EXTENDING LIBGUESTFS for more
- * info about these.  In GCC 4.8.0 the warning is even harder to
- * 'trick', hence the need for the #pragma directives.
- */
-#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
-#endif
-static inline int
-asprintf_nowarn (char **strp, const char *fmt, ...)
-{
-  int r;
-  va_list args;
-
-  va_start (args, fmt);
-  r = vasprintf (strp, fmt, args);
-  va_end (args);
-  return r;
-}
-#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
-#pragma GCC diagnostic pop
-#endif
+extern int asprintf_nowarn (char **strp, const char *fmt, ...);
 
 /* Use by the CLEANUP_* macros. */
 extern void cleanup_free (void *ptr);
@@ -224,6 +203,7 @@ extern int sync_disks (void);
 #define EXT2_LABEL_MAX 16
 extern int fstype_is_extfs (const char *fstype);
 extern int ext_set_uuid_random (const char *device);
+extern int64_t ext_minimum_size (const char *device);
 
 /*-- in blkid.c --*/
 extern char *get_blkid_tag (const char *device, const char *tag);
@@ -268,6 +248,7 @@ extern int copy_xattrs (const char *src, const char *dest);
 extern int xfs_set_uuid (const char *device, const char *uuid);
 extern int xfs_set_uuid_random (const char *device);
 extern int xfs_set_label (const char *device, const char *label);
+extern int64_t xfs_minimum_size (const char *path);
 
 /*-- debug-bmap.c --*/
 extern char *debug_bmap (const char *subcmd, size_t argc, char *const *const argv);
@@ -279,10 +260,12 @@ extern char *btrfs_get_label (const char *device);
 extern int btrfs_set_label (const char *device, const char *label);
 extern int btrfs_set_uuid (const char *device, const char *uuid);
 extern int btrfs_set_uuid_random (const char *device);
+extern int64_t btrfs_minimum_size (const char *path);
 
 /*-- in ntfs.c --*/
 extern char *ntfs_get_label (const char *device);
 extern int ntfs_set_label (const char *device, const char *label);
+extern int64_t ntfs_minimum_size (const char *device);
 
 /*-- in swap.c --*/
 extern int swap_set_uuid (const char *device, const char *uuid);

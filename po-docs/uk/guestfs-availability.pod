@@ -6,7 +6,7 @@ libguestfs generated file
    generator/ *.ml
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2015 Red Hat Inc.
+ Copyright (C) 2009-2016 Red Hat Inc.
 
  Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
  змінювати її за умов дотримання GNU General Public License  утому вигляді, що
@@ -41,7 +41,7 @@ L</guestfs_acl_set_file>
 
 =item B<btrfs>
 
-The following functions: L</guestfs_btrfs_balance_cancel>
+Такі функції: L</guestfs_btrfs_balance_cancel>
 L</guestfs_btrfs_balance_pause> L</guestfs_btrfs_balance_resume>
 L</guestfs_btrfs_balance_status> L</guestfs_btrfs_device_add>
 L</guestfs_btrfs_device_delete> L</guestfs_btrfs_filesystem_balance>

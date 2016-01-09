@@ -186,12 +186,13 @@ or contain unknown data.
 
  virt-filesystems --format=raw -a диск.img
 
-forces raw format (no auto-detection) for F<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<disk.img>.
 
  virt-filesystems --format=raw -a диск.img --format -a інший_диск.img
 
-forces raw format (no auto-detection) for F<disk.img> and reverts to
-auto-detection for F<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<diskimg> і повернення до автоматичного визначення для F<another.img>.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату

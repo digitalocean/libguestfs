@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -376,7 +376,8 @@ Guestfish will prompt for these separately."
         | BufferIn n ->
             pr "  const char *%s;\n" n;
             pr "  size_t %s_size;\n" n
-        | StringList n | DeviceList n -> pr "  char **%s;\n" n
+        | StringList n | DeviceList n | FilenameList n ->
+            pr "  char **%s;\n" n
         | Bool n -> pr "  int %s;\n" n
         | Int n -> pr "  int %s;\n" n
         | Int64 n -> pr "  int64_t %s;\n" n
@@ -464,7 +465,7 @@ Guestfish will prompt for these separately."
         | FileOut name ->
             pr "  %s = file_out (argv[i++]);\n" name;
             pr "  if (%s == NULL) goto out_%s;\n" name name
-        | StringList name | DeviceList name ->
+        | StringList name | DeviceList name | FilenameList name ->
             pr "  %s = parse_string_list (argv[i++]);\n" name;
             pr "  if (%s == NULL) goto out_%s;\n" name name
         | Key name ->
@@ -678,7 +679,7 @@ Guestfish will prompt for these separately."
         | FileIn name ->
             pr "  free_file_in (%s);\n" name;
             pr " out_%s:\n" name
-        | StringList name | DeviceList name ->
+        | StringList name | DeviceList name | FilenameList name ->
             pr "  guestfs_int_free_string_list (%s);\n" name;
             pr " out_%s:\n" name
         | Pointer _ -> assert false
@@ -917,7 +918,8 @@ and generate_fish_actions_pod () =
         | GUID n ->
             pr " %s" n
         | OptString n -> pr " %s" n
-        | StringList n | DeviceList n -> pr " '%s ...'" n
+        | StringList n | DeviceList n | FilenameList n ->
+            pr " '%s ...'" n
         | Bool _ -> pr " true|false"
         | Int n -> pr " %s" n
         | Int64 n -> pr " %s" n

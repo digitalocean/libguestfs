@@ -18,10 +18,13 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
-	$(SOURCES_ML) $(SOURCES_C) \
+	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
         virt-dib.pod
 
 CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-dib
+
+SOURCES_MLI = \
+	cmdline.mli
 
 SOURCES_ML = \
 	utils.ml \
@@ -109,19 +112,21 @@ endif
 
 man_MANS = virt-dib.1
 
-noinst_DATA = $(top_builddir)/html/virt-dib.1.html
+noinst_DATA = $(top_builddir)/website/virt-dib.1.html
 
-virt-dib.1 $(top_builddir)/html/virt-dib.1.html: stamp-virt-dib.pod
+virt-dib.1 $(top_builddir)/website/virt-dib.1.html: stamp-virt-dib.pod
 
 stamp-virt-dib.pod: virt-dib.pod
 	$(PODWRAPPER) \
 	  --man virt-dib.1 \
-	  --html $(top_builddir)/html/virt-dib.1.html \
+	  --html $(top_builddir)/website/virt-dib.1.html \
 	  --license GPLv2+ \
 	  $<
 	touch $@
 
-CLEANFILES += stamp-virt-dib.pod
+CLEANFILES += \
+	stamp-virt-dib.pod \
+	virt-dib.1
 
 # Dependencies.
 depend: .depend

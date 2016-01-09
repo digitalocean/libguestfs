@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,6 @@ open Types
 open Utils
 open DOM
 
-let title = sprintf "Exported by virt-v2v %s" Guestfs_config.package_version
-
 (* We set the creation time to be the same for all dates in
  * all metadata files.  All dates in OVF are UTC.
  *)
@@ -50,7 +48,7 @@ let iso_time =
 let get_vmtype = function
   | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
       i_product_name = product }
-      when major >= 5 && string_find product "Server" >= 0 ->
+      when major >= 5 && String.find product "Server" >= 0 ->
     Server
 
   | { i_type = "linux"; i_distro = "rhel"; i_major_version = major }
@@ -59,12 +57,12 @@ let get_vmtype = function
 
   | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
       i_product_name = product }
-      when major >= 3 && string_find product "ES" >= 0 ->
+      when major >= 3 && String.find product "ES" >= 0 ->
     Server
 
   | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
       i_product_name = product }
-      when major >= 3 && string_find product "AS" >= 0 ->
+      when major >= 3 && String.find product "AS" >= 0 ->
     Server
 
   | { i_type = "linux"; i_distro = "rhel"; i_major_version = major }
@@ -77,21 +75,21 @@ let get_vmtype = function
     Desktop                            (* Windows XP *)
 
   | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
-      i_product_name = product } when string_find product "XP" >= 0 ->
+      i_product_name = product } when String.find product "XP" >= 0 ->
     Desktop                            (* Windows XP *)
 
   | { i_type = "windows"; i_major_version = 5; i_minor_version = 2 } ->
     Server                             (* Windows 2003 *)
 
   | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
-      i_product_name = product } when string_find product "Server" >= 0 ->
+      i_product_name = product } when String.find product "Server" >= 0 ->
     Server                             (* Windows 2008 *)
 
   | { i_type = "windows"; i_major_version = 6; i_minor_version = 0 } ->
     Desktop                            (* Vista *)
 
   | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
-      i_product_name = product } when string_find product "Server" >= 0 ->
+      i_product_name = product } when String.find product "Server" >= 0 ->
     Server                             (* Windows 2008R2 *)
 
   | { i_type = "windows"; i_major_version = 6; i_minor_version = 1 } ->
@@ -136,7 +134,7 @@ and get_ostype = function
     "WindowsXP" (* no architecture differentiation of XP on RHEV *)
 
   | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
-      i_product_name = product } when string_find product "XP" >= 0 ->
+      i_product_name = product } when String.find product "XP" >= 0 ->
     "WindowsXP" (* no architecture differentiation of XP on RHEV *)
 
   | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
@@ -228,7 +226,7 @@ let create_meta_files output_alloc sd_uuid image_uuids targets =
       bpf "SIZE=%Ld\n" size_in_sectors;
       bpf "FORMAT=%s\n" format_for_rhev;
       bpf "TYPE=%s\n" output_alloc_for_rhev;
-      bpf "DESCRIPTION=%s\n" title;
+      bpf "DESCRIPTION=%s\n" generated_by;
       bpf "EOF\n";
       Buffer.contents buf
   ) (List.combine targets image_uuids)
@@ -273,7 +271,7 @@ let rec create_ovf source targets guestcaps inspect
         e "Name" [] [PCData source.s_name];
         e "TemplateId" [] [PCData "00000000-0000-0000-0000-000000000000"];
         e "TemplateName" [] [PCData "Blank"];
-        e "Description" [] [PCData title];
+        e "Description" [] [PCData generated_by];
         e "Domain" [] [];
         e "CreationDate" [] [PCData iso_time];
         e "IsInitilized" (* sic *) [] [PCData "True"];
@@ -282,11 +280,8 @@ let rec create_ovf source targets guestcaps inspect
         e "IsStateless" [] [PCData "False"];
         e "Origin" [] [PCData (string_of_int origin)];
         e "VmType" [] [PCData vmtype];
-        (* The documentation for DefaultDisplayType is wrong.  See
-         * https://bugzilla.redhat.com/show_bug.cgi?id=1260590#c7 for
-         * correct information.
-         *)
-        e "DefaultDisplayType" [] [PCData "2" (* qxl *)];
+        (* See https://bugzilla.redhat.com/show_bug.cgi?id=1260590#c17 *)
+        e "DefaultDisplayType" [] [PCData "1"];
 
         e "Section" ["ovf:id", vm_uuid; "ovf:required", "false";
                      "xsi:type", "ovf:OperatingSystemSection_Type"] [
@@ -341,6 +336,9 @@ let rec create_ovf source targets guestcaps inspect
 
   (* Add networks to the OVF XML. *)
   add_networks source.s_nics guestcaps ovf;
+
+  (* Add sound card to the OVF XML. *)
+  add_sound_card source.s_sound ovf;
 
   (* Old virt-v2v didn't really look at the video and display
    * metadata, instead just adding a single standard display (see
@@ -420,7 +418,7 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
           "ovf:href", fileref;
           "ovf:id", vol_uuid;
           "ovf:size", Int64.to_string ov.ov_virtual_size; (* NB: in bytes *)
-          "ovf:description", title;
+          "ovf:description", generated_by;
         ] [] in
       append_child disk references;
 
@@ -530,3 +528,35 @@ and add_networks nics guestcaps ovf =
         e "Item" [] children in
       append_child item virtualhardware_section;
   ) nics
+
+(* This modifies the OVF DOM, adding a sound card, if oVirt can emulate it. *)
+and add_sound_card sound ovf =
+  let device =
+    match sound with
+    | None -> None
+    | Some { s_sound_model = AC97 } -> Some "ac97"
+    | Some { s_sound_model = ICH6 } -> Some "ich6"
+    | Some { s_sound_model = model } ->
+       warning (f_"oVirt cannot emulate '%s' sound cards.  This sound card will be dropped from the output.")
+               (string_of_source_sound_model model);
+       None in
+
+  match device with
+  | Some device ->
+     let virtualhardware_section =
+       let sections =
+         path_to_nodes ovf ["ovf:Envelope"; "Content"; "Section"] in
+       try find_node_by_attr sections
+                             ("xsi:type", "ovf:VirtualHardwareSection_Type")
+       with Not_found -> assert false in
+
+     let item =
+       e "Item" [] [
+         e "rasd:InstanceId" [] [PCData (uuidgen ())];
+         e "rasd:ResourceType" [] [PCData "0"];
+         e "Type" [] [PCData "sound"];
+         e "Device" [] [PCData device];
+       ] in
+     append_child item virtualhardware_section
+
+  | None -> ()

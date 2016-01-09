@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -6892,6 +6892,33 @@ ocaml_guestfs_get_hv (value gv)
 
   rv = caml_copy_string (r);
   free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_identifier : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_get_identifier (value gv);
+
+value
+ocaml_guestfs_get_identifier (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_identifier");
+
+  const char *r;
+
+  r = guestfs_get_identifier (g);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_identifier");
+
+  rv = caml_copy_string (r);
   CAMLreturn (rv);
 }
 
@@ -17563,6 +17590,35 @@ ocaml_guestfs_set_hv (value gv, value hvv)
 }
 
 /* Automatically generated wrapper for function
+ * val set_identifier : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_set_identifier (value gv, value identifierv);
+
+value
+ocaml_guestfs_set_identifier (value gv, value identifierv)
+{
+  CAMLparam2 (gv, identifierv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_identifier");
+
+  char *identifier = guestfs_int_safe_strdup (g, String_val (identifierv));
+  int r;
+
+  r = guestfs_set_identifier (g, identifier);
+  free (identifier);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_identifier");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val set_label : t -> string -> string -> unit
  */
 
@@ -19031,16 +19087,17 @@ ocaml_guestfs_tail_n (value gv, value nrlinesv, value pathv)
 }
 
 /* Automatically generated wrapper for function
- * val tar_in : t -> ?compress:string -> string -> string -> unit
+ * val tar_in : t -> ?compress:string -> ?xattrs:bool -> ?selinux:bool -> ?acls:bool -> string -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_tar_in (value gv, value compressv, value tarfilev, value directoryv);
+value ocaml_guestfs_tar_in (value gv, value compressv, value xattrsv, value selinuxv, value aclsv, value tarfilev, value directoryv);
 
 value
-ocaml_guestfs_tar_in (value gv, value compressv, value tarfilev, value directoryv)
+ocaml_guestfs_tar_in (value gv, value compressv, value xattrsv, value selinuxv, value aclsv, value tarfilev, value directoryv)
 {
-  CAMLparam4 (gv, compressv, tarfilev, directoryv);
+  CAMLparam5 (gv, compressv, xattrsv, selinuxv, aclsv);
+  CAMLxparam2 (tarfilev, directoryv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -19054,6 +19111,18 @@ ocaml_guestfs_tar_in (value gv, value compressv, value tarfilev, value directory
   if (compressv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
     optargs_s.compress = guestfs_int_safe_strdup (g, String_val (Field (compressv, 0)));
+  }
+  if (xattrsv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK;
+    optargs_s.xattrs = Bool_val (Field (xattrsv, 0));
+  }
+  if (selinuxv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK;
+    optargs_s.selinux = Bool_val (Field (selinuxv, 0));
+  }
+  if (aclsv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_ACLS_BITMASK;
+    optargs_s.acls = Bool_val (Field (aclsv, 0));
   }
   int r;
 
@@ -19071,18 +19140,27 @@ ocaml_guestfs_tar_in (value gv, value compressv, value tarfilev, value directory
   CAMLreturn (rv);
 }
 
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_tar_in_byte (value *argv, int argn);
+
+value
+ocaml_guestfs_tar_in_byte (value *argv, int argn ATTRIBUTE_UNUSED)
+{
+  return ocaml_guestfs_tar_in (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
+}
+
 /* Automatically generated wrapper for function
- * val tar_out : t -> ?compress:string -> ?numericowner:bool -> ?excludes:string array -> string -> string -> unit
+ * val tar_out : t -> ?compress:string -> ?numericowner:bool -> ?excludes:string array -> ?xattrs:bool -> ?selinux:bool -> ?acls:bool -> string -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_tar_out (value gv, value compressv, value numericownerv, value excludesv, value directoryv, value tarfilev);
+value ocaml_guestfs_tar_out (value gv, value compressv, value numericownerv, value excludesv, value xattrsv, value selinuxv, value aclsv, value directoryv, value tarfilev);
 
 value
-ocaml_guestfs_tar_out (value gv, value compressv, value numericownerv, value excludesv, value directoryv, value tarfilev)
+ocaml_guestfs_tar_out (value gv, value compressv, value numericownerv, value excludesv, value xattrsv, value selinuxv, value aclsv, value directoryv, value tarfilev)
 {
-  CAMLparam5 (gv, compressv, numericownerv, excludesv, directoryv);
-  CAMLxparam1 (tarfilev);
+  CAMLparam5 (gv, compressv, numericownerv, excludesv, xattrsv);
+  CAMLxparam4 (selinuxv, aclsv, directoryv, tarfilev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -19105,6 +19183,18 @@ ocaml_guestfs_tar_out (value gv, value compressv, value numericownerv, value exc
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
     optargs_s.excludes = ocaml_guestfs_strings_val (g, Field (excludesv, 0))
 ;
+  }
+  if (xattrsv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK;
+    optargs_s.xattrs = Bool_val (Field (xattrsv, 0));
+  }
+  if (selinuxv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_SELINUX_BITMASK;
+    optargs_s.selinux = Bool_val (Field (selinuxv, 0));
+  }
+  if (aclsv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_ACLS_BITMASK;
+    optargs_s.acls = Bool_val (Field (aclsv, 0));
   }
   int r;
 
@@ -19130,7 +19220,7 @@ value ocaml_guestfs_tar_out_byte (value *argv, int argn);
 value
 ocaml_guestfs_tar_out_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_tar_out (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+  return ocaml_guestfs_tar_out (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
 }
 
 /* Automatically generated wrapper for function
@@ -19842,6 +19932,37 @@ ocaml_guestfs_vfs_label (value gv, value mountablev)
 
   rv = caml_copy_string (r);
   free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val vfs_minimum_size : t -> string -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_vfs_minimum_size (value gv, value mountablev);
+
+value
+ocaml_guestfs_vfs_minimum_size (value gv, value mountablev)
+{
+  CAMLparam2 (gv, mountablev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("vfs_minimum_size");
+
+  char *mountable = guestfs_int_safe_strdup (g, String_val (mountablev));
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_vfs_minimum_size (g, mountable);
+  caml_leave_blocking_section ();
+  free (mountable);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "vfs_minimum_size");
+
+  rv = caml_copy_int64 (r);
   CAMLreturn (rv);
 }
 

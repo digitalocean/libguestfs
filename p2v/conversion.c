@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
+#include <pthread.h>
 
 #include <glib.h>
 
@@ -115,7 +117,46 @@ get_conversion_error (void)
   return conversion_error;
 }
 
-static volatile sig_atomic_t stop = 0;
+static pthread_mutex_t running_mutex = PTHREAD_MUTEX_INITIALIZER;
+static int running = 0;
+static pthread_mutex_t cancel_requested_mutex = PTHREAD_MUTEX_INITIALIZER;
+static int cancel_requested = 0;
+
+static int
+is_running (void)
+{
+  int r;
+  pthread_mutex_lock (&running_mutex);
+  r = running;
+  pthread_mutex_unlock (&running_mutex);
+  return r;
+}
+
+static void
+set_running (int r)
+{
+  pthread_mutex_lock (&running_mutex);
+  running = r;
+  pthread_mutex_unlock (&running_mutex);
+}
+
+static int
+is_cancel_requested (void)
+{
+  int r;
+  pthread_mutex_lock (&cancel_requested_mutex);
+  r = cancel_requested;
+  pthread_mutex_unlock (&cancel_requested_mutex);
+  return r;
+}
+
+static void
+set_cancel_requested (int r)
+{
+  pthread_mutex_lock (&cancel_requested_mutex);
+  cancel_requested = r;
+  pthread_mutex_unlock (&cancel_requested_mutex);
+}
 
 #pragma GCC diagnostic ignored "-Wsuggest-attribute=noreturn"
 int
@@ -139,6 +180,9 @@ start_conversion (struct config *config,
   print_config (config, stderr);
   fprintf (stderr, "\n");
 #endif
+
+  set_running (1);
+  set_cancel_requested (0);
 
   for (i = 0; config->disks[i] != NULL; ++i) {
     data_conns[i].h = NULL;
@@ -336,7 +380,7 @@ start_conversion (struct config *config,
   /* Read output from the virt-v2v process and echo it through the
    * notify function, until virt-v2v closes the connection.
    */
-  while (!stop) {
+  while (!is_cancel_requested ()) {
     char buf[257];
     ssize_t r;
 
@@ -355,7 +399,7 @@ start_conversion (struct config *config,
       notify_ui (NOTIFY_REMOTE_MESSAGE, buf);
   }
 
-  if (stop) {
+  if (is_cancel_requested ()) {
     set_conversion_error ("cancelled by user");
     if (notify_ui)
       notify_ui (NOTIFY_STATUS, _("Conversion cancelled by user."));
@@ -380,13 +424,22 @@ start_conversion (struct config *config,
     }
   }
   cleanup_data_conns (data_conns, nr_disks);
+
+  set_running (0);
+
   return ret;
+}
+
+int
+conversion_is_running (void)
+{
+  return is_running ();
 }
 
 void
 cancel_conversion (void)
 {
-  stop = 1;
+  set_cancel_requested (1);
 }
 
 /* Send a shell-quoted string to remote. */
@@ -611,7 +664,7 @@ wait_qemu_nbd (int nbd_local_port, int timeout_seconds)
   }
 
   result = 0;
-cleanup:
+ cleanup:
   close (sockfd);
 
   return result;
@@ -642,25 +695,25 @@ cleanup_data_conns (struct data_conn *data_conns, size_t nr)
 
 /* Macros "inspired" by src/launch-libvirt.c */
 /* <element */
-#define start_element(element)                                        \
-  if (xmlTextWriterStartElement (xo, BAD_CAST (element)) == -1) {     \
-    set_conversion_error ("xmlTextWriterStartElement: %m");           \
-    return NULL;                                                      \
-  }                                                                   \
+#define start_element(element)						\
+  if (xmlTextWriterStartElement (xo, BAD_CAST (element)) == -1) {	\
+    set_conversion_error ("xmlTextWriterStartElement: %m");		\
+    return NULL;							\
+  }									\
   do
 
 /* finish current </element> */
-#define end_element()                                                   \
-  while (0);                                                            \
-  do {                                                                  \
-    if (xmlTextWriterEndElement (xo) == -1) {                           \
-      set_conversion_error ("xmlTextWriterEndElement: %m");             \
-      return NULL;                                                      \
-    }                                                                   \
+#define end_element()						\
+  while (0);							\
+  do {								\
+    if (xmlTextWriterEndElement (xo) == -1) {			\
+      set_conversion_error ("xmlTextWriterEndElement: %m");	\
+      return NULL;						\
+    }								\
   } while (0)
 
 /* <element/> */
-#define empty_element(element) \
+#define empty_element(element)					\
   do { start_element(element) {} end_element (); } while (0)
 
 /* key=value attribute of the current element. */
@@ -673,16 +726,16 @@ cleanup_data_conns (struct data_conn *data_conns, size_t nr)
 /* key=value, but value is a printf-style format string. */
 #define attribute_format(key,fs,...)                                    \
   if (xmlTextWriterWriteFormatAttribute (xo, BAD_CAST (key),            \
-                                           fs, ##__VA_ARGS__) == -1) {  \
+					 fs, ##__VA_ARGS__) == -1) {	\
     set_conversion_error ("xmlTextWriterWriteFormatAttribute: %m");     \
     return NULL;                                                        \
   }
 
 /* A string, eg. within an element. */
-#define string(str)                                                     \
-  if (xmlTextWriterWriteString (xo, BAD_CAST (str)) == -1) {            \
-    set_conversion_error ("xmlTextWriterWriteString: %m");              \
-    return NULL;                                                        \
+#define string(str)						\
+  if (xmlTextWriterWriteString (xo, BAD_CAST (str)) == -1) {	\
+    set_conversion_error ("xmlTextWriterWriteString: %m");	\
+    return NULL;						\
   }
 
 /* A string, using printf-style formatting. */
@@ -693,10 +746,10 @@ cleanup_data_conns (struct data_conn *data_conns, size_t nr)
   }
 
 /* An XML comment. */
-#define comment(str)                                                  \
-  if (xmlTextWriterWriteComment (xo, BAD_CAST (str)) == -1) {         \
-    set_conversion_error ("xmlTextWriterWriteComment: %m");           \
-    return NULL;                                                      \
+#define comment(str)						\
+  if (xmlTextWriterWriteComment (xo, BAD_CAST (str)) == -1) {	\
+    set_conversion_error ("xmlTextWriterWriteComment: %m");	\
+    return NULL;						\
   }
 
 /* Write the libvirt XML for this physical machine.  Note this is not

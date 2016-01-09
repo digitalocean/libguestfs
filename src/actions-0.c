@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1216,6 +1216,17 @@ guestfs_lstatnslist (guestfs_h *g,
     error (g, "%s: %s: parameter cannot be NULL",
            "lstatnslist", "names");
     return NULL;
+  }
+
+  {
+    size_t i;
+    for (i = 0; names[i] != NULL; ++i) {
+      if (strchr (names[i], '/') != NULL) {
+        error (g, "%s: %s: '%s' is not a file name",
+               "lstatnslist", "names", names[i]);
+        return NULL;
+      }
+    }
   }
 
   if (trace_flag) {

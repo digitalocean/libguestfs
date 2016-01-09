@@ -6,6 +6,7 @@ builder/index-struct.c
 builder/index-validate.c
 builder/pxzcat-c.c
 builder/setlocale-c.c
+builder/yajl-c.c
 cat/cat.c
 cat/filesystems.c
 cat/log.c
@@ -48,6 +49,8 @@ daemon/file.c
 daemon/fill.c
 daemon/find.c
 daemon/findfs.c
+daemon/format.c
+daemon/fs-min-size.c
 daemon/fsck.c
 daemon/fstrim.c
 daemon/glob.c
@@ -277,8 +280,8 @@ p2v/miniexpect.c
 p2v/ssh.c
 p2v/utils.c
 p2v/whole-file.c
-perl/Guestfs.c
 perl/bindtests.pl
+perl/lib/Sys/Guestfs.c
 perl/lib/Sys/Guestfs.pm
 php/extension/guestfs_php.c
 python/guestfs-py-byhand.c
@@ -299,6 +302,7 @@ src/actions-support.c
 src/actions-variants.c
 src/alloc.c
 src/appliance.c
+src/available.c
 src/bindtests.c
 src/canonical-name.c
 src/cleanup.c
@@ -351,7 +355,7 @@ src/tmpdirs.c
 src/utils.c
 src/whole-file.c
 test-tool/test-tool.c
+v2v/changeuid-c.c
 v2v/domainxml-c.c
-v2v/kvmuid-c.c
 v2v/utils-c.c
 v2v/xml-c.c

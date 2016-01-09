@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -3384,6 +3384,15 @@ guestfs_tar_in_opts_va (guestfs_h *g,
     case GUESTFS_TAR_IN_OPTS_COMPRESS:
       optargs_s.compress = va_arg (args, const char *);
       break;
+    case GUESTFS_TAR_IN_OPTS_XATTRS:
+      optargs_s.xattrs = va_arg (args, int);
+      break;
+    case GUESTFS_TAR_IN_OPTS_SELINUX:
+      optargs_s.selinux = va_arg (args, int);
+      break;
+    case GUESTFS_TAR_IN_OPTS_ACLS:
+      optargs_s.acls = va_arg (args, int);
+      break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
              "tar_in", i);
@@ -3453,6 +3462,15 @@ guestfs_tar_out_opts_va (guestfs_h *g,
       break;
     case GUESTFS_TAR_OUT_OPTS_EXCLUDES:
       optargs_s.excludes = va_arg (args, char *const *);
+      break;
+    case GUESTFS_TAR_OUT_OPTS_XATTRS:
+      optargs_s.xattrs = va_arg (args, int);
+      break;
+    case GUESTFS_TAR_OUT_OPTS_SELINUX:
+      optargs_s.selinux = va_arg (args, int);
+      break;
+    case GUESTFS_TAR_OUT_OPTS_ACLS:
+      optargs_s.acls = va_arg (args, int);
       break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",

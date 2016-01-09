@@ -28,9 +28,10 @@
 #include <errno.h>
 #include <poll.h>
 #include <sys/stat.h>
-#include <sys/socket.h>
+#include <sys/socket.h>  /* accept4 */
 #include <sys/types.h>
 #include <assert.h>
+#include <libintl.h>
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
@@ -380,8 +381,8 @@ static struct connection_ops ops = {
  */
 struct connection *
 guestfs_int_new_conn_socket_listening (guestfs_h *g,
-                                     int daemon_accept_sock,
-                                     int console_sock)
+				       int daemon_accept_sock,
+				       int console_sock)
 {
   struct connection_socket *conn;
 
@@ -419,8 +420,8 @@ guestfs_int_new_conn_socket_listening (guestfs_h *g,
  */
 struct connection *
 guestfs_int_new_conn_socket_connected (guestfs_h *g,
-                                     int daemon_sock,
-                                     int console_sock)
+				       int daemon_sock,
+				       int console_sock)
 {
   struct connection_socket *conn;
 

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@ EXTRA_DIST = \
 	test-guestunmount-not-mounted.sh
 
 CLEANFILES = \
+	guestmount.1 \
+	guestunmount.1 \
 	stamp-guestmount.pod \
 	stamp-guestunmount.pod
 
@@ -101,25 +103,25 @@ man_MANS = \
 	guestmount.1 \
 	guestunmount.1
 noinst_DATA = \
-	$(top_builddir)/html/guestmount.1.html \
-	$(top_builddir)/html/guestunmount.1.html
+	$(top_builddir)/website/guestmount.1.html \
+	$(top_builddir)/website/guestunmount.1.html
 
-guestmount.1 $(top_builddir)/html/guestmount.1.html: stamp-guestmount.pod
+guestmount.1 $(top_builddir)/website/guestmount.1.html: stamp-guestmount.pod
 
 stamp-guestmount.pod: guestmount.pod
 	$(PODWRAPPER) \
 	  --man guestmount.1 \
-	  --html $(top_builddir)/html/guestmount.1.html \
+	  --html $(top_builddir)/website/guestmount.1.html \
 	  --license GPLv2+ \
 	  $<
 	touch $@
 
-guestunmount.1 $(top_builddir)/html/guestunmount.1.html: stamp-guestunmount.pod
+guestunmount.1 $(top_builddir)/website/guestunmount.1.html: stamp-guestunmount.pod
 
 stamp-guestunmount.pod: guestunmount.pod
 	$(PODWRAPPER) \
 	  --man guestunmount.1 \
-	  --html $(top_builddir)/html/guestunmount.1.html \
+	  --html $(top_builddir)/website/guestunmount.1.html \
 	  --license GPLv2+ \
 	  $<
 	touch $@

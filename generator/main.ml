@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,7 +127,7 @@ Run it from the top source directory using the command
   output_to "ocaml/guestfs-c-actions.c" generate_ocaml_c;
   output_to "ocaml/guestfs-c-errnos.c" generate_ocaml_c_errnos;
   output_to "ocaml/bindtests.ml" generate_ocaml_bindtests;
-  output_to "perl/Guestfs.xs" generate_perl_xs;
+  output_to "perl/lib/Sys/Guestfs.xs" generate_perl_xs;
   output_to "perl/lib/Sys/Guestfs.pm" generate_perl_pm;
   output_to "perl/bindtests.pl" generate_perl_bindtests;
   output_to "python/guestfs-py.c" generate_python_c;

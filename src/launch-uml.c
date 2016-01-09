@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,20 +22,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <inttypes.h>
 #include <unistd.h>
-#include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <sys/signal.h>
+#include <libintl.h>
 
 #include "cloexec.h"
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
-#include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
 /* Per-handle data. */
@@ -202,9 +200,9 @@ launch_uml (guestfs_h *g, void *datav, const char *arg)
    * forking, because after fork we are not allowed to use
    * non-signal-safe functions such as malloc.
    */
-#define ADD_CMDLINE(str) \
+#define ADD_CMDLINE(str)			\
   guestfs_int_add_string (g, &cmdline, (str))
-#define ADD_CMDLINE_PRINTF(fs,...) \
+#define ADD_CMDLINE_PRINTF(fs,...)				\
   guestfs_int_add_sprintf (g, &cmdline, (fs), ##__VA_ARGS__)
 
   ADD_CMDLINE (g->hv);
@@ -272,7 +270,7 @@ launch_uml (guestfs_h *g, void *datav, const char *arg)
     ADD_CMDLINE (hp->hv_param);
     if (hp->hv_value)
       ADD_CMDLINE (hp->hv_value);
-    }
+  }
 
   /* Finish off the command line. */
   guestfs_int_end_stringsbuf (g, &cmdline);
@@ -352,7 +350,6 @@ launch_uml (guestfs_h *g, void *datav, const char *arg)
   if (g->recovery_proc) {
     r = fork ();
     if (r == 0) {
-      int i;
       struct sigaction sa;
       pid_t vmlinux_pid = data->pid;
       pid_t parent_pid = getppid ();

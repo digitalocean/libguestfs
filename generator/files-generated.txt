@@ -233,9 +233,9 @@ ocaml/guestfs-c-actions.c
 ocaml/guestfs-c-errnos.c
 ocaml/guestfs.ml
 ocaml/guestfs.mli
-perl/Guestfs.xs
 perl/bindtests.pl
 perl/lib/Sys/Guestfs.pm
+perl/lib/Sys/Guestfs.xs
 php/extension/guestfs_php.c
 php/extension/php_guestfs_php.h
 php/extension/tests/guestfs_php_bindtests.phpt

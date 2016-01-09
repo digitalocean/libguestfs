@@ -6,7 +6,7 @@ libguestfs generated file
    generator/ *.ml
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2015 Red Hat Inc.
+ Copyright (C) 2009-2016 Red Hat Inc.
 
  Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
  змінювати її за умов дотримання GNU General Public License  утому вигляді, що
@@ -296,7 +296,8 @@ supplied - see below.
 =item C<protocol = "iscsi">
 
 Connect to the iSCSI server.  The C<server> parameter must also be supplied
-- see below.
+- see below.  The C<username> parameter may be supplied.  See below.  The
+C<secret> parameter may be supplied.  See below.
 
 Див. також L<guestfs(3)/ISCSI>.
 
@@ -1808,12 +1809,13 @@ The other optional parameters are:
 
 =item C<preallocation>
 
-If format is C<raw>, then this can be either C<sparse> or C<full> to create
-a sparse or fully allocated file respectively.  The default is C<sparse>.
+If format is C<raw>, then this can be either C<off> (or C<sparse>)  or
+C<full> to create a sparse or fully allocated file respectively.  The
+default is C<off>.
 
-If format is C<qcow2>, then this can be either C<off> or C<metadata>.
-Preallocating metadata can be faster when doing lots of writes, but uses
-more space.  The default is C<off>.
+If format is C<qcow2>, then this can be C<off> (or C<sparse>), C<metadata>
+or C<full>.  Preallocating metadata can be faster when doing lots of writes,
+but uses more space.  The default is C<off>.
 
 =item C<compat>
 
@@ -2683,6 +2685,12 @@ Return the current hypervisor binary.
 This is always non-NULL.  If it wasn't set already, then this will return
 the default qemu binary name.
 
+=head2 get-identifier
+
+ get-identifier
+
+Get the handle identifier.  See L</set-identifier>.
+
 =head2 get-libvirt-requested-credential-challenge
 
  get-libvirt-requested-credential-challenge index
@@ -3305,6 +3313,14 @@ This returns the distro (distribution) of the inspected operating system.
 
 =over 4
 
+=item "alpinelinux"
+
+Alpine Linux.
+
+=item "altlinux"
+
+ALT Linux.
+
 =item "archlinux"
 
 Arch Linux.
@@ -3340,6 +3356,10 @@ FreeBSD.
 =item "freedos"
 
 FreeDOS.
+
+=item "frugalware"
+
+Frugalware.
 
 =item "gentoo"
 
@@ -3380,6 +3400,10 @@ Oracle Linux.
 =item "pardus"
 
 Pardus.
+
+=item "pldlinux"
+
+PLD Linux.
 
 =item "redhat-based"
 
@@ -3647,7 +3671,7 @@ format I<or> if the operating system does not have a real packaging system
 (eg. Windows).
 
 Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>,
-C<pkgsrc>.  Future versions of libguestfs may return other strings.
+C<pkgsrc>, C<apk>.  Future versions of libguestfs may return other strings.
 
 З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
@@ -3665,8 +3689,8 @@ management tool I<or> if the operating system does not have a real packaging
 system (eg. Windows).
 
 Possible strings include: C<yum>, C<dnf>, C<up2date>, C<apt> (for all Debian
-derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.  Future
-versions of libguestfs may return other strings.
+derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>.
+Future versions of libguestfs may return other strings.
 
 З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
@@ -6508,7 +6532,7 @@ L</mkmountpoint>.  See L</mkmountpoint> for full details.
 
 =head2 rsync
 
- rsync src dest [archive:true|false] [deletedest:true|false]
+ rsync джерело призначення [archive:true|false] [deletedest:true|false]
 
 This call may be used to copy or synchronize two directories under the same
 libguestfs handle.  This uses the L<rsync(1)> program which uses a fast
@@ -6628,10 +6652,10 @@ more details.
 
 =head2 append
 
- set-append append
+ set-append додаток
 
-This function is used to add additional options to the libguestfs appliance
-kernel command line.
+Ця функція використовується для додавання параметрів до командного рядка
+елементарного ядра libguestfs.
 
 The default is C<NULL> unless overridden by setting C<LIBGUESTFS_APPEND>
 environment variable.
@@ -6643,7 +6667,7 @@ Setting C<append> to C<NULL> means I<no> additional options are passed
 
 =head2 attach-method
 
- set-attach-method backend
+ set-attach-method модуль
 
 Set the method that libguestfs uses to connect to the backend guestfsd
 daemon.
@@ -6685,7 +6709,7 @@ This handle property was previously called the "attach method".
 
 =head2 set-backend-setting
 
- set-backend-setting name val
+ set-backend-setting назва значення
 
 Append C<"name=value"> to the backend settings string list.  However if a
 string already exists matching C<"name"> or beginning with C<"name=">, then
@@ -6695,7 +6719,7 @@ that setting is replaced.
 
 =head2 set-backend-settings
 
- set-backend-settings 'settings ...'
+ set-backend-settings 'параметри ...'
 
 Set a list of zero or more settings which are passed through to the current
 backend.  Each setting is a string which is interpreted in a
@@ -6832,6 +6856,34 @@ don't retest features, and so you might see inconsistent results.  Using the
 environment variable C<LIBGUESTFS_HV> is safest of all since that picks the
 qemu binary at the same time as the handle is created.
 
+=head2 set-identifier
+
+=head2 ідентифікатор
+
+ set-identifier identifier
+
+This is an informative string which the caller may optionally set in the
+handle.  It is printed in various places, allowing the current handle to be
+identified in debugging output.
+
+One important place is when tracing is enabled.  If the identifier string is
+not an empty string, then trace messages change from this:
+
+ libguestfs: trace: get_tmpdir
+ libguestfs: trace: get_tmpdir = "/tmp"
+
+to this:
+
+ libguestfs: trace: ID: get_tmpdir
+ libguestfs: trace: ID: get_tmpdir = "/tmp"
+
+where C<ID> is the identifier string set by this call.
+
+The identifier must only contain alphanumeric ASCII characters, underscore
+and minus sign.  The default is the empty string.
+
+See also L</set-program>, L</set-trace>, L</get-identifier>.
+
 =head2 set-label
 
  set-label mountable label
@@ -6858,7 +6910,7 @@ trying to set the label.
 
 =item btrfs
 
-The label is limited to 256 bytes and some characters are not allowed.
+The label is limited to 255 bytes and some characters are not allowed.
 Setting the label on a btrfs subvolume will set the label on its parent
 filesystem.  The filesystem must not be mounted when trying to set the
 label.
@@ -7535,7 +7587,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 tar-in-opts
 
- tar-in (tarfile|-) directory [compress:..]
+ tar-in (tarfile|-) directory [compress:..] [xattrs:true|false] [selinux:true|false] [acls:true|false]
 
 This command uploads and unpacks local file C<tarfile> into F<directory>.
 
@@ -7544,6 +7596,24 @@ input should be an uncompressed tar file.  Otherwise one of the following
 strings may be given to select the compression type of the input file:
 C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.  (Note that not all builds
 of libguestfs will support all of these compression types).
+
+The other optional arguments are:
+
+=over 4
+
+=item C<xattrs>
+
+If set to true, extended attributes are restored from the tar file.
+
+=item C<selinux>
+
+If set to true, SELinux contexts are restored from the tar file.
+
+=item C<acls>
+
+If set to true, POSIX ACLs are restored from the tar file.
+
+=back
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
@@ -7554,7 +7624,7 @@ ARGUMENTS>.
 
 =head2 tar-out-opts
 
- tar-out directory (tarfile|-) [compress:..] [numericowner:true|false] [excludes:..]
+ tar-out directory (tarfile|-) [compress:..] [numericowner:true|false] [excludes:..] [xattrs:true|false] [selinux:true|false] [acls:true|false]
 
 This command packs the contents of F<directory> and downloads it to local
 file C<tarfile>.
@@ -7577,6 +7647,18 @@ A list of wildcards.  Files are excluded if they match any of the wildcards.
 
 If set to true, the output tar file will contain UID/GID numbers instead of
 user/group names.
+
+=item C<xattrs>
+
+If set to true, extended attributes are saved in the output tar.
+
+=item C<selinux>
+
+If set to true, SELinux contexts are saved in the output tar.
+
+=item C<acls>
+
+If set to true, POSIX ACLs are saved in the output tar.
 
 =back
 
@@ -7949,6 +8031,18 @@ This returns the label of the filesystem on C<mountable>.
 If the filesystem is unlabeled, this returns the empty string.
 
 To find a filesystem from the label, use L</findfs-label>.
+
+=head2 vfs-minimum-size
+
+ vfs-minimum-size mountable
+
+Get the minimum size of filesystem in bytes.  This is the minimum possible
+size for filesystem shrinking.
+
+If getting minimum size of specified filesystem is not supported, this will
+fail and set errno as ENOTSUP.
+
+See also L<ntfsresize(8)>, L<resize2fs(8)>, L<btrfs(8)>, L<xfs_info(8)>.
 
 =head2 vfs-type
 

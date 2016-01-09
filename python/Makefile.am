@@ -1,5 +1,5 @@
 # libguestfs Python bindings
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -110,7 +110,10 @@ endif HAVE_PYTHON
 
 # Extra clean.
 CLEANFILES = \
-	*~ examples/*~ t/*~ \
+	*~ *.pyc \
+	examples/*~ examples/*.pyc \
+	t/*~ t/*.pyc \
+	bindtests.tmp \
 	config.h \
 	guestfs-internal-all.h \
 	guestfs-internal-frontend-cleanups.h \

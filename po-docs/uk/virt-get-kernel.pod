@@ -98,7 +98,7 @@ and before the rest of the file name; for example, a kernel in the guest
 like C<vmlinuz-3.19.0-20-generic> is saved as
 C<mydistro-vmlinuz-3.19.0-20-generic> when the prefix is C<mydistro>.
 
-See also I<--unversioned-names>.
+Див. також I<--unversioned-names>.
 
 =item B<-q>
 
@@ -115,7 +115,7 @@ example, kernel and ramdisk in the guest like C<vmlinuz-3.19.0-20-generic>
 and C<initrd.img-3.19.0-20-generic> are saved respectively as C<vmlinuz> and
 C<initrd.img>.
 
-See also I<--prefix>.
+Див. також I<--prefix>.
 
 =item B<-v>
 
@@ -171,5 +171,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2013-2015 Red Hat Inc.
+Copyright (C) 2013-2016 Red Hat Inc.
 

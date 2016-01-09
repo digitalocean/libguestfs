@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,15 +19,28 @@ include $(top_srcdir)/common-rules.mk
 
 ACLOCAL_AMFLAGS = -I m4
 
+# The generator - must be before anything else.
+SUBDIRS = generator
+
+# Must be the first tests that run.
+if ENABLE_APPLIANCE
+SUBDIRS += tests/qemu
+endif
+
+# Files and other test data used by the tests.  Must be before any
+# tests run, except tests/qemu.
+SUBDIRS += test-data
+
 # Gnulib - must be built and tested before the library.
-SUBDIRS = gnulib/lib
+SUBDIRS += gnulib/lib
 if ENABLE_GNULIB_TESTS
 SUBDIRS += gnulib/tests
 endif
 
 # Basic source for the library.
-SUBDIRS += tests/data generator src examples po
+SUBDIRS += src docs examples po
 
+# The daemon and the appliance.
 if ENABLE_DAEMON
 SUBDIRS += daemon
 SUBDIRS += tests/daemon
@@ -38,8 +51,6 @@ endif
 
 # Tests - order is important.
 if ENABLE_APPLIANCE
-SUBDIRS += tests/qemu
-SUBDIRS += tests/guests
 SUBDIRS += tests/c-api
 SUBDIRS += tests/tmpdirs
 SUBDIRS += tests/protocol
@@ -69,7 +80,6 @@ SUBDIRS += tests/nbd
 SUBDIRS += tests/http
 SUBDIRS += tests/syslinux
 SUBDIRS += tests/journal
-SUBDIRS += tests/fuzz
 SUBDIRS += tests/relative-paths
 SUBDIRS += tests/regressions
 endif
@@ -194,23 +204,31 @@ EXTRA_DIST = \
 	contrib/visualize-alignment/README \
 	contrib/visualize-alignment/tracetops.ml \
 	contrib/windows-icons.pl \
-	guestfs-release-notes.pod \
-	guestfs-release-notes.txt \
-	html/draft.png \
-	html/draft.svg \
-	html/pod.css \
-	html/virt-builder.svg \
 	libtool-kill-dependency_libs.sh \
 	logo/fish.svg logo/fish.png \
 	logo/fish-5yrs.svg logo/fish-5yrs.png \
 	logo/virt-builder.svg \
 	m4/.gitignore \
 	ocaml-link.sh \
-	tests/run-xml-to-junit.sh \
-	tests/run-xml-to-junit.xsl \
+	tests/automake2junit.ml \
 	tmp/.gitignore \
 	update-bugs.sh \
 	valgrind-suppressions \
+	website/bugs.png \
+	website/communicate.png \
+	website/documentation.png \
+	website/download.png \
+	website/draft.png \
+	website/draft.svg \
+	website/easytoread.css \
+	website/feed.css \
+	website/fish-5yrs.svg \
+	website/fish.png \
+	website/git.png \
+	website/index.css \
+	website/index.html.in \
+	website/pod.css \
+	website/standard.css \
 	zanata.xml \
 	zanata-pull.sh \
 	.x-sc_avoid_ctype_macros \
@@ -221,91 +239,7 @@ EXTRA_DIST = \
 	.x-sc_TAB_in_indentation \
 	.x-sc_trailing_blank
 
-# The website.
-HTMLFILES = \
-	html/guestfs.3.html \
-	html/guestfs-examples.3.html \
-	html/guestfs-faq.1.html \
-	html/guestfs-performance.1.html \
-	html/guestfs-recipes.1.html \
-	html/guestfs-release-notes.1.html \
-	html/guestfs-testing.1.html \
-	html/guestfsd.8.html \
-	html/guestfish.1.html \
-	html/libguestfs-make-fixed-appliance.1.html \
-	html/libguestfs-test-tool.1.html \
-	html/virt-alignment-scan.1.html \
-	html/virt-builder.1.html \
-	html/virt-cat.1.html \
-	html/virt-copy-in.1.html \
-	html/virt-copy-out.1.html \
-	html/virt-customize.1.html \
-	html/virt-df.1.html \
-	html/virt-dib.1.html \
-	html/virt-diff.1.html \
-	html/virt-edit.1.html \
-	html/virt-filesystems.1.html \
-	html/virt-format.1.html \
-	html/virt-get-kernel.1.html \
-	html/virt-inspector.1.html \
-	html/virt-list-filesystems.1.html \
-	html/virt-list-partitions.1.html \
-	html/virt-log.1.html \
-	html/virt-ls.1.html \
-	html/virt-make-fs.1.html \
-	html/virt-rescue.1.html \
-	html/virt-resize.1.html \
-	html/virt-sparsify.1.html \
-	html/virt-sysprep.1.html \
-	html/virt-tar.1.html \
-	html/virt-tar-in.1.html \
-	html/virt-tar-out.1.html \
-	html/virt-v2v.1.html \
-	html/virt-win-reg.1.html
-
-if HAVE_ERLANG
-HTMLFILES += html/guestfs-erlang.3.html
-endif
-if HAVE_GOLANG
-HTMLFILES += html/guestfs-golang.3.html
-endif
-if HAVE_JAVA
-HTMLFILES += html/guestfs-java.3.html
-endif
-if HAVE_LUA
-HTMLFILES += html/guestfs-lua.3.html
-endif
-if HAVE_OCAML
-HTMLFILES += html/guestfs-ocaml.3.html
-endif
-if HAVE_PERL
-HTMLFILES += html/guestfs-perl.3.html
-endif
-if HAVE_PYTHON
-HTMLFILES += html/guestfs-python.3.html
-endif
-if HAVE_RUBY
-HTMLFILES += html/guestfs-ruby.3.html
-endif
-if HAVE_FUSE
-HTMLFILES += \
-	html/guestmount.1.html \
-	html/guestunmount.1.html
-endif
-if HAVE_P2V
-HTMLFILES += \
-	html/virt-p2v.1.html \
-	html/virt-p2v-make-disk.1.html \
-	html/virt-p2v-make-kickstart.1.html
-endif
-
-HTMLSUPPORTFILES = \
-	html/draft.png \
-	html/pod.css \
-	html/virt-builder.svg
-
-TEXTFILES = BUGS README TODO
-
+# XXX Eventually move builder/website under website/ top level directory.
 BUILDERFILES = \
 	builder/website/README \
 	builder/website/index \
@@ -313,19 +247,20 @@ BUILDERFILES = \
 
 WEBSITEDIR = $(HOME)/d/websites/libguestfs
 
-# For reasons not fully understood, we need to rebuild all the
-# man pages and HTMLFILES from scratch here.
-website: $(HTMLFILES) $(HTMLSUPPORTFILES) $(TEXTFILES) $(BUILDERFILES)
-	find -name 'stamp-*.pod' -delete
-	$(MAKE)
-	cp $(HTMLFILES) $(HTMLSUPPORTFILES) $(WEBSITEDIR)
-	for f in $(TEXTFILES); do cp $$f $(WEBSITEDIR)/$$f.txt; done
+noinst_DATA = \
+	website/index.html \
+	website/README.txt \
+	website/TODO.txt
+
+website/README.txt: README
+	cp $< $@
+
+website/TODO.txt: TODO
+	cp $< $@
+
+maintainer-upload-website:
+	cp website/*.{css,html,png,svg,txt} $(WEBSITEDIR)/
 	cp $(BUILDERFILES) $(WEBSITEDIR)/download/builder/
-	cd $(WEBSITEDIR) && \
-	date=`date +%F`; \
-	sed -e "s/SUBST_VERSION/$(VERSION)/" \
-	    -e "s/SUBST_DATE/$$date/" \
-	< index.html.in > index.html
 
 # When doing 'make dist' update a few files automatically.
 dist-hook:
@@ -352,9 +287,9 @@ dist-hook:
 all-local:
 	cd $(srcdir); \
 	find $(DIST_SUBDIRS) -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
-	grep -v -E '^(examples|gnulib|perl/(blib|examples)|po-docs|tests)/' | \
+	grep -v -E '^(examples|gnulib|gobject/docs|perl/(blib|examples)|po-docs|tests|test-data)/' | \
 	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
-	grep -v -E '^python/utils.c$$' | \
+	grep -v -E '^python/utils\.c$$' | \
 	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
 	find builder customize dib get-kernel mllib resize sparsify sysprep v2v -name '*.ml' | \
@@ -379,25 +314,6 @@ install:
 installcheck-local: installcheck.sh
 	$(builddir)/installcheck.sh
 
-# Manual pages in top level directory.
-
-man_MANS = \
-	guestfs-release-notes.1
-noinst_DATA = \
-	$(top_builddir)/html/guestfs-release-notes.1.html
-
-guestfs-release-notes.1 guestfs-release-notes.txt $(top_builddir)/html/guestfs-release-notes.1.html: stamp-guestfs-release-notes.pod
-
-stamp-guestfs-release-notes.pod: guestfs-release-notes.pod
-	$(PODWRAPPER) \
-	  --section 1 \
-	  --man guestfs-release-notes.1 \
-	  --text guestfs-release-notes.txt \
-	  --html $(top_builddir)/html/guestfs-release-notes.1.html \
-	  --license GPLv2+ \
-	  $<
-	touch $@
-
 # NB. podwrapper is an internal tool, so the man page mustn't be installed.
 noinst_MANS = podwrapper.1
 podwrapper.1: podwrapper.pl
@@ -412,14 +328,14 @@ podwrapper.1: podwrapper.pl
 
 CLEANFILES = \
 	*~ \
-	html/*.html \
 	pod2htm?.tmp \
 	podwrapper.1 \
 	qemu-wrapper.sh \
-	stamp-guestfs-release-notes.pod \
 	tmp/disk* \
 	tmp/run-* \
-	tmp/valgrind-*.log
+	tmp/valgrind-*.log \
+	website/*~ \
+	website/*.html
 
 clean-local:
 	-rm -rf tmp/libguestfs??????
@@ -547,7 +463,7 @@ check-slow: build-test-guests
 	exit $$(( $$errors ? 1 : 0 ))
 
 build-test-guests:
-	$(MAKE) -C tests/guests check
+	$(MAKE) -C test-data/phony-guests check
 
 # Print subdirs.
 #
@@ -581,13 +497,15 @@ maintainer-tag:
 maintainer-check-extra-dist:
 	zcat $(PACKAGE_NAME)-$(VERSION).tar.gz | tar tf - | sort | \
 	  sed 's,^$(PACKAGE_NAME)-$(VERSION)/,,' > tmp/tarfiles
-	git ls-files | sort > tmp/gitfiles
-	diff -ur tmp/tarfiles tmp/gitfiles | \
-	  grep '^\+' | \
-	  grep -v '^\+intltool-.*\.in' | \
-	  grep -v '^\+.gitmodules' | \
-	  grep -v '^\+.gnulib' ||:
-	rm tmp/tarfiles tmp/gitfiles
+	git ls-files | \
+	  grep -v '^intltool-.*\.in' | \
+	  grep -v '^\.gitmodules' | \
+	  grep -v '^\.gnulib' | \
+	  sort > tmp/gitfiles
+	comm -13 tmp/tarfiles tmp/gitfiles > tmp/comm-out
+	cat tmp/comm-out
+	[ ! -s tmp/comm-out ]
+	rm tmp/tarfiles tmp/gitfiles tmp/comm-out
 
 # Provide help on common Makefile targets.
 
@@ -623,5 +541,5 @@ help:
 	@echo "To run programs without installing:"
 	@echo "  ./run ./fish/guestfish [or any other program]"
 	@echo
-	@echo "For more information, see EXTENDING LIBGUESTFS in guestfs(3); and README."
+	@echo "For more information, see guestfs-hacking(1); and README."
 	@echo

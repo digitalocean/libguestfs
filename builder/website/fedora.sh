@@ -88,7 +88,7 @@ virt-install \
     --name=$tmpname \
     --ram=2048 \
     --cpu=host --vcpus=2 \
-    --os-type=linux --os-variant=fedora18 \
+    --os-type=linux --os-variant=fedora22 \
     --initrd-inject=$ks \
     --extra-args="ks=file:/`basename $ks` console=tty0 console=ttyS0,115200 proxy=$http_proxy" \
     --disk $(pwd)/$output,size=6,format=raw \
@@ -96,5 +96,11 @@ virt-install \
     --location=$tree \
     --nographics \
     --noreboot
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1280029
+# (Only for Fedora 23)
+if [ "$version" = "23" ]; then
+    virt-customize -a $output --install "https://kojipkgs.fedoraproject.org//packages/dnf/1.1.4/2.fc23/noarch/dnf-1.1.4-2.fc23.noarch.rpm,https://kojipkgs.fedoraproject.org//packages/dnf/1.1.4/2.fc23/noarch/dnf-conf-1.1.4-2.fc23.noarch.rpm,https://kojipkgs.fedoraproject.org//packages/dnf/1.1.4/2.fc23/noarch/dnf-yum-1.1.4-2.fc23.noarch.rpm,https://kojipkgs.fedoraproject.org//packages/dnf/1.1.4/2.fc23/noarch/python3-dnf-1.1.4-2.fc23.noarch.rpm"
+fi
 
 source $(dirname "$0")/compress.sh $output

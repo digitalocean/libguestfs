@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # Copyright (C) 2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,6 @@ for (my $i = 0; $i < $nr_files; ++$i) {
 # Check that lstatlist, lxattrlist and readlinklist return the
 # expected number of entries.
 my @a;
-@filenames = map { "/dir/$_" } @filenames;
 
 @a = $g->lstatlist ("/dir", \@filenames);
 die unless @a == $nr_files;

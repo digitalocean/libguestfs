@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,9 @@ val new_text_child : node -> string -> string -> node
 
 val set_prop : node -> string -> string -> unit
 (** xmlSetProp *)
+
+val unset_prop : node -> string -> bool
+(** xmlUnsetProp (returns [true] if the property was removed) *)
 
 val unlink_node : node -> unit
 (** xmlUnlinkNode

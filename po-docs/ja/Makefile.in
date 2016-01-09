@@ -34,9 +34,29 @@
 # Note that each Makefile.am in po-docs/$lang/Makefile.am should be
 # identical.  If you create a new $lang.po, create the $lang/
 # subdirectory and copy the Makefile.am from an existing language.
+# All the actual logic should be in language.mk.
+
+# libguestfs translations of man pages and POD files
+# Copyright (C) 2010-2012 Red Hat Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Common logic for generating translated documentation.
 
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -157,10 +177,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/close-stream.m4 $(top_srcdir)/m4/close.m4 \
 	$(top_srcdir)/m4/closedir.m4 $(top_srcdir)/m4/closeout.m4 \
 	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/configmake.m4 \
-	$(top_srcdir)/m4/cycle-check.m4 $(top_srcdir)/m4/d-ino.m4 \
-	$(top_srcdir)/m4/d-type.m4 $(top_srcdir)/m4/dirent-safer.m4 \
-	$(top_srcdir)/m4/dirent_h.m4 $(top_srcdir)/m4/dirfd.m4 \
-	$(top_srcdir)/m4/dirname.m4 \
+	$(top_srcdir)/m4/ctype.m4 $(top_srcdir)/m4/cycle-check.m4 \
+	$(top_srcdir)/m4/d-ino.m4 $(top_srcdir)/m4/d-type.m4 \
+	$(top_srcdir)/m4/dirent-safer.m4 $(top_srcdir)/m4/dirent_h.m4 \
+	$(top_srcdir)/m4/dirfd.m4 $(top_srcdir)/m4/dirname.m4 \
 	$(top_srcdir)/m4/double-slash-root.m4 $(top_srcdir)/m4/dup.m4 \
 	$(top_srcdir)/m4/dup2.m4 $(top_srcdir)/m4/dup3.m4 \
 	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/environ.m4 \
@@ -279,7 +299,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
 	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
 	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs_progs.m4 \
+	$(top_srcdir)/m4/guestfs_c.m4 \
+	$(top_srcdir)/m4/guestfs_libraries.m4 \
+	$(top_srcdir)/m4/guestfs_fuse.m4 \
+	$(top_srcdir)/m4/guestfs_daemon.m4 \
+	$(top_srcdir)/m4/guestfs_appliance.m4 \
+	$(top_srcdir)/m4/guestfs_qemu.m4 \
+	$(top_srcdir)/m4/guestfs_misc_libraries.m4 \
+	$(top_srcdir)/m4/guestfs_ocaml.m4 \
+	$(top_srcdir)/m4/guestfs_perl.m4 \
+	$(top_srcdir)/m4/guestfs_python.m4 \
+	$(top_srcdir)/m4/guestfs_ruby.m4 \
+	$(top_srcdir)/m4/guestfs_java.m4 \
+	$(top_srcdir)/m4/guestfs_haskell.m4 \
+	$(top_srcdir)/m4/guestfs_php.m4 \
+	$(top_srcdir)/m4/guestfs_erlang.m4 \
+	$(top_srcdir)/m4/guestfs_lua.m4 \
+	$(top_srcdir)/m4/guestfs_golang.m4 \
+	$(top_srcdir)/m4/guestfs_gobject.m4 \
+	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -307,8 +347,8 @@ am__can_run_installinfo = \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/common-rules.mk \
-	$(top_srcdir)/subdir-rules.mk
+am__DIST_COMMON = $(srcdir)/../language.mk $(srcdir)/Makefile.in \
+	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
@@ -482,6 +522,7 @@ GNULIB_INET_NTOP = @GNULIB_INET_NTOP@
 GNULIB_INET_PTON = @GNULIB_INET_PTON@
 GNULIB_IOCTL = @GNULIB_IOCTL@
 GNULIB_ISATTY = @GNULIB_ISATTY@
+GNULIB_ISBLANK = @GNULIB_ISBLANK@
 GNULIB_ISWBLANK = @GNULIB_ISWBLANK@
 GNULIB_ISWCTYPE = @GNULIB_ISWCTYPE@
 GNULIB_LCHMOD = @GNULIB_LCHMOD@
@@ -621,6 +662,7 @@ GNULIB_SYMLINKAT = @GNULIB_SYMLINKAT@
 GNULIB_SYSTEM_POSIX = @GNULIB_SYSTEM_POSIX@
 GNULIB_TIMEGM = @GNULIB_TIMEGM@
 GNULIB_TIME_R = @GNULIB_TIME_R@
+GNULIB_TIME_RZ = @GNULIB_TIME_RZ@
 GNULIB_TMPFILE = @GNULIB_TMPFILE@
 GNULIB_TOWCTRANS = @GNULIB_TOWCTRANS@
 GNULIB_TTYNAME_R = @GNULIB_TTYNAME_R@
@@ -780,6 +822,7 @@ HAVE_GETTIMEOFDAY = @HAVE_GETTIMEOFDAY@
 HAVE_GRANTPT = @HAVE_GRANTPT@
 HAVE_GROUP_MEMBER = @HAVE_GROUP_MEMBER@
 HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
+HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
 HAVE_ISWCNTRL = @HAVE_ISWCNTRL@
 HAVE_LANGINFO_CODESET = @HAVE_LANGINFO_CODESET@
@@ -889,6 +932,7 @@ HAVE_SYS_TIME_H = @HAVE_SYS_TIME_H@
 HAVE_SYS_TYPES_H = @HAVE_SYS_TYPES_H@
 HAVE_SYS_UIO_H = @HAVE_SYS_UIO_H@
 HAVE_TIMEGM = @HAVE_TIMEGM@
+HAVE_TIMEZONE_T = @HAVE_TIMEZONE_T@
 HAVE_TYPE_VOLATILE_SIG_ATOMIC_T = @HAVE_TYPE_VOLATILE_SIG_ATOMIC_T@
 HAVE_UNISTD_H = @HAVE_UNISTD_H@
 HAVE_UNLINKAT = @HAVE_UNLINKAT@
@@ -1038,6 +1082,7 @@ MSGMERGE = @MSGMERGE@
 NETINET_IN_H = @NETINET_IN_H@
 NEXT_ARPA_INET_H = @NEXT_ARPA_INET_H@
 NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H = @NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H@
+NEXT_AS_FIRST_DIRECTIVE_CTYPE_H = @NEXT_AS_FIRST_DIRECTIVE_CTYPE_H@
 NEXT_AS_FIRST_DIRECTIVE_DIRENT_H = @NEXT_AS_FIRST_DIRECTIVE_DIRENT_H@
 NEXT_AS_FIRST_DIRECTIVE_ERRNO_H = @NEXT_AS_FIRST_DIRECTIVE_ERRNO_H@
 NEXT_AS_FIRST_DIRECTIVE_FCNTL_H = @NEXT_AS_FIRST_DIRECTIVE_FCNTL_H@
@@ -1067,6 +1112,7 @@ NEXT_AS_FIRST_DIRECTIVE_TIME_H = @NEXT_AS_FIRST_DIRECTIVE_TIME_H@
 NEXT_AS_FIRST_DIRECTIVE_UNISTD_H = @NEXT_AS_FIRST_DIRECTIVE_UNISTD_H@
 NEXT_AS_FIRST_DIRECTIVE_WCHAR_H = @NEXT_AS_FIRST_DIRECTIVE_WCHAR_H@
 NEXT_AS_FIRST_DIRECTIVE_WCTYPE_H = @NEXT_AS_FIRST_DIRECTIVE_WCTYPE_H@
+NEXT_CTYPE_H = @NEXT_CTYPE_H@
 NEXT_DIRENT_H = @NEXT_DIRENT_H@
 NEXT_ERRNO_H = @NEXT_ERRNO_H@
 NEXT_FCNTL_H = @NEXT_FCNTL_H@
@@ -1160,6 +1206,7 @@ PYTHON_VERSION = @PYTHON_VERSION@
 QEMU = @QEMU@
 RAKE = @RAKE@
 RANLIB = @RANLIB@
+RELEASE_DATE = @RELEASE_DATE@
 REPLACE_BTOWC = @REPLACE_BTOWC@
 REPLACE_CALLOC = @REPLACE_CALLOC@
 REPLACE_CANONICALIZE_FILE_NAME = @REPLACE_CANONICALIZE_FILE_NAME@
@@ -1427,6 +1474,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 LINGUA = $(shell basename -- `pwd`)
 
 # Before 1.23.23, the old Perl tools were called *.pl.
@@ -1437,6 +1485,8 @@ MANPAGES = \
 	guestfs-erlang.3 \
 	guestfs-examples.3 \
 	guestfs-faq.1 \
+	guestfs-hacking.1 \
+	guestfs-internals.1 \
 	guestfs-golang.3 \
 	guestfs-java.3 \
 	guestfs-lua.3 \
@@ -1447,6 +1497,7 @@ MANPAGES = \
 	guestfs-recipes.1 \
 	guestfs-release-notes.1 \
 	guestfs-ruby.3 \
+	guestfs-security.1 \
 	guestfs-testing.1 \
 	guestfsd.8 \
 	guestmount.1 \
@@ -1461,10 +1512,12 @@ MANPAGES = \
 	virt-copy-out.1 \
 	virt-customize.1 \
 	virt-df.1 \
+	virt-dib.1 \
 	virt-diff.1 \
 	virt-edit.1 \
 	virt-filesystems.1 \
 	virt-format.1 \
+	virt-get-kernel.1 \
 	virt-index-validate.1 \
 	virt-inspector.1 \
 	virt-list-filesystems.1 \
@@ -1498,7 +1551,7 @@ EXTRA_DIST = \
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/../language.mk $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -1518,7 +1571,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__empty):
+$(srcdir)/../language.mk $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -1692,14 +1745,6 @@ uninstall-am:
 
 
 -include $(top_builddir)/localenv
-
-# Old RHEL 5 autoconf defines these, but RHEL 5 automake doesn't
-# create variables for them.  So define them here if they're not
-# defined already.
-builddir     ?= @builddir@
-abs_builddir ?= @abs_builddir@
-srcdir       ?= @srcdir@
-abs_srcdir   ?= @abs_srcdir@
 
 # Individual Makefile.am's should define generator_built if that
 # subdirectory contains any files which are built by the generator.

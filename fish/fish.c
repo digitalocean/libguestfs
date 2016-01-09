@@ -1,5 +1,5 @@
 /* guestfish - guest filesystem shell
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,56 +105,56 @@ usage (int status)
     fprintf (stderr, _("Try `%s --help' for more information.\n"),
              guestfs_int_program_name);
   else {
-    fprintf (stdout,
-           _("%s: guest filesystem shell\n"
-             "%s lets you edit virtual machine filesystems\n"
-             "Copyright (C) 2009-2015 Red Hat Inc.\n"
-             "Usage:\n"
-             "  %s [--options] cmd [: cmd : cmd ...]\n"
-             "Options:\n"
-             "  -h|--cmd-help        List available commands\n"
-             "  -h|--cmd-help cmd    Display detailed help on 'cmd'\n"
-             "  -a|--add image       Add image\n"
-             "  -c|--connect uri     Specify libvirt URI for -d option\n"
-             "  --csh                Make --listen csh-compatible\n"
-             "  -d|--domain guest    Add disks from libvirt guest\n"
-             "  --echo-keys          Don't turn off echo for passphrases\n"
-             "  -f|--file file       Read commands from file\n"
-             "  --format[=raw|..]    Force disk format for -a option\n"
-             "  -i|--inspector       Automatically mount filesystems\n"
-             "  --keys-from-stdin    Read passphrases from stdin\n"
-             "  --listen             Listen for remote commands\n"
-             "  --live               Connect to a live virtual machine\n"
-             "  -m|--mount dev[:mnt[:opts[:fstype]]]\n"
-             "                       Mount dev on mnt (if omitted, /)\n"
-             "  --network            Enable network\n"
-             "  -N|--new [filename=]type\n"
-             "                       Create prepared disk (test<N>.img or filename)\n"
-             "  -n|--no-sync         Don't autosync\n"
-             "  --no-dest-paths      Don't tab-complete paths from guest fs\n"
-             "  --pipe-error         Pipe commands can detect write errors\n"
-             "  --progress-bars      Enable progress bars even when not interactive\n"
-             "  --no-progress-bars   Disable progress bars\n"
-             "  --remote[=pid]       Send commands to remote %s\n"
-             "  -r|--ro              Mount read-only\n"
-             "  --selinux            Enable SELinux support\n"
-             "  -v|--verbose         Verbose messages\n"
-             "  -V|--version         Display version and exit\n"
-             "  -w|--rw              Mount read-write\n"
-             "  -x                   Echo each command before executing it\n"
-             "\n"
-             "To examine a disk image, ISO, hard disk, filesystem etc:\n"
-             "  %s [--ro|--rw] -i -a /path/to/disk.img\n"
-             "or\n"
-             "  %s [--ro|--rw] -i -d name-of-libvirt-domain\n"
-             "\n"
-             "--ro recommended to avoid any writes to the disk image.  If -i option fails\n"
-             "run again without -i and use 'run' + 'list-filesystems' + 'mount' cmds.\n"
-             "\n"
-             "For more information, see the manpage %s(1).\n"),
-             guestfs_int_program_name, guestfs_int_program_name, guestfs_int_program_name,
-             guestfs_int_program_name, guestfs_int_program_name, guestfs_int_program_name,
-             guestfs_int_program_name);
+    printf (_("%s: guest filesystem shell\n"
+              "%s lets you edit virtual machine filesystems\n"
+              "Copyright (C) 2009-2016 Red Hat Inc.\n"
+              "Usage:\n"
+              "  %s [--options] cmd [: cmd : cmd ...]\n"
+              "Options:\n"
+              "  -h|--cmd-help        List available commands\n"
+              "  -h|--cmd-help cmd    Display detailed help on 'cmd'\n"
+              "  -a|--add image       Add image\n"
+              "  -c|--connect uri     Specify libvirt URI for -d option\n"
+              "  --csh                Make --listen csh-compatible\n"
+              "  -d|--domain guest    Add disks from libvirt guest\n"
+              "  --echo-keys          Don't turn off echo for passphrases\n"
+              "  -f|--file file       Read commands from file\n"
+              "  --format[=raw|..]    Force disk format for -a option\n"
+              "  -i|--inspector       Automatically mount filesystems\n"
+              "  --keys-from-stdin    Read passphrases from stdin\n"
+              "  --listen             Listen for remote commands\n"
+              "  --live               Connect to a live virtual machine\n"
+              "  -m|--mount dev[:mnt[:opts[:fstype]]]\n"
+              "                       Mount dev on mnt (if omitted, /)\n"
+              "  --network            Enable network\n"
+              "  -N|--new [filename=]type\n"
+              "                       Create prepared disk (test<N>.img or filename)\n"
+              "  -n|--no-sync         Don't autosync\n"
+              "  --no-dest-paths      Don't tab-complete paths from guest fs\n"
+              "  --pipe-error         Pipe commands can detect write errors\n"
+              "  --progress-bars      Enable progress bars even when not interactive\n"
+              "  --no-progress-bars   Disable progress bars\n"
+              "  --remote[=pid]       Send commands to remote %s\n"
+              "  -r|--ro              Mount read-only\n"
+              "  --selinux            Enable SELinux support\n"
+              "  -v|--verbose         Verbose messages\n"
+              "  -V|--version         Display version and exit\n"
+              "  -w|--rw              Mount read-write\n"
+              "  -x                   Echo each command before executing it\n"
+              "\n"
+              "To examine a disk image, ISO, hard disk, filesystem etc:\n"
+              "  %s [--ro|--rw] -i -a /path/to/disk.img\n"
+              "or\n"
+              "  %s [--ro|--rw] -i -d name-of-libvirt-domain\n"
+              "\n"
+              "--ro recommended to avoid any writes to the disk image.  If -i option fails\n"
+              "run again without -i and use 'run' + 'list-filesystems' + 'mount' cmds.\n"
+              "\n"
+              "For more information, see the manpage %s(1).\n"),
+            guestfs_int_program_name, guestfs_int_program_name,
+            guestfs_int_program_name, guestfs_int_program_name,
+            guestfs_int_program_name, guestfs_int_program_name,
+            guestfs_int_program_name);
   }
   exit (status);
 }
@@ -1091,7 +1091,7 @@ cmdline (char *argv[], size_t optind, size_t argc)
 
   if (optind == argc) {
     if (issue_command (cmd, params, NULL, exit_on_error) == -1 && exit_on_error)
-        exit (EXIT_FAILURE);
+      exit (EXIT_FAILURE);
   } else {
     argv[optind] = NULL;
     if (issue_command (cmd, params, NULL, exit_on_error) == -1 && exit_on_error)

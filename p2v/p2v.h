@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,9 @@ struct config {
   int port;
   char *username;
   char *password;
+  char *identity_url;
+  char *identity_file; /* Used to cache the downloaded identity_url. */
+  int identity_file_needs_update;
   int sudo;
   char *guestname;
   int vcpus;
@@ -109,6 +112,7 @@ extern int start_conversion (struct config *, void (*notify_ui) (int type, const
 #define NOTIFY_STATUS         3  /* stage in conversion process */
 extern const char *get_conversion_error (void);
 extern void cancel_conversion (void);
+extern int conversion_is_running (void);
 
 /* ssh.c */
 extern int test_connection (struct config *);

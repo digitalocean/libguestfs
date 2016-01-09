@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ class input_disk input_format disk = object
       match input_format with
       | Some format -> format
       | None ->
-        match (new Guestfs.guestfs ())#disk_format disk with
+        match (open_guestfs ())#disk_format disk with
         | "unknown" ->
           error (f_"cannot detect the input disk format; use the -if parameter")
         | format -> format in

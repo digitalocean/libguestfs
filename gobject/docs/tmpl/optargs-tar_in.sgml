@@ -28,7 +28,22 @@ GuestfsTarIn
 </para>
 
 
+<!-- ##### ARG GuestfsTarIn:acls ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsTarIn:compress ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTarIn:selinux ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTarIn:xattrs ##### -->
 <para>
 
 </para>

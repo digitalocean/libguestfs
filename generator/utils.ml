@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -254,7 +254,7 @@ let name_of_argt = function
   | Mountable_or_Path n | String n | OptString n
   | StringList n | DeviceList n | Bool n | Int n | Int64 n
   | FileIn n | FileOut n | BufferIn n | Key n | Pointer (_, n)
-  | GUID n -> n
+  | GUID n | FilenameList n -> n
 
 let name_of_optargt = function
   | OBool n | OInt n | OInt64 n | OString n | OStringList n -> n

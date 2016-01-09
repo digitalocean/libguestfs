@@ -37,7 +37,11 @@ AC_DEFUN([gl_EARLY],
   m4_pattern_allow([^gl_ES$])dnl a valid locale name
   m4_pattern_allow([^gl_LIBOBJS$])dnl a variable
   m4_pattern_allow([^gl_LTLIBOBJS$])dnl a variable
+
+  # Pre-early section.
+  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   AC_REQUIRE([gl_PROG_AR_RANLIB])
+
   AC_REQUIRE([AM_PROG_CC_C_O])
   # Code from module absolute-header:
   # Code from module accept:
@@ -90,6 +94,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module configmake:
   # Code from module connect:
   # Code from module connect-tests:
+  # Code from module ctype:
+  # Code from module ctype-tests:
   # Code from module cycle-check:
   # Code from module d-ino:
   # Code from module d-type:
@@ -102,6 +108,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module dirname-lgpl:
   # Code from module dosname:
   # Code from module double-slash-root:
+  # Code from module dtotimespec:
   # Code from module dup:
   # Code from module dup-tests:
   # Code from module dup2:
@@ -115,7 +122,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module error:
   # Code from module exitfail:
   # Code from module extensions:
-  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   # Code from module extern-inline:
   # Code from module fchdir:
   # Code from module fchdir-tests:
@@ -429,6 +435,9 @@ AC_DEFUN([gl_EARLY],
   # Code from module time:
   # Code from module time-tests:
   # Code from module timespec:
+  # Code from module timespec-add:
+  # Code from module timespec-sub:
+  # Code from module timespec-tests:
   # Code from module ttyname_r:
   # Code from module ttyname_r-tests:
   # Code from module unistd:
@@ -1197,6 +1206,7 @@ changequote([, ])dnl
   gt_LOCALE_FR_UTF8
   gt_LOCALE_FR
   gt_LOCALE_TR_UTF8
+  gl_CTYPE_H
   gl_MODULE_INDICATOR([fd-safer-flag])
   gl_FUNC_FDOPEN
   if test $REPLACE_FDOPEN = 1; then
@@ -1802,6 +1812,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/closeout.m4
   m4/codeset.m4
   m4/configmake.m4
+  m4/ctype.m4
   m4/cycle-check.m4
   m4/d-ino.m4
   m4/d-type.m4
@@ -2065,6 +2076,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-cloexec.c
   tests/test-close.c
   tests/test-connect.c
+  tests/test-ctype.c
   tests/test-dirent-safer.c
   tests/test-dirent.c
   tests/test-dup-safer.c
@@ -2240,6 +2252,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-thread_create.c
   tests/test-thread_self.c
   tests/test-time.c
+  tests/test-timespec.c
   tests/test-ttyname_r.c
   tests/test-unistd.c
   tests/test-unlink.c
@@ -2282,6 +2295,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/at-func.c
   tests=lib/bind.c
   tests=lib/btowc.c
+  tests=lib/ctype.in.h
+  tests=lib/dtotimespec.c
   tests=lib/dup-safer-flag.c
   tests=lib/fd-safer-flag.c
   tests=lib/fdopen.c
@@ -2320,6 +2335,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/sigprocmask.c
   tests=lib/statat.c
   tests=lib/sys_ioctl.in.h
+  tests=lib/timespec-add.c
+  tests=lib/timespec-sub.c
   tests=lib/uinttostr.c
   tests=lib/umaxtostr.c
   tests=lib/unlink.c

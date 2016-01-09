@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2012 Red Hat Inc.
+ * Copyright (C) 2012-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,6 +30,7 @@
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <string.h>
+#include <libintl.h>
 
 #ifdef HAVE_LINUX_FS_H
 #include <linux/fs.h>
@@ -38,7 +39,6 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 static int disk_create_raw (guestfs_h *g, const char *filename, int64_t size, const struct guestfs_disk_create_argv *optargs);
 static int disk_create_qcow2 (guestfs_h *g, const char *filename, int64_t size, const char *backingfile, const struct guestfs_disk_create_argv *optargs);
@@ -46,8 +46,8 @@ static char *qemu_escape_param (guestfs_h *g, const char *param);
 
 int
 guestfs_impl_disk_create (guestfs_h *g, const char *filename,
-                      const char *format, int64_t size,
-                      const struct guestfs_disk_create_argv *optargs)
+			  const char *format, int64_t size,
+			  const struct guestfs_disk_create_argv *optargs)
 {
   const char *backingfile;
 
@@ -140,7 +140,8 @@ disk_create_raw (guestfs_h *g, const char *filename, int64_t size,
     return -1;
   }
   if (optargs->bitmask & GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK) {
-    if (STREQ (optargs->preallocation, "sparse"))
+    if (STREQ (optargs->preallocation, "off") ||
+        STREQ (optargs->preallocation, "sparse"))
       allocated = 0;
     else if (STREQ (optargs->preallocation, "full"))
       allocated = 1;
@@ -273,8 +274,15 @@ disk_create_qcow2 (guestfs_h *g, const char *orig_filename, int64_t size,
     }
   }
   if (optargs->bitmask & GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK) {
-    preallocation = optargs->preallocation;
-    if (STRNEQ (preallocation, "off") && STRNEQ (preallocation, "metadata")) {
+    if (STREQ (optargs->preallocation, "off") ||
+        STREQ (optargs->preallocation, "sparse"))
+      preallocation = "off";
+    else if (STREQ (optargs->preallocation, "metadata"))
+      preallocation = "metadata";
+    else if (STREQ (optargs->preallocation, "full"))
+      /* Ugh: https://lists.gnu.org/archive/html/qemu-devel/2014-08/msg03863.html */
+      preallocation = "falloc";
+    else {
       error (g, _("invalid value for preallocation parameter '%s'"),
              preallocation);
       return -1;

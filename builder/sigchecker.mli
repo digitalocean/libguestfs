@@ -20,6 +20,10 @@ type t
 
 val create : gpg:string -> gpgkey:Utils.gpgkey_type -> check_signature:bool -> t
 
+val verifying_signatures : t -> bool
+(** Return whether signatures are being verified by this
+    Sigchecker.t. *)
+
 val verify : t -> string -> unit
 (** Verify the file is signed (if check_signature is true). *)
 
@@ -27,8 +31,6 @@ val verify_detached : t -> string -> string option -> unit
 (** Verify the file is signed against the detached signature
     (if check_signature is true). *)
 
-type csum_t = SHA512 of string
-
-val verify_checksum : t -> csum_t -> string -> unit
-(** Verify the checksum of the file.  This is always verified even if
-    check_signature if false. *)
+val verify_and_remove_signature : t -> string -> string option
+(** If check_signature is true, verify the file is signed and extract
+    the content of the file (i.e. without the signature). *)

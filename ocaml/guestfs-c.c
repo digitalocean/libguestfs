@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -49,11 +49,11 @@ static void event_callback_wrapper (guestfs_h *g, void *data, uint64_t event, in
 
 /* This macro was added in OCaml 3.10.  Backport for earlier versions. */
 #ifndef CAMLreturnT
-#define CAMLreturnT(type, result) do{ \
-  type caml__temp_result = (result); \
-  caml_local_roots = caml__frame; \
-  return (caml__temp_result); \
-}while(0)
+#define CAMLreturnT(type, result) do{		\
+    type caml__temp_result = (result);		\
+    caml_local_roots = caml__frame;		\
+    return (caml__temp_result);			\
+  }while(0)
 #endif
 
 /* These prototypes are solely to quiet gcc warning.  */
@@ -78,8 +78,6 @@ guestfs_finalize (value gv)
     size_t len, i;
     value **roots = get_all_event_callbacks (g, &len);
 
-    value *v = guestfs_get_private (g, "_ocaml_g");
-
     /* Close the handle: this could invoke callbacks from the list
      * above, which is why we don't want to delete them before
      * closing the handle.
@@ -88,13 +86,10 @@ guestfs_finalize (value gv)
 
     /* Now unregister the global roots. */
     for (i = 0; i < len; ++i) {
-      caml_remove_global_root (roots[i]);
+      caml_remove_generational_global_root (roots[i]);
       free (roots[i]);
     }
     free (roots);
-
-    caml_remove_global_root (v);
-    free (v);
   }
 }
 
@@ -156,7 +151,6 @@ ocaml_guestfs_create (value environmentv, value close_on_exitv, value unitv)
   CAMLlocal1 (gv);
   unsigned flags = 0;
   guestfs_h *g;
-  value *v;
 
   if (environmentv != Val_int (0) &&
       !Bool_val (Field (environmentv, 0)))
@@ -173,17 +167,6 @@ ocaml_guestfs_create (value environmentv, value close_on_exitv, value unitv)
   guestfs_set_error_handler (g, NULL, NULL);
 
   gv = Val_guestfs (g);
-
-  /* Store the OCaml handle into the C handle.  This is only so we can
-   * map the C handle to the OCaml handle in event_callback_wrapper.
-   */
-  v = guestfs_int_safe_malloc (g, sizeof *v);
-  *v = gv;
-  /* XXX This global root is generational, but we cannot rely on every
-   * user having the OCaml 3.11 version which supports this.
-   */
-  caml_register_global_root (v);
-  guestfs_set_private (g, "_ocaml_g", v);
 
   CAMLreturn (gv);
 }
@@ -255,10 +238,7 @@ ocaml_guestfs_set_event_callback (value gv, value closure, value events)
     ocaml_guestfs_raise_error (g, "set_event_callback");
   }
 
-  /* XXX This global root is generational, but we cannot rely on every
-   * user having the OCaml 3.11 version which supports this.
-   */
-  caml_register_global_root (root);
+  caml_register_generational_global_root (root);
 
   snprintf (key, sizeof key, "_ocaml_event_%d", eh);
   guestfs_set_private (g, key, root);
@@ -280,7 +260,7 @@ ocaml_guestfs_delete_event_callback (value gv, value ehv)
 
   value *root = guestfs_get_private (g, key);
   if (root) {
-    caml_remove_global_root (root);
+    caml_remove_generational_global_root (root);
     free (root);
     guestfs_set_private (g, key, NULL);
     guestfs_delete_event_callback (g, eh);
@@ -364,13 +344,9 @@ event_callback_wrapper_locked (guestfs_h *g,
                                const uint64_t *array, size_t array_len)
 {
   CAMLparam0 ();
-  CAMLlocal5 (gv, evv, ehv, bufv, arrayv);
+  CAMLlocal4 (evv, ehv, bufv, arrayv);
   CAMLlocal2 (rv, v);
-  value *root;
   size_t i;
-
-  root = guestfs_get_private (g, "_ocaml_g");
-  gv = *root;
 
   /* Only one bit should be set in 'event'.  Which one? */
   evv = Val_int (event_bitmask_to_event (event));
@@ -386,9 +362,9 @@ event_callback_wrapper_locked (guestfs_h *g,
     Store_field (arrayv, i, v);
   }
 
-  value args[5] = { gv, evv, ehv, bufv, arrayv };
+  value args[4] = { evv, ehv, bufv, arrayv };
 
-  rv = caml_callbackN_exn (*(value*)data, 5, args);
+  rv = caml_callbackN_exn (*(value*)data, 4, args);
 
   /* Callbacks shouldn't throw exceptions.  There's not much we can do
    * except to print it.

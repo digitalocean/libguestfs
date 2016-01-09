@@ -1,5 +1,5 @@
 /* virt-edit
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,30 +63,29 @@ usage (int status)
     fprintf (stderr, _("Try `%s --help' for more information.\n"),
              guestfs_int_program_name);
   else {
-    fprintf (stdout,
-           _("%s: Edit a file in a virtual machine\n"
-             "Copyright (C) 2009-2015 Red Hat Inc.\n"
-             "Usage:\n"
-             "  %s [--options] -d domname file [file ...]\n"
-             "  %s [--options] -a disk.img [-a disk.img ...] file [file ...]\n"
-             "Options:\n"
-             "  -a|--add image       Add image\n"
-             "  -b|--backup .ext     Backup original as original.ext\n"
-             "  -c|--connect uri     Specify libvirt URI for -d option\n"
-             "  -d|--domain guest    Add disks from libvirt guest\n"
-             "  --echo-keys          Don't turn off echo for passphrases\n"
-             "  -e|--expr expr       Non-interactive editing using Perl expr\n"
-             "  --format[=raw|..]    Force disk format for -a option\n"
-             "  --help               Display brief help\n"
-             "  --keys-from-stdin    Read passphrases from stdin\n"
-             "  -m|--mount dev[:mnt[:opts[:fstype]]]\n"
-             "                       Mount dev on mnt (if omitted, /)\n"
-             "  -v|--verbose         Verbose messages\n"
-             "  -V|--version         Display version and exit\n"
-             "  -x                   Trace libguestfs API calls\n"
-             "For more information, see the manpage %s(1).\n"),
-             guestfs_int_program_name, guestfs_int_program_name, guestfs_int_program_name,
-             guestfs_int_program_name);
+    printf (_("%s: Edit a file in a virtual machine\n"
+              "Copyright (C) 2009-2016 Red Hat Inc.\n"
+              "Usage:\n"
+              "  %s [--options] -d domname file [file ...]\n"
+              "  %s [--options] -a disk.img [-a disk.img ...] file [file ...]\n"
+              "Options:\n"
+              "  -a|--add image       Add image\n"
+              "  -b|--backup .ext     Backup original as original.ext\n"
+              "  -c|--connect uri     Specify libvirt URI for -d option\n"
+              "  -d|--domain guest    Add disks from libvirt guest\n"
+              "  --echo-keys          Don't turn off echo for passphrases\n"
+              "  -e|--expr expr       Non-interactive editing using Perl expr\n"
+              "  --format[=raw|..]    Force disk format for -a option\n"
+              "  --help               Display brief help\n"
+              "  --keys-from-stdin    Read passphrases from stdin\n"
+              "  -m|--mount dev[:mnt[:opts[:fstype]]]\n"
+              "                       Mount dev on mnt (if omitted, /)\n"
+              "  -v|--verbose         Verbose messages\n"
+              "  -V|--version         Display version and exit\n"
+              "  -x                   Trace libguestfs API calls\n"
+              "For more information, see the manpage %s(1).\n"),
+            guestfs_int_program_name, guestfs_int_program_name,
+            guestfs_int_program_name, guestfs_int_program_name);
   }
   exit (status);
 }
@@ -156,7 +155,8 @@ main (int argc, char *argv[])
         OPTION_format;
       } else {
         fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name, long_options[option_index].name, option_index);
+                 guestfs_int_program_name,
+                 long_options[option_index].name, option_index);
         exit (EXIT_FAILURE);
       }
       break;

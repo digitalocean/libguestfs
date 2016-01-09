@@ -22,7 +22,7 @@ set -e
 # virt-customize with the -n option doesn't modify the guest.  It ought
 # to be able to customize any of our Linux-like test guests.
 
-for f in ../tests/guests/{debian,fedora,ubuntu}.img; do
+for f in ../test-data/phony-guests/{debian,fedora,ubuntu}.img; do
     # Ignore zero-sized windows.img if ntfs-3g is not installed.
     if [ -s "$f" ]; then
         # Add --no-network so UML works.

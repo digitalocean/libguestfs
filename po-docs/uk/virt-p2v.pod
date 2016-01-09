@@ -86,10 +86,13 @@ When virt-p2v starts up in GUI mode, the first dialog looks like this:
  │                                                        │
  │          Password: [_________________________________] │
  │                                                        │
+ │  SSH Identity URL: [_________________________________] │
+ │                                                        │
 
-In the fields above, you must enter the hostname, SSH port number, remote
-user name and password of the conversion server.  The conversion server must
-have an up to date version of virt-v2v.
+In the fields above, you must enter the details of the conversion server:
+the hostname, SSH port number, remote user name, and either the password or
+SSH identity (private key) URL.  The conversion server must have an up to
+date version of virt-v2v.
 
 Normally you must log in to the conversion server as root, but if you check
 the following box:
@@ -313,8 +316,17 @@ The default is to try with no password.  If this fails then virt-p2v will
 ask the user to type the password (probably several times during
 conversion).
 
-Note that virt-p2v does not support authentication using key distribution at
-this time.
+This setting is ignored if C<p2v.identity> is present.
+
+=item B<p2v.identity=АДРЕСА>
+
+Provide a URL pointing to an SSH identity (private key) file.  The URL is
+interpreted by L<curl(1)> so any URL that curl supports can be used here,
+including C<https://> and C<file://>.  For more information on using SSH
+identities, see L</SSH IDENTITIES> below.
+
+If C<p2v.identity> is present, it overrides C<p2v.password>.  There is no
+fallback.
 
 =item B<p2v.sudo>
 
@@ -416,9 +428,9 @@ See L<virt-v2v(1)/OPTIONS>.
 
 If not specified, the default is F</var/tmp> (on the conversion server).
 
-=item B<p2v.pre=COMMAND>
+=item B<p2v.pre=КОМАНДА>
 
-=item B<p2v.pre="COMMAND ARG ...">
+=item B<p2v.pre="КОМАНАД АРГУМЕНТ ...">
 
 Select a pre-conversion command to run.  Any command or script can be
 specified here.  If the command contains spaces, you must quote the whole
@@ -428,9 +440,9 @@ command with double quotes.  The default is not to run any command.
 
 =item B<p2v.post=reboot>
 
-=item B<p2v.post=COMMAND>
+=item B<p2v.post=КОМАНДА>
 
-=item B<p2v.post="COMMAND ARG ...">
+=item B<p2v.post="КОМАНДА АРГУМЕНТ ...">
 
 Select a post-conversion command to run if conversion is successful.  This
 can be any command or script.  If the command contains spaces, you must
@@ -440,9 +452,9 @@ I<If> virt-p2v is running as root, I<and> the command line was set from
 F</proc/cmdline> (not I<--cmdline>), then the default is to run the
 L<poweroff(8)> command.  Otherwise the default is not to run any command.
 
-=item B<p2v.fail=COMMAND>
+=item B<p2v.fail=КОМАНДА>
 
-=item B<p2v.fail="COMMAND ARG ...">
+=item B<p2v.fail="КОМАНДА АРГУМЕНТ ...">
 
 Select a post-conversion command to run if conversion fails.  Any command or
 script can be specified here.  If the command contains spaces, you must
@@ -462,6 +474,80 @@ Set up a static IPv4 network configuration.
 =end коментар
 
 =back
+
+=head1 SSH IDENTITIES
+
+As a somewhat more secure alternative to password authentication, you can
+use an SSH identity (private key) for authentication.
+
+First create a key pair.  It must have an empty passphrase:
+
+ ssh-keygen -t rsa -N '' -f id_rsa
+
+This creates a private key (C<id_rsa>) and a public key (C<id_rsa.pub>)
+pair.
+
+The public key should be appended to the C<authorized_keys> file on the
+virt-v2v conversion server (usually to C</root/.ssh/authorized_keys>).
+
+For distributing the private key, there are four scenarios from least secure
+to most secure:
+
+=over 4
+
+=item 1.
+
+Not using SSH identities at all, ie. password authentication.
+
+Anyone who can sniff the PXE boot parameters from the network or observe the
+password some other way can log in to the virt-v2v conversion server.
+
+=item 2.
+
+SSH identity embedded in the virt-p2v ISO or disk image.  In the GUI, use:
+
+ │          Password: [    <leave this field blank>       ] │
+ │                                                          │
+ │  SSH Identity URL: [file:///var/tmp/id_rsa_____________] │
+
+or on the kernel command line:
+
+ p2v.identity=file:///var/tmp/id_rsa
+
+The SSH private key can still be sniffed from the network if using standard
+PXE.
+
+=item 3.
+
+SSH identity downloaded from a website.  In the GUI, use:
+
+ │          Password: [    <leave this field blank>       ] │
+ │                                                          │
+ │  SSH Identity URL: [https://internal.example.com/id_rsa] │
+
+or on the kernel command line:
+
+ p2v.identity=https://internal.example.com/id_rsa
+
+Anyone could still download the private key and use it to log in to the
+virt-v2v conversion server, but you could provide some extra security by
+configuring the web server to only allow connections from P2V machines.
+
+=item 4.
+
+SSH identity embedded in the virt-p2v ISO or disk image (like 2.), I<and>
+use of secure PXE, PXE over separate physical network, or sneakernet to
+distribute virt-p2v to the physical machine.
+
+=back
+
+Both L<virt-p2v-make-disk(1)> and L<virt-p2v-make-kickstart(1)> have the
+same option I<--inject-ssh-identity> for injecting the private key into the
+virt-p2v disk image / ISO.  See also the following manual sections:
+
+L<virt-p2v-make-disk(1)/ДОДАВАННЯ ПРОФІЛЮ SSH>
+
+L<virt-p2v-make-kickstart(1)/ДОДАВАННЯ ПРОФІЛЮ SSH>
 
 =head1 ПАРАМЕТРИ
 
@@ -490,7 +576,7 @@ Enable debugging (on the conversion server).
 
 =back
 
-=head1 HOW VIRT-P2V WORKS
+=head1 ЯК ПРАЦЮЄ VIRT-P2V
 
 B<Note this section is not normative.> We may change how virt-p2v works at
 any time in the future.
@@ -509,8 +595,8 @@ closed before conversion begins.
 
  ┌──────────────┐                      ┌─────────────────┐
  │ virt-p2v     │                      │ virt-v2v        │
- │ (physical    │  control connection  │ (conversion     │
- │  server)   ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍▶ server)       │
+ │ (фізичний    │  керівне з’єднання   │ (сервер         │
+ │  сервер)   ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍▶ перетворення) │
  └──────────────┘                      └─────────────────┘
 
 Once virt-p2v is ready to start conversion, it will open a single ssh
@@ -528,20 +614,20 @@ Into this directory are written various files which include:
 
 =item F<dmesg>
 
-I<(before conversion)>
+I<(до перетворення)>
 
 The dmesg output from the physical machine.  Useful for detecting problems
 such as missing device drivers or firmware on the virt-p2v ISO.
 
 =item F<name>
 
-I<(before conversion)>
+I<(до перетворення)>
 
 The name (usually the hostname) of the physical machine.
 
 =item F<physical.xml>
 
-I<(before conversion)>
+I<(до перетворення)>
 
 Libvirt XML describing the physical machine.  It is used to pass data about
 the physical source host to L<virt-v2v(1)> via the I<-i libvirtxml> option.
@@ -552,20 +638,20 @@ libvirt XML which virt-v2v generates in certain output modes.
 
 =item F<status>
 
-I<(after conversion)>
+I<(після перетворення)>
 
 The final status of the conversion.  C<0> if the conversion was successful.
 Non-zero if the conversion failed.
 
 =item F<time>
 
-I<(before conversion)>
+I<(до перетворення)>
 
-The start date/time of conversion.
+Дата і час початку перетворення.
 
 =item F<virt-v2v-conversion-log.txt>
 
-I<(during/after conversion)>
+I<(під час/після перетворення)>
 
 The conversion log.  This is just the output of the virt-v2v command on the
 conversion server.  If conversion fails, you should examine this log file,
@@ -638,5 +724,5 @@ Tingting Zheng
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2015
+Copyright (C) 2009-2016 Red Hat Inc.
 

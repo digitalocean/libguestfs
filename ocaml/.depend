@@ -15,6 +15,8 @@
  ./t/guestfs_050_handle_properties.cmx : guestfs.cmx
  ./t/guestfs_060_explicit_close.cmo : guestfs.cmi
  ./t/guestfs_060_explicit_close.cmx : guestfs.cmx
+ ./t/guestfs_065_implicit_close.cmo : guestfs.cmi
+ ./t/guestfs_065_implicit_close.cmx : guestfs.cmx
  ./t/guestfs_070_optargs.cmo : guestfs.cmi
  ./t/guestfs_070_optargs.cmx : guestfs.cmx
  ./t/guestfs_100_launch.cmo : guestfs.cmi

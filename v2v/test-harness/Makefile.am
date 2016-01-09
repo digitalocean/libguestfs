@@ -1,5 +1,5 @@
 # libguestfs virt-v2v test harness
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,16 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) \
 	virt-v2v-test-harness.pod
 
-CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o
+CLEANFILES = \
+	*~ \
+	*.a \
+	*.annot \
+	*.cmi \
+	*.cmo \
+	*.cmx \
+	*.cmxa \
+	*.o \
+	*.so
 
 SOURCES_MLI = \
 	v2v_test_harness.mli
@@ -125,19 +134,21 @@ install-data-hook:
 
 man_MANS = virt-v2v-test-harness.1
 
-noinst_DATA += $(top_builddir)/html/virt-v2v-test-harness.1.html
+noinst_DATA += $(top_builddir)/website/virt-v2v-test-harness.1.html
 
-virt-v2v-test-harness.1 $(top_builddir)/html/virt-v2v-test-harness.1.html: stamp-virt-v2v-test-harness.pod
+virt-v2v-test-harness.1 $(top_builddir)/website/virt-v2v-test-harness.1.html: stamp-virt-v2v-test-harness.pod
 
 stamp-virt-v2v-test-harness.pod: virt-v2v-test-harness.pod
 	$(PODWRAPPER) \
 	  --man virt-v2v-test-harness.1 \
-	  --html $(top_builddir)/html/virt-v2v-test-harness.1.html \
+	  --html $(top_builddir)/website/virt-v2v-test-harness.1.html \
 	  --license LGPLv2+ \
 	  $<
 	touch $@
 
-CLEANFILES += stamp-virt-v2v-test-harness.pod
+CLEANFILES += \
+	stamp-virt-v2v-test-harness.pod \
+	virt-v2v-test-harness.1
 
 # Dependencies.
 depend: .depend

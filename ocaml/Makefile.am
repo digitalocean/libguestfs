@@ -34,7 +34,7 @@ EXTRA_DIST = \
 	t/*.ml
 
 CLEANFILES = *.annot *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so
-CLEANFILES += t/*.cmi t/*.cmo t/*.cmx t/*.o t/*.a t/*.so
+CLEANFILES += t/*.annot t/*.cmi t/*.cmo t/*.cmx t/*.o t/*.a t/*.so
 
 if HAVE_OCAML
 
@@ -100,6 +100,9 @@ noinst_DATA += html/index.html
 html/index.html: $(srcdir)/guestfs.mli $(srcdir)/guestfs.ml
 	-$(OCAMLFIND) ocamldoc -d html -html $^
 
+clean-local:
+	rm -rf html/*
+
 endif
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
@@ -111,6 +114,7 @@ test_progs_bc = \
 	t/guestfs_040_create_multiple.bc \
 	t/guestfs_050_handle_properties.bc \
 	t/guestfs_060_explicit_close.bc \
+	t/guestfs_065_implicit_close.bc \
 	t/guestfs_070_optargs.bc \
 	t/guestfs_410_close_event.bc \
 	t/guestfs_420_log_messages.bc
@@ -122,6 +126,7 @@ test_progs_opt = \
 	t/guestfs_040_create_multiple.opt \
 	t/guestfs_050_handle_properties.opt \
 	t/guestfs_060_explicit_close.opt \
+	t/guestfs_065_implicit_close.opt \
 	t/guestfs_070_optargs.opt \
 	t/guestfs_410_close_event.opt \
 	t/guestfs_420_log_messages.opt
@@ -158,6 +163,8 @@ endif
 
 check-valgrind:
 	$(MAKE) VG="$(top_builddir)/run @VG@" TESTS="$(test_progs_all)" check
+
+CLEANFILES += bindtests.tmp
 
 # Dependencies.
 %.cmi: %.mli

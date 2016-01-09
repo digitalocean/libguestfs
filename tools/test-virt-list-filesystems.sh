@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ set -e
 
 # Run virt-list-filesystems.
 # Only columns 1 & 2 are guaranteed, we may add more in future.
-if [ "$($srcdir/virt-list-filesystems -l ../tests/guests/fedora.img |
+if [ "$($srcdir/virt-list-filesystems -l ../test-data/phony-guests/fedora.img |
         sort | awk '{print $1 $2}')" \
     != \
 "/dev/VG/LV1ext2

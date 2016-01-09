@@ -70,8 +70,8 @@ virt-alignment-scan без параметрів I<-a> та I<-d>.
 
 =item стовпчик 1
 
-The device and partition name (eg. F</dev/sda1> meaning the first partition
-on the first block device).
+Назва пристрою і розділу (наприклад, F</dev/sda> означає перший розділ на
+першому блоковому пристрої).
 
 У пунктах списків всіх доменів libvirt (без вказаного параметра I<-a> або
 I<-d>) записи у цьому стовпчику матимуть префікс назви libvirt або UUID
@@ -157,12 +157,13 @@ libvirt не буде використовуватися взагалі.
 
  virt-alignment-scan --format=raw -a disk.img
 
-forces raw format (no auto-detection) for F<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<disk.img>.
 
  virt-cat --format=raw -a disk.img --format -a another.img file
 
-forces raw format (no auto-detection) for F<disk.img> and reverts to
-auto-detection for F<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<diskimg> і повернення до автоматичного визначення для F<another.img>.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату
@@ -274,7 +275,7 @@ and the two blocks written back (4x I/O).
 New versions of the Linux kernel expose the physical and logical block size,
 and minimum and recommended I/O size.
 
-For a typical consumer hard drive with 512 byte sectors:
+Для типового жорсткого диска з 512-байтовими секторами:
 
  $ cat /sys/block/sda/queue/hw_sector_size
  512
@@ -344,8 +345,8 @@ Another way to correct partition alignment problems is to reinstall your
 guest operating systems.  If you install operating systems from templates,
 ensure these have correct partition alignment too.
 
-For older versions of Windows, the following NetApp document contains useful
-information: L<http://media.netapp.com/documents/tr-3747.pdf>
+Для старіших версій Windows корисні відомості можна знайти у цьому документі
+NetApp: L<http://media.netapp.com/documents/tr-3747.pdf>
 
 For Red Hat Enterprise Linux E<le> 5, use a Kickstart script that contains
 an explicit C<%pre> section that creates aligned partitions using

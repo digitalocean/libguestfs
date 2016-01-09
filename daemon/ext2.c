@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "daemon.h"
 #include "c-ctype.h"
 #include "actions.h"
+#include "xstrtol.h"
 
 #define MAX_ARGS 128
 
@@ -130,7 +131,7 @@ do_set_e2label (const char *device, const char *label)
   CLEANUP_FREE char *err = NULL;
 
   if (strlen (label) > EXT2_LABEL_MAX) {
-    reply_with_error ("%s: ext2 labels are limited to %d bytes",
+    reply_with_error ("%s: ext2/3/4 labels are limited to %d bytes",
                       label, EXT2_LABEL_MAX);
     return -1;
   }
@@ -279,6 +280,86 @@ do_resize2fs_M (const char *device)
   return 0;
 }
 
+static long
+get_block_size (const char *device)
+{
+  CLEANUP_FREE_STRING_LIST char **params = NULL;
+  const char *block_pattern = "Block size";
+  size_t i;
+  long block_size;
+
+  params = do_tune2fs_l (device);
+  if (params == NULL)
+    return -1;
+
+  for (i = 0; params[i] != NULL; i += 2) {
+    if (STREQ (params[i], block_pattern)) {
+      if (xstrtol (params[i + 1], NULL, 10, &block_size, NULL) != LONGINT_OK) {
+        reply_with_error ("cannot parse block size");
+        return -1;
+      }
+      return block_size;
+    }
+  }
+
+  reply_with_error ("missing 'Block size' in tune2fs_l output");
+  return -1;
+}
+
+int64_t
+ext_minimum_size (const char *device)
+{
+  CLEANUP_FREE char *err = NULL, *out = NULL;
+  CLEANUP_FREE_STRING_LIST char **lines = NULL;
+  int r;
+  size_t i;
+  int64_t ret;
+  long block_size;
+  const char *pattern = "Estimated minimum size of the filesystem: ";
+
+  r = command (&out, &err, str_resize2fs, "-P", device, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    return -1;
+  }
+
+  lines = split_lines (out);
+  if (lines == NULL)
+    return -1;
+
+#if __WORDSIZE == 64
+#define XSTRTOD64 xstrtol
+#else
+#define XSTRTOD64 xstrtoll
+#endif
+
+  for (i = 0; lines[i] != NULL; ++i) {
+    if (STRPREFIX (lines[i], pattern)) {
+      if (XSTRTOD64 (lines[i] + strlen (pattern),
+                     NULL, 10, &ret, NULL) != LONGINT_OK) {
+        reply_with_error ("cannot parse minimum size");
+        return -1;
+      }
+      if ((block_size = get_block_size (device)) == -1)
+        return -1;
+      if (verbose) {
+        fprintf (stderr, "Minimum size in blocks: %" SCNd64 \
+                         "\nBlock count: %ld\n", ret, block_size);
+      }
+      if (INT64_MAX / block_size < ret) {
+        reply_with_error ("filesystem size too big: overflow");
+        return -1;
+      }
+      return ret * block_size;
+    }
+  }
+
+#undef XSTRTOD64
+
+  reply_with_error ("minimum size not found. Check output format:\n%s", out);
+  return -1;
+}
+
 /* Takes optional arguments, consult optargs_bitmask. */
 int
 do_e2fsck (const char *device,
@@ -367,7 +448,7 @@ do_mke2journal_L (int blocksize, const char *label, const char *device)
   int r;
 
   if (strlen (label) > EXT2_LABEL_MAX) {
-    reply_with_error ("%s: ext2 labels are limited to %d bytes",
+    reply_with_error ("%s: ext2/3/4 labels are limited to %d bytes",
                       label, EXT2_LABEL_MAX);
     return -1;
   }
@@ -457,7 +538,7 @@ do_mke2fs_JL (const char *fstype, int blocksize, const char *device,
   }
 
   if (strlen (label) > EXT2_LABEL_MAX) {
-    reply_with_error ("%s: ext2 labels are limited to %d bytes",
+    reply_with_error ("%s: ext2/3/4 labels are limited to %d bytes",
                       label, EXT2_LABEL_MAX);
     return -1;
   }

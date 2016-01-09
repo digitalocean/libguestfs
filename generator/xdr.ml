@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,8 @@ let generate_xdr () =
           | Key n | GUID n ->
             pr "  string %s<>;\n" n
           | OptString n -> pr "  guestfs_str *%s;\n" n
-          | StringList n | DeviceList n -> pr "  guestfs_str %s<>;\n" n
+          | StringList n | DeviceList n | FilenameList n ->
+            pr "  guestfs_str %s<>;\n" n
           | Bool n -> pr "  bool %s;\n" n
           | Int n -> pr "  int %s;\n" n
           | Int64 n -> pr "  int64_t %s;\n" n

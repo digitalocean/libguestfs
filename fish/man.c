@@ -1,5 +1,5 @@
 /* guestfish - guest filesystem shell
- * Copyright (C) 2010-2015 Red Hat Inc.
+ * Copyright (C) 2010-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,8 +56,8 @@ run_man (const char *cmd, size_t argc, char *argv[])
 
     fprintf (stderr, "%s\n",
              guestfs_int_exit_status_to_string (r, "man",
-                                              status_string,
-                                              sizeof status_string));
+						status_string,
+						sizeof status_string));
     return -1;
   }
 

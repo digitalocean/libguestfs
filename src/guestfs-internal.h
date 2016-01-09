@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,15 +21,28 @@
 
 #include <stdbool.h>
 
-#include <libintl.h>
-
-#include <rpc/types.h>
+#include <rpc/types.h>  /* Needed on libc's different than glibc. */
 #include <rpc/xdr.h>
 
 #include <pcre.h>
 
+/* Minimum required version of libvirt for the libvirt backend.
+ *
+ * This is also checked at runtime because you can dynamically link
+ * with a different version from what you were compiled with.
+ */
+#define MIN_LIBVIRT_MAJOR 0
+#define MIN_LIBVIRT_MINOR 10
+#define MIN_LIBVIRT_MICRO 2 /* XXX patches in > 2 already */
+#define MIN_LIBVIRT_VERSION (MIN_LIBVIRT_MAJOR * 1000000 +	\
+                             MIN_LIBVIRT_MINOR * 1000 +		\
+                             MIN_LIBVIRT_MICRO)
+
 #ifdef HAVE_LIBVIRT
 #include <libvirt/libvirt.h>
+#if LIBVIR_VERSION_NUMBER >= MIN_LIBVIRT_VERSION
+#define HAVE_LIBVIRT_BACKEND
+#endif
 #endif
 
 #include "hash.h"
@@ -346,6 +359,12 @@ struct error_cb_stack {
   void *                   error_cb_data;
 };
 
+/* Cached queried features. */
+struct cached_feature {
+  char *group;
+  int result;
+};
+
 /* The libguestfs handle. */
 struct guestfs_h
 {
@@ -373,6 +392,7 @@ struct guestfs_h
   struct hv_param *hv_params;   /* Extra hv parameters. */
 
   char *program;                /* Program name. */
+  char *identifier;             /* Handle identifier. */
 
   /* Array of drives added by add-drive* APIs.
    *
@@ -477,7 +497,7 @@ struct guestfs_h
   int ml_debug_calls;        /* Extra debug info on each FUSE call. */
 #endif
 
-#ifdef HAVE_LIBVIRT
+#ifdef HAVE_LIBVIRT_BACKEND
   /* Used by src/libvirt-auth.c. */
 #define NR_CREDENTIAL_TYPES 9
   unsigned int nr_supported_credentials;
@@ -487,6 +507,10 @@ struct guestfs_h
   unsigned int nr_requested_credentials;
   virConnectCredentialPtr requested_credentials;
 #endif
+
+  /* Cached features. */
+  struct cached_feature *features;
+  size_t nr_features;
 };
 
 /* Per-filesystem data stored for inspect_os. */
@@ -539,6 +563,10 @@ enum inspect_os_distro {
   OS_DISTRO_FREEBSD,
   OS_DISTRO_NETBSD,
   OS_DISTRO_COREOS,
+  OS_DISTRO_ALPINE_LINUX,
+  OS_DISTRO_ALTLINUX,
+  OS_DISTRO_FRUGALWARE,
+  OS_DISTRO_PLD_LINUX,
 };
 
 enum inspect_os_package_format {
@@ -549,6 +577,7 @@ enum inspect_os_package_format {
   OS_PACKAGE_FORMAT_EBUILD,
   OS_PACKAGE_FORMAT_PISI,
   OS_PACKAGE_FORMAT_PKGSRC,
+  OS_PACKAGE_FORMAT_APK,
 };
 
 enum inspect_os_package_management {
@@ -562,6 +591,7 @@ enum inspect_os_package_management {
   OS_PACKAGE_MANAGEMENT_URPMI,
   OS_PACKAGE_MANAGEMENT_ZYPPER,
   OS_PACKAGE_MANAGEMENT_DNF,
+  OS_PACKAGE_MANAGEMENT_APK,
 };
 
 struct inspect_fs {
@@ -881,7 +911,7 @@ extern bool guestfs_int_discard_possible (guestfs_h *g, struct drive *drv, unsig
 
 /* launch-*.c constructors */
 void guestfs_int_init_direct_backend (void) __attribute__((constructor));
-#ifdef HAVE_LIBVIRT
+#ifdef HAVE_LIBVIRT_BACKEND
 void guestfs_int_init_libvirt_backend (void) __attribute__((constructor));
 #endif
 void guestfs_int_init_uml_backend (void) __attribute__((constructor));

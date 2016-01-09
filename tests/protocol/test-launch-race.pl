@@ -1,5 +1,5 @@
-#!/usr/bin/perl
-# Copyright (C) 2010-2015 Red Hat Inc.
+#!/usr/bin/env perl
+# Copyright (C) 2010-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

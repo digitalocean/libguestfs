@@ -20,13 +20,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <inttypes.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <errno.h>
+#include <libintl.h>
 
 #ifdef HAVE_ENDIAN_H
 #include <endian.h>
@@ -39,8 +35,6 @@
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
-#include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 COMPILE_REGEXP (re_major_minor, "(\\d+)\\.(\\d+)", 0)
 
@@ -269,12 +263,12 @@ check_filesystem (guestfs_h *g, const char *mountable,
     ;
   /* Windows root? */
   else if ((windows_systemroot = guestfs_int_get_windows_systemroot (g)) != NULL)
-  {
-    fs->is_root = 1;
-    fs->format = OS_FORMAT_INSTALLED;
-    if (guestfs_int_check_windows_root (g, fs, windows_systemroot) == -1)
-      return -1;
-  }
+    {
+      fs->is_root = 1;
+      fs->format = OS_FORMAT_INSTALLED;
+      if (guestfs_int_check_windows_root (g, fs, windows_systemroot) == -1)
+	return -1;
+    }
   /* Windows volume with installed applications (but not root)? */
   else if (guestfs_int_is_dir_nocase (g, "/System Volume Information") > 0 &&
            guestfs_int_is_dir_nocase (g, "/Program Files") > 0)
@@ -465,6 +459,7 @@ guestfs_int_check_package_format (guestfs_h *g, struct inspect_fs *fs)
   case OS_DISTRO_CENTOS:
   case OS_DISTRO_SCIENTIFIC_LINUX:
   case OS_DISTRO_ORACLE_LINUX:
+  case OS_DISTRO_ALTLINUX:
     fs->package_format = OS_PACKAGE_FORMAT_RPM;
     break;
 
@@ -484,6 +479,10 @@ guestfs_int_check_package_format (guestfs_h *g, struct inspect_fs *fs)
     fs->package_format = OS_PACKAGE_FORMAT_PISI;
     break;
 
+  case OS_DISTRO_ALPINE_LINUX:
+    fs->package_format = OS_PACKAGE_FORMAT_APK;
+    break;
+
   case OS_DISTRO_SLACKWARE:
   case OS_DISTRO_TTYLINUX:
   case OS_DISTRO_COREOS:
@@ -494,6 +493,8 @@ guestfs_int_check_package_format (guestfs_h *g, struct inspect_fs *fs)
   case OS_DISTRO_FREEBSD:
   case OS_DISTRO_NETBSD:
   case OS_DISTRO_OPENBSD:
+  case OS_DISTRO_FRUGALWARE:
+  case OS_DISTRO_PLD_LINUX:
   case OS_DISTRO_UNKNOWN:
     fs->package_format = OS_PACKAGE_FORMAT_UNKNOWN;
     break;
@@ -532,6 +533,7 @@ guestfs_int_check_package_management (guestfs_h *g, struct inspect_fs *fs)
   case OS_DISTRO_DEBIAN:
   case OS_DISTRO_UBUNTU:
   case OS_DISTRO_LINUX_MINT:
+  case OS_DISTRO_ALTLINUX:
     fs->package_management = OS_PACKAGE_MANAGEMENT_APT;
     break;
 
@@ -555,6 +557,10 @@ guestfs_int_check_package_management (guestfs_h *g, struct inspect_fs *fs)
     fs->package_management = OS_PACKAGE_MANAGEMENT_ZYPPER;
     break;
 
+  case OS_DISTRO_ALPINE_LINUX:
+    fs->package_management = OS_PACKAGE_MANAGEMENT_APK;
+    break;
+
   case OS_DISTRO_SLACKWARE:
   case OS_DISTRO_TTYLINUX:
   case OS_DISTRO_COREOS:
@@ -565,6 +571,8 @@ guestfs_int_check_package_management (guestfs_h *g, struct inspect_fs *fs)
   case OS_DISTRO_FREEBSD:
   case OS_DISTRO_NETBSD:
   case OS_DISTRO_OPENBSD:
+  case OS_DISTRO_FRUGALWARE:
+  case OS_DISTRO_PLD_LINUX:
   case OS_DISTRO_UNKNOWN:
     fs->package_management = OS_PACKAGE_MANAGEMENT_UNKNOWN;
     break;
@@ -624,7 +632,7 @@ guestfs_int_first_line_of_file (guestfs_h *g, const char *filename)
  */
 int
 guestfs_int_first_egrep_of_file (guestfs_h *g, const char *filename,
-                               const char *eregex, int iflag, char **ret)
+				 const char *eregex, int iflag, char **ret)
 {
   char **lines;
   int64_t size;

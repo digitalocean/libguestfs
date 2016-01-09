@@ -50,19 +50,15 @@ if [ "$(uname -m)" != "x86_64" ]; then
 fi
 
 abs_top_builddir="$(cd ..; pwd)"
-libvirt_uri="test://$abs_top_builddir/tests/guests/guests.xml"
+libvirt_uri="test://$abs_top_builddir/test-data/phony-guests/guests.xml"
 
-f=../tests/guests/windows.img
+f=../test-data/phony-guests/windows.img
 if ! test -f $f || ! test -s $f; then
     echo "$0: test skipped because phony Windows image was not created"
     exit 77
 fi
 
-virt_tools_data_dir=${VIRT_TOOLS_DATA_DIR:-/usr/share/virt-tools}
-if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
-    echo "$0: test skipped because rhsrvany.exe is not installed"
-    exit 77
-fi
+export VIRT_TOOLS_DATA_DIR="$srcdir/../test-data/fake-virt-tools"
 
 # Generate a random guest name.
 guestname=tmp-$(tr -cd 'a-f0-9' < /dev/urandom | head -c 8)

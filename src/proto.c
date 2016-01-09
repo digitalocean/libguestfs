@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,30 +20,23 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <inttypes.h>
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
-#include <time.h>
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <assert.h>
+#include <libintl.h>
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 
 #include "c-ctype.h"
-#include "glthread/lock.h"
 #include "ignore-value.h"
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
-#include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
 /* Size of guestfs_progress message on the wire. */
@@ -109,7 +102,7 @@ child_cleanup (guestfs_h *g)
 /* Convenient wrapper to generate a progress message callback. */
 void
 guestfs_int_progress_message_callback (guestfs_h *g,
-                                     const guestfs_progress *message)
+				       const guestfs_progress *message)
 {
   uint64_t array[4];
 
@@ -119,7 +112,7 @@ guestfs_int_progress_message_callback (guestfs_h *g,
   array[3] = message->total;
 
   guestfs_int_call_callbacks_array (g, GUESTFS_EVENT_PROGRESS,
-                                  array, sizeof array / sizeof array[0]);
+				    array, sizeof array / sizeof array[0]);
 }
 
 /* Connection modules call us back here when they get a log message. */
@@ -181,14 +174,14 @@ check_daemon_socket (guestfs_h *g)
 
   /* Read and process progress messages that happen during FileIn. */
   if (flag == GUESTFS_PROGRESS_FLAG) {
-    char buf[PROGRESS_MESSAGE_SIZE];
+    char mbuf[PROGRESS_MESSAGE_SIZE];
     guestfs_progress message;
 
-    n = g->conn->ops->read_data (g, g->conn, buf, PROGRESS_MESSAGE_SIZE);
+    n = g->conn->ops->read_data (g, g->conn, mbuf, PROGRESS_MESSAGE_SIZE);
     if (n <= 0) /* 0 or -1 */
       return n;
 
-    xdrmem_create (&xdr, buf, PROGRESS_MESSAGE_SIZE, XDR_DECODE);
+    xdrmem_create (&xdr, mbuf, PROGRESS_MESSAGE_SIZE, XDR_DECODE);
     xdr_guestfs_progress (&xdr, &message);
     xdr_destroy (&xdr);
 
@@ -208,8 +201,8 @@ check_daemon_socket (guestfs_h *g)
 
 int
 guestfs_int_send (guestfs_h *g, int proc_nr,
-                uint64_t progress_hint, uint64_t optargs_bitmask,
-                xdrproc_t xdrp, char *args)
+		  uint64_t progress_hint, uint64_t optargs_bitmask,
+		  xdrproc_t xdrp, char *args)
 {
   struct guestfs_message_header hdr;
   XDR xdr;
@@ -640,9 +633,9 @@ guestfs_int_recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn)
 /* Receive a reply. */
 int
 guestfs_int_recv (guestfs_h *g, const char *fn,
-                guestfs_message_header *hdr,
-                guestfs_message_error *err,
-                xdrproc_t xdrp, char *ret)
+		  guestfs_message_header *hdr,
+		  guestfs_message_error *err,
+		  xdrproc_t xdrp, char *ret)
 {
   XDR xdr;
   CLEANUP_FREE void *buf = NULL;

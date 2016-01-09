@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,13 +38,19 @@
 
 struct _GuestfsTarInPrivate {
   gchar *compress;
+  GuestfsTristate xattrs;
+  GuestfsTristate selinux;
+  GuestfsTristate acls;
 };
 
 G_DEFINE_TYPE (GuestfsTarIn, guestfs_tar_in, G_TYPE_OBJECT);
 
 enum {
   PROP_GUESTFS_TAR_IN_PROP0,
-  PROP_GUESTFS_TAR_IN_COMPRESS
+  PROP_GUESTFS_TAR_IN_COMPRESS,
+  PROP_GUESTFS_TAR_IN_XATTRS,
+  PROP_GUESTFS_TAR_IN_SELINUX,
+  PROP_GUESTFS_TAR_IN_ACLS
 };
 
 static void
@@ -57,6 +63,18 @@ guestfs_tar_in_set_property(GObject *object, guint property_id, const GValue *va
     case PROP_GUESTFS_TAR_IN_COMPRESS:
       g_free (priv->compress);
       priv->compress = g_value_dup_string (value);
+      break;
+
+    case PROP_GUESTFS_TAR_IN_XATTRS:
+      priv->xattrs = g_value_get_enum (value);
+      break;
+
+    case PROP_GUESTFS_TAR_IN_SELINUX:
+      priv->selinux = g_value_get_enum (value);
+      break;
+
+    case PROP_GUESTFS_TAR_IN_ACLS:
+      priv->acls = g_value_get_enum (value);
       break;
 
     default:
@@ -74,6 +92,18 @@ guestfs_tar_in_get_property(GObject *object, guint property_id, GValue *value, G
   switch (property_id) {
     case PROP_GUESTFS_TAR_IN_COMPRESS:
       g_value_set_string (value, priv->compress);
+      break;
+
+    case PROP_GUESTFS_TAR_IN_XATTRS:
+      g_value_set_enum (value, priv->xattrs);
+      break;
+
+    case PROP_GUESTFS_TAR_IN_SELINUX:
+      g_value_set_enum (value, priv->selinux);
+      break;
+
+    case PROP_GUESTFS_TAR_IN_ACLS:
+      g_value_set_enum (value, priv->acls);
       break;
 
     default:
@@ -112,6 +142,57 @@ guestfs_tar_in_class_init (GuestfsTarInClass *klass)
       "compress",
       "A string.",
       NULL,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsTarIn:xattrs:
+   *
+   * A boolean.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_TAR_IN_XATTRS,
+    g_param_spec_enum (
+      "xattrs",
+      "xattrs",
+      "A boolean.",
+      GUESTFS_TYPE_TRISTATE, GUESTFS_TRISTATE_NONE,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsTarIn:selinux:
+   *
+   * A boolean.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_TAR_IN_SELINUX,
+    g_param_spec_enum (
+      "selinux",
+      "selinux",
+      "A boolean.",
+      GUESTFS_TYPE_TRISTATE, GUESTFS_TRISTATE_NONE,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsTarIn:acls:
+   *
+   * A boolean.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_TAR_IN_ACLS,
+    g_param_spec_enum (
+      "acls",
+      "acls",
+      "A boolean.",
+      GUESTFS_TYPE_TRISTATE, GUESTFS_TRISTATE_NONE,
       G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
     )
   );

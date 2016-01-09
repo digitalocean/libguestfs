@@ -84,7 +84,7 @@ The full requirements are described below.
 +--------------+-------------+---+-----------------------------------------+
 | Pod::Simple  |             | R | Part of Perl core.                      |
 +--------------+-------------+---+-----------------------------------------+
-| OCaml        |             |R/O| Required if compiling from git.         |
+| OCaml        | 3.11        |R/O| Required if compiling from git.         |
 |              |             |   | Optional if compiling from tarball.     |
 |              |             |   | To build generated files and OCaml bindings.
 +--------------+-------------+---+-----------------------------------------+
@@ -191,6 +191,8 @@ The full requirements are described below.
 |              |             |   | Event Log files.                        |
 +--------------+-------------+---+-----------------------------------------+
 | ocaml-gettext|             | O | For localizing OCaml virt-* tools.      |
++--------------+-------------+---+-----------------------------------------+
+| Module::Build| 0.19        | O | To build the Perl bindings.             |
 +--------------+-------------+---+-----------------------------------------+
 | Python       | 2.2         | O | For the Python bindings.                |
 +--------------+-------------+---+-----------------------------------------+
@@ -406,7 +408,7 @@ Don't enable GCC warnings (ie. *don't* use
 Copyright and license information
 ----------------------------------------------------------------------
 
-Copyright (C) 2009-2015 Red Hat Inc.
+Copyright (C) 2009-2016 Red Hat Inc.
 
 The library is distributed under the LGPLv2+.  The programs are
 distributed under the GPLv2+.  Please see the files COPYING and

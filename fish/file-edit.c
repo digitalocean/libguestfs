@@ -1,5 +1,5 @@
 /* libguestfs - shared file editing
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -252,7 +252,7 @@ do_upload (guestfs_h *g, const char *fn, const char *tempfile,
    * file to match the old file (RHBZ#788641).
    */
   if (guestfs_copy_attributes (g, filename, newname,
-      GUESTFS_COPY_ATTRIBUTES_ALL, 1, -1) == -1)
+			       GUESTFS_COPY_ATTRIBUTES_ALL, 1, -1) == -1)
     return -1;
 
   /* Backup or overwrite the file. */

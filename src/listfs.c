@@ -20,16 +20,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <inttypes.h>
-#include <unistd.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 /* List filesystems.
  *
@@ -177,8 +172,8 @@ check_with_vfs_type (guestfs_h *g, const char *device, struct stringsbuf *sb)
     for (size_t i = 0; i < vols->len; i++) {
       struct guestfs_btrfssubvolume *this = &vols->val[i];
       guestfs_int_add_sprintf (g, sb,
-                             "btrfsvol:%s/%s",
-                             device, this->btrfssubvolume_path);
+			       "btrfsvol:%s/%s",
+			       device, this->btrfssubvolume_path);
       guestfs_int_add_string (g, sb, "btrfs");
     }
 

@@ -22,15 +22,15 @@
 set -e
 export LANG=C
 
-if [ ! -s ../data/test.iso ]; then
+if [ ! -s ../../test-data/test.iso ]; then
     echo "$0: test skipped because there is no test.iso"
     exit 77
 fi
 
-rm -f test.out
+rm -f rhbz563450b.out
 
-guestfish --ro > test.out <<EOF
-add-cdrom ../data/test.iso
+guestfish --ro > rhbz563450b.out <<EOF
+add-cdrom ../../test-data/test.iso
 
 run
 
@@ -39,10 +39,10 @@ list-devices | sed -r 's,^/dev/[abce-ln-z]+d,/dev/sd,'
 ping-daemon
 EOF
 
-if [ "$(cat test.out)" != "/dev/sda" ]; then
+if [ "$(cat rhbz563450b.out)" != "/dev/sda" ]; then
     echo "$0: unexpected output:"
-    cat test.out
+    cat rhbz563450b.out
     exit 1
 fi
 
-rm -f test.out
+rm -f rhbz563450b.out

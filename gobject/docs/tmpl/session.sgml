@@ -2093,6 +2093,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_get_identifier ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_get_libvirt_requested_credential_challenge ##### -->
 <para>
 
@@ -5624,6 +5634,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_set_identifier ##### -->
+<para>
+
+</para>
+
+@session: 
+@identifier: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_set_label ##### -->
 <para>
 
@@ -6402,6 +6423,17 @@ GuestfsSession
 
 
 <!-- ##### FUNCTION guestfs_session_vfs_label ##### -->
+<para>
+
+</para>
+
+@session: 
+@mountable: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_vfs_minimum_size ##### -->
 <para>
 
 </para>

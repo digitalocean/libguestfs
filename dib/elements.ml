@@ -107,7 +107,7 @@ let load_dependencies elements loaded_elements =
       let path = path // filename in
       if Sys.file_exists path then (
         let lines = read_whole_file path in
-        let lines = string_nsplit "\n" lines in
+        let lines = String.nsplit "\n" lines in
         let lines = List.filter ((<>) "") lines in
         stringset_of_list lines
       ) else
@@ -147,9 +147,6 @@ let copy_element element destdir blacklist =
   let dirs, nondirs = List.partition is_directory entries in
   let dirs = List.map (fun x -> (x, element.directory // x, destdir // x)) dirs in
   let nondirs = List.map (fun x -> element.directory // x) nondirs in
-  let is_regular_file file =
-    try (Unix.stat file).Unix.st_kind = Unix.S_REG
-    with Unix.Unix_error _ -> false in
   List.iter (
     fun (e, path, destpath) ->
       do_mkdir destpath;

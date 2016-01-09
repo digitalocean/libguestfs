@@ -1,5 +1,5 @@
 (* libguestfs OCaml tests
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 let callback_invoked = ref 0
 
-let callback _ _ _ _ _ = incr callback_invoked
+let callback _ _ _ _ = incr callback_invoked
 
 let () =
   let g = new Guestfs.guestfs () in

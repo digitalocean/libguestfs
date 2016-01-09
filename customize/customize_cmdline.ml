@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -141,10 +141,10 @@ let rec argspec () =
     String.sub arg 0 i, String.sub arg (i+1) (len-(i+1))
   in
   let split_string_list arg =
-    string_nsplit "," arg
+    String.nsplit "," arg
   in
   let split_links_list option_name arg =
-    match string_nsplit ":" arg with
+    match String.nsplit ":" arg with
     | [] | [_] ->
       error (f_"invalid format for '--%s' parameter, see the man page")
         option_name
@@ -343,7 +343,7 @@ let rec argspec () =
       "--ssh-inject",
       Arg.String (
         fun s ->
-          let user, selstr = string_split ":" s in
+          let user, selstr = String.split ":" s in
           let sel = Ssh_key.parse_selector selstr in
           ops := `SSHInject (user, sel) :: !ops
       ),
@@ -436,12 +436,12 @@ let rec argspec () =
       "commands-from-file";
     ] in
     let lines = read_whole_file filename in
-    let lines = string_lines_split lines in
+    let lines = String.lines_split lines in
     let lines = List.filter (
       fun line ->
         String.length line > 0 && line.[0] <> '#'
     ) lines in
-    let cmds = List.map (fun line -> string_split " " line) lines in
+    let cmds = List.map (fun line -> String.split " " line) lines in
     (* Check for commands not allowed in files containing commands. *)
     List.iter (
       fun (cmd, _) ->

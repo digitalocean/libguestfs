@@ -24,93 +24,6 @@ open Utils
 open Printf
 open Unix
 
-type index = (string * entry) list      (* string = "os-version" *)
-and entry = {
-  printable_name : string option;       (* the name= field *)
-  osinfo : string option;
-  file_uri : string;
-  arch : string;
-  signature_uri : string option;        (* deprecated, will be removed in 1.26 *)
-  checksum_sha512 : string option;
-  revision : int;
-  format : string option;
-  size : int64;
-  compressed_size : int64 option;
-  expand : string option;
-  lvexpand : string option;
-  notes : (string * string) list;
-  hidden : bool;
-  aliases : string list option;
-
-  sigchecker : Sigchecker.t;
-  proxy : Downloader.proxy_mode;
-}
-
-let print_entry chan (name, { printable_name = printable_name;
-                              file_uri = file_uri;
-                              arch = arch;
-                              osinfo = osinfo;
-                              signature_uri = signature_uri;
-                              checksum_sha512 = checksum_sha512;
-                              revision = revision;
-                              format = format;
-                              size = size;
-                              compressed_size = compressed_size;
-                              expand = expand;
-                              lvexpand = lvexpand;
-                              notes = notes;
-                              aliases = aliases;
-                              hidden = hidden }) =
-  let fp fs = fprintf chan fs in
-  fp "[%s]\n" name;
-  (match printable_name with
-  | None -> ()
-  | Some name -> fp "name=%s\n" name
-  );
-  (match osinfo with
-  | None -> ()
-  | Some id -> fp "osinfo=%s\n" id
-  );
-  fp "file=%s\n" file_uri;
-  fp "arch=%s\n" arch;
-  (match signature_uri with
-  | None -> ()
-  | Some uri -> fp "sig=%s\n" uri
-  );
-  (match checksum_sha512 with
-  | None -> ()
-  | Some uri -> fp "checksum[sha512]=%s\n" uri
-  );
-  fp "revision=%d\n" revision;
-  (match format with
-  | None -> ()
-  | Some format -> fp "format=%s\n" format
-  );
-  fp "size=%Ld\n" size;
-  (match compressed_size with
-  | None -> ()
-  | Some size -> fp "compressed_size=%Ld\n" size
-  );
-  (match expand with
-  | None -> ()
-  | Some expand -> fp "expand=%s\n" expand
-  );
-  (match lvexpand with
-  | None -> ()
-  | Some lvexpand -> fp "lvexpand=%s\n" lvexpand
-  );
-  List.iter (
-    fun (lang, notes) ->
-      match lang with
-      | "" -> fp "notes=%s\n" notes
-      | lang -> fp "notes[%s]=%s\n" lang notes
-  ) notes;
-  (match aliases with
-  | None -> ()
-  | Some l -> fp "aliases=%s\n" (String.concat " " l)
-  );
-  if hidden then fp "hidden=true\n"
-
 let get_index ~downloader ~sigchecker
   { Sources.uri = uri; proxy = proxy } =
   let corrupt_file () =
@@ -199,9 +112,9 @@ let get_index ~downloader ~sigchecker
               try Some (List.assoc ("checksum", None) fields)
               with Not_found -> None in
           let revision =
-            try int_of_string (List.assoc ("revision", None) fields)
+            try Rev_int (int_of_string (List.assoc ("revision", None) fields))
             with
-            | Not_found -> 1
+            | Not_found -> Rev_int 1
             | Failure "int_of_string" ->
               eprintf (f_"%s: cannot parse 'revision' field for '%s'\n") prog n;
               corrupt_file () in
@@ -252,18 +165,23 @@ let get_index ~downloader ~sigchecker
               corrupt_file () in
           let aliases =
             let l =
-              try string_nsplit " " (List.assoc ("aliases", None) fields)
+              try String.nsplit " " (List.assoc ("aliases", None) fields)
               with Not_found -> [] in
             match l with
             | [] -> None
             | l -> Some l in
 
-          let entry = { printable_name = printable_name;
+          let checksums =
+            match checksum_sha512 with
+            | Some c -> Some [Checksums.SHA512 c]
+            | None -> None in
+
+          let entry = { Index.printable_name = printable_name;
                         osinfo = osinfo;
                         file_uri = file_uri;
                         arch = arch;
                         signature_uri = signature_uri;
-                        checksum_sha512 = checksum_sha512;
+                        checksums = checksums;
                         revision = revision;
                         format = format;
                         size = size;
@@ -280,7 +198,7 @@ let get_index ~downloader ~sigchecker
 
     if verbose () then (
       printf "index file (%s) after parsing (C parser):\n" uri;
-      List.iter (print_entry Pervasives.stdout) entries
+      List.iter (Index.print_entry Pervasives.stdout) entries
     );
 
     entries
@@ -291,7 +209,7 @@ let get_index ~downloader ~sigchecker
       eprintf (f_"%s: zero length path in the index file\n") prog;
       corrupt_file ()
     )
-    else if string_find path "://" >= 0 then (
+    else if String.find path "://" >= 0 then (
       eprintf (f_"%s: cannot use a URI ('%s') in the index file\n") prog path;
       corrupt_file ()
     )

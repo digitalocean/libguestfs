@@ -1,6 +1,6 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 # podwrapper.pl
-# Copyright (C) 2010-2015 Red Hat Inc.
+# Copyright (C) 2010-2016 Red Hat Inc.
 # @configure_input@
 #
 # This program is free software; you can redistribute it and/or modify
@@ -39,13 +39,13 @@ podwrapper.pl - Generate libguestfs documentation from POD input files
 
  man_MANS = virt-foo.1
  
- virt-foo.1 $(top_builddir)/html/virt-foo.1.html: stamp-virt-foo.pod
+ virt-foo.1 $(top_builddir)/website/virt-foo.1.html: stamp-virt-foo.pod
  
  stamp-virt-foo.pod: virt-foo.pod
          $(PODWRAPPER) \
            --section 1 \
            --man virt-foo.1 \
-           --html $(top_builddir)/html/virt-foo.1.html \
+           --html $(top_builddir)/website/virt-foo.1.html \
            --license GPLv2+ \
            $<
          touch $@
@@ -513,7 +513,7 @@ SUBHTML: {
 }
 
 if ($html) {
-    mkdir "$abs_top_builddir/html";
+    mkdir "$abs_top_builddir/website";
 
     my $parser = Podwrapper::XHTML->new;
     my $output;
@@ -582,4 +582,4 @@ Richard W.M. Jones.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2012-2015 Red Hat Inc.
+Copyright (C) 2012-2016 Red Hat Inc.

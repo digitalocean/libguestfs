@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,11 +37,13 @@ EXTRA_DIST = \
 	rhbz957772.sh \
 	rhbz975797.sh \
 	rhbz1001875.sh \
+	rhbz1011907-1165785.sh \
 	rhbz1044014.sh \
 	rhbz1044014.in \
 	rhbz1044014.xml \
 	rhbz1054761.sh \
 	rhbz1091803.sh \
+	rhbz1174551.sh \
 	rhbz1175196.sh \
 	rhbz1232192.sh \
 	rhbz1232192.xml \
@@ -70,6 +72,8 @@ TESTS = \
 	rhbz1054761.sh \
 	rhbz1055452 \
 	rhbz1091803.sh \
+	rhbz1011907-1165785.sh \
+	rhbz1174551.sh \
 	rhbz1175196.sh \
 	rhbz1232192.sh \
 	rhbz1285847.sh \

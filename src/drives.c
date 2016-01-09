@@ -24,18 +24,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include <inttypes.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <assert.h>
-#include <sys/types.h>
-
-#include <pcre.h>
+#include <libintl.h>
 
 #include "c-ctype.h"
 #include "ignore-value.h"
@@ -43,7 +38,6 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 /* Helper struct to hold all the data needed when creating a new
  * drive.
@@ -370,16 +364,6 @@ static struct drive *
 create_drive_iscsi (guestfs_h *g,
                     const struct drive_create_data *data)
 {
-  if (data->username != NULL) {
-    error (g, _("iscsi: you cannot specify a username with this protocol"));
-    return NULL;
-  }
-
-  if (data->secret != NULL) {
-    error (g, _("iscsi: you cannot specify a secret with this protocol"));
-    return NULL;
-  }
-
   if (data->nr_servers != 1) {
     error (g, _("iscsi: you must specify exactly one server"));
     return NULL;
@@ -530,7 +514,7 @@ add_drive_to_handle_at (guestfs_h *g, struct drive *d, size_t drv_index)
   if (drv_index >= g->nr_drives) {
     g->drives = safe_realloc (g, g->drives,
                               sizeof (struct drive *) * (drv_index + 1));
-    while (g->nr_drives <= drv_index) {
+    while (g->nr_drives < drv_index+1) {
       g->drives[g->nr_drives] = NULL;
       g->nr_drives++;
     }
@@ -735,7 +719,7 @@ parse_servers (guestfs_h *g, char *const *strs,
 
 int
 guestfs_impl_add_drive_opts (guestfs_h *g, const char *filename,
-                         const struct guestfs_add_drive_opts_argv *optargs)
+			     const struct guestfs_add_drive_opts_argv *optargs)
 {
   struct drive_create_data data;
   const char *protocol;
@@ -960,7 +944,7 @@ guestfs_impl_add_drive_ro (guestfs_h *g, const char *filename)
 
 int
 guestfs_impl_add_drive_with_if (guestfs_h *g, const char *filename,
-                            const char *iface)
+				const char *iface)
 {
   const struct guestfs_add_drive_opts_argv optargs = {
     .bitmask = GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK,
@@ -986,7 +970,7 @@ guestfs_impl_add_drive_ro_with_if (guestfs_h *g, const char *filename,
 
 int
 guestfs_impl_add_drive_scratch (guestfs_h *g, int64_t size,
-                            const struct guestfs_add_drive_scratch_argv *optargs)
+				const struct guestfs_add_drive_scratch_argv *optargs)
 {
   struct guestfs_add_drive_opts_argv add_drive_optargs = { .bitmask = 0 };
   CLEANUP_FREE char *filename = NULL;

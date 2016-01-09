@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -68,20 +68,6 @@
 #ifndef RSTRING_PTR
 #define RSTRING_PTR(r) (RSTRING((r))->ptr)
 #endif
-
-/* For RHEL 5 (Ruby 1.8.5) */
-#ifndef HAVE_RB_HASH_LOOKUP
-VALUE
-rb_hash_lookup (VALUE hash, VALUE key)
-{
-  volatile VALUE val;
-
-  if (!st_lookup (RHASH(hash)->tbl, key, &val))
-    return Qnil;
-
-  return val;
-}
-#endif /* !HAVE_RB_HASH_LOOKUP */
 
 static VALUE m_guestfs;			/* guestfs module */
 static VALUE c_guestfs;			/* guestfs_h handle */
@@ -163,7 +149,7 @@ parse_flags (int argc, VALUE *argv)
  *   Guestfs::Guestfs.new([{:environment => false, :close_on_exit => false}]) -> Guestfs::Guestfs
  *
  * Call
- * +guestfs_create_flags+[http://libguestfs.org/guestfs.3.html#guestfs_create_flags]
+ * {guestfs_create_flags}[http://libguestfs.org/guestfs.3.html#guestfs_create_flags]
  * to create a new libguestfs handle.  The handle is represented in
  * Ruby as an instance of the Guestfs::Guestfs class.
  */
@@ -220,7 +206,7 @@ ruby_guestfs_create (int argc, VALUE *argv, VALUE module)
  *   g.close() -> nil
  *
  * Call
- * +guestfs_close+[http://libguestfs.org/guestfs.3.html#guestfs_close]
+ * {guestfs_close}[http://libguestfs.org/guestfs.3.html#guestfs_close]
  * to close the libguestfs handle.
  */
 static VALUE
@@ -243,7 +229,7 @@ ruby_guestfs_close (VALUE gv)
  *   g.set_event_callback(cb, event_bitmask) -> event_handle
  *
  * Call
- * +guestfs_set_event_callback+[http://libguestfs.org/guestfs.3.html#guestfs_set_event_callback]
+ * {guestfs_set_event_callback}[http://libguestfs.org/guestfs.3.html#guestfs_set_event_callback]
  * to register an event callback.  This returns an event handle.
  */
 static VALUE
@@ -282,7 +268,7 @@ ruby_set_event_callback (VALUE gv, VALUE cbv, VALUE event_bitmaskv)
  *   g.delete_event_callback(event_handle) -> nil
  *
  * Call
- * +guestfs_delete_event_callback+[http://libguestfs.org/guestfs.3.html#guestfs_delete_event_callback]
+ * {guestfs_delete_event_callback}[http://libguestfs.org/guestfs.3.html#guestfs_delete_event_callback]
  * to delete an event callback.
  */
 static VALUE
@@ -313,7 +299,7 @@ ruby_delete_event_callback (VALUE gv, VALUE event_handlev)
  *   Guestfs::Guestfs.event_to_string(events) -> string
  *
  * Call
- * +guestfs_event_to_string+[http://libguestfs.org/guestfs.3.html#guestfs_event_to_string]
+ * {guestfs_event_to_string}[http://libguestfs.org/guestfs.3.html#guestfs_event_to_string]
  * to convert an event or event bitmask into a printable string.
  */
 static VALUE
@@ -455,8 +441,10 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
  * List (ACL) attached to directory "dir".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_acl_delete_def_file+[http://libguestfs.org/guestfs.3.html#guestfs_acl_delete_def_file]).
+ * [Since] Added in version 1.19.63.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_acl_delete_def_file}[http://libguestfs.org/guestfs.3.html#guestfs_acl_delete_def_file].
  */
 static VALUE
 ruby_guestfs_acl_delete_def_file (VALUE gv, VALUE dirv)
@@ -498,8 +486,10 @@ ruby_guestfs_acl_delete_def_file (VALUE gv, VALUE dirv)
  * sense if "path" is a directory.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_acl_get_file+[http://libguestfs.org/guestfs.3.html#guestfs_acl_get_file]).
+ * [Since] Added in version 1.19.63.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_acl_get_file}[http://libguestfs.org/guestfs.3.html#guestfs_acl_get_file].
  */
 static VALUE
 ruby_guestfs_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
@@ -562,8 +552,10 @@ ruby_guestfs_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
  * "g.aug_init").
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_acl_set_file+[http://libguestfs.org/guestfs.3.html#guestfs_acl_set_file]).
+ * [Since] Added in version 1.19.63.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_acl_set_file}[http://libguestfs.org/guestfs.3.html#guestfs_acl_set_file].
  */
 static VALUE
 ruby_guestfs_acl_set_file (VALUE gv, VALUE pathv, VALUE acltypev, VALUE aclv)
@@ -597,17 +589,14 @@ ruby_guestfs_acl_set_file (VALUE gv, VALUE pathv, VALUE acltypev, VALUE aclv)
  * 
  * The image is added as read-only drive, so this function
  * is equivalent of "g.add_drive_ro".
- * 
- * *This function is deprecated.* In new code, use the
- * "add_drive_ro" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_add_cdrom+[http://libguestfs.org/guestfs.3.html#guestfs_add_cdrom]).
+ * [Since] Added in version 0.3.
+ *
+ * [Deprecated] In new code, use rdoc-ref:add_drive_ro instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_add_cdrom}[http://libguestfs.org/guestfs.3.html#guestfs_add_cdrom].
  */
 static VALUE
 ruby_guestfs_add_cdrom (VALUE gv, VALUE filenamev)
@@ -721,8 +710,10 @@ ruby_guestfs_add_cdrom (VALUE gv, VALUE filenamev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_add_domain+[http://libguestfs.org/guestfs.3.html#guestfs_add_domain]).
+ * [Since] Added in version 1.7.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_add_domain}[http://libguestfs.org/guestfs.3.html#guestfs_add_domain].
  */
 static VALUE
 ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
@@ -897,7 +888,10 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  * 
  * "protocol = "iscsi""
  * Connect to the iSCSI server. The "server"
- * parameter must also be supplied - see below.
+ * parameter must also be supplied - see below. The
+ * "username" parameter may be supplied. See below.
+ * The "secret" parameter may be supplied. See
+ * below.
  * 
  * See also: "ISCSI" in guestfs(3).
  * 
@@ -1045,8 +1039,10 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_add_drive+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_add_drive}[http://libguestfs.org/guestfs.3.html#guestfs_add_drive].
  */
 static VALUE
 ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
@@ -1164,8 +1160,10 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
  * automatically.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_add_drive_ro+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_ro]).
+ * [Since] Added in version 1.0.38.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_add_drive_ro}[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_ro].
  */
 static VALUE
 ruby_guestfs_add_drive_ro (VALUE gv, VALUE filenamev)
@@ -1195,17 +1193,14 @@ ruby_guestfs_add_drive_ro (VALUE gv, VALUE filenamev)
  * This is the same as "g.add_drive_ro" but it allows you
  * to specify the QEMU interface emulation to use at run
  * time.
- * 
- * *This function is deprecated.* In new code, use the
- * "add_drive" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_add_drive_ro_with_if+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_ro_with_if]).
+ * [Since] Added in version 1.0.84.
+ *
+ * [Deprecated] In new code, use rdoc-ref:add_drive instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_add_drive_ro_with_if}[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_ro_with_if].
  */
 static VALUE
 ruby_guestfs_add_drive_ro_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
@@ -1247,8 +1242,10 @@ ruby_guestfs_add_drive_ro_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_add_drive_scratch+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_scratch]).
+ * [Since] Added in version 1.23.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_add_drive_scratch}[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_scratch].
  */
 static VALUE
 ruby_guestfs_add_drive_scratch (int argc, VALUE *argv, VALUE gv)
@@ -1298,17 +1295,14 @@ ruby_guestfs_add_drive_scratch (int argc, VALUE *argv, VALUE gv)
  *
  * This is the same as "g.add_drive" but it allows you to
  * specify the QEMU interface emulation to use at run time.
- * 
- * *This function is deprecated.* In new code, use the
- * "add_drive" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_add_drive_with_if+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_with_if]).
+ * [Since] Added in version 1.0.84.
+ *
+ * [Deprecated] In new code, use rdoc-ref:add_drive instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_add_drive_with_if}[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_with_if].
  */
 static VALUE
 ruby_guestfs_add_drive_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
@@ -1379,8 +1373,10 @@ ruby_guestfs_add_drive_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_add_libvirt_dom+[http://libguestfs.org/guestfs.3.html#guestfs_add_libvirt_dom]).
+ * [Since] Added in version 1.29.14.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_add_libvirt_dom}[http://libguestfs.org/guestfs.3.html#guestfs_add_libvirt_dom].
  */
 static VALUE
 ruby_guestfs_add_libvirt_dom (int argc, VALUE *argv, VALUE gv)
@@ -1458,8 +1454,10 @@ ruby_guestfs_add_libvirt_dom (int argc, VALUE *argv, VALUE gv)
  * the same as the augtool(1) "clear" command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_clear+[http://libguestfs.org/guestfs.3.html#guestfs_aug_clear]).
+ * [Since] Added in version 1.3.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_clear}[http://libguestfs.org/guestfs.3.html#guestfs_aug_clear].
  */
 static VALUE
 ruby_guestfs_aug_clear (VALUE gv, VALUE augpathv)
@@ -1492,8 +1490,10 @@ ruby_guestfs_aug_clear (VALUE gv, VALUE augpathv)
  * Augeas functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_close+[http://libguestfs.org/guestfs.3.html#guestfs_aug_close]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_close}[http://libguestfs.org/guestfs.3.html#guestfs_aug_close].
  */
 static VALUE
 ruby_guestfs_aug_close (VALUE gv)
@@ -1532,8 +1532,10 @@ ruby_guestfs_aug_close (VALUE gv)
  * created.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_defnode+[http://libguestfs.org/guestfs.3.html#guestfs_aug_defnode]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_defnode}[http://libguestfs.org/guestfs.3.html#guestfs_aug_defnode].
  */
 static VALUE
 ruby_guestfs_aug_defnode (VALUE gv, VALUE namev, VALUE exprv, VALUE valv)
@@ -1575,8 +1577,10 @@ ruby_guestfs_aug_defnode (VALUE gv, VALUE namev, VALUE exprv, VALUE valv)
  * nodeset.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_defvar+[http://libguestfs.org/guestfs.3.html#guestfs_aug_defvar]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_defvar}[http://libguestfs.org/guestfs.3.html#guestfs_aug_defvar].
  */
 static VALUE
 ruby_guestfs_aug_defvar (VALUE gv, VALUE namev, VALUE exprv)
@@ -1608,8 +1612,10 @@ ruby_guestfs_aug_defvar (VALUE gv, VALUE namev, VALUE exprv)
  * matches exactly one node, the "value" is returned.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_get+[http://libguestfs.org/guestfs.3.html#guestfs_aug_get]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_get}[http://libguestfs.org/guestfs.3.html#guestfs_aug_get].
  */
 static VALUE
 ruby_guestfs_aug_get (VALUE gv, VALUE augpathv)
@@ -1683,8 +1689,10 @@ ruby_guestfs_aug_get (VALUE gv, VALUE augpathv)
  * To find out more about Augeas, see <http://augeas.net/>.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_init+[http://libguestfs.org/guestfs.3.html#guestfs_aug_init]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_init}[http://libguestfs.org/guestfs.3.html#guestfs_aug_init].
  */
 static VALUE
 ruby_guestfs_aug_init (VALUE gv, VALUE rootv, VALUE flagsv)
@@ -1721,8 +1729,10 @@ ruby_guestfs_aug_init (VALUE gv, VALUE rootv, VALUE flagsv)
  * end with a bracketed index "[N]".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_insert+[http://libguestfs.org/guestfs.3.html#guestfs_aug_insert]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_insert}[http://libguestfs.org/guestfs.3.html#guestfs_aug_insert].
  */
 static VALUE
 ruby_guestfs_aug_insert (VALUE gv, VALUE augpathv, VALUE labelv, VALUE beforev)
@@ -1756,8 +1766,10 @@ ruby_guestfs_aug_insert (VALUE gv, VALUE augpathv, VALUE labelv, VALUE beforev)
  * exactly one node, else this function returns an error.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_label+[http://libguestfs.org/guestfs.3.html#guestfs_aug_label]).
+ * [Since] Added in version 1.23.14.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_label}[http://libguestfs.org/guestfs.3.html#guestfs_aug_label].
  */
 static VALUE
 ruby_guestfs_aug_label (VALUE gv, VALUE augpathv)
@@ -1792,8 +1804,10 @@ ruby_guestfs_aug_label (VALUE gv, VALUE augpathv)
  * gory details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_load+[http://libguestfs.org/guestfs.3.html#guestfs_aug_load]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_load}[http://libguestfs.org/guestfs.3.html#guestfs_aug_load].
  */
 static VALUE
 ruby_guestfs_aug_load (VALUE gv)
@@ -1824,8 +1838,10 @@ ruby_guestfs_aug_load (VALUE gv)
  * alphabetical order.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_ls+[http://libguestfs.org/guestfs.3.html#guestfs_aug_ls]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_ls}[http://libguestfs.org/guestfs.3.html#guestfs_aug_ls].
  */
 static VALUE
 ruby_guestfs_aug_ls (VALUE gv, VALUE augpathv)
@@ -1865,8 +1881,10 @@ ruby_guestfs_aug_ls (VALUE gv, VALUE augpathv)
  * that they match exactly one node in the current tree.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_match+[http://libguestfs.org/guestfs.3.html#guestfs_aug_match]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_match}[http://libguestfs.org/guestfs.3.html#guestfs_aug_match].
  */
 static VALUE
 ruby_guestfs_aug_match (VALUE gv, VALUE augpathv)
@@ -1905,8 +1923,10 @@ ruby_guestfs_aug_match (VALUE gv, VALUE augpathv)
  * one node. "dest" is overwritten if it exists.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_mv+[http://libguestfs.org/guestfs.3.html#guestfs_aug_mv]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_mv}[http://libguestfs.org/guestfs.3.html#guestfs_aug_mv].
  */
 static VALUE
 ruby_guestfs_aug_mv (VALUE gv, VALUE srcv, VALUE destv)
@@ -1940,8 +1960,10 @@ ruby_guestfs_aug_mv (VALUE gv, VALUE srcv, VALUE destv)
  * removed.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_rm+[http://libguestfs.org/guestfs.3.html#guestfs_aug_rm]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_rm}[http://libguestfs.org/guestfs.3.html#guestfs_aug_rm].
  */
 static VALUE
 ruby_guestfs_aug_rm (VALUE gv, VALUE augpathv)
@@ -1974,8 +1996,10 @@ ruby_guestfs_aug_rm (VALUE gv, VALUE augpathv)
  * exactly how files are saved.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_save+[http://libguestfs.org/guestfs.3.html#guestfs_aug_save]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_save}[http://libguestfs.org/guestfs.3.html#guestfs_aug_save].
  */
 static VALUE
 ruby_guestfs_aug_save (VALUE gv)
@@ -2009,8 +2033,10 @@ ruby_guestfs_aug_save (VALUE gv)
  * Instead you must use the "g.aug_clear" call.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_set+[http://libguestfs.org/guestfs.3.html#guestfs_aug_set]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_set}[http://libguestfs.org/guestfs.3.html#guestfs_aug_set].
  */
 static VALUE
 ruby_guestfs_aug_set (VALUE gv, VALUE augpathv, VALUE valv)
@@ -2048,8 +2074,10 @@ ruby_guestfs_aug_set (VALUE gv, VALUE augpathv, VALUE valv)
  * This returns the number of nodes modified.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_aug_setm+[http://libguestfs.org/guestfs.3.html#guestfs_aug_setm]).
+ * [Since] Added in version 1.23.14.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_setm}[http://libguestfs.org/guestfs.3.html#guestfs_aug_setm].
  */
 static VALUE
 ruby_guestfs_aug_setm (VALUE gv, VALUE basev, VALUE subv, VALUE valv)
@@ -2135,8 +2163,10 @@ ruby_guestfs_aug_setm (VALUE gv, VALUE basev, VALUE subv, VALUE valv)
  * See also "g.filesystem_available".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_available+[http://libguestfs.org/guestfs.3.html#guestfs_available]).
+ * [Since] Added in version 1.0.80.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_available}[http://libguestfs.org/guestfs.3.html#guestfs_available].
  */
 static VALUE
 ruby_guestfs_available (VALUE gv, VALUE groupsv)
@@ -2186,8 +2216,10 @@ ruby_guestfs_available (VALUE gv, VALUE groupsv)
  * "AVAILABILITY" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_available_all_groups+[http://libguestfs.org/guestfs.3.html#guestfs_available_all_groups]).
+ * [Since] Added in version 1.3.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_available_all_groups}[http://libguestfs.org/guestfs.3.html#guestfs_available_all_groups].
  */
 static VALUE
 ruby_guestfs_available_all_groups (VALUE gv)
@@ -2225,8 +2257,10 @@ ruby_guestfs_available_all_groups (VALUE gv)
  * "base64file" to filename.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_base64_in+[http://libguestfs.org/guestfs.3.html#guestfs_base64_in]).
+ * [Since] Added in version 1.3.5.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_base64_in}[http://libguestfs.org/guestfs.3.html#guestfs_base64_in].
  */
 static VALUE
 ruby_guestfs_base64_in (VALUE gv, VALUE base64filev, VALUE filenamev)
@@ -2258,8 +2292,10 @@ ruby_guestfs_base64_in (VALUE gv, VALUE base64filev, VALUE filenamev)
  * it out to local file "base64file" encoded as base64.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_base64_out+[http://libguestfs.org/guestfs.3.html#guestfs_base64_out]).
+ * [Since] Added in version 1.3.5.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_base64_out}[http://libguestfs.org/guestfs.3.html#guestfs_base64_out].
  */
 static VALUE
 ruby_guestfs_base64_out (VALUE gv, VALUE filenamev, VALUE base64filev)
@@ -2298,8 +2334,10 @@ ruby_guestfs_base64_out (VALUE gv, VALUE filenamev, VALUE base64filev)
  * "g.add_drive_opts").
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blkdiscard+[http://libguestfs.org/guestfs.3.html#guestfs_blkdiscard]).
+ * [Since] Added in version 1.25.44.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blkdiscard}[http://libguestfs.org/guestfs.3.html#guestfs_blkdiscard].
  */
 static VALUE
 ruby_guestfs_blkdiscard (VALUE gv, VALUE devicev)
@@ -2334,8 +2372,10 @@ ruby_guestfs_blkdiscard (VALUE gv, VALUE devicev)
  * blocks are read as stale or random data.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blkdiscardzeroes+[http://libguestfs.org/guestfs.3.html#guestfs_blkdiscardzeroes]).
+ * [Since] Added in version 1.25.44.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blkdiscardzeroes}[http://libguestfs.org/guestfs.3.html#guestfs_blkdiscardzeroes].
  */
 static VALUE
 ruby_guestfs_blkdiscardzeroes (VALUE gv, VALUE devicev)
@@ -2383,8 +2423,10 @@ ruby_guestfs_blkdiscardzeroes (VALUE gv, VALUE devicev)
  * or "raid".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blkid+[http://libguestfs.org/guestfs.3.html#guestfs_blkid]).
+ * [Since] Added in version 1.15.9.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blkid}[http://libguestfs.org/guestfs.3.html#guestfs_blkid].
  */
 static VALUE
 ruby_guestfs_blkid (VALUE gv, VALUE devicev)
@@ -2425,8 +2467,10 @@ ruby_guestfs_blkid (VALUE gv, VALUE devicev)
  * This uses the blockdev(8) command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_flushbufs+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_flushbufs]).
+ * [Since] Added in version 1.9.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_flushbufs}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_flushbufs].
  */
 static VALUE
 ruby_guestfs_blockdev_flushbufs (VALUE gv, VALUE devicev)
@@ -2464,8 +2508,10 @@ ruby_guestfs_blockdev_flushbufs (VALUE gv, VALUE devicev)
  * This uses the blockdev(8) command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_getbsz+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getbsz]).
+ * [Since] Added in version 1.9.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_getbsz}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getbsz].
  */
 static VALUE
 ruby_guestfs_blockdev_getbsz (VALUE gv, VALUE devicev)
@@ -2498,8 +2544,10 @@ ruby_guestfs_blockdev_getbsz (VALUE gv, VALUE devicev)
  * This uses the blockdev(8) command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_getro+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getro]).
+ * [Since] Added in version 1.9.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_getro}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getro].
  */
 static VALUE
 ruby_guestfs_blockdev_getro (VALUE gv, VALUE devicev)
@@ -2533,8 +2581,10 @@ ruby_guestfs_blockdev_getro (VALUE gv, VALUE devicev)
  * This uses the blockdev(8) command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_getsize64+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getsize64]).
+ * [Since] Added in version 1.9.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_getsize64}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getsize64].
  */
 static VALUE
 ruby_guestfs_blockdev_getsize64 (VALUE gv, VALUE devicev)
@@ -2570,8 +2620,10 @@ ruby_guestfs_blockdev_getsize64 (VALUE gv, VALUE devicev)
  * This uses the blockdev(8) command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_getss+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getss]).
+ * [Since] Added in version 1.9.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_getss}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getss].
  */
 static VALUE
 ruby_guestfs_blockdev_getss (VALUE gv, VALUE devicev)
@@ -2609,8 +2661,10 @@ ruby_guestfs_blockdev_getss (VALUE gv, VALUE devicev)
  * This uses the blockdev(8) command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_getsz+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getsz]).
+ * [Since] Added in version 1.9.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_getsz}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getsz].
  */
 static VALUE
 ruby_guestfs_blockdev_getsz (VALUE gv, VALUE devicev)
@@ -2642,8 +2696,10 @@ ruby_guestfs_blockdev_getsz (VALUE gv, VALUE devicev)
  * This uses the blockdev(8) command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_rereadpt+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_rereadpt]).
+ * [Since] Added in version 1.9.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_rereadpt}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_rereadpt].
  */
 static VALUE
 ruby_guestfs_blockdev_rereadpt (VALUE gv, VALUE devicev)
@@ -2675,17 +2731,14 @@ ruby_guestfs_blockdev_rereadpt (VALUE gv, VALUE devicev)
  * 
  * If you need to set the filesystem block size, use the
  * "blocksize" option of "g.mkfs".
- * 
- * *This function is deprecated.* In new code, use the
- * "mkfs" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_setbsz+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setbsz]).
+ * [Since] Added in version 1.9.3.
+ *
+ * [Deprecated] In new code, use rdoc-ref:mkfs instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_setbsz}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setbsz].
  */
 static VALUE
 ruby_guestfs_blockdev_setbsz (VALUE gv, VALUE devicev, VALUE blocksizev)
@@ -2718,8 +2771,10 @@ ruby_guestfs_blockdev_setbsz (VALUE gv, VALUE devicev, VALUE blocksizev)
  * This uses the blockdev(8) command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_setra+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setra]).
+ * [Since] Added in version 1.29.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_setra}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setra].
  */
 static VALUE
 ruby_guestfs_blockdev_setra (VALUE gv, VALUE devicev, VALUE sectorsv)
@@ -2752,8 +2807,10 @@ ruby_guestfs_blockdev_setra (VALUE gv, VALUE devicev, VALUE sectorsv)
  * This uses the blockdev(8) command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_setro+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setro]).
+ * [Since] Added in version 1.9.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_setro}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setro].
  */
 static VALUE
 ruby_guestfs_blockdev_setro (VALUE gv, VALUE devicev)
@@ -2785,8 +2842,10 @@ ruby_guestfs_blockdev_setro (VALUE gv, VALUE devicev)
  * This uses the blockdev(8) command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_blockdev_setrw+[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setrw]).
+ * [Since] Added in version 1.9.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_blockdev_setrw}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setrw].
  */
 static VALUE
 ruby_guestfs_blockdev_setrw (VALUE gv, VALUE devicev)
@@ -2816,8 +2875,10 @@ ruby_guestfs_blockdev_setrw (VALUE gv, VALUE devicev)
  * Cancel a running balance on a btrfs filesystem.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_balance_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_cancel]).
+ * [Since] Added in version 1.29.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_balance_cancel}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_cancel].
  */
 static VALUE
 ruby_guestfs_btrfs_balance_cancel (VALUE gv, VALUE pathv)
@@ -2847,8 +2908,10 @@ ruby_guestfs_btrfs_balance_cancel (VALUE gv, VALUE pathv)
  * Pause a running balance on a btrfs filesystem.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_balance_pause+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_pause]).
+ * [Since] Added in version 1.29.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_balance_pause}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_pause].
  */
 static VALUE
 ruby_guestfs_btrfs_balance_pause (VALUE gv, VALUE pathv)
@@ -2878,8 +2941,10 @@ ruby_guestfs_btrfs_balance_pause (VALUE gv, VALUE pathv)
  * Resume a paused balance on a btrfs filesystem.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_balance_resume+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_resume]).
+ * [Since] Added in version 1.29.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_balance_resume}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_resume].
  */
 static VALUE
 ruby_guestfs_btrfs_balance_resume (VALUE gv, VALUE pathv)
@@ -2910,8 +2975,10 @@ ruby_guestfs_btrfs_balance_resume (VALUE gv, VALUE pathv)
  * btrfs filesystem.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_balance_status+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_status]).
+ * [Since] Added in version 1.29.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_balance_status}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_status].
  */
 static VALUE
 ruby_guestfs_btrfs_balance_status (VALUE gv, VALUE pathv)
@@ -2950,8 +3017,10 @@ ruby_guestfs_btrfs_balance_status (VALUE gv, VALUE pathv)
  * list, this does nothing.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_device_add+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_device_add]).
+ * [Since] Added in version 1.17.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_device_add}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_device_add].
  */
 static VALUE
 ruby_guestfs_btrfs_device_add (VALUE gv, VALUE devicesv, VALUE fsv)
@@ -2996,8 +3065,10 @@ ruby_guestfs_btrfs_device_add (VALUE gv, VALUE devicesv, VALUE fsv)
  * nothing.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_device_delete+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_device_delete]).
+ * [Since] Added in version 1.17.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_device_delete}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_device_delete].
  */
 static VALUE
 ruby_guestfs_btrfs_device_delete (VALUE gv, VALUE devicesv, VALUE fsv)
@@ -3041,8 +3112,10 @@ ruby_guestfs_btrfs_device_delete (VALUE gv, VALUE devicesv, VALUE fsv)
  * "fs" across the underlying devices.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_filesystem_balance+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_balance]).
+ * [Since] Added in version 1.17.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_filesystem_balance}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_balance].
  */
 static VALUE
 ruby_guestfs_btrfs_filesystem_balance (VALUE gv, VALUE fsv)
@@ -3077,8 +3150,10 @@ ruby_guestfs_btrfs_filesystem_balance (VALUE gv, VALUE fsv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_filesystem_defragment+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_defragment]).
+ * [Since] Added in version 1.29.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_filesystem_defragment}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_defragment].
  */
 static VALUE
 ruby_guestfs_btrfs_filesystem_defragment (int argc, VALUE *argv, VALUE gv)
@@ -3146,8 +3221,10 @@ ruby_guestfs_btrfs_filesystem_defragment (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_filesystem_resize+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_resize]).
+ * [Since] Added in version 1.11.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_filesystem_resize}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_resize].
  */
 static VALUE
 ruby_guestfs_btrfs_filesystem_resize (int argc, VALUE *argv, VALUE gv)
@@ -3193,8 +3270,10 @@ ruby_guestfs_btrfs_filesystem_resize (int argc, VALUE *argv, VALUE gv)
  * Force sync on the btrfs filesystem mounted at "fs".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_filesystem_sync+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_sync]).
+ * [Since] Added in version 1.17.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_filesystem_sync}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_sync].
  */
 static VALUE
 ruby_guestfs_btrfs_filesystem_sync (VALUE gv, VALUE fsv)
@@ -3229,8 +3308,10 @@ ruby_guestfs_btrfs_filesystem_sync (VALUE gv, VALUE fsv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_fsck+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_fsck]).
+ * [Since] Added in version 1.17.43.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_fsck}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_fsck].
  */
 static VALUE
 ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
@@ -3287,8 +3368,10 @@ ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_image+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_image]).
+ * [Since] Added in version 1.29.32.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_image}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_image].
  */
 static VALUE
 ruby_guestfs_btrfs_image (int argc, VALUE *argv, VALUE gv)
@@ -3350,8 +3433,10 @@ ruby_guestfs_btrfs_image (int argc, VALUE *argv, VALUE gv)
  * common limit.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_qgroup_assign+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_assign]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_qgroup_assign}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_assign].
  */
 static VALUE
 ruby_guestfs_btrfs_qgroup_assign (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
@@ -3384,8 +3469,10 @@ ruby_guestfs_btrfs_qgroup_assign (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
  * "subvolume".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_qgroup_create+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_create]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_qgroup_create}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_create].
  */
 static VALUE
 ruby_guestfs_btrfs_qgroup_create (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
@@ -3416,8 +3503,10 @@ ruby_guestfs_btrfs_qgroup_create (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
  * Destroy a quota group.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_qgroup_destroy+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_destroy]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_qgroup_destroy}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_destroy].
  */
 static VALUE
 ruby_guestfs_btrfs_qgroup_destroy (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
@@ -3449,8 +3538,10 @@ ruby_guestfs_btrfs_qgroup_destroy (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
  * "subvolume". "size" can have suffix of G, M, or K.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_qgroup_limit+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_limit]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_qgroup_limit}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_limit].
  */
 static VALUE
 ruby_guestfs_btrfs_qgroup_limit (VALUE gv, VALUE subvolumev, VALUE sizev)
@@ -3481,8 +3572,10 @@ ruby_guestfs_btrfs_qgroup_limit (VALUE gv, VALUE subvolumev, VALUE sizev)
  * Remove qgroup "src" from the parent qgroup "dst".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_qgroup_remove+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_remove]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_qgroup_remove}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_remove].
  */
 static VALUE
 ruby_guestfs_btrfs_qgroup_remove (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
@@ -3515,8 +3608,10 @@ ruby_guestfs_btrfs_qgroup_remove (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
  * including their usages.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_qgroup_show+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_show]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_qgroup_show}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_show].
  */
 static VALUE
 ruby_guestfs_btrfs_qgroup_show (VALUE gv, VALUE pathv)
@@ -3557,8 +3652,10 @@ ruby_guestfs_btrfs_qgroup_show (VALUE gv, VALUE pathv)
  * which contains "path".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_quota_enable+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_quota_enable]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_quota_enable}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_quota_enable].
  */
 static VALUE
 ruby_guestfs_btrfs_quota_enable (VALUE gv, VALUE fsv, VALUE enablev)
@@ -3590,8 +3687,10 @@ ruby_guestfs_btrfs_quota_enable (VALUE gv, VALUE fsv, VALUE enablev)
  * with the current config.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_quota_rescan+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_quota_rescan]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_quota_rescan}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_quota_rescan].
  */
 static VALUE
 ruby_guestfs_btrfs_quota_rescan (VALUE gv, VALUE fsv)
@@ -3629,8 +3728,10 @@ ruby_guestfs_btrfs_quota_rescan (VALUE gv, VALUE fsv)
  * allowed to be used as the "targetdev".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_replace+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_replace]).
+ * [Since] Added in version 1.29.48.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_replace}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_replace].
  */
 static VALUE
 ruby_guestfs_btrfs_replace (VALUE gv, VALUE srcdevv, VALUE targetdevv, VALUE mntpointv)
@@ -3663,8 +3764,10 @@ ruby_guestfs_btrfs_replace (VALUE gv, VALUE srcdevv, VALUE targetdevv, VALUE mnt
  * the devices one by one.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_rescue_chunk_recover+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_rescue_chunk_recover]).
+ * [Since] Added in version 1.29.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_rescue_chunk_recover}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_rescue_chunk_recover].
  */
 static VALUE
 ruby_guestfs_btrfs_rescue_chunk_recover (VALUE gv, VALUE devicev)
@@ -3694,8 +3797,10 @@ ruby_guestfs_btrfs_rescue_chunk_recover (VALUE gv, VALUE devicev)
  * Recover bad superblocks from good copies.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_rescue_super_recover+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_rescue_super_recover]).
+ * [Since] Added in version 1.29.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_rescue_super_recover}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_rescue_super_recover].
  */
 static VALUE
 ruby_guestfs_btrfs_rescue_super_recover (VALUE gv, VALUE devicev)
@@ -3725,8 +3830,10 @@ ruby_guestfs_btrfs_rescue_super_recover (VALUE gv, VALUE devicev)
  * Cancel a running scrub on a btrfs filesystem.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_scrub_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_cancel]).
+ * [Since] Added in version 1.29.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_scrub_cancel}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_cancel].
  */
 static VALUE
 ruby_guestfs_btrfs_scrub_cancel (VALUE gv, VALUE pathv)
@@ -3757,8 +3864,10 @@ ruby_guestfs_btrfs_scrub_cancel (VALUE gv, VALUE pathv)
  * btrfs filesystem.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_scrub_resume+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_resume]).
+ * [Since] Added in version 1.29.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_scrub_resume}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_resume].
  */
 static VALUE
 ruby_guestfs_btrfs_scrub_resume (VALUE gv, VALUE pathv)
@@ -3790,8 +3899,10 @@ ruby_guestfs_btrfs_scrub_resume (VALUE gv, VALUE pathv)
  * storage to identify and repair any corrupt data.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_scrub_start+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_start]).
+ * [Since] Added in version 1.29.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_scrub_start}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_start].
  */
 static VALUE
 ruby_guestfs_btrfs_scrub_start (VALUE gv, VALUE pathv)
@@ -3822,8 +3933,10 @@ ruby_guestfs_btrfs_scrub_start (VALUE gv, VALUE pathv)
  * filesystem.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_scrub_status+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_status]).
+ * [Since] Added in version 1.29.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_scrub_status}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_status].
  */
 static VALUE
 ruby_guestfs_btrfs_scrub_status (VALUE gv, VALUE pathv)
@@ -3871,8 +3984,10 @@ ruby_guestfs_btrfs_scrub_status (VALUE gv, VALUE pathv)
  * contains a btrfs filesystem.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_set_seeding+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_set_seeding]).
+ * [Since] Added in version 1.17.43.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_set_seeding}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_set_seeding].
  */
 static VALUE
 ruby_guestfs_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
@@ -3911,8 +4026,10 @@ ruby_guestfs_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_subvolume_create+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_create]).
+ * [Since] Added in version 1.17.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_subvolume_create}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_create].
  */
 static VALUE
 ruby_guestfs_btrfs_subvolume_create (int argc, VALUE *argv, VALUE gv)
@@ -3958,8 +4075,10 @@ ruby_guestfs_btrfs_subvolume_create (int argc, VALUE *argv, VALUE gv)
  * Delete the named btrfs subvolume or snapshot.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_subvolume_delete+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_delete]).
+ * [Since] Added in version 1.17.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_subvolume_delete}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_delete].
  */
 static VALUE
 ruby_guestfs_btrfs_subvolume_delete (VALUE gv, VALUE subvolumev)
@@ -3990,8 +4109,10 @@ ruby_guestfs_btrfs_subvolume_delete (VALUE gv, VALUE subvolumev)
  * mounted at "mountpoint".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_subvolume_get_default+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_get_default]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_subvolume_get_default}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_get_default].
  */
 static VALUE
 ruby_guestfs_btrfs_subvolume_get_default (VALUE gv, VALUE fsv)
@@ -4022,8 +4143,10 @@ ruby_guestfs_btrfs_subvolume_get_default (VALUE gv, VALUE fsv)
  * filesystem which is mounted at "fs".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_subvolume_list+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_list]).
+ * [Since] Added in version 1.17.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_subvolume_list}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_list].
  */
 static VALUE
 ruby_guestfs_btrfs_subvolume_list (VALUE gv, VALUE fsv)
@@ -4065,8 +4188,10 @@ ruby_guestfs_btrfs_subvolume_list (VALUE gv, VALUE fsv)
  * to get a list of subvolumes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_subvolume_set_default+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_set_default]).
+ * [Since] Added in version 1.17.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_subvolume_set_default}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_set_default].
  */
 static VALUE
 ruby_guestfs_btrfs_subvolume_set_default (VALUE gv, VALUE idv, VALUE fsv)
@@ -4097,8 +4222,10 @@ ruby_guestfs_btrfs_subvolume_set_default (VALUE gv, VALUE idv, VALUE fsv)
  * Return detailed information of the subvolume.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_subvolume_show+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_show]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_subvolume_show}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_show].
  */
 static VALUE
 ruby_guestfs_btrfs_subvolume_show (VALUE gv, VALUE subvolumev)
@@ -4147,8 +4274,10 @@ ruby_guestfs_btrfs_subvolume_show (VALUE gv, VALUE subvolumev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfs_subvolume_snapshot+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_snapshot]).
+ * [Since] Added in version 1.17.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_subvolume_snapshot}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_snapshot].
  */
 static VALUE
 ruby_guestfs_btrfs_subvolume_snapshot (int argc, VALUE *argv, VALUE gv)
@@ -4201,8 +4330,10 @@ ruby_guestfs_btrfs_subvolume_snapshot (int argc, VALUE *argv, VALUE gv)
  * This will Enable extended inode refs.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfstune_enable_extended_inode_refs+[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_enable_extended_inode_refs]).
+ * [Since] Added in version 1.29.29.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfstune_enable_extended_inode_refs}[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_enable_extended_inode_refs].
  */
 static VALUE
 ruby_guestfs_btrfstune_enable_extended_inode_refs (VALUE gv, VALUE devicev)
@@ -4232,8 +4363,10 @@ ruby_guestfs_btrfstune_enable_extended_inode_refs (VALUE gv, VALUE devicev)
  * This enable skinny metadata extent refs.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfstune_enable_skinny_metadata_extent_refs+[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_enable_skinny_metadata_extent_refs]).
+ * [Since] Added in version 1.29.29.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfstune_enable_skinny_metadata_extent_refs}[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_enable_skinny_metadata_extent_refs].
  */
 static VALUE
 ruby_guestfs_btrfstune_enable_skinny_metadata_extent_refs (VALUE gv, VALUE devicev)
@@ -4265,8 +4398,10 @@ ruby_guestfs_btrfstune_enable_skinny_metadata_extent_refs (VALUE gv, VALUE devic
  * filesystems.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_btrfstune_seeding+[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_seeding]).
+ * [Since] Added in version 1.29.29.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfstune_seeding}[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_seeding].
  */
 static VALUE
 ruby_guestfs_btrfstune_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
@@ -4300,8 +4435,10 @@ ruby_guestfs_btrfstune_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
  * interwork with libguestfs.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_c_pointer+[http://libguestfs.org/guestfs.3.html#guestfs_c_pointer]).
+ * [Since] Added in version 1.29.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_c_pointer}[http://libguestfs.org/guestfs.3.html#guestfs_c_pointer].
  */
 static VALUE
 ruby_guestfs_c_pointer (VALUE gv)
@@ -4346,8 +4483,10 @@ ruby_guestfs_c_pointer (VALUE gv)
  * Other strings are returned unmodified.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_canonical_device_name+[http://libguestfs.org/guestfs.3.html#guestfs_canonical_device_name]).
+ * [Since] Added in version 1.19.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_canonical_device_name}[http://libguestfs.org/guestfs.3.html#guestfs_canonical_device_name].
  */
 static VALUE
 ruby_guestfs_canonical_device_name (VALUE gv, VALUE devicev)
@@ -4384,8 +4523,10 @@ ruby_guestfs_canonical_device_name (VALUE gv, VALUE devicev)
  * string is returned.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_cap_get_file+[http://libguestfs.org/guestfs.3.html#guestfs_cap_get_file]).
+ * [Since] Added in version 1.19.63.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_cap_get_file}[http://libguestfs.org/guestfs.3.html#guestfs_cap_get_file].
  */
 static VALUE
 ruby_guestfs_cap_get_file (VALUE gv, VALUE pathv)
@@ -4419,8 +4560,10 @@ ruby_guestfs_cap_get_file (VALUE gv, VALUE pathv)
  * text form (see cap_from_text(3)).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_cap_set_file+[http://libguestfs.org/guestfs.3.html#guestfs_cap_set_file]).
+ * [Since] Added in version 1.19.63.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_cap_set_file}[http://libguestfs.org/guestfs.3.html#guestfs_cap_set_file].
  */
 static VALUE
 ruby_guestfs_cap_set_file (VALUE gv, VALUE pathv, VALUE capv)
@@ -4498,8 +4641,10 @@ ruby_guestfs_cap_set_file (VALUE gv, VALUE pathv, VALUE capv)
  * See also "g.realpath".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_case_sensitive_path+[http://libguestfs.org/guestfs.3.html#guestfs_case_sensitive_path]).
+ * [Since] Added in version 1.0.75.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_case_sensitive_path}[http://libguestfs.org/guestfs.3.html#guestfs_case_sensitive_path].
  */
 static VALUE
 ruby_guestfs_case_sensitive_path (VALUE gv, VALUE pathv)
@@ -4536,8 +4681,10 @@ ruby_guestfs_case_sensitive_path (VALUE gv, VALUE pathv)
  * "g.read_file" or "g.download" functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_cat+[http://libguestfs.org/guestfs.3.html#guestfs_cat]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_cat}[http://libguestfs.org/guestfs.3.html#guestfs_cat].
  */
 static VALUE
 ruby_guestfs_cat (VALUE gv, VALUE pathv)
@@ -4608,8 +4755,10 @@ ruby_guestfs_cat (VALUE gv, VALUE pathv)
  * "g.checksums_out".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_checksum+[http://libguestfs.org/guestfs.3.html#guestfs_checksum]).
+ * [Since] Added in version 1.0.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_checksum}[http://libguestfs.org/guestfs.3.html#guestfs_checksum].
  */
 static VALUE
 ruby_guestfs_checksum (VALUE gv, VALUE csumtypev, VALUE pathv)
@@ -4644,8 +4793,10 @@ ruby_guestfs_checksum (VALUE gv, VALUE csumtypev, VALUE pathv)
  * checksums supported see the "g.checksum" command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_checksum_device+[http://libguestfs.org/guestfs.3.html#guestfs_checksum_device]).
+ * [Since] Added in version 1.3.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_checksum_device}[http://libguestfs.org/guestfs.3.html#guestfs_checksum_device].
  */
 static VALUE
 ruby_guestfs_checksum_device (VALUE gv, VALUE csumtypev, VALUE devicev)
@@ -4688,8 +4839,10 @@ ruby_guestfs_checksum_device (VALUE gv, VALUE csumtypev, VALUE devicev)
  * see the GNU coreutils info file.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_checksums_out+[http://libguestfs.org/guestfs.3.html#guestfs_checksums_out]).
+ * [Since] Added in version 1.3.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_checksums_out}[http://libguestfs.org/guestfs.3.html#guestfs_checksums_out].
  */
 static VALUE
 ruby_guestfs_checksums_out (VALUE gv, VALUE csumtypev, VALUE directoryv, VALUE sumsfilev)
@@ -4728,8 +4881,10 @@ ruby_guestfs_checksums_out (VALUE gv, VALUE csumtypev, VALUE directoryv, VALUE s
  * The mode actually set is affected by the umask.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_chmod+[http://libguestfs.org/guestfs.3.html#guestfs_chmod]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_chmod}[http://libguestfs.org/guestfs.3.html#guestfs_chmod].
  */
 static VALUE
 ruby_guestfs_chmod (VALUE gv, VALUE modev, VALUE pathv)
@@ -4765,8 +4920,10 @@ ruby_guestfs_chmod (VALUE gv, VALUE modev, VALUE pathv)
  * relatively easy).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_chown+[http://libguestfs.org/guestfs.3.html#guestfs_chown]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_chown}[http://libguestfs.org/guestfs.3.html#guestfs_chown].
  */
 static VALUE
 ruby_guestfs_chown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
@@ -4806,8 +4963,10 @@ ruby_guestfs_chown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
  * guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_clear_backend_setting+[http://libguestfs.org/guestfs.3.html#guestfs_clear_backend_setting]).
+ * [Since] Added in version 1.27.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_clear_backend_setting}[http://libguestfs.org/guestfs.3.html#guestfs_clear_backend_setting].
  */
 static VALUE
 ruby_guestfs_clear_backend_setting (VALUE gv, VALUE namev)
@@ -4869,8 +5028,10 @@ ruby_guestfs_clear_backend_setting (VALUE gv, VALUE namev)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_command+[http://libguestfs.org/guestfs.3.html#guestfs_command]).
+ * [Since] Added in version 1.9.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_command}[http://libguestfs.org/guestfs.3.html#guestfs_command].
  */
 static VALUE
 ruby_guestfs_command (VALUE gv, VALUE argumentsv)
@@ -4921,8 +5082,10 @@ ruby_guestfs_command (VALUE gv, VALUE argumentsv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_command_lines+[http://libguestfs.org/guestfs.3.html#guestfs_command_lines]).
+ * [Since] Added in version 1.9.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_command_lines}[http://libguestfs.org/guestfs.3.html#guestfs_command_lines].
  */
 static VALUE
 ruby_guestfs_command_lines (VALUE gv, VALUE argumentsv)
@@ -4980,8 +5143,10 @@ ruby_guestfs_command_lines (VALUE gv, VALUE argumentsv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_compress_device_out+[http://libguestfs.org/guestfs.3.html#guestfs_compress_device_out]).
+ * [Since] Added in version 1.13.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_compress_device_out}[http://libguestfs.org/guestfs.3.html#guestfs_compress_device_out].
  */
 static VALUE
 ruby_guestfs_compress_device_out (int argc, VALUE *argv, VALUE gv)
@@ -5047,8 +5212,10 @@ ruby_guestfs_compress_device_out (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_compress_out+[http://libguestfs.org/guestfs.3.html#guestfs_compress_out]).
+ * [Since] Added in version 1.13.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_compress_out}[http://libguestfs.org/guestfs.3.html#guestfs_compress_out].
  */
 static VALUE
 ruby_guestfs_compress_out (int argc, VALUE *argv, VALUE gv)
@@ -5106,8 +5273,10 @@ ruby_guestfs_compress_out (int argc, VALUE *argv, VALUE gv)
  * "hvvalue" can be NULL.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_config+[http://libguestfs.org/guestfs.3.html#guestfs_config]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_config}[http://libguestfs.org/guestfs.3.html#guestfs_config].
  */
 static VALUE
 ruby_guestfs_config (VALUE gv, VALUE hvparamv, VALUE hvvaluev)
@@ -5169,8 +5338,10 @@ ruby_guestfs_config (VALUE gv, VALUE hvparamv, VALUE hvvaluev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_copy_attributes+[http://libguestfs.org/guestfs.3.html#guestfs_copy_attributes]).
+ * [Since] Added in version 1.25.21.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_copy_attributes}[http://libguestfs.org/guestfs.3.html#guestfs_copy_attributes].
  */
 static VALUE
 ruby_guestfs_copy_attributes (int argc, VALUE *argv, VALUE gv)
@@ -5267,8 +5438,10 @@ ruby_guestfs_copy_attributes (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_copy_device_to_device+[http://libguestfs.org/guestfs.3.html#guestfs_copy_device_to_device]).
+ * [Since] Added in version 1.13.25.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_copy_device_to_device}[http://libguestfs.org/guestfs.3.html#guestfs_copy_device_to_device].
  */
 static VALUE
 ruby_guestfs_copy_device_to_device (int argc, VALUE *argv, VALUE gv)
@@ -5341,8 +5514,10 @@ ruby_guestfs_copy_device_to_device (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_copy_device_to_file+[http://libguestfs.org/guestfs.3.html#guestfs_copy_device_to_file]).
+ * [Since] Added in version 1.13.25.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_copy_device_to_file}[http://libguestfs.org/guestfs.3.html#guestfs_copy_device_to_file].
  */
 static VALUE
 ruby_guestfs_copy_device_to_file (int argc, VALUE *argv, VALUE gv)
@@ -5415,8 +5590,10 @@ ruby_guestfs_copy_device_to_file (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_copy_file_to_device+[http://libguestfs.org/guestfs.3.html#guestfs_copy_file_to_device]).
+ * [Since] Added in version 1.13.25.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_copy_file_to_device}[http://libguestfs.org/guestfs.3.html#guestfs_copy_file_to_device].
  */
 static VALUE
 ruby_guestfs_copy_file_to_device (int argc, VALUE *argv, VALUE gv)
@@ -5494,8 +5671,10 @@ ruby_guestfs_copy_file_to_device (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_copy_file_to_file+[http://libguestfs.org/guestfs.3.html#guestfs_copy_file_to_file]).
+ * [Since] Added in version 1.13.25.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_copy_file_to_file}[http://libguestfs.org/guestfs.3.html#guestfs_copy_file_to_file].
  */
 static VALUE
 ruby_guestfs_copy_file_to_file (int argc, VALUE *argv, VALUE gv)
@@ -5567,8 +5746,10 @@ ruby_guestfs_copy_file_to_file (int argc, VALUE *argv, VALUE gv)
  * Wildcards cannot be used.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_copy_in+[http://libguestfs.org/guestfs.3.html#guestfs_copy_in]).
+ * [Since] Added in version 1.29.24.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_copy_in}[http://libguestfs.org/guestfs.3.html#guestfs_copy_in].
  */
 static VALUE
 ruby_guestfs_copy_in (VALUE gv, VALUE localpathv, VALUE remotedirv)
@@ -5608,8 +5789,10 @@ ruby_guestfs_copy_in (VALUE gv, VALUE localpathv, VALUE remotedirv)
  * Wildcards cannot be used.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_copy_out+[http://libguestfs.org/guestfs.3.html#guestfs_copy_out]).
+ * [Since] Added in version 1.29.24.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_copy_out}[http://libguestfs.org/guestfs.3.html#guestfs_copy_out].
  */
 static VALUE
 ruby_guestfs_copy_out (VALUE gv, VALUE remotepathv, VALUE localdirv)
@@ -5643,17 +5826,14 @@ ruby_guestfs_copy_out (VALUE gv, VALUE remotepathv, VALUE localdirv)
  * 
  * Note this will fail if the source is too short or if the
  * destination is not large enough.
- * 
- * *This function is deprecated.* In new code, use the
- * "copy_device_to_device" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_copy_size+[http://libguestfs.org/guestfs.3.html#guestfs_copy_size]).
+ * [Since] Added in version 1.0.87.
+ *
+ * [Deprecated] In new code, use rdoc-ref:copy_device_to_device instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_copy_size}[http://libguestfs.org/guestfs.3.html#guestfs_copy_size].
  */
 static VALUE
 ruby_guestfs_copy_size (VALUE gv, VALUE srcv, VALUE destv, VALUE sizev)
@@ -5686,8 +5866,10 @@ ruby_guestfs_copy_size (VALUE gv, VALUE srcv, VALUE destv, VALUE sizev)
  * either a destination filename or destination directory.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_cp+[http://libguestfs.org/guestfs.3.html#guestfs_cp]).
+ * [Since] Added in version 1.0.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_cp}[http://libguestfs.org/guestfs.3.html#guestfs_cp].
  */
 static VALUE
 ruby_guestfs_cp (VALUE gv, VALUE srcv, VALUE destv)
@@ -5719,8 +5901,10 @@ ruby_guestfs_cp (VALUE gv, VALUE srcv, VALUE destv)
  * recursively using the "cp -a" command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_cp_a+[http://libguestfs.org/guestfs.3.html#guestfs_cp_a]).
+ * [Since] Added in version 1.0.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_cp_a}[http://libguestfs.org/guestfs.3.html#guestfs_cp_a].
  */
 static VALUE
 ruby_guestfs_cp_a (VALUE gv, VALUE srcv, VALUE destv)
@@ -5757,8 +5941,10 @@ ruby_guestfs_cp_a (VALUE gv, VALUE srcv, VALUE destv)
  * (primarily when writing to DOS FAT filesystems).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_cp_r+[http://libguestfs.org/guestfs.3.html#guestfs_cp_r]).
+ * [Since] Added in version 1.21.38.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_cp_r}[http://libguestfs.org/guestfs.3.html#guestfs_cp_r].
  */
 static VALUE
 ruby_guestfs_cp_r (VALUE gv, VALUE srcv, VALUE destv)
@@ -5808,8 +5994,10 @@ ruby_guestfs_cp_r (VALUE gv, VALUE srcv, VALUE destv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_cpio_out+[http://libguestfs.org/guestfs.3.html#guestfs_cpio_out]).
+ * [Since] Added in version 1.27.9.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_cpio_out}[http://libguestfs.org/guestfs.3.html#guestfs_cpio_out].
  */
 static VALUE
 ruby_guestfs_cpio_out (int argc, VALUE *argv, VALUE gv)
@@ -5863,17 +6051,14 @@ ruby_guestfs_cpio_out (int argc, VALUE *argv, VALUE gv)
  * larger than the source file or device, otherwise the
  * copy will fail. This command cannot do partial copies
  * (see "g.copy_device_to_device").
- * 
- * *This function is deprecated.* In new code, use the
- * "copy_device_to_device" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_dd+[http://libguestfs.org/guestfs.3.html#guestfs_dd]).
+ * [Since] Added in version 1.0.80.
+ *
+ * [Deprecated] In new code, use rdoc-ref:copy_device_to_device instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_dd}[http://libguestfs.org/guestfs.3.html#guestfs_dd].
  */
 static VALUE
 ruby_guestfs_dd (VALUE gv, VALUE srcv, VALUE destv)
@@ -6009,8 +6194,10 @@ ruby_guestfs_debug_upload (VALUE gv, VALUE filenamev, VALUE tmpnamev, VALUE mode
  * See also "g.list_devices", "g.part_to_dev".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_device_index+[http://libguestfs.org/guestfs.3.html#guestfs_device_index]).
+ * [Since] Added in version 1.19.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_device_index}[http://libguestfs.org/guestfs.3.html#guestfs_device_index].
  */
 static VALUE
 ruby_guestfs_device_index (VALUE gv, VALUE devicev)
@@ -6045,8 +6232,10 @@ ruby_guestfs_device_index (VALUE gv, VALUE devicev)
  * string. Use "g.statvfs" from programs.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_df+[http://libguestfs.org/guestfs.3.html#guestfs_df]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_df}[http://libguestfs.org/guestfs.3.html#guestfs_df].
  */
 static VALUE
 ruby_guestfs_df (VALUE gv)
@@ -6082,8 +6271,10 @@ ruby_guestfs_df (VALUE gv)
  * string. Use "g.statvfs" from programs.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_df_h+[http://libguestfs.org/guestfs.3.html#guestfs_df_h]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_df_h}[http://libguestfs.org/guestfs.3.html#guestfs_df_h].
  */
 static VALUE
 ruby_guestfs_df_h (VALUE gv)
@@ -6130,14 +6321,14 @@ ruby_guestfs_df_h (VALUE gv)
  * The other optional parameters are:
  * 
  * "preallocation"
- * If format is "raw", then this can be either "sparse"
- * or "full" to create a sparse or fully allocated file
- * respectively. The default is "sparse".
+ * If format is "raw", then this can be either "off"
+ * (or "sparse") or "full" to create a sparse or fully
+ * allocated file respectively. The default is "off".
  * 
- * If format is "qcow2", then this can be either "off"
- * or "metadata". Preallocating metadata can be faster
- * when doing lots of writes, but uses more space. The
- * default is "off".
+ * If format is "qcow2", then this can be "off" (or
+ * "sparse"), "metadata" or "full". Preallocating
+ * metadata can be faster when doing lots of writes,
+ * but uses more space. The default is "off".
  * 
  * "compat"
  * "qcow2" only: Pass the string 1.1 to use the
@@ -6157,8 +6348,10 @@ ruby_guestfs_df_h (VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_disk_create+[http://libguestfs.org/guestfs.3.html#guestfs_disk_create]).
+ * [Since] Added in version 1.25.31.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_disk_create}[http://libguestfs.org/guestfs.3.html#guestfs_disk_create].
  */
 static VALUE
 ruby_guestfs_disk_create (int argc, VALUE *argv, VALUE gv)
@@ -6237,8 +6430,10 @@ ruby_guestfs_disk_create (int argc, VALUE *argv, VALUE gv)
  * See also: "DISK IMAGE FORMATS" in guestfs(3)
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_disk_format+[http://libguestfs.org/guestfs.3.html#guestfs_disk_format]).
+ * [Since] Added in version 1.19.38.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_disk_format}[http://libguestfs.org/guestfs.3.html#guestfs_disk_format].
  */
 static VALUE
 ruby_guestfs_disk_format (VALUE gv, VALUE filenamev)
@@ -6274,8 +6469,10 @@ ruby_guestfs_disk_format (VALUE gv, VALUE filenamev)
  * some circumstances. See "CVE-2010-3851" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_disk_has_backing_file+[http://libguestfs.org/guestfs.3.html#guestfs_disk_has_backing_file]).
+ * [Since] Added in version 1.19.39.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_disk_has_backing_file}[http://libguestfs.org/guestfs.3.html#guestfs_disk_has_backing_file].
  */
 static VALUE
 ruby_guestfs_disk_has_backing_file (VALUE gv, VALUE filenamev)
@@ -6309,8 +6506,10 @@ ruby_guestfs_disk_has_backing_file (VALUE gv, VALUE filenamev)
  * some circumstances. See "CVE-2010-3851" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_disk_virtual_size+[http://libguestfs.org/guestfs.3.html#guestfs_disk_virtual_size]).
+ * [Since] Added in version 1.19.39.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_disk_virtual_size}[http://libguestfs.org/guestfs.3.html#guestfs_disk_virtual_size].
  */
 static VALUE
 ruby_guestfs_disk_virtual_size (VALUE gv, VALUE filenamev)
@@ -6347,8 +6546,10 @@ ruby_guestfs_disk_virtual_size (VALUE gv, VALUE filenamev)
  * the program.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_dmesg+[http://libguestfs.org/guestfs.3.html#guestfs_dmesg]).
+ * [Since] Added in version 1.0.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_dmesg}[http://libguestfs.org/guestfs.3.html#guestfs_dmesg].
  */
 static VALUE
 ruby_guestfs_dmesg (VALUE gv)
@@ -6384,8 +6585,10 @@ ruby_guestfs_dmesg (VALUE gv)
  * See also "g.upload", "g.cat".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_download+[http://libguestfs.org/guestfs.3.html#guestfs_download]).
+ * [Since] Added in version 1.0.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_download}[http://libguestfs.org/guestfs.3.html#guestfs_download].
  */
 static VALUE
 ruby_guestfs_download (VALUE gv, VALUE remotefilenamev, VALUE filenamev)
@@ -6428,8 +6631,10 @@ ruby_guestfs_download (VALUE gv, VALUE remotefilenamev, VALUE filenamev)
  * See also "g.download", "g.pread".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_download_offset+[http://libguestfs.org/guestfs.3.html#guestfs_download_offset]).
+ * [Since] Added in version 1.5.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_download_offset}[http://libguestfs.org/guestfs.3.html#guestfs_download_offset].
  */
 static VALUE
 ruby_guestfs_download_offset (VALUE gv, VALUE remotefilenamev, VALUE filenamev, VALUE offsetv, VALUE sizev)
@@ -6470,8 +6675,10 @@ ruby_guestfs_download_offset (VALUE gv, VALUE remotefilenamev, VALUE filenamev, 
  * so that the maximum guest memory is freed.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_drop_caches+[http://libguestfs.org/guestfs.3.html#guestfs_drop_caches]).
+ * [Since] Added in version 1.0.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_drop_caches}[http://libguestfs.org/guestfs.3.html#guestfs_drop_caches].
  */
 static VALUE
 ruby_guestfs_drop_caches (VALUE gv, VALUE whattodropv)
@@ -6509,8 +6716,10 @@ ruby_guestfs_drop_caches (VALUE gv, VALUE whattodropv)
  * units of 1024 bytes).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_du+[http://libguestfs.org/guestfs.3.html#guestfs_du]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_du}[http://libguestfs.org/guestfs.3.html#guestfs_du].
  */
 static VALUE
 ruby_guestfs_du (VALUE gv, VALUE pathv)
@@ -6561,8 +6770,10 @@ ruby_guestfs_du (VALUE gv, VALUE pathv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_e2fsck+[http://libguestfs.org/guestfs.3.html#guestfs_e2fsck]).
+ * [Since] Added in version 1.15.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_e2fsck}[http://libguestfs.org/guestfs.3.html#guestfs_e2fsck].
  */
 static VALUE
 ruby_guestfs_e2fsck (int argc, VALUE *argv, VALUE gv)
@@ -6613,17 +6824,14 @@ ruby_guestfs_e2fsck (int argc, VALUE *argv, VALUE gv)
  * This runs "e2fsck -p -f device", ie. runs the ext2/ext3
  * filesystem checker on "device", noninteractively (*-p*),
  * even if the filesystem appears to be clean (*-f*).
- * 
- * *This function is deprecated.* In new code, use the
- * "e2fsck" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_e2fsck_f+[http://libguestfs.org/guestfs.3.html#guestfs_e2fsck_f]).
+ * [Since] Added in version 1.0.29.
+ *
+ * [Deprecated] In new code, use rdoc-ref:e2fsck instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_e2fsck_f}[http://libguestfs.org/guestfs.3.html#guestfs_e2fsck_f].
  */
 static VALUE
 ruby_guestfs_e2fsck_f (VALUE gv, VALUE devicev)
@@ -6660,8 +6868,10 @@ ruby_guestfs_e2fsck_f (VALUE gv, VALUE devicev)
  * See also "g.ping_daemon".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_echo_daemon+[http://libguestfs.org/guestfs.3.html#guestfs_echo_daemon]).
+ * [Since] Added in version 1.0.69.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_echo_daemon}[http://libguestfs.org/guestfs.3.html#guestfs_echo_daemon].
  */
 static VALUE
 ruby_guestfs_echo_daemon (VALUE gv, VALUE wordsv)
@@ -6708,17 +6918,14 @@ ruby_guestfs_echo_daemon (VALUE gv, VALUE wordsv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_egrep+[http://libguestfs.org/guestfs.3.html#guestfs_egrep]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_egrep}[http://libguestfs.org/guestfs.3.html#guestfs_egrep].
  */
 static VALUE
 ruby_guestfs_egrep (VALUE gv, VALUE regexv, VALUE pathv)
@@ -6760,17 +6967,14 @@ ruby_guestfs_egrep (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_egrepi+[http://libguestfs.org/guestfs.3.html#guestfs_egrepi]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_egrepi}[http://libguestfs.org/guestfs.3.html#guestfs_egrepi].
  */
 static VALUE
 ruby_guestfs_egrepi (VALUE gv, VALUE regexv, VALUE pathv)
@@ -6813,8 +7017,10 @@ ruby_guestfs_egrepi (VALUE gv, VALUE regexv, VALUE pathv)
  * The external cmp(1) program is used for the comparison.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_equal+[http://libguestfs.org/guestfs.3.html#guestfs_equal]).
+ * [Since] Added in version 1.0.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_equal}[http://libguestfs.org/guestfs.3.html#guestfs_equal].
  */
 static VALUE
 ruby_guestfs_equal (VALUE gv, VALUE file1v, VALUE file2v)
@@ -6848,8 +7054,10 @@ ruby_guestfs_equal (VALUE gv, VALUE file1v, VALUE file2v)
  * See also "g.is_file", "g.is_dir", "g.stat".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_exists+[http://libguestfs.org/guestfs.3.html#guestfs_exists]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_exists}[http://libguestfs.org/guestfs.3.html#guestfs_exists].
  */
 static VALUE
 ruby_guestfs_exists (VALUE gv, VALUE pathv)
@@ -6899,8 +7107,10 @@ ruby_guestfs_exists (VALUE gv, VALUE pathv)
  * See also "g.syslinux".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_extlinux+[http://libguestfs.org/guestfs.3.html#guestfs_extlinux]).
+ * [Since] Added in version 1.21.27.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_extlinux}[http://libguestfs.org/guestfs.3.html#guestfs_extlinux].
  */
 static VALUE
 ruby_guestfs_extlinux (VALUE gv, VALUE directoryv)
@@ -6934,17 +7144,14 @@ ruby_guestfs_extlinux (VALUE gv, VALUE directoryv)
  * Do not confuse this with the guestfish-specific "alloc"
  * command which allocates a file in the host and attaches
  * it as a device.
- * 
- * *This function is deprecated.* In new code, use the
- * "fallocate64" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_fallocate+[http://libguestfs.org/guestfs.3.html#guestfs_fallocate]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:fallocate64 instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_fallocate}[http://libguestfs.org/guestfs.3.html#guestfs_fallocate].
  */
 static VALUE
 ruby_guestfs_fallocate (VALUE gv, VALUE pathv, VALUE lenv)
@@ -6989,8 +7196,10 @@ ruby_guestfs_fallocate (VALUE gv, VALUE pathv, VALUE lenv)
  * and attach it as a device.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_fallocate64+[http://libguestfs.org/guestfs.3.html#guestfs_fallocate64]).
+ * [Since] Added in version 1.3.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_fallocate64}[http://libguestfs.org/guestfs.3.html#guestfs_fallocate64].
  */
 static VALUE
 ruby_guestfs_fallocate64 (VALUE gv, VALUE pathv, VALUE lenv)
@@ -7024,8 +7233,10 @@ ruby_guestfs_fallocate64 (VALUE gv, VALUE pathv, VALUE lenv)
  * other documentation see "g.available".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_feature_available+[http://libguestfs.org/guestfs.3.html#guestfs_feature_available]).
+ * [Since] Added in version 1.21.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_feature_available}[http://libguestfs.org/guestfs.3.html#guestfs_feature_available].
  */
 static VALUE
 ruby_guestfs_feature_available (VALUE gv, VALUE groupsv)
@@ -7070,17 +7281,14 @@ ruby_guestfs_feature_available (VALUE gv, VALUE groupsv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_fgrep+[http://libguestfs.org/guestfs.3.html#guestfs_fgrep]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_fgrep}[http://libguestfs.org/guestfs.3.html#guestfs_fgrep].
  */
 static VALUE
 ruby_guestfs_fgrep (VALUE gv, VALUE patternv, VALUE pathv)
@@ -7122,17 +7330,14 @@ ruby_guestfs_fgrep (VALUE gv, VALUE patternv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_fgrepi+[http://libguestfs.org/guestfs.3.html#guestfs_fgrepi]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_fgrepi}[http://libguestfs.org/guestfs.3.html#guestfs_fgrepi].
  */
 static VALUE
 ruby_guestfs_fgrepi (VALUE gv, VALUE patternv, VALUE pathv)
@@ -7187,8 +7392,10 @@ ruby_guestfs_fgrepi (VALUE gv, VALUE patternv, VALUE pathv)
  * "g.is_blockdev" (etc), "g.is_zero".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_file+[http://libguestfs.org/guestfs.3.html#guestfs_file]).
+ * [Since] Added in version 1.9.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_file}[http://libguestfs.org/guestfs.3.html#guestfs_file].
  */
 static VALUE
 ruby_guestfs_file (VALUE gv, VALUE pathv)
@@ -7291,8 +7498,10 @@ ruby_guestfs_file (VALUE gv, VALUE pathv)
  * initrd or kernel module(s) instead.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_file_architecture+[http://libguestfs.org/guestfs.3.html#guestfs_file_architecture]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_file_architecture}[http://libguestfs.org/guestfs.3.html#guestfs_file_architecture].
  */
 static VALUE
 ruby_guestfs_file_architecture (VALUE gv, VALUE filenamev)
@@ -7328,8 +7537,10 @@ ruby_guestfs_file_architecture (VALUE gv, VALUE filenamev)
  * of block devices, use "g.blockdev_getsize64".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_filesize+[http://libguestfs.org/guestfs.3.html#guestfs_filesize]).
+ * [Since] Added in version 1.0.82.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_filesize}[http://libguestfs.org/guestfs.3.html#guestfs_filesize].
  */
 static VALUE
 ruby_guestfs_filesize (VALUE gv, VALUE filev)
@@ -7373,8 +7584,10 @@ ruby_guestfs_filesize (VALUE gv, VALUE filev)
  * "AVAILABILITY" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_filesystem_available+[http://libguestfs.org/guestfs.3.html#guestfs_filesystem_available]).
+ * [Since] Added in version 1.19.5.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_filesystem_available}[http://libguestfs.org/guestfs.3.html#guestfs_filesystem_available].
  */
 static VALUE
 ruby_guestfs_filesystem_available (VALUE gv, VALUE filesystemv)
@@ -7411,8 +7624,10 @@ ruby_guestfs_filesystem_available (VALUE gv, VALUE filesystemv)
  * "g.fill_pattern".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_fill+[http://libguestfs.org/guestfs.3.html#guestfs_fill]).
+ * [Since] Added in version 1.0.79.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_fill}[http://libguestfs.org/guestfs.3.html#guestfs_fill].
  */
 static VALUE
 ruby_guestfs_fill (VALUE gv, VALUE cv, VALUE lenv, VALUE pathv)
@@ -7447,8 +7662,10 @@ ruby_guestfs_fill (VALUE gv, VALUE cv, VALUE lenv, VALUE pathv)
  * long padded with zeroes).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_fill_dir+[http://libguestfs.org/guestfs.3.html#guestfs_fill_dir]).
+ * [Since] Added in version 1.19.32.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_fill_dir}[http://libguestfs.org/guestfs.3.html#guestfs_fill_dir].
  */
 static VALUE
 ruby_guestfs_fill_dir (VALUE gv, VALUE dirv, VALUE nrv)
@@ -7483,8 +7700,10 @@ ruby_guestfs_fill_dir (VALUE gv, VALUE dirv, VALUE nrv)
  * "len" bytes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_fill_pattern+[http://libguestfs.org/guestfs.3.html#guestfs_fill_pattern]).
+ * [Since] Added in version 1.3.12.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_fill_pattern}[http://libguestfs.org/guestfs.3.html#guestfs_fill_pattern].
  */
 static VALUE
 ruby_guestfs_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
@@ -7540,8 +7759,10 @@ ruby_guestfs_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
  * The returned list is sorted.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_find+[http://libguestfs.org/guestfs.3.html#guestfs_find]).
+ * [Since] Added in version 1.0.27.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_find}[http://libguestfs.org/guestfs.3.html#guestfs_find].
  */
 static VALUE
 ruby_guestfs_find (VALUE gv, VALUE directoryv)
@@ -7591,8 +7812,10 @@ ruby_guestfs_find (VALUE gv, VALUE directoryv)
  * *   The result list is not sorted.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_find0+[http://libguestfs.org/guestfs.3.html#guestfs_find0]).
+ * [Since] Added in version 1.0.74.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_find0}[http://libguestfs.org/guestfs.3.html#guestfs_find0].
  */
 static VALUE
 ruby_guestfs_find0 (VALUE gv, VALUE directoryv, VALUE filesv)
@@ -7627,8 +7850,10 @@ ruby_guestfs_find0 (VALUE gv, VALUE directoryv, VALUE filesv)
  * To find the label of a filesystem, use "g.vfs_label".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_findfs_label+[http://libguestfs.org/guestfs.3.html#guestfs_findfs_label]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_findfs_label}[http://libguestfs.org/guestfs.3.html#guestfs_findfs_label].
  */
 static VALUE
 ruby_guestfs_findfs_label (VALUE gv, VALUE labelv)
@@ -7664,8 +7889,10 @@ ruby_guestfs_findfs_label (VALUE gv, VALUE labelv)
  * To find the UUID of a filesystem, use "g.vfs_uuid".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_findfs_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_findfs_uuid]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_findfs_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_findfs_uuid].
  */
 static VALUE
 ruby_guestfs_findfs_uuid (VALUE gv, VALUE uuidv)
@@ -7715,8 +7942,10 @@ ruby_guestfs_findfs_uuid (VALUE gv, VALUE uuidv)
  * -t fstype device".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_fsck+[http://libguestfs.org/guestfs.3.html#guestfs_fsck]).
+ * [Since] Added in version 1.0.16.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_fsck}[http://libguestfs.org/guestfs.3.html#guestfs_fsck].
  */
 static VALUE
 ruby_guestfs_fsck (VALUE gv, VALUE fstypev, VALUE devicev)
@@ -7768,8 +7997,10 @@ ruby_guestfs_fsck (VALUE gv, VALUE fstypev, VALUE devicev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_fstrim+[http://libguestfs.org/guestfs.3.html#guestfs_fstrim]).
+ * [Since] Added in version 1.19.6.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_fstrim}[http://libguestfs.org/guestfs.3.html#guestfs_fstrim].
  */
 static VALUE
 ruby_guestfs_fstrim (int argc, VALUE *argv, VALUE gv)
@@ -7828,8 +8059,10 @@ ruby_guestfs_fstrim (int argc, VALUE *argv, VALUE gv)
  * If "NULL" then no options are added.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_append+[http://libguestfs.org/guestfs.3.html#guestfs_get_append]).
+ * [Since] Added in version 1.0.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_append}[http://libguestfs.org/guestfs.3.html#guestfs_get_append].
  */
 static VALUE
 ruby_guestfs_get_append (VALUE gv)
@@ -7859,17 +8092,14 @@ ruby_guestfs_get_append (VALUE gv)
  * Return the current backend.
  * 
  * See "g.set_backend" and "BACKEND" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "get_backend" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_attach_method+[http://libguestfs.org/guestfs.3.html#guestfs_get_attach_method]).
+ * [Since] Added in version 1.9.8.
+ *
+ * [Deprecated] In new code, use rdoc-ref:get_backend instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_attach_method}[http://libguestfs.org/guestfs.3.html#guestfs_get_attach_method].
  */
 static VALUE
 ruby_guestfs_get_attach_method (VALUE gv)
@@ -7900,8 +8130,10 @@ ruby_guestfs_get_attach_method (VALUE gv)
  * Get the autosync flag.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_autosync+[http://libguestfs.org/guestfs.3.html#guestfs_get_autosync]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_autosync}[http://libguestfs.org/guestfs.3.html#guestfs_get_autosync].
  */
 static VALUE
 ruby_guestfs_get_autosync (VALUE gv)
@@ -7935,8 +8167,10 @@ ruby_guestfs_get_autosync (VALUE gv)
  * See "g.set_backend" and "BACKEND" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_backend+[http://libguestfs.org/guestfs.3.html#guestfs_get_backend]).
+ * [Since] Added in version 1.21.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_backend}[http://libguestfs.org/guestfs.3.html#guestfs_get_backend].
  */
 static VALUE
 ruby_guestfs_get_backend (VALUE gv)
@@ -7977,8 +8211,10 @@ ruby_guestfs_get_backend (VALUE gv)
  * guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_backend_setting+[http://libguestfs.org/guestfs.3.html#guestfs_get_backend_setting]).
+ * [Since] Added in version 1.27.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_backend_setting}[http://libguestfs.org/guestfs.3.html#guestfs_get_backend_setting].
  */
 static VALUE
 ruby_guestfs_get_backend_setting (VALUE gv, VALUE namev)
@@ -8017,8 +8253,10 @@ ruby_guestfs_get_backend_setting (VALUE gv, VALUE namev)
  * guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_backend_settings+[http://libguestfs.org/guestfs.3.html#guestfs_get_backend_settings]).
+ * [Since] Added in version 1.25.24.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_backend_settings}[http://libguestfs.org/guestfs.3.html#guestfs_get_backend_settings].
  */
 static VALUE
 ruby_guestfs_get_backend_settings (VALUE gv)
@@ -8056,8 +8294,10 @@ ruby_guestfs_get_backend_settings (VALUE gv)
  * appliance cache.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_cachedir+[http://libguestfs.org/guestfs.3.html#guestfs_get_cachedir]).
+ * [Since] Added in version 1.19.58.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_cachedir}[http://libguestfs.org/guestfs.3.html#guestfs_get_cachedir].
  */
 static VALUE
 ruby_guestfs_get_cachedir (VALUE gv)
@@ -8088,8 +8328,10 @@ ruby_guestfs_get_cachedir (VALUE gv)
  * Return the direct appliance mode flag.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_direct+[http://libguestfs.org/guestfs.3.html#guestfs_get_direct]).
+ * [Since] Added in version 1.0.72.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_direct}[http://libguestfs.org/guestfs.3.html#guestfs_get_direct].
  */
 static VALUE
 ruby_guestfs_get_direct (VALUE gv)
@@ -8193,8 +8435,10 @@ ruby_guestfs_get_direct (VALUE gv)
  * (see "g.getxattr").
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_e2attrs+[http://libguestfs.org/guestfs.3.html#guestfs_get_e2attrs]).
+ * [Since] Added in version 1.17.31.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_e2attrs}[http://libguestfs.org/guestfs.3.html#guestfs_get_e2attrs].
  */
 static VALUE
 ruby_guestfs_get_e2attrs (VALUE gv, VALUE filev)
@@ -8235,8 +8479,10 @@ ruby_guestfs_get_e2attrs (VALUE gv, VALUE filev)
  * See "g.set_e2generation".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_e2generation+[http://libguestfs.org/guestfs.3.html#guestfs_get_e2generation]).
+ * [Since] Added in version 1.17.31.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_e2generation}[http://libguestfs.org/guestfs.3.html#guestfs_get_e2generation].
  */
 static VALUE
 ruby_guestfs_get_e2generation (VALUE gv, VALUE filev)
@@ -8265,17 +8511,14 @@ ruby_guestfs_get_e2generation (VALUE gv, VALUE filev)
  *
  * This returns the ext2/3/4 filesystem label of the
  * filesystem on "device".
- * 
- * *This function is deprecated.* In new code, use the
- * "vfs_label" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_e2label+[http://libguestfs.org/guestfs.3.html#guestfs_get_e2label]).
+ * [Since] Added in version 1.0.15.
+ *
+ * [Deprecated] In new code, use rdoc-ref:vfs_label instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_e2label}[http://libguestfs.org/guestfs.3.html#guestfs_get_e2label].
  */
 static VALUE
 ruby_guestfs_get_e2label (VALUE gv, VALUE devicev)
@@ -8306,17 +8549,14 @@ ruby_guestfs_get_e2label (VALUE gv, VALUE devicev)
  *
  * This returns the ext2/3/4 filesystem UUID of the
  * filesystem on "device".
- * 
- * *This function is deprecated.* In new code, use the
- * "vfs_uuid" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_e2uuid+[http://libguestfs.org/guestfs.3.html#guestfs_get_e2uuid]).
+ * [Since] Added in version 1.0.15.
+ *
+ * [Deprecated] In new code, use rdoc-ref:vfs_uuid instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_e2uuid}[http://libguestfs.org/guestfs.3.html#guestfs_get_e2uuid].
  */
 static VALUE
 ruby_guestfs_get_e2uuid (VALUE gv, VALUE devicev)
@@ -8351,8 +8591,10 @@ ruby_guestfs_get_e2uuid (VALUE gv, VALUE devicev)
  * this will return the default qemu binary name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_hv+[http://libguestfs.org/guestfs.3.html#guestfs_get_hv]).
+ * [Since] Added in version 1.23.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_hv}[http://libguestfs.org/guestfs.3.html#guestfs_get_hv].
  */
 static VALUE
 ruby_guestfs_get_hv (VALUE gv)
@@ -8376,6 +8618,38 @@ ruby_guestfs_get_hv (VALUE gv)
 
 /*
  * call-seq:
+ *   g.get_identifier() -> string
+ *
+ * get the handle identifier
+ *
+ * Get the handle identifier. See "g.set_identifier".
+ *
+ *
+ * [Since] Added in version 1.31.14.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_identifier}[http://libguestfs.org/guestfs.3.html#guestfs_get_identifier].
+ */
+static VALUE
+ruby_guestfs_get_identifier (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_identifier");
+
+
+  const char *r;
+
+  r = guestfs_get_identifier (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return rb_str_new2 (r);
+}
+
+/*
+ * call-seq:
  *   g.get_libvirt_requested_credential_challenge(index) -> string
  *
  * challenge of i'th requested credential
@@ -8388,8 +8662,10 @@ ruby_guestfs_get_hv (VALUE gv)
  * documentation and example code.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_libvirt_requested_credential_challenge+[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_challenge]).
+ * [Since] Added in version 1.19.52.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_libvirt_requested_credential_challenge}[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_challenge].
  */
 static VALUE
 ruby_guestfs_get_libvirt_requested_credential_challenge (VALUE gv, VALUE indexv)
@@ -8427,8 +8703,10 @@ ruby_guestfs_get_libvirt_requested_credential_challenge (VALUE gv, VALUE indexv)
  * documentation and example code.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_libvirt_requested_credential_defresult+[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_defresult]).
+ * [Since] Added in version 1.19.52.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_libvirt_requested_credential_defresult}[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_defresult].
  */
 static VALUE
 ruby_guestfs_get_libvirt_requested_credential_defresult (VALUE gv, VALUE indexv)
@@ -8465,8 +8743,10 @@ ruby_guestfs_get_libvirt_requested_credential_defresult (VALUE gv, VALUE indexv)
  * documentation and example code.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_libvirt_requested_credential_prompt+[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_prompt]).
+ * [Since] Added in version 1.19.52.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_libvirt_requested_credential_prompt}[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_prompt].
  */
 static VALUE
 ruby_guestfs_get_libvirt_requested_credential_prompt (VALUE gv, VALUE indexv)
@@ -8506,8 +8786,10 @@ ruby_guestfs_get_libvirt_requested_credential_prompt (VALUE gv, VALUE indexv)
  * documentation and example code.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_libvirt_requested_credentials+[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credentials]).
+ * [Since] Added in version 1.19.52.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_libvirt_requested_credentials}[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credentials].
  */
 static VALUE
 ruby_guestfs_get_libvirt_requested_credentials (VALUE gv)
@@ -8552,8 +8834,10 @@ ruby_guestfs_get_libvirt_requested_credentials (VALUE gv)
  * see guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_memsize+[http://libguestfs.org/guestfs.3.html#guestfs_get_memsize]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_memsize}[http://libguestfs.org/guestfs.3.html#guestfs_get_memsize].
  */
 static VALUE
 ruby_guestfs_get_memsize (VALUE gv)
@@ -8582,8 +8866,10 @@ ruby_guestfs_get_memsize (VALUE gv)
  * This returns the enable network flag.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_network+[http://libguestfs.org/guestfs.3.html#guestfs_get_network]).
+ * [Since] Added in version 1.5.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_network}[http://libguestfs.org/guestfs.3.html#guestfs_get_network].
  */
 static VALUE
 ruby_guestfs_get_network (VALUE gv)
@@ -8615,8 +8901,10 @@ ruby_guestfs_get_network (VALUE gv)
  * this will return the default path.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_path+[http://libguestfs.org/guestfs.3.html#guestfs_get_path]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_path}[http://libguestfs.org/guestfs.3.html#guestfs_get_path].
  */
 static VALUE
 ruby_guestfs_get_path (VALUE gv)
@@ -8645,8 +8933,10 @@ ruby_guestfs_get_path (VALUE gv)
  * This returns the process group flag.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_pgroup+[http://libguestfs.org/guestfs.3.html#guestfs_get_pgroup]).
+ * [Since] Added in version 1.11.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_pgroup}[http://libguestfs.org/guestfs.3.html#guestfs_get_pgroup].
  */
 static VALUE
 ruby_guestfs_get_pgroup (VALUE gv)
@@ -8678,8 +8968,10 @@ ruby_guestfs_get_pgroup (VALUE gv)
  * This is an internal call used for debugging and testing.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_pid+[http://libguestfs.org/guestfs.3.html#guestfs_get_pid]).
+ * [Since] Added in version 1.0.56.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_pid}[http://libguestfs.org/guestfs.3.html#guestfs_get_pid].
  */
 static VALUE
 ruby_guestfs_get_pid (VALUE gv)
@@ -8708,8 +9000,10 @@ ruby_guestfs_get_pid (VALUE gv)
  * Get the program name. See "g.set_program".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_program+[http://libguestfs.org/guestfs.3.html#guestfs_get_program]).
+ * [Since] Added in version 1.21.29.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_program}[http://libguestfs.org/guestfs.3.html#guestfs_get_program].
  */
 static VALUE
 ruby_guestfs_get_program (VALUE gv)
@@ -8739,17 +9033,14 @@ ruby_guestfs_get_program (VALUE gv)
  * 
  * This is always non-NULL. If it wasn't set already, then
  * this will return the default qemu binary name.
- * 
- * *This function is deprecated.* In new code, use the
- * "get_hv" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_qemu+[http://libguestfs.org/guestfs.3.html#guestfs_get_qemu]).
+ * [Since] Added in version 1.0.6.
+ *
+ * [Deprecated] In new code, use rdoc-ref:get_hv instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_qemu}[http://libguestfs.org/guestfs.3.html#guestfs_get_qemu].
  */
 static VALUE
 ruby_guestfs_get_qemu (VALUE gv)
@@ -8778,8 +9069,10 @@ ruby_guestfs_get_qemu (VALUE gv)
  * Return the recovery process enabled flag.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_recovery_proc+[http://libguestfs.org/guestfs.3.html#guestfs_get_recovery_proc]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_recovery_proc}[http://libguestfs.org/guestfs.3.html#guestfs_get_recovery_proc].
  */
 static VALUE
 ruby_guestfs_get_recovery_proc (VALUE gv)
@@ -8813,8 +9106,10 @@ ruby_guestfs_get_recovery_proc (VALUE gv)
  * see guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_selinux+[http://libguestfs.org/guestfs.3.html#guestfs_get_selinux]).
+ * [Since] Added in version 1.0.67.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_selinux}[http://libguestfs.org/guestfs.3.html#guestfs_get_selinux].
  */
 static VALUE
 ruby_guestfs_get_selinux (VALUE gv)
@@ -8844,8 +9139,10 @@ ruby_guestfs_get_selinux (VALUE gv)
  * appliance.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_smp+[http://libguestfs.org/guestfs.3.html#guestfs_get_smp]).
+ * [Since] Added in version 1.13.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_smp}[http://libguestfs.org/guestfs.3.html#guestfs_get_smp].
  */
 static VALUE
 ruby_guestfs_get_smp (VALUE gv)
@@ -8878,8 +9175,10 @@ ruby_guestfs_get_smp (VALUE gv)
  * For more information on states, see guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_state+[http://libguestfs.org/guestfs.3.html#guestfs_get_state]).
+ * [Since] Added in version 1.0.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_state}[http://libguestfs.org/guestfs.3.html#guestfs_get_state].
  */
 static VALUE
 ruby_guestfs_get_state (VALUE gv)
@@ -8909,8 +9208,10 @@ ruby_guestfs_get_state (VALUE gv)
  * files.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_tmpdir+[http://libguestfs.org/guestfs.3.html#guestfs_get_tmpdir]).
+ * [Since] Added in version 1.19.58.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_tmpdir}[http://libguestfs.org/guestfs.3.html#guestfs_get_tmpdir].
  */
 static VALUE
 ruby_guestfs_get_tmpdir (VALUE gv)
@@ -8941,8 +9242,10 @@ ruby_guestfs_get_tmpdir (VALUE gv)
  * Return the command trace flag.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_trace+[http://libguestfs.org/guestfs.3.html#guestfs_get_trace]).
+ * [Since] Added in version 1.0.69.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_trace}[http://libguestfs.org/guestfs.3.html#guestfs_get_trace].
  */
 static VALUE
 ruby_guestfs_get_trace (VALUE gv)
@@ -8972,8 +9275,10 @@ ruby_guestfs_get_trace (VALUE gv)
  * unless it has been set by calling "g.umask".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_umask+[http://libguestfs.org/guestfs.3.html#guestfs_get_umask]).
+ * [Since] Added in version 1.3.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_umask}[http://libguestfs.org/guestfs.3.html#guestfs_get_umask].
  */
 static VALUE
 ruby_guestfs_get_umask (VALUE gv)
@@ -9002,8 +9307,10 @@ ruby_guestfs_get_umask (VALUE gv)
  * This returns the verbose messages flag.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_get_verbose+[http://libguestfs.org/guestfs.3.html#guestfs_get_verbose]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_verbose}[http://libguestfs.org/guestfs.3.html#guestfs_get_verbose].
  */
 static VALUE
 ruby_guestfs_get_verbose (VALUE gv)
@@ -9035,8 +9342,10 @@ ruby_guestfs_get_verbose (VALUE gv)
  * "g.setcon"
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_getcon+[http://libguestfs.org/guestfs.3.html#guestfs_getcon]).
+ * [Since] Added in version 1.0.67.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_getcon}[http://libguestfs.org/guestfs.3.html#guestfs_getcon].
  */
 static VALUE
 ruby_guestfs_getcon (VALUE gv)
@@ -9084,8 +9393,10 @@ ruby_guestfs_getcon (VALUE gv)
  * See also: "g.getxattrs", "g.lgetxattr", attr(5).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_getxattr+[http://libguestfs.org/guestfs.3.html#guestfs_getxattr]).
+ * [Since] Added in version 1.7.24.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_getxattr}[http://libguestfs.org/guestfs.3.html#guestfs_getxattr].
  */
 static VALUE
 ruby_guestfs_getxattr (VALUE gv, VALUE pathv, VALUE namev)
@@ -9125,8 +9436,10 @@ ruby_guestfs_getxattr (VALUE gv, VALUE pathv, VALUE namev)
  * See also: "g.lgetxattrs", attr(5).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_getxattrs+[http://libguestfs.org/guestfs.3.html#guestfs_getxattrs]).
+ * [Since] Added in version 1.0.59.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_getxattrs}[http://libguestfs.org/guestfs.3.html#guestfs_getxattrs].
  */
 static VALUE
 ruby_guestfs_getxattrs (VALUE gv, VALUE pathv)
@@ -9178,8 +9491,10 @@ ruby_guestfs_getxattrs (VALUE gv, VALUE pathv)
  * "g.list_partitions" etc functions instead.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_glob_expand+[http://libguestfs.org/guestfs.3.html#guestfs_glob_expand]).
+ * [Since] Added in version 1.0.50.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_glob_expand}[http://libguestfs.org/guestfs.3.html#guestfs_glob_expand].
  */
 static VALUE
 ruby_guestfs_glob_expand (VALUE gv, VALUE patternv)
@@ -9244,8 +9559,10 @@ ruby_guestfs_glob_expand (VALUE gv, VALUE patternv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_grep+[http://libguestfs.org/guestfs.3.html#guestfs_grep]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_grep}[http://libguestfs.org/guestfs.3.html#guestfs_grep].
  */
 static VALUE
 ruby_guestfs_grep (int argc, VALUE *argv, VALUE gv)
@@ -9319,17 +9636,14 @@ ruby_guestfs_grep (int argc, VALUE *argv, VALUE gv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_grepi+[http://libguestfs.org/guestfs.3.html#guestfs_grepi]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_grepi}[http://libguestfs.org/guestfs.3.html#guestfs_grepi].
  */
 static VALUE
 ruby_guestfs_grepi (VALUE gv, VALUE regexv, VALUE pathv)
@@ -9396,8 +9710,10 @@ ruby_guestfs_grepi (VALUE gv, VALUE regexv, VALUE pathv)
  * device.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_grub_install+[http://libguestfs.org/guestfs.3.html#guestfs_grub_install]).
+ * [Since] Added in version 1.0.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_grub_install}[http://libguestfs.org/guestfs.3.html#guestfs_grub_install].
  */
 static VALUE
 ruby_guestfs_grub_install (VALUE gv, VALUE rootv, VALUE devicev)
@@ -9433,8 +9749,10 @@ ruby_guestfs_grub_install (VALUE gv, VALUE rootv, VALUE devicev)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_head+[http://libguestfs.org/guestfs.3.html#guestfs_head]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_head}[http://libguestfs.org/guestfs.3.html#guestfs_head].
  */
 static VALUE
 ruby_guestfs_head (VALUE gv, VALUE pathv)
@@ -9484,8 +9802,10 @@ ruby_guestfs_head (VALUE gv, VALUE pathv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_head_n+[http://libguestfs.org/guestfs.3.html#guestfs_head_n]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_head_n}[http://libguestfs.org/guestfs.3.html#guestfs_head_n].
  */
 static VALUE
 ruby_guestfs_head_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
@@ -9529,8 +9849,10 @@ ruby_guestfs_head_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hexdump+[http://libguestfs.org/guestfs.3.html#guestfs_hexdump]).
+ * [Since] Added in version 1.0.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hexdump}[http://libguestfs.org/guestfs.3.html#guestfs_hexdump].
  */
 static VALUE
 ruby_guestfs_hexdump (VALUE gv, VALUE pathv)
@@ -9565,8 +9887,10 @@ ruby_guestfs_hexdump (VALUE gv, VALUE pathv)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_close+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_close]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_close}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_close].
  */
 static VALUE
 ruby_guestfs_hivex_close (VALUE gv)
@@ -9604,8 +9928,10 @@ ruby_guestfs_hivex_close (VALUE gv)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_commit+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_commit]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_commit}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_commit].
  */
 static VALUE
 ruby_guestfs_hivex_commit (VALUE gv, VALUE filenamev)
@@ -9638,8 +9964,10 @@ ruby_guestfs_hivex_commit (VALUE gv, VALUE filenamev)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_node_add_child+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_add_child]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_node_add_child}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_add_child].
  */
 static VALUE
 ruby_guestfs_hivex_node_add_child (VALUE gv, VALUE parentv, VALUE namev)
@@ -9673,8 +10001,10 @@ ruby_guestfs_hivex_node_add_child (VALUE gv, VALUE parentv, VALUE namev)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_node_children+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_children]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_node_children}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_children].
  */
 static VALUE
 ruby_guestfs_hivex_node_children (VALUE gv, VALUE nodehv)
@@ -9715,8 +10045,10 @@ ruby_guestfs_hivex_node_children (VALUE gv, VALUE nodehv)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_node_delete_child+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_delete_child]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_node_delete_child}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_delete_child].
  */
 static VALUE
 ruby_guestfs_hivex_node_delete_child (VALUE gv, VALUE nodehv)
@@ -9751,8 +10083,10 @@ ruby_guestfs_hivex_node_delete_child (VALUE gv, VALUE nodehv)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_node_get_child+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_get_child]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_node_get_child}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_get_child].
  */
 static VALUE
 ruby_guestfs_hivex_node_get_child (VALUE gv, VALUE nodehv, VALUE namev)
@@ -9788,8 +10122,10 @@ ruby_guestfs_hivex_node_get_child (VALUE gv, VALUE nodehv, VALUE namev)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_node_get_value+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_get_value]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_node_get_value}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_get_value].
  */
 static VALUE
 ruby_guestfs_hivex_node_get_value (VALUE gv, VALUE nodehv, VALUE keyv)
@@ -9823,8 +10159,10 @@ ruby_guestfs_hivex_node_get_value (VALUE gv, VALUE nodehv, VALUE keyv)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_node_name+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_name]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_node_name}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_name].
  */
 static VALUE
 ruby_guestfs_hivex_node_name (VALUE gv, VALUE nodehv)
@@ -9859,8 +10197,10 @@ ruby_guestfs_hivex_node_name (VALUE gv, VALUE nodehv)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_node_parent+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_parent]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_node_parent}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_parent].
  */
 static VALUE
 ruby_guestfs_hivex_node_parent (VALUE gv, VALUE nodehv)
@@ -9895,8 +10235,10 @@ ruby_guestfs_hivex_node_parent (VALUE gv, VALUE nodehv)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_node_set_value+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_set_value]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_node_set_value}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_set_value].
  */
 static VALUE
 ruby_guestfs_hivex_node_set_value (VALUE gv, VALUE nodehv, VALUE keyv, VALUE tv, VALUE valv)
@@ -9938,8 +10280,10 @@ ruby_guestfs_hivex_node_set_value (VALUE gv, VALUE nodehv, VALUE keyv, VALUE tv,
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_node_values+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_values]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_node_values}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_values].
  */
 static VALUE
 ruby_guestfs_hivex_node_values (VALUE gv, VALUE nodehv)
@@ -9986,8 +10330,10 @@ ruby_guestfs_hivex_node_values (VALUE gv, VALUE nodehv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_open+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_open]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_open}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_open].
  */
 static VALUE
 ruby_guestfs_hivex_open (int argc, VALUE *argv, VALUE gv)
@@ -10046,8 +10392,10 @@ ruby_guestfs_hivex_open (int argc, VALUE *argv, VALUE gv)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_root+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_root]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_root}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_root].
  */
 static VALUE
 ruby_guestfs_hivex_root (VALUE gv)
@@ -10080,8 +10428,10 @@ ruby_guestfs_hivex_root (VALUE gv)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_value_key+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_key]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_value_key}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_key].
  */
 static VALUE
 ruby_guestfs_hivex_value_key (VALUE gv, VALUE valuehv)
@@ -10117,8 +10467,10 @@ ruby_guestfs_hivex_value_key (VALUE gv, VALUE valuehv)
  * name.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_value_type+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_type]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_value_type}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_type].
  */
 static VALUE
 ruby_guestfs_hivex_value_type (VALUE gv, VALUE valuehv)
@@ -10157,8 +10509,10 @@ ruby_guestfs_hivex_value_type (VALUE gv, VALUE valuehv)
  * arbitrary or unexpected data.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_value_utf8+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_utf8]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_value_utf8}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_utf8].
  */
 static VALUE
 ruby_guestfs_hivex_value_utf8 (VALUE gv, VALUE valuehv)
@@ -10195,8 +10549,10 @@ ruby_guestfs_hivex_value_utf8 (VALUE gv, VALUE valuehv)
  * See also: "g.hivex_value_utf8".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_hivex_value_value+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_value]).
+ * [Since] Added in version 1.19.35.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_value_value}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_value].
  */
 static VALUE
 ruby_guestfs_hivex_value_value (VALUE gv, VALUE valuehv)
@@ -10243,8 +10599,10 @@ ruby_guestfs_hivex_value_value (VALUE gv, VALUE valuehv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_initrd_cat+[http://libguestfs.org/guestfs.3.html#guestfs_initrd_cat]).
+ * [Since] Added in version 1.0.84.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_initrd_cat}[http://libguestfs.org/guestfs.3.html#guestfs_initrd_cat].
  */
 static VALUE
 ruby_guestfs_initrd_cat (VALUE gv, VALUE initrdpathv, VALUE filenamev)
@@ -10287,8 +10645,10 @@ ruby_guestfs_initrd_cat (VALUE gv, VALUE initrdpathv, VALUE filenamev)
  * initramfs format (compressed cpio files).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_initrd_list+[http://libguestfs.org/guestfs.3.html#guestfs_initrd_list]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_initrd_list}[http://libguestfs.org/guestfs.3.html#guestfs_initrd_list].
  */
 static VALUE
 ruby_guestfs_initrd_list (VALUE gv, VALUE pathv)
@@ -10334,8 +10694,10 @@ ruby_guestfs_initrd_list (VALUE gv, VALUE pathv)
  * /usr/include/sys/inotify.h.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inotify_add_watch+[http://libguestfs.org/guestfs.3.html#guestfs_inotify_add_watch]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inotify_add_watch}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_add_watch].
  */
 static VALUE
 ruby_guestfs_inotify_add_watch (VALUE gv, VALUE pathv, VALUE maskv)
@@ -10368,8 +10730,10 @@ ruby_guestfs_inotify_add_watch (VALUE gv, VALUE pathv, VALUE maskv)
  * away any pending events, and deallocates all resources.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inotify_close+[http://libguestfs.org/guestfs.3.html#guestfs_inotify_close]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inotify_close}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_close].
  */
 static VALUE
 ruby_guestfs_inotify_close (VALUE gv)
@@ -10401,8 +10765,10 @@ ruby_guestfs_inotify_close (VALUE gv)
  * sorted and deduplicated.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inotify_files+[http://libguestfs.org/guestfs.3.html#guestfs_inotify_files]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inotify_files}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_files].
  */
 static VALUE
 ruby_guestfs_inotify_files (VALUE gv)
@@ -10469,8 +10835,10 @@ ruby_guestfs_inotify_files (VALUE gv)
  * is one global inotify handle per libguestfs instance.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inotify_init+[http://libguestfs.org/guestfs.3.html#guestfs_inotify_init]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inotify_init}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_init].
  */
 static VALUE
 ruby_guestfs_inotify_init (VALUE gv, VALUE maxeventsv)
@@ -10509,8 +10877,10 @@ ruby_guestfs_inotify_init (VALUE gv, VALUE maxeventsv)
  * size and leave remaining events in the queue.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inotify_read+[http://libguestfs.org/guestfs.3.html#guestfs_inotify_read]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inotify_read}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_read].
  */
 static VALUE
 ruby_guestfs_inotify_read (VALUE gv)
@@ -10551,8 +10921,10 @@ ruby_guestfs_inotify_read (VALUE gv)
  * "g.inotify_add_watch".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inotify_rm_watch+[http://libguestfs.org/guestfs.3.html#guestfs_inotify_rm_watch]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inotify_rm_watch}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_rm_watch].
  */
 static VALUE
 ruby_guestfs_inotify_rm_watch (VALUE gv, VALUE wdv)
@@ -10589,8 +10961,10 @@ ruby_guestfs_inotify_rm_watch (VALUE gv, VALUE wdv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_arch+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_arch]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_arch}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_arch].
  */
 static VALUE
 ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
@@ -10624,6 +10998,12 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * 
  * Currently defined distros are:
  * 
+ * "alpinelinux"
+ * Alpine Linux.
+ * 
+ * "altlinux"
+ * ALT Linux.
+ * 
  * "archlinux"
  * Arch Linux.
  * 
@@ -10651,6 +11031,9 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * 
  * "freedos"
  * FreeDOS.
+ * 
+ * "frugalware"
+ * Frugalware.
  * 
  * "gentoo"
  * Gentoo.
@@ -10681,6 +11064,9 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * 
  * "pardus"
  * Pardus.
+ * 
+ * "pldlinux"
+ * PLD Linux.
  * 
  * "redhat-based"
  * Some Red Hat-derived distro.
@@ -10720,8 +11106,10 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_distro+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_distro]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_distro}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_distro].
  */
 static VALUE
 ruby_guestfs_inspect_get_distro (VALUE gv, VALUE rootv)
@@ -10784,8 +11172,10 @@ ruby_guestfs_inspect_get_distro (VALUE gv, VALUE rootv)
  * "g.inspect_get_filesystems".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_drive_mappings+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_drive_mappings]).
+ * [Since] Added in version 1.9.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_drive_mappings}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_drive_mappings].
  */
 static VALUE
 ruby_guestfs_inspect_get_drive_mappings (VALUE gv, VALUE rootv)
@@ -10833,8 +11223,10 @@ ruby_guestfs_inspect_get_drive_mappings (VALUE gv, VALUE rootv)
  * See also "g.inspect_get_mountpoints".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_filesystems+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_filesystems]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_filesystems}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_filesystems].
  */
 static VALUE
 ruby_guestfs_inspect_get_filesystems (VALUE gv, VALUE rootv)
@@ -10893,8 +11285,10 @@ ruby_guestfs_inspect_get_filesystems (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_format+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_format]).
+ * [Since] Added in version 1.9.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_format}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_format].
  */
 static VALUE
 ruby_guestfs_inspect_get_format (VALUE gv, VALUE rootv)
@@ -10933,8 +11327,10 @@ ruby_guestfs_inspect_get_format (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_hostname+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_hostname]).
+ * [Since] Added in version 1.7.9.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_hostname}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_hostname].
  */
 static VALUE
 ruby_guestfs_inspect_get_hostname (VALUE gv, VALUE rootv)
@@ -11020,8 +11416,10 @@ ruby_guestfs_inspect_get_hostname (VALUE gv, VALUE rootv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_icon+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_icon]).
+ * [Since] Added in version 1.11.12.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_icon}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_icon].
  */
 static VALUE
 ruby_guestfs_inspect_get_icon (int argc, VALUE *argv, VALUE gv)
@@ -11088,8 +11486,10 @@ ruby_guestfs_inspect_get_icon (int argc, VALUE *argv, VALUE gv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_major_version+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_major_version]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_major_version}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_major_version].
  */
 static VALUE
 ruby_guestfs_inspect_get_major_version (VALUE gv, VALUE rootv)
@@ -11126,8 +11526,10 @@ ruby_guestfs_inspect_get_major_version (VALUE gv, VALUE rootv)
  * See also "g.inspect_get_major_version".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_minor_version+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_minor_version]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_minor_version}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_minor_version].
  */
 static VALUE
 ruby_guestfs_inspect_get_minor_version (VALUE gv, VALUE rootv)
@@ -11181,8 +11583,10 @@ ruby_guestfs_inspect_get_minor_version (VALUE gv, VALUE rootv)
  * See also "g.inspect_get_filesystems".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_mountpoints+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_mountpoints]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_mountpoints}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_mountpoints].
  */
 static VALUE
 ruby_guestfs_inspect_get_mountpoints (VALUE gv, VALUE rootv)
@@ -11229,14 +11633,16 @@ ruby_guestfs_inspect_get_mountpoints (VALUE gv, VALUE rootv)
  * Windows).
  * 
  * Possible strings include: "rpm", "deb", "ebuild",
- * "pisi", "pacman", "pkgsrc". Future versions of
+ * "pisi", "pacman", "pkgsrc", "apk". Future versions of
  * libguestfs may return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_package_format+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_package_format]).
+ * [Since] Added in version 1.7.5.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_package_format}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_package_format].
  */
 static VALUE
 ruby_guestfs_inspect_get_package_format (VALUE gv, VALUE rootv)
@@ -11278,14 +11684,16 @@ ruby_guestfs_inspect_get_package_format (VALUE gv, VALUE rootv)
  * 
  * Possible strings include: "yum", "dnf", "up2date", "apt"
  * (for all Debian derivatives), "portage", "pisi",
- * "pacman", "urpmi", "zypper". Future versions of
+ * "pacman", "urpmi", "zypper", "apk". Future versions of
  * libguestfs may return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_package_management+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_package_management]).
+ * [Since] Added in version 1.7.5.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_package_management}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_package_management].
  */
 static VALUE
 ruby_guestfs_inspect_get_package_management (VALUE gv, VALUE rootv)
@@ -11325,8 +11733,10 @@ ruby_guestfs_inspect_get_package_management (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_product_name+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_product_name]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_product_name}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_product_name].
  */
 static VALUE
 ruby_guestfs_inspect_get_product_name (VALUE gv, VALUE rootv)
@@ -11380,8 +11790,10 @@ ruby_guestfs_inspect_get_product_name (VALUE gv, VALUE rootv)
  * "g.inspect_get_major_version".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_product_variant+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_product_variant]).
+ * [Since] Added in version 1.9.13.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_product_variant}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_product_variant].
  */
 static VALUE
 ruby_guestfs_inspect_get_product_variant (VALUE gv, VALUE rootv)
@@ -11421,8 +11833,10 @@ ruby_guestfs_inspect_get_product_variant (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_roots+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_roots]).
+ * [Since] Added in version 1.7.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_roots}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_roots].
  */
 static VALUE
 ruby_guestfs_inspect_get_roots (VALUE gv)
@@ -11493,8 +11907,10 @@ ruby_guestfs_inspect_get_roots (VALUE gv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_type+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_type]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_type}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_type].
  */
 static VALUE
 ruby_guestfs_inspect_get_type (VALUE gv, VALUE rootv)
@@ -11534,8 +11950,10 @@ ruby_guestfs_inspect_get_type (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_windows_current_control_set+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_windows_current_control_set]).
+ * [Since] Added in version 1.9.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_windows_current_control_set}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_windows_current_control_set].
  */
 static VALUE
 ruby_guestfs_inspect_get_windows_current_control_set (VALUE gv, VALUE rootv)
@@ -11575,8 +11993,10 @@ ruby_guestfs_inspect_get_windows_current_control_set (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_get_windows_systemroot+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_windows_systemroot]).
+ * [Since] Added in version 1.5.25.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_windows_systemroot}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_windows_systemroot].
  */
 static VALUE
 ruby_guestfs_inspect_get_windows_systemroot (VALUE gv, VALUE rootv)
@@ -11612,8 +12032,10 @@ ruby_guestfs_inspect_get_windows_systemroot (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_is_live+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_live]).
+ * [Since] Added in version 1.9.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_is_live}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_live].
  */
 static VALUE
 ruby_guestfs_inspect_is_live (VALUE gv, VALUE rootv)
@@ -11647,8 +12069,10 @@ ruby_guestfs_inspect_is_live (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_is_multipart+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_multipart]).
+ * [Since] Added in version 1.9.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_is_multipart}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_multipart].
  */
 static VALUE
 ruby_guestfs_inspect_is_multipart (VALUE gv, VALUE rootv)
@@ -11684,8 +12108,10 @@ ruby_guestfs_inspect_is_multipart (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_is_netinst+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_netinst]).
+ * [Since] Added in version 1.9.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_is_netinst}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_netinst].
  */
 static VALUE
 ruby_guestfs_inspect_is_netinst (VALUE gv, VALUE rootv)
@@ -11798,17 +12224,14 @@ ruby_guestfs_inspect_is_netinst (VALUE gv, VALUE rootv)
  * "".
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
- * 
- * *This function is deprecated.* In new code, use the
- * "inspect_list_applications2" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_list_applications+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_list_applications]).
+ * [Since] Added in version 1.7.8.
+ *
+ * [Deprecated] In new code, use rdoc-ref:inspect_list_applications2 instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_list_applications}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_list_applications].
  */
 static VALUE
 ruby_guestfs_inspect_list_applications (VALUE gv, VALUE rootv)
@@ -11947,8 +12370,10 @@ ruby_guestfs_inspect_list_applications (VALUE gv, VALUE rootv)
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_list_applications2+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_list_applications2]).
+ * [Since] Added in version 1.19.56.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_list_applications2}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_list_applications2].
  */
 static VALUE
 ruby_guestfs_inspect_list_applications2 (VALUE gv, VALUE rootv)
@@ -12036,8 +12461,10 @@ ruby_guestfs_inspect_list_applications2 (VALUE gv, VALUE rootv)
  * See also "g.list_filesystems".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_inspect_os+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_os]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_os}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_os].
  */
 static VALUE
 ruby_guestfs_inspect_os (VALUE gv)
@@ -13315,8 +13742,10 @@ ruby_guestfs_internal_test_set_output (VALUE gv, VALUE filenamev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_blockdev+[http://libguestfs.org/guestfs.3.html#guestfs_is_blockdev]).
+ * [Since] Added in version 1.5.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_blockdev}[http://libguestfs.org/guestfs.3.html#guestfs_is_blockdev].
  */
 static VALUE
 ruby_guestfs_is_blockdev (int argc, VALUE *argv, VALUE gv)
@@ -13365,8 +13794,10 @@ ruby_guestfs_is_blockdev (int argc, VALUE *argv, VALUE gv)
  * For more information on states, see guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_busy+[http://libguestfs.org/guestfs.3.html#guestfs_is_busy]).
+ * [Since] Added in version 1.0.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_busy}[http://libguestfs.org/guestfs.3.html#guestfs_is_busy].
  */
 static VALUE
 ruby_guestfs_is_busy (VALUE gv)
@@ -13406,8 +13837,10 @@ ruby_guestfs_is_busy (VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_chardev+[http://libguestfs.org/guestfs.3.html#guestfs_is_chardev]).
+ * [Since] Added in version 1.5.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_chardev}[http://libguestfs.org/guestfs.3.html#guestfs_is_chardev].
  */
 static VALUE
 ruby_guestfs_is_chardev (int argc, VALUE *argv, VALUE gv)
@@ -13456,8 +13889,10 @@ ruby_guestfs_is_chardev (int argc, VALUE *argv, VALUE gv)
  * For more information on states, see guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_config+[http://libguestfs.org/guestfs.3.html#guestfs_is_config]).
+ * [Since] Added in version 1.0.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_config}[http://libguestfs.org/guestfs.3.html#guestfs_is_config].
  */
 static VALUE
 ruby_guestfs_is_config (VALUE gv)
@@ -13498,8 +13933,10 @@ ruby_guestfs_is_config (VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_dir+[http://libguestfs.org/guestfs.3.html#guestfs_is_dir]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_dir}[http://libguestfs.org/guestfs.3.html#guestfs_is_dir].
  */
 static VALUE
 ruby_guestfs_is_dir (int argc, VALUE *argv, VALUE gv)
@@ -13556,8 +13993,10 @@ ruby_guestfs_is_dir (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_fifo+[http://libguestfs.org/guestfs.3.html#guestfs_is_fifo]).
+ * [Since] Added in version 1.5.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_fifo}[http://libguestfs.org/guestfs.3.html#guestfs_is_fifo].
  */
 static VALUE
 ruby_guestfs_is_fifo (int argc, VALUE *argv, VALUE gv)
@@ -13615,8 +14054,10 @@ ruby_guestfs_is_fifo (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_file+[http://libguestfs.org/guestfs.3.html#guestfs_is_file]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_file}[http://libguestfs.org/guestfs.3.html#guestfs_is_file].
  */
 static VALUE
 ruby_guestfs_is_file (int argc, VALUE *argv, VALUE gv)
@@ -13665,8 +14106,10 @@ ruby_guestfs_is_file (int argc, VALUE *argv, VALUE gv)
  * For more information on states, see guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_launching+[http://libguestfs.org/guestfs.3.html#guestfs_is_launching]).
+ * [Since] Added in version 1.0.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_launching}[http://libguestfs.org/guestfs.3.html#guestfs_is_launching].
  */
 static VALUE
 ruby_guestfs_is_launching (VALUE gv)
@@ -13696,8 +14139,10 @@ ruby_guestfs_is_launching (VALUE gv)
  * and returns true iff this is the case.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_lv+[http://libguestfs.org/guestfs.3.html#guestfs_is_lv]).
+ * [Since] Added in version 1.5.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_lv}[http://libguestfs.org/guestfs.3.html#guestfs_is_lv].
  */
 static VALUE
 ruby_guestfs_is_lv (VALUE gv, VALUE devicev)
@@ -13730,8 +14175,10 @@ ruby_guestfs_is_lv (VALUE gv, VALUE devicev)
  * For more information on states, see guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_ready+[http://libguestfs.org/guestfs.3.html#guestfs_is_ready]).
+ * [Since] Added in version 1.0.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_ready}[http://libguestfs.org/guestfs.3.html#guestfs_is_ready].
  */
 static VALUE
 ruby_guestfs_is_ready (VALUE gv)
@@ -13771,8 +14218,10 @@ ruby_guestfs_is_ready (VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_socket+[http://libguestfs.org/guestfs.3.html#guestfs_is_socket]).
+ * [Since] Added in version 1.5.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_socket}[http://libguestfs.org/guestfs.3.html#guestfs_is_socket].
  */
 static VALUE
 ruby_guestfs_is_socket (int argc, VALUE *argv, VALUE gv)
@@ -13821,8 +14270,10 @@ ruby_guestfs_is_socket (int argc, VALUE *argv, VALUE gv)
  * See also "g.stat".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_symlink+[http://libguestfs.org/guestfs.3.html#guestfs_is_symlink]).
+ * [Since] Added in version 1.5.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_symlink}[http://libguestfs.org/guestfs.3.html#guestfs_is_symlink].
  */
 static VALUE
 ruby_guestfs_is_symlink (VALUE gv, VALUE pathv)
@@ -13854,8 +14305,10 @@ ruby_guestfs_is_symlink (VALUE gv, VALUE pathv)
  * logical device.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_whole_device+[http://libguestfs.org/guestfs.3.html#guestfs_is_whole_device]).
+ * [Since] Added in version 1.21.9.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_whole_device}[http://libguestfs.org/guestfs.3.html#guestfs_is_whole_device].
  */
 static VALUE
 ruby_guestfs_is_whole_device (VALUE gv, VALUE devicev)
@@ -13886,8 +14339,10 @@ ruby_guestfs_is_whole_device (VALUE gv, VALUE devicev)
  * empty or it contains all zero bytes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_zero+[http://libguestfs.org/guestfs.3.html#guestfs_is_zero]).
+ * [Since] Added in version 1.11.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_zero}[http://libguestfs.org/guestfs.3.html#guestfs_is_zero].
  */
 static VALUE
 ruby_guestfs_is_zero (VALUE gv, VALUE pathv)
@@ -13921,8 +14376,10 @@ ruby_guestfs_is_zero (VALUE gv, VALUE pathv)
  * run.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_is_zero_device+[http://libguestfs.org/guestfs.3.html#guestfs_is_zero_device]).
+ * [Since] Added in version 1.11.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_is_zero_device}[http://libguestfs.org/guestfs.3.html#guestfs_is_zero_device].
  */
 static VALUE
 ruby_guestfs_is_zero_device (VALUE gv, VALUE devicev)
@@ -13957,8 +14414,10 @@ ruby_guestfs_is_zero_device (VALUE gv, VALUE devicev)
  * "g.isoinfo_device".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_isoinfo+[http://libguestfs.org/guestfs.3.html#guestfs_isoinfo]).
+ * [Since] Added in version 1.17.19.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_isoinfo}[http://libguestfs.org/guestfs.3.html#guestfs_isoinfo].
  */
 static VALUE
 ruby_guestfs_isoinfo (VALUE gv, VALUE isofilev)
@@ -14018,8 +14477,10 @@ ruby_guestfs_isoinfo (VALUE gv, VALUE isofilev)
  * iptor>
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_isoinfo_device+[http://libguestfs.org/guestfs.3.html#guestfs_isoinfo_device]).
+ * [Since] Added in version 1.17.19.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_isoinfo_device}[http://libguestfs.org/guestfs.3.html#guestfs_isoinfo_device].
  */
 static VALUE
 ruby_guestfs_isoinfo_device (VALUE gv, VALUE devicev)
@@ -14068,8 +14529,10 @@ ruby_guestfs_isoinfo_device (VALUE gv, VALUE devicev)
  * Close the journal handle.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_journal_close+[http://libguestfs.org/guestfs.3.html#guestfs_journal_close]).
+ * [Since] Added in version 1.23.11.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_journal_close}[http://libguestfs.org/guestfs.3.html#guestfs_journal_close].
  */
 static VALUE
 ruby_guestfs_journal_close (VALUE gv)
@@ -14112,8 +14575,10 @@ ruby_guestfs_journal_close (VALUE gv)
  * limited by the libguestfs protocol.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_journal_get+[http://libguestfs.org/guestfs.3.html#guestfs_journal_get]).
+ * [Since] Added in version 1.23.11.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_journal_get}[http://libguestfs.org/guestfs.3.html#guestfs_journal_get].
  */
 static VALUE
 ruby_guestfs_journal_get (VALUE gv)
@@ -14157,8 +14622,10 @@ ruby_guestfs_journal_get (VALUE gv)
  * See also "g.journal_set_data_threshold".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_journal_get_data_threshold+[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_data_threshold]).
+ * [Since] Added in version 1.23.11.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_journal_get_data_threshold}[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_data_threshold].
  */
 static VALUE
 ruby_guestfs_journal_get_data_threshold (VALUE gv)
@@ -14188,8 +14655,10 @@ ruby_guestfs_journal_get_data_threshold (VALUE gv)
  * journal entry.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_journal_get_realtime_usec+[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_realtime_usec]).
+ * [Since] Added in version 1.27.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_journal_get_realtime_usec}[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_realtime_usec].
  */
 static VALUE
 ruby_guestfs_journal_get_realtime_usec (VALUE gv)
@@ -14225,8 +14694,10 @@ ruby_guestfs_journal_get_realtime_usec (VALUE gv)
  * means you have reached the end of the journal.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_journal_next+[http://libguestfs.org/guestfs.3.html#guestfs_journal_next]).
+ * [Since] Added in version 1.23.11.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_journal_next}[http://libguestfs.org/guestfs.3.html#guestfs_journal_next].
  */
 static VALUE
 ruby_guestfs_journal_next (VALUE gv)
@@ -14262,8 +14733,10 @@ ruby_guestfs_journal_next (VALUE gv)
  * close the handle by calling "g.journal_close".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_journal_open+[http://libguestfs.org/guestfs.3.html#guestfs_journal_open]).
+ * [Since] Added in version 1.23.11.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_journal_open}[http://libguestfs.org/guestfs.3.html#guestfs_journal_open].
  */
 static VALUE
 ruby_guestfs_journal_open (VALUE gv, VALUE directoryv)
@@ -14299,8 +14772,10 @@ ruby_guestfs_journal_open (VALUE gv, VALUE directoryv)
  * See also "g.journal_get_data_threshold".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_journal_set_data_threshold+[http://libguestfs.org/guestfs.3.html#guestfs_journal_set_data_threshold]).
+ * [Since] Added in version 1.23.11.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_journal_set_data_threshold}[http://libguestfs.org/guestfs.3.html#guestfs_journal_set_data_threshold].
  */
 static VALUE
 ruby_guestfs_journal_set_data_threshold (VALUE gv, VALUE thresholdv)
@@ -14337,8 +14812,10 @@ ruby_guestfs_journal_set_data_threshold (VALUE gv, VALUE thresholdv)
  * the journal.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_journal_skip+[http://libguestfs.org/guestfs.3.html#guestfs_journal_skip]).
+ * [Since] Added in version 1.23.11.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_journal_skip}[http://libguestfs.org/guestfs.3.html#guestfs_journal_skip].
  */
 static VALUE
 ruby_guestfs_journal_skip (VALUE gv, VALUE skipv)
@@ -14368,17 +14845,14 @@ ruby_guestfs_journal_skip (VALUE gv, VALUE skipv)
  * This kills the hypervisor.
  * 
  * Do not call this. See: "g.shutdown" instead.
- * 
- * *This function is deprecated.* In new code, use the
- * "shutdown" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_kill_subprocess+[http://libguestfs.org/guestfs.3.html#guestfs_kill_subprocess]).
+ * [Since] Added in version 0.3.
+ *
+ * [Deprecated] In new code, use rdoc-ref:shutdown instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_kill_subprocess}[http://libguestfs.org/guestfs.3.html#guestfs_kill_subprocess].
  */
 static VALUE
 ruby_guestfs_kill_subprocess (VALUE gv)
@@ -14414,8 +14888,10 @@ ruby_guestfs_kill_subprocess (VALUE gv)
  * create a new one for each launch.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_launch+[http://libguestfs.org/guestfs.3.html#guestfs_launch]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_launch}[http://libguestfs.org/guestfs.3.html#guestfs_launch].
  */
 static VALUE
 ruby_guestfs_launch (VALUE gv)
@@ -14451,8 +14927,10 @@ ruby_guestfs_launch (VALUE gv)
  * relatively easy).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lchown+[http://libguestfs.org/guestfs.3.html#guestfs_lchown]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lchown}[http://libguestfs.org/guestfs.3.html#guestfs_lchown].
  */
 static VALUE
 ruby_guestfs_lchown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
@@ -14495,8 +14973,10 @@ ruby_guestfs_lchown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
  * dynamic disk.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ldmtool_create_all+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_create_all]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ldmtool_create_all}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_create_all].
  */
 static VALUE
 ruby_guestfs_ldmtool_create_all (VALUE gv)
@@ -14528,8 +15008,10 @@ ruby_guestfs_ldmtool_create_all (VALUE gv)
  * "g.ldmtool_scan".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ldmtool_diskgroup_disks+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_disks]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ldmtool_diskgroup_disks}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_disks].
  */
 static VALUE
 ruby_guestfs_ldmtool_diskgroup_disks (VALUE gv, VALUE diskgroupv)
@@ -14570,8 +15052,10 @@ ruby_guestfs_ldmtool_diskgroup_disks (VALUE gv, VALUE diskgroupv)
  * "g.ldmtool_scan".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ldmtool_diskgroup_name+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_name]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ldmtool_diskgroup_name}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_name].
  */
 static VALUE
 ruby_guestfs_ldmtool_diskgroup_name (VALUE gv, VALUE diskgroupv)
@@ -14606,8 +15090,10 @@ ruby_guestfs_ldmtool_diskgroup_name (VALUE gv, VALUE diskgroupv)
  * "g.ldmtool_scan".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ldmtool_diskgroup_volumes+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_volumes]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ldmtool_diskgroup_volumes}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_volumes].
  */
 static VALUE
 ruby_guestfs_ldmtool_diskgroup_volumes (VALUE gv, VALUE diskgroupv)
@@ -14647,8 +15133,10 @@ ruby_guestfs_ldmtool_diskgroup_volumes (VALUE gv, VALUE diskgroupv)
  * mappings for all Windows dynamic disk volumes
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ldmtool_remove_all+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_remove_all]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ldmtool_remove_all}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_remove_all].
  */
 static VALUE
 ruby_guestfs_ldmtool_remove_all (VALUE gv)
@@ -14683,8 +15171,10 @@ ruby_guestfs_ldmtool_remove_all (VALUE gv)
  * of block devices, call "g.ldmtool_scan_devices" instead.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ldmtool_scan+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_scan]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ldmtool_scan}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_scan].
  */
 static VALUE
 ruby_guestfs_ldmtool_scan (VALUE gv)
@@ -14728,8 +15218,10 @@ ruby_guestfs_ldmtool_scan (VALUE gv)
  * are scanned.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ldmtool_scan_devices+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_scan_devices]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ldmtool_scan_devices}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_scan_devices].
  */
 static VALUE
 ruby_guestfs_ldmtool_scan_devices (VALUE gv, VALUE devicesv)
@@ -14783,8 +15275,10 @@ ruby_guestfs_ldmtool_scan_devices (VALUE gv, VALUE devicesv)
  * Windows drive, eg. "E:".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ldmtool_volume_hint+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_hint]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ldmtool_volume_hint}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_hint].
  */
 static VALUE
 ruby_guestfs_ldmtool_volume_hint (VALUE gv, VALUE diskgroupv, VALUE volumev)
@@ -14818,8 +15312,10 @@ ruby_guestfs_ldmtool_volume_hint (VALUE gv, VALUE diskgroupv, VALUE volumev)
  * "volume" in the disk group with GUID "diskgroup".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ldmtool_volume_partitions+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_partitions]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ldmtool_volume_partitions}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_partitions].
  */
 static VALUE
 ruby_guestfs_ldmtool_volume_partitions (VALUE gv, VALUE diskgroupv, VALUE volumev)
@@ -14863,8 +15359,10 @@ ruby_guestfs_ldmtool_volume_partitions (VALUE gv, VALUE diskgroupv, VALUE volume
  * Other types may also be returned.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ldmtool_volume_type+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_type]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ldmtool_volume_type}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_type].
  */
 static VALUE
 ruby_guestfs_ldmtool_volume_type (VALUE gv, VALUE diskgroupv, VALUE volumev)
@@ -14913,8 +15411,10 @@ ruby_guestfs_ldmtool_volume_type (VALUE gv, VALUE diskgroupv, VALUE volumev)
  * See also: "g.lgetxattrs", "g.getxattr", attr(5).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lgetxattr+[http://libguestfs.org/guestfs.3.html#guestfs_lgetxattr]).
+ * [Since] Added in version 1.7.24.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lgetxattr}[http://libguestfs.org/guestfs.3.html#guestfs_lgetxattr].
  */
 static VALUE
 ruby_guestfs_lgetxattr (VALUE gv, VALUE pathv, VALUE namev)
@@ -14950,8 +15450,10 @@ ruby_guestfs_lgetxattr (VALUE gv, VALUE pathv, VALUE namev)
  * of the link itself.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lgetxattrs+[http://libguestfs.org/guestfs.3.html#guestfs_lgetxattrs]).
+ * [Since] Added in version 1.0.59.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lgetxattrs}[http://libguestfs.org/guestfs.3.html#guestfs_lgetxattrs].
  */
 static VALUE
 ruby_guestfs_lgetxattrs (VALUE gv, VALUE pathv)
@@ -14991,8 +15493,10 @@ ruby_guestfs_lgetxattrs (VALUE gv, VALUE pathv)
  * mount tags is returned.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_list_9p+[http://libguestfs.org/guestfs.3.html#guestfs_list_9p]).
+ * [Since] Added in version 1.11.12.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_list_9p}[http://libguestfs.org/guestfs.3.html#guestfs_list_9p].
  */
 static VALUE
 ruby_guestfs_list_9p (VALUE gv)
@@ -15033,8 +15537,10 @@ ruby_guestfs_list_9p (VALUE gv)
  * See also "g.list_filesystems".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_list_devices+[http://libguestfs.org/guestfs.3.html#guestfs_list_devices]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_list_devices}[http://libguestfs.org/guestfs.3.html#guestfs_list_devices].
  */
 static VALUE
 ruby_guestfs_list_devices (VALUE gv)
@@ -15079,8 +15585,10 @@ ruby_guestfs_list_devices (VALUE gv)
  * /dev/sda and /dev/sda1).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_list_disk_labels+[http://libguestfs.org/guestfs.3.html#guestfs_list_disk_labels]).
+ * [Since] Added in version 1.19.49.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_list_disk_labels}[http://libguestfs.org/guestfs.3.html#guestfs_list_disk_labels].
  */
 static VALUE
 ruby_guestfs_list_disk_labels (VALUE gv)
@@ -15124,8 +15632,10 @@ ruby_guestfs_list_disk_labels (VALUE gv)
  * you want to list logical volumes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_list_dm_devices+[http://libguestfs.org/guestfs.3.html#guestfs_list_dm_devices]).
+ * [Since] Added in version 1.11.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_list_dm_devices}[http://libguestfs.org/guestfs.3.html#guestfs_list_dm_devices].
  */
 static VALUE
 ruby_guestfs_list_dm_devices (VALUE gv)
@@ -15195,8 +15705,10 @@ ruby_guestfs_list_dm_devices (VALUE gv)
  * (use "g.inspect_os" to look for OSes).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_list_filesystems+[http://libguestfs.org/guestfs.3.html#guestfs_list_filesystems]).
+ * [Since] Added in version 1.5.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_list_filesystems}[http://libguestfs.org/guestfs.3.html#guestfs_list_filesystems].
  */
 static VALUE
 ruby_guestfs_list_filesystems (VALUE gv)
@@ -15235,8 +15747,10 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * list of device names.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_list_ldm_partitions+[http://libguestfs.org/guestfs.3.html#guestfs_list_ldm_partitions]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_list_ldm_partitions}[http://libguestfs.org/guestfs.3.html#guestfs_list_ldm_partitions].
  */
 static VALUE
 ruby_guestfs_list_ldm_partitions (VALUE gv)
@@ -15275,8 +15789,10 @@ ruby_guestfs_list_ldm_partitions (VALUE gv)
  * device names.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_list_ldm_volumes+[http://libguestfs.org/guestfs.3.html#guestfs_list_ldm_volumes]).
+ * [Since] Added in version 1.20.0.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_list_ldm_volumes}[http://libguestfs.org/guestfs.3.html#guestfs_list_ldm_volumes].
  */
 static VALUE
 ruby_guestfs_list_ldm_volumes (VALUE gv)
@@ -15313,8 +15829,10 @@ ruby_guestfs_list_ldm_volumes (VALUE gv)
  * List all Linux md devices.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_list_md_devices+[http://libguestfs.org/guestfs.3.html#guestfs_list_md_devices]).
+ * [Since] Added in version 1.15.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_list_md_devices}[http://libguestfs.org/guestfs.3.html#guestfs_list_md_devices].
  */
 static VALUE
 ruby_guestfs_list_md_devices (VALUE gv)
@@ -15359,8 +15877,10 @@ ruby_guestfs_list_md_devices (VALUE gv)
  * See also "g.list_filesystems".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_list_partitions+[http://libguestfs.org/guestfs.3.html#guestfs_list_partitions]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_list_partitions}[http://libguestfs.org/guestfs.3.html#guestfs_list_partitions].
  */
 static VALUE
 ruby_guestfs_list_partitions (VALUE gv)
@@ -15402,8 +15922,10 @@ ruby_guestfs_list_partitions (VALUE gv)
  * string.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ll+[http://libguestfs.org/guestfs.3.html#guestfs_ll]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ll}[http://libguestfs.org/guestfs.3.html#guestfs_ll].
  */
 static VALUE
 ruby_guestfs_ll (VALUE gv, VALUE directoryv)
@@ -15439,8 +15961,10 @@ ruby_guestfs_ll (VALUE gv, VALUE directoryv)
  * string.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_llz+[http://libguestfs.org/guestfs.3.html#guestfs_llz]).
+ * [Since] Added in version 1.17.6.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_llz}[http://libguestfs.org/guestfs.3.html#guestfs_llz].
  */
 static VALUE
 ruby_guestfs_llz (VALUE gv, VALUE directoryv)
@@ -15472,8 +15996,10 @@ ruby_guestfs_llz (VALUE gv, VALUE directoryv)
  * This command creates a hard link using the "ln" command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ln+[http://libguestfs.org/guestfs.3.html#guestfs_ln]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ln}[http://libguestfs.org/guestfs.3.html#guestfs_ln].
  */
 static VALUE
 ruby_guestfs_ln (VALUE gv, VALUE targetv, VALUE linknamev)
@@ -15506,8 +16032,10 @@ ruby_guestfs_ln (VALUE gv, VALUE targetv, VALUE linknamev)
  * if it exists already.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ln_f+[http://libguestfs.org/guestfs.3.html#guestfs_ln_f]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ln_f}[http://libguestfs.org/guestfs.3.html#guestfs_ln_f].
  */
 static VALUE
 ruby_guestfs_ln_f (VALUE gv, VALUE targetv, VALUE linknamev)
@@ -15539,8 +16067,10 @@ ruby_guestfs_ln_f (VALUE gv, VALUE targetv, VALUE linknamev)
  * command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ln_s+[http://libguestfs.org/guestfs.3.html#guestfs_ln_s]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ln_s}[http://libguestfs.org/guestfs.3.html#guestfs_ln_s].
  */
 static VALUE
 ruby_guestfs_ln_s (VALUE gv, VALUE targetv, VALUE linknamev)
@@ -15573,8 +16103,10 @@ ruby_guestfs_ln_s (VALUE gv, VALUE targetv, VALUE linknamev)
  * if it exists already.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ln_sf+[http://libguestfs.org/guestfs.3.html#guestfs_ln_sf]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ln_sf}[http://libguestfs.org/guestfs.3.html#guestfs_ln_sf].
  */
 static VALUE
 ruby_guestfs_ln_sf (VALUE gv, VALUE targetv, VALUE linknamev)
@@ -15607,8 +16139,10 @@ ruby_guestfs_ln_sf (VALUE gv, VALUE targetv, VALUE linknamev)
  * the link itself.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lremovexattr+[http://libguestfs.org/guestfs.3.html#guestfs_lremovexattr]).
+ * [Since] Added in version 1.0.59.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lremovexattr}[http://libguestfs.org/guestfs.3.html#guestfs_lremovexattr].
  */
 static VALUE
 ruby_guestfs_lremovexattr (VALUE gv, VALUE xattrv, VALUE pathv)
@@ -15641,8 +16175,10 @@ ruby_guestfs_lremovexattr (VALUE gv, VALUE xattrv, VALUE pathv)
  * are not returned, but hidden files are shown.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ls+[http://libguestfs.org/guestfs.3.html#guestfs_ls]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ls}[http://libguestfs.org/guestfs.3.html#guestfs_ls].
  */
 static VALUE
 ruby_guestfs_ls (VALUE gv, VALUE directoryv)
@@ -15688,8 +16224,10 @@ ruby_guestfs_ls (VALUE gv, VALUE directoryv)
  * sorted.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ls0+[http://libguestfs.org/guestfs.3.html#guestfs_ls0]).
+ * [Since] Added in version 1.19.32.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ls0}[http://libguestfs.org/guestfs.3.html#guestfs_ls0].
  */
 static VALUE
 ruby_guestfs_ls0 (VALUE gv, VALUE dirv, VALUE filenamesv)
@@ -15722,8 +16260,10 @@ ruby_guestfs_ls0 (VALUE gv, VALUE dirv, VALUE filenamesv)
  * link itself.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lsetxattr+[http://libguestfs.org/guestfs.3.html#guestfs_lsetxattr]).
+ * [Since] Added in version 1.0.59.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lsetxattr}[http://libguestfs.org/guestfs.3.html#guestfs_lsetxattr].
  */
 static VALUE
 ruby_guestfs_lsetxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE pathv)
@@ -15760,17 +16300,14 @@ ruby_guestfs_lsetxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE
  * refers to.
  * 
  * This is the same as the lstat(2) system call.
- * 
- * *This function is deprecated.* In new code, use the
- * "lstatns" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lstat+[http://libguestfs.org/guestfs.3.html#guestfs_lstat]).
+ * [Since] Added in version 1.9.2.
+ *
+ * [Deprecated] In new code, use rdoc-ref:lstatns instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lstat}[http://libguestfs.org/guestfs.3.html#guestfs_lstat].
  */
 static VALUE
 ruby_guestfs_lstat (VALUE gv, VALUE pathv)
@@ -15827,17 +16364,14 @@ ruby_guestfs_lstat (VALUE gv, VALUE pathv)
  * many round-trips. See also "g.lxattrlist" for a
  * similarly efficient call for getting extended
  * attributes.
- * 
- * *This function is deprecated.* In new code, use the
- * "lstatnslist" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lstatlist+[http://libguestfs.org/guestfs.3.html#guestfs_lstatlist]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [Deprecated] In new code, use rdoc-ref:lstatnslist instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lstatlist}[http://libguestfs.org/guestfs.3.html#guestfs_lstatlist].
  */
 static VALUE
 ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
@@ -15906,8 +16440,10 @@ ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
  * This is the same as the lstat(2) system call.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lstatns+[http://libguestfs.org/guestfs.3.html#guestfs_lstatns]).
+ * [Since] Added in version 1.27.53.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lstatns}[http://libguestfs.org/guestfs.3.html#guestfs_lstatns].
  */
 static VALUE
 ruby_guestfs_lstatns (VALUE gv, VALUE pathv)
@@ -15975,8 +16511,10 @@ ruby_guestfs_lstatns (VALUE gv, VALUE pathv)
  * attributes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lstatnslist+[http://libguestfs.org/guestfs.3.html#guestfs_lstatnslist]).
+ * [Since] Added in version 1.27.53.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lstatnslist}[http://libguestfs.org/guestfs.3.html#guestfs_lstatnslist].
  */
 static VALUE
 ruby_guestfs_lstatnslist (VALUE gv, VALUE pathv, VALUE namesv)
@@ -16055,8 +16593,10 @@ ruby_guestfs_lstatnslist (VALUE gv, VALUE pathv, VALUE namesv)
  * first to remove that key.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_luks_add_key+[http://libguestfs.org/guestfs.3.html#guestfs_luks_add_key]).
+ * [Since] Added in version 1.5.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_luks_add_key}[http://libguestfs.org/guestfs.3.html#guestfs_luks_add_key].
  */
 static VALUE
 ruby_guestfs_luks_add_key (VALUE gv, VALUE devicev, VALUE keyv, VALUE newkeyv, VALUE keyslotv)
@@ -16093,8 +16633,10 @@ ruby_guestfs_luks_add_key (VALUE gv, VALUE devicev, VALUE keyv, VALUE newkeyv, V
  * underlying block device.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_luks_close+[http://libguestfs.org/guestfs.3.html#guestfs_luks_close]).
+ * [Since] Added in version 1.5.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_luks_close}[http://libguestfs.org/guestfs.3.html#guestfs_luks_close].
  */
 static VALUE
 ruby_guestfs_luks_close (VALUE gv, VALUE devicev)
@@ -16127,8 +16669,10 @@ ruby_guestfs_luks_close (VALUE gv, VALUE devicev)
  * (LUKS supports 8 key slots, numbered 0-7).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_luks_format+[http://libguestfs.org/guestfs.3.html#guestfs_luks_format]).
+ * [Since] Added in version 1.5.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_luks_format}[http://libguestfs.org/guestfs.3.html#guestfs_luks_format].
  */
 static VALUE
 ruby_guestfs_luks_format (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv)
@@ -16161,8 +16705,10 @@ ruby_guestfs_luks_format (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv)
  * allows you to set the "cipher" used.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_luks_format_cipher+[http://libguestfs.org/guestfs.3.html#guestfs_luks_format_cipher]).
+ * [Since] Added in version 1.5.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_luks_format_cipher}[http://libguestfs.org/guestfs.3.html#guestfs_luks_format_cipher].
  */
 static VALUE
 ruby_guestfs_luks_format_cipher (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv, VALUE cipherv)
@@ -16197,8 +16743,10 @@ ruby_guestfs_luks_format_cipher (VALUE gv, VALUE devicev, VALUE keyv, VALUE keys
  * the *other* keys.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_luks_kill_slot+[http://libguestfs.org/guestfs.3.html#guestfs_luks_kill_slot]).
+ * [Since] Added in version 1.5.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_luks_kill_slot}[http://libguestfs.org/guestfs.3.html#guestfs_luks_kill_slot].
  */
 static VALUE
 ruby_guestfs_luks_kill_slot (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv)
@@ -16249,8 +16797,10 @@ ruby_guestfs_luks_kill_slot (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv
  * devices.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_luks_open+[http://libguestfs.org/guestfs.3.html#guestfs_luks_open]).
+ * [Since] Added in version 1.5.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_luks_open}[http://libguestfs.org/guestfs.3.html#guestfs_luks_open].
  */
 static VALUE
 ruby_guestfs_luks_open (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
@@ -16283,8 +16833,10 @@ ruby_guestfs_luks_open (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
  * read-only mapping is created.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_luks_open_ro+[http://libguestfs.org/guestfs.3.html#guestfs_luks_open_ro]).
+ * [Since] Added in version 1.5.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_luks_open_ro}[http://libguestfs.org/guestfs.3.html#guestfs_luks_open_ro].
  */
 static VALUE
 ruby_guestfs_luks_open_ro (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
@@ -16317,8 +16869,10 @@ ruby_guestfs_luks_open_ro (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
  * the volume group "volgroup", with "size" megabytes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvcreate+[http://libguestfs.org/guestfs.3.html#guestfs_lvcreate]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvcreate}[http://libguestfs.org/guestfs.3.html#guestfs_lvcreate].
  */
 static VALUE
 ruby_guestfs_lvcreate (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE mbytesv)
@@ -16354,8 +16908,10 @@ ruby_guestfs_lvcreate (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE mbytesv)
  * largest possible LV.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvcreate_free+[http://libguestfs.org/guestfs.3.html#guestfs_lvcreate_free]).
+ * [Since] Added in version 1.17.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvcreate_free}[http://libguestfs.org/guestfs.3.html#guestfs_lvcreate_free].
  */
 static VALUE
 ruby_guestfs_lvcreate_free (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE percentv)
@@ -16394,8 +16950,10 @@ ruby_guestfs_lvcreate_free (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE perc
  * See also "g.is_lv", "g.canonical_device_name".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvm_canonical_lv_name+[http://libguestfs.org/guestfs.3.html#guestfs_lvm_canonical_lv_name]).
+ * [Since] Added in version 1.5.24.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvm_canonical_lv_name}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_canonical_lv_name].
  */
 static VALUE
 ruby_guestfs_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev)
@@ -16431,8 +16989,10 @@ ruby_guestfs_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev)
  * volume group scan.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvm_clear_filter+[http://libguestfs.org/guestfs.3.html#guestfs_lvm_clear_filter]).
+ * [Since] Added in version 1.5.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvm_clear_filter}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_clear_filter].
  */
 static VALUE
 ruby_guestfs_lvm_clear_filter (VALUE gv)
@@ -16462,8 +17022,10 @@ ruby_guestfs_lvm_clear_filter (VALUE gv)
  * groups and physical volumes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvm_remove_all+[http://libguestfs.org/guestfs.3.html#guestfs_lvm_remove_all]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvm_remove_all}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_remove_all].
  */
 static VALUE
 ruby_guestfs_lvm_remove_all (VALUE gv)
@@ -16514,8 +17076,10 @@ ruby_guestfs_lvm_remove_all (VALUE gv)
  * filtering out that VG.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvm_set_filter+[http://libguestfs.org/guestfs.3.html#guestfs_lvm_set_filter]).
+ * [Since] Added in version 1.5.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvm_set_filter}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_set_filter].
  */
 static VALUE
 ruby_guestfs_lvm_set_filter (VALUE gv, VALUE devicesv)
@@ -16561,8 +17125,10 @@ ruby_guestfs_lvm_set_filter (VALUE gv, VALUE devicesv)
  * specifying the VG name, /dev/VG.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvremove+[http://libguestfs.org/guestfs.3.html#guestfs_lvremove]).
+ * [Since] Added in version 1.0.13.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvremove}[http://libguestfs.org/guestfs.3.html#guestfs_lvremove].
  */
 static VALUE
 ruby_guestfs_lvremove (VALUE gv, VALUE devicev)
@@ -16593,8 +17159,10 @@ ruby_guestfs_lvremove (VALUE gv, VALUE devicev)
  * "newlogvol".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvrename+[http://libguestfs.org/guestfs.3.html#guestfs_lvrename]).
+ * [Since] Added in version 1.0.83.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvrename}[http://libguestfs.org/guestfs.3.html#guestfs_lvrename].
  */
 static VALUE
 ruby_guestfs_lvrename (VALUE gv, VALUE logvolv, VALUE newlogvolv)
@@ -16627,8 +17195,10 @@ ruby_guestfs_lvrename (VALUE gv, VALUE logvolv, VALUE newlogvolv)
  * reduced part is lost.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvresize+[http://libguestfs.org/guestfs.3.html#guestfs_lvresize]).
+ * [Since] Added in version 1.0.27.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvresize}[http://libguestfs.org/guestfs.3.html#guestfs_lvresize].
  */
 static VALUE
 ruby_guestfs_lvresize (VALUE gv, VALUE devicev, VALUE mbytesv)
@@ -16663,8 +17233,10 @@ ruby_guestfs_lvresize (VALUE gv, VALUE devicev, VALUE mbytesv)
  * all remaining free space in the volume group.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvresize_free+[http://libguestfs.org/guestfs.3.html#guestfs_lvresize_free]).
+ * [Since] Added in version 1.3.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvresize_free}[http://libguestfs.org/guestfs.3.html#guestfs_lvresize_free].
  */
 static VALUE
 ruby_guestfs_lvresize_free (VALUE gv, VALUE lvv, VALUE percentv)
@@ -16701,8 +17273,10 @@ ruby_guestfs_lvresize_free (VALUE gv, VALUE lvv, VALUE percentv)
  * See also "g.lvs_full", "g.list_filesystems".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvs+[http://libguestfs.org/guestfs.3.html#guestfs_lvs]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvs}[http://libguestfs.org/guestfs.3.html#guestfs_lvs].
  */
 static VALUE
 ruby_guestfs_lvs (VALUE gv)
@@ -16741,8 +17315,10 @@ ruby_guestfs_lvs (VALUE gv)
  * includes all fields.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvs_full+[http://libguestfs.org/guestfs.3.html#guestfs_lvs_full]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvs_full}[http://libguestfs.org/guestfs.3.html#guestfs_lvs_full].
  */
 static VALUE
 ruby_guestfs_lvs_full (VALUE gv)
@@ -16794,8 +17370,10 @@ ruby_guestfs_lvs_full (VALUE gv)
  * This command returns the UUID of the LVM LV "device".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lvuuid+[http://libguestfs.org/guestfs.3.html#guestfs_lvuuid]).
+ * [Since] Added in version 1.0.87.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvuuid}[http://libguestfs.org/guestfs.3.html#guestfs_lvuuid].
  */
 static VALUE
 ruby_guestfs_lvuuid (VALUE gv, VALUE devicev)
@@ -16846,8 +17424,10 @@ ruby_guestfs_lvuuid (VALUE gv, VALUE devicev)
  * efficient call for getting standard stats.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_lxattrlist+[http://libguestfs.org/guestfs.3.html#guestfs_lxattrlist]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lxattrlist}[http://libguestfs.org/guestfs.3.html#guestfs_lxattrlist].
  */
 static VALUE
 ruby_guestfs_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
@@ -16906,8 +17486,10 @@ ruby_guestfs_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
  * additional information on this topic.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_max_disks+[http://libguestfs.org/guestfs.3.html#guestfs_max_disks]).
+ * [Since] Added in version 1.19.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_max_disks}[http://libguestfs.org/guestfs.3.html#guestfs_max_disks].
  */
 static VALUE
 ruby_guestfs_max_disks (VALUE gv)
@@ -16987,8 +17569,10 @@ ruby_guestfs_max_disks (VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_md_create+[http://libguestfs.org/guestfs.3.html#guestfs_md_create]).
+ * [Since] Added in version 1.15.6.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_md_create}[http://libguestfs.org/guestfs.3.html#guestfs_md_create].
  */
 static VALUE
 ruby_guestfs_md_create (int argc, VALUE *argv, VALUE gv)
@@ -17085,8 +17669,10 @@ ruby_guestfs_md_create (int argc, VALUE *argv, VALUE gv)
  * The name of the MD device.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_md_detail+[http://libguestfs.org/guestfs.3.html#guestfs_md_detail]).
+ * [Since] Added in version 1.15.6.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_md_detail}[http://libguestfs.org/guestfs.3.html#guestfs_md_detail].
  */
 static VALUE
 ruby_guestfs_md_detail (VALUE gv, VALUE mdv)
@@ -17150,8 +17736,10 @@ ruby_guestfs_md_detail (VALUE gv, VALUE mdv)
  * "R" replacement
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_md_stat+[http://libguestfs.org/guestfs.3.html#guestfs_md_stat]).
+ * [Since] Added in version 1.17.21.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_md_stat}[http://libguestfs.org/guestfs.3.html#guestfs_md_stat].
  */
 static VALUE
 ruby_guestfs_md_stat (VALUE gv, VALUE mdv)
@@ -17192,8 +17780,10 @@ ruby_guestfs_md_stat (VALUE gv, VALUE mdv)
  * device is stopped, but it is not destroyed or zeroed.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_md_stop+[http://libguestfs.org/guestfs.3.html#guestfs_md_stop]).
+ * [Since] Added in version 1.15.6.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_md_stop}[http://libguestfs.org/guestfs.3.html#guestfs_md_stop].
  */
 static VALUE
 ruby_guestfs_md_stop (VALUE gv, VALUE mdv)
@@ -17223,8 +17813,10 @@ ruby_guestfs_md_stop (VALUE gv, VALUE mdv)
  * Create a directory named "path".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkdir+[http://libguestfs.org/guestfs.3.html#guestfs_mkdir]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkdir}[http://libguestfs.org/guestfs.3.html#guestfs_mkdir].
  */
 static VALUE
 ruby_guestfs_mkdir (VALUE gv, VALUE pathv)
@@ -17261,8 +17853,10 @@ ruby_guestfs_mkdir (VALUE gv, VALUE pathv)
  * See also "g.mkdir", "g.umask"
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkdir_mode+[http://libguestfs.org/guestfs.3.html#guestfs_mkdir_mode]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkdir_mode}[http://libguestfs.org/guestfs.3.html#guestfs_mkdir_mode].
  */
 static VALUE
 ruby_guestfs_mkdir_mode (VALUE gv, VALUE pathv, VALUE modev)
@@ -17295,8 +17889,10 @@ ruby_guestfs_mkdir_mode (VALUE gv, VALUE pathv, VALUE modev)
  * shell command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkdir_p+[http://libguestfs.org/guestfs.3.html#guestfs_mkdir_p]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkdir_p}[http://libguestfs.org/guestfs.3.html#guestfs_mkdir_p].
  */
 static VALUE
 ruby_guestfs_mkdir_p (VALUE gv, VALUE pathv)
@@ -17344,8 +17940,10 @@ ruby_guestfs_mkdir_p (VALUE gv, VALUE pathv)
  * See also: mkdtemp(3)
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkdtemp+[http://libguestfs.org/guestfs.3.html#guestfs_mkdtemp]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkdtemp}[http://libguestfs.org/guestfs.3.html#guestfs_mkdtemp].
  */
 static VALUE
 ruby_guestfs_mkdtemp (VALUE gv, VALUE tmplv)
@@ -17388,8 +17986,10 @@ ruby_guestfs_mkdtemp (VALUE gv, VALUE tmplv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mke2fs+[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs]).
+ * [Since] Added in version 1.19.44.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mke2fs}[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs].
  */
 static VALUE
 ruby_guestfs_mke2fs (int argc, VALUE *argv, VALUE gv)
@@ -17624,17 +18224,14 @@ ruby_guestfs_mke2fs (int argc, VALUE *argv, VALUE gv)
  * mke2fs -t fstype -b blocksize -J device=<journal> <device>
  * 
  * See also "g.mke2journal".
- * 
- * *This function is deprecated.* In new code, use the
- * "mke2fs" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mke2fs_J+[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs_J]).
+ * [Since] Added in version 1.0.68.
+ *
+ * [Deprecated] In new code, use rdoc-ref:mke2fs instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mke2fs_J}[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs_J].
  */
 static VALUE
 ruby_guestfs_mke2fs_J (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev, VALUE journalv)
@@ -17668,17 +18265,14 @@ ruby_guestfs_mke2fs_J (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev,
  * external journal on the journal labeled "label".
  * 
  * See also "g.mke2journal_L".
- * 
- * *This function is deprecated.* In new code, use the
- * "mke2fs" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mke2fs_JL+[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs_JL]).
+ * [Since] Added in version 1.0.68.
+ *
+ * [Deprecated] In new code, use rdoc-ref:mke2fs instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mke2fs_JL}[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs_JL].
  */
 static VALUE
 ruby_guestfs_mke2fs_JL (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev, VALUE labelv)
@@ -17712,17 +18306,14 @@ ruby_guestfs_mke2fs_JL (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev
  * external journal on the journal with UUID "uuid".
  * 
  * See also "g.mke2journal_U".
- * 
- * *This function is deprecated.* In new code, use the
- * "mke2fs" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mke2fs_JU+[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs_JU]).
+ * [Since] Added in version 1.0.68.
+ *
+ * [Deprecated] In new code, use rdoc-ref:mke2fs instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mke2fs_JU}[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs_JU].
  */
 static VALUE
 ruby_guestfs_mke2fs_JU (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev, VALUE uuidv)
@@ -17756,17 +18347,14 @@ ruby_guestfs_mke2fs_JU (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev
  * equivalent to the command:
  * 
  * mke2fs -O journal_dev -b blocksize device
- * 
- * *This function is deprecated.* In new code, use the
- * "mke2fs" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mke2journal+[http://libguestfs.org/guestfs.3.html#guestfs_mke2journal]).
+ * [Since] Added in version 1.0.68.
+ *
+ * [Deprecated] In new code, use rdoc-ref:mke2fs instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mke2journal}[http://libguestfs.org/guestfs.3.html#guestfs_mke2journal].
  */
 static VALUE
 ruby_guestfs_mke2journal (VALUE gv, VALUE blocksizev, VALUE devicev)
@@ -17796,17 +18384,14 @@ ruby_guestfs_mke2journal (VALUE gv, VALUE blocksizev, VALUE devicev)
  *
  * This creates an ext2 external journal on "device" with
  * label "label".
- * 
- * *This function is deprecated.* In new code, use the
- * "mke2fs" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mke2journal_L+[http://libguestfs.org/guestfs.3.html#guestfs_mke2journal_L]).
+ * [Since] Added in version 1.0.68.
+ *
+ * [Deprecated] In new code, use rdoc-ref:mke2fs instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mke2journal_L}[http://libguestfs.org/guestfs.3.html#guestfs_mke2journal_L].
  */
 static VALUE
 ruby_guestfs_mke2journal_L (VALUE gv, VALUE blocksizev, VALUE labelv, VALUE devicev)
@@ -17837,17 +18422,14 @@ ruby_guestfs_mke2journal_L (VALUE gv, VALUE blocksizev, VALUE labelv, VALUE devi
  *
  * This creates an ext2 external journal on "device" with
  * UUID "uuid".
- * 
- * *This function is deprecated.* In new code, use the
- * "mke2fs" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mke2journal_U+[http://libguestfs.org/guestfs.3.html#guestfs_mke2journal_U]).
+ * [Since] Added in version 1.0.68.
+ *
+ * [Deprecated] In new code, use rdoc-ref:mke2fs instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mke2journal_U}[http://libguestfs.org/guestfs.3.html#guestfs_mke2journal_U].
  */
 static VALUE
 ruby_guestfs_mke2journal_U (VALUE gv, VALUE blocksizev, VALUE uuidv, VALUE devicev)
@@ -17886,8 +18468,10 @@ ruby_guestfs_mke2journal_U (VALUE gv, VALUE blocksizev, VALUE uuidv, VALUE devic
  * The mode actually set is affected by the umask.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkfifo+[http://libguestfs.org/guestfs.3.html#guestfs_mkfifo]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkfifo}[http://libguestfs.org/guestfs.3.html#guestfs_mkfifo].
  */
 static VALUE
 ruby_guestfs_mkfifo (VALUE gv, VALUE modev, VALUE pathv)
@@ -17956,8 +18540,10 @@ ruby_guestfs_mkfifo (VALUE gv, VALUE modev, VALUE pathv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkfs+[http://libguestfs.org/guestfs.3.html#guestfs_mkfs]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkfs}[http://libguestfs.org/guestfs.3.html#guestfs_mkfs].
  */
 static VALUE
 ruby_guestfs_mkfs (int argc, VALUE *argv, VALUE gv)
@@ -18029,17 +18615,14 @@ ruby_guestfs_mkfs (int argc, VALUE *argv, VALUE gv)
  * 
  * For VFAT and NTFS the "blocksize" parameter is treated
  * as the requested cluster size.
- * 
- * *This function is deprecated.* In new code, use the
- * "mkfs" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkfs_b+[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_b]).
+ * [Since] Added in version 1.0.68.
+ *
+ * [Deprecated] In new code, use rdoc-ref:mkfs instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkfs_b}[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_b].
  */
 static VALUE
 ruby_guestfs_mkfs_b (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev)
@@ -18082,8 +18665,10 @@ ruby_guestfs_mkfs_b (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkfs_btrfs+[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_btrfs]).
+ * [Since] Added in version 1.17.25.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkfs_btrfs}[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_btrfs].
  */
 static VALUE
 ruby_guestfs_mkfs_btrfs (int argc, VALUE *argv, VALUE gv)
@@ -18179,8 +18764,10 @@ ruby_guestfs_mkfs_btrfs (int argc, VALUE *argv, VALUE gv)
  * directory.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mklost_and_found+[http://libguestfs.org/guestfs.3.html#guestfs_mklost_and_found]).
+ * [Since] Added in version 1.19.56.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mklost_and_found}[http://libguestfs.org/guestfs.3.html#guestfs_mklost_and_found].
  */
 static VALUE
 ruby_guestfs_mklost_and_found (VALUE gv, VALUE mountpointv)
@@ -18252,8 +18839,10 @@ ruby_guestfs_mklost_and_found (VALUE gv, VALUE mountpointv)
  * issues.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkmountpoint+[http://libguestfs.org/guestfs.3.html#guestfs_mkmountpoint]).
+ * [Since] Added in version 1.0.62.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkmountpoint}[http://libguestfs.org/guestfs.3.html#guestfs_mkmountpoint].
  */
 static VALUE
 ruby_guestfs_mkmountpoint (VALUE gv, VALUE exemptpathv)
@@ -18299,8 +18888,10 @@ ruby_guestfs_mkmountpoint (VALUE gv, VALUE exemptpathv)
  * The mode actually set is affected by the umask.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mknod+[http://libguestfs.org/guestfs.3.html#guestfs_mknod]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mknod}[http://libguestfs.org/guestfs.3.html#guestfs_mknod].
  */
 static VALUE
 ruby_guestfs_mknod (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv)
@@ -18341,8 +18932,10 @@ ruby_guestfs_mknod (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VAL
  * The mode actually set is affected by the umask.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mknod_b+[http://libguestfs.org/guestfs.3.html#guestfs_mknod_b]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mknod_b}[http://libguestfs.org/guestfs.3.html#guestfs_mknod_b].
  */
 static VALUE
 ruby_guestfs_mknod_b (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv)
@@ -18383,8 +18976,10 @@ ruby_guestfs_mknod_b (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, V
  * The mode actually set is affected by the umask.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mknod_c+[http://libguestfs.org/guestfs.3.html#guestfs_mknod_c]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mknod_c}[http://libguestfs.org/guestfs.3.html#guestfs_mknod_c].
  */
 static VALUE
 ruby_guestfs_mknod_c (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv)
@@ -18424,8 +19019,10 @@ ruby_guestfs_mknod_c (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, V
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkswap+[http://libguestfs.org/guestfs.3.html#guestfs_mkswap]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkswap}[http://libguestfs.org/guestfs.3.html#guestfs_mkswap].
  */
 static VALUE
 ruby_guestfs_mkswap (int argc, VALUE *argv, VALUE gv)
@@ -18478,17 +19075,14 @@ ruby_guestfs_mkswap (int argc, VALUE *argv, VALUE gv)
  * Note that you cannot attach a swap label to a block
  * device (eg. /dev/sda), just to a partition. This appears
  * to be a limitation of the kernel or swap tools.
- * 
- * *This function is deprecated.* In new code, use the
- * "mkswap" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkswap_L+[http://libguestfs.org/guestfs.3.html#guestfs_mkswap_L]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [Deprecated] In new code, use rdoc-ref:mkswap instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkswap_L}[http://libguestfs.org/guestfs.3.html#guestfs_mkswap_L].
  */
 static VALUE
 ruby_guestfs_mkswap_L (VALUE gv, VALUE labelv, VALUE devicev)
@@ -18517,17 +19111,14 @@ ruby_guestfs_mkswap_L (VALUE gv, VALUE labelv, VALUE devicev)
  * create a swap partition with an explicit UUID
  *
  * Create a swap partition on "device" with UUID "uuid".
- * 
- * *This function is deprecated.* In new code, use the
- * "mkswap" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkswap_U+[http://libguestfs.org/guestfs.3.html#guestfs_mkswap_U]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [Deprecated] In new code, use rdoc-ref:mkswap instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkswap_U}[http://libguestfs.org/guestfs.3.html#guestfs_mkswap_U].
  */
 static VALUE
 ruby_guestfs_mkswap_U (VALUE gv, VALUE uuidv, VALUE devicev)
@@ -18562,8 +19153,10 @@ ruby_guestfs_mkswap_U (VALUE gv, VALUE uuidv, VALUE devicev)
  * like "g.fallocate".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mkswap_file+[http://libguestfs.org/guestfs.3.html#guestfs_mkswap_file]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mkswap_file}[http://libguestfs.org/guestfs.3.html#guestfs_mkswap_file].
  */
 static VALUE
 ruby_guestfs_mkswap_file (VALUE gv, VALUE pathv)
@@ -18618,8 +19211,10 @@ ruby_guestfs_mkswap_file (VALUE gv, VALUE pathv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mktemp+[http://libguestfs.org/guestfs.3.html#guestfs_mktemp]).
+ * [Since] Added in version 1.19.53.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mktemp}[http://libguestfs.org/guestfs.3.html#guestfs_mktemp].
  */
 static VALUE
 ruby_guestfs_mktemp (int argc, VALUE *argv, VALUE gv)
@@ -18667,8 +19262,10 @@ ruby_guestfs_mktemp (int argc, VALUE *argv, VALUE gv)
  * This loads a kernel module in the appliance.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_modprobe+[http://libguestfs.org/guestfs.3.html#guestfs_modprobe]).
+ * [Since] Added in version 1.0.68.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_modprobe}[http://libguestfs.org/guestfs.3.html#guestfs_modprobe].
  */
 static VALUE
 ruby_guestfs_modprobe (VALUE gv, VALUE modulenamev)
@@ -18720,8 +19317,10 @@ ruby_guestfs_modprobe (VALUE gv, VALUE modulenamev)
  * don't want any options).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mount+[http://libguestfs.org/guestfs.3.html#guestfs_mount]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mount}[http://libguestfs.org/guestfs.3.html#guestfs_mount].
  */
 static VALUE
 ruby_guestfs_mount (VALUE gv, VALUE mountablev, VALUE mountpointv)
@@ -18761,8 +19360,10 @@ ruby_guestfs_mount (VALUE gv, VALUE mountablev, VALUE mountpointv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mount_9p+[http://libguestfs.org/guestfs.3.html#guestfs_mount_9p]).
+ * [Since] Added in version 1.11.12.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mount_9p}[http://libguestfs.org/guestfs.3.html#guestfs_mount_9p].
  */
 static VALUE
 ruby_guestfs_mount_9p (int argc, VALUE *argv, VALUE gv)
@@ -18838,8 +19439,10 @@ ruby_guestfs_mount_9p (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mount_local+[http://libguestfs.org/guestfs.3.html#guestfs_mount_local]).
+ * [Since] Added in version 1.17.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mount_local}[http://libguestfs.org/guestfs.3.html#guestfs_mount_local].
  */
 static VALUE
 ruby_guestfs_mount_local (int argc, VALUE *argv, VALUE gv)
@@ -18915,8 +19518,10 @@ ruby_guestfs_mount_local (int argc, VALUE *argv, VALUE gv)
  * See "MOUNT LOCAL" in guestfs(3) for full documentation.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mount_local_run+[http://libguestfs.org/guestfs.3.html#guestfs_mount_local_run]).
+ * [Since] Added in version 1.17.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mount_local_run}[http://libguestfs.org/guestfs.3.html#guestfs_mount_local_run].
  */
 static VALUE
 ruby_guestfs_mount_local_run (VALUE gv)
@@ -18947,8 +19552,10 @@ ruby_guestfs_mount_local_run (VALUE gv)
  * the command "mount -o loop file mountpoint".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mount_loop+[http://libguestfs.org/guestfs.3.html#guestfs_mount_loop]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mount_loop}[http://libguestfs.org/guestfs.3.html#guestfs_mount_loop].
  */
 static VALUE
 ruby_guestfs_mount_loop (VALUE gv, VALUE filev, VALUE mountpointv)
@@ -18985,8 +19592,10 @@ ruby_guestfs_mount_loop (VALUE gv, VALUE filev, VALUE mountpointv)
  * filesystem uses).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mount_options+[http://libguestfs.org/guestfs.3.html#guestfs_mount_options]).
+ * [Since] Added in version 1.0.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mount_options}[http://libguestfs.org/guestfs.3.html#guestfs_mount_options].
  */
 static VALUE
 ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE mountablev, VALUE mountpointv)
@@ -19019,8 +19628,10 @@ ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE mountablev, VALUE mo
  * the filesystem with the read-only (*-o ro*) flag.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mount_ro+[http://libguestfs.org/guestfs.3.html#guestfs_mount_ro]).
+ * [Since] Added in version 1.0.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mount_ro}[http://libguestfs.org/guestfs.3.html#guestfs_mount_ro].
  */
 static VALUE
 ruby_guestfs_mount_ro (VALUE gv, VALUE mountablev, VALUE mountpointv)
@@ -19053,8 +19664,10 @@ ruby_guestfs_mount_ro (VALUE gv, VALUE mountablev, VALUE mountpointv)
  * the mount(8) *-o* and *-t* flags.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mount_vfs+[http://libguestfs.org/guestfs.3.html#guestfs_mount_vfs]).
+ * [Since] Added in version 1.0.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mount_vfs}[http://libguestfs.org/guestfs.3.html#guestfs_mount_vfs].
  */
 static VALUE
 ruby_guestfs_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE mountablev, VALUE mountpointv)
@@ -19089,8 +19702,10 @@ ruby_guestfs_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE mountabl
  * device name to directory where the device is mounted.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mountpoints+[http://libguestfs.org/guestfs.3.html#guestfs_mountpoints]).
+ * [Since] Added in version 1.0.62.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mountpoints}[http://libguestfs.org/guestfs.3.html#guestfs_mountpoints].
  */
 static VALUE
 ruby_guestfs_mountpoints (VALUE gv)
@@ -19133,8 +19748,10 @@ ruby_guestfs_mountpoints (VALUE gv)
  * See also: "g.mountpoints"
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mounts+[http://libguestfs.org/guestfs.3.html#guestfs_mounts]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mounts}[http://libguestfs.org/guestfs.3.html#guestfs_mounts].
  */
 static VALUE
 ruby_guestfs_mounts (VALUE gv)
@@ -19174,8 +19791,10 @@ ruby_guestfs_mounts (VALUE gv)
  * See also: "g.rename".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_mv+[http://libguestfs.org/guestfs.3.html#guestfs_mv]).
+ * [Since] Added in version 1.0.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mv}[http://libguestfs.org/guestfs.3.html#guestfs_mv].
  */
 static VALUE
 ruby_guestfs_mv (VALUE gv, VALUE srcv, VALUE destv)
@@ -19211,8 +19830,10 @@ ruby_guestfs_mv (VALUE gv, VALUE srcv, VALUE destv)
  * added, call "g.max_disks".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_nr_devices+[http://libguestfs.org/guestfs.3.html#guestfs_nr_devices]).
+ * [Since] Added in version 1.19.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_nr_devices}[http://libguestfs.org/guestfs.3.html#guestfs_nr_devices].
  */
 static VALUE
 ruby_guestfs_nr_devices (VALUE gv)
@@ -19253,8 +19874,10 @@ ruby_guestfs_nr_devices (VALUE gv)
  * ntfs-3g.probe(8) manual page.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ntfs_3g_probe+[http://libguestfs.org/guestfs.3.html#guestfs_ntfs_3g_probe]).
+ * [Since] Added in version 1.0.43.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ntfs_3g_probe}[http://libguestfs.org/guestfs.3.html#guestfs_ntfs_3g_probe].
  */
 static VALUE
 ruby_guestfs_ntfs_3g_probe (VALUE gv, VALUE rwv, VALUE devicev)
@@ -19287,8 +19910,10 @@ ruby_guestfs_ntfs_3g_probe (VALUE gv, VALUE rwv, VALUE devicev)
  * contents of this device.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ntfsclone_in+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_in]).
+ * [Since] Added in version 1.17.9.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ntfsclone_in}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_in].
  */
 static VALUE
 ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
@@ -19336,8 +19961,10 @@ ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ntfsclone_out+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_out]).
+ * [Since] Added in version 1.17.9.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ntfsclone_out}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_out].
  */
 static VALUE
 ruby_guestfs_ntfsclone_out (int argc, VALUE *argv, VALUE gv)
@@ -19419,8 +20046,10 @@ ruby_guestfs_ntfsclone_out (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ntfsfix+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsfix]).
+ * [Since] Added in version 1.17.9.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ntfsfix}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsfix].
  */
 static VALUE
 ruby_guestfs_ntfsfix (int argc, VALUE *argv, VALUE gv)
@@ -19494,8 +20123,10 @@ ruby_guestfs_ntfsfix (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ntfsresize+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize]).
+ * [Since] Added in version 1.3.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ntfsresize}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize].
  */
 static VALUE
 ruby_guestfs_ntfsresize (int argc, VALUE *argv, VALUE gv)
@@ -19546,17 +20177,14 @@ ruby_guestfs_ntfsresize (int argc, VALUE *argv, VALUE gv)
  * This command is the same as "g.ntfsresize" except that
  * it allows you to specify the new size (in bytes)
  * explicitly.
- * 
- * *This function is deprecated.* In new code, use the
- * "ntfsresize" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ntfsresize_size+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize_size]).
+ * [Since] Added in version 1.3.14.
+ *
+ * [Deprecated] In new code, use rdoc-ref:ntfsresize instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ntfsresize_size}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize_size].
  */
 static VALUE
 ruby_guestfs_ntfsresize_size (VALUE gv, VALUE devicev, VALUE sizev)
@@ -19597,8 +20225,10 @@ ruby_guestfs_ntfsresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  * and "g.parse_environment_list".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_parse_environment+[http://libguestfs.org/guestfs.3.html#guestfs_parse_environment]).
+ * [Since] Added in version 1.19.53.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_parse_environment}[http://libguestfs.org/guestfs.3.html#guestfs_parse_environment].
  */
 static VALUE
 ruby_guestfs_parse_environment (VALUE gv)
@@ -19634,8 +20264,10 @@ ruby_guestfs_parse_environment (VALUE gv)
  * program's environment.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_parse_environment_list+[http://libguestfs.org/guestfs.3.html#guestfs_parse_environment_list]).
+ * [Since] Added in version 1.19.53.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_parse_environment_list}[http://libguestfs.org/guestfs.3.html#guestfs_parse_environment_list].
  */
 static VALUE
 ruby_guestfs_parse_environment_list (VALUE gv, VALUE environmentv)
@@ -19692,8 +20324,10 @@ ruby_guestfs_parse_environment_list (VALUE gv, VALUE environmentv)
  * so easy. Use "g.part_disk" to do that.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_add+[http://libguestfs.org/guestfs.3.html#guestfs_part_add]).
+ * [Since] Added in version 1.0.78.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_add}[http://libguestfs.org/guestfs.3.html#guestfs_part_add].
  */
 static VALUE
 ruby_guestfs_part_add (VALUE gv, VALUE devicev, VALUE prlogexv, VALUE startsectv, VALUE endsectv)
@@ -19731,8 +20365,10 @@ ruby_guestfs_part_add (VALUE gv, VALUE devicev, VALUE prlogexv, VALUE startsectv
  * it contains.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_del+[http://libguestfs.org/guestfs.3.html#guestfs_part_del]).
+ * [Since] Added in version 1.3.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_del}[http://libguestfs.org/guestfs.3.html#guestfs_part_del].
  */
 static VALUE
 ruby_guestfs_part_del (VALUE gv, VALUE devicev, VALUE partnumv)
@@ -19769,8 +20405,10 @@ ruby_guestfs_part_del (VALUE gv, VALUE devicev, VALUE partnumv)
  * "g.part_init".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_disk+[http://libguestfs.org/guestfs.3.html#guestfs_part_disk]).
+ * [Since] Added in version 1.0.78.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_disk}[http://libguestfs.org/guestfs.3.html#guestfs_part_disk].
  */
 static VALUE
 ruby_guestfs_part_disk (VALUE gv, VALUE devicev, VALUE parttypev)
@@ -19804,8 +20442,10 @@ ruby_guestfs_part_disk (VALUE gv, VALUE devicev, VALUE parttypev)
  * See also "g.part_set_bootable".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_get_bootable+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_bootable]).
+ * [Since] Added in version 1.3.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_get_bootable}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_bootable].
  */
 static VALUE
 ruby_guestfs_part_get_bootable (VALUE gv, VALUE devicev, VALUE partnumv)
@@ -19836,8 +20476,10 @@ ruby_guestfs_part_get_bootable (VALUE gv, VALUE devicev, VALUE partnumv)
  * Return the GUID of numbered GPT partition "partnum".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_get_gpt_guid+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_guid]).
+ * [Since] Added in version 1.29.25.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_get_gpt_guid}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_guid].
  */
 static VALUE
 ruby_guestfs_part_get_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv)
@@ -19873,8 +20515,10 @@ ruby_guestfs_part_get_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv)
  * undefined for other partition types.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_get_gpt_type+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_type]).
+ * [Since] Added in version 1.21.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_get_gpt_type}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_type].
  */
 static VALUE
 ruby_guestfs_part_get_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv)
@@ -19912,8 +20556,10 @@ ruby_guestfs_part_get_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv)
  * partition table types (see "g.part_get_parttype").
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_get_mbr_id+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_mbr_id]).
+ * [Since] Added in version 1.3.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_get_mbr_id}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_mbr_id].
  */
 static VALUE
 ruby_guestfs_part_get_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv)
@@ -19947,8 +20593,10 @@ ruby_guestfs_part_get_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv)
  * It returns "primary", "logical", or "extended".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_get_mbr_part_type+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_mbr_part_type]).
+ * [Since] Added in version 1.29.32.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_get_mbr_part_type}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_mbr_part_type].
  */
 static VALUE
 ruby_guestfs_part_get_mbr_part_type (VALUE gv, VALUE devicev, VALUE partnumv)
@@ -19987,8 +20635,10 @@ ruby_guestfs_part_get_mbr_part_type (VALUE gv, VALUE devicev, VALUE partnumv)
  * partitions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_get_name+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_name]).
+ * [Since] Added in version 1.25.33.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_get_name}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_name].
  */
 static VALUE
 ruby_guestfs_part_get_name (VALUE gv, VALUE devicev, VALUE partnumv)
@@ -20028,8 +20678,10 @@ ruby_guestfs_part_get_name (VALUE gv, VALUE devicev, VALUE partnumv)
  * unusual. See "g.part_init" for a full list.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_get_parttype+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_parttype]).
+ * [Since] Added in version 1.0.78.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_get_parttype}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_parttype].
  */
 static VALUE
 ruby_guestfs_part_get_parttype (VALUE gv, VALUE devicev)
@@ -20105,8 +20757,10 @@ ruby_guestfs_part_get_parttype (VALUE gv, VALUE devicev)
  * sun Sun disk labels.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_init+[http://libguestfs.org/guestfs.3.html#guestfs_part_init]).
+ * [Since] Added in version 1.0.78.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_init}[http://libguestfs.org/guestfs.3.html#guestfs_part_init].
  */
 static VALUE
 ruby_guestfs_part_init (VALUE gv, VALUE devicev, VALUE parttypev)
@@ -20154,8 +20808,10 @@ ruby_guestfs_part_init (VALUE gv, VALUE devicev, VALUE parttypev)
  * Size of the partition in bytes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_list+[http://libguestfs.org/guestfs.3.html#guestfs_part_list]).
+ * [Since] Added in version 1.0.78.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_list}[http://libguestfs.org/guestfs.3.html#guestfs_part_list].
  */
 static VALUE
 ruby_guestfs_part_list (VALUE gv, VALUE devicev)
@@ -20202,8 +20858,10 @@ ruby_guestfs_part_list (VALUE gv, VALUE devicev)
  * from. It is by no means universally recognized.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_set_bootable+[http://libguestfs.org/guestfs.3.html#guestfs_part_set_bootable]).
+ * [Since] Added in version 1.0.78.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_set_bootable}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_bootable].
  */
 static VALUE
 ruby_guestfs_part_set_bootable (VALUE gv, VALUE devicev, VALUE partnumv, VALUE bootablev)
@@ -20237,8 +20895,10 @@ ruby_guestfs_part_set_bootable (VALUE gv, VALUE devicev, VALUE partnumv, VALUE b
  * "device" isn't GPT, or if "guid" is not a valid GUID.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_set_gpt_guid+[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_guid]).
+ * [Since] Added in version 1.29.25.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_set_gpt_guid}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_guid].
  */
 static VALUE
 ruby_guestfs_part_set_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv)
@@ -20276,8 +20936,10 @@ ruby_guestfs_part_set_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv, VALUE g
  * tion_type_GUIDs> for a useful list of type GUIDs.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_set_gpt_type+[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_type]).
+ * [Since] Added in version 1.21.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_set_gpt_type}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_type].
  */
 static VALUE
 ruby_guestfs_part_set_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv)
@@ -20317,8 +20979,10 @@ ruby_guestfs_part_set_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv, VALUE g
  * partition table types (see "g.part_get_parttype").
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_set_mbr_id+[http://libguestfs.org/guestfs.3.html#guestfs_part_set_mbr_id]).
+ * [Since] Added in version 1.3.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_set_mbr_id}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_mbr_id].
  */
 static VALUE
 ruby_guestfs_part_set_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv, VALUE idbytev)
@@ -20356,8 +21020,10 @@ ruby_guestfs_part_set_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv, VALUE idb
  * partitions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_set_name+[http://libguestfs.org/guestfs.3.html#guestfs_part_set_name]).
+ * [Since] Added in version 1.0.78.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_set_name}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_name].
  */
 static VALUE
 ruby_guestfs_part_set_name (VALUE gv, VALUE devicev, VALUE partnumv, VALUE namev)
@@ -20396,8 +21062,10 @@ ruby_guestfs_part_set_name (VALUE gv, VALUE devicev, VALUE partnumv, VALUE namev
  * See also "g.part_to_partnum", "g.device_index".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_to_dev+[http://libguestfs.org/guestfs.3.html#guestfs_part_to_dev]).
+ * [Since] Added in version 1.5.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_to_dev}[http://libguestfs.org/guestfs.3.html#guestfs_part_to_dev].
  */
 static VALUE
 ruby_guestfs_part_to_dev (VALUE gv, VALUE partitionv)
@@ -20435,8 +21103,10 @@ ruby_guestfs_part_to_dev (VALUE gv, VALUE partitionv)
  * See also "g.part_to_dev".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_part_to_partnum+[http://libguestfs.org/guestfs.3.html#guestfs_part_to_partnum]).
+ * [Since] Added in version 1.13.25.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_to_partnum}[http://libguestfs.org/guestfs.3.html#guestfs_part_to_partnum].
  */
 static VALUE
 ruby_guestfs_part_to_partnum (VALUE gv, VALUE partitionv)
@@ -20470,8 +21140,10 @@ ruby_guestfs_part_to_partnum (VALUE gv, VALUE partitionv)
  * in any other way.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_ping_daemon+[http://libguestfs.org/guestfs.3.html#guestfs_ping_daemon]).
+ * [Since] Added in version 1.0.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ping_daemon}[http://libguestfs.org/guestfs.3.html#guestfs_ping_daemon].
  */
 static VALUE
 ruby_guestfs_ping_daemon (VALUE gv)
@@ -20511,8 +21183,10 @@ ruby_guestfs_ping_daemon (VALUE gv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pread+[http://libguestfs.org/guestfs.3.html#guestfs_pread]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pread}[http://libguestfs.org/guestfs.3.html#guestfs_pread].
  */
 static VALUE
 ruby_guestfs_pread (VALUE gv, VALUE pathv, VALUE countv, VALUE offsetv)
@@ -20557,8 +21231,10 @@ ruby_guestfs_pread (VALUE gv, VALUE pathv, VALUE countv, VALUE offsetv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pread_device+[http://libguestfs.org/guestfs.3.html#guestfs_pread_device]).
+ * [Since] Added in version 1.5.21.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pread_device}[http://libguestfs.org/guestfs.3.html#guestfs_pread_device].
  */
 static VALUE
 ruby_guestfs_pread_device (VALUE gv, VALUE devicev, VALUE countv, VALUE offsetv)
@@ -20594,8 +21270,10 @@ ruby_guestfs_pread_device (VALUE gv, VALUE devicev, VALUE countv, VALUE offsetv)
  * "device".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pvchange_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_pvchange_uuid]).
+ * [Since] Added in version 1.19.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pvchange_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_pvchange_uuid].
  */
 static VALUE
 ruby_guestfs_pvchange_uuid (VALUE gv, VALUE devicev)
@@ -20625,8 +21303,10 @@ ruby_guestfs_pvchange_uuid (VALUE gv, VALUE devicev)
  * Generate new random UUIDs for all physical volumes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pvchange_uuid_all+[http://libguestfs.org/guestfs.3.html#guestfs_pvchange_uuid_all]).
+ * [Since] Added in version 1.19.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pvchange_uuid_all}[http://libguestfs.org/guestfs.3.html#guestfs_pvchange_uuid_all].
  */
 static VALUE
 ruby_guestfs_pvchange_uuid_all (VALUE gv)
@@ -20657,8 +21337,10 @@ ruby_guestfs_pvchange_uuid_all (VALUE gv)
  * name such as /dev/sda1.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pvcreate+[http://libguestfs.org/guestfs.3.html#guestfs_pvcreate]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pvcreate}[http://libguestfs.org/guestfs.3.html#guestfs_pvcreate].
  */
 static VALUE
 ruby_guestfs_pvcreate (VALUE gv, VALUE devicev)
@@ -20693,8 +21375,10 @@ ruby_guestfs_pvcreate (VALUE gv, VALUE devicev)
  * groups, so you have to remove those first.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pvremove+[http://libguestfs.org/guestfs.3.html#guestfs_pvremove]).
+ * [Since] Added in version 1.0.13.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pvremove}[http://libguestfs.org/guestfs.3.html#guestfs_pvremove].
  */
 static VALUE
 ruby_guestfs_pvremove (VALUE gv, VALUE devicev)
@@ -20726,8 +21410,10 @@ ruby_guestfs_pvremove (VALUE gv, VALUE devicev)
  * device.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pvresize+[http://libguestfs.org/guestfs.3.html#guestfs_pvresize]).
+ * [Since] Added in version 1.0.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pvresize}[http://libguestfs.org/guestfs.3.html#guestfs_pvresize].
  */
 static VALUE
 ruby_guestfs_pvresize (VALUE gv, VALUE devicev)
@@ -20759,8 +21445,10 @@ ruby_guestfs_pvresize (VALUE gv, VALUE devicev)
  * explicitly.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pvresize_size+[http://libguestfs.org/guestfs.3.html#guestfs_pvresize_size]).
+ * [Since] Added in version 1.3.14.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pvresize_size}[http://libguestfs.org/guestfs.3.html#guestfs_pvresize_size].
  */
 static VALUE
 ruby_guestfs_pvresize_size (VALUE gv, VALUE devicev, VALUE sizev)
@@ -20797,8 +21485,10 @@ ruby_guestfs_pvresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  * See also "g.pvs_full".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pvs+[http://libguestfs.org/guestfs.3.html#guestfs_pvs]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pvs}[http://libguestfs.org/guestfs.3.html#guestfs_pvs].
  */
 static VALUE
 ruby_guestfs_pvs (VALUE gv)
@@ -20837,8 +21527,10 @@ ruby_guestfs_pvs (VALUE gv)
  * includes all fields.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pvs_full+[http://libguestfs.org/guestfs.3.html#guestfs_pvs_full]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pvs_full}[http://libguestfs.org/guestfs.3.html#guestfs_pvs_full].
  */
 static VALUE
 ruby_guestfs_pvs_full (VALUE gv)
@@ -20888,8 +21580,10 @@ ruby_guestfs_pvs_full (VALUE gv)
  * This command returns the UUID of the LVM PV "device".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pvuuid+[http://libguestfs.org/guestfs.3.html#guestfs_pvuuid]).
+ * [Since] Added in version 1.0.87.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pvuuid}[http://libguestfs.org/guestfs.3.html#guestfs_pvuuid].
  */
 static VALUE
 ruby_guestfs_pvuuid (VALUE gv, VALUE devicev)
@@ -20936,8 +21630,10 @@ ruby_guestfs_pvuuid (VALUE gv, VALUE devicev)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pwrite+[http://libguestfs.org/guestfs.3.html#guestfs_pwrite]).
+ * [Since] Added in version 1.3.14.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pwrite}[http://libguestfs.org/guestfs.3.html#guestfs_pwrite].
  */
 static VALUE
 ruby_guestfs_pwrite (VALUE gv, VALUE pathv, VALUE contentv, VALUE offsetv)
@@ -20988,8 +21684,10 @@ ruby_guestfs_pwrite (VALUE gv, VALUE pathv, VALUE contentv, VALUE offsetv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_pwrite_device+[http://libguestfs.org/guestfs.3.html#guestfs_pwrite_device]).
+ * [Since] Added in version 1.5.20.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_pwrite_device}[http://libguestfs.org/guestfs.3.html#guestfs_pwrite_device].
  */
 static VALUE
 ruby_guestfs_pwrite_device (VALUE gv, VALUE devicev, VALUE contentv, VALUE offsetv)
@@ -21030,8 +21728,10 @@ ruby_guestfs_pwrite_device (VALUE gv, VALUE devicev, VALUE contentv, VALUE offse
  * that contain embedded ASCII NUL characters.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_read_file+[http://libguestfs.org/guestfs.3.html#guestfs_read_file]).
+ * [Since] Added in version 1.0.63.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_read_file}[http://libguestfs.org/guestfs.3.html#guestfs_read_file].
  */
 static VALUE
 ruby_guestfs_read_file (VALUE gv, VALUE pathv)
@@ -21074,8 +21774,10 @@ ruby_guestfs_read_file (VALUE gv, VALUE pathv)
  * into lines yourself.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_read_lines+[http://libguestfs.org/guestfs.3.html#guestfs_read_lines]).
+ * [Since] Added in version 0.7.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_read_lines}[http://libguestfs.org/guestfs.3.html#guestfs_read_lines].
  */
 static VALUE
 ruby_guestfs_read_lines (VALUE gv, VALUE pathv)
@@ -21149,8 +21851,10 @@ ruby_guestfs_read_lines (VALUE gv, VALUE pathv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_readdir+[http://libguestfs.org/guestfs.3.html#guestfs_readdir]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_readdir}[http://libguestfs.org/guestfs.3.html#guestfs_readdir].
  */
 static VALUE
 ruby_guestfs_readdir (VALUE gv, VALUE dirv)
@@ -21190,8 +21894,10 @@ ruby_guestfs_readdir (VALUE gv, VALUE dirv)
  * This command reads the target of a symbolic link.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_readlink+[http://libguestfs.org/guestfs.3.html#guestfs_readlink]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_readlink}[http://libguestfs.org/guestfs.3.html#guestfs_readlink].
  */
 static VALUE
 ruby_guestfs_readlink (VALUE gv, VALUE pathv)
@@ -21241,8 +21947,10 @@ ruby_guestfs_readlink (VALUE gv, VALUE pathv)
  * many round-trips.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_readlinklist+[http://libguestfs.org/guestfs.3.html#guestfs_readlinklist]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_readlinklist}[http://libguestfs.org/guestfs.3.html#guestfs_readlinklist].
  */
 static VALUE
 ruby_guestfs_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
@@ -21295,8 +22003,10 @@ ruby_guestfs_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
  * elements.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_realpath+[http://libguestfs.org/guestfs.3.html#guestfs_realpath]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_realpath}[http://libguestfs.org/guestfs.3.html#guestfs_realpath].
  */
 static VALUE
 ruby_guestfs_realpath (VALUE gv, VALUE pathv)
@@ -21339,8 +22049,10 @@ ruby_guestfs_realpath (VALUE gv, VALUE pathv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_remount+[http://libguestfs.org/guestfs.3.html#guestfs_remount]).
+ * [Since] Added in version 1.23.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_remount}[http://libguestfs.org/guestfs.3.html#guestfs_remount].
  */
 static VALUE
 ruby_guestfs_remount (int argc, VALUE *argv, VALUE gv)
@@ -21400,8 +22112,10 @@ ruby_guestfs_remount (int argc, VALUE *argv, VALUE gv)
  * and stop you from doing this.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_remove_drive+[http://libguestfs.org/guestfs.3.html#guestfs_remove_drive]).
+ * [Since] Added in version 1.19.49.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_remove_drive}[http://libguestfs.org/guestfs.3.html#guestfs_remove_drive].
  */
 static VALUE
 ruby_guestfs_remove_drive (VALUE gv, VALUE labelv)
@@ -21434,8 +22148,10 @@ ruby_guestfs_remove_drive (VALUE gv, VALUE labelv)
  * See also: "g.lremovexattr", attr(5).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_removexattr+[http://libguestfs.org/guestfs.3.html#guestfs_removexattr]).
+ * [Since] Added in version 1.0.59.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_removexattr}[http://libguestfs.org/guestfs.3.html#guestfs_removexattr].
  */
 static VALUE
 ruby_guestfs_removexattr (VALUE gv, VALUE xattrv, VALUE pathv)
@@ -21468,8 +22184,10 @@ ruby_guestfs_removexattr (VALUE gv, VALUE xattrv, VALUE pathv)
  * most cases you are better to use "g.mv" instead.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_rename+[http://libguestfs.org/guestfs.3.html#guestfs_rename]).
+ * [Since] Added in version 1.21.5.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_rename}[http://libguestfs.org/guestfs.3.html#guestfs_rename].
  */
 static VALUE
 ruby_guestfs_rename (VALUE gv, VALUE oldpathv, VALUE newpathv)
@@ -21503,8 +22221,10 @@ ruby_guestfs_rename (VALUE gv, VALUE oldpathv, VALUE newpathv)
  * See also "RESIZE2FS ERRORS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_resize2fs+[http://libguestfs.org/guestfs.3.html#guestfs_resize2fs]).
+ * [Since] Added in version 1.0.27.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_resize2fs}[http://libguestfs.org/guestfs.3.html#guestfs_resize2fs].
  */
 static VALUE
 ruby_guestfs_resize2fs (VALUE gv, VALUE devicev)
@@ -21544,8 +22264,10 @@ ruby_guestfs_resize2fs (VALUE gv, VALUE devicev)
  * See also "RESIZE2FS ERRORS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_resize2fs_M+[http://libguestfs.org/guestfs.3.html#guestfs_resize2fs_M]).
+ * [Since] Added in version 1.9.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_resize2fs_M}[http://libguestfs.org/guestfs.3.html#guestfs_resize2fs_M].
  */
 static VALUE
 ruby_guestfs_resize2fs_M (VALUE gv, VALUE devicev)
@@ -21579,8 +22301,10 @@ ruby_guestfs_resize2fs_M (VALUE gv, VALUE devicev)
  * See also "RESIZE2FS ERRORS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_resize2fs_size+[http://libguestfs.org/guestfs.3.html#guestfs_resize2fs_size]).
+ * [Since] Added in version 1.3.14.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_resize2fs_size}[http://libguestfs.org/guestfs.3.html#guestfs_resize2fs_size].
  */
 static VALUE
 ruby_guestfs_resize2fs_size (VALUE gv, VALUE devicev, VALUE sizev)
@@ -21611,8 +22335,10 @@ ruby_guestfs_resize2fs_size (VALUE gv, VALUE devicev, VALUE sizev)
  * Remove the single file "path".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_rm+[http://libguestfs.org/guestfs.3.html#guestfs_rm]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_rm}[http://libguestfs.org/guestfs.3.html#guestfs_rm].
  */
 static VALUE
 ruby_guestfs_rm (VALUE gv, VALUE pathv)
@@ -21649,8 +22375,10 @@ ruby_guestfs_rm (VALUE gv, VALUE pathv)
  * directories recursively.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_rm_f+[http://libguestfs.org/guestfs.3.html#guestfs_rm_f]).
+ * [Since] Added in version 1.19.42.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_rm_f}[http://libguestfs.org/guestfs.3.html#guestfs_rm_f].
  */
 static VALUE
 ruby_guestfs_rm_f (VALUE gv, VALUE pathv)
@@ -21682,8 +22410,10 @@ ruby_guestfs_rm_f (VALUE gv, VALUE pathv)
  * the "rm -rf" shell command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_rm_rf+[http://libguestfs.org/guestfs.3.html#guestfs_rm_rf]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_rm_rf}[http://libguestfs.org/guestfs.3.html#guestfs_rm_rf].
  */
 static VALUE
 ruby_guestfs_rm_rf (VALUE gv, VALUE pathv)
@@ -21713,8 +22443,10 @@ ruby_guestfs_rm_rf (VALUE gv, VALUE pathv)
  * Remove the single directory "path".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_rmdir+[http://libguestfs.org/guestfs.3.html#guestfs_rmdir]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_rmdir}[http://libguestfs.org/guestfs.3.html#guestfs_rmdir].
  */
 static VALUE
 ruby_guestfs_rmdir (VALUE gv, VALUE pathv)
@@ -21746,8 +22478,10 @@ ruby_guestfs_rmdir (VALUE gv, VALUE pathv)
  * full details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_rmmountpoint+[http://libguestfs.org/guestfs.3.html#guestfs_rmmountpoint]).
+ * [Since] Added in version 1.0.62.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_rmmountpoint}[http://libguestfs.org/guestfs.3.html#guestfs_rmmountpoint].
  */
 static VALUE
 ruby_guestfs_rmmountpoint (VALUE gv, VALUE exemptpathv)
@@ -21797,8 +22531,10 @@ ruby_guestfs_rmmountpoint (VALUE gv, VALUE exemptpathv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_rsync+[http://libguestfs.org/guestfs.3.html#guestfs_rsync]).
+ * [Since] Added in version 1.19.29.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_rsync}[http://libguestfs.org/guestfs.3.html#guestfs_rsync].
  */
 static VALUE
 ruby_guestfs_rsync (int argc, VALUE *argv, VALUE gv)
@@ -21875,8 +22611,10 @@ ruby_guestfs_rsync (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_rsync_in+[http://libguestfs.org/guestfs.3.html#guestfs_rsync_in]).
+ * [Since] Added in version 1.19.29.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_rsync_in}[http://libguestfs.org/guestfs.3.html#guestfs_rsync_in].
  */
 static VALUE
 ruby_guestfs_rsync_in (int argc, VALUE *argv, VALUE gv)
@@ -21960,8 +22698,10 @@ ruby_guestfs_rsync_in (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_rsync_out+[http://libguestfs.org/guestfs.3.html#guestfs_rsync_out]).
+ * [Since] Added in version 1.19.29.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_rsync_out}[http://libguestfs.org/guestfs.3.html#guestfs_rsync_out].
  */
 static VALUE
 ruby_guestfs_rsync_out (int argc, VALUE *argv, VALUE gv)
@@ -22018,8 +22758,10 @@ ruby_guestfs_rsync_out (int argc, VALUE *argv, VALUE gv)
  * manual page for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_scrub_device+[http://libguestfs.org/guestfs.3.html#guestfs_scrub_device]).
+ * [Since] Added in version 1.0.52.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_scrub_device}[http://libguestfs.org/guestfs.3.html#guestfs_scrub_device].
  */
 static VALUE
 ruby_guestfs_scrub_device (VALUE gv, VALUE devicev)
@@ -22055,8 +22797,10 @@ ruby_guestfs_scrub_device (VALUE gv, VALUE devicev)
  * manual page for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_scrub_file+[http://libguestfs.org/guestfs.3.html#guestfs_scrub_file]).
+ * [Since] Added in version 1.0.52.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_scrub_file}[http://libguestfs.org/guestfs.3.html#guestfs_scrub_file].
  */
 static VALUE
 ruby_guestfs_scrub_file (VALUE gv, VALUE filev)
@@ -22093,8 +22837,10 @@ ruby_guestfs_scrub_file (VALUE gv, VALUE filev)
  * manual page for more details.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_scrub_freespace+[http://libguestfs.org/guestfs.3.html#guestfs_scrub_freespace]).
+ * [Since] Added in version 1.0.52.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_scrub_freespace}[http://libguestfs.org/guestfs.3.html#guestfs_scrub_freespace].
  */
 static VALUE
 ruby_guestfs_scrub_freespace (VALUE gv, VALUE dirv)
@@ -22131,8 +22877,10 @@ ruby_guestfs_scrub_freespace (VALUE gv, VALUE dirv)
  * are passed (libguestfs always adds a few of its own).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_append+[http://libguestfs.org/guestfs.3.html#guestfs_set_append]).
+ * [Since] Added in version 1.0.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_append}[http://libguestfs.org/guestfs.3.html#guestfs_set_append].
  */
 static VALUE
 ruby_guestfs_set_append (VALUE gv, VALUE appendv)
@@ -22163,17 +22911,14 @@ ruby_guestfs_set_append (VALUE gv, VALUE appendv)
  * backend guestfsd daemon.
  * 
  * See "BACKEND" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "set_backend" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_attach_method+[http://libguestfs.org/guestfs.3.html#guestfs_set_attach_method]).
+ * [Since] Added in version 1.9.8.
+ *
+ * [Deprecated] In new code, use rdoc-ref:set_backend instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_attach_method}[http://libguestfs.org/guestfs.3.html#guestfs_set_attach_method].
  */
 static VALUE
 ruby_guestfs_set_attach_method (VALUE gv, VALUE backendv)
@@ -22209,8 +22954,10 @@ ruby_guestfs_set_attach_method (VALUE gv, VALUE backendv)
  * previously it was disabled by default).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_autosync+[http://libguestfs.org/guestfs.3.html#guestfs_set_autosync]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_autosync}[http://libguestfs.org/guestfs.3.html#guestfs_set_autosync].
  */
 static VALUE
 ruby_guestfs_set_autosync (VALUE gv, VALUE autosyncv)
@@ -22246,8 +22993,10 @@ ruby_guestfs_set_autosync (VALUE gv, VALUE autosyncv)
  * See "BACKEND" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_backend+[http://libguestfs.org/guestfs.3.html#guestfs_set_backend]).
+ * [Since] Added in version 1.21.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_backend}[http://libguestfs.org/guestfs.3.html#guestfs_set_backend].
  */
 static VALUE
 ruby_guestfs_set_backend (VALUE gv, VALUE backendv)
@@ -22282,8 +23031,10 @@ ruby_guestfs_set_backend (VALUE gv, VALUE backendv)
  * guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_backend_setting+[http://libguestfs.org/guestfs.3.html#guestfs_set_backend_setting]).
+ * [Since] Added in version 1.27.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_backend_setting}[http://libguestfs.org/guestfs.3.html#guestfs_set_backend_setting].
  */
 static VALUE
 ruby_guestfs_set_backend_setting (VALUE gv, VALUE namev, VALUE valv)
@@ -22330,8 +23081,10 @@ ruby_guestfs_set_backend_setting (VALUE gv, VALUE namev, VALUE valv)
  * guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_backend_settings+[http://libguestfs.org/guestfs.3.html#guestfs_set_backend_settings]).
+ * [Since] Added in version 1.25.24.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_backend_settings}[http://libguestfs.org/guestfs.3.html#guestfs_set_backend_settings].
  */
 static VALUE
 ruby_guestfs_set_backend_settings (VALUE gv, VALUE settingsv)
@@ -22382,8 +23135,10 @@ ruby_guestfs_set_backend_settings (VALUE gv, VALUE settingsv)
  * /var/tmp is the default.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_cachedir+[http://libguestfs.org/guestfs.3.html#guestfs_set_cachedir]).
+ * [Since] Added in version 1.19.58.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_cachedir}[http://libguestfs.org/guestfs.3.html#guestfs_set_cachedir].
  */
 static VALUE
 ruby_guestfs_set_cachedir (VALUE gv, VALUE cachedirv)
@@ -22424,8 +23179,10 @@ ruby_guestfs_set_cachedir (VALUE gv, VALUE cachedirv)
  * The default is disabled.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_direct+[http://libguestfs.org/guestfs.3.html#guestfs_set_direct]).
+ * [Since] Added in version 1.0.72.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_direct}[http://libguestfs.org/guestfs.3.html#guestfs_set_direct].
  */
 static VALUE
 ruby_guestfs_set_direct (VALUE gv, VALUE directv)
@@ -22477,8 +23234,10 @@ ruby_guestfs_set_direct (VALUE gv, VALUE directv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_e2attrs+[http://libguestfs.org/guestfs.3.html#guestfs_set_e2attrs]).
+ * [Since] Added in version 1.17.31.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_e2attrs}[http://libguestfs.org/guestfs.3.html#guestfs_set_e2attrs].
  */
 static VALUE
 ruby_guestfs_set_e2attrs (int argc, VALUE *argv, VALUE gv)
@@ -22528,8 +23287,10 @@ ruby_guestfs_set_e2attrs (int argc, VALUE *argv, VALUE gv)
  * See "g.get_e2generation".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_e2generation+[http://libguestfs.org/guestfs.3.html#guestfs_set_e2generation]).
+ * [Since] Added in version 1.17.31.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_e2generation}[http://libguestfs.org/guestfs.3.html#guestfs_set_e2generation].
  */
 static VALUE
 ruby_guestfs_set_e2generation (VALUE gv, VALUE filev, VALUE generationv)
@@ -22563,17 +23324,14 @@ ruby_guestfs_set_e2generation (VALUE gv, VALUE filev, VALUE generationv)
  * 
  * You can use either "g.tune2fs_l" or "g.get_e2label" to
  * return the existing label on a filesystem.
- * 
- * *This function is deprecated.* In new code, use the
- * "set_label" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_e2label+[http://libguestfs.org/guestfs.3.html#guestfs_set_e2label]).
+ * [Since] Added in version 1.0.15.
+ *
+ * [Deprecated] In new code, use rdoc-ref:set_label instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_e2label}[http://libguestfs.org/guestfs.3.html#guestfs_set_e2label].
  */
 static VALUE
 ruby_guestfs_set_e2label (VALUE gv, VALUE devicev, VALUE labelv)
@@ -22608,17 +23366,14 @@ ruby_guestfs_set_e2label (VALUE gv, VALUE devicev, VALUE labelv)
  * 
  * You can use "g.vfs_uuid" to return the existing UUID of
  * a filesystem.
- * 
- * *This function is deprecated.* In new code, use the
- * "set_uuid" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_e2uuid+[http://libguestfs.org/guestfs.3.html#guestfs_set_e2uuid]).
+ * [Since] Added in version 1.0.15.
+ *
+ * [Deprecated] In new code, use rdoc-ref:set_uuid instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_e2uuid}[http://libguestfs.org/guestfs.3.html#guestfs_set_e2uuid].
  */
 static VALUE
 ruby_guestfs_set_e2uuid (VALUE gv, VALUE devicev, VALUE uuidv)
@@ -22668,8 +23423,10 @@ ruby_guestfs_set_e2uuid (VALUE gv, VALUE devicev, VALUE uuidv)
  * qemu binary at the same time as the handle is created.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_hv+[http://libguestfs.org/guestfs.3.html#guestfs_set_hv]).
+ * [Since] Added in version 1.23.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_hv}[http://libguestfs.org/guestfs.3.html#guestfs_set_hv].
  */
 static VALUE
 ruby_guestfs_set_hv (VALUE gv, VALUE hvv)
@@ -22684,6 +23441,63 @@ ruby_guestfs_set_hv (VALUE gv, VALUE hvv)
   int r;
 
   r = guestfs_set_hv (g, hv);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.set_identifier(identifier) -> nil
+ *
+ * set the handle identifier
+ *
+ * This is an informative string which the caller may
+ * optionally set in the handle. It is printed in various
+ * places, allowing the current handle to be identified in
+ * debugging output.
+ * 
+ * One important place is when tracing is enabled. If the
+ * identifier string is not an empty string, then trace
+ * messages change from this:
+ * 
+ * libguestfs: trace: get_tmpdir
+ * libguestfs: trace: get_tmpdir = "/tmp"
+ * 
+ * to this:
+ * 
+ * libguestfs: trace: ID: get_tmpdir
+ * libguestfs: trace: ID: get_tmpdir = "/tmp"
+ * 
+ * where "ID" is the identifier string set by this call.
+ * 
+ * The identifier must only contain alphanumeric ASCII
+ * characters, underscore and minus sign. The default is
+ * the empty string.
+ * 
+ * See also "g.set_program", "g.set_trace",
+ * "g.get_identifier".
+ *
+ *
+ * [Since] Added in version 1.31.14.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_identifier}[http://libguestfs.org/guestfs.3.html#guestfs_set_identifier].
+ */
+static VALUE
+ruby_guestfs_set_identifier (VALUE gv, VALUE identifierv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_identifier");
+
+  const char *identifier = StringValueCStr (identifierv);
+
+  int r;
+
+  r = guestfs_set_identifier (g, identifier);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -22712,7 +23526,7 @@ ruby_guestfs_set_hv (VALUE gv, VALUE hvv)
  * must not be mounted when trying to set the label.
  * 
  * btrfs
- * The label is limited to 256 bytes and some
+ * The label is limited to 255 bytes and some
  * characters are not allowed. Setting the label on a
  * btrfs subvolume will set the label on its parent
  * filesystem. The filesystem must not be mounted when
@@ -22727,8 +23541,10 @@ ruby_guestfs_set_hv (VALUE gv, VALUE hvv)
  * To read the label on a filesystem, call "g.vfs_label".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_label+[http://libguestfs.org/guestfs.3.html#guestfs_set_label]).
+ * [Since] Added in version 1.17.9.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_label}[http://libguestfs.org/guestfs.3.html#guestfs_set_label].
  */
 static VALUE
 ruby_guestfs_set_label (VALUE gv, VALUE mountablev, VALUE labelv)
@@ -22764,8 +23580,10 @@ ruby_guestfs_set_label (VALUE gv, VALUE mountablev, VALUE labelv)
  * documentation and example code.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_libvirt_requested_credential+[http://libguestfs.org/guestfs.3.html#guestfs_set_libvirt_requested_credential]).
+ * [Since] Added in version 1.19.52.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_libvirt_requested_credential}[http://libguestfs.org/guestfs.3.html#guestfs_set_libvirt_requested_credential].
  */
 static VALUE
 ruby_guestfs_set_libvirt_requested_credential (VALUE gv, VALUE indexv, VALUE credv)
@@ -22822,8 +23640,10 @@ ruby_guestfs_set_libvirt_requested_credential (VALUE gv, VALUE indexv, VALUE cre
  * documentation and example code.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_libvirt_supported_credentials+[http://libguestfs.org/guestfs.3.html#guestfs_set_libvirt_supported_credentials]).
+ * [Since] Added in version 1.19.52.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_libvirt_supported_credentials}[http://libguestfs.org/guestfs.3.html#guestfs_set_libvirt_supported_credentials].
  */
 static VALUE
 ruby_guestfs_set_libvirt_supported_credentials (VALUE gv, VALUE credsv)
@@ -22874,8 +23694,10 @@ ruby_guestfs_set_libvirt_supported_credentials (VALUE gv, VALUE credsv)
  * see guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_memsize+[http://libguestfs.org/guestfs.3.html#guestfs_set_memsize]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_memsize}[http://libguestfs.org/guestfs.3.html#guestfs_set_memsize].
  */
 static VALUE
 ruby_guestfs_set_memsize (VALUE gv, VALUE memsizev)
@@ -22912,8 +23734,10 @@ ruby_guestfs_set_memsize (VALUE gv, VALUE memsizev)
  * it has no effect.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_network+[http://libguestfs.org/guestfs.3.html#guestfs_set_network]).
+ * [Since] Added in version 1.5.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_network}[http://libguestfs.org/guestfs.3.html#guestfs_set_network].
  */
 static VALUE
 ruby_guestfs_set_network (VALUE gv, VALUE networkv)
@@ -22949,8 +23773,10 @@ ruby_guestfs_set_network (VALUE gv, VALUE networkv)
  * Setting "path" to "NULL" restores the default path.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_path+[http://libguestfs.org/guestfs.3.html#guestfs_set_path]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_path}[http://libguestfs.org/guestfs.3.html#guestfs_set_path].
  */
 static VALUE
 ruby_guestfs_set_path (VALUE gv, VALUE searchpathv)
@@ -22991,8 +23817,10 @@ ruby_guestfs_set_path (VALUE gv, VALUE searchpathv)
  * "g.user_cancel").
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_pgroup+[http://libguestfs.org/guestfs.3.html#guestfs_set_pgroup]).
+ * [Since] Added in version 1.11.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_pgroup}[http://libguestfs.org/guestfs.3.html#guestfs_set_pgroup].
  */
 static VALUE
 ruby_guestfs_set_pgroup (VALUE gv, VALUE pgroupv)
@@ -23028,8 +23856,10 @@ ruby_guestfs_set_pgroup (VALUE gv, VALUE pgroupv)
  * never "NULL").
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_program+[http://libguestfs.org/guestfs.3.html#guestfs_set_program]).
+ * [Since] Added in version 1.21.29.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_program}[http://libguestfs.org/guestfs.3.html#guestfs_set_program].
  */
 static VALUE
 ruby_guestfs_set_program (VALUE gv, VALUE programv)
@@ -23075,17 +23905,14 @@ ruby_guestfs_set_program (VALUE gv, VALUE programv)
  * inconsistent results. Using the environment variable
  * "LIBGUESTFS_HV" is safest of all since that picks the
  * qemu binary at the same time as the handle is created.
- * 
- * *This function is deprecated.* In new code, use the
- * "set_hv" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_qemu+[http://libguestfs.org/guestfs.3.html#guestfs_set_qemu]).
+ * [Since] Added in version 1.0.6.
+ *
+ * [Deprecated] In new code, use rdoc-ref:set_hv instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_qemu}[http://libguestfs.org/guestfs.3.html#guestfs_set_qemu].
  */
 static VALUE
 ruby_guestfs_set_qemu (VALUE gv, VALUE hvv)
@@ -23129,8 +23956,10 @@ ruby_guestfs_set_qemu (VALUE gv, VALUE hvv)
  * very helpful.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_recovery_proc+[http://libguestfs.org/guestfs.3.html#guestfs_set_recovery_proc]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_recovery_proc}[http://libguestfs.org/guestfs.3.html#guestfs_set_recovery_proc].
  */
 static VALUE
 ruby_guestfs_set_recovery_proc (VALUE gv, VALUE recoveryprocv)
@@ -23168,8 +23997,10 @@ ruby_guestfs_set_recovery_proc (VALUE gv, VALUE recoveryprocv)
  * see guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_selinux+[http://libguestfs.org/guestfs.3.html#guestfs_set_selinux]).
+ * [Since] Added in version 1.0.67.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_selinux}[http://libguestfs.org/guestfs.3.html#guestfs_set_selinux].
  */
 static VALUE
 ruby_guestfs_set_selinux (VALUE gv, VALUE selinuxv)
@@ -23203,8 +24034,10 @@ ruby_guestfs_set_selinux (VALUE gv, VALUE selinuxv)
  * This function must be called before "g.launch".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_smp+[http://libguestfs.org/guestfs.3.html#guestfs_set_smp]).
+ * [Since] Added in version 1.13.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_smp}[http://libguestfs.org/guestfs.3.html#guestfs_set_smp].
  */
 static VALUE
 ruby_guestfs_set_smp (VALUE gv, VALUE smpv)
@@ -23241,8 +24074,10 @@ ruby_guestfs_set_smp (VALUE gv, VALUE smpv)
  * /tmp is the default.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_tmpdir+[http://libguestfs.org/guestfs.3.html#guestfs_set_tmpdir]).
+ * [Since] Added in version 1.19.58.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_tmpdir}[http://libguestfs.org/guestfs.3.html#guestfs_set_tmpdir].
  */
 static VALUE
 ruby_guestfs_set_tmpdir (VALUE gv, VALUE tmpdirv)
@@ -23284,8 +24119,10 @@ ruby_guestfs_set_tmpdir (VALUE gv, VALUE tmpdirv)
  * "g.set_event_callback").
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_trace+[http://libguestfs.org/guestfs.3.html#guestfs_set_trace]).
+ * [Since] Added in version 1.0.69.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_trace}[http://libguestfs.org/guestfs.3.html#guestfs_set_trace].
  */
 static VALUE
 ruby_guestfs_set_trace (VALUE gv, VALUE tracev)
@@ -23322,8 +24159,10 @@ ruby_guestfs_set_trace (VALUE gv, VALUE tracev)
  * To read the UUID on a filesystem, call "g.vfs_uuid".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_set_uuid]).
+ * [Since] Added in version 1.23.10.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_set_uuid].
  */
 static VALUE
 ruby_guestfs_set_uuid (VALUE gv, VALUE devicev, VALUE uuidv)
@@ -23361,8 +24200,10 @@ ruby_guestfs_set_uuid (VALUE gv, VALUE devicev, VALUE uuidv)
  * To read the UUID on a filesystem, call "g.vfs_uuid".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_uuid_random+[http://libguestfs.org/guestfs.3.html#guestfs_set_uuid_random]).
+ * [Since] Added in version 1.29.50.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_uuid_random}[http://libguestfs.org/guestfs.3.html#guestfs_set_uuid_random].
  */
 static VALUE
 ruby_guestfs_set_uuid_random (VALUE gv, VALUE devicev)
@@ -23399,8 +24240,10 @@ ruby_guestfs_set_uuid_random (VALUE gv, VALUE devicev)
  * "g.set_event_callback").
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_set_verbose+[http://libguestfs.org/guestfs.3.html#guestfs_set_verbose]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_set_verbose}[http://libguestfs.org/guestfs.3.html#guestfs_set_verbose].
  */
 static VALUE
 ruby_guestfs_set_verbose (VALUE gv, VALUE verbosev)
@@ -23433,8 +24276,10 @@ ruby_guestfs_set_verbose (VALUE gv, VALUE verbosev)
  * See the documentation about SELINUX in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_setcon+[http://libguestfs.org/guestfs.3.html#guestfs_setcon]).
+ * [Since] Added in version 1.0.67.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_setcon}[http://libguestfs.org/guestfs.3.html#guestfs_setcon].
  */
 static VALUE
 ruby_guestfs_setcon (VALUE gv, VALUE contextv)
@@ -23468,8 +24313,10 @@ ruby_guestfs_setcon (VALUE gv, VALUE contextv)
  * See also: "g.lsetxattr", attr(5).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_setxattr+[http://libguestfs.org/guestfs.3.html#guestfs_setxattr]).
+ * [Since] Added in version 1.0.59.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_setxattr}[http://libguestfs.org/guestfs.3.html#guestfs_setxattr].
  */
 static VALUE
 ruby_guestfs_setxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE pathv)
@@ -23522,17 +24369,14 @@ ruby_guestfs_setxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE 
  * the single element being the string "," (comma).
  * 
  * See also: "g.sfdisk_l", "g.sfdisk_N", "g.part_init"
- * 
- * *This function is deprecated.* In new code, use the
- * "part_add" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_sfdisk+[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk]).
+ * [Since] Added in version 0.8.
+ *
+ * [Deprecated] In new code, use rdoc-ref:part_add instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_sfdisk}[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk].
  */
 static VALUE
 ruby_guestfs_sfdisk (VALUE gv, VALUE devicev, VALUE cylsv, VALUE headsv, VALUE sectorsv, VALUE linesv)
@@ -23583,17 +24427,14 @@ ruby_guestfs_sfdisk (VALUE gv, VALUE devicev, VALUE cylsv, VALUE headsv, VALUE s
  * 
  * See also: "g.sfdisk", the sfdisk(8) manpage and
  * "g.part_disk"
- * 
- * *This function is deprecated.* In new code, use the
- * "part_add" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_sfdiskM+[http://libguestfs.org/guestfs.3.html#guestfs_sfdiskM]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [Deprecated] In new code, use rdoc-ref:part_add instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_sfdiskM}[http://libguestfs.org/guestfs.3.html#guestfs_sfdiskM].
  */
 static VALUE
 ruby_guestfs_sfdiskM (VALUE gv, VALUE devicev, VALUE linesv)
@@ -23640,17 +24481,14 @@ ruby_guestfs_sfdiskM (VALUE gv, VALUE devicev, VALUE linesv)
  * pass 0 for the cyls/heads/sectors parameters.
  * 
  * See also: "g.part_add"
- * 
- * *This function is deprecated.* In new code, use the
- * "part_add" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_sfdisk_N+[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_N]).
+ * [Since] Added in version 1.0.26.
+ *
+ * [Deprecated] In new code, use rdoc-ref:part_add instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_sfdisk_N}[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_N].
  */
 static VALUE
 ruby_guestfs_sfdisk_N (VALUE gv, VALUE devicev, VALUE partnumv, VALUE cylsv, VALUE headsv, VALUE sectorsv, VALUE linev)
@@ -23692,8 +24530,10 @@ ruby_guestfs_sfdisk_N (VALUE gv, VALUE devicev, VALUE partnumv, VALUE cylsv, VAL
  * to be parsed.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_sfdisk_disk_geometry+[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_disk_geometry]).
+ * [Since] Added in version 1.0.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_sfdisk_disk_geometry}[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_disk_geometry].
  */
 static VALUE
 ruby_guestfs_sfdisk_disk_geometry (VALUE gv, VALUE devicev)
@@ -23729,8 +24569,10 @@ ruby_guestfs_sfdisk_disk_geometry (VALUE gv, VALUE devicev)
  * to be parsed.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_sfdisk_kernel_geometry+[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_kernel_geometry]).
+ * [Since] Added in version 1.0.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_sfdisk_kernel_geometry}[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_kernel_geometry].
  */
 static VALUE
 ruby_guestfs_sfdisk_kernel_geometry (VALUE gv, VALUE devicev)
@@ -23764,17 +24606,14 @@ ruby_guestfs_sfdisk_kernel_geometry (VALUE gv, VALUE devicev)
  * not intended to be parsed.
  * 
  * See also: "g.part_list"
- * 
- * *This function is deprecated.* In new code, use the
- * "part_list" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_sfdisk_l+[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_l]).
+ * [Since] Added in version 1.0.26.
+ *
+ * [Deprecated] In new code, use rdoc-ref:part_list instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_sfdisk_l}[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_l].
  */
 static VALUE
 ruby_guestfs_sfdisk_l (VALUE gv, VALUE devicev)
@@ -23817,8 +24656,10 @@ ruby_guestfs_sfdisk_l (VALUE gv, VALUE devicev)
  * All the provisos about "g.command" apply to this call.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_sh+[http://libguestfs.org/guestfs.3.html#guestfs_sh]).
+ * [Since] Added in version 1.0.50.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_sh}[http://libguestfs.org/guestfs.3.html#guestfs_sh].
  */
 static VALUE
 ruby_guestfs_sh (VALUE gv, VALUE commandv)
@@ -23853,8 +24694,10 @@ ruby_guestfs_sh (VALUE gv, VALUE commandv)
  * See also: "g.command_lines"
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_sh_lines+[http://libguestfs.org/guestfs.3.html#guestfs_sh_lines]).
+ * [Since] Added in version 1.0.50.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_sh_lines}[http://libguestfs.org/guestfs.3.html#guestfs_sh_lines].
  */
 static VALUE
 ruby_guestfs_sh_lines (VALUE gv, VALUE commandv)
@@ -23909,8 +24752,10 @@ ruby_guestfs_sh_lines (VALUE gv, VALUE commandv)
  * but note that any errors are ignored in that case.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_shutdown+[http://libguestfs.org/guestfs.3.html#guestfs_shutdown]).
+ * [Since] Added in version 1.19.16.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_shutdown}[http://libguestfs.org/guestfs.3.html#guestfs_shutdown].
  */
 static VALUE
 ruby_guestfs_shutdown (VALUE gv)
@@ -23939,8 +24784,10 @@ ruby_guestfs_shutdown (VALUE gv)
  * Sleep for "secs" seconds.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_sleep+[http://libguestfs.org/guestfs.3.html#guestfs_sleep]).
+ * [Since] Added in version 1.0.41.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_sleep}[http://libguestfs.org/guestfs.3.html#guestfs_sleep].
  */
 static VALUE
 ruby_guestfs_sleep (VALUE gv, VALUE secsv)
@@ -23970,17 +24817,14 @@ ruby_guestfs_sleep (VALUE gv, VALUE secsv)
  * Returns file information for the given "path".
  * 
  * This is the same as the stat(2) system call.
- * 
- * *This function is deprecated.* In new code, use the
- * "statns" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_stat+[http://libguestfs.org/guestfs.3.html#guestfs_stat]).
+ * [Since] Added in version 1.9.2.
+ *
+ * [Deprecated] In new code, use rdoc-ref:statns instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_stat}[http://libguestfs.org/guestfs.3.html#guestfs_stat].
  */
 static VALUE
 ruby_guestfs_stat (VALUE gv, VALUE pathv)
@@ -24027,8 +24871,10 @@ ruby_guestfs_stat (VALUE gv, VALUE pathv)
  * This is the same as the stat(2) system call.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_statns+[http://libguestfs.org/guestfs.3.html#guestfs_statns]).
+ * [Since] Added in version 1.27.53.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_statns}[http://libguestfs.org/guestfs.3.html#guestfs_statns].
  */
 static VALUE
 ruby_guestfs_statns (VALUE gv, VALUE pathv)
@@ -24087,8 +24933,10 @@ ruby_guestfs_statns (VALUE gv, VALUE pathv)
  * This is the same as the statvfs(2) system call.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_statvfs+[http://libguestfs.org/guestfs.3.html#guestfs_statvfs]).
+ * [Since] Added in version 1.9.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_statvfs}[http://libguestfs.org/guestfs.3.html#guestfs_statvfs].
  */
 static VALUE
 ruby_guestfs_statvfs (VALUE gv, VALUE pathv)
@@ -24141,8 +24989,10 @@ ruby_guestfs_statvfs (VALUE gv, VALUE pathv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_strings+[http://libguestfs.org/guestfs.3.html#guestfs_strings]).
+ * [Since] Added in version 1.0.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_strings}[http://libguestfs.org/guestfs.3.html#guestfs_strings].
  */
 static VALUE
 ruby_guestfs_strings (VALUE gv, VALUE pathv)
@@ -24213,8 +25063,10 @@ ruby_guestfs_strings (VALUE gv, VALUE pathv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_strings_e+[http://libguestfs.org/guestfs.3.html#guestfs_strings_e]).
+ * [Since] Added in version 1.0.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_strings_e}[http://libguestfs.org/guestfs.3.html#guestfs_strings_e].
  */
 static VALUE
 ruby_guestfs_strings_e (VALUE gv, VALUE encodingv, VALUE pathv)
@@ -24255,8 +25107,10 @@ ruby_guestfs_strings_e (VALUE gv, VALUE encodingv, VALUE pathv)
  * "g.swapon_device".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_swapoff_device+[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_device]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_swapoff_device}[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_device].
  */
 static VALUE
 ruby_guestfs_swapoff_device (VALUE gv, VALUE devicev)
@@ -24287,8 +25141,10 @@ ruby_guestfs_swapoff_device (VALUE gv, VALUE devicev)
  * file.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_swapoff_file+[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_file]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_swapoff_file}[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_file].
  */
 static VALUE
 ruby_guestfs_swapoff_file (VALUE gv, VALUE filev)
@@ -24319,8 +25175,10 @@ ruby_guestfs_swapoff_file (VALUE gv, VALUE filev)
  * labeled swap partition.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_swapoff_label+[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_label]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_swapoff_label}[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_label].
  */
 static VALUE
 ruby_guestfs_swapoff_label (VALUE gv, VALUE labelv)
@@ -24351,8 +25209,10 @@ ruby_guestfs_swapoff_label (VALUE gv, VALUE labelv)
  * partition with the given UUID.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_swapoff_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_uuid]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_swapoff_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_uuid].
  */
 static VALUE
 ruby_guestfs_swapoff_uuid (VALUE gv, VALUE uuidv)
@@ -24393,8 +25253,10 @@ ruby_guestfs_swapoff_uuid (VALUE gv, VALUE uuidv)
  * swap on that.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_swapon_device+[http://libguestfs.org/guestfs.3.html#guestfs_swapon_device]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_swapon_device}[http://libguestfs.org/guestfs.3.html#guestfs_swapon_device].
  */
 static VALUE
 ruby_guestfs_swapon_device (VALUE gv, VALUE devicev)
@@ -24425,8 +25287,10 @@ ruby_guestfs_swapon_device (VALUE gv, VALUE devicev)
  * "g.swapon_device" for other notes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_swapon_file+[http://libguestfs.org/guestfs.3.html#guestfs_swapon_file]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_swapon_file}[http://libguestfs.org/guestfs.3.html#guestfs_swapon_file].
  */
 static VALUE
 ruby_guestfs_swapon_file (VALUE gv, VALUE filev)
@@ -24457,8 +25321,10 @@ ruby_guestfs_swapon_file (VALUE gv, VALUE filev)
  * See "g.swapon_device" for other notes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_swapon_label+[http://libguestfs.org/guestfs.3.html#guestfs_swapon_label]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_swapon_label}[http://libguestfs.org/guestfs.3.html#guestfs_swapon_label].
  */
 static VALUE
 ruby_guestfs_swapon_label (VALUE gv, VALUE labelv)
@@ -24489,8 +25355,10 @@ ruby_guestfs_swapon_label (VALUE gv, VALUE labelv)
  * given UUID. See "g.swapon_device" for other notes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_swapon_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_swapon_uuid]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_swapon_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_swapon_uuid].
  */
 static VALUE
 ruby_guestfs_swapon_uuid (VALUE gv, VALUE uuidv)
@@ -24524,8 +25392,10 @@ ruby_guestfs_swapon_uuid (VALUE gv, VALUE uuidv)
  * image, before closing the handle.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_sync+[http://libguestfs.org/guestfs.3.html#guestfs_sync]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_sync}[http://libguestfs.org/guestfs.3.html#guestfs_sync].
  */
 static VALUE
 ruby_guestfs_sync (VALUE gv)
@@ -24583,8 +25453,10 @@ ruby_guestfs_sync (VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_syslinux+[http://libguestfs.org/guestfs.3.html#guestfs_syslinux]).
+ * [Since] Added in version 1.21.27.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_syslinux}[http://libguestfs.org/guestfs.3.html#guestfs_syslinux].
  */
 static VALUE
 ruby_guestfs_syslinux (int argc, VALUE *argv, VALUE gv)
@@ -24635,8 +25507,10 @@ ruby_guestfs_syslinux (int argc, VALUE *argv, VALUE gv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_tail+[http://libguestfs.org/guestfs.3.html#guestfs_tail]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_tail}[http://libguestfs.org/guestfs.3.html#guestfs_tail].
  */
 static VALUE
 ruby_guestfs_tail (VALUE gv, VALUE pathv)
@@ -24686,8 +25560,10 @@ ruby_guestfs_tail (VALUE gv, VALUE pathv)
  * LIMITS" in guestfs(3).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_tail_n+[http://libguestfs.org/guestfs.3.html#guestfs_tail_n]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_tail_n}[http://libguestfs.org/guestfs.3.html#guestfs_tail_n].
  */
 static VALUE
 ruby_guestfs_tail_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
@@ -24734,13 +25610,29 @@ ruby_guestfs_tail_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
  * not all builds of libguestfs will support all of these
  * compression types).
  * 
+ * The other optional arguments are:
+ * 
+ * "xattrs"
+ * If set to true, extended attributes are restored
+ * from the tar file.
+ * 
+ * "selinux"
+ * If set to true, SELinux contexts are restored from
+ * the tar file.
+ * 
+ * "acls"
+ * If set to true, POSIX ACLs are restored from the tar
+ * file.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_tar_in+[http://libguestfs.org/guestfs.3.html#guestfs_tar_in]).
+ * [Since] Added in version 1.0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_tar_in}[http://libguestfs.org/guestfs.3.html#guestfs_tar_in].
  */
 static VALUE
 ruby_guestfs_tar_in (int argc, VALUE *argv, VALUE gv)
@@ -24768,6 +25660,21 @@ ruby_guestfs_tar_in (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.compress = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("xattrs")));
+  if (v != Qnil) {
+    optargs_s.xattrs = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("selinux")));
+  if (v != Qnil) {
+    optargs_s.selinux = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("acls")));
+  if (v != Qnil) {
+    optargs_s.acls = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_ACLS_BITMASK;
   }
 
   int r;
@@ -24806,13 +25713,27 @@ ruby_guestfs_tar_in (int argc, VALUE *argv, VALUE gv)
  * If set to true, the output tar file will contain
  * UID/GID numbers instead of user/group names.
  * 
+ * "xattrs"
+ * If set to true, extended attributes are saved in the
+ * output tar.
+ * 
+ * "selinux"
+ * If set to true, SELinux contexts are saved in the
+ * output tar.
+ * 
+ * "acls"
+ * If set to true, POSIX ACLs are saved in the output
+ * tar.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_tar_out+[http://libguestfs.org/guestfs.3.html#guestfs_tar_out]).
+ * [Since] Added in version 1.0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_tar_out}[http://libguestfs.org/guestfs.3.html#guestfs_tar_out].
  */
 static VALUE
 ruby_guestfs_tar_out (int argc, VALUE *argv, VALUE gv)
@@ -24864,6 +25785,21 @@ ruby_guestfs_tar_out (int argc, VALUE *argv, VALUE gv)
   }
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
   }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("xattrs")));
+  if (v != Qnil) {
+    optargs_s.xattrs = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("selinux")));
+  if (v != Qnil) {
+    optargs_s.selinux = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_SELINUX_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("acls")));
+  if (v != Qnil) {
+    optargs_s.acls = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_ACLS_BITMASK;
+  }
 
   int r;
 
@@ -24882,17 +25818,14 @@ ruby_guestfs_tar_out (int argc, VALUE *argv, VALUE gv)
  *
  * This command uploads and unpacks local file "tarball" (a
  * *gzip compressed* tar file) into directory.
- * 
- * *This function is deprecated.* In new code, use the
- * "tar_in" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_tgz_in+[http://libguestfs.org/guestfs.3.html#guestfs_tgz_in]).
+ * [Since] Added in version 1.0.3.
+ *
+ * [Deprecated] In new code, use rdoc-ref:tar_in instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_tgz_in}[http://libguestfs.org/guestfs.3.html#guestfs_tgz_in].
  */
 static VALUE
 ruby_guestfs_tgz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
@@ -24922,17 +25855,14 @@ ruby_guestfs_tgz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
  *
  * This command packs the contents of directory and
  * downloads it to local file "tarball".
- * 
- * *This function is deprecated.* In new code, use the
- * "tar_out" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_tgz_out+[http://libguestfs.org/guestfs.3.html#guestfs_tgz_out]).
+ * [Since] Added in version 1.0.3.
+ *
+ * [Deprecated] In new code, use rdoc-ref:tar_out instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_tgz_out}[http://libguestfs.org/guestfs.3.html#guestfs_tgz_out].
  */
 static VALUE
 ruby_guestfs_tgz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
@@ -24969,8 +25899,10 @@ ruby_guestfs_tgz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
  * block special etc.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_touch+[http://libguestfs.org/guestfs.3.html#guestfs_touch]).
+ * [Since] Added in version 0.3.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_touch}[http://libguestfs.org/guestfs.3.html#guestfs_touch].
  */
 static VALUE
 ruby_guestfs_touch (VALUE gv, VALUE pathv)
@@ -25001,8 +25933,10 @@ ruby_guestfs_touch (VALUE gv, VALUE pathv)
  * file must exist already.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_truncate+[http://libguestfs.org/guestfs.3.html#guestfs_truncate]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_truncate}[http://libguestfs.org/guestfs.3.html#guestfs_truncate].
  */
 static VALUE
 ruby_guestfs_truncate (VALUE gv, VALUE pathv)
@@ -25040,8 +25974,10 @@ ruby_guestfs_truncate (VALUE gv, VALUE pathv)
  * instead.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_truncate_size+[http://libguestfs.org/guestfs.3.html#guestfs_truncate_size]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_truncate_size}[http://libguestfs.org/guestfs.3.html#guestfs_truncate_size].
  */
 static VALUE
 ruby_guestfs_truncate_size (VALUE gv, VALUE pathv, VALUE sizev)
@@ -25138,8 +26074,10 @@ ruby_guestfs_truncate_size (VALUE gv, VALUE pathv, VALUE sizev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_tune2fs+[http://libguestfs.org/guestfs.3.html#guestfs_tune2fs]).
+ * [Since] Added in version 1.15.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_tune2fs}[http://libguestfs.org/guestfs.3.html#guestfs_tune2fs].
  */
 static VALUE
 ruby_guestfs_tune2fs (int argc, VALUE *argv, VALUE gv)
@@ -25237,8 +26175,10 @@ ruby_guestfs_tune2fs (int argc, VALUE *argv, VALUE gv)
  * and the filesystem itself.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_tune2fs_l+[http://libguestfs.org/guestfs.3.html#guestfs_tune2fs_l]).
+ * [Since] Added in version 1.9.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_tune2fs_l}[http://libguestfs.org/guestfs.3.html#guestfs_tune2fs_l].
  */
 static VALUE
 ruby_guestfs_tune2fs_l (VALUE gv, VALUE devicev)
@@ -25275,17 +26215,14 @@ ruby_guestfs_tune2fs_l (VALUE gv, VALUE devicev)
  *
  * This command uploads and unpacks local file "tarball"
  * (an *xz compressed* tar file) into directory.
- * 
- * *This function is deprecated.* In new code, use the
- * "tar_in" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_txz_in+[http://libguestfs.org/guestfs.3.html#guestfs_txz_in]).
+ * [Since] Added in version 1.3.2.
+ *
+ * [Deprecated] In new code, use rdoc-ref:tar_in instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_txz_in}[http://libguestfs.org/guestfs.3.html#guestfs_txz_in].
  */
 static VALUE
 ruby_guestfs_txz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
@@ -25316,17 +26253,14 @@ ruby_guestfs_txz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
  * This command packs the contents of directory and
  * downloads it to local file "tarball" (as an xz
  * compressed tar archive).
- * 
- * *This function is deprecated.* In new code, use the
- * "tar_out" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_txz_out+[http://libguestfs.org/guestfs.3.html#guestfs_txz_out]).
+ * [Since] Added in version 1.3.2.
+ *
+ * [Deprecated] In new code, use rdoc-ref:tar_out instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_txz_out}[http://libguestfs.org/guestfs.3.html#guestfs_txz_out].
  */
 static VALUE
 ruby_guestfs_txz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
@@ -25371,8 +26305,10 @@ ruby_guestfs_txz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
  * This call returns the previous umask.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_umask+[http://libguestfs.org/guestfs.3.html#guestfs_umask]).
+ * [Since] Added in version 1.0.55.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_umask}[http://libguestfs.org/guestfs.3.html#guestfs_umask].
  */
 static VALUE
 ruby_guestfs_umask (VALUE gv, VALUE maskv)
@@ -25408,8 +26344,10 @@ ruby_guestfs_umask (VALUE gv, VALUE maskv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_umount+[http://libguestfs.org/guestfs.3.html#guestfs_umount]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_umount}[http://libguestfs.org/guestfs.3.html#guestfs_umount].
  */
 static VALUE
 ruby_guestfs_umount (int argc, VALUE *argv, VALUE gv)
@@ -25462,8 +26400,10 @@ ruby_guestfs_umount (int argc, VALUE *argv, VALUE gv)
  * Some internal mounts are not unmounted by this call.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_umount_all+[http://libguestfs.org/guestfs.3.html#guestfs_umount_all]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_umount_all}[http://libguestfs.org/guestfs.3.html#guestfs_umount_all].
  */
 static VALUE
 ruby_guestfs_umount_all (VALUE gv)
@@ -25499,8 +26439,10 @@ ruby_guestfs_umount_all (VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_umount_local+[http://libguestfs.org/guestfs.3.html#guestfs_umount_local]).
+ * [Since] Added in version 1.17.22.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_umount_local}[http://libguestfs.org/guestfs.3.html#guestfs_umount_local].
  */
 static VALUE
 ruby_guestfs_umount_local (int argc, VALUE *argv, VALUE gv)
@@ -25549,8 +26491,10 @@ ruby_guestfs_umount_local (int argc, VALUE *argv, VALUE gv)
  * See also "g.download".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_upload+[http://libguestfs.org/guestfs.3.html#guestfs_upload]).
+ * [Since] Added in version 1.0.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_upload}[http://libguestfs.org/guestfs.3.html#guestfs_upload].
  */
 static VALUE
 ruby_guestfs_upload (VALUE gv, VALUE filenamev, VALUE remotefilenamev)
@@ -25596,8 +26540,10 @@ ruby_guestfs_upload (VALUE gv, VALUE filenamev, VALUE remotefilenamev)
  * See also "g.upload", "g.pwrite".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_upload_offset+[http://libguestfs.org/guestfs.3.html#guestfs_upload_offset]).
+ * [Since] Added in version 1.5.17.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_upload_offset}[http://libguestfs.org/guestfs.3.html#guestfs_upload_offset].
  */
 static VALUE
 ruby_guestfs_upload_offset (VALUE gv, VALUE filenamev, VALUE remotefilenamev, VALUE offsetv)
@@ -25659,8 +26605,10 @@ ruby_guestfs_upload_offset (VALUE gv, VALUE filenamev, VALUE remotefilenamev, VA
  * the cancel button to call this function.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_user_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_user_cancel]).
+ * [Since] Added in version 1.11.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_user_cancel}[http://libguestfs.org/guestfs.3.html#guestfs_user_cancel].
  */
 static VALUE
 ruby_guestfs_user_cancel (VALUE gv)
@@ -25704,8 +26652,10 @@ ruby_guestfs_user_cancel (VALUE gv)
  * *secs field is ignored in this case).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_utimens+[http://libguestfs.org/guestfs.3.html#guestfs_utimens]).
+ * [Since] Added in version 1.0.77.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_utimens}[http://libguestfs.org/guestfs.3.html#guestfs_utimens].
  */
 static VALUE
 ruby_guestfs_utimens (VALUE gv, VALUE pathv, VALUE atsecsv, VALUE atnsecsv, VALUE mtsecsv, VALUE mtnsecsv)
@@ -25742,8 +26692,10 @@ ruby_guestfs_utimens (VALUE gv, VALUE pathv, VALUE atsecsv, VALUE atnsecsv, VALU
  * by the API.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_utsname+[http://libguestfs.org/guestfs.3.html#guestfs_utsname]).
+ * [Since] Added in version 1.19.27.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_utsname}[http://libguestfs.org/guestfs.3.html#guestfs_utsname].
  */
 static VALUE
 ruby_guestfs_utsname (VALUE gv)
@@ -25808,8 +26760,10 @@ ruby_guestfs_utsname (VALUE gv)
  * "g.available" or "g.feature_available" instead.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_version+[http://libguestfs.org/guestfs.3.html#guestfs_version]).
+ * [Since] Added in version 1.0.58.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_version}[http://libguestfs.org/guestfs.3.html#guestfs_version].
  */
 static VALUE
 ruby_guestfs_version (VALUE gv)
@@ -25850,8 +26804,10 @@ ruby_guestfs_version (VALUE gv)
  * "g.findfs_label".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vfs_label+[http://libguestfs.org/guestfs.3.html#guestfs_vfs_label]).
+ * [Since] Added in version 1.3.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vfs_label}[http://libguestfs.org/guestfs.3.html#guestfs_vfs_label].
  */
 static VALUE
 ruby_guestfs_vfs_label (VALUE gv, VALUE mountablev)
@@ -25876,6 +26832,46 @@ ruby_guestfs_vfs_label (VALUE gv, VALUE mountablev)
 
 /*
  * call-seq:
+ *   g.vfs_minimum_size(mountable) -> fixnum
+ *
+ * get minimum filesystem size
+ *
+ * Get the minimum size of filesystem in bytes. This is the
+ * minimum possible size for filesystem shrinking.
+ * 
+ * If getting minimum size of specified filesystem is not
+ * supported, this will fail and set errno as ENOTSUP.
+ * 
+ * See also ntfsresize(8), resize2fs(8), btrfs(8),
+ * xfs_info(8).
+ *
+ *
+ * [Since] Added in version 1.31.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vfs_minimum_size}[http://libguestfs.org/guestfs.3.html#guestfs_vfs_minimum_size].
+ */
+static VALUE
+ruby_guestfs_vfs_minimum_size (VALUE gv, VALUE mountablev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "vfs_minimum_size");
+
+  const char *mountable = StringValueCStr (mountablev);
+
+  int64_t r;
+
+  r = guestfs_vfs_minimum_size (g, mountable);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
  *   g.vfs_type(mountable) -> string
  *
  * get the Linux VFS type corresponding to a mounted device
@@ -25890,8 +26886,10 @@ ruby_guestfs_vfs_label (VALUE gv, VALUE mountablev)
  * "ntfs".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vfs_type+[http://libguestfs.org/guestfs.3.html#guestfs_vfs_type]).
+ * [Since] Added in version 1.0.75.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vfs_type}[http://libguestfs.org/guestfs.3.html#guestfs_vfs_type].
  */
 static VALUE
 ruby_guestfs_vfs_type (VALUE gv, VALUE mountablev)
@@ -25929,8 +26927,10 @@ ruby_guestfs_vfs_type (VALUE gv, VALUE mountablev)
  * To find a filesystem from the UUID, use "g.findfs_uuid".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vfs_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_vfs_uuid]).
+ * [Since] Added in version 1.3.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vfs_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_vfs_uuid].
  */
 static VALUE
 ruby_guestfs_vfs_uuid (VALUE gv, VALUE mountablev)
@@ -25970,8 +26970,10 @@ ruby_guestfs_vfs_uuid (VALUE gv, VALUE mountablev)
  * volume groups are activated or deactivated.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vg_activate+[http://libguestfs.org/guestfs.3.html#guestfs_vg_activate]).
+ * [Since] Added in version 1.0.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vg_activate}[http://libguestfs.org/guestfs.3.html#guestfs_vg_activate].
  */
 static VALUE
 ruby_guestfs_vg_activate (VALUE gv, VALUE activatev, VALUE volgroupsv)
@@ -26017,8 +27019,10 @@ ruby_guestfs_vg_activate (VALUE gv, VALUE activatev, VALUE volgroupsv)
  * This command is the same as running "vgchange -a y|n"
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vg_activate_all+[http://libguestfs.org/guestfs.3.html#guestfs_vg_activate_all]).
+ * [Since] Added in version 1.0.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vg_activate_all}[http://libguestfs.org/guestfs.3.html#guestfs_vg_activate_all].
  */
 static VALUE
 ruby_guestfs_vg_activate_all (VALUE gv, VALUE activatev)
@@ -26048,8 +27052,10 @@ ruby_guestfs_vg_activate_all (VALUE gv, VALUE activatev)
  * Generate a new random UUID for the volume group "vg".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vgchange_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_vgchange_uuid]).
+ * [Since] Added in version 1.19.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vgchange_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_vgchange_uuid].
  */
 static VALUE
 ruby_guestfs_vgchange_uuid (VALUE gv, VALUE vgv)
@@ -26079,8 +27085,10 @@ ruby_guestfs_vgchange_uuid (VALUE gv, VALUE vgv)
  * Generate new random UUIDs for all volume groups.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vgchange_uuid_all+[http://libguestfs.org/guestfs.3.html#guestfs_vgchange_uuid_all]).
+ * [Since] Added in version 1.19.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vgchange_uuid_all}[http://libguestfs.org/guestfs.3.html#guestfs_vgchange_uuid_all].
  */
 static VALUE
 ruby_guestfs_vgchange_uuid_all (VALUE gv)
@@ -26110,8 +27118,10 @@ ruby_guestfs_vgchange_uuid_all (VALUE gv)
  * the non-empty list of physical volumes "physvols".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vgcreate+[http://libguestfs.org/guestfs.3.html#guestfs_vgcreate]).
+ * [Since] Added in version 0.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vgcreate}[http://libguestfs.org/guestfs.3.html#guestfs_vgcreate].
  */
 static VALUE
 ruby_guestfs_vgcreate (VALUE gv, VALUE volgroupv, VALUE physvolsv)
@@ -26160,8 +27170,10 @@ ruby_guestfs_vgcreate (VALUE gv, VALUE volgroupv, VALUE physvolsv)
  * See also "g.vgpvuuids".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vglvuuids+[http://libguestfs.org/guestfs.3.html#guestfs_vglvuuids]).
+ * [Since] Added in version 1.0.87.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vglvuuids}[http://libguestfs.org/guestfs.3.html#guestfs_vglvuuids].
  */
 static VALUE
 ruby_guestfs_vglvuuids (VALUE gv, VALUE vgnamev)
@@ -26204,8 +27216,10 @@ ruby_guestfs_vglvuuids (VALUE gv, VALUE vgnamev)
  * information only.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vgmeta+[http://libguestfs.org/guestfs.3.html#guestfs_vgmeta]).
+ * [Since] Added in version 1.17.20.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vgmeta}[http://libguestfs.org/guestfs.3.html#guestfs_vgmeta].
  */
 static VALUE
 ruby_guestfs_vgmeta (VALUE gv, VALUE vgnamev)
@@ -26245,8 +27259,10 @@ ruby_guestfs_vgmeta (VALUE gv, VALUE vgnamev)
  * See also "g.vglvuuids".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vgpvuuids+[http://libguestfs.org/guestfs.3.html#guestfs_vgpvuuids]).
+ * [Since] Added in version 1.0.87.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vgpvuuids}[http://libguestfs.org/guestfs.3.html#guestfs_vgpvuuids].
  */
 static VALUE
 ruby_guestfs_vgpvuuids (VALUE gv, VALUE vgnamev)
@@ -26287,8 +27303,10 @@ ruby_guestfs_vgpvuuids (VALUE gv, VALUE vgnamev)
  * volume group (if any).
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vgremove+[http://libguestfs.org/guestfs.3.html#guestfs_vgremove]).
+ * [Since] Added in version 1.0.13.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vgremove}[http://libguestfs.org/guestfs.3.html#guestfs_vgremove].
  */
 static VALUE
 ruby_guestfs_vgremove (VALUE gv, VALUE vgnamev)
@@ -26319,8 +27337,10 @@ ruby_guestfs_vgremove (VALUE gv, VALUE vgnamev)
  * "newvolgroup".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vgrename+[http://libguestfs.org/guestfs.3.html#guestfs_vgrename]).
+ * [Since] Added in version 1.0.83.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vgrename}[http://libguestfs.org/guestfs.3.html#guestfs_vgrename].
  */
 static VALUE
 ruby_guestfs_vgrename (VALUE gv, VALUE volgroupv, VALUE newvolgroupv)
@@ -26357,8 +27377,10 @@ ruby_guestfs_vgrename (VALUE gv, VALUE volgroupv, VALUE newvolgroupv)
  * See also "g.vgs_full".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vgs+[http://libguestfs.org/guestfs.3.html#guestfs_vgs]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vgs}[http://libguestfs.org/guestfs.3.html#guestfs_vgs].
  */
 static VALUE
 ruby_guestfs_vgs (VALUE gv)
@@ -26397,8 +27419,10 @@ ruby_guestfs_vgs (VALUE gv)
  * includes all fields.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vgs_full+[http://libguestfs.org/guestfs.3.html#guestfs_vgs_full]).
+ * [Since] Added in version 0.4.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vgs_full}[http://libguestfs.org/guestfs.3.html#guestfs_vgs_full].
  */
 static VALUE
 ruby_guestfs_vgs_full (VALUE gv)
@@ -26454,8 +27478,10 @@ ruby_guestfs_vgs_full (VALUE gv)
  * LVM physical volumes, volume groups and logical volumes.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vgscan+[http://libguestfs.org/guestfs.3.html#guestfs_vgscan]).
+ * [Since] Added in version 1.3.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vgscan}[http://libguestfs.org/guestfs.3.html#guestfs_vgscan].
  */
 static VALUE
 ruby_guestfs_vgscan (VALUE gv)
@@ -26485,8 +27511,10 @@ ruby_guestfs_vgscan (VALUE gv)
  * "vgname".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_vguuid+[http://libguestfs.org/guestfs.3.html#guestfs_vguuid]).
+ * [Since] Added in version 1.0.87.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_vguuid}[http://libguestfs.org/guestfs.3.html#guestfs_vguuid].
  */
 static VALUE
 ruby_guestfs_vguuid (VALUE gv, VALUE vgnamev)
@@ -26525,17 +27553,14 @@ ruby_guestfs_vguuid (VALUE gv, VALUE vgnamev)
  * If you see any calls to this function in code then you
  * can just remove them, unless you want to retain
  * compatibility with older versions of the API.
- * 
- * *This function is deprecated.* In new code, use the
- * "launch" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_wait_ready+[http://libguestfs.org/guestfs.3.html#guestfs_wait_ready]).
+ * [Since] Added in version 0.3.
+ *
+ * [Deprecated] In new code, use rdoc-ref:launch instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_wait_ready}[http://libguestfs.org/guestfs.3.html#guestfs_wait_ready].
  */
 static VALUE
 ruby_guestfs_wait_ready (VALUE gv)
@@ -26565,8 +27590,10 @@ ruby_guestfs_wait_ready (VALUE gv)
  * "wc -c" external command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_wc_c+[http://libguestfs.org/guestfs.3.html#guestfs_wc_c]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_wc_c}[http://libguestfs.org/guestfs.3.html#guestfs_wc_c].
  */
 static VALUE
 ruby_guestfs_wc_c (VALUE gv, VALUE pathv)
@@ -26597,8 +27624,10 @@ ruby_guestfs_wc_c (VALUE gv, VALUE pathv)
  * -l" external command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_wc_l+[http://libguestfs.org/guestfs.3.html#guestfs_wc_l]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_wc_l}[http://libguestfs.org/guestfs.3.html#guestfs_wc_l].
  */
 static VALUE
 ruby_guestfs_wc_l (VALUE gv, VALUE pathv)
@@ -26629,8 +27658,10 @@ ruby_guestfs_wc_l (VALUE gv, VALUE pathv)
  * -w" external command.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_wc_w+[http://libguestfs.org/guestfs.3.html#guestfs_wc_w]).
+ * [Since] Added in version 1.0.54.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_wc_w}[http://libguestfs.org/guestfs.3.html#guestfs_wc_w].
  */
 static VALUE
 ruby_guestfs_wc_w (VALUE gv, VALUE pathv)
@@ -26668,8 +27699,10 @@ ruby_guestfs_wc_w (VALUE gv, VALUE pathv)
  * of a device.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_wipefs+[http://libguestfs.org/guestfs.3.html#guestfs_wipefs]).
+ * [Since] Added in version 1.17.6.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_wipefs}[http://libguestfs.org/guestfs.3.html#guestfs_wipefs].
  */
 static VALUE
 ruby_guestfs_wipefs (VALUE gv, VALUE devicev)
@@ -26703,8 +27736,10 @@ ruby_guestfs_wipefs (VALUE gv, VALUE devicev)
  * See also "g.write_append".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_write+[http://libguestfs.org/guestfs.3.html#guestfs_write]).
+ * [Since] Added in version 1.3.14.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_write}[http://libguestfs.org/guestfs.3.html#guestfs_write].
  */
 static VALUE
 ruby_guestfs_write (VALUE gv, VALUE pathv, VALUE contentv)
@@ -26743,8 +27778,10 @@ ruby_guestfs_write (VALUE gv, VALUE pathv, VALUE contentv)
  * See also "g.write".
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_write_append+[http://libguestfs.org/guestfs.3.html#guestfs_write_append]).
+ * [Since] Added in version 1.11.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_write_append}[http://libguestfs.org/guestfs.3.html#guestfs_write_append].
  */
 static VALUE
 ruby_guestfs_write_append (VALUE gv, VALUE pathv, VALUE contentv)
@@ -26792,17 +27829,14 @@ ruby_guestfs_write_append (VALUE gv, VALUE pathv, VALUE contentv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "write" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_write_file+[http://libguestfs.org/guestfs.3.html#guestfs_write_file]).
+ * [Since] Added in version 0.8.
+ *
+ * [Deprecated] In new code, use rdoc-ref:write instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_write_file}[http://libguestfs.org/guestfs.3.html#guestfs_write_file].
  */
 static VALUE
 ruby_guestfs_write_file (VALUE gv, VALUE pathv, VALUE contentv, VALUE sizev)
@@ -26846,8 +27880,10 @@ ruby_guestfs_write_file (VALUE gv, VALUE pathv, VALUE contentv, VALUE sizev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_xfs_admin+[http://libguestfs.org/guestfs.3.html#guestfs_xfs_admin]).
+ * [Since] Added in version 1.19.33.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_xfs_admin}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_admin].
  */
 static VALUE
 ruby_guestfs_xfs_admin (int argc, VALUE *argv, VALUE gv)
@@ -26931,8 +27967,10 @@ ruby_guestfs_xfs_admin (int argc, VALUE *argv, VALUE gv)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_xfs_growfs+[http://libguestfs.org/guestfs.3.html#guestfs_xfs_growfs]).
+ * [Since] Added in version 1.19.28.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_xfs_growfs}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_growfs].
  */
 static VALUE
 ruby_guestfs_xfs_growfs (int argc, VALUE *argv, VALUE gv)
@@ -27019,8 +28057,10 @@ ruby_guestfs_xfs_growfs (int argc, VALUE *argv, VALUE gv)
  * or empty string.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_xfs_info+[http://libguestfs.org/guestfs.3.html#guestfs_xfs_info]).
+ * [Since] Added in version 1.19.21.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_xfs_info}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_info].
  */
 static VALUE
 ruby_guestfs_xfs_info (VALUE gv, VALUE pathordevicev)
@@ -27096,8 +28136,10 @@ ruby_guestfs_xfs_info (VALUE gv, VALUE pathordevicev)
  * value. Pass an empty {} for no optional arguments.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_xfs_repair+[http://libguestfs.org/guestfs.3.html#guestfs_xfs_repair]).
+ * [Since] Added in version 1.19.36.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_xfs_repair}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_repair].
  */
 static VALUE
 ruby_guestfs_xfs_repair (int argc, VALUE *argv, VALUE gv)
@@ -27191,17 +28233,14 @@ ruby_guestfs_xfs_repair (int argc, VALUE *argv, VALUE gv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zegrep+[http://libguestfs.org/guestfs.3.html#guestfs_zegrep]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zegrep}[http://libguestfs.org/guestfs.3.html#guestfs_zegrep].
  */
 static VALUE
 ruby_guestfs_zegrep (VALUE gv, VALUE regexv, VALUE pathv)
@@ -27243,17 +28282,14 @@ ruby_guestfs_zegrep (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zegrepi+[http://libguestfs.org/guestfs.3.html#guestfs_zegrepi]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zegrepi}[http://libguestfs.org/guestfs.3.html#guestfs_zegrepi].
  */
 static VALUE
 ruby_guestfs_zegrepi (VALUE gv, VALUE regexv, VALUE pathv)
@@ -27305,8 +28341,10 @@ ruby_guestfs_zegrepi (VALUE gv, VALUE regexv, VALUE pathv)
  * "g.is_zero_device"
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zero+[http://libguestfs.org/guestfs.3.html#guestfs_zero]).
+ * [Since] Added in version 1.0.16.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zero}[http://libguestfs.org/guestfs.3.html#guestfs_zero].
  */
 static VALUE
 ruby_guestfs_zero (VALUE gv, VALUE devicev)
@@ -27342,8 +28380,10 @@ ruby_guestfs_zero (VALUE gv, VALUE devicev)
  * becoming non-sparse or growing unnecessarily.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zero_device+[http://libguestfs.org/guestfs.3.html#guestfs_zero_device]).
+ * [Since] Added in version 1.3.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zero_device}[http://libguestfs.org/guestfs.3.html#guestfs_zero_device].
  */
 static VALUE
 ruby_guestfs_zero_device (VALUE gv, VALUE devicev)
@@ -27381,8 +28421,10 @@ ruby_guestfs_zero_device (VALUE gv, VALUE devicev)
  * calling this, depending on your requirements.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zero_free_space+[http://libguestfs.org/guestfs.3.html#guestfs_zero_free_space]).
+ * [Since] Added in version 1.17.18.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zero_free_space}[http://libguestfs.org/guestfs.3.html#guestfs_zero_free_space].
  */
 static VALUE
 ruby_guestfs_zero_free_space (VALUE gv, VALUE directoryv)
@@ -27421,8 +28463,10 @@ ruby_guestfs_zero_free_space (VALUE gv, VALUE directoryv)
  * filesystem or data on the filesystem.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zerofree+[http://libguestfs.org/guestfs.3.html#guestfs_zerofree]).
+ * [Since] Added in version 1.0.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zerofree}[http://libguestfs.org/guestfs.3.html#guestfs_zerofree].
  */
 static VALUE
 ruby_guestfs_zerofree (VALUE gv, VALUE devicev)
@@ -27455,17 +28499,14 @@ ruby_guestfs_zerofree (VALUE gv, VALUE devicev)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zfgrep+[http://libguestfs.org/guestfs.3.html#guestfs_zfgrep]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zfgrep}[http://libguestfs.org/guestfs.3.html#guestfs_zfgrep].
  */
 static VALUE
 ruby_guestfs_zfgrep (VALUE gv, VALUE patternv, VALUE pathv)
@@ -27507,17 +28548,14 @@ ruby_guestfs_zfgrep (VALUE gv, VALUE patternv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zfgrepi+[http://libguestfs.org/guestfs.3.html#guestfs_zfgrepi]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zfgrepi}[http://libguestfs.org/guestfs.3.html#guestfs_zfgrepi].
  */
 static VALUE
 ruby_guestfs_zfgrepi (VALUE gv, VALUE patternv, VALUE pathv)
@@ -27560,17 +28598,14 @@ ruby_guestfs_zfgrepi (VALUE gv, VALUE patternv, VALUE pathv)
  * 
  * Since 1.0.63, use "g.file" instead which can now process
  * compressed files.
- * 
- * *This function is deprecated.* In new code, use the
- * "file" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zfile+[http://libguestfs.org/guestfs.3.html#guestfs_zfile]).
+ * [Since] Added in version 1.0.59.
+ *
+ * [Deprecated] In new code, use rdoc-ref:file instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zfile}[http://libguestfs.org/guestfs.3.html#guestfs_zfile].
  */
 static VALUE
 ruby_guestfs_zfile (VALUE gv, VALUE methv, VALUE pathv)
@@ -27606,17 +28641,14 @@ ruby_guestfs_zfile (VALUE gv, VALUE methv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zgrep+[http://libguestfs.org/guestfs.3.html#guestfs_zgrep]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zgrep}[http://libguestfs.org/guestfs.3.html#guestfs_zgrep].
  */
 static VALUE
 ruby_guestfs_zgrep (VALUE gv, VALUE regexv, VALUE pathv)
@@ -27658,17 +28690,14 @@ ruby_guestfs_zgrep (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
- * 
- * *This function is deprecated.* In new code, use the
- * "grep" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
  *
  *
- * (For the C API documentation for this function, see
- * +guestfs_zgrepi+[http://libguestfs.org/guestfs.3.html#guestfs_zgrepi]).
+ * [Since] Added in version 1.0.66.
+ *
+ * [Deprecated] In new code, use rdoc-ref:grep instead.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_zgrepi}[http://libguestfs.org/guestfs.3.html#guestfs_zgrepi].
  */
 static VALUE
 ruby_guestfs_zgrepi (VALUE gv, VALUE regexv, VALUE pathv)
@@ -28092,6 +29121,8 @@ Init__guestfs (void)
         ruby_guestfs_get_e2uuid, 1);
   rb_define_method (c_guestfs, "get_hv",
         ruby_guestfs_get_hv, 0);
+  rb_define_method (c_guestfs, "get_identifier",
+        ruby_guestfs_get_identifier, 0);
   rb_define_method (c_guestfs, "get_libvirt_requested_credential_challenge",
         ruby_guestfs_get_libvirt_requested_credential_challenge, 1);
   rb_define_method (c_guestfs, "get_libvirt_requested_credential_defresult",
@@ -28734,6 +29765,8 @@ Init__guestfs (void)
         ruby_guestfs_set_e2uuid, 2);
   rb_define_method (c_guestfs, "set_hv",
         ruby_guestfs_set_hv, 1);
+  rb_define_method (c_guestfs, "set_identifier",
+        ruby_guestfs_set_identifier, 1);
   rb_define_method (c_guestfs, "set_label",
         ruby_guestfs_set_label, 2);
   rb_define_method (c_guestfs, "set_libvirt_requested_credential",
@@ -28876,6 +29909,8 @@ Init__guestfs (void)
         ruby_guestfs_version, 0);
   rb_define_method (c_guestfs, "vfs_label",
         ruby_guestfs_vfs_label, 1);
+  rb_define_method (c_guestfs, "vfs_minimum_size",
+        ruby_guestfs_vfs_minimum_size, 1);
   rb_define_method (c_guestfs, "vfs_type",
         ruby_guestfs_vfs_type, 1);
   rb_define_method (c_guestfs, "vfs_uuid",

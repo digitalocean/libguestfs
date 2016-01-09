@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -190,6 +190,11 @@ and argt =
      * guestfs_int_validate_guid.
      *)
   | GUID of string
+    (* List of file names only, where the list cannot be NULL,
+     * and each element cannot be NULL, empty, or anything different than
+     * a simple file name (i.e. neither absolute nor relative paths).
+     *)
+  | FilenameList of string
 
 and optargs = optargt list
 
@@ -207,7 +212,7 @@ type fish_output_t =
   | FishOutputOctal       (* for int return, print in octal *)
   | FishOutputHexadecimal (* for int return, print in hex *)
 
-(* See guestfs(3)/EXTENDING LIBGUESTFS. *)
+(* See guestfs-hacking(1). *)
 type c_api_tests = (c_api_test_init * c_api_test_prereq * c_api_test * c_api_test_cleanup) list
 and c_api_test =
     (* Run the command sequence and just expect nothing to fail. *)

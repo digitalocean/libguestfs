@@ -1,5 +1,5 @@
 /* virt-make-fs
- * Copyright (C) 2010-2015 Red Hat Inc.
+ * Copyright (C) 2010-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,27 +74,27 @@ usage (int status)
     fprintf (stderr, _("Try `%s --help' for more information.\n"),
              guestfs_int_program_name);
   else {
-    fprintf (stdout,
-           _("%s: make a filesystem from a tar archive or files\n"
-             "Copyright (C) 2010-2015 Red Hat Inc.\n"
-             "Usage:\n"
-             "  %s [--options] input.tar output.img\n"
-             "  %s [--options] input.tar.gz output.img\n"
-             "  %s [--options] directory output.img\n"
-             "Options:\n"
-             "  --floppy               Make a virtual floppy disk\n"
-             "  --format=raw|qcow2|..  Set output format\n"
-             "  --help                 Display brief help\n"
-             "  --label=label          Filesystem label\n"
-             "  --partition=mbr|gpt|.. Set partition type\n"
-             "  --size=size|+size      Set size of output disk\n"
-             "  --type=ext4|..         Set filesystem type\n"
-             "  -v|--verbose           Verbose messages\n"
-             "  -V|--version           Display version and exit\n"
-             "  -x                     Trace libguestfs API calls\n"
-             "For more information, see the manpage %s(1).\n"),
-             guestfs_int_program_name, guestfs_int_program_name, guestfs_int_program_name, guestfs_int_program_name,
-             guestfs_int_program_name);
+    printf (_("%s: make a filesystem from a tar archive or files\n"
+              "Copyright (C) 2010-2016 Red Hat Inc.\n"
+              "Usage:\n"
+              "  %s [--options] input.tar output.img\n"
+              "  %s [--options] input.tar.gz output.img\n"
+              "  %s [--options] directory output.img\n"
+              "Options:\n"
+              "  --floppy               Make a virtual floppy disk\n"
+              "  --format=raw|qcow2|..  Set output format\n"
+              "  --help                 Display brief help\n"
+              "  --label=label          Filesystem label\n"
+              "  --partition=mbr|gpt|.. Set partition type\n"
+              "  --size=size|+size      Set size of output disk\n"
+              "  --type=ext4|..         Set filesystem type\n"
+              "  -v|--verbose           Verbose messages\n"
+              "  -V|--version           Display version and exit\n"
+              "  -x                     Trace libguestfs API calls\n"
+              "For more information, see the manpage %s(1).\n"),
+            guestfs_int_program_name, guestfs_int_program_name,
+            guestfs_int_program_name, guestfs_int_program_name,
+            guestfs_int_program_name);
   }
   exit (status);
 }
@@ -144,7 +144,8 @@ main (int argc, char *argv[])
           partition = optarg;
       } else {
         fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name, long_options[option_index].name, option_index);
+                 guestfs_int_program_name,
+                 long_options[option_index].name, option_index);
         exit (EXIT_FAILURE);
       }
       break;
@@ -182,7 +183,8 @@ main (int argc, char *argv[])
   }
 
   if (optind + 2 != argc) {
-    fprintf (stderr, _("%s: missing input and output arguments on the command line\n"),
+    fprintf (stderr,
+             _("%s: missing input and output arguments on the command line\n"),
              guestfs_int_program_name);
     usage (EXIT_FAILURE);
   }
@@ -200,7 +202,8 @@ check_ntfs_available (void)
 
   if (STREQ (type, "ntfs") &&
       guestfs_feature_available (g, (char **) ntfs_features) == 0) {
-    fprintf (stderr, _("%s: NTFS support was disabled when libguestfs was compiled\n"),
+    fprintf (stderr,
+             _("%s: NTFS support was disabled when libguestfs was compiled\n"),
              guestfs_int_program_name);
     return -1;
   }
@@ -250,7 +253,8 @@ exec_command (char **argv, const char *file)
       return -1;
     }
     if (!WIFEXITED (status) || WEXITSTATUS (status) != 0) {
-      fprintf (stderr, _("%s: %s command failed\n"), guestfs_int_program_name, argv[0]);
+      fprintf (stderr, _("%s: %s command failed\n"),
+               guestfs_int_program_name, argv[0]);
       return -1;
     }
     return 0;
@@ -307,7 +311,8 @@ exec_command_count_output (char **argv, uint64_t *bytes_rtn)
       return -1;
     }
     if (!WIFEXITED (status) || WEXITSTATUS (status) != 0) {
-      fprintf (stderr, _("%s: %s command failed\n"), guestfs_int_program_name, argv[0]);
+      fprintf (stderr, _("%s: %s command failed\n"),
+               guestfs_int_program_name, argv[0]);
       return -1;
     }
     return 0;

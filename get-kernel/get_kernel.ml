@@ -1,5 +1,5 @@
 (* virt-get-kernel
- * Copyright (C) 2013-2015 Red Hat Inc.
+ * Copyright (C) 2013-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -182,9 +182,7 @@ let main () =
   let add, output, unversioned, prefix = parse_cmdline () in
 
   (* Connect to libguestfs. *)
-  let g = new G.guestfs () in
-  if trace () then g#set_trace true;
-  if verbose () then g#set_verbose true;
+  let g = open_guestfs () in
   add g;
   g#launch ();
 
@@ -198,7 +196,7 @@ let main () =
   let dest_filename fn =
     let fn = Filename.basename fn in
     let fn =
-      if unversioned then fst (string_split "-" fn)
+      if unversioned then fst (String.split "-" fn)
       else fn in
     match prefix with
     | None -> fn

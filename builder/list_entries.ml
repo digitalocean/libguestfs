@@ -29,16 +29,13 @@ let rec list_entries ~list_format ~sources index =
 
 and list_entries_short index =
   List.iter (
-    fun (name, { Index_parser.printable_name = printable_name;
+    fun (name, { Index.printable_name = printable_name;
                  arch = arch;
                  hidden = hidden }) ->
       if not hidden then (
         printf "%-24s" name;
         printf " %-10s" arch;
-        (match printable_name with
-        | None -> ()
-        | Some s -> printf " %s" s
-        );
+        may (printf " %s") printable_name;
         printf "\n"
       )
   ) index
@@ -60,7 +57,7 @@ and list_entries_long ~sources index =
   ) sources;
 
   List.iter (
-    fun (name, { Index_parser.printable_name = printable_name;
+    fun (name, { Index.printable_name = printable_name;
                  arch = arch;
                  size = size;
                  compressed_size = compressed_size;
@@ -69,10 +66,7 @@ and list_entries_long ~sources index =
                  hidden = hidden }) ->
       if not hidden then (
         printf "%-24s %s\n" "os-version:" name;
-        (match printable_name with
-        | None -> ()
-        | Some name -> printf "%-24s %s\n" (s_"Full name:") name;
-        );
+        may (printf "%-24s %s\n" (s_"Full name:")) printable_name;
         printf "%-24s %s\n" (s_"Architecture:") arch;
         printf "%-24s %s\n" (s_"Minimum/default size:") (human_size size);
         (match compressed_size with
@@ -112,7 +106,7 @@ and list_entries_json ~sources index =
     ) sources in
   let json_templates =
     List.map (
-      fun (name, { Index_parser.printable_name = printable_name;
+      fun (name, { Index.printable_name = printable_name;
                    arch = arch;
                    size = size;
                    compressed_size = compressed_size;

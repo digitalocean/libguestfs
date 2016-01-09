@@ -20,14 +20,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <inttypes.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-
-#include <pcre.h>
+#include <libintl.h>
 
 #ifdef HAVE_LIBMAGIC
 #include <magic.h>
@@ -38,7 +36,6 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 #if defined(HAVE_LIBMAGIC)
 

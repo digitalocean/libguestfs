@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -203,6 +203,7 @@ PHP_FUNCTION (guestfs_get_e2generation);
 PHP_FUNCTION (guestfs_get_e2label);
 PHP_FUNCTION (guestfs_get_e2uuid);
 PHP_FUNCTION (guestfs_get_hv);
+PHP_FUNCTION (guestfs_get_identifier);
 PHP_FUNCTION (guestfs_get_libvirt_requested_credential_challenge);
 PHP_FUNCTION (guestfs_get_libvirt_requested_credential_defresult);
 PHP_FUNCTION (guestfs_get_libvirt_requested_credential_prompt);
@@ -514,6 +515,7 @@ PHP_FUNCTION (guestfs_set_e2generation);
 PHP_FUNCTION (guestfs_set_e2label);
 PHP_FUNCTION (guestfs_set_e2uuid);
 PHP_FUNCTION (guestfs_set_hv);
+PHP_FUNCTION (guestfs_set_identifier);
 PHP_FUNCTION (guestfs_set_label);
 PHP_FUNCTION (guestfs_set_libvirt_requested_credential);
 PHP_FUNCTION (guestfs_set_libvirt_supported_credentials);
@@ -582,6 +584,7 @@ PHP_FUNCTION (guestfs_utimens);
 PHP_FUNCTION (guestfs_utsname);
 PHP_FUNCTION (guestfs_version);
 PHP_FUNCTION (guestfs_vfs_label);
+PHP_FUNCTION (guestfs_vfs_minimum_size);
 PHP_FUNCTION (guestfs_vfs_type);
 PHP_FUNCTION (guestfs_vfs_uuid);
 PHP_FUNCTION (guestfs_vg_activate);

@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -215,6 +215,7 @@ static int run_get_e2generation (const char *cmd, size_t argc, char *argv[]);
 static int run_get_e2label (const char *cmd, size_t argc, char *argv[]);
 static int run_get_e2uuid (const char *cmd, size_t argc, char *argv[]);
 static int run_get_hv (const char *cmd, size_t argc, char *argv[]);
+static int run_get_identifier (const char *cmd, size_t argc, char *argv[]);
 static int run_get_libvirt_requested_credential_challenge (const char *cmd, size_t argc, char *argv[]);
 static int run_get_libvirt_requested_credential_defresult (const char *cmd, size_t argc, char *argv[]);
 static int run_get_libvirt_requested_credential_prompt (const char *cmd, size_t argc, char *argv[]);
@@ -495,6 +496,7 @@ static int run_set_e2generation (const char *cmd, size_t argc, char *argv[]);
 static int run_set_e2label (const char *cmd, size_t argc, char *argv[]);
 static int run_set_e2uuid (const char *cmd, size_t argc, char *argv[]);
 static int run_set_hv (const char *cmd, size_t argc, char *argv[]);
+static int run_set_identifier (const char *cmd, size_t argc, char *argv[]);
 static int run_set_label (const char *cmd, size_t argc, char *argv[]);
 static int run_set_libvirt_requested_credential (const char *cmd, size_t argc, char *argv[]);
 static int run_set_libvirt_supported_credentials (const char *cmd, size_t argc, char *argv[]);
@@ -563,6 +565,7 @@ static int run_utimens (const char *cmd, size_t argc, char *argv[]);
 static int run_utsname (const char *cmd, size_t argc, char *argv[]);
 static int run_version (const char *cmd, size_t argc, char *argv[]);
 static int run_vfs_label (const char *cmd, size_t argc, char *argv[]);
+static int run_vfs_minimum_size (const char *cmd, size_t argc, char *argv[]);
 static int run_vfs_type (const char *cmd, size_t argc, char *argv[]);
 static int run_vfs_uuid (const char *cmd, size_t argc, char *argv[]);
 static int run_vg_activate (const char *cmd, size_t argc, char *argv[]);
@@ -779,7 +782,7 @@ struct command_entry add_domain_cmd_entry = {
 
 struct command_entry add_drive_cmd_entry = {
   .name = "add-drive",
-  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..] [discard:..] [copyonread:true|false]\n\nDESCRIPTION\n    This function adds a disk image called filename to the handle. filename\n    may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    /dev/sda, the second time as /dev/sdb, and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that filename exists.\n\n    filename may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. /dev/sdb. This is\n        used as a hint to the guest inspection process if it is available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as /dev/sda), the drive will also be named\n        /dev/disk/guestfs/*label*.\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            filename is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\"\"\n            Connect to a remote FTP, HTTP or TFTP server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"FTP, HTTP AND TFTP\" in guestfs(3)\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"iscsi\"\"\n            Connect to the iSCSI server. The \"server\" parameter must also be\n            supplied - see below.\n\n            See also: \"ISCSI\" in guestfs(3).\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below. The \"username\" parameter may\n            be supplied. See below. The \"secret\" parameter may be supplied.\n            See below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         ftp|ftps|http|https|tftp  Exactly one\n         gluster        Exactly one\n         iscsi          Exactly one\n         nbd            Exactly one\n         rbd            Zero or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see /etc/services).\n\n    \"username\"\n        For the \"ftp\", \"ftps\", \"http\", \"https\", \"iscsi\", \"rbd\", \"ssh\" and\n        \"tftp\" protocols, this specifies the remote username.\n\n        If not given, then the local username is used for \"ssh\", and no\n        authentication is attempted for ceph. But note this sometimes may\n        give unexpected results, for example if using the libvirt backend\n        and if the libvirt backend is configured to start the qemu appliance\n        as a special user such as \"qemu.qemu\". If in doubt, specify the\n        remote username you want.\n\n    \"secret\"\n        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n        connecting to the remote device. It must be base64 encoded.\n\n        If not given, then a secret matching the given username will be\n        looked up in the default keychain locations, or if no username is\n        given, then no authentication will be used.\n\n    \"cachemode\"\n        Choose whether or not libguestfs will obey sync operations (safe but\n        slow) or not (unsafe but fast). The possible values for this string\n        are:\n\n        \"cachemode = \"writeback\"\"\n            This is the default.\n\n            Write operations in the API do not return until a write(2) call\n            has completed in the host [but note this does not imply that\n            anything gets written to disk].\n\n            Sync operations in the API, including implicit syncs caused by\n            filesystem journalling, will not return until an fdatasync(2)\n            call has completed in the host, indicating that data has been\n            committed to disk.\n\n        \"cachemode = \"unsafe\"\"\n            In this mode, there are no guarantees. Libguestfs may cache\n            anything and ignore sync requests. This is suitable only for\n            scratch or temporary disks.\n\n    \"discard\"\n        Enable or disable discard (a.k.a. trim or unmap) support on this\n        drive. If enabled, operations such as \"fstrim\" will be able to\n        discard / make thin / punch holes in the underlying host file or\n        device.\n\n        Possible discard settings are:\n\n        \"discard = \"disable\"\"\n            Disable discard support. This is the default.\n\n        \"discard = \"enable\"\"\n            Enable discard support. Fail if discard is not possible.\n\n        \"discard = \"besteffort\"\"\n            Enable discard support if possible, but don't fail if it is not\n            supported.\n\n            Since not all backends and not all underlying systems support\n            discard, this is a good choice if you want to use discard if\n            possible, but don't mind if it doesn't work.\n\n    \"copyonread\"\n        The boolean parameter \"copyonread\" enables copy-on-read support.\n        This only affects disk formats which have backing files, and causes\n        reads to be stored in the overlay layer, speeding up multiple reads\n        of the same area of disk.\n\n        The default is false.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
+  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..] [discard:..] [copyonread:true|false]\n\nDESCRIPTION\n    This function adds a disk image called filename to the handle. filename\n    may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    /dev/sda, the second time as /dev/sdb, and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that filename exists.\n\n    filename may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. /dev/sdb. This is\n        used as a hint to the guest inspection process if it is available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as /dev/sda), the drive will also be named\n        /dev/disk/guestfs/*label*.\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            filename is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\"\"\n            Connect to a remote FTP, HTTP or TFTP server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"FTP, HTTP AND TFTP\" in guestfs(3)\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"iscsi\"\"\n            Connect to the iSCSI server. The \"server\" parameter must also be\n            supplied - see below. The \"username\" parameter may be supplied.\n            See below. The \"secret\" parameter may be supplied. See below.\n\n            See also: \"ISCSI\" in guestfs(3).\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below. The \"username\" parameter may\n            be supplied. See below. The \"secret\" parameter may be supplied.\n            See below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         ftp|ftps|http|https|tftp  Exactly one\n         gluster        Exactly one\n         iscsi          Exactly one\n         nbd            Exactly one\n         rbd            Zero or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see /etc/services).\n\n    \"username\"\n        For the \"ftp\", \"ftps\", \"http\", \"https\", \"iscsi\", \"rbd\", \"ssh\" and\n        \"tftp\" protocols, this specifies the remote username.\n\n        If not given, then the local username is used for \"ssh\", and no\n        authentication is attempted for ceph. But note this sometimes may\n        give unexpected results, for example if using the libvirt backend\n        and if the libvirt backend is configured to start the qemu appliance\n        as a special user such as \"qemu.qemu\". If in doubt, specify the\n        remote username you want.\n\n    \"secret\"\n        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n        connecting to the remote device. It must be base64 encoded.\n\n        If not given, then a secret matching the given username will be\n        looked up in the default keychain locations, or if no username is\n        given, then no authentication will be used.\n\n    \"cachemode\"\n        Choose whether or not libguestfs will obey sync operations (safe but\n        slow) or not (unsafe but fast). The possible values for this string\n        are:\n\n        \"cachemode = \"writeback\"\"\n            This is the default.\n\n            Write operations in the API do not return until a write(2) call\n            has completed in the host [but note this does not imply that\n            anything gets written to disk].\n\n            Sync operations in the API, including implicit syncs caused by\n            filesystem journalling, will not return until an fdatasync(2)\n            call has completed in the host, indicating that data has been\n            committed to disk.\n\n        \"cachemode = \"unsafe\"\"\n            In this mode, there are no guarantees. Libguestfs may cache\n            anything and ignore sync requests. This is suitable only for\n            scratch or temporary disks.\n\n    \"discard\"\n        Enable or disable discard (a.k.a. trim or unmap) support on this\n        drive. If enabled, operations such as \"fstrim\" will be able to\n        discard / make thin / punch holes in the underlying host file or\n        device.\n\n        Possible discard settings are:\n\n        \"discard = \"disable\"\"\n            Disable discard support. This is the default.\n\n        \"discard = \"enable\"\"\n            Enable discard support. Fail if discard is not possible.\n\n        \"discard = \"besteffort\"\"\n            Enable discard support if possible, but don't fail if it is not\n            supported.\n\n            Since not all backends and not all underlying systems support\n            discard, this is a good choice if you want to use discard if\n            possible, but don't mind if it doesn't work.\n\n    \"copyonread\"\n        The boolean parameter \"copyonread\" enables copy-on-read support.\n        This only affects disk formats which have backing files, and causes\n        reads to be stored in the overlay layer, speeding up multiple reads\n        of the same area of disk.\n\n        The default is false.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
   .synopsis = "add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..] [secret:..] [cachemode:..] [discard:..] [copyonread:true|false]",
   .run = run_add_drive
 };
@@ -1556,7 +1559,7 @@ struct command_entry df_h_cmd_entry = {
 
 struct command_entry disk_create_cmd_entry = {
   .name = "disk-create",
-  .help = "NAME\n    disk-create - create a blank disk image\n\nSYNOPSIS\n     disk-create filename format size [backingfile:..] [backingformat:..] [preallocation:..] [compat:..] [clustersize:N]\n\nDESCRIPTION\n    Create a blank disk image called filename (a host file) with format\n    \"format\" (usually \"raw\" or \"qcow2\"). The size is \"size\" bytes.\n\n    If used with the optional \"backingfile\" parameter, then a snapshot is\n    created on top of the backing file. In this case, \"size\" must be passed\n    as -1. The size of the snapshot is the same as the size of the backing\n    file, which is discovered automatically. You are encouraged to also pass\n    \"backingformat\" to describe the format of \"backingfile\".\n\n    If filename refers to a block device, then the device is formatted. The\n    \"size\" is ignored since block devices have an intrinsic size.\n\n    The other optional parameters are:\n\n    \"preallocation\"\n        If format is \"raw\", then this can be either \"sparse\" or \"full\" to\n        create a sparse or fully allocated file respectively. The default is\n        \"sparse\".\n\n        If format is \"qcow2\", then this can be either \"off\" or \"metadata\".\n        Preallocating metadata can be faster when doing lots of writes, but\n        uses more space. The default is \"off\".\n\n    \"compat\"\n        \"qcow2\" only: Pass the string 1.1 to use the advanced qcow2 format\n        supported by qemu ≥ 1.1.\n\n    \"clustersize\"\n        \"qcow2\" only: Change the qcow2 cluster size. The default is 65536\n        (bytes) and this setting may be any power of two between 512 and\n        2097152.\n\n    Note that this call does not add the new disk to the handle. You may\n    need to call \"add_drive_opts\" separately.\n\n",
+  .help = "NAME\n    disk-create - create a blank disk image\n\nSYNOPSIS\n     disk-create filename format size [backingfile:..] [backingformat:..] [preallocation:..] [compat:..] [clustersize:N]\n\nDESCRIPTION\n    Create a blank disk image called filename (a host file) with format\n    \"format\" (usually \"raw\" or \"qcow2\"). The size is \"size\" bytes.\n\n    If used with the optional \"backingfile\" parameter, then a snapshot is\n    created on top of the backing file. In this case, \"size\" must be passed\n    as -1. The size of the snapshot is the same as the size of the backing\n    file, which is discovered automatically. You are encouraged to also pass\n    \"backingformat\" to describe the format of \"backingfile\".\n\n    If filename refers to a block device, then the device is formatted. The\n    \"size\" is ignored since block devices have an intrinsic size.\n\n    The other optional parameters are:\n\n    \"preallocation\"\n        If format is \"raw\", then this can be either \"off\" (or \"sparse\") or\n        \"full\" to create a sparse or fully allocated file respectively. The\n        default is \"off\".\n\n        If format is \"qcow2\", then this can be \"off\" (or \"sparse\"),\n        \"metadata\" or \"full\". Preallocating metadata can be faster when\n        doing lots of writes, but uses more space. The default is \"off\".\n\n    \"compat\"\n        \"qcow2\" only: Pass the string 1.1 to use the advanced qcow2 format\n        supported by qemu ≥ 1.1.\n\n    \"clustersize\"\n        \"qcow2\" only: Change the qcow2 cluster size. The default is 65536\n        (bytes) and this setting may be any power of two between 512 and\n        2097152.\n\n    Note that this call does not add the new disk to the handle. You may\n    need to call \"add_drive_opts\" separately.\n\n",
   .synopsis = "disk-create filename format size [backingfile:..] [backingformat:..] [preallocation:..] [compat:..] [clustersize:N]",
   .run = run_disk_create
 };
@@ -1888,6 +1891,13 @@ struct command_entry get_hv_cmd_entry = {
   .help = "NAME\n    get-hv - get the hypervisor binary\n\nSYNOPSIS\n     get-hv\n\nDESCRIPTION\n    Return the current hypervisor binary.\n\n    This is always non-NULL. If it wasn't set already, then this will return\n    the default qemu binary name.\n\n",
   .synopsis = "get-hv",
   .run = run_get_hv
+};
+
+struct command_entry get_identifier_cmd_entry = {
+  .name = "get-identifier",
+  .help = "NAME\n    get-identifier - get the handle identifier\n\nSYNOPSIS\n     get-identifier\n\nDESCRIPTION\n    Get the handle identifier. See \"set_identifier\".\n\n",
+  .synopsis = "get-identifier",
+  .run = run_get_identifier
 };
 
 struct command_entry get_libvirt_requested_credential_challenge_cmd_entry = {
@@ -2270,7 +2280,7 @@ struct command_entry inspect_get_arch_cmd_entry = {
 
 struct command_entry inspect_get_distro_cmd_entry = {
   .name = "inspect-get-distro",
-  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"buildroot\"\n        Buildroot-derived distro, but not one we specifically recognize.\n\n    \"centos\"\n        CentOS.\n\n    \"cirros\"\n        Cirros.\n\n    \"coreos\"\n        CoreOS.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"freedos\"\n        FreeDOS.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mageia\"\n        Mageia.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"netbsd\"\n        NetBSD.\n\n    \"openbsd\"\n        OpenBSD.\n\n    \"opensuse\"\n        OpenSUSE.\n\n    \"oraclelinux\"\n        Oracle Linux.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"sles\"\n        SuSE Linux Enterprise Server or Desktop.\n\n    \"suse-based\"\n        Some openSuSE-derived distro.\n\n    \"ttylinux\"\n        ttylinux.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"alpinelinux\"\n        Alpine Linux.\n\n    \"altlinux\"\n        ALT Linux.\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"buildroot\"\n        Buildroot-derived distro, but not one we specifically recognize.\n\n    \"centos\"\n        CentOS.\n\n    \"cirros\"\n        Cirros.\n\n    \"coreos\"\n        CoreOS.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"freedos\"\n        FreeDOS.\n\n    \"frugalware\"\n        Frugalware.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mageia\"\n        Mageia.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"netbsd\"\n        NetBSD.\n\n    \"openbsd\"\n        OpenBSD.\n\n    \"opensuse\"\n        OpenSUSE.\n\n    \"oraclelinux\"\n        Oracle Linux.\n\n    \"pardus\"\n        Pardus.\n\n    \"pldlinux\"\n        PLD Linux.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"sles\"\n        SuSE Linux Enterprise Server or Desktop.\n\n    \"suse-based\"\n        Some openSuSE-derived distro.\n\n    \"ttylinux\"\n        ttylinux.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .synopsis = "inspect-get-distro root",
   .run = run_inspect_get_distro
 };
@@ -2333,14 +2343,14 @@ struct command_entry inspect_get_mountpoints_cmd_entry = {
 
 struct command_entry inspect_get_package_format_cmd_entry = {
   .name = "inspect-get-package-format",
-  .help = "NAME\n    inspect-get-package-format - get package format used by the operating\n    system\n\nSYNOPSIS\n     inspect-get-package-format root\n\nDESCRIPTION\n    This function and \"inspect_get_package_management\" return the package\n    format and package management tool used by the inspected operating\n    system. For example for Fedora these functions would return \"rpm\"\n    (package format), and \"yum\" or \"dnf\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    format *or* if the operating system does not have a real packaging\n    system (eg. Windows).\n\n    Possible strings include: \"rpm\", \"deb\", \"ebuild\", \"pisi\", \"pacman\",\n    \"pkgsrc\". Future versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-package-format - get package format used by the operating\n    system\n\nSYNOPSIS\n     inspect-get-package-format root\n\nDESCRIPTION\n    This function and \"inspect_get_package_management\" return the package\n    format and package management tool used by the inspected operating\n    system. For example for Fedora these functions would return \"rpm\"\n    (package format), and \"yum\" or \"dnf\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    format *or* if the operating system does not have a real packaging\n    system (eg. Windows).\n\n    Possible strings include: \"rpm\", \"deb\", \"ebuild\", \"pisi\", \"pacman\",\n    \"pkgsrc\", \"apk\". Future versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .synopsis = "inspect-get-package-format root",
   .run = run_inspect_get_package_format
 };
 
 struct command_entry inspect_get_package_management_cmd_entry = {
   .name = "inspect-get-package-management",
-  .help = "NAME\n    inspect-get-package-management - get package management tool used by the\n    operating system\n\nSYNOPSIS\n     inspect-get-package-management root\n\nDESCRIPTION\n    \"inspect_get_package_format\" and this function return the package format\n    and package management tool used by the inspected operating system. For\n    example for Fedora these functions would return \"rpm\" (package format),\n    and \"yum\" or \"dnf\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    management tool *or* if the operating system does not have a real\n    packaging system (eg. Windows).\n\n    Possible strings include: \"yum\", \"dnf\", \"up2date\", \"apt\" (for all Debian\n    derivatives), \"portage\", \"pisi\", \"pacman\", \"urpmi\", \"zypper\". Future\n    versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-package-management - get package management tool used by the\n    operating system\n\nSYNOPSIS\n     inspect-get-package-management root\n\nDESCRIPTION\n    \"inspect_get_package_format\" and this function return the package format\n    and package management tool used by the inspected operating system. For\n    example for Fedora these functions would return \"rpm\" (package format),\n    and \"yum\" or \"dnf\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    management tool *or* if the operating system does not have a real\n    packaging system (eg. Windows).\n\n    Possible strings include: \"yum\", \"dnf\", \"up2date\", \"apt\" (for all Debian\n    derivatives), \"portage\", \"pisi\", \"pacman\", \"urpmi\", \"zypper\", \"apk\".\n    Future versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .synopsis = "inspect-get-package-management root",
   .run = run_inspect_get_package_management
 };
@@ -3850,9 +3860,16 @@ struct command_entry set_hv_cmd_entry = {
   .run = run_set_hv
 };
 
+struct command_entry set_identifier_cmd_entry = {
+  .name = "set-identifier",
+  .help = "NAME\n    set-identifier - set the handle identifier\n\nSYNOPSIS\n     set-identifier identifier\n\nDESCRIPTION\n    This is an informative string which the caller may optionally set in the\n    handle. It is printed in various places, allowing the current handle to\n    be identified in debugging output.\n\n    One important place is when tracing is enabled. If the identifier string\n    is not an empty string, then trace messages change from this:\n\n     libguestfs: trace: get_tmpdir\n     libguestfs: trace: get_tmpdir = \"/tmp\"\n\n    to this:\n\n     libguestfs: trace: ID: get_tmpdir\n     libguestfs: trace: ID: get_tmpdir = \"/tmp\"\n\n    where \"ID\" is the identifier string set by this call.\n\n    The identifier must only contain alphanumeric ASCII characters,\n    underscore and minus sign. The default is the empty string.\n\n    See also \"set_program\", \"set_trace\", \"get_identifier\".\n\n    You can use 'identifier' as an alias for this command.\n\n",
+  .synopsis = "set-identifier identifier",
+  .run = run_set_identifier
+};
+
 struct command_entry set_label_cmd_entry = {
   .name = "set-label",
-  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    ext2, ext3, ext4\n        Labels are limited to 16 bytes.\n\n    NTFS\n        Labels are limited to 128 unicode characters.\n\n    XFS The label is limited to 12 bytes. The filesystem must not be mounted\n        when trying to set the label.\n\n    btrfs\n        The label is limited to 256 bytes and some characters are not\n        allowed. Setting the label on a btrfs subvolume will set the label\n        on its parent filesystem. The filesystem must not be mounted when\n        trying to set the label.\n\n    fat The label is limited to 11 bytes.\n\n    If there is no support for changing the label for the type of the\n    specified filesystem, set_label will fail and set errno as ENOTSUP.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
+  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    ext2, ext3, ext4\n        Labels are limited to 16 bytes.\n\n    NTFS\n        Labels are limited to 128 unicode characters.\n\n    XFS The label is limited to 12 bytes. The filesystem must not be mounted\n        when trying to set the label.\n\n    btrfs\n        The label is limited to 255 bytes and some characters are not\n        allowed. Setting the label on a btrfs subvolume will set the label\n        on its parent filesystem. The filesystem must not be mounted when\n        trying to set the label.\n\n    fat The label is limited to 11 bytes.\n\n    If there is no support for changing the label for the type of the\n    specified filesystem, set_label will fail and set errno as ENOTSUP.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
   .synopsis = "set-label mountable label",
   .run = run_set_label
 };
@@ -4174,15 +4191,15 @@ struct command_entry tail_n_cmd_entry = {
 
 struct command_entry tar_in_cmd_entry = {
   .name = "tar-in",
-  .help = "NAME\n    tar-in - unpack tarfile to directory\n\nSYNOPSIS\n     tar-in tarfile directory [compress:..]\n\nDESCRIPTION\n    This command uploads and unpacks local file \"tarfile\" into directory.\n\n    The optional \"compress\" flag controls compression. If not given, then\n    the input should be an uncompressed tar file. Otherwise one of the\n    following strings may be given to select the compression type of the\n    input file: \"compress\", \"gzip\", \"bzip2\", \"xz\", \"lzop\". (Note that not\n    all builds of libguestfs will support all of these compression types).\n\n    You can use 'tar-in-opts' as an alias for this command.\n\n",
-  .synopsis = "tar-in tarfile directory [compress:..]",
+  .help = "NAME\n    tar-in - unpack tarfile to directory\n\nSYNOPSIS\n     tar-in tarfile directory [compress:..] [xattrs:true|false] [selinux:true|false] [acls:true|false]\n\nDESCRIPTION\n    This command uploads and unpacks local file \"tarfile\" into directory.\n\n    The optional \"compress\" flag controls compression. If not given, then\n    the input should be an uncompressed tar file. Otherwise one of the\n    following strings may be given to select the compression type of the\n    input file: \"compress\", \"gzip\", \"bzip2\", \"xz\", \"lzop\". (Note that not\n    all builds of libguestfs will support all of these compression types).\n\n    The other optional arguments are:\n\n    \"xattrs\"\n        If set to true, extended attributes are restored from the tar file.\n\n    \"selinux\"\n        If set to true, SELinux contexts are restored from the tar file.\n\n    \"acls\"\n        If set to true, POSIX ACLs are restored from the tar file.\n\n    You can use 'tar-in-opts' as an alias for this command.\n\n",
+  .synopsis = "tar-in tarfile directory [compress:..] [xattrs:true|false] [selinux:true|false] [acls:true|false]",
   .run = run_tar_in
 };
 
 struct command_entry tar_out_cmd_entry = {
   .name = "tar-out",
-  .help = "NAME\n    tar-out - pack directory into tarfile\n\nSYNOPSIS\n     tar-out directory tarfile [compress:..] [numericowner:true|false] [excludes:..]\n\nDESCRIPTION\n    This command packs the contents of directory and downloads it to local\n    file \"tarfile\".\n\n    The optional \"compress\" flag controls compression. If not given, then\n    the output will be an uncompressed tar file. Otherwise one of the\n    following strings may be given to select the compression type of the\n    output file: \"compress\", \"gzip\", \"bzip2\", \"xz\", \"lzop\". (Note that not\n    all builds of libguestfs will support all of these compression types).\n\n    The other optional arguments are:\n\n    \"excludes\"\n        A list of wildcards. Files are excluded if they match any of the\n        wildcards.\n\n    \"numericowner\"\n        If set to true, the output tar file will contain UID/GID numbers\n        instead of user/group names.\n\n    You can use 'tar-out-opts' as an alias for this command.\n\n",
-  .synopsis = "tar-out directory tarfile [compress:..] [numericowner:true|false] [excludes:..]",
+  .help = "NAME\n    tar-out - pack directory into tarfile\n\nSYNOPSIS\n     tar-out directory tarfile [compress:..] [numericowner:true|false] [excludes:..] [xattrs:true|false] [selinux:true|false] [acls:true|false]\n\nDESCRIPTION\n    This command packs the contents of directory and downloads it to local\n    file \"tarfile\".\n\n    The optional \"compress\" flag controls compression. If not given, then\n    the output will be an uncompressed tar file. Otherwise one of the\n    following strings may be given to select the compression type of the\n    output file: \"compress\", \"gzip\", \"bzip2\", \"xz\", \"lzop\". (Note that not\n    all builds of libguestfs will support all of these compression types).\n\n    The other optional arguments are:\n\n    \"excludes\"\n        A list of wildcards. Files are excluded if they match any of the\n        wildcards.\n\n    \"numericowner\"\n        If set to true, the output tar file will contain UID/GID numbers\n        instead of user/group names.\n\n    \"xattrs\"\n        If set to true, extended attributes are saved in the output tar.\n\n    \"selinux\"\n        If set to true, SELinux contexts are saved in the output tar.\n\n    \"acls\"\n        If set to true, POSIX ACLs are saved in the output tar.\n\n    You can use 'tar-out-opts' as an alias for this command.\n\n",
+  .synopsis = "tar-out directory tarfile [compress:..] [numericowner:true|false] [excludes:..] [xattrs:true|false] [selinux:true|false] [acls:true|false]",
   .run = run_tar_out
 };
 
@@ -4324,6 +4341,13 @@ struct command_entry vfs_label_cmd_entry = {
   .help = "NAME\n    vfs-label - get the filesystem label\n\nSYNOPSIS\n     vfs-label mountable\n\nDESCRIPTION\n    This returns the label of the filesystem on \"mountable\".\n\n    If the filesystem is unlabeled, this returns the empty string.\n\n    To find a filesystem from the label, use \"findfs_label\".\n\n",
   .synopsis = "vfs-label mountable",
   .run = run_vfs_label
+};
+
+struct command_entry vfs_minimum_size_cmd_entry = {
+  .name = "vfs-minimum-size",
+  .help = "NAME\n    vfs-minimum-size - get minimum filesystem size\n\nSYNOPSIS\n     vfs-minimum-size mountable\n\nDESCRIPTION\n    Get the minimum size of filesystem in bytes. This is the minimum\n    possible size for filesystem shrinking.\n\n    If getting minimum size of specified filesystem is not supported, this\n    will fail and set errno as ENOTSUP.\n\n    See also ntfsresize(8), resize2fs(8), btrfs(8), xfs_info(8).\n\n",
+  .synopsis = "vfs-minimum-size mountable",
+  .run = run_vfs_minimum_size
 };
 
 struct command_entry vfs_type_cmd_entry = {
@@ -4808,6 +4832,7 @@ list_commands (void)
   printf ("%-20s %s\n", "get-e2label", _("get the ext2/3/4 filesystem label"));
   printf ("%-20s %s\n", "get-e2uuid", _("get the ext2/3/4 filesystem UUID"));
   printf ("%-20s %s\n", "get-hv", _("get the hypervisor binary"));
+  printf ("%-20s %s\n", "get-identifier", _("get the handle identifier"));
   printf ("%-20s %s\n", "get-libvirt-requested-credential-challenge", _("challenge of i'th requested credential"));
   printf ("%-20s %s\n", "get-libvirt-requested-credential-defresult", _("default result of i'th requested credential"));
   printf ("%-20s %s\n", "get-libvirt-requested-credential-prompt", _("prompt of i'th requested credential"));
@@ -4857,6 +4882,9 @@ list_commands (void)
   printf ("%-20s %s\n", "hivex-value-value", _("return the data field from the (key, datatype, data) tuple"));
   printf ("%-20s ", "hv");
   printf (_("alias for '%s'"), "set-hv");
+  putchar ('\n');
+  printf ("%-20s ", "identifier");
+  printf (_("alias for '%s'"), "set-identifier");
   putchar ('\n');
   printf ("%-20s %s\n", "initrd-cat", _("list the contents of a single file in an initrd"));
   printf ("%-20s %s\n", "initrd-list", _("list files in an initrd"));
@@ -5137,6 +5165,7 @@ list_commands (void)
   printf ("%-20s %s\n", "set-e2label", _("set the ext2/3/4 filesystem label"));
   printf ("%-20s %s\n", "set-e2uuid", _("set the ext2/3/4 filesystem UUID"));
   printf ("%-20s %s\n", "set-hv", _("set the hypervisor binary"));
+  printf ("%-20s %s\n", "set-identifier", _("set the handle identifier"));
   printf ("%-20s %s\n", "set-label", _("set filesystem label"));
   printf ("%-20s %s\n", "set-libvirt-requested-credential", _("pass requested credential back to libvirt"));
   printf ("%-20s %s\n", "set-libvirt-supported-credentials", _("set libvirt credentials supported by calling program"));
@@ -5228,6 +5257,7 @@ list_commands (void)
   putchar ('\n');
   printf ("%-20s %s\n", "version", _("get the library version number"));
   printf ("%-20s %s\n", "vfs-label", _("get the filesystem label"));
+  printf ("%-20s %s\n", "vfs-minimum-size", _("get minimum filesystem size"));
   printf ("%-20s %s\n", "vfs-type", _("get the Linux VFS type corresponding to a mounted device"));
   printf ("%-20s %s\n", "vfs-uuid", _("get the filesystem UUID"));
   printf ("%-20s %s\n", "vg-activate", _("activate or deactivate some volume groups"));
@@ -11517,6 +11547,25 @@ run_get_hv (const char *cmd, size_t argc, char *argv[])
   ret = 0;
   printf ("%s\n", r);
   free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_identifier (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  const char *r;
+
+  if (argc != 0) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  r = guestfs_get_identifier (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
  out:
  out_noargs:
   return ret;
@@ -21263,6 +21312,27 @@ run_set_hv (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_set_identifier (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *identifier;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  identifier = argv[i++];
+  r = guestfs_set_identifier (g, identifier);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_set_label (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -22665,7 +22735,7 @@ run_tar_in (const char *cmd, size_t argc, char *argv[])
   struct guestfs_tar_in_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 3) {
+  if (argc < 2 || argc > 6) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -22682,6 +22752,45 @@ run_tar_in (const char *cmd, size_t argc, char *argv[])
       optargs_s.compress = &argv[i][9];
       this_mask = GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
       this_arg = "compress";
+    }
+    else if (STRPREFIX (argv[i], "xattrs:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.xattrs = 0; break;
+        default: optargs_s.xattrs = 1;
+      }
+      this_mask = GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK;
+      this_arg = "xattrs";
+    }
+    else if (STRPREFIX (argv[i], "selinux:")) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][8]);
+          goto out;
+        case 0:  optargs_s.selinux = 0; break;
+        default: optargs_s.selinux = 1;
+      }
+      this_mask = GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK;
+      this_arg = "selinux";
+    }
+    else if (STRPREFIX (argv[i], "acls:")) {
+      switch (guestfs_int_is_true (&argv[i][5])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][5]);
+          goto out;
+        case 0:  optargs_s.acls = 0; break;
+        default: optargs_s.acls = 1;
+      }
+      this_mask = GUESTFS_TAR_IN_OPTS_ACLS_BITMASK;
+      this_arg = "acls";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -22720,7 +22829,7 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
   struct guestfs_tar_out_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 5) {
+  if (argc < 2 || argc > 8) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -22755,6 +22864,45 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
       if (optargs_s.excludes == NULL) goto out;
       this_mask = GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
       this_arg = "excludes";
+    }
+    else if (STRPREFIX (argv[i], "xattrs:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.xattrs = 0; break;
+        default: optargs_s.xattrs = 1;
+      }
+      this_mask = GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK;
+      this_arg = "xattrs";
+    }
+    else if (STRPREFIX (argv[i], "selinux:")) {
+      switch (guestfs_int_is_true (&argv[i][8])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][8]);
+          goto out;
+        case 0:  optargs_s.selinux = 0; break;
+        default: optargs_s.selinux = 1;
+      }
+      this_mask = GUESTFS_TAR_OUT_OPTS_SELINUX_BITMASK;
+      this_arg = "selinux";
+    }
+    else if (STRPREFIX (argv[i], "acls:")) {
+      switch (guestfs_int_is_true (&argv[i][5])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][5]);
+          goto out;
+        case 0:  optargs_s.acls = 0; break;
+        default: optargs_s.acls = 1;
+      }
+      this_mask = GUESTFS_TAR_OUT_OPTS_ACLS_BITMASK;
+      this_arg = "acls";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -23633,6 +23781,28 @@ run_vfs_label (const char *cmd, size_t argc, char *argv[])
   ret = 0;
   printf ("%s\n", r);
   free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_vfs_minimum_size (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int64_t r;
+  const char *mountable;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  mountable = argv[i++];
+  r = guestfs_vfs_minimum_size (g, mountable);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
  out:
  out_noargs:
   return ret;

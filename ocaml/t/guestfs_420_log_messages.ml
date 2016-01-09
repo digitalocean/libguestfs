@@ -1,5 +1,5 @@
 (* libguestfs OCaml tests
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ open Printf
 
 let log_invoked = ref 0
 
-let log g ev eh buf array =
+let log ev eh buf array =
   let eh : int = Obj.magic eh in
 
   printf "event logged: event=%s eh=%d buf=%S array=[%s]\n"

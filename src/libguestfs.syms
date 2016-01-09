@@ -3,7 +3,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -390,6 +390,7 @@
         guestfs_get_e2uuid;
         guestfs_get_error_handler;
         guestfs_get_hv;
+        guestfs_get_identifier;
         guestfs_get_libvirt_requested_credential_challenge;
         guestfs_get_libvirt_requested_credential_defresult;
         guestfs_get_libvirt_requested_credential_prompt;
@@ -483,6 +484,7 @@
         guestfs_int_safe_strdup;
         guestfs_internal_autosync;
         guestfs_internal_exit;
+        guestfs_internal_feature_available;
         guestfs_internal_hot_add_drive;
         guestfs_internal_hot_remove_drive;
         guestfs_internal_hot_remove_drive_precheck;
@@ -794,6 +796,7 @@
         guestfs_set_error_handler;
         guestfs_set_event_callback;
         guestfs_set_hv;
+        guestfs_set_identifier;
         guestfs_set_label;
         guestfs_set_launch_done_callback;
         guestfs_set_libvirt_requested_credential;
@@ -883,6 +886,7 @@
         guestfs_utsname;
         guestfs_version;
         guestfs_vfs_label;
+        guestfs_vfs_minimum_size;
         guestfs_vfs_type;
         guestfs_vfs_uuid;
         guestfs_vg_activate;

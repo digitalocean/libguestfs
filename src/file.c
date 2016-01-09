@@ -20,8 +20,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <inttypes.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -34,7 +32,6 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 static int
 compare (const void *vp1, const void *vp2)
@@ -366,14 +363,14 @@ write_or_append (guestfs_h *g, const char *path,
 
 int
 guestfs_impl_write (guestfs_h *g, const char *path,
-                const char *content, size_t size)
+		    const char *content, size_t size)
 {
   return write_or_append (g, path, content, size, 0);
 }
 
 int
 guestfs_impl_write_append (guestfs_h *g, const char *path,
-                       const char *content, size_t size)
+			   const char *content, size_t size)
 {
   return write_or_append (g, path, content, size, 1);
 }

@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1770,6 +1770,9 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_get_e2uuid (guestfs_h *g, const char *de
 #define GUESTFS_HAVE_GET_HV 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_hv (guestfs_h *g);
 
+#define GUESTFS_HAVE_GET_IDENTIFIER 1
+extern GUESTFS_DLL_PUBLIC const char *guestfs_get_identifier (guestfs_h *g);
+
 #define GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_libvirt_requested_credential_challenge (guestfs_h *g, int index);
 
@@ -3131,6 +3134,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_e2uuid (guestfs_h *g, const char *devi
 #define GUESTFS_HAVE_SET_HV 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_hv (guestfs_h *g, const char *hv);
 
+#define GUESTFS_HAVE_SET_IDENTIFIER 1
+extern GUESTFS_DLL_PUBLIC int guestfs_set_identifier (guestfs_h *g, const char *identifier);
+
 #define GUESTFS_HAVE_SET_LABEL 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_label (guestfs_h *g, const char *mountable, const char *label);
 
@@ -3290,6 +3296,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_tar_in (guestfs_h *g, const char *tarfile,
 
 #define GUESTFS_HAVE_TAR_IN_OPTS 1
 #define GUESTFS_TAR_IN_OPTS_COMPRESS 0
+#define GUESTFS_TAR_IN_OPTS_XATTRS 1
+#define GUESTFS_TAR_IN_OPTS_SELINUX 2
+#define GUESTFS_TAR_IN_OPTS_ACLS 3
 extern GUESTFS_DLL_PUBLIC int guestfs_tar_in_opts (guestfs_h *g, const char *tarfile, const char *directory, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_tar_in_opts_va (guestfs_h *g, const char *tarfile, const char *directory, va_list args);
 
@@ -3297,6 +3306,12 @@ struct guestfs_tar_in_opts_argv {
   uint64_t bitmask;
 # define GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK (UINT64_C(1)<<0)
   const char *compress;
+# define GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK (UINT64_C(1)<<1)
+  int xattrs;
+# define GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK (UINT64_C(1)<<2)
+  int selinux;
+# define GUESTFS_TAR_IN_OPTS_ACLS_BITMASK (UINT64_C(1)<<3)
+  int acls;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_tar_in_opts_argv (guestfs_h *g, const char *tarfile, const char *directory, const struct guestfs_tar_in_opts_argv *optargs);
@@ -3308,6 +3323,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_tar_out (guestfs_h *g, const char *directo
 #define GUESTFS_TAR_OUT_OPTS_COMPRESS 0
 #define GUESTFS_TAR_OUT_OPTS_NUMERICOWNER 1
 #define GUESTFS_TAR_OUT_OPTS_EXCLUDES 2
+#define GUESTFS_TAR_OUT_OPTS_XATTRS 3
+#define GUESTFS_TAR_OUT_OPTS_SELINUX 4
+#define GUESTFS_TAR_OUT_OPTS_ACLS 5
 extern GUESTFS_DLL_PUBLIC int guestfs_tar_out_opts (guestfs_h *g, const char *directory, const char *tarfile, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_tar_out_opts_va (guestfs_h *g, const char *directory, const char *tarfile, va_list args);
 
@@ -3319,6 +3337,12 @@ struct guestfs_tar_out_opts_argv {
   int numericowner;
 # define GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK (UINT64_C(1)<<2)
   char *const *excludes;
+# define GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK (UINT64_C(1)<<3)
+  int xattrs;
+# define GUESTFS_TAR_OUT_OPTS_SELINUX_BITMASK (UINT64_C(1)<<4)
+  int selinux;
+# define GUESTFS_TAR_OUT_OPTS_ACLS_BITMASK (UINT64_C(1)<<5)
+  int acls;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_tar_out_opts_argv (guestfs_h *g, const char *directory, const char *tarfile, const struct guestfs_tar_out_opts_argv *optargs);
@@ -3449,6 +3473,9 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_version *guestfs_version (guestfs_h *g)
 
 #define GUESTFS_HAVE_VFS_LABEL 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_vfs_label (guestfs_h *g, const char *mountable);
+
+#define GUESTFS_HAVE_VFS_MINIMUM_SIZE 1
+extern GUESTFS_DLL_PUBLIC int64_t guestfs_vfs_minimum_size (guestfs_h *g, const char *mountable);
 
 #define GUESTFS_HAVE_VFS_TYPE 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_vfs_type (guestfs_h *g, const char *mountable);
@@ -3682,6 +3709,9 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_zgrepi (guestfs_h *g, const char *regex
 
 #define GUESTFS_HAVE_INTERNAL_AUTOSYNC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_autosync (guestfs_h *g);
+
+#define GUESTFS_HAVE_INTERNAL_FEATURE_AVAILABLE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_feature_available (guestfs_h *g, const char *group);
 
 #define GUESTFS_HAVE_INTERNAL_HOT_ADD_DRIVE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_add_drive (guestfs_h *g, const char *label);
@@ -4237,6 +4267,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_GET_E2LABEL 1
 #define LIBGUESTFS_HAVE_GET_E2UUID 1
 #define LIBGUESTFS_HAVE_GET_HV 1
+#define LIBGUESTFS_HAVE_GET_IDENTIFIER 1
 #define LIBGUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE 1
 #define LIBGUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_DEFRESULT 1
 #define LIBGUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_PROMPT 1
@@ -4521,6 +4552,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SET_E2LABEL 1
 #define LIBGUESTFS_HAVE_SET_E2UUID 1
 #define LIBGUESTFS_HAVE_SET_HV 1
+#define LIBGUESTFS_HAVE_SET_IDENTIFIER 1
 #define LIBGUESTFS_HAVE_SET_LABEL 1
 #define LIBGUESTFS_HAVE_SET_LIBVIRT_REQUESTED_CREDENTIAL 1
 #define LIBGUESTFS_HAVE_SET_LIBVIRT_SUPPORTED_CREDENTIALS 1
@@ -4589,6 +4621,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_UTSNAME 1
 #define LIBGUESTFS_HAVE_VERSION 1
 #define LIBGUESTFS_HAVE_VFS_LABEL 1
+#define LIBGUESTFS_HAVE_VFS_MINIMUM_SIZE 1
 #define LIBGUESTFS_HAVE_VFS_TYPE 1
 #define LIBGUESTFS_HAVE_VFS_UUID 1
 #define LIBGUESTFS_HAVE_VG_ACTIVATE 1

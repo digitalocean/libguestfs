@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -3755,6 +3755,18 @@ run_get_hv (ETERM *message)
   ETERM *rt = erl_mk_string (r);
   free (r);
   return rt;
+}
+
+static ETERM *
+run_get_identifier (ETERM *message)
+{
+  const char *r;
+
+  r = guestfs_get_identifier (g);
+  if (r == NULL)
+    return make_error ("get_identifier");
+
+  return erl_mk_string (r);
 }
 
 static ETERM *
@@ -9394,6 +9406,19 @@ run_set_hv (ETERM *message)
 }
 
 static ETERM *
+run_set_identifier (ETERM *message)
+{
+  CLEANUP_FREE char *identifier = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_set_identifier (g, identifier);
+  if (r == -1)
+    return make_error ("set_identifier");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_set_label (ETERM *message)
 {
   CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
@@ -10089,6 +10114,21 @@ run_tar_in (ETERM *message)
       optargs_s.compress = erl_iolist_to_string (hd_value);
     }
     else
+    if (atom_equals (hd_name, "xattrs")) {
+      optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK;
+      optargs_s.xattrs = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "selinux")) {
+      optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK;
+      optargs_s.selinux = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "acls")) {
+      optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_ACLS_BITMASK;
+      optargs_s.acls = get_bool (hd_value);
+    }
+    else
       return unknown_optarg ("tar_in", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -10131,6 +10171,21 @@ run_tar_out (ETERM *message)
     if (atom_equals (hd_name, "excludes")) {
       optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
       optargs_s.excludes = get_string_list (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "xattrs")) {
+      optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK;
+      optargs_s.xattrs = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "selinux")) {
+      optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_SELINUX_BITMASK;
+      optargs_s.selinux = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "acls")) {
+      optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_ACLS_BITMASK;
+      optargs_s.acls = get_bool (hd_value);
     }
     else
       return unknown_optarg ("tar_out", hd_name);
@@ -10531,6 +10586,19 @@ run_vfs_label (ETERM *message)
   ETERM *rt = erl_mk_string (r);
   free (r);
   return rt;
+}
+
+static ETERM *
+run_vfs_minimum_size (ETERM *message)
+{
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
+  int64_t r;
+
+  r = guestfs_vfs_minimum_size (g, mountable);
+  if (r == -1)
+    return make_error ("vfs_minimum_size");
+
+  return erl_mk_longlong (r);
 }
 
 static ETERM *
@@ -11610,6 +11678,8 @@ dispatch (ETERM *message)
     return run_get_e2uuid (message);
   else if (atom_equals (fun, "get_hv"))
     return run_get_hv (message);
+  else if (atom_equals (fun, "get_identifier"))
+    return run_get_identifier (message);
   else if (atom_equals (fun, "get_libvirt_requested_credential_challenge"))
     return run_get_libvirt_requested_credential_challenge (message);
   else if (atom_equals (fun, "get_libvirt_requested_credential_defresult"))
@@ -12232,6 +12302,8 @@ dispatch (ETERM *message)
     return run_set_e2uuid (message);
   else if (atom_equals (fun, "set_hv"))
     return run_set_hv (message);
+  else if (atom_equals (fun, "set_identifier"))
+    return run_set_identifier (message);
   else if (atom_equals (fun, "set_label"))
     return run_set_label (message);
   else if (atom_equals (fun, "set_libvirt_requested_credential"))
@@ -12368,6 +12440,8 @@ dispatch (ETERM *message)
     return run_version (message);
   else if (atom_equals (fun, "vfs_label"))
     return run_vfs_label (message);
+  else if (atom_equals (fun, "vfs_minimum_size"))
+    return run_vfs_minimum_size (message);
   else if (atom_equals (fun, "vfs_type"))
     return run_vfs_type (message);
   else if (atom_equals (fun, "vfs_uuid"))

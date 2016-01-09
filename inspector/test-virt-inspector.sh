@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs virt-inspector test script
-# Copyright (C) 2012-2015 Red Hat Inc.
+# Copyright (C) 2012-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ fi
 # ntfs-3g can't set UUIDs right now, so ignore just that <uuid>.
 diff_ignore="-I <uuid>[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]</uuid>"
 
-for f in ../tests/guests/{debian,fedora,ubuntu,archlinux,coreos,windows}.img; do
+for f in ../test-data/phony-guests/{debian,fedora,ubuntu,archlinux,coreos,windows}.img; do
     # Ignore zero-sized windows.img if ntfs-3g is not installed.
     if [ -s "$f" ]; then
         b=$(basename "$f" .xml)
@@ -43,5 +43,5 @@ done
 # We could also test this image, but mdadm is problematic for
 # many users.
 # $VG virt-inspector \
-#   -a ../tests/guests/fedora-md1.img \
-#   -a ../tests/guests/fedora-md2.img
+#   -a ../test-data/phony-guests/fedora-md1.img \
+#   -a ../test-data/phony-guests/fedora-md2.img

@@ -20,14 +20,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <inttypes.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <string.h>
+#include <libintl.h>
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
@@ -46,6 +45,12 @@ guestfs_impl_copy_in (guestfs_h *g,
   size_t buf_len = strlen (localpath) + 1;
   char buf[buf_len];
   const char *dirname, *basename;
+  struct stat statbuf;
+
+  if (stat (localpath, &statbuf) == -1) {
+    error (g, _("source '%s' does not exist (or cannot be read)"), localpath);
+    return -1;
+  }
 
   int remote_is_dir = guestfs_is_dir (g, remotedir);
   if (remote_is_dir == -1)

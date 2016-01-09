@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,17 +20,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include <inttypes.h>
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <errno.h>
 #include <assert.h>
+#include <libintl.h>
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
@@ -77,6 +75,8 @@ guestfs_impl_launch (guestfs_h *g)
     CLEANUP_FREE char *backend = guestfs_get_backend (g);
 
     debug (g, "launch: program=%s", g->program);
+    if (STRNEQ (g->identifier, ""))
+      debug (g, "launch: identifier=%s", g->identifier);
     debug (g, "launch: version=%"PRIi64".%"PRIi64".%"PRIi64"%s",
            v->major, v->minor, v->release, v->extra);
 
@@ -246,16 +246,16 @@ guestfs_impl_get_state (guestfs_h *g)
 /* Add arbitrary qemu parameters.  Useful for testing. */
 int
 guestfs_impl_config (guestfs_h *g,
-                 const char *hv_param, const char *hv_value)
+		     const char *hv_param, const char *hv_value)
 {
   struct hv_param *hp;
 
   /*
     XXX For qemu this made sense, but not for uml.
-  if (hv_param[0] != '-') {
+    if (hv_param[0] != '-') {
     error (g, _("parameter must begin with '-' character"));
     return -1;
-  }
+    }
   */
 
   /* A bit fascist, but the user will probably break the extra
@@ -312,7 +312,7 @@ guestfs_impl_config (guestfs_h *g,
 
 char *
 guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
-                                  int flags)
+				    int flags)
 {
   char root[64] = "";
   char *term = getenv ("TERM");
@@ -361,6 +361,7 @@ guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
      "%s"                       /* verbose */
      "%s"                       /* network */
      " TERM=%s"                 /* TERM environment variable */
+     "%s%s"                     /* handle identifier */
      "%s%s",                    /* append */
 #ifdef __arm__
      g->memsize,
@@ -371,6 +372,8 @@ guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
      g->verbose ? " guestfs_verbose=1" : "",
      g->enable_network ? " guestfs_network=1" : "",
      term ? term : "linux",
+     STRNEQ (g->identifier, "") ? " guestfs_identifier=" : "",
+     g->identifier,
      g->append ? " " : "", g->append ? g->append : "");
 
   return ret;
@@ -517,7 +520,7 @@ guestfs_int_set_backend (guestfs_h *g, const char *method)
 void *
 guestfs_int_force_load_backends[] = {
   guestfs_int_init_direct_backend,
-#ifdef HAVE_LIBVIRT
+#ifdef HAVE_LIBVIRT_BACKEND
   guestfs_int_init_libvirt_backend,
 #endif
   guestfs_int_init_uml_backend,

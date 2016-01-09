@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 # virt-list-partitions
 # Copyright (C) 2010 Red Hat Inc.
 #
@@ -277,4 +277,4 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2015 Red Hat Inc.
+Copyright (C) 2009-2016 Red Hat Inc.

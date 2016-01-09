@@ -20,13 +20,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <inttypes.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <errno.h>
+#include <libintl.h>
 
 #ifdef HAVE_ENDIAN_H
 #include <endian.h>
@@ -37,7 +36,6 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 COMPILE_REGEXP (re_primary_partition, "^/dev/(?:h|s|v)d.[1234]$", 0)
 
@@ -255,6 +253,8 @@ guestfs_impl_inspect_get_distro (guestfs_h *g, const char *root)
     return NULL;
 
   switch (fs->distro) {
+  case OS_DISTRO_ALPINE_LINUX: ret = safe_strdup (g, "alpinelinux"); break;
+  case OS_DISTRO_ALTLINUX: ret = safe_strdup (g, "altlinux"); break;
   case OS_DISTRO_ARCHLINUX: ret = safe_strdup (g, "archlinux"); break;
   case OS_DISTRO_BUILDROOT: ret = safe_strdup (g, "buildroot"); break;
   case OS_DISTRO_CENTOS: ret = safe_strdup (g, "centos"); break;
@@ -264,6 +264,7 @@ guestfs_impl_inspect_get_distro (guestfs_h *g, const char *root)
   case OS_DISTRO_FEDORA: ret = safe_strdup (g, "fedora"); break;
   case OS_DISTRO_FREEBSD: ret = safe_strdup (g, "freebsd"); break;
   case OS_DISTRO_FREEDOS: ret = safe_strdup (g, "freedos"); break;
+  case OS_DISTRO_FRUGALWARE: ret = safe_strdup (g, "frugalware"); break;
   case OS_DISTRO_GENTOO: ret = safe_strdup (g, "gentoo"); break;
   case OS_DISTRO_LINUX_MINT: ret = safe_strdup (g, "linuxmint"); break;
   case OS_DISTRO_MAGEIA: ret = safe_strdup (g, "mageia"); break;
@@ -274,6 +275,7 @@ guestfs_impl_inspect_get_distro (guestfs_h *g, const char *root)
   case OS_DISTRO_OPENSUSE: ret = safe_strdup (g, "opensuse"); break;
   case OS_DISTRO_ORACLE_LINUX: ret = safe_strdup (g, "oraclelinux"); break;
   case OS_DISTRO_PARDUS: ret = safe_strdup (g, "pardus"); break;
+  case OS_DISTRO_PLD_LINUX: ret = safe_strdup (g, "pldlinux"); break;
   case OS_DISTRO_REDHAT_BASED: ret = safe_strdup (g, "redhat-based"); break;
   case OS_DISTRO_RHEL: ret = safe_strdup (g, "rhel"); break;
   case OS_DISTRO_SCIENTIFIC_LINUX: ret = safe_strdup (g, "scientificlinux"); break;
@@ -349,7 +351,7 @@ guestfs_impl_inspect_get_windows_systemroot (guestfs_h *g, const char *root)
 
 char *
 guestfs_impl_inspect_get_windows_current_control_set (guestfs_h *g,
-                                                  const char *root)
+						      const char *root)
 {
   struct inspect_fs *fs = guestfs_int_search_for_root (g, root);
   if (!fs)
@@ -529,6 +531,7 @@ guestfs_impl_inspect_get_package_format (guestfs_h *g, const char *root)
   case OS_PACKAGE_FORMAT_EBUILD: ret = safe_strdup (g, "ebuild"); break;
   case OS_PACKAGE_FORMAT_PISI: ret = safe_strdup (g, "pisi"); break;
   case OS_PACKAGE_FORMAT_PKGSRC: ret = safe_strdup (g, "pkgsrc"); break;
+  case OS_PACKAGE_FORMAT_APK: ret = safe_strdup (g, "apk"); break;
   case OS_PACKAGE_FORMAT_UNKNOWN:
     ret = safe_strdup (g, "unknown");
     break;
@@ -549,6 +552,7 @@ guestfs_impl_inspect_get_package_management (guestfs_h *g, const char *root)
     return NULL;
 
   switch (fs->package_management) {
+  case OS_PACKAGE_MANAGEMENT_APK: ret = safe_strdup (g, "apk"); break;
   case OS_PACKAGE_MANAGEMENT_APT: ret = safe_strdup (g, "apt"); break;
   case OS_PACKAGE_MANAGEMENT_DNF: ret = safe_strdup (g, "dnf"); break;
   case OS_PACKAGE_MANAGEMENT_PACMAN: ret = safe_strdup (g, "pacman"); break;
@@ -620,8 +624,8 @@ guestfs_int_free_inspect_info (guestfs_h *g)
  */
 char *
 guestfs_int_download_to_tmp (guestfs_h *g, struct inspect_fs *fs,
-                           const char *filename,
-                           const char *basename, uint64_t max_size)
+			     const char *filename,
+			     const char *basename, uint64_t max_size)
 {
   char *r;
   int fd;

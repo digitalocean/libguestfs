@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,18 +65,18 @@ usage (int status)
     fprintf (stderr, _("Try `%s --help' for more information.\n"),
              guestfs_int_program_name);
   else {
-    fprintf (stdout,
-           _("%s: Convert a physical machine to use KVM\n"
-             "Copyright (C) 2009-2015 Red Hat Inc.\n"
-             "Usage:\n"
-             "  %s [--options]\n"
-             "Options:\n"
-             "  --help                 Display brief help\n"
-             " --cmdline=CMDLINE       Used to debug command line parsing\n"
-             "  -v|--verbose           Verbose messages\n"
-             "  -V|--version           Display version and exit\n"
-             "For more information, see the manpage %s(1).\n"),
-             guestfs_int_program_name, guestfs_int_program_name, guestfs_int_program_name);
+    printf (_("%s: Convert a physical machine to use KVM\n"
+              "Copyright (C) 2009-2016 Red Hat Inc.\n"
+              "Usage:\n"
+              "  %s [--options]\n"
+              "Options:\n"
+              "  --help                 Display brief help\n"
+              " --cmdline=CMDLINE       Used to debug command line parsing\n"
+              "  -v|--verbose           Verbose messages\n"
+              "  -V|--version           Display version and exit\n"
+              "For more information, see the manpage %s(1).\n"),
+            guestfs_int_program_name, guestfs_int_program_name,
+            guestfs_int_program_name);
   }
   exit (status);
 }

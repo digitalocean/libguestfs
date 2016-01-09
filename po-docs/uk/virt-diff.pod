@@ -5,7 +5,7 @@ virt-diff - Differences between files in two virtual machines
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-diff [--options] -d domain1 -D domain2
+ virt-diff [--параметри] -d домен1 -D домен2
 
  virt-diff [--options] -a disk1.img [-a ...] -A disk2.img [-A ...]
 
@@ -150,12 +150,13 @@ back to auto-detection for subsequent I<-a>/I<-A> options.
 
  virt-diff --format=raw -a disk.img [...]
 
-forces raw format (no auto-detection) for F<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<disk.img>.
 
  virt-diff --format=raw -a disk.img --format -a another.img [...]
 
-forces raw format (no auto-detection) for F<disk.img> and reverts to
-auto-detection for F<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<diskimg> і повернення до автоматичного визначення для F<another.img>.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату
@@ -258,5 +259,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2015
+Copyright (C) 2009-2016 Red Hat Inc.
 

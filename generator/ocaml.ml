@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,8 @@ let rec generate_ocaml_mli () =
     (see the end of this file and {!guestfs})
     which is functionally completely equivalent, but is more compact. *)
 
+(** {3 Handles} *)
+
 type t
 (** A [guestfs_h] handle. *)
 
@@ -69,7 +71,7 @@ exception Error of string
 exception Handle_closed of string
 (** This exception is raised if you use a {!t} handle
     after calling {!close} on it.  The string is the name of
-    the function. *)
+    the function that was called incorrectly. *)
 
 val create : ?environment:bool -> ?close_on_exit:bool -> unit -> t
 (** Create a {!t} handle.
@@ -88,6 +90,8 @@ val close : t -> unit
     unreferenced, but callers can call this in order to provide
     predictable cleanup. *)
 
+(** {3 Events} *)
+
 type event =
 ";
   List.iter (
@@ -103,8 +107,7 @@ val event_all : event list
 type event_handle
 (** The opaque event handle which can be used to delete event callbacks. *)
 
-type event_callback =
-  t -> event -> event_handle -> string -> int64 array -> unit
+type event_callback = event -> event_handle -> string -> int64 array -> unit
 (** The event callback. *)
 
 val set_event_callback : t -> event_callback -> event list -> event_handle
@@ -113,9 +116,7 @@ val set_event_callback : t -> event_callback -> event list -> event_handle
 
     Note that if the closure captures a reference to the handle,
     this reference will prevent the handle from being
-    automatically closed by the garbage collector.  Since the
-    handle is passed to the event callback, with careful programming
-    it should be possible to avoid capturing the handle in the closure. *)
+    automatically closed by the garbage collector. *)
 
 val delete_event_callback : t -> event_handle -> unit
 (** [delete_event_callback g eh] removes a previously registered
@@ -124,6 +125,8 @@ val delete_event_callback : t -> event_handle -> unit
 val event_to_string : event list -> string
 (** [event_to_string events] returns the event(s) as a printable string
     for debugging etc. *)
+
+(** {3 Errors} *)
 
 val last_errno : t -> int
 (** [last_errno g] returns the last errno that happened on the handle [g]
@@ -144,56 +147,70 @@ module Errno : sig
 ";
   List.iter (
     fun e ->
-      pr "  val errno_%s : int\n" e
+      pr "  val errno_%s : int\n" e;
+      pr "  (** Integer value of errno [%s].  See {!Guestfs.last_errno}. *)\n" e
   ) ocaml_errnos;
   pr "\
 end
 
+(** {3 Structs} *)
+
 ";
   generate_ocaml_structure_decls ();
 
+  pr "\
+
+(** {3 Actions} *)
+
+";
+
+  let generate_doc ?(indent = "") ?(alias = false) f cont =
+    if is_documented f then (
+      let has_tags = ref false in
+
+      cont ();
+
+      if not alias then
+        pr "%s(** %s" indent f.shortdesc
+      else
+        pr "%s(** alias for {!%s}" indent f.name;
+
+      (match f.deprecated_by with
+       | None -> ()
+       | Some replacement ->
+          has_tags := true;
+          pr "\n\n    @deprecated Use {!%s} instead" replacement
+      );
+      (match version_added f with
+       | None -> ()
+       | Some version ->
+          has_tags := true;
+          pr "\n\n    @since %s" version
+      );
+      if !has_tags then
+        pr "\n";
+      pr "%s *)\n" indent
+    )
+    else (
+      (* Using **/** hides the function from the documentation. *)
+      pr "%s(**/**)\n" indent;
+      cont ();
+      pr "%s(**/**)\n" indent
+    );
+  in
+
   (* The actions. *)
   List.iter (
-    fun ({ name = name; style = style; deprecated_by = deprecated_by;
-          non_c_aliases = non_c_aliases;
-          shortdesc = shortdesc } as f) ->
-      let need_doc = is_documented f in
-
-      if not need_doc then
-        pr "(**/**)\n";
-
-      generate_ocaml_prototype name style;
-
-      if need_doc then (
-        let has_tags = ref false in
-
-        pr "(** %s" shortdesc;
-        (match deprecated_by with
-         | None -> ()
-         | Some replacement ->
-             has_tags := true;
-             pr "\n\n    @deprecated Use {!%s} instead" replacement
-        );
-        (match version_added f with
-        | None -> ()
-        | Some version ->
-             has_tags := true;
-             pr "\n\n    @since %s" version
-        );
-        if !has_tags then
-          pr "\n";
-        pr " *)\n";
-      );
+    fun ({ name = name; style = style; non_c_aliases = non_c_aliases } as f) ->
+      generate_doc f (fun () -> generate_ocaml_prototype name style);
 
       (* Aliases. *)
       List.iter (
         fun alias ->
           pr "\n";
-          generate_ocaml_prototype alias style;
+          generate_doc ~alias:true f
+                       (fun () -> generate_ocaml_prototype alias style)
       ) non_c_aliases;
-
-      if not need_doc then
-        pr "(**/**)\n";
 
       pr "\n";
   ) external_functions_sorted;
@@ -223,28 +240,44 @@ end
 
 class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method close : unit -> unit
+  (** See {!Guestfs.close} *)
   method set_event_callback : event_callback -> event list -> event_handle
+  (** See {!Guestfs.set_event_callback} *)
   method delete_event_callback : event_handle -> unit
+  (** See {!Guestfs.delete_event_callback} *)
   method last_errno : unit -> int
+  (** See {!Guestfs.last_errno} *)
   method ocaml_handle : t
+  (** Return the {!Guestfs.t} handle *)
 ";
 
   List.iter (
-    fun { name = name; style = style; non_c_aliases = non_c_aliases } ->
+    fun ({ name = name; style = style; non_c_aliases = non_c_aliases } as f) ->
+      let indent = "  " in
+
       (match style with
       | _, [], _ ->
-        pr "  method %s : " name;
-        generate_ocaml_function_type ~extra_unit:true style;
-        pr "\n"
+        generate_doc ~indent f (
+          fun () ->
+            pr "  method %s : " name;
+            generate_ocaml_function_type ~extra_unit:true style;
+            pr "\n"
+        )
       | _, (_::_), _ ->
-        pr "  method %s : " name;
-        generate_ocaml_function_type style;
-        pr "\n"
+        generate_doc ~indent f (
+          fun () ->
+            pr "  method %s : " name;
+            generate_ocaml_function_type style;
+            pr "\n"
+        )
       );
       List.iter (fun alias ->
-        pr "  method %s : " alias;
-        generate_ocaml_function_type style;
-        pr "\n"
+        generate_doc ~indent ~alias:true f (
+          fun () ->
+            pr "  method %s : " alias;
+            generate_ocaml_function_type style;
+            pr "\n"
+        )
       ) non_c_aliases
   ) external_functions_sorted;
 
@@ -285,8 +318,7 @@ let event_all = [
 
 type event_handle = int
 
-type event_callback =
-  t -> event -> event_handle -> string -> int64 array -> unit
+type event_callback = event -> event_handle -> string -> int64 array -> unit
 
 external set_event_callback : t -> event_callback -> event list -> event_handle
   = \"ocaml_guestfs_set_event_callback\"
@@ -568,7 +600,7 @@ copy_table (char * const * argv)
         | BufferIn n ->
             pr "  size_t %s_size = caml_string_length (%sv);\n" n n;
             pr "  char *%s = guestfs_int_safe_memdup (g, String_val (%sv), %s_size);\n" n n n
-        | StringList n | DeviceList n ->
+        | StringList n | DeviceList n | FilenameList n ->
             pr "  char **%s = ocaml_guestfs_strings_val (g, %sv);\n" n n
         | Bool n ->
             pr "  int %s = Bool_val (%sv);\n" n n
@@ -645,7 +677,7 @@ copy_table (char * const * argv)
         | OptString n | FileIn n | FileOut n | BufferIn n
         | Key n | GUID n ->
             pr "  free (%s);\n" n
-        | StringList n | DeviceList n ->
+        | StringList n | DeviceList n | FilenameList n ->
             pr "  guestfs_int_free_string_list (%s);\n" n;
         | Bool _ | Int _ | Int64 _ | Pointer _ -> ()
       ) args;
@@ -818,7 +850,8 @@ and generate_ocaml_function_type ?(extra_unit = false) (ret, args, optargs) =
     | FileIn _ | FileOut _ | BufferIn _ | Key _
     | GUID _ -> pr "string -> "
     | OptString _ -> pr "string option -> "
-    | StringList _ | DeviceList _ -> pr "string array -> "
+    | StringList _ | DeviceList _ | FilenameList _ ->
+        pr "string array -> "
     | Bool _ -> pr "bool -> "
     | Int _ -> pr "int -> "
     | Int64 _ | Pointer _ -> pr "int64 -> "

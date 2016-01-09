@@ -20,9 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <inttypes.h>
-#include <limits.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -30,6 +28,7 @@
 #include <sys/wait.h>
 #include <assert.h>
 #include <string.h>
+#include <libintl.h>
 
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -46,7 +45,6 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 static int which_parser (guestfs_h *g);
 static char *get_disk_format (guestfs_h *g, const char *filename);
@@ -347,8 +345,8 @@ which_parser (guestfs_h *g)
     guestfs_int_cmd_add_arg (cmd, "qemu-img");
     guestfs_int_cmd_add_arg (cmd, "--help");
     guestfs_int_cmd_set_stdout_callback (cmd,
-                                       help_contains_output_json,
-                                       &qemu_img_supports_json, 0);
+					 help_contains_output_json,
+					 &qemu_img_supports_json, 0);
     guestfs_int_cmd_run (cmd);
     /* ignore return code, which would usually be 1 */
 

@@ -60,6 +60,11 @@
 </colgroup>
 <tbody>
 <tr>
+<td class="property_type"><a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></td>
+<td class="property_name"><a class="link" href="GuestfsTarOut.html#GuestfsTarOut--acls" title="The “acls” property">acls</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
 <td class="property_type">
 <span class="type">gchar</span> *</td>
 <td class="property_name"><a class="link" href="GuestfsTarOut.html#GuestfsTarOut--compress" title="The “compress” property">compress</a></td>
@@ -68,6 +73,16 @@
 <tr>
 <td class="property_type"><a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></td>
 <td class="property_name"><a class="link" href="GuestfsTarOut.html#GuestfsTarOut--numericowner" title="The “numericowner” property">numericowner</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type"><a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></td>
+<td class="property_name"><a class="link" href="GuestfsTarOut.html#GuestfsTarOut--selinux" title="The “selinux” property">selinux</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type"><a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></td>
+<td class="property_name"><a class="link" href="GuestfsTarOut.html#GuestfsTarOut--xattrs" title="The “xattrs” property">xattrs</a></td>
 <td class="property_flags">Read / Write / Construct</td>
 </tr>
 </tbody>
@@ -156,6 +171,14 @@ guestfs_tar_out_new (<em class="parameter"><code><span class="type">void</span><
 <div class="refsect1">
 <a name="GuestfsTarOut.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
+<a name="GuestfsTarOut--acls"></a><h3>The <code class="literal">“acls”</code> property</h3>
+<pre class="programlisting">  “acls”                     <a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></pre>
+<p>A boolean.</p>
+<p>Flags: Read / Write / Construct</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="GuestfsTarOut--compress"></a><h3>The <code class="literal">“compress”</code> property</h3>
 <pre class="programlisting">  “compress”                 <span class="type">gchar</span> *</pre>
 <p>A string.</p>
@@ -166,6 +189,22 @@ guestfs_tar_out_new (<em class="parameter"><code><span class="type">void</span><
 <div class="refsect2">
 <a name="GuestfsTarOut--numericowner"></a><h3>The <code class="literal">“numericowner”</code> property</h3>
 <pre class="programlisting">  “numericowner”             <a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></pre>
+<p>A boolean.</p>
+<p>Flags: Read / Write / Construct</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTarOut--selinux"></a><h3>The <code class="literal">“selinux”</code> property</h3>
+<pre class="programlisting">  “selinux”                  <a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></pre>
+<p>A boolean.</p>
+<p>Flags: Read / Write / Construct</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTarOut--xattrs"></a><h3>The <code class="literal">“xattrs”</code> property</h3>
+<pre class="programlisting">  “xattrs”                   <a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></pre>
 <p>A boolean.</p>
 <p>Flags: Read / Write / Construct</p>
 <p>Default value: GUESTFS_TRISTATE_NONE</p>

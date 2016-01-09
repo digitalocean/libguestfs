@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ open Utils
 
 class input_ova ova =
   let tmpdir =
-    let base_dir = (new Guestfs.guestfs ())#get_cachedir () in
+    let base_dir = (open_guestfs ())#get_cachedir () in
     let t = Mkdtemp.temp_dir ~base_dir "ova." "" in
     rmdir_on_exit t;
     t in
@@ -151,7 +151,7 @@ object
             | [] ->
               error (f_"no output from sha1sum command, see previous errors")
             | [line] ->
-              let actual, _ = string_split " " line in
+              let actual, _ = String.split " " line in
               if actual <> expected then
                 error (f_"checksum of disk %s does not match manifest %s (actual sha1(%s) = %s, expected sha1 (%s) = %s)")
                   disk mf disk actual disk expected;
@@ -274,7 +274,7 @@ object
            *)
           let filename =
             if detect_file_type filename = `GZip then (
-              let new_filename = tmpdir // string_random8 () ^ ".vmdk" in
+              let new_filename = tmpdir // String.random8 () ^ ".vmdk" in
               let cmd =
                 sprintf "zcat %s > %s" (quote filename) (quote new_filename) in
               if verbose () then printf "%s\n%!" cmd;

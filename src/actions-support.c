@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,20 +22,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <unistd.h>
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
-#include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
 /* Check the return message from a call for validity. */
 int
 guestfs_int_check_reply_header (guestfs_h *g,
-                              const struct guestfs_message_header *hdr,
-                              unsigned int proc_nr, unsigned int serial)
+				const struct guestfs_message_header *hdr,
+				unsigned int proc_nr, unsigned int serial)
 {
   if (hdr->prog != GUESTFS_PROGRAM) {
     error (g, "wrong program (%u/%d)", hdr->prog, GUESTFS_PROGRAM);
