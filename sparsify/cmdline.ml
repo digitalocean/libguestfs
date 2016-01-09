@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2015 Red Hat Inc.
+ * Copyright (C) 2011-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,18 @@ open Common_utils
 
 open Utils
 
-type mode_t =
-| Mode_copying of string * check_t * bool * string option * string option *
-    string option
+type cmdline = {
+  indisk : string;
+  format : string option;
+  ignores : string list;
+  machine_readable : bool;
+  zeroes : string list;
+  mode : mode_t;
+}
+
+and mode_t =
+| Mode_copying of
+    string * check_t * bool * string option * string option * string option
 | Mode_in_place
 and check_t = [`Ignore|`Continue|`Warn|`Fail]
 
@@ -107,7 +116,7 @@ read the man page virt-sparsify(1).
     printf "check-tmpdir\n";
     printf "in-place\n";
     printf "tmp-option\n";
-    let g = new Guestfs.guestfs () in
+    let g = open_guestfs () in
     g#add_drive "/dev/null";
     g#launch ();
     if g#feature_available [| "ntfsprogs"; "ntfs3g" |] then
@@ -175,4 +184,10 @@ read the man page virt-sparsify(1).
     else
       Mode_in_place in
 
-  indisk, format, ignores, machine_readable, zeroes, mode
+  { indisk = indisk;
+    format = format;
+    ignores = ignores;
+    machine_readable = machine_readable;
+    zeroes = zeroes;
+    mode = mode;
+  }

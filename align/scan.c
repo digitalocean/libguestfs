@@ -73,26 +73,25 @@ usage (int status)
     fprintf (stderr, _("Try `%s --help' for more information.\n"),
              guestfs_int_program_name);
   else {
-    fprintf (stdout,
-           _("%s: check alignment of virtual machine partitions\n"
-             "Copyright (C) 2011 Red Hat Inc.\n"
-             "Usage:\n"
-             "  %s [--options] -d domname\n"
-             "  %s [--options] -a disk.img [-a disk.img ...]\n"
-             "Options:\n"
-             "  -a|--add image       Add image\n"
-             "  -c|--connect uri     Specify libvirt URI for -d option\n"
-             "  -d|--domain guest    Add disks from libvirt guest\n"
-             "  --format[=raw|..]    Force disk format for -a option\n"
-             "  --help               Display brief help\n"
-             "  -P nr_threads        Use at most nr_threads\n"
-             "  -q|--quiet           No output, just exit code\n"
-             "  -v|--verbose         Verbose messages\n"
-             "  -V|--version         Display version and exit\n"
-             "  -x                   Trace libguestfs API calls\n"
-             "For more information, see the manpage %s(1).\n"),
-             guestfs_int_program_name, guestfs_int_program_name, guestfs_int_program_name,
-             guestfs_int_program_name);
+    printf (_("%s: check alignment of virtual machine partitions\n"
+              "Copyright (C) 2011 Red Hat Inc.\n"
+              "Usage:\n"
+              "  %s [--options] -d domname\n"
+              "  %s [--options] -a disk.img [-a disk.img ...]\n"
+              "Options:\n"
+              "  -a|--add image       Add image\n"
+              "  -c|--connect uri     Specify libvirt URI for -d option\n"
+              "  -d|--domain guest    Add disks from libvirt guest\n"
+              "  --format[=raw|..]    Force disk format for -a option\n"
+              "  --help               Display brief help\n"
+              "  -P nr_threads        Use at most nr_threads\n"
+              "  -q|--quiet           No output, just exit code\n"
+              "  -v|--verbose         Verbose messages\n"
+              "  -V|--version         Display version and exit\n"
+              "  -x                   Trace libguestfs API calls\n"
+              "For more information, see the manpage %s(1).\n"),
+            guestfs_int_program_name, guestfs_int_program_name,
+            guestfs_int_program_name, guestfs_int_program_name);
   }
   exit (status);
 }
@@ -152,7 +151,8 @@ main (int argc, char *argv[])
         uuid = 1;
       } else {
         fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name, long_options[option_index].name, option_index);
+                 guestfs_int_program_name,
+                 long_options[option_index].name, option_index);
         exit (EXIT_FAILURE);
       }
       break;
@@ -171,7 +171,8 @@ main (int argc, char *argv[])
 
     case 'P':
       if (sscanf (optarg, "%zu", &max_threads) != 1) {
-        fprintf (stderr, _("%s: -P option is not numeric\n"), guestfs_int_program_name);
+        fprintf (stderr, _("%s: -P option is not numeric\n"),
+                 guestfs_int_program_name);
         exit (EXIT_FAILURE);
       }
       break;

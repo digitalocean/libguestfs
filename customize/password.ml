@@ -1,5 +1,5 @@
 (* virt-sysprep
- * Copyright (C) 2012-2015 Red Hat Inc.
+ * Copyright (C) 2012-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ let password_crypto_of_string = function
     error (f_"password-crypto: unknown algorithm %s, use \"md5\", \"sha256\" or \"sha512\"") arg
 
 let rec parse_selector arg =
-  parse_selector_list arg (string_nsplit ":" arg)
+  parse_selector_list arg (String.nsplit ":" arg)
 
 and parse_selector_list orig_arg = function
   | [ "lock"|"locked" ] ->
@@ -161,6 +161,9 @@ and default_crypto g root =
    *)
   | "ubuntu", v when v >= 10 -> `SHA512
   | "ubuntu", _ -> `MD5
+
+  | ("opensuse"|"sles"), v when v >= 11 -> `SHA512
+  | ("opensuse"|"sles"), _ -> `MD5
 
   | _, _ ->
     let minor = g#inspect_get_minor_version root in

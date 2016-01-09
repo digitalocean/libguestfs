@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 export LANG=C
 set -e
 
-output="$($VG virt-filesystems -a ../tests/guests/fedora.img | sort)"
+output="$($VG virt-filesystems -a ../test-data/phony-guests/fedora.img | sort)"
 expected="/dev/VG/LV1
 /dev/VG/LV2
 /dev/VG/LV3
@@ -32,7 +32,7 @@ if [ "$output" != "$expected" ]; then
     exit 1
 fi
 
-output="$($VG virt-filesystems -a ../tests/guests/fedora.img --all --long --uuid -h --no-title | awk '{print $1}' | sort -u)"
+output="$($VG virt-filesystems -a ../test-data/phony-guests/fedora.img --all --long --uuid -h --no-title | awk '{print $1}' | sort -u)"
 expected="/dev/VG
 /dev/VG/LV1
 /dev/VG/LV2

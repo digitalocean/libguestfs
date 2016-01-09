@@ -53,7 +53,7 @@ distribution.
 
 Показати довідкове повідомлення.
 
-=item B<-B> PATH
+=item B<-B> ШЛЯХ
 
 Set the path to the library directory of C<diskimage-builder>. This is
 usually the F<lib> subdirectory in the sources and when installed, and
@@ -87,11 +87,11 @@ scripts executed.
 Add the specified disk to be used as helper drive where to cache files of
 the elements, like disk images, distribution packages, etc.
 
-See L</HELPER DRIVE>.
+Див. L</ДОПОМІЖНИЙ ДИСК>.
 
-=item B<-p> PATH
+=item B<-p> ШЛЯХ
 
-=item B<--element-path> PATH
+=item B<--element-path> ШЛЯХ
 
 Add a new path with elements.  Paths are used in the same order as the I<-p>
 parameters appear, so a path specified first is looked first, and so on.
@@ -109,9 +109,9 @@ management elements.
 This option can be specified multiple times, each time with multiple
 packages separated by comma.
 
-=item B<--envvar> VARIABLE
+=item B<--envvar> ЗМІННА
 
-=item B<--envvar> VARIABLE=VALUE
+=item B<--envvar> ЗМІННА=ЗНАЧЕННЯ
 
 Carry or set an environment variable for the elements.
 
@@ -122,12 +122,12 @@ This option can be used in two ways:
 
 =over 4
 
-=item B<--envvar> VARIABLE
+=item B<--envvar> ЗМІННА
 
 Carry the environment variable C<VARIABLE>. If it is not set, nothing is
 exported to the elements.
 
-=item B<--envvar> VARIABLE=VALUE
+=item B<--envvar> ЗМІННА=ЗНАЧЕННЯ
 
 Set the environment variable C<VARIABLE> with value C<VALUE> for the
 elements, regardless whether an environment variable with the same name
@@ -142,14 +142,14 @@ the environment where virt-dib runs.
 
 Ignore the specified element.
 
-=item B<--exclude-script> SCRIPT
+=item B<--exclude-script> СКРИПТ
 
 Ignore any element script named C<SCRIPT>, whichever element it is in.
 
 This can be useful in case some script does not run well with virt-dib, for
 example when they really need C<diskimage-builder>'s environment.
 
-=item B<--formats> FORMAT,...
+=item B<--formats> ФОРМАТ,...
 
 Set the list of output formats, separating them with comma.
 
@@ -181,12 +181,12 @@ L<https://github.com/emonty/vhd-util/blob/master/debian/patches/citrix>.
 
 =back
 
-=item B<--fs-type> FILESYSTEM
+=item B<--fs-type> ФАЙЛОВА СИСТЕМА
 
 Set the filesystem type to use for the root filesystem.  The default is
 C<ext4>.
 
-See also L<guestfs(3)/guestfs_filesystem_available>.
+Див. також L<guestfs(3)/guestfs_filesystem_available>
 
 =item B<--image-cache> DIRECTORY
 
@@ -219,7 +219,7 @@ The default can be found with this command:
 
  guestfish get-memsize
 
-=item B<--mkfs-options> C<OPTION STRING>
+=item B<--mkfs-options> C<РЯДОК ПАРАМЕТРІВ>
 
 Add the specified options to L<mkfs(1)>, to be able to fine-tune the root
 filesystem creation.  Note that this is not possible to override the
@@ -251,7 +251,7 @@ resources when available.  Note also that, unlike with C<diskimage-builder>
 where elements may still be able to access to the network even with
 C<DIB_OFFLINE=>, under virt-dib network will be fully unaccessible.
 
-=item B<--name> NAME
+=item B<--name> НАЗВА
 
 Set the name of the output image file.  The default is C<image>.
 
@@ -305,14 +305,14 @@ options, separate them with commas, eg:
 
 Set the ramdisk building mode.
 
-See L</RAMDISK BUILDING>.
+Див. L</ЗБИРАННЯ ДИСКА У ПАМ'ЯТІ>.
 
-=item B<--ramdisk-element> NAME
+=item B<--ramdisk-element> НАЗВА
 
 Set the name for the additional element added in ramdisk building mode.  The
 default is C<ramdisk>.
 
-See L</RAMDISK BUILDING>.
+Див. L</ЗБИРАННЯ ДИСКА У ПАМ'ЯТІ>.
 
 =item B<--root-label> LABEL
 
@@ -388,7 +388,7 @@ be available to the elements, you can do either
 
  virt-dib ... --envvar MYVAR=value_of_it ...
 
-=head1 HELPER DRIVE
+=head1 ДОПОМІЖНИЙ ДИСК
 
 Virt-dib runs most of the element in its own appliance, and thus not on the
 host.  Because of this, there is no possibility for elements to cache
@@ -442,7 +442,7 @@ appliance, which means all the hooks except C<extra-data.d>.
 
 =back
 
-=head1 RAMDISK BUILDING
+=head1 ЗБИРАННЯ ДИСКА У ПАМ'ЯТІ
 
 Virt-dib can emulate also C<ramdisk-image-create>, which is a secondary
 operation mode of C<diskimage-builder>.  Instead of being a different tool
@@ -467,7 +467,7 @@ F<$NAME.d> (see I<--name>) will contain initrd, kernel, etc
 
 =back
 
-=head1 TEMPORARY DIRECTORY
+=head1 ТИМЧАСОВИЙ КАТАЛОГ
 
 Virt-dib uses the standard temporary directory used by libguestfs, see
 L<guestfs(3)/ENVIRONMENT VARIABLES>.
@@ -481,6 +481,23 @@ location used as temporary location, for example:
  mkdir local-tmp
  env TMPDIR=$PWD/local-tmp virt-dib ...
  rm -rf local-tmp
+
+=head1 EXTRA DEPENDENCIES
+
+Because of virt-dib runs most of the elements in its own appliance, all the
+tools and libraries used by elements running outside the guest (typically
+C<root.d>, C<block-device.d>, and C<cleanup.d>)  need to be present in the
+appliance as well.  In case they are not, scripts will fail mostly with a
+C<command not found> error.
+
+For tools and libraries packaged by the distribution, the easy solution is
+to tell libguestfs to include additional packages in the appliance.  This is
+doable by e.g. creating a new file with the additional packages:
+
+ # echo wget > /usr/lib64/guestfs/supermin.d/dib-my-extra
+
+The actual path to the F<supermin.d> directory depends on the distribution;
+additional files can list more packages, each in its own line.
 
 =head1 COMPARISON WITH DISKIMAGE-BUILDER
 
@@ -550,6 +567,11 @@ e.g. F<00-create-missing-dirs> to create the missing directories
 
 =back
 
+=item 
+
+extra tools needed on some out-of-chroot phases need to be available in the
+appliance, see L</EXTRA DEPENDENCIES>.
+
 =back
 
 Elements themselves should notice no difference in they way they are run;
@@ -562,7 +584,7 @@ Known issues at the moment:
 
 =item 
 
-(none)
+(немає)
 
 =back
 
@@ -585,7 +607,7 @@ Typical output looks like this:
 A list of features is printed, one per line, and the program exits with
 status 0.
 
-=head1 TESTING
+=head1 ТЕСТУВАННЯ
 
 Virt-dib has been tested with C<diskimage-builder> (and its elements)  E<ge>
 0.1.43; from time to time also with C<tripleo-image-elements> and
@@ -609,5 +631,5 @@ Pino Toscano (C<ptoscano at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2015 Red Hat Inc.
+© Red Hat Inc., 2015
 

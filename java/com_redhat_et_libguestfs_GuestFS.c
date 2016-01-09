@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -4406,6 +4406,23 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1hv  (JNIEnv *env, jobject obj, jlon
   jr = (*env)->NewStringUTF (env, r);
   free (r);
   return jr;
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1get_1identifier  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  const char *r;
+
+
+  r = guestfs_get_identifier (g);
+
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  return (*env)->NewStringUTF (env, r);
 }
 
 JNIEXPORT jstring JNICALL
@@ -12883,6 +12900,25 @@ Java_com_redhat_et_libguestfs_GuestFS__1set_1hv  (JNIEnv *env, jobject obj, jlon
 }
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1set_1identifier  (JNIEnv *env, jobject obj, jlong jg, jstring jidentifier)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *identifier;
+
+  identifier = (*env)->GetStringUTFChars (env, jidentifier, NULL);
+
+  r = guestfs_set_identifier (g, identifier);
+
+  (*env)->ReleaseStringUTFChars (env, jidentifier, identifier);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1set_1label  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable, jstring jlabel)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
@@ -14042,7 +14078,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1tail_1n  (JNIEnv *env, jobject obj, jlon
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1tar_1in  (JNIEnv *env, jobject obj, jlong jg, jstring jtarfile, jstring jdirectory, jlong joptargs_bitmask, jstring jcompress)
+Java_com_redhat_et_libguestfs_GuestFS__1tar_1in  (JNIEnv *env, jobject obj, jlong jg, jstring jtarfile, jstring jdirectory, jlong joptargs_bitmask, jstring jcompress, jboolean jxattrs, jboolean jselinux, jboolean jacls)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -14055,6 +14091,9 @@ Java_com_redhat_et_libguestfs_GuestFS__1tar_1in  (JNIEnv *env, jobject obj, jlon
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
 
   optargs_s.compress = (*env)->GetStringUTFChars (env, jcompress, NULL);
+  optargs_s.xattrs = jxattrs;
+  optargs_s.selinux = jselinux;
+  optargs_s.acls = jacls;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_tar_in_opts_argv (g, tarfile, directory, optargs);
@@ -14070,7 +14109,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1tar_1in  (JNIEnv *env, jobject obj, jlon
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1tar_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jtarfile, jlong joptargs_bitmask, jstring jcompress, jboolean jnumericowner, jobjectArray jexcludes)
+Java_com_redhat_et_libguestfs_GuestFS__1tar_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jtarfile, jlong joptargs_bitmask, jstring jcompress, jboolean jnumericowner, jobjectArray jexcludes, jboolean jxattrs, jboolean jselinux, jboolean jacls)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -14095,6 +14134,9 @@ Java_com_redhat_et_libguestfs_GuestFS__1tar_1out  (JNIEnv *env, jobject obj, jlo
   }
   excludes[excludes_len] = NULL;
   optargs_s.excludes = excludes;
+  optargs_s.xattrs = jxattrs;
+  optargs_s.selinux = jselinux;
+  optargs_s.acls = jacls;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_tar_out_opts_argv (g, directory, tarfile, optargs);
@@ -14584,6 +14626,26 @@ Java_com_redhat_et_libguestfs_GuestFS__1vfs_1label  (JNIEnv *env, jobject obj, j
   jr = (*env)->NewStringUTF (env, r);
   free (r);
   return jr;
+}
+
+JNIEXPORT jlong JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1vfs_1minimum_1size  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int64_t r;
+  const char *mountable;
+
+  mountable = (*env)->GetStringUTFChars (env, jmountable, NULL);
+
+  r = guestfs_vfs_minimum_size (g, mountable);
+
+  (*env)->ReleaseStringUTFChars (env, jmountable, mountable);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jlong) r;
 }
 
 JNIEXPORT jstring JNICALL

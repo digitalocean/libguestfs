@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <inttypes.h>
 #include <unistd.h>
 #include <errno.h>
@@ -32,9 +31,9 @@
 #include <signal.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <grp.h>
 #include <assert.h>
 #include <string.h>
+#include <libintl.h>
 
 #include <pcre.h>
 
@@ -45,7 +44,6 @@
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
-#include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
 COMPILE_REGEXP (re_major_minor, "(\\d+)\\.(\\d+)", 0)
@@ -158,7 +156,7 @@ add_cmdline_shell_unquoted (guestfs_h *g, struct stringsbuf *sb,
       nextp++;
 
     guestfs_int_add_string_nodup (g, sb,
-                                safe_strndup (g, startp, endp-startp));
+				  safe_strndup (g, startp, endp-startp));
 
     options = nextp;
   }
@@ -217,10 +215,10 @@ debian_kvm_warning (guestfs_h *g)
    * in warnings.
    */
   warning (g,
-  _("current user is not a member of the KVM group (group ID %d). "
-    "This user cannot access /dev/kvm, so libguestfs may run very slowly. "
-    "It is recommended that you 'chmod 0666 /dev/kvm' or add the current user "
-    "to the KVM group (you might need to log out and log in again)."),
+	   _("current user is not a member of the KVM group (group ID %d). "
+	     "This user cannot access /dev/kvm, so libguestfs may run very slowly. "
+	     "It is recommended that you 'chmod 0666 /dev/kvm' or add the current user "
+	     "to the KVM group (you might need to log out and log in again)."),
            (int) kvm_group);
 #endif /* __linux__ */
 }
@@ -335,11 +333,11 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    * forking, because after fork we are not allowed to use
    * non-signal-safe functions such as malloc.
    */
-#define ADD_CMDLINE(str) \
+#define ADD_CMDLINE(str)			\
   guestfs_int_add_string (g, &cmdline, (str))
-#define ADD_CMDLINE_STRING_NODUP(str) \
+#define ADD_CMDLINE_STRING_NODUP(str)			\
   guestfs_int_add_string_nodup (g, &cmdline, (str))
-#define ADD_CMDLINE_PRINTF(fs,...) \
+#define ADD_CMDLINE_PRINTF(fs,...)				\
   guestfs_int_add_sprintf (g, &cmdline, (fs), ##__VA_ARGS__)
 
   ADD_CMDLINE (g->hv);
@@ -378,11 +376,6 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   ADD_CMDLINE ("-display");
   ADD_CMDLINE ("none");
 
-#ifdef MACHINE_TYPE
-  ADD_CMDLINE ("-M");
-  ADD_CMDLINE (MACHINE_TYPE);
-#endif
-
   /* See guestfs.pod / gdb */
   if (guestfs_int_get_backend_setting_bool (g, "gdb") > 0) {
     ADD_CMDLINE ("-S");
@@ -390,33 +383,30 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     warning (g, "qemu debugging is enabled, connect gdb to tcp::1234 to begin");
   }
 
+  ADD_CMDLINE ("-machine");
+  if (!force_tcg)
+    ADD_CMDLINE (
+#ifdef MACHINE_TYPE
+                 MACHINE_TYPE ","
+#endif
+#ifdef __aarch64__
+		 "gic-version=host,"
+#endif
+                 "accel=kvm:tcg");
+  else
+    ADD_CMDLINE (
+#ifdef MACHINE_TYPE
+                 MACHINE_TYPE ","
+#endif
+#ifdef __aarch64__
+		 "gic-version=host,"
+#endif
+                 "accel=tcg");
+
   cpu_model = guestfs_int_get_cpu_model (has_kvm && !force_tcg);
   if (cpu_model) {
     ADD_CMDLINE ("-cpu");
     ADD_CMDLINE (cpu_model);
-  }
-
-  /* The qemu -machine option (added 2010-12) is a bit more sane
-   * since it falls back through various different acceleration
-   * modes, so try that first (thanks Markus Armbruster).
-   */
-  if (qemu_supports (g, data, "-machine")) {
-    ADD_CMDLINE ("-machine");
-    if (!force_tcg)
-      ADD_CMDLINE ("accel=kvm:tcg");
-    else
-      ADD_CMDLINE ("accel=tcg");
-  } else {
-    /* qemu sometimes needs this option to enable hardware
-     * virtualization, but some versions of 'qemu-kvm' will use KVM
-     * regardless (even where this option appears in the help text).
-     * It is rumoured that there are versions of qemu where
-     * supplying this option when hardware virtualization is not
-     * available will cause qemu to fail.  A giant clusterfuck with
-     * the qemu command line, again.
-     */
-    if (has_kvm && !force_tcg && qemu_supports (g, data, "-enable-kvm"))
-      ADD_CMDLINE ("-enable-kvm");
   }
 
   if (g->smp > 1) {
@@ -631,7 +621,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   if (!has_kvm || force_tcg)
     flags |= APPLIANCE_COMMAND_LINE_IS_TCG;
   ADD_CMDLINE_STRING_NODUP (guestfs_int_appliance_command_line (g, appliance_dev,
-                                                              flags));
+								flags));
 
   /* Note: custom command line parameters must come last so that
    * qemu -set parameters can modify previously added options.
@@ -734,7 +724,6 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   if (g->recovery_proc) {
     r = fork ();
     if (r == 0) {
-      int i;
       struct sigaction sa;
       pid_t qemu_pid = data->pid;
       pid_t parent_pid = getppid ();
@@ -979,7 +968,7 @@ test_qemu (guestfs_h *g, struct backend_direct_data *data)
   guestfs_int_cmd_add_arg (cmd1, "none");
   guestfs_int_cmd_add_arg (cmd1, "-help");
   guestfs_int_cmd_set_stdout_callback (cmd1, read_all, &data->qemu_help,
-                                     CMD_STDOUT_FLAG_WHOLE_BUFFER);
+				       CMD_STDOUT_FLAG_WHOLE_BUFFER);
   r = guestfs_int_cmd_run (cmd1);
   if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
     goto error;
@@ -989,7 +978,7 @@ test_qemu (guestfs_h *g, struct backend_direct_data *data)
   guestfs_int_cmd_add_arg (cmd2, "none");
   guestfs_int_cmd_add_arg (cmd2, "-version");
   guestfs_int_cmd_set_stdout_callback (cmd2, read_all, &data->qemu_version,
-                                     CMD_STDOUT_FLAG_WHOLE_BUFFER);
+				       CMD_STDOUT_FLAG_WHOLE_BUFFER);
   r = guestfs_int_cmd_run (cmd2);
   if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
     goto error;
@@ -999,18 +988,18 @@ test_qemu (guestfs_h *g, struct backend_direct_data *data)
   guestfs_int_cmd_add_arg (cmd3, g->hv);
   guestfs_int_cmd_add_arg (cmd3, "-display");
   guestfs_int_cmd_add_arg (cmd3, "none");
-#ifdef MACHINE_TYPE
-  guestfs_int_cmd_add_arg (cmd3, "-M");
-  guestfs_int_cmd_add_arg (cmd3, MACHINE_TYPE);
-#endif
   guestfs_int_cmd_add_arg (cmd3, "-machine");
-  guestfs_int_cmd_add_arg (cmd3, "accel=kvm:tcg");
+  guestfs_int_cmd_add_arg (cmd3,
+#ifdef MACHINE_TYPE
+                           MACHINE_TYPE ","
+#endif
+                           "accel=kvm:tcg");
   guestfs_int_cmd_add_arg (cmd3, "-device");
   guestfs_int_cmd_add_arg (cmd3, "?");
   guestfs_int_cmd_clear_capture_errors (cmd3);
   guestfs_int_cmd_set_stderr_to_stdout (cmd3);
   guestfs_int_cmd_set_stdout_callback (cmd3, read_all, &data->qemu_devices,
-                                     CMD_STDOUT_FLAG_WHOLE_BUFFER);
+				       CMD_STDOUT_FLAG_WHOLE_BUFFER);
   r = guestfs_int_cmd_run (cmd3);
   if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
     goto error;
@@ -1285,9 +1274,34 @@ guestfs_int_drive_source_qemu_param (guestfs_h *g, const struct drive_source *sr
     return make_uri (g, "https", src->username, src->secret,
                      &src->servers[0], src->u.exportname);
 
-  case drive_protocol_iscsi:
-    return make_uri (g, "iscsi", NULL, NULL,
-                     &src->servers[0], src->u.exportname);
+  case drive_protocol_iscsi: {
+    CLEANUP_FREE char *escaped_hostname = NULL;
+    CLEANUP_FREE char *escaped_target = NULL;
+    CLEANUP_FREE char *userauth = NULL;
+    char port_str[16];
+    char *ret;
+
+    escaped_hostname =
+      (char *) xmlURIEscapeStr(BAD_CAST src->servers[0].u.hostname,
+                               BAD_CAST "");
+    /* The target string must keep slash as it is, as exportname contains
+     * "iqn/lun".
+     */
+    escaped_target =
+      (char *) xmlURIEscapeStr(BAD_CAST src->u.exportname, BAD_CAST "/");
+    if (src->username != NULL && src->secret != NULL)
+      userauth = safe_asprintf (g, "%s%%%s@", src->username, src->secret);
+    if (src->servers[0].port != 0)
+      snprintf (port_str, sizeof port_str, ":%d", src->servers[0].port);
+
+    ret = safe_asprintf (g, "iscsi://%s%s%s/%s",
+                         userauth != NULL ? userauth : "",
+                         escaped_hostname,
+                         src->servers[0].port != 0 ? port_str : "",
+                         escaped_target);
+
+    return ret;
+  }
 
   case drive_protocol_nbd: {
     CLEANUP_FREE char *p = NULL;
@@ -1347,13 +1361,13 @@ guestfs_int_drive_source_qemu_param (guestfs_h *g, const struct drive_source *sr
     mon_host[n] = '\0';
 
     if (src->username)
-        username = safe_asprintf (g, ":id=%s", src->username);
+      username = safe_asprintf (g, ":id=%s", src->username);
     if (src->secret)
-        secret = safe_asprintf (g, ":key=%s", src->secret);
+      secret = safe_asprintf (g, ":key=%s", src->secret);
     if (username || secret)
-        auth = ":auth_supported=cephx\\;none";
+      auth = ":auth_supported=cephx\\;none";
     else
-        auth = ":auth_supported=none";
+      auth = ":auth_supported=none";
 
     return safe_asprintf (g, "rbd:%s%s%s%s%s%s",
                           src->u.exportname,
@@ -1395,7 +1409,7 @@ guestfs_int_drive_source_qemu_param (guestfs_h *g, const struct drive_source *sr
  */
 bool
 guestfs_int_discard_possible (guestfs_h *g, struct drive *drv,
-                            unsigned long qemu_version)
+			      unsigned long qemu_version)
 {
   /* qemu >= 1.5.  This was the first version that supported the
    * discard option on -drive at all.

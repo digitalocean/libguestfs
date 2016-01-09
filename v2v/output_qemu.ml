@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ object
     | BusSlotEmpty -> ()
 
     | BusSlotTarget t ->
-       let qemu_quoted_filename = replace_str t.target_file "," ",," in
+       let qemu_quoted_filename = String.replace t.target_file "," ",," in
        let drive_param =
           sprintf "file=%s,format=%s,if=%s,index=%d,media=disk"
                   qemu_quoted_filename t.target_format if_name i in
@@ -119,7 +119,7 @@ object
     | BusSlotEmpty -> ()
 
     | BusSlotTarget t ->
-       let qemu_quoted_filename = replace_str t.target_file "," ",," in
+       let qemu_quoted_filename = String.replace t.target_file "," ",," in
        let drive_param =
           sprintf "file=%s,format=%s,if=scsi,bus=0,unit=%d,media=disk"
                   qemu_quoted_filename t.target_format i in

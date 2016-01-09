@@ -20,30 +20,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <inttypes.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <errno.h>
+#include <libintl.h>
 
 #ifdef HAVE_ENDIAN_H
 #include <endian.h>
 #endif
 
-#include <pcre.h>
-
 #include "c-ctype.h"
 #include "ignore-value.h"
-#include "xstrtol.h"
-#include "hash.h"
 #include "hash-pjw.h"
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
-#include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 COMPILE_REGEXP (re_fedora, "Fedora release (\\d+)", 0)
 COMPILE_REGEXP (re_rhel_old, "Red Hat.*release (\\d+).*Update (\\d+)", 0)
@@ -84,6 +75,8 @@ COMPILE_REGEXP (re_openbsd, "^OpenBSD (\\d+|\\?)\\.(\\d+|\\?)", 0)
 COMPILE_REGEXP (re_openbsd_duid, "^[0-9a-f]{16}\\.[a-z]", 0)
 COMPILE_REGEXP (re_openbsd_dev, "^/dev/(s|w)d([0-9])([a-z])$", 0)
 COMPILE_REGEXP (re_netbsd_dev, "^/dev/(l|s)d([0-9])([a-z])$", 0)
+COMPILE_REGEXP (re_altlinux, " (?:(\\d+)(?:\\.(\\d+)(?:[\\.\\d]+)?)?)\\s+\\((?:[^)]+)\\)$", 0)
+COMPILE_REGEXP (re_frugalware, "Frugalware (\\d+)\\.(\\d+)", 0)
 
 static void check_architecture (guestfs_h *g, struct inspect_fs *fs);
 static int check_hostname_unix (guestfs_h *g, struct inspect_fs *fs);
@@ -137,6 +130,143 @@ parse_release_file (guestfs_h *g, struct inspect_fs *fs,
     return -1;
   }
   return 0;
+}
+
+/* Parse a os-release file.
+ *
+ * Only few fields are parsed, falling back to the usual detection if we
+ * cannot read all of them.
+ *
+ * For the format of os-release, see also:
+ * http://www.freedesktop.org/software/systemd/man/os-release.html
+ */
+static int
+parse_os_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
+{
+  int64_t size;
+  CLEANUP_FREE_STRING_LIST char **lines = NULL;
+  size_t i;
+  enum inspect_os_distro distro = OS_DISTRO_UNKNOWN;
+  CLEANUP_FREE char *product_name = NULL;
+  int major_version = -1, minor_version = -1;
+
+  /* Don't trust guestfs_read_lines not to break with very large files.
+   * Check the file size is something reasonable first.
+   */
+  size = guestfs_filesize (g, filename);
+  if (size == -1)
+    /* guestfs_filesize failed and has already set error in handle */
+    return -1;
+  if (size > MAX_SMALL_FILE_SIZE) {
+    error (g, _("size of %s is unreasonably large (%" PRIi64 " bytes)"),
+           filename, size);
+    return -1;
+  }
+
+  lines = guestfs_read_lines (g, filename);
+  if (lines == NULL)
+    return -1;
+
+  for (i = 0; lines[i] != NULL; ++i) {
+    const char *line = lines[i];
+    const char *value;
+    size_t value_len;
+
+    if (line[0] == '#')
+      continue;
+
+    value = strchr (line, '=');
+    if (value == NULL)
+      continue;
+
+    ++value;
+    value_len = strlen (line) - (value - line);
+    if (value_len > 1 && value[0] == '"' && value[value_len-1] == '"') {
+      ++value;
+      value_len -= 2;
+    }
+
+#define VALUE_IS(a) STREQLEN(value, a, value_len)
+    if (STRPREFIX (line, "ID=")) {
+      if (VALUE_IS ("alpine"))
+        distro = OS_DISTRO_ALPINE_LINUX;
+      else if (VALUE_IS ("altlinux"))
+        distro = OS_DISTRO_ALTLINUX;
+      else if (VALUE_IS ("arch"))
+        distro = OS_DISTRO_ARCHLINUX;
+      else if (VALUE_IS ("centos"))
+        distro = OS_DISTRO_CENTOS;
+      else if (VALUE_IS ("debian"))
+        distro = OS_DISTRO_DEBIAN;
+      else if (VALUE_IS ("fedora"))
+        distro = OS_DISTRO_FEDORA;
+      else if (VALUE_IS ("frugalware"))
+        distro = OS_DISTRO_FRUGALWARE;
+      else if (VALUE_IS ("mageia"))
+        distro = OS_DISTRO_MAGEIA;
+      else if (VALUE_IS ("opensuse"))
+        distro = OS_DISTRO_OPENSUSE;
+      else if (VALUE_IS ("pld"))
+        distro = OS_DISTRO_PLD_LINUX;
+      else if (VALUE_IS ("rhel"))
+        distro = OS_DISTRO_RHEL;
+      else if (VALUE_IS ("sles"))
+        distro = OS_DISTRO_SLES;
+      else if (VALUE_IS ("ubuntu"))
+        distro = OS_DISTRO_UBUNTU;
+    } else if (STRPREFIX (line, "PRETTY_NAME=")) {
+      free (product_name);
+      product_name = safe_strndup (g, value, value_len);
+    } else if (STRPREFIX (line, "VERSION_ID=")) {
+      char *major, *minor;
+      if (match2 (g, value, re_major_minor, &major, &minor)) {
+        major_version = guestfs_int_parse_unsigned_int (g, major);
+        free (major);
+        if (major_version == -1) {
+          free (minor);
+          return -1;
+        }
+        minor_version = guestfs_int_parse_unsigned_int (g, minor);
+        free (minor);
+        if (minor_version == -1)
+          return -1;
+      } else {
+        char buf[value_len + 1];
+        snprintf (buf, sizeof buf, "%*s", (int) value_len, value);
+        major_version = guestfs_int_parse_unsigned_int (g, buf);
+        /* Handle cases where VERSION_ID is not a number. */
+        if (major_version != -1)
+          minor_version = 0;
+      }
+    }
+#undef VALUE_IS
+  }
+
+  /* If we haven't got all the fields, exit right away. */
+  if (distro == OS_DISTRO_UNKNOWN || product_name == NULL ||
+      major_version == -1 || minor_version == -1)
+    return 0;
+
+  /* Apparently, os-release in Debian and CentOS does not provide the full
+   * version number in VERSION_ID, but just the "major" part of it.
+   * Hence, if minor_version is 0, act as there was no information in
+   * os-release, which will continue the inspection using the release files
+   * as done previously.
+   */
+  if ((distro == OS_DISTRO_DEBIAN || distro == OS_DISTRO_CENTOS) &&
+      minor_version == 0)
+    return 0;
+
+  /* We got everything, so set the fields and report the inspection
+   * was successful.
+   */
+  fs->distro = distro;
+  fs->product_name = product_name;
+  product_name = NULL;
+  fs->major_version = major_version;
+  fs->minor_version = minor_version;
+
+  return 1;
 }
 
 /* Ubuntu has /etc/lsb-release containing:
@@ -329,7 +459,7 @@ parse_suse_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
 
   r = 0;
 
-out:
+ out:
   return r;
 }
 
@@ -345,6 +475,15 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
   char *major, *minor;
 
   fs->type = OS_TYPE_LINUX;
+
+  if (guestfs_is_file_opts (g, "/etc/os-release",
+                            GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
+    r = parse_os_release (g, fs, "/etc/os-release");
+    if (r == -1)        /* error */
+      return -1;
+    if (r == 1)         /* ok - detected the release from this file */
+      goto skip_release_checks;
+  }
 
   if (guestfs_is_file_opts (g, "/etc/lsb-release",
                             GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
@@ -394,7 +533,7 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
       return -1;
 
     if (match2 (g, fs->product_name, re_centos_old, &major, &minor) ||
-             match2 (g, fs->product_name, re_centos, &major, &minor)) {
+	match2 (g, fs->product_name, re_centos, &major, &minor)) {
       fs->major_version = guestfs_int_parse_unsigned_int (g, major);
       free (major);
       if (fs->major_version == -1) {
@@ -412,6 +551,26 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
       if (fs->major_version == -1)
         return -1;
       fs->minor_version = 0;
+    }
+  }
+  else if (guestfs_is_file_opts (g, "/etc/altlinux-release",
+                                 GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
+    fs->distro = OS_DISTRO_ALTLINUX;
+
+    if (parse_release_file (g, fs, "/etc/altlinux-release") == -1)
+      return -1;
+
+    if (match2 (g, fs->product_name, re_altlinux, &major, &minor)) {
+      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      free (major);
+      if (fs->major_version == -1) {
+        free (minor);
+        return -1;
+      }
+      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
+      free (minor);
+      if (fs->minor_version == -1)
+        return -1;
     }
   }
   else if (guestfs_is_file_opts (g, "/etc/redhat-release",
@@ -600,6 +759,36 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
 
     if (guestfs_int_parse_major_minor (g, fs) == -1)
       return -1;
+  }
+  else if (guestfs_is_file_opts (g, "/etc/alpine-release",
+                                 GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
+    fs->distro = OS_DISTRO_ALPINE_LINUX;
+
+    if (parse_release_file (g, fs, "/etc/alpine-release") == -1)
+      return -1;
+
+    if (guestfs_int_parse_major_minor (g, fs) == -1)
+      return -1;
+  }
+  else if (guestfs_is_file_opts (g, "/etc/frugalware-release",
+                                 GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
+    fs->distro = OS_DISTRO_FRUGALWARE;
+
+    if (parse_release_file (g, fs, "/etc/frugalware-release") == -1)
+      return -1;
+
+    if (match2 (g, fs->product_name, re_frugalware, &major, &minor)) {
+      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      free (major);
+      if (fs->major_version == -1) {
+        free (minor);
+        return -1;
+      }
+      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
+      free (minor);
+      if (fs->minor_version == -1)
+        return -1;
+    }
   }
 
  skip_release_checks:;
@@ -1149,14 +1338,14 @@ check_fstab (guestfs_h *g, struct inspect_fs *fs)
        * disklabel. For more info see here:
        * http://www.openbsd.org/faq/faq14.html#intro
        */
-       char device[10]; /* /dev/sd[0-9][a-z] */
-       char part = spec[17];
+      char device[10]; /* /dev/sd[0-9][a-z] */
+      char part = spec[17];
 
-       /* We cannot peep into disklables, we can only assume that this is the
-        * first disk.
-        */
-       snprintf(device, 10, "%s%c", "/dev/sd0", part);
-       mountable = resolve_fstab_device (g, device, md_map, fs->type);
+      /* We cannot peep into disklables, we can only assume that this is the
+       * first disk.
+       */
+      snprintf(device, 10, "%s%c", "/dev/sd0", part);
+      mountable = resolve_fstab_device (g, device, md_map, fs->type);
     }
 
     /* If we haven't resolved the device successfully by this point,
@@ -1342,32 +1531,32 @@ map_app_md_devices (guestfs_h *g, Hash_table **map)
       if (parse_uuid(*i, entry->uuid) == -1) {
         /* Invalid UUID is weird, but not fatal. */
         debug(g, "inspect-os: guestfs_md_detail returned invalid "
-                 "uuid for %s: %s", *md, *i);
+	      "uuid for %s: %s", *md, *i);
         md_uuid_free(entry);
         continue;
       }
 
       const void *matched = NULL;
       switch (hash_insert_if_absent(*map, entry, &matched)) {
-        case -1:
-          g->abort_cb();
+      case -1:
+	g->abort_cb();
 
-        case 0:
-          /* Duplicate uuid in for md device is weird, but not fatal. */
-          debug(g, "inspect-os: md devices %s and %s have the same uuid",
-                ((md_uuid *)matched)->path, entry->path);
-          md_uuid_free(entry);
-          break;
+      case 0:
+	/* Duplicate uuid in for md device is weird, but not fatal. */
+	debug(g, "inspect-os: md devices %s and %s have the same uuid",
+	      ((md_uuid *)matched)->path, entry->path);
+	md_uuid_free(entry);
+	break;
 
-        default:
-          n++;
+      default:
+	n++;
       }
     }
   }
 
   return n;
 
-error:
+ error:
   hash_free (*map); *map = NULL;
 
   return -1;
@@ -1424,12 +1613,12 @@ map_md_devices(guestfs_h *g, Hash_table **map)
   /* Log a debug message if we've got md devices, but nothing in mdadm.conf */
   if (matches[0] == NULL) {
     debug(g, "Appliance has MD devices, but augeas returned no array matches "
-             "in mdadm.conf");
+	  "in mdadm.conf");
     return 0;
   }
 
   *map = hash_initialize(16, NULL, mdadm_app_hash, mdadm_app_cmp,
-                                   mdadm_app_free);
+			 mdadm_app_free);
   if (!*map) g->abort_cb();
 
   for (char **m = matches; *m != NULL; m++) {
@@ -1466,15 +1655,15 @@ map_md_devices(guestfs_h *g, Hash_table **map)
       entry->app = safe_strdup(g, app->path);
 
       switch (hash_insert_if_absent(*map, entry, NULL)) {
-        case -1:
-          g->abort_cb();
+      case -1:
+	g->abort_cb();
 
-        case 0:
-          /* Duplicate uuid in for md device is weird, but not fatal. */
-          debug(g, "inspect-os: mdadm.conf contains multiple entries for %s",
-                app->path);
-          mdadm_app_free(entry);
-          continue;
+      case 0:
+	/* Duplicate uuid in for md device is weird, but not fatal. */
+	debug(g, "inspect-os: mdadm.conf contains multiple entries for %s",
+	      app->path);
+	mdadm_app_free(entry);
+	continue;
       }
     } else
       free (dev);
@@ -1482,7 +1671,7 @@ map_md_devices(guestfs_h *g, Hash_table **map)
 
   return 0;
 
-error:
+ error:
   if (*map) hash_free (*map);
 
   return -1;
@@ -1796,6 +1985,8 @@ inspect_with_augeas (guestfs_h *g, struct inspect_fs *fs,
   int64_t size;
   int r;
   CLEANUP_FREE char *pathexpr = NULL;
+  CLEANUP_FREE_STRING_LIST char **matches = NULL;
+  char **match;
 
   /* Security: Refuse to do this if a config file is too large. */
   for (i = 0; configfiles[i] != NULL; ++i) {
@@ -1831,6 +2022,39 @@ inspect_with_augeas (guestfs_h *g, struct inspect_fs *fs,
 
   if (guestfs_aug_load (g) == -1)
     goto out;
+
+  /* Check that augeas did not get a parse error for any of the configfiles,
+   * otherwise we are silently missing information.
+   */
+  matches = guestfs_aug_match (g, "/augeas/files//error");
+  for (match = matches; *match != NULL; ++match) {
+    for (i = 0; configfiles[i] != NULL; ++i) {
+      CLEANUP_FREE char *errorpath =
+        safe_asprintf (g, "/augeas/files%s/error", configfiles[i]);
+
+      if (STREQ (*match, errorpath)) {
+        /* Get the various error details. */
+        guestfs_push_error_handler (g, NULL, NULL);
+        CLEANUP_FREE char *messagepath =
+          safe_asprintf (g, "%s/message", errorpath);
+        CLEANUP_FREE char *message = guestfs_aug_get (g, messagepath);
+        CLEANUP_FREE char *linepath =
+          safe_asprintf (g, "%s/line", errorpath);
+        CLEANUP_FREE char *line = guestfs_aug_get (g, linepath);
+        CLEANUP_FREE char *charpath =
+          safe_asprintf (g, "%s/char", errorpath);
+        CLEANUP_FREE char *charp = guestfs_aug_get (g, charpath);
+        guestfs_pop_error_handler (g);
+
+        error (g, _("%s:%s:%s: augeas parse failure: %s"),
+               configfiles[i],
+               line ? : "<none>",
+               charp ? : "<none>",
+               message ? : "<none>");
+        goto out;
+      }
+    }
+  }
 
   r = f (g, fs);
 

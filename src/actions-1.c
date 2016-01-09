@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -806,6 +806,17 @@ guestfs_lstatlist (guestfs_h *g,
     return NULL;
   }
 
+  {
+    size_t i;
+    for (i = 0; names[i] != NULL; ++i) {
+      if (strchr (names[i], '/') != NULL) {
+        error (g, "%s: %s: '%s' is not a file name",
+               "lstatlist", "names", names[i]);
+        return NULL;
+      }
+    }
+  }
+
   if (trace_flag) {
     size_t i;
 
@@ -1015,6 +1026,82 @@ guestfs_lstat (guestfs_h *g,
     if (trace_flag)
       guestfs_int_trace (g, "%s = %s (error)",
                          "lstat", "NULL");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_set_identifier (guestfs_h *g,
+                        const char *identifier)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                      "set_identifier", 14);
+  if (identifier == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "set_identifier", "identifier");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_identifier");
+    fprintf (trace_buffer.fp, " \"%s\"", identifier);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs_impl_set_identifier (g, identifier);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs_int_trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "set_identifier");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs_int_trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "set_identifier", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC const char *
+guestfs_get_identifier (guestfs_h *g)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  const char *r;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                      "get_identifier", 14);
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_identifier");
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs_impl_get_identifier (g);
+
+  if (r != NULL) {
+    if (trace_flag) {
+      guestfs_int_trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "get_identifier");
+      fprintf (trace_buffer.fp, "\"%s\"", r);
+      guestfs_int_trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "get_identifier", "NULL");
   }
 
   return r;

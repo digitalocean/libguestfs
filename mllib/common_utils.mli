@@ -1,5 +1,5 @@
 (* Common utilities for OCaml tools in libguestfs.
- * Copyright (C) 2010-2015 Red Hat Inc.
+ * Copyright (C) 2010-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,75 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
+
+module Char : sig
+    type t = char
+    val chr : int -> char
+    val code : char -> int
+    val compare: t -> t -> int
+    val escaped : char -> string
+    val unsafe_chr : int -> char
+
+    val lowercase_ascii : char -> char
+    val uppercase_ascii : char -> char
+end
+(** Override the Char module from stdlib. *)
+
+module String : sig
+    type t = string
+    val blit : string -> int -> string -> int -> int -> unit
+    val compare: t -> t -> int
+    val concat : string -> string list -> string
+    val contains : string -> char -> bool
+    val contains_from : string -> int -> char -> bool
+    val copy : string -> string
+    val create : int -> string
+    val escaped : string -> string
+    val fill : string -> int -> int -> char -> unit
+    val get : string -> int -> char
+    val index : string -> char -> int
+    val index_from : string -> int -> char -> int
+    val iter : (char -> unit) -> string -> unit
+    val length : string -> int
+    val make : int -> char -> string
+    val rcontains_from : string -> int -> char -> bool
+    val rindex : string -> char -> int
+    val rindex_from : string -> int -> char -> int
+    val set : string -> int -> char -> unit
+    val sub : string -> int -> int -> string
+    val unsafe_blit : string -> int -> string -> int -> int -> unit
+    val unsafe_fill : string -> int -> int -> char -> unit
+    val unsafe_get : string -> int -> char
+    val unsafe_set : string -> int -> char -> unit
+
+    val lowercase_ascii : string -> string
+    val uppercase_ascii : string -> string
+
+    val is_prefix : string -> string -> bool
+    (** [is_prefix str prefix] returns true if [prefix] is a prefix of [str]. *)
+    val is_suffix : string -> string -> bool
+    (** [is_suffix str suffix] returns true if [suffix] is a suffix of [str]. *)
+    val find : string -> string -> int
+    (** [find str sub] searches for [sub] as a substring of [str].  If
+        found it returns the index.  If not found, it returns [-1]. *)
+    val replace : string -> string -> string -> string
+    (** [replace str s1 s2] replaces all instances of [s1] appearing in
+        [str] with [s2]. *)
+    val nsplit : string -> string -> string list
+    (** [nsplit sep str] splits [str] into multiple strings at each
+        separator [sep]. *)
+    val split : string -> string -> string * string
+    (** [split sep str] splits [str] at the first occurrence of the
+        separator [sep], returning the part before and the part after.
+        If separator is not found, return the whole string and an
+        empty string. *)
+    val lines_split : string -> string list
+    (** [lines_split str] splits [str] into lines, keeping continuation
+        characters (i.e. [\] at the end of lines) into account. *)
+    val random8 : unit -> string
+    (** Return a string of 8 random printable characters. *)
+end
+(** Override the String module from stdlib. *)
 
 val ( // ) : string -> string -> string
 (** Concatenate directory and filename. *)
@@ -40,16 +109,6 @@ val wrap : ?chan:out_channel -> ?indent:int -> string -> unit
 
 val output_spaces : out_channel -> int -> unit
 (** Write [n] spaces to [out_channel]. *)
-
-val string_prefix : string -> string -> bool
-val string_suffix : string -> string -> bool
-val string_find : string -> string -> int
-val replace_str : string -> string -> string -> string
-val string_nsplit : string -> string -> string list
-val string_split : string -> string -> string * string
-val string_random8 : unit -> string
-val string_lines_split : string -> string list
-(** Various string functions. *)
 
 val dropwhile : ('a -> bool) -> 'a list -> 'a list
 val takewhile : ('a -> bool) -> 'a list -> 'a list
@@ -92,6 +151,10 @@ val warning : ('a, unit, string, unit) format4 -> 'a
 
 val info : ('a, unit, string, unit) format4 -> 'a
 (** Standard info function.  Note: Use full sentences for this. *)
+
+val open_guestfs : ?identifier:string -> unit -> Guestfs.guestfs
+(** Common function to create a new Guestfs handle, with common options
+    (e.g. debug, tracing) already set. *)
 
 val run_main_and_handle_errors : (unit -> unit) -> unit
 (** Common function for handling pretty-printing exceptions. *)
@@ -177,6 +240,11 @@ val qemu_input_filename : string -> string
 val mkdir_p : string -> int -> unit
 (** Creates a directory, and its parents if missing. *)
 
+val normalize_arch : string -> string
+(** Normalize the architecture name, i.e. maps it into a defined
+    identifier for it -- e.g. i386, i486, i586, and i686 are
+    normalized as i386. *)
+
 val guest_arch_compatible : string -> bool
 (** Are guest arch and host_cpu compatible, in terms of being able
     to run commands in the libguestfs appliance? *)
@@ -187,3 +255,6 @@ val last_part_of : string -> char -> string option
 val read_first_line_from_file : string -> string
 (** Read only the first line (i.e. until the first newline character)
     of a file. *)
+
+val is_regular_file : string -> bool
+(** Checks whether the file is a regular file. *)

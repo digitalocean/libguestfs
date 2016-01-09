@@ -1,5 +1,5 @@
 # libguestfs Perl bindings
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,69 +18,63 @@
 include $(top_srcdir)/subdir-rules.mk
 
 generator_built = \
-	Guestfs.xs \
+	lib/Sys/Guestfs.xs \
 	lib/Sys/Guestfs.pm \
 	bindtests.pl
 
 EXTRA_DIST = \
 	$(generator_built) \
-	Makefile.PL.in \
+	Build.PL.in \
 	examples/README \
 	examples/LICENSE \
 	examples/*.pl \
+	MANIFEST \
 	run-bindtests \
 	run-perl-tests \
 	t/*.t \
 	typemap
 
+DISTCLEANFILES = Build
+
+# Some files are not removed by './Build clean' below.
+CLEANFILES = \
+	*.o \
+	bindtests.tmp \
+	MYMETA.json \
+	MYMETA.yml \
+	pm_to_blib
+
+# It would be nice to do this, but 'make distclean' runs 'make clean'
+# in parallel, and './Build clean' requires '_build/magicnum' to
+# exist, so you end up deleting a file which is required by the
+# parallel 'make clean' instance.
+#
+#distclean-local:
+#	rm -rf _build
+
 if HAVE_PERL
 
-# Interfacing automake and ExtUtils::MakeMaker known to be
-# a nightmare, news at 11.
+all-local: Build
+	./Build
 
-# src/ dependencies
-src_deps: $(top_builddir)/src/libguestfs.la $(generator_built)
+clean-local: Build
+	./Build clean
 
-# Images used by tests.
-test_images:
-	$(MAKE) -C $(top_builddir)/tests/data
-
-# Build the appliance.
-appliance:
-	$(MAKE) -C $(top_builddir)/appliance
-
-TESTS = run-bindtests
-test_prereq = src_deps all test_images
-
-if ENABLE_APPLIANCE
-test_prereq += appliance
-TESTS += run-perl-tests
-endif
-
-$(TESTS): $(test_prereq)
+Build: Build.PL
+	$(PERL) $(srcdir)/Build.PL --prefix "@prefix@"
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-INSTALLDIRS = site
+TESTS = run-bindtests
 
-all: Makefile-pl src_deps
-	$(MAKE) -f Makefile-pl
-
-Makefile-pl: Makefile.PL
-	-[ $(srcdir) != $(builddir) ] && cp -rsu $(abs_srcdir)/. $(builddir)/.
-	perl Makefile.PL INSTALLDIRS=$(INSTALLDIRS) PREFIX=$(prefix)
-
-# No!  Otherwise it is deleted before the clean-local rule runs.
-#CLEANFILES = Makefile-pl
-
-clean-local:
-	-$(MAKE) -f Makefile-pl clean
-	rm -f Makefile-pl
-
-install-data-hook:
-	$(MAKE) -C $(srcdir) -f $(abs_builddir)/Makefile-pl \
-		DESTDIR=$(DESTDIR) install
-
+if ENABLE_APPLIANCE
+TESTS += run-perl-tests
 endif
 
-.PHONY: appliance src_deps test_images
+# Packagers may override this, eg using 'make install INSTALLDIRS=vendor'
+INSTALLDIRS = site
+
+install-data-hook: Build
+	./Build install --destdir "$(DESTDIR)" --installdirs $(INSTALLDIRS)
+
+endif

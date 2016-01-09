@@ -1,5 +1,5 @@
 (* virt-sysprep
- * Copyright (C) 2012-2015 Red Hat Inc.
+ * Copyright (C) 2012-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ and replace_line_in_file g filename key value =
     if g#is_file filename then (
       let lines = Array.to_list (g#read_lines filename) in
       let lines = List.filter (
-        fun line -> not (string_prefix line (key ^ "="))
+        fun line -> not (String.is_prefix line (key ^ "="))
       ) lines in
       let lines = lines @ [sprintf "%s=%s" key value] in
       String.concat "\n" lines ^ "\n"

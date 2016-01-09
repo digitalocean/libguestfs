@@ -18,27 +18,20 @@
 
 #include <config.h>
 
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <unistd.h>
 #include <string.h>
-#include <fcntl.h>
-#include <time.h>
 #include <sys/stat.h>
-#include <sys/select.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <utime.h>
+#include <libintl.h>
 
-#include "glthread/lock.h"
 #include "ignore-value.h"
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
-#include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 /* Old-style appliance is going to be obsoleted. */
 static const char *kernel_name = "vmlinuz." host_cpu;
@@ -100,10 +93,10 @@ static int run_supermin_build (guestfs_h *g, const char *lockfile, const char *a
  */
 int
 guestfs_int_build_appliance (guestfs_h *g,
-                           char **kernel_rtn,
-                           char **dtb_rtn,
-                           char **initrd_rtn,
-                           char **appliance_rtn)
+			     char **kernel_rtn,
+			     char **dtb_rtn,
+			     char **initrd_rtn,
+			     char **appliance_rtn)
 {
   char *kernel = NULL, *dtb = NULL, *initrd = NULL, *appliance = NULL;
 

@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2015 Red Hat Inc.
+ * Copyright (C) 2011-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,15 +30,16 @@ module G = Guestfs
 let () = Random.self_init ()
 
 let rec main () =
-  let indisk, format, ignores, machine_readable, zeroes, mode =
-    parse_cmdline () in
+  let cmdline = parse_cmdline () in
 
-  (match mode with
+  (match cmdline.mode with
   | Mode_copying (outdisk, check_tmpdir, compress, convert, option, tmp) ->
-    Copying.run indisk outdisk check_tmpdir compress convert
-      format ignores machine_readable option tmp zeroes
+    Copying.run cmdline.indisk outdisk check_tmpdir compress convert
+                cmdline.format cmdline.ignores cmdline.machine_readable
+                option tmp cmdline.zeroes
   | Mode_in_place ->
-    In_place.run indisk format ignores machine_readable zeroes
+    In_place.run cmdline.indisk cmdline.format cmdline.ignores
+                 cmdline.machine_readable cmdline.zeroes
   )
 
 let () = run_main_and_handle_errors main

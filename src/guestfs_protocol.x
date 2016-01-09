@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -735,6 +735,9 @@ struct guestfs_checksum_ret {
 struct guestfs_tar_in_args {
   string directory<>;
   string compress<>;
+  bool xattrs;
+  bool selinux;
+  bool acls;
 };
 
 struct guestfs_tar_out_args {
@@ -742,6 +745,9 @@ struct guestfs_tar_out_args {
   string compress<>;
   bool numericowner;
   guestfs_str excludes<>;
+  bool xattrs;
+  bool selinux;
+  bool acls;
 };
 
 struct guestfs_tgz_in_args {
@@ -1626,10 +1632,6 @@ struct guestfs_fill_args {
   int c;
   int len;
   string path<>;
-};
-
-struct guestfs_available_args {
-  guestfs_str groups<>;
 };
 
 struct guestfs_dd_args {
@@ -2824,14 +2826,6 @@ struct guestfs_internal_rhbz914931_args {
   int count;
 };
 
-struct guestfs_feature_available_args {
-  guestfs_str groups<>;
-};
-
-struct guestfs_feature_available_ret {
-  bool isavailable;
-};
-
 struct guestfs_syslinux_args {
   string device<>;
   string directory<>;
@@ -3139,6 +3133,22 @@ struct guestfs_set_uuid_random_args {
   string device<>;
 };
 
+struct guestfs_vfs_minimum_size_args {
+  string mountable<>;
+};
+
+struct guestfs_vfs_minimum_size_ret {
+  int64_t sizeinbytes;
+};
+
+struct guestfs_internal_feature_available_args {
+  string group<>;
+};
+
+struct guestfs_internal_feature_available_ret {
+  int result;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3347,7 +3357,6 @@ enum guestfs_procedure {
   GUESTFS_PROC_PART_LIST = 213,
   GUESTFS_PROC_PART_GET_PARTTYPE = 214,
   GUESTFS_PROC_FILL = 215,
-  GUESTFS_PROC_AVAILABLE = 216,
   GUESTFS_PROC_DD = 217,
   GUESTFS_PROC_FILESIZE = 218,
   GUESTFS_PROC_LVRENAME = 219,
@@ -3528,7 +3537,6 @@ enum guestfs_procedure {
   GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
   GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396,
   GUESTFS_PROC_INTERNAL_RHBZ914931 = 397,
-  GUESTFS_PROC_FEATURE_AVAILABLE = 398,
   GUESTFS_PROC_SYSLINUX = 399,
   GUESTFS_PROC_EXTLINUX = 400,
   GUESTFS_PROC_CP_R = 401,
@@ -3584,10 +3592,12 @@ enum guestfs_procedure {
   GUESTFS_PROC_BTRFS_IMAGE = 453,
   GUESTFS_PROC_PART_GET_MBR_PART_TYPE = 454,
   GUESTFS_PROC_BTRFS_REPLACE = 455,
-  GUESTFS_PROC_SET_UUID_RANDOM = 456
+  GUESTFS_PROC_SET_UUID_RANDOM = 456,
+  GUESTFS_PROC_VFS_MINIMUM_SIZE = 457,
+  GUESTFS_PROC_INTERNAL_FEATURE_AVAILABLE = 458
 };
 
-const GUESTFS_MAX_PROC_NR = 456;
+const GUESTFS_MAX_PROC_NR = 458;
 
 /* The remote procedure call protocol. */
 

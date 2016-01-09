@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <libintl.h>
 
 #if HAVE_FUSE
 /* See <attr/xattr.h> */
@@ -46,7 +47,6 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 #if HAVE_FUSE
 
@@ -66,24 +66,24 @@ static const char *rlc_lookup (guestfs_h *, const char *pathname);
 gl_lock_define_initialized (static, mount_local_lock);
 
 #define DECL_G() guestfs_h *g = fuse_get_context()->private_data
-#define DEBUG_CALL(fs,...)                                              \
-  if (g->ml_debug_calls) {                                              \
-    debug (g,                                                           \
-           "%s: %s (" fs ")",                                           \
-           g->localmountpoint, __func__, ## __VA_ARGS__);               \
+#define DEBUG_CALL(fs,...)					\
+  if (g->ml_debug_calls) {					\
+    debug (g,							\
+           "%s: %s (" fs ")",					\
+           g->localmountpoint, __func__, ## __VA_ARGS__);	\
   }
 
-#define RETURN_ERRNO                                                 \
-  do {                                                               \
-    int ret_errno = guestfs_last_errno (g);                          \
-                                                                     \
-    /* 0 doesn't mean "no error".  It means the errno was not        \
-     * captured.  Therefore we have to substitute an errno here.     \
-     */                                                              \
-    if (ret_errno == 0)                                              \
-      ret_errno = EINVAL;                                            \
-                                                                     \
-    return -ret_errno;                                               \
+#define RETURN_ERRNO							\
+  do {									\
+    int ret_errno = guestfs_last_errno (g);				\
+									\
+    /* 0 doesn't mean "no error".  It means the errno was not		\
+     * captured.  Therefore we have to substitute an errno here.	\
+     */									\
+    if (ret_errno == 0)							\
+      ret_errno = EINVAL;						\
+									\
+    return -ret_errno;							\
   } while (0)
 
 static struct guestfs_xattr_list *
@@ -751,7 +751,7 @@ mount_local_fsync (const char *path, int isdatasync,
 
 static int
 mount_local_setxattr (const char *path, const char *name, const char *value,
-             size_t size, int flags)
+		      size_t size, int flags)
 {
   int r;
   DECL_G ();
@@ -824,7 +824,7 @@ mount_local_getxattr (const char *path, const char *name, char *value,
   }
   memcpy (value, xattrs->val[i].attrval, sz);
 
-out:
+ out:
   if (free_attrs)
     guestfs_free_xattr_list ((struct guestfs_xattr_list *) xattrs);
 
@@ -954,7 +954,7 @@ static struct fuse_operations mount_local_operations = {
 
 int
 guestfs_impl_mount_local (guestfs_h *g, const char *localmountpoint,
-                      const struct guestfs_mount_local_argv *optargs)
+			  const struct guestfs_mount_local_argv *optargs)
 {
   const char *t;
   struct fuse_args args = FUSE_ARGS_INIT (0, NULL);
@@ -1102,7 +1102,7 @@ guestfs_int_free_fuse (guestfs_h *g)
 
 int
 guestfs_impl_umount_local (guestfs_h *g,
-                       const struct guestfs_umount_local_argv *optargs)
+			   const struct guestfs_umount_local_argv *optargs)
 {
   const char *retry;
   int r;
@@ -1505,7 +1505,7 @@ dir_cache_invalidate (guestfs_h *g, const char *path)
 
 int
 guestfs_impl_mount_local (guestfs_h *g, const char *localmountpoint,
-                      const struct guestfs_mount_local_argv *optargs)
+			  const struct guestfs_mount_local_argv *optargs)
 {
   FUSE_NOT_SUPPORTED ();
 }
@@ -1518,7 +1518,7 @@ guestfs_impl_mount_local_run (guestfs_h *g)
 
 int
 guestfs_impl_umount_local (guestfs_h *g,
-                       const struct guestfs_umount_local_argv *optargs)
+			   const struct guestfs_umount_local_argv *optargs)
 {
   FUSE_NOT_SUPPORTED ();
 }

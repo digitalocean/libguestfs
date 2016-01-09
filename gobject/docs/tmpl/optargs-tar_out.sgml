@@ -28,12 +28,27 @@ GuestfsTarOut
 </para>
 
 
+<!-- ##### ARG GuestfsTarOut:acls ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsTarOut:compress ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG GuestfsTarOut:numericowner ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTarOut:selinux ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTarOut:xattrs ##### -->
 <para>
 
 </para>

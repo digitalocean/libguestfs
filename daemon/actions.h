@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,9 +31,15 @@
 #define GUESTFS_UMOUNT_FORCE_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_UMOUNT_LAZYUNMOUNT_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_TAR_IN_COMPRESS_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_TAR_IN_XATTRS_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_TAR_IN_SELINUX_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_TAR_IN_ACLS_BITMASK (UINT64_C(1)<<3)
 #define GUESTFS_TAR_OUT_COMPRESS_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_TAR_OUT_NUMERICOWNER_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_TAR_OUT_EXCLUDES_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_TAR_OUT_XATTRS_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_TAR_OUT_SELINUX_BITMASK (UINT64_C(1)<<4)
+#define GUESTFS_TAR_OUT_ACLS_BITMASK (UINT64_C(1)<<5)
 #define GUESTFS_MKSWAP_LABEL_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_MKSWAP_UUID_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_GREP_EXTENDED_BITMASK (UINT64_C(1)<<0)
@@ -260,8 +266,8 @@ extern int do_blockdev_rereadpt (const char *device);
 extern int do_upload (const char *remotefilename);
 extern int do_download (const char *remotefilename);
 extern char *do_checksum (const char *csumtype, const char *path);
-extern int do_tar_in (const char *directory, const char *compress);
-extern int do_tar_out (const char *directory, const char *compress, int numericowner, char *const *excludes);
+extern int do_tar_in (const char *directory, const char *compress, int xattrs, int selinux, int acls);
+extern int do_tar_out (const char *directory, const char *compress, int numericowner, char *const *excludes, int xattrs, int selinux, int acls);
 extern int do_tgz_in (const char *directory);
 extern int do_tgz_out (const char *directory);
 extern int do_mount_ro (const mountable_t *mountable, const char *mountpoint);
@@ -404,7 +410,6 @@ extern int do_part_set_name (const char *device, int partnum, const char *name);
 extern guestfs_int_partition_list *do_part_list (const char *device);
 extern char *do_part_get_parttype (const char *device);
 extern int do_fill (int c, int len, const char *path);
-extern int do_available (char *const *groups);
 extern int do_dd (const char *src, const char *dest);
 extern int64_t do_filesize (const char *file);
 extern int do_lvrename (const char *logvol, const char *newlogvol);
@@ -585,7 +590,6 @@ extern int do_rename (const char *oldpath, const char *newpath);
 extern int do_is_whole_device (const char *device);
 extern guestfs_int_internal_mountable *do_internal_parse_mountable (const mountable_t *mountable);
 extern int do_internal_rhbz914931 (int count);
-extern int do_feature_available (char *const *groups);
 extern int do_syslinux (const char *device, const char *directory);
 extern int do_extlinux (const char *directory);
 extern int do_cp_r (const char *src, const char *dest);
@@ -642,5 +646,7 @@ extern int do_btrfs_image (char *const *source, const char *image, int compressl
 extern char *do_part_get_mbr_part_type (const char *device, int partnum);
 extern int do_btrfs_replace (const char *srcdev, const char *targetdev, const char *mntpoint);
 extern int do_set_uuid_random (const char *device);
+extern int64_t do_vfs_minimum_size (const mountable_t *mountable);
+extern int do_internal_feature_available (const char *group);
 
 #endif /* GUESTFSD_ACTIONS_H */

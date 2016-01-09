@@ -194,7 +194,6 @@ EXTRA_DIST += test-byteswap.c macros.h
 
 TESTS += test-c-ctype
 check_PROGRAMS += test-c-ctype
-
 EXTRA_DIST += test-c-ctype.c macros.h
 
 ## end   gnulib module c-ctype-tests
@@ -241,6 +240,41 @@ EXTRA_DIST += test-connect.c signature.h macros.h
 
 ## end   gnulib module connect-tests
 
+## begin gnulib module ctype
+
+BUILT_SOURCES += ctype.h
+
+# We need the following in order to create <ctype.h> when the system
+# doesn't have one that works with the given compiler.
+ctype.h: ctype.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE_H)
+	$(AM_V_GEN)rm -f $@-t $@ && \
+	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
+	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
+	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
+	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
+	      -e 's|@''NEXT_CTYPE_H''@|$(NEXT_CTYPE_H)|g' \
+	      -e 's/@''GNULIB_ISBLANK''@/$(GNULIB_ISBLANK)/g' \
+	      -e 's/@''HAVE_ISBLANK''@/$(HAVE_ISBLANK)/g' \
+	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
+	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
+	      < $(srcdir)/ctype.in.h; \
+	} > $@-t && \
+	mv $@-t $@
+MOSTLYCLEANFILES += ctype.h ctype.h-t
+
+EXTRA_DIST += ctype.in.h
+
+## end   gnulib module ctype
+
+## begin gnulib module ctype-tests
+
+TESTS += test-ctype
+check_PROGRAMS += test-ctype
+EXTRA_DIST += test-ctype.c
+
+## end   gnulib module ctype-tests
+
 ## begin gnulib module dirent-safer-tests
 
 TESTS += test-dirent-safer
@@ -259,6 +293,12 @@ check_PROGRAMS += test-dirent
 EXTRA_DIST += test-dirent.c
 
 ## end   gnulib module dirent-tests
+
+## begin gnulib module dtotimespec
+
+libtests_a_SOURCES += dtotimespec.c
+
+## end   gnulib module dtotimespec
 
 ## begin gnulib module dup-tests
 
@@ -1662,6 +1702,26 @@ check_PROGRAMS += test-time
 EXTRA_DIST += test-time.c
 
 ## end   gnulib module time-tests
+
+## begin gnulib module timespec-add
+
+libtests_a_SOURCES += timespec-add.c
+
+## end   gnulib module timespec-add
+
+## begin gnulib module timespec-sub
+
+libtests_a_SOURCES += timespec-sub.c
+
+## end   gnulib module timespec-sub
+
+## begin gnulib module timespec-tests
+
+TESTS += test-timespec
+check_PROGRAMS += test-timespec
+EXTRA_DIST += test-timespec.c macros.h
+
+## end   gnulib module timespec-tests
 
 ## begin gnulib module ttyname_r-tests
 

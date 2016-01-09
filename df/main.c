@@ -66,30 +66,29 @@ usage (int status)
     fprintf (stderr, _("Try `%s --help' for more information.\n"),
              guestfs_int_program_name);
   else {
-    fprintf (stdout,
-           _("%s: display free space on virtual filesystems\n"
-             "Copyright (C) 2010 Red Hat Inc.\n"
-             "Usage:\n"
-             "  %s [--options] -d domname\n"
-             "  %s [--options] -a disk.img [-a disk.img ...]\n"
-             "Options:\n"
-             "  -a|--add image       Add image\n"
-             "  -c|--connect uri     Specify libvirt URI for -d option\n"
-             "  --csv                Output as Comma-Separated Values\n"
-             "  -d|--domain guest    Add disks from libvirt guest\n"
-             "  --format[=raw|..]    Force disk format for -a option\n"
-             "  -h|--human-readable  Human-readable sizes in --long output\n"
-             "  --help               Display brief help\n"
-             "  -i|--inodes          Display inodes\n"
-             "  --one-per-guest      Separate appliance per guest\n"
-             "  -P nr_threads        Use at most nr_threads\n"
-             "  --uuid               Add UUIDs to --long output\n"
-             "  -v|--verbose         Verbose messages\n"
-             "  -V|--version         Display version and exit\n"
-             "  -x                   Trace libguestfs API calls\n"
-             "For more information, see the manpage %s(1).\n"),
-             guestfs_int_program_name, guestfs_int_program_name, guestfs_int_program_name,
-             guestfs_int_program_name);
+    printf (_("%s: display free space on virtual filesystems\n"
+              "Copyright (C) 2010 Red Hat Inc.\n"
+              "Usage:\n"
+              "  %s [--options] -d domname\n"
+              "  %s [--options] -a disk.img [-a disk.img ...]\n"
+              "Options:\n"
+              "  -a|--add image       Add image\n"
+              "  -c|--connect uri     Specify libvirt URI for -d option\n"
+              "  --csv                Output as Comma-Separated Values\n"
+              "  -d|--domain guest    Add disks from libvirt guest\n"
+              "  --format[=raw|..]    Force disk format for -a option\n"
+              "  -h|--human-readable  Human-readable sizes in --long output\n"
+              "  --help               Display brief help\n"
+              "  -i|--inodes          Display inodes\n"
+              "  --one-per-guest      Separate appliance per guest\n"
+              "  -P nr_threads        Use at most nr_threads\n"
+              "  --uuid               Add UUIDs to --long output\n"
+              "  -v|--verbose         Verbose messages\n"
+              "  -V|--version         Display version and exit\n"
+              "  -x                   Trace libguestfs API calls\n"
+              "For more information, see the manpage %s(1).\n"),
+            guestfs_int_program_name, guestfs_int_program_name,
+            guestfs_int_program_name, guestfs_int_program_name);
   }
   exit (status);
 }
@@ -183,7 +182,8 @@ main (int argc, char *argv[])
 
     case 'P':
       if (sscanf (optarg, "%zu", &max_threads) != 1) {
-        fprintf (stderr, _("%s: -P option is not numeric\n"), guestfs_int_program_name);
+        fprintf (stderr, _("%s: -P option is not numeric\n"),
+                 guestfs_int_program_name);
         exit (EXIT_FAILURE);
       }
       break;

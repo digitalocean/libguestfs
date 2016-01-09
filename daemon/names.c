@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -232,7 +232,6 @@ const char *function_names[] = {
   [213] = "part_list",
   [214] = "part_get_parttype",
   [215] = "fill",
-  [216] = "available",
   [217] = "dd",
   [218] = "filesize",
   [219] = "lvrename",
@@ -413,7 +412,6 @@ const char *function_names[] = {
   [395] = "is_whole_device",
   [396] = "internal_parse_mountable",
   [397] = "internal_rhbz914931",
-  [398] = "feature_available",
   [399] = "syslinux",
   [400] = "extlinux",
   [401] = "cp_r",
@@ -470,4 +468,6 @@ const char *function_names[] = {
   [454] = "part_get_mbr_part_type",
   [455] = "btrfs_replace",
   [456] = "set_uuid_random",
+  [457] = "vfs_minimum_size",
+  [458] = "internal_feature_available",
 };

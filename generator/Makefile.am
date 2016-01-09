@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2010-2015 Red Hat Inc.
+# Copyright (C) 2010-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -154,6 +154,6 @@ stamp-generator: generator
 
 CLEANFILES = $(noinst_DATA) $(noinst_PROGRAM) *.cmi *.cmo *~
 
-DISTCLEANFILES = .depend
+DISTCLEANFILES = .depend .pod2text.data.version.2
 
 SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly

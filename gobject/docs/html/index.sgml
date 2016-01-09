@@ -176,6 +176,7 @@
 <ANCHOR id="guestfs-session-get-e2label" href="guestfs/GuestfsSession.html#guestfs-session-get-e2label">
 <ANCHOR id="guestfs-session-get-e2uuid" href="guestfs/GuestfsSession.html#guestfs-session-get-e2uuid">
 <ANCHOR id="guestfs-session-get-hv" href="guestfs/GuestfsSession.html#guestfs-session-get-hv">
+<ANCHOR id="guestfs-session-get-identifier" href="guestfs/GuestfsSession.html#guestfs-session-get-identifier">
 <ANCHOR id="guestfs-session-get-libvirt-requested-credential-challenge" href="guestfs/GuestfsSession.html#guestfs-session-get-libvirt-requested-credential-challenge">
 <ANCHOR id="guestfs-session-get-libvirt-requested-credential-defresult" href="guestfs/GuestfsSession.html#guestfs-session-get-libvirt-requested-credential-defresult">
 <ANCHOR id="guestfs-session-get-libvirt-requested-credential-prompt" href="guestfs/GuestfsSession.html#guestfs-session-get-libvirt-requested-credential-prompt">
@@ -486,6 +487,7 @@
 <ANCHOR id="guestfs-session-set-e2label" href="guestfs/GuestfsSession.html#guestfs-session-set-e2label">
 <ANCHOR id="guestfs-session-set-e2uuid" href="guestfs/GuestfsSession.html#guestfs-session-set-e2uuid">
 <ANCHOR id="guestfs-session-set-hv" href="guestfs/GuestfsSession.html#guestfs-session-set-hv">
+<ANCHOR id="guestfs-session-set-identifier" href="guestfs/GuestfsSession.html#guestfs-session-set-identifier">
 <ANCHOR id="guestfs-session-set-label" href="guestfs/GuestfsSession.html#guestfs-session-set-label">
 <ANCHOR id="guestfs-session-set-libvirt-requested-credential" href="guestfs/GuestfsSession.html#guestfs-session-set-libvirt-requested-credential">
 <ANCHOR id="guestfs-session-set-libvirt-supported-credentials" href="guestfs/GuestfsSession.html#guestfs-session-set-libvirt-supported-credentials">
@@ -554,6 +556,7 @@
 <ANCHOR id="guestfs-session-utsname" href="guestfs/GuestfsSession.html#guestfs-session-utsname">
 <ANCHOR id="guestfs-session-version" href="guestfs/GuestfsSession.html#guestfs-session-version">
 <ANCHOR id="guestfs-session-vfs-label" href="guestfs/GuestfsSession.html#guestfs-session-vfs-label">
+<ANCHOR id="guestfs-session-vfs-minimum-size" href="guestfs/GuestfsSession.html#guestfs-session-vfs-minimum-size">
 <ANCHOR id="guestfs-session-vfs-type" href="guestfs/GuestfsSession.html#guestfs-session-vfs-type">
 <ANCHOR id="guestfs-session-vfs-uuid" href="guestfs/GuestfsSession.html#guestfs-session-vfs-uuid">
 <ANCHOR id="guestfs-session-vg-activate" href="guestfs/GuestfsSession.html#guestfs-session-vg-activate">
@@ -1731,7 +1734,10 @@
 <ANCHOR id="GuestfsTarIn-struct" href="guestfs/GuestfsTarIn.html#GuestfsTarIn-struct">
 <ANCHOR id="GuestfsTarInClass" href="guestfs/GuestfsTarIn.html#GuestfsTarInClass">
 <ANCHOR id="GuestfsTarIn.property-details" href="guestfs/GuestfsTarIn.html#GuestfsTarIn.property-details">
+<ANCHOR id="GuestfsTarIn--acls" href="guestfs/GuestfsTarIn.html#GuestfsTarIn--acls">
 <ANCHOR id="GuestfsTarIn--compress" href="guestfs/GuestfsTarIn.html#GuestfsTarIn--compress">
+<ANCHOR id="GuestfsTarIn--selinux" href="guestfs/GuestfsTarIn.html#GuestfsTarIn--selinux">
+<ANCHOR id="GuestfsTarIn--xattrs" href="guestfs/GuestfsTarIn.html#GuestfsTarIn--xattrs">
 <ANCHOR id="GuestfsTarOut" href="guestfs/GuestfsTarOut.html">
 <ANCHOR id="GuestfsTarOut.functions" href="guestfs/GuestfsTarOut.html#GuestfsTarOut.functions">
 <ANCHOR id="GuestfsTarOut.properties" href="guestfs/GuestfsTarOut.html#GuestfsTarOut.properties">
@@ -1745,8 +1751,11 @@
 <ANCHOR id="GuestfsTarOut-struct" href="guestfs/GuestfsTarOut.html#GuestfsTarOut-struct">
 <ANCHOR id="GuestfsTarOutClass" href="guestfs/GuestfsTarOut.html#GuestfsTarOutClass">
 <ANCHOR id="GuestfsTarOut.property-details" href="guestfs/GuestfsTarOut.html#GuestfsTarOut.property-details">
+<ANCHOR id="GuestfsTarOut--acls" href="guestfs/GuestfsTarOut.html#GuestfsTarOut--acls">
 <ANCHOR id="GuestfsTarOut--compress" href="guestfs/GuestfsTarOut.html#GuestfsTarOut--compress">
 <ANCHOR id="GuestfsTarOut--numericowner" href="guestfs/GuestfsTarOut.html#GuestfsTarOut--numericowner">
+<ANCHOR id="GuestfsTarOut--selinux" href="guestfs/GuestfsTarOut.html#GuestfsTarOut--selinux">
+<ANCHOR id="GuestfsTarOut--xattrs" href="guestfs/GuestfsTarOut.html#GuestfsTarOut--xattrs">
 <ANCHOR id="GuestfsTune2FS" href="guestfs/GuestfsTune2FS.html">
 <ANCHOR id="GuestfsTune2FS.functions" href="guestfs/GuestfsTune2FS.html#GuestfsTune2FS.functions">
 <ANCHOR id="GuestfsTune2FS.properties" href="guestfs/GuestfsTune2FS.html#GuestfsTune2FS.properties">

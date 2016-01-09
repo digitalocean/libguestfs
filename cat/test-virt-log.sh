@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ can_handle ()
 tmpfile=`mktemp`
 
 # Read out the log files from the image using virt-log.
-for f in ../tests/guests/{fedora,debian,ubuntu}.img; do
+for f in ../test-data/phony-guests/{fedora,debian,ubuntu}.img; do
     echo "Trying $f ..."
     if [ ! -s "$f" ]; then
         echo "SKIP: empty file"

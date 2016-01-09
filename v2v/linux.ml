@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ and augeas_debug_errors g =
                * <filename>, <field> and the value of this Augeas field
                * into a map.
                *)
-              let i = string_find path "/error/" in
+              let i = String.find path "/error/" in
               assert (i >= 0);
               let filename = String.sub path 13 (i-13) in
               let field = String.sub path (i+7) (String.length path - (i+7)) in
@@ -166,7 +166,7 @@ let rec file_owner g inspect path =
       if verbose () then eprintf "%s\n%!" (String.concat " " (Array.to_list cmd));
       (try g#command cmd
        with Guestfs.Error msg as exn ->
-         if string_find msg "is not owned" >= 0 then
+         if String.find msg "is not owned" >= 0 then
            raise Not_found
          else
            raise exn

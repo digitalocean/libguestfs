@@ -37,20 +37,16 @@ if [ "$(guestfish get-backend)" = "uml" ]; then
     exit 77
 fi
 
-if [ ! -f ../guests/windows.img ] || [ ! -s ../guests/windows.img ]; then
-    echo "$0: test skipped because tests/guests/windows.img was not built"
+if [ ! -f ../../test-data/phony-guests/windows.img ] || [ ! -s ../../test-data/phony-guests/windows.img ]; then
+    echo "$0: test skipped because test-data/phony-guests/windows.img was not built"
     exit 77
 fi
 
-if [ ! -f ../guests/blank-disk.img ]; then
-    echo "$0: test skipped because tests/guests/blank-disk.img was not built"
+if [ ! -f ../../test-data/phony-guests/blank-disk.img ]; then
+    echo "$0: test skipped because test-data/phony-guests/blank-disk.img was not built"
     exit 77
 fi
 
-virt_tools_data_dir=${VIRT_TOOLS_DATA_DIR:-/usr/share/virt-tools}
-if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
-    echo "$0: test skipped because rhsrvany.exe is not installed"
-    exit 77
-fi
+export VIRT_TOOLS_DATA_DIR="$srcdir/../../test-data/fake-virt-tools"
 
 ../../v2v/virt-v2v -i libvirtxml rhbz1232192.xml -o null --no-copy

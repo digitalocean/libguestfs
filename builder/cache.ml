@@ -1,5 +1,5 @@
 (* virt-builder
- * Copyright (C) 2013-2015 Red Hat Inc.
+ * Copyright (C) 2013-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ let create ~directory =
   }
 
 let cache_of_name t name arch revision =
-  t.directory // sprintf "%s.%s.%d" name arch revision
+  t.directory // sprintf "%s.%s.%s" name arch (string_of_revision revision)
 
 let is_cached t name arch revision =
   let filename = cache_of_name t name arch revision in

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ object
         (List.length targets);
 
     let mp, uuid =
-      let fields = string_nsplit "/" os in (* ... "data-center" "UUID" *)
+      let fields = String.nsplit "/" os in (* ... "data-center" "UUID" *)
       let fields = List.rev fields in      (* "UUID" "data-center" ... *)
       match fields with
       | "" :: uuid :: rest                 (* handles trailing "/" case *)
@@ -156,7 +156,7 @@ object
 
   method disk_create ?backingfile ?backingformat ?preallocation ?compat
     ?clustersize path format size =
-    let g = new Guestfs.guestfs () in
+    let g = open_guestfs ~identifier:"vdsm_disk_create" () in
     (* For qcow2, override v2v-supplied compat option, because RHEL 6
      * nodes cannot handle qcow2 v3 (RHBZ#1145582).
      *)

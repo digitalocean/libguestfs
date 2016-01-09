@@ -4,7 +4,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -439,7 +439,10 @@ class GuestFS(object):
         
         "protocol = "iscsi""
         Connect to the iSCSI server. The "server"
-        parameter must also be supplied - see below.
+        parameter must also be supplied - see below. The
+        "username" parameter may be supplied. See below.
+        The "secret" parameter may be supplied. See
+        below.
         
         See also: "ISCSI" in guestfs(3).
         
@@ -2167,14 +2170,14 @@ class GuestFS(object):
         The other optional parameters are:
         
         "preallocation"
-        If format is "raw", then this can be either "sparse"
-        or "full" to create a sparse or fully allocated file
-        respectively. The default is "sparse".
+        If format is "raw", then this can be either "off"
+        (or "sparse") or "full" to create a sparse or fully
+        allocated file respectively. The default is "off".
         
-        If format is "qcow2", then this can be either "off"
-        or "metadata". Preallocating metadata can be faster
-        when doing lots of writes, but uses more space. The
-        default is "off".
+        If format is "qcow2", then this can be "off" (or
+        "sparse"), "metadata" or "full". Preallocating
+        metadata can be faster when doing lots of writes,
+        but uses more space. The default is "off".
         
         "compat"
         "qcow2" only: Pass the string 1.1 to use the
@@ -3067,6 +3070,13 @@ class GuestFS(object):
         r = libguestfsmod.get_hv (self._o)
         return r
 
+    def get_identifier (self):
+        """Get the handle identifier. See "g.set_identifier".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.get_identifier (self._o)
+        return r
+
     def get_libvirt_requested_credential_challenge (self, index):
         """Get the challenge (provided by libvirt) for the
         "index"'th requested credential. If libvirt did not
@@ -3831,6 +3841,12 @@ class GuestFS(object):
         
         Currently defined distros are:
         
+        "alpinelinux"
+        Alpine Linux.
+        
+        "altlinux"
+        ALT Linux.
+        
         "archlinux"
         Arch Linux.
         
@@ -3858,6 +3874,9 @@ class GuestFS(object):
         
         "freedos"
         FreeDOS.
+        
+        "frugalware"
+        Frugalware.
         
         "gentoo"
         Gentoo.
@@ -3888,6 +3907,9 @@ class GuestFS(object):
         
         "pardus"
         Pardus.
+        
+        "pldlinux"
+        PLD Linux.
         
         "redhat-based"
         Some Red Hat-derived distro.
@@ -4178,7 +4200,7 @@ class GuestFS(object):
         Windows).
         
         Possible strings include: "rpm", "deb", "ebuild",
-        "pisi", "pacman", "pkgsrc". Future versions of
+        "pisi", "pacman", "pkgsrc", "apk". Future versions of
         libguestfs may return other strings.
         
         Please read "INSPECTION" in guestfs(3) for more details.
@@ -4201,7 +4223,7 @@ class GuestFS(object):
         
         Possible strings include: "yum", "dnf", "up2date", "apt"
         (for all Debian derivatives), "portage", "pisi",
-        "pacman", "urpmi", "zypper". Future versions of
+        "pacman", "urpmi", "zypper", "apk". Future versions of
         libguestfs may return other strings.
         
         Please read "INSPECTION" in guestfs(3) for more details.
@@ -7939,6 +7961,37 @@ class GuestFS(object):
         r = libguestfsmod.set_hv (self._o, hv)
         return r
 
+    def set_identifier (self, identifier):
+        """This is an informative string which the caller may
+        optionally set in the handle. It is printed in various
+        places, allowing the current handle to be identified in
+        debugging output.
+        
+        One important place is when tracing is enabled. If the
+        identifier string is not an empty string, then trace
+        messages change from this:
+        
+        libguestfs: trace: get_tmpdir
+        libguestfs: trace: get_tmpdir = "/tmp"
+        
+        to this:
+        
+        libguestfs: trace: ID: get_tmpdir
+        libguestfs: trace: ID: get_tmpdir = "/tmp"
+        
+        where "ID" is the identifier string set by this call.
+        
+        The identifier must only contain alphanumeric ASCII
+        characters, underscore and minus sign. The default is
+        the empty string.
+        
+        See also "g.set_program", "g.set_trace",
+        "g.get_identifier".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_identifier (self._o, identifier)
+        return r
+
     def set_label (self, mountable, label):
         """Set the filesystem label on "mountable" to "label".
         
@@ -7956,7 +8009,7 @@ class GuestFS(object):
         must not be mounted when trying to set the label.
         
         btrfs
-        The label is limited to 256 bytes and some
+        The label is limited to 255 bytes and some
         characters are not allowed. Setting the label on a
         btrfs subvolume will set the label on its parent
         filesystem. The filesystem must not be mounted when
@@ -8707,7 +8760,7 @@ class GuestFS(object):
         r = libguestfsmod.tail_n (self._o, nrlines, path)
         return r
 
-    def tar_in (self, tarfile, directory, compress=None):
+    def tar_in (self, tarfile, directory, compress=None, xattrs=None, selinux=None, acls=None):
         """This command uploads and unpacks local file "tarfile"
         into directory.
         
@@ -8718,14 +8771,28 @@ class GuestFS(object):
         "compress", "gzip", "bzip2", "xz", "lzop". (Note that
         not all builds of libguestfs will support all of these
         compression types).
+        
+        The other optional arguments are:
+        
+        "xattrs"
+        If set to true, extended attributes are restored
+        from the tar file.
+        
+        "selinux"
+        If set to true, SELinux contexts are restored from
+        the tar file.
+        
+        "acls"
+        If set to true, POSIX ACLs are restored from the tar
+        file.
         """
         self._check_not_closed ()
-        r = libguestfsmod.tar_in (self._o, tarfile, directory, compress)
+        r = libguestfsmod.tar_in (self._o, tarfile, directory, compress, xattrs, selinux, acls)
         return r
 
     tar_in_opts = tar_in
 
-    def tar_out (self, directory, tarfile, compress=None, numericowner=None, excludes=None):
+    def tar_out (self, directory, tarfile, compress=None, numericowner=None, excludes=None, xattrs=None, selinux=None, acls=None):
         """This command packs the contents of directory and
         downloads it to local file "tarfile".
         
@@ -8746,9 +8813,21 @@ class GuestFS(object):
         "numericowner"
         If set to true, the output tar file will contain
         UID/GID numbers instead of user/group names.
+        
+        "xattrs"
+        If set to true, extended attributes are saved in the
+        output tar.
+        
+        "selinux"
+        If set to true, SELinux contexts are saved in the
+        output tar.
+        
+        "acls"
+        If set to true, POSIX ACLs are saved in the output
+        tar.
         """
         self._check_not_closed ()
-        r = libguestfsmod.tar_out (self._o, directory, tarfile, compress, numericowner, excludes)
+        r = libguestfsmod.tar_out (self._o, directory, tarfile, compress, numericowner, excludes, xattrs, selinux, acls)
         return r
 
     tar_out_opts = tar_out
@@ -9148,6 +9227,20 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.vfs_label (self._o, mountable)
+        return r
+
+    def vfs_minimum_size (self, mountable):
+        """Get the minimum size of filesystem in bytes. This is the
+        minimum possible size for filesystem shrinking.
+        
+        If getting minimum size of specified filesystem is not
+        supported, this will fail and set errno as ENOTSUP.
+        
+        See also ntfsresize(8), resize2fs(8), btrfs(8),
+        xfs_info(8).
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.vfs_minimum_size (self._o, mountable)
         return r
 
     def vfs_type (self, mountable):

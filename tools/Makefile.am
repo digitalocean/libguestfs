@@ -1,5 +1,5 @@
 # libguestfs virt-* tools
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,8 +23,11 @@ tools = \
 	tar \
 	win-reg
 
-# Before 1.23.23, there were symlinks called *.pl.  Need to delete these.
-CLEANFILES = *.pl
+CLEANFILES = \
+	virt-list-filesystems.1 \
+	virt-list-partitions.1 \
+	virt-tar.1 \
+	virt-win-reg.1
 
 EXTRA_DIST = \
 	$(tools:%=virt-%) \
@@ -41,7 +44,7 @@ bin_SCRIPTS = $(tools:%=virt-%)
 # then the man pages are neither built nor installed.
 man_MANS = virt-tar.1 $(patsubst %,virt-%.1,$(filter-out tar,$(tools)))
 
-noinst_DATA = $(tools:%=$(top_builddir)/html/virt-%.1.html)
+noinst_DATA = $(tools:%=$(top_builddir)/website/virt-%.1.html)
 
 virt-%.1: virt-%
 	$(PODWRAPPER) \
@@ -49,7 +52,7 @@ virt-%.1: virt-%
 	  --license GPLv2+ \
 	  $<
 
-$(top_builddir)/html/virt-%.1.html: virt-%
+$(top_builddir)/website/virt-%.1.html: virt-%
 	$(PODWRAPPER) \
 	  --html $@ \
 	  --license GPLv2+ \

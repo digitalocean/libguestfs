@@ -51,10 +51,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <errno.h>
 #include <dirent.h>
 #include <assert.h>
 #include <sys/types.h>
+#include <libintl.h>
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -85,7 +85,7 @@ static void free_osinfo_db_entry (struct osinfo *);
  */
 int
 guestfs_int_osinfo_map (guestfs_h *g, const struct guestfs_isoinfo *isoinfo,
-                      const struct osinfo **osinfo_ret)
+			const struct osinfo **osinfo_ret)
 {
   size_t i;
 
@@ -492,7 +492,9 @@ parse_distro (guestfs_h *g, xmlNodePtr node, struct osinfo *osinfo)
 
   content = (char *) xmlNodeGetContent (node);
   if (content) {
-    if (STREQ (content, "centos"))
+    if (STREQ (content, "altlinux"))
+      osinfo->distro = OS_DISTRO_ALTLINUX;
+    else if (STREQ (content, "centos"))
       osinfo->distro = OS_DISTRO_CENTOS;
     else if (STREQ (content, "debian"))
       osinfo->distro = OS_DISTRO_DEBIAN;
@@ -500,6 +502,8 @@ parse_distro (guestfs_h *g, xmlNodePtr node, struct osinfo *osinfo)
       osinfo->distro = OS_DISTRO_FEDORA;
     else if (STREQ (content, "freebsd"))
       osinfo->distro = OS_DISTRO_FREEBSD;
+    else if (STREQ (content, "mageia"))
+      osinfo->distro = OS_DISTRO_MAGEIA;
     else if (STREQ (content, "mandriva"))
       osinfo->distro = OS_DISTRO_MANDRIVA;
     else if (STREQ (content, "netbsd"))

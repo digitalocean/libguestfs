@@ -264,7 +264,7 @@ do_list_md_devices (void)
 
   return ret.argv;
 
-error:
+ error:
   globfree (&mds);
   if (ret.argv != NULL)
     free_stringslen (ret.argv, ret.size);
@@ -337,7 +337,7 @@ do_md_detail (const char *md)
 
   return ret.argv;
 
-error:
+ error:
   if (ret.argv != NULL)
     free_stringslen (ret.argv, ret.size);
 
@@ -467,7 +467,7 @@ parse_md_stat_line (char *line)
   return ret;
 
  error:
-  for (i = 0; i <= spaces; ++i) {
+  for (i = 0; i < spaces+1; ++i) {
     free (ret->guestfs_int_mdstat_list_val[i].mdstat_device);
     free (ret->guestfs_int_mdstat_list_val[i].mdstat_flags);
   }

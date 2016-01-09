@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ export LANG=C
 set -e
 
 # Run virt-df.
-output=$($VG virt-df ../tests/guests/fedora.img)
+output=$($VG virt-df ../test-data/phony-guests/fedora.img)
 
 # Check title is the first line.
 if [[ ! $output =~ ^Filesystem.* ]]; then

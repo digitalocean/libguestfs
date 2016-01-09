@@ -170,12 +170,13 @@ libvirt не буде використовуватися взагалі.
 
  virt-rescue --format=raw -a диск.img
 
-forces raw format (no auto-detection) for F<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<disk.img>.
 
  virt-rescue --format=raw -a диск.img --format -a інший.img
 
-forces raw format (no auto-detection) for F<disk.img> and reverts to
-auto-detection for F<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<diskimg> і повернення до автоматичного визначення для F<another.img>.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату
@@ -421,5 +422,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2015
+Copyright (C) 2009-2016 Red Hat Inc.
 

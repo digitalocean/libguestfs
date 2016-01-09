@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <errno.h>
+#include <libintl.h>
 
 #include "c-ctype.h"
 
@@ -290,9 +291,9 @@ guestfs_int_launch_failed_error (guestfs_h *g)
     error (g, _("guestfs_launch failed, see earlier error messages"));
   else
     error (g, _(
-"guestfs_launch failed.\n"
-"This usually means the libguestfs appliance failed to start or crashed.\n"
-DEBUG_ADVICE));
+		"guestfs_launch failed.\n"
+		"This usually means the libguestfs appliance failed to start or crashed.\n"
+		DEBUG_ADVICE));
 }
 
 /* As above, but for crashes that occur after launch. */
@@ -303,9 +304,9 @@ guestfs_int_unexpected_close_error (guestfs_h *g)
     error (g, _("appliance closed the connection unexpectedly, see earlier error messages"));
   else
     error (g, _(
-"appliance closed the connection unexpectedly.\n"
-"This usually means the libguestfs appliance crashed.\n"
-DEBUG_ADVICE));
+		"appliance closed the connection unexpectedly.\n"
+		"This usually means the libguestfs appliance crashed.\n"
+		DEBUG_ADVICE));
 }
 
 /* As above, but for appliance kernel hanging. */
@@ -316,15 +317,15 @@ guestfs_int_launch_timeout (guestfs_h *g)
     error (g, _("appliance launch timed out, see earlier error messages"));
   else
     error (g, _(
-"appliance launch timed out.\n"
-"This usually means the kernel or appliance hung during launch.\n"
-DEBUG_ADVICE));
+		"appliance launch timed out.\n"
+		"This usually means the kernel or appliance hung during launch.\n"
+		DEBUG_ADVICE));
 }
 
 /* External command failed. */
 void
 guestfs_int_external_command_failed (guestfs_h *g, int status,
-                                   const char *cmd_name, const char *extra)
+				     const char *cmd_name, const char *extra)
 {
   size_t len = 80 + strlen (cmd_name);
   char status_string[len];
@@ -341,15 +342,15 @@ guestfs_int_external_command_failed (guestfs_h *g, int status,
   else {
     if (!extra)
       error (g, _(
-"%s.\n"
-"To see full error messages you may need to enable debugging.\n"
-DEBUG_ADVICE),
+		  "%s.\n"
+		  "To see full error messages you may need to enable debugging.\n"
+		  DEBUG_ADVICE),
              status_string);
     else
       error (g, _(
-"%s: %s: %s.\n"
-"To see full error messages you may need to enable debugging.\n"
-DEBUG_ADVICE),
+		  "%s: %s: %s.\n"
+		  "To see full error messages you may need to enable debugging.\n"
+		  DEBUG_ADVICE),
              cmd_name, extra, status_string);
   }
 }

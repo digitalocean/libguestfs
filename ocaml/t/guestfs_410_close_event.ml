@@ -1,5 +1,5 @@
 (* libguestfs OCaml tests
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 let close_invoked = ref 0
 
-let close _ _ _ _ _ =
+let close _ _ _ _ =
   incr close_invoked
 
 let () =

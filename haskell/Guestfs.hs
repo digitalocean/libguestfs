@@ -3,7 +3,7 @@
      generator/ *.ml
    ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
   
-   Copyright (C) 2009-2015 Red Hat Inc.
+   Copyright (C) 2009-2016 Red Hat Inc.
   
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -164,6 +164,7 @@ module Guestfs (
   get_e2label,
   get_e2uuid,
   get_hv,
+  get_identifier,
   get_libvirt_requested_credential_challenge,
   get_libvirt_requested_credential_defresult,
   get_libvirt_requested_credential_prompt,
@@ -412,6 +413,7 @@ module Guestfs (
   set_e2label,
   set_e2uuid,
   set_hv,
+  set_identifier,
   set_label,
   set_libvirt_requested_credential,
   set_libvirt_supported_credentials,
@@ -469,6 +471,7 @@ module Guestfs (
   user_cancel,
   utimens,
   vfs_label,
+  vfs_minimum_size,
   vfs_type,
   vfs_uuid,
   vg_activate,
@@ -2235,6 +2238,18 @@ foreign import ccall unsafe "guestfs.h guestfs_get_hv" c_get_hv
 get_hv :: GuestfsH -> IO String
 get_hv h = do
   r <- withForeignPtr h (\p -> c_get_hv p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_get_identifier" c_get_identifier
+  :: GuestfsP -> IO CString
+
+get_identifier :: GuestfsH -> IO String
+get_identifier h = do
+  r <- withForeignPtr h (\p -> c_get_identifier p)
   if (r == nullPtr)
     then do
       err <- last_error h
@@ -5241,6 +5256,18 @@ set_hv h hv = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_set_identifier" c_set_identifier
+  :: GuestfsP -> CString -> IO CInt
+
+set_identifier :: GuestfsH -> String -> IO ()
+set_identifier h identifier = do
+  r <- withCString identifier $ \identifier -> withForeignPtr h (\p -> c_set_identifier p identifier)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
 foreign import ccall unsafe "guestfs.h guestfs_set_label" c_set_label
   :: GuestfsP -> CString -> CString -> IO CInt
 
@@ -5927,6 +5954,18 @@ vfs_label h mountable = do
       err <- last_error h
       fail err
     else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_vfs_minimum_size" c_vfs_minimum_size
+  :: GuestfsP -> CString -> IO Int64
+
+vfs_minimum_size :: GuestfsH -> String -> IO Int64
+vfs_minimum_size h mountable = do
+  r <- withCString mountable $ \mountable -> withForeignPtr h (\p -> c_vfs_minimum_size p mountable)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
 
 foreign import ccall unsafe "guestfs.h guestfs_vfs_type" c_vfs_type
   :: GuestfsP -> CString -> IO CString

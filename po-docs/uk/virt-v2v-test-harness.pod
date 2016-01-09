@@ -53,7 +53,7 @@ through to tens of gigabytes I<each>.  This means that distributing test
 cases can be very time-consuming and expensive.  We use L<git-annex(1)> to
 distribute the test images.
 
-=head2 REQUIREMENTS
+=head2 ВИМОГИ
 
 It's recommended to use an idle machine for testing.  You will need B<a lot
 of disk space> to run the tests, in excess of S<100 GB>.  You should also
@@ -118,7 +118,7 @@ Each test case consists of:
 
 =over 4
 
-=item I<test>.img.xz
+=item I<тест>.img.xz
 
 The disk image of the virtual machine before conversion.  Usually this
 should be converted to raw format and xz-compressed.
@@ -263,5 +263,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2014-2015 Red Hat Inc.
+Copyright (C) 2014-2016 Red Hat Inc.
 

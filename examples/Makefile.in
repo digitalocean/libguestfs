@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs C examples
-# Copyright (C) 2010-2015 Red Hat Inc.
+# Copyright (C) 2010-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -161,10 +161,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/close-stream.m4 $(top_srcdir)/m4/close.m4 \
 	$(top_srcdir)/m4/closedir.m4 $(top_srcdir)/m4/closeout.m4 \
 	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/configmake.m4 \
-	$(top_srcdir)/m4/cycle-check.m4 $(top_srcdir)/m4/d-ino.m4 \
-	$(top_srcdir)/m4/d-type.m4 $(top_srcdir)/m4/dirent-safer.m4 \
-	$(top_srcdir)/m4/dirent_h.m4 $(top_srcdir)/m4/dirfd.m4 \
-	$(top_srcdir)/m4/dirname.m4 \
+	$(top_srcdir)/m4/ctype.m4 $(top_srcdir)/m4/cycle-check.m4 \
+	$(top_srcdir)/m4/d-ino.m4 $(top_srcdir)/m4/d-type.m4 \
+	$(top_srcdir)/m4/dirent-safer.m4 $(top_srcdir)/m4/dirent_h.m4 \
+	$(top_srcdir)/m4/dirfd.m4 $(top_srcdir)/m4/dirname.m4 \
 	$(top_srcdir)/m4/double-slash-root.m4 $(top_srcdir)/m4/dup.m4 \
 	$(top_srcdir)/m4/dup2.m4 $(top_srcdir)/m4/dup3.m4 \
 	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/environ.m4 \
@@ -283,7 +283,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
 	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
 	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs_progs.m4 \
+	$(top_srcdir)/m4/guestfs_c.m4 \
+	$(top_srcdir)/m4/guestfs_libraries.m4 \
+	$(top_srcdir)/m4/guestfs_fuse.m4 \
+	$(top_srcdir)/m4/guestfs_daemon.m4 \
+	$(top_srcdir)/m4/guestfs_appliance.m4 \
+	$(top_srcdir)/m4/guestfs_qemu.m4 \
+	$(top_srcdir)/m4/guestfs_misc_libraries.m4 \
+	$(top_srcdir)/m4/guestfs_ocaml.m4 \
+	$(top_srcdir)/m4/guestfs_perl.m4 \
+	$(top_srcdir)/m4/guestfs_python.m4 \
+	$(top_srcdir)/m4/guestfs_ruby.m4 \
+	$(top_srcdir)/m4/guestfs_java.m4 \
+	$(top_srcdir)/m4/guestfs_haskell.m4 \
+	$(top_srcdir)/m4/guestfs_php.m4 \
+	$(top_srcdir)/m4/guestfs_erlang.m4 \
+	$(top_srcdir)/m4/guestfs_lua.m4 \
+	$(top_srcdir)/m4/guestfs_golang.m4 \
+	$(top_srcdir)/m4/guestfs_gobject.m4 \
+	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -438,9 +458,8 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-man1dir = $(mandir)/man1
-am__installdirs = "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man3dir)"
 man3dir = $(mandir)/man3
+am__installdirs = "$(DESTDIR)$(man3dir)"
 NROFF = nroff
 MANS = $(man_MANS)
 DATA = $(noinst_DATA)
@@ -639,6 +658,7 @@ GNULIB_INET_NTOP = @GNULIB_INET_NTOP@
 GNULIB_INET_PTON = @GNULIB_INET_PTON@
 GNULIB_IOCTL = @GNULIB_IOCTL@
 GNULIB_ISATTY = @GNULIB_ISATTY@
+GNULIB_ISBLANK = @GNULIB_ISBLANK@
 GNULIB_ISWBLANK = @GNULIB_ISWBLANK@
 GNULIB_ISWCTYPE = @GNULIB_ISWCTYPE@
 GNULIB_LCHMOD = @GNULIB_LCHMOD@
@@ -778,6 +798,7 @@ GNULIB_SYMLINKAT = @GNULIB_SYMLINKAT@
 GNULIB_SYSTEM_POSIX = @GNULIB_SYSTEM_POSIX@
 GNULIB_TIMEGM = @GNULIB_TIMEGM@
 GNULIB_TIME_R = @GNULIB_TIME_R@
+GNULIB_TIME_RZ = @GNULIB_TIME_RZ@
 GNULIB_TMPFILE = @GNULIB_TMPFILE@
 GNULIB_TOWCTRANS = @GNULIB_TOWCTRANS@
 GNULIB_TTYNAME_R = @GNULIB_TTYNAME_R@
@@ -937,6 +958,7 @@ HAVE_GETTIMEOFDAY = @HAVE_GETTIMEOFDAY@
 HAVE_GRANTPT = @HAVE_GRANTPT@
 HAVE_GROUP_MEMBER = @HAVE_GROUP_MEMBER@
 HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
+HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
 HAVE_ISWCNTRL = @HAVE_ISWCNTRL@
 HAVE_LANGINFO_CODESET = @HAVE_LANGINFO_CODESET@
@@ -1046,6 +1068,7 @@ HAVE_SYS_TIME_H = @HAVE_SYS_TIME_H@
 HAVE_SYS_TYPES_H = @HAVE_SYS_TYPES_H@
 HAVE_SYS_UIO_H = @HAVE_SYS_UIO_H@
 HAVE_TIMEGM = @HAVE_TIMEGM@
+HAVE_TIMEZONE_T = @HAVE_TIMEZONE_T@
 HAVE_TYPE_VOLATILE_SIG_ATOMIC_T = @HAVE_TYPE_VOLATILE_SIG_ATOMIC_T@
 HAVE_UNISTD_H = @HAVE_UNISTD_H@
 HAVE_UNLINKAT = @HAVE_UNLINKAT@
@@ -1195,6 +1218,7 @@ MSGMERGE = @MSGMERGE@
 NETINET_IN_H = @NETINET_IN_H@
 NEXT_ARPA_INET_H = @NEXT_ARPA_INET_H@
 NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H = @NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H@
+NEXT_AS_FIRST_DIRECTIVE_CTYPE_H = @NEXT_AS_FIRST_DIRECTIVE_CTYPE_H@
 NEXT_AS_FIRST_DIRECTIVE_DIRENT_H = @NEXT_AS_FIRST_DIRECTIVE_DIRENT_H@
 NEXT_AS_FIRST_DIRECTIVE_ERRNO_H = @NEXT_AS_FIRST_DIRECTIVE_ERRNO_H@
 NEXT_AS_FIRST_DIRECTIVE_FCNTL_H = @NEXT_AS_FIRST_DIRECTIVE_FCNTL_H@
@@ -1224,6 +1248,7 @@ NEXT_AS_FIRST_DIRECTIVE_TIME_H = @NEXT_AS_FIRST_DIRECTIVE_TIME_H@
 NEXT_AS_FIRST_DIRECTIVE_UNISTD_H = @NEXT_AS_FIRST_DIRECTIVE_UNISTD_H@
 NEXT_AS_FIRST_DIRECTIVE_WCHAR_H = @NEXT_AS_FIRST_DIRECTIVE_WCHAR_H@
 NEXT_AS_FIRST_DIRECTIVE_WCTYPE_H = @NEXT_AS_FIRST_DIRECTIVE_WCTYPE_H@
+NEXT_CTYPE_H = @NEXT_CTYPE_H@
 NEXT_DIRENT_H = @NEXT_DIRENT_H@
 NEXT_ERRNO_H = @NEXT_ERRNO_H@
 NEXT_FCNTL_H = @NEXT_FCNTL_H@
@@ -1317,6 +1342,7 @@ PYTHON_VERSION = @PYTHON_VERSION@
 QEMU = @QEMU@
 RAKE = @RAKE@
 RANLIB = @RANLIB@
+RELEASE_DATE = @RELEASE_DATE@
 REPLACE_BTOWC = @REPLACE_BTOWC@
 REPLACE_CALLOC = @REPLACE_CALLOC@
 REPLACE_CANONICALIZE_FILE_NAME = @REPLACE_CANONICALIZE_FILE_NAME@
@@ -1584,13 +1610,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 EXTRA_DIST = \
 	LICENSE \
 	guestfs-examples.pod \
-	guestfs-faq.pod \
-	guestfs-performance.pod \
-	guestfs-recipes.pod \
-	guestfs-testing.pod \
 	copy-over.c \
 	create-disk.c \
 	debug-logging.c \
@@ -1601,11 +1624,8 @@ EXTRA_DIST = \
 	virt-dhcp-address.c
 
 CLEANFILES = \
-	stamp-guestfs-examples.pod \
-	stamp-guestfs-faq.pod \
-	stamp-guestfs-performance.pod \
-	stamp-guestfs-recipes.pod \
-	stamp-guestfs-testing.pod
+	guestfs-examples.3 \
+	stamp-guestfs-examples.pod
 
 @HAVE_LIBVIRT_TRUE@copy_over_SOURCES = copy-over.c
 @HAVE_LIBVIRT_TRUE@copy_over_CPPFLAGS = \
@@ -1705,20 +1725,8 @@ inspect_vm_LDADD = \
 @HAVE_HIVEX_TRUE@virt_dhcp_address_LDADD = \
 @HAVE_HIVEX_TRUE@	$(top_builddir)/src/libguestfs.la
 
-man_MANS = \
-	guestfs-examples.3 \
-	guestfs-faq.1 \
-	guestfs-performance.1 \
-	guestfs-recipes.1 \
-	guestfs-testing.1
-
-noinst_DATA = \
-	$(top_builddir)/html/guestfs-examples.3.html \
-	$(top_builddir)/html/guestfs-faq.1.html \
-	$(top_builddir)/html/guestfs-performance.1.html \
-	$(top_builddir)/html/guestfs-recipes.1.html \
-	$(top_builddir)/html/guestfs-testing.1.html
-
+man_MANS = guestfs-examples.3
+noinst_DATA = $(top_builddir)/website/guestfs-examples.3.html
 all: all-am
 
 .SUFFIXES:
@@ -1951,49 +1959,6 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-man1: $(man_MANS)
-	@$(NORMAL_INSTALL)
-	@list1=''; \
-	list2='$(man_MANS)'; \
-	test -n "$(man1dir)" \
-	  && test -n "`echo $$list1$$list2`" \
-	  || exit 0; \
-	echo " $(MKDIR_P) '$(DESTDIR)$(man1dir)'"; \
-	$(MKDIR_P) "$(DESTDIR)$(man1dir)" || exit 1; \
-	{ for i in $$list1; do echo "$$i"; done;  \
-	if test -n "$$list2"; then \
-	  for i in $$list2; do echo "$$i"; done \
-	    | sed -n '/\.1[a-z]*$$/p'; \
-	fi; \
-	} | while read p; do \
-	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; echo "$$p"; \
-	done | \
-	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
-	sed 'N;N;s,\n, ,g' | { \
-	list=; while read file base inst; do \
-	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
-	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
-	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst" || exit $$?; \
-	  fi; \
-	done; \
-	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
-	while read files; do \
-	  test -z "$$files" || { \
-	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man1dir)'"; \
-	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man1dir)" || exit $$?; }; \
-	done; }
-
-uninstall-man1:
-	@$(NORMAL_UNINSTALL)
-	@list=''; test -n "$(man1dir)" || exit 0; \
-	files=`{ for i in $$list; do echo "$$i"; done; \
-	l2='$(man_MANS)'; for i in $$l2; do echo "$$i"; done | \
-	  sed -n '/\.1[a-z]*$$/p'; \
-	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
-	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
 install-man3: $(man_MANS)
 	@$(NORMAL_INSTALL)
 	@list1=''; \
@@ -2124,7 +2089,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man3dir)"; do \
+	for dir in "$(DESTDIR)$(man3dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -2197,7 +2162,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man: install-man1 install-man3
+install-man: install-man3
 
 install-pdf: install-pdf-am
 
@@ -2229,7 +2194,7 @@ ps-am:
 
 uninstall-am: uninstall-man
 
-uninstall-man: uninstall-man1 uninstall-man3
+uninstall-man: uninstall-man3
 
 .MAKE: install-am install-strip
 
@@ -2240,26 +2205,18 @@ uninstall-man: uninstall-man1 uninstall-man3
 	html-am info info-am install install-am install-data \
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-man1 install-man3 \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-man uninstall-man1 uninstall-man3
+	install-info-am install-man install-man3 install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am uninstall-man \
+	uninstall-man3
 
 .PRECIOUS: Makefile
 
 
 -include $(top_builddir)/localenv
-
-# Old RHEL 5 autoconf defines these, but RHEL 5 automake doesn't
-# create variables for them.  So define them here if they're not
-# defined already.
-builddir     ?= @builddir@
-abs_builddir ?= @abs_builddir@
-srcdir       ?= @srcdir@
-abs_srcdir   ?= @abs_srcdir@
 
 # Individual Makefile.am's should define generator_built if that
 # subdirectory contains any files which are built by the generator.
@@ -2283,13 +2240,13 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-guestfs-examples.3 $(top_builddir)/html/guestfs-examples.3.html: stamp-guestfs-examples.pod
+guestfs-examples.3 $(top_builddir)/website/guestfs-examples.3.html: stamp-guestfs-examples.pod
 
 stamp-guestfs-examples.pod: guestfs-examples.pod copy-over.c create-disk.c debug-logging.c display-icon.c inspect-vm.c libvirt-auth.c mount-local.c virt-dhcp-address.c
 	$(PODWRAPPER) \
 	  --section 3 \
 	  --man guestfs-examples.3 \
-	  --html $(top_builddir)/html/guestfs-examples.3.html \
+	  --html $(top_builddir)/website/guestfs-examples.3.html \
 	  --verbatim $(srcdir)/copy-over.c:@COPY_OVER@ \
 	  --verbatim $(srcdir)/create-disk.c:@CREATE_DISK@ \
 	  --verbatim $(srcdir)/debug-logging.c:@DEBUG_LOGGING@ \
@@ -2299,50 +2256,6 @@ stamp-guestfs-examples.pod: guestfs-examples.pod copy-over.c create-disk.c debug
 	  --verbatim $(srcdir)/mount-local.c:@MOUNT_LOCAL@ \
 	  --verbatim $(srcdir)/virt-dhcp-address.c:@VIRT_DHCP_ADDRESS@ \
 	  --license examples \
-	  $<
-	touch $@
-
-guestfs-faq.1 $(top_builddir)/html/guestfs-faq.1.html: stamp-guestfs-faq.pod
-
-stamp-guestfs-faq.pod: guestfs-faq.pod
-	$(PODWRAPPER) \
-	  --section 1 \
-	  --man guestfs-faq.1 \
-	  --html $(top_builddir)/html/guestfs-faq.1.html \
-	  --license LGPLv2+ \
-	  $<
-	touch $@
-
-guestfs-performance.1 $(top_builddir)/html/guestfs-performance.1.html: stamp-guestfs-performance.pod
-
-stamp-guestfs-performance.pod: guestfs-performance.pod
-	$(PODWRAPPER) \
-	  --section 1 \
-	  --man guestfs-performance.1 \
-	  --html $(top_builddir)/html/guestfs-performance.1.html \
-	  --license LGPLv2+ \
-	  $<
-	touch $@
-
-guestfs-recipes.1 $(top_builddir)/html/guestfs-recipes.1.html: stamp-guestfs-recipes.pod
-
-stamp-guestfs-recipes.pod: guestfs-recipes.pod
-	$(PODWRAPPER) \
-	  --section 1 \
-	  --man guestfs-recipes.1 \
-	  --html $(top_builddir)/html/guestfs-recipes.1.html \
-	  --license examples \
-	  $<
-	touch $@
-
-guestfs-testing.1 $(top_builddir)/html/guestfs-testing.1.html: stamp-guestfs-testing.pod
-
-stamp-guestfs-testing.pod: guestfs-testing.pod
-	$(PODWRAPPER) \
-	  --section 1 \
-	  --man guestfs-testing.1 \
-	  --html $(top_builddir)/html/guestfs-testing.1.html \
-	  --license LGPLv2+ \
 	  $<
 	touch $@
 

@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -4637,6 +4637,26 @@ guestfs_lua_get_hv (lua_State *L)
 
   lua_pushstring (L, r);
   free (r);
+  return 1;
+}
+
+static int
+guestfs_lua_get_identifier (lua_State *L)
+{
+  const char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_identifier");
+
+
+  r = guestfs_get_identifier (g);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
   return 1;
 }
 
@@ -12449,6 +12469,27 @@ guestfs_lua_set_hv (lua_State *L)
 }
 
 static int
+guestfs_lua_set_identifier (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *identifier;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "set_identifier");
+
+  identifier = luaL_checkstring (L, 2);
+
+  r = guestfs_set_identifier (g, identifier);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_set_label (lua_State *L)
 {
   int r;
@@ -13508,6 +13549,18 @@ guestfs_lua_tar_in (lua_State *L)
       optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
       optargs_s.compress = luaL_checkstring (L, -1);
     );
+    OPTARG_IF_SET (4, "xattrs",
+      optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK;
+      optargs_s.xattrs = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (4, "selinux",
+      optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK;
+      optargs_s.selinux = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (4, "acls",
+      optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_ACLS_BITMASK;
+      optargs_s.acls = lua_toboolean (L, -1);
+    );
   }
 
   r = guestfs_tar_in_opts_argv (g, tarfile, directory, optargs);
@@ -13548,6 +13601,18 @@ guestfs_lua_tar_out (lua_State *L)
     OPTARG_IF_SET (4, "excludes",
       optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
       optargs_s.excludes = get_string_list (L, -1);
+    );
+    OPTARG_IF_SET (4, "xattrs",
+      optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK;
+      optargs_s.xattrs = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (4, "selinux",
+      optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_SELINUX_BITMASK;
+      optargs_s.selinux = lua_toboolean (L, -1);
+    );
+    OPTARG_IF_SET (4, "acls",
+      optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_ACLS_BITMASK;
+      optargs_s.acls = lua_toboolean (L, -1);
     );
   }
 
@@ -14069,6 +14134,28 @@ guestfs_lua_vfs_label (lua_State *L)
 
   lua_pushstring (L, r);
   free (r);
+  return 1;
+}
+
+static int
+guestfs_lua_vfs_minimum_size (lua_State *L)
+{
+  int64_t r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *mountable;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "vfs_minimum_size");
+
+  mountable = luaL_checkstring (L, 2);
+
+  r = guestfs_vfs_minimum_size (g, mountable);
+  if (r == -1)
+    return last_error (L, g);
+
+  push_int64 (L, r);
   return 1;
 }
 
@@ -16458,6 +16545,7 @@ static luaL_Reg methods[] = {
   { "get_e2label", guestfs_lua_get_e2label },
   { "get_e2uuid", guestfs_lua_get_e2uuid },
   { "get_hv", guestfs_lua_get_hv },
+  { "get_identifier", guestfs_lua_get_identifier },
   { "get_libvirt_requested_credential_challenge", guestfs_lua_get_libvirt_requested_credential_challenge },
   { "get_libvirt_requested_credential_defresult", guestfs_lua_get_libvirt_requested_credential_defresult },
   { "get_libvirt_requested_credential_prompt", guestfs_lua_get_libvirt_requested_credential_prompt },
@@ -16769,6 +16857,7 @@ static luaL_Reg methods[] = {
   { "set_e2label", guestfs_lua_set_e2label },
   { "set_e2uuid", guestfs_lua_set_e2uuid },
   { "set_hv", guestfs_lua_set_hv },
+  { "set_identifier", guestfs_lua_set_identifier },
   { "set_label", guestfs_lua_set_label },
   { "set_libvirt_requested_credential", guestfs_lua_set_libvirt_requested_credential },
   { "set_libvirt_supported_credentials", guestfs_lua_set_libvirt_supported_credentials },
@@ -16837,6 +16926,7 @@ static luaL_Reg methods[] = {
   { "utsname", guestfs_lua_utsname },
   { "version", guestfs_lua_version },
   { "vfs_label", guestfs_lua_vfs_label },
+  { "vfs_minimum_size", guestfs_lua_vfs_minimum_size },
   { "vfs_type", guestfs_lua_vfs_type },
   { "vfs_uuid", guestfs_lua_vfs_uuid },
   { "vg_activate", guestfs_lua_vg_activate },
@@ -16939,7 +17029,7 @@ luaopen_guestfs (lua_State *L)
 
   /* Add _COPYRIGHT, etc. fields to the module namespace. */
   lua_pushliteral (L, "_COPYRIGHT");
-  lua_pushliteral (L, "Copyright (C) 2009-2015 Red Hat Inc.");
+  lua_pushliteral (L, "Copyright (C) 2009-2016 Red Hat Inc.");
   lua_settable (L, -3);
 
   lua_pushliteral (L, "_DESCRIPTION");

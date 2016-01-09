@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,14 +117,14 @@ do_mkfs (const char *fstype, const char *device, int blocksize,
        * have to determine the block device sector size in order to do
        * this.
        */
-      int sectorsize = do_blockdev_getss (device);
-      if (sectorsize == -1)
+      int ss = do_blockdev_getss (device);
+      if (ss == -1)
         return -1;
 
-      int sectors_per_cluster = blocksize / sectorsize;
+      int sectors_per_cluster = blocksize / ss;
       if (sectors_per_cluster < 1 || sectors_per_cluster > 128) {
         reply_with_error ("unsupported cluster size for %s filesystem (requested cluster size = %d, sector size = %d, trying sectors per cluster = %d)",
-                          fstype, blocksize, sectorsize, sectors_per_cluster);
+                          fstype, blocksize, ss, sectors_per_cluster);
         return -1;
       }
 
@@ -197,7 +197,7 @@ do_mkfs (const char *fstype, const char *device, int blocksize,
   if (optargs_bitmask & GUESTFS_MKFS_LABEL_BITMASK) {
     if (extfs) {
       if (strlen (label) > EXT2_LABEL_MAX) {
-        reply_with_error ("%s: ext2 labels are limited to %d bytes",
+        reply_with_error ("%s: ext2/3/4 labels are limited to %d bytes",
                           label, EXT2_LABEL_MAX);
         return -1;
       }

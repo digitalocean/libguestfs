@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -581,6 +581,17 @@ guestfs_lxattrlist (guestfs_h *g,
     return NULL;
   }
 
+  {
+    size_t i;
+    for (i = 0; names[i] != NULL; ++i) {
+      if (strchr (names[i], '/') != NULL) {
+        error (g, "%s: %s: '%s' is not a file name",
+               "lxattrlist", "names", names[i]);
+        return NULL;
+      }
+    }
+  }
+
   if (trace_flag) {
     size_t i;
 
@@ -1066,6 +1077,56 @@ guestfs_copy_out (guestfs_h *g,
     if (trace_flag)
       guestfs_int_trace (g, "%s = %s (error)",
                          "copy_out", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_available (guestfs_h *g,
+                   char *const *groups)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                      "available", 9);
+  if (groups == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "available", "groups");
+    return -1;
+  }
+
+  if (trace_flag) {
+    size_t i;
+
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "available");
+    fputc (' ', trace_buffer.fp);
+    fputc ('"', trace_buffer.fp);
+    for (i = 0; groups[i]; ++i) {
+      if (i > 0) fputc (' ', trace_buffer.fp);
+      fputs (groups[i], trace_buffer.fp);
+    }
+    fputc ('"', trace_buffer.fp);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs_impl_available (g, groups);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs_int_trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "available");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs_int_trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "available", "-1");
   }
 
   return r;
@@ -2932,7 +2993,7 @@ guestfs_tar_in_opts_argv (guestfs_h *g,
     return -1;
   }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffff0)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "tar_in_opts", "tar_in_opts");
     return -1;
@@ -2945,6 +3006,15 @@ guestfs_tar_in_opts_argv (guestfs_h *g,
     fprintf (trace_buffer.fp, " \"%s\"", directory);
     if (optargs->bitmask & GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%s\"", "compress", optargs->compress);
+    }
+    if (optargs->bitmask & GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "xattrs", optargs->xattrs ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "selinux", optargs->selinux ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_TAR_IN_OPTS_ACLS_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "acls", optargs->acls ? "true" : "false");
     }
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
@@ -2965,6 +3035,21 @@ guestfs_tar_in_opts_argv (guestfs_h *g,
     args.compress = (char *) optargs->compress;
   } else {
     args.compress = (char *) "";
+  }
+  if (optargs->bitmask & GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK) {
+    args.xattrs = optargs->xattrs;
+  } else {
+    args.xattrs = 0;
+  }
+  if (optargs->bitmask & GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK) {
+    args.selinux = optargs->selinux;
+  } else {
+    args.selinux = 0;
+  }
+  if (optargs->bitmask & GUESTFS_TAR_IN_OPTS_ACLS_BITMASK) {
+    args.acls = optargs->acls;
+  } else {
+    args.acls = 0;
   }
   serial = guestfs_int_send (g, GUESTFS_PROC_TAR_IN,
                              progress_hint, optargs->bitmask,
@@ -5529,110 +5614,6 @@ guestfs_mkdir_mode (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "mkdir_mode");
-    fprintf (trace_buffer.fp, "%d", ret_v);
-    guestfs_int_trace_send_line (g, &trace_buffer);
-  }
-
-  return ret_v;
-}
-
-GUESTFS_DLL_PUBLIC int
-guestfs_available (guestfs_h *g,
-                   char *const *groups)
-{
-  struct guestfs_available_args args;
-  guestfs_message_header hdr;
-  guestfs_message_error err;
-  int serial;
-  int r;
-  int trace_flag = g->trace;
-  struct trace_buffer trace_buffer;
-  int ret_v;
-  const uint64_t progress_hint = 0;
-
-  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-                                      "available", 9);
-  if (groups == NULL) {
-    error (g, "%s: %s: parameter cannot be NULL",
-           "available", "groups");
-    return -1;
-  }
-
-  if (trace_flag) {
-    size_t i;
-
-    guestfs_int_trace_open (&trace_buffer);
-    fprintf (trace_buffer.fp, "%s", "available");
-    fputc (' ', trace_buffer.fp);
-    fputc ('"', trace_buffer.fp);
-    for (i = 0; groups[i]; ++i) {
-      if (i > 0) fputc (' ', trace_buffer.fp);
-      fputs (groups[i], trace_buffer.fp);
-    }
-    fputc ('"', trace_buffer.fp);
-    guestfs_int_trace_send_line (g, &trace_buffer);
-  }
-
-  if (guestfs_int_check_appliance_up (g, "available") == -1) {
-    if (trace_flag)
-      guestfs_int_trace (g, "%s = %s (error)",
-                         "available", "-1");
-    return -1;
-  }
-
-  args.groups.groups_val = (char **) groups;
-  for (args.groups.groups_len = 0; groups[args.groups.groups_len]; args.groups.groups_len++) ;
-  serial = guestfs_int_send (g, GUESTFS_PROC_AVAILABLE,
-                             progress_hint, 0,
-                             (xdrproc_t) xdr_guestfs_available_args, (char *) &args);
-  if (serial == -1) {
-    if (trace_flag)
-      guestfs_int_trace (g, "%s = %s (error)",
-                         "available", "-1");
-    return -1;
-  }
-
-  memset (&hdr, 0, sizeof hdr);
-  memset (&err, 0, sizeof err);
-
-  r = guestfs_int_recv (g, "available", &hdr, &err,
-        NULL, NULL);
-  if (r == -1) {
-    if (trace_flag)
-      guestfs_int_trace (g, "%s = %s (error)",
-                         "available", "-1");
-    return -1;
-  }
-
-  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_AVAILABLE, serial) == -1) {
-    if (trace_flag)
-      guestfs_int_trace (g, "%s = %s (error)",
-                         "available", "-1");
-    return -1;
-  }
-
-  if (hdr.status == GUESTFS_STATUS_ERROR) {
-    int errnum = 0;
-
-    if (trace_flag)
-      guestfs_int_trace (g, "%s = %s (error)",
-                         "available", "-1");
-    if (err.errno_string[0] != '\0')
-      errnum = guestfs_int_string_to_errno (err.errno_string);
-    if (errnum <= 0)
-      error (g, "%s: %s", "available", err.error_message);
-    else
-      guestfs_int_error_errno (g, errnum, "%s: %s", "available",
-                               err.error_message);
-    free (err.error_message);
-    free (err.errno_string);
-    return -1;
-  }
-
-  ret_v = 0;
-  if (trace_flag) {
-    guestfs_int_trace_open (&trace_buffer);
-    fprintf (trace_buffer.fp, "%s = ", "available");
     fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
@@ -9688,6 +9669,103 @@ guestfs_btrfs_image_argv (guestfs_h *g,
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "btrfs_image");
     fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int64_t
+guestfs_vfs_minimum_size (guestfs_h *g,
+                          const char *mountable)
+{
+  struct guestfs_vfs_minimum_size_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_vfs_minimum_size_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int64_t ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                      "vfs_minimum_size", 16);
+  if (mountable == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "vfs_minimum_size", "mountable");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "vfs_minimum_size");
+    fprintf (trace_buffer.fp, " \"%s\"", mountable);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs_int_check_appliance_up (g, "vfs_minimum_size") == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "vfs_minimum_size", "-1");
+    return -1;
+  }
+
+  args.mountable = (char *) mountable;
+  serial = guestfs_int_send (g, GUESTFS_PROC_VFS_MINIMUM_SIZE,
+                             progress_hint, 0,
+                             (xdrproc_t) xdr_guestfs_vfs_minimum_size_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "vfs_minimum_size", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs_int_recv (g, "vfs_minimum_size", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_vfs_minimum_size_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "vfs_minimum_size", "-1");
+    return -1;
+  }
+
+  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_VFS_MINIMUM_SIZE, serial) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "vfs_minimum_size", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "vfs_minimum_size", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs_int_string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "vfs_minimum_size", err.error_message);
+    else
+      guestfs_int_error_errno (g, errnum, "%s: %s", "vfs_minimum_size",
+                               err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = ret.sizeinbytes;
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "vfs_minimum_size");
+    fprintf (trace_buffer.fp, "%" PRIi64, ret_v);
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 

@@ -105,12 +105,13 @@ operation, but throws away any changes to the disk at the end.
 
  virt-customize --format raw -a disk.img
 
-forces raw format (no auto-detection) for F<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<disk.img>.
 
  virt-customize --format raw -a disk.img --format auto -a another.img
 
-forces raw format (no auto-detection) for F<disk.img> and reverts to
-auto-detection for F<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для F<diskimg> і повернення до автоматичного визначення для F<another.img>.
 
 Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
 форматі, вам слід скористатися цим параметром для визначення формату
@@ -263,5 +264,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2011–2015
+Copyright (C) 2011-2016 Red Hat Inc.
 

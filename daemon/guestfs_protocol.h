@@ -929,6 +929,9 @@ typedef struct guestfs_checksum_ret guestfs_checksum_ret;
 struct guestfs_tar_in_args {
 	char *directory;
 	char *compress;
+	bool_t xattrs;
+	bool_t selinux;
+	bool_t acls;
 };
 typedef struct guestfs_tar_in_args guestfs_tar_in_args;
 
@@ -940,6 +943,9 @@ struct guestfs_tar_out_args {
 		u_int excludes_len;
 		guestfs_str *excludes_val;
 	} excludes;
+	bool_t xattrs;
+	bool_t selinux;
+	bool_t acls;
 };
 typedef struct guestfs_tar_out_args guestfs_tar_out_args;
 
@@ -2112,14 +2118,6 @@ struct guestfs_fill_args {
 	char *path;
 };
 typedef struct guestfs_fill_args guestfs_fill_args;
-
-struct guestfs_available_args {
-	struct {
-		u_int groups_len;
-		guestfs_str *groups_val;
-	} groups;
-};
-typedef struct guestfs_available_args guestfs_available_args;
 
 struct guestfs_dd_args {
 	char *src;
@@ -3651,19 +3649,6 @@ struct guestfs_internal_rhbz914931_args {
 };
 typedef struct guestfs_internal_rhbz914931_args guestfs_internal_rhbz914931_args;
 
-struct guestfs_feature_available_args {
-	struct {
-		u_int groups_len;
-		guestfs_str *groups_val;
-	} groups;
-};
-typedef struct guestfs_feature_available_args guestfs_feature_available_args;
-
-struct guestfs_feature_available_ret {
-	bool_t isavailable;
-};
-typedef struct guestfs_feature_available_ret guestfs_feature_available_ret;
-
 struct guestfs_syslinux_args {
 	char *device;
 	char *directory;
@@ -4048,6 +4033,26 @@ struct guestfs_set_uuid_random_args {
 };
 typedef struct guestfs_set_uuid_random_args guestfs_set_uuid_random_args;
 
+struct guestfs_vfs_minimum_size_args {
+	char *mountable;
+};
+typedef struct guestfs_vfs_minimum_size_args guestfs_vfs_minimum_size_args;
+
+struct guestfs_vfs_minimum_size_ret {
+	int64_t sizeinbytes;
+};
+typedef struct guestfs_vfs_minimum_size_ret guestfs_vfs_minimum_size_ret;
+
+struct guestfs_internal_feature_available_args {
+	char *group;
+};
+typedef struct guestfs_internal_feature_available_args guestfs_internal_feature_available_args;
+
+struct guestfs_internal_feature_available_ret {
+	int result;
+};
+typedef struct guestfs_internal_feature_available_ret guestfs_internal_feature_available_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4255,7 +4260,6 @@ enum guestfs_procedure {
 	GUESTFS_PROC_PART_LIST = 213,
 	GUESTFS_PROC_PART_GET_PARTTYPE = 214,
 	GUESTFS_PROC_FILL = 215,
-	GUESTFS_PROC_AVAILABLE = 216,
 	GUESTFS_PROC_DD = 217,
 	GUESTFS_PROC_FILESIZE = 218,
 	GUESTFS_PROC_LVRENAME = 219,
@@ -4436,7 +4440,6 @@ enum guestfs_procedure {
 	GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
 	GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396,
 	GUESTFS_PROC_INTERNAL_RHBZ914931 = 397,
-	GUESTFS_PROC_FEATURE_AVAILABLE = 398,
 	GUESTFS_PROC_SYSLINUX = 399,
 	GUESTFS_PROC_EXTLINUX = 400,
 	GUESTFS_PROC_CP_R = 401,
@@ -4493,9 +4496,11 @@ enum guestfs_procedure {
 	GUESTFS_PROC_PART_GET_MBR_PART_TYPE = 454,
 	GUESTFS_PROC_BTRFS_REPLACE = 455,
 	GUESTFS_PROC_SET_UUID_RANDOM = 456,
+	GUESTFS_PROC_VFS_MINIMUM_SIZE = 457,
+	GUESTFS_PROC_INTERNAL_FEATURE_AVAILABLE = 458,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 456
+#define GUESTFS_MAX_PROC_NR 458
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4878,7 +4883,6 @@ extern  bool_t xdr_guestfs_part_list_ret (XDR *, guestfs_part_list_ret*);
 extern  bool_t xdr_guestfs_part_get_parttype_args (XDR *, guestfs_part_get_parttype_args*);
 extern  bool_t xdr_guestfs_part_get_parttype_ret (XDR *, guestfs_part_get_parttype_ret*);
 extern  bool_t xdr_guestfs_fill_args (XDR *, guestfs_fill_args*);
-extern  bool_t xdr_guestfs_available_args (XDR *, guestfs_available_args*);
 extern  bool_t xdr_guestfs_dd_args (XDR *, guestfs_dd_args*);
 extern  bool_t xdr_guestfs_filesize_args (XDR *, guestfs_filesize_args*);
 extern  bool_t xdr_guestfs_filesize_ret (XDR *, guestfs_filesize_ret*);
@@ -5118,8 +5122,6 @@ extern  bool_t xdr_guestfs_is_whole_device_ret (XDR *, guestfs_is_whole_device_r
 extern  bool_t xdr_guestfs_internal_parse_mountable_args (XDR *, guestfs_internal_parse_mountable_args*);
 extern  bool_t xdr_guestfs_internal_parse_mountable_ret (XDR *, guestfs_internal_parse_mountable_ret*);
 extern  bool_t xdr_guestfs_internal_rhbz914931_args (XDR *, guestfs_internal_rhbz914931_args*);
-extern  bool_t xdr_guestfs_feature_available_args (XDR *, guestfs_feature_available_args*);
-extern  bool_t xdr_guestfs_feature_available_ret (XDR *, guestfs_feature_available_ret*);
 extern  bool_t xdr_guestfs_syslinux_args (XDR *, guestfs_syslinux_args*);
 extern  bool_t xdr_guestfs_extlinux_args (XDR *, guestfs_extlinux_args*);
 extern  bool_t xdr_guestfs_cp_r_args (XDR *, guestfs_cp_r_args*);
@@ -5188,6 +5190,10 @@ extern  bool_t xdr_guestfs_part_get_mbr_part_type_args (XDR *, guestfs_part_get_
 extern  bool_t xdr_guestfs_part_get_mbr_part_type_ret (XDR *, guestfs_part_get_mbr_part_type_ret*);
 extern  bool_t xdr_guestfs_btrfs_replace_args (XDR *, guestfs_btrfs_replace_args*);
 extern  bool_t xdr_guestfs_set_uuid_random_args (XDR *, guestfs_set_uuid_random_args*);
+extern  bool_t xdr_guestfs_vfs_minimum_size_args (XDR *, guestfs_vfs_minimum_size_args*);
+extern  bool_t xdr_guestfs_vfs_minimum_size_ret (XDR *, guestfs_vfs_minimum_size_ret*);
+extern  bool_t xdr_guestfs_internal_feature_available_args (XDR *, guestfs_internal_feature_available_args*);
+extern  bool_t xdr_guestfs_internal_feature_available_ret (XDR *, guestfs_internal_feature_available_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5520,7 +5526,6 @@ extern bool_t xdr_guestfs_part_list_ret ();
 extern bool_t xdr_guestfs_part_get_parttype_args ();
 extern bool_t xdr_guestfs_part_get_parttype_ret ();
 extern bool_t xdr_guestfs_fill_args ();
-extern bool_t xdr_guestfs_available_args ();
 extern bool_t xdr_guestfs_dd_args ();
 extern bool_t xdr_guestfs_filesize_args ();
 extern bool_t xdr_guestfs_filesize_ret ();
@@ -5760,8 +5765,6 @@ extern bool_t xdr_guestfs_is_whole_device_ret ();
 extern bool_t xdr_guestfs_internal_parse_mountable_args ();
 extern bool_t xdr_guestfs_internal_parse_mountable_ret ();
 extern bool_t xdr_guestfs_internal_rhbz914931_args ();
-extern bool_t xdr_guestfs_feature_available_args ();
-extern bool_t xdr_guestfs_feature_available_ret ();
 extern bool_t xdr_guestfs_syslinux_args ();
 extern bool_t xdr_guestfs_extlinux_args ();
 extern bool_t xdr_guestfs_cp_r_args ();
@@ -5830,6 +5833,10 @@ extern bool_t xdr_guestfs_part_get_mbr_part_type_args ();
 extern bool_t xdr_guestfs_part_get_mbr_part_type_ret ();
 extern bool_t xdr_guestfs_btrfs_replace_args ();
 extern bool_t xdr_guestfs_set_uuid_random_args ();
+extern bool_t xdr_guestfs_vfs_minimum_size_args ();
+extern bool_t xdr_guestfs_vfs_minimum_size_ret ();
+extern bool_t xdr_guestfs_internal_feature_available_args ();
+extern bool_t xdr_guestfs_internal_feature_available_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

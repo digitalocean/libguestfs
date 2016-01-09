@@ -23,6 +23,8 @@
 #include <stdbool.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
 
 #include "guestfs_protocol.h"
 #include "daemon.h"
@@ -242,7 +244,7 @@ do_command (char *const *argv)
 {
   char *out;
   CLEANUP_FREE char *err = NULL;
-  int r;
+  int r, flags;
   CLEANUP_BIND_STATE struct bind_state bind_state = { .mounted = false };
   CLEANUP_RESOLVER_STATE struct resolver_state resolver_state =
     { .mounted = false };
@@ -266,9 +268,9 @@ do_command (char *const *argv)
       return NULL;
   }
 
-  CHROOT_IN;
-  r = commandv (&out, &err, (const char * const *) argv);
-  CHROOT_OUT;
+  flags = COMMAND_FLAG_DO_CHROOT;
+
+  r = commandvf (&out, &err, flags, (const char * const *) argv);
 
   free_bind_state (&bind_state);
   free_resolver_state (&resolver_state);

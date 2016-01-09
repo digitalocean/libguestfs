@@ -262,6 +262,7 @@
     <keyword type="function" name="guestfs_session_get_e2label ()" link="GuestfsSession.html#guestfs-session-get-e2label" deprecated="In new code, use guestfs_session_vfs_label() instead" since="1.0.15"/>
     <keyword type="function" name="guestfs_session_get_e2uuid ()" link="GuestfsSession.html#guestfs-session-get-e2uuid" deprecated="In new code, use guestfs_session_vfs_uuid() instead" since="1.0.15"/>
     <keyword type="function" name="guestfs_session_get_hv ()" link="GuestfsSession.html#guestfs-session-get-hv" since="1.23.17"/>
+    <keyword type="function" name="guestfs_session_get_identifier ()" link="GuestfsSession.html#guestfs-session-get-identifier" since="1.31.14"/>
     <keyword type="function" name="guestfs_session_get_libvirt_requested_credential_challenge ()" link="GuestfsSession.html#guestfs-session-get-libvirt-requested-credential-challenge" since="1.19.52"/>
     <keyword type="function" name="guestfs_session_get_libvirt_requested_credential_defresult ()" link="GuestfsSession.html#guestfs-session-get-libvirt-requested-credential-defresult" since="1.19.52"/>
     <keyword type="function" name="guestfs_session_get_libvirt_requested_credential_prompt ()" link="GuestfsSession.html#guestfs-session-get-libvirt-requested-credential-prompt" since="1.19.52"/>
@@ -572,6 +573,7 @@
     <keyword type="function" name="guestfs_session_set_e2label ()" link="GuestfsSession.html#guestfs-session-set-e2label" deprecated="In new code, use guestfs_session_set_label() instead" since="1.0.15"/>
     <keyword type="function" name="guestfs_session_set_e2uuid ()" link="GuestfsSession.html#guestfs-session-set-e2uuid" deprecated="In new code, use guestfs_session_set_uuid() instead" since="1.0.15"/>
     <keyword type="function" name="guestfs_session_set_hv ()" link="GuestfsSession.html#guestfs-session-set-hv" since="1.23.17"/>
+    <keyword type="function" name="guestfs_session_set_identifier ()" link="GuestfsSession.html#guestfs-session-set-identifier" since="1.31.14"/>
     <keyword type="function" name="guestfs_session_set_label ()" link="GuestfsSession.html#guestfs-session-set-label" since="1.17.9"/>
     <keyword type="function" name="guestfs_session_set_libvirt_requested_credential ()" link="GuestfsSession.html#guestfs-session-set-libvirt-requested-credential" since="1.19.52"/>
     <keyword type="function" name="guestfs_session_set_libvirt_supported_credentials ()" link="GuestfsSession.html#guestfs-session-set-libvirt-supported-credentials" since="1.19.52"/>
@@ -640,6 +642,7 @@
     <keyword type="function" name="guestfs_session_utsname ()" link="GuestfsSession.html#guestfs-session-utsname" since="1.19.27"/>
     <keyword type="function" name="guestfs_session_version ()" link="GuestfsSession.html#guestfs-session-version" since="1.0.58"/>
     <keyword type="function" name="guestfs_session_vfs_label ()" link="GuestfsSession.html#guestfs-session-vfs-label" since="1.3.18"/>
+    <keyword type="function" name="guestfs_session_vfs_minimum_size ()" link="GuestfsSession.html#guestfs-session-vfs-minimum-size" since="1.31.18"/>
     <keyword type="function" name="guestfs_session_vfs_type ()" link="GuestfsSession.html#guestfs-session-vfs-type" since="1.0.75"/>
     <keyword type="function" name="guestfs_session_vfs_uuid ()" link="GuestfsSession.html#guestfs-session-vfs-uuid" since="1.3.18"/>
     <keyword type="function" name="guestfs_session_vg_activate ()" link="GuestfsSession.html#guestfs-session-vg-activate" since="1.0.26"/>
@@ -1117,12 +1120,18 @@
     <keyword type="function" name="guestfs_tar_in_new ()" link="GuestfsTarIn.html#guestfs-tar-in-new"/>
     <keyword type="struct" name="struct GuestfsTarIn" link="GuestfsTarIn.html#GuestfsTarIn-struct"/>
     <keyword type="struct" name="struct GuestfsTarInClass" link="GuestfsTarIn.html#GuestfsTarInClass"/>
+    <keyword type="property" name="The “acls” property" link="GuestfsTarIn.html#GuestfsTarIn--acls"/>
     <keyword type="property" name="The “compress” property" link="GuestfsTarIn.html#GuestfsTarIn--compress"/>
+    <keyword type="property" name="The “selinux” property" link="GuestfsTarIn.html#GuestfsTarIn--selinux"/>
+    <keyword type="property" name="The “xattrs” property" link="GuestfsTarIn.html#GuestfsTarIn--xattrs"/>
     <keyword type="function" name="guestfs_tar_out_new ()" link="GuestfsTarOut.html#guestfs-tar-out-new"/>
     <keyword type="struct" name="struct GuestfsTarOut" link="GuestfsTarOut.html#GuestfsTarOut-struct"/>
     <keyword type="struct" name="struct GuestfsTarOutClass" link="GuestfsTarOut.html#GuestfsTarOutClass"/>
+    <keyword type="property" name="The “acls” property" link="GuestfsTarOut.html#GuestfsTarOut--acls"/>
     <keyword type="property" name="The “compress” property" link="GuestfsTarOut.html#GuestfsTarOut--compress"/>
     <keyword type="property" name="The “numericowner” property" link="GuestfsTarOut.html#GuestfsTarOut--numericowner"/>
+    <keyword type="property" name="The “selinux” property" link="GuestfsTarOut.html#GuestfsTarOut--selinux"/>
+    <keyword type="property" name="The “xattrs” property" link="GuestfsTarOut.html#GuestfsTarOut--xattrs"/>
     <keyword type="function" name="guestfs_tune2fs_new ()" link="GuestfsTune2FS.html#guestfs-tune2fs-new"/>
     <keyword type="struct" name="struct GuestfsTune2FS" link="GuestfsTune2FS.html#GuestfsTune2FS-struct"/>
     <keyword type="struct" name="struct GuestfsTune2FSClass" link="GuestfsTune2FS.html#GuestfsTune2FSClass"/>

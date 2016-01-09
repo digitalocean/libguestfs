@@ -27,6 +27,7 @@ open Unix
 type t = {
   gpg : string;
   fingerprint : string;
+  subkeys_fingerprints : string list;
   check_signature : bool;
   gpghome : string;
 }
@@ -43,12 +44,12 @@ let import_keyfile ~gpg ~gpghome ?(trust = true) keyfile =
   if r <> 0 then
     error (f_"could not import public key\nUse the '-v' option and look for earlier error messages.");
   let status = read_whole_file status_file in
-  let status = string_nsplit "\n" status in
+  let status = String.nsplit "\n" status in
   let key_id = ref "" in
   let fingerprint = ref "" in
   List.iter (
     fun line ->
-      let line = string_nsplit " " line in
+      let line = String.nsplit " " line in
       match line with
       | "[GNUPG:]" :: "IMPORT_OK" :: _ :: fp :: _ -> fingerprint := fp
       | "[GNUPG:]" :: "IMPORTED" :: key :: _ -> key_id := key
@@ -63,7 +64,34 @@ let import_keyfile ~gpg ~gpghome ?(trust = true) keyfile =
     if r <> 0 then
       error (f_"GPG failure: could not trust the imported key\nUse the '-v' option and look for earlier error messages.");
   );
-  !fingerprint
+  let subkeys =
+    (* --with-fingerprint is specified twice so gpg outputs the full
+     * fingerprint of the subkeys. *)
+    let cmd = sprintf "%s --homedir %s --with-colons --with-fingerprint --with-fingerprint --list-keys %s"
+      gpg gpghome !fingerprint in
+    if verbose () then printf "%s\n%!" cmd;
+    let lines = external_command cmd in
+    let current = ref None in
+    let subkeys = ref [] in
+    List.iter (
+      fun line ->
+        let line = String.nsplit ":" line in
+        match line with
+        | "sub" :: ("u"|"-") :: _ :: _ :: id :: _ ->
+          current := Some id
+        | "fpr" :: _ :: _ :: _ :: _ :: _ :: _ :: _ :: _ :: id :: _ ->
+          (match !current with
+          | None -> ()
+          | Some k ->
+            if String.is_suffix id k then (
+              subkeys := id :: !subkeys;
+            );
+            current := None
+          )
+        | _ -> ()
+    ) lines;
+    !subkeys in
+  !fingerprint, subkeys
 
 let rec create ~gpg ~gpgkey ~check_signature =
   (* Create a temporary directory for gnupg. *)
@@ -74,7 +102,7 @@ let rec create ~gpg ~gpgkey ~check_signature =
     match check_signature, gpgkey with
     | true, No_Key -> false, No_Key
     | x, y -> x, y in
-  let fingerprint =
+  let fingerprint, subkeys =
     if check_signature then (
       (* Run gpg so it can setup its own home directory, failing if it
        * cannot.
@@ -100,13 +128,13 @@ let rec create ~gpg ~gpgkey ~check_signature =
         let r = Sys.command cmd in
         if r <> 0 then
           error (f_"could not export public key\nUse the '-v' option and look for earlier error messages.");
-        ignore (import_keyfile gpg tmpdir filename);
-        fp
+        import_keyfile gpg tmpdir filename
     ) else
-      "" in
+      "", [] in
   {
     gpg = gpg;
     fingerprint = fingerprint;
+    subkeys_fingerprints = subkeys;
     check_signature = check_signature;
     gpghome = tmpdir;
   }
@@ -135,6 +163,9 @@ and getxdigit = function
   | 'A'..'F' as c -> Some (Char.code c - Char.code 'A')
   | _ -> None
 
+let verifying_signatures t =
+  t.check_signature
+
 let rec verify t filename =
   if t.check_signature then (
     let args = quote filename in
@@ -151,12 +182,30 @@ and verify_detached t filename sigfile =
       do_verify t args
   )
 
-and do_verify t args =
+and verify_and_remove_signature t filename =
+  if t.check_signature then (
+    (* Copy the input file as temporary file with the .asc extension,
+     * so gpg recognises that format. *)
+    let asc_file = Filename.temp_file "vbfile" ".asc" in
+    unlink_on_exit asc_file;
+    let cmd = sprintf "cp %s %s" (quote filename) (quote asc_file) in
+    if verbose () then printf "%s\n%!" cmd;
+    if Sys.command cmd <> 0 then exit 1;
+    let out_file = Filename.temp_file "vbfile" "" in
+    unlink_on_exit out_file;
+    let args = sprintf "--yes --output %s %s" (quote out_file) (quote filename) in
+    do_verify ~verify_only:false t args;
+    Some out_file
+  ) else
+    None
+
+and do_verify ?(verify_only = true) t args =
   let status_file = Filename.temp_file "vbstat" ".txt" in
   unlink_on_exit status_file;
   let cmd =
-    sprintf "%s --homedir %s --verify%s --status-file %s %s"
+    sprintf "%s --homedir %s %s%s --status-file %s %s"
         t.gpg t.gpghome
+        (if verify_only then "--verify" else "")
         (if verbose () then "" else " --batch -q --logger-file /dev/null")
         (quote status_file) args in
   if verbose () then printf "%s\n%!" cmd;
@@ -167,41 +216,17 @@ and do_verify t args =
   (* Check the fingerprint is who it should be. *)
   let status = read_whole_file status_file in
 
-  let status = string_nsplit "\n" status in
+  let status = String.nsplit "\n" status in
   let fingerprint = ref "" in
   List.iter (
     fun line ->
-      let line = string_nsplit " " line in
+      let line = String.nsplit " " line in
       match line with
       | "[GNUPG:]" :: "VALIDSIG" :: fp :: _ -> fingerprint := fp
       | _ -> ()
   ) status;
 
-  if not (equal_fingerprints !fingerprint t.fingerprint) then
+  if not (equal_fingerprints !fingerprint t.fingerprint) &&
+    not (List.exists (equal_fingerprints !fingerprint) t.subkeys_fingerprints) then
     error (f_"fingerprint of signature does not match the expected fingerprint!\n  found fingerprint: %s\n  expected fingerprint: %s")
       !fingerprint t.fingerprint
-
-type csum_t = SHA512 of string
-
-let verify_checksum t (SHA512 csum) filename =
-  let csum_file = Filename.temp_file "vbcsum" ".txt" in
-  unlink_on_exit csum_file;
-  let cmd = sprintf "sha512sum %s | awk '{print $1}' > %s"
-    (quote filename) (quote csum_file) in
-  if verbose () then printf "%s\n%!" cmd;
-  let r = Sys.command cmd in
-  if r <> 0 then
-    error (f_"could not run sha512sum command to verify checksum");
-
-  let csum_actual = read_whole_file csum_file in
-
-  let csum_actual =
-    let len = String.length csum_actual in
-    if len > 0 && csum_actual.[len-1] = '\n' then
-      String.sub csum_actual 0 (len-1)
-    else
-      csum_actual in
-
-  if csum <> csum_actual then
-    error (f_"checksum of template did not match the expected checksum!\n  found checksum: %s\n  expected checksum: %s\nTry:\n - Use the '-v' option and look for earlier error messages.\n - Delete the cache: virt-builder --delete-cache\n - Check no one has tampered with the website or your network!")
-      csum_actual csum

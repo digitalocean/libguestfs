@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -4823,6 +4823,20 @@ func (g *Guestfs) Get_hv () (string, *GuestfsError) {
         return "", get_error_from_handle (g, "get_hv")
     }
     defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
+/* get_identifier : get the handle identifier */
+func (g *Guestfs) Get_identifier () (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("get_identifier")
+    }
+
+    r := C.guestfs_get_identifier (g.g)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "get_identifier")
+    }
     return C.GoString (r), nil
 }
 
@@ -11623,6 +11637,23 @@ func (g *Guestfs) Set_hv (hv string) *GuestfsError {
     return nil
 }
 
+/* set_identifier : set the handle identifier */
+func (g *Guestfs) Set_identifier (identifier string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("set_identifier")
+    }
+
+    c_identifier := C.CString (identifier)
+    defer C.free (unsafe.Pointer (c_identifier))
+
+    r := C.guestfs_set_identifier (g.g, c_identifier)
+
+    if r == -1 {
+        return get_error_from_handle (g, "set_identifier")
+    }
+    return nil
+}
+
 /* set_label : set filesystem label */
 func (g *Guestfs) Set_label (mountable string, label string) *GuestfsError {
     if g.g == nil {
@@ -12460,6 +12491,15 @@ type OptargsTar_in struct {
     /* Compress field is ignored unless Compress_is_set == true */
     Compress_is_set bool
     Compress string
+    /* Xattrs field is ignored unless Xattrs_is_set == true */
+    Xattrs_is_set bool
+    Xattrs bool
+    /* Selinux field is ignored unless Selinux_is_set == true */
+    Selinux_is_set bool
+    Selinux bool
+    /* Acls field is ignored unless Acls_is_set == true */
+    Acls_is_set bool
+    Acls bool
 }
 
 /* tar_in : unpack tarfile to directory */
@@ -12479,6 +12519,18 @@ func (g *Guestfs) Tar_in (tarfile string, directory string, optargs *OptargsTar_
             c_optargs.bitmask |= C.GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK
             c_optargs.compress = C.CString (optargs.Compress)
             defer C.free (unsafe.Pointer (c_optargs.compress))
+        }
+        if optargs.Xattrs_is_set {
+            c_optargs.bitmask |= C.GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK
+            if optargs.Xattrs { c_optargs.xattrs = 1 } else { c_optargs.xattrs = 0}
+        }
+        if optargs.Selinux_is_set {
+            c_optargs.bitmask |= C.GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK
+            if optargs.Selinux { c_optargs.selinux = 1 } else { c_optargs.selinux = 0}
+        }
+        if optargs.Acls_is_set {
+            c_optargs.bitmask |= C.GUESTFS_TAR_IN_OPTS_ACLS_BITMASK
+            if optargs.Acls { c_optargs.acls = 1 } else { c_optargs.acls = 0}
         }
     }
 
@@ -12501,6 +12553,15 @@ type OptargsTar_out struct {
     /* Excludes field is ignored unless Excludes_is_set == true */
     Excludes_is_set bool
     Excludes []string
+    /* Xattrs field is ignored unless Xattrs_is_set == true */
+    Xattrs_is_set bool
+    Xattrs bool
+    /* Selinux field is ignored unless Selinux_is_set == true */
+    Selinux_is_set bool
+    Selinux bool
+    /* Acls field is ignored unless Acls_is_set == true */
+    Acls_is_set bool
+    Acls bool
 }
 
 /* tar_out : pack directory into tarfile */
@@ -12529,6 +12590,18 @@ func (g *Guestfs) Tar_out (directory string, tarfile string, optargs *OptargsTar
             c_optargs.bitmask |= C.GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK
             c_optargs.excludes = arg_string_list (optargs.Excludes)
             defer free_string_list (c_optargs.excludes)
+        }
+        if optargs.Xattrs_is_set {
+            c_optargs.bitmask |= C.GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK
+            if optargs.Xattrs { c_optargs.xattrs = 1 } else { c_optargs.xattrs = 0}
+        }
+        if optargs.Selinux_is_set {
+            c_optargs.bitmask |= C.GUESTFS_TAR_OUT_OPTS_SELINUX_BITMASK
+            if optargs.Selinux { c_optargs.selinux = 1 } else { c_optargs.selinux = 0}
+        }
+        if optargs.Acls_is_set {
+            c_optargs.bitmask |= C.GUESTFS_TAR_OUT_OPTS_ACLS_BITMASK
+            if optargs.Acls { c_optargs.acls = 1 } else { c_optargs.acls = 0}
         }
     }
 
@@ -12996,6 +13069,23 @@ func (g *Guestfs) Vfs_label (mountable string) (string, *GuestfsError) {
     }
     defer C.free (unsafe.Pointer (r))
     return C.GoString (r), nil
+}
+
+/* vfs_minimum_size : get minimum filesystem size */
+func (g *Guestfs) Vfs_minimum_size (mountable string) (int64, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("vfs_minimum_size")
+    }
+
+    c_mountable := C.CString (mountable)
+    defer C.free (unsafe.Pointer (c_mountable))
+
+    r := C.guestfs_vfs_minimum_size (g.g, c_mountable)
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "vfs_minimum_size")
+    }
+    return int64 (r), nil
 }
 
 /* vfs_type : get the Linux VFS type corresponding to a mounted device */

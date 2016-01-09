@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,16 +39,6 @@ module G = Guestfs
  * time the Windows VM is booted on KVM.
  *)
 
-type ('a, 'b) maybe = Either of 'a | Or of 'b
-
-(* Antivirus regexps that match on inspect.i_apps.app2_name fields. *)
-let av_rex =
-  let alternatives = [
-    "virus"; (* generic *)
-    "Kaspersky"; "McAfee"; "Norton"; "Sophos";
-  ] in
-  Str.regexp_case_fold (String.concat "\\|" alternatives)
-
 let convert ~keep_serial_console (g : G.guestfs) inspect source =
   (* Get the data directory. *)
   let virt_tools_data_dir =
@@ -75,83 +65,60 @@ let convert ~keep_serial_console (g : G.guestfs) inspect source =
           rhev_apt_exe msg;
         None in
 
+  (* Get the Windows %systemroot%. *)
   let systemroot = g#inspect_get_windows_systemroot inspect.i_root in
 
-  (* This is a wrapper that handles opening and closing the hive
-   * properly around a function [f].  If [~write] is [true] then the
-   * hive is opened for writing and committed at the end if the
-   * function returned without error.
-   *)
-  let rec with_hive name ~write f =
-    let filename = sprintf "%s/system32/config/%s" systemroot name in
+  (* Get the software and system hive files. *)
+  let software_hive_filename =
+    let filename = sprintf "%s/system32/config/software" systemroot in
     let filename = g#case_sensitive_path filename in
-    let verbose = verbose () in
-    g#hivex_open ~write ~verbose (* ~debug:verbose *) filename;
-    let r =
-      try
-        let root = g#hivex_root () in
-        let ret = f root in
-        if write then g#hivex_commit None;
-        Either ret
-      with exn ->
-        Or exn in
-    g#hivex_close ();
-    match r with Either ret -> ret | Or exn -> raise exn
+    filename in
 
-  (* Find the given node in the current hive, relative to the starting
-   * point.  Raises [Not_found] if the node is not found.
-   *)
-  and get_node node = function
-    | [] -> node
-    | x :: xs ->
-      let node = g#hivex_node_get_child node x in
-      if node = 0L then raise Not_found;
-      get_node node xs
-  in
+  let system_hive_filename =
+    let filename = sprintf "%s/system32/config/system" systemroot in
+    let filename = g#case_sensitive_path filename in
+    filename in
 
   (*----------------------------------------------------------------------*)
   (* Inspect the Windows guest. *)
 
-  (* Warn if Windows guest appears to be using group policy. *)
+  (* If the Windows guest appears to be using group policy. *)
   let has_group_policy =
-    let check_group_policy root =
-      try
-        let node =
-          get_node root
-                   ["Microsoft"; "Windows"; "CurrentVersion"; "Group Policy";
-                    "History"] in
-        let children = g#hivex_node_children node in
-        let children = Array.to_list children in
-        let children =
-          List.map (fun { G.hivex_node_h = h } -> g#hivex_node_name h)
-                   children in
-        (* Just assume any children looking like "{<GUID>}" mean that
-         * some GPOs were installed.
-         *
-         * In future we might want to look for nodes which match:
-         * History\{<GUID>}\<N> where <N> is a small integer (the order
-         * in which policy objects were applied.
-         *
-         * For an example registry containing GPOs, see RHBZ#1219651.
-         * See also: https://support.microsoft.com/en-us/kb/201453
-         *)
-        let is_gpo_guid name =
-          let len = String.length name in
-          len > 3 && name.[0] = '{' && isxdigit name.[1] && name.[len-1] = '}'
-        in
-        List.exists is_gpo_guid children
-      with
-        Not_found -> false
-    in
-    with_hive "software" ~write:false check_group_policy in
+    Windows.with_hive g software_hive_filename ~write:false
+      (fun root ->
+       try
+         let path = ["Microsoft"; "Windows"; "CurrentVersion";
+                     "Group Policy"; "History"]  in
+         let node =
+           match Windows.get_node g root path with
+           | None -> raise Not_found
+           | Some node -> node in
+         let children = g#hivex_node_children node in
+         let children = Array.to_list children in
+         let children =
+           List.map (fun { G.hivex_node_h = h } -> g#hivex_node_name h)
+                    children in
+         (* Just assume any children looking like "{<GUID>}" mean that
+          * some GPOs were installed.
+          *
+          * In future we might want to look for nodes which match:
+          * History\{<GUID>}\<N> where <N> is a small integer (the order
+          * in which policy objects were applied.
+          *
+          * For an example registry containing GPOs, see RHBZ#1219651.
+          * See also: https://support.microsoft.com/en-us/kb/201453
+          *)
+         let is_gpo_guid name =
+           let len = String.length name in
+           len > 3 && name.[0] = '{' && isxdigit name.[1] && name.[len-1] = '}'
+         in
+         List.exists is_gpo_guid children
+       with
+         Not_found -> false
+      ) in
 
-  (* Warn if Windows guest has AV installed. *)
-  let has_antivirus =
-    let check_app { G.app2_name = name } =
-      try ignore (Str.search_forward av_rex name 0); true
-      with Not_found -> false
-    in
-    List.exists check_app inspect.i_apps in
+  (* If the Windows guest has AV installed. *)
+  let has_antivirus = Windows.detect_antivirus inspect in
 
   (* Open the software hive (readonly) and find the Xen PV uninstaller,
    * if it exists.
@@ -159,39 +126,42 @@ let convert ~keep_serial_console (g : G.guestfs) inspect source =
   let xenpv_uninst =
     let xenpvreg = "Red Hat Paravirtualized Xen Drivers for Windows(R)" in
 
-    let find_xenpv_uninst root =
-      try
-        let node =
-          get_node root
-                   ["Microsoft"; "Windows"; "CurrentVersion"; "Uninstall";
-                    xenpvreg] in
-        let uninstkey = "UninstallString" in
-        let valueh = g#hivex_node_get_value node uninstkey in
-        if valueh = 0L then (
-          warning (f_"cannot uninstall Xen PV drivers: registry key 'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s' does not contain an '%s' key")
-                  xenpvreg uninstkey;
-          raise Not_found
-        );
-        let data = g#hivex_value_value valueh in
-        let data = decode_utf16le data in
+    Windows.with_hive g software_hive_filename ~write:false
+      (fun root ->
+       try
+         let path = ["Microsoft"; "Windows"; "CurrentVersion"; "Uninstall";
+                     xenpvreg] in
+         let node =
+           match Windows.get_node g root path with
+           | None -> raise Not_found
+           | Some node -> node in
+         let uninstkey = "UninstallString" in
+         let valueh = g#hivex_node_get_value node uninstkey in
+         if valueh = 0L then (
+           warning (f_"cannot uninstall Xen PV drivers: registry key 'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s' does not contain an '%s' key")
+                   xenpvreg uninstkey;
+           raise Not_found
+         );
+         let data = g#hivex_value_value valueh in
+         let data = decode_utf16le data in
 
-        (* The uninstall program will be uninst.exe.  This is a wrapper
-         * around _uninst.exe which prompts the user.  As we don't want
-         * the user to be prompted, we run _uninst.exe explicitly.
-         *)
-        let len = String.length data in
-        let data =
-          if len >= 8 &&
-               String.lowercase (String.sub data (len-8) 8) = "uninst.exe" then
-            (String.sub data 0 (len-8)) ^ "_uninst.exe"
-          else
-            data in
+         (* The uninstall program will be uninst.exe.  This is a wrapper
+          * around _uninst.exe which prompts the user.  As we don't want
+          * the user to be prompted, we run _uninst.exe explicitly.
+          *)
+         let len = String.length data in
+         let data =
+           if len >= 8 &&
+              String.lowercase_ascii (String.sub data (len-8) 8) = "uninst.exe"
+           then
+             (String.sub data 0 (len-8)) ^ "_uninst.exe"
+           else
+             data in
 
-        Some data
-      with
-        Not_found -> None
-    in
-    with_hive "software" ~write:false find_xenpv_uninst in
+         Some data
+       with
+         Not_found -> None
+      ) in
 
   (*----------------------------------------------------------------------*)
   (* Perform the conversion of the Windows guest. *)
@@ -254,130 +224,91 @@ echo uninstalling Xen PV driver
 
   and disable_services root current_cs =
     (* Disable miscellaneous services. *)
-    let services = get_node root [current_cs; "Services"] in
+    let services = Windows.get_node g root [current_cs; "Services"] in
 
-    (* Disable the Processor and Intelppm services
-     * http://blogs.msdn.com/b/virtual_pc_guy/archive/2005/10/24/484461.aspx
-     *
-     * Disable the rhelscsi service (RHBZ#809273).
-     *)
-    let disable = [ "Processor"; "Intelppm"; "rhelscsi" ] in
-    List.iter (
-      fun name ->
-        let node = g#hivex_node_get_child services name in
-        if node <> 0L then (
-          (* Delete the node instead of trying to disable it.  RHBZ#737600. *)
-          g#hivex_node_delete_child node
-        )
-    ) disable
+    match services with
+    | None -> ()
+    | Some services ->
+       (* Disable the Processor and Intelppm services
+        * http://blogs.msdn.com/b/virtual_pc_guy/archive/2005/10/24/484461.aspx
+        *
+        * Disable the rhelscsi service (RHBZ#809273).
+        *)
+       let disable = [ "Processor"; "Intelppm"; "rhelscsi" ] in
+       List.iter (
+           fun name ->
+           let node = g#hivex_node_get_child services name in
+           if node <> 0L then (
+             (* Delete the node instead of trying to disable it (RHBZ#737600) *)
+             g#hivex_node_delete_child node
+           )
+         ) disable
 
   and disable_autoreboot root current_cs =
     (* If the guest reboots after a crash, it's hard to see the original
      * error (eg. the infamous 0x0000007B).  Turn off autoreboot.
      *)
-    try
-      let crash_control =
-        get_node root [current_cs; "Control"; "CrashControl"] in
-      g#hivex_node_set_value crash_control "AutoReboot" 4_L (le32_of_int 0_L)
-    with
-      Not_found -> ()
+    let crash_control =
+      Windows.get_node g root [current_cs; "Control"; "CrashControl"] in
+    match crash_control with
+    | None -> ()
+    | Some crash_control ->
+       g#hivex_node_set_value crash_control "AutoReboot" 4_L (le32_of_int 0_L)
 
   and install_virtio_drivers root current_cs =
     (* Copy the virtio drivers to the guest. *)
     let driverdir = sprintf "%s/Drivers/VirtIO" systemroot in
     g#mkdir_p driverdir;
 
-    (* Load the list of drivers available. *)
-    let drivers = find_virtio_win_drivers virtio_win in
+    if not (Windows.copy_virtio_drivers g inspect virtio_win driverdir) then (
+      warning (f_"there are no virtio drivers available for this version of Windows (%d.%d %s %s).  virt-v2v looks for drivers in %s\n\nThe guest will be configured to use slower emulated devices.")
+              inspect.i_major_version inspect.i_minor_version inspect.i_arch
+              inspect.i_product_variant virtio_win;
+      ( IDE, RTL8139, Cirrus )
+    )
+    else (
+      (* Can we install the block driver? *)
+      let block : guestcaps_block_type =
+        let source = driverdir // "viostor.sys" in
+        if g#exists source then (
+          let target = sprintf "%s/system32/drivers/viostor.sys" systemroot in
+          let target = g#case_sensitive_path target in
+          g#cp source target;
+          add_viostor_to_critical_device_database root current_cs;
+          Virtio_blk
+        ) else (
+          warning (f_"there is no viostor (virtio block device) driver for this version of Windows (%d.%d %s).  virt-v2v looks for this driver in %s\n\nThe guest will be configured to use a slower emulated device.")
+                  inspect.i_major_version inspect.i_minor_version
+                  inspect.i_arch virtio_win;
+          IDE
+        ) in
 
-    (* Filter out only drivers matching the current guest. *)
-    let drivers =
-      List.filter (
-        fun { vwd_os_arch = arch;
-              vwd_os_major = os_major; vwd_os_minor = os_minor;
-              vwd_os_variant = os_variant } ->
-        arch = inspect.i_arch &&
-        os_major = inspect.i_major_version &&
-        os_minor = inspect.i_minor_version &&
-        (match os_variant with
-         | Vwd_client -> inspect.i_product_variant = "Client"
-         | Vwd_not_client -> inspect.i_product_variant <> "Client"
-         | Vwd_any_variant -> true)
-      ) drivers in
+      (* Can we install the virtio-net driver? *)
+      let net : guestcaps_net_type =
+        if not (g#exists (driverdir // "netkvm.inf")) then (
+          warning (f_"there is no virtio network driver for this version of Windows (%d.%d %s).  virt-v2v looks for this driver in %s\n\nThe guest will be configured to use a slower emulated device.")
+                  inspect.i_major_version inspect.i_minor_version
+                  inspect.i_arch virtio_win;
+          RTL8139
+        )
+        else
+          (* It will be installed at firstboot. *)
+          Virtio_net in
 
-    if verbose () then (
-      printf "virtio-win driver files matching this guest:\n";
-      List.iter print_virtio_win_driver_file drivers;
-      flush stdout
-    );
+      (* Can we install the QXL driver? *)
+      let video : guestcaps_video_type =
+        if not (g#exists (driverdir // "qxl.inf")) then (
+          warning (f_"there is no QXL driver for this version of Windows (%d.%d %s).  virt-v2v looks for this driver in %s\n\nThe guest will be configured to use standard VGA.")
+                  inspect.i_major_version inspect.i_minor_version
+                  inspect.i_arch virtio_win;
+          Cirrus
+        )
+        else
+          (* It will be installed at firstboot. *)
+          QXL in
 
-    match drivers with
-    | [] ->
-       warning (f_"there are no virtio drivers available for this version of Windows (%d.%d %s %s).  virt-v2v looks for drivers in %s\n\nThe guest will be configured to use slower emulated devices.")
-               inspect.i_major_version inspect.i_minor_version
-               inspect.i_arch inspect.i_product_variant
-               virtio_win;
-       ( IDE, RTL8139, Cirrus )
-
-    | drivers ->
-       (* Can we install the block driver? *)
-       let block : guestcaps_block_type =
-         try
-           let viostor_sys_file =
-             List.find
-               (fun { vwd_filename = filename } -> filename = "viostor.sys")
-               drivers in
-           (* Get the actual file contents of the .sys file. *)
-           let content = viostor_sys_file.vwd_get_contents () in
-           let target = sprintf "%s/system32/drivers/viostor.sys" systemroot in
-           let target = g#case_sensitive_path target in
-           g#write target content;
-           add_viostor_to_critical_device_database root current_cs;
-           Virtio_blk
-         with Not_found ->
-           warning (f_"there is no viostor (virtio block device) driver for this version of Windows (%d.%d %s).  virt-v2v looks for this driver in %s\n\nThe guest will be configured to use a slower emulated device.")
-                   inspect.i_major_version inspect.i_minor_version
-                   inspect.i_arch virtio_win;
-           IDE in
-
-       (* Can we install the virtio-net driver? *)
-       let net : guestcaps_net_type =
-         if not (List.exists
-                   (fun { vwd_filename = filename } -> filename = "netkvm.inf")
-                   drivers) then (
-           warning (f_"there is no virtio network driver for this version of Windows (%d.%d %s).  virt-v2v looks for this driver in %s\n\nThe guest will be configured to use a slower emulated device.")
-                   inspect.i_major_version inspect.i_minor_version
-                   inspect.i_arch virtio_win;
-           RTL8139
-         )
-         else
-           (* It will be installed at firstboot. *)
-           Virtio_net in
-
-       (* Can we install the QXL driver? *)
-       let video : guestcaps_video_type =
-         if not (List.exists
-                   (fun { vwd_filename = filename } -> filename = "qxl.inf")
-                   drivers) then (
-           warning (f_"there is no QXL driver for this version of Windows (%d.%d %s).  virt-v2v looks for this driver in %s\n\nThe guest will be configured to use standard VGA.")
-                   inspect.i_major_version inspect.i_minor_version
-                   inspect.i_arch virtio_win;
-           Cirrus
-         )
-         else
-           (* It will be installed at firstboot. *)
-           QXL in
-
-       (* Copy all the drivers to the driverdir.  They will be
-        * installed at firstboot.
-        *)
-       List.iter (
-         fun driver ->
-           let content = driver.vwd_get_contents () in
-           g#write (driverdir // driver.vwd_filename) content
-       ) drivers;
-
-       (block, net, video)
+      (block, net, video)
+    )
 
   and add_viostor_to_critical_device_database root current_cs =
     let { i_major_version = major; i_minor_version = minor;
@@ -467,11 +398,12 @@ echo uninstalling Xen PV driver
      * "oem1.inf"=hex(0):
      *)
     let () =
-      let node =
-        try get_node root [ "DriverDatabase"; "DeviceIds"; scsi_adapter_guid ]
-        with Not_found ->
-          error (f_"cannot find HKLM\\SYSTEM\\DriverDatabase\\DeviceIds\\%s in the guest registry") scsi_adapter_guid in
-      g#hivex_node_set_value node oem1_inf (* REG_NONE *) 0_L "" in
+      let path = [ "DriverDatabase"; "DeviceIds"; scsi_adapter_guid ] in
+      match Windows.get_node g root path with
+      | None ->
+         error (f_"cannot find HKLM\\SYSTEM\\DriverDatabase\\DeviceIds\\%s in the guest registry") scsi_adapter_guid
+      | Some node ->
+         g#hivex_node_set_value node oem1_inf (* REG_NONE *) 0_L "" in
 
     (* There should be a key
      * HKLM\SYSTEM\ControlSet001\Control\Class\{4d36e97b-e325-11ce-bfc1-08002be10318}
@@ -481,17 +413,17 @@ echo uninstalling Xen PV driver
     let controller_path =
       [ current_cs; "Control"; "Class"; scsi_adapter_guid ] in
     let controller_offset =
-      let node =
-        try get_node root controller_path
-        with Not_found ->
-          error (f_"cannot find HKLM\\SYSTEM\\%s in the guest registry")
-                (String.concat "\\" controller_path) in
-      let rec loop node i =
-        let controller_offset = sprintf "%04d" i in
-        let child = g#hivex_node_get_child node controller_offset in
-        if child = 0_L then controller_offset else loop node (i+1)
-      in
-      loop node 0 in
+      match Windows.get_node g root controller_path with
+      | None ->
+         error (f_"cannot find HKLM\\SYSTEM\\%s in the guest registry")
+               (String.concat "\\" controller_path)
+      | Some node ->
+         let rec loop node i =
+           let controller_offset = sprintf "%04d" i in
+           let child = g#hivex_node_get_child node controller_offset in
+           if child = 0_L then controller_offset else loop node (i+1)
+         in
+         loop node 0 in
 
     let regedits = [
         controller_path @ [ controller_offset ],
@@ -642,42 +574,44 @@ echo uninstalling Xen PV driver
      * has a key called DevicePath then append the virtio driver
      * path to this key.
      *)
-    try
-      let node = get_node root ["Microsoft"; "Windows"; "CurrentVersion"] in
-      let append = encode_utf16le ";%SystemRoot%\\Drivers\\VirtIO" in
-      let values = Array.to_list (g#hivex_node_values node) in
-      let rec loop = function
-        | [] -> () (* DevicePath not found -- ignore this case *)
-        | { G.hivex_value_h = valueh } :: values ->
-          let key = g#hivex_value_key valueh in
-          if key <> "DevicePath" then
-            loop values
-          else (
-            let data = g#hivex_value_value valueh in
-            let len = String.length data in
-            let t = g#hivex_value_type valueh in
+    let node =
+      Windows.get_node g root ["Microsoft"; "Windows"; "CurrentVersion"] in
+    match node with
+    | Some node ->
+       let append = encode_utf16le ";%SystemRoot%\\Drivers\\VirtIO" in
+       let values = Array.to_list (g#hivex_node_values node) in
+       let rec loop = function
+         | [] -> () (* DevicePath not found -- ignore this case *)
+         | { G.hivex_value_h = valueh } :: values ->
+            let key = g#hivex_value_key valueh in
+            if key <> "DevicePath" then
+              loop values
+            else (
+              let data = g#hivex_value_value valueh in
+              let len = String.length data in
+              let t = g#hivex_value_type valueh in
 
-            (* Only add the appended path if it doesn't exist already. *)
-            if string_find data append = -1 then (
-              (* Remove the explicit [\0\0] at the end of the string.
-               * This is the UTF-16LE NUL-terminator.
-               *)
-              let data =
-                if len >= 2 && String.sub data (len-2) 2 = "\000\000" then
-                  String.sub data 0 (len-2)
-                else
-                  data in
+              (* Only add the appended path if it doesn't exist already. *)
+              if String.find data append = -1 then (
+                (* Remove the explicit [\0\0] at the end of the string.
+                 * This is the UTF-16LE NUL-terminator.
+                 *)
+                let data =
+                  if len >= 2 && String.sub data (len-2) 2 = "\000\000" then
+                    String.sub data 0 (len-2)
+                  else
+                    data in
 
-              (* Append the path and the explicit NUL. *)
-              let data = data ^ append ^ "\000\000" in
+                (* Append the path and the explicit NUL. *)
+                let data = data ^ append ^ "\000\000" in
 
-              g#hivex_node_set_value node key t data
+                g#hivex_node_set_value node key t data
+              )
             )
-          )
-      in
-      loop values
-    with Not_found ->
-      warning (f_"could not find registry key HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion")
+       in
+       loop values
+    | None ->
+       warning (f_"could not find registry key HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion")
 
   and fix_ntfs_heads () =
     (* NTFS hardcodes the number of heads on the drive which created
@@ -748,10 +682,10 @@ echo uninstalling Xen PV driver
 
   (* Open the system hive and update it. *)
   let block_driver, net_driver, video_driver =
-    with_hive "system" ~write:true update_system_hive in
+    Windows.with_hive g system_hive_filename ~write:true update_system_hive in
 
   (* Open the software hive and update it. *)
-  with_hive "software" ~write:true update_software_hive;
+  Windows.with_hive g software_hive_filename ~write:true update_software_hive;
 
   fix_ntfs_heads ();
 

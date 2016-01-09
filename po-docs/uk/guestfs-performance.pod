@@ -309,10 +309,11 @@ L<http://rwmj.wordpress.com/2013/02/25/multiple-libguestfs-appliances-in-paralle
 L<http://rwmj.wordpress.com/2013/02/25/multiple-libguestfs-appliances-in-parallel-part-3/>
 L<http://rwmj.wordpress.com/2013/02/25/multiple-libguestfs-appliances-in-parallel-part-4/>
 
- #!/usr/bin/perl -w
+ #!/usr/bin/env perl
  
  use strict;
  use threads;
+ use warnings;
  use Sys::Guestfs;
  use Time::HiRes qw(time);
  
@@ -547,8 +548,8 @@ to change the architecture back to 32 or 64 bit.
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<supermin(1)>, L<guestfish(1)>, L<guestfs(3)>, L<guestfs-examples(3)>,
-L<libguestfs-make-fixed-appliance(1)>, L<stap(1)>, L<qemu(1)>, L<gdb(1)>,
-L<http://libguestfs.org/>.
+L<guestfs-internals(1)>, L<libguestfs-make-fixed-appliance(1)>, L<stap(1)>,
+L<qemu(1)>, L<gdb(1)>, L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 
@@ -556,5 +557,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2012–2015
+Copyright (C) 2012-2016 Red Hat Inc.
 

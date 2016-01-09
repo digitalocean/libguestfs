@@ -1407,6 +1407,14 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1hv
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_identifier
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1identifier
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _get_libvirt_requested_credential_challenge
  * Signature: (JI)Ljava/lang/String;
  */
@@ -3895,6 +3903,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1hv
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_identifier
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1identifier
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _set_label
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
@@ -4264,18 +4280,18 @@ JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1tail_1n
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _tar_in
- * Signature: (JLjava/lang/String;Ljava/lang/String;JLjava/lang/String;)V
+ * Signature: (JLjava/lang/String;Ljava/lang/String;JLjava/lang/String;ZZZ)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1tar_1in
-  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jstring, jboolean, jboolean, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _tar_out
- * Signature: (JLjava/lang/String;Ljava/lang/String;JLjava/lang/String;Z[Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;Ljava/lang/String;JLjava/lang/String;Z[Ljava/lang/String;ZZZ)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1tar_1out
-  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jstring, jboolean, jobjectArray);
+  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jstring, jboolean, jobjectArray, jboolean, jboolean, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -4435,6 +4451,14 @@ JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1version
  * Signature: (JLjava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1vfs_1label
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _vfs_minimum_size
+ * Signature: (JLjava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1vfs_1minimum_1size
   (JNIEnv *, jobject, jlong, jstring);
 
 /*

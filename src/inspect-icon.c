@@ -20,25 +20,20 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <inttypes.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <string.h>
-#include <errno.h>
 #include <sys/wait.h>
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 /* External tools are required for some icon types.  Check we have them. */
 #if defined(PBMTEXT) && defined (PNMTOPNG)
 #define CAN_DO_CIRROS 1
 #endif
-#if defined(WRESTOOL) && defined(BMPTOPNM) && defined(PNMTOPNG) && \
-    defined(PAMCUT)
+#if defined(WRESTOOL) && defined(BMPTOPNM) && defined(PNMTOPNG) &&	\
+  defined(PAMCUT)
 #define CAN_DO_WINDOWS 1
 #endif
 
@@ -83,7 +78,7 @@ static char *NOT_FOUND = (char *) "not_found";
  */
 char *
 guestfs_impl_inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
-                           const struct guestfs_inspect_get_icon_argv *optargs)
+			       const struct guestfs_inspect_get_icon_argv *optargs)
 {
   struct inspect_fs *fs;
   char *r = NOT_FOUND;
@@ -179,6 +174,10 @@ guestfs_impl_inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
     case OS_DISTRO_FREEBSD:
     case OS_DISTRO_NETBSD:
     case OS_DISTRO_OPENBSD:
+    case OS_DISTRO_ALPINE_LINUX:
+    case OS_DISTRO_ALTLINUX:
+    case OS_DISTRO_FRUGALWARE:
+    case OS_DISTRO_PLD_LINUX:
     case OS_DISTRO_UNKNOWN:
       ; /* nothing */
     }
@@ -464,8 +463,8 @@ icon_windows_xp (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
     return NOT_FOUND;
 
   filename_downloaded = guestfs_int_download_to_tmp (g, fs, filename_case,
-                                                   "explorer.exe",
-                                                   MAX_WINDOWS_EXPLORER_SIZE);
+						     "explorer.exe",
+						     MAX_WINDOWS_EXPLORER_SIZE);
   if (filename_downloaded == NULL)
     return NOT_FOUND;
 
@@ -474,7 +473,7 @@ icon_windows_xp (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
   guestfs_int_cmd_add_string_unquoted (cmd, WRESTOOL " -x --type=2 --name=143 ");
   guestfs_int_cmd_add_string_quoted   (cmd, filename_downloaded);
   guestfs_int_cmd_add_string_unquoted (cmd,
-                                     " | " BMPTOPNM " | " PNMTOPNG " > ");
+				       " | " BMPTOPNM " | " PNMTOPNG " > ");
   guestfs_int_cmd_add_string_quoted   (cmd, pngfile);
   r = guestfs_int_cmd_run (cmd);
   if (r == -1)
@@ -514,8 +513,8 @@ icon_windows_7 (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
     return NOT_FOUND;
 
   filename_downloaded = guestfs_int_download_to_tmp (g, fs, filename_case,
-                                                   "explorer.exe",
-                                                   MAX_WINDOWS_EXPLORER_SIZE);
+						     "explorer.exe",
+						     MAX_WINDOWS_EXPLORER_SIZE);
   if (filename_downloaded == NULL)
     return NOT_FOUND;
 
@@ -524,9 +523,9 @@ icon_windows_7 (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
   guestfs_int_cmd_add_string_unquoted (cmd, WRESTOOL " -x --type=2 --name=6801 ");
   guestfs_int_cmd_add_string_quoted   (cmd, filename_downloaded);
   guestfs_int_cmd_add_string_unquoted (cmd,
-                                     " | " BMPTOPNM " | "
-                                     PAMCUT " -bottom 54 | "
-                                     PNMTOPNG " > ");
+				       " | " BMPTOPNM " | "
+				       PAMCUT " -bottom 54 | "
+				       PNMTOPNG " > ");
   guestfs_int_cmd_add_string_quoted   (cmd, pngfile);
   r = guestfs_int_cmd_run (cmd);
   if (r == -1)
@@ -567,7 +566,7 @@ icon_windows_8 (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
     return NOT_FOUND;
 
   filename_downloaded = guestfs_int_download_to_tmp (g, fs, filename_case,
-                                                   "wlive48x48.png", 8192);
+						     "wlive48x48.png", 8192);
   if (filename_downloaded == NULL)
     return NOT_FOUND;
 

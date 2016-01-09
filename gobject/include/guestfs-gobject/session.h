@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -294,6 +294,7 @@ gint64 guestfs_session_get_e2generation (GuestfsSession *session, const gchar *f
 gchar *guestfs_session_get_e2label (GuestfsSession *session, const gchar *device, GError **err);
 gchar *guestfs_session_get_e2uuid (GuestfsSession *session, const gchar *device, GError **err);
 gchar *guestfs_session_get_hv (GuestfsSession *session, GError **err);
+const gchar *guestfs_session_get_identifier (GuestfsSession *session, GError **err);
 gchar *guestfs_session_get_libvirt_requested_credential_challenge (GuestfsSession *session, gint32 index, GError **err);
 gchar *guestfs_session_get_libvirt_requested_credential_defresult (GuestfsSession *session, gint32 index, GError **err);
 gchar *guestfs_session_get_libvirt_requested_credential_prompt (GuestfsSession *session, gint32 index, GError **err);
@@ -605,6 +606,7 @@ gboolean guestfs_session_set_e2generation (GuestfsSession *session, const gchar 
 gboolean guestfs_session_set_e2label (GuestfsSession *session, const gchar *device, const gchar *label, GError **err);
 gboolean guestfs_session_set_e2uuid (GuestfsSession *session, const gchar *device, const gchar *uuid, GError **err);
 gboolean guestfs_session_set_hv (GuestfsSession *session, const gchar *hv, GError **err);
+gboolean guestfs_session_set_identifier (GuestfsSession *session, const gchar *identifier, GError **err);
 gboolean guestfs_session_set_label (GuestfsSession *session, const gchar *mountable, const gchar *label, GError **err);
 gboolean guestfs_session_set_libvirt_requested_credential (GuestfsSession *session, gint32 index, const guint8 *cred, gsize cred_size, GError **err);
 gboolean guestfs_session_set_libvirt_supported_credentials (GuestfsSession *session, gchar *const *creds, GError **err);
@@ -673,6 +675,7 @@ gboolean guestfs_session_utimens (GuestfsSession *session, const gchar *path, gi
 GuestfsUTSName *guestfs_session_utsname (GuestfsSession *session, GError **err);
 GuestfsVersion *guestfs_session_version (GuestfsSession *session, GError **err);
 gchar *guestfs_session_vfs_label (GuestfsSession *session, const gchar *mountable, GError **err);
+gint64 guestfs_session_vfs_minimum_size (GuestfsSession *session, const gchar *mountable, GError **err);
 gchar *guestfs_session_vfs_type (GuestfsSession *session, const gchar *mountable, GError **err);
 gchar *guestfs_session_vfs_uuid (GuestfsSession *session, const gchar *mountable, GError **err);
 gboolean guestfs_session_vg_activate (GuestfsSession *session, gboolean activate, gchar *const *volgroups, GError **err);

@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -703,7 +703,10 @@ public class GuestFS {
    * </p><p>
    * "protocol = "iscsi""
    * Connect to the iSCSI server. The "server"
-   * parameter must also be supplied - see below.
+   * parameter must also be supplied - see below. The
+   * "username" parameter may be supplied. See below.
+   * The "secret" parameter may be supplied. See
+   * below.
    * </p><p>
    * See also: "ISCSI" in guestfs(3).
    * </p><p>
@@ -4792,14 +4795,14 @@ public class GuestFS {
    * The other optional parameters are:
    * </p><p>
    * "preallocation"
-   * If format is "raw", then this can be either "sparse"
-   * or "full" to create a sparse or fully allocated file
-   * respectively. The default is "sparse".
+   * If format is "raw", then this can be either "off"
+   * (or "sparse") or "full" to create a sparse or fully
+   * allocated file respectively. The default is "off".
    * </p><p>
-   * If format is "qcow2", then this can be either "off"
-   * or "metadata". Preallocating metadata can be faster
-   * when doing lots of writes, but uses more space. The
-   * default is "off".
+   * If format is "qcow2", then this can be "off" (or
+   * "sparse"), "metadata" or "full". Preallocating
+   * metadata can be faster when doing lots of writes,
+   * but uses more space. The default is "off".
    * </p><p>
    * "compat"
    * "qcow2" only: Pass the string 1.1 to use the
@@ -6468,6 +6471,28 @@ public class GuestFS {
 
   /**
    * <p>
+   * get the handle identifier
+   * </p><p>
+   * Get the handle identifier. See "g.set_identifier".
+   * </p><p>
+   * </p>
+   * @since 1.31.14
+   * @throws LibGuestFSException
+   */
+  public String get_identifier ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_identifier: handle is closed");
+
+    return _get_identifier (g);
+  }
+
+  private native String _get_identifier (long g)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * challenge of i'th requested credential
    * </p><p>
    * Get the challenge (provided by libvirt) for the
@@ -8114,6 +8139,12 @@ public class GuestFS {
    * </p><p>
    * Currently defined distros are:
    * </p><p>
+   * "alpinelinux"
+   * Alpine Linux.
+   * </p><p>
+   * "altlinux"
+   * ALT Linux.
+   * </p><p>
    * "archlinux"
    * Arch Linux.
    * </p><p>
@@ -8141,6 +8172,9 @@ public class GuestFS {
    * </p><p>
    * "freedos"
    * FreeDOS.
+   * </p><p>
+   * "frugalware"
+   * Frugalware.
    * </p><p>
    * "gentoo"
    * Gentoo.
@@ -8171,6 +8205,9 @@ public class GuestFS {
    * </p><p>
    * "pardus"
    * Pardus.
+   * </p><p>
+   * "pldlinux"
+   * PLD Linux.
    * </p><p>
    * "redhat-based"
    * Some Red Hat-derived distro.
@@ -8621,7 +8658,7 @@ public class GuestFS {
    * Windows).
    * </p><p>
    * Possible strings include: "rpm", "deb", "ebuild",
-   * "pisi", "pacman", "pkgsrc". Future versions of
+   * "pisi", "pacman", "pkgsrc", "apk". Future versions of
    * libguestfs may return other strings.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
@@ -8659,7 +8696,7 @@ public class GuestFS {
    * </p><p>
    * Possible strings include: "yum", "dnf", "up2date", "apt"
    * (for all Debian derivatives), "portage", "pisi",
-   * "pacman", "urpmi", "zypper". Future versions of
+   * "pacman", "urpmi", "zypper", "apk". Future versions of
    * libguestfs may return other strings.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
@@ -17351,6 +17388,52 @@ public class GuestFS {
 
   /**
    * <p>
+   * set the handle identifier
+   * </p><p>
+   * This is an informative string which the caller may
+   * optionally set in the handle. It is printed in various
+   * places, allowing the current handle to be identified in
+   * debugging output.
+   * </p><p>
+   * One important place is when tracing is enabled. If the
+   * identifier string is not an empty string, then trace
+   * messages change from this:
+   * </p><p>
+   * libguestfs: trace: get_tmpdir
+   * libguestfs: trace: get_tmpdir = "/tmp"
+   * </p><p>
+   * to this:
+   * </p><p>
+   * libguestfs: trace: ID: get_tmpdir
+   * libguestfs: trace: ID: get_tmpdir = "/tmp"
+   * </p><p>
+   * where "ID" is the identifier string set by this call.
+   * </p><p>
+   * The identifier must only contain alphanumeric ASCII
+   * characters, underscore and minus sign. The default is
+   * the empty string.
+   * </p><p>
+   * See also "g.set_program", "g.set_trace",
+   * "g.get_identifier".
+   * </p><p>
+   * </p>
+   * @since 1.31.14
+   * @throws LibGuestFSException
+   */
+  public void set_identifier (String identifier)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_identifier: handle is closed");
+
+    _set_identifier (g, identifier);
+  }
+
+  private native void _set_identifier (long g, String identifier)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * set filesystem label
    * </p><p>
    * Set the filesystem label on "mountable" to "label".
@@ -17369,7 +17452,7 @@ public class GuestFS {
    * must not be mounted when trying to set the label.
    * </p><p>
    * btrfs
-   * The label is limited to 256 bytes and some
+   * The label is limited to 255 bytes and some
    * characters are not allowed. Setting the label on a
    * btrfs subvolume will set the label on its parent
    * filesystem. The filesystem must not be mounted when
@@ -18787,6 +18870,20 @@ public class GuestFS {
    * not all builds of libguestfs will support all of these
    * compression types).
    * </p><p>
+   * The other optional arguments are:
+   * </p><p>
+   * "xattrs"
+   * If set to true, extended attributes are restored
+   * from the tar file.
+   * </p><p>
+   * "selinux"
+   * If set to true, SELinux contexts are restored from
+   * the tar file.
+   * </p><p>
+   * "acls"
+   * If set to true, POSIX ACLs are restored from the tar
+   * file.
+   * </p><p>
    * Optional arguments are supplied in the final
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -18813,8 +18910,32 @@ public class GuestFS {
       compress = ((String) _optobj);
       _optargs_bitmask |= 1L;
     }
+    boolean xattrs = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("xattrs");
+    if (_optobj != null) {
+      xattrs = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+    boolean selinux = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("selinux");
+    if (_optobj != null) {
+      selinux = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4L;
+    }
+    boolean acls = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("acls");
+    if (_optobj != null) {
+      acls = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
 
-    _tar_in (g, tarfile, directory, _optargs_bitmask, compress);
+    _tar_in (g, tarfile, directory, _optargs_bitmask, compress, xattrs, selinux, acls);
   }
 
   public void tar_in (String tarfile, String directory)
@@ -18835,7 +18956,7 @@ public class GuestFS {
     tar_in (tarfile, directory, null);
   }
 
-  private native void _tar_in (long g, String tarfile, String directory, long _optargs_bitmask, String compress)
+  private native void _tar_in (long g, String tarfile, String directory, long _optargs_bitmask, String compress, boolean xattrs, boolean selinux, boolean acls)
     throws LibGuestFSException;
 
   /**
@@ -18862,6 +18983,18 @@ public class GuestFS {
    * "numericowner"
    * If set to true, the output tar file will contain
    * UID/GID numbers instead of user/group names.
+   * </p><p>
+   * "xattrs"
+   * If set to true, extended attributes are saved in the
+   * output tar.
+   * </p><p>
+   * "selinux"
+   * If set to true, SELinux contexts are saved in the
+   * output tar.
+   * </p><p>
+   * "acls"
+   * If set to true, POSIX ACLs are saved in the output
+   * tar.
    * </p><p>
    * Optional arguments are supplied in the final
    * Map&lt;String,Object&gt; parameter, which is a hash of the
@@ -18905,8 +19038,32 @@ public class GuestFS {
       excludes = ((String[]) _optobj);
       _optargs_bitmask |= 4L;
     }
+    boolean xattrs = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("xattrs");
+    if (_optobj != null) {
+      xattrs = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
+    boolean selinux = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("selinux");
+    if (_optobj != null) {
+      selinux = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 16L;
+    }
+    boolean acls = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("acls");
+    if (_optobj != null) {
+      acls = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 32L;
+    }
 
-    _tar_out (g, directory, tarfile, _optargs_bitmask, compress, numericowner, excludes);
+    _tar_out (g, directory, tarfile, _optargs_bitmask, compress, numericowner, excludes, xattrs, selinux, acls);
   }
 
   public void tar_out (String directory, String tarfile)
@@ -18927,7 +19084,7 @@ public class GuestFS {
     tar_out (directory, tarfile, null);
   }
 
-  private native void _tar_out (long g, String directory, String tarfile, long _optargs_bitmask, String compress, boolean numericowner, String[] excludes)
+  private native void _tar_out (long g, String directory, String tarfile, long _optargs_bitmask, String compress, boolean numericowner, String[] excludes, boolean xattrs, boolean selinux, boolean acls)
     throws LibGuestFSException;
 
   /**
@@ -19752,6 +19909,35 @@ public class GuestFS {
   }
 
   private native String _vfs_label (long g, String mountable)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * get minimum filesystem size
+   * </p><p>
+   * Get the minimum size of filesystem in bytes. This is the
+   * minimum possible size for filesystem shrinking.
+   * </p><p>
+   * If getting minimum size of specified filesystem is not
+   * supported, this will fail and set errno as ENOTSUP.
+   * </p><p>
+   * See also ntfsresize(8), resize2fs(8), btrfs(8),
+   * xfs_info(8).
+   * </p><p>
+   * </p>
+   * @since 1.31.18
+   * @throws LibGuestFSException
+   */
+  public long vfs_minimum_size (String mountable)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vfs_minimum_size: handle is closed");
+
+    return _vfs_minimum_size (g, mountable);
+  }
+
+  private native long _vfs_minimum_size (long g, String mountable)
     throws LibGuestFSException;
 
   /**

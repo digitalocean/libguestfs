@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -217,7 +217,7 @@ do_vgcreate (const char *volgroup, char *const *physvols)
   argv[0] = str_lvm;
   argv[1] = "vgcreate";
   argv[2] = volgroup;
-  for (i = 3; i <= argc; ++i)
+  for (i = 3; i < argc+1; ++i)
     argv[i] = physvols[i-3];
 
   r = commandv (NULL, &err, (const char * const*) argv);
@@ -288,7 +288,7 @@ static int
 ignore_same_size_error (const char *err)
 {
   return strstr (err, "New size (") != NULL &&
-         strstr (err, "extents) matches existing size (") != NULL;
+    strstr (err, "extents) matches existing size (") != NULL;
 }
 
 int
@@ -393,7 +393,7 @@ do_lvm_remove_all (void)
   }
 
   {
-  /* Remove PVs. */
+    /* Remove PVs. */
     CLEANUP_FREE_STRING_LIST char **xs = do_pvs ();
     if (xs == NULL)
       return -1;
@@ -524,7 +524,7 @@ do_vg_activate (int activate, char *const *volgroups)
   argv[1] = "vgchange";
   argv[2] = "-a";
   argv[3] = activate ? "y" : "n";
-  for (i = 4; i <= argc; ++i)
+  for (i = 4; i < argc+1; ++i)
     argv[i] = volgroups[i-4];
 
   r = commandv (NULL, &err, (const char * const*) argv);

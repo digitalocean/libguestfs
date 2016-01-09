@@ -32,11 +32,8 @@ if [ "$(guestfish get-backend)" = "uml" ]; then
     exit 77
 fi
 
-virt_tools_data_dir=${VIRT_TOOLS_DATA_DIR:-/usr/share/virt-tools}
-if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
-    echo "$0: test skipped because rhsrvany.exe is not installed"
-    exit 77
-fi
+export VIRT_TOOLS_DATA_DIR="$srcdir/../test-data/fake-virt-tools"
+export VIRTIO_WIN="$srcdir/../test-data/fake-virtio-win"
 
 d=test-v2v-i-ova-two-disks.d
 rm -rf $d

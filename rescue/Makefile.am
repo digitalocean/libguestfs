@@ -1,5 +1,5 @@
 # libguestfs virt-rescue
-# Copyright (C) 2010-2015 Red Hat Inc.
+# Copyright (C) 2010-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,9 @@ EXTRA_DIST = \
 	test-virt-rescue-suggest.sh \
 	virt-rescue.pod
 
-CLEANFILES = stamp-virt-rescue.pod
+CLEANFILES = \
+	stamp-virt-rescue.pod \
+	virt-rescue.1
 
 bin_PROGRAMS = virt-rescue
 
@@ -64,14 +66,14 @@ virt_rescue_LDADD = \
 
 # Manual pages and HTML files for the website.
 man_MANS = virt-rescue.1
-noinst_DATA = $(top_builddir)/html/virt-rescue.1.html
+noinst_DATA = $(top_builddir)/website/virt-rescue.1.html
 
-virt-rescue.1 $(top_builddir)/html/virt-rescue.1.html: stamp-virt-rescue.pod
+virt-rescue.1 $(top_builddir)/website/virt-rescue.1.html: stamp-virt-rescue.pod
 
 stamp-virt-rescue.pod: virt-rescue.pod
 	$(PODWRAPPER) \
 	  --man virt-rescue.1 \
-	  --html $(top_builddir)/html/virt-rescue.1.html \
+	  --html $(top_builddir)/website/virt-rescue.1.html \
 	  --license GPLv2+ \
 	  $<
 	touch $@

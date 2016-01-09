@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -56,8 +56,7 @@ let event_all = [
 
 type event_handle = int
 
-type event_callback =
-  t -> event -> event_handle -> string -> int64 array -> unit
+type event_callback = event -> event_handle -> string -> int64 array -> unit
 
 external set_event_callback : t -> event_callback -> event list -> event_handle
   = "ocaml_guestfs_set_event_callback"
@@ -548,6 +547,7 @@ external get_e2generation : t -> string -> int64 = "ocaml_guestfs_get_e2generati
 external get_e2label : t -> string -> string = "ocaml_guestfs_get_e2label"
 external get_e2uuid : t -> string -> string = "ocaml_guestfs_get_e2uuid"
 external get_hv : t -> string = "ocaml_guestfs_get_hv"
+external get_identifier : t -> string = "ocaml_guestfs_get_identifier"
 external get_libvirt_requested_credential_challenge : t -> int -> string = "ocaml_guestfs_get_libvirt_requested_credential_challenge"
 external get_libvirt_requested_credential_defresult : t -> int -> string = "ocaml_guestfs_get_libvirt_requested_credential_defresult"
 external get_libvirt_requested_credential_prompt : t -> int -> string = "ocaml_guestfs_get_libvirt_requested_credential_prompt"
@@ -869,6 +869,7 @@ external set_e2generation : t -> string -> int64 -> unit = "ocaml_guestfs_set_e2
 external set_e2label : t -> string -> string -> unit = "ocaml_guestfs_set_e2label"
 external set_e2uuid : t -> string -> string -> unit = "ocaml_guestfs_set_e2uuid"
 external set_hv : t -> string -> unit = "ocaml_guestfs_set_hv"
+external set_identifier : t -> string -> unit = "ocaml_guestfs_set_identifier"
 external set_label : t -> string -> string -> unit = "ocaml_guestfs_set_label"
 external set_libvirt_requested_credential : t -> int -> string -> unit = "ocaml_guestfs_set_libvirt_requested_credential"
 external set_libvirt_supported_credentials : t -> string array -> unit = "ocaml_guestfs_set_libvirt_supported_credentials"
@@ -915,9 +916,9 @@ external sync : t -> unit = "ocaml_guestfs_sync"
 external syslinux : t -> ?directory:string -> string -> unit = "ocaml_guestfs_syslinux"
 external tail : t -> string -> string array = "ocaml_guestfs_tail"
 external tail_n : t -> int -> string -> string array = "ocaml_guestfs_tail_n"
-external tar_in : t -> ?compress:string -> string -> string -> unit = "ocaml_guestfs_tar_in"
+external tar_in : t -> ?compress:string -> ?xattrs:bool -> ?selinux:bool -> ?acls:bool -> string -> string -> unit = "ocaml_guestfs_tar_in_byte" "ocaml_guestfs_tar_in"
 let tar_in_opts = tar_in
-external tar_out : t -> ?compress:string -> ?numericowner:bool -> ?excludes:string array -> string -> string -> unit = "ocaml_guestfs_tar_out_byte" "ocaml_guestfs_tar_out"
+external tar_out : t -> ?compress:string -> ?numericowner:bool -> ?excludes:string array -> ?xattrs:bool -> ?selinux:bool -> ?acls:bool -> string -> string -> unit = "ocaml_guestfs_tar_out_byte" "ocaml_guestfs_tar_out"
 let tar_out_opts = tar_out
 external tgz_in : t -> string -> string -> unit = "ocaml_guestfs_tgz_in"
 external tgz_out : t -> string -> string -> unit = "ocaml_guestfs_tgz_out"
@@ -940,6 +941,7 @@ external utimens : t -> string -> int64 -> int64 -> int64 -> int64 -> unit = "oc
 external utsname : t -> utsname = "ocaml_guestfs_utsname"
 external version : t -> version = "ocaml_guestfs_version"
 external vfs_label : t -> string -> string = "ocaml_guestfs_vfs_label"
+external vfs_minimum_size : t -> string -> int64 = "ocaml_guestfs_vfs_minimum_size"
 external vfs_type : t -> string -> string = "ocaml_guestfs_vfs_type"
 external vfs_uuid : t -> string -> string = "ocaml_guestfs_vfs_uuid"
 external vg_activate : t -> bool -> string array -> unit = "ocaml_guestfs_vg_activate"
@@ -1158,6 +1160,7 @@ class guestfs ?environment ?close_on_exit () =
     method get_e2label = get_e2label g
     method get_e2uuid = get_e2uuid g
     method get_hv () = get_hv g
+    method get_identifier () = get_identifier g
     method get_libvirt_requested_credential_challenge = get_libvirt_requested_credential_challenge g
     method get_libvirt_requested_credential_defresult = get_libvirt_requested_credential_defresult g
     method get_libvirt_requested_credential_prompt = get_libvirt_requested_credential_prompt g
@@ -1479,6 +1482,7 @@ class guestfs ?environment ?close_on_exit () =
     method set_e2label = set_e2label g
     method set_e2uuid = set_e2uuid g
     method set_hv = set_hv g
+    method set_identifier = set_identifier g
     method set_label = set_label g
     method set_libvirt_requested_credential = set_libvirt_requested_credential g
     method set_libvirt_supported_credentials = set_libvirt_supported_credentials g
@@ -1550,6 +1554,7 @@ class guestfs ?environment ?close_on_exit () =
     method utsname () = utsname g
     method version () = version g
     method vfs_label = vfs_label g
+    method vfs_minimum_size = vfs_minimum_size g
     method vfs_type = vfs_type g
     method vfs_uuid = vfs_uuid g
     method vg_activate = vg_activate g

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 (** [-i libvirt] source. *)
 
-val input_libvirt : string option -> string option -> string -> Types.input
-(** [input_libvirt verbose password libvirt_uri guest] creates and returns a
+val input_libvirt : string option -> string option -> string option -> string -> Types.input
+(** [input_libvirt dcpath password libvirt_uri guest] creates and returns a
     new {!Types.input} object specialized for reading input from
     libvirt sources. *)

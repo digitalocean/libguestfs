@@ -1,5 +1,5 @@
 # libguestfs virt-diff
-# Copyright (C) 2010-2015 Red Hat Inc.
+# Copyright (C) 2010-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +21,9 @@ EXTRA_DIST = \
 	test-virt-make-fs.sh \
 	virt-make-fs.pod
 
-CLEANFILES = stamp-virt-make-fs.pod
+CLEANFILES = \
+	stamp-virt-make-fs.pod \
+	virt-make-fs.1
 
 bin_PROGRAMS = virt-make-fs
 
@@ -57,14 +59,14 @@ virt_make_fs_LDADD = \
 man_MANS = virt-make-fs.1
 
 noinst_DATA = \
-	$(top_builddir)/html/virt-make-fs.1.html
+	$(top_builddir)/website/virt-make-fs.1.html
 
-virt-make-fs.1 $(top_builddir)/html/virt-make-fs.1.html: stamp-virt-make-fs.pod
+virt-make-fs.1 $(top_builddir)/website/virt-make-fs.1.html: stamp-virt-make-fs.pod
 
 stamp-virt-make-fs.pod: virt-make-fs.pod
 	$(PODWRAPPER) \
 	  --man virt-make-fs.1 \
-	  --html $(top_builddir)/html/virt-make-fs.1.html \
+	  --html $(top_builddir)/website/virt-make-fs.1.html \
 	  --license GPLv2+ \
 	  $<
 	touch $@

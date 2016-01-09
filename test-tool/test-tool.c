@@ -1,5 +1,5 @@
 /* libguestfs-test-tool
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ static void
 usage (void)
 {
   printf (_("libguestfs-test-tool: interactive test tool\n"
-            "Copyright (C) 2009-2015 Red Hat Inc.\n"
+            "Copyright (C) 2009-2016 Red Hat Inc.\n"
             "Usage:\n"
             "  libguestfs-test-tool [--options]\n"
             "Options:\n"
@@ -342,8 +342,8 @@ set_qemu (guestfs_h *g, const char *path, int use_wrapper)
   if (getenv ("LIBGUESTFS_QEMU") != NULL ||
       getenv ("LIBGUESTFS_HV") != NULL) {
     fprintf (stderr,
-    _("LIBGUESTFS_HV/LIBGUESTFS_QEMU environment variable is already set, so\n"
-      "--qemu/--qemudir options cannot be used.\n"));
+	     _("LIBGUESTFS_HV/LIBGUESTFS_QEMU environment variable is already set, so\n"
+	       "--qemu/--qemudir options cannot be used.\n"));
     exit (EXIT_FAILURE);
   }
 

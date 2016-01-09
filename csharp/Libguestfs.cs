@@ -3,7 +3,7 @@
 //   generator/ *.ml
 // ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 //
-// Copyright (C) 2009-2015 Red Hat Inc.
+// Copyright (C) 2009-2016 Red Hat Inc.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -2835,6 +2835,21 @@ namespace Guestfs
     {
       string r;
       r = guestfs_get_hv (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_identifier (IntPtr h);
+
+    /// <summary>
+    /// get the handle identifier
+    /// </summary>
+    public string get_identifier ()
+    {
+      string r;
+      r = guestfs_get_identifier (_handle);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -7445,6 +7460,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_identifier (IntPtr h, [In] string identifier);
+
+    /// <summary>
+    /// set the handle identifier
+    /// </summary>
+    public void set_identifier (string identifier)
+    {
+      int r;
+      r = guestfs_set_identifier (_handle, identifier);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_set_label (IntPtr h, [In] string mountable, [In] string label);
 
     /// <summary>
@@ -8427,6 +8456,21 @@ namespace Guestfs
       string r;
       r = guestfs_vfs_label (_handle, mountable);
       if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_vfs_minimum_size (IntPtr h, [In] string mountable);
+
+    /// <summary>
+    /// get minimum filesystem size
+    /// </summary>
+    public long vfs_minimum_size (string mountable)
+    {
+      long r;
+      r = guestfs_vfs_minimum_size (_handle, mountable);
+      if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r;
     }

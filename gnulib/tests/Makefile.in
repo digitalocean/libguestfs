@@ -118,7 +118,7 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-bind$(EXEEXT) test-bitrotate$(EXEEXT) test-btowc1.sh \
 	test-btowc2.sh test-byteswap$(EXEEXT) test-c-ctype$(EXEEXT) \
 	test-c-strcase.sh test-chdir$(EXEEXT) test-cloexec$(EXEEXT) \
-	test-close$(EXEEXT) test-connect$(EXEEXT) \
+	test-close$(EXEEXT) test-connect$(EXEEXT) test-ctype$(EXEEXT) \
 	test-dirent-safer$(EXEEXT) test-dirent$(EXEEXT) \
 	test-dup$(EXEEXT) test-dup2$(EXEEXT) test-dup3$(EXEEXT) \
 	test-environ$(EXEEXT) test-errno$(EXEEXT) test-fchdir$(EXEEXT) \
@@ -181,18 +181,18 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-sys_types$(EXEEXT) test-sys_uio$(EXEEXT) \
 	test-sys_wait$(EXEEXT) test-init.sh test-thread_self$(EXEEXT) \
 	test-thread_create$(EXEEXT) test-time$(EXEEXT) \
-	test-ttyname_r$(EXEEXT) test-dup-safer$(EXEEXT) \
-	test-unistd$(EXEEXT) test-unlink$(EXEEXT) \
-	test-unlinkat$(EXEEXT) test-unsetenv$(EXEEXT) \
-	test-utimens$(EXEEXT) test-vasnprintf$(EXEEXT) \
-	test-vasprintf$(EXEEXT) test-vc-list-files-git.sh \
-	test-vc-list-files-cvs.sh test-verify$(EXEEXT) test-verify.sh \
-	test-wchar$(EXEEXT) test-wcrtomb.sh test-wcrtomb-w32-1.sh \
-	test-wcrtomb-w32-2.sh test-wcrtomb-w32-3.sh \
-	test-wcrtomb-w32-4.sh test-wcrtomb-w32-5.sh \
-	test-wctype-h$(EXEEXT) test-write$(EXEEXT) test-xalloc-die.sh \
-	test-xstrtol.sh test-xstrtoll.sh test-xstrtoumax.sh \
-	test-xvasprintf$(EXEEXT)
+	test-timespec$(EXEEXT) test-ttyname_r$(EXEEXT) \
+	test-dup-safer$(EXEEXT) test-unistd$(EXEEXT) \
+	test-unlink$(EXEEXT) test-unlinkat$(EXEEXT) \
+	test-unsetenv$(EXEEXT) test-utimens$(EXEEXT) \
+	test-vasnprintf$(EXEEXT) test-vasprintf$(EXEEXT) \
+	test-vc-list-files-git.sh test-vc-list-files-cvs.sh \
+	test-verify$(EXEEXT) test-verify.sh test-wchar$(EXEEXT) \
+	test-wcrtomb.sh test-wcrtomb-w32-1.sh test-wcrtomb-w32-2.sh \
+	test-wcrtomb-w32-3.sh test-wcrtomb-w32-4.sh \
+	test-wcrtomb-w32-5.sh test-wctype-h$(EXEEXT) \
+	test-write$(EXEEXT) test-xalloc-die.sh test-xstrtol.sh \
+	test-xstrtoll.sh test-xstrtoumax.sh test-xvasprintf$(EXEEXT)
 XFAIL_TESTS =
 noinst_PROGRAMS =
 check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
@@ -204,42 +204,43 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-byteswap$(EXEEXT) test-c-ctype$(EXEEXT) \
 	test-c-strcasecmp$(EXEEXT) test-c-strncasecmp$(EXEEXT) \
 	test-chdir$(EXEEXT) test-cloexec$(EXEEXT) test-close$(EXEEXT) \
-	test-connect$(EXEEXT) test-dirent-safer$(EXEEXT) \
-	test-dirent$(EXEEXT) test-dup$(EXEEXT) test-dup2$(EXEEXT) \
-	test-dup3$(EXEEXT) test-environ$(EXEEXT) test-errno$(EXEEXT) \
-	test-fchdir$(EXEEXT) test-fcntl-h$(EXEEXT) \
-	test-fcntl-safer$(EXEEXT) test-fcntl$(EXEEXT) \
-	test-fdopen$(EXEEXT) test-fdopendir$(EXEEXT) \
-	test-fgetc$(EXEEXT) test-filevercmp$(EXEEXT) \
-	test-float$(EXEEXT) test-fnmatch$(EXEEXT) \
-	test-fpending$(EXEEXT) test-fputc$(EXEEXT) test-fread$(EXEEXT) \
-	test-fstat$(EXEEXT) test-fstatat$(EXEEXT) test-ftell$(EXEEXT) \
-	test-ftell3$(EXEEXT) test-ftello$(EXEEXT) \
-	test-ftello3$(EXEEXT) test-ftello4$(EXEEXT) \
-	test-ftruncate$(EXEEXT) test-futimens$(EXEEXT) \
-	test-fwrite$(EXEEXT) test-getaddrinfo$(EXEEXT) \
-	test-getcwd-lgpl$(EXEEXT) test-getcwd$(EXEEXT) \
-	test-getdelim$(EXEEXT) test-getdtablesize$(EXEEXT) \
-	test-getline$(EXEEXT) test-getopt$(EXEEXT) \
-	test-gettimeofday$(EXEEXT) test-glob$(EXEEXT) \
-	test-hash$(EXEEXT) test-i-ring$(EXEEXT) test-iconv$(EXEEXT) \
-	test-ignore-value$(EXEEXT) test-inet_ntop$(EXEEXT) \
-	test-inet_pton$(EXEEXT) test-intprops$(EXEEXT) \
-	test-inttostr$(EXEEXT) test-inttypes$(EXEEXT) \
-	test-ioctl$(EXEEXT) test-isatty$(EXEEXT) \
-	test-langinfo$(EXEEXT) test-listen$(EXEEXT) \
-	test-locale$(EXEEXT) test-localeconv$(EXEEXT) \
-	test-localename$(EXEEXT) test-lock$(EXEEXT) \
-	test-lseek$(EXEEXT) test-lstat$(EXEEXT) test-malloca$(EXEEXT) \
-	test-mbrtowc$(EXEEXT) test-mbrtowc-w32$(EXEEXT) \
-	test-mbsinit$(EXEEXT) test-mbsrtowcs$(EXEEXT) \
-	test-memchr$(EXEEXT) test-memmem$(EXEEXT) \
-	test-memrchr$(EXEEXT) test-nanosleep$(EXEEXT) \
-	test-netdb$(EXEEXT) test-netinet_in$(EXEEXT) \
-	test-open$(EXEEXT) test-openat-safer$(EXEEXT) \
-	test-openat$(EXEEXT) test-pathmax$(EXEEXT) \
-	test-perror$(EXEEXT) test-perror2$(EXEEXT) test-pipe$(EXEEXT) \
-	test-pipe2$(EXEEXT) test-pread$(EXEEXT) test-priv-set$(EXEEXT) \
+	test-connect$(EXEEXT) test-ctype$(EXEEXT) \
+	test-dirent-safer$(EXEEXT) test-dirent$(EXEEXT) \
+	test-dup$(EXEEXT) test-dup2$(EXEEXT) test-dup3$(EXEEXT) \
+	test-environ$(EXEEXT) test-errno$(EXEEXT) test-fchdir$(EXEEXT) \
+	test-fcntl-h$(EXEEXT) test-fcntl-safer$(EXEEXT) \
+	test-fcntl$(EXEEXT) test-fdopen$(EXEEXT) \
+	test-fdopendir$(EXEEXT) test-fgetc$(EXEEXT) \
+	test-filevercmp$(EXEEXT) test-float$(EXEEXT) \
+	test-fnmatch$(EXEEXT) test-fpending$(EXEEXT) \
+	test-fputc$(EXEEXT) test-fread$(EXEEXT) test-fstat$(EXEEXT) \
+	test-fstatat$(EXEEXT) test-ftell$(EXEEXT) test-ftell3$(EXEEXT) \
+	test-ftello$(EXEEXT) test-ftello3$(EXEEXT) \
+	test-ftello4$(EXEEXT) test-ftruncate$(EXEEXT) \
+	test-futimens$(EXEEXT) test-fwrite$(EXEEXT) \
+	test-getaddrinfo$(EXEEXT) test-getcwd-lgpl$(EXEEXT) \
+	test-getcwd$(EXEEXT) test-getdelim$(EXEEXT) \
+	test-getdtablesize$(EXEEXT) test-getline$(EXEEXT) \
+	test-getopt$(EXEEXT) test-gettimeofday$(EXEEXT) \
+	test-glob$(EXEEXT) test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
+	test-iconv$(EXEEXT) test-ignore-value$(EXEEXT) \
+	test-inet_ntop$(EXEEXT) test-inet_pton$(EXEEXT) \
+	test-intprops$(EXEEXT) test-inttostr$(EXEEXT) \
+	test-inttypes$(EXEEXT) test-ioctl$(EXEEXT) \
+	test-isatty$(EXEEXT) test-langinfo$(EXEEXT) \
+	test-listen$(EXEEXT) test-locale$(EXEEXT) \
+	test-localeconv$(EXEEXT) test-localename$(EXEEXT) \
+	test-lock$(EXEEXT) test-lseek$(EXEEXT) test-lstat$(EXEEXT) \
+	test-malloca$(EXEEXT) test-mbrtowc$(EXEEXT) \
+	test-mbrtowc-w32$(EXEEXT) test-mbsinit$(EXEEXT) \
+	test-mbsrtowcs$(EXEEXT) test-memchr$(EXEEXT) \
+	test-memmem$(EXEEXT) test-memrchr$(EXEEXT) \
+	test-nanosleep$(EXEEXT) test-netdb$(EXEEXT) \
+	test-netinet_in$(EXEEXT) test-open$(EXEEXT) \
+	test-openat-safer$(EXEEXT) test-openat$(EXEEXT) \
+	test-pathmax$(EXEEXT) test-perror$(EXEEXT) \
+	test-perror2$(EXEEXT) test-pipe$(EXEEXT) test-pipe2$(EXEEXT) \
+	test-pread$(EXEEXT) test-priv-set$(EXEEXT) \
 	test-ptsname_r$(EXEEXT) test-quotearg-simple$(EXEEXT) \
 	test-raise$(EXEEXT) test-rawmemchr$(EXEEXT) \
 	test-read-file$(EXEEXT) test-read$(EXEEXT) \
@@ -265,12 +266,13 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-sys_time$(EXEEXT) test-sys_types$(EXEEXT) \
 	test-sys_uio$(EXEEXT) test-sys_wait$(EXEEXT) \
 	test-thread_self$(EXEEXT) test-thread_create$(EXEEXT) \
-	test-time$(EXEEXT) test-ttyname_r$(EXEEXT) \
-	test-dup-safer$(EXEEXT) test-unistd$(EXEEXT) \
-	test-unlink$(EXEEXT) test-unlinkat$(EXEEXT) \
-	test-unsetenv$(EXEEXT) test-utimens$(EXEEXT) \
-	test-vasnprintf$(EXEEXT) test-vasprintf$(EXEEXT) \
-	test-verify$(EXEEXT) test-wchar$(EXEEXT) test-wcrtomb$(EXEEXT) \
+	test-time$(EXEEXT) test-timespec$(EXEEXT) \
+	test-ttyname_r$(EXEEXT) test-dup-safer$(EXEEXT) \
+	test-unistd$(EXEEXT) test-unlink$(EXEEXT) \
+	test-unlinkat$(EXEEXT) test-unsetenv$(EXEEXT) \
+	test-utimens$(EXEEXT) test-vasnprintf$(EXEEXT) \
+	test-vasprintf$(EXEEXT) test-verify$(EXEEXT) \
+	test-wchar$(EXEEXT) test-wcrtomb$(EXEEXT) \
 	test-wcrtomb-w32$(EXEEXT) test-wctype-h$(EXEEXT) \
 	test-write$(EXEEXT) test-xalloc-die$(EXEEXT) \
 	test-xstrtol$(EXEEXT) test-xstrtoul$(EXEEXT) \
@@ -287,10 +289,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/close-stream.m4 $(top_srcdir)/m4/close.m4 \
 	$(top_srcdir)/m4/closedir.m4 $(top_srcdir)/m4/closeout.m4 \
 	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/configmake.m4 \
-	$(top_srcdir)/m4/cycle-check.m4 $(top_srcdir)/m4/d-ino.m4 \
-	$(top_srcdir)/m4/d-type.m4 $(top_srcdir)/m4/dirent-safer.m4 \
-	$(top_srcdir)/m4/dirent_h.m4 $(top_srcdir)/m4/dirfd.m4 \
-	$(top_srcdir)/m4/dirname.m4 \
+	$(top_srcdir)/m4/ctype.m4 $(top_srcdir)/m4/cycle-check.m4 \
+	$(top_srcdir)/m4/d-ino.m4 $(top_srcdir)/m4/d-type.m4 \
+	$(top_srcdir)/m4/dirent-safer.m4 $(top_srcdir)/m4/dirent_h.m4 \
+	$(top_srcdir)/m4/dirfd.m4 $(top_srcdir)/m4/dirname.m4 \
 	$(top_srcdir)/m4/double-slash-root.m4 $(top_srcdir)/m4/dup.m4 \
 	$(top_srcdir)/m4/dup2.m4 $(top_srcdir)/m4/dup3.m4 \
 	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/environ.m4 \
@@ -409,7 +411,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
 	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
 	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs_progs.m4 \
+	$(top_srcdir)/m4/guestfs_c.m4 \
+	$(top_srcdir)/m4/guestfs_libraries.m4 \
+	$(top_srcdir)/m4/guestfs_fuse.m4 \
+	$(top_srcdir)/m4/guestfs_daemon.m4 \
+	$(top_srcdir)/m4/guestfs_appliance.m4 \
+	$(top_srcdir)/m4/guestfs_qemu.m4 \
+	$(top_srcdir)/m4/guestfs_misc_libraries.m4 \
+	$(top_srcdir)/m4/guestfs_ocaml.m4 \
+	$(top_srcdir)/m4/guestfs_perl.m4 \
+	$(top_srcdir)/m4/guestfs_python.m4 \
+	$(top_srcdir)/m4/guestfs_ruby.m4 \
+	$(top_srcdir)/m4/guestfs_java.m4 \
+	$(top_srcdir)/m4/guestfs_haskell.m4 \
+	$(top_srcdir)/m4/guestfs_php.m4 \
+	$(top_srcdir)/m4/guestfs_erlang.m4 \
+	$(top_srcdir)/m4/guestfs_lua.m4 \
+	$(top_srcdir)/m4/guestfs_golang.m4 \
+	$(top_srcdir)/m4/guestfs_gobject.m4 \
+	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(noinst_HEADERS) \
@@ -426,13 +448,13 @@ am__v_AR_1 =
 libtests_a_AR = $(AR) $(ARFLAGS)
 am__DEPENDENCIES_1 =
 am__dirstamp = $(am__leading_dot)dirstamp
-am_libtests_a_OBJECTS = fd-safer-flag.$(OBJEXT) \
+am_libtests_a_OBJECTS = dtotimespec.$(OBJEXT) fd-safer-flag.$(OBJEXT) \
 	dup-safer-flag.$(OBJEXT) imaxtostr.$(OBJEXT) \
 	inttostr.$(OBJEXT) offtostr.$(OBJEXT) uinttostr.$(OBJEXT) \
 	umaxtostr.$(OBJEXT) localename.$(OBJEXT) priv-set.$(OBJEXT) \
 	progname.$(OBJEXT) sig-handler.$(OBJEXT) statat.$(OBJEXT) \
-	glthread/thread.$(OBJEXT) unlinkdir.$(OBJEXT) \
-	utimecmp.$(OBJEXT)
+	glthread/thread.$(OBJEXT) timespec-add.$(OBJEXT) \
+	timespec-sub.$(OBJEXT) unlinkdir.$(OBJEXT) utimecmp.$(OBJEXT)
 libtests_a_OBJECTS = $(am_libtests_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 test_accept_SOURCES = test-accept.c
@@ -530,6 +552,11 @@ test_connect_SOURCES = test-connect.c
 test_connect_OBJECTS = test-connect.$(OBJEXT)
 test_connect_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	$(am__DEPENDENCIES_1)
+test_ctype_SOURCES = test-ctype.c
+test_ctype_OBJECTS = test-ctype.$(OBJEXT)
+test_ctype_LDADD = $(LDADD)
+test_ctype_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
 test_dirent_SOURCES = test-dirent.c
 test_dirent_OBJECTS = test-dirent.$(OBJEXT)
 test_dirent_LDADD = $(LDADD)
@@ -1132,6 +1159,11 @@ test_time_OBJECTS = test-time.$(OBJEXT)
 test_time_LDADD = $(LDADD)
 test_time_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
+test_timespec_SOURCES = test-timespec.c
+test_timespec_OBJECTS = test-timespec.$(OBJEXT)
+test_timespec_LDADD = $(LDADD)
+test_timespec_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
 test_ttyname_r_SOURCES = test-ttyname_r.c
 test_ttyname_r_OBJECTS = test-ttyname_r.$(OBJEXT)
 test_ttyname_r_LDADD = $(LDADD)
@@ -1262,18 +1294,19 @@ SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-arpa_inet.c test-base64.c test-binary-io.c test-bind.c \
 	test-bitrotate.c test-btowc.c test-byteswap.c test-c-ctype.c \
 	test-c-strcasecmp.c test-c-strncasecmp.c test-chdir.c \
-	test-cloexec.c test-close.c test-connect.c test-dirent.c \
-	test-dirent-safer.c test-dup.c test-dup-safer.c test-dup2.c \
-	test-dup3.c test-environ.c test-errno.c test-fchdir.c \
-	test-fcntl.c test-fcntl-h.c test-fcntl-safer.c test-fdopen.c \
-	test-fdopendir.c test-fgetc.c test-filevercmp.c test-float.c \
-	test-fnmatch.c test-fpending.c test-fputc.c test-fread.c \
-	test-fstat.c test-fstatat.c test-ftell.c test-ftell3.c \
-	test-ftello.c test-ftello3.c test-ftello4.c test-ftruncate.c \
-	test-futimens.c test-fwrite.c test-getaddrinfo.c test-getcwd.c \
-	test-getcwd-lgpl.c test-getdelim.c test-getdtablesize.c \
-	test-getline.c test-getopt.c test-gettimeofday.c test-glob.c \
-	test-hash.c test-i-ring.c test-iconv.c test-ignore-value.c \
+	test-cloexec.c test-close.c test-connect.c test-ctype.c \
+	test-dirent.c test-dirent-safer.c test-dup.c test-dup-safer.c \
+	test-dup2.c test-dup3.c test-environ.c test-errno.c \
+	test-fchdir.c test-fcntl.c test-fcntl-h.c test-fcntl-safer.c \
+	test-fdopen.c test-fdopendir.c test-fgetc.c test-filevercmp.c \
+	test-float.c test-fnmatch.c test-fpending.c test-fputc.c \
+	test-fread.c test-fstat.c test-fstatat.c test-ftell.c \
+	test-ftell3.c test-ftello.c test-ftello3.c test-ftello4.c \
+	test-ftruncate.c test-futimens.c test-fwrite.c \
+	test-getaddrinfo.c test-getcwd.c test-getcwd-lgpl.c \
+	test-getdelim.c test-getdtablesize.c test-getline.c \
+	test-getopt.c test-gettimeofday.c test-glob.c test-hash.c \
+	test-i-ring.c test-iconv.c test-ignore-value.c \
 	test-inet_ntop.c test-inet_pton.c test-intprops.c \
 	test-inttostr.c test-inttypes.c test-ioctl.c test-isatty.c \
 	test-langinfo.c test-listen.c test-locale.c test-localeconv.c \
@@ -1299,10 +1332,10 @@ SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-sys_socket.c test-sys_stat.c test-sys_time.c \
 	test-sys_types.c test-sys_uio.c test-sys_wait.c \
 	test-thread_create.c test-thread_self.c test-time.c \
-	test-ttyname_r.c test-unistd.c test-unlink.c test-unlinkat.c \
-	test-unsetenv.c test-utimens.c test-vasnprintf.c \
-	test-vasprintf.c test-verify.c test-wchar.c test-wcrtomb.c \
-	test-wcrtomb-w32.c test-wctype-h.c test-write.c \
+	test-timespec.c test-ttyname_r.c test-unistd.c test-unlink.c \
+	test-unlinkat.c test-unsetenv.c test-utimens.c \
+	test-vasnprintf.c test-vasprintf.c test-verify.c test-wchar.c \
+	test-wcrtomb.c test-wcrtomb-w32.c test-wctype-h.c test-write.c \
 	test-xalloc-die.c test-xstrtol.c test-xstrtoll.c \
 	test-xstrtoul.c test-xstrtoull.c test-xstrtoumax.c \
 	test-xvasprintf.c
@@ -1312,18 +1345,19 @@ DIST_SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-arpa_inet.c test-base64.c test-binary-io.c test-bind.c \
 	test-bitrotate.c test-btowc.c test-byteswap.c test-c-ctype.c \
 	test-c-strcasecmp.c test-c-strncasecmp.c test-chdir.c \
-	test-cloexec.c test-close.c test-connect.c test-dirent.c \
-	test-dirent-safer.c test-dup.c test-dup-safer.c test-dup2.c \
-	test-dup3.c test-environ.c test-errno.c test-fchdir.c \
-	test-fcntl.c test-fcntl-h.c test-fcntl-safer.c test-fdopen.c \
-	test-fdopendir.c test-fgetc.c test-filevercmp.c test-float.c \
-	test-fnmatch.c test-fpending.c test-fputc.c test-fread.c \
-	test-fstat.c test-fstatat.c test-ftell.c test-ftell3.c \
-	test-ftello.c test-ftello3.c test-ftello4.c test-ftruncate.c \
-	test-futimens.c test-fwrite.c test-getaddrinfo.c test-getcwd.c \
-	test-getcwd-lgpl.c test-getdelim.c test-getdtablesize.c \
-	test-getline.c test-getopt.c test-gettimeofday.c test-glob.c \
-	test-hash.c test-i-ring.c test-iconv.c test-ignore-value.c \
+	test-cloexec.c test-close.c test-connect.c test-ctype.c \
+	test-dirent.c test-dirent-safer.c test-dup.c test-dup-safer.c \
+	test-dup2.c test-dup3.c test-environ.c test-errno.c \
+	test-fchdir.c test-fcntl.c test-fcntl-h.c test-fcntl-safer.c \
+	test-fdopen.c test-fdopendir.c test-fgetc.c test-filevercmp.c \
+	test-float.c test-fnmatch.c test-fpending.c test-fputc.c \
+	test-fread.c test-fstat.c test-fstatat.c test-ftell.c \
+	test-ftell3.c test-ftello.c test-ftello3.c test-ftello4.c \
+	test-ftruncate.c test-futimens.c test-fwrite.c \
+	test-getaddrinfo.c test-getcwd.c test-getcwd-lgpl.c \
+	test-getdelim.c test-getdtablesize.c test-getline.c \
+	test-getopt.c test-gettimeofday.c test-glob.c test-hash.c \
+	test-i-ring.c test-iconv.c test-ignore-value.c \
 	test-inet_ntop.c test-inet_pton.c test-intprops.c \
 	test-inttostr.c test-inttypes.c test-ioctl.c test-isatty.c \
 	test-langinfo.c test-listen.c test-locale.c test-localeconv.c \
@@ -1349,10 +1383,10 @@ DIST_SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-sys_socket.c test-sys_stat.c test-sys_time.c \
 	test-sys_types.c test-sys_uio.c test-sys_wait.c \
 	test-thread_create.c test-thread_self.c test-time.c \
-	test-ttyname_r.c test-unistd.c test-unlink.c test-unlinkat.c \
-	test-unsetenv.c test-utimens.c test-vasnprintf.c \
-	test-vasprintf.c test-verify.c test-wchar.c test-wcrtomb.c \
-	test-wcrtomb-w32.c test-wctype-h.c test-write.c \
+	test-timespec.c test-ttyname_r.c test-unistd.c test-unlink.c \
+	test-unlinkat.c test-unsetenv.c test-utimens.c \
+	test-vasnprintf.c test-vasprintf.c test-verify.c test-wchar.c \
+	test-wcrtomb.c test-wcrtomb-w32.c test-wctype-h.c test-write.c \
 	test-xalloc-die.c test-xstrtol.c test-xstrtoll.c \
 	test-xstrtoul.c test-xstrtoull.c test-xstrtoumax.c \
 	test-xvasprintf.c
@@ -1377,7 +1411,7 @@ am__recursive_targets = \
   $(RECURSIVE_CLEAN_TARGETS) \
   $(am__extra_recursive_targets)
 AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
-	distdir
+	check recheck distdir
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -1419,9 +1453,191 @@ am__tty_colors = { \
     std='[m'; \
   fi; \
 }
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+am__recheck_rx = ^[ 	]*:recheck:[ 	]*
+am__global_test_result_rx = ^[ 	]*:global-test-result:[ 	]*
+am__copy_in_global_log_rx = ^[ 	]*:copy-in-global-log:[ 	]*
+# A command that, given a newline-separated list of test names on the
+# standard input, print the name of the tests that are to be re-run
+# upon "make recheck".
+am__list_recheck_tests = $(AWK) '{ \
+  recheck = 1; \
+  while ((rc = (getline line < ($$0 ".trs"))) != 0) \
+    { \
+      if (rc < 0) \
+        { \
+          if ((getline line2 < ($$0 ".log")) < 0) \
+	    recheck = 0; \
+          break; \
+        } \
+      else if (line ~ /$(am__recheck_rx)[nN][Oo]/) \
+        { \
+          recheck = 0; \
+          break; \
+        } \
+      else if (line ~ /$(am__recheck_rx)[yY][eE][sS]/) \
+        { \
+          break; \
+        } \
+    }; \
+  if (recheck) \
+    print $$0; \
+  close ($$0 ".trs"); \
+  close ($$0 ".log"); \
+}'
+# A command that, given a newline-separated list of test names on the
+# standard input, create the global log from their .trs and .log files.
+am__create_global_log = $(AWK) ' \
+function fatal(msg) \
+{ \
+  print "fatal: making $@: " msg | "cat >&2"; \
+  exit 1; \
+} \
+function rst_section(header) \
+{ \
+  print header; \
+  len = length(header); \
+  for (i = 1; i <= len; i = i + 1) \
+    printf "="; \
+  printf "\n\n"; \
+} \
+{ \
+  copy_in_global_log = 1; \
+  global_test_result = "RUN"; \
+  while ((rc = (getline line < ($$0 ".trs"))) != 0) \
+    { \
+      if (rc < 0) \
+         fatal("failed to read from " $$0 ".trs"); \
+      if (line ~ /$(am__global_test_result_rx)/) \
+        { \
+          sub("$(am__global_test_result_rx)", "", line); \
+          sub("[ 	]*$$", "", line); \
+          global_test_result = line; \
+        } \
+      else if (line ~ /$(am__copy_in_global_log_rx)[nN][oO]/) \
+        copy_in_global_log = 0; \
+    }; \
+  if (copy_in_global_log) \
+    { \
+      rst_section(global_test_result ": " $$0); \
+      while ((rc = (getline line < ($$0 ".log"))) != 0) \
+      { \
+        if (rc < 0) \
+          fatal("failed to read from " $$0 ".log"); \
+        print line; \
+      }; \
+      printf "\n"; \
+    }; \
+  close ($$0 ".trs"); \
+  close ($$0 ".log"); \
+}'
+# Restructured Text title.
+am__rst_title = { sed 's/.*/   &   /;h;s/./=/g;p;x;s/ *$$//;p;g' && echo; }
+# Solaris 10 'make', and several other traditional 'make' implementations,
+# pass "-e" to $(SHELL), and POSIX 2008 even requires this.  Work around it
+# by disabling -e (using the XSI extension "set +e") if it's set.
+am__sh_e_setup = case $$- in *e*) set +e;; esac
+# Default flags passed to test drivers.
+am__common_driver_flags = \
+  --color-tests "$$am__color_tests" \
+  --enable-hard-errors "$$am__enable_hard_errors" \
+  --expect-failure "$$am__expect_failure"
+# To be inserted before the command running the test.  Creates the
+# directory for the log if needed.  Stores in $dir the directory
+# containing $f, in $tst the test, in $log the log.  Executes the
+# developer- defined test setup AM_TESTS_ENVIRONMENT (if any), and
+# passes TESTS_ENVIRONMENT.  Set up options for the wrapper that
+# will run the test scripts (or their associated LOG_COMPILER, if
+# thy have one).
+am__check_pre = \
+$(am__sh_e_setup);					\
+$(am__vpath_adj_setup) $(am__vpath_adj)			\
+$(am__tty_colors);					\
+srcdir=$(srcdir); export srcdir;			\
+case "$@" in						\
+  */*) am__odir=`echo "./$@" | sed 's|/[^/]*$$||'`;;	\
+    *) am__odir=.;; 					\
+esac;							\
+test "x$$am__odir" = x"." || test -d "$$am__odir" 	\
+  || $(MKDIR_P) "$$am__odir" || exit $$?;		\
+if test -f "./$$f"; then dir=./;			\
+elif test -f "$$f"; then dir=;				\
+else dir="$(srcdir)/"; fi;				\
+tst=$$dir$$f; log='$@'; 				\
+if test -n '$(DISABLE_HARD_ERRORS)'; then		\
+  am__enable_hard_errors=no; 				\
+else							\
+  am__enable_hard_errors=yes; 				\
+fi; 							\
+case " $(XFAIL_TESTS) " in				\
+  *[\ \	]$$f[\ \	]* | *[\ \	]$$dir$$f[\ \	]*) \
+    am__expect_failure=yes;;				\
+  *)							\
+    am__expect_failure=no;;				\
+esac; 							\
+$(AM_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)
+# A shell command to get the names of the tests scripts with any registered
+# extension removed (i.e., equivalently, the names of the test logs, with
+# the '.log' extension removed).  The result is saved in the shell variable
+# '$bases'.  This honors runtime overriding of TESTS and TEST_LOGS.  Sadly,
+# we cannot use something simpler, involving e.g., "$(TEST_LOGS:.log=)",
+# since that might cause problem with VPATH rewrites for suffix-less tests.
+# See also 'test-harness-vpath-rewrite.sh' and 'test-trs-basic.sh'.
+am__set_TESTS_bases = \
+  bases='$(TEST_LOGS)'; \
+  bases=`for i in $$bases; do echo $$i; done | sed 's/\.log$$//'`; \
+  bases=`echo $$bases`
+RECHECK_LOGS = $(TEST_LOGS)
+TEST_SUITE_LOG = test-suite.log
+TEST_EXTENSIONS = @EXEEXT@ .test
+LOG_DRIVER = $(SHELL) $(top_srcdir)/build-aux/test-driver
+LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
+am__set_b = \
+  case '$@' in \
+    */*) \
+      case '$*' in \
+        */*) b='$*';; \
+          *) b=`echo '$@' | sed 's/\.log$$//'`; \
+       esac;; \
+    *) \
+      b='$*';; \
+  esac
+am__test_logs1 = $(TESTS:=.log)
+am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
+TEST_LOGS = $(am__test_logs2:.test.log=.log)
+TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/build-aux/test-driver
+TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
+	$(TEST_LOG_FLAGS)
 DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(srcdir)/Makefile.in \
-	$(top_srcdir)/build-aux/depcomp
+	$(top_srcdir)/build-aux/depcomp \
+	$(top_srcdir)/build-aux/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -1620,6 +1836,7 @@ GNULIB_INET_NTOP = @GNULIB_INET_NTOP@
 GNULIB_INET_PTON = @GNULIB_INET_PTON@
 GNULIB_IOCTL = @GNULIB_IOCTL@
 GNULIB_ISATTY = @GNULIB_ISATTY@
+GNULIB_ISBLANK = @GNULIB_ISBLANK@
 GNULIB_ISWBLANK = @GNULIB_ISWBLANK@
 GNULIB_ISWCTYPE = @GNULIB_ISWCTYPE@
 GNULIB_LCHMOD = @GNULIB_LCHMOD@
@@ -1759,6 +1976,7 @@ GNULIB_SYMLINKAT = @GNULIB_SYMLINKAT@
 GNULIB_SYSTEM_POSIX = @GNULIB_SYSTEM_POSIX@
 GNULIB_TIMEGM = @GNULIB_TIMEGM@
 GNULIB_TIME_R = @GNULIB_TIME_R@
+GNULIB_TIME_RZ = @GNULIB_TIME_RZ@
 GNULIB_TMPFILE = @GNULIB_TMPFILE@
 GNULIB_TOWCTRANS = @GNULIB_TOWCTRANS@
 GNULIB_TTYNAME_R = @GNULIB_TTYNAME_R@
@@ -1918,6 +2136,7 @@ HAVE_GETTIMEOFDAY = @HAVE_GETTIMEOFDAY@
 HAVE_GRANTPT = @HAVE_GRANTPT@
 HAVE_GROUP_MEMBER = @HAVE_GROUP_MEMBER@
 HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
+HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
 HAVE_ISWCNTRL = @HAVE_ISWCNTRL@
 HAVE_LANGINFO_CODESET = @HAVE_LANGINFO_CODESET@
@@ -2027,6 +2246,7 @@ HAVE_SYS_TIME_H = @HAVE_SYS_TIME_H@
 HAVE_SYS_TYPES_H = @HAVE_SYS_TYPES_H@
 HAVE_SYS_UIO_H = @HAVE_SYS_UIO_H@
 HAVE_TIMEGM = @HAVE_TIMEGM@
+HAVE_TIMEZONE_T = @HAVE_TIMEZONE_T@
 HAVE_TYPE_VOLATILE_SIG_ATOMIC_T = @HAVE_TYPE_VOLATILE_SIG_ATOMIC_T@
 HAVE_UNISTD_H = @HAVE_UNISTD_H@
 HAVE_UNLINKAT = @HAVE_UNLINKAT@
@@ -2176,6 +2396,7 @@ MSGMERGE = @MSGMERGE@
 NETINET_IN_H = @NETINET_IN_H@
 NEXT_ARPA_INET_H = @NEXT_ARPA_INET_H@
 NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H = @NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H@
+NEXT_AS_FIRST_DIRECTIVE_CTYPE_H = @NEXT_AS_FIRST_DIRECTIVE_CTYPE_H@
 NEXT_AS_FIRST_DIRECTIVE_DIRENT_H = @NEXT_AS_FIRST_DIRECTIVE_DIRENT_H@
 NEXT_AS_FIRST_DIRECTIVE_ERRNO_H = @NEXT_AS_FIRST_DIRECTIVE_ERRNO_H@
 NEXT_AS_FIRST_DIRECTIVE_FCNTL_H = @NEXT_AS_FIRST_DIRECTIVE_FCNTL_H@
@@ -2205,6 +2426,7 @@ NEXT_AS_FIRST_DIRECTIVE_TIME_H = @NEXT_AS_FIRST_DIRECTIVE_TIME_H@
 NEXT_AS_FIRST_DIRECTIVE_UNISTD_H = @NEXT_AS_FIRST_DIRECTIVE_UNISTD_H@
 NEXT_AS_FIRST_DIRECTIVE_WCHAR_H = @NEXT_AS_FIRST_DIRECTIVE_WCHAR_H@
 NEXT_AS_FIRST_DIRECTIVE_WCTYPE_H = @NEXT_AS_FIRST_DIRECTIVE_WCTYPE_H@
+NEXT_CTYPE_H = @NEXT_CTYPE_H@
 NEXT_DIRENT_H = @NEXT_DIRENT_H@
 NEXT_ERRNO_H = @NEXT_ERRNO_H@
 NEXT_FCNTL_H = @NEXT_FCNTL_H@
@@ -2298,6 +2520,7 @@ PYTHON_VERSION = @PYTHON_VERSION@
 QEMU = @QEMU@
 RAKE = @RAKE@
 RANLIB = @RANLIB@
+RELEASE_DATE = @RELEASE_DATE@
 REPLACE_BTOWC = @REPLACE_BTOWC@
 REPLACE_CALLOC = @REPLACE_CALLOC@
 REPLACE_CANONICALIZE_FILE_NAME = @REPLACE_CANONICALIZE_FILE_NAME@
@@ -2606,31 +2829,31 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	test-c-strcase.sh test-c-strcasecmp.c test-c-strncasecmp.c \
 	macros.h test-chdir.c signature.h macros.h test-cloexec.c \
 	macros.h test-close.c signature.h macros.h test-connect.c \
-	signature.h macros.h test-dirent-safer.c macros.h \
-	test-dirent.c test-dup.c signature.h macros.h test-dup2.c \
-	signature.h macros.h test-dup3.c signature.h macros.h \
-	test-environ.c test-errno.c test-fchdir.c signature.h macros.h \
-	test-fcntl-h.c test-open.h test-fcntl-safer.c macros.h \
-	test-fcntl.c signature.h macros.h fdopen.c test-fdopen.c \
-	signature.h macros.h test-fdopendir.c signature.h macros.h \
-	test-fgetc.c signature.h macros.h test-filevercmp.c macros.h \
-	test-float.c macros.h test-fnmatch.c signature.h macros.h \
-	test-fpending.c test-fpending.sh macros.h fpucw.h test-fputc.c \
-	signature.h macros.h test-fread.c signature.h macros.h \
-	test-fstat.c signature.h macros.h test-fstatat.c test-lstat.h \
-	test-stat.h signature.h macros.h test-ftell.c test-ftell.sh \
-	test-ftell2.sh test-ftell3.c signature.h macros.h \
-	test-ftello.c test-ftello.sh test-ftello2.sh test-ftello3.c \
-	test-ftello4.c test-ftello4.sh signature.h macros.h \
-	ftruncate.c test-ftruncate.c test-ftruncate.sh signature.h \
-	macros.h nap.h test-futimens.h test-utimens-common.h \
-	test-futimens.c signature.h macros.h test-fwrite.c signature.h \
-	macros.h signature.h test-getaddrinfo.c test-getcwd-lgpl.c \
-	signature.h macros.h test-getcwd.c test-getcwd.sh \
-	test-getdelim.c signature.h macros.h test-getdtablesize.c \
-	signature.h macros.h test-getline.c signature.h macros.h \
-	macros.h signature.h test-getopt.c test-getopt.h \
-	test-getopt_long.h getpagesize.c \
+	signature.h macros.h ctype.in.h test-ctype.c \
+	test-dirent-safer.c macros.h test-dirent.c test-dup.c \
+	signature.h macros.h test-dup2.c signature.h macros.h \
+	test-dup3.c signature.h macros.h test-environ.c test-errno.c \
+	test-fchdir.c signature.h macros.h test-fcntl-h.c test-open.h \
+	test-fcntl-safer.c macros.h test-fcntl.c signature.h macros.h \
+	fdopen.c test-fdopen.c signature.h macros.h test-fdopendir.c \
+	signature.h macros.h test-fgetc.c signature.h macros.h \
+	test-filevercmp.c macros.h test-float.c macros.h \
+	test-fnmatch.c signature.h macros.h test-fpending.c \
+	test-fpending.sh macros.h fpucw.h test-fputc.c signature.h \
+	macros.h test-fread.c signature.h macros.h test-fstat.c \
+	signature.h macros.h test-fstatat.c test-lstat.h test-stat.h \
+	signature.h macros.h test-ftell.c test-ftell.sh test-ftell2.sh \
+	test-ftell3.c signature.h macros.h test-ftello.c \
+	test-ftello.sh test-ftello2.sh test-ftello3.c test-ftello4.c \
+	test-ftello4.sh signature.h macros.h ftruncate.c \
+	test-ftruncate.c test-ftruncate.sh signature.h macros.h nap.h \
+	test-futimens.h test-utimens-common.h test-futimens.c \
+	signature.h macros.h test-fwrite.c signature.h macros.h \
+	signature.h test-getaddrinfo.c test-getcwd-lgpl.c signature.h \
+	macros.h test-getcwd.c test-getcwd.sh test-getdelim.c \
+	signature.h macros.h test-getdtablesize.c signature.h macros.h \
+	test-getline.c signature.h macros.h macros.h signature.h \
+	test-getopt.c test-getopt.h test-getopt_long.h getpagesize.c \
 	$(top_srcdir)/build-aux/config.rpath signature.h \
 	test-gettimeofday.c test-glob.c signature.h macros.h \
 	test-hash.c macros.h test-i-ring.c macros.h test-iconv.c \
@@ -2698,14 +2921,14 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	test-sys_socket.c test-sys_stat.c test-sys_time.c \
 	test-sys_types.c test-sys_uio.c test-sys_wait.c \
 	test-sys_wait.h init.sh test-init.sh test-thread_self.c \
-	test-thread_create.c macros.h test-time.c test-ttyname_r.c \
-	signature.h macros.h test-dup-safer.c macros.h test-unistd.c \
-	unlink.c test-unlink.h test-unlink.c signature.h macros.h \
-	at-func.c unlinkat.c test-unlinkat.c test-rmdir.h \
-	test-unlink.h signature.h macros.h unlinkdir.h unsetenv.c \
-	test-unsetenv.c signature.h macros.h utimecmp.h nap.h \
-	test-futimens.h test-lutimens.h test-utimens.h \
-	test-utimens-common.h test-utimens.c macros.h \
+	test-thread_create.c macros.h test-time.c test-timespec.c \
+	macros.h test-ttyname_r.c signature.h macros.h \
+	test-dup-safer.c macros.h test-unistd.c unlink.c test-unlink.h \
+	test-unlink.c signature.h macros.h at-func.c unlinkat.c \
+	test-unlinkat.c test-rmdir.h test-unlink.h signature.h \
+	macros.h unlinkdir.h unsetenv.c test-unsetenv.c signature.h \
+	macros.h utimecmp.h nap.h test-futimens.h test-lutimens.h \
+	test-utimens.h test-utimens-common.h test-utimens.c macros.h \
 	test-vasnprintf.c macros.h test-vasprintf.c signature.h \
 	macros.h test-vc-list-files-git.sh test-vc-list-files-cvs.sh \
 	test-verify.c test-verify.sh test-wchar.c wcrtomb.c \
@@ -2728,14 +2951,14 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 # statements but through direct file reference. Therefore this snippet must be
 # present in all Makefile.am that need it. This is ensured by the applicability
 # 'all' defined above.
-BUILT_SOURCES = langinfo.h arg-nonnull.h c++defs.h warn-on-use.h \
-	sys/ioctl.h
+BUILT_SOURCES = ctype.h langinfo.h arg-nonnull.h c++defs.h \
+	warn-on-use.h sys/ioctl.h
 SUFFIXES = 
-MOSTLYCLEANFILES = core *.stackdump test-fpending.t t-ftell3.tmp \
-	t-ftello3.tmp test-getdelim.txt test-getline.txt langinfo.h \
-	langinfo.h-t arg-nonnull.h arg-nonnull.h-t c++defs.h \
-	c++defs.h-t warn-on-use.h warn-on-use.h-t sys/ioctl.h \
-	sys/ioctl.h-t
+MOSTLYCLEANFILES = core *.stackdump ctype.h ctype.h-t test-fpending.t \
+	t-ftell3.tmp t-ftello3.tmp test-getdelim.txt test-getline.txt \
+	langinfo.h langinfo.h-t arg-nonnull.h arg-nonnull.h-t \
+	c++defs.h c++defs.h-t warn-on-use.h warn-on-use.h-t \
+	sys/ioctl.h sys/ioctl.h-t
 MOSTLYCLEANDIRS = sys
 CLEANFILES = 
 DISTCLEANFILES = 
@@ -2747,11 +2970,11 @@ AM_CPPFLAGS = \
   -I../../gnulib/lib -I$(srcdir)/../../gnulib/lib
 
 LDADD = libtests.a ../../gnulib/lib/libgnu.la libtests.a $(LIBTESTS_LIBDEPS)
-libtests_a_SOURCES = fd-safer-flag.c dup-safer-flag.c imaxtostr.c \
-	inttostr.c offtostr.c uinttostr.c umaxtostr.c localename.c \
-	priv-set.c progname.h progname.c sig-handler.c statat.c \
-	glthread/thread.h glthread/thread.c unlinkdir.c utimecmp.c \
-	glthread/yield.h
+libtests_a_SOURCES = dtotimespec.c fd-safer-flag.c dup-safer-flag.c \
+	imaxtostr.c inttostr.c offtostr.c uinttostr.c umaxtostr.c \
+	localename.c priv-set.c progname.h progname.c sig-handler.c \
+	statat.c glthread/thread.h glthread/thread.c timespec-add.c \
+	timespec-sub.c unlinkdir.c utimecmp.c glthread/yield.h
 libtests_a_LIBADD = $(gltests_LIBOBJS)
 libtests_a_DEPENDENCIES = $(gltests_LIBOBJS)
 EXTRA_libtests_a_SOURCES = bind.c btowc.c fdopen.c ftruncate.c \
@@ -2821,7 +3044,7 @@ all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
+.SUFFIXES: .c .lo .log .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -2968,6 +3191,10 @@ test-close$(EXEEXT): $(test_close_OBJECTS) $(test_close_DEPENDENCIES) $(EXTRA_te
 test-connect$(EXEEXT): $(test_connect_OBJECTS) $(test_connect_DEPENDENCIES) $(EXTRA_test_connect_DEPENDENCIES) 
 	@rm -f test-connect$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_connect_OBJECTS) $(test_connect_LDADD) $(LIBS)
+
+test-ctype$(EXEEXT): $(test_ctype_OBJECTS) $(test_ctype_DEPENDENCIES) $(EXTRA_test_ctype_DEPENDENCIES) 
+	@rm -f test-ctype$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_ctype_OBJECTS) $(test_ctype_LDADD) $(LIBS)
 
 test-dirent$(EXEEXT): $(test_dirent_OBJECTS) $(test_dirent_DEPENDENCIES) $(EXTRA_test_dirent_DEPENDENCIES) 
 	@rm -f test-dirent$(EXEEXT)
@@ -3497,6 +3724,10 @@ test-time$(EXEEXT): $(test_time_OBJECTS) $(test_time_DEPENDENCIES) $(EXTRA_test_
 	@rm -f test-time$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_time_OBJECTS) $(test_time_LDADD) $(LIBS)
 
+test-timespec$(EXEEXT): $(test_timespec_OBJECTS) $(test_timespec_DEPENDENCIES) $(EXTRA_test_timespec_DEPENDENCIES) 
+	@rm -f test-timespec$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_timespec_OBJECTS) $(test_timespec_LDADD) $(LIBS)
+
 test-ttyname_r$(EXEEXT): $(test_ttyname_r_OBJECTS) $(test_ttyname_r_DEPENDENCIES) $(EXTRA_test_ttyname_r_DEPENDENCIES) 
 	@rm -f test-ttyname_r$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_ttyname_r_OBJECTS) $(test_ttyname_r_LDADD) $(LIBS)
@@ -3592,6 +3823,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/at-func.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/btowc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dtotimespec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dup-safer-flag.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fd-safer-flag.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fdopen.Po@am__quote@
@@ -3637,6 +3869,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-cloexec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-close.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-connect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-ctype.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-dirent-safer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-dirent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-dup-safer.Po@am__quote@
@@ -3769,6 +4002,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-thread_create.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-thread_self.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-time.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-timespec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-ttyname_r.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-unistd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-unlink.Po@am__quote@
@@ -3790,6 +4024,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-xstrtoull.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-xstrtoumax.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-xvasprintf.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timespec-add.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timespec-sub.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uinttostr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/umaxtostr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unlink.Po@am__quote@
@@ -3931,98 +4167,1512 @@ cscopelist-am: $(am__tagged_files)
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
-check-TESTS: $(TESTS)
-	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
-	srcdir=$(srcdir); export srcdir; \
-	list=' $(TESTS) '; \
-	$(am__tty_colors); \
-	if test -n "$$list"; then \
-	  for tst in $$list; do \
-	    if test -f ./$$tst; then dir=./; \
-	    elif test -f $$tst; then dir=; \
-	    else dir="$(srcdir)/"; fi; \
-	    if $(TESTS_ENVIRONMENT) $${dir}$$tst $(AM_TESTS_FD_REDIRECT); then \
-	      all=`expr $$all + 1`; \
-	      case " $(XFAIL_TESTS) " in \
-	      *[\ \	]$$tst[\ \	]*) \
-		xpass=`expr $$xpass + 1`; \
-		failed=`expr $$failed + 1`; \
-		col=$$red; res=XPASS; \
-	      ;; \
-	      *) \
-		col=$$grn; res=PASS; \
-	      ;; \
-	      esac; \
-	    elif test $$? -ne 77; then \
-	      all=`expr $$all + 1`; \
-	      case " $(XFAIL_TESTS) " in \
-	      *[\ \	]$$tst[\ \	]*) \
-		xfail=`expr $$xfail + 1`; \
-		col=$$lgn; res=XFAIL; \
-	      ;; \
-	      *) \
-		failed=`expr $$failed + 1`; \
-		col=$$red; res=FAIL; \
-	      ;; \
-	      esac; \
-	    else \
-	      skip=`expr $$skip + 1`; \
-	      col=$$blu; res=SKIP; \
-	    fi; \
-	    echo "$${col}$$res$${std}: $$tst"; \
+# Recover from deleted '.trs' file; this should ensure that
+# "rm -f foo.log; make foo.trs" re-run 'foo.test', and re-create
+# both 'foo.log' and 'foo.trs'.  Break the recipe in two subshells
+# to avoid problems with "make -n".
+.log.trs:
+	rm -f $< $@
+	$(MAKE) $(AM_MAKEFLAGS) $<
+
+# Leading 'am--fnord' is there to ensure the list of targets does not
+# expand to empty, as could happen e.g. with make check TESTS=''.
+am--fnord $(TEST_LOGS) $(TEST_LOGS:.log=.trs): $(am__force_recheck)
+am--force-recheck:
+	@:
+
+$(TEST_SUITE_LOG): $(TEST_LOGS)
+	@$(am__set_TESTS_bases); \
+	am__f_ok () { test -f "$$1" && test -r "$$1"; }; \
+	redo_bases=`for i in $$bases; do \
+	              am__f_ok $$i.trs && am__f_ok $$i.log || echo $$i; \
+	            done`; \
+	if test -n "$$redo_bases"; then \
+	  redo_logs=`for i in $$redo_bases; do echo $$i.log; done`; \
+	  redo_results=`for i in $$redo_bases; do echo $$i.trs; done`; \
+	  if $(am__make_dryrun); then :; else \
+	    rm -f $$redo_logs && rm -f $$redo_results || exit 1; \
+	  fi; \
+	fi; \
+	if test -n "$$am__remaking_logs"; then \
+	  echo "fatal: making $(TEST_SUITE_LOG): possible infinite" \
+	       "recursion detected" >&2; \
+	elif test -n "$$redo_logs"; then \
+	  am__remaking_logs=yes $(MAKE) $(AM_MAKEFLAGS) $$redo_logs; \
+	fi; \
+	if $(am__make_dryrun); then :; else \
+	  st=0;  \
+	  errmsg="fatal: making $(TEST_SUITE_LOG): failed to create"; \
+	  for i in $$redo_bases; do \
+	    test -f $$i.trs && test -r $$i.trs \
+	      || { echo "$$errmsg $$i.trs" >&2; st=1; }; \
+	    test -f $$i.log && test -r $$i.log \
+	      || { echo "$$errmsg $$i.log" >&2; st=1; }; \
 	  done; \
-	  if test "$$all" -eq 1; then \
-	    tests="test"; \
-	    All=""; \
-	  else \
-	    tests="tests"; \
-	    All="All "; \
-	  fi; \
-	  if test "$$failed" -eq 0; then \
-	    if test "$$xfail" -eq 0; then \
-	      banner="$$All$$all $$tests passed"; \
+	  test $$st -eq 0 || exit 1; \
+	fi
+	@$(am__sh_e_setup); $(am__tty_colors); $(am__set_TESTS_bases); \
+	ws='[ 	]'; \
+	results=`for b in $$bases; do echo $$b.trs; done`; \
+	test -n "$$results" || results=/dev/null; \
+	all=`  grep "^$$ws*:test-result:"           $$results | wc -l`; \
+	pass=` grep "^$$ws*:test-result:$$ws*PASS"  $$results | wc -l`; \
+	fail=` grep "^$$ws*:test-result:$$ws*FAIL"  $$results | wc -l`; \
+	skip=` grep "^$$ws*:test-result:$$ws*SKIP"  $$results | wc -l`; \
+	xfail=`grep "^$$ws*:test-result:$$ws*XFAIL" $$results | wc -l`; \
+	xpass=`grep "^$$ws*:test-result:$$ws*XPASS" $$results | wc -l`; \
+	error=`grep "^$$ws*:test-result:$$ws*ERROR" $$results | wc -l`; \
+	if test `expr $$fail + $$xpass + $$error` -eq 0; then \
+	  success=true; \
+	else \
+	  success=false; \
+	fi; \
+	br='==================='; br=$$br$$br$$br$$br; \
+	result_count () \
+	{ \
+	    if test x"$$1" = x"--maybe-color"; then \
+	      maybe_colorize=yes; \
+	    elif test x"$$1" = x"--no-color"; then \
+	      maybe_colorize=no; \
 	    else \
-	      if test "$$xfail" -eq 1; then failures=failure; else failures=failures; fi; \
-	      banner="$$All$$all $$tests behaved as expected ($$xfail expected $$failures)"; \
+	      echo "$@: invalid 'result_count' usage" >&2; exit 4; \
 	    fi; \
-	  else \
-	    if test "$$xpass" -eq 0; then \
-	      banner="$$failed of $$all $$tests failed"; \
+	    shift; \
+	    desc=$$1 count=$$2; \
+	    if test $$maybe_colorize = yes && test $$count -gt 0; then \
+	      color_start=$$3 color_end=$$std; \
 	    else \
-	      if test "$$xpass" -eq 1; then passes=pass; else passes=passes; fi; \
-	      banner="$$failed of $$all $$tests did not behave as expected ($$xpass unexpected $$passes)"; \
+	      color_start= color_end=; \
 	    fi; \
-	  fi; \
-	  dashes="$$banner"; \
-	  skipped=""; \
-	  if test "$$skip" -ne 0; then \
-	    if test "$$skip" -eq 1; then \
-	      skipped="($$skip test was not run)"; \
-	    else \
-	      skipped="($$skip tests were not run)"; \
-	    fi; \
-	    test `echo "$$skipped" | wc -c` -le `echo "$$banner" | wc -c` || \
-	      dashes="$$skipped"; \
-	  fi; \
-	  report=""; \
-	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
-	    report="Please report to $(PACKAGE_BUGREPORT)"; \
-	    test `echo "$$report" | wc -c` -le `echo "$$banner" | wc -c` || \
-	      dashes="$$report"; \
-	  fi; \
-	  dashes=`echo "$$dashes" | sed s/./=/g`; \
-	  if test "$$failed" -eq 0; then \
-	    col="$$grn"; \
-	  else \
-	    col="$$red"; \
-	  fi; \
-	  echo "$${col}$$dashes$${std}"; \
-	  echo "$${col}$$banner$${std}"; \
-	  test -z "$$skipped" || echo "$${col}$$skipped$${std}"; \
-	  test -z "$$report" || echo "$${col}$$report$${std}"; \
-	  echo "$${col}$$dashes$${std}"; \
-	  test "$$failed" -eq 0; \
-	else :; fi
+	    echo "$${color_start}# $$desc $$count$${color_end}"; \
+	}; \
+	create_testsuite_report () \
+	{ \
+	  result_count $$1 "TOTAL:" $$all   "$$brg"; \
+	  result_count $$1 "PASS: " $$pass  "$$grn"; \
+	  result_count $$1 "SKIP: " $$skip  "$$blu"; \
+	  result_count $$1 "XFAIL:" $$xfail "$$lgn"; \
+	  result_count $$1 "FAIL: " $$fail  "$$red"; \
+	  result_count $$1 "XPASS:" $$xpass "$$red"; \
+	  result_count $$1 "ERROR:" $$error "$$mgn"; \
+	}; \
+	{								\
+	  echo "$(PACKAGE_STRING): $(subdir)/$(TEST_SUITE_LOG)" |	\
+	    $(am__rst_title);						\
+	  create_testsuite_report --no-color;				\
+	  echo;								\
+	  echo ".. contents:: :depth: 2";				\
+	  echo;								\
+	  for b in $$bases; do echo $$b; done				\
+	    | $(am__create_global_log);					\
+	} >$(TEST_SUITE_LOG).tmp || exit 1;				\
+	mv $(TEST_SUITE_LOG).tmp $(TEST_SUITE_LOG);			\
+	if $$success; then						\
+	  col="$$grn";							\
+	 else								\
+	  col="$$red";							\
+	  test x"$$VERBOSE" = x || cat $(TEST_SUITE_LOG);		\
+	fi;								\
+	echo "$${col}$$br$${std}"; 					\
+	echo "$${col}Testsuite summary for $(PACKAGE_STRING)$${std}";	\
+	echo "$${col}$$br$${std}"; 					\
+	create_testsuite_report --maybe-color;				\
+	echo "$$col$$br$$std";						\
+	if $$success; then :; else					\
+	  echo "$${col}See $(subdir)/$(TEST_SUITE_LOG)$${std}";		\
+	  if test -n "$(PACKAGE_BUGREPORT)"; then			\
+	    echo "$${col}Please report to $(PACKAGE_BUGREPORT)$${std}";	\
+	  fi;								\
+	  echo "$$col$$br$$std";					\
+	fi;								\
+	$$success || exit 1
+
+check-TESTS:
+	@list='$(RECHECK_LOGS)';           test -z "$$list" || rm -f $$list
+	@list='$(RECHECK_LOGS:.log=.trs)'; test -z "$$list" || rm -f $$list
+	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
+	@set +e; $(am__set_TESTS_bases); \
+	log_list=`for i in $$bases; do echo $$i.log; done`; \
+	trs_list=`for i in $$bases; do echo $$i.trs; done`; \
+	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
+	exit $$?;
+recheck: all $(check_LIBRARIES) $(check_PROGRAMS)
+	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
+	@set +e; $(am__set_TESTS_bases); \
+	bases=`for i in $$bases; do echo $$i; done \
+	         | $(am__list_recheck_tests)` || exit 1; \
+	log_list=`for i in $$bases; do echo $$i.log; done`; \
+	log_list=`echo $$log_list`; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) \
+	        am__force_recheck=am--force-recheck \
+	        TEST_LOGS="$$log_list"; \
+	exit $$?
+test-accept.log: test-accept$(EXEEXT)
+	@p='test-accept$(EXEEXT)'; \
+	b='test-accept'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-accept4.log: test-accept4$(EXEEXT)
+	@p='test-accept4$(EXEEXT)'; \
+	b='test-accept4'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-alloca-opt.log: test-alloca-opt$(EXEEXT)
+	@p='test-alloca-opt$(EXEEXT)'; \
+	b='test-alloca-opt'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-areadlink.log: test-areadlink$(EXEEXT)
+	@p='test-areadlink$(EXEEXT)'; \
+	b='test-areadlink'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-areadlinkat.log: test-areadlinkat$(EXEEXT)
+	@p='test-areadlinkat$(EXEEXT)'; \
+	b='test-areadlinkat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-argmatch.log: test-argmatch$(EXEEXT)
+	@p='test-argmatch$(EXEEXT)'; \
+	b='test-argmatch'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-arpa_inet.log: test-arpa_inet$(EXEEXT)
+	@p='test-arpa_inet$(EXEEXT)'; \
+	b='test-arpa_inet'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-base64.log: test-base64$(EXEEXT)
+	@p='test-base64$(EXEEXT)'; \
+	b='test-base64'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-binary-io.sh.log: test-binary-io.sh
+	@p='test-binary-io.sh'; \
+	b='test-binary-io.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-bind.log: test-bind$(EXEEXT)
+	@p='test-bind$(EXEEXT)'; \
+	b='test-bind'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-bitrotate.log: test-bitrotate$(EXEEXT)
+	@p='test-bitrotate$(EXEEXT)'; \
+	b='test-bitrotate'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-btowc1.sh.log: test-btowc1.sh
+	@p='test-btowc1.sh'; \
+	b='test-btowc1.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-btowc2.sh.log: test-btowc2.sh
+	@p='test-btowc2.sh'; \
+	b='test-btowc2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-byteswap.log: test-byteswap$(EXEEXT)
+	@p='test-byteswap$(EXEEXT)'; \
+	b='test-byteswap'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-c-ctype.log: test-c-ctype$(EXEEXT)
+	@p='test-c-ctype$(EXEEXT)'; \
+	b='test-c-ctype'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-c-strcase.sh.log: test-c-strcase.sh
+	@p='test-c-strcase.sh'; \
+	b='test-c-strcase.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-chdir.log: test-chdir$(EXEEXT)
+	@p='test-chdir$(EXEEXT)'; \
+	b='test-chdir'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-cloexec.log: test-cloexec$(EXEEXT)
+	@p='test-cloexec$(EXEEXT)'; \
+	b='test-cloexec'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-close.log: test-close$(EXEEXT)
+	@p='test-close$(EXEEXT)'; \
+	b='test-close'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-connect.log: test-connect$(EXEEXT)
+	@p='test-connect$(EXEEXT)'; \
+	b='test-connect'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ctype.log: test-ctype$(EXEEXT)
+	@p='test-ctype$(EXEEXT)'; \
+	b='test-ctype'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-dirent-safer.log: test-dirent-safer$(EXEEXT)
+	@p='test-dirent-safer$(EXEEXT)'; \
+	b='test-dirent-safer'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-dirent.log: test-dirent$(EXEEXT)
+	@p='test-dirent$(EXEEXT)'; \
+	b='test-dirent'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-dup.log: test-dup$(EXEEXT)
+	@p='test-dup$(EXEEXT)'; \
+	b='test-dup'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-dup2.log: test-dup2$(EXEEXT)
+	@p='test-dup2$(EXEEXT)'; \
+	b='test-dup2'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-dup3.log: test-dup3$(EXEEXT)
+	@p='test-dup3$(EXEEXT)'; \
+	b='test-dup3'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-environ.log: test-environ$(EXEEXT)
+	@p='test-environ$(EXEEXT)'; \
+	b='test-environ'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-errno.log: test-errno$(EXEEXT)
+	@p='test-errno$(EXEEXT)'; \
+	b='test-errno'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fchdir.log: test-fchdir$(EXEEXT)
+	@p='test-fchdir$(EXEEXT)'; \
+	b='test-fchdir'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fcntl-h.log: test-fcntl-h$(EXEEXT)
+	@p='test-fcntl-h$(EXEEXT)'; \
+	b='test-fcntl-h'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fcntl-safer.log: test-fcntl-safer$(EXEEXT)
+	@p='test-fcntl-safer$(EXEEXT)'; \
+	b='test-fcntl-safer'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fcntl.log: test-fcntl$(EXEEXT)
+	@p='test-fcntl$(EXEEXT)'; \
+	b='test-fcntl'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fdopen.log: test-fdopen$(EXEEXT)
+	@p='test-fdopen$(EXEEXT)'; \
+	b='test-fdopen'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fdopendir.log: test-fdopendir$(EXEEXT)
+	@p='test-fdopendir$(EXEEXT)'; \
+	b='test-fdopendir'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fgetc.log: test-fgetc$(EXEEXT)
+	@p='test-fgetc$(EXEEXT)'; \
+	b='test-fgetc'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-filevercmp.log: test-filevercmp$(EXEEXT)
+	@p='test-filevercmp$(EXEEXT)'; \
+	b='test-filevercmp'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-float.log: test-float$(EXEEXT)
+	@p='test-float$(EXEEXT)'; \
+	b='test-float'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fnmatch.log: test-fnmatch$(EXEEXT)
+	@p='test-fnmatch$(EXEEXT)'; \
+	b='test-fnmatch'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fpending.sh.log: test-fpending.sh
+	@p='test-fpending.sh'; \
+	b='test-fpending.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fputc.log: test-fputc$(EXEEXT)
+	@p='test-fputc$(EXEEXT)'; \
+	b='test-fputc'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fread.log: test-fread$(EXEEXT)
+	@p='test-fread$(EXEEXT)'; \
+	b='test-fread'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fstat.log: test-fstat$(EXEEXT)
+	@p='test-fstat$(EXEEXT)'; \
+	b='test-fstat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fstatat.log: test-fstatat$(EXEEXT)
+	@p='test-fstatat$(EXEEXT)'; \
+	b='test-fstatat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ftell.sh.log: test-ftell.sh
+	@p='test-ftell.sh'; \
+	b='test-ftell.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ftell2.sh.log: test-ftell2.sh
+	@p='test-ftell2.sh'; \
+	b='test-ftell2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ftell3.log: test-ftell3$(EXEEXT)
+	@p='test-ftell3$(EXEEXT)'; \
+	b='test-ftell3'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ftello.sh.log: test-ftello.sh
+	@p='test-ftello.sh'; \
+	b='test-ftello.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ftello2.sh.log: test-ftello2.sh
+	@p='test-ftello2.sh'; \
+	b='test-ftello2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ftello3.log: test-ftello3$(EXEEXT)
+	@p='test-ftello3$(EXEEXT)'; \
+	b='test-ftello3'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ftello4.sh.log: test-ftello4.sh
+	@p='test-ftello4.sh'; \
+	b='test-ftello4.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ftruncate.sh.log: test-ftruncate.sh
+	@p='test-ftruncate.sh'; \
+	b='test-ftruncate.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-futimens.log: test-futimens$(EXEEXT)
+	@p='test-futimens$(EXEEXT)'; \
+	b='test-futimens'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fwrite.log: test-fwrite$(EXEEXT)
+	@p='test-fwrite$(EXEEXT)'; \
+	b='test-fwrite'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-getaddrinfo.log: test-getaddrinfo$(EXEEXT)
+	@p='test-getaddrinfo$(EXEEXT)'; \
+	b='test-getaddrinfo'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-getcwd-lgpl.log: test-getcwd-lgpl$(EXEEXT)
+	@p='test-getcwd-lgpl$(EXEEXT)'; \
+	b='test-getcwd-lgpl'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-getcwd.sh.log: test-getcwd.sh
+	@p='test-getcwd.sh'; \
+	b='test-getcwd.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-getdelim.log: test-getdelim$(EXEEXT)
+	@p='test-getdelim$(EXEEXT)'; \
+	b='test-getdelim'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-getdtablesize.log: test-getdtablesize$(EXEEXT)
+	@p='test-getdtablesize$(EXEEXT)'; \
+	b='test-getdtablesize'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-getline.log: test-getline$(EXEEXT)
+	@p='test-getline$(EXEEXT)'; \
+	b='test-getline'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-getopt.log: test-getopt$(EXEEXT)
+	@p='test-getopt$(EXEEXT)'; \
+	b='test-getopt'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-gettimeofday.log: test-gettimeofday$(EXEEXT)
+	@p='test-gettimeofday$(EXEEXT)'; \
+	b='test-gettimeofday'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-glob.log: test-glob$(EXEEXT)
+	@p='test-glob$(EXEEXT)'; \
+	b='test-glob'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-hash.log: test-hash$(EXEEXT)
+	@p='test-hash$(EXEEXT)'; \
+	b='test-hash'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-i-ring.log: test-i-ring$(EXEEXT)
+	@p='test-i-ring$(EXEEXT)'; \
+	b='test-i-ring'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-iconv.log: test-iconv$(EXEEXT)
+	@p='test-iconv$(EXEEXT)'; \
+	b='test-iconv'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ignore-value.log: test-ignore-value$(EXEEXT)
+	@p='test-ignore-value$(EXEEXT)'; \
+	b='test-ignore-value'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-inet_ntop.log: test-inet_ntop$(EXEEXT)
+	@p='test-inet_ntop$(EXEEXT)'; \
+	b='test-inet_ntop'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-inet_pton.log: test-inet_pton$(EXEEXT)
+	@p='test-inet_pton$(EXEEXT)'; \
+	b='test-inet_pton'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-intprops.log: test-intprops$(EXEEXT)
+	@p='test-intprops$(EXEEXT)'; \
+	b='test-intprops'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-inttostr.log: test-inttostr$(EXEEXT)
+	@p='test-inttostr$(EXEEXT)'; \
+	b='test-inttostr'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-inttypes.log: test-inttypes$(EXEEXT)
+	@p='test-inttypes$(EXEEXT)'; \
+	b='test-inttypes'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ioctl.log: test-ioctl$(EXEEXT)
+	@p='test-ioctl$(EXEEXT)'; \
+	b='test-ioctl'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-isatty.log: test-isatty$(EXEEXT)
+	@p='test-isatty$(EXEEXT)'; \
+	b='test-isatty'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-langinfo.log: test-langinfo$(EXEEXT)
+	@p='test-langinfo$(EXEEXT)'; \
+	b='test-langinfo'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-listen.log: test-listen$(EXEEXT)
+	@p='test-listen$(EXEEXT)'; \
+	b='test-listen'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-locale.log: test-locale$(EXEEXT)
+	@p='test-locale$(EXEEXT)'; \
+	b='test-locale'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-localeconv.log: test-localeconv$(EXEEXT)
+	@p='test-localeconv$(EXEEXT)'; \
+	b='test-localeconv'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-localename.log: test-localename$(EXEEXT)
+	@p='test-localename$(EXEEXT)'; \
+	b='test-localename'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-lock.log: test-lock$(EXEEXT)
+	@p='test-lock$(EXEEXT)'; \
+	b='test-lock'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-lseek.sh.log: test-lseek.sh
+	@p='test-lseek.sh'; \
+	b='test-lseek.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-lstat.log: test-lstat$(EXEEXT)
+	@p='test-lstat$(EXEEXT)'; \
+	b='test-lstat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-malloca.log: test-malloca$(EXEEXT)
+	@p='test-malloca$(EXEEXT)'; \
+	b='test-malloca'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbrtowc1.sh.log: test-mbrtowc1.sh
+	@p='test-mbrtowc1.sh'; \
+	b='test-mbrtowc1.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbrtowc2.sh.log: test-mbrtowc2.sh
+	@p='test-mbrtowc2.sh'; \
+	b='test-mbrtowc2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbrtowc3.sh.log: test-mbrtowc3.sh
+	@p='test-mbrtowc3.sh'; \
+	b='test-mbrtowc3.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbrtowc4.sh.log: test-mbrtowc4.sh
+	@p='test-mbrtowc4.sh'; \
+	b='test-mbrtowc4.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbrtowc-w32-1.sh.log: test-mbrtowc-w32-1.sh
+	@p='test-mbrtowc-w32-1.sh'; \
+	b='test-mbrtowc-w32-1.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbrtowc-w32-2.sh.log: test-mbrtowc-w32-2.sh
+	@p='test-mbrtowc-w32-2.sh'; \
+	b='test-mbrtowc-w32-2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbrtowc-w32-3.sh.log: test-mbrtowc-w32-3.sh
+	@p='test-mbrtowc-w32-3.sh'; \
+	b='test-mbrtowc-w32-3.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbrtowc-w32-4.sh.log: test-mbrtowc-w32-4.sh
+	@p='test-mbrtowc-w32-4.sh'; \
+	b='test-mbrtowc-w32-4.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbrtowc-w32-5.sh.log: test-mbrtowc-w32-5.sh
+	@p='test-mbrtowc-w32-5.sh'; \
+	b='test-mbrtowc-w32-5.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbsinit.sh.log: test-mbsinit.sh
+	@p='test-mbsinit.sh'; \
+	b='test-mbsinit.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbsrtowcs1.sh.log: test-mbsrtowcs1.sh
+	@p='test-mbsrtowcs1.sh'; \
+	b='test-mbsrtowcs1.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbsrtowcs2.sh.log: test-mbsrtowcs2.sh
+	@p='test-mbsrtowcs2.sh'; \
+	b='test-mbsrtowcs2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbsrtowcs3.sh.log: test-mbsrtowcs3.sh
+	@p='test-mbsrtowcs3.sh'; \
+	b='test-mbsrtowcs3.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbsrtowcs4.sh.log: test-mbsrtowcs4.sh
+	@p='test-mbsrtowcs4.sh'; \
+	b='test-mbsrtowcs4.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-memchr.log: test-memchr$(EXEEXT)
+	@p='test-memchr$(EXEEXT)'; \
+	b='test-memchr'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-memmem.log: test-memmem$(EXEEXT)
+	@p='test-memmem$(EXEEXT)'; \
+	b='test-memmem'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-memrchr.log: test-memrchr$(EXEEXT)
+	@p='test-memrchr$(EXEEXT)'; \
+	b='test-memrchr'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-nanosleep.log: test-nanosleep$(EXEEXT)
+	@p='test-nanosleep$(EXEEXT)'; \
+	b='test-nanosleep'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-netdb.log: test-netdb$(EXEEXT)
+	@p='test-netdb$(EXEEXT)'; \
+	b='test-netdb'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-netinet_in.log: test-netinet_in$(EXEEXT)
+	@p='test-netinet_in$(EXEEXT)'; \
+	b='test-netinet_in'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-open.log: test-open$(EXEEXT)
+	@p='test-open$(EXEEXT)'; \
+	b='test-open'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-openat-safer.log: test-openat-safer$(EXEEXT)
+	@p='test-openat-safer$(EXEEXT)'; \
+	b='test-openat-safer'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-openat.log: test-openat$(EXEEXT)
+	@p='test-openat$(EXEEXT)'; \
+	b='test-openat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-pathmax.log: test-pathmax$(EXEEXT)
+	@p='test-pathmax$(EXEEXT)'; \
+	b='test-pathmax'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-perror.sh.log: test-perror.sh
+	@p='test-perror.sh'; \
+	b='test-perror.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-perror2.log: test-perror2$(EXEEXT)
+	@p='test-perror2$(EXEEXT)'; \
+	b='test-perror2'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-pipe.log: test-pipe$(EXEEXT)
+	@p='test-pipe$(EXEEXT)'; \
+	b='test-pipe'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-pipe2.log: test-pipe2$(EXEEXT)
+	@p='test-pipe2$(EXEEXT)'; \
+	b='test-pipe2'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-pread.sh.log: test-pread.sh
+	@p='test-pread.sh'; \
+	b='test-pread.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-priv-set.log: test-priv-set$(EXEEXT)
+	@p='test-priv-set$(EXEEXT)'; \
+	b='test-priv-set'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ptsname_r.log: test-ptsname_r$(EXEEXT)
+	@p='test-ptsname_r$(EXEEXT)'; \
+	b='test-ptsname_r'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-quotearg-simple.log: test-quotearg-simple$(EXEEXT)
+	@p='test-quotearg-simple$(EXEEXT)'; \
+	b='test-quotearg-simple'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-raise.log: test-raise$(EXEEXT)
+	@p='test-raise$(EXEEXT)'; \
+	b='test-raise'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-rawmemchr.log: test-rawmemchr$(EXEEXT)
+	@p='test-rawmemchr$(EXEEXT)'; \
+	b='test-rawmemchr'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-read-file.log: test-read-file$(EXEEXT)
+	@p='test-read-file$(EXEEXT)'; \
+	b='test-read-file'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-read.log: test-read$(EXEEXT)
+	@p='test-read$(EXEEXT)'; \
+	b='test-read'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-readlink.log: test-readlink$(EXEEXT)
+	@p='test-readlink$(EXEEXT)'; \
+	b='test-readlink'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-readlinkat.log: test-readlinkat$(EXEEXT)
+	@p='test-readlinkat$(EXEEXT)'; \
+	b='test-readlinkat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-rmdir.log: test-rmdir$(EXEEXT)
+	@p='test-rmdir$(EXEEXT)'; \
+	b='test-rmdir'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-select.log: test-select$(EXEEXT)
+	@p='test-select$(EXEEXT)'; \
+	b='test-select'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-select-in.sh.log: test-select-in.sh
+	@p='test-select-in.sh'; \
+	b='test-select-in.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-select-out.sh.log: test-select-out.sh
+	@p='test-select-out.sh'; \
+	b='test-select-out.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-setenv.log: test-setenv$(EXEEXT)
+	@p='test-setenv$(EXEEXT)'; \
+	b='test-setenv'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-setlocale1.sh.log: test-setlocale1.sh
+	@p='test-setlocale1.sh'; \
+	b='test-setlocale1.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-setlocale2.sh.log: test-setlocale2.sh
+	@p='test-setlocale2.sh'; \
+	b='test-setlocale2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-setsockopt.log: test-setsockopt$(EXEEXT)
+	@p='test-setsockopt$(EXEEXT)'; \
+	b='test-setsockopt'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sigaction.log: test-sigaction$(EXEEXT)
+	@p='test-sigaction$(EXEEXT)'; \
+	b='test-sigaction'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-signal-h.log: test-signal-h$(EXEEXT)
+	@p='test-signal-h$(EXEEXT)'; \
+	b='test-signal-h'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sigprocmask.log: test-sigprocmask$(EXEEXT)
+	@p='test-sigprocmask$(EXEEXT)'; \
+	b='test-sigprocmask'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sleep.log: test-sleep$(EXEEXT)
+	@p='test-sleep$(EXEEXT)'; \
+	b='test-sleep'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-snprintf.log: test-snprintf$(EXEEXT)
+	@p='test-snprintf$(EXEEXT)'; \
+	b='test-snprintf'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sockets.log: test-sockets$(EXEEXT)
+	@p='test-sockets$(EXEEXT)'; \
+	b='test-sockets'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-stat.log: test-stat$(EXEEXT)
+	@p='test-stat$(EXEEXT)'; \
+	b='test-stat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-stat-time.log: test-stat-time$(EXEEXT)
+	@p='test-stat-time$(EXEEXT)'; \
+	b='test-stat-time'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-statat.log: test-statat$(EXEEXT)
+	@p='test-statat$(EXEEXT)'; \
+	b='test-statat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-stdalign.log: test-stdalign$(EXEEXT)
+	@p='test-stdalign$(EXEEXT)'; \
+	b='test-stdalign'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-stdbool.log: test-stdbool$(EXEEXT)
+	@p='test-stdbool$(EXEEXT)'; \
+	b='test-stdbool'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-stddef.log: test-stddef$(EXEEXT)
+	@p='test-stddef$(EXEEXT)'; \
+	b='test-stddef'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-stdint.log: test-stdint$(EXEEXT)
+	@p='test-stdint$(EXEEXT)'; \
+	b='test-stdint'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-stdio.log: test-stdio$(EXEEXT)
+	@p='test-stdio$(EXEEXT)'; \
+	b='test-stdio'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-stdlib.log: test-stdlib$(EXEEXT)
+	@p='test-stdlib$(EXEEXT)'; \
+	b='test-stdlib'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-strchrnul.log: test-strchrnul$(EXEEXT)
+	@p='test-strchrnul$(EXEEXT)'; \
+	b='test-strchrnul'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-strerror.log: test-strerror$(EXEEXT)
+	@p='test-strerror$(EXEEXT)'; \
+	b='test-strerror'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-strerror_r.log: test-strerror_r$(EXEEXT)
+	@p='test-strerror_r$(EXEEXT)'; \
+	b='test-strerror_r'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-string.log: test-string$(EXEEXT)
+	@p='test-string$(EXEEXT)'; \
+	b='test-string'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-strnlen.log: test-strnlen$(EXEEXT)
+	@p='test-strnlen$(EXEEXT)'; \
+	b='test-strnlen'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-strtoll.log: test-strtoll$(EXEEXT)
+	@p='test-strtoll$(EXEEXT)'; \
+	b='test-strtoll'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-strtoull.log: test-strtoull$(EXEEXT)
+	@p='test-strtoull$(EXEEXT)'; \
+	b='test-strtoull'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-strtoumax.log: test-strtoumax$(EXEEXT)
+	@p='test-strtoumax$(EXEEXT)'; \
+	b='test-strtoumax'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-symlink.log: test-symlink$(EXEEXT)
+	@p='test-symlink$(EXEEXT)'; \
+	b='test-symlink'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-symlinkat.log: test-symlinkat$(EXEEXT)
+	@p='test-symlinkat$(EXEEXT)'; \
+	b='test-symlinkat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sys_ioctl.log: test-sys_ioctl$(EXEEXT)
+	@p='test-sys_ioctl$(EXEEXT)'; \
+	b='test-sys_ioctl'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sys_select.log: test-sys_select$(EXEEXT)
+	@p='test-sys_select$(EXEEXT)'; \
+	b='test-sys_select'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sys_socket.log: test-sys_socket$(EXEEXT)
+	@p='test-sys_socket$(EXEEXT)'; \
+	b='test-sys_socket'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sys_stat.log: test-sys_stat$(EXEEXT)
+	@p='test-sys_stat$(EXEEXT)'; \
+	b='test-sys_stat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sys_time.log: test-sys_time$(EXEEXT)
+	@p='test-sys_time$(EXEEXT)'; \
+	b='test-sys_time'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sys_types.log: test-sys_types$(EXEEXT)
+	@p='test-sys_types$(EXEEXT)'; \
+	b='test-sys_types'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sys_uio.log: test-sys_uio$(EXEEXT)
+	@p='test-sys_uio$(EXEEXT)'; \
+	b='test-sys_uio'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-sys_wait.log: test-sys_wait$(EXEEXT)
+	@p='test-sys_wait$(EXEEXT)'; \
+	b='test-sys_wait'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-init.sh.log: test-init.sh
+	@p='test-init.sh'; \
+	b='test-init.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-thread_self.log: test-thread_self$(EXEEXT)
+	@p='test-thread_self$(EXEEXT)'; \
+	b='test-thread_self'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-thread_create.log: test-thread_create$(EXEEXT)
+	@p='test-thread_create$(EXEEXT)'; \
+	b='test-thread_create'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-time.log: test-time$(EXEEXT)
+	@p='test-time$(EXEEXT)'; \
+	b='test-time'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-timespec.log: test-timespec$(EXEEXT)
+	@p='test-timespec$(EXEEXT)'; \
+	b='test-timespec'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-ttyname_r.log: test-ttyname_r$(EXEEXT)
+	@p='test-ttyname_r$(EXEEXT)'; \
+	b='test-ttyname_r'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-dup-safer.log: test-dup-safer$(EXEEXT)
+	@p='test-dup-safer$(EXEEXT)'; \
+	b='test-dup-safer'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-unistd.log: test-unistd$(EXEEXT)
+	@p='test-unistd$(EXEEXT)'; \
+	b='test-unistd'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-unlink.log: test-unlink$(EXEEXT)
+	@p='test-unlink$(EXEEXT)'; \
+	b='test-unlink'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-unlinkat.log: test-unlinkat$(EXEEXT)
+	@p='test-unlinkat$(EXEEXT)'; \
+	b='test-unlinkat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-unsetenv.log: test-unsetenv$(EXEEXT)
+	@p='test-unsetenv$(EXEEXT)'; \
+	b='test-unsetenv'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-utimens.log: test-utimens$(EXEEXT)
+	@p='test-utimens$(EXEEXT)'; \
+	b='test-utimens'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-vasnprintf.log: test-vasnprintf$(EXEEXT)
+	@p='test-vasnprintf$(EXEEXT)'; \
+	b='test-vasnprintf'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-vasprintf.log: test-vasprintf$(EXEEXT)
+	@p='test-vasprintf$(EXEEXT)'; \
+	b='test-vasprintf'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-vc-list-files-git.sh.log: test-vc-list-files-git.sh
+	@p='test-vc-list-files-git.sh'; \
+	b='test-vc-list-files-git.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-vc-list-files-cvs.sh.log: test-vc-list-files-cvs.sh
+	@p='test-vc-list-files-cvs.sh'; \
+	b='test-vc-list-files-cvs.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-verify.log: test-verify$(EXEEXT)
+	@p='test-verify$(EXEEXT)'; \
+	b='test-verify'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-verify.sh.log: test-verify.sh
+	@p='test-verify.sh'; \
+	b='test-verify.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-wchar.log: test-wchar$(EXEEXT)
+	@p='test-wchar$(EXEEXT)'; \
+	b='test-wchar'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-wcrtomb.sh.log: test-wcrtomb.sh
+	@p='test-wcrtomb.sh'; \
+	b='test-wcrtomb.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-wcrtomb-w32-1.sh.log: test-wcrtomb-w32-1.sh
+	@p='test-wcrtomb-w32-1.sh'; \
+	b='test-wcrtomb-w32-1.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-wcrtomb-w32-2.sh.log: test-wcrtomb-w32-2.sh
+	@p='test-wcrtomb-w32-2.sh'; \
+	b='test-wcrtomb-w32-2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-wcrtomb-w32-3.sh.log: test-wcrtomb-w32-3.sh
+	@p='test-wcrtomb-w32-3.sh'; \
+	b='test-wcrtomb-w32-3.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-wcrtomb-w32-4.sh.log: test-wcrtomb-w32-4.sh
+	@p='test-wcrtomb-w32-4.sh'; \
+	b='test-wcrtomb-w32-4.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-wcrtomb-w32-5.sh.log: test-wcrtomb-w32-5.sh
+	@p='test-wcrtomb-w32-5.sh'; \
+	b='test-wcrtomb-w32-5.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-wctype-h.log: test-wctype-h$(EXEEXT)
+	@p='test-wctype-h$(EXEEXT)'; \
+	b='test-wctype-h'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-write.log: test-write$(EXEEXT)
+	@p='test-write$(EXEEXT)'; \
+	b='test-write'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-xalloc-die.sh.log: test-xalloc-die.sh
+	@p='test-xalloc-die.sh'; \
+	b='test-xalloc-die.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-xstrtol.sh.log: test-xstrtol.sh
+	@p='test-xstrtol.sh'; \
+	b='test-xstrtol.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-xstrtoll.sh.log: test-xstrtoll.sh
+	@p='test-xstrtoll.sh'; \
+	b='test-xstrtoll.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-xstrtoumax.sh.log: test-xstrtoumax.sh
+	@p='test-xstrtoumax.sh'; \
+	b='test-xstrtoumax.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-xvasprintf.log: test-xvasprintf$(EXEEXT)
+	@p='test-xvasprintf$(EXEEXT)'; \
+	b='test-xvasprintf'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+.test.log:
+	@p='$<'; \
+	$(am__set_b); \
+	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+@am__EXEEXT_TRUE@.test$(EXEEXT).log:
+@am__EXEEXT_TRUE@	@p='$<'; \
+@am__EXEEXT_TRUE@	$(am__set_b); \
+@am__EXEEXT_TRUE@	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
+@am__EXEEXT_TRUE@	--log-file $$b.log --trs-file $$b.trs \
+@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
+@am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
 
 distdir: $(DISTFILES)
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
@@ -4109,6 +5759,9 @@ install-strip:
 	fi
 mostlyclean-generic:
 	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
+	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
+	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 
 clean-generic:
 	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
@@ -4214,10 +5867,28 @@ uninstall-am:
 	installcheck-am installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool mostlyclean-local pdf \
-	pdf-am ps ps-am tags tags-am uninstall uninstall-am
+	pdf-am ps ps-am recheck tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
+
+# We need the following in order to create <ctype.h> when the system
+# doesn't have one that works with the given compiler.
+ctype.h: ctype.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE_H)
+	$(AM_V_GEN)rm -f $@-t $@ && \
+	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
+	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
+	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
+	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
+	      -e 's|@''NEXT_CTYPE_H''@|$(NEXT_CTYPE_H)|g' \
+	      -e 's/@''GNULIB_ISBLANK''@/$(GNULIB_ISBLANK)/g' \
+	      -e 's/@''HAVE_ISBLANK''@/$(HAVE_ISBLANK)/g' \
+	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
+	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
+	      < $(srcdir)/ctype.in.h; \
+	} > $@-t && \
+	mv $@-t $@
 
 # We need the following in order to create an empty placeholder for
 # <langinfo.h> when the system doesn't have one.

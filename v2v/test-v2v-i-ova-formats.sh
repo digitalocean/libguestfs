@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs virt-v2v test script
-# Copyright (C) 2014-2015 Red Hat Inc.
+# Copyright (C) 2014-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,11 +44,7 @@ if [ "$(guestfish get-backend)" = "uml" ]; then
     exit 77
 fi
 
-virt_tools_data_dir=${VIRT_TOOLS_DATA_DIR:-/usr/share/virt-tools}
-if ! test -r $virt_tools_data_dir/rhsrvany.exe; then
-    echo "$0: test skipped because rhsrvany.exe is not installed"
-    exit 77
-fi
+export VIRT_TOOLS_DATA_DIR="$srcdir/../test-data/fake-virt-tools"
 
 d=test-v2v-i-ova-formats.d
 rm -rf $d

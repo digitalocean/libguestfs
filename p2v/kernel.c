@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,13 @@ kernel_configuration (struct config *config, char **cmdline, int cmdline_source)
   if (p) {
     free (config->password);
     config->password = strdup (p);
+  }
+
+  p = get_cmdline_key (cmdline, "p2v.identity");
+  if (p) {
+    free (config->identity_url);
+    config->identity_url = strdup (p);
+    config->identity_file_needs_update = 1;
   }
 
   p = get_cmdline_key (cmdline, "p2v.sudo");

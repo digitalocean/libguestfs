@@ -1,6 +1,6 @@
 # libguestfs Ruby bindings -*- ruby -*-
 # @configure_input@
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@ unless have_library("guestfs", "guestfs_create", "guestfs.h")
   raise "libguestfs not found"
 end
 
-have_func("rb_hash_lookup")
 have_func("rb_define_alloc_func")
 have_type("rb_alloc_func_t")
 

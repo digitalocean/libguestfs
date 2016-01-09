@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,6 +174,16 @@ type inspect = {
 (** Inspection information. *)
 
 val string_of_inspect : inspect -> string
+
+type mpstat = {
+  mp_dev : string;                      (** Filesystem device (eg. /dev/sda1) *)
+  mp_path : string;                     (** Guest mountpoint (eg. /boot) *)
+  mp_statvfs : Guestfs.statvfs;         (** Free space stats. *)
+  mp_vfs : string;                      (** VFS type (eg. "ext4") *)
+}
+(** Mountpoint stats, used for free space estimation. *)
+
+val print_mpstat : out_channel -> mpstat -> unit
 
 type guestcaps = {
   gcaps_block_bus : guestcaps_block_type;

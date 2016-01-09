@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ class output_glance () =
    * to write to a temporary file.  XXX
    *)
   let tmpdir =
-    let base_dir = (new Guestfs.guestfs ())#get_cachedir () in
+    let base_dir = (open_guestfs ())#get_cachedir () in
     let t = Mkdtemp.temp_dir ~base_dir "glance." "" in
     rmdir_on_exit t;
     t in

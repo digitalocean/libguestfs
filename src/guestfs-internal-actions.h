@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -177,5 +177,9 @@ extern struct guestfs_stat *guestfs_impl_lstat (guestfs_h *g, const char *path);
 extern int64_t guestfs_impl_c_pointer (guestfs_h *g);
 extern int guestfs_impl_copy_in (guestfs_h *g, const char *localpath, const char *remotedir);
 extern int guestfs_impl_copy_out (guestfs_h *g, const char *remotepath, const char *localdir);
+extern int guestfs_impl_set_identifier (guestfs_h *g, const char *identifier);
+extern const char *guestfs_impl_get_identifier (guestfs_h *g);
+extern int guestfs_impl_available (guestfs_h *g, char *const *groups);
+extern int guestfs_impl_feature_available (guestfs_h *g, char *const *groups);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

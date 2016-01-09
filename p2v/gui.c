@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ static void set_info_label (void);
 /* The connection dialog. */
 static GtkWidget *conn_dlg,
   *server_entry, *port_entry,
-  *username_entry, *password_entry, *sudo_button,
+  *username_entry, *password_entry, *identity_entry, *sudo_button,
   *spinner_hbox, *spinner, *spinner_message, *next_button;
 
 /* The conversion dialog. */
@@ -107,6 +107,8 @@ create_connection_dialog (struct config *config)
   GtkWidget *port_label;
   GtkWidget *username_label;
   GtkWidget *password_label;
+  GtkWidget *identity_label;
+  GtkWidget *identity_tip_label;
   GtkWidget *test_hbox, *test;
   GtkWidget *about;
   GtkWidget *configure_network;
@@ -121,7 +123,7 @@ create_connection_dialog (struct config *config)
   gtk_label_set_line_wrap (GTK_LABEL (intro), TRUE);
   gtk_misc_set_padding (GTK_MISC (intro), 10, 10);
 
-  table = gtk_table_new (5, 2, FALSE);
+  table = gtk_table_new (7, 2, FALSE);
   server_label = gtk_label_new (_("Conversion server:"));
   gtk_misc_set_alignment (GTK_MISC (server_label), 1., 0.5);
   gtk_table_attach (GTK_TABLE (table), server_label,
@@ -170,12 +172,29 @@ create_connection_dialog (struct config *config)
   gtk_table_attach (GTK_TABLE (table), password_entry,
                     1, 2, 3, 4, GTK_FILL, GTK_FILL, 4, 4);
 
+  identity_label = gtk_label_new (_("SSH Identity URL:"));
+  gtk_misc_set_alignment (GTK_MISC (identity_label), 1., 0.5);
+  gtk_table_attach (GTK_TABLE (table), identity_label,
+                    0, 1, 4, 5, GTK_FILL, GTK_FILL, 4, 4);
+  identity_entry = gtk_entry_new ();
+  if (config->identity_url != NULL)
+    gtk_entry_set_text (GTK_ENTRY (identity_entry), config->identity_url);
+  gtk_table_attach (GTK_TABLE (table), identity_entry,
+                    1, 2, 4, 5, GTK_FILL, GTK_FILL, 4, 4);
+
+  identity_tip_label = gtk_label_new (NULL);
+  gtk_label_set_markup (GTK_LABEL (identity_tip_label),
+                        _("<i>If using password authentication, leave the SSH Identity URL blank</i>"));
+  gtk_label_set_line_wrap (GTK_LABEL (identity_tip_label), TRUE);
+  gtk_table_attach (GTK_TABLE (table), identity_tip_label,
+                    1, 2, 5, 6, GTK_FILL, GTK_FILL, 4, 4);
+
   sudo_button =
     gtk_check_button_new_with_label (_("Use sudo when running virt-v2v"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (sudo_button),
                                 config->sudo);
   gtk_table_attach (GTK_TABLE (table), sudo_button,
-                    1, 2, 4, 5, GTK_FILL, GTK_FILL, 4, 4);
+                    1, 2, 6, 7, GTK_FILL, GTK_FILL, 4, 4);
 
   test_hbox = gtk_hbox_new (FALSE, 0);
   test = gtk_button_new_with_label (_("Test connection"));
@@ -242,6 +261,7 @@ test_connection_clicked (GtkWidget *w, gpointer data)
 {
   struct config *config = data;
   const gchar *port_str;
+  const gchar *identity_str;
   size_t errors = 0;
   struct config *copy;
   int err;
@@ -278,6 +298,14 @@ test_connection_clicked (GtkWidget *w, gpointer data)
   }
   free (config->password);
   config->password = strdup (gtk_entry_get_text (GTK_ENTRY (password_entry)));
+
+  free (config->identity_url);
+  identity_str = gtk_entry_get_text (GTK_ENTRY (identity_entry));
+  if (identity_str && STRNEQ (identity_str, ""))
+    config->identity_url = strdup (identity_str);
+  else
+    config->identity_url = NULL;
+  config->identity_file_needs_update = 1;
 
   config->sudo = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (sudo_button));
 
@@ -362,7 +390,7 @@ about_button_clicked (GtkWidget *w, gpointer data)
   gtk_show_about_dialog (GTK_WINDOW (conn_dlg),
                          "program-name", guestfs_int_program_name,
                          "version", PACKAGE_VERSION,
-                         "copyright", "\u00A9 2009-2015 Red Hat Inc.",
+                         "copyright", "\u00A9 2009-2016 Red Hat Inc.",
                          "comments", "Convert a physical machine to use KVM",
                          "license", gplv2plus,
                          "website", "http://libguestfs.org/",
@@ -1235,6 +1263,7 @@ static void add_v2v_output (const char *msg);
 static void *start_conversion_thread (void *data);
 static void cancel_conversion_clicked (GtkWidget *w, gpointer data);
 static void reboot_clicked (GtkWidget *w, gpointer data);
+static gboolean close_running_dialog (GtkWidget *w, GdkEvent *event, gpointer data);
 
 static void
 create_running_dialog (void)
@@ -1279,6 +1308,8 @@ create_running_dialog (void)
   gtk_widget_set_sensitive (reboot_button, FALSE);
 
   /* Signals. */
+  g_signal_connect_swapped (G_OBJECT (run_dlg), "delete_event",
+                            G_CALLBACK (close_running_dialog), NULL);
   g_signal_connect_swapped (G_OBJECT (run_dlg), "destroy",
                             G_CALLBACK (gtk_main_quit), NULL);
   g_signal_connect (G_OBJECT (cancel_button), "clicked",
@@ -1530,6 +1561,21 @@ notify_ui_callback (int type, const char *data)
   }
 
   gdk_threads_leave ();
+}
+
+static gboolean
+close_running_dialog (GtkWidget *w, GdkEvent *event, gpointer data)
+{
+  /* This function is called if the user tries to close the running
+   * dialog.  This is the same as cancelling the conversion.
+   */
+  if (conversion_is_running ()) {
+    cancel_conversion ();
+    return TRUE;
+  }
+  else
+    /* Conversion is not running, so this will delete the dialog. */
+    return FALSE;
 }
 
 static void

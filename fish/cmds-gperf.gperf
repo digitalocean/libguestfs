@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,6 +207,7 @@ extern struct command_entry get_e2generation_cmd_entry;
 extern struct command_entry get_e2label_cmd_entry;
 extern struct command_entry get_e2uuid_cmd_entry;
 extern struct command_entry get_hv_cmd_entry;
+extern struct command_entry get_identifier_cmd_entry;
 extern struct command_entry get_libvirt_requested_credential_challenge_cmd_entry;
 extern struct command_entry get_libvirt_requested_credential_defresult_cmd_entry;
 extern struct command_entry get_libvirt_requested_credential_prompt_cmd_entry;
@@ -494,6 +495,7 @@ extern struct command_entry set_e2generation_cmd_entry;
 extern struct command_entry set_e2label_cmd_entry;
 extern struct command_entry set_e2uuid_cmd_entry;
 extern struct command_entry set_hv_cmd_entry;
+extern struct command_entry set_identifier_cmd_entry;
 extern struct command_entry set_label_cmd_entry;
 extern struct command_entry set_libvirt_requested_credential_cmd_entry;
 extern struct command_entry set_libvirt_supported_credentials_cmd_entry;
@@ -567,6 +569,7 @@ extern struct command_entry utimens_cmd_entry;
 extern struct command_entry utsname_cmd_entry;
 extern struct command_entry version_cmd_entry;
 extern struct command_entry vfs_label_cmd_entry;
+extern struct command_entry vfs_minimum_size_cmd_entry;
 extern struct command_entry vfs_type_cmd_entry;
 extern struct command_entry vfs_uuid_cmd_entry;
 extern struct command_entry vg_activate_cmd_entry;
@@ -926,6 +929,8 @@ get_e2uuid, &get_e2uuid_cmd_entry
 get-e2uuid, &get_e2uuid_cmd_entry
 get_hv, &get_hv_cmd_entry
 get-hv, &get_hv_cmd_entry
+get_identifier, &get_identifier_cmd_entry
+get-identifier, &get_identifier_cmd_entry
 get_libvirt_requested_credential_challenge, &get_libvirt_requested_credential_challenge_cmd_entry
 get-libvirt-requested-credential-challenge, &get_libvirt_requested_credential_challenge_cmd_entry
 get_libvirt_requested_credential_defresult, &get_libvirt_requested_credential_defresult_cmd_entry
@@ -1449,6 +1454,9 @@ set-e2uuid, &set_e2uuid_cmd_entry
 set_hv, &set_hv_cmd_entry
 set-hv, &set_hv_cmd_entry
 hv, &set_hv_cmd_entry
+set_identifier, &set_identifier_cmd_entry
+set-identifier, &set_identifier_cmd_entry
+identifier, &set_identifier_cmd_entry
 set_label, &set_label_cmd_entry
 set-label, &set_label_cmd_entry
 set_libvirt_requested_credential, &set_libvirt_requested_credential_cmd_entry
@@ -1584,6 +1592,8 @@ utsname, &utsname_cmd_entry
 version, &version_cmd_entry
 vfs_label, &vfs_label_cmd_entry
 vfs-label, &vfs_label_cmd_entry
+vfs_minimum_size, &vfs_minimum_size_cmd_entry
+vfs-minimum-size, &vfs_minimum_size_cmd_entry
 vfs_type, &vfs_type_cmd_entry
 vfs-type, &vfs_type_cmd_entry
 vfs_uuid, &vfs_uuid_cmd_entry

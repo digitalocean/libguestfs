@@ -3,7 +3,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2015 Red Hat Inc.
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.456';
+$VERSION = '0.458';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -559,6 +559,8 @@ See also: L<guestfs(3)/GLUSTER>
 
 Connect to the iSCSI server.
 The C<server> parameter must also be supplied - see below.
+The C<username> parameter may be supplied.  See below.
+The C<secret> parameter may be supplied.  See below.
 
 See also: L<guestfs(3)/ISCSI>.
 
@@ -1935,13 +1937,14 @@ The other optional parameters are:
 
 =item C<preallocation>
 
-If format is C<raw>, then this can be either C<sparse> or C<full>
-to create a sparse or fully allocated file respectively.  The default
-is C<sparse>.
+If format is C<raw>, then this can be either C<off> (or C<sparse>)
+or C<full> to create a sparse or fully allocated file respectively.
+The default is C<off>.
 
-If format is C<qcow2>, then this can be either C<off> or
-C<metadata>.  Preallocating metadata can be faster when doing lots
-of writes, but uses more space.  The default is C<off>.
+If format is C<qcow2>, then this can be C<off> (or C<sparse>),
+C<metadata> or C<full>.  Preallocating metadata can be faster
+when doing lots of writes, but uses more space.
+The default is C<off>.
 
 =item C<compat>
 
@@ -2746,6 +2749,10 @@ Return the current hypervisor binary.
 This is always non-NULL.  If it wasn't set already, then this will
 return the default qemu binary name.
 
+=item $identifier = $g->get_identifier ();
+
+Get the handle identifier.  See C<$g-E<gt>set_identifier>.
+
 =item $challenge = $g->get_libvirt_requested_credential_challenge ($index);
 
 Get the challenge (provided by libvirt) for the C<index>'th
@@ -3300,6 +3307,14 @@ Currently defined distros are:
 
 =over 4
 
+=item "alpinelinux"
+
+Alpine Linux.
+
+=item "altlinux"
+
+ALT Linux.
+
 =item "archlinux"
 
 Arch Linux.
@@ -3335,6 +3350,10 @@ FreeBSD.
 =item "freedos"
 
 FreeDOS.
+
+=item "frugalware"
+
+Frugalware.
 
 =item "gentoo"
 
@@ -3375,6 +3394,10 @@ Oracle Linux.
 =item "pardus"
 
 Pardus.
+
+=item "pldlinux"
+
+PLD Linux.
 
 =item "redhat-based"
 
@@ -3636,7 +3659,7 @@ package format I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
 Possible strings include:
-C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>.
+C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>, C<apk>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
@@ -3655,7 +3678,7 @@ a real packaging system (eg. Windows).
 
 Possible strings include: C<yum>, C<dnf>, C<up2date>,
 C<apt> (for all Debian derivatives),
-C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.
+C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
@@ -6546,6 +6569,32 @@ so you might see inconsistent results.  Using the environment
 variable C<LIBGUESTFS_HV> is safest of all since that picks
 the qemu binary at the same time as the handle is created.
 
+=item $g->set_identifier ($identifier);
+
+This is an informative string which the caller may optionally
+set in the handle.  It is printed in various places, allowing
+the current handle to be identified in debugging output.
+
+One important place is when tracing is enabled.  If the
+identifier string is not an empty string, then trace messages
+change from this:
+
+ libguestfs: trace: get_tmpdir
+ libguestfs: trace: get_tmpdir = "/tmp"
+
+to this:
+
+ libguestfs: trace: ID: get_tmpdir
+ libguestfs: trace: ID: get_tmpdir = "/tmp"
+
+where C<ID> is the identifier string set by this call.
+
+The identifier must only contain alphanumeric ASCII characters,
+underscore and minus sign.  The default is the empty string.
+
+See also C<$g-E<gt>set_program>, C<$g-E<gt>set_trace>,
+C<$g-E<gt>get_identifier>.
+
 =item $g->set_label ($mountable, $label);
 
 Set the filesystem label on C<mountable> to C<label>.
@@ -6570,7 +6619,7 @@ be mounted when trying to set the label.
 
 =item btrfs
 
-The label is limited to 256 bytes and some characters are
+The label is limited to 255 bytes and some characters are
 not allowed.  Setting the label on a btrfs subvolume will set the
 label on its parent filesystem.  The filesystem must not be mounted
 when trying to set the label.
@@ -7159,7 +7208,7 @@ If the parameter C<nrlines> is zero, this returns an empty list.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-=item $g->tar_in ($tarfile, $directory [, compress => $compress]);
+=item $g->tar_in ($tarfile, $directory [, compress => $compress] [, xattrs => $xattrs] [, selinux => $selinux] [, acls => $acls]);
 
 This command uploads and unpacks local file C<tarfile> into F<directory>.
 
@@ -7170,7 +7219,25 @@ type of the input file: C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.
 (Note that not all builds of libguestfs will support all of these
 compression types).
 
-=item $g->tar_in_opts ($tarfile, $directory [, compress => $compress]);
+The other optional arguments are:
+
+=over 4
+
+=item C<xattrs>
+
+If set to true, extended attributes are restored from the tar file.
+
+=item C<selinux>
+
+If set to true, SELinux contexts are restored from the tar file.
+
+=item C<acls>
+
+If set to true, POSIX ACLs are restored from the tar file.
+
+=back
+
+=item $g->tar_in_opts ($tarfile, $directory [, compress => $compress] [, xattrs => $xattrs] [, selinux => $selinux] [, acls => $acls]);
 
 This is an alias of L</tar_in>.
 
@@ -7182,7 +7249,7 @@ sub tar_in_opts {
 
 =pod
 
-=item $g->tar_out ($directory, $tarfile [, compress => $compress] [, numericowner => $numericowner] [, excludes => $excludes]);
+=item $g->tar_out ($directory, $tarfile [, compress => $compress] [, numericowner => $numericowner] [, excludes => $excludes] [, xattrs => $xattrs] [, selinux => $selinux] [, acls => $acls]);
 
 This command packs the contents of F<directory> and downloads
 it to local file C<tarfile>.
@@ -7208,9 +7275,21 @@ wildcards.
 If set to true, the output tar file will contain UID/GID numbers
 instead of user/group names.
 
+=item C<xattrs>
+
+If set to true, extended attributes are saved in the output tar.
+
+=item C<selinux>
+
+If set to true, SELinux contexts are saved in the output tar.
+
+=item C<acls>
+
+If set to true, POSIX ACLs are saved in the output tar.
+
 =back
 
-=item $g->tar_out_opts ($directory, $tarfile [, compress => $compress] [, numericowner => $numericowner] [, excludes => $excludes]);
+=item $g->tar_out_opts ($directory, $tarfile [, compress => $compress] [, numericowner => $numericowner] [, excludes => $excludes] [, xattrs => $xattrs] [, selinux => $selinux] [, acls => $acls]);
 
 This is an alias of L</tar_out>.
 
@@ -7552,6 +7631,16 @@ This returns the label of the filesystem on C<mountable>.
 If the filesystem is unlabeled, this returns the empty string.
 
 To find a filesystem from the label, use C<$g-E<gt>findfs_label>.
+
+=item $sizeinbytes = $g->vfs_minimum_size ($mountable);
+
+Get the minimum size of filesystem in bytes.
+This is the minimum possible size for filesystem shrinking.
+
+If getting minimum size of specified filesystem is not supported,
+this will fail and set errno as ENOTSUP.
+
+See also L<ntfsresize(8)>, L<resize2fs(8)>, L<btrfs(8)>, L<xfs_info(8)>.
 
 =item $fstype = $g->vfs_type ($mountable);
 
@@ -9476,6 +9565,13 @@ use vars qw(%guestfs_introspection);
     name => "get_hv",
     description => "get the hypervisor binary",
   },
+  "get_identifier" => {
+    ret => 'const string',
+    args => [
+    ],
+    name => "get_identifier",
+    description => "get the handle identifier",
+  },
   "get_libvirt_requested_credential_challenge" => {
     ret => 'string',
     args => [
@@ -10890,7 +10986,7 @@ use vars qw(%guestfs_introspection);
     ret => 'struct stat list',
     args => [
       [ 'path', 'string(path)', 0 ],
-      [ 'names', 'string list', 1 ],
+      [ 'names', 'string(path) list', 1 ],
     ],
     name => "lstatlist",
     description => "lstat on multiple files",
@@ -10907,7 +11003,7 @@ use vars qw(%guestfs_introspection);
     ret => 'struct statns list',
     args => [
       [ 'path', 'string(path)', 0 ],
-      [ 'names', 'string list', 1 ],
+      [ 'names', 'string(path) list', 1 ],
     ],
     name => "lstatnslist",
     description => "lstat on multiple files",
@@ -11093,7 +11189,7 @@ use vars qw(%guestfs_introspection);
     ret => 'struct xattr list',
     args => [
       [ 'path', 'string(path)', 0 ],
-      [ 'names', 'string list', 1 ],
+      [ 'names', 'string(path) list', 1 ],
     ],
     name => "lxattrlist",
     description => "lgetxattr on multiple files",
@@ -11966,7 +12062,7 @@ use vars qw(%guestfs_introspection);
     ret => 'string list',
     args => [
       [ 'path', 'string(path)', 0 ],
-      [ 'names', 'string list', 1 ],
+      [ 'names', 'string(path) list', 1 ],
     ],
     name => "readlinklist",
     description => "readlink on multiple files",
@@ -12255,6 +12351,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_hv",
     description => "set the hypervisor binary",
+  },
+  "set_identifier" => {
+    ret => 'void',
+    args => [
+      [ 'identifier', 'string', 0 ],
+    ],
+    name => "set_identifier",
+    description => "set the handle identifier",
   },
   "set_label" => {
     ret => 'void',
@@ -12651,6 +12755,9 @@ use vars qw(%guestfs_introspection);
     ],
     optargs => {
       compress => [ 'compress', 'string', 0 ],
+      xattrs => [ 'xattrs', 'bool', 1 ],
+      selinux => [ 'selinux', 'bool', 2 ],
+      acls => [ 'acls', 'bool', 3 ],
     },
     name => "tar_in",
     description => "unpack tarfile to directory",
@@ -12665,6 +12772,9 @@ use vars qw(%guestfs_introspection);
       compress => [ 'compress', 'string', 0 ],
       numericowner => [ 'numericowner', 'bool', 1 ],
       excludes => [ 'excludes', 'string list', 2 ],
+      xattrs => [ 'xattrs', 'bool', 3 ],
+      selinux => [ 'selinux', 'bool', 4 ],
+      acls => [ 'acls', 'bool', 5 ],
     },
     name => "tar_out",
     description => "pack directory into tarfile",
@@ -12854,6 +12964,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "vfs_label",
     description => "get the filesystem label",
+  },
+  "vfs_minimum_size" => {
+    ret => 'int64',
+    args => [
+      [ 'mountable', 'string(mountable)', 0 ],
+    ],
+    name => "vfs_minimum_size",
+    description => "get minimum filesystem size",
   },
   "vfs_type" => {
     ret => 'string',
@@ -13321,7 +13439,7 @@ with some unique string, to avoid conflicts with other users.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2015 Red Hat Inc.
+Copyright (C) 2009-2016 Red Hat Inc.
 
 =head1 LICENSE
 

@@ -1,5 +1,5 @@
 # libguestfs virt-sparsify tool
-# Copyright (C) 2011-2015 Red Hat Inc.
+# Copyright (C) 2011-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,12 +18,15 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
-	$(SOURCES_ML) $(SOURCES_C) \
+	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	virt-sparsify.pod \
 	test-virt-sparsify.sh \
 	test-virt-sparsify-in-place.sh
 
 CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify
+
+SOURCES_MLI = \
+	cmdline.mli
 
 SOURCES_ML = \
 	utils.ml \
@@ -106,19 +109,21 @@ endif
 
 man_MANS = virt-sparsify.1
 
-noinst_DATA = $(top_builddir)/html/virt-sparsify.1.html
+noinst_DATA = $(top_builddir)/website/virt-sparsify.1.html
 
-virt-sparsify.1 $(top_builddir)/html/virt-sparsify.1.html: stamp-virt-sparsify.pod
+virt-sparsify.1 $(top_builddir)/website/virt-sparsify.1.html: stamp-virt-sparsify.pod
 
 stamp-virt-sparsify.pod: virt-sparsify.pod
 	$(PODWRAPPER) \
 	  --man virt-sparsify.1 \
-	  --html $(top_builddir)/html/virt-sparsify.1.html \
+	  --html $(top_builddir)/website/virt-sparsify.1.html \
 	  --license GPLv2+ \
 	  $<
 	touch $@
 
-CLEANFILES += stamp-virt-sparsify.pod
+CLEANFILES += \
+	stamp-virt-sparsify.pod \
+	virt-sparsify.1
 
 # Tests.
 

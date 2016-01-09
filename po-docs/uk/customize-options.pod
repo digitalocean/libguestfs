@@ -6,7 +6,7 @@ libguestfs generated file
    generator/ *.ml
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2015 Red Hat Inc.
+ Copyright (C) 2009-2016 Red Hat Inc.
 
  Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
  змінювати її за умов дотримання GNU General Public License  утому вигляді, що
@@ -309,16 +309,16 @@ for more keys for each user.
 Set the default timezone of the guest to C<TIMEZONE>.  Use a location string
 like C<Europe/London>
 
-=item B<--touch> FILE
+=item B<--touch> ФАЙЛ
 
 This command performs a L<touch(1)>-like operation on C<FILE>.
 
-=item B<--truncate> FILE
+=item B<--truncate> ФАЙЛ
 
 This command truncates "path" to a zero-length file. The file must exist
 already.
 
-=item B<--truncate-recursive> PATH
+=item B<--truncate-recursive> ШЛЯХ
 
 This command recursively truncates all files under "path" to zero-length.
 

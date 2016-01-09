@@ -20,13 +20,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <inttypes.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <errno.h>
 
 #ifdef HAVE_ENDIAN_H
 #include <endian.h>
@@ -34,12 +29,6 @@
 #ifdef HAVE_SYS_ENDIAN_H
 #include <sys/endian.h>
 #endif
-
-/* be32toh is usually a macro defined in <endian.h>, but it might be
- * a function in some system so check both, and if neither is defined
- * then define be32toh for RHEL 5.
- */
-#if !defined(HAVE_BE32TOH) && !defined(be32toh)
 
 #if defined __APPLE__ && defined __MACH__
 /* Define/include necessary items on MacOS X */
@@ -51,21 +40,9 @@
 #define __bswap_32      OSSwapConstInt32
 #endif /* __APPLE__ */
 
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-#define be32toh(x) __bswap_32 (x)
-#else
-#define be32toh(x) (x)
-#endif
-#endif
-
-#include <pcre.h>
-
-#include "xstrtol.h"
-
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-#include "guestfs_protocol.h"
 
 #ifdef DB_DUMP
 static struct guestfs_application2_list *list_applications_rpm (guestfs_h *g, struct inspect_fs *fs);
@@ -162,6 +139,7 @@ guestfs_impl_inspect_list_applications2 (guestfs_h *g, const char *root)
 	  return NULL;
 	break;
 
+      case OS_PACKAGE_FORMAT_APK:
       case OS_PACKAGE_FORMAT_EBUILD:
       case OS_PACKAGE_FORMAT_PISI:
       case OS_PACKAGE_FORMAT_PKGSRC:
@@ -400,14 +378,14 @@ list_applications_rpm (guestfs_h *g, struct inspect_fs *fs)
   struct read_package_data data;
 
   Name = guestfs_int_download_to_tmp (g, fs,
-                                    "/var/lib/rpm/Name", "rpm_Name",
-                                    MAX_PKG_DB_SIZE);
+				      "/var/lib/rpm/Name", "rpm_Name",
+				      MAX_PKG_DB_SIZE);
   if (Name == NULL)
     goto error;
 
   Packages = guestfs_int_download_to_tmp (g, fs,
-                                        "/var/lib/rpm/Packages", "rpm_Packages",
-                                        MAX_PKG_DB_SIZE);
+					  "/var/lib/rpm/Packages", "rpm_Packages",
+					  MAX_PKG_DB_SIZE);
   if (Packages == NULL)
     goto error;
 
@@ -455,7 +433,7 @@ list_applications_deb (guestfs_h *g, struct inspect_fs *fs)
   int installed_flag = 0;
 
   status = guestfs_int_download_to_tmp (g, fs, "/var/lib/dpkg/status", "status",
-                                      MAX_PKG_DB_SIZE);
+					MAX_PKG_DB_SIZE);
   if (status == NULL)
     return NULL;
 
@@ -626,8 +604,8 @@ list_applications_pacman (guestfs_h *g, struct inspect_fs *fs)
     }
 
     if ((name == NULL) || (version == NULL) || (arch == NULL))
-       /* Those are mandatory fields. The file is corrupted */
-       goto after_add_application;
+      /* Those are mandatory fields. The file is corrupted */
+      goto after_add_application;
 
     /* version: [epoch:]ver-rel */
     p = strchr (version, ':');
@@ -651,28 +629,28 @@ list_applications_pacman (guestfs_h *g, struct inspect_fs *fs)
       add_application (g, apps, name, "", epoch, ver, rel, arch, "", "",
                        url ? : "", desc ? : "");
 
-    after_add_application:
-     key = NULL;
-     free (name);
-     free (version);
-     free (desc);
-     free (arch);
-     free (url);
-     name = version = desc = arch = url = NULL;
-     rel = ver = NULL; /* haven't allocated memory for those */
+  after_add_application:
+    key = NULL;
+    free (name);
+    free (version);
+    free (desc);
+    free (arch);
+    free (url);
+    name = version = desc = arch = url = NULL;
+    rel = ver = NULL; /* haven't allocated memory for those */
 
-     if (fclose (fp) == -1) {
-       perrorf (g, "fclose: %s", desc_file);
-       goto out;
-     }
+    if (fclose (fp) == -1) {
+      perrorf (g, "fclose: %s", desc_file);
+      goto out;
+    }
 
   }
 
   ret = apps;
 
-  out:
-    if (ret == NULL)
-      guestfs_free_application2_list (apps);
+ out:
+  if (ret == NULL)
+    guestfs_free_application2_list (apps);
 
   return ret;
 }

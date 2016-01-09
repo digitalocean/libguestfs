@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -219,6 +219,7 @@ static const char *const commands[] = {
   "get-e2label",
   "get-e2uuid",
   "get-hv",
+  "get-identifier",
   "get-libvirt-requested-credential-challenge",
   "get-libvirt-requested-credential-defresult",
   "get-libvirt-requested-credential-prompt",
@@ -527,6 +528,8 @@ static const char *const commands[] = {
   "set-e2uuid",
   "set-hv",
   "hv",
+  "set-identifier",
+  "identifier",
   "set-label",
   "set-libvirt-requested-credential",
   "set-libvirt-supported-credentials",
@@ -617,6 +620,7 @@ static const char *const commands[] = {
   "utsname",
   "version",
   "vfs-label",
+  "vfs-minimum-size",
   "vfs-type",
   "vfs-uuid",
   "get-uuid",

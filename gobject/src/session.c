@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2015 Red Hat Inc.
+ * Copyright (C) 2009-2016 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -872,7 +872,8 @@ guestfs_session_add_domain (GuestfsSession *session, const gchar *dom, GuestfsAd
  * 
  * "protocol = "iscsi""
  * Connect to the iSCSI server. The @server parameter must also be
- * supplied - see below.
+ * supplied - see below. The @username parameter may be supplied.
+ * See below. The @secret parameter may be supplied. See below.
  * 
  * See also: "ISCSI" in guestfs(3).
  * 
@@ -6200,13 +6201,13 @@ guestfs_session_df_h (GuestfsSession *session, GError **err)
  * The other optional parameters are:
  * 
  * @preallocation
- * If format is @raw, then this can be either @sparse or @full to
- * create a sparse or fully allocated file respectively. The default is
- * @sparse.
+ * If format is @raw, then this can be either @off (or @sparse) or
+ * @full to create a sparse or fully allocated file respectively. The
+ * default is @off.
  * 
- * If format is @qcow2, then this can be either @off or @metadata.
- * Preallocating metadata can be faster when doing lots of writes, but
- * uses more space. The default is @off.
+ * If format is @qcow2, then this can be @off (or @sparse), @metadata
+ * or @full. Preallocating metadata can be faster when doing lots of
+ * writes, but uses more space. The default is @off.
  * 
  * @compat
  * @qcow2 only: Pass the string 1.1 to use the advanced qcow2 format
@@ -8346,6 +8347,38 @@ guestfs_session_get_hv (GuestfsSession *session, GError **err)
   }
 
   char *ret = guestfs_get_hv (g);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_get_identifier:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the handle identifier
+ *
+ * Get the handle identifier. See guestfs_session_set_identifier().
+ * 
+ * Returns: (transfer none): the returned string, or NULL on error
+ * Since: 1.31.14
+ */
+const gchar *
+guestfs_session_get_identifier (GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_identifier");
+    return NULL;
+  }
+
+  const char *ret = guestfs_get_identifier (g);
   if (ret == NULL) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return NULL;
@@ -10541,6 +10574,12 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * 
  * Currently defined distros are:
  * 
+ * "alpinelinux"
+ * Alpine Linux.
+ * 
+ * "altlinux"
+ * ALT Linux.
+ * 
  * "archlinux"
  * Arch Linux.
  * 
@@ -10567,6 +10606,9 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * 
  * "freedos"
  * FreeDOS.
+ * 
+ * "frugalware"
+ * Frugalware.
  * 
  * "gentoo"
  * Gentoo.
@@ -10597,6 +10639,9 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * 
  * "pardus"
  * Pardus.
+ * 
+ * "pldlinux"
+ * PLD Linux.
  * 
  * "redhat-based"
  * Some Red Hat-derived distro.
@@ -11117,8 +11162,8 @@ guestfs_session_inspect_get_mountpoints (GuestfsSession *session, const gchar *r
  * format *or* if the operating system does not have a real packaging
  * system (eg. Windows).
  * 
- * Possible strings include: @rpm, @deb, @ebuild, @pisi, @pacman, @pkgsrc.
- * Future versions of libguestfs may return other strings.
+ * Possible strings include: @rpm, @deb, @ebuild, @pisi, @pacman, @pkgsrc,
+ * @apk. Future versions of libguestfs may return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
@@ -11163,8 +11208,8 @@ guestfs_session_inspect_get_package_format (GuestfsSession *session, const gchar
  * packaging system (eg. Windows).
  * 
  * Possible strings include: @yum, @dnf, @up2date, @apt (for all Debian
- * derivatives), @portage, @pisi, @pacman, @urpmi, @zypper. Future versions
- * of libguestfs may return other strings.
+ * derivatives), @portage, @pisi, @pacman, @urpmi, @zypper, @apk. Future
+ * versions of libguestfs may return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
@@ -16110,7 +16155,7 @@ guestfs_session_lstat (GuestfsSession *session, const gchar *path, GError **err)
  * guestfs_session_lstatlist:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
- * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @names: (transfer none) (array zero-terminated=1) (element-type filename): an array of strings
  * @err: A GError object to receive any generated errors
  *
  * lstat on multiple files
@@ -16238,7 +16283,7 @@ guestfs_session_lstatns (GuestfsSession *session, const gchar *path, GError **er
  * guestfs_session_lstatnslist:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
- * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @names: (transfer none) (array zero-terminated=1) (element-type filename): an array of strings
  * @err: A GError object to receive any generated errors
  *
  * lstat on multiple files
@@ -17090,7 +17135,7 @@ guestfs_session_lvuuid (GuestfsSession *session, const gchar *device, GError **e
  * guestfs_session_lxattrlist:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
- * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @names: (transfer none) (array zero-terminated=1) (element-type filename): an array of strings
  * @err: A GError object to receive any generated errors
  *
  * lgetxattr on multiple files
@@ -21583,7 +21628,7 @@ guestfs_session_readlink (GuestfsSession *session, const gchar *path, GError **e
  * guestfs_session_readlinklist:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
- * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @names: (transfer none) (array zero-terminated=1) (element-type filename): an array of strings
  * @err: A GError object to receive any generated errors
  *
  * readlink on multiple files
@@ -23021,6 +23066,62 @@ guestfs_session_set_hv (GuestfsSession *session, const gchar *hv, GError **err)
 }
 
 /**
+ * guestfs_session_set_identifier:
+ * @session: (transfer none): A GuestfsSession object
+ * @identifier: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the handle identifier
+ *
+ * This is an informative string which the caller may optionally set in the
+ * handle. It is printed in various places, allowing the current handle to
+ * be identified in debugging output.
+ * 
+ * One important place is when tracing is enabled. If the identifier string
+ * is not an empty string, then trace messages change from this:
+ * 
+ * <![CDATA[libguestfs: trace: get_tmpdir]]>
+ * 
+ * <![CDATA[libguestfs: trace: get_tmpdir = "/tmp"]]>
+ * 
+ * to this:
+ * 
+ * <![CDATA[libguestfs: trace: ID: get_tmpdir]]>
+ * 
+ * <![CDATA[libguestfs: trace: ID: get_tmpdir = "/tmp"]]>
+ * 
+ * where @ID is the identifier string set by this call.
+ * 
+ * The identifier must only contain alphanumeric ASCII characters,
+ * underscore and minus sign. The default is the empty string.
+ * 
+ * See also guestfs_session_set_program(), guestfs_session_set_trace(),
+ * guestfs_session_get_identifier().
+ * 
+ * Returns: true on success, false on error
+ * Since: 1.31.14
+ */
+gboolean
+guestfs_session_set_identifier (GuestfsSession *session, const gchar *identifier, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_identifier");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_identifier (g, identifier);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_set_label:
  * @session: (transfer none): A GuestfsSession object
  * @mountable: (transfer none) (type filename):
@@ -23044,7 +23145,7 @@ guestfs_session_set_hv (GuestfsSession *session, const gchar *hv, GError **err)
  * when trying to set the label.
  * 
  * btrfs
- * The label is limited to 256 bytes and some characters are not
+ * The label is limited to 255 bytes and some characters are not
  * allowed. Setting the label on a btrfs subvolume will set the label
  * on its parent filesystem. The filesystem must not be mounted when
  * trying to set the label.
@@ -24965,6 +25066,17 @@ guestfs_session_tail_n (GuestfsSession *session, gint32 nrlines, const gchar *pa
  * @compress, @gzip, @bzip2, @xz, @lzop. (Note that not all builds of
  * libguestfs will support all of these compression types).
  * 
+ * The other optional arguments are:
+ * 
+ * @xattrs
+ * If set to true, extended attributes are restored from the tar file.
+ * 
+ * @selinux
+ * If set to true, SELinux contexts are restored from the tar file.
+ * 
+ * @acls
+ * If set to true, POSIX ACLs are restored from the tar file.
+ * 
  * Returns: true on success, false on error
  * Since: 1.0.3
  */
@@ -24996,6 +25108,30 @@ guestfs_session_tar_in (GuestfsSession *session, const gchar *tarfile, const gch
     if (compress != NULL) {
       argv.bitmask |= GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
       argv.compress = compress;
+    }
+    GValue xattrs_v = {0, };
+    g_value_init (&xattrs_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "xattrs", &xattrs_v);
+    GuestfsTristate xattrs = g_value_get_enum (&xattrs_v);
+    if (xattrs != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK;
+      argv.xattrs = xattrs;
+    }
+    GValue selinux_v = {0, };
+    g_value_init (&selinux_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "selinux", &selinux_v);
+    GuestfsTristate selinux = g_value_get_enum (&selinux_v);
+    if (selinux != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_TAR_IN_OPTS_SELINUX_BITMASK;
+      argv.selinux = selinux;
+    }
+    GValue acls_v = {0, };
+    g_value_init (&acls_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "acls", &acls_v);
+    GuestfsTristate acls = g_value_get_enum (&acls_v);
+    if (acls != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_TAR_IN_OPTS_ACLS_BITMASK;
+      argv.acls = acls;
     }
     argvp = &argv;
   }
@@ -25046,6 +25182,15 @@ guestfs_session_tar_in (GuestfsSession *session, const gchar *tarfile, const gch
  * If set to true, the output tar file will contain UID/GID numbers
  * instead of user/group names.
  * 
+ * @xattrs
+ * If set to true, extended attributes are saved in the output tar.
+ * 
+ * @selinux
+ * If set to true, SELinux contexts are saved in the output tar.
+ * 
+ * @acls
+ * If set to true, POSIX ACLs are saved in the output tar.
+ * 
  * Returns: true on success, false on error
  * Since: 1.0.3
  */
@@ -25085,6 +25230,30 @@ guestfs_session_tar_out (GuestfsSession *session, const gchar *directory, const 
     if (numericowner != GUESTFS_TRISTATE_NONE) {
       argv.bitmask |= GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
       argv.numericowner = numericowner;
+    }
+    GValue xattrs_v = {0, };
+    g_value_init (&xattrs_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "xattrs", &xattrs_v);
+    GuestfsTristate xattrs = g_value_get_enum (&xattrs_v);
+    if (xattrs != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK;
+      argv.xattrs = xattrs;
+    }
+    GValue selinux_v = {0, };
+    g_value_init (&selinux_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "selinux", &selinux_v);
+    GuestfsTristate selinux = g_value_get_enum (&selinux_v);
+    if (selinux != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_TAR_OUT_OPTS_SELINUX_BITMASK;
+      argv.selinux = selinux;
+    }
+    GValue acls_v = {0, };
+    g_value_init (&acls_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "acls", &acls_v);
+    GuestfsTristate acls = g_value_get_enum (&acls_v);
+    if (acls != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_TAR_OUT_OPTS_ACLS_BITMASK;
+      argv.acls = acls;
     }
     argvp = &argv;
   }
@@ -26184,6 +26353,45 @@ guestfs_session_vfs_label (GuestfsSession *session, const gchar *mountable, GErr
   if (ret == NULL) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_vfs_minimum_size:
+ * @session: (transfer none): A GuestfsSession object
+ * @mountable: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get minimum filesystem size
+ *
+ * Get the minimum size of filesystem in bytes. This is the minimum
+ * possible size for filesystem shrinking.
+ * 
+ * If getting minimum size of specified filesystem is not supported, this
+ * will fail and set errno as ENOTSUP.
+ * 
+ * See also ntfsresize(8), resize2fs(8), btrfs(8), xfs_info(8).
+ * 
+ * Returns: the returned value, or -1 on error
+ * Since: 1.31.18
+ */
+gint64
+guestfs_session_vfs_minimum_size (GuestfsSession *session, const gchar *mountable, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vfs_minimum_size");
+    return -1;
+  }
+
+  int64_t ret = guestfs_vfs_minimum_size (g, mountable);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return -1;
   }
 
   return ret;

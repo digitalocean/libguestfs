@@ -21,6 +21,10 @@ type source = {
   uri : string;
   gpgkey : Utils.gpgkey_type;
   proxy : Downloader.proxy_mode;
+  format : source_format;
 }
+and source_format =
+| FormatNative
+| FormatSimpleStreams
 
 val read_sources : unit -> source list
