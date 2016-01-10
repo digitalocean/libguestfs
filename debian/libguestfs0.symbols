@@ -373,6 +373,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_get_e2uuid@Base 1.10
  guestfs_get_error_handler@Base 1.10
  guestfs_get_hv@Base 1:1.23.17
+ guestfs_get_identifier@Base 1:1.31.14
  guestfs_get_libvirt_requested_credential_challenge@Base 1:1.20
  guestfs_get_libvirt_requested_credential_defresult@Base 1:1.20
  guestfs_get_libvirt_requested_credential_prompt@Base 1:1.20
@@ -464,6 +465,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_int_safe_malloc@Base 1:1.29.26
  guestfs_int_safe_memdup@Base 1:1.29.26
  guestfs_int_safe_strdup@Base 1:1.29.26
+ (optional)guestfs_internal_feature_available@Base 1:1.31.25
  (optional)guestfs_internal_autosync@Base 1.10
  (optional)guestfs_internal_exit@Base 1:1.23.30
  (optional)guestfs_internal_hot_add_drive@Base 1:1.20
@@ -777,6 +779,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_set_e2uuid@Base 1.10
  guestfs_set_error_handler@Base 1.10
  guestfs_set_hv@Base 1:1.23.17
+ guestfs_set_identifier@Base 1:1.31.14
  guestfs_set_event_callback@Base 1.10
  guestfs_set_label@Base 1:1.18
  guestfs_set_launch_done_callback@Base 1.10
@@ -866,6 +869,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_utimens@Base 1.10
  guestfs_utsname@Base 1:1.20
  guestfs_version@Base 1.10
+ guestfs_vfs_minimum_size@Base 1:1.31.19
  guestfs_vfs_label@Base 1.10
  guestfs_vfs_type@Base 1.10
  guestfs_vfs_uuid@Base 1.10
