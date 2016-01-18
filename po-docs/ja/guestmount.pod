@@ -11,11 +11,6 @@ guestmount - Mount a guest filesystem on the host using FUSE and libguestfs
 
  guestmount [--options] -d Guest -i [--ro] mountpoint
 
-=head1 警告
-
-You must I<not> use C<guestmount> in read-write mode on live virtual
-machines.  If you do this, you risk disk corruption in the VM.
-
 =head1 説明
 
 The guestmount program can be used to mount virtual machine filesystems and

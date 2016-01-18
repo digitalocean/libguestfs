@@ -17,12 +17,6 @@ virt-edit — програма для редагування файлів у в�
 
  virt-edit диск.img [диск.img ...] файл
 
-=head1 ПОПЕРЕДЖЕННЯ
-
-You must I<not> use C<virt-edit> on live virtual machines.  If you do this,
-you risk disk corruption in the VM.  C<virt-edit> tries to stop you from
-doing this, but doesn't catch all cases.
-
 =head1 ОПИС
 
 C<virt-edit> is a command line tool to edit C<file> where each C<file>

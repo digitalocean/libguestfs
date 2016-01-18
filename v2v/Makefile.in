@@ -2019,6 +2019,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	DOM.cmo \
 @HAVE_OCAML_TRUE@	OVF.cmo \
 @HAVE_OCAML_TRUE@	windows.cmo \
+@HAVE_OCAML_TRUE@	linux.cmo \
 @HAVE_OCAML_TRUE@	v2v_unit_tests.cmo
 
 @HAVE_OCAML_TRUE@v2v_unit_tests_XOBJECTS = $(v2v_unit_tests_BOBJECTS:.cmo=.cmx)
@@ -3020,6 +3021,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	  --man virt-v2v.1 \
 @HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-v2v.1.html \
 @HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning safe \
 @HAVE_OCAML_TRUE@	  $<
 @HAVE_OCAML_TRUE@	touch $@
 
@@ -3030,6 +3032,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	  --man virt-v2v-copy-to-local.1 \
 @HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-v2v-copy-to-local.1.html \
 @HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning safe \
 @HAVE_OCAML_TRUE@	  $<
 @HAVE_OCAML_TRUE@	touch $@
 

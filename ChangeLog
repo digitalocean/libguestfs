@@ -1,3 +1,126 @@
+commit eff7d5c73d3a95547880b989704a3c12f6ed05df
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 15 11:41:06 2016 +0000
+
+    Version 1.32.1.
+
+commit 5163f0997114910a6c6c4806339aff89fce6a0c5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 14 17:04:50 2016 +0000
+
+    Update gnulib.
+    
+    The version we picked just before 1.32 was released suffers from:
+    
+      test-mbrtowc.c:49: assertion 'ret == (size_t)(-2)' failed
+    
+    on RHEL 7.  See this thread for details:
+    
+      http://comments.gmane.org/gmane.comp.lib.gnulib.bugs/35567
+    
+    (cherry picked from commit 727ac63dea41115f6e1c70bd2067c448ee04dca5)
+
+commit 2dcefb001774ba6bc4ffa14af443d86f0a2afd23
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 15 12:52:48 2015 +0000
+
+    tests/mountable: Allow test to be skipped.
+    
+    (cherry picked from commit 7bccd0593f1c841a8390cd2d6ea3ec6b4a1e834b)
+
+commit 8f4adc67dffcb06095089110b2ce1692c9d6829f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 4 14:48:59 2016 +0000
+
+    podwrapper: Add --warning flag for manual pages of CLI tools (RHBZ#1293527).
+    
+    This doesn't add --warning flags to the translated pages,
+    which is a bug to be fixed at some point.
+    
+    (cherry picked from commit 446f7794e0231ae3f6bc724cdbc18235a32bca42)
+
+commit af612b558577dcb7913c04853464c9ef20d3e5f5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 4 14:21:11 2016 +0000
+
+    podwrapper: Generate consistent WARNING sections (RHBZ#1293527).
+    
+    (cherry picked from commit bb27fc1c0afd23c805a8db474b4cfe97c072fdd6)
+
+commit c9f73fe784f5f786d6a4edd90bc44cb9293569d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 4 14:20:20 2016 +0000
+
+    podwrapper: Enforce that every manual page must have a DESCRIPTION section.
+    
+    For every user command line tool (eg. guestfish or virt-cat) require
+    that the manual page has a DESCRIPTION section.  This doesn't apply to
+    non-CLI man pages (eg. guestfs-perl, guestfs-faq).
+    
+    (cherry picked from commit 6fa4d983a3b7df682fac0801bb89b477e2db4b71)
+
+commit d8e415504429898775644fffcd2451e5bd9a03d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 2 21:14:57 2016 +0000
+
+    customize: Document missing command line parameters in the synopsis.
+    
+    I noticed that the --attach option was not covered in the synopsis.
+    This commit documents all of the missing command line parameters in
+    the synopsis.
+    
+    (cherry picked from commit 3b8322e18ca0f4a59a7f7a07643c521818cb8e8d)
+
+commit 6ba3b164c970cc93c70208173f7b4779d230c138
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 11 13:38:36 2016 +0000
+
+    v2v: Unquote path when removing VirtualBox Guest Additions (RHBZ#1296606).
+    
+    (cherry picked from commit 64af88a1b766edddeb1dcf845019f1ed01202d0b)
+
+commit 2f16b85562779597f04d3f1b7942a23882de3385
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 8 12:34:34 2016 +0000
+
+    p2v: Break long lines when displaying virt-v2v output in GUI.
+    
+    (cherry picked from commit 2e728ed0dc740a239291de15fd8cb876ed348d5c)
+
+commit 194a80f3b12734dab483d51a63ccf26c90d2018f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 6 17:05:28 2016 +0000
+
+    tests: Allow test-disk-create.sh to be skipped.
+    
+    (cherry picked from commit abd41320e10bd3092df9a8feab81311883addba5)
+
+commit 78f779fb35af237f1e32f8a68406de0a4c92b15f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 6 16:04:46 2016 +0000
+
+    regressions: test-big-heap: Allow this test to be skipped.
+    
+    (cherry picked from commit 980dc9deafdceeac46f1b3009e4fec051b407604)
+
+commit bff9c95646eeb2745418ae5327df39fd2d71848c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 6 16:04:23 2016 +0000
+
+    regressions: test-big-heap: Add comment about a failure of this test.
+    
+    (cherry picked from commit de94d01692b006d90226bed9745abfe3bc2f8f1a)
+
+commit ca24d40fe4b3aebeefec520be13c843672332443
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 6 11:35:34 2016 +0000
+
+    hacking: Fix git push command for pushing stable branch.
+    
+    This fixes commit 5218f54a544cd147cb72640506ce8be845116bd2.
+    
+    (cherry picked from commit f67452065156149797dae00aefeb05e2772e486f)
+
 commit 88ba55c553e99f2209e232e7b2fb0bc2f25dda9f
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Jan 6 11:29:26 2016 +0000
