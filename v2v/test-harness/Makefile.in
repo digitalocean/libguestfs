@@ -2049,6 +2049,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  --man virt-v2v-test-harness.1 \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-v2v-test-harness.1.html \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  --license LGPLv2+ \
+@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  --warning safe \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  $<
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	touch $@
 

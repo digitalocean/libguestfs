@@ -70,7 +70,6 @@
 # 'common-rules.mk' should be included in every Makefile.am.
 # cf. 'subdir-rules.mk'
 
-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -356,7 +355,6 @@ am__can_run_installinfo = \
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man_MANS)
-DATA = $(noinst_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__tty_colors_dummy = \
   mgn= red= grn= lgn= blu= brg= std=; \
@@ -1682,12 +1680,12 @@ EXTRA_DIST = \
 @HAVE_TOOLS_TRUE@bin_SCRIPTS = $(tools:%=virt-%)
 
 # Manual pages and HTML files for the website.
+@HAVE_TOOLS_TRUE@man_MANS = \
+@HAVE_TOOLS_TRUE@	virt-list-filesystems.1 \
+@HAVE_TOOLS_TRUE@	virt-list-partitions.1 \
+@HAVE_TOOLS_TRUE@	virt-tar.1 \
+@HAVE_TOOLS_TRUE@	virt-win-reg.1
 
-# XXX Bug in automake?  If you list virt-tar.1 explicitly, then it
-# builds and installs the man pages.  However if this is removed,
-# then the man pages are neither built nor installed.
-@HAVE_TOOLS_TRUE@man_MANS = virt-tar.1 $(patsubst %,virt-%.1,$(filter-out tar,$(tools)))
-@HAVE_TOOLS_TRUE@noinst_DATA = $(tools:%=$(top_builddir)/website/virt-%.1.html)
 
 # Tests.
 @HAVE_TOOLS_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
@@ -2022,7 +2020,7 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile $(SCRIPTS) $(MANS) $(DATA) all-local
+all-am: Makefile $(SCRIPTS) $(MANS) all-local
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -2172,17 +2170,49 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-@HAVE_TOOLS_TRUE@virt-%.1: virt-%
-@HAVE_TOOLS_TRUE@	$(PODWRAPPER) \
-@HAVE_TOOLS_TRUE@	  --man $@ \
-@HAVE_TOOLS_TRUE@	  --license GPLv2+ \
-@HAVE_TOOLS_TRUE@	  $<
+@HAVE_TOOLS_TRUE@virt-list-filesystems.1 $(top_builddir)/website/virt-list-filesystems.1.html: stamp-virt-list-filesystems.pod
 
-@HAVE_TOOLS_TRUE@$(top_builddir)/website/virt-%.1.html: virt-%
+@HAVE_TOOLS_TRUE@stamp-virt-list-filesystems.pod: virt-list-filesystems
 @HAVE_TOOLS_TRUE@	$(PODWRAPPER) \
-@HAVE_TOOLS_TRUE@	  --html $@ \
+@HAVE_TOOLS_TRUE@	  --man virt-list-filesystems.1 \
+@HAVE_TOOLS_TRUE@	  --html $(top_builddir)/website/virt-list-filesystems.1.html \
 @HAVE_TOOLS_TRUE@	  --license GPLv2+ \
+@HAVE_TOOLS_TRUE@	  --warning safe \
 @HAVE_TOOLS_TRUE@	  $<
+@HAVE_TOOLS_TRUE@	touch $@
+
+@HAVE_TOOLS_TRUE@virt-list-partitions.1 $(top_builddir)/website/virt-list-partitions.1.html: stamp-virt-list-partitions.pod
+
+@HAVE_TOOLS_TRUE@stamp-virt-list-partitions.pod: virt-list-partitions
+@HAVE_TOOLS_TRUE@	$(PODWRAPPER) \
+@HAVE_TOOLS_TRUE@	  --man virt-list-partitions.1 \
+@HAVE_TOOLS_TRUE@	  --html $(top_builddir)/website/virt-list-partitions.1.html \
+@HAVE_TOOLS_TRUE@	  --license GPLv2+ \
+@HAVE_TOOLS_TRUE@	  --warning safe \
+@HAVE_TOOLS_TRUE@	  $<
+@HAVE_TOOLS_TRUE@	touch $@
+
+@HAVE_TOOLS_TRUE@virt-tar.1 $(top_builddir)/website/virt-tar.1.html: stamp-virt-tar.pod
+
+@HAVE_TOOLS_TRUE@stamp-virt-tar.pod: virt-tar
+@HAVE_TOOLS_TRUE@	$(PODWRAPPER) \
+@HAVE_TOOLS_TRUE@	  --man virt-tar.1 \
+@HAVE_TOOLS_TRUE@	  --html $(top_builddir)/website/virt-tar.1.html \
+@HAVE_TOOLS_TRUE@	  --license GPLv2+ \
+@HAVE_TOOLS_TRUE@	  --warning custom \
+@HAVE_TOOLS_TRUE@	  $<
+@HAVE_TOOLS_TRUE@	touch $@
+
+@HAVE_TOOLS_TRUE@virt-win-reg.1 $(top_builddir)/website/virt-win-reg.1.html: stamp-virt-win-reg.pod
+
+@HAVE_TOOLS_TRUE@stamp-virt-win-reg.pod: virt-win-reg
+@HAVE_TOOLS_TRUE@	$(PODWRAPPER) \
+@HAVE_TOOLS_TRUE@	  --man virt-win-reg.1 \
+@HAVE_TOOLS_TRUE@	  --html $(top_builddir)/website/virt-win-reg.1.html \
+@HAVE_TOOLS_TRUE@	  --license GPLv2+ \
+@HAVE_TOOLS_TRUE@	  --warning custom \
+@HAVE_TOOLS_TRUE@	  $<
+@HAVE_TOOLS_TRUE@	touch $@
 
 all-local:
 	for f in $(tools:%=tools/virt-%); do echo $$f; done > $(top_srcdir)/po/POTFILES-pl

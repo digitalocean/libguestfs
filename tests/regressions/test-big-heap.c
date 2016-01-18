@@ -38,13 +38,26 @@
 int
 main (int argc, char *argv[])
 {
-  guestfs_h *g = guestfs_create ();
+  const char *s;
+  guestfs_h *g;
   char *mem, *fmt;
+
+  /* Allow the test to be skipped. */
+  s = getenv ("SKIP_TEST_BIG_HEAP");
+  if (s && STRNEQ (s, "")) {
+    printf ("%s: test skipped because environment variable is set\n",
+            argv[0]);
+    exit (77);
+  }
 
   /* Make sure we're using > 1GB in the main process.  This test won't
    * work on 32 bit platforms, because we can't allocate 2GB of
    * contiguous memory.  Therefore skip the test if the calloc call
    * fails.
+   */
+  /* XXX This test also fails for machines with ~ 4 GB of RAM,
+   * because the 2 GB allocation succeeds here, but the fork
+   * fails (since it will require around 2 * 2 GB).
    */
   mem = calloc (2 * 1024, 1024 * 1024);
   if (mem == NULL) {
@@ -54,6 +67,8 @@ main (int argc, char *argv[])
              argv[0]);
     exit (77);
   }
+
+  g = guestfs_create ();
 
   /* Do something which forks qemu-img subprocess. */
   fmt = guestfs_disk_format (g, "/dev/null");

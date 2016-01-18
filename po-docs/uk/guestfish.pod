@@ -19,13 +19,6 @@ guestfish - the guest filesystem shell
 
  guestfish -d libvirt-domain -i
 
-=head1 ПОПЕРЕДЖЕННЯ
-
-Using guestfish in read/write mode on live virtual machines can be
-dangerous, potentially causing disk corruption.  Use the I<--ro> (read-only)
-option to use guestfish safely if the disk image or virtual machine might be
-live.
-
 =head1 ОПИС
 
 Guestfish is a shell and command-line tool for examining and modifying

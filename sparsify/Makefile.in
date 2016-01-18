@@ -2462,6 +2462,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	  --man virt-sparsify.1 \
 @HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-sparsify.1.html \
 @HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning general \
 @HAVE_OCAML_TRUE@	  $<
 @HAVE_OCAML_TRUE@	touch $@
 

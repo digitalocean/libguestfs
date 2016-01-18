@@ -9,12 +9,6 @@ virt-copy-in - ファイルおよびディレクトリを仮想マシンのデ�
 
  virt-copy-in -d domain file|dir [file|dir ...] /destination
 
-=head1 警告
-
-Using C<virt-copy-in> on live virtual machines can be dangerous, potentially
-causing disk corruption.  The virtual machine must be shut down before you
-use this command.
-
 =head1 説明
 
 C<virt-copy-in> copies files and directories from the local disk into a

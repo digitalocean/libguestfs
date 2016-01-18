@@ -2529,6 +2529,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	  --insert $(top_srcdir)/customize/customize-synopsis.pod:__CUSTOMIZE_SYNOPSIS__ \
 @HAVE_OCAML_TRUE@	  --insert $(top_srcdir)/customize/customize-options.pod:__CUSTOMIZE_OPTIONS__ \
 @HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning general \
 @HAVE_OCAML_TRUE@	  $<
 @HAVE_OCAML_TRUE@	touch $@
 

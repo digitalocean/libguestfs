@@ -2763,6 +2763,7 @@ $(top_builddir)/generator/generator:
 @HAVE_FUSE_TRUE@	  --man guestmount.1 \
 @HAVE_FUSE_TRUE@	  --html $(top_builddir)/website/guestmount.1.html \
 @HAVE_FUSE_TRUE@	  --license GPLv2+ \
+@HAVE_FUSE_TRUE@	  --warning ro-option \
 @HAVE_FUSE_TRUE@	  $<
 @HAVE_FUSE_TRUE@	touch $@
 
@@ -2773,6 +2774,7 @@ $(top_builddir)/generator/generator:
 @HAVE_FUSE_TRUE@	  --man guestunmount.1 \
 @HAVE_FUSE_TRUE@	  --html $(top_builddir)/website/guestunmount.1.html \
 @HAVE_FUSE_TRUE@	  --license GPLv2+ \
+@HAVE_FUSE_TRUE@	  --warning safe \
 @HAVE_FUSE_TRUE@	  $<
 @HAVE_FUSE_TRUE@	touch $@
 
