@@ -1832,6 +1832,7 @@ SOURCES_MLI = \
 	utils.mli \
 	vCenter.mli \
 	windows.mli \
+	windows_virtio.mli \
 	xml.mli
 
 SOURCES_ML = \
@@ -1847,6 +1848,7 @@ SOURCES_ML = \
 	OVF.ml \
 	linux.ml \
 	windows.ml \
+	windows_virtio.ml \
 	modules_list.ml \
 	input_disk.ml \
 	input_libvirtxml.ml \
@@ -2012,6 +2014,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/guestfs_config.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmo \
 @HAVE_OCAML_TRUE@	stringMap.cmo \
 @HAVE_OCAML_TRUE@	types.cmo \
 @HAVE_OCAML_TRUE@	xml.cmo \
@@ -2019,6 +2022,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	DOM.cmo \
 @HAVE_OCAML_TRUE@	OVF.cmo \
 @HAVE_OCAML_TRUE@	windows.cmo \
+@HAVE_OCAML_TRUE@	windows_virtio.cmo \
 @HAVE_OCAML_TRUE@	linux.cmo \
 @HAVE_OCAML_TRUE@	v2v_unit_tests.cmo
 

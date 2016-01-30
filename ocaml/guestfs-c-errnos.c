@@ -38,43 +38,43 @@
 #include "guestfs-c.h"
 
 /* These prototypes are solely to quiet gcc warnings. */
-value ocaml_guestfs_get_EINVAL (value unitv);
-value ocaml_guestfs_get_ENOTSUP (value unitv);
-value ocaml_guestfs_get_EPERM (value unitv);
-value ocaml_guestfs_get_ESRCH (value unitv);
-value ocaml_guestfs_get_ENOENT (value unitv);
+value guestfs_int_ocaml_get_EINVAL (value unitv);
+value guestfs_int_ocaml_get_ENOTSUP (value unitv);
+value guestfs_int_ocaml_get_EPERM (value unitv);
+value guestfs_int_ocaml_get_ESRCH (value unitv);
+value guestfs_int_ocaml_get_ENOENT (value unitv);
 
 /* NB: "noalloc" function. */
 value
-ocaml_guestfs_get_EINVAL (value unitv)
+guestfs_int_ocaml_get_EINVAL (value unitv)
 {
   return Val_int (EINVAL);
 }
 
 /* NB: "noalloc" function. */
 value
-ocaml_guestfs_get_ENOTSUP (value unitv)
+guestfs_int_ocaml_get_ENOTSUP (value unitv)
 {
   return Val_int (ENOTSUP);
 }
 
 /* NB: "noalloc" function. */
 value
-ocaml_guestfs_get_EPERM (value unitv)
+guestfs_int_ocaml_get_EPERM (value unitv)
 {
   return Val_int (EPERM);
 }
 
 /* NB: "noalloc" function. */
 value
-ocaml_guestfs_get_ESRCH (value unitv)
+guestfs_int_ocaml_get_ESRCH (value unitv)
 {
   return Val_int (ESRCH);
 }
 
 /* NB: "noalloc" function. */
 value
-ocaml_guestfs_get_ENOENT (value unitv)
+guestfs_int_ocaml_get_ENOENT (value unitv)
 {
   return Val_int (ENOENT);
 }

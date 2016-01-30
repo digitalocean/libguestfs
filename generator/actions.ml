@@ -7274,7 +7274,7 @@ per libguestfs instance." };
       InitScratchFS, Always, TestResult (
         [["mkdir"; "/inotify_add_watch"];
          ["inotify_init"; "0"];
-         ["inotify_add_watch"; "/inotify_add_watch"; "1073741823"];
+         ["inotify_add_watch"; "/inotify_add_watch"; "4095"];
          ["touch"; "/inotify_add_watch/a"];
          ["touch"; "/inotify_add_watch/b"];
          ["inotify_files"]],
@@ -10928,12 +10928,12 @@ with zeroes)." };
         InitEmpty, Always, TestResultString (
           [["part_disk"; "/dev/sda"; "mbr"];
            ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
-           ["xfs_admin"; "/dev/sda1"; ""; ""; ""; ""; "false"; "NOARG"; uuid];
+           ["xfs_admin"; "/dev/sda1"; ""; ""; ""; ""; ""; "NOARG"; uuid];
            ["vfs_uuid"; "/dev/sda1"]], uuid), [];
         InitEmpty, Always, TestResultString (
           [["part_disk"; "/dev/sda"; "mbr"];
            ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
-           ["xfs_admin"; "/dev/sda1"; ""; ""; ""; ""; "false"; "LBL-TEST"; "NOARG"];
+           ["xfs_admin"; "/dev/sda1"; ""; ""; ""; ""; ""; "LBL-TEST"; "NOARG"];
            ["vfs_label"; "/dev/sda1"]], "LBL-TEST"), [];
       ]);
     shortdesc = "change parameters of an XFS filesystem";
@@ -12680,8 +12680,8 @@ This enable skinny metadata extent refs." };
     tests = [
       InitEmpty, Always, TestRun (
         [["part_init"; "/dev/sda"; "mbr"];
-         ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
-         ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
+         ["part_add"; "/dev/sda"; "p"; "64"; "409599"];
+         ["part_add"; "/dev/sda"; "p"; "409600"; "819199"];
          ["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
          ["mkfs_btrfs"; "/dev/sda2"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];
@@ -12765,7 +12765,7 @@ To read the UUID on a filesystem, call C<guestfs_vfs_uuid>." };
       InitPartition, IfAvailable "ntfsprogs", TestRun(
         [["mkfs"; "ntfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["vfs_minimum_size"; "/dev/sda1"]]), [];
-      InitPartition, IfAvailable "btrfs", TestRun (
+      InitPartition, IfAvailable "btrfs", TestRunOrUnsupported (
         [["mkfs"; "btrfs"; "/dev/sda1"; ""; "NOARG"; ""; ""; "NOARG"];
          ["mount"; "/dev/sda1"; "/"];
          ["vfs_minimum_size"; "/dev/sda1"]]), [];

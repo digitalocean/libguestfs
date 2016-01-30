@@ -1355,7 +1355,7 @@ put_stat_list (struct guestfs_stat_list *stats)
 
 #ifdef GUESTFS_HAVE_ACL_DELETE_DEF_FILE
 static PyObject *
-py_guestfs_acl_delete_def_file (PyObject *self, PyObject *args)
+guestfs_int_py_acl_delete_def_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -1393,7 +1393,7 @@ py_guestfs_acl_delete_def_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ACL_GET_FILE
 static PyObject *
-py_guestfs_acl_get_file (PyObject *self, PyObject *args)
+guestfs_int_py_acl_get_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -1437,7 +1437,7 @@ py_guestfs_acl_get_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ACL_SET_FILE
 static PyObject *
-py_guestfs_acl_set_file (PyObject *self, PyObject *args)
+guestfs_int_py_acl_set_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -1477,7 +1477,7 @@ py_guestfs_acl_set_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ADD_CDROM
 static PyObject *
-py_guestfs_add_cdrom (PyObject *self, PyObject *args)
+guestfs_int_py_add_cdrom (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -1508,7 +1508,7 @@ py_guestfs_add_cdrom (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ADD_DOMAIN
 static PyObject *
-py_guestfs_add_domain (PyObject *self, PyObject *args)
+guestfs_int_py_add_domain (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -1647,7 +1647,7 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ADD_DRIVE
 static PyObject *
-py_guestfs_add_drive (PyObject *self, PyObject *args)
+guestfs_int_py_add_drive (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -1828,7 +1828,7 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ADD_DRIVE_RO
 static PyObject *
-py_guestfs_add_drive_ro (PyObject *self, PyObject *args)
+guestfs_int_py_add_drive_ro (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -1859,7 +1859,7 @@ py_guestfs_add_drive_ro (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ADD_DRIVE_RO_WITH_IF
 static PyObject *
-py_guestfs_add_drive_ro_with_if (PyObject *self, PyObject *args)
+guestfs_int_py_add_drive_ro_with_if (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -1891,7 +1891,7 @@ py_guestfs_add_drive_ro_with_if (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ADD_DRIVE_SCRATCH
 static PyObject *
-py_guestfs_add_drive_scratch (PyObject *self, PyObject *args)
+guestfs_int_py_add_drive_scratch (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -1953,7 +1953,7 @@ py_guestfs_add_drive_scratch (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ADD_DRIVE_WITH_IF
 static PyObject *
-py_guestfs_add_drive_with_if (PyObject *self, PyObject *args)
+guestfs_int_py_add_drive_with_if (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -1985,7 +1985,7 @@ py_guestfs_add_drive_with_if (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ADD_LIBVIRT_DOM
 static PyObject *
-py_guestfs_add_libvirt_dom (PyObject *self, PyObject *args)
+guestfs_int_py_add_libvirt_dom (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2105,7 +2105,7 @@ py_guestfs_add_libvirt_dom (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_CLEAR
 static PyObject *
-py_guestfs_aug_clear (PyObject *self, PyObject *args)
+guestfs_int_py_aug_clear (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2143,7 +2143,7 @@ py_guestfs_aug_clear (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_CLOSE
 static PyObject *
-py_guestfs_aug_close (PyObject *self, PyObject *args)
+guestfs_int_py_aug_close (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2180,7 +2180,7 @@ py_guestfs_aug_close (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_DEFNODE
 static PyObject *
-py_guestfs_aug_defnode (PyObject *self, PyObject *args)
+guestfs_int_py_aug_defnode (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2220,7 +2220,7 @@ py_guestfs_aug_defnode (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_DEFVAR
 static PyObject *
-py_guestfs_aug_defvar (PyObject *self, PyObject *args)
+guestfs_int_py_aug_defvar (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2258,7 +2258,7 @@ py_guestfs_aug_defvar (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_GET
 static PyObject *
-py_guestfs_aug_get (PyObject *self, PyObject *args)
+guestfs_int_py_aug_get (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2301,7 +2301,7 @@ py_guestfs_aug_get (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_INIT
 static PyObject *
-py_guestfs_aug_init (PyObject *self, PyObject *args)
+guestfs_int_py_aug_init (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2340,7 +2340,7 @@ py_guestfs_aug_init (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_INSERT
 static PyObject *
-py_guestfs_aug_insert (PyObject *self, PyObject *args)
+guestfs_int_py_aug_insert (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2380,7 +2380,7 @@ py_guestfs_aug_insert (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_LABEL
 static PyObject *
-py_guestfs_aug_label (PyObject *self, PyObject *args)
+guestfs_int_py_aug_label (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2423,7 +2423,7 @@ py_guestfs_aug_label (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_LOAD
 static PyObject *
-py_guestfs_aug_load (PyObject *self, PyObject *args)
+guestfs_int_py_aug_load (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2460,7 +2460,7 @@ py_guestfs_aug_load (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_LS
 static PyObject *
-py_guestfs_aug_ls (PyObject *self, PyObject *args)
+guestfs_int_py_aug_ls (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2498,7 +2498,7 @@ py_guestfs_aug_ls (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_MATCH
 static PyObject *
-py_guestfs_aug_match (PyObject *self, PyObject *args)
+guestfs_int_py_aug_match (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2536,7 +2536,7 @@ py_guestfs_aug_match (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_MV
 static PyObject *
-py_guestfs_aug_mv (PyObject *self, PyObject *args)
+guestfs_int_py_aug_mv (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2575,7 +2575,7 @@ py_guestfs_aug_mv (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_RM
 static PyObject *
-py_guestfs_aug_rm (PyObject *self, PyObject *args)
+guestfs_int_py_aug_rm (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2612,7 +2612,7 @@ py_guestfs_aug_rm (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_SAVE
 static PyObject *
-py_guestfs_aug_save (PyObject *self, PyObject *args)
+guestfs_int_py_aug_save (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2649,7 +2649,7 @@ py_guestfs_aug_save (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_SET
 static PyObject *
-py_guestfs_aug_set (PyObject *self, PyObject *args)
+guestfs_int_py_aug_set (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2688,7 +2688,7 @@ py_guestfs_aug_set (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AUG_SETM
 static PyObject *
-py_guestfs_aug_setm (PyObject *self, PyObject *args)
+guestfs_int_py_aug_setm (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2727,7 +2727,7 @@ py_guestfs_aug_setm (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AVAILABLE
 static PyObject *
-py_guestfs_available (PyObject *self, PyObject *args)
+guestfs_int_py_available (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2769,7 +2769,7 @@ py_guestfs_available (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_AVAILABLE_ALL_GROUPS
 static PyObject *
-py_guestfs_available_all_groups (PyObject *self, PyObject *args)
+guestfs_int_py_available_all_groups (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2806,7 +2806,7 @@ py_guestfs_available_all_groups (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BASE64_IN
 static PyObject *
-py_guestfs_base64_in (PyObject *self, PyObject *args)
+guestfs_int_py_base64_in (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2845,7 +2845,7 @@ py_guestfs_base64_in (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BASE64_OUT
 static PyObject *
-py_guestfs_base64_out (PyObject *self, PyObject *args)
+guestfs_int_py_base64_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2884,7 +2884,7 @@ py_guestfs_base64_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLKDISCARD
 static PyObject *
-py_guestfs_blkdiscard (PyObject *self, PyObject *args)
+guestfs_int_py_blkdiscard (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2922,7 +2922,7 @@ py_guestfs_blkdiscard (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLKDISCARDZEROES
 static PyObject *
-py_guestfs_blkdiscardzeroes (PyObject *self, PyObject *args)
+guestfs_int_py_blkdiscardzeroes (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2959,7 +2959,7 @@ py_guestfs_blkdiscardzeroes (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLKID
 static PyObject *
-py_guestfs_blkid (PyObject *self, PyObject *args)
+guestfs_int_py_blkid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -2997,7 +2997,7 @@ py_guestfs_blkid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_FLUSHBUFS
 static PyObject *
-py_guestfs_blockdev_flushbufs (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_flushbufs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3035,7 +3035,7 @@ py_guestfs_blockdev_flushbufs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_GETBSZ
 static PyObject *
-py_guestfs_blockdev_getbsz (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_getbsz (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3072,7 +3072,7 @@ py_guestfs_blockdev_getbsz (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_GETRO
 static PyObject *
-py_guestfs_blockdev_getro (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_getro (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3109,7 +3109,7 @@ py_guestfs_blockdev_getro (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_GETSIZE64
 static PyObject *
-py_guestfs_blockdev_getsize64 (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_getsize64 (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3146,7 +3146,7 @@ py_guestfs_blockdev_getsize64 (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_GETSS
 static PyObject *
-py_guestfs_blockdev_getss (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_getss (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3183,7 +3183,7 @@ py_guestfs_blockdev_getss (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_GETSZ
 static PyObject *
-py_guestfs_blockdev_getsz (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_getsz (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3220,7 +3220,7 @@ py_guestfs_blockdev_getsz (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_REREADPT
 static PyObject *
-py_guestfs_blockdev_rereadpt (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_rereadpt (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3258,7 +3258,7 @@ py_guestfs_blockdev_rereadpt (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_SETBSZ
 static PyObject *
-py_guestfs_blockdev_setbsz (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_setbsz (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3297,7 +3297,7 @@ py_guestfs_blockdev_setbsz (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_SETRA
 static PyObject *
-py_guestfs_blockdev_setra (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_setra (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3336,7 +3336,7 @@ py_guestfs_blockdev_setra (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_SETRO
 static PyObject *
-py_guestfs_blockdev_setro (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_setro (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3374,7 +3374,7 @@ py_guestfs_blockdev_setro (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BLOCKDEV_SETRW
 static PyObject *
-py_guestfs_blockdev_setrw (PyObject *self, PyObject *args)
+guestfs_int_py_blockdev_setrw (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3412,7 +3412,7 @@ py_guestfs_blockdev_setrw (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_BALANCE_CANCEL
 static PyObject *
-py_guestfs_btrfs_balance_cancel (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_balance_cancel (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3450,7 +3450,7 @@ py_guestfs_btrfs_balance_cancel (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_BALANCE_PAUSE
 static PyObject *
-py_guestfs_btrfs_balance_pause (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_balance_pause (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3488,7 +3488,7 @@ py_guestfs_btrfs_balance_pause (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_BALANCE_RESUME
 static PyObject *
-py_guestfs_btrfs_balance_resume (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_balance_resume (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3526,7 +3526,7 @@ py_guestfs_btrfs_balance_resume (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_BALANCE_STATUS
 static PyObject *
-py_guestfs_btrfs_balance_status (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_balance_status (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3564,7 +3564,7 @@ py_guestfs_btrfs_balance_status (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_DEVICE_ADD
 static PyObject *
-py_guestfs_btrfs_device_add (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_device_add (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3607,7 +3607,7 @@ py_guestfs_btrfs_device_add (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_DEVICE_DELETE
 static PyObject *
-py_guestfs_btrfs_device_delete (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_device_delete (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3650,7 +3650,7 @@ py_guestfs_btrfs_device_delete (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_BALANCE
 static PyObject *
-py_guestfs_btrfs_filesystem_balance (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_filesystem_balance (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3688,7 +3688,7 @@ py_guestfs_btrfs_filesystem_balance (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_DEFRAGMENT
 static PyObject *
-py_guestfs_btrfs_filesystem_defragment (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_filesystem_defragment (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3752,7 +3752,7 @@ py_guestfs_btrfs_filesystem_defragment (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_RESIZE
 static PyObject *
-py_guestfs_btrfs_filesystem_resize (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_filesystem_resize (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3803,7 +3803,7 @@ py_guestfs_btrfs_filesystem_resize (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_SYNC
 static PyObject *
-py_guestfs_btrfs_filesystem_sync (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_filesystem_sync (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3841,7 +3841,7 @@ py_guestfs_btrfs_filesystem_sync (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_FSCK
 static PyObject *
-py_guestfs_btrfs_fsck (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_fsck (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3900,7 +3900,7 @@ py_guestfs_btrfs_fsck (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_IMAGE
 static PyObject *
-py_guestfs_btrfs_image (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_image (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3956,7 +3956,7 @@ py_guestfs_btrfs_image (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_ASSIGN
 static PyObject *
-py_guestfs_btrfs_qgroup_assign (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_qgroup_assign (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -3996,7 +3996,7 @@ py_guestfs_btrfs_qgroup_assign (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_CREATE
 static PyObject *
-py_guestfs_btrfs_qgroup_create (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_qgroup_create (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4035,7 +4035,7 @@ py_guestfs_btrfs_qgroup_create (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_DESTROY
 static PyObject *
-py_guestfs_btrfs_qgroup_destroy (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_qgroup_destroy (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4074,7 +4074,7 @@ py_guestfs_btrfs_qgroup_destroy (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_LIMIT
 static PyObject *
-py_guestfs_btrfs_qgroup_limit (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_qgroup_limit (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4113,7 +4113,7 @@ py_guestfs_btrfs_qgroup_limit (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_REMOVE
 static PyObject *
-py_guestfs_btrfs_qgroup_remove (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_qgroup_remove (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4153,7 +4153,7 @@ py_guestfs_btrfs_qgroup_remove (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_SHOW
 static PyObject *
-py_guestfs_btrfs_qgroup_show (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_qgroup_show (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4191,7 +4191,7 @@ py_guestfs_btrfs_qgroup_show (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_QUOTA_ENABLE
 static PyObject *
-py_guestfs_btrfs_quota_enable (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_quota_enable (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4230,7 +4230,7 @@ py_guestfs_btrfs_quota_enable (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_QUOTA_RESCAN
 static PyObject *
-py_guestfs_btrfs_quota_rescan (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_quota_rescan (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4268,7 +4268,7 @@ py_guestfs_btrfs_quota_rescan (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_REPLACE
 static PyObject *
-py_guestfs_btrfs_replace (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_replace (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4308,7 +4308,7 @@ py_guestfs_btrfs_replace (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_RESCUE_CHUNK_RECOVER
 static PyObject *
-py_guestfs_btrfs_rescue_chunk_recover (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_rescue_chunk_recover (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4346,7 +4346,7 @@ py_guestfs_btrfs_rescue_chunk_recover (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_RESCUE_SUPER_RECOVER
 static PyObject *
-py_guestfs_btrfs_rescue_super_recover (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_rescue_super_recover (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4384,7 +4384,7 @@ py_guestfs_btrfs_rescue_super_recover (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SCRUB_CANCEL
 static PyObject *
-py_guestfs_btrfs_scrub_cancel (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_scrub_cancel (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4422,7 +4422,7 @@ py_guestfs_btrfs_scrub_cancel (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SCRUB_RESUME
 static PyObject *
-py_guestfs_btrfs_scrub_resume (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_scrub_resume (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4460,7 +4460,7 @@ py_guestfs_btrfs_scrub_resume (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SCRUB_START
 static PyObject *
-py_guestfs_btrfs_scrub_start (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_scrub_start (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4498,7 +4498,7 @@ py_guestfs_btrfs_scrub_start (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SCRUB_STATUS
 static PyObject *
-py_guestfs_btrfs_scrub_status (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_scrub_status (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4536,7 +4536,7 @@ py_guestfs_btrfs_scrub_status (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SET_SEEDING
 static PyObject *
-py_guestfs_btrfs_set_seeding (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_set_seeding (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4575,7 +4575,7 @@ py_guestfs_btrfs_set_seeding (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE
 static PyObject *
-py_guestfs_btrfs_subvolume_create (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_subvolume_create (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4631,7 +4631,7 @@ py_guestfs_btrfs_subvolume_create (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_DELETE
 static PyObject *
-py_guestfs_btrfs_subvolume_delete (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_subvolume_delete (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4669,7 +4669,7 @@ py_guestfs_btrfs_subvolume_delete (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_GET_DEFAULT
 static PyObject *
-py_guestfs_btrfs_subvolume_get_default (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_subvolume_get_default (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4706,7 +4706,7 @@ py_guestfs_btrfs_subvolume_get_default (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_LIST
 static PyObject *
-py_guestfs_btrfs_subvolume_list (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_subvolume_list (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4744,7 +4744,7 @@ py_guestfs_btrfs_subvolume_list (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SET_DEFAULT
 static PyObject *
-py_guestfs_btrfs_subvolume_set_default (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_subvolume_set_default (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4783,7 +4783,7 @@ py_guestfs_btrfs_subvolume_set_default (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SHOW
 static PyObject *
-py_guestfs_btrfs_subvolume_show (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_subvolume_show (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4821,7 +4821,7 @@ py_guestfs_btrfs_subvolume_show (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT
 static PyObject *
-py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
+guestfs_int_py_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4886,7 +4886,7 @@ py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS
 static PyObject *
-py_guestfs_btrfstune_enable_extended_inode_refs (PyObject *self, PyObject *args)
+guestfs_int_py_btrfstune_enable_extended_inode_refs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4924,7 +4924,7 @@ py_guestfs_btrfstune_enable_extended_inode_refs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS
 static PyObject *
-py_guestfs_btrfstune_enable_skinny_metadata_extent_refs (PyObject *self, PyObject *args)
+guestfs_int_py_btrfstune_enable_skinny_metadata_extent_refs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -4962,7 +4962,7 @@ py_guestfs_btrfstune_enable_skinny_metadata_extent_refs (PyObject *self, PyObjec
 
 #ifdef GUESTFS_HAVE_BTRFSTUNE_SEEDING
 static PyObject *
-py_guestfs_btrfstune_seeding (PyObject *self, PyObject *args)
+guestfs_int_py_btrfstune_seeding (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5001,7 +5001,7 @@ py_guestfs_btrfstune_seeding (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_C_POINTER
 static PyObject *
-py_guestfs_c_pointer (PyObject *self, PyObject *args)
+guestfs_int_py_c_pointer (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5037,7 +5037,7 @@ py_guestfs_c_pointer (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CANONICAL_DEVICE_NAME
 static PyObject *
-py_guestfs_canonical_device_name (PyObject *self, PyObject *args)
+guestfs_int_py_canonical_device_name (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5080,7 +5080,7 @@ py_guestfs_canonical_device_name (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CAP_GET_FILE
 static PyObject *
-py_guestfs_cap_get_file (PyObject *self, PyObject *args)
+guestfs_int_py_cap_get_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5123,7 +5123,7 @@ py_guestfs_cap_get_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CAP_SET_FILE
 static PyObject *
-py_guestfs_cap_set_file (PyObject *self, PyObject *args)
+guestfs_int_py_cap_set_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5162,7 +5162,7 @@ py_guestfs_cap_set_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CASE_SENSITIVE_PATH
 static PyObject *
-py_guestfs_case_sensitive_path (PyObject *self, PyObject *args)
+guestfs_int_py_case_sensitive_path (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5205,7 +5205,7 @@ py_guestfs_case_sensitive_path (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CAT
 static PyObject *
-py_guestfs_cat (PyObject *self, PyObject *args)
+guestfs_int_py_cat (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5248,7 +5248,7 @@ py_guestfs_cat (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CHECKSUM
 static PyObject *
-py_guestfs_checksum (PyObject *self, PyObject *args)
+guestfs_int_py_checksum (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5292,7 +5292,7 @@ py_guestfs_checksum (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CHECKSUM_DEVICE
 static PyObject *
-py_guestfs_checksum_device (PyObject *self, PyObject *args)
+guestfs_int_py_checksum_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5336,7 +5336,7 @@ py_guestfs_checksum_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CHECKSUMS_OUT
 static PyObject *
-py_guestfs_checksums_out (PyObject *self, PyObject *args)
+guestfs_int_py_checksums_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5376,7 +5376,7 @@ py_guestfs_checksums_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CHMOD
 static PyObject *
-py_guestfs_chmod (PyObject *self, PyObject *args)
+guestfs_int_py_chmod (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5415,7 +5415,7 @@ py_guestfs_chmod (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CHOWN
 static PyObject *
-py_guestfs_chown (PyObject *self, PyObject *args)
+guestfs_int_py_chown (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5455,7 +5455,7 @@ py_guestfs_chown (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CLEAR_BACKEND_SETTING
 static PyObject *
-py_guestfs_clear_backend_setting (PyObject *self, PyObject *args)
+guestfs_int_py_clear_backend_setting (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -5485,7 +5485,7 @@ py_guestfs_clear_backend_setting (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COMMAND
 static PyObject *
-py_guestfs_command (PyObject *self, PyObject *args)
+guestfs_int_py_command (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5532,7 +5532,7 @@ py_guestfs_command (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COMMAND_LINES
 static PyObject *
-py_guestfs_command_lines (PyObject *self, PyObject *args)
+guestfs_int_py_command_lines (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5574,7 +5574,7 @@ py_guestfs_command_lines (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COMPRESS_DEVICE_OUT
 static PyObject *
-py_guestfs_compress_device_out (PyObject *self, PyObject *args)
+guestfs_int_py_compress_device_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5627,7 +5627,7 @@ py_guestfs_compress_device_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COMPRESS_OUT
 static PyObject *
-py_guestfs_compress_out (PyObject *self, PyObject *args)
+guestfs_int_py_compress_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5680,7 +5680,7 @@ py_guestfs_compress_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CONFIG
 static PyObject *
-py_guestfs_config (PyObject *self, PyObject *args)
+guestfs_int_py_config (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -5712,7 +5712,7 @@ py_guestfs_config (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COPY_ATTRIBUTES
 static PyObject *
-py_guestfs_copy_attributes (PyObject *self, PyObject *args)
+guestfs_int_py_copy_attributes (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5788,7 +5788,7 @@ py_guestfs_copy_attributes (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COPY_DEVICE_TO_DEVICE
 static PyObject *
-py_guestfs_copy_device_to_device (PyObject *self, PyObject *args)
+guestfs_int_py_copy_device_to_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5872,7 +5872,7 @@ py_guestfs_copy_device_to_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COPY_DEVICE_TO_FILE
 static PyObject *
-py_guestfs_copy_device_to_file (PyObject *self, PyObject *args)
+guestfs_int_py_copy_device_to_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -5956,7 +5956,7 @@ py_guestfs_copy_device_to_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COPY_FILE_TO_DEVICE
 static PyObject *
-py_guestfs_copy_file_to_device (PyObject *self, PyObject *args)
+guestfs_int_py_copy_file_to_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6040,7 +6040,7 @@ py_guestfs_copy_file_to_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COPY_FILE_TO_FILE
 static PyObject *
-py_guestfs_copy_file_to_file (PyObject *self, PyObject *args)
+guestfs_int_py_copy_file_to_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6124,7 +6124,7 @@ py_guestfs_copy_file_to_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COPY_IN
 static PyObject *
-py_guestfs_copy_in (PyObject *self, PyObject *args)
+guestfs_int_py_copy_in (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6163,7 +6163,7 @@ py_guestfs_copy_in (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COPY_OUT
 static PyObject *
-py_guestfs_copy_out (PyObject *self, PyObject *args)
+guestfs_int_py_copy_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6202,7 +6202,7 @@ py_guestfs_copy_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_COPY_SIZE
 static PyObject *
-py_guestfs_copy_size (PyObject *self, PyObject *args)
+guestfs_int_py_copy_size (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6242,7 +6242,7 @@ py_guestfs_copy_size (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CP
 static PyObject *
-py_guestfs_cp (PyObject *self, PyObject *args)
+guestfs_int_py_cp (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6281,7 +6281,7 @@ py_guestfs_cp (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CP_A
 static PyObject *
-py_guestfs_cp_a (PyObject *self, PyObject *args)
+guestfs_int_py_cp_a (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6320,7 +6320,7 @@ py_guestfs_cp_a (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CP_R
 static PyObject *
-py_guestfs_cp_r (PyObject *self, PyObject *args)
+guestfs_int_py_cp_r (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6359,7 +6359,7 @@ py_guestfs_cp_r (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_CPIO_OUT
 static PyObject *
-py_guestfs_cpio_out (PyObject *self, PyObject *args)
+guestfs_int_py_cpio_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6416,7 +6416,7 @@ py_guestfs_cpio_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DD
 static PyObject *
-py_guestfs_dd (PyObject *self, PyObject *args)
+guestfs_int_py_dd (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6455,7 +6455,7 @@ py_guestfs_dd (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DEBUG
 static PyObject *
-py_guestfs_debug (PyObject *self, PyObject *args)
+guestfs_int_py_debug (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6503,7 +6503,7 @@ py_guestfs_debug (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DEBUG_DRIVES
 static PyObject *
-py_guestfs_debug_drives (PyObject *self, PyObject *args)
+guestfs_int_py_debug_drives (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -6533,7 +6533,7 @@ py_guestfs_debug_drives (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DEBUG_UPLOAD
 static PyObject *
-py_guestfs_debug_upload (PyObject *self, PyObject *args)
+guestfs_int_py_debug_upload (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6573,7 +6573,7 @@ py_guestfs_debug_upload (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DEVICE_INDEX
 static PyObject *
-py_guestfs_device_index (PyObject *self, PyObject *args)
+guestfs_int_py_device_index (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6610,7 +6610,7 @@ py_guestfs_device_index (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DF
 static PyObject *
-py_guestfs_df (PyObject *self, PyObject *args)
+guestfs_int_py_df (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6652,7 +6652,7 @@ py_guestfs_df (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DF_H
 static PyObject *
-py_guestfs_df_h (PyObject *self, PyObject *args)
+guestfs_int_py_df_h (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6694,7 +6694,7 @@ py_guestfs_df_h (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DISK_CREATE
 static PyObject *
-py_guestfs_disk_create (PyObject *self, PyObject *args)
+guestfs_int_py_disk_create (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6799,7 +6799,7 @@ py_guestfs_disk_create (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DISK_FORMAT
 static PyObject *
-py_guestfs_disk_format (PyObject *self, PyObject *args)
+guestfs_int_py_disk_format (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6842,7 +6842,7 @@ py_guestfs_disk_format (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DISK_HAS_BACKING_FILE
 static PyObject *
-py_guestfs_disk_has_backing_file (PyObject *self, PyObject *args)
+guestfs_int_py_disk_has_backing_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6879,7 +6879,7 @@ py_guestfs_disk_has_backing_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DISK_VIRTUAL_SIZE
 static PyObject *
-py_guestfs_disk_virtual_size (PyObject *self, PyObject *args)
+guestfs_int_py_disk_virtual_size (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6916,7 +6916,7 @@ py_guestfs_disk_virtual_size (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DMESG
 static PyObject *
-py_guestfs_dmesg (PyObject *self, PyObject *args)
+guestfs_int_py_dmesg (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6958,7 +6958,7 @@ py_guestfs_dmesg (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DOWNLOAD
 static PyObject *
-py_guestfs_download (PyObject *self, PyObject *args)
+guestfs_int_py_download (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -6997,7 +6997,7 @@ py_guestfs_download (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DOWNLOAD_OFFSET
 static PyObject *
-py_guestfs_download_offset (PyObject *self, PyObject *args)
+guestfs_int_py_download_offset (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7038,7 +7038,7 @@ py_guestfs_download_offset (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DROP_CACHES
 static PyObject *
-py_guestfs_drop_caches (PyObject *self, PyObject *args)
+guestfs_int_py_drop_caches (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7076,7 +7076,7 @@ py_guestfs_drop_caches (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_DU
 static PyObject *
-py_guestfs_du (PyObject *self, PyObject *args)
+guestfs_int_py_du (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7113,7 +7113,7 @@ py_guestfs_du (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_E2FSCK
 static PyObject *
-py_guestfs_e2fsck (PyObject *self, PyObject *args)
+guestfs_int_py_e2fsck (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7172,7 +7172,7 @@ py_guestfs_e2fsck (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_E2FSCK_F
 static PyObject *
-py_guestfs_e2fsck_f (PyObject *self, PyObject *args)
+guestfs_int_py_e2fsck_f (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7210,7 +7210,7 @@ py_guestfs_e2fsck_f (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ECHO_DAEMON
 static PyObject *
-py_guestfs_echo_daemon (PyObject *self, PyObject *args)
+guestfs_int_py_echo_daemon (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7257,7 +7257,7 @@ py_guestfs_echo_daemon (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_EGREP
 static PyObject *
-py_guestfs_egrep (PyObject *self, PyObject *args)
+guestfs_int_py_egrep (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7296,7 +7296,7 @@ py_guestfs_egrep (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_EGREPI
 static PyObject *
-py_guestfs_egrepi (PyObject *self, PyObject *args)
+guestfs_int_py_egrepi (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7335,7 +7335,7 @@ py_guestfs_egrepi (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_EQUAL
 static PyObject *
-py_guestfs_equal (PyObject *self, PyObject *args)
+guestfs_int_py_equal (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7373,7 +7373,7 @@ py_guestfs_equal (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_EXISTS
 static PyObject *
-py_guestfs_exists (PyObject *self, PyObject *args)
+guestfs_int_py_exists (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7410,7 +7410,7 @@ py_guestfs_exists (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_EXTLINUX
 static PyObject *
-py_guestfs_extlinux (PyObject *self, PyObject *args)
+guestfs_int_py_extlinux (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7448,7 +7448,7 @@ py_guestfs_extlinux (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FALLOCATE
 static PyObject *
-py_guestfs_fallocate (PyObject *self, PyObject *args)
+guestfs_int_py_fallocate (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7487,7 +7487,7 @@ py_guestfs_fallocate (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FALLOCATE64
 static PyObject *
-py_guestfs_fallocate64 (PyObject *self, PyObject *args)
+guestfs_int_py_fallocate64 (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7526,7 +7526,7 @@ py_guestfs_fallocate64 (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FEATURE_AVAILABLE
 static PyObject *
-py_guestfs_feature_available (PyObject *self, PyObject *args)
+guestfs_int_py_feature_available (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7567,7 +7567,7 @@ py_guestfs_feature_available (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FGREP
 static PyObject *
-py_guestfs_fgrep (PyObject *self, PyObject *args)
+guestfs_int_py_fgrep (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7606,7 +7606,7 @@ py_guestfs_fgrep (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FGREPI
 static PyObject *
-py_guestfs_fgrepi (PyObject *self, PyObject *args)
+guestfs_int_py_fgrepi (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7645,7 +7645,7 @@ py_guestfs_fgrepi (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FILE
 static PyObject *
-py_guestfs_file (PyObject *self, PyObject *args)
+guestfs_int_py_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7688,7 +7688,7 @@ py_guestfs_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FILE_ARCHITECTURE
 static PyObject *
-py_guestfs_file_architecture (PyObject *self, PyObject *args)
+guestfs_int_py_file_architecture (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7731,7 +7731,7 @@ py_guestfs_file_architecture (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FILESIZE
 static PyObject *
-py_guestfs_filesize (PyObject *self, PyObject *args)
+guestfs_int_py_filesize (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7768,7 +7768,7 @@ py_guestfs_filesize (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FILESYSTEM_AVAILABLE
 static PyObject *
-py_guestfs_filesystem_available (PyObject *self, PyObject *args)
+guestfs_int_py_filesystem_available (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7805,7 +7805,7 @@ py_guestfs_filesystem_available (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FILL
 static PyObject *
-py_guestfs_fill (PyObject *self, PyObject *args)
+guestfs_int_py_fill (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7845,7 +7845,7 @@ py_guestfs_fill (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FILL_DIR
 static PyObject *
-py_guestfs_fill_dir (PyObject *self, PyObject *args)
+guestfs_int_py_fill_dir (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7884,7 +7884,7 @@ py_guestfs_fill_dir (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FILL_PATTERN
 static PyObject *
-py_guestfs_fill_pattern (PyObject *self, PyObject *args)
+guestfs_int_py_fill_pattern (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7924,7 +7924,7 @@ py_guestfs_fill_pattern (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FIND
 static PyObject *
-py_guestfs_find (PyObject *self, PyObject *args)
+guestfs_int_py_find (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -7962,7 +7962,7 @@ py_guestfs_find (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FIND0
 static PyObject *
-py_guestfs_find0 (PyObject *self, PyObject *args)
+guestfs_int_py_find0 (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -8001,7 +8001,7 @@ py_guestfs_find0 (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FINDFS_LABEL
 static PyObject *
-py_guestfs_findfs_label (PyObject *self, PyObject *args)
+guestfs_int_py_findfs_label (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -8044,7 +8044,7 @@ py_guestfs_findfs_label (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FINDFS_UUID
 static PyObject *
-py_guestfs_findfs_uuid (PyObject *self, PyObject *args)
+guestfs_int_py_findfs_uuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -8087,7 +8087,7 @@ py_guestfs_findfs_uuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FSCK
 static PyObject *
-py_guestfs_fsck (PyObject *self, PyObject *args)
+guestfs_int_py_fsck (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -8125,7 +8125,7 @@ py_guestfs_fsck (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_FSTRIM
 static PyObject *
-py_guestfs_fstrim (PyObject *self, PyObject *args)
+guestfs_int_py_fstrim (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -8192,7 +8192,7 @@ py_guestfs_fstrim (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_APPEND
 static PyObject *
-py_guestfs_get_append (PyObject *self, PyObject *args)
+guestfs_int_py_get_append (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8227,7 +8227,7 @@ py_guestfs_get_append (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_ATTACH_METHOD
 static PyObject *
-py_guestfs_get_attach_method (PyObject *self, PyObject *args)
+guestfs_int_py_get_attach_method (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8262,7 +8262,7 @@ py_guestfs_get_attach_method (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_AUTOSYNC
 static PyObject *
-py_guestfs_get_autosync (PyObject *self, PyObject *args)
+guestfs_int_py_get_autosync (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8291,7 +8291,7 @@ py_guestfs_get_autosync (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_BACKEND
 static PyObject *
-py_guestfs_get_backend (PyObject *self, PyObject *args)
+guestfs_int_py_get_backend (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8326,7 +8326,7 @@ py_guestfs_get_backend (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_BACKEND_SETTING
 static PyObject *
-py_guestfs_get_backend_setting (PyObject *self, PyObject *args)
+guestfs_int_py_get_backend_setting (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8362,7 +8362,7 @@ py_guestfs_get_backend_setting (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_BACKEND_SETTINGS
 static PyObject *
-py_guestfs_get_backend_settings (PyObject *self, PyObject *args)
+guestfs_int_py_get_backend_settings (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8392,7 +8392,7 @@ py_guestfs_get_backend_settings (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_CACHEDIR
 static PyObject *
-py_guestfs_get_cachedir (PyObject *self, PyObject *args)
+guestfs_int_py_get_cachedir (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8427,7 +8427,7 @@ py_guestfs_get_cachedir (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_DIRECT
 static PyObject *
-py_guestfs_get_direct (PyObject *self, PyObject *args)
+guestfs_int_py_get_direct (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8456,7 +8456,7 @@ py_guestfs_get_direct (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_E2ATTRS
 static PyObject *
-py_guestfs_get_e2attrs (PyObject *self, PyObject *args)
+guestfs_int_py_get_e2attrs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -8499,7 +8499,7 @@ py_guestfs_get_e2attrs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_E2GENERATION
 static PyObject *
-py_guestfs_get_e2generation (PyObject *self, PyObject *args)
+guestfs_int_py_get_e2generation (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -8536,7 +8536,7 @@ py_guestfs_get_e2generation (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_E2LABEL
 static PyObject *
-py_guestfs_get_e2label (PyObject *self, PyObject *args)
+guestfs_int_py_get_e2label (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -8579,7 +8579,7 @@ py_guestfs_get_e2label (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_E2UUID
 static PyObject *
-py_guestfs_get_e2uuid (PyObject *self, PyObject *args)
+guestfs_int_py_get_e2uuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -8622,7 +8622,7 @@ py_guestfs_get_e2uuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_HV
 static PyObject *
-py_guestfs_get_hv (PyObject *self, PyObject *args)
+guestfs_int_py_get_hv (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8657,7 +8657,7 @@ py_guestfs_get_hv (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_IDENTIFIER
 static PyObject *
-py_guestfs_get_identifier (PyObject *self, PyObject *args)
+guestfs_int_py_get_identifier (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8691,7 +8691,7 @@ py_guestfs_get_identifier (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE
 static PyObject *
-py_guestfs_get_libvirt_requested_credential_challenge (PyObject *self, PyObject *args)
+guestfs_int_py_get_libvirt_requested_credential_challenge (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8727,7 +8727,7 @@ py_guestfs_get_libvirt_requested_credential_challenge (PyObject *self, PyObject 
 
 #ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_DEFRESULT
 static PyObject *
-py_guestfs_get_libvirt_requested_credential_defresult (PyObject *self, PyObject *args)
+guestfs_int_py_get_libvirt_requested_credential_defresult (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8763,7 +8763,7 @@ py_guestfs_get_libvirt_requested_credential_defresult (PyObject *self, PyObject 
 
 #ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_PROMPT
 static PyObject *
-py_guestfs_get_libvirt_requested_credential_prompt (PyObject *self, PyObject *args)
+guestfs_int_py_get_libvirt_requested_credential_prompt (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8799,7 +8799,7 @@ py_guestfs_get_libvirt_requested_credential_prompt (PyObject *self, PyObject *ar
 
 #ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIALS
 static PyObject *
-py_guestfs_get_libvirt_requested_credentials (PyObject *self, PyObject *args)
+guestfs_int_py_get_libvirt_requested_credentials (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8829,7 +8829,7 @@ py_guestfs_get_libvirt_requested_credentials (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_MEMSIZE
 static PyObject *
-py_guestfs_get_memsize (PyObject *self, PyObject *args)
+guestfs_int_py_get_memsize (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8858,7 +8858,7 @@ py_guestfs_get_memsize (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_NETWORK
 static PyObject *
-py_guestfs_get_network (PyObject *self, PyObject *args)
+guestfs_int_py_get_network (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8887,7 +8887,7 @@ py_guestfs_get_network (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_PATH
 static PyObject *
-py_guestfs_get_path (PyObject *self, PyObject *args)
+guestfs_int_py_get_path (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8921,7 +8921,7 @@ py_guestfs_get_path (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_PGROUP
 static PyObject *
-py_guestfs_get_pgroup (PyObject *self, PyObject *args)
+guestfs_int_py_get_pgroup (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8950,7 +8950,7 @@ py_guestfs_get_pgroup (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_PID
 static PyObject *
-py_guestfs_get_pid (PyObject *self, PyObject *args)
+guestfs_int_py_get_pid (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -8979,7 +8979,7 @@ py_guestfs_get_pid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_PROGRAM
 static PyObject *
-py_guestfs_get_program (PyObject *self, PyObject *args)
+guestfs_int_py_get_program (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -9013,7 +9013,7 @@ py_guestfs_get_program (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_QEMU
 static PyObject *
-py_guestfs_get_qemu (PyObject *self, PyObject *args)
+guestfs_int_py_get_qemu (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -9047,7 +9047,7 @@ py_guestfs_get_qemu (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_RECOVERY_PROC
 static PyObject *
-py_guestfs_get_recovery_proc (PyObject *self, PyObject *args)
+guestfs_int_py_get_recovery_proc (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -9076,7 +9076,7 @@ py_guestfs_get_recovery_proc (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_SELINUX
 static PyObject *
-py_guestfs_get_selinux (PyObject *self, PyObject *args)
+guestfs_int_py_get_selinux (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -9105,7 +9105,7 @@ py_guestfs_get_selinux (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_SMP
 static PyObject *
-py_guestfs_get_smp (PyObject *self, PyObject *args)
+guestfs_int_py_get_smp (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -9134,7 +9134,7 @@ py_guestfs_get_smp (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_STATE
 static PyObject *
-py_guestfs_get_state (PyObject *self, PyObject *args)
+guestfs_int_py_get_state (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -9163,7 +9163,7 @@ py_guestfs_get_state (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_TMPDIR
 static PyObject *
-py_guestfs_get_tmpdir (PyObject *self, PyObject *args)
+guestfs_int_py_get_tmpdir (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -9198,7 +9198,7 @@ py_guestfs_get_tmpdir (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_TRACE
 static PyObject *
-py_guestfs_get_trace (PyObject *self, PyObject *args)
+guestfs_int_py_get_trace (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -9227,7 +9227,7 @@ py_guestfs_get_trace (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_UMASK
 static PyObject *
-py_guestfs_get_umask (PyObject *self, PyObject *args)
+guestfs_int_py_get_umask (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9263,7 +9263,7 @@ py_guestfs_get_umask (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GET_VERBOSE
 static PyObject *
-py_guestfs_get_verbose (PyObject *self, PyObject *args)
+guestfs_int_py_get_verbose (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -9292,7 +9292,7 @@ py_guestfs_get_verbose (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GETCON
 static PyObject *
-py_guestfs_getcon (PyObject *self, PyObject *args)
+guestfs_int_py_getcon (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9334,7 +9334,7 @@ py_guestfs_getcon (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GETXATTR
 static PyObject *
-py_guestfs_getxattr (PyObject *self, PyObject *args)
+guestfs_int_py_getxattr (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9379,7 +9379,7 @@ py_guestfs_getxattr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GETXATTRS
 static PyObject *
-py_guestfs_getxattrs (PyObject *self, PyObject *args)
+guestfs_int_py_getxattrs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9417,7 +9417,7 @@ py_guestfs_getxattrs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GLOB_EXPAND
 static PyObject *
-py_guestfs_glob_expand (PyObject *self, PyObject *args)
+guestfs_int_py_glob_expand (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9455,7 +9455,7 @@ py_guestfs_glob_expand (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GREP
 static PyObject *
-py_guestfs_grep (PyObject *self, PyObject *args)
+guestfs_int_py_grep (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9531,7 +9531,7 @@ py_guestfs_grep (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GREPI
 static PyObject *
-py_guestfs_grepi (PyObject *self, PyObject *args)
+guestfs_int_py_grepi (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9570,7 +9570,7 @@ py_guestfs_grepi (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_GRUB_INSTALL
 static PyObject *
-py_guestfs_grub_install (PyObject *self, PyObject *args)
+guestfs_int_py_grub_install (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9609,7 +9609,7 @@ py_guestfs_grub_install (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HEAD
 static PyObject *
-py_guestfs_head (PyObject *self, PyObject *args)
+guestfs_int_py_head (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9647,7 +9647,7 @@ py_guestfs_head (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HEAD_N
 static PyObject *
-py_guestfs_head_n (PyObject *self, PyObject *args)
+guestfs_int_py_head_n (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9686,7 +9686,7 @@ py_guestfs_head_n (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HEXDUMP
 static PyObject *
-py_guestfs_hexdump (PyObject *self, PyObject *args)
+guestfs_int_py_hexdump (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9729,7 +9729,7 @@ py_guestfs_hexdump (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_CLOSE
 static PyObject *
-py_guestfs_hivex_close (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_close (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9766,7 +9766,7 @@ py_guestfs_hivex_close (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_COMMIT
 static PyObject *
-py_guestfs_hivex_commit (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_commit (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9804,7 +9804,7 @@ py_guestfs_hivex_commit (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_NODE_ADD_CHILD
 static PyObject *
-py_guestfs_hivex_node_add_child (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_node_add_child (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9842,7 +9842,7 @@ py_guestfs_hivex_node_add_child (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_NODE_CHILDREN
 static PyObject *
-py_guestfs_hivex_node_children (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_node_children (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9880,7 +9880,7 @@ py_guestfs_hivex_node_children (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_NODE_DELETE_CHILD
 static PyObject *
-py_guestfs_hivex_node_delete_child (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_node_delete_child (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9918,7 +9918,7 @@ py_guestfs_hivex_node_delete_child (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_NODE_GET_CHILD
 static PyObject *
-py_guestfs_hivex_node_get_child (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_node_get_child (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9956,7 +9956,7 @@ py_guestfs_hivex_node_get_child (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_NODE_GET_VALUE
 static PyObject *
-py_guestfs_hivex_node_get_value (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_node_get_value (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -9994,7 +9994,7 @@ py_guestfs_hivex_node_get_value (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_NODE_NAME
 static PyObject *
-py_guestfs_hivex_node_name (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_node_name (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10037,7 +10037,7 @@ py_guestfs_hivex_node_name (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_NODE_PARENT
 static PyObject *
-py_guestfs_hivex_node_parent (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_node_parent (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10074,7 +10074,7 @@ py_guestfs_hivex_node_parent (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_NODE_SET_VALUE
 static PyObject *
-py_guestfs_hivex_node_set_value (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_node_set_value (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10116,7 +10116,7 @@ py_guestfs_hivex_node_set_value (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_NODE_VALUES
 static PyObject *
-py_guestfs_hivex_node_values (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_node_values (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10154,7 +10154,7 @@ py_guestfs_hivex_node_values (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_OPEN
 static PyObject *
-py_guestfs_hivex_open (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_open (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10221,7 +10221,7 @@ py_guestfs_hivex_open (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_ROOT
 static PyObject *
-py_guestfs_hivex_root (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_root (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10257,7 +10257,7 @@ py_guestfs_hivex_root (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_KEY
 static PyObject *
-py_guestfs_hivex_value_key (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_value_key (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10300,7 +10300,7 @@ py_guestfs_hivex_value_key (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_TYPE
 static PyObject *
-py_guestfs_hivex_value_type (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_value_type (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10337,7 +10337,7 @@ py_guestfs_hivex_value_type (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_UTF8
 static PyObject *
-py_guestfs_hivex_value_utf8 (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_value_utf8 (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10380,7 +10380,7 @@ py_guestfs_hivex_value_utf8 (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_VALUE
 static PyObject *
-py_guestfs_hivex_value_value (PyObject *self, PyObject *args)
+guestfs_int_py_hivex_value_value (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10424,7 +10424,7 @@ py_guestfs_hivex_value_value (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INITRD_CAT
 static PyObject *
-py_guestfs_initrd_cat (PyObject *self, PyObject *args)
+guestfs_int_py_initrd_cat (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10469,7 +10469,7 @@ py_guestfs_initrd_cat (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INITRD_LIST
 static PyObject *
-py_guestfs_initrd_list (PyObject *self, PyObject *args)
+guestfs_int_py_initrd_list (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10507,7 +10507,7 @@ py_guestfs_initrd_list (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INOTIFY_ADD_WATCH
 static PyObject *
-py_guestfs_inotify_add_watch (PyObject *self, PyObject *args)
+guestfs_int_py_inotify_add_watch (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10545,7 +10545,7 @@ py_guestfs_inotify_add_watch (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INOTIFY_CLOSE
 static PyObject *
-py_guestfs_inotify_close (PyObject *self, PyObject *args)
+guestfs_int_py_inotify_close (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10582,7 +10582,7 @@ py_guestfs_inotify_close (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INOTIFY_FILES
 static PyObject *
-py_guestfs_inotify_files (PyObject *self, PyObject *args)
+guestfs_int_py_inotify_files (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10619,7 +10619,7 @@ py_guestfs_inotify_files (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INOTIFY_INIT
 static PyObject *
-py_guestfs_inotify_init (PyObject *self, PyObject *args)
+guestfs_int_py_inotify_init (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10657,7 +10657,7 @@ py_guestfs_inotify_init (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INOTIFY_READ
 static PyObject *
-py_guestfs_inotify_read (PyObject *self, PyObject *args)
+guestfs_int_py_inotify_read (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10694,7 +10694,7 @@ py_guestfs_inotify_read (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INOTIFY_RM_WATCH
 static PyObject *
-py_guestfs_inotify_rm_watch (PyObject *self, PyObject *args)
+guestfs_int_py_inotify_rm_watch (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10732,7 +10732,7 @@ py_guestfs_inotify_rm_watch (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_ARCH
 static PyObject *
-py_guestfs_inspect_get_arch (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_arch (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10775,7 +10775,7 @@ py_guestfs_inspect_get_arch (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_DISTRO
 static PyObject *
-py_guestfs_inspect_get_distro (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_distro (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10818,7 +10818,7 @@ py_guestfs_inspect_get_distro (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_DRIVE_MAPPINGS
 static PyObject *
-py_guestfs_inspect_get_drive_mappings (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_drive_mappings (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10856,7 +10856,7 @@ py_guestfs_inspect_get_drive_mappings (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_FILESYSTEMS
 static PyObject *
-py_guestfs_inspect_get_filesystems (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_filesystems (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10894,7 +10894,7 @@ py_guestfs_inspect_get_filesystems (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_FORMAT
 static PyObject *
-py_guestfs_inspect_get_format (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_format (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10937,7 +10937,7 @@ py_guestfs_inspect_get_format (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_HOSTNAME
 static PyObject *
-py_guestfs_inspect_get_hostname (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_hostname (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -10980,7 +10980,7 @@ py_guestfs_inspect_get_hostname (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_ICON
 static PyObject *
-py_guestfs_inspect_get_icon (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_icon (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11045,7 +11045,7 @@ py_guestfs_inspect_get_icon (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_MAJOR_VERSION
 static PyObject *
-py_guestfs_inspect_get_major_version (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_major_version (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11082,7 +11082,7 @@ py_guestfs_inspect_get_major_version (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_MINOR_VERSION
 static PyObject *
-py_guestfs_inspect_get_minor_version (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_minor_version (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11119,7 +11119,7 @@ py_guestfs_inspect_get_minor_version (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_MOUNTPOINTS
 static PyObject *
-py_guestfs_inspect_get_mountpoints (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_mountpoints (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11157,7 +11157,7 @@ py_guestfs_inspect_get_mountpoints (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_PACKAGE_FORMAT
 static PyObject *
-py_guestfs_inspect_get_package_format (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_package_format (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11200,7 +11200,7 @@ py_guestfs_inspect_get_package_format (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_PACKAGE_MANAGEMENT
 static PyObject *
-py_guestfs_inspect_get_package_management (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_package_management (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11243,7 +11243,7 @@ py_guestfs_inspect_get_package_management (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_PRODUCT_NAME
 static PyObject *
-py_guestfs_inspect_get_product_name (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_product_name (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11286,7 +11286,7 @@ py_guestfs_inspect_get_product_name (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_PRODUCT_VARIANT
 static PyObject *
-py_guestfs_inspect_get_product_variant (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_product_variant (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11329,7 +11329,7 @@ py_guestfs_inspect_get_product_variant (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_ROOTS
 static PyObject *
-py_guestfs_inspect_get_roots (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_roots (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11366,7 +11366,7 @@ py_guestfs_inspect_get_roots (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_TYPE
 static PyObject *
-py_guestfs_inspect_get_type (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_type (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11409,7 +11409,7 @@ py_guestfs_inspect_get_type (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_CURRENT_CONTROL_SET
 static PyObject *
-py_guestfs_inspect_get_windows_current_control_set (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_windows_current_control_set (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11452,7 +11452,7 @@ py_guestfs_inspect_get_windows_current_control_set (PyObject *self, PyObject *ar
 
 #ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SYSTEMROOT
 static PyObject *
-py_guestfs_inspect_get_windows_systemroot (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_get_windows_systemroot (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11495,7 +11495,7 @@ py_guestfs_inspect_get_windows_systemroot (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_IS_LIVE
 static PyObject *
-py_guestfs_inspect_is_live (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_is_live (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11532,7 +11532,7 @@ py_guestfs_inspect_is_live (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_IS_MULTIPART
 static PyObject *
-py_guestfs_inspect_is_multipart (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_is_multipart (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11569,7 +11569,7 @@ py_guestfs_inspect_is_multipart (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_IS_NETINST
 static PyObject *
-py_guestfs_inspect_is_netinst (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_is_netinst (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11606,7 +11606,7 @@ py_guestfs_inspect_is_netinst (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_LIST_APPLICATIONS
 static PyObject *
-py_guestfs_inspect_list_applications (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_list_applications (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11644,7 +11644,7 @@ py_guestfs_inspect_list_applications (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_LIST_APPLICATIONS2
 static PyObject *
-py_guestfs_inspect_list_applications2 (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_list_applications2 (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11682,7 +11682,7 @@ py_guestfs_inspect_list_applications2 (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INSPECT_OS
 static PyObject *
-py_guestfs_inspect_os (PyObject *self, PyObject *args)
+guestfs_int_py_inspect_os (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11719,7 +11719,7 @@ py_guestfs_inspect_os (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_EXIT
 static PyObject *
-py_guestfs_internal_exit (PyObject *self, PyObject *args)
+guestfs_int_py_internal_exit (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -11756,7 +11756,7 @@ py_guestfs_internal_exit (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST
 static PyObject *
-py_guestfs_internal_test (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -11854,7 +11854,7 @@ py_guestfs_internal_test (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_63_OPTARGS
 static PyObject *
-py_guestfs_internal_test_63_optargs (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_63_optargs (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12393,7 +12393,7 @@ py_guestfs_internal_test_63_optargs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_CLOSE_OUTPUT
 static PyObject *
-py_guestfs_internal_test_close_output (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_close_output (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12423,7 +12423,7 @@ py_guestfs_internal_test_close_output (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_ONLY_OPTARGS
 static PyObject *
-py_guestfs_internal_test_only_optargs (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_only_optargs (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12466,7 +12466,7 @@ py_guestfs_internal_test_only_optargs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RBOOL
 static PyObject *
-py_guestfs_internal_test_rbool (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rbool (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12496,7 +12496,7 @@ py_guestfs_internal_test_rbool (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RBOOLERR
 static PyObject *
-py_guestfs_internal_test_rboolerr (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rboolerr (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12525,7 +12525,7 @@ py_guestfs_internal_test_rboolerr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUT
 static PyObject *
-py_guestfs_internal_test_rbufferout (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rbufferout (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12562,7 +12562,7 @@ py_guestfs_internal_test_rbufferout (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUTERR
 static PyObject *
-py_guestfs_internal_test_rbufferouterr (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rbufferouterr (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12598,7 +12598,7 @@ py_guestfs_internal_test_rbufferouterr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRING
 static PyObject *
-py_guestfs_internal_test_rconstoptstring (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rconstoptstring (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12634,7 +12634,7 @@ py_guestfs_internal_test_rconstoptstring (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRINGERR
 static PyObject *
-py_guestfs_internal_test_rconstoptstringerr (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rconstoptstringerr (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12669,7 +12669,7 @@ py_guestfs_internal_test_rconstoptstringerr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRING
 static PyObject *
-py_guestfs_internal_test_rconststring (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rconststring (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12704,7 +12704,7 @@ py_guestfs_internal_test_rconststring (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRINGERR
 static PyObject *
-py_guestfs_internal_test_rconststringerr (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rconststringerr (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12738,7 +12738,7 @@ py_guestfs_internal_test_rconststringerr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RHASHTABLE
 static PyObject *
-py_guestfs_internal_test_rhashtable (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rhashtable (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12769,7 +12769,7 @@ py_guestfs_internal_test_rhashtable (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RHASHTABLEERR
 static PyObject *
-py_guestfs_internal_test_rhashtableerr (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rhashtableerr (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12799,7 +12799,7 @@ py_guestfs_internal_test_rhashtableerr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT
 static PyObject *
-py_guestfs_internal_test_rint (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rint (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12829,7 +12829,7 @@ py_guestfs_internal_test_rint (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT64
 static PyObject *
-py_guestfs_internal_test_rint64 (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rint64 (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12859,7 +12859,7 @@ py_guestfs_internal_test_rint64 (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT64ERR
 static PyObject *
-py_guestfs_internal_test_rint64err (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rint64err (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12888,7 +12888,7 @@ py_guestfs_internal_test_rint64err (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RINTERR
 static PyObject *
-py_guestfs_internal_test_rinterr (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rinterr (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12917,7 +12917,7 @@ py_guestfs_internal_test_rinterr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRING
 static PyObject *
-py_guestfs_internal_test_rstring (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rstring (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12953,7 +12953,7 @@ py_guestfs_internal_test_rstring (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGERR
 static PyObject *
-py_guestfs_internal_test_rstringerr (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rstringerr (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -12988,7 +12988,7 @@ py_guestfs_internal_test_rstringerr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGLIST
 static PyObject *
-py_guestfs_internal_test_rstringlist (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rstringlist (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13019,7 +13019,7 @@ py_guestfs_internal_test_rstringlist (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGLISTERR
 static PyObject *
-py_guestfs_internal_test_rstringlisterr (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rstringlisterr (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13049,7 +13049,7 @@ py_guestfs_internal_test_rstringlisterr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCT
 static PyObject *
-py_guestfs_internal_test_rstruct (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rstruct (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13080,7 +13080,7 @@ py_guestfs_internal_test_rstruct (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTERR
 static PyObject *
-py_guestfs_internal_test_rstructerr (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rstructerr (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13110,7 +13110,7 @@ py_guestfs_internal_test_rstructerr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLIST
 static PyObject *
-py_guestfs_internal_test_rstructlist (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rstructlist (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13141,7 +13141,7 @@ py_guestfs_internal_test_rstructlist (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLISTERR
 static PyObject *
-py_guestfs_internal_test_rstructlisterr (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_rstructlisterr (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13171,7 +13171,7 @@ py_guestfs_internal_test_rstructlisterr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_SET_OUTPUT
 static PyObject *
-py_guestfs_internal_test_set_output (PyObject *self, PyObject *args)
+guestfs_int_py_internal_test_set_output (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13202,7 +13202,7 @@ py_guestfs_internal_test_set_output (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_BLOCKDEV
 static PyObject *
-py_guestfs_is_blockdev (PyObject *self, PyObject *args)
+guestfs_int_py_is_blockdev (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13252,7 +13252,7 @@ py_guestfs_is_blockdev (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_BUSY
 static PyObject *
-py_guestfs_is_busy (PyObject *self, PyObject *args)
+guestfs_int_py_is_busy (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13281,7 +13281,7 @@ py_guestfs_is_busy (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_CHARDEV
 static PyObject *
-py_guestfs_is_chardev (PyObject *self, PyObject *args)
+guestfs_int_py_is_chardev (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13331,7 +13331,7 @@ py_guestfs_is_chardev (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_CONFIG
 static PyObject *
-py_guestfs_is_config (PyObject *self, PyObject *args)
+guestfs_int_py_is_config (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13360,7 +13360,7 @@ py_guestfs_is_config (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_DIR
 static PyObject *
-py_guestfs_is_dir (PyObject *self, PyObject *args)
+guestfs_int_py_is_dir (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13410,7 +13410,7 @@ py_guestfs_is_dir (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_FIFO
 static PyObject *
-py_guestfs_is_fifo (PyObject *self, PyObject *args)
+guestfs_int_py_is_fifo (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13460,7 +13460,7 @@ py_guestfs_is_fifo (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_FILE
 static PyObject *
-py_guestfs_is_file (PyObject *self, PyObject *args)
+guestfs_int_py_is_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13510,7 +13510,7 @@ py_guestfs_is_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_LAUNCHING
 static PyObject *
-py_guestfs_is_launching (PyObject *self, PyObject *args)
+guestfs_int_py_is_launching (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13539,7 +13539,7 @@ py_guestfs_is_launching (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_LV
 static PyObject *
-py_guestfs_is_lv (PyObject *self, PyObject *args)
+guestfs_int_py_is_lv (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13576,7 +13576,7 @@ py_guestfs_is_lv (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_READY
 static PyObject *
-py_guestfs_is_ready (PyObject *self, PyObject *args)
+guestfs_int_py_is_ready (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -13605,7 +13605,7 @@ py_guestfs_is_ready (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_SOCKET
 static PyObject *
-py_guestfs_is_socket (PyObject *self, PyObject *args)
+guestfs_int_py_is_socket (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13655,7 +13655,7 @@ py_guestfs_is_socket (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_SYMLINK
 static PyObject *
-py_guestfs_is_symlink (PyObject *self, PyObject *args)
+guestfs_int_py_is_symlink (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13692,7 +13692,7 @@ py_guestfs_is_symlink (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_WHOLE_DEVICE
 static PyObject *
-py_guestfs_is_whole_device (PyObject *self, PyObject *args)
+guestfs_int_py_is_whole_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13729,7 +13729,7 @@ py_guestfs_is_whole_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_ZERO
 static PyObject *
-py_guestfs_is_zero (PyObject *self, PyObject *args)
+guestfs_int_py_is_zero (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13766,7 +13766,7 @@ py_guestfs_is_zero (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_IS_ZERO_DEVICE
 static PyObject *
-py_guestfs_is_zero_device (PyObject *self, PyObject *args)
+guestfs_int_py_is_zero_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13803,7 +13803,7 @@ py_guestfs_is_zero_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ISOINFO
 static PyObject *
-py_guestfs_isoinfo (PyObject *self, PyObject *args)
+guestfs_int_py_isoinfo (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13841,7 +13841,7 @@ py_guestfs_isoinfo (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ISOINFO_DEVICE
 static PyObject *
-py_guestfs_isoinfo_device (PyObject *self, PyObject *args)
+guestfs_int_py_isoinfo_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13879,7 +13879,7 @@ py_guestfs_isoinfo_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_JOURNAL_CLOSE
 static PyObject *
-py_guestfs_journal_close (PyObject *self, PyObject *args)
+guestfs_int_py_journal_close (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13916,7 +13916,7 @@ py_guestfs_journal_close (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_JOURNAL_GET
 static PyObject *
-py_guestfs_journal_get (PyObject *self, PyObject *args)
+guestfs_int_py_journal_get (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13953,7 +13953,7 @@ py_guestfs_journal_get (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_JOURNAL_GET_DATA_THRESHOLD
 static PyObject *
-py_guestfs_journal_get_data_threshold (PyObject *self, PyObject *args)
+guestfs_int_py_journal_get_data_threshold (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -13989,7 +13989,7 @@ py_guestfs_journal_get_data_threshold (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_JOURNAL_GET_REALTIME_USEC
 static PyObject *
-py_guestfs_journal_get_realtime_usec (PyObject *self, PyObject *args)
+guestfs_int_py_journal_get_realtime_usec (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14025,7 +14025,7 @@ py_guestfs_journal_get_realtime_usec (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_JOURNAL_NEXT
 static PyObject *
-py_guestfs_journal_next (PyObject *self, PyObject *args)
+guestfs_int_py_journal_next (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14061,7 +14061,7 @@ py_guestfs_journal_next (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_JOURNAL_OPEN
 static PyObject *
-py_guestfs_journal_open (PyObject *self, PyObject *args)
+guestfs_int_py_journal_open (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14099,7 +14099,7 @@ py_guestfs_journal_open (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_JOURNAL_SET_DATA_THRESHOLD
 static PyObject *
-py_guestfs_journal_set_data_threshold (PyObject *self, PyObject *args)
+guestfs_int_py_journal_set_data_threshold (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14137,7 +14137,7 @@ py_guestfs_journal_set_data_threshold (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_JOURNAL_SKIP
 static PyObject *
-py_guestfs_journal_skip (PyObject *self, PyObject *args)
+guestfs_int_py_journal_skip (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14174,7 +14174,7 @@ py_guestfs_journal_skip (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_KILL_SUBPROCESS
 static PyObject *
-py_guestfs_kill_subprocess (PyObject *self, PyObject *args)
+guestfs_int_py_kill_subprocess (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14211,7 +14211,7 @@ py_guestfs_kill_subprocess (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LAUNCH
 static PyObject *
-py_guestfs_launch (PyObject *self, PyObject *args)
+guestfs_int_py_launch (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14248,7 +14248,7 @@ py_guestfs_launch (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LCHOWN
 static PyObject *
-py_guestfs_lchown (PyObject *self, PyObject *args)
+guestfs_int_py_lchown (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14288,7 +14288,7 @@ py_guestfs_lchown (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LDMTOOL_CREATE_ALL
 static PyObject *
-py_guestfs_ldmtool_create_all (PyObject *self, PyObject *args)
+guestfs_int_py_ldmtool_create_all (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14325,7 +14325,7 @@ py_guestfs_ldmtool_create_all (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_DISKS
 static PyObject *
-py_guestfs_ldmtool_diskgroup_disks (PyObject *self, PyObject *args)
+guestfs_int_py_ldmtool_diskgroup_disks (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14363,7 +14363,7 @@ py_guestfs_ldmtool_diskgroup_disks (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_NAME
 static PyObject *
-py_guestfs_ldmtool_diskgroup_name (PyObject *self, PyObject *args)
+guestfs_int_py_ldmtool_diskgroup_name (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14406,7 +14406,7 @@ py_guestfs_ldmtool_diskgroup_name (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_VOLUMES
 static PyObject *
-py_guestfs_ldmtool_diskgroup_volumes (PyObject *self, PyObject *args)
+guestfs_int_py_ldmtool_diskgroup_volumes (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14444,7 +14444,7 @@ py_guestfs_ldmtool_diskgroup_volumes (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LDMTOOL_REMOVE_ALL
 static PyObject *
-py_guestfs_ldmtool_remove_all (PyObject *self, PyObject *args)
+guestfs_int_py_ldmtool_remove_all (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14481,7 +14481,7 @@ py_guestfs_ldmtool_remove_all (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LDMTOOL_SCAN
 static PyObject *
-py_guestfs_ldmtool_scan (PyObject *self, PyObject *args)
+guestfs_int_py_ldmtool_scan (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14518,7 +14518,7 @@ py_guestfs_ldmtool_scan (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LDMTOOL_SCAN_DEVICES
 static PyObject *
-py_guestfs_ldmtool_scan_devices (PyObject *self, PyObject *args)
+guestfs_int_py_ldmtool_scan_devices (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14560,7 +14560,7 @@ py_guestfs_ldmtool_scan_devices (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_HINT
 static PyObject *
-py_guestfs_ldmtool_volume_hint (PyObject *self, PyObject *args)
+guestfs_int_py_ldmtool_volume_hint (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14604,7 +14604,7 @@ py_guestfs_ldmtool_volume_hint (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_PARTITIONS
 static PyObject *
-py_guestfs_ldmtool_volume_partitions (PyObject *self, PyObject *args)
+guestfs_int_py_ldmtool_volume_partitions (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14643,7 +14643,7 @@ py_guestfs_ldmtool_volume_partitions (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_TYPE
 static PyObject *
-py_guestfs_ldmtool_volume_type (PyObject *self, PyObject *args)
+guestfs_int_py_ldmtool_volume_type (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14687,7 +14687,7 @@ py_guestfs_ldmtool_volume_type (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LGETXATTR
 static PyObject *
-py_guestfs_lgetxattr (PyObject *self, PyObject *args)
+guestfs_int_py_lgetxattr (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14732,7 +14732,7 @@ py_guestfs_lgetxattr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LGETXATTRS
 static PyObject *
-py_guestfs_lgetxattrs (PyObject *self, PyObject *args)
+guestfs_int_py_lgetxattrs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14770,7 +14770,7 @@ py_guestfs_lgetxattrs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LIST_9P
 static PyObject *
-py_guestfs_list_9p (PyObject *self, PyObject *args)
+guestfs_int_py_list_9p (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14807,7 +14807,7 @@ py_guestfs_list_9p (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LIST_DEVICES
 static PyObject *
-py_guestfs_list_devices (PyObject *self, PyObject *args)
+guestfs_int_py_list_devices (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14844,7 +14844,7 @@ py_guestfs_list_devices (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LIST_DISK_LABELS
 static PyObject *
-py_guestfs_list_disk_labels (PyObject *self, PyObject *args)
+guestfs_int_py_list_disk_labels (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14881,7 +14881,7 @@ py_guestfs_list_disk_labels (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LIST_DM_DEVICES
 static PyObject *
-py_guestfs_list_dm_devices (PyObject *self, PyObject *args)
+guestfs_int_py_list_dm_devices (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14918,7 +14918,7 @@ py_guestfs_list_dm_devices (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LIST_FILESYSTEMS
 static PyObject *
-py_guestfs_list_filesystems (PyObject *self, PyObject *args)
+guestfs_int_py_list_filesystems (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14955,7 +14955,7 @@ py_guestfs_list_filesystems (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LIST_LDM_PARTITIONS
 static PyObject *
-py_guestfs_list_ldm_partitions (PyObject *self, PyObject *args)
+guestfs_int_py_list_ldm_partitions (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -14992,7 +14992,7 @@ py_guestfs_list_ldm_partitions (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LIST_LDM_VOLUMES
 static PyObject *
-py_guestfs_list_ldm_volumes (PyObject *self, PyObject *args)
+guestfs_int_py_list_ldm_volumes (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15029,7 +15029,7 @@ py_guestfs_list_ldm_volumes (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LIST_MD_DEVICES
 static PyObject *
-py_guestfs_list_md_devices (PyObject *self, PyObject *args)
+guestfs_int_py_list_md_devices (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15066,7 +15066,7 @@ py_guestfs_list_md_devices (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LIST_PARTITIONS
 static PyObject *
-py_guestfs_list_partitions (PyObject *self, PyObject *args)
+guestfs_int_py_list_partitions (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15103,7 +15103,7 @@ py_guestfs_list_partitions (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LL
 static PyObject *
-py_guestfs_ll (PyObject *self, PyObject *args)
+guestfs_int_py_ll (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15146,7 +15146,7 @@ py_guestfs_ll (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LLZ
 static PyObject *
-py_guestfs_llz (PyObject *self, PyObject *args)
+guestfs_int_py_llz (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15189,7 +15189,7 @@ py_guestfs_llz (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LN
 static PyObject *
-py_guestfs_ln (PyObject *self, PyObject *args)
+guestfs_int_py_ln (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15228,7 +15228,7 @@ py_guestfs_ln (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LN_F
 static PyObject *
-py_guestfs_ln_f (PyObject *self, PyObject *args)
+guestfs_int_py_ln_f (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15267,7 +15267,7 @@ py_guestfs_ln_f (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LN_S
 static PyObject *
-py_guestfs_ln_s (PyObject *self, PyObject *args)
+guestfs_int_py_ln_s (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15306,7 +15306,7 @@ py_guestfs_ln_s (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LN_SF
 static PyObject *
-py_guestfs_ln_sf (PyObject *self, PyObject *args)
+guestfs_int_py_ln_sf (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15345,7 +15345,7 @@ py_guestfs_ln_sf (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LREMOVEXATTR
 static PyObject *
-py_guestfs_lremovexattr (PyObject *self, PyObject *args)
+guestfs_int_py_lremovexattr (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15384,7 +15384,7 @@ py_guestfs_lremovexattr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LS
 static PyObject *
-py_guestfs_ls (PyObject *self, PyObject *args)
+guestfs_int_py_ls (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15422,7 +15422,7 @@ py_guestfs_ls (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LS0
 static PyObject *
-py_guestfs_ls0 (PyObject *self, PyObject *args)
+guestfs_int_py_ls0 (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15461,7 +15461,7 @@ py_guestfs_ls0 (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LSETXATTR
 static PyObject *
-py_guestfs_lsetxattr (PyObject *self, PyObject *args)
+guestfs_int_py_lsetxattr (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15502,7 +15502,7 @@ py_guestfs_lsetxattr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LSTAT
 static PyObject *
-py_guestfs_lstat (PyObject *self, PyObject *args)
+guestfs_int_py_lstat (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15540,7 +15540,7 @@ py_guestfs_lstat (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LSTATLIST
 static PyObject *
-py_guestfs_lstatlist (PyObject *self, PyObject *args)
+guestfs_int_py_lstatlist (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15583,7 +15583,7 @@ py_guestfs_lstatlist (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LSTATNS
 static PyObject *
-py_guestfs_lstatns (PyObject *self, PyObject *args)
+guestfs_int_py_lstatns (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15621,7 +15621,7 @@ py_guestfs_lstatns (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LSTATNSLIST
 static PyObject *
-py_guestfs_lstatnslist (PyObject *self, PyObject *args)
+guestfs_int_py_lstatnslist (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15664,7 +15664,7 @@ py_guestfs_lstatnslist (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LUKS_ADD_KEY
 static PyObject *
-py_guestfs_luks_add_key (PyObject *self, PyObject *args)
+guestfs_int_py_luks_add_key (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15705,7 +15705,7 @@ py_guestfs_luks_add_key (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LUKS_CLOSE
 static PyObject *
-py_guestfs_luks_close (PyObject *self, PyObject *args)
+guestfs_int_py_luks_close (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15743,7 +15743,7 @@ py_guestfs_luks_close (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LUKS_FORMAT
 static PyObject *
-py_guestfs_luks_format (PyObject *self, PyObject *args)
+guestfs_int_py_luks_format (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15783,7 +15783,7 @@ py_guestfs_luks_format (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LUKS_FORMAT_CIPHER
 static PyObject *
-py_guestfs_luks_format_cipher (PyObject *self, PyObject *args)
+guestfs_int_py_luks_format_cipher (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15824,7 +15824,7 @@ py_guestfs_luks_format_cipher (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LUKS_KILL_SLOT
 static PyObject *
-py_guestfs_luks_kill_slot (PyObject *self, PyObject *args)
+guestfs_int_py_luks_kill_slot (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15864,7 +15864,7 @@ py_guestfs_luks_kill_slot (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LUKS_OPEN
 static PyObject *
-py_guestfs_luks_open (PyObject *self, PyObject *args)
+guestfs_int_py_luks_open (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15904,7 +15904,7 @@ py_guestfs_luks_open (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LUKS_OPEN_RO
 static PyObject *
-py_guestfs_luks_open_ro (PyObject *self, PyObject *args)
+guestfs_int_py_luks_open_ro (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15944,7 +15944,7 @@ py_guestfs_luks_open_ro (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVCREATE
 static PyObject *
-py_guestfs_lvcreate (PyObject *self, PyObject *args)
+guestfs_int_py_lvcreate (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -15984,7 +15984,7 @@ py_guestfs_lvcreate (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVCREATE_FREE
 static PyObject *
-py_guestfs_lvcreate_free (PyObject *self, PyObject *args)
+guestfs_int_py_lvcreate_free (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16024,7 +16024,7 @@ py_guestfs_lvcreate_free (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVM_CANONICAL_LV_NAME
 static PyObject *
-py_guestfs_lvm_canonical_lv_name (PyObject *self, PyObject *args)
+guestfs_int_py_lvm_canonical_lv_name (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16067,7 +16067,7 @@ py_guestfs_lvm_canonical_lv_name (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVM_CLEAR_FILTER
 static PyObject *
-py_guestfs_lvm_clear_filter (PyObject *self, PyObject *args)
+guestfs_int_py_lvm_clear_filter (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16104,7 +16104,7 @@ py_guestfs_lvm_clear_filter (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVM_REMOVE_ALL
 static PyObject *
-py_guestfs_lvm_remove_all (PyObject *self, PyObject *args)
+guestfs_int_py_lvm_remove_all (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16141,7 +16141,7 @@ py_guestfs_lvm_remove_all (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVM_SET_FILTER
 static PyObject *
-py_guestfs_lvm_set_filter (PyObject *self, PyObject *args)
+guestfs_int_py_lvm_set_filter (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16183,7 +16183,7 @@ py_guestfs_lvm_set_filter (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVREMOVE
 static PyObject *
-py_guestfs_lvremove (PyObject *self, PyObject *args)
+guestfs_int_py_lvremove (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16221,7 +16221,7 @@ py_guestfs_lvremove (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVRENAME
 static PyObject *
-py_guestfs_lvrename (PyObject *self, PyObject *args)
+guestfs_int_py_lvrename (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16260,7 +16260,7 @@ py_guestfs_lvrename (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVRESIZE
 static PyObject *
-py_guestfs_lvresize (PyObject *self, PyObject *args)
+guestfs_int_py_lvresize (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16299,7 +16299,7 @@ py_guestfs_lvresize (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVRESIZE_FREE
 static PyObject *
-py_guestfs_lvresize_free (PyObject *self, PyObject *args)
+guestfs_int_py_lvresize_free (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16338,7 +16338,7 @@ py_guestfs_lvresize_free (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVS
 static PyObject *
-py_guestfs_lvs (PyObject *self, PyObject *args)
+guestfs_int_py_lvs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16375,7 +16375,7 @@ py_guestfs_lvs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVS_FULL
 static PyObject *
-py_guestfs_lvs_full (PyObject *self, PyObject *args)
+guestfs_int_py_lvs_full (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16412,7 +16412,7 @@ py_guestfs_lvs_full (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LVUUID
 static PyObject *
-py_guestfs_lvuuid (PyObject *self, PyObject *args)
+guestfs_int_py_lvuuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16455,7 +16455,7 @@ py_guestfs_lvuuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_LXATTRLIST
 static PyObject *
-py_guestfs_lxattrlist (PyObject *self, PyObject *args)
+guestfs_int_py_lxattrlist (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16498,7 +16498,7 @@ py_guestfs_lxattrlist (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MAX_DISKS
 static PyObject *
-py_guestfs_max_disks (PyObject *self, PyObject *args)
+guestfs_int_py_max_disks (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -16527,7 +16527,7 @@ py_guestfs_max_disks (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MD_CREATE
 static PyObject *
-py_guestfs_md_create (PyObject *self, PyObject *args)
+guestfs_int_py_md_create (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16620,7 +16620,7 @@ py_guestfs_md_create (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MD_DETAIL
 static PyObject *
-py_guestfs_md_detail (PyObject *self, PyObject *args)
+guestfs_int_py_md_detail (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16658,7 +16658,7 @@ py_guestfs_md_detail (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MD_STAT
 static PyObject *
-py_guestfs_md_stat (PyObject *self, PyObject *args)
+guestfs_int_py_md_stat (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16696,7 +16696,7 @@ py_guestfs_md_stat (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MD_STOP
 static PyObject *
-py_guestfs_md_stop (PyObject *self, PyObject *args)
+guestfs_int_py_md_stop (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16734,7 +16734,7 @@ py_guestfs_md_stop (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKDIR
 static PyObject *
-py_guestfs_mkdir (PyObject *self, PyObject *args)
+guestfs_int_py_mkdir (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16772,7 +16772,7 @@ py_guestfs_mkdir (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKDIR_MODE
 static PyObject *
-py_guestfs_mkdir_mode (PyObject *self, PyObject *args)
+guestfs_int_py_mkdir_mode (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16811,7 +16811,7 @@ py_guestfs_mkdir_mode (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKDIR_P
 static PyObject *
-py_guestfs_mkdir_p (PyObject *self, PyObject *args)
+guestfs_int_py_mkdir_p (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16849,7 +16849,7 @@ py_guestfs_mkdir_p (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKDTEMP
 static PyObject *
-py_guestfs_mkdtemp (PyObject *self, PyObject *args)
+guestfs_int_py_mkdtemp (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -16892,7 +16892,7 @@ py_guestfs_mkdtemp (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKE2FS
 static PyObject *
-py_guestfs_mke2fs (PyObject *self, PyObject *args)
+guestfs_int_py_mke2fs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17274,7 +17274,7 @@ py_guestfs_mke2fs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKE2FS_J
 static PyObject *
-py_guestfs_mke2fs_J (PyObject *self, PyObject *args)
+guestfs_int_py_mke2fs_J (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17315,7 +17315,7 @@ py_guestfs_mke2fs_J (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKE2FS_JL
 static PyObject *
-py_guestfs_mke2fs_JL (PyObject *self, PyObject *args)
+guestfs_int_py_mke2fs_JL (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17356,7 +17356,7 @@ py_guestfs_mke2fs_JL (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKE2FS_JU
 static PyObject *
-py_guestfs_mke2fs_JU (PyObject *self, PyObject *args)
+guestfs_int_py_mke2fs_JU (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17397,7 +17397,7 @@ py_guestfs_mke2fs_JU (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKE2JOURNAL
 static PyObject *
-py_guestfs_mke2journal (PyObject *self, PyObject *args)
+guestfs_int_py_mke2journal (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17436,7 +17436,7 @@ py_guestfs_mke2journal (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKE2JOURNAL_L
 static PyObject *
-py_guestfs_mke2journal_L (PyObject *self, PyObject *args)
+guestfs_int_py_mke2journal_L (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17476,7 +17476,7 @@ py_guestfs_mke2journal_L (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKE2JOURNAL_U
 static PyObject *
-py_guestfs_mke2journal_U (PyObject *self, PyObject *args)
+guestfs_int_py_mke2journal_U (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17516,7 +17516,7 @@ py_guestfs_mke2journal_U (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKFIFO
 static PyObject *
-py_guestfs_mkfifo (PyObject *self, PyObject *args)
+guestfs_int_py_mkfifo (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17555,7 +17555,7 @@ py_guestfs_mkfifo (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKFS
 static PyObject *
-py_guestfs_mkfs (PyObject *self, PyObject *args)
+guestfs_int_py_mkfs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17649,7 +17649,7 @@ py_guestfs_mkfs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKFS_B
 static PyObject *
-py_guestfs_mkfs_b (PyObject *self, PyObject *args)
+guestfs_int_py_mkfs_b (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17689,7 +17689,7 @@ py_guestfs_mkfs_b (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKFS_BTRFS
 static PyObject *
-py_guestfs_mkfs_btrfs (PyObject *self, PyObject *args)
+guestfs_int_py_mkfs_btrfs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17815,7 +17815,7 @@ py_guestfs_mkfs_btrfs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKLOST_AND_FOUND
 static PyObject *
-py_guestfs_mklost_and_found (PyObject *self, PyObject *args)
+guestfs_int_py_mklost_and_found (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17853,7 +17853,7 @@ py_guestfs_mklost_and_found (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKMOUNTPOINT
 static PyObject *
-py_guestfs_mkmountpoint (PyObject *self, PyObject *args)
+guestfs_int_py_mkmountpoint (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17891,7 +17891,7 @@ py_guestfs_mkmountpoint (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKNOD
 static PyObject *
-py_guestfs_mknod (PyObject *self, PyObject *args)
+guestfs_int_py_mknod (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17932,7 +17932,7 @@ py_guestfs_mknod (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKNOD_B
 static PyObject *
-py_guestfs_mknod_b (PyObject *self, PyObject *args)
+guestfs_int_py_mknod_b (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -17973,7 +17973,7 @@ py_guestfs_mknod_b (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKNOD_C
 static PyObject *
-py_guestfs_mknod_c (PyObject *self, PyObject *args)
+guestfs_int_py_mknod_c (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18014,7 +18014,7 @@ py_guestfs_mknod_c (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKSWAP
 static PyObject *
-py_guestfs_mkswap (PyObject *self, PyObject *args)
+guestfs_int_py_mkswap (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18083,7 +18083,7 @@ py_guestfs_mkswap (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKSWAP_L
 static PyObject *
-py_guestfs_mkswap_L (PyObject *self, PyObject *args)
+guestfs_int_py_mkswap_L (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18122,7 +18122,7 @@ py_guestfs_mkswap_L (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKSWAP_U
 static PyObject *
-py_guestfs_mkswap_U (PyObject *self, PyObject *args)
+guestfs_int_py_mkswap_U (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18161,7 +18161,7 @@ py_guestfs_mkswap_U (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKSWAP_FILE
 static PyObject *
-py_guestfs_mkswap_file (PyObject *self, PyObject *args)
+guestfs_int_py_mkswap_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18199,7 +18199,7 @@ py_guestfs_mkswap_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MKTEMP
 static PyObject *
-py_guestfs_mktemp (PyObject *self, PyObject *args)
+guestfs_int_py_mktemp (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18260,7 +18260,7 @@ py_guestfs_mktemp (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MODPROBE
 static PyObject *
-py_guestfs_modprobe (PyObject *self, PyObject *args)
+guestfs_int_py_modprobe (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18298,7 +18298,7 @@ py_guestfs_modprobe (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MOUNT
 static PyObject *
-py_guestfs_mount (PyObject *self, PyObject *args)
+guestfs_int_py_mount (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18337,7 +18337,7 @@ py_guestfs_mount (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MOUNT_9P
 static PyObject *
-py_guestfs_mount_9p (PyObject *self, PyObject *args)
+guestfs_int_py_mount_9p (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18394,7 +18394,7 @@ py_guestfs_mount_9p (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MOUNT_LOCAL
 static PyObject *
-py_guestfs_mount_local (PyObject *self, PyObject *args)
+guestfs_int_py_mount_local (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18474,7 +18474,7 @@ py_guestfs_mount_local (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MOUNT_LOCAL_RUN
 static PyObject *
-py_guestfs_mount_local_run (PyObject *self, PyObject *args)
+guestfs_int_py_mount_local_run (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18511,7 +18511,7 @@ py_guestfs_mount_local_run (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MOUNT_LOOP
 static PyObject *
-py_guestfs_mount_loop (PyObject *self, PyObject *args)
+guestfs_int_py_mount_loop (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18550,7 +18550,7 @@ py_guestfs_mount_loop (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MOUNT_OPTIONS
 static PyObject *
-py_guestfs_mount_options (PyObject *self, PyObject *args)
+guestfs_int_py_mount_options (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18590,7 +18590,7 @@ py_guestfs_mount_options (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MOUNT_RO
 static PyObject *
-py_guestfs_mount_ro (PyObject *self, PyObject *args)
+guestfs_int_py_mount_ro (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18629,7 +18629,7 @@ py_guestfs_mount_ro (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MOUNT_VFS
 static PyObject *
-py_guestfs_mount_vfs (PyObject *self, PyObject *args)
+guestfs_int_py_mount_vfs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18670,7 +18670,7 @@ py_guestfs_mount_vfs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MOUNTPOINTS
 static PyObject *
-py_guestfs_mountpoints (PyObject *self, PyObject *args)
+guestfs_int_py_mountpoints (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18707,7 +18707,7 @@ py_guestfs_mountpoints (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MOUNTS
 static PyObject *
-py_guestfs_mounts (PyObject *self, PyObject *args)
+guestfs_int_py_mounts (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18744,7 +18744,7 @@ py_guestfs_mounts (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_MV
 static PyObject *
-py_guestfs_mv (PyObject *self, PyObject *args)
+guestfs_int_py_mv (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18783,7 +18783,7 @@ py_guestfs_mv (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_NR_DEVICES
 static PyObject *
-py_guestfs_nr_devices (PyObject *self, PyObject *args)
+guestfs_int_py_nr_devices (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18819,7 +18819,7 @@ py_guestfs_nr_devices (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_NTFS_3G_PROBE
 static PyObject *
-py_guestfs_ntfs_3g_probe (PyObject *self, PyObject *args)
+guestfs_int_py_ntfs_3g_probe (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18857,7 +18857,7 @@ py_guestfs_ntfs_3g_probe (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_NTFSCLONE_IN
 static PyObject *
-py_guestfs_ntfsclone_in (PyObject *self, PyObject *args)
+guestfs_int_py_ntfsclone_in (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18896,7 +18896,7 @@ py_guestfs_ntfsclone_in (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_NTFSCLONE_OUT
 static PyObject *
-py_guestfs_ntfsclone_out (PyObject *self, PyObject *args)
+guestfs_int_py_ntfsclone_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -18980,7 +18980,7 @@ py_guestfs_ntfsclone_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_NTFSFIX
 static PyObject *
-py_guestfs_ntfsfix (PyObject *self, PyObject *args)
+guestfs_int_py_ntfsfix (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19031,7 +19031,7 @@ py_guestfs_ntfsfix (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_NTFSRESIZE
 static PyObject *
-py_guestfs_ntfsresize (PyObject *self, PyObject *args)
+guestfs_int_py_ntfsresize (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19090,7 +19090,7 @@ py_guestfs_ntfsresize (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_NTFSRESIZE_SIZE
 static PyObject *
-py_guestfs_ntfsresize_size (PyObject *self, PyObject *args)
+guestfs_int_py_ntfsresize_size (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19129,7 +19129,7 @@ py_guestfs_ntfsresize_size (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PARSE_ENVIRONMENT
 static PyObject *
-py_guestfs_parse_environment (PyObject *self, PyObject *args)
+guestfs_int_py_parse_environment (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -19159,7 +19159,7 @@ py_guestfs_parse_environment (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PARSE_ENVIRONMENT_LIST
 static PyObject *
-py_guestfs_parse_environment_list (PyObject *self, PyObject *args)
+guestfs_int_py_parse_environment_list (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -19194,7 +19194,7 @@ py_guestfs_parse_environment_list (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_ADD
 static PyObject *
-py_guestfs_part_add (PyObject *self, PyObject *args)
+guestfs_int_py_part_add (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19235,7 +19235,7 @@ py_guestfs_part_add (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_DEL
 static PyObject *
-py_guestfs_part_del (PyObject *self, PyObject *args)
+guestfs_int_py_part_del (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19274,7 +19274,7 @@ py_guestfs_part_del (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_DISK
 static PyObject *
-py_guestfs_part_disk (PyObject *self, PyObject *args)
+guestfs_int_py_part_disk (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19313,7 +19313,7 @@ py_guestfs_part_disk (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_GET_BOOTABLE
 static PyObject *
-py_guestfs_part_get_bootable (PyObject *self, PyObject *args)
+guestfs_int_py_part_get_bootable (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19351,7 +19351,7 @@ py_guestfs_part_get_bootable (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_GET_GPT_GUID
 static PyObject *
-py_guestfs_part_get_gpt_guid (PyObject *self, PyObject *args)
+guestfs_int_py_part_get_gpt_guid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19395,7 +19395,7 @@ py_guestfs_part_get_gpt_guid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_GET_GPT_TYPE
 static PyObject *
-py_guestfs_part_get_gpt_type (PyObject *self, PyObject *args)
+guestfs_int_py_part_get_gpt_type (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19439,7 +19439,7 @@ py_guestfs_part_get_gpt_type (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_GET_MBR_ID
 static PyObject *
-py_guestfs_part_get_mbr_id (PyObject *self, PyObject *args)
+guestfs_int_py_part_get_mbr_id (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19477,7 +19477,7 @@ py_guestfs_part_get_mbr_id (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_GET_MBR_PART_TYPE
 static PyObject *
-py_guestfs_part_get_mbr_part_type (PyObject *self, PyObject *args)
+guestfs_int_py_part_get_mbr_part_type (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19521,7 +19521,7 @@ py_guestfs_part_get_mbr_part_type (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_GET_NAME
 static PyObject *
-py_guestfs_part_get_name (PyObject *self, PyObject *args)
+guestfs_int_py_part_get_name (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19565,7 +19565,7 @@ py_guestfs_part_get_name (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_GET_PARTTYPE
 static PyObject *
-py_guestfs_part_get_parttype (PyObject *self, PyObject *args)
+guestfs_int_py_part_get_parttype (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19608,7 +19608,7 @@ py_guestfs_part_get_parttype (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_INIT
 static PyObject *
-py_guestfs_part_init (PyObject *self, PyObject *args)
+guestfs_int_py_part_init (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19647,7 +19647,7 @@ py_guestfs_part_init (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_LIST
 static PyObject *
-py_guestfs_part_list (PyObject *self, PyObject *args)
+guestfs_int_py_part_list (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19685,7 +19685,7 @@ py_guestfs_part_list (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_SET_BOOTABLE
 static PyObject *
-py_guestfs_part_set_bootable (PyObject *self, PyObject *args)
+guestfs_int_py_part_set_bootable (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19725,7 +19725,7 @@ py_guestfs_part_set_bootable (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_SET_GPT_GUID
 static PyObject *
-py_guestfs_part_set_gpt_guid (PyObject *self, PyObject *args)
+guestfs_int_py_part_set_gpt_guid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19765,7 +19765,7 @@ py_guestfs_part_set_gpt_guid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_SET_GPT_TYPE
 static PyObject *
-py_guestfs_part_set_gpt_type (PyObject *self, PyObject *args)
+guestfs_int_py_part_set_gpt_type (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19805,7 +19805,7 @@ py_guestfs_part_set_gpt_type (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_SET_MBR_ID
 static PyObject *
-py_guestfs_part_set_mbr_id (PyObject *self, PyObject *args)
+guestfs_int_py_part_set_mbr_id (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19845,7 +19845,7 @@ py_guestfs_part_set_mbr_id (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_SET_NAME
 static PyObject *
-py_guestfs_part_set_name (PyObject *self, PyObject *args)
+guestfs_int_py_part_set_name (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19885,7 +19885,7 @@ py_guestfs_part_set_name (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_TO_DEV
 static PyObject *
-py_guestfs_part_to_dev (PyObject *self, PyObject *args)
+guestfs_int_py_part_to_dev (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19928,7 +19928,7 @@ py_guestfs_part_to_dev (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PART_TO_PARTNUM
 static PyObject *
-py_guestfs_part_to_partnum (PyObject *self, PyObject *args)
+guestfs_int_py_part_to_partnum (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -19965,7 +19965,7 @@ py_guestfs_part_to_partnum (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PING_DAEMON
 static PyObject *
-py_guestfs_ping_daemon (PyObject *self, PyObject *args)
+guestfs_int_py_ping_daemon (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20002,7 +20002,7 @@ py_guestfs_ping_daemon (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PREAD
 static PyObject *
-py_guestfs_pread (PyObject *self, PyObject *args)
+guestfs_int_py_pread (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20048,7 +20048,7 @@ py_guestfs_pread (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PREAD_DEVICE
 static PyObject *
-py_guestfs_pread_device (PyObject *self, PyObject *args)
+guestfs_int_py_pread_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20094,7 +20094,7 @@ py_guestfs_pread_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PVCHANGE_UUID
 static PyObject *
-py_guestfs_pvchange_uuid (PyObject *self, PyObject *args)
+guestfs_int_py_pvchange_uuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20132,7 +20132,7 @@ py_guestfs_pvchange_uuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PVCHANGE_UUID_ALL
 static PyObject *
-py_guestfs_pvchange_uuid_all (PyObject *self, PyObject *args)
+guestfs_int_py_pvchange_uuid_all (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20169,7 +20169,7 @@ py_guestfs_pvchange_uuid_all (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PVCREATE
 static PyObject *
-py_guestfs_pvcreate (PyObject *self, PyObject *args)
+guestfs_int_py_pvcreate (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20207,7 +20207,7 @@ py_guestfs_pvcreate (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PVREMOVE
 static PyObject *
-py_guestfs_pvremove (PyObject *self, PyObject *args)
+guestfs_int_py_pvremove (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20245,7 +20245,7 @@ py_guestfs_pvremove (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PVRESIZE
 static PyObject *
-py_guestfs_pvresize (PyObject *self, PyObject *args)
+guestfs_int_py_pvresize (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20283,7 +20283,7 @@ py_guestfs_pvresize (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PVRESIZE_SIZE
 static PyObject *
-py_guestfs_pvresize_size (PyObject *self, PyObject *args)
+guestfs_int_py_pvresize_size (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20322,7 +20322,7 @@ py_guestfs_pvresize_size (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PVS
 static PyObject *
-py_guestfs_pvs (PyObject *self, PyObject *args)
+guestfs_int_py_pvs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20359,7 +20359,7 @@ py_guestfs_pvs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PVS_FULL
 static PyObject *
-py_guestfs_pvs_full (PyObject *self, PyObject *args)
+guestfs_int_py_pvs_full (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20396,7 +20396,7 @@ py_guestfs_pvs_full (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PVUUID
 static PyObject *
-py_guestfs_pvuuid (PyObject *self, PyObject *args)
+guestfs_int_py_pvuuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20439,7 +20439,7 @@ py_guestfs_pvuuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PWRITE
 static PyObject *
-py_guestfs_pwrite (PyObject *self, PyObject *args)
+guestfs_int_py_pwrite (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20479,7 +20479,7 @@ py_guestfs_pwrite (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_PWRITE_DEVICE
 static PyObject *
-py_guestfs_pwrite_device (PyObject *self, PyObject *args)
+guestfs_int_py_pwrite_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20519,7 +20519,7 @@ py_guestfs_pwrite_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_READ_FILE
 static PyObject *
-py_guestfs_read_file (PyObject *self, PyObject *args)
+guestfs_int_py_read_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20563,7 +20563,7 @@ py_guestfs_read_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_READ_LINES
 static PyObject *
-py_guestfs_read_lines (PyObject *self, PyObject *args)
+guestfs_int_py_read_lines (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20601,7 +20601,7 @@ py_guestfs_read_lines (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_READDIR
 static PyObject *
-py_guestfs_readdir (PyObject *self, PyObject *args)
+guestfs_int_py_readdir (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20639,7 +20639,7 @@ py_guestfs_readdir (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_READLINK
 static PyObject *
-py_guestfs_readlink (PyObject *self, PyObject *args)
+guestfs_int_py_readlink (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20682,7 +20682,7 @@ py_guestfs_readlink (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_READLINKLIST
 static PyObject *
-py_guestfs_readlinklist (PyObject *self, PyObject *args)
+guestfs_int_py_readlinklist (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20725,7 +20725,7 @@ py_guestfs_readlinklist (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_REALPATH
 static PyObject *
-py_guestfs_realpath (PyObject *self, PyObject *args)
+guestfs_int_py_realpath (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20768,7 +20768,7 @@ py_guestfs_realpath (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_REMOUNT
 static PyObject *
-py_guestfs_remount (PyObject *self, PyObject *args)
+guestfs_int_py_remount (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20819,7 +20819,7 @@ py_guestfs_remount (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_REMOVE_DRIVE
 static PyObject *
-py_guestfs_remove_drive (PyObject *self, PyObject *args)
+guestfs_int_py_remove_drive (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -20850,7 +20850,7 @@ py_guestfs_remove_drive (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_REMOVEXATTR
 static PyObject *
-py_guestfs_removexattr (PyObject *self, PyObject *args)
+guestfs_int_py_removexattr (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20889,7 +20889,7 @@ py_guestfs_removexattr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RENAME
 static PyObject *
-py_guestfs_rename (PyObject *self, PyObject *args)
+guestfs_int_py_rename (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20928,7 +20928,7 @@ py_guestfs_rename (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RESIZE2FS
 static PyObject *
-py_guestfs_resize2fs (PyObject *self, PyObject *args)
+guestfs_int_py_resize2fs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -20966,7 +20966,7 @@ py_guestfs_resize2fs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RESIZE2FS_M
 static PyObject *
-py_guestfs_resize2fs_M (PyObject *self, PyObject *args)
+guestfs_int_py_resize2fs_M (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21004,7 +21004,7 @@ py_guestfs_resize2fs_M (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RESIZE2FS_SIZE
 static PyObject *
-py_guestfs_resize2fs_size (PyObject *self, PyObject *args)
+guestfs_int_py_resize2fs_size (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21043,7 +21043,7 @@ py_guestfs_resize2fs_size (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RM
 static PyObject *
-py_guestfs_rm (PyObject *self, PyObject *args)
+guestfs_int_py_rm (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21081,7 +21081,7 @@ py_guestfs_rm (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RM_F
 static PyObject *
-py_guestfs_rm_f (PyObject *self, PyObject *args)
+guestfs_int_py_rm_f (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21119,7 +21119,7 @@ py_guestfs_rm_f (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RM_RF
 static PyObject *
-py_guestfs_rm_rf (PyObject *self, PyObject *args)
+guestfs_int_py_rm_rf (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21157,7 +21157,7 @@ py_guestfs_rm_rf (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RMDIR
 static PyObject *
-py_guestfs_rmdir (PyObject *self, PyObject *args)
+guestfs_int_py_rmdir (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21195,7 +21195,7 @@ py_guestfs_rmdir (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RMMOUNTPOINT
 static PyObject *
-py_guestfs_rmmountpoint (PyObject *self, PyObject *args)
+guestfs_int_py_rmmountpoint (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21233,7 +21233,7 @@ py_guestfs_rmmountpoint (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RSYNC
 static PyObject *
-py_guestfs_rsync (PyObject *self, PyObject *args)
+guestfs_int_py_rsync (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21293,7 +21293,7 @@ py_guestfs_rsync (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RSYNC_IN
 static PyObject *
-py_guestfs_rsync_in (PyObject *self, PyObject *args)
+guestfs_int_py_rsync_in (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21353,7 +21353,7 @@ py_guestfs_rsync_in (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_RSYNC_OUT
 static PyObject *
-py_guestfs_rsync_out (PyObject *self, PyObject *args)
+guestfs_int_py_rsync_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21413,7 +21413,7 @@ py_guestfs_rsync_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SCRUB_DEVICE
 static PyObject *
-py_guestfs_scrub_device (PyObject *self, PyObject *args)
+guestfs_int_py_scrub_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21451,7 +21451,7 @@ py_guestfs_scrub_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SCRUB_FILE
 static PyObject *
-py_guestfs_scrub_file (PyObject *self, PyObject *args)
+guestfs_int_py_scrub_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21489,7 +21489,7 @@ py_guestfs_scrub_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SCRUB_FREESPACE
 static PyObject *
-py_guestfs_scrub_freespace (PyObject *self, PyObject *args)
+guestfs_int_py_scrub_freespace (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21527,7 +21527,7 @@ py_guestfs_scrub_freespace (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_APPEND
 static PyObject *
-py_guestfs_set_append (PyObject *self, PyObject *args)
+guestfs_int_py_set_append (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -21558,7 +21558,7 @@ py_guestfs_set_append (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_ATTACH_METHOD
 static PyObject *
-py_guestfs_set_attach_method (PyObject *self, PyObject *args)
+guestfs_int_py_set_attach_method (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -21589,7 +21589,7 @@ py_guestfs_set_attach_method (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_AUTOSYNC
 static PyObject *
-py_guestfs_set_autosync (PyObject *self, PyObject *args)
+guestfs_int_py_set_autosync (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -21620,7 +21620,7 @@ py_guestfs_set_autosync (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_BACKEND
 static PyObject *
-py_guestfs_set_backend (PyObject *self, PyObject *args)
+guestfs_int_py_set_backend (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -21651,7 +21651,7 @@ py_guestfs_set_backend (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_BACKEND_SETTING
 static PyObject *
-py_guestfs_set_backend_setting (PyObject *self, PyObject *args)
+guestfs_int_py_set_backend_setting (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -21683,7 +21683,7 @@ py_guestfs_set_backend_setting (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_BACKEND_SETTINGS
 static PyObject *
-py_guestfs_set_backend_settings (PyObject *self, PyObject *args)
+guestfs_int_py_set_backend_settings (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -21718,7 +21718,7 @@ py_guestfs_set_backend_settings (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_CACHEDIR
 static PyObject *
-py_guestfs_set_cachedir (PyObject *self, PyObject *args)
+guestfs_int_py_set_cachedir (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -21749,7 +21749,7 @@ py_guestfs_set_cachedir (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_DIRECT
 static PyObject *
-py_guestfs_set_direct (PyObject *self, PyObject *args)
+guestfs_int_py_set_direct (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -21780,7 +21780,7 @@ py_guestfs_set_direct (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_E2ATTRS
 static PyObject *
-py_guestfs_set_e2attrs (PyObject *self, PyObject *args)
+guestfs_int_py_set_e2attrs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21832,7 +21832,7 @@ py_guestfs_set_e2attrs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_E2GENERATION
 static PyObject *
-py_guestfs_set_e2generation (PyObject *self, PyObject *args)
+guestfs_int_py_set_e2generation (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21871,7 +21871,7 @@ py_guestfs_set_e2generation (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_E2LABEL
 static PyObject *
-py_guestfs_set_e2label (PyObject *self, PyObject *args)
+guestfs_int_py_set_e2label (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21910,7 +21910,7 @@ py_guestfs_set_e2label (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_E2UUID
 static PyObject *
-py_guestfs_set_e2uuid (PyObject *self, PyObject *args)
+guestfs_int_py_set_e2uuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -21949,7 +21949,7 @@ py_guestfs_set_e2uuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_HV
 static PyObject *
-py_guestfs_set_hv (PyObject *self, PyObject *args)
+guestfs_int_py_set_hv (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -21980,7 +21980,7 @@ py_guestfs_set_hv (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_IDENTIFIER
 static PyObject *
-py_guestfs_set_identifier (PyObject *self, PyObject *args)
+guestfs_int_py_set_identifier (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22011,7 +22011,7 @@ py_guestfs_set_identifier (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_LABEL
 static PyObject *
-py_guestfs_set_label (PyObject *self, PyObject *args)
+guestfs_int_py_set_label (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22050,7 +22050,7 @@ py_guestfs_set_label (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_LIBVIRT_REQUESTED_CREDENTIAL
 static PyObject *
-py_guestfs_set_libvirt_requested_credential (PyObject *self, PyObject *args)
+guestfs_int_py_set_libvirt_requested_credential (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22083,7 +22083,7 @@ py_guestfs_set_libvirt_requested_credential (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_LIBVIRT_SUPPORTED_CREDENTIALS
 static PyObject *
-py_guestfs_set_libvirt_supported_credentials (PyObject *self, PyObject *args)
+guestfs_int_py_set_libvirt_supported_credentials (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22118,7 +22118,7 @@ py_guestfs_set_libvirt_supported_credentials (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_MEMSIZE
 static PyObject *
-py_guestfs_set_memsize (PyObject *self, PyObject *args)
+guestfs_int_py_set_memsize (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22149,7 +22149,7 @@ py_guestfs_set_memsize (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_NETWORK
 static PyObject *
-py_guestfs_set_network (PyObject *self, PyObject *args)
+guestfs_int_py_set_network (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22180,7 +22180,7 @@ py_guestfs_set_network (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_PATH
 static PyObject *
-py_guestfs_set_path (PyObject *self, PyObject *args)
+guestfs_int_py_set_path (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22211,7 +22211,7 @@ py_guestfs_set_path (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_PGROUP
 static PyObject *
-py_guestfs_set_pgroup (PyObject *self, PyObject *args)
+guestfs_int_py_set_pgroup (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22242,7 +22242,7 @@ py_guestfs_set_pgroup (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_PROGRAM
 static PyObject *
-py_guestfs_set_program (PyObject *self, PyObject *args)
+guestfs_int_py_set_program (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22273,7 +22273,7 @@ py_guestfs_set_program (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_QEMU
 static PyObject *
-py_guestfs_set_qemu (PyObject *self, PyObject *args)
+guestfs_int_py_set_qemu (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22304,7 +22304,7 @@ py_guestfs_set_qemu (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_RECOVERY_PROC
 static PyObject *
-py_guestfs_set_recovery_proc (PyObject *self, PyObject *args)
+guestfs_int_py_set_recovery_proc (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22335,7 +22335,7 @@ py_guestfs_set_recovery_proc (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_SELINUX
 static PyObject *
-py_guestfs_set_selinux (PyObject *self, PyObject *args)
+guestfs_int_py_set_selinux (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22366,7 +22366,7 @@ py_guestfs_set_selinux (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_SMP
 static PyObject *
-py_guestfs_set_smp (PyObject *self, PyObject *args)
+guestfs_int_py_set_smp (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22397,7 +22397,7 @@ py_guestfs_set_smp (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_TMPDIR
 static PyObject *
-py_guestfs_set_tmpdir (PyObject *self, PyObject *args)
+guestfs_int_py_set_tmpdir (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22428,7 +22428,7 @@ py_guestfs_set_tmpdir (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_TRACE
 static PyObject *
-py_guestfs_set_trace (PyObject *self, PyObject *args)
+guestfs_int_py_set_trace (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22459,7 +22459,7 @@ py_guestfs_set_trace (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_UUID
 static PyObject *
-py_guestfs_set_uuid (PyObject *self, PyObject *args)
+guestfs_int_py_set_uuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22498,7 +22498,7 @@ py_guestfs_set_uuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_UUID_RANDOM
 static PyObject *
-py_guestfs_set_uuid_random (PyObject *self, PyObject *args)
+guestfs_int_py_set_uuid_random (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22536,7 +22536,7 @@ py_guestfs_set_uuid_random (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SET_VERBOSE
 static PyObject *
-py_guestfs_set_verbose (PyObject *self, PyObject *args)
+guestfs_int_py_set_verbose (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -22567,7 +22567,7 @@ py_guestfs_set_verbose (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SETCON
 static PyObject *
-py_guestfs_setcon (PyObject *self, PyObject *args)
+guestfs_int_py_setcon (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22605,7 +22605,7 @@ py_guestfs_setcon (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SETXATTR
 static PyObject *
-py_guestfs_setxattr (PyObject *self, PyObject *args)
+guestfs_int_py_setxattr (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22646,7 +22646,7 @@ py_guestfs_setxattr (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SFDISK
 static PyObject *
-py_guestfs_sfdisk (PyObject *self, PyObject *args)
+guestfs_int_py_sfdisk (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22692,7 +22692,7 @@ py_guestfs_sfdisk (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SFDISKM
 static PyObject *
-py_guestfs_sfdiskM (PyObject *self, PyObject *args)
+guestfs_int_py_sfdiskM (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22735,7 +22735,7 @@ py_guestfs_sfdiskM (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SFDISK_N
 static PyObject *
-py_guestfs_sfdisk_N (PyObject *self, PyObject *args)
+guestfs_int_py_sfdisk_N (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22778,7 +22778,7 @@ py_guestfs_sfdisk_N (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SFDISK_DISK_GEOMETRY
 static PyObject *
-py_guestfs_sfdisk_disk_geometry (PyObject *self, PyObject *args)
+guestfs_int_py_sfdisk_disk_geometry (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22821,7 +22821,7 @@ py_guestfs_sfdisk_disk_geometry (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SFDISK_KERNEL_GEOMETRY
 static PyObject *
-py_guestfs_sfdisk_kernel_geometry (PyObject *self, PyObject *args)
+guestfs_int_py_sfdisk_kernel_geometry (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22864,7 +22864,7 @@ py_guestfs_sfdisk_kernel_geometry (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SFDISK_L
 static PyObject *
-py_guestfs_sfdisk_l (PyObject *self, PyObject *args)
+guestfs_int_py_sfdisk_l (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22907,7 +22907,7 @@ py_guestfs_sfdisk_l (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SH
 static PyObject *
-py_guestfs_sh (PyObject *self, PyObject *args)
+guestfs_int_py_sh (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22950,7 +22950,7 @@ py_guestfs_sh (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SH_LINES
 static PyObject *
-py_guestfs_sh_lines (PyObject *self, PyObject *args)
+guestfs_int_py_sh_lines (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -22988,7 +22988,7 @@ py_guestfs_sh_lines (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SHUTDOWN
 static PyObject *
-py_guestfs_shutdown (PyObject *self, PyObject *args)
+guestfs_int_py_shutdown (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23025,7 +23025,7 @@ py_guestfs_shutdown (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SLEEP
 static PyObject *
-py_guestfs_sleep (PyObject *self, PyObject *args)
+guestfs_int_py_sleep (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23063,7 +23063,7 @@ py_guestfs_sleep (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_STAT
 static PyObject *
-py_guestfs_stat (PyObject *self, PyObject *args)
+guestfs_int_py_stat (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23101,7 +23101,7 @@ py_guestfs_stat (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_STATNS
 static PyObject *
-py_guestfs_statns (PyObject *self, PyObject *args)
+guestfs_int_py_statns (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23139,7 +23139,7 @@ py_guestfs_statns (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_STATVFS
 static PyObject *
-py_guestfs_statvfs (PyObject *self, PyObject *args)
+guestfs_int_py_statvfs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23177,7 +23177,7 @@ py_guestfs_statvfs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_STRINGS
 static PyObject *
-py_guestfs_strings (PyObject *self, PyObject *args)
+guestfs_int_py_strings (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23215,7 +23215,7 @@ py_guestfs_strings (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_STRINGS_E
 static PyObject *
-py_guestfs_strings_e (PyObject *self, PyObject *args)
+guestfs_int_py_strings_e (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23254,7 +23254,7 @@ py_guestfs_strings_e (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SWAPOFF_DEVICE
 static PyObject *
-py_guestfs_swapoff_device (PyObject *self, PyObject *args)
+guestfs_int_py_swapoff_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23292,7 +23292,7 @@ py_guestfs_swapoff_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SWAPOFF_FILE
 static PyObject *
-py_guestfs_swapoff_file (PyObject *self, PyObject *args)
+guestfs_int_py_swapoff_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23330,7 +23330,7 @@ py_guestfs_swapoff_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SWAPOFF_LABEL
 static PyObject *
-py_guestfs_swapoff_label (PyObject *self, PyObject *args)
+guestfs_int_py_swapoff_label (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23368,7 +23368,7 @@ py_guestfs_swapoff_label (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SWAPOFF_UUID
 static PyObject *
-py_guestfs_swapoff_uuid (PyObject *self, PyObject *args)
+guestfs_int_py_swapoff_uuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23406,7 +23406,7 @@ py_guestfs_swapoff_uuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SWAPON_DEVICE
 static PyObject *
-py_guestfs_swapon_device (PyObject *self, PyObject *args)
+guestfs_int_py_swapon_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23444,7 +23444,7 @@ py_guestfs_swapon_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SWAPON_FILE
 static PyObject *
-py_guestfs_swapon_file (PyObject *self, PyObject *args)
+guestfs_int_py_swapon_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23482,7 +23482,7 @@ py_guestfs_swapon_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SWAPON_LABEL
 static PyObject *
-py_guestfs_swapon_label (PyObject *self, PyObject *args)
+guestfs_int_py_swapon_label (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23520,7 +23520,7 @@ py_guestfs_swapon_label (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SWAPON_UUID
 static PyObject *
-py_guestfs_swapon_uuid (PyObject *self, PyObject *args)
+guestfs_int_py_swapon_uuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23558,7 +23558,7 @@ py_guestfs_swapon_uuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SYNC
 static PyObject *
-py_guestfs_sync (PyObject *self, PyObject *args)
+guestfs_int_py_sync (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23595,7 +23595,7 @@ py_guestfs_sync (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_SYSLINUX
 static PyObject *
-py_guestfs_syslinux (PyObject *self, PyObject *args)
+guestfs_int_py_syslinux (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23651,7 +23651,7 @@ py_guestfs_syslinux (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TAIL
 static PyObject *
-py_guestfs_tail (PyObject *self, PyObject *args)
+guestfs_int_py_tail (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23689,7 +23689,7 @@ py_guestfs_tail (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TAIL_N
 static PyObject *
-py_guestfs_tail_n (PyObject *self, PyObject *args)
+guestfs_int_py_tail_n (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23728,7 +23728,7 @@ py_guestfs_tail_n (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TAR_IN
 static PyObject *
-py_guestfs_tar_in (PyObject *self, PyObject *args)
+guestfs_int_py_tar_in (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23809,7 +23809,7 @@ py_guestfs_tar_in (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TAR_OUT
 static PyObject *
-py_guestfs_tar_out (PyObject *self, PyObject *args)
+guestfs_int_py_tar_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23910,7 +23910,7 @@ py_guestfs_tar_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TGZ_IN
 static PyObject *
-py_guestfs_tgz_in (PyObject *self, PyObject *args)
+guestfs_int_py_tgz_in (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23949,7 +23949,7 @@ py_guestfs_tgz_in (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TGZ_OUT
 static PyObject *
-py_guestfs_tgz_out (PyObject *self, PyObject *args)
+guestfs_int_py_tgz_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -23988,7 +23988,7 @@ py_guestfs_tgz_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TOUCH
 static PyObject *
-py_guestfs_touch (PyObject *self, PyObject *args)
+guestfs_int_py_touch (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24026,7 +24026,7 @@ py_guestfs_touch (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TRUNCATE
 static PyObject *
-py_guestfs_truncate (PyObject *self, PyObject *args)
+guestfs_int_py_truncate (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24064,7 +24064,7 @@ py_guestfs_truncate (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TRUNCATE_SIZE
 static PyObject *
-py_guestfs_truncate_size (PyObject *self, PyObject *args)
+guestfs_int_py_truncate_size (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24103,7 +24103,7 @@ py_guestfs_truncate_size (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TUNE2FS
 static PyObject *
-py_guestfs_tune2fs (PyObject *self, PyObject *args)
+guestfs_int_py_tune2fs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24236,7 +24236,7 @@ py_guestfs_tune2fs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TUNE2FS_L
 static PyObject *
-py_guestfs_tune2fs_l (PyObject *self, PyObject *args)
+guestfs_int_py_tune2fs_l (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24274,7 +24274,7 @@ py_guestfs_tune2fs_l (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TXZ_IN
 static PyObject *
-py_guestfs_txz_in (PyObject *self, PyObject *args)
+guestfs_int_py_txz_in (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24313,7 +24313,7 @@ py_guestfs_txz_in (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_TXZ_OUT
 static PyObject *
-py_guestfs_txz_out (PyObject *self, PyObject *args)
+guestfs_int_py_txz_out (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24352,7 +24352,7 @@ py_guestfs_txz_out (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_UMASK
 static PyObject *
-py_guestfs_umask (PyObject *self, PyObject *args)
+guestfs_int_py_umask (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24389,7 +24389,7 @@ py_guestfs_umask (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_UMOUNT
 static PyObject *
-py_guestfs_umount (PyObject *self, PyObject *args)
+guestfs_int_py_umount (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24448,7 +24448,7 @@ py_guestfs_umount (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_UMOUNT_ALL
 static PyObject *
-py_guestfs_umount_all (PyObject *self, PyObject *args)
+guestfs_int_py_umount_all (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24485,7 +24485,7 @@ py_guestfs_umount_all (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_UMOUNT_LOCAL
 static PyObject *
-py_guestfs_umount_local (PyObject *self, PyObject *args)
+guestfs_int_py_umount_local (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24535,7 +24535,7 @@ py_guestfs_umount_local (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_UPLOAD
 static PyObject *
-py_guestfs_upload (PyObject *self, PyObject *args)
+guestfs_int_py_upload (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24574,7 +24574,7 @@ py_guestfs_upload (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_UPLOAD_OFFSET
 static PyObject *
-py_guestfs_upload_offset (PyObject *self, PyObject *args)
+guestfs_int_py_upload_offset (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24614,7 +24614,7 @@ py_guestfs_upload_offset (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_USER_CANCEL
 static PyObject *
-py_guestfs_user_cancel (PyObject *self, PyObject *args)
+guestfs_int_py_user_cancel (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -24644,7 +24644,7 @@ py_guestfs_user_cancel (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_UTIMENS
 static PyObject *
-py_guestfs_utimens (PyObject *self, PyObject *args)
+guestfs_int_py_utimens (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24686,7 +24686,7 @@ py_guestfs_utimens (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_UTSNAME
 static PyObject *
-py_guestfs_utsname (PyObject *self, PyObject *args)
+guestfs_int_py_utsname (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24723,7 +24723,7 @@ py_guestfs_utsname (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VERSION
 static PyObject *
-py_guestfs_version (PyObject *self, PyObject *args)
+guestfs_int_py_version (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -24753,7 +24753,7 @@ py_guestfs_version (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VFS_LABEL
 static PyObject *
-py_guestfs_vfs_label (PyObject *self, PyObject *args)
+guestfs_int_py_vfs_label (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24796,7 +24796,7 @@ py_guestfs_vfs_label (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VFS_MINIMUM_SIZE
 static PyObject *
-py_guestfs_vfs_minimum_size (PyObject *self, PyObject *args)
+guestfs_int_py_vfs_minimum_size (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24833,7 +24833,7 @@ py_guestfs_vfs_minimum_size (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VFS_TYPE
 static PyObject *
-py_guestfs_vfs_type (PyObject *self, PyObject *args)
+guestfs_int_py_vfs_type (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24876,7 +24876,7 @@ py_guestfs_vfs_type (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VFS_UUID
 static PyObject *
-py_guestfs_vfs_uuid (PyObject *self, PyObject *args)
+guestfs_int_py_vfs_uuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24919,7 +24919,7 @@ py_guestfs_vfs_uuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VG_ACTIVATE
 static PyObject *
-py_guestfs_vg_activate (PyObject *self, PyObject *args)
+guestfs_int_py_vg_activate (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -24962,7 +24962,7 @@ py_guestfs_vg_activate (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VG_ACTIVATE_ALL
 static PyObject *
-py_guestfs_vg_activate_all (PyObject *self, PyObject *args)
+guestfs_int_py_vg_activate_all (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25000,7 +25000,7 @@ py_guestfs_vg_activate_all (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGCHANGE_UUID
 static PyObject *
-py_guestfs_vgchange_uuid (PyObject *self, PyObject *args)
+guestfs_int_py_vgchange_uuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25038,7 +25038,7 @@ py_guestfs_vgchange_uuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGCHANGE_UUID_ALL
 static PyObject *
-py_guestfs_vgchange_uuid_all (PyObject *self, PyObject *args)
+guestfs_int_py_vgchange_uuid_all (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25075,7 +25075,7 @@ py_guestfs_vgchange_uuid_all (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGCREATE
 static PyObject *
-py_guestfs_vgcreate (PyObject *self, PyObject *args)
+guestfs_int_py_vgcreate (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25118,7 +25118,7 @@ py_guestfs_vgcreate (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGLVUUIDS
 static PyObject *
-py_guestfs_vglvuuids (PyObject *self, PyObject *args)
+guestfs_int_py_vglvuuids (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25156,7 +25156,7 @@ py_guestfs_vglvuuids (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGMETA
 static PyObject *
-py_guestfs_vgmeta (PyObject *self, PyObject *args)
+guestfs_int_py_vgmeta (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25200,7 +25200,7 @@ py_guestfs_vgmeta (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGPVUUIDS
 static PyObject *
-py_guestfs_vgpvuuids (PyObject *self, PyObject *args)
+guestfs_int_py_vgpvuuids (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25238,7 +25238,7 @@ py_guestfs_vgpvuuids (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGREMOVE
 static PyObject *
-py_guestfs_vgremove (PyObject *self, PyObject *args)
+guestfs_int_py_vgremove (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25276,7 +25276,7 @@ py_guestfs_vgremove (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGRENAME
 static PyObject *
-py_guestfs_vgrename (PyObject *self, PyObject *args)
+guestfs_int_py_vgrename (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25315,7 +25315,7 @@ py_guestfs_vgrename (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGS
 static PyObject *
-py_guestfs_vgs (PyObject *self, PyObject *args)
+guestfs_int_py_vgs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25352,7 +25352,7 @@ py_guestfs_vgs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGS_FULL
 static PyObject *
-py_guestfs_vgs_full (PyObject *self, PyObject *args)
+guestfs_int_py_vgs_full (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25389,7 +25389,7 @@ py_guestfs_vgs_full (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGSCAN
 static PyObject *
-py_guestfs_vgscan (PyObject *self, PyObject *args)
+guestfs_int_py_vgscan (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25426,7 +25426,7 @@ py_guestfs_vgscan (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_VGUUID
 static PyObject *
-py_guestfs_vguuid (PyObject *self, PyObject *args)
+guestfs_int_py_vguuid (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25469,7 +25469,7 @@ py_guestfs_vguuid (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_WAIT_READY
 static PyObject *
-py_guestfs_wait_ready (PyObject *self, PyObject *args)
+guestfs_int_py_wait_ready (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
   guestfs_h *g;
@@ -25499,7 +25499,7 @@ py_guestfs_wait_ready (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_WC_C
 static PyObject *
-py_guestfs_wc_c (PyObject *self, PyObject *args)
+guestfs_int_py_wc_c (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25536,7 +25536,7 @@ py_guestfs_wc_c (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_WC_L
 static PyObject *
-py_guestfs_wc_l (PyObject *self, PyObject *args)
+guestfs_int_py_wc_l (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25573,7 +25573,7 @@ py_guestfs_wc_l (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_WC_W
 static PyObject *
-py_guestfs_wc_w (PyObject *self, PyObject *args)
+guestfs_int_py_wc_w (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25610,7 +25610,7 @@ py_guestfs_wc_w (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_WIPEFS
 static PyObject *
-py_guestfs_wipefs (PyObject *self, PyObject *args)
+guestfs_int_py_wipefs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25648,7 +25648,7 @@ py_guestfs_wipefs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_WRITE
 static PyObject *
-py_guestfs_write (PyObject *self, PyObject *args)
+guestfs_int_py_write (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25688,7 +25688,7 @@ py_guestfs_write (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_WRITE_APPEND
 static PyObject *
-py_guestfs_write_append (PyObject *self, PyObject *args)
+guestfs_int_py_write_append (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25728,7 +25728,7 @@ py_guestfs_write_append (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_WRITE_FILE
 static PyObject *
-py_guestfs_write_file (PyObject *self, PyObject *args)
+guestfs_int_py_write_file (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25768,7 +25768,7 @@ py_guestfs_write_file (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_XFS_ADMIN
 static PyObject *
-py_guestfs_xfs_admin (PyObject *self, PyObject *args)
+guestfs_int_py_xfs_admin (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25877,7 +25877,7 @@ py_guestfs_xfs_admin (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_XFS_GROWFS
 static PyObject *
-py_guestfs_xfs_growfs (PyObject *self, PyObject *args)
+guestfs_int_py_xfs_growfs (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -25984,7 +25984,7 @@ py_guestfs_xfs_growfs (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_XFS_INFO
 static PyObject *
-py_guestfs_xfs_info (PyObject *self, PyObject *args)
+guestfs_int_py_xfs_info (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26022,7 +26022,7 @@ py_guestfs_xfs_info (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_XFS_REPAIR
 static PyObject *
-py_guestfs_xfs_repair (PyObject *self, PyObject *args)
+guestfs_int_py_xfs_repair (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26154,7 +26154,7 @@ py_guestfs_xfs_repair (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZEGREP
 static PyObject *
-py_guestfs_zegrep (PyObject *self, PyObject *args)
+guestfs_int_py_zegrep (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26193,7 +26193,7 @@ py_guestfs_zegrep (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZEGREPI
 static PyObject *
-py_guestfs_zegrepi (PyObject *self, PyObject *args)
+guestfs_int_py_zegrepi (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26232,7 +26232,7 @@ py_guestfs_zegrepi (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZERO
 static PyObject *
-py_guestfs_zero (PyObject *self, PyObject *args)
+guestfs_int_py_zero (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26270,7 +26270,7 @@ py_guestfs_zero (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZERO_DEVICE
 static PyObject *
-py_guestfs_zero_device (PyObject *self, PyObject *args)
+guestfs_int_py_zero_device (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26308,7 +26308,7 @@ py_guestfs_zero_device (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZERO_FREE_SPACE
 static PyObject *
-py_guestfs_zero_free_space (PyObject *self, PyObject *args)
+guestfs_int_py_zero_free_space (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26346,7 +26346,7 @@ py_guestfs_zero_free_space (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZEROFREE
 static PyObject *
-py_guestfs_zerofree (PyObject *self, PyObject *args)
+guestfs_int_py_zerofree (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26384,7 +26384,7 @@ py_guestfs_zerofree (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZFGREP
 static PyObject *
-py_guestfs_zfgrep (PyObject *self, PyObject *args)
+guestfs_int_py_zfgrep (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26423,7 +26423,7 @@ py_guestfs_zfgrep (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZFGREPI
 static PyObject *
-py_guestfs_zfgrepi (PyObject *self, PyObject *args)
+guestfs_int_py_zfgrepi (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26462,7 +26462,7 @@ py_guestfs_zfgrepi (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZFILE
 static PyObject *
-py_guestfs_zfile (PyObject *self, PyObject *args)
+guestfs_int_py_zfile (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26506,7 +26506,7 @@ py_guestfs_zfile (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZGREP
 static PyObject *
-py_guestfs_zgrep (PyObject *self, PyObject *args)
+guestfs_int_py_zgrep (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26545,7 +26545,7 @@ py_guestfs_zgrep (PyObject *self, PyObject *args)
 
 #ifdef GUESTFS_HAVE_ZGREPI
 static PyObject *
-py_guestfs_zgrepi (PyObject *self, PyObject *args)
+guestfs_int_py_zgrepi (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
   PyObject *py_g;
@@ -26583,1777 +26583,1777 @@ py_guestfs_zgrepi (PyObject *self, PyObject *args)
 #endif
 
 static PyMethodDef methods[] = {
-  { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
-  { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
+  { (char *) "create", guestfs_int_py_create, METH_VARARGS, NULL },
+  { (char *) "close", guestfs_int_py_close, METH_VARARGS, NULL },
   { (char *) "set_event_callback",
-    py_guestfs_set_event_callback, METH_VARARGS, NULL },
+    guestfs_int_py_set_event_callback, METH_VARARGS, NULL },
   { (char *) "delete_event_callback",
-    py_guestfs_delete_event_callback, METH_VARARGS, NULL },
+    guestfs_int_py_delete_event_callback, METH_VARARGS, NULL },
   { (char *) "event_to_string",
-    py_guestfs_event_to_string, METH_VARARGS, NULL },
+    guestfs_int_py_event_to_string, METH_VARARGS, NULL },
 #ifdef GUESTFS_HAVE_ACL_DELETE_DEF_FILE
-  { (char *) "acl_delete_def_file", py_guestfs_acl_delete_def_file, METH_VARARGS, NULL },
+  { (char *) "acl_delete_def_file", guestfs_int_py_acl_delete_def_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ACL_GET_FILE
-  { (char *) "acl_get_file", py_guestfs_acl_get_file, METH_VARARGS, NULL },
+  { (char *) "acl_get_file", guestfs_int_py_acl_get_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ACL_SET_FILE
-  { (char *) "acl_set_file", py_guestfs_acl_set_file, METH_VARARGS, NULL },
+  { (char *) "acl_set_file", guestfs_int_py_acl_set_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ADD_CDROM
-  { (char *) "add_cdrom", py_guestfs_add_cdrom, METH_VARARGS, NULL },
+  { (char *) "add_cdrom", guestfs_int_py_add_cdrom, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ADD_DOMAIN
-  { (char *) "add_domain", py_guestfs_add_domain, METH_VARARGS, NULL },
+  { (char *) "add_domain", guestfs_int_py_add_domain, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ADD_DRIVE
-  { (char *) "add_drive", py_guestfs_add_drive, METH_VARARGS, NULL },
+  { (char *) "add_drive", guestfs_int_py_add_drive, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ADD_DRIVE_RO
-  { (char *) "add_drive_ro", py_guestfs_add_drive_ro, METH_VARARGS, NULL },
+  { (char *) "add_drive_ro", guestfs_int_py_add_drive_ro, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ADD_DRIVE_RO_WITH_IF
-  { (char *) "add_drive_ro_with_if", py_guestfs_add_drive_ro_with_if, METH_VARARGS, NULL },
+  { (char *) "add_drive_ro_with_if", guestfs_int_py_add_drive_ro_with_if, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ADD_DRIVE_SCRATCH
-  { (char *) "add_drive_scratch", py_guestfs_add_drive_scratch, METH_VARARGS, NULL },
+  { (char *) "add_drive_scratch", guestfs_int_py_add_drive_scratch, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ADD_DRIVE_WITH_IF
-  { (char *) "add_drive_with_if", py_guestfs_add_drive_with_if, METH_VARARGS, NULL },
+  { (char *) "add_drive_with_if", guestfs_int_py_add_drive_with_if, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ADD_LIBVIRT_DOM
-  { (char *) "add_libvirt_dom", py_guestfs_add_libvirt_dom, METH_VARARGS, NULL },
+  { (char *) "add_libvirt_dom", guestfs_int_py_add_libvirt_dom, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_CLEAR
-  { (char *) "aug_clear", py_guestfs_aug_clear, METH_VARARGS, NULL },
+  { (char *) "aug_clear", guestfs_int_py_aug_clear, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_CLOSE
-  { (char *) "aug_close", py_guestfs_aug_close, METH_VARARGS, NULL },
+  { (char *) "aug_close", guestfs_int_py_aug_close, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_DEFNODE
-  { (char *) "aug_defnode", py_guestfs_aug_defnode, METH_VARARGS, NULL },
+  { (char *) "aug_defnode", guestfs_int_py_aug_defnode, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_DEFVAR
-  { (char *) "aug_defvar", py_guestfs_aug_defvar, METH_VARARGS, NULL },
+  { (char *) "aug_defvar", guestfs_int_py_aug_defvar, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_GET
-  { (char *) "aug_get", py_guestfs_aug_get, METH_VARARGS, NULL },
+  { (char *) "aug_get", guestfs_int_py_aug_get, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_INIT
-  { (char *) "aug_init", py_guestfs_aug_init, METH_VARARGS, NULL },
+  { (char *) "aug_init", guestfs_int_py_aug_init, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_INSERT
-  { (char *) "aug_insert", py_guestfs_aug_insert, METH_VARARGS, NULL },
+  { (char *) "aug_insert", guestfs_int_py_aug_insert, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_LABEL
-  { (char *) "aug_label", py_guestfs_aug_label, METH_VARARGS, NULL },
+  { (char *) "aug_label", guestfs_int_py_aug_label, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_LOAD
-  { (char *) "aug_load", py_guestfs_aug_load, METH_VARARGS, NULL },
+  { (char *) "aug_load", guestfs_int_py_aug_load, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_LS
-  { (char *) "aug_ls", py_guestfs_aug_ls, METH_VARARGS, NULL },
+  { (char *) "aug_ls", guestfs_int_py_aug_ls, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_MATCH
-  { (char *) "aug_match", py_guestfs_aug_match, METH_VARARGS, NULL },
+  { (char *) "aug_match", guestfs_int_py_aug_match, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_MV
-  { (char *) "aug_mv", py_guestfs_aug_mv, METH_VARARGS, NULL },
+  { (char *) "aug_mv", guestfs_int_py_aug_mv, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_RM
-  { (char *) "aug_rm", py_guestfs_aug_rm, METH_VARARGS, NULL },
+  { (char *) "aug_rm", guestfs_int_py_aug_rm, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_SAVE
-  { (char *) "aug_save", py_guestfs_aug_save, METH_VARARGS, NULL },
+  { (char *) "aug_save", guestfs_int_py_aug_save, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_SET
-  { (char *) "aug_set", py_guestfs_aug_set, METH_VARARGS, NULL },
+  { (char *) "aug_set", guestfs_int_py_aug_set, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AUG_SETM
-  { (char *) "aug_setm", py_guestfs_aug_setm, METH_VARARGS, NULL },
+  { (char *) "aug_setm", guestfs_int_py_aug_setm, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AVAILABLE
-  { (char *) "available", py_guestfs_available, METH_VARARGS, NULL },
+  { (char *) "available", guestfs_int_py_available, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_AVAILABLE_ALL_GROUPS
-  { (char *) "available_all_groups", py_guestfs_available_all_groups, METH_VARARGS, NULL },
+  { (char *) "available_all_groups", guestfs_int_py_available_all_groups, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BASE64_IN
-  { (char *) "base64_in", py_guestfs_base64_in, METH_VARARGS, NULL },
+  { (char *) "base64_in", guestfs_int_py_base64_in, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BASE64_OUT
-  { (char *) "base64_out", py_guestfs_base64_out, METH_VARARGS, NULL },
+  { (char *) "base64_out", guestfs_int_py_base64_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLKDISCARD
-  { (char *) "blkdiscard", py_guestfs_blkdiscard, METH_VARARGS, NULL },
+  { (char *) "blkdiscard", guestfs_int_py_blkdiscard, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLKDISCARDZEROES
-  { (char *) "blkdiscardzeroes", py_guestfs_blkdiscardzeroes, METH_VARARGS, NULL },
+  { (char *) "blkdiscardzeroes", guestfs_int_py_blkdiscardzeroes, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLKID
-  { (char *) "blkid", py_guestfs_blkid, METH_VARARGS, NULL },
+  { (char *) "blkid", guestfs_int_py_blkid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_FLUSHBUFS
-  { (char *) "blockdev_flushbufs", py_guestfs_blockdev_flushbufs, METH_VARARGS, NULL },
+  { (char *) "blockdev_flushbufs", guestfs_int_py_blockdev_flushbufs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_GETBSZ
-  { (char *) "blockdev_getbsz", py_guestfs_blockdev_getbsz, METH_VARARGS, NULL },
+  { (char *) "blockdev_getbsz", guestfs_int_py_blockdev_getbsz, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_GETRO
-  { (char *) "blockdev_getro", py_guestfs_blockdev_getro, METH_VARARGS, NULL },
+  { (char *) "blockdev_getro", guestfs_int_py_blockdev_getro, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_GETSIZE64
-  { (char *) "blockdev_getsize64", py_guestfs_blockdev_getsize64, METH_VARARGS, NULL },
+  { (char *) "blockdev_getsize64", guestfs_int_py_blockdev_getsize64, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_GETSS
-  { (char *) "blockdev_getss", py_guestfs_blockdev_getss, METH_VARARGS, NULL },
+  { (char *) "blockdev_getss", guestfs_int_py_blockdev_getss, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_GETSZ
-  { (char *) "blockdev_getsz", py_guestfs_blockdev_getsz, METH_VARARGS, NULL },
+  { (char *) "blockdev_getsz", guestfs_int_py_blockdev_getsz, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_REREADPT
-  { (char *) "blockdev_rereadpt", py_guestfs_blockdev_rereadpt, METH_VARARGS, NULL },
+  { (char *) "blockdev_rereadpt", guestfs_int_py_blockdev_rereadpt, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_SETBSZ
-  { (char *) "blockdev_setbsz", py_guestfs_blockdev_setbsz, METH_VARARGS, NULL },
+  { (char *) "blockdev_setbsz", guestfs_int_py_blockdev_setbsz, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_SETRA
-  { (char *) "blockdev_setra", py_guestfs_blockdev_setra, METH_VARARGS, NULL },
+  { (char *) "blockdev_setra", guestfs_int_py_blockdev_setra, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_SETRO
-  { (char *) "blockdev_setro", py_guestfs_blockdev_setro, METH_VARARGS, NULL },
+  { (char *) "blockdev_setro", guestfs_int_py_blockdev_setro, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BLOCKDEV_SETRW
-  { (char *) "blockdev_setrw", py_guestfs_blockdev_setrw, METH_VARARGS, NULL },
+  { (char *) "blockdev_setrw", guestfs_int_py_blockdev_setrw, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_BALANCE_CANCEL
-  { (char *) "btrfs_balance_cancel", py_guestfs_btrfs_balance_cancel, METH_VARARGS, NULL },
+  { (char *) "btrfs_balance_cancel", guestfs_int_py_btrfs_balance_cancel, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_BALANCE_PAUSE
-  { (char *) "btrfs_balance_pause", py_guestfs_btrfs_balance_pause, METH_VARARGS, NULL },
+  { (char *) "btrfs_balance_pause", guestfs_int_py_btrfs_balance_pause, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_BALANCE_RESUME
-  { (char *) "btrfs_balance_resume", py_guestfs_btrfs_balance_resume, METH_VARARGS, NULL },
+  { (char *) "btrfs_balance_resume", guestfs_int_py_btrfs_balance_resume, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_BALANCE_STATUS
-  { (char *) "btrfs_balance_status", py_guestfs_btrfs_balance_status, METH_VARARGS, NULL },
+  { (char *) "btrfs_balance_status", guestfs_int_py_btrfs_balance_status, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_DEVICE_ADD
-  { (char *) "btrfs_device_add", py_guestfs_btrfs_device_add, METH_VARARGS, NULL },
+  { (char *) "btrfs_device_add", guestfs_int_py_btrfs_device_add, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_DEVICE_DELETE
-  { (char *) "btrfs_device_delete", py_guestfs_btrfs_device_delete, METH_VARARGS, NULL },
+  { (char *) "btrfs_device_delete", guestfs_int_py_btrfs_device_delete, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_BALANCE
-  { (char *) "btrfs_filesystem_balance", py_guestfs_btrfs_filesystem_balance, METH_VARARGS, NULL },
+  { (char *) "btrfs_filesystem_balance", guestfs_int_py_btrfs_filesystem_balance, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_DEFRAGMENT
-  { (char *) "btrfs_filesystem_defragment", py_guestfs_btrfs_filesystem_defragment, METH_VARARGS, NULL },
+  { (char *) "btrfs_filesystem_defragment", guestfs_int_py_btrfs_filesystem_defragment, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_RESIZE
-  { (char *) "btrfs_filesystem_resize", py_guestfs_btrfs_filesystem_resize, METH_VARARGS, NULL },
+  { (char *) "btrfs_filesystem_resize", guestfs_int_py_btrfs_filesystem_resize, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_FILESYSTEM_SYNC
-  { (char *) "btrfs_filesystem_sync", py_guestfs_btrfs_filesystem_sync, METH_VARARGS, NULL },
+  { (char *) "btrfs_filesystem_sync", guestfs_int_py_btrfs_filesystem_sync, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_FSCK
-  { (char *) "btrfs_fsck", py_guestfs_btrfs_fsck, METH_VARARGS, NULL },
+  { (char *) "btrfs_fsck", guestfs_int_py_btrfs_fsck, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_IMAGE
-  { (char *) "btrfs_image", py_guestfs_btrfs_image, METH_VARARGS, NULL },
+  { (char *) "btrfs_image", guestfs_int_py_btrfs_image, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_ASSIGN
-  { (char *) "btrfs_qgroup_assign", py_guestfs_btrfs_qgroup_assign, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_assign", guestfs_int_py_btrfs_qgroup_assign, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_CREATE
-  { (char *) "btrfs_qgroup_create", py_guestfs_btrfs_qgroup_create, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_create", guestfs_int_py_btrfs_qgroup_create, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_DESTROY
-  { (char *) "btrfs_qgroup_destroy", py_guestfs_btrfs_qgroup_destroy, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_destroy", guestfs_int_py_btrfs_qgroup_destroy, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_LIMIT
-  { (char *) "btrfs_qgroup_limit", py_guestfs_btrfs_qgroup_limit, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_limit", guestfs_int_py_btrfs_qgroup_limit, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_REMOVE
-  { (char *) "btrfs_qgroup_remove", py_guestfs_btrfs_qgroup_remove, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_remove", guestfs_int_py_btrfs_qgroup_remove, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_SHOW
-  { (char *) "btrfs_qgroup_show", py_guestfs_btrfs_qgroup_show, METH_VARARGS, NULL },
+  { (char *) "btrfs_qgroup_show", guestfs_int_py_btrfs_qgroup_show, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_QUOTA_ENABLE
-  { (char *) "btrfs_quota_enable", py_guestfs_btrfs_quota_enable, METH_VARARGS, NULL },
+  { (char *) "btrfs_quota_enable", guestfs_int_py_btrfs_quota_enable, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_QUOTA_RESCAN
-  { (char *) "btrfs_quota_rescan", py_guestfs_btrfs_quota_rescan, METH_VARARGS, NULL },
+  { (char *) "btrfs_quota_rescan", guestfs_int_py_btrfs_quota_rescan, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_REPLACE
-  { (char *) "btrfs_replace", py_guestfs_btrfs_replace, METH_VARARGS, NULL },
+  { (char *) "btrfs_replace", guestfs_int_py_btrfs_replace, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_RESCUE_CHUNK_RECOVER
-  { (char *) "btrfs_rescue_chunk_recover", py_guestfs_btrfs_rescue_chunk_recover, METH_VARARGS, NULL },
+  { (char *) "btrfs_rescue_chunk_recover", guestfs_int_py_btrfs_rescue_chunk_recover, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_RESCUE_SUPER_RECOVER
-  { (char *) "btrfs_rescue_super_recover", py_guestfs_btrfs_rescue_super_recover, METH_VARARGS, NULL },
+  { (char *) "btrfs_rescue_super_recover", guestfs_int_py_btrfs_rescue_super_recover, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SCRUB_CANCEL
-  { (char *) "btrfs_scrub_cancel", py_guestfs_btrfs_scrub_cancel, METH_VARARGS, NULL },
+  { (char *) "btrfs_scrub_cancel", guestfs_int_py_btrfs_scrub_cancel, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SCRUB_RESUME
-  { (char *) "btrfs_scrub_resume", py_guestfs_btrfs_scrub_resume, METH_VARARGS, NULL },
+  { (char *) "btrfs_scrub_resume", guestfs_int_py_btrfs_scrub_resume, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SCRUB_START
-  { (char *) "btrfs_scrub_start", py_guestfs_btrfs_scrub_start, METH_VARARGS, NULL },
+  { (char *) "btrfs_scrub_start", guestfs_int_py_btrfs_scrub_start, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SCRUB_STATUS
-  { (char *) "btrfs_scrub_status", py_guestfs_btrfs_scrub_status, METH_VARARGS, NULL },
+  { (char *) "btrfs_scrub_status", guestfs_int_py_btrfs_scrub_status, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SET_SEEDING
-  { (char *) "btrfs_set_seeding", py_guestfs_btrfs_set_seeding, METH_VARARGS, NULL },
+  { (char *) "btrfs_set_seeding", guestfs_int_py_btrfs_set_seeding, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE
-  { (char *) "btrfs_subvolume_create", py_guestfs_btrfs_subvolume_create, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_create", guestfs_int_py_btrfs_subvolume_create, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_DELETE
-  { (char *) "btrfs_subvolume_delete", py_guestfs_btrfs_subvolume_delete, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_delete", guestfs_int_py_btrfs_subvolume_delete, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_GET_DEFAULT
-  { (char *) "btrfs_subvolume_get_default", py_guestfs_btrfs_subvolume_get_default, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_get_default", guestfs_int_py_btrfs_subvolume_get_default, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_LIST
-  { (char *) "btrfs_subvolume_list", py_guestfs_btrfs_subvolume_list, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_list", guestfs_int_py_btrfs_subvolume_list, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SET_DEFAULT
-  { (char *) "btrfs_subvolume_set_default", py_guestfs_btrfs_subvolume_set_default, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_set_default", guestfs_int_py_btrfs_subvolume_set_default, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SHOW
-  { (char *) "btrfs_subvolume_show", py_guestfs_btrfs_subvolume_show, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_show", guestfs_int_py_btrfs_subvolume_show, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT
-  { (char *) "btrfs_subvolume_snapshot", py_guestfs_btrfs_subvolume_snapshot, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_snapshot", guestfs_int_py_btrfs_subvolume_snapshot, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS
-  { (char *) "btrfstune_enable_extended_inode_refs", py_guestfs_btrfstune_enable_extended_inode_refs, METH_VARARGS, NULL },
+  { (char *) "btrfstune_enable_extended_inode_refs", guestfs_int_py_btrfstune_enable_extended_inode_refs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFSTUNE_ENABLE_SKINNY_METADATA_EXTENT_REFS
-  { (char *) "btrfstune_enable_skinny_metadata_extent_refs", py_guestfs_btrfstune_enable_skinny_metadata_extent_refs, METH_VARARGS, NULL },
+  { (char *) "btrfstune_enable_skinny_metadata_extent_refs", guestfs_int_py_btrfstune_enable_skinny_metadata_extent_refs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFSTUNE_SEEDING
-  { (char *) "btrfstune_seeding", py_guestfs_btrfstune_seeding, METH_VARARGS, NULL },
+  { (char *) "btrfstune_seeding", guestfs_int_py_btrfstune_seeding, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_C_POINTER
-  { (char *) "c_pointer", py_guestfs_c_pointer, METH_VARARGS, NULL },
+  { (char *) "c_pointer", guestfs_int_py_c_pointer, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CANONICAL_DEVICE_NAME
-  { (char *) "canonical_device_name", py_guestfs_canonical_device_name, METH_VARARGS, NULL },
+  { (char *) "canonical_device_name", guestfs_int_py_canonical_device_name, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CAP_GET_FILE
-  { (char *) "cap_get_file", py_guestfs_cap_get_file, METH_VARARGS, NULL },
+  { (char *) "cap_get_file", guestfs_int_py_cap_get_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CAP_SET_FILE
-  { (char *) "cap_set_file", py_guestfs_cap_set_file, METH_VARARGS, NULL },
+  { (char *) "cap_set_file", guestfs_int_py_cap_set_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CASE_SENSITIVE_PATH
-  { (char *) "case_sensitive_path", py_guestfs_case_sensitive_path, METH_VARARGS, NULL },
+  { (char *) "case_sensitive_path", guestfs_int_py_case_sensitive_path, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CAT
-  { (char *) "cat", py_guestfs_cat, METH_VARARGS, NULL },
+  { (char *) "cat", guestfs_int_py_cat, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CHECKSUM
-  { (char *) "checksum", py_guestfs_checksum, METH_VARARGS, NULL },
+  { (char *) "checksum", guestfs_int_py_checksum, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CHECKSUM_DEVICE
-  { (char *) "checksum_device", py_guestfs_checksum_device, METH_VARARGS, NULL },
+  { (char *) "checksum_device", guestfs_int_py_checksum_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CHECKSUMS_OUT
-  { (char *) "checksums_out", py_guestfs_checksums_out, METH_VARARGS, NULL },
+  { (char *) "checksums_out", guestfs_int_py_checksums_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CHMOD
-  { (char *) "chmod", py_guestfs_chmod, METH_VARARGS, NULL },
+  { (char *) "chmod", guestfs_int_py_chmod, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CHOWN
-  { (char *) "chown", py_guestfs_chown, METH_VARARGS, NULL },
+  { (char *) "chown", guestfs_int_py_chown, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CLEAR_BACKEND_SETTING
-  { (char *) "clear_backend_setting", py_guestfs_clear_backend_setting, METH_VARARGS, NULL },
+  { (char *) "clear_backend_setting", guestfs_int_py_clear_backend_setting, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COMMAND
-  { (char *) "command", py_guestfs_command, METH_VARARGS, NULL },
+  { (char *) "command", guestfs_int_py_command, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COMMAND_LINES
-  { (char *) "command_lines", py_guestfs_command_lines, METH_VARARGS, NULL },
+  { (char *) "command_lines", guestfs_int_py_command_lines, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COMPRESS_DEVICE_OUT
-  { (char *) "compress_device_out", py_guestfs_compress_device_out, METH_VARARGS, NULL },
+  { (char *) "compress_device_out", guestfs_int_py_compress_device_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COMPRESS_OUT
-  { (char *) "compress_out", py_guestfs_compress_out, METH_VARARGS, NULL },
+  { (char *) "compress_out", guestfs_int_py_compress_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CONFIG
-  { (char *) "config", py_guestfs_config, METH_VARARGS, NULL },
+  { (char *) "config", guestfs_int_py_config, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COPY_ATTRIBUTES
-  { (char *) "copy_attributes", py_guestfs_copy_attributes, METH_VARARGS, NULL },
+  { (char *) "copy_attributes", guestfs_int_py_copy_attributes, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COPY_DEVICE_TO_DEVICE
-  { (char *) "copy_device_to_device", py_guestfs_copy_device_to_device, METH_VARARGS, NULL },
+  { (char *) "copy_device_to_device", guestfs_int_py_copy_device_to_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COPY_DEVICE_TO_FILE
-  { (char *) "copy_device_to_file", py_guestfs_copy_device_to_file, METH_VARARGS, NULL },
+  { (char *) "copy_device_to_file", guestfs_int_py_copy_device_to_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COPY_FILE_TO_DEVICE
-  { (char *) "copy_file_to_device", py_guestfs_copy_file_to_device, METH_VARARGS, NULL },
+  { (char *) "copy_file_to_device", guestfs_int_py_copy_file_to_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COPY_FILE_TO_FILE
-  { (char *) "copy_file_to_file", py_guestfs_copy_file_to_file, METH_VARARGS, NULL },
+  { (char *) "copy_file_to_file", guestfs_int_py_copy_file_to_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COPY_IN
-  { (char *) "copy_in", py_guestfs_copy_in, METH_VARARGS, NULL },
+  { (char *) "copy_in", guestfs_int_py_copy_in, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COPY_OUT
-  { (char *) "copy_out", py_guestfs_copy_out, METH_VARARGS, NULL },
+  { (char *) "copy_out", guestfs_int_py_copy_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_COPY_SIZE
-  { (char *) "copy_size", py_guestfs_copy_size, METH_VARARGS, NULL },
+  { (char *) "copy_size", guestfs_int_py_copy_size, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CP
-  { (char *) "cp", py_guestfs_cp, METH_VARARGS, NULL },
+  { (char *) "cp", guestfs_int_py_cp, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CP_A
-  { (char *) "cp_a", py_guestfs_cp_a, METH_VARARGS, NULL },
+  { (char *) "cp_a", guestfs_int_py_cp_a, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CP_R
-  { (char *) "cp_r", py_guestfs_cp_r, METH_VARARGS, NULL },
+  { (char *) "cp_r", guestfs_int_py_cp_r, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_CPIO_OUT
-  { (char *) "cpio_out", py_guestfs_cpio_out, METH_VARARGS, NULL },
+  { (char *) "cpio_out", guestfs_int_py_cpio_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DD
-  { (char *) "dd", py_guestfs_dd, METH_VARARGS, NULL },
+  { (char *) "dd", guestfs_int_py_dd, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DEBUG
-  { (char *) "debug", py_guestfs_debug, METH_VARARGS, NULL },
+  { (char *) "debug", guestfs_int_py_debug, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DEBUG_DRIVES
-  { (char *) "debug_drives", py_guestfs_debug_drives, METH_VARARGS, NULL },
+  { (char *) "debug_drives", guestfs_int_py_debug_drives, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DEBUG_UPLOAD
-  { (char *) "debug_upload", py_guestfs_debug_upload, METH_VARARGS, NULL },
+  { (char *) "debug_upload", guestfs_int_py_debug_upload, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DEVICE_INDEX
-  { (char *) "device_index", py_guestfs_device_index, METH_VARARGS, NULL },
+  { (char *) "device_index", guestfs_int_py_device_index, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DF
-  { (char *) "df", py_guestfs_df, METH_VARARGS, NULL },
+  { (char *) "df", guestfs_int_py_df, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DF_H
-  { (char *) "df_h", py_guestfs_df_h, METH_VARARGS, NULL },
+  { (char *) "df_h", guestfs_int_py_df_h, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DISK_CREATE
-  { (char *) "disk_create", py_guestfs_disk_create, METH_VARARGS, NULL },
+  { (char *) "disk_create", guestfs_int_py_disk_create, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DISK_FORMAT
-  { (char *) "disk_format", py_guestfs_disk_format, METH_VARARGS, NULL },
+  { (char *) "disk_format", guestfs_int_py_disk_format, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DISK_HAS_BACKING_FILE
-  { (char *) "disk_has_backing_file", py_guestfs_disk_has_backing_file, METH_VARARGS, NULL },
+  { (char *) "disk_has_backing_file", guestfs_int_py_disk_has_backing_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DISK_VIRTUAL_SIZE
-  { (char *) "disk_virtual_size", py_guestfs_disk_virtual_size, METH_VARARGS, NULL },
+  { (char *) "disk_virtual_size", guestfs_int_py_disk_virtual_size, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DMESG
-  { (char *) "dmesg", py_guestfs_dmesg, METH_VARARGS, NULL },
+  { (char *) "dmesg", guestfs_int_py_dmesg, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DOWNLOAD
-  { (char *) "download", py_guestfs_download, METH_VARARGS, NULL },
+  { (char *) "download", guestfs_int_py_download, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DOWNLOAD_OFFSET
-  { (char *) "download_offset", py_guestfs_download_offset, METH_VARARGS, NULL },
+  { (char *) "download_offset", guestfs_int_py_download_offset, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DROP_CACHES
-  { (char *) "drop_caches", py_guestfs_drop_caches, METH_VARARGS, NULL },
+  { (char *) "drop_caches", guestfs_int_py_drop_caches, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_DU
-  { (char *) "du", py_guestfs_du, METH_VARARGS, NULL },
+  { (char *) "du", guestfs_int_py_du, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_E2FSCK
-  { (char *) "e2fsck", py_guestfs_e2fsck, METH_VARARGS, NULL },
+  { (char *) "e2fsck", guestfs_int_py_e2fsck, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_E2FSCK_F
-  { (char *) "e2fsck_f", py_guestfs_e2fsck_f, METH_VARARGS, NULL },
+  { (char *) "e2fsck_f", guestfs_int_py_e2fsck_f, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ECHO_DAEMON
-  { (char *) "echo_daemon", py_guestfs_echo_daemon, METH_VARARGS, NULL },
+  { (char *) "echo_daemon", guestfs_int_py_echo_daemon, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_EGREP
-  { (char *) "egrep", py_guestfs_egrep, METH_VARARGS, NULL },
+  { (char *) "egrep", guestfs_int_py_egrep, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_EGREPI
-  { (char *) "egrepi", py_guestfs_egrepi, METH_VARARGS, NULL },
+  { (char *) "egrepi", guestfs_int_py_egrepi, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_EQUAL
-  { (char *) "equal", py_guestfs_equal, METH_VARARGS, NULL },
+  { (char *) "equal", guestfs_int_py_equal, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_EXISTS
-  { (char *) "exists", py_guestfs_exists, METH_VARARGS, NULL },
+  { (char *) "exists", guestfs_int_py_exists, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_EXTLINUX
-  { (char *) "extlinux", py_guestfs_extlinux, METH_VARARGS, NULL },
+  { (char *) "extlinux", guestfs_int_py_extlinux, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FALLOCATE
-  { (char *) "fallocate", py_guestfs_fallocate, METH_VARARGS, NULL },
+  { (char *) "fallocate", guestfs_int_py_fallocate, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FALLOCATE64
-  { (char *) "fallocate64", py_guestfs_fallocate64, METH_VARARGS, NULL },
+  { (char *) "fallocate64", guestfs_int_py_fallocate64, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FEATURE_AVAILABLE
-  { (char *) "feature_available", py_guestfs_feature_available, METH_VARARGS, NULL },
+  { (char *) "feature_available", guestfs_int_py_feature_available, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FGREP
-  { (char *) "fgrep", py_guestfs_fgrep, METH_VARARGS, NULL },
+  { (char *) "fgrep", guestfs_int_py_fgrep, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FGREPI
-  { (char *) "fgrepi", py_guestfs_fgrepi, METH_VARARGS, NULL },
+  { (char *) "fgrepi", guestfs_int_py_fgrepi, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FILE
-  { (char *) "file", py_guestfs_file, METH_VARARGS, NULL },
+  { (char *) "file", guestfs_int_py_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FILE_ARCHITECTURE
-  { (char *) "file_architecture", py_guestfs_file_architecture, METH_VARARGS, NULL },
+  { (char *) "file_architecture", guestfs_int_py_file_architecture, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FILESIZE
-  { (char *) "filesize", py_guestfs_filesize, METH_VARARGS, NULL },
+  { (char *) "filesize", guestfs_int_py_filesize, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FILESYSTEM_AVAILABLE
-  { (char *) "filesystem_available", py_guestfs_filesystem_available, METH_VARARGS, NULL },
+  { (char *) "filesystem_available", guestfs_int_py_filesystem_available, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FILL
-  { (char *) "fill", py_guestfs_fill, METH_VARARGS, NULL },
+  { (char *) "fill", guestfs_int_py_fill, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FILL_DIR
-  { (char *) "fill_dir", py_guestfs_fill_dir, METH_VARARGS, NULL },
+  { (char *) "fill_dir", guestfs_int_py_fill_dir, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FILL_PATTERN
-  { (char *) "fill_pattern", py_guestfs_fill_pattern, METH_VARARGS, NULL },
+  { (char *) "fill_pattern", guestfs_int_py_fill_pattern, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FIND
-  { (char *) "find", py_guestfs_find, METH_VARARGS, NULL },
+  { (char *) "find", guestfs_int_py_find, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FIND0
-  { (char *) "find0", py_guestfs_find0, METH_VARARGS, NULL },
+  { (char *) "find0", guestfs_int_py_find0, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FINDFS_LABEL
-  { (char *) "findfs_label", py_guestfs_findfs_label, METH_VARARGS, NULL },
+  { (char *) "findfs_label", guestfs_int_py_findfs_label, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FINDFS_UUID
-  { (char *) "findfs_uuid", py_guestfs_findfs_uuid, METH_VARARGS, NULL },
+  { (char *) "findfs_uuid", guestfs_int_py_findfs_uuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FSCK
-  { (char *) "fsck", py_guestfs_fsck, METH_VARARGS, NULL },
+  { (char *) "fsck", guestfs_int_py_fsck, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_FSTRIM
-  { (char *) "fstrim", py_guestfs_fstrim, METH_VARARGS, NULL },
+  { (char *) "fstrim", guestfs_int_py_fstrim, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_APPEND
-  { (char *) "get_append", py_guestfs_get_append, METH_VARARGS, NULL },
+  { (char *) "get_append", guestfs_int_py_get_append, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_ATTACH_METHOD
-  { (char *) "get_attach_method", py_guestfs_get_attach_method, METH_VARARGS, NULL },
+  { (char *) "get_attach_method", guestfs_int_py_get_attach_method, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_AUTOSYNC
-  { (char *) "get_autosync", py_guestfs_get_autosync, METH_VARARGS, NULL },
+  { (char *) "get_autosync", guestfs_int_py_get_autosync, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_BACKEND
-  { (char *) "get_backend", py_guestfs_get_backend, METH_VARARGS, NULL },
+  { (char *) "get_backend", guestfs_int_py_get_backend, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_BACKEND_SETTING
-  { (char *) "get_backend_setting", py_guestfs_get_backend_setting, METH_VARARGS, NULL },
+  { (char *) "get_backend_setting", guestfs_int_py_get_backend_setting, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_BACKEND_SETTINGS
-  { (char *) "get_backend_settings", py_guestfs_get_backend_settings, METH_VARARGS, NULL },
+  { (char *) "get_backend_settings", guestfs_int_py_get_backend_settings, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_CACHEDIR
-  { (char *) "get_cachedir", py_guestfs_get_cachedir, METH_VARARGS, NULL },
+  { (char *) "get_cachedir", guestfs_int_py_get_cachedir, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_DIRECT
-  { (char *) "get_direct", py_guestfs_get_direct, METH_VARARGS, NULL },
+  { (char *) "get_direct", guestfs_int_py_get_direct, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_E2ATTRS
-  { (char *) "get_e2attrs", py_guestfs_get_e2attrs, METH_VARARGS, NULL },
+  { (char *) "get_e2attrs", guestfs_int_py_get_e2attrs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_E2GENERATION
-  { (char *) "get_e2generation", py_guestfs_get_e2generation, METH_VARARGS, NULL },
+  { (char *) "get_e2generation", guestfs_int_py_get_e2generation, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_E2LABEL
-  { (char *) "get_e2label", py_guestfs_get_e2label, METH_VARARGS, NULL },
+  { (char *) "get_e2label", guestfs_int_py_get_e2label, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_E2UUID
-  { (char *) "get_e2uuid", py_guestfs_get_e2uuid, METH_VARARGS, NULL },
+  { (char *) "get_e2uuid", guestfs_int_py_get_e2uuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_HV
-  { (char *) "get_hv", py_guestfs_get_hv, METH_VARARGS, NULL },
+  { (char *) "get_hv", guestfs_int_py_get_hv, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_IDENTIFIER
-  { (char *) "get_identifier", py_guestfs_get_identifier, METH_VARARGS, NULL },
+  { (char *) "get_identifier", guestfs_int_py_get_identifier, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE
-  { (char *) "get_libvirt_requested_credential_challenge", py_guestfs_get_libvirt_requested_credential_challenge, METH_VARARGS, NULL },
+  { (char *) "get_libvirt_requested_credential_challenge", guestfs_int_py_get_libvirt_requested_credential_challenge, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_DEFRESULT
-  { (char *) "get_libvirt_requested_credential_defresult", py_guestfs_get_libvirt_requested_credential_defresult, METH_VARARGS, NULL },
+  { (char *) "get_libvirt_requested_credential_defresult", guestfs_int_py_get_libvirt_requested_credential_defresult, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_PROMPT
-  { (char *) "get_libvirt_requested_credential_prompt", py_guestfs_get_libvirt_requested_credential_prompt, METH_VARARGS, NULL },
+  { (char *) "get_libvirt_requested_credential_prompt", guestfs_int_py_get_libvirt_requested_credential_prompt, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIALS
-  { (char *) "get_libvirt_requested_credentials", py_guestfs_get_libvirt_requested_credentials, METH_VARARGS, NULL },
+  { (char *) "get_libvirt_requested_credentials", guestfs_int_py_get_libvirt_requested_credentials, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_MEMSIZE
-  { (char *) "get_memsize", py_guestfs_get_memsize, METH_VARARGS, NULL },
+  { (char *) "get_memsize", guestfs_int_py_get_memsize, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_NETWORK
-  { (char *) "get_network", py_guestfs_get_network, METH_VARARGS, NULL },
+  { (char *) "get_network", guestfs_int_py_get_network, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_PATH
-  { (char *) "get_path", py_guestfs_get_path, METH_VARARGS, NULL },
+  { (char *) "get_path", guestfs_int_py_get_path, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_PGROUP
-  { (char *) "get_pgroup", py_guestfs_get_pgroup, METH_VARARGS, NULL },
+  { (char *) "get_pgroup", guestfs_int_py_get_pgroup, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_PID
-  { (char *) "get_pid", py_guestfs_get_pid, METH_VARARGS, NULL },
+  { (char *) "get_pid", guestfs_int_py_get_pid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_PROGRAM
-  { (char *) "get_program", py_guestfs_get_program, METH_VARARGS, NULL },
+  { (char *) "get_program", guestfs_int_py_get_program, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_QEMU
-  { (char *) "get_qemu", py_guestfs_get_qemu, METH_VARARGS, NULL },
+  { (char *) "get_qemu", guestfs_int_py_get_qemu, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_RECOVERY_PROC
-  { (char *) "get_recovery_proc", py_guestfs_get_recovery_proc, METH_VARARGS, NULL },
+  { (char *) "get_recovery_proc", guestfs_int_py_get_recovery_proc, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_SELINUX
-  { (char *) "get_selinux", py_guestfs_get_selinux, METH_VARARGS, NULL },
+  { (char *) "get_selinux", guestfs_int_py_get_selinux, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_SMP
-  { (char *) "get_smp", py_guestfs_get_smp, METH_VARARGS, NULL },
+  { (char *) "get_smp", guestfs_int_py_get_smp, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_STATE
-  { (char *) "get_state", py_guestfs_get_state, METH_VARARGS, NULL },
+  { (char *) "get_state", guestfs_int_py_get_state, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_TMPDIR
-  { (char *) "get_tmpdir", py_guestfs_get_tmpdir, METH_VARARGS, NULL },
+  { (char *) "get_tmpdir", guestfs_int_py_get_tmpdir, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_TRACE
-  { (char *) "get_trace", py_guestfs_get_trace, METH_VARARGS, NULL },
+  { (char *) "get_trace", guestfs_int_py_get_trace, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_UMASK
-  { (char *) "get_umask", py_guestfs_get_umask, METH_VARARGS, NULL },
+  { (char *) "get_umask", guestfs_int_py_get_umask, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GET_VERBOSE
-  { (char *) "get_verbose", py_guestfs_get_verbose, METH_VARARGS, NULL },
+  { (char *) "get_verbose", guestfs_int_py_get_verbose, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GETCON
-  { (char *) "getcon", py_guestfs_getcon, METH_VARARGS, NULL },
+  { (char *) "getcon", guestfs_int_py_getcon, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GETXATTR
-  { (char *) "getxattr", py_guestfs_getxattr, METH_VARARGS, NULL },
+  { (char *) "getxattr", guestfs_int_py_getxattr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GETXATTRS
-  { (char *) "getxattrs", py_guestfs_getxattrs, METH_VARARGS, NULL },
+  { (char *) "getxattrs", guestfs_int_py_getxattrs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GLOB_EXPAND
-  { (char *) "glob_expand", py_guestfs_glob_expand, METH_VARARGS, NULL },
+  { (char *) "glob_expand", guestfs_int_py_glob_expand, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GREP
-  { (char *) "grep", py_guestfs_grep, METH_VARARGS, NULL },
+  { (char *) "grep", guestfs_int_py_grep, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GREPI
-  { (char *) "grepi", py_guestfs_grepi, METH_VARARGS, NULL },
+  { (char *) "grepi", guestfs_int_py_grepi, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GRUB_INSTALL
-  { (char *) "grub_install", py_guestfs_grub_install, METH_VARARGS, NULL },
+  { (char *) "grub_install", guestfs_int_py_grub_install, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HEAD
-  { (char *) "head", py_guestfs_head, METH_VARARGS, NULL },
+  { (char *) "head", guestfs_int_py_head, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HEAD_N
-  { (char *) "head_n", py_guestfs_head_n, METH_VARARGS, NULL },
+  { (char *) "head_n", guestfs_int_py_head_n, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HEXDUMP
-  { (char *) "hexdump", py_guestfs_hexdump, METH_VARARGS, NULL },
+  { (char *) "hexdump", guestfs_int_py_hexdump, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_CLOSE
-  { (char *) "hivex_close", py_guestfs_hivex_close, METH_VARARGS, NULL },
+  { (char *) "hivex_close", guestfs_int_py_hivex_close, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_COMMIT
-  { (char *) "hivex_commit", py_guestfs_hivex_commit, METH_VARARGS, NULL },
+  { (char *) "hivex_commit", guestfs_int_py_hivex_commit, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_NODE_ADD_CHILD
-  { (char *) "hivex_node_add_child", py_guestfs_hivex_node_add_child, METH_VARARGS, NULL },
+  { (char *) "hivex_node_add_child", guestfs_int_py_hivex_node_add_child, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_NODE_CHILDREN
-  { (char *) "hivex_node_children", py_guestfs_hivex_node_children, METH_VARARGS, NULL },
+  { (char *) "hivex_node_children", guestfs_int_py_hivex_node_children, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_NODE_DELETE_CHILD
-  { (char *) "hivex_node_delete_child", py_guestfs_hivex_node_delete_child, METH_VARARGS, NULL },
+  { (char *) "hivex_node_delete_child", guestfs_int_py_hivex_node_delete_child, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_NODE_GET_CHILD
-  { (char *) "hivex_node_get_child", py_guestfs_hivex_node_get_child, METH_VARARGS, NULL },
+  { (char *) "hivex_node_get_child", guestfs_int_py_hivex_node_get_child, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_NODE_GET_VALUE
-  { (char *) "hivex_node_get_value", py_guestfs_hivex_node_get_value, METH_VARARGS, NULL },
+  { (char *) "hivex_node_get_value", guestfs_int_py_hivex_node_get_value, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_NODE_NAME
-  { (char *) "hivex_node_name", py_guestfs_hivex_node_name, METH_VARARGS, NULL },
+  { (char *) "hivex_node_name", guestfs_int_py_hivex_node_name, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_NODE_PARENT
-  { (char *) "hivex_node_parent", py_guestfs_hivex_node_parent, METH_VARARGS, NULL },
+  { (char *) "hivex_node_parent", guestfs_int_py_hivex_node_parent, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_NODE_SET_VALUE
-  { (char *) "hivex_node_set_value", py_guestfs_hivex_node_set_value, METH_VARARGS, NULL },
+  { (char *) "hivex_node_set_value", guestfs_int_py_hivex_node_set_value, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_NODE_VALUES
-  { (char *) "hivex_node_values", py_guestfs_hivex_node_values, METH_VARARGS, NULL },
+  { (char *) "hivex_node_values", guestfs_int_py_hivex_node_values, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_OPEN
-  { (char *) "hivex_open", py_guestfs_hivex_open, METH_VARARGS, NULL },
+  { (char *) "hivex_open", guestfs_int_py_hivex_open, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_ROOT
-  { (char *) "hivex_root", py_guestfs_hivex_root, METH_VARARGS, NULL },
+  { (char *) "hivex_root", guestfs_int_py_hivex_root, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_KEY
-  { (char *) "hivex_value_key", py_guestfs_hivex_value_key, METH_VARARGS, NULL },
+  { (char *) "hivex_value_key", guestfs_int_py_hivex_value_key, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_TYPE
-  { (char *) "hivex_value_type", py_guestfs_hivex_value_type, METH_VARARGS, NULL },
+  { (char *) "hivex_value_type", guestfs_int_py_hivex_value_type, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_UTF8
-  { (char *) "hivex_value_utf8", py_guestfs_hivex_value_utf8, METH_VARARGS, NULL },
+  { (char *) "hivex_value_utf8", guestfs_int_py_hivex_value_utf8, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_VALUE
-  { (char *) "hivex_value_value", py_guestfs_hivex_value_value, METH_VARARGS, NULL },
+  { (char *) "hivex_value_value", guestfs_int_py_hivex_value_value, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INITRD_CAT
-  { (char *) "initrd_cat", py_guestfs_initrd_cat, METH_VARARGS, NULL },
+  { (char *) "initrd_cat", guestfs_int_py_initrd_cat, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INITRD_LIST
-  { (char *) "initrd_list", py_guestfs_initrd_list, METH_VARARGS, NULL },
+  { (char *) "initrd_list", guestfs_int_py_initrd_list, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INOTIFY_ADD_WATCH
-  { (char *) "inotify_add_watch", py_guestfs_inotify_add_watch, METH_VARARGS, NULL },
+  { (char *) "inotify_add_watch", guestfs_int_py_inotify_add_watch, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INOTIFY_CLOSE
-  { (char *) "inotify_close", py_guestfs_inotify_close, METH_VARARGS, NULL },
+  { (char *) "inotify_close", guestfs_int_py_inotify_close, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INOTIFY_FILES
-  { (char *) "inotify_files", py_guestfs_inotify_files, METH_VARARGS, NULL },
+  { (char *) "inotify_files", guestfs_int_py_inotify_files, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INOTIFY_INIT
-  { (char *) "inotify_init", py_guestfs_inotify_init, METH_VARARGS, NULL },
+  { (char *) "inotify_init", guestfs_int_py_inotify_init, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INOTIFY_READ
-  { (char *) "inotify_read", py_guestfs_inotify_read, METH_VARARGS, NULL },
+  { (char *) "inotify_read", guestfs_int_py_inotify_read, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INOTIFY_RM_WATCH
-  { (char *) "inotify_rm_watch", py_guestfs_inotify_rm_watch, METH_VARARGS, NULL },
+  { (char *) "inotify_rm_watch", guestfs_int_py_inotify_rm_watch, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_ARCH
-  { (char *) "inspect_get_arch", py_guestfs_inspect_get_arch, METH_VARARGS, NULL },
+  { (char *) "inspect_get_arch", guestfs_int_py_inspect_get_arch, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_DISTRO
-  { (char *) "inspect_get_distro", py_guestfs_inspect_get_distro, METH_VARARGS, NULL },
+  { (char *) "inspect_get_distro", guestfs_int_py_inspect_get_distro, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_DRIVE_MAPPINGS
-  { (char *) "inspect_get_drive_mappings", py_guestfs_inspect_get_drive_mappings, METH_VARARGS, NULL },
+  { (char *) "inspect_get_drive_mappings", guestfs_int_py_inspect_get_drive_mappings, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_FILESYSTEMS
-  { (char *) "inspect_get_filesystems", py_guestfs_inspect_get_filesystems, METH_VARARGS, NULL },
+  { (char *) "inspect_get_filesystems", guestfs_int_py_inspect_get_filesystems, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_FORMAT
-  { (char *) "inspect_get_format", py_guestfs_inspect_get_format, METH_VARARGS, NULL },
+  { (char *) "inspect_get_format", guestfs_int_py_inspect_get_format, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_HOSTNAME
-  { (char *) "inspect_get_hostname", py_guestfs_inspect_get_hostname, METH_VARARGS, NULL },
+  { (char *) "inspect_get_hostname", guestfs_int_py_inspect_get_hostname, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_ICON
-  { (char *) "inspect_get_icon", py_guestfs_inspect_get_icon, METH_VARARGS, NULL },
+  { (char *) "inspect_get_icon", guestfs_int_py_inspect_get_icon, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_MAJOR_VERSION
-  { (char *) "inspect_get_major_version", py_guestfs_inspect_get_major_version, METH_VARARGS, NULL },
+  { (char *) "inspect_get_major_version", guestfs_int_py_inspect_get_major_version, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_MINOR_VERSION
-  { (char *) "inspect_get_minor_version", py_guestfs_inspect_get_minor_version, METH_VARARGS, NULL },
+  { (char *) "inspect_get_minor_version", guestfs_int_py_inspect_get_minor_version, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_MOUNTPOINTS
-  { (char *) "inspect_get_mountpoints", py_guestfs_inspect_get_mountpoints, METH_VARARGS, NULL },
+  { (char *) "inspect_get_mountpoints", guestfs_int_py_inspect_get_mountpoints, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_PACKAGE_FORMAT
-  { (char *) "inspect_get_package_format", py_guestfs_inspect_get_package_format, METH_VARARGS, NULL },
+  { (char *) "inspect_get_package_format", guestfs_int_py_inspect_get_package_format, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_PACKAGE_MANAGEMENT
-  { (char *) "inspect_get_package_management", py_guestfs_inspect_get_package_management, METH_VARARGS, NULL },
+  { (char *) "inspect_get_package_management", guestfs_int_py_inspect_get_package_management, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_PRODUCT_NAME
-  { (char *) "inspect_get_product_name", py_guestfs_inspect_get_product_name, METH_VARARGS, NULL },
+  { (char *) "inspect_get_product_name", guestfs_int_py_inspect_get_product_name, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_PRODUCT_VARIANT
-  { (char *) "inspect_get_product_variant", py_guestfs_inspect_get_product_variant, METH_VARARGS, NULL },
+  { (char *) "inspect_get_product_variant", guestfs_int_py_inspect_get_product_variant, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_ROOTS
-  { (char *) "inspect_get_roots", py_guestfs_inspect_get_roots, METH_VARARGS, NULL },
+  { (char *) "inspect_get_roots", guestfs_int_py_inspect_get_roots, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_TYPE
-  { (char *) "inspect_get_type", py_guestfs_inspect_get_type, METH_VARARGS, NULL },
+  { (char *) "inspect_get_type", guestfs_int_py_inspect_get_type, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_CURRENT_CONTROL_SET
-  { (char *) "inspect_get_windows_current_control_set", py_guestfs_inspect_get_windows_current_control_set, METH_VARARGS, NULL },
+  { (char *) "inspect_get_windows_current_control_set", guestfs_int_py_inspect_get_windows_current_control_set, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SYSTEMROOT
-  { (char *) "inspect_get_windows_systemroot", py_guestfs_inspect_get_windows_systemroot, METH_VARARGS, NULL },
+  { (char *) "inspect_get_windows_systemroot", guestfs_int_py_inspect_get_windows_systemroot, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_IS_LIVE
-  { (char *) "inspect_is_live", py_guestfs_inspect_is_live, METH_VARARGS, NULL },
+  { (char *) "inspect_is_live", guestfs_int_py_inspect_is_live, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_IS_MULTIPART
-  { (char *) "inspect_is_multipart", py_guestfs_inspect_is_multipart, METH_VARARGS, NULL },
+  { (char *) "inspect_is_multipart", guestfs_int_py_inspect_is_multipart, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_IS_NETINST
-  { (char *) "inspect_is_netinst", py_guestfs_inspect_is_netinst, METH_VARARGS, NULL },
+  { (char *) "inspect_is_netinst", guestfs_int_py_inspect_is_netinst, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_LIST_APPLICATIONS
-  { (char *) "inspect_list_applications", py_guestfs_inspect_list_applications, METH_VARARGS, NULL },
+  { (char *) "inspect_list_applications", guestfs_int_py_inspect_list_applications, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_LIST_APPLICATIONS2
-  { (char *) "inspect_list_applications2", py_guestfs_inspect_list_applications2, METH_VARARGS, NULL },
+  { (char *) "inspect_list_applications2", guestfs_int_py_inspect_list_applications2, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_OS
-  { (char *) "inspect_os", py_guestfs_inspect_os, METH_VARARGS, NULL },
+  { (char *) "inspect_os", guestfs_int_py_inspect_os, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_EXIT
-  { (char *) "internal_exit", py_guestfs_internal_exit, METH_VARARGS, NULL },
+  { (char *) "internal_exit", guestfs_int_py_internal_exit, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST
-  { (char *) "internal_test", py_guestfs_internal_test, METH_VARARGS, NULL },
+  { (char *) "internal_test", guestfs_int_py_internal_test, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_63_OPTARGS
-  { (char *) "internal_test_63_optargs", py_guestfs_internal_test_63_optargs, METH_VARARGS, NULL },
+  { (char *) "internal_test_63_optargs", guestfs_int_py_internal_test_63_optargs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_CLOSE_OUTPUT
-  { (char *) "internal_test_close_output", py_guestfs_internal_test_close_output, METH_VARARGS, NULL },
+  { (char *) "internal_test_close_output", guestfs_int_py_internal_test_close_output, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_ONLY_OPTARGS
-  { (char *) "internal_test_only_optargs", py_guestfs_internal_test_only_optargs, METH_VARARGS, NULL },
+  { (char *) "internal_test_only_optargs", guestfs_int_py_internal_test_only_optargs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RBOOL
-  { (char *) "internal_test_rbool", py_guestfs_internal_test_rbool, METH_VARARGS, NULL },
+  { (char *) "internal_test_rbool", guestfs_int_py_internal_test_rbool, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RBOOLERR
-  { (char *) "internal_test_rboolerr", py_guestfs_internal_test_rboolerr, METH_VARARGS, NULL },
+  { (char *) "internal_test_rboolerr", guestfs_int_py_internal_test_rboolerr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUT
-  { (char *) "internal_test_rbufferout", py_guestfs_internal_test_rbufferout, METH_VARARGS, NULL },
+  { (char *) "internal_test_rbufferout", guestfs_int_py_internal_test_rbufferout, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUTERR
-  { (char *) "internal_test_rbufferouterr", py_guestfs_internal_test_rbufferouterr, METH_VARARGS, NULL },
+  { (char *) "internal_test_rbufferouterr", guestfs_int_py_internal_test_rbufferouterr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRING
-  { (char *) "internal_test_rconstoptstring", py_guestfs_internal_test_rconstoptstring, METH_VARARGS, NULL },
+  { (char *) "internal_test_rconstoptstring", guestfs_int_py_internal_test_rconstoptstring, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRINGERR
-  { (char *) "internal_test_rconstoptstringerr", py_guestfs_internal_test_rconstoptstringerr, METH_VARARGS, NULL },
+  { (char *) "internal_test_rconstoptstringerr", guestfs_int_py_internal_test_rconstoptstringerr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRING
-  { (char *) "internal_test_rconststring", py_guestfs_internal_test_rconststring, METH_VARARGS, NULL },
+  { (char *) "internal_test_rconststring", guestfs_int_py_internal_test_rconststring, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRINGERR
-  { (char *) "internal_test_rconststringerr", py_guestfs_internal_test_rconststringerr, METH_VARARGS, NULL },
+  { (char *) "internal_test_rconststringerr", guestfs_int_py_internal_test_rconststringerr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RHASHTABLE
-  { (char *) "internal_test_rhashtable", py_guestfs_internal_test_rhashtable, METH_VARARGS, NULL },
+  { (char *) "internal_test_rhashtable", guestfs_int_py_internal_test_rhashtable, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RHASHTABLEERR
-  { (char *) "internal_test_rhashtableerr", py_guestfs_internal_test_rhashtableerr, METH_VARARGS, NULL },
+  { (char *) "internal_test_rhashtableerr", guestfs_int_py_internal_test_rhashtableerr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT
-  { (char *) "internal_test_rint", py_guestfs_internal_test_rint, METH_VARARGS, NULL },
+  { (char *) "internal_test_rint", guestfs_int_py_internal_test_rint, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT64
-  { (char *) "internal_test_rint64", py_guestfs_internal_test_rint64, METH_VARARGS, NULL },
+  { (char *) "internal_test_rint64", guestfs_int_py_internal_test_rint64, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RINT64ERR
-  { (char *) "internal_test_rint64err", py_guestfs_internal_test_rint64err, METH_VARARGS, NULL },
+  { (char *) "internal_test_rint64err", guestfs_int_py_internal_test_rint64err, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RINTERR
-  { (char *) "internal_test_rinterr", py_guestfs_internal_test_rinterr, METH_VARARGS, NULL },
+  { (char *) "internal_test_rinterr", guestfs_int_py_internal_test_rinterr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRING
-  { (char *) "internal_test_rstring", py_guestfs_internal_test_rstring, METH_VARARGS, NULL },
+  { (char *) "internal_test_rstring", guestfs_int_py_internal_test_rstring, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGERR
-  { (char *) "internal_test_rstringerr", py_guestfs_internal_test_rstringerr, METH_VARARGS, NULL },
+  { (char *) "internal_test_rstringerr", guestfs_int_py_internal_test_rstringerr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGLIST
-  { (char *) "internal_test_rstringlist", py_guestfs_internal_test_rstringlist, METH_VARARGS, NULL },
+  { (char *) "internal_test_rstringlist", guestfs_int_py_internal_test_rstringlist, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRINGLISTERR
-  { (char *) "internal_test_rstringlisterr", py_guestfs_internal_test_rstringlisterr, METH_VARARGS, NULL },
+  { (char *) "internal_test_rstringlisterr", guestfs_int_py_internal_test_rstringlisterr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCT
-  { (char *) "internal_test_rstruct", py_guestfs_internal_test_rstruct, METH_VARARGS, NULL },
+  { (char *) "internal_test_rstruct", guestfs_int_py_internal_test_rstruct, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTERR
-  { (char *) "internal_test_rstructerr", py_guestfs_internal_test_rstructerr, METH_VARARGS, NULL },
+  { (char *) "internal_test_rstructerr", guestfs_int_py_internal_test_rstructerr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLIST
-  { (char *) "internal_test_rstructlist", py_guestfs_internal_test_rstructlist, METH_VARARGS, NULL },
+  { (char *) "internal_test_rstructlist", guestfs_int_py_internal_test_rstructlist, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLISTERR
-  { (char *) "internal_test_rstructlisterr", py_guestfs_internal_test_rstructlisterr, METH_VARARGS, NULL },
+  { (char *) "internal_test_rstructlisterr", guestfs_int_py_internal_test_rstructlisterr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_SET_OUTPUT
-  { (char *) "internal_test_set_output", py_guestfs_internal_test_set_output, METH_VARARGS, NULL },
+  { (char *) "internal_test_set_output", guestfs_int_py_internal_test_set_output, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_BLOCKDEV
-  { (char *) "is_blockdev", py_guestfs_is_blockdev, METH_VARARGS, NULL },
+  { (char *) "is_blockdev", guestfs_int_py_is_blockdev, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_BUSY
-  { (char *) "is_busy", py_guestfs_is_busy, METH_VARARGS, NULL },
+  { (char *) "is_busy", guestfs_int_py_is_busy, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_CHARDEV
-  { (char *) "is_chardev", py_guestfs_is_chardev, METH_VARARGS, NULL },
+  { (char *) "is_chardev", guestfs_int_py_is_chardev, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_CONFIG
-  { (char *) "is_config", py_guestfs_is_config, METH_VARARGS, NULL },
+  { (char *) "is_config", guestfs_int_py_is_config, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_DIR
-  { (char *) "is_dir", py_guestfs_is_dir, METH_VARARGS, NULL },
+  { (char *) "is_dir", guestfs_int_py_is_dir, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_FIFO
-  { (char *) "is_fifo", py_guestfs_is_fifo, METH_VARARGS, NULL },
+  { (char *) "is_fifo", guestfs_int_py_is_fifo, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_FILE
-  { (char *) "is_file", py_guestfs_is_file, METH_VARARGS, NULL },
+  { (char *) "is_file", guestfs_int_py_is_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_LAUNCHING
-  { (char *) "is_launching", py_guestfs_is_launching, METH_VARARGS, NULL },
+  { (char *) "is_launching", guestfs_int_py_is_launching, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_LV
-  { (char *) "is_lv", py_guestfs_is_lv, METH_VARARGS, NULL },
+  { (char *) "is_lv", guestfs_int_py_is_lv, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_READY
-  { (char *) "is_ready", py_guestfs_is_ready, METH_VARARGS, NULL },
+  { (char *) "is_ready", guestfs_int_py_is_ready, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_SOCKET
-  { (char *) "is_socket", py_guestfs_is_socket, METH_VARARGS, NULL },
+  { (char *) "is_socket", guestfs_int_py_is_socket, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_SYMLINK
-  { (char *) "is_symlink", py_guestfs_is_symlink, METH_VARARGS, NULL },
+  { (char *) "is_symlink", guestfs_int_py_is_symlink, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_WHOLE_DEVICE
-  { (char *) "is_whole_device", py_guestfs_is_whole_device, METH_VARARGS, NULL },
+  { (char *) "is_whole_device", guestfs_int_py_is_whole_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_ZERO
-  { (char *) "is_zero", py_guestfs_is_zero, METH_VARARGS, NULL },
+  { (char *) "is_zero", guestfs_int_py_is_zero, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_ZERO_DEVICE
-  { (char *) "is_zero_device", py_guestfs_is_zero_device, METH_VARARGS, NULL },
+  { (char *) "is_zero_device", guestfs_int_py_is_zero_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ISOINFO
-  { (char *) "isoinfo", py_guestfs_isoinfo, METH_VARARGS, NULL },
+  { (char *) "isoinfo", guestfs_int_py_isoinfo, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ISOINFO_DEVICE
-  { (char *) "isoinfo_device", py_guestfs_isoinfo_device, METH_VARARGS, NULL },
+  { (char *) "isoinfo_device", guestfs_int_py_isoinfo_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_JOURNAL_CLOSE
-  { (char *) "journal_close", py_guestfs_journal_close, METH_VARARGS, NULL },
+  { (char *) "journal_close", guestfs_int_py_journal_close, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_JOURNAL_GET
-  { (char *) "journal_get", py_guestfs_journal_get, METH_VARARGS, NULL },
+  { (char *) "journal_get", guestfs_int_py_journal_get, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_JOURNAL_GET_DATA_THRESHOLD
-  { (char *) "journal_get_data_threshold", py_guestfs_journal_get_data_threshold, METH_VARARGS, NULL },
+  { (char *) "journal_get_data_threshold", guestfs_int_py_journal_get_data_threshold, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_JOURNAL_GET_REALTIME_USEC
-  { (char *) "journal_get_realtime_usec", py_guestfs_journal_get_realtime_usec, METH_VARARGS, NULL },
+  { (char *) "journal_get_realtime_usec", guestfs_int_py_journal_get_realtime_usec, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_JOURNAL_NEXT
-  { (char *) "journal_next", py_guestfs_journal_next, METH_VARARGS, NULL },
+  { (char *) "journal_next", guestfs_int_py_journal_next, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_JOURNAL_OPEN
-  { (char *) "journal_open", py_guestfs_journal_open, METH_VARARGS, NULL },
+  { (char *) "journal_open", guestfs_int_py_journal_open, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_JOURNAL_SET_DATA_THRESHOLD
-  { (char *) "journal_set_data_threshold", py_guestfs_journal_set_data_threshold, METH_VARARGS, NULL },
+  { (char *) "journal_set_data_threshold", guestfs_int_py_journal_set_data_threshold, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_JOURNAL_SKIP
-  { (char *) "journal_skip", py_guestfs_journal_skip, METH_VARARGS, NULL },
+  { (char *) "journal_skip", guestfs_int_py_journal_skip, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_KILL_SUBPROCESS
-  { (char *) "kill_subprocess", py_guestfs_kill_subprocess, METH_VARARGS, NULL },
+  { (char *) "kill_subprocess", guestfs_int_py_kill_subprocess, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LAUNCH
-  { (char *) "launch", py_guestfs_launch, METH_VARARGS, NULL },
+  { (char *) "launch", guestfs_int_py_launch, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LCHOWN
-  { (char *) "lchown", py_guestfs_lchown, METH_VARARGS, NULL },
+  { (char *) "lchown", guestfs_int_py_lchown, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LDMTOOL_CREATE_ALL
-  { (char *) "ldmtool_create_all", py_guestfs_ldmtool_create_all, METH_VARARGS, NULL },
+  { (char *) "ldmtool_create_all", guestfs_int_py_ldmtool_create_all, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_DISKS
-  { (char *) "ldmtool_diskgroup_disks", py_guestfs_ldmtool_diskgroup_disks, METH_VARARGS, NULL },
+  { (char *) "ldmtool_diskgroup_disks", guestfs_int_py_ldmtool_diskgroup_disks, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_NAME
-  { (char *) "ldmtool_diskgroup_name", py_guestfs_ldmtool_diskgroup_name, METH_VARARGS, NULL },
+  { (char *) "ldmtool_diskgroup_name", guestfs_int_py_ldmtool_diskgroup_name, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LDMTOOL_DISKGROUP_VOLUMES
-  { (char *) "ldmtool_diskgroup_volumes", py_guestfs_ldmtool_diskgroup_volumes, METH_VARARGS, NULL },
+  { (char *) "ldmtool_diskgroup_volumes", guestfs_int_py_ldmtool_diskgroup_volumes, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LDMTOOL_REMOVE_ALL
-  { (char *) "ldmtool_remove_all", py_guestfs_ldmtool_remove_all, METH_VARARGS, NULL },
+  { (char *) "ldmtool_remove_all", guestfs_int_py_ldmtool_remove_all, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LDMTOOL_SCAN
-  { (char *) "ldmtool_scan", py_guestfs_ldmtool_scan, METH_VARARGS, NULL },
+  { (char *) "ldmtool_scan", guestfs_int_py_ldmtool_scan, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LDMTOOL_SCAN_DEVICES
-  { (char *) "ldmtool_scan_devices", py_guestfs_ldmtool_scan_devices, METH_VARARGS, NULL },
+  { (char *) "ldmtool_scan_devices", guestfs_int_py_ldmtool_scan_devices, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_HINT
-  { (char *) "ldmtool_volume_hint", py_guestfs_ldmtool_volume_hint, METH_VARARGS, NULL },
+  { (char *) "ldmtool_volume_hint", guestfs_int_py_ldmtool_volume_hint, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_PARTITIONS
-  { (char *) "ldmtool_volume_partitions", py_guestfs_ldmtool_volume_partitions, METH_VARARGS, NULL },
+  { (char *) "ldmtool_volume_partitions", guestfs_int_py_ldmtool_volume_partitions, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LDMTOOL_VOLUME_TYPE
-  { (char *) "ldmtool_volume_type", py_guestfs_ldmtool_volume_type, METH_VARARGS, NULL },
+  { (char *) "ldmtool_volume_type", guestfs_int_py_ldmtool_volume_type, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LGETXATTR
-  { (char *) "lgetxattr", py_guestfs_lgetxattr, METH_VARARGS, NULL },
+  { (char *) "lgetxattr", guestfs_int_py_lgetxattr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LGETXATTRS
-  { (char *) "lgetxattrs", py_guestfs_lgetxattrs, METH_VARARGS, NULL },
+  { (char *) "lgetxattrs", guestfs_int_py_lgetxattrs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LIST_9P
-  { (char *) "list_9p", py_guestfs_list_9p, METH_VARARGS, NULL },
+  { (char *) "list_9p", guestfs_int_py_list_9p, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LIST_DEVICES
-  { (char *) "list_devices", py_guestfs_list_devices, METH_VARARGS, NULL },
+  { (char *) "list_devices", guestfs_int_py_list_devices, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LIST_DISK_LABELS
-  { (char *) "list_disk_labels", py_guestfs_list_disk_labels, METH_VARARGS, NULL },
+  { (char *) "list_disk_labels", guestfs_int_py_list_disk_labels, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LIST_DM_DEVICES
-  { (char *) "list_dm_devices", py_guestfs_list_dm_devices, METH_VARARGS, NULL },
+  { (char *) "list_dm_devices", guestfs_int_py_list_dm_devices, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LIST_FILESYSTEMS
-  { (char *) "list_filesystems", py_guestfs_list_filesystems, METH_VARARGS, NULL },
+  { (char *) "list_filesystems", guestfs_int_py_list_filesystems, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LIST_LDM_PARTITIONS
-  { (char *) "list_ldm_partitions", py_guestfs_list_ldm_partitions, METH_VARARGS, NULL },
+  { (char *) "list_ldm_partitions", guestfs_int_py_list_ldm_partitions, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LIST_LDM_VOLUMES
-  { (char *) "list_ldm_volumes", py_guestfs_list_ldm_volumes, METH_VARARGS, NULL },
+  { (char *) "list_ldm_volumes", guestfs_int_py_list_ldm_volumes, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LIST_MD_DEVICES
-  { (char *) "list_md_devices", py_guestfs_list_md_devices, METH_VARARGS, NULL },
+  { (char *) "list_md_devices", guestfs_int_py_list_md_devices, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LIST_PARTITIONS
-  { (char *) "list_partitions", py_guestfs_list_partitions, METH_VARARGS, NULL },
+  { (char *) "list_partitions", guestfs_int_py_list_partitions, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LL
-  { (char *) "ll", py_guestfs_ll, METH_VARARGS, NULL },
+  { (char *) "ll", guestfs_int_py_ll, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LLZ
-  { (char *) "llz", py_guestfs_llz, METH_VARARGS, NULL },
+  { (char *) "llz", guestfs_int_py_llz, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LN
-  { (char *) "ln", py_guestfs_ln, METH_VARARGS, NULL },
+  { (char *) "ln", guestfs_int_py_ln, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LN_F
-  { (char *) "ln_f", py_guestfs_ln_f, METH_VARARGS, NULL },
+  { (char *) "ln_f", guestfs_int_py_ln_f, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LN_S
-  { (char *) "ln_s", py_guestfs_ln_s, METH_VARARGS, NULL },
+  { (char *) "ln_s", guestfs_int_py_ln_s, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LN_SF
-  { (char *) "ln_sf", py_guestfs_ln_sf, METH_VARARGS, NULL },
+  { (char *) "ln_sf", guestfs_int_py_ln_sf, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LREMOVEXATTR
-  { (char *) "lremovexattr", py_guestfs_lremovexattr, METH_VARARGS, NULL },
+  { (char *) "lremovexattr", guestfs_int_py_lremovexattr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LS
-  { (char *) "ls", py_guestfs_ls, METH_VARARGS, NULL },
+  { (char *) "ls", guestfs_int_py_ls, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LS0
-  { (char *) "ls0", py_guestfs_ls0, METH_VARARGS, NULL },
+  { (char *) "ls0", guestfs_int_py_ls0, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LSETXATTR
-  { (char *) "lsetxattr", py_guestfs_lsetxattr, METH_VARARGS, NULL },
+  { (char *) "lsetxattr", guestfs_int_py_lsetxattr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LSTAT
-  { (char *) "lstat", py_guestfs_lstat, METH_VARARGS, NULL },
+  { (char *) "lstat", guestfs_int_py_lstat, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LSTATLIST
-  { (char *) "lstatlist", py_guestfs_lstatlist, METH_VARARGS, NULL },
+  { (char *) "lstatlist", guestfs_int_py_lstatlist, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LSTATNS
-  { (char *) "lstatns", py_guestfs_lstatns, METH_VARARGS, NULL },
+  { (char *) "lstatns", guestfs_int_py_lstatns, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LSTATNSLIST
-  { (char *) "lstatnslist", py_guestfs_lstatnslist, METH_VARARGS, NULL },
+  { (char *) "lstatnslist", guestfs_int_py_lstatnslist, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LUKS_ADD_KEY
-  { (char *) "luks_add_key", py_guestfs_luks_add_key, METH_VARARGS, NULL },
+  { (char *) "luks_add_key", guestfs_int_py_luks_add_key, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LUKS_CLOSE
-  { (char *) "luks_close", py_guestfs_luks_close, METH_VARARGS, NULL },
+  { (char *) "luks_close", guestfs_int_py_luks_close, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LUKS_FORMAT
-  { (char *) "luks_format", py_guestfs_luks_format, METH_VARARGS, NULL },
+  { (char *) "luks_format", guestfs_int_py_luks_format, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LUKS_FORMAT_CIPHER
-  { (char *) "luks_format_cipher", py_guestfs_luks_format_cipher, METH_VARARGS, NULL },
+  { (char *) "luks_format_cipher", guestfs_int_py_luks_format_cipher, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LUKS_KILL_SLOT
-  { (char *) "luks_kill_slot", py_guestfs_luks_kill_slot, METH_VARARGS, NULL },
+  { (char *) "luks_kill_slot", guestfs_int_py_luks_kill_slot, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LUKS_OPEN
-  { (char *) "luks_open", py_guestfs_luks_open, METH_VARARGS, NULL },
+  { (char *) "luks_open", guestfs_int_py_luks_open, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LUKS_OPEN_RO
-  { (char *) "luks_open_ro", py_guestfs_luks_open_ro, METH_VARARGS, NULL },
+  { (char *) "luks_open_ro", guestfs_int_py_luks_open_ro, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVCREATE
-  { (char *) "lvcreate", py_guestfs_lvcreate, METH_VARARGS, NULL },
+  { (char *) "lvcreate", guestfs_int_py_lvcreate, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVCREATE_FREE
-  { (char *) "lvcreate_free", py_guestfs_lvcreate_free, METH_VARARGS, NULL },
+  { (char *) "lvcreate_free", guestfs_int_py_lvcreate_free, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVM_CANONICAL_LV_NAME
-  { (char *) "lvm_canonical_lv_name", py_guestfs_lvm_canonical_lv_name, METH_VARARGS, NULL },
+  { (char *) "lvm_canonical_lv_name", guestfs_int_py_lvm_canonical_lv_name, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVM_CLEAR_FILTER
-  { (char *) "lvm_clear_filter", py_guestfs_lvm_clear_filter, METH_VARARGS, NULL },
+  { (char *) "lvm_clear_filter", guestfs_int_py_lvm_clear_filter, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVM_REMOVE_ALL
-  { (char *) "lvm_remove_all", py_guestfs_lvm_remove_all, METH_VARARGS, NULL },
+  { (char *) "lvm_remove_all", guestfs_int_py_lvm_remove_all, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVM_SET_FILTER
-  { (char *) "lvm_set_filter", py_guestfs_lvm_set_filter, METH_VARARGS, NULL },
+  { (char *) "lvm_set_filter", guestfs_int_py_lvm_set_filter, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVREMOVE
-  { (char *) "lvremove", py_guestfs_lvremove, METH_VARARGS, NULL },
+  { (char *) "lvremove", guestfs_int_py_lvremove, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVRENAME
-  { (char *) "lvrename", py_guestfs_lvrename, METH_VARARGS, NULL },
+  { (char *) "lvrename", guestfs_int_py_lvrename, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVRESIZE
-  { (char *) "lvresize", py_guestfs_lvresize, METH_VARARGS, NULL },
+  { (char *) "lvresize", guestfs_int_py_lvresize, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVRESIZE_FREE
-  { (char *) "lvresize_free", py_guestfs_lvresize_free, METH_VARARGS, NULL },
+  { (char *) "lvresize_free", guestfs_int_py_lvresize_free, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVS
-  { (char *) "lvs", py_guestfs_lvs, METH_VARARGS, NULL },
+  { (char *) "lvs", guestfs_int_py_lvs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVS_FULL
-  { (char *) "lvs_full", py_guestfs_lvs_full, METH_VARARGS, NULL },
+  { (char *) "lvs_full", guestfs_int_py_lvs_full, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVUUID
-  { (char *) "lvuuid", py_guestfs_lvuuid, METH_VARARGS, NULL },
+  { (char *) "lvuuid", guestfs_int_py_lvuuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LXATTRLIST
-  { (char *) "lxattrlist", py_guestfs_lxattrlist, METH_VARARGS, NULL },
+  { (char *) "lxattrlist", guestfs_int_py_lxattrlist, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MAX_DISKS
-  { (char *) "max_disks", py_guestfs_max_disks, METH_VARARGS, NULL },
+  { (char *) "max_disks", guestfs_int_py_max_disks, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MD_CREATE
-  { (char *) "md_create", py_guestfs_md_create, METH_VARARGS, NULL },
+  { (char *) "md_create", guestfs_int_py_md_create, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MD_DETAIL
-  { (char *) "md_detail", py_guestfs_md_detail, METH_VARARGS, NULL },
+  { (char *) "md_detail", guestfs_int_py_md_detail, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MD_STAT
-  { (char *) "md_stat", py_guestfs_md_stat, METH_VARARGS, NULL },
+  { (char *) "md_stat", guestfs_int_py_md_stat, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MD_STOP
-  { (char *) "md_stop", py_guestfs_md_stop, METH_VARARGS, NULL },
+  { (char *) "md_stop", guestfs_int_py_md_stop, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKDIR
-  { (char *) "mkdir", py_guestfs_mkdir, METH_VARARGS, NULL },
+  { (char *) "mkdir", guestfs_int_py_mkdir, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKDIR_MODE
-  { (char *) "mkdir_mode", py_guestfs_mkdir_mode, METH_VARARGS, NULL },
+  { (char *) "mkdir_mode", guestfs_int_py_mkdir_mode, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKDIR_P
-  { (char *) "mkdir_p", py_guestfs_mkdir_p, METH_VARARGS, NULL },
+  { (char *) "mkdir_p", guestfs_int_py_mkdir_p, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKDTEMP
-  { (char *) "mkdtemp", py_guestfs_mkdtemp, METH_VARARGS, NULL },
+  { (char *) "mkdtemp", guestfs_int_py_mkdtemp, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKE2FS
-  { (char *) "mke2fs", py_guestfs_mke2fs, METH_VARARGS, NULL },
+  { (char *) "mke2fs", guestfs_int_py_mke2fs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKE2FS_J
-  { (char *) "mke2fs_J", py_guestfs_mke2fs_J, METH_VARARGS, NULL },
+  { (char *) "mke2fs_J", guestfs_int_py_mke2fs_J, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKE2FS_JL
-  { (char *) "mke2fs_JL", py_guestfs_mke2fs_JL, METH_VARARGS, NULL },
+  { (char *) "mke2fs_JL", guestfs_int_py_mke2fs_JL, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKE2FS_JU
-  { (char *) "mke2fs_JU", py_guestfs_mke2fs_JU, METH_VARARGS, NULL },
+  { (char *) "mke2fs_JU", guestfs_int_py_mke2fs_JU, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKE2JOURNAL
-  { (char *) "mke2journal", py_guestfs_mke2journal, METH_VARARGS, NULL },
+  { (char *) "mke2journal", guestfs_int_py_mke2journal, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKE2JOURNAL_L
-  { (char *) "mke2journal_L", py_guestfs_mke2journal_L, METH_VARARGS, NULL },
+  { (char *) "mke2journal_L", guestfs_int_py_mke2journal_L, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKE2JOURNAL_U
-  { (char *) "mke2journal_U", py_guestfs_mke2journal_U, METH_VARARGS, NULL },
+  { (char *) "mke2journal_U", guestfs_int_py_mke2journal_U, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKFIFO
-  { (char *) "mkfifo", py_guestfs_mkfifo, METH_VARARGS, NULL },
+  { (char *) "mkfifo", guestfs_int_py_mkfifo, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKFS
-  { (char *) "mkfs", py_guestfs_mkfs, METH_VARARGS, NULL },
+  { (char *) "mkfs", guestfs_int_py_mkfs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKFS_B
-  { (char *) "mkfs_b", py_guestfs_mkfs_b, METH_VARARGS, NULL },
+  { (char *) "mkfs_b", guestfs_int_py_mkfs_b, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKFS_BTRFS
-  { (char *) "mkfs_btrfs", py_guestfs_mkfs_btrfs, METH_VARARGS, NULL },
+  { (char *) "mkfs_btrfs", guestfs_int_py_mkfs_btrfs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKLOST_AND_FOUND
-  { (char *) "mklost_and_found", py_guestfs_mklost_and_found, METH_VARARGS, NULL },
+  { (char *) "mklost_and_found", guestfs_int_py_mklost_and_found, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKMOUNTPOINT
-  { (char *) "mkmountpoint", py_guestfs_mkmountpoint, METH_VARARGS, NULL },
+  { (char *) "mkmountpoint", guestfs_int_py_mkmountpoint, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKNOD
-  { (char *) "mknod", py_guestfs_mknod, METH_VARARGS, NULL },
+  { (char *) "mknod", guestfs_int_py_mknod, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKNOD_B
-  { (char *) "mknod_b", py_guestfs_mknod_b, METH_VARARGS, NULL },
+  { (char *) "mknod_b", guestfs_int_py_mknod_b, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKNOD_C
-  { (char *) "mknod_c", py_guestfs_mknod_c, METH_VARARGS, NULL },
+  { (char *) "mknod_c", guestfs_int_py_mknod_c, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKSWAP
-  { (char *) "mkswap", py_guestfs_mkswap, METH_VARARGS, NULL },
+  { (char *) "mkswap", guestfs_int_py_mkswap, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKSWAP_L
-  { (char *) "mkswap_L", py_guestfs_mkswap_L, METH_VARARGS, NULL },
+  { (char *) "mkswap_L", guestfs_int_py_mkswap_L, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKSWAP_U
-  { (char *) "mkswap_U", py_guestfs_mkswap_U, METH_VARARGS, NULL },
+  { (char *) "mkswap_U", guestfs_int_py_mkswap_U, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKSWAP_FILE
-  { (char *) "mkswap_file", py_guestfs_mkswap_file, METH_VARARGS, NULL },
+  { (char *) "mkswap_file", guestfs_int_py_mkswap_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKTEMP
-  { (char *) "mktemp", py_guestfs_mktemp, METH_VARARGS, NULL },
+  { (char *) "mktemp", guestfs_int_py_mktemp, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MODPROBE
-  { (char *) "modprobe", py_guestfs_modprobe, METH_VARARGS, NULL },
+  { (char *) "modprobe", guestfs_int_py_modprobe, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MOUNT
-  { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
+  { (char *) "mount", guestfs_int_py_mount, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MOUNT_9P
-  { (char *) "mount_9p", py_guestfs_mount_9p, METH_VARARGS, NULL },
+  { (char *) "mount_9p", guestfs_int_py_mount_9p, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MOUNT_LOCAL
-  { (char *) "mount_local", py_guestfs_mount_local, METH_VARARGS, NULL },
+  { (char *) "mount_local", guestfs_int_py_mount_local, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MOUNT_LOCAL_RUN
-  { (char *) "mount_local_run", py_guestfs_mount_local_run, METH_VARARGS, NULL },
+  { (char *) "mount_local_run", guestfs_int_py_mount_local_run, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MOUNT_LOOP
-  { (char *) "mount_loop", py_guestfs_mount_loop, METH_VARARGS, NULL },
+  { (char *) "mount_loop", guestfs_int_py_mount_loop, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MOUNT_OPTIONS
-  { (char *) "mount_options", py_guestfs_mount_options, METH_VARARGS, NULL },
+  { (char *) "mount_options", guestfs_int_py_mount_options, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MOUNT_RO
-  { (char *) "mount_ro", py_guestfs_mount_ro, METH_VARARGS, NULL },
+  { (char *) "mount_ro", guestfs_int_py_mount_ro, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MOUNT_VFS
-  { (char *) "mount_vfs", py_guestfs_mount_vfs, METH_VARARGS, NULL },
+  { (char *) "mount_vfs", guestfs_int_py_mount_vfs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MOUNTPOINTS
-  { (char *) "mountpoints", py_guestfs_mountpoints, METH_VARARGS, NULL },
+  { (char *) "mountpoints", guestfs_int_py_mountpoints, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MOUNTS
-  { (char *) "mounts", py_guestfs_mounts, METH_VARARGS, NULL },
+  { (char *) "mounts", guestfs_int_py_mounts, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MV
-  { (char *) "mv", py_guestfs_mv, METH_VARARGS, NULL },
+  { (char *) "mv", guestfs_int_py_mv, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_NR_DEVICES
-  { (char *) "nr_devices", py_guestfs_nr_devices, METH_VARARGS, NULL },
+  { (char *) "nr_devices", guestfs_int_py_nr_devices, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_NTFS_3G_PROBE
-  { (char *) "ntfs_3g_probe", py_guestfs_ntfs_3g_probe, METH_VARARGS, NULL },
+  { (char *) "ntfs_3g_probe", guestfs_int_py_ntfs_3g_probe, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_NTFSCLONE_IN
-  { (char *) "ntfsclone_in", py_guestfs_ntfsclone_in, METH_VARARGS, NULL },
+  { (char *) "ntfsclone_in", guestfs_int_py_ntfsclone_in, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_NTFSCLONE_OUT
-  { (char *) "ntfsclone_out", py_guestfs_ntfsclone_out, METH_VARARGS, NULL },
+  { (char *) "ntfsclone_out", guestfs_int_py_ntfsclone_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_NTFSFIX
-  { (char *) "ntfsfix", py_guestfs_ntfsfix, METH_VARARGS, NULL },
+  { (char *) "ntfsfix", guestfs_int_py_ntfsfix, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_NTFSRESIZE
-  { (char *) "ntfsresize", py_guestfs_ntfsresize, METH_VARARGS, NULL },
+  { (char *) "ntfsresize", guestfs_int_py_ntfsresize, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_NTFSRESIZE_SIZE
-  { (char *) "ntfsresize_size", py_guestfs_ntfsresize_size, METH_VARARGS, NULL },
+  { (char *) "ntfsresize_size", guestfs_int_py_ntfsresize_size, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PARSE_ENVIRONMENT
-  { (char *) "parse_environment", py_guestfs_parse_environment, METH_VARARGS, NULL },
+  { (char *) "parse_environment", guestfs_int_py_parse_environment, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PARSE_ENVIRONMENT_LIST
-  { (char *) "parse_environment_list", py_guestfs_parse_environment_list, METH_VARARGS, NULL },
+  { (char *) "parse_environment_list", guestfs_int_py_parse_environment_list, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_ADD
-  { (char *) "part_add", py_guestfs_part_add, METH_VARARGS, NULL },
+  { (char *) "part_add", guestfs_int_py_part_add, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_DEL
-  { (char *) "part_del", py_guestfs_part_del, METH_VARARGS, NULL },
+  { (char *) "part_del", guestfs_int_py_part_del, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_DISK
-  { (char *) "part_disk", py_guestfs_part_disk, METH_VARARGS, NULL },
+  { (char *) "part_disk", guestfs_int_py_part_disk, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_GET_BOOTABLE
-  { (char *) "part_get_bootable", py_guestfs_part_get_bootable, METH_VARARGS, NULL },
+  { (char *) "part_get_bootable", guestfs_int_py_part_get_bootable, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_GET_GPT_GUID
-  { (char *) "part_get_gpt_guid", py_guestfs_part_get_gpt_guid, METH_VARARGS, NULL },
+  { (char *) "part_get_gpt_guid", guestfs_int_py_part_get_gpt_guid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_GET_GPT_TYPE
-  { (char *) "part_get_gpt_type", py_guestfs_part_get_gpt_type, METH_VARARGS, NULL },
+  { (char *) "part_get_gpt_type", guestfs_int_py_part_get_gpt_type, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_GET_MBR_ID
-  { (char *) "part_get_mbr_id", py_guestfs_part_get_mbr_id, METH_VARARGS, NULL },
+  { (char *) "part_get_mbr_id", guestfs_int_py_part_get_mbr_id, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_GET_MBR_PART_TYPE
-  { (char *) "part_get_mbr_part_type", py_guestfs_part_get_mbr_part_type, METH_VARARGS, NULL },
+  { (char *) "part_get_mbr_part_type", guestfs_int_py_part_get_mbr_part_type, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_GET_NAME
-  { (char *) "part_get_name", py_guestfs_part_get_name, METH_VARARGS, NULL },
+  { (char *) "part_get_name", guestfs_int_py_part_get_name, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_GET_PARTTYPE
-  { (char *) "part_get_parttype", py_guestfs_part_get_parttype, METH_VARARGS, NULL },
+  { (char *) "part_get_parttype", guestfs_int_py_part_get_parttype, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_INIT
-  { (char *) "part_init", py_guestfs_part_init, METH_VARARGS, NULL },
+  { (char *) "part_init", guestfs_int_py_part_init, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_LIST
-  { (char *) "part_list", py_guestfs_part_list, METH_VARARGS, NULL },
+  { (char *) "part_list", guestfs_int_py_part_list, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_SET_BOOTABLE
-  { (char *) "part_set_bootable", py_guestfs_part_set_bootable, METH_VARARGS, NULL },
+  { (char *) "part_set_bootable", guestfs_int_py_part_set_bootable, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_SET_GPT_GUID
-  { (char *) "part_set_gpt_guid", py_guestfs_part_set_gpt_guid, METH_VARARGS, NULL },
+  { (char *) "part_set_gpt_guid", guestfs_int_py_part_set_gpt_guid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_SET_GPT_TYPE
-  { (char *) "part_set_gpt_type", py_guestfs_part_set_gpt_type, METH_VARARGS, NULL },
+  { (char *) "part_set_gpt_type", guestfs_int_py_part_set_gpt_type, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_SET_MBR_ID
-  { (char *) "part_set_mbr_id", py_guestfs_part_set_mbr_id, METH_VARARGS, NULL },
+  { (char *) "part_set_mbr_id", guestfs_int_py_part_set_mbr_id, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_SET_NAME
-  { (char *) "part_set_name", py_guestfs_part_set_name, METH_VARARGS, NULL },
+  { (char *) "part_set_name", guestfs_int_py_part_set_name, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_TO_DEV
-  { (char *) "part_to_dev", py_guestfs_part_to_dev, METH_VARARGS, NULL },
+  { (char *) "part_to_dev", guestfs_int_py_part_to_dev, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_TO_PARTNUM
-  { (char *) "part_to_partnum", py_guestfs_part_to_partnum, METH_VARARGS, NULL },
+  { (char *) "part_to_partnum", guestfs_int_py_part_to_partnum, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PING_DAEMON
-  { (char *) "ping_daemon", py_guestfs_ping_daemon, METH_VARARGS, NULL },
+  { (char *) "ping_daemon", guestfs_int_py_ping_daemon, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PREAD
-  { (char *) "pread", py_guestfs_pread, METH_VARARGS, NULL },
+  { (char *) "pread", guestfs_int_py_pread, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PREAD_DEVICE
-  { (char *) "pread_device", py_guestfs_pread_device, METH_VARARGS, NULL },
+  { (char *) "pread_device", guestfs_int_py_pread_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PVCHANGE_UUID
-  { (char *) "pvchange_uuid", py_guestfs_pvchange_uuid, METH_VARARGS, NULL },
+  { (char *) "pvchange_uuid", guestfs_int_py_pvchange_uuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PVCHANGE_UUID_ALL
-  { (char *) "pvchange_uuid_all", py_guestfs_pvchange_uuid_all, METH_VARARGS, NULL },
+  { (char *) "pvchange_uuid_all", guestfs_int_py_pvchange_uuid_all, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PVCREATE
-  { (char *) "pvcreate", py_guestfs_pvcreate, METH_VARARGS, NULL },
+  { (char *) "pvcreate", guestfs_int_py_pvcreate, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PVREMOVE
-  { (char *) "pvremove", py_guestfs_pvremove, METH_VARARGS, NULL },
+  { (char *) "pvremove", guestfs_int_py_pvremove, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PVRESIZE
-  { (char *) "pvresize", py_guestfs_pvresize, METH_VARARGS, NULL },
+  { (char *) "pvresize", guestfs_int_py_pvresize, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PVRESIZE_SIZE
-  { (char *) "pvresize_size", py_guestfs_pvresize_size, METH_VARARGS, NULL },
+  { (char *) "pvresize_size", guestfs_int_py_pvresize_size, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PVS
-  { (char *) "pvs", py_guestfs_pvs, METH_VARARGS, NULL },
+  { (char *) "pvs", guestfs_int_py_pvs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PVS_FULL
-  { (char *) "pvs_full", py_guestfs_pvs_full, METH_VARARGS, NULL },
+  { (char *) "pvs_full", guestfs_int_py_pvs_full, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PVUUID
-  { (char *) "pvuuid", py_guestfs_pvuuid, METH_VARARGS, NULL },
+  { (char *) "pvuuid", guestfs_int_py_pvuuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PWRITE
-  { (char *) "pwrite", py_guestfs_pwrite, METH_VARARGS, NULL },
+  { (char *) "pwrite", guestfs_int_py_pwrite, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PWRITE_DEVICE
-  { (char *) "pwrite_device", py_guestfs_pwrite_device, METH_VARARGS, NULL },
+  { (char *) "pwrite_device", guestfs_int_py_pwrite_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_READ_FILE
-  { (char *) "read_file", py_guestfs_read_file, METH_VARARGS, NULL },
+  { (char *) "read_file", guestfs_int_py_read_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_READ_LINES
-  { (char *) "read_lines", py_guestfs_read_lines, METH_VARARGS, NULL },
+  { (char *) "read_lines", guestfs_int_py_read_lines, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_READDIR
-  { (char *) "readdir", py_guestfs_readdir, METH_VARARGS, NULL },
+  { (char *) "readdir", guestfs_int_py_readdir, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_READLINK
-  { (char *) "readlink", py_guestfs_readlink, METH_VARARGS, NULL },
+  { (char *) "readlink", guestfs_int_py_readlink, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_READLINKLIST
-  { (char *) "readlinklist", py_guestfs_readlinklist, METH_VARARGS, NULL },
+  { (char *) "readlinklist", guestfs_int_py_readlinklist, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_REALPATH
-  { (char *) "realpath", py_guestfs_realpath, METH_VARARGS, NULL },
+  { (char *) "realpath", guestfs_int_py_realpath, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_REMOUNT
-  { (char *) "remount", py_guestfs_remount, METH_VARARGS, NULL },
+  { (char *) "remount", guestfs_int_py_remount, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_REMOVE_DRIVE
-  { (char *) "remove_drive", py_guestfs_remove_drive, METH_VARARGS, NULL },
+  { (char *) "remove_drive", guestfs_int_py_remove_drive, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_REMOVEXATTR
-  { (char *) "removexattr", py_guestfs_removexattr, METH_VARARGS, NULL },
+  { (char *) "removexattr", guestfs_int_py_removexattr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RENAME
-  { (char *) "rename", py_guestfs_rename, METH_VARARGS, NULL },
+  { (char *) "rename", guestfs_int_py_rename, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RESIZE2FS
-  { (char *) "resize2fs", py_guestfs_resize2fs, METH_VARARGS, NULL },
+  { (char *) "resize2fs", guestfs_int_py_resize2fs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RESIZE2FS_M
-  { (char *) "resize2fs_M", py_guestfs_resize2fs_M, METH_VARARGS, NULL },
+  { (char *) "resize2fs_M", guestfs_int_py_resize2fs_M, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RESIZE2FS_SIZE
-  { (char *) "resize2fs_size", py_guestfs_resize2fs_size, METH_VARARGS, NULL },
+  { (char *) "resize2fs_size", guestfs_int_py_resize2fs_size, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RM
-  { (char *) "rm", py_guestfs_rm, METH_VARARGS, NULL },
+  { (char *) "rm", guestfs_int_py_rm, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RM_F
-  { (char *) "rm_f", py_guestfs_rm_f, METH_VARARGS, NULL },
+  { (char *) "rm_f", guestfs_int_py_rm_f, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RM_RF
-  { (char *) "rm_rf", py_guestfs_rm_rf, METH_VARARGS, NULL },
+  { (char *) "rm_rf", guestfs_int_py_rm_rf, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RMDIR
-  { (char *) "rmdir", py_guestfs_rmdir, METH_VARARGS, NULL },
+  { (char *) "rmdir", guestfs_int_py_rmdir, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RMMOUNTPOINT
-  { (char *) "rmmountpoint", py_guestfs_rmmountpoint, METH_VARARGS, NULL },
+  { (char *) "rmmountpoint", guestfs_int_py_rmmountpoint, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RSYNC
-  { (char *) "rsync", py_guestfs_rsync, METH_VARARGS, NULL },
+  { (char *) "rsync", guestfs_int_py_rsync, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RSYNC_IN
-  { (char *) "rsync_in", py_guestfs_rsync_in, METH_VARARGS, NULL },
+  { (char *) "rsync_in", guestfs_int_py_rsync_in, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_RSYNC_OUT
-  { (char *) "rsync_out", py_guestfs_rsync_out, METH_VARARGS, NULL },
+  { (char *) "rsync_out", guestfs_int_py_rsync_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SCRUB_DEVICE
-  { (char *) "scrub_device", py_guestfs_scrub_device, METH_VARARGS, NULL },
+  { (char *) "scrub_device", guestfs_int_py_scrub_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SCRUB_FILE
-  { (char *) "scrub_file", py_guestfs_scrub_file, METH_VARARGS, NULL },
+  { (char *) "scrub_file", guestfs_int_py_scrub_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SCRUB_FREESPACE
-  { (char *) "scrub_freespace", py_guestfs_scrub_freespace, METH_VARARGS, NULL },
+  { (char *) "scrub_freespace", guestfs_int_py_scrub_freespace, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_APPEND
-  { (char *) "set_append", py_guestfs_set_append, METH_VARARGS, NULL },
+  { (char *) "set_append", guestfs_int_py_set_append, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_ATTACH_METHOD
-  { (char *) "set_attach_method", py_guestfs_set_attach_method, METH_VARARGS, NULL },
+  { (char *) "set_attach_method", guestfs_int_py_set_attach_method, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_AUTOSYNC
-  { (char *) "set_autosync", py_guestfs_set_autosync, METH_VARARGS, NULL },
+  { (char *) "set_autosync", guestfs_int_py_set_autosync, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_BACKEND
-  { (char *) "set_backend", py_guestfs_set_backend, METH_VARARGS, NULL },
+  { (char *) "set_backend", guestfs_int_py_set_backend, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_BACKEND_SETTING
-  { (char *) "set_backend_setting", py_guestfs_set_backend_setting, METH_VARARGS, NULL },
+  { (char *) "set_backend_setting", guestfs_int_py_set_backend_setting, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_BACKEND_SETTINGS
-  { (char *) "set_backend_settings", py_guestfs_set_backend_settings, METH_VARARGS, NULL },
+  { (char *) "set_backend_settings", guestfs_int_py_set_backend_settings, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_CACHEDIR
-  { (char *) "set_cachedir", py_guestfs_set_cachedir, METH_VARARGS, NULL },
+  { (char *) "set_cachedir", guestfs_int_py_set_cachedir, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_DIRECT
-  { (char *) "set_direct", py_guestfs_set_direct, METH_VARARGS, NULL },
+  { (char *) "set_direct", guestfs_int_py_set_direct, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_E2ATTRS
-  { (char *) "set_e2attrs", py_guestfs_set_e2attrs, METH_VARARGS, NULL },
+  { (char *) "set_e2attrs", guestfs_int_py_set_e2attrs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_E2GENERATION
-  { (char *) "set_e2generation", py_guestfs_set_e2generation, METH_VARARGS, NULL },
+  { (char *) "set_e2generation", guestfs_int_py_set_e2generation, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_E2LABEL
-  { (char *) "set_e2label", py_guestfs_set_e2label, METH_VARARGS, NULL },
+  { (char *) "set_e2label", guestfs_int_py_set_e2label, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_E2UUID
-  { (char *) "set_e2uuid", py_guestfs_set_e2uuid, METH_VARARGS, NULL },
+  { (char *) "set_e2uuid", guestfs_int_py_set_e2uuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_HV
-  { (char *) "set_hv", py_guestfs_set_hv, METH_VARARGS, NULL },
+  { (char *) "set_hv", guestfs_int_py_set_hv, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_IDENTIFIER
-  { (char *) "set_identifier", py_guestfs_set_identifier, METH_VARARGS, NULL },
+  { (char *) "set_identifier", guestfs_int_py_set_identifier, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_LABEL
-  { (char *) "set_label", py_guestfs_set_label, METH_VARARGS, NULL },
+  { (char *) "set_label", guestfs_int_py_set_label, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_LIBVIRT_REQUESTED_CREDENTIAL
-  { (char *) "set_libvirt_requested_credential", py_guestfs_set_libvirt_requested_credential, METH_VARARGS, NULL },
+  { (char *) "set_libvirt_requested_credential", guestfs_int_py_set_libvirt_requested_credential, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_LIBVIRT_SUPPORTED_CREDENTIALS
-  { (char *) "set_libvirt_supported_credentials", py_guestfs_set_libvirt_supported_credentials, METH_VARARGS, NULL },
+  { (char *) "set_libvirt_supported_credentials", guestfs_int_py_set_libvirt_supported_credentials, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_MEMSIZE
-  { (char *) "set_memsize", py_guestfs_set_memsize, METH_VARARGS, NULL },
+  { (char *) "set_memsize", guestfs_int_py_set_memsize, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_NETWORK
-  { (char *) "set_network", py_guestfs_set_network, METH_VARARGS, NULL },
+  { (char *) "set_network", guestfs_int_py_set_network, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_PATH
-  { (char *) "set_path", py_guestfs_set_path, METH_VARARGS, NULL },
+  { (char *) "set_path", guestfs_int_py_set_path, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_PGROUP
-  { (char *) "set_pgroup", py_guestfs_set_pgroup, METH_VARARGS, NULL },
+  { (char *) "set_pgroup", guestfs_int_py_set_pgroup, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_PROGRAM
-  { (char *) "set_program", py_guestfs_set_program, METH_VARARGS, NULL },
+  { (char *) "set_program", guestfs_int_py_set_program, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_QEMU
-  { (char *) "set_qemu", py_guestfs_set_qemu, METH_VARARGS, NULL },
+  { (char *) "set_qemu", guestfs_int_py_set_qemu, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_RECOVERY_PROC
-  { (char *) "set_recovery_proc", py_guestfs_set_recovery_proc, METH_VARARGS, NULL },
+  { (char *) "set_recovery_proc", guestfs_int_py_set_recovery_proc, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_SELINUX
-  { (char *) "set_selinux", py_guestfs_set_selinux, METH_VARARGS, NULL },
+  { (char *) "set_selinux", guestfs_int_py_set_selinux, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_SMP
-  { (char *) "set_smp", py_guestfs_set_smp, METH_VARARGS, NULL },
+  { (char *) "set_smp", guestfs_int_py_set_smp, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_TMPDIR
-  { (char *) "set_tmpdir", py_guestfs_set_tmpdir, METH_VARARGS, NULL },
+  { (char *) "set_tmpdir", guestfs_int_py_set_tmpdir, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_TRACE
-  { (char *) "set_trace", py_guestfs_set_trace, METH_VARARGS, NULL },
+  { (char *) "set_trace", guestfs_int_py_set_trace, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_UUID
-  { (char *) "set_uuid", py_guestfs_set_uuid, METH_VARARGS, NULL },
+  { (char *) "set_uuid", guestfs_int_py_set_uuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_UUID_RANDOM
-  { (char *) "set_uuid_random", py_guestfs_set_uuid_random, METH_VARARGS, NULL },
+  { (char *) "set_uuid_random", guestfs_int_py_set_uuid_random, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SET_VERBOSE
-  { (char *) "set_verbose", py_guestfs_set_verbose, METH_VARARGS, NULL },
+  { (char *) "set_verbose", guestfs_int_py_set_verbose, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SETCON
-  { (char *) "setcon", py_guestfs_setcon, METH_VARARGS, NULL },
+  { (char *) "setcon", guestfs_int_py_setcon, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SETXATTR
-  { (char *) "setxattr", py_guestfs_setxattr, METH_VARARGS, NULL },
+  { (char *) "setxattr", guestfs_int_py_setxattr, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SFDISK
-  { (char *) "sfdisk", py_guestfs_sfdisk, METH_VARARGS, NULL },
+  { (char *) "sfdisk", guestfs_int_py_sfdisk, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SFDISKM
-  { (char *) "sfdiskM", py_guestfs_sfdiskM, METH_VARARGS, NULL },
+  { (char *) "sfdiskM", guestfs_int_py_sfdiskM, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SFDISK_N
-  { (char *) "sfdisk_N", py_guestfs_sfdisk_N, METH_VARARGS, NULL },
+  { (char *) "sfdisk_N", guestfs_int_py_sfdisk_N, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SFDISK_DISK_GEOMETRY
-  { (char *) "sfdisk_disk_geometry", py_guestfs_sfdisk_disk_geometry, METH_VARARGS, NULL },
+  { (char *) "sfdisk_disk_geometry", guestfs_int_py_sfdisk_disk_geometry, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SFDISK_KERNEL_GEOMETRY
-  { (char *) "sfdisk_kernel_geometry", py_guestfs_sfdisk_kernel_geometry, METH_VARARGS, NULL },
+  { (char *) "sfdisk_kernel_geometry", guestfs_int_py_sfdisk_kernel_geometry, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SFDISK_L
-  { (char *) "sfdisk_l", py_guestfs_sfdisk_l, METH_VARARGS, NULL },
+  { (char *) "sfdisk_l", guestfs_int_py_sfdisk_l, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SH
-  { (char *) "sh", py_guestfs_sh, METH_VARARGS, NULL },
+  { (char *) "sh", guestfs_int_py_sh, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SH_LINES
-  { (char *) "sh_lines", py_guestfs_sh_lines, METH_VARARGS, NULL },
+  { (char *) "sh_lines", guestfs_int_py_sh_lines, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SHUTDOWN
-  { (char *) "shutdown", py_guestfs_shutdown, METH_VARARGS, NULL },
+  { (char *) "shutdown", guestfs_int_py_shutdown, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SLEEP
-  { (char *) "sleep", py_guestfs_sleep, METH_VARARGS, NULL },
+  { (char *) "sleep", guestfs_int_py_sleep, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_STAT
-  { (char *) "stat", py_guestfs_stat, METH_VARARGS, NULL },
+  { (char *) "stat", guestfs_int_py_stat, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_STATNS
-  { (char *) "statns", py_guestfs_statns, METH_VARARGS, NULL },
+  { (char *) "statns", guestfs_int_py_statns, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_STATVFS
-  { (char *) "statvfs", py_guestfs_statvfs, METH_VARARGS, NULL },
+  { (char *) "statvfs", guestfs_int_py_statvfs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_STRINGS
-  { (char *) "strings", py_guestfs_strings, METH_VARARGS, NULL },
+  { (char *) "strings", guestfs_int_py_strings, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_STRINGS_E
-  { (char *) "strings_e", py_guestfs_strings_e, METH_VARARGS, NULL },
+  { (char *) "strings_e", guestfs_int_py_strings_e, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SWAPOFF_DEVICE
-  { (char *) "swapoff_device", py_guestfs_swapoff_device, METH_VARARGS, NULL },
+  { (char *) "swapoff_device", guestfs_int_py_swapoff_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SWAPOFF_FILE
-  { (char *) "swapoff_file", py_guestfs_swapoff_file, METH_VARARGS, NULL },
+  { (char *) "swapoff_file", guestfs_int_py_swapoff_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SWAPOFF_LABEL
-  { (char *) "swapoff_label", py_guestfs_swapoff_label, METH_VARARGS, NULL },
+  { (char *) "swapoff_label", guestfs_int_py_swapoff_label, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SWAPOFF_UUID
-  { (char *) "swapoff_uuid", py_guestfs_swapoff_uuid, METH_VARARGS, NULL },
+  { (char *) "swapoff_uuid", guestfs_int_py_swapoff_uuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SWAPON_DEVICE
-  { (char *) "swapon_device", py_guestfs_swapon_device, METH_VARARGS, NULL },
+  { (char *) "swapon_device", guestfs_int_py_swapon_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SWAPON_FILE
-  { (char *) "swapon_file", py_guestfs_swapon_file, METH_VARARGS, NULL },
+  { (char *) "swapon_file", guestfs_int_py_swapon_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SWAPON_LABEL
-  { (char *) "swapon_label", py_guestfs_swapon_label, METH_VARARGS, NULL },
+  { (char *) "swapon_label", guestfs_int_py_swapon_label, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SWAPON_UUID
-  { (char *) "swapon_uuid", py_guestfs_swapon_uuid, METH_VARARGS, NULL },
+  { (char *) "swapon_uuid", guestfs_int_py_swapon_uuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SYNC
-  { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
+  { (char *) "sync", guestfs_int_py_sync, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_SYSLINUX
-  { (char *) "syslinux", py_guestfs_syslinux, METH_VARARGS, NULL },
+  { (char *) "syslinux", guestfs_int_py_syslinux, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TAIL
-  { (char *) "tail", py_guestfs_tail, METH_VARARGS, NULL },
+  { (char *) "tail", guestfs_int_py_tail, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TAIL_N
-  { (char *) "tail_n", py_guestfs_tail_n, METH_VARARGS, NULL },
+  { (char *) "tail_n", guestfs_int_py_tail_n, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TAR_IN
-  { (char *) "tar_in", py_guestfs_tar_in, METH_VARARGS, NULL },
+  { (char *) "tar_in", guestfs_int_py_tar_in, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TAR_OUT
-  { (char *) "tar_out", py_guestfs_tar_out, METH_VARARGS, NULL },
+  { (char *) "tar_out", guestfs_int_py_tar_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TGZ_IN
-  { (char *) "tgz_in", py_guestfs_tgz_in, METH_VARARGS, NULL },
+  { (char *) "tgz_in", guestfs_int_py_tgz_in, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TGZ_OUT
-  { (char *) "tgz_out", py_guestfs_tgz_out, METH_VARARGS, NULL },
+  { (char *) "tgz_out", guestfs_int_py_tgz_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TOUCH
-  { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },
+  { (char *) "touch", guestfs_int_py_touch, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TRUNCATE
-  { (char *) "truncate", py_guestfs_truncate, METH_VARARGS, NULL },
+  { (char *) "truncate", guestfs_int_py_truncate, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TRUNCATE_SIZE
-  { (char *) "truncate_size", py_guestfs_truncate_size, METH_VARARGS, NULL },
+  { (char *) "truncate_size", guestfs_int_py_truncate_size, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TUNE2FS
-  { (char *) "tune2fs", py_guestfs_tune2fs, METH_VARARGS, NULL },
+  { (char *) "tune2fs", guestfs_int_py_tune2fs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TUNE2FS_L
-  { (char *) "tune2fs_l", py_guestfs_tune2fs_l, METH_VARARGS, NULL },
+  { (char *) "tune2fs_l", guestfs_int_py_tune2fs_l, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TXZ_IN
-  { (char *) "txz_in", py_guestfs_txz_in, METH_VARARGS, NULL },
+  { (char *) "txz_in", guestfs_int_py_txz_in, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TXZ_OUT
-  { (char *) "txz_out", py_guestfs_txz_out, METH_VARARGS, NULL },
+  { (char *) "txz_out", guestfs_int_py_txz_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_UMASK
-  { (char *) "umask", py_guestfs_umask, METH_VARARGS, NULL },
+  { (char *) "umask", guestfs_int_py_umask, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_UMOUNT
-  { (char *) "umount", py_guestfs_umount, METH_VARARGS, NULL },
+  { (char *) "umount", guestfs_int_py_umount, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_UMOUNT_ALL
-  { (char *) "umount_all", py_guestfs_umount_all, METH_VARARGS, NULL },
+  { (char *) "umount_all", guestfs_int_py_umount_all, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_UMOUNT_LOCAL
-  { (char *) "umount_local", py_guestfs_umount_local, METH_VARARGS, NULL },
+  { (char *) "umount_local", guestfs_int_py_umount_local, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_UPLOAD
-  { (char *) "upload", py_guestfs_upload, METH_VARARGS, NULL },
+  { (char *) "upload", guestfs_int_py_upload, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_UPLOAD_OFFSET
-  { (char *) "upload_offset", py_guestfs_upload_offset, METH_VARARGS, NULL },
+  { (char *) "upload_offset", guestfs_int_py_upload_offset, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_USER_CANCEL
-  { (char *) "user_cancel", py_guestfs_user_cancel, METH_VARARGS, NULL },
+  { (char *) "user_cancel", guestfs_int_py_user_cancel, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_UTIMENS
-  { (char *) "utimens", py_guestfs_utimens, METH_VARARGS, NULL },
+  { (char *) "utimens", guestfs_int_py_utimens, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_UTSNAME
-  { (char *) "utsname", py_guestfs_utsname, METH_VARARGS, NULL },
+  { (char *) "utsname", guestfs_int_py_utsname, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VERSION
-  { (char *) "version", py_guestfs_version, METH_VARARGS, NULL },
+  { (char *) "version", guestfs_int_py_version, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VFS_LABEL
-  { (char *) "vfs_label", py_guestfs_vfs_label, METH_VARARGS, NULL },
+  { (char *) "vfs_label", guestfs_int_py_vfs_label, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VFS_MINIMUM_SIZE
-  { (char *) "vfs_minimum_size", py_guestfs_vfs_minimum_size, METH_VARARGS, NULL },
+  { (char *) "vfs_minimum_size", guestfs_int_py_vfs_minimum_size, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VFS_TYPE
-  { (char *) "vfs_type", py_guestfs_vfs_type, METH_VARARGS, NULL },
+  { (char *) "vfs_type", guestfs_int_py_vfs_type, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VFS_UUID
-  { (char *) "vfs_uuid", py_guestfs_vfs_uuid, METH_VARARGS, NULL },
+  { (char *) "vfs_uuid", guestfs_int_py_vfs_uuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VG_ACTIVATE
-  { (char *) "vg_activate", py_guestfs_vg_activate, METH_VARARGS, NULL },
+  { (char *) "vg_activate", guestfs_int_py_vg_activate, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VG_ACTIVATE_ALL
-  { (char *) "vg_activate_all", py_guestfs_vg_activate_all, METH_VARARGS, NULL },
+  { (char *) "vg_activate_all", guestfs_int_py_vg_activate_all, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGCHANGE_UUID
-  { (char *) "vgchange_uuid", py_guestfs_vgchange_uuid, METH_VARARGS, NULL },
+  { (char *) "vgchange_uuid", guestfs_int_py_vgchange_uuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGCHANGE_UUID_ALL
-  { (char *) "vgchange_uuid_all", py_guestfs_vgchange_uuid_all, METH_VARARGS, NULL },
+  { (char *) "vgchange_uuid_all", guestfs_int_py_vgchange_uuid_all, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGCREATE
-  { (char *) "vgcreate", py_guestfs_vgcreate, METH_VARARGS, NULL },
+  { (char *) "vgcreate", guestfs_int_py_vgcreate, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGLVUUIDS
-  { (char *) "vglvuuids", py_guestfs_vglvuuids, METH_VARARGS, NULL },
+  { (char *) "vglvuuids", guestfs_int_py_vglvuuids, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGMETA
-  { (char *) "vgmeta", py_guestfs_vgmeta, METH_VARARGS, NULL },
+  { (char *) "vgmeta", guestfs_int_py_vgmeta, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGPVUUIDS
-  { (char *) "vgpvuuids", py_guestfs_vgpvuuids, METH_VARARGS, NULL },
+  { (char *) "vgpvuuids", guestfs_int_py_vgpvuuids, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGREMOVE
-  { (char *) "vgremove", py_guestfs_vgremove, METH_VARARGS, NULL },
+  { (char *) "vgremove", guestfs_int_py_vgremove, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGRENAME
-  { (char *) "vgrename", py_guestfs_vgrename, METH_VARARGS, NULL },
+  { (char *) "vgrename", guestfs_int_py_vgrename, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGS
-  { (char *) "vgs", py_guestfs_vgs, METH_VARARGS, NULL },
+  { (char *) "vgs", guestfs_int_py_vgs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGS_FULL
-  { (char *) "vgs_full", py_guestfs_vgs_full, METH_VARARGS, NULL },
+  { (char *) "vgs_full", guestfs_int_py_vgs_full, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGSCAN
-  { (char *) "vgscan", py_guestfs_vgscan, METH_VARARGS, NULL },
+  { (char *) "vgscan", guestfs_int_py_vgscan, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_VGUUID
-  { (char *) "vguuid", py_guestfs_vguuid, METH_VARARGS, NULL },
+  { (char *) "vguuid", guestfs_int_py_vguuid, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_WAIT_READY
-  { (char *) "wait_ready", py_guestfs_wait_ready, METH_VARARGS, NULL },
+  { (char *) "wait_ready", guestfs_int_py_wait_ready, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_WC_C
-  { (char *) "wc_c", py_guestfs_wc_c, METH_VARARGS, NULL },
+  { (char *) "wc_c", guestfs_int_py_wc_c, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_WC_L
-  { (char *) "wc_l", py_guestfs_wc_l, METH_VARARGS, NULL },
+  { (char *) "wc_l", guestfs_int_py_wc_l, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_WC_W
-  { (char *) "wc_w", py_guestfs_wc_w, METH_VARARGS, NULL },
+  { (char *) "wc_w", guestfs_int_py_wc_w, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_WIPEFS
-  { (char *) "wipefs", py_guestfs_wipefs, METH_VARARGS, NULL },
+  { (char *) "wipefs", guestfs_int_py_wipefs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_WRITE
-  { (char *) "write", py_guestfs_write, METH_VARARGS, NULL },
+  { (char *) "write", guestfs_int_py_write, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_WRITE_APPEND
-  { (char *) "write_append", py_guestfs_write_append, METH_VARARGS, NULL },
+  { (char *) "write_append", guestfs_int_py_write_append, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_WRITE_FILE
-  { (char *) "write_file", py_guestfs_write_file, METH_VARARGS, NULL },
+  { (char *) "write_file", guestfs_int_py_write_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_XFS_ADMIN
-  { (char *) "xfs_admin", py_guestfs_xfs_admin, METH_VARARGS, NULL },
+  { (char *) "xfs_admin", guestfs_int_py_xfs_admin, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_XFS_GROWFS
-  { (char *) "xfs_growfs", py_guestfs_xfs_growfs, METH_VARARGS, NULL },
+  { (char *) "xfs_growfs", guestfs_int_py_xfs_growfs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_XFS_INFO
-  { (char *) "xfs_info", py_guestfs_xfs_info, METH_VARARGS, NULL },
+  { (char *) "xfs_info", guestfs_int_py_xfs_info, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_XFS_REPAIR
-  { (char *) "xfs_repair", py_guestfs_xfs_repair, METH_VARARGS, NULL },
+  { (char *) "xfs_repair", guestfs_int_py_xfs_repair, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZEGREP
-  { (char *) "zegrep", py_guestfs_zegrep, METH_VARARGS, NULL },
+  { (char *) "zegrep", guestfs_int_py_zegrep, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZEGREPI
-  { (char *) "zegrepi", py_guestfs_zegrepi, METH_VARARGS, NULL },
+  { (char *) "zegrepi", guestfs_int_py_zegrepi, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZERO
-  { (char *) "zero", py_guestfs_zero, METH_VARARGS, NULL },
+  { (char *) "zero", guestfs_int_py_zero, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZERO_DEVICE
-  { (char *) "zero_device", py_guestfs_zero_device, METH_VARARGS, NULL },
+  { (char *) "zero_device", guestfs_int_py_zero_device, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZERO_FREE_SPACE
-  { (char *) "zero_free_space", py_guestfs_zero_free_space, METH_VARARGS, NULL },
+  { (char *) "zero_free_space", guestfs_int_py_zero_free_space, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZEROFREE
-  { (char *) "zerofree", py_guestfs_zerofree, METH_VARARGS, NULL },
+  { (char *) "zerofree", guestfs_int_py_zerofree, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZFGREP
-  { (char *) "zfgrep", py_guestfs_zfgrep, METH_VARARGS, NULL },
+  { (char *) "zfgrep", guestfs_int_py_zfgrep, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZFGREPI
-  { (char *) "zfgrepi", py_guestfs_zfgrepi, METH_VARARGS, NULL },
+  { (char *) "zfgrepi", guestfs_int_py_zfgrepi, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZFILE
-  { (char *) "zfile", py_guestfs_zfile, METH_VARARGS, NULL },
+  { (char *) "zfile", guestfs_int_py_zfile, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZGREP
-  { (char *) "zgrep", py_guestfs_zgrep, METH_VARARGS, NULL },
+  { (char *) "zgrep", guestfs_int_py_zgrep, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZGREPI
-  { (char *) "zgrepi", py_guestfs_zgrepi, METH_VARARGS, NULL },
+  { (char *) "zgrepi", guestfs_int_py_zgrepi, METH_VARARGS, NULL },
 #endif
   { NULL, NULL, 0, NULL }
 };

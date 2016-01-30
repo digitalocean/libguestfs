@@ -25,6 +25,7 @@ daemon/blockdev.c
 daemon/btrfs.c
 daemon/cap.c
 daemon/checksum.c
+daemon/cleanups.c
 daemon/cmp.c
 daemon/command.c
 daemon/compress.c
@@ -96,6 +97,7 @@ daemon/rsync.c
 daemon/scrub.c
 daemon/selinux.c
 daemon/sfdisk.c
+daemon/sh.c
 daemon/sleep.c
 daemon/stat.c
 daemon/statvfs.c

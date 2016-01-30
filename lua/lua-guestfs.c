@@ -53,7 +53,7 @@
 
 /* This struct is managed on the Lua heap.  If the GC collects it,
  * the Lua '__gc' function is called which ends up calling
- * guestfs_lua_finalizer.
+ * guestfs_int_lua_finalizer.
  *
  * There is also an entry in the Lua registry, indexed by 'g'
  * (allocated on demand) which stores per-handle Lua data.  See
@@ -148,7 +148,7 @@ static void push_statvfs (lua_State *L, struct guestfs_statvfs *v);
 
 /* Create a new connection. */
 static int
-guestfs_lua_create (lua_State *L)
+guestfs_int_lua_create (lua_State *L)
 {
   guestfs_h *g;
   struct userdata *u;
@@ -199,7 +199,7 @@ close_handle (lua_State *L, guestfs_h *g)
 
 /* Finalizer. */
 static int
-guestfs_lua_finalizer (lua_State *L)
+guestfs_int_lua_finalizer (lua_State *L)
 {
   struct userdata *u = get_handle (L, 1);
   struct event_state *es, *es_next;
@@ -219,7 +219,7 @@ guestfs_lua_finalizer (lua_State *L)
 
 /* Explicit close. */
 static int
-guestfs_lua_close (lua_State *L)
+guestfs_int_lua_close (lua_State *L)
 {
   struct userdata *u = get_handle (L, 1);
 
@@ -316,7 +316,7 @@ free_per_handle_table (lua_State *L, guestfs_h *g)
 
 /* Set an event callback. */
 static int
-guestfs_lua_set_event_callback (lua_State *L)
+guestfs_int_lua_set_event_callback (lua_State *L)
 {
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
@@ -421,7 +421,7 @@ event_callback_wrapper (guestfs_h *g,
 
 /* Delete an event callback. */
 static int
-guestfs_lua_delete_event_callback (lua_State *L)
+guestfs_int_lua_delete_event_callback (lua_State *L)
 {
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
@@ -439,7 +439,7 @@ guestfs_lua_delete_event_callback (lua_State *L)
 }
 
 static int
-guestfs_lua_acl_delete_def_file (lua_State *L)
+guestfs_int_lua_acl_delete_def_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -460,7 +460,7 @@ guestfs_lua_acl_delete_def_file (lua_State *L)
 }
 
 static int
-guestfs_lua_acl_get_file (lua_State *L)
+guestfs_int_lua_acl_get_file (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -485,7 +485,7 @@ guestfs_lua_acl_get_file (lua_State *L)
 }
 
 static int
-guestfs_lua_acl_set_file (lua_State *L)
+guestfs_int_lua_acl_set_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -510,7 +510,7 @@ guestfs_lua_acl_set_file (lua_State *L)
 }
 
 static int
-guestfs_lua_add_cdrom (lua_State *L)
+guestfs_int_lua_add_cdrom (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -531,7 +531,7 @@ guestfs_lua_add_cdrom (lua_State *L)
 }
 
 static int
-guestfs_lua_add_domain (lua_State *L)
+guestfs_int_lua_add_domain (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -595,7 +595,7 @@ guestfs_lua_add_domain (lua_State *L)
 }
 
 static int
-guestfs_lua_add_drive (lua_State *L)
+guestfs_int_lua_add_drive (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -671,7 +671,7 @@ guestfs_lua_add_drive (lua_State *L)
 }
 
 static int
-guestfs_lua_add_drive_ro (lua_State *L)
+guestfs_int_lua_add_drive_ro (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -692,7 +692,7 @@ guestfs_lua_add_drive_ro (lua_State *L)
 }
 
 static int
-guestfs_lua_add_drive_ro_with_if (lua_State *L)
+guestfs_int_lua_add_drive_ro_with_if (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -715,7 +715,7 @@ guestfs_lua_add_drive_ro_with_if (lua_State *L)
 }
 
 static int
-guestfs_lua_add_drive_scratch (lua_State *L)
+guestfs_int_lua_add_drive_scratch (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -750,7 +750,7 @@ guestfs_lua_add_drive_scratch (lua_State *L)
 }
 
 static int
-guestfs_lua_add_drive_with_if (lua_State *L)
+guestfs_int_lua_add_drive_with_if (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -773,7 +773,7 @@ guestfs_lua_add_drive_with_if (lua_State *L)
 }
 
 static int
-guestfs_lua_add_libvirt_dom (lua_State *L)
+guestfs_int_lua_add_libvirt_dom (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -829,7 +829,7 @@ guestfs_lua_add_libvirt_dom (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_clear (lua_State *L)
+guestfs_int_lua_aug_clear (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -850,7 +850,7 @@ guestfs_lua_aug_clear (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_close (lua_State *L)
+guestfs_int_lua_aug_close (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -869,7 +869,7 @@ guestfs_lua_aug_close (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_defnode (lua_State *L)
+guestfs_int_lua_aug_defnode (lua_State *L)
 {
   struct guestfs_int_bool *r;
   struct userdata *u = get_handle (L, 1);
@@ -896,7 +896,7 @@ guestfs_lua_aug_defnode (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_defvar (lua_State *L)
+guestfs_int_lua_aug_defvar (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -920,7 +920,7 @@ guestfs_lua_aug_defvar (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_get (lua_State *L)
+guestfs_int_lua_aug_get (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -943,7 +943,7 @@ guestfs_lua_aug_get (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_init (lua_State *L)
+guestfs_int_lua_aug_init (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -966,7 +966,7 @@ guestfs_lua_aug_init (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_insert (lua_State *L)
+guestfs_int_lua_aug_insert (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -991,7 +991,7 @@ guestfs_lua_aug_insert (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_label (lua_State *L)
+guestfs_int_lua_aug_label (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -1014,7 +1014,7 @@ guestfs_lua_aug_label (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_load (lua_State *L)
+guestfs_int_lua_aug_load (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1033,7 +1033,7 @@ guestfs_lua_aug_load (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_ls (lua_State *L)
+guestfs_int_lua_aug_ls (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -1056,7 +1056,7 @@ guestfs_lua_aug_ls (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_match (lua_State *L)
+guestfs_int_lua_aug_match (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -1079,7 +1079,7 @@ guestfs_lua_aug_match (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_mv (lua_State *L)
+guestfs_int_lua_aug_mv (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1102,7 +1102,7 @@ guestfs_lua_aug_mv (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_rm (lua_State *L)
+guestfs_int_lua_aug_rm (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1124,7 +1124,7 @@ guestfs_lua_aug_rm (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_save (lua_State *L)
+guestfs_int_lua_aug_save (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1143,7 +1143,7 @@ guestfs_lua_aug_save (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_set (lua_State *L)
+guestfs_int_lua_aug_set (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1166,7 +1166,7 @@ guestfs_lua_aug_set (lua_State *L)
 }
 
 static int
-guestfs_lua_aug_setm (lua_State *L)
+guestfs_int_lua_aug_setm (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1192,7 +1192,7 @@ guestfs_lua_aug_setm (lua_State *L)
 }
 
 static int
-guestfs_lua_available (lua_State *L)
+guestfs_int_lua_available (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1214,7 +1214,7 @@ guestfs_lua_available (lua_State *L)
 }
 
 static int
-guestfs_lua_available_all_groups (lua_State *L)
+guestfs_int_lua_available_all_groups (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -1235,7 +1235,7 @@ guestfs_lua_available_all_groups (lua_State *L)
 }
 
 static int
-guestfs_lua_base64_in (lua_State *L)
+guestfs_int_lua_base64_in (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1258,7 +1258,7 @@ guestfs_lua_base64_in (lua_State *L)
 }
 
 static int
-guestfs_lua_base64_out (lua_State *L)
+guestfs_int_lua_base64_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1281,7 +1281,7 @@ guestfs_lua_base64_out (lua_State *L)
 }
 
 static int
-guestfs_lua_blkdiscard (lua_State *L)
+guestfs_int_lua_blkdiscard (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1302,7 +1302,7 @@ guestfs_lua_blkdiscard (lua_State *L)
 }
 
 static int
-guestfs_lua_blkdiscardzeroes (lua_State *L)
+guestfs_int_lua_blkdiscardzeroes (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1324,7 +1324,7 @@ guestfs_lua_blkdiscardzeroes (lua_State *L)
 }
 
 static int
-guestfs_lua_blkid (lua_State *L)
+guestfs_int_lua_blkid (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -1347,7 +1347,7 @@ guestfs_lua_blkid (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_flushbufs (lua_State *L)
+guestfs_int_lua_blockdev_flushbufs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1368,7 +1368,7 @@ guestfs_lua_blockdev_flushbufs (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_getbsz (lua_State *L)
+guestfs_int_lua_blockdev_getbsz (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1390,7 +1390,7 @@ guestfs_lua_blockdev_getbsz (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_getro (lua_State *L)
+guestfs_int_lua_blockdev_getro (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1412,7 +1412,7 @@ guestfs_lua_blockdev_getro (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_getsize64 (lua_State *L)
+guestfs_int_lua_blockdev_getsize64 (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -1434,7 +1434,7 @@ guestfs_lua_blockdev_getsize64 (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_getss (lua_State *L)
+guestfs_int_lua_blockdev_getss (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1456,7 +1456,7 @@ guestfs_lua_blockdev_getss (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_getsz (lua_State *L)
+guestfs_int_lua_blockdev_getsz (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -1478,7 +1478,7 @@ guestfs_lua_blockdev_getsz (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_rereadpt (lua_State *L)
+guestfs_int_lua_blockdev_rereadpt (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1499,7 +1499,7 @@ guestfs_lua_blockdev_rereadpt (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_setbsz (lua_State *L)
+guestfs_int_lua_blockdev_setbsz (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1522,7 +1522,7 @@ guestfs_lua_blockdev_setbsz (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_setra (lua_State *L)
+guestfs_int_lua_blockdev_setra (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1545,7 +1545,7 @@ guestfs_lua_blockdev_setra (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_setro (lua_State *L)
+guestfs_int_lua_blockdev_setro (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1566,7 +1566,7 @@ guestfs_lua_blockdev_setro (lua_State *L)
 }
 
 static int
-guestfs_lua_blockdev_setrw (lua_State *L)
+guestfs_int_lua_blockdev_setrw (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1587,7 +1587,7 @@ guestfs_lua_blockdev_setrw (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_balance_cancel (lua_State *L)
+guestfs_int_lua_btrfs_balance_cancel (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1608,7 +1608,7 @@ guestfs_lua_btrfs_balance_cancel (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_balance_pause (lua_State *L)
+guestfs_int_lua_btrfs_balance_pause (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1629,7 +1629,7 @@ guestfs_lua_btrfs_balance_pause (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_balance_resume (lua_State *L)
+guestfs_int_lua_btrfs_balance_resume (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1650,7 +1650,7 @@ guestfs_lua_btrfs_balance_resume (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_balance_status (lua_State *L)
+guestfs_int_lua_btrfs_balance_status (lua_State *L)
 {
   struct guestfs_btrfsbalance *r;
   struct userdata *u = get_handle (L, 1);
@@ -1673,7 +1673,7 @@ guestfs_lua_btrfs_balance_status (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_device_add (lua_State *L)
+guestfs_int_lua_btrfs_device_add (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1697,7 +1697,7 @@ guestfs_lua_btrfs_device_add (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_device_delete (lua_State *L)
+guestfs_int_lua_btrfs_device_delete (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1721,7 +1721,7 @@ guestfs_lua_btrfs_device_delete (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_filesystem_balance (lua_State *L)
+guestfs_int_lua_btrfs_filesystem_balance (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1742,7 +1742,7 @@ guestfs_lua_btrfs_filesystem_balance (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_filesystem_defragment (lua_State *L)
+guestfs_int_lua_btrfs_filesystem_defragment (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1777,7 +1777,7 @@ guestfs_lua_btrfs_filesystem_defragment (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_filesystem_resize (lua_State *L)
+guestfs_int_lua_btrfs_filesystem_resize (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1808,7 +1808,7 @@ guestfs_lua_btrfs_filesystem_resize (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_filesystem_sync (lua_State *L)
+guestfs_int_lua_btrfs_filesystem_sync (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1829,7 +1829,7 @@ guestfs_lua_btrfs_filesystem_sync (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_fsck (lua_State *L)
+guestfs_int_lua_btrfs_fsck (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1864,7 +1864,7 @@ guestfs_lua_btrfs_fsck (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_image (lua_State *L)
+guestfs_int_lua_btrfs_image (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1898,7 +1898,7 @@ guestfs_lua_btrfs_image (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_qgroup_assign (lua_State *L)
+guestfs_int_lua_btrfs_qgroup_assign (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1923,7 +1923,7 @@ guestfs_lua_btrfs_qgroup_assign (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_qgroup_create (lua_State *L)
+guestfs_int_lua_btrfs_qgroup_create (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1946,7 +1946,7 @@ guestfs_lua_btrfs_qgroup_create (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_qgroup_destroy (lua_State *L)
+guestfs_int_lua_btrfs_qgroup_destroy (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1969,7 +1969,7 @@ guestfs_lua_btrfs_qgroup_destroy (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_qgroup_limit (lua_State *L)
+guestfs_int_lua_btrfs_qgroup_limit (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -1992,7 +1992,7 @@ guestfs_lua_btrfs_qgroup_limit (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_qgroup_remove (lua_State *L)
+guestfs_int_lua_btrfs_qgroup_remove (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2017,7 +2017,7 @@ guestfs_lua_btrfs_qgroup_remove (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_qgroup_show (lua_State *L)
+guestfs_int_lua_btrfs_qgroup_show (lua_State *L)
 {
   struct guestfs_btrfsqgroup_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -2040,7 +2040,7 @@ guestfs_lua_btrfs_qgroup_show (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_quota_enable (lua_State *L)
+guestfs_int_lua_btrfs_quota_enable (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2063,7 +2063,7 @@ guestfs_lua_btrfs_quota_enable (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_quota_rescan (lua_State *L)
+guestfs_int_lua_btrfs_quota_rescan (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2084,7 +2084,7 @@ guestfs_lua_btrfs_quota_rescan (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_replace (lua_State *L)
+guestfs_int_lua_btrfs_replace (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2109,7 +2109,7 @@ guestfs_lua_btrfs_replace (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_rescue_chunk_recover (lua_State *L)
+guestfs_int_lua_btrfs_rescue_chunk_recover (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2130,7 +2130,7 @@ guestfs_lua_btrfs_rescue_chunk_recover (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_rescue_super_recover (lua_State *L)
+guestfs_int_lua_btrfs_rescue_super_recover (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2151,7 +2151,7 @@ guestfs_lua_btrfs_rescue_super_recover (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_scrub_cancel (lua_State *L)
+guestfs_int_lua_btrfs_scrub_cancel (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2172,7 +2172,7 @@ guestfs_lua_btrfs_scrub_cancel (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_scrub_resume (lua_State *L)
+guestfs_int_lua_btrfs_scrub_resume (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2193,7 +2193,7 @@ guestfs_lua_btrfs_scrub_resume (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_scrub_start (lua_State *L)
+guestfs_int_lua_btrfs_scrub_start (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2214,7 +2214,7 @@ guestfs_lua_btrfs_scrub_start (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_scrub_status (lua_State *L)
+guestfs_int_lua_btrfs_scrub_status (lua_State *L)
 {
   struct guestfs_btrfsscrub *r;
   struct userdata *u = get_handle (L, 1);
@@ -2237,7 +2237,7 @@ guestfs_lua_btrfs_scrub_status (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_set_seeding (lua_State *L)
+guestfs_int_lua_btrfs_set_seeding (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2260,7 +2260,7 @@ guestfs_lua_btrfs_set_seeding (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_subvolume_create (lua_State *L)
+guestfs_int_lua_btrfs_subvolume_create (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2291,7 +2291,7 @@ guestfs_lua_btrfs_subvolume_create (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_subvolume_delete (lua_State *L)
+guestfs_int_lua_btrfs_subvolume_delete (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2312,7 +2312,7 @@ guestfs_lua_btrfs_subvolume_delete (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_subvolume_get_default (lua_State *L)
+guestfs_int_lua_btrfs_subvolume_get_default (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -2334,7 +2334,7 @@ guestfs_lua_btrfs_subvolume_get_default (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_subvolume_list (lua_State *L)
+guestfs_int_lua_btrfs_subvolume_list (lua_State *L)
 {
   struct guestfs_btrfssubvolume_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -2357,7 +2357,7 @@ guestfs_lua_btrfs_subvolume_list (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_subvolume_set_default (lua_State *L)
+guestfs_int_lua_btrfs_subvolume_set_default (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2380,7 +2380,7 @@ guestfs_lua_btrfs_subvolume_set_default (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_subvolume_show (lua_State *L)
+guestfs_int_lua_btrfs_subvolume_show (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -2403,7 +2403,7 @@ guestfs_lua_btrfs_subvolume_show (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfs_subvolume_snapshot (lua_State *L)
+guestfs_int_lua_btrfs_subvolume_snapshot (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2440,7 +2440,7 @@ guestfs_lua_btrfs_subvolume_snapshot (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfstune_enable_extended_inode_refs (lua_State *L)
+guestfs_int_lua_btrfstune_enable_extended_inode_refs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2461,7 +2461,7 @@ guestfs_lua_btrfstune_enable_extended_inode_refs (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfstune_enable_skinny_metadata_extent_refs (lua_State *L)
+guestfs_int_lua_btrfstune_enable_skinny_metadata_extent_refs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2482,7 +2482,7 @@ guestfs_lua_btrfstune_enable_skinny_metadata_extent_refs (lua_State *L)
 }
 
 static int
-guestfs_lua_btrfstune_seeding (lua_State *L)
+guestfs_int_lua_btrfstune_seeding (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2505,7 +2505,7 @@ guestfs_lua_btrfstune_seeding (lua_State *L)
 }
 
 static int
-guestfs_lua_c_pointer (lua_State *L)
+guestfs_int_lua_c_pointer (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -2525,7 +2525,7 @@ guestfs_lua_c_pointer (lua_State *L)
 }
 
 static int
-guestfs_lua_canonical_device_name (lua_State *L)
+guestfs_int_lua_canonical_device_name (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -2548,7 +2548,7 @@ guestfs_lua_canonical_device_name (lua_State *L)
 }
 
 static int
-guestfs_lua_cap_get_file (lua_State *L)
+guestfs_int_lua_cap_get_file (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -2571,7 +2571,7 @@ guestfs_lua_cap_get_file (lua_State *L)
 }
 
 static int
-guestfs_lua_cap_set_file (lua_State *L)
+guestfs_int_lua_cap_set_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2594,7 +2594,7 @@ guestfs_lua_cap_set_file (lua_State *L)
 }
 
 static int
-guestfs_lua_case_sensitive_path (lua_State *L)
+guestfs_int_lua_case_sensitive_path (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -2617,7 +2617,7 @@ guestfs_lua_case_sensitive_path (lua_State *L)
 }
 
 static int
-guestfs_lua_cat (lua_State *L)
+guestfs_int_lua_cat (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -2640,7 +2640,7 @@ guestfs_lua_cat (lua_State *L)
 }
 
 static int
-guestfs_lua_checksum (lua_State *L)
+guestfs_int_lua_checksum (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -2665,7 +2665,7 @@ guestfs_lua_checksum (lua_State *L)
 }
 
 static int
-guestfs_lua_checksum_device (lua_State *L)
+guestfs_int_lua_checksum_device (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -2690,7 +2690,7 @@ guestfs_lua_checksum_device (lua_State *L)
 }
 
 static int
-guestfs_lua_checksums_out (lua_State *L)
+guestfs_int_lua_checksums_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2715,7 +2715,7 @@ guestfs_lua_checksums_out (lua_State *L)
 }
 
 static int
-guestfs_lua_chmod (lua_State *L)
+guestfs_int_lua_chmod (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2738,7 +2738,7 @@ guestfs_lua_chmod (lua_State *L)
 }
 
 static int
-guestfs_lua_chown (lua_State *L)
+guestfs_int_lua_chown (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2763,7 +2763,7 @@ guestfs_lua_chown (lua_State *L)
 }
 
 static int
-guestfs_lua_clear_backend_setting (lua_State *L)
+guestfs_int_lua_clear_backend_setting (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2785,7 +2785,7 @@ guestfs_lua_clear_backend_setting (lua_State *L)
 }
 
 static int
-guestfs_lua_command (lua_State *L)
+guestfs_int_lua_command (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -2809,7 +2809,7 @@ guestfs_lua_command (lua_State *L)
 }
 
 static int
-guestfs_lua_command_lines (lua_State *L)
+guestfs_int_lua_command_lines (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -2833,7 +2833,7 @@ guestfs_lua_command_lines (lua_State *L)
 }
 
 static int
-guestfs_lua_compress_device_out (lua_State *L)
+guestfs_int_lua_compress_device_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2868,7 +2868,7 @@ guestfs_lua_compress_device_out (lua_State *L)
 }
 
 static int
-guestfs_lua_compress_out (lua_State *L)
+guestfs_int_lua_compress_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2903,7 +2903,7 @@ guestfs_lua_compress_out (lua_State *L)
 }
 
 static int
-guestfs_lua_config (lua_State *L)
+guestfs_int_lua_config (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2926,7 +2926,7 @@ guestfs_lua_config (lua_State *L)
 }
 
 static int
-guestfs_lua_copy_attributes (lua_State *L)
+guestfs_int_lua_copy_attributes (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -2971,7 +2971,7 @@ guestfs_lua_copy_attributes (lua_State *L)
 }
 
 static int
-guestfs_lua_copy_device_to_device (lua_State *L)
+guestfs_int_lua_copy_device_to_device (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3020,7 +3020,7 @@ guestfs_lua_copy_device_to_device (lua_State *L)
 }
 
 static int
-guestfs_lua_copy_device_to_file (lua_State *L)
+guestfs_int_lua_copy_device_to_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3069,7 +3069,7 @@ guestfs_lua_copy_device_to_file (lua_State *L)
 }
 
 static int
-guestfs_lua_copy_file_to_device (lua_State *L)
+guestfs_int_lua_copy_file_to_device (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3118,7 +3118,7 @@ guestfs_lua_copy_file_to_device (lua_State *L)
 }
 
 static int
-guestfs_lua_copy_file_to_file (lua_State *L)
+guestfs_int_lua_copy_file_to_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3167,7 +3167,7 @@ guestfs_lua_copy_file_to_file (lua_State *L)
 }
 
 static int
-guestfs_lua_copy_in (lua_State *L)
+guestfs_int_lua_copy_in (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3190,7 +3190,7 @@ guestfs_lua_copy_in (lua_State *L)
 }
 
 static int
-guestfs_lua_copy_out (lua_State *L)
+guestfs_int_lua_copy_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3213,7 +3213,7 @@ guestfs_lua_copy_out (lua_State *L)
 }
 
 static int
-guestfs_lua_copy_size (lua_State *L)
+guestfs_int_lua_copy_size (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3238,7 +3238,7 @@ guestfs_lua_copy_size (lua_State *L)
 }
 
 static int
-guestfs_lua_cp (lua_State *L)
+guestfs_int_lua_cp (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3261,7 +3261,7 @@ guestfs_lua_cp (lua_State *L)
 }
 
 static int
-guestfs_lua_cp_a (lua_State *L)
+guestfs_int_lua_cp_a (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3284,7 +3284,7 @@ guestfs_lua_cp_a (lua_State *L)
 }
 
 static int
-guestfs_lua_cp_r (lua_State *L)
+guestfs_int_lua_cp_r (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3307,7 +3307,7 @@ guestfs_lua_cp_r (lua_State *L)
 }
 
 static int
-guestfs_lua_cpio_out (lua_State *L)
+guestfs_int_lua_cpio_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3340,7 +3340,7 @@ guestfs_lua_cpio_out (lua_State *L)
 }
 
 static int
-guestfs_lua_dd (lua_State *L)
+guestfs_int_lua_dd (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3363,7 +3363,7 @@ guestfs_lua_dd (lua_State *L)
 }
 
 static int
-guestfs_lua_debug (lua_State *L)
+guestfs_int_lua_debug (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -3389,7 +3389,7 @@ guestfs_lua_debug (lua_State *L)
 }
 
 static int
-guestfs_lua_debug_drives (lua_State *L)
+guestfs_int_lua_debug_drives (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -3410,7 +3410,7 @@ guestfs_lua_debug_drives (lua_State *L)
 }
 
 static int
-guestfs_lua_debug_upload (lua_State *L)
+guestfs_int_lua_debug_upload (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3435,7 +3435,7 @@ guestfs_lua_debug_upload (lua_State *L)
 }
 
 static int
-guestfs_lua_device_index (lua_State *L)
+guestfs_int_lua_device_index (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3457,7 +3457,7 @@ guestfs_lua_device_index (lua_State *L)
 }
 
 static int
-guestfs_lua_df (lua_State *L)
+guestfs_int_lua_df (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -3478,7 +3478,7 @@ guestfs_lua_df (lua_State *L)
 }
 
 static int
-guestfs_lua_df_h (lua_State *L)
+guestfs_int_lua_df_h (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -3499,7 +3499,7 @@ guestfs_lua_df_h (lua_State *L)
 }
 
 static int
-guestfs_lua_disk_create (lua_State *L)
+guestfs_int_lua_disk_create (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3550,7 +3550,7 @@ guestfs_lua_disk_create (lua_State *L)
 }
 
 static int
-guestfs_lua_disk_format (lua_State *L)
+guestfs_int_lua_disk_format (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -3573,7 +3573,7 @@ guestfs_lua_disk_format (lua_State *L)
 }
 
 static int
-guestfs_lua_disk_has_backing_file (lua_State *L)
+guestfs_int_lua_disk_has_backing_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3595,7 +3595,7 @@ guestfs_lua_disk_has_backing_file (lua_State *L)
 }
 
 static int
-guestfs_lua_disk_virtual_size (lua_State *L)
+guestfs_int_lua_disk_virtual_size (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -3617,7 +3617,7 @@ guestfs_lua_disk_virtual_size (lua_State *L)
 }
 
 static int
-guestfs_lua_dmesg (lua_State *L)
+guestfs_int_lua_dmesg (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -3638,7 +3638,7 @@ guestfs_lua_dmesg (lua_State *L)
 }
 
 static int
-guestfs_lua_download (lua_State *L)
+guestfs_int_lua_download (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3661,7 +3661,7 @@ guestfs_lua_download (lua_State *L)
 }
 
 static int
-guestfs_lua_download_offset (lua_State *L)
+guestfs_int_lua_download_offset (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3688,7 +3688,7 @@ guestfs_lua_download_offset (lua_State *L)
 }
 
 static int
-guestfs_lua_drop_caches (lua_State *L)
+guestfs_int_lua_drop_caches (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3709,7 +3709,7 @@ guestfs_lua_drop_caches (lua_State *L)
 }
 
 static int
-guestfs_lua_du (lua_State *L)
+guestfs_int_lua_du (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -3731,7 +3731,7 @@ guestfs_lua_du (lua_State *L)
 }
 
 static int
-guestfs_lua_e2fsck (lua_State *L)
+guestfs_int_lua_e2fsck (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3766,7 +3766,7 @@ guestfs_lua_e2fsck (lua_State *L)
 }
 
 static int
-guestfs_lua_e2fsck_f (lua_State *L)
+guestfs_int_lua_e2fsck_f (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3787,7 +3787,7 @@ guestfs_lua_e2fsck_f (lua_State *L)
 }
 
 static int
-guestfs_lua_echo_daemon (lua_State *L)
+guestfs_int_lua_echo_daemon (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -3811,7 +3811,7 @@ guestfs_lua_echo_daemon (lua_State *L)
 }
 
 static int
-guestfs_lua_egrep (lua_State *L)
+guestfs_int_lua_egrep (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -3836,7 +3836,7 @@ guestfs_lua_egrep (lua_State *L)
 }
 
 static int
-guestfs_lua_egrepi (lua_State *L)
+guestfs_int_lua_egrepi (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -3861,7 +3861,7 @@ guestfs_lua_egrepi (lua_State *L)
 }
 
 static int
-guestfs_lua_equal (lua_State *L)
+guestfs_int_lua_equal (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3885,7 +3885,7 @@ guestfs_lua_equal (lua_State *L)
 }
 
 static int
-guestfs_lua_exists (lua_State *L)
+guestfs_int_lua_exists (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3907,7 +3907,7 @@ guestfs_lua_exists (lua_State *L)
 }
 
 static int
-guestfs_lua_extlinux (lua_State *L)
+guestfs_int_lua_extlinux (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3928,7 +3928,7 @@ guestfs_lua_extlinux (lua_State *L)
 }
 
 static int
-guestfs_lua_fallocate (lua_State *L)
+guestfs_int_lua_fallocate (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3951,7 +3951,7 @@ guestfs_lua_fallocate (lua_State *L)
 }
 
 static int
-guestfs_lua_fallocate64 (lua_State *L)
+guestfs_int_lua_fallocate64 (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3974,7 +3974,7 @@ guestfs_lua_fallocate64 (lua_State *L)
 }
 
 static int
-guestfs_lua_feature_available (lua_State *L)
+guestfs_int_lua_feature_available (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -3997,7 +3997,7 @@ guestfs_lua_feature_available (lua_State *L)
 }
 
 static int
-guestfs_lua_fgrep (lua_State *L)
+guestfs_int_lua_fgrep (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -4022,7 +4022,7 @@ guestfs_lua_fgrep (lua_State *L)
 }
 
 static int
-guestfs_lua_fgrepi (lua_State *L)
+guestfs_int_lua_fgrepi (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -4047,7 +4047,7 @@ guestfs_lua_fgrepi (lua_State *L)
 }
 
 static int
-guestfs_lua_file (lua_State *L)
+guestfs_int_lua_file (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4070,7 +4070,7 @@ guestfs_lua_file (lua_State *L)
 }
 
 static int
-guestfs_lua_file_architecture (lua_State *L)
+guestfs_int_lua_file_architecture (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4093,7 +4093,7 @@ guestfs_lua_file_architecture (lua_State *L)
 }
 
 static int
-guestfs_lua_filesize (lua_State *L)
+guestfs_int_lua_filesize (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -4115,7 +4115,7 @@ guestfs_lua_filesize (lua_State *L)
 }
 
 static int
-guestfs_lua_filesystem_available (lua_State *L)
+guestfs_int_lua_filesystem_available (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4137,7 +4137,7 @@ guestfs_lua_filesystem_available (lua_State *L)
 }
 
 static int
-guestfs_lua_fill (lua_State *L)
+guestfs_int_lua_fill (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4162,7 +4162,7 @@ guestfs_lua_fill (lua_State *L)
 }
 
 static int
-guestfs_lua_fill_dir (lua_State *L)
+guestfs_int_lua_fill_dir (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4185,7 +4185,7 @@ guestfs_lua_fill_dir (lua_State *L)
 }
 
 static int
-guestfs_lua_fill_pattern (lua_State *L)
+guestfs_int_lua_fill_pattern (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4210,7 +4210,7 @@ guestfs_lua_fill_pattern (lua_State *L)
 }
 
 static int
-guestfs_lua_find (lua_State *L)
+guestfs_int_lua_find (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -4233,7 +4233,7 @@ guestfs_lua_find (lua_State *L)
 }
 
 static int
-guestfs_lua_find0 (lua_State *L)
+guestfs_int_lua_find0 (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4256,7 +4256,7 @@ guestfs_lua_find0 (lua_State *L)
 }
 
 static int
-guestfs_lua_findfs_label (lua_State *L)
+guestfs_int_lua_findfs_label (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4279,7 +4279,7 @@ guestfs_lua_findfs_label (lua_State *L)
 }
 
 static int
-guestfs_lua_findfs_uuid (lua_State *L)
+guestfs_int_lua_findfs_uuid (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4302,7 +4302,7 @@ guestfs_lua_findfs_uuid (lua_State *L)
 }
 
 static int
-guestfs_lua_fsck (lua_State *L)
+guestfs_int_lua_fsck (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4326,7 +4326,7 @@ guestfs_lua_fsck (lua_State *L)
 }
 
 static int
-guestfs_lua_fstrim (lua_State *L)
+guestfs_int_lua_fstrim (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4365,7 +4365,7 @@ guestfs_lua_fstrim (lua_State *L)
 }
 
 static int
-guestfs_lua_get_append (lua_State *L)
+guestfs_int_lua_get_append (lua_State *L)
 {
   const char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4382,7 +4382,7 @@ guestfs_lua_get_append (lua_State *L)
 }
 
 static int
-guestfs_lua_get_attach_method (lua_State *L)
+guestfs_int_lua_get_attach_method (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4403,7 +4403,7 @@ guestfs_lua_get_attach_method (lua_State *L)
 }
 
 static int
-guestfs_lua_get_autosync (lua_State *L)
+guestfs_int_lua_get_autosync (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4423,7 +4423,7 @@ guestfs_lua_get_autosync (lua_State *L)
 }
 
 static int
-guestfs_lua_get_backend (lua_State *L)
+guestfs_int_lua_get_backend (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4444,7 +4444,7 @@ guestfs_lua_get_backend (lua_State *L)
 }
 
 static int
-guestfs_lua_get_backend_setting (lua_State *L)
+guestfs_int_lua_get_backend_setting (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4467,7 +4467,7 @@ guestfs_lua_get_backend_setting (lua_State *L)
 }
 
 static int
-guestfs_lua_get_backend_settings (lua_State *L)
+guestfs_int_lua_get_backend_settings (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -4488,7 +4488,7 @@ guestfs_lua_get_backend_settings (lua_State *L)
 }
 
 static int
-guestfs_lua_get_cachedir (lua_State *L)
+guestfs_int_lua_get_cachedir (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4509,7 +4509,7 @@ guestfs_lua_get_cachedir (lua_State *L)
 }
 
 static int
-guestfs_lua_get_direct (lua_State *L)
+guestfs_int_lua_get_direct (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4529,7 +4529,7 @@ guestfs_lua_get_direct (lua_State *L)
 }
 
 static int
-guestfs_lua_get_e2attrs (lua_State *L)
+guestfs_int_lua_get_e2attrs (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4552,7 +4552,7 @@ guestfs_lua_get_e2attrs (lua_State *L)
 }
 
 static int
-guestfs_lua_get_e2generation (lua_State *L)
+guestfs_int_lua_get_e2generation (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -4574,7 +4574,7 @@ guestfs_lua_get_e2generation (lua_State *L)
 }
 
 static int
-guestfs_lua_get_e2label (lua_State *L)
+guestfs_int_lua_get_e2label (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4597,7 +4597,7 @@ guestfs_lua_get_e2label (lua_State *L)
 }
 
 static int
-guestfs_lua_get_e2uuid (lua_State *L)
+guestfs_int_lua_get_e2uuid (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4620,7 +4620,7 @@ guestfs_lua_get_e2uuid (lua_State *L)
 }
 
 static int
-guestfs_lua_get_hv (lua_State *L)
+guestfs_int_lua_get_hv (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4641,7 +4641,7 @@ guestfs_lua_get_hv (lua_State *L)
 }
 
 static int
-guestfs_lua_get_identifier (lua_State *L)
+guestfs_int_lua_get_identifier (lua_State *L)
 {
   const char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4661,7 +4661,7 @@ guestfs_lua_get_identifier (lua_State *L)
 }
 
 static int
-guestfs_lua_get_libvirt_requested_credential_challenge (lua_State *L)
+guestfs_int_lua_get_libvirt_requested_credential_challenge (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4684,7 +4684,7 @@ guestfs_lua_get_libvirt_requested_credential_challenge (lua_State *L)
 }
 
 static int
-guestfs_lua_get_libvirt_requested_credential_defresult (lua_State *L)
+guestfs_int_lua_get_libvirt_requested_credential_defresult (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4707,7 +4707,7 @@ guestfs_lua_get_libvirt_requested_credential_defresult (lua_State *L)
 }
 
 static int
-guestfs_lua_get_libvirt_requested_credential_prompt (lua_State *L)
+guestfs_int_lua_get_libvirt_requested_credential_prompt (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4730,7 +4730,7 @@ guestfs_lua_get_libvirt_requested_credential_prompt (lua_State *L)
 }
 
 static int
-guestfs_lua_get_libvirt_requested_credentials (lua_State *L)
+guestfs_int_lua_get_libvirt_requested_credentials (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -4751,7 +4751,7 @@ guestfs_lua_get_libvirt_requested_credentials (lua_State *L)
 }
 
 static int
-guestfs_lua_get_memsize (lua_State *L)
+guestfs_int_lua_get_memsize (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4771,7 +4771,7 @@ guestfs_lua_get_memsize (lua_State *L)
 }
 
 static int
-guestfs_lua_get_network (lua_State *L)
+guestfs_int_lua_get_network (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4791,7 +4791,7 @@ guestfs_lua_get_network (lua_State *L)
 }
 
 static int
-guestfs_lua_get_path (lua_State *L)
+guestfs_int_lua_get_path (lua_State *L)
 {
   const char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4811,7 +4811,7 @@ guestfs_lua_get_path (lua_State *L)
 }
 
 static int
-guestfs_lua_get_pgroup (lua_State *L)
+guestfs_int_lua_get_pgroup (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4831,7 +4831,7 @@ guestfs_lua_get_pgroup (lua_State *L)
 }
 
 static int
-guestfs_lua_get_pid (lua_State *L)
+guestfs_int_lua_get_pid (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4851,7 +4851,7 @@ guestfs_lua_get_pid (lua_State *L)
 }
 
 static int
-guestfs_lua_get_program (lua_State *L)
+guestfs_int_lua_get_program (lua_State *L)
 {
   const char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4871,7 +4871,7 @@ guestfs_lua_get_program (lua_State *L)
 }
 
 static int
-guestfs_lua_get_qemu (lua_State *L)
+guestfs_int_lua_get_qemu (lua_State *L)
 {
   const char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4891,7 +4891,7 @@ guestfs_lua_get_qemu (lua_State *L)
 }
 
 static int
-guestfs_lua_get_recovery_proc (lua_State *L)
+guestfs_int_lua_get_recovery_proc (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4911,7 +4911,7 @@ guestfs_lua_get_recovery_proc (lua_State *L)
 }
 
 static int
-guestfs_lua_get_selinux (lua_State *L)
+guestfs_int_lua_get_selinux (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4931,7 +4931,7 @@ guestfs_lua_get_selinux (lua_State *L)
 }
 
 static int
-guestfs_lua_get_smp (lua_State *L)
+guestfs_int_lua_get_smp (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4951,7 +4951,7 @@ guestfs_lua_get_smp (lua_State *L)
 }
 
 static int
-guestfs_lua_get_state (lua_State *L)
+guestfs_int_lua_get_state (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -4971,7 +4971,7 @@ guestfs_lua_get_state (lua_State *L)
 }
 
 static int
-guestfs_lua_get_tmpdir (lua_State *L)
+guestfs_int_lua_get_tmpdir (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -4992,7 +4992,7 @@ guestfs_lua_get_tmpdir (lua_State *L)
 }
 
 static int
-guestfs_lua_get_trace (lua_State *L)
+guestfs_int_lua_get_trace (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5012,7 +5012,7 @@ guestfs_lua_get_trace (lua_State *L)
 }
 
 static int
-guestfs_lua_get_umask (lua_State *L)
+guestfs_int_lua_get_umask (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5032,7 +5032,7 @@ guestfs_lua_get_umask (lua_State *L)
 }
 
 static int
-guestfs_lua_get_verbose (lua_State *L)
+guestfs_int_lua_get_verbose (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5052,7 +5052,7 @@ guestfs_lua_get_verbose (lua_State *L)
 }
 
 static int
-guestfs_lua_getcon (lua_State *L)
+guestfs_int_lua_getcon (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -5073,7 +5073,7 @@ guestfs_lua_getcon (lua_State *L)
 }
 
 static int
-guestfs_lua_getxattr (lua_State *L)
+guestfs_int_lua_getxattr (lua_State *L)
 {
   char *r;
   size_t size;
@@ -5099,7 +5099,7 @@ guestfs_lua_getxattr (lua_State *L)
 }
 
 static int
-guestfs_lua_getxattrs (lua_State *L)
+guestfs_int_lua_getxattrs (lua_State *L)
 {
   struct guestfs_xattr_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -5122,7 +5122,7 @@ guestfs_lua_getxattrs (lua_State *L)
 }
 
 static int
-guestfs_lua_glob_expand (lua_State *L)
+guestfs_int_lua_glob_expand (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -5145,7 +5145,7 @@ guestfs_lua_glob_expand (lua_State *L)
 }
 
 static int
-guestfs_lua_grep (lua_State *L)
+guestfs_int_lua_grep (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -5192,7 +5192,7 @@ guestfs_lua_grep (lua_State *L)
 }
 
 static int
-guestfs_lua_grepi (lua_State *L)
+guestfs_int_lua_grepi (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -5217,7 +5217,7 @@ guestfs_lua_grepi (lua_State *L)
 }
 
 static int
-guestfs_lua_grub_install (lua_State *L)
+guestfs_int_lua_grub_install (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5240,7 +5240,7 @@ guestfs_lua_grub_install (lua_State *L)
 }
 
 static int
-guestfs_lua_head (lua_State *L)
+guestfs_int_lua_head (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -5263,7 +5263,7 @@ guestfs_lua_head (lua_State *L)
 }
 
 static int
-guestfs_lua_head_n (lua_State *L)
+guestfs_int_lua_head_n (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -5288,7 +5288,7 @@ guestfs_lua_head_n (lua_State *L)
 }
 
 static int
-guestfs_lua_hexdump (lua_State *L)
+guestfs_int_lua_hexdump (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -5311,7 +5311,7 @@ guestfs_lua_hexdump (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_close (lua_State *L)
+guestfs_int_lua_hivex_close (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5330,7 +5330,7 @@ guestfs_lua_hivex_close (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_commit (lua_State *L)
+guestfs_int_lua_hivex_commit (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5351,7 +5351,7 @@ guestfs_lua_hivex_commit (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_node_add_child (lua_State *L)
+guestfs_int_lua_hivex_node_add_child (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -5375,7 +5375,7 @@ guestfs_lua_hivex_node_add_child (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_node_children (lua_State *L)
+guestfs_int_lua_hivex_node_children (lua_State *L)
 {
   struct guestfs_hivex_node_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -5398,7 +5398,7 @@ guestfs_lua_hivex_node_children (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_node_delete_child (lua_State *L)
+guestfs_int_lua_hivex_node_delete_child (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5419,7 +5419,7 @@ guestfs_lua_hivex_node_delete_child (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_node_get_child (lua_State *L)
+guestfs_int_lua_hivex_node_get_child (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -5443,7 +5443,7 @@ guestfs_lua_hivex_node_get_child (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_node_get_value (lua_State *L)
+guestfs_int_lua_hivex_node_get_value (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -5467,7 +5467,7 @@ guestfs_lua_hivex_node_get_value (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_node_name (lua_State *L)
+guestfs_int_lua_hivex_node_name (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -5490,7 +5490,7 @@ guestfs_lua_hivex_node_name (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_node_parent (lua_State *L)
+guestfs_int_lua_hivex_node_parent (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -5512,7 +5512,7 @@ guestfs_lua_hivex_node_parent (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_node_set_value (lua_State *L)
+guestfs_int_lua_hivex_node_set_value (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5540,7 +5540,7 @@ guestfs_lua_hivex_node_set_value (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_node_values (lua_State *L)
+guestfs_int_lua_hivex_node_values (lua_State *L)
 {
   struct guestfs_hivex_value_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -5563,7 +5563,7 @@ guestfs_lua_hivex_node_values (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_open (lua_State *L)
+guestfs_int_lua_hivex_open (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5602,7 +5602,7 @@ guestfs_lua_hivex_open (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_root (lua_State *L)
+guestfs_int_lua_hivex_root (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -5622,7 +5622,7 @@ guestfs_lua_hivex_root (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_value_key (lua_State *L)
+guestfs_int_lua_hivex_value_key (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -5645,7 +5645,7 @@ guestfs_lua_hivex_value_key (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_value_type (lua_State *L)
+guestfs_int_lua_hivex_value_type (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -5667,7 +5667,7 @@ guestfs_lua_hivex_value_type (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_value_utf8 (lua_State *L)
+guestfs_int_lua_hivex_value_utf8 (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -5690,7 +5690,7 @@ guestfs_lua_hivex_value_utf8 (lua_State *L)
 }
 
 static int
-guestfs_lua_hivex_value_value (lua_State *L)
+guestfs_int_lua_hivex_value_value (lua_State *L)
 {
   char *r;
   size_t size;
@@ -5714,7 +5714,7 @@ guestfs_lua_hivex_value_value (lua_State *L)
 }
 
 static int
-guestfs_lua_initrd_cat (lua_State *L)
+guestfs_int_lua_initrd_cat (lua_State *L)
 {
   char *r;
   size_t size;
@@ -5740,7 +5740,7 @@ guestfs_lua_initrd_cat (lua_State *L)
 }
 
 static int
-guestfs_lua_initrd_list (lua_State *L)
+guestfs_int_lua_initrd_list (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -5763,7 +5763,7 @@ guestfs_lua_initrd_list (lua_State *L)
 }
 
 static int
-guestfs_lua_inotify_add_watch (lua_State *L)
+guestfs_int_lua_inotify_add_watch (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -5787,7 +5787,7 @@ guestfs_lua_inotify_add_watch (lua_State *L)
 }
 
 static int
-guestfs_lua_inotify_close (lua_State *L)
+guestfs_int_lua_inotify_close (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5806,7 +5806,7 @@ guestfs_lua_inotify_close (lua_State *L)
 }
 
 static int
-guestfs_lua_inotify_files (lua_State *L)
+guestfs_int_lua_inotify_files (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -5827,7 +5827,7 @@ guestfs_lua_inotify_files (lua_State *L)
 }
 
 static int
-guestfs_lua_inotify_init (lua_State *L)
+guestfs_int_lua_inotify_init (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5848,7 +5848,7 @@ guestfs_lua_inotify_init (lua_State *L)
 }
 
 static int
-guestfs_lua_inotify_read (lua_State *L)
+guestfs_int_lua_inotify_read (lua_State *L)
 {
   struct guestfs_inotify_event_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -5869,7 +5869,7 @@ guestfs_lua_inotify_read (lua_State *L)
 }
 
 static int
-guestfs_lua_inotify_rm_watch (lua_State *L)
+guestfs_int_lua_inotify_rm_watch (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -5890,7 +5890,7 @@ guestfs_lua_inotify_rm_watch (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_arch (lua_State *L)
+guestfs_int_lua_inspect_get_arch (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -5913,7 +5913,7 @@ guestfs_lua_inspect_get_arch (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_distro (lua_State *L)
+guestfs_int_lua_inspect_get_distro (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -5936,7 +5936,7 @@ guestfs_lua_inspect_get_distro (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_drive_mappings (lua_State *L)
+guestfs_int_lua_inspect_get_drive_mappings (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -5959,7 +5959,7 @@ guestfs_lua_inspect_get_drive_mappings (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_filesystems (lua_State *L)
+guestfs_int_lua_inspect_get_filesystems (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -5982,7 +5982,7 @@ guestfs_lua_inspect_get_filesystems (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_format (lua_State *L)
+guestfs_int_lua_inspect_get_format (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6005,7 +6005,7 @@ guestfs_lua_inspect_get_format (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_hostname (lua_State *L)
+guestfs_int_lua_inspect_get_hostname (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6028,7 +6028,7 @@ guestfs_lua_inspect_get_hostname (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_icon (lua_State *L)
+guestfs_int_lua_inspect_get_icon (lua_State *L)
 {
   char *r;
   size_t size;
@@ -6066,7 +6066,7 @@ guestfs_lua_inspect_get_icon (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_major_version (lua_State *L)
+guestfs_int_lua_inspect_get_major_version (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6088,7 +6088,7 @@ guestfs_lua_inspect_get_major_version (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_minor_version (lua_State *L)
+guestfs_int_lua_inspect_get_minor_version (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6110,7 +6110,7 @@ guestfs_lua_inspect_get_minor_version (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_mountpoints (lua_State *L)
+guestfs_int_lua_inspect_get_mountpoints (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -6133,7 +6133,7 @@ guestfs_lua_inspect_get_mountpoints (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_package_format (lua_State *L)
+guestfs_int_lua_inspect_get_package_format (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6156,7 +6156,7 @@ guestfs_lua_inspect_get_package_format (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_package_management (lua_State *L)
+guestfs_int_lua_inspect_get_package_management (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6179,7 +6179,7 @@ guestfs_lua_inspect_get_package_management (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_product_name (lua_State *L)
+guestfs_int_lua_inspect_get_product_name (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6202,7 +6202,7 @@ guestfs_lua_inspect_get_product_name (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_product_variant (lua_State *L)
+guestfs_int_lua_inspect_get_product_variant (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6225,7 +6225,7 @@ guestfs_lua_inspect_get_product_variant (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_roots (lua_State *L)
+guestfs_int_lua_inspect_get_roots (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -6246,7 +6246,7 @@ guestfs_lua_inspect_get_roots (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_type (lua_State *L)
+guestfs_int_lua_inspect_get_type (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6269,7 +6269,7 @@ guestfs_lua_inspect_get_type (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_windows_current_control_set (lua_State *L)
+guestfs_int_lua_inspect_get_windows_current_control_set (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6292,7 +6292,7 @@ guestfs_lua_inspect_get_windows_current_control_set (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_get_windows_systemroot (lua_State *L)
+guestfs_int_lua_inspect_get_windows_systemroot (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6315,7 +6315,7 @@ guestfs_lua_inspect_get_windows_systemroot (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_is_live (lua_State *L)
+guestfs_int_lua_inspect_is_live (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6337,7 +6337,7 @@ guestfs_lua_inspect_is_live (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_is_multipart (lua_State *L)
+guestfs_int_lua_inspect_is_multipart (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6359,7 +6359,7 @@ guestfs_lua_inspect_is_multipart (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_is_netinst (lua_State *L)
+guestfs_int_lua_inspect_is_netinst (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6381,7 +6381,7 @@ guestfs_lua_inspect_is_netinst (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_list_applications (lua_State *L)
+guestfs_int_lua_inspect_list_applications (lua_State *L)
 {
   struct guestfs_application_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -6404,7 +6404,7 @@ guestfs_lua_inspect_list_applications (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_list_applications2 (lua_State *L)
+guestfs_int_lua_inspect_list_applications2 (lua_State *L)
 {
   struct guestfs_application2_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -6427,7 +6427,7 @@ guestfs_lua_inspect_list_applications2 (lua_State *L)
 }
 
 static int
-guestfs_lua_inspect_os (lua_State *L)
+guestfs_int_lua_inspect_os (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -6448,7 +6448,7 @@ guestfs_lua_inspect_os (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_exit (lua_State *L)
+guestfs_int_lua_internal_exit (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6467,7 +6467,7 @@ guestfs_lua_internal_exit (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test (lua_State *L)
+guestfs_int_lua_internal_test (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6533,7 +6533,7 @@ guestfs_lua_internal_test (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_63_optargs (lua_State *L)
+guestfs_int_lua_internal_test_63_optargs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6810,7 +6810,7 @@ guestfs_lua_internal_test_63_optargs (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_close_output (lua_State *L)
+guestfs_int_lua_internal_test_close_output (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6829,7 +6829,7 @@ guestfs_lua_internal_test_close_output (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_only_optargs (lua_State *L)
+guestfs_int_lua_internal_test_only_optargs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6858,7 +6858,7 @@ guestfs_lua_internal_test_only_optargs (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rbool (lua_State *L)
+guestfs_int_lua_internal_test_rbool (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6880,7 +6880,7 @@ guestfs_lua_internal_test_rbool (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rboolerr (lua_State *L)
+guestfs_int_lua_internal_test_rboolerr (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -6900,7 +6900,7 @@ guestfs_lua_internal_test_rboolerr (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rbufferout (lua_State *L)
+guestfs_int_lua_internal_test_rbufferout (lua_State *L)
 {
   char *r;
   size_t size;
@@ -6924,7 +6924,7 @@ guestfs_lua_internal_test_rbufferout (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rbufferouterr (lua_State *L)
+guestfs_int_lua_internal_test_rbufferouterr (lua_State *L)
 {
   char *r;
   size_t size;
@@ -6946,7 +6946,7 @@ guestfs_lua_internal_test_rbufferouterr (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rconstoptstring (lua_State *L)
+guestfs_int_lua_internal_test_rconstoptstring (lua_State *L)
 {
   const char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6965,7 +6965,7 @@ guestfs_lua_internal_test_rconstoptstring (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rconstoptstringerr (lua_State *L)
+guestfs_int_lua_internal_test_rconstoptstringerr (lua_State *L)
 {
   const char *r;
   struct userdata *u = get_handle (L, 1);
@@ -6982,7 +6982,7 @@ guestfs_lua_internal_test_rconstoptstringerr (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rconststring (lua_State *L)
+guestfs_int_lua_internal_test_rconststring (lua_State *L)
 {
   const char *r;
   struct userdata *u = get_handle (L, 1);
@@ -7004,7 +7004,7 @@ guestfs_lua_internal_test_rconststring (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rconststringerr (lua_State *L)
+guestfs_int_lua_internal_test_rconststringerr (lua_State *L)
 {
   const char *r;
   struct userdata *u = get_handle (L, 1);
@@ -7024,7 +7024,7 @@ guestfs_lua_internal_test_rconststringerr (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rhashtable (lua_State *L)
+guestfs_int_lua_internal_test_rhashtable (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -7047,7 +7047,7 @@ guestfs_lua_internal_test_rhashtable (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rhashtableerr (lua_State *L)
+guestfs_int_lua_internal_test_rhashtableerr (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -7068,7 +7068,7 @@ guestfs_lua_internal_test_rhashtableerr (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rint (lua_State *L)
+guestfs_int_lua_internal_test_rint (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7090,7 +7090,7 @@ guestfs_lua_internal_test_rint (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rint64 (lua_State *L)
+guestfs_int_lua_internal_test_rint64 (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -7112,7 +7112,7 @@ guestfs_lua_internal_test_rint64 (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rint64err (lua_State *L)
+guestfs_int_lua_internal_test_rint64err (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -7132,7 +7132,7 @@ guestfs_lua_internal_test_rint64err (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rinterr (lua_State *L)
+guestfs_int_lua_internal_test_rinterr (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7152,7 +7152,7 @@ guestfs_lua_internal_test_rinterr (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rstring (lua_State *L)
+guestfs_int_lua_internal_test_rstring (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -7175,7 +7175,7 @@ guestfs_lua_internal_test_rstring (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rstringerr (lua_State *L)
+guestfs_int_lua_internal_test_rstringerr (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -7196,7 +7196,7 @@ guestfs_lua_internal_test_rstringerr (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rstringlist (lua_State *L)
+guestfs_int_lua_internal_test_rstringlist (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -7219,7 +7219,7 @@ guestfs_lua_internal_test_rstringlist (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rstringlisterr (lua_State *L)
+guestfs_int_lua_internal_test_rstringlisterr (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -7240,7 +7240,7 @@ guestfs_lua_internal_test_rstringlisterr (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rstruct (lua_State *L)
+guestfs_int_lua_internal_test_rstruct (lua_State *L)
 {
   struct guestfs_lvm_pv *r;
   struct userdata *u = get_handle (L, 1);
@@ -7263,7 +7263,7 @@ guestfs_lua_internal_test_rstruct (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rstructerr (lua_State *L)
+guestfs_int_lua_internal_test_rstructerr (lua_State *L)
 {
   struct guestfs_lvm_pv *r;
   struct userdata *u = get_handle (L, 1);
@@ -7284,7 +7284,7 @@ guestfs_lua_internal_test_rstructerr (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rstructlist (lua_State *L)
+guestfs_int_lua_internal_test_rstructlist (lua_State *L)
 {
   struct guestfs_lvm_pv_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -7307,7 +7307,7 @@ guestfs_lua_internal_test_rstructlist (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_rstructlisterr (lua_State *L)
+guestfs_int_lua_internal_test_rstructlisterr (lua_State *L)
 {
   struct guestfs_lvm_pv_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -7328,7 +7328,7 @@ guestfs_lua_internal_test_rstructlisterr (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_test_set_output (lua_State *L)
+guestfs_int_lua_internal_test_set_output (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7349,7 +7349,7 @@ guestfs_lua_internal_test_set_output (lua_State *L)
 }
 
 static int
-guestfs_lua_is_blockdev (lua_State *L)
+guestfs_int_lua_is_blockdev (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7381,7 +7381,7 @@ guestfs_lua_is_blockdev (lua_State *L)
 }
 
 static int
-guestfs_lua_is_busy (lua_State *L)
+guestfs_int_lua_is_busy (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7401,7 +7401,7 @@ guestfs_lua_is_busy (lua_State *L)
 }
 
 static int
-guestfs_lua_is_chardev (lua_State *L)
+guestfs_int_lua_is_chardev (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7433,7 +7433,7 @@ guestfs_lua_is_chardev (lua_State *L)
 }
 
 static int
-guestfs_lua_is_config (lua_State *L)
+guestfs_int_lua_is_config (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7453,7 +7453,7 @@ guestfs_lua_is_config (lua_State *L)
 }
 
 static int
-guestfs_lua_is_dir (lua_State *L)
+guestfs_int_lua_is_dir (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7485,7 +7485,7 @@ guestfs_lua_is_dir (lua_State *L)
 }
 
 static int
-guestfs_lua_is_fifo (lua_State *L)
+guestfs_int_lua_is_fifo (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7517,7 +7517,7 @@ guestfs_lua_is_fifo (lua_State *L)
 }
 
 static int
-guestfs_lua_is_file (lua_State *L)
+guestfs_int_lua_is_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7549,7 +7549,7 @@ guestfs_lua_is_file (lua_State *L)
 }
 
 static int
-guestfs_lua_is_launching (lua_State *L)
+guestfs_int_lua_is_launching (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7569,7 +7569,7 @@ guestfs_lua_is_launching (lua_State *L)
 }
 
 static int
-guestfs_lua_is_lv (lua_State *L)
+guestfs_int_lua_is_lv (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7591,7 +7591,7 @@ guestfs_lua_is_lv (lua_State *L)
 }
 
 static int
-guestfs_lua_is_ready (lua_State *L)
+guestfs_int_lua_is_ready (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7611,7 +7611,7 @@ guestfs_lua_is_ready (lua_State *L)
 }
 
 static int
-guestfs_lua_is_socket (lua_State *L)
+guestfs_int_lua_is_socket (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7643,7 +7643,7 @@ guestfs_lua_is_socket (lua_State *L)
 }
 
 static int
-guestfs_lua_is_symlink (lua_State *L)
+guestfs_int_lua_is_symlink (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7665,7 +7665,7 @@ guestfs_lua_is_symlink (lua_State *L)
 }
 
 static int
-guestfs_lua_is_whole_device (lua_State *L)
+guestfs_int_lua_is_whole_device (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7687,7 +7687,7 @@ guestfs_lua_is_whole_device (lua_State *L)
 }
 
 static int
-guestfs_lua_is_zero (lua_State *L)
+guestfs_int_lua_is_zero (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7709,7 +7709,7 @@ guestfs_lua_is_zero (lua_State *L)
 }
 
 static int
-guestfs_lua_is_zero_device (lua_State *L)
+guestfs_int_lua_is_zero_device (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7731,7 +7731,7 @@ guestfs_lua_is_zero_device (lua_State *L)
 }
 
 static int
-guestfs_lua_isoinfo (lua_State *L)
+guestfs_int_lua_isoinfo (lua_State *L)
 {
   struct guestfs_isoinfo *r;
   struct userdata *u = get_handle (L, 1);
@@ -7754,7 +7754,7 @@ guestfs_lua_isoinfo (lua_State *L)
 }
 
 static int
-guestfs_lua_isoinfo_device (lua_State *L)
+guestfs_int_lua_isoinfo_device (lua_State *L)
 {
   struct guestfs_isoinfo *r;
   struct userdata *u = get_handle (L, 1);
@@ -7777,7 +7777,7 @@ guestfs_lua_isoinfo_device (lua_State *L)
 }
 
 static int
-guestfs_lua_journal_close (lua_State *L)
+guestfs_int_lua_journal_close (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7796,7 +7796,7 @@ guestfs_lua_journal_close (lua_State *L)
 }
 
 static int
-guestfs_lua_journal_get (lua_State *L)
+guestfs_int_lua_journal_get (lua_State *L)
 {
   struct guestfs_xattr_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -7817,7 +7817,7 @@ guestfs_lua_journal_get (lua_State *L)
 }
 
 static int
-guestfs_lua_journal_get_data_threshold (lua_State *L)
+guestfs_int_lua_journal_get_data_threshold (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -7837,7 +7837,7 @@ guestfs_lua_journal_get_data_threshold (lua_State *L)
 }
 
 static int
-guestfs_lua_journal_get_realtime_usec (lua_State *L)
+guestfs_int_lua_journal_get_realtime_usec (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -7857,7 +7857,7 @@ guestfs_lua_journal_get_realtime_usec (lua_State *L)
 }
 
 static int
-guestfs_lua_journal_next (lua_State *L)
+guestfs_int_lua_journal_next (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7877,7 +7877,7 @@ guestfs_lua_journal_next (lua_State *L)
 }
 
 static int
-guestfs_lua_journal_open (lua_State *L)
+guestfs_int_lua_journal_open (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7898,7 +7898,7 @@ guestfs_lua_journal_open (lua_State *L)
 }
 
 static int
-guestfs_lua_journal_set_data_threshold (lua_State *L)
+guestfs_int_lua_journal_set_data_threshold (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7919,7 +7919,7 @@ guestfs_lua_journal_set_data_threshold (lua_State *L)
 }
 
 static int
-guestfs_lua_journal_skip (lua_State *L)
+guestfs_int_lua_journal_skip (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -7941,7 +7941,7 @@ guestfs_lua_journal_skip (lua_State *L)
 }
 
 static int
-guestfs_lua_kill_subprocess (lua_State *L)
+guestfs_int_lua_kill_subprocess (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7960,7 +7960,7 @@ guestfs_lua_kill_subprocess (lua_State *L)
 }
 
 static int
-guestfs_lua_launch (lua_State *L)
+guestfs_int_lua_launch (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -7979,7 +7979,7 @@ guestfs_lua_launch (lua_State *L)
 }
 
 static int
-guestfs_lua_lchown (lua_State *L)
+guestfs_int_lua_lchown (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8004,7 +8004,7 @@ guestfs_lua_lchown (lua_State *L)
 }
 
 static int
-guestfs_lua_ldmtool_create_all (lua_State *L)
+guestfs_int_lua_ldmtool_create_all (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8023,7 +8023,7 @@ guestfs_lua_ldmtool_create_all (lua_State *L)
 }
 
 static int
-guestfs_lua_ldmtool_diskgroup_disks (lua_State *L)
+guestfs_int_lua_ldmtool_diskgroup_disks (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8046,7 +8046,7 @@ guestfs_lua_ldmtool_diskgroup_disks (lua_State *L)
 }
 
 static int
-guestfs_lua_ldmtool_diskgroup_name (lua_State *L)
+guestfs_int_lua_ldmtool_diskgroup_name (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -8069,7 +8069,7 @@ guestfs_lua_ldmtool_diskgroup_name (lua_State *L)
 }
 
 static int
-guestfs_lua_ldmtool_diskgroup_volumes (lua_State *L)
+guestfs_int_lua_ldmtool_diskgroup_volumes (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8092,7 +8092,7 @@ guestfs_lua_ldmtool_diskgroup_volumes (lua_State *L)
 }
 
 static int
-guestfs_lua_ldmtool_remove_all (lua_State *L)
+guestfs_int_lua_ldmtool_remove_all (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8111,7 +8111,7 @@ guestfs_lua_ldmtool_remove_all (lua_State *L)
 }
 
 static int
-guestfs_lua_ldmtool_scan (lua_State *L)
+guestfs_int_lua_ldmtool_scan (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8132,7 +8132,7 @@ guestfs_lua_ldmtool_scan (lua_State *L)
 }
 
 static int
-guestfs_lua_ldmtool_scan_devices (lua_State *L)
+guestfs_int_lua_ldmtool_scan_devices (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8156,7 +8156,7 @@ guestfs_lua_ldmtool_scan_devices (lua_State *L)
 }
 
 static int
-guestfs_lua_ldmtool_volume_hint (lua_State *L)
+guestfs_int_lua_ldmtool_volume_hint (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -8181,7 +8181,7 @@ guestfs_lua_ldmtool_volume_hint (lua_State *L)
 }
 
 static int
-guestfs_lua_ldmtool_volume_partitions (lua_State *L)
+guestfs_int_lua_ldmtool_volume_partitions (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8206,7 +8206,7 @@ guestfs_lua_ldmtool_volume_partitions (lua_State *L)
 }
 
 static int
-guestfs_lua_ldmtool_volume_type (lua_State *L)
+guestfs_int_lua_ldmtool_volume_type (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -8231,7 +8231,7 @@ guestfs_lua_ldmtool_volume_type (lua_State *L)
 }
 
 static int
-guestfs_lua_lgetxattr (lua_State *L)
+guestfs_int_lua_lgetxattr (lua_State *L)
 {
   char *r;
   size_t size;
@@ -8257,7 +8257,7 @@ guestfs_lua_lgetxattr (lua_State *L)
 }
 
 static int
-guestfs_lua_lgetxattrs (lua_State *L)
+guestfs_int_lua_lgetxattrs (lua_State *L)
 {
   struct guestfs_xattr_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -8280,7 +8280,7 @@ guestfs_lua_lgetxattrs (lua_State *L)
 }
 
 static int
-guestfs_lua_list_9p (lua_State *L)
+guestfs_int_lua_list_9p (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8301,7 +8301,7 @@ guestfs_lua_list_9p (lua_State *L)
 }
 
 static int
-guestfs_lua_list_devices (lua_State *L)
+guestfs_int_lua_list_devices (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8322,7 +8322,7 @@ guestfs_lua_list_devices (lua_State *L)
 }
 
 static int
-guestfs_lua_list_disk_labels (lua_State *L)
+guestfs_int_lua_list_disk_labels (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8343,7 +8343,7 @@ guestfs_lua_list_disk_labels (lua_State *L)
 }
 
 static int
-guestfs_lua_list_dm_devices (lua_State *L)
+guestfs_int_lua_list_dm_devices (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8364,7 +8364,7 @@ guestfs_lua_list_dm_devices (lua_State *L)
 }
 
 static int
-guestfs_lua_list_filesystems (lua_State *L)
+guestfs_int_lua_list_filesystems (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8385,7 +8385,7 @@ guestfs_lua_list_filesystems (lua_State *L)
 }
 
 static int
-guestfs_lua_list_ldm_partitions (lua_State *L)
+guestfs_int_lua_list_ldm_partitions (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8406,7 +8406,7 @@ guestfs_lua_list_ldm_partitions (lua_State *L)
 }
 
 static int
-guestfs_lua_list_ldm_volumes (lua_State *L)
+guestfs_int_lua_list_ldm_volumes (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8427,7 +8427,7 @@ guestfs_lua_list_ldm_volumes (lua_State *L)
 }
 
 static int
-guestfs_lua_list_md_devices (lua_State *L)
+guestfs_int_lua_list_md_devices (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8448,7 +8448,7 @@ guestfs_lua_list_md_devices (lua_State *L)
 }
 
 static int
-guestfs_lua_list_partitions (lua_State *L)
+guestfs_int_lua_list_partitions (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8469,7 +8469,7 @@ guestfs_lua_list_partitions (lua_State *L)
 }
 
 static int
-guestfs_lua_ll (lua_State *L)
+guestfs_int_lua_ll (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -8492,7 +8492,7 @@ guestfs_lua_ll (lua_State *L)
 }
 
 static int
-guestfs_lua_llz (lua_State *L)
+guestfs_int_lua_llz (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -8515,7 +8515,7 @@ guestfs_lua_llz (lua_State *L)
 }
 
 static int
-guestfs_lua_ln (lua_State *L)
+guestfs_int_lua_ln (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8538,7 +8538,7 @@ guestfs_lua_ln (lua_State *L)
 }
 
 static int
-guestfs_lua_ln_f (lua_State *L)
+guestfs_int_lua_ln_f (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8561,7 +8561,7 @@ guestfs_lua_ln_f (lua_State *L)
 }
 
 static int
-guestfs_lua_ln_s (lua_State *L)
+guestfs_int_lua_ln_s (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8584,7 +8584,7 @@ guestfs_lua_ln_s (lua_State *L)
 }
 
 static int
-guestfs_lua_ln_sf (lua_State *L)
+guestfs_int_lua_ln_sf (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8607,7 +8607,7 @@ guestfs_lua_ln_sf (lua_State *L)
 }
 
 static int
-guestfs_lua_lremovexattr (lua_State *L)
+guestfs_int_lua_lremovexattr (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8630,7 +8630,7 @@ guestfs_lua_lremovexattr (lua_State *L)
 }
 
 static int
-guestfs_lua_ls (lua_State *L)
+guestfs_int_lua_ls (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -8653,7 +8653,7 @@ guestfs_lua_ls (lua_State *L)
 }
 
 static int
-guestfs_lua_ls0 (lua_State *L)
+guestfs_int_lua_ls0 (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8676,7 +8676,7 @@ guestfs_lua_ls0 (lua_State *L)
 }
 
 static int
-guestfs_lua_lsetxattr (lua_State *L)
+guestfs_int_lua_lsetxattr (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8703,7 +8703,7 @@ guestfs_lua_lsetxattr (lua_State *L)
 }
 
 static int
-guestfs_lua_lstat (lua_State *L)
+guestfs_int_lua_lstat (lua_State *L)
 {
   struct guestfs_stat *r;
   struct userdata *u = get_handle (L, 1);
@@ -8726,7 +8726,7 @@ guestfs_lua_lstat (lua_State *L)
 }
 
 static int
-guestfs_lua_lstatlist (lua_State *L)
+guestfs_int_lua_lstatlist (lua_State *L)
 {
   struct guestfs_stat_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -8752,7 +8752,7 @@ guestfs_lua_lstatlist (lua_State *L)
 }
 
 static int
-guestfs_lua_lstatns (lua_State *L)
+guestfs_int_lua_lstatns (lua_State *L)
 {
   struct guestfs_statns *r;
   struct userdata *u = get_handle (L, 1);
@@ -8775,7 +8775,7 @@ guestfs_lua_lstatns (lua_State *L)
 }
 
 static int
-guestfs_lua_lstatnslist (lua_State *L)
+guestfs_int_lua_lstatnslist (lua_State *L)
 {
   struct guestfs_statns_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -8801,7 +8801,7 @@ guestfs_lua_lstatnslist (lua_State *L)
 }
 
 static int
-guestfs_lua_luks_add_key (lua_State *L)
+guestfs_int_lua_luks_add_key (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8828,7 +8828,7 @@ guestfs_lua_luks_add_key (lua_State *L)
 }
 
 static int
-guestfs_lua_luks_close (lua_State *L)
+guestfs_int_lua_luks_close (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8849,7 +8849,7 @@ guestfs_lua_luks_close (lua_State *L)
 }
 
 static int
-guestfs_lua_luks_format (lua_State *L)
+guestfs_int_lua_luks_format (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8874,7 +8874,7 @@ guestfs_lua_luks_format (lua_State *L)
 }
 
 static int
-guestfs_lua_luks_format_cipher (lua_State *L)
+guestfs_int_lua_luks_format_cipher (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8901,7 +8901,7 @@ guestfs_lua_luks_format_cipher (lua_State *L)
 }
 
 static int
-guestfs_lua_luks_kill_slot (lua_State *L)
+guestfs_int_lua_luks_kill_slot (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8926,7 +8926,7 @@ guestfs_lua_luks_kill_slot (lua_State *L)
 }
 
 static int
-guestfs_lua_luks_open (lua_State *L)
+guestfs_int_lua_luks_open (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8951,7 +8951,7 @@ guestfs_lua_luks_open (lua_State *L)
 }
 
 static int
-guestfs_lua_luks_open_ro (lua_State *L)
+guestfs_int_lua_luks_open_ro (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -8976,7 +8976,7 @@ guestfs_lua_luks_open_ro (lua_State *L)
 }
 
 static int
-guestfs_lua_lvcreate (lua_State *L)
+guestfs_int_lua_lvcreate (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9001,7 +9001,7 @@ guestfs_lua_lvcreate (lua_State *L)
 }
 
 static int
-guestfs_lua_lvcreate_free (lua_State *L)
+guestfs_int_lua_lvcreate_free (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9026,7 +9026,7 @@ guestfs_lua_lvcreate_free (lua_State *L)
 }
 
 static int
-guestfs_lua_lvm_canonical_lv_name (lua_State *L)
+guestfs_int_lua_lvm_canonical_lv_name (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -9049,7 +9049,7 @@ guestfs_lua_lvm_canonical_lv_name (lua_State *L)
 }
 
 static int
-guestfs_lua_lvm_clear_filter (lua_State *L)
+guestfs_int_lua_lvm_clear_filter (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9068,7 +9068,7 @@ guestfs_lua_lvm_clear_filter (lua_State *L)
 }
 
 static int
-guestfs_lua_lvm_remove_all (lua_State *L)
+guestfs_int_lua_lvm_remove_all (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9087,7 +9087,7 @@ guestfs_lua_lvm_remove_all (lua_State *L)
 }
 
 static int
-guestfs_lua_lvm_set_filter (lua_State *L)
+guestfs_int_lua_lvm_set_filter (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9109,7 +9109,7 @@ guestfs_lua_lvm_set_filter (lua_State *L)
 }
 
 static int
-guestfs_lua_lvremove (lua_State *L)
+guestfs_int_lua_lvremove (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9130,7 +9130,7 @@ guestfs_lua_lvremove (lua_State *L)
 }
 
 static int
-guestfs_lua_lvrename (lua_State *L)
+guestfs_int_lua_lvrename (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9153,7 +9153,7 @@ guestfs_lua_lvrename (lua_State *L)
 }
 
 static int
-guestfs_lua_lvresize (lua_State *L)
+guestfs_int_lua_lvresize (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9176,7 +9176,7 @@ guestfs_lua_lvresize (lua_State *L)
 }
 
 static int
-guestfs_lua_lvresize_free (lua_State *L)
+guestfs_int_lua_lvresize_free (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9199,7 +9199,7 @@ guestfs_lua_lvresize_free (lua_State *L)
 }
 
 static int
-guestfs_lua_lvs (lua_State *L)
+guestfs_int_lua_lvs (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -9220,7 +9220,7 @@ guestfs_lua_lvs (lua_State *L)
 }
 
 static int
-guestfs_lua_lvs_full (lua_State *L)
+guestfs_int_lua_lvs_full (lua_State *L)
 {
   struct guestfs_lvm_lv_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -9241,7 +9241,7 @@ guestfs_lua_lvs_full (lua_State *L)
 }
 
 static int
-guestfs_lua_lvuuid (lua_State *L)
+guestfs_int_lua_lvuuid (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -9264,7 +9264,7 @@ guestfs_lua_lvuuid (lua_State *L)
 }
 
 static int
-guestfs_lua_lxattrlist (lua_State *L)
+guestfs_int_lua_lxattrlist (lua_State *L)
 {
   struct guestfs_xattr_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -9290,7 +9290,7 @@ guestfs_lua_lxattrlist (lua_State *L)
 }
 
 static int
-guestfs_lua_max_disks (lua_State *L)
+guestfs_int_lua_max_disks (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9310,7 +9310,7 @@ guestfs_lua_max_disks (lua_State *L)
 }
 
 static int
-guestfs_lua_md_create (lua_State *L)
+guestfs_int_lua_md_create (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9360,7 +9360,7 @@ guestfs_lua_md_create (lua_State *L)
 }
 
 static int
-guestfs_lua_md_detail (lua_State *L)
+guestfs_int_lua_md_detail (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -9383,7 +9383,7 @@ guestfs_lua_md_detail (lua_State *L)
 }
 
 static int
-guestfs_lua_md_stat (lua_State *L)
+guestfs_int_lua_md_stat (lua_State *L)
 {
   struct guestfs_mdstat_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -9406,7 +9406,7 @@ guestfs_lua_md_stat (lua_State *L)
 }
 
 static int
-guestfs_lua_md_stop (lua_State *L)
+guestfs_int_lua_md_stop (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9427,7 +9427,7 @@ guestfs_lua_md_stop (lua_State *L)
 }
 
 static int
-guestfs_lua_mkdir (lua_State *L)
+guestfs_int_lua_mkdir (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9448,7 +9448,7 @@ guestfs_lua_mkdir (lua_State *L)
 }
 
 static int
-guestfs_lua_mkdir_mode (lua_State *L)
+guestfs_int_lua_mkdir_mode (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9471,7 +9471,7 @@ guestfs_lua_mkdir_mode (lua_State *L)
 }
 
 static int
-guestfs_lua_mkdir_p (lua_State *L)
+guestfs_int_lua_mkdir_p (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9492,7 +9492,7 @@ guestfs_lua_mkdir_p (lua_State *L)
 }
 
 static int
-guestfs_lua_mkdtemp (lua_State *L)
+guestfs_int_lua_mkdtemp (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -9515,7 +9515,7 @@ guestfs_lua_mkdtemp (lua_State *L)
 }
 
 static int
-guestfs_lua_mke2fs (lua_State *L)
+guestfs_int_lua_mke2fs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9694,7 +9694,7 @@ guestfs_lua_mke2fs (lua_State *L)
 }
 
 static int
-guestfs_lua_mke2fs_J (lua_State *L)
+guestfs_int_lua_mke2fs_J (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9721,7 +9721,7 @@ guestfs_lua_mke2fs_J (lua_State *L)
 }
 
 static int
-guestfs_lua_mke2fs_JL (lua_State *L)
+guestfs_int_lua_mke2fs_JL (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9748,7 +9748,7 @@ guestfs_lua_mke2fs_JL (lua_State *L)
 }
 
 static int
-guestfs_lua_mke2fs_JU (lua_State *L)
+guestfs_int_lua_mke2fs_JU (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9775,7 +9775,7 @@ guestfs_lua_mke2fs_JU (lua_State *L)
 }
 
 static int
-guestfs_lua_mke2journal (lua_State *L)
+guestfs_int_lua_mke2journal (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9798,7 +9798,7 @@ guestfs_lua_mke2journal (lua_State *L)
 }
 
 static int
-guestfs_lua_mke2journal_L (lua_State *L)
+guestfs_int_lua_mke2journal_L (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9823,7 +9823,7 @@ guestfs_lua_mke2journal_L (lua_State *L)
 }
 
 static int
-guestfs_lua_mke2journal_U (lua_State *L)
+guestfs_int_lua_mke2journal_U (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9848,7 +9848,7 @@ guestfs_lua_mke2journal_U (lua_State *L)
 }
 
 static int
-guestfs_lua_mkfifo (lua_State *L)
+guestfs_int_lua_mkfifo (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9871,7 +9871,7 @@ guestfs_lua_mkfifo (lua_State *L)
 }
 
 static int
-guestfs_lua_mkfs (lua_State *L)
+guestfs_int_lua_mkfs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9920,7 +9920,7 @@ guestfs_lua_mkfs (lua_State *L)
 }
 
 static int
-guestfs_lua_mkfs_b (lua_State *L)
+guestfs_int_lua_mkfs_b (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -9945,7 +9945,7 @@ guestfs_lua_mkfs_b (lua_State *L)
 }
 
 static int
-guestfs_lua_mkfs_btrfs (lua_State *L)
+guestfs_int_lua_mkfs_btrfs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10005,7 +10005,7 @@ guestfs_lua_mkfs_btrfs (lua_State *L)
 }
 
 static int
-guestfs_lua_mklost_and_found (lua_State *L)
+guestfs_int_lua_mklost_and_found (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10026,7 +10026,7 @@ guestfs_lua_mklost_and_found (lua_State *L)
 }
 
 static int
-guestfs_lua_mkmountpoint (lua_State *L)
+guestfs_int_lua_mkmountpoint (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10047,7 +10047,7 @@ guestfs_lua_mkmountpoint (lua_State *L)
 }
 
 static int
-guestfs_lua_mknod (lua_State *L)
+guestfs_int_lua_mknod (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10074,7 +10074,7 @@ guestfs_lua_mknod (lua_State *L)
 }
 
 static int
-guestfs_lua_mknod_b (lua_State *L)
+guestfs_int_lua_mknod_b (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10101,7 +10101,7 @@ guestfs_lua_mknod_b (lua_State *L)
 }
 
 static int
-guestfs_lua_mknod_c (lua_State *L)
+guestfs_int_lua_mknod_c (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10128,7 +10128,7 @@ guestfs_lua_mknod_c (lua_State *L)
 }
 
 static int
-guestfs_lua_mkswap (lua_State *L)
+guestfs_int_lua_mkswap (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10163,7 +10163,7 @@ guestfs_lua_mkswap (lua_State *L)
 }
 
 static int
-guestfs_lua_mkswap_L (lua_State *L)
+guestfs_int_lua_mkswap_L (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10186,7 +10186,7 @@ guestfs_lua_mkswap_L (lua_State *L)
 }
 
 static int
-guestfs_lua_mkswap_U (lua_State *L)
+guestfs_int_lua_mkswap_U (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10209,7 +10209,7 @@ guestfs_lua_mkswap_U (lua_State *L)
 }
 
 static int
-guestfs_lua_mkswap_file (lua_State *L)
+guestfs_int_lua_mkswap_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10230,7 +10230,7 @@ guestfs_lua_mkswap_file (lua_State *L)
 }
 
 static int
-guestfs_lua_mktemp (lua_State *L)
+guestfs_int_lua_mktemp (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -10263,7 +10263,7 @@ guestfs_lua_mktemp (lua_State *L)
 }
 
 static int
-guestfs_lua_modprobe (lua_State *L)
+guestfs_int_lua_modprobe (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10284,7 +10284,7 @@ guestfs_lua_modprobe (lua_State *L)
 }
 
 static int
-guestfs_lua_mount (lua_State *L)
+guestfs_int_lua_mount (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10307,7 +10307,7 @@ guestfs_lua_mount (lua_State *L)
 }
 
 static int
-guestfs_lua_mount_9p (lua_State *L)
+guestfs_int_lua_mount_9p (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10340,7 +10340,7 @@ guestfs_lua_mount_9p (lua_State *L)
 }
 
 static int
-guestfs_lua_mount_local (lua_State *L)
+guestfs_int_lua_mount_local (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10383,7 +10383,7 @@ guestfs_lua_mount_local (lua_State *L)
 }
 
 static int
-guestfs_lua_mount_local_run (lua_State *L)
+guestfs_int_lua_mount_local_run (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10402,7 +10402,7 @@ guestfs_lua_mount_local_run (lua_State *L)
 }
 
 static int
-guestfs_lua_mount_loop (lua_State *L)
+guestfs_int_lua_mount_loop (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10425,7 +10425,7 @@ guestfs_lua_mount_loop (lua_State *L)
 }
 
 static int
-guestfs_lua_mount_options (lua_State *L)
+guestfs_int_lua_mount_options (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10450,7 +10450,7 @@ guestfs_lua_mount_options (lua_State *L)
 }
 
 static int
-guestfs_lua_mount_ro (lua_State *L)
+guestfs_int_lua_mount_ro (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10473,7 +10473,7 @@ guestfs_lua_mount_ro (lua_State *L)
 }
 
 static int
-guestfs_lua_mount_vfs (lua_State *L)
+guestfs_int_lua_mount_vfs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10500,7 +10500,7 @@ guestfs_lua_mount_vfs (lua_State *L)
 }
 
 static int
-guestfs_lua_mountpoints (lua_State *L)
+guestfs_int_lua_mountpoints (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -10521,7 +10521,7 @@ guestfs_lua_mountpoints (lua_State *L)
 }
 
 static int
-guestfs_lua_mounts (lua_State *L)
+guestfs_int_lua_mounts (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -10542,7 +10542,7 @@ guestfs_lua_mounts (lua_State *L)
 }
 
 static int
-guestfs_lua_mv (lua_State *L)
+guestfs_int_lua_mv (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10565,7 +10565,7 @@ guestfs_lua_mv (lua_State *L)
 }
 
 static int
-guestfs_lua_nr_devices (lua_State *L)
+guestfs_int_lua_nr_devices (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10585,7 +10585,7 @@ guestfs_lua_nr_devices (lua_State *L)
 }
 
 static int
-guestfs_lua_ntfs_3g_probe (lua_State *L)
+guestfs_int_lua_ntfs_3g_probe (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10609,7 +10609,7 @@ guestfs_lua_ntfs_3g_probe (lua_State *L)
 }
 
 static int
-guestfs_lua_ntfsclone_in (lua_State *L)
+guestfs_int_lua_ntfsclone_in (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10632,7 +10632,7 @@ guestfs_lua_ntfsclone_in (lua_State *L)
 }
 
 static int
-guestfs_lua_ntfsclone_out (lua_State *L)
+guestfs_int_lua_ntfsclone_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10681,7 +10681,7 @@ guestfs_lua_ntfsclone_out (lua_State *L)
 }
 
 static int
-guestfs_lua_ntfsfix (lua_State *L)
+guestfs_int_lua_ntfsfix (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10712,7 +10712,7 @@ guestfs_lua_ntfsfix (lua_State *L)
 }
 
 static int
-guestfs_lua_ntfsresize (lua_State *L)
+guestfs_int_lua_ntfsresize (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10747,7 +10747,7 @@ guestfs_lua_ntfsresize (lua_State *L)
 }
 
 static int
-guestfs_lua_ntfsresize_size (lua_State *L)
+guestfs_int_lua_ntfsresize_size (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10770,7 +10770,7 @@ guestfs_lua_ntfsresize_size (lua_State *L)
 }
 
 static int
-guestfs_lua_parse_environment (lua_State *L)
+guestfs_int_lua_parse_environment (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10789,7 +10789,7 @@ guestfs_lua_parse_environment (lua_State *L)
 }
 
 static int
-guestfs_lua_parse_environment_list (lua_State *L)
+guestfs_int_lua_parse_environment_list (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10811,7 +10811,7 @@ guestfs_lua_parse_environment_list (lua_State *L)
 }
 
 static int
-guestfs_lua_part_add (lua_State *L)
+guestfs_int_lua_part_add (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10838,7 +10838,7 @@ guestfs_lua_part_add (lua_State *L)
 }
 
 static int
-guestfs_lua_part_del (lua_State *L)
+guestfs_int_lua_part_del (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10861,7 +10861,7 @@ guestfs_lua_part_del (lua_State *L)
 }
 
 static int
-guestfs_lua_part_disk (lua_State *L)
+guestfs_int_lua_part_disk (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10884,7 +10884,7 @@ guestfs_lua_part_disk (lua_State *L)
 }
 
 static int
-guestfs_lua_part_get_bootable (lua_State *L)
+guestfs_int_lua_part_get_bootable (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10908,7 +10908,7 @@ guestfs_lua_part_get_bootable (lua_State *L)
 }
 
 static int
-guestfs_lua_part_get_gpt_guid (lua_State *L)
+guestfs_int_lua_part_get_gpt_guid (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -10933,7 +10933,7 @@ guestfs_lua_part_get_gpt_guid (lua_State *L)
 }
 
 static int
-guestfs_lua_part_get_gpt_type (lua_State *L)
+guestfs_int_lua_part_get_gpt_type (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -10958,7 +10958,7 @@ guestfs_lua_part_get_gpt_type (lua_State *L)
 }
 
 static int
-guestfs_lua_part_get_mbr_id (lua_State *L)
+guestfs_int_lua_part_get_mbr_id (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -10982,7 +10982,7 @@ guestfs_lua_part_get_mbr_id (lua_State *L)
 }
 
 static int
-guestfs_lua_part_get_mbr_part_type (lua_State *L)
+guestfs_int_lua_part_get_mbr_part_type (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -11007,7 +11007,7 @@ guestfs_lua_part_get_mbr_part_type (lua_State *L)
 }
 
 static int
-guestfs_lua_part_get_name (lua_State *L)
+guestfs_int_lua_part_get_name (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -11032,7 +11032,7 @@ guestfs_lua_part_get_name (lua_State *L)
 }
 
 static int
-guestfs_lua_part_get_parttype (lua_State *L)
+guestfs_int_lua_part_get_parttype (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -11055,7 +11055,7 @@ guestfs_lua_part_get_parttype (lua_State *L)
 }
 
 static int
-guestfs_lua_part_init (lua_State *L)
+guestfs_int_lua_part_init (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11078,7 +11078,7 @@ guestfs_lua_part_init (lua_State *L)
 }
 
 static int
-guestfs_lua_part_list (lua_State *L)
+guestfs_int_lua_part_list (lua_State *L)
 {
   struct guestfs_partition_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -11101,7 +11101,7 @@ guestfs_lua_part_list (lua_State *L)
 }
 
 static int
-guestfs_lua_part_set_bootable (lua_State *L)
+guestfs_int_lua_part_set_bootable (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11126,7 +11126,7 @@ guestfs_lua_part_set_bootable (lua_State *L)
 }
 
 static int
-guestfs_lua_part_set_gpt_guid (lua_State *L)
+guestfs_int_lua_part_set_gpt_guid (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11151,7 +11151,7 @@ guestfs_lua_part_set_gpt_guid (lua_State *L)
 }
 
 static int
-guestfs_lua_part_set_gpt_type (lua_State *L)
+guestfs_int_lua_part_set_gpt_type (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11176,7 +11176,7 @@ guestfs_lua_part_set_gpt_type (lua_State *L)
 }
 
 static int
-guestfs_lua_part_set_mbr_id (lua_State *L)
+guestfs_int_lua_part_set_mbr_id (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11201,7 +11201,7 @@ guestfs_lua_part_set_mbr_id (lua_State *L)
 }
 
 static int
-guestfs_lua_part_set_name (lua_State *L)
+guestfs_int_lua_part_set_name (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11226,7 +11226,7 @@ guestfs_lua_part_set_name (lua_State *L)
 }
 
 static int
-guestfs_lua_part_to_dev (lua_State *L)
+guestfs_int_lua_part_to_dev (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -11249,7 +11249,7 @@ guestfs_lua_part_to_dev (lua_State *L)
 }
 
 static int
-guestfs_lua_part_to_partnum (lua_State *L)
+guestfs_int_lua_part_to_partnum (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11271,7 +11271,7 @@ guestfs_lua_part_to_partnum (lua_State *L)
 }
 
 static int
-guestfs_lua_ping_daemon (lua_State *L)
+guestfs_int_lua_ping_daemon (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11290,7 +11290,7 @@ guestfs_lua_ping_daemon (lua_State *L)
 }
 
 static int
-guestfs_lua_pread (lua_State *L)
+guestfs_int_lua_pread (lua_State *L)
 {
   char *r;
   size_t size;
@@ -11318,7 +11318,7 @@ guestfs_lua_pread (lua_State *L)
 }
 
 static int
-guestfs_lua_pread_device (lua_State *L)
+guestfs_int_lua_pread_device (lua_State *L)
 {
   char *r;
   size_t size;
@@ -11346,7 +11346,7 @@ guestfs_lua_pread_device (lua_State *L)
 }
 
 static int
-guestfs_lua_pvchange_uuid (lua_State *L)
+guestfs_int_lua_pvchange_uuid (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11367,7 +11367,7 @@ guestfs_lua_pvchange_uuid (lua_State *L)
 }
 
 static int
-guestfs_lua_pvchange_uuid_all (lua_State *L)
+guestfs_int_lua_pvchange_uuid_all (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11386,7 +11386,7 @@ guestfs_lua_pvchange_uuid_all (lua_State *L)
 }
 
 static int
-guestfs_lua_pvcreate (lua_State *L)
+guestfs_int_lua_pvcreate (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11407,7 +11407,7 @@ guestfs_lua_pvcreate (lua_State *L)
 }
 
 static int
-guestfs_lua_pvremove (lua_State *L)
+guestfs_int_lua_pvremove (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11428,7 +11428,7 @@ guestfs_lua_pvremove (lua_State *L)
 }
 
 static int
-guestfs_lua_pvresize (lua_State *L)
+guestfs_int_lua_pvresize (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11449,7 +11449,7 @@ guestfs_lua_pvresize (lua_State *L)
 }
 
 static int
-guestfs_lua_pvresize_size (lua_State *L)
+guestfs_int_lua_pvresize_size (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11472,7 +11472,7 @@ guestfs_lua_pvresize_size (lua_State *L)
 }
 
 static int
-guestfs_lua_pvs (lua_State *L)
+guestfs_int_lua_pvs (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -11493,7 +11493,7 @@ guestfs_lua_pvs (lua_State *L)
 }
 
 static int
-guestfs_lua_pvs_full (lua_State *L)
+guestfs_int_lua_pvs_full (lua_State *L)
 {
   struct guestfs_lvm_pv_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -11514,7 +11514,7 @@ guestfs_lua_pvs_full (lua_State *L)
 }
 
 static int
-guestfs_lua_pvuuid (lua_State *L)
+guestfs_int_lua_pvuuid (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -11537,7 +11537,7 @@ guestfs_lua_pvuuid (lua_State *L)
 }
 
 static int
-guestfs_lua_pwrite (lua_State *L)
+guestfs_int_lua_pwrite (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11564,7 +11564,7 @@ guestfs_lua_pwrite (lua_State *L)
 }
 
 static int
-guestfs_lua_pwrite_device (lua_State *L)
+guestfs_int_lua_pwrite_device (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11591,7 +11591,7 @@ guestfs_lua_pwrite_device (lua_State *L)
 }
 
 static int
-guestfs_lua_read_file (lua_State *L)
+guestfs_int_lua_read_file (lua_State *L)
 {
   char *r;
   size_t size;
@@ -11615,7 +11615,7 @@ guestfs_lua_read_file (lua_State *L)
 }
 
 static int
-guestfs_lua_read_lines (lua_State *L)
+guestfs_int_lua_read_lines (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -11638,7 +11638,7 @@ guestfs_lua_read_lines (lua_State *L)
 }
 
 static int
-guestfs_lua_readdir (lua_State *L)
+guestfs_int_lua_readdir (lua_State *L)
 {
   struct guestfs_dirent_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -11661,7 +11661,7 @@ guestfs_lua_readdir (lua_State *L)
 }
 
 static int
-guestfs_lua_readlink (lua_State *L)
+guestfs_int_lua_readlink (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -11684,7 +11684,7 @@ guestfs_lua_readlink (lua_State *L)
 }
 
 static int
-guestfs_lua_readlinklist (lua_State *L)
+guestfs_int_lua_readlinklist (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -11710,7 +11710,7 @@ guestfs_lua_readlinklist (lua_State *L)
 }
 
 static int
-guestfs_lua_realpath (lua_State *L)
+guestfs_int_lua_realpath (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -11733,7 +11733,7 @@ guestfs_lua_realpath (lua_State *L)
 }
 
 static int
-guestfs_lua_remount (lua_State *L)
+guestfs_int_lua_remount (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11764,7 +11764,7 @@ guestfs_lua_remount (lua_State *L)
 }
 
 static int
-guestfs_lua_remove_drive (lua_State *L)
+guestfs_int_lua_remove_drive (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11785,7 +11785,7 @@ guestfs_lua_remove_drive (lua_State *L)
 }
 
 static int
-guestfs_lua_removexattr (lua_State *L)
+guestfs_int_lua_removexattr (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11808,7 +11808,7 @@ guestfs_lua_removexattr (lua_State *L)
 }
 
 static int
-guestfs_lua_rename (lua_State *L)
+guestfs_int_lua_rename (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11831,7 +11831,7 @@ guestfs_lua_rename (lua_State *L)
 }
 
 static int
-guestfs_lua_resize2fs (lua_State *L)
+guestfs_int_lua_resize2fs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11852,7 +11852,7 @@ guestfs_lua_resize2fs (lua_State *L)
 }
 
 static int
-guestfs_lua_resize2fs_M (lua_State *L)
+guestfs_int_lua_resize2fs_M (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11873,7 +11873,7 @@ guestfs_lua_resize2fs_M (lua_State *L)
 }
 
 static int
-guestfs_lua_resize2fs_size (lua_State *L)
+guestfs_int_lua_resize2fs_size (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11896,7 +11896,7 @@ guestfs_lua_resize2fs_size (lua_State *L)
 }
 
 static int
-guestfs_lua_rm (lua_State *L)
+guestfs_int_lua_rm (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11917,7 +11917,7 @@ guestfs_lua_rm (lua_State *L)
 }
 
 static int
-guestfs_lua_rm_f (lua_State *L)
+guestfs_int_lua_rm_f (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11938,7 +11938,7 @@ guestfs_lua_rm_f (lua_State *L)
 }
 
 static int
-guestfs_lua_rm_rf (lua_State *L)
+guestfs_int_lua_rm_rf (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11959,7 +11959,7 @@ guestfs_lua_rm_rf (lua_State *L)
 }
 
 static int
-guestfs_lua_rmdir (lua_State *L)
+guestfs_int_lua_rmdir (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -11980,7 +11980,7 @@ guestfs_lua_rmdir (lua_State *L)
 }
 
 static int
-guestfs_lua_rmmountpoint (lua_State *L)
+guestfs_int_lua_rmmountpoint (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12001,7 +12001,7 @@ guestfs_lua_rmmountpoint (lua_State *L)
 }
 
 static int
-guestfs_lua_rsync (lua_State *L)
+guestfs_int_lua_rsync (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12038,7 +12038,7 @@ guestfs_lua_rsync (lua_State *L)
 }
 
 static int
-guestfs_lua_rsync_in (lua_State *L)
+guestfs_int_lua_rsync_in (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12075,7 +12075,7 @@ guestfs_lua_rsync_in (lua_State *L)
 }
 
 static int
-guestfs_lua_rsync_out (lua_State *L)
+guestfs_int_lua_rsync_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12112,7 +12112,7 @@ guestfs_lua_rsync_out (lua_State *L)
 }
 
 static int
-guestfs_lua_scrub_device (lua_State *L)
+guestfs_int_lua_scrub_device (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12133,7 +12133,7 @@ guestfs_lua_scrub_device (lua_State *L)
 }
 
 static int
-guestfs_lua_scrub_file (lua_State *L)
+guestfs_int_lua_scrub_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12154,7 +12154,7 @@ guestfs_lua_scrub_file (lua_State *L)
 }
 
 static int
-guestfs_lua_scrub_freespace (lua_State *L)
+guestfs_int_lua_scrub_freespace (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12175,7 +12175,7 @@ guestfs_lua_scrub_freespace (lua_State *L)
 }
 
 static int
-guestfs_lua_set_append (lua_State *L)
+guestfs_int_lua_set_append (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12196,7 +12196,7 @@ guestfs_lua_set_append (lua_State *L)
 }
 
 static int
-guestfs_lua_set_attach_method (lua_State *L)
+guestfs_int_lua_set_attach_method (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12217,7 +12217,7 @@ guestfs_lua_set_attach_method (lua_State *L)
 }
 
 static int
-guestfs_lua_set_autosync (lua_State *L)
+guestfs_int_lua_set_autosync (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12238,7 +12238,7 @@ guestfs_lua_set_autosync (lua_State *L)
 }
 
 static int
-guestfs_lua_set_backend (lua_State *L)
+guestfs_int_lua_set_backend (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12259,7 +12259,7 @@ guestfs_lua_set_backend (lua_State *L)
 }
 
 static int
-guestfs_lua_set_backend_setting (lua_State *L)
+guestfs_int_lua_set_backend_setting (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12282,7 +12282,7 @@ guestfs_lua_set_backend_setting (lua_State *L)
 }
 
 static int
-guestfs_lua_set_backend_settings (lua_State *L)
+guestfs_int_lua_set_backend_settings (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12304,7 +12304,7 @@ guestfs_lua_set_backend_settings (lua_State *L)
 }
 
 static int
-guestfs_lua_set_cachedir (lua_State *L)
+guestfs_int_lua_set_cachedir (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12325,7 +12325,7 @@ guestfs_lua_set_cachedir (lua_State *L)
 }
 
 static int
-guestfs_lua_set_direct (lua_State *L)
+guestfs_int_lua_set_direct (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12346,7 +12346,7 @@ guestfs_lua_set_direct (lua_State *L)
 }
 
 static int
-guestfs_lua_set_e2attrs (lua_State *L)
+guestfs_int_lua_set_e2attrs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12379,7 +12379,7 @@ guestfs_lua_set_e2attrs (lua_State *L)
 }
 
 static int
-guestfs_lua_set_e2generation (lua_State *L)
+guestfs_int_lua_set_e2generation (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12402,7 +12402,7 @@ guestfs_lua_set_e2generation (lua_State *L)
 }
 
 static int
-guestfs_lua_set_e2label (lua_State *L)
+guestfs_int_lua_set_e2label (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12425,7 +12425,7 @@ guestfs_lua_set_e2label (lua_State *L)
 }
 
 static int
-guestfs_lua_set_e2uuid (lua_State *L)
+guestfs_int_lua_set_e2uuid (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12448,7 +12448,7 @@ guestfs_lua_set_e2uuid (lua_State *L)
 }
 
 static int
-guestfs_lua_set_hv (lua_State *L)
+guestfs_int_lua_set_hv (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12469,7 +12469,7 @@ guestfs_lua_set_hv (lua_State *L)
 }
 
 static int
-guestfs_lua_set_identifier (lua_State *L)
+guestfs_int_lua_set_identifier (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12490,7 +12490,7 @@ guestfs_lua_set_identifier (lua_State *L)
 }
 
 static int
-guestfs_lua_set_label (lua_State *L)
+guestfs_int_lua_set_label (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12513,7 +12513,7 @@ guestfs_lua_set_label (lua_State *L)
 }
 
 static int
-guestfs_lua_set_libvirt_requested_credential (lua_State *L)
+guestfs_int_lua_set_libvirt_requested_credential (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12537,7 +12537,7 @@ guestfs_lua_set_libvirt_requested_credential (lua_State *L)
 }
 
 static int
-guestfs_lua_set_libvirt_supported_credentials (lua_State *L)
+guestfs_int_lua_set_libvirt_supported_credentials (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12559,7 +12559,7 @@ guestfs_lua_set_libvirt_supported_credentials (lua_State *L)
 }
 
 static int
-guestfs_lua_set_memsize (lua_State *L)
+guestfs_int_lua_set_memsize (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12580,7 +12580,7 @@ guestfs_lua_set_memsize (lua_State *L)
 }
 
 static int
-guestfs_lua_set_network (lua_State *L)
+guestfs_int_lua_set_network (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12601,7 +12601,7 @@ guestfs_lua_set_network (lua_State *L)
 }
 
 static int
-guestfs_lua_set_path (lua_State *L)
+guestfs_int_lua_set_path (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12622,7 +12622,7 @@ guestfs_lua_set_path (lua_State *L)
 }
 
 static int
-guestfs_lua_set_pgroup (lua_State *L)
+guestfs_int_lua_set_pgroup (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12643,7 +12643,7 @@ guestfs_lua_set_pgroup (lua_State *L)
 }
 
 static int
-guestfs_lua_set_program (lua_State *L)
+guestfs_int_lua_set_program (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12664,7 +12664,7 @@ guestfs_lua_set_program (lua_State *L)
 }
 
 static int
-guestfs_lua_set_qemu (lua_State *L)
+guestfs_int_lua_set_qemu (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12685,7 +12685,7 @@ guestfs_lua_set_qemu (lua_State *L)
 }
 
 static int
-guestfs_lua_set_recovery_proc (lua_State *L)
+guestfs_int_lua_set_recovery_proc (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12706,7 +12706,7 @@ guestfs_lua_set_recovery_proc (lua_State *L)
 }
 
 static int
-guestfs_lua_set_selinux (lua_State *L)
+guestfs_int_lua_set_selinux (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12727,7 +12727,7 @@ guestfs_lua_set_selinux (lua_State *L)
 }
 
 static int
-guestfs_lua_set_smp (lua_State *L)
+guestfs_int_lua_set_smp (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12748,7 +12748,7 @@ guestfs_lua_set_smp (lua_State *L)
 }
 
 static int
-guestfs_lua_set_tmpdir (lua_State *L)
+guestfs_int_lua_set_tmpdir (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12769,7 +12769,7 @@ guestfs_lua_set_tmpdir (lua_State *L)
 }
 
 static int
-guestfs_lua_set_trace (lua_State *L)
+guestfs_int_lua_set_trace (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12790,7 +12790,7 @@ guestfs_lua_set_trace (lua_State *L)
 }
 
 static int
-guestfs_lua_set_uuid (lua_State *L)
+guestfs_int_lua_set_uuid (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12813,7 +12813,7 @@ guestfs_lua_set_uuid (lua_State *L)
 }
 
 static int
-guestfs_lua_set_uuid_random (lua_State *L)
+guestfs_int_lua_set_uuid_random (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12834,7 +12834,7 @@ guestfs_lua_set_uuid_random (lua_State *L)
 }
 
 static int
-guestfs_lua_set_verbose (lua_State *L)
+guestfs_int_lua_set_verbose (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12855,7 +12855,7 @@ guestfs_lua_set_verbose (lua_State *L)
 }
 
 static int
-guestfs_lua_setcon (lua_State *L)
+guestfs_int_lua_setcon (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12876,7 +12876,7 @@ guestfs_lua_setcon (lua_State *L)
 }
 
 static int
-guestfs_lua_setxattr (lua_State *L)
+guestfs_int_lua_setxattr (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12903,7 +12903,7 @@ guestfs_lua_setxattr (lua_State *L)
 }
 
 static int
-guestfs_lua_sfdisk (lua_State *L)
+guestfs_int_lua_sfdisk (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12933,7 +12933,7 @@ guestfs_lua_sfdisk (lua_State *L)
 }
 
 static int
-guestfs_lua_sfdiskM (lua_State *L)
+guestfs_int_lua_sfdiskM (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12957,7 +12957,7 @@ guestfs_lua_sfdiskM (lua_State *L)
 }
 
 static int
-guestfs_lua_sfdisk_N (lua_State *L)
+guestfs_int_lua_sfdisk_N (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -12988,7 +12988,7 @@ guestfs_lua_sfdisk_N (lua_State *L)
 }
 
 static int
-guestfs_lua_sfdisk_disk_geometry (lua_State *L)
+guestfs_int_lua_sfdisk_disk_geometry (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -13011,7 +13011,7 @@ guestfs_lua_sfdisk_disk_geometry (lua_State *L)
 }
 
 static int
-guestfs_lua_sfdisk_kernel_geometry (lua_State *L)
+guestfs_int_lua_sfdisk_kernel_geometry (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -13034,7 +13034,7 @@ guestfs_lua_sfdisk_kernel_geometry (lua_State *L)
 }
 
 static int
-guestfs_lua_sfdisk_l (lua_State *L)
+guestfs_int_lua_sfdisk_l (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -13057,7 +13057,7 @@ guestfs_lua_sfdisk_l (lua_State *L)
 }
 
 static int
-guestfs_lua_sh (lua_State *L)
+guestfs_int_lua_sh (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -13080,7 +13080,7 @@ guestfs_lua_sh (lua_State *L)
 }
 
 static int
-guestfs_lua_sh_lines (lua_State *L)
+guestfs_int_lua_sh_lines (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -13103,7 +13103,7 @@ guestfs_lua_sh_lines (lua_State *L)
 }
 
 static int
-guestfs_lua_shutdown (lua_State *L)
+guestfs_int_lua_shutdown (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13122,7 +13122,7 @@ guestfs_lua_shutdown (lua_State *L)
 }
 
 static int
-guestfs_lua_sleep (lua_State *L)
+guestfs_int_lua_sleep (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13143,7 +13143,7 @@ guestfs_lua_sleep (lua_State *L)
 }
 
 static int
-guestfs_lua_stat (lua_State *L)
+guestfs_int_lua_stat (lua_State *L)
 {
   struct guestfs_stat *r;
   struct userdata *u = get_handle (L, 1);
@@ -13166,7 +13166,7 @@ guestfs_lua_stat (lua_State *L)
 }
 
 static int
-guestfs_lua_statns (lua_State *L)
+guestfs_int_lua_statns (lua_State *L)
 {
   struct guestfs_statns *r;
   struct userdata *u = get_handle (L, 1);
@@ -13189,7 +13189,7 @@ guestfs_lua_statns (lua_State *L)
 }
 
 static int
-guestfs_lua_statvfs (lua_State *L)
+guestfs_int_lua_statvfs (lua_State *L)
 {
   struct guestfs_statvfs *r;
   struct userdata *u = get_handle (L, 1);
@@ -13212,7 +13212,7 @@ guestfs_lua_statvfs (lua_State *L)
 }
 
 static int
-guestfs_lua_strings (lua_State *L)
+guestfs_int_lua_strings (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -13235,7 +13235,7 @@ guestfs_lua_strings (lua_State *L)
 }
 
 static int
-guestfs_lua_strings_e (lua_State *L)
+guestfs_int_lua_strings_e (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -13260,7 +13260,7 @@ guestfs_lua_strings_e (lua_State *L)
 }
 
 static int
-guestfs_lua_swapoff_device (lua_State *L)
+guestfs_int_lua_swapoff_device (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13281,7 +13281,7 @@ guestfs_lua_swapoff_device (lua_State *L)
 }
 
 static int
-guestfs_lua_swapoff_file (lua_State *L)
+guestfs_int_lua_swapoff_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13302,7 +13302,7 @@ guestfs_lua_swapoff_file (lua_State *L)
 }
 
 static int
-guestfs_lua_swapoff_label (lua_State *L)
+guestfs_int_lua_swapoff_label (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13323,7 +13323,7 @@ guestfs_lua_swapoff_label (lua_State *L)
 }
 
 static int
-guestfs_lua_swapoff_uuid (lua_State *L)
+guestfs_int_lua_swapoff_uuid (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13344,7 +13344,7 @@ guestfs_lua_swapoff_uuid (lua_State *L)
 }
 
 static int
-guestfs_lua_swapon_device (lua_State *L)
+guestfs_int_lua_swapon_device (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13365,7 +13365,7 @@ guestfs_lua_swapon_device (lua_State *L)
 }
 
 static int
-guestfs_lua_swapon_file (lua_State *L)
+guestfs_int_lua_swapon_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13386,7 +13386,7 @@ guestfs_lua_swapon_file (lua_State *L)
 }
 
 static int
-guestfs_lua_swapon_label (lua_State *L)
+guestfs_int_lua_swapon_label (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13407,7 +13407,7 @@ guestfs_lua_swapon_label (lua_State *L)
 }
 
 static int
-guestfs_lua_swapon_uuid (lua_State *L)
+guestfs_int_lua_swapon_uuid (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13428,7 +13428,7 @@ guestfs_lua_swapon_uuid (lua_State *L)
 }
 
 static int
-guestfs_lua_sync (lua_State *L)
+guestfs_int_lua_sync (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13447,7 +13447,7 @@ guestfs_lua_sync (lua_State *L)
 }
 
 static int
-guestfs_lua_syslinux (lua_State *L)
+guestfs_int_lua_syslinux (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13478,7 +13478,7 @@ guestfs_lua_syslinux (lua_State *L)
 }
 
 static int
-guestfs_lua_tail (lua_State *L)
+guestfs_int_lua_tail (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -13501,7 +13501,7 @@ guestfs_lua_tail (lua_State *L)
 }
 
 static int
-guestfs_lua_tail_n (lua_State *L)
+guestfs_int_lua_tail_n (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -13526,7 +13526,7 @@ guestfs_lua_tail_n (lua_State *L)
 }
 
 static int
-guestfs_lua_tar_in (lua_State *L)
+guestfs_int_lua_tar_in (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13571,7 +13571,7 @@ guestfs_lua_tar_in (lua_State *L)
 }
 
 static int
-guestfs_lua_tar_out (lua_State *L)
+guestfs_int_lua_tar_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13625,7 +13625,7 @@ guestfs_lua_tar_out (lua_State *L)
 }
 
 static int
-guestfs_lua_tgz_in (lua_State *L)
+guestfs_int_lua_tgz_in (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13648,7 +13648,7 @@ guestfs_lua_tgz_in (lua_State *L)
 }
 
 static int
-guestfs_lua_tgz_out (lua_State *L)
+guestfs_int_lua_tgz_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13671,7 +13671,7 @@ guestfs_lua_tgz_out (lua_State *L)
 }
 
 static int
-guestfs_lua_touch (lua_State *L)
+guestfs_int_lua_touch (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13692,7 +13692,7 @@ guestfs_lua_touch (lua_State *L)
 }
 
 static int
-guestfs_lua_truncate (lua_State *L)
+guestfs_int_lua_truncate (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13713,7 +13713,7 @@ guestfs_lua_truncate (lua_State *L)
 }
 
 static int
-guestfs_lua_truncate_size (lua_State *L)
+guestfs_int_lua_truncate_size (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13736,7 +13736,7 @@ guestfs_lua_truncate_size (lua_State *L)
 }
 
 static int
-guestfs_lua_tune2fs (lua_State *L)
+guestfs_int_lua_tune2fs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13803,7 +13803,7 @@ guestfs_lua_tune2fs (lua_State *L)
 }
 
 static int
-guestfs_lua_tune2fs_l (lua_State *L)
+guestfs_int_lua_tune2fs_l (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -13826,7 +13826,7 @@ guestfs_lua_tune2fs_l (lua_State *L)
 }
 
 static int
-guestfs_lua_txz_in (lua_State *L)
+guestfs_int_lua_txz_in (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13849,7 +13849,7 @@ guestfs_lua_txz_in (lua_State *L)
 }
 
 static int
-guestfs_lua_txz_out (lua_State *L)
+guestfs_int_lua_txz_out (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13872,7 +13872,7 @@ guestfs_lua_txz_out (lua_State *L)
 }
 
 static int
-guestfs_lua_umask (lua_State *L)
+guestfs_int_lua_umask (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13894,7 +13894,7 @@ guestfs_lua_umask (lua_State *L)
 }
 
 static int
-guestfs_lua_umount (lua_State *L)
+guestfs_int_lua_umount (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13929,7 +13929,7 @@ guestfs_lua_umount (lua_State *L)
 }
 
 static int
-guestfs_lua_umount_all (lua_State *L)
+guestfs_int_lua_umount_all (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13948,7 +13948,7 @@ guestfs_lua_umount_all (lua_State *L)
 }
 
 static int
-guestfs_lua_umount_local (lua_State *L)
+guestfs_int_lua_umount_local (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -13977,7 +13977,7 @@ guestfs_lua_umount_local (lua_State *L)
 }
 
 static int
-guestfs_lua_upload (lua_State *L)
+guestfs_int_lua_upload (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14000,7 +14000,7 @@ guestfs_lua_upload (lua_State *L)
 }
 
 static int
-guestfs_lua_upload_offset (lua_State *L)
+guestfs_int_lua_upload_offset (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14025,7 +14025,7 @@ guestfs_lua_upload_offset (lua_State *L)
 }
 
 static int
-guestfs_lua_user_cancel (lua_State *L)
+guestfs_int_lua_user_cancel (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14044,7 +14044,7 @@ guestfs_lua_user_cancel (lua_State *L)
 }
 
 static int
-guestfs_lua_utimens (lua_State *L)
+guestfs_int_lua_utimens (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14073,7 +14073,7 @@ guestfs_lua_utimens (lua_State *L)
 }
 
 static int
-guestfs_lua_utsname (lua_State *L)
+guestfs_int_lua_utsname (lua_State *L)
 {
   struct guestfs_utsname *r;
   struct userdata *u = get_handle (L, 1);
@@ -14094,7 +14094,7 @@ guestfs_lua_utsname (lua_State *L)
 }
 
 static int
-guestfs_lua_version (lua_State *L)
+guestfs_int_lua_version (lua_State *L)
 {
   struct guestfs_version *r;
   struct userdata *u = get_handle (L, 1);
@@ -14115,7 +14115,7 @@ guestfs_lua_version (lua_State *L)
 }
 
 static int
-guestfs_lua_vfs_label (lua_State *L)
+guestfs_int_lua_vfs_label (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -14138,7 +14138,7 @@ guestfs_lua_vfs_label (lua_State *L)
 }
 
 static int
-guestfs_lua_vfs_minimum_size (lua_State *L)
+guestfs_int_lua_vfs_minimum_size (lua_State *L)
 {
   int64_t r;
   struct userdata *u = get_handle (L, 1);
@@ -14160,7 +14160,7 @@ guestfs_lua_vfs_minimum_size (lua_State *L)
 }
 
 static int
-guestfs_lua_vfs_type (lua_State *L)
+guestfs_int_lua_vfs_type (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -14183,7 +14183,7 @@ guestfs_lua_vfs_type (lua_State *L)
 }
 
 static int
-guestfs_lua_vfs_uuid (lua_State *L)
+guestfs_int_lua_vfs_uuid (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -14206,7 +14206,7 @@ guestfs_lua_vfs_uuid (lua_State *L)
 }
 
 static int
-guestfs_lua_vg_activate (lua_State *L)
+guestfs_int_lua_vg_activate (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14230,7 +14230,7 @@ guestfs_lua_vg_activate (lua_State *L)
 }
 
 static int
-guestfs_lua_vg_activate_all (lua_State *L)
+guestfs_int_lua_vg_activate_all (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14251,7 +14251,7 @@ guestfs_lua_vg_activate_all (lua_State *L)
 }
 
 static int
-guestfs_lua_vgchange_uuid (lua_State *L)
+guestfs_int_lua_vgchange_uuid (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14272,7 +14272,7 @@ guestfs_lua_vgchange_uuid (lua_State *L)
 }
 
 static int
-guestfs_lua_vgchange_uuid_all (lua_State *L)
+guestfs_int_lua_vgchange_uuid_all (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14291,7 +14291,7 @@ guestfs_lua_vgchange_uuid_all (lua_State *L)
 }
 
 static int
-guestfs_lua_vgcreate (lua_State *L)
+guestfs_int_lua_vgcreate (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14315,7 +14315,7 @@ guestfs_lua_vgcreate (lua_State *L)
 }
 
 static int
-guestfs_lua_vglvuuids (lua_State *L)
+guestfs_int_lua_vglvuuids (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -14338,7 +14338,7 @@ guestfs_lua_vglvuuids (lua_State *L)
 }
 
 static int
-guestfs_lua_vgmeta (lua_State *L)
+guestfs_int_lua_vgmeta (lua_State *L)
 {
   char *r;
   size_t size;
@@ -14362,7 +14362,7 @@ guestfs_lua_vgmeta (lua_State *L)
 }
 
 static int
-guestfs_lua_vgpvuuids (lua_State *L)
+guestfs_int_lua_vgpvuuids (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -14385,7 +14385,7 @@ guestfs_lua_vgpvuuids (lua_State *L)
 }
 
 static int
-guestfs_lua_vgremove (lua_State *L)
+guestfs_int_lua_vgremove (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14406,7 +14406,7 @@ guestfs_lua_vgremove (lua_State *L)
 }
 
 static int
-guestfs_lua_vgrename (lua_State *L)
+guestfs_int_lua_vgrename (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14429,7 +14429,7 @@ guestfs_lua_vgrename (lua_State *L)
 }
 
 static int
-guestfs_lua_vgs (lua_State *L)
+guestfs_int_lua_vgs (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -14450,7 +14450,7 @@ guestfs_lua_vgs (lua_State *L)
 }
 
 static int
-guestfs_lua_vgs_full (lua_State *L)
+guestfs_int_lua_vgs_full (lua_State *L)
 {
   struct guestfs_lvm_vg_list *r;
   struct userdata *u = get_handle (L, 1);
@@ -14471,7 +14471,7 @@ guestfs_lua_vgs_full (lua_State *L)
 }
 
 static int
-guestfs_lua_vgscan (lua_State *L)
+guestfs_int_lua_vgscan (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14490,7 +14490,7 @@ guestfs_lua_vgscan (lua_State *L)
 }
 
 static int
-guestfs_lua_vguuid (lua_State *L)
+guestfs_int_lua_vguuid (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -14513,7 +14513,7 @@ guestfs_lua_vguuid (lua_State *L)
 }
 
 static int
-guestfs_lua_wait_ready (lua_State *L)
+guestfs_int_lua_wait_ready (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14532,7 +14532,7 @@ guestfs_lua_wait_ready (lua_State *L)
 }
 
 static int
-guestfs_lua_wc_c (lua_State *L)
+guestfs_int_lua_wc_c (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14554,7 +14554,7 @@ guestfs_lua_wc_c (lua_State *L)
 }
 
 static int
-guestfs_lua_wc_l (lua_State *L)
+guestfs_int_lua_wc_l (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14576,7 +14576,7 @@ guestfs_lua_wc_l (lua_State *L)
 }
 
 static int
-guestfs_lua_wc_w (lua_State *L)
+guestfs_int_lua_wc_w (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14598,7 +14598,7 @@ guestfs_lua_wc_w (lua_State *L)
 }
 
 static int
-guestfs_lua_wipefs (lua_State *L)
+guestfs_int_lua_wipefs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14619,7 +14619,7 @@ guestfs_lua_wipefs (lua_State *L)
 }
 
 static int
-guestfs_lua_write (lua_State *L)
+guestfs_int_lua_write (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14643,7 +14643,7 @@ guestfs_lua_write (lua_State *L)
 }
 
 static int
-guestfs_lua_write_append (lua_State *L)
+guestfs_int_lua_write_append (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14667,7 +14667,7 @@ guestfs_lua_write_append (lua_State *L)
 }
 
 static int
-guestfs_lua_write_file (lua_State *L)
+guestfs_int_lua_write_file (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14692,7 +14692,7 @@ guestfs_lua_write_file (lua_State *L)
 }
 
 static int
-guestfs_lua_xfs_admin (lua_State *L)
+guestfs_int_lua_xfs_admin (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14747,7 +14747,7 @@ guestfs_lua_xfs_admin (lua_State *L)
 }
 
 static int
-guestfs_lua_xfs_growfs (lua_State *L)
+guestfs_int_lua_xfs_growfs (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14806,7 +14806,7 @@ guestfs_lua_xfs_growfs (lua_State *L)
 }
 
 static int
-guestfs_lua_xfs_info (lua_State *L)
+guestfs_int_lua_xfs_info (lua_State *L)
 {
   struct guestfs_xfsinfo *r;
   struct userdata *u = get_handle (L, 1);
@@ -14829,7 +14829,7 @@ guestfs_lua_xfs_info (lua_State *L)
 }
 
 static int
-guestfs_lua_xfs_repair (lua_State *L)
+guestfs_int_lua_xfs_repair (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14897,7 +14897,7 @@ guestfs_lua_xfs_repair (lua_State *L)
 }
 
 static int
-guestfs_lua_zegrep (lua_State *L)
+guestfs_int_lua_zegrep (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -14922,7 +14922,7 @@ guestfs_lua_zegrep (lua_State *L)
 }
 
 static int
-guestfs_lua_zegrepi (lua_State *L)
+guestfs_int_lua_zegrepi (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -14947,7 +14947,7 @@ guestfs_lua_zegrepi (lua_State *L)
 }
 
 static int
-guestfs_lua_zero (lua_State *L)
+guestfs_int_lua_zero (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14968,7 +14968,7 @@ guestfs_lua_zero (lua_State *L)
 }
 
 static int
-guestfs_lua_zero_device (lua_State *L)
+guestfs_int_lua_zero_device (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -14989,7 +14989,7 @@ guestfs_lua_zero_device (lua_State *L)
 }
 
 static int
-guestfs_lua_zero_free_space (lua_State *L)
+guestfs_int_lua_zero_free_space (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -15010,7 +15010,7 @@ guestfs_lua_zero_free_space (lua_State *L)
 }
 
 static int
-guestfs_lua_zerofree (lua_State *L)
+guestfs_int_lua_zerofree (lua_State *L)
 {
   int r;
   struct userdata *u = get_handle (L, 1);
@@ -15031,7 +15031,7 @@ guestfs_lua_zerofree (lua_State *L)
 }
 
 static int
-guestfs_lua_zfgrep (lua_State *L)
+guestfs_int_lua_zfgrep (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -15056,7 +15056,7 @@ guestfs_lua_zfgrep (lua_State *L)
 }
 
 static int
-guestfs_lua_zfgrepi (lua_State *L)
+guestfs_int_lua_zfgrepi (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -15081,7 +15081,7 @@ guestfs_lua_zfgrepi (lua_State *L)
 }
 
 static int
-guestfs_lua_zfile (lua_State *L)
+guestfs_int_lua_zfile (lua_State *L)
 {
   char *r;
   struct userdata *u = get_handle (L, 1);
@@ -15106,7 +15106,7 @@ guestfs_lua_zfile (lua_State *L)
 }
 
 static int
-guestfs_lua_zgrep (lua_State *L)
+guestfs_int_lua_zgrep (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -15131,7 +15131,7 @@ guestfs_lua_zgrep (lua_State *L)
 }
 
 static int
-guestfs_lua_zgrepi (lua_State *L)
+guestfs_int_lua_zgrepi (lua_State *L)
 {
   char **r;
   struct userdata *u = get_handle (L, 1);
@@ -16362,610 +16362,610 @@ push_statvfs (lua_State *L, struct guestfs_statvfs *v)
  * See: http://article.gmane.org/gmane.comp.lang.lua.general/95065
  */
 static luaL_Reg metamethods[] = {
-  { "__gc", guestfs_lua_finalizer },
+  { "__gc", guestfs_int_lua_finalizer },
   { NULL, NULL }
 };
 
 /* Module functions. */
 static luaL_Reg functions[] = {
-  { "create", guestfs_lua_create },
+  { "create", guestfs_int_lua_create },
   { NULL, NULL }
 };
 
 /* Methods. */
 static luaL_Reg methods[] = {
-  { "close", guestfs_lua_close },
-  { "set_event_callback", guestfs_lua_set_event_callback },
-  { "delete_event_callback", guestfs_lua_delete_event_callback },
+  { "close", guestfs_int_lua_close },
+  { "set_event_callback", guestfs_int_lua_set_event_callback },
+  { "delete_event_callback", guestfs_int_lua_delete_event_callback },
 
-  { "acl_delete_def_file", guestfs_lua_acl_delete_def_file },
-  { "acl_get_file", guestfs_lua_acl_get_file },
-  { "acl_set_file", guestfs_lua_acl_set_file },
-  { "add_cdrom", guestfs_lua_add_cdrom },
-  { "add_domain", guestfs_lua_add_domain },
-  { "add_drive", guestfs_lua_add_drive },
-  { "add_drive_ro", guestfs_lua_add_drive_ro },
-  { "add_drive_ro_with_if", guestfs_lua_add_drive_ro_with_if },
-  { "add_drive_scratch", guestfs_lua_add_drive_scratch },
-  { "add_drive_with_if", guestfs_lua_add_drive_with_if },
-  { "add_libvirt_dom", guestfs_lua_add_libvirt_dom },
-  { "aug_clear", guestfs_lua_aug_clear },
-  { "aug_close", guestfs_lua_aug_close },
-  { "aug_defnode", guestfs_lua_aug_defnode },
-  { "aug_defvar", guestfs_lua_aug_defvar },
-  { "aug_get", guestfs_lua_aug_get },
-  { "aug_init", guestfs_lua_aug_init },
-  { "aug_insert", guestfs_lua_aug_insert },
-  { "aug_label", guestfs_lua_aug_label },
-  { "aug_load", guestfs_lua_aug_load },
-  { "aug_ls", guestfs_lua_aug_ls },
-  { "aug_match", guestfs_lua_aug_match },
-  { "aug_mv", guestfs_lua_aug_mv },
-  { "aug_rm", guestfs_lua_aug_rm },
-  { "aug_save", guestfs_lua_aug_save },
-  { "aug_set", guestfs_lua_aug_set },
-  { "aug_setm", guestfs_lua_aug_setm },
-  { "available", guestfs_lua_available },
-  { "available_all_groups", guestfs_lua_available_all_groups },
-  { "base64_in", guestfs_lua_base64_in },
-  { "base64_out", guestfs_lua_base64_out },
-  { "blkdiscard", guestfs_lua_blkdiscard },
-  { "blkdiscardzeroes", guestfs_lua_blkdiscardzeroes },
-  { "blkid", guestfs_lua_blkid },
-  { "blockdev_flushbufs", guestfs_lua_blockdev_flushbufs },
-  { "blockdev_getbsz", guestfs_lua_blockdev_getbsz },
-  { "blockdev_getro", guestfs_lua_blockdev_getro },
-  { "blockdev_getsize64", guestfs_lua_blockdev_getsize64 },
-  { "blockdev_getss", guestfs_lua_blockdev_getss },
-  { "blockdev_getsz", guestfs_lua_blockdev_getsz },
-  { "blockdev_rereadpt", guestfs_lua_blockdev_rereadpt },
-  { "blockdev_setbsz", guestfs_lua_blockdev_setbsz },
-  { "blockdev_setra", guestfs_lua_blockdev_setra },
-  { "blockdev_setro", guestfs_lua_blockdev_setro },
-  { "blockdev_setrw", guestfs_lua_blockdev_setrw },
-  { "btrfs_balance_cancel", guestfs_lua_btrfs_balance_cancel },
-  { "btrfs_balance_pause", guestfs_lua_btrfs_balance_pause },
-  { "btrfs_balance_resume", guestfs_lua_btrfs_balance_resume },
-  { "btrfs_balance_status", guestfs_lua_btrfs_balance_status },
-  { "btrfs_device_add", guestfs_lua_btrfs_device_add },
-  { "btrfs_device_delete", guestfs_lua_btrfs_device_delete },
-  { "btrfs_filesystem_balance", guestfs_lua_btrfs_filesystem_balance },
-  { "btrfs_filesystem_defragment", guestfs_lua_btrfs_filesystem_defragment },
-  { "btrfs_filesystem_resize", guestfs_lua_btrfs_filesystem_resize },
-  { "btrfs_filesystem_sync", guestfs_lua_btrfs_filesystem_sync },
-  { "btrfs_fsck", guestfs_lua_btrfs_fsck },
-  { "btrfs_image", guestfs_lua_btrfs_image },
-  { "btrfs_qgroup_assign", guestfs_lua_btrfs_qgroup_assign },
-  { "btrfs_qgroup_create", guestfs_lua_btrfs_qgroup_create },
-  { "btrfs_qgroup_destroy", guestfs_lua_btrfs_qgroup_destroy },
-  { "btrfs_qgroup_limit", guestfs_lua_btrfs_qgroup_limit },
-  { "btrfs_qgroup_remove", guestfs_lua_btrfs_qgroup_remove },
-  { "btrfs_qgroup_show", guestfs_lua_btrfs_qgroup_show },
-  { "btrfs_quota_enable", guestfs_lua_btrfs_quota_enable },
-  { "btrfs_quota_rescan", guestfs_lua_btrfs_quota_rescan },
-  { "btrfs_replace", guestfs_lua_btrfs_replace },
-  { "btrfs_rescue_chunk_recover", guestfs_lua_btrfs_rescue_chunk_recover },
-  { "btrfs_rescue_super_recover", guestfs_lua_btrfs_rescue_super_recover },
-  { "btrfs_scrub_cancel", guestfs_lua_btrfs_scrub_cancel },
-  { "btrfs_scrub_resume", guestfs_lua_btrfs_scrub_resume },
-  { "btrfs_scrub_start", guestfs_lua_btrfs_scrub_start },
-  { "btrfs_scrub_status", guestfs_lua_btrfs_scrub_status },
-  { "btrfs_set_seeding", guestfs_lua_btrfs_set_seeding },
-  { "btrfs_subvolume_create", guestfs_lua_btrfs_subvolume_create },
-  { "btrfs_subvolume_delete", guestfs_lua_btrfs_subvolume_delete },
-  { "btrfs_subvolume_get_default", guestfs_lua_btrfs_subvolume_get_default },
-  { "btrfs_subvolume_list", guestfs_lua_btrfs_subvolume_list },
-  { "btrfs_subvolume_set_default", guestfs_lua_btrfs_subvolume_set_default },
-  { "btrfs_subvolume_show", guestfs_lua_btrfs_subvolume_show },
-  { "btrfs_subvolume_snapshot", guestfs_lua_btrfs_subvolume_snapshot },
-  { "btrfstune_enable_extended_inode_refs", guestfs_lua_btrfstune_enable_extended_inode_refs },
-  { "btrfstune_enable_skinny_metadata_extent_refs", guestfs_lua_btrfstune_enable_skinny_metadata_extent_refs },
-  { "btrfstune_seeding", guestfs_lua_btrfstune_seeding },
-  { "c_pointer", guestfs_lua_c_pointer },
-  { "canonical_device_name", guestfs_lua_canonical_device_name },
-  { "cap_get_file", guestfs_lua_cap_get_file },
-  { "cap_set_file", guestfs_lua_cap_set_file },
-  { "case_sensitive_path", guestfs_lua_case_sensitive_path },
-  { "cat", guestfs_lua_cat },
-  { "checksum", guestfs_lua_checksum },
-  { "checksum_device", guestfs_lua_checksum_device },
-  { "checksums_out", guestfs_lua_checksums_out },
-  { "chmod", guestfs_lua_chmod },
-  { "chown", guestfs_lua_chown },
-  { "clear_backend_setting", guestfs_lua_clear_backend_setting },
-  { "command", guestfs_lua_command },
-  { "command_lines", guestfs_lua_command_lines },
-  { "compress_device_out", guestfs_lua_compress_device_out },
-  { "compress_out", guestfs_lua_compress_out },
-  { "config", guestfs_lua_config },
-  { "copy_attributes", guestfs_lua_copy_attributes },
-  { "copy_device_to_device", guestfs_lua_copy_device_to_device },
-  { "copy_device_to_file", guestfs_lua_copy_device_to_file },
-  { "copy_file_to_device", guestfs_lua_copy_file_to_device },
-  { "copy_file_to_file", guestfs_lua_copy_file_to_file },
-  { "copy_in", guestfs_lua_copy_in },
-  { "copy_out", guestfs_lua_copy_out },
-  { "copy_size", guestfs_lua_copy_size },
-  { "cp", guestfs_lua_cp },
-  { "cp_a", guestfs_lua_cp_a },
-  { "cp_r", guestfs_lua_cp_r },
-  { "cpio_out", guestfs_lua_cpio_out },
-  { "dd", guestfs_lua_dd },
-  { "debug", guestfs_lua_debug },
-  { "debug_drives", guestfs_lua_debug_drives },
-  { "debug_upload", guestfs_lua_debug_upload },
-  { "device_index", guestfs_lua_device_index },
-  { "df", guestfs_lua_df },
-  { "df_h", guestfs_lua_df_h },
-  { "disk_create", guestfs_lua_disk_create },
-  { "disk_format", guestfs_lua_disk_format },
-  { "disk_has_backing_file", guestfs_lua_disk_has_backing_file },
-  { "disk_virtual_size", guestfs_lua_disk_virtual_size },
-  { "dmesg", guestfs_lua_dmesg },
-  { "download", guestfs_lua_download },
-  { "download_offset", guestfs_lua_download_offset },
-  { "drop_caches", guestfs_lua_drop_caches },
-  { "du", guestfs_lua_du },
-  { "e2fsck", guestfs_lua_e2fsck },
-  { "e2fsck_f", guestfs_lua_e2fsck_f },
-  { "echo_daemon", guestfs_lua_echo_daemon },
-  { "egrep", guestfs_lua_egrep },
-  { "egrepi", guestfs_lua_egrepi },
-  { "equal", guestfs_lua_equal },
-  { "exists", guestfs_lua_exists },
-  { "extlinux", guestfs_lua_extlinux },
-  { "fallocate", guestfs_lua_fallocate },
-  { "fallocate64", guestfs_lua_fallocate64 },
-  { "feature_available", guestfs_lua_feature_available },
-  { "fgrep", guestfs_lua_fgrep },
-  { "fgrepi", guestfs_lua_fgrepi },
-  { "file", guestfs_lua_file },
-  { "file_architecture", guestfs_lua_file_architecture },
-  { "filesize", guestfs_lua_filesize },
-  { "filesystem_available", guestfs_lua_filesystem_available },
-  { "fill", guestfs_lua_fill },
-  { "fill_dir", guestfs_lua_fill_dir },
-  { "fill_pattern", guestfs_lua_fill_pattern },
-  { "find", guestfs_lua_find },
-  { "find0", guestfs_lua_find0 },
-  { "findfs_label", guestfs_lua_findfs_label },
-  { "findfs_uuid", guestfs_lua_findfs_uuid },
-  { "fsck", guestfs_lua_fsck },
-  { "fstrim", guestfs_lua_fstrim },
-  { "get_append", guestfs_lua_get_append },
-  { "get_attach_method", guestfs_lua_get_attach_method },
-  { "get_autosync", guestfs_lua_get_autosync },
-  { "get_backend", guestfs_lua_get_backend },
-  { "get_backend_setting", guestfs_lua_get_backend_setting },
-  { "get_backend_settings", guestfs_lua_get_backend_settings },
-  { "get_cachedir", guestfs_lua_get_cachedir },
-  { "get_direct", guestfs_lua_get_direct },
-  { "get_e2attrs", guestfs_lua_get_e2attrs },
-  { "get_e2generation", guestfs_lua_get_e2generation },
-  { "get_e2label", guestfs_lua_get_e2label },
-  { "get_e2uuid", guestfs_lua_get_e2uuid },
-  { "get_hv", guestfs_lua_get_hv },
-  { "get_identifier", guestfs_lua_get_identifier },
-  { "get_libvirt_requested_credential_challenge", guestfs_lua_get_libvirt_requested_credential_challenge },
-  { "get_libvirt_requested_credential_defresult", guestfs_lua_get_libvirt_requested_credential_defresult },
-  { "get_libvirt_requested_credential_prompt", guestfs_lua_get_libvirt_requested_credential_prompt },
-  { "get_libvirt_requested_credentials", guestfs_lua_get_libvirt_requested_credentials },
-  { "get_memsize", guestfs_lua_get_memsize },
-  { "get_network", guestfs_lua_get_network },
-  { "get_path", guestfs_lua_get_path },
-  { "get_pgroup", guestfs_lua_get_pgroup },
-  { "get_pid", guestfs_lua_get_pid },
-  { "get_program", guestfs_lua_get_program },
-  { "get_qemu", guestfs_lua_get_qemu },
-  { "get_recovery_proc", guestfs_lua_get_recovery_proc },
-  { "get_selinux", guestfs_lua_get_selinux },
-  { "get_smp", guestfs_lua_get_smp },
-  { "get_state", guestfs_lua_get_state },
-  { "get_tmpdir", guestfs_lua_get_tmpdir },
-  { "get_trace", guestfs_lua_get_trace },
-  { "get_umask", guestfs_lua_get_umask },
-  { "get_verbose", guestfs_lua_get_verbose },
-  { "getcon", guestfs_lua_getcon },
-  { "getxattr", guestfs_lua_getxattr },
-  { "getxattrs", guestfs_lua_getxattrs },
-  { "glob_expand", guestfs_lua_glob_expand },
-  { "grep", guestfs_lua_grep },
-  { "grepi", guestfs_lua_grepi },
-  { "grub_install", guestfs_lua_grub_install },
-  { "head", guestfs_lua_head },
-  { "head_n", guestfs_lua_head_n },
-  { "hexdump", guestfs_lua_hexdump },
-  { "hivex_close", guestfs_lua_hivex_close },
-  { "hivex_commit", guestfs_lua_hivex_commit },
-  { "hivex_node_add_child", guestfs_lua_hivex_node_add_child },
-  { "hivex_node_children", guestfs_lua_hivex_node_children },
-  { "hivex_node_delete_child", guestfs_lua_hivex_node_delete_child },
-  { "hivex_node_get_child", guestfs_lua_hivex_node_get_child },
-  { "hivex_node_get_value", guestfs_lua_hivex_node_get_value },
-  { "hivex_node_name", guestfs_lua_hivex_node_name },
-  { "hivex_node_parent", guestfs_lua_hivex_node_parent },
-  { "hivex_node_set_value", guestfs_lua_hivex_node_set_value },
-  { "hivex_node_values", guestfs_lua_hivex_node_values },
-  { "hivex_open", guestfs_lua_hivex_open },
-  { "hivex_root", guestfs_lua_hivex_root },
-  { "hivex_value_key", guestfs_lua_hivex_value_key },
-  { "hivex_value_type", guestfs_lua_hivex_value_type },
-  { "hivex_value_utf8", guestfs_lua_hivex_value_utf8 },
-  { "hivex_value_value", guestfs_lua_hivex_value_value },
-  { "initrd_cat", guestfs_lua_initrd_cat },
-  { "initrd_list", guestfs_lua_initrd_list },
-  { "inotify_add_watch", guestfs_lua_inotify_add_watch },
-  { "inotify_close", guestfs_lua_inotify_close },
-  { "inotify_files", guestfs_lua_inotify_files },
-  { "inotify_init", guestfs_lua_inotify_init },
-  { "inotify_read", guestfs_lua_inotify_read },
-  { "inotify_rm_watch", guestfs_lua_inotify_rm_watch },
-  { "inspect_get_arch", guestfs_lua_inspect_get_arch },
-  { "inspect_get_distro", guestfs_lua_inspect_get_distro },
-  { "inspect_get_drive_mappings", guestfs_lua_inspect_get_drive_mappings },
-  { "inspect_get_filesystems", guestfs_lua_inspect_get_filesystems },
-  { "inspect_get_format", guestfs_lua_inspect_get_format },
-  { "inspect_get_hostname", guestfs_lua_inspect_get_hostname },
-  { "inspect_get_icon", guestfs_lua_inspect_get_icon },
-  { "inspect_get_major_version", guestfs_lua_inspect_get_major_version },
-  { "inspect_get_minor_version", guestfs_lua_inspect_get_minor_version },
-  { "inspect_get_mountpoints", guestfs_lua_inspect_get_mountpoints },
-  { "inspect_get_package_format", guestfs_lua_inspect_get_package_format },
-  { "inspect_get_package_management", guestfs_lua_inspect_get_package_management },
-  { "inspect_get_product_name", guestfs_lua_inspect_get_product_name },
-  { "inspect_get_product_variant", guestfs_lua_inspect_get_product_variant },
-  { "inspect_get_roots", guestfs_lua_inspect_get_roots },
-  { "inspect_get_type", guestfs_lua_inspect_get_type },
-  { "inspect_get_windows_current_control_set", guestfs_lua_inspect_get_windows_current_control_set },
-  { "inspect_get_windows_systemroot", guestfs_lua_inspect_get_windows_systemroot },
-  { "inspect_is_live", guestfs_lua_inspect_is_live },
-  { "inspect_is_multipart", guestfs_lua_inspect_is_multipart },
-  { "inspect_is_netinst", guestfs_lua_inspect_is_netinst },
-  { "inspect_list_applications", guestfs_lua_inspect_list_applications },
-  { "inspect_list_applications2", guestfs_lua_inspect_list_applications2 },
-  { "inspect_os", guestfs_lua_inspect_os },
-  { "internal_exit", guestfs_lua_internal_exit },
-  { "internal_test", guestfs_lua_internal_test },
-  { "internal_test_63_optargs", guestfs_lua_internal_test_63_optargs },
-  { "internal_test_close_output", guestfs_lua_internal_test_close_output },
-  { "internal_test_only_optargs", guestfs_lua_internal_test_only_optargs },
-  { "internal_test_rbool", guestfs_lua_internal_test_rbool },
-  { "internal_test_rboolerr", guestfs_lua_internal_test_rboolerr },
-  { "internal_test_rbufferout", guestfs_lua_internal_test_rbufferout },
-  { "internal_test_rbufferouterr", guestfs_lua_internal_test_rbufferouterr },
-  { "internal_test_rconstoptstring", guestfs_lua_internal_test_rconstoptstring },
-  { "internal_test_rconstoptstringerr", guestfs_lua_internal_test_rconstoptstringerr },
-  { "internal_test_rconststring", guestfs_lua_internal_test_rconststring },
-  { "internal_test_rconststringerr", guestfs_lua_internal_test_rconststringerr },
-  { "internal_test_rhashtable", guestfs_lua_internal_test_rhashtable },
-  { "internal_test_rhashtableerr", guestfs_lua_internal_test_rhashtableerr },
-  { "internal_test_rint", guestfs_lua_internal_test_rint },
-  { "internal_test_rint64", guestfs_lua_internal_test_rint64 },
-  { "internal_test_rint64err", guestfs_lua_internal_test_rint64err },
-  { "internal_test_rinterr", guestfs_lua_internal_test_rinterr },
-  { "internal_test_rstring", guestfs_lua_internal_test_rstring },
-  { "internal_test_rstringerr", guestfs_lua_internal_test_rstringerr },
-  { "internal_test_rstringlist", guestfs_lua_internal_test_rstringlist },
-  { "internal_test_rstringlisterr", guestfs_lua_internal_test_rstringlisterr },
-  { "internal_test_rstruct", guestfs_lua_internal_test_rstruct },
-  { "internal_test_rstructerr", guestfs_lua_internal_test_rstructerr },
-  { "internal_test_rstructlist", guestfs_lua_internal_test_rstructlist },
-  { "internal_test_rstructlisterr", guestfs_lua_internal_test_rstructlisterr },
-  { "internal_test_set_output", guestfs_lua_internal_test_set_output },
-  { "is_blockdev", guestfs_lua_is_blockdev },
-  { "is_busy", guestfs_lua_is_busy },
-  { "is_chardev", guestfs_lua_is_chardev },
-  { "is_config", guestfs_lua_is_config },
-  { "is_dir", guestfs_lua_is_dir },
-  { "is_fifo", guestfs_lua_is_fifo },
-  { "is_file", guestfs_lua_is_file },
-  { "is_launching", guestfs_lua_is_launching },
-  { "is_lv", guestfs_lua_is_lv },
-  { "is_ready", guestfs_lua_is_ready },
-  { "is_socket", guestfs_lua_is_socket },
-  { "is_symlink", guestfs_lua_is_symlink },
-  { "is_whole_device", guestfs_lua_is_whole_device },
-  { "is_zero", guestfs_lua_is_zero },
-  { "is_zero_device", guestfs_lua_is_zero_device },
-  { "isoinfo", guestfs_lua_isoinfo },
-  { "isoinfo_device", guestfs_lua_isoinfo_device },
-  { "journal_close", guestfs_lua_journal_close },
-  { "journal_get", guestfs_lua_journal_get },
-  { "journal_get_data_threshold", guestfs_lua_journal_get_data_threshold },
-  { "journal_get_realtime_usec", guestfs_lua_journal_get_realtime_usec },
-  { "journal_next", guestfs_lua_journal_next },
-  { "journal_open", guestfs_lua_journal_open },
-  { "journal_set_data_threshold", guestfs_lua_journal_set_data_threshold },
-  { "journal_skip", guestfs_lua_journal_skip },
-  { "kill_subprocess", guestfs_lua_kill_subprocess },
-  { "launch", guestfs_lua_launch },
-  { "lchown", guestfs_lua_lchown },
-  { "ldmtool_create_all", guestfs_lua_ldmtool_create_all },
-  { "ldmtool_diskgroup_disks", guestfs_lua_ldmtool_diskgroup_disks },
-  { "ldmtool_diskgroup_name", guestfs_lua_ldmtool_diskgroup_name },
-  { "ldmtool_diskgroup_volumes", guestfs_lua_ldmtool_diskgroup_volumes },
-  { "ldmtool_remove_all", guestfs_lua_ldmtool_remove_all },
-  { "ldmtool_scan", guestfs_lua_ldmtool_scan },
-  { "ldmtool_scan_devices", guestfs_lua_ldmtool_scan_devices },
-  { "ldmtool_volume_hint", guestfs_lua_ldmtool_volume_hint },
-  { "ldmtool_volume_partitions", guestfs_lua_ldmtool_volume_partitions },
-  { "ldmtool_volume_type", guestfs_lua_ldmtool_volume_type },
-  { "lgetxattr", guestfs_lua_lgetxattr },
-  { "lgetxattrs", guestfs_lua_lgetxattrs },
-  { "list_9p", guestfs_lua_list_9p },
-  { "list_devices", guestfs_lua_list_devices },
-  { "list_disk_labels", guestfs_lua_list_disk_labels },
-  { "list_dm_devices", guestfs_lua_list_dm_devices },
-  { "list_filesystems", guestfs_lua_list_filesystems },
-  { "list_ldm_partitions", guestfs_lua_list_ldm_partitions },
-  { "list_ldm_volumes", guestfs_lua_list_ldm_volumes },
-  { "list_md_devices", guestfs_lua_list_md_devices },
-  { "list_partitions", guestfs_lua_list_partitions },
-  { "ll", guestfs_lua_ll },
-  { "llz", guestfs_lua_llz },
-  { "ln", guestfs_lua_ln },
-  { "ln_f", guestfs_lua_ln_f },
-  { "ln_s", guestfs_lua_ln_s },
-  { "ln_sf", guestfs_lua_ln_sf },
-  { "lremovexattr", guestfs_lua_lremovexattr },
-  { "ls", guestfs_lua_ls },
-  { "ls0", guestfs_lua_ls0 },
-  { "lsetxattr", guestfs_lua_lsetxattr },
-  { "lstat", guestfs_lua_lstat },
-  { "lstatlist", guestfs_lua_lstatlist },
-  { "lstatns", guestfs_lua_lstatns },
-  { "lstatnslist", guestfs_lua_lstatnslist },
-  { "luks_add_key", guestfs_lua_luks_add_key },
-  { "luks_close", guestfs_lua_luks_close },
-  { "luks_format", guestfs_lua_luks_format },
-  { "luks_format_cipher", guestfs_lua_luks_format_cipher },
-  { "luks_kill_slot", guestfs_lua_luks_kill_slot },
-  { "luks_open", guestfs_lua_luks_open },
-  { "luks_open_ro", guestfs_lua_luks_open_ro },
-  { "lvcreate", guestfs_lua_lvcreate },
-  { "lvcreate_free", guestfs_lua_lvcreate_free },
-  { "lvm_canonical_lv_name", guestfs_lua_lvm_canonical_lv_name },
-  { "lvm_clear_filter", guestfs_lua_lvm_clear_filter },
-  { "lvm_remove_all", guestfs_lua_lvm_remove_all },
-  { "lvm_set_filter", guestfs_lua_lvm_set_filter },
-  { "lvremove", guestfs_lua_lvremove },
-  { "lvrename", guestfs_lua_lvrename },
-  { "lvresize", guestfs_lua_lvresize },
-  { "lvresize_free", guestfs_lua_lvresize_free },
-  { "lvs", guestfs_lua_lvs },
-  { "lvs_full", guestfs_lua_lvs_full },
-  { "lvuuid", guestfs_lua_lvuuid },
-  { "lxattrlist", guestfs_lua_lxattrlist },
-  { "max_disks", guestfs_lua_max_disks },
-  { "md_create", guestfs_lua_md_create },
-  { "md_detail", guestfs_lua_md_detail },
-  { "md_stat", guestfs_lua_md_stat },
-  { "md_stop", guestfs_lua_md_stop },
-  { "mkdir", guestfs_lua_mkdir },
-  { "mkdir_mode", guestfs_lua_mkdir_mode },
-  { "mkdir_p", guestfs_lua_mkdir_p },
-  { "mkdtemp", guestfs_lua_mkdtemp },
-  { "mke2fs", guestfs_lua_mke2fs },
-  { "mke2fs_J", guestfs_lua_mke2fs_J },
-  { "mke2fs_JL", guestfs_lua_mke2fs_JL },
-  { "mke2fs_JU", guestfs_lua_mke2fs_JU },
-  { "mke2journal", guestfs_lua_mke2journal },
-  { "mke2journal_L", guestfs_lua_mke2journal_L },
-  { "mke2journal_U", guestfs_lua_mke2journal_U },
-  { "mkfifo", guestfs_lua_mkfifo },
-  { "mkfs", guestfs_lua_mkfs },
-  { "mkfs_b", guestfs_lua_mkfs_b },
-  { "mkfs_btrfs", guestfs_lua_mkfs_btrfs },
-  { "mklost_and_found", guestfs_lua_mklost_and_found },
-  { "mkmountpoint", guestfs_lua_mkmountpoint },
-  { "mknod", guestfs_lua_mknod },
-  { "mknod_b", guestfs_lua_mknod_b },
-  { "mknod_c", guestfs_lua_mknod_c },
-  { "mkswap", guestfs_lua_mkswap },
-  { "mkswap_L", guestfs_lua_mkswap_L },
-  { "mkswap_U", guestfs_lua_mkswap_U },
-  { "mkswap_file", guestfs_lua_mkswap_file },
-  { "mktemp", guestfs_lua_mktemp },
-  { "modprobe", guestfs_lua_modprobe },
-  { "mount", guestfs_lua_mount },
-  { "mount_9p", guestfs_lua_mount_9p },
-  { "mount_local", guestfs_lua_mount_local },
-  { "mount_local_run", guestfs_lua_mount_local_run },
-  { "mount_loop", guestfs_lua_mount_loop },
-  { "mount_options", guestfs_lua_mount_options },
-  { "mount_ro", guestfs_lua_mount_ro },
-  { "mount_vfs", guestfs_lua_mount_vfs },
-  { "mountpoints", guestfs_lua_mountpoints },
-  { "mounts", guestfs_lua_mounts },
-  { "mv", guestfs_lua_mv },
-  { "nr_devices", guestfs_lua_nr_devices },
-  { "ntfs_3g_probe", guestfs_lua_ntfs_3g_probe },
-  { "ntfsclone_in", guestfs_lua_ntfsclone_in },
-  { "ntfsclone_out", guestfs_lua_ntfsclone_out },
-  { "ntfsfix", guestfs_lua_ntfsfix },
-  { "ntfsresize", guestfs_lua_ntfsresize },
-  { "ntfsresize_size", guestfs_lua_ntfsresize_size },
-  { "parse_environment", guestfs_lua_parse_environment },
-  { "parse_environment_list", guestfs_lua_parse_environment_list },
-  { "part_add", guestfs_lua_part_add },
-  { "part_del", guestfs_lua_part_del },
-  { "part_disk", guestfs_lua_part_disk },
-  { "part_get_bootable", guestfs_lua_part_get_bootable },
-  { "part_get_gpt_guid", guestfs_lua_part_get_gpt_guid },
-  { "part_get_gpt_type", guestfs_lua_part_get_gpt_type },
-  { "part_get_mbr_id", guestfs_lua_part_get_mbr_id },
-  { "part_get_mbr_part_type", guestfs_lua_part_get_mbr_part_type },
-  { "part_get_name", guestfs_lua_part_get_name },
-  { "part_get_parttype", guestfs_lua_part_get_parttype },
-  { "part_init", guestfs_lua_part_init },
-  { "part_list", guestfs_lua_part_list },
-  { "part_set_bootable", guestfs_lua_part_set_bootable },
-  { "part_set_gpt_guid", guestfs_lua_part_set_gpt_guid },
-  { "part_set_gpt_type", guestfs_lua_part_set_gpt_type },
-  { "part_set_mbr_id", guestfs_lua_part_set_mbr_id },
-  { "part_set_name", guestfs_lua_part_set_name },
-  { "part_to_dev", guestfs_lua_part_to_dev },
-  { "part_to_partnum", guestfs_lua_part_to_partnum },
-  { "ping_daemon", guestfs_lua_ping_daemon },
-  { "pread", guestfs_lua_pread },
-  { "pread_device", guestfs_lua_pread_device },
-  { "pvchange_uuid", guestfs_lua_pvchange_uuid },
-  { "pvchange_uuid_all", guestfs_lua_pvchange_uuid_all },
-  { "pvcreate", guestfs_lua_pvcreate },
-  { "pvremove", guestfs_lua_pvremove },
-  { "pvresize", guestfs_lua_pvresize },
-  { "pvresize_size", guestfs_lua_pvresize_size },
-  { "pvs", guestfs_lua_pvs },
-  { "pvs_full", guestfs_lua_pvs_full },
-  { "pvuuid", guestfs_lua_pvuuid },
-  { "pwrite", guestfs_lua_pwrite },
-  { "pwrite_device", guestfs_lua_pwrite_device },
-  { "read_file", guestfs_lua_read_file },
-  { "read_lines", guestfs_lua_read_lines },
-  { "readdir", guestfs_lua_readdir },
-  { "readlink", guestfs_lua_readlink },
-  { "readlinklist", guestfs_lua_readlinklist },
-  { "realpath", guestfs_lua_realpath },
-  { "remount", guestfs_lua_remount },
-  { "remove_drive", guestfs_lua_remove_drive },
-  { "removexattr", guestfs_lua_removexattr },
-  { "rename", guestfs_lua_rename },
-  { "resize2fs", guestfs_lua_resize2fs },
-  { "resize2fs_M", guestfs_lua_resize2fs_M },
-  { "resize2fs_size", guestfs_lua_resize2fs_size },
-  { "rm", guestfs_lua_rm },
-  { "rm_f", guestfs_lua_rm_f },
-  { "rm_rf", guestfs_lua_rm_rf },
-  { "rmdir", guestfs_lua_rmdir },
-  { "rmmountpoint", guestfs_lua_rmmountpoint },
-  { "rsync", guestfs_lua_rsync },
-  { "rsync_in", guestfs_lua_rsync_in },
-  { "rsync_out", guestfs_lua_rsync_out },
-  { "scrub_device", guestfs_lua_scrub_device },
-  { "scrub_file", guestfs_lua_scrub_file },
-  { "scrub_freespace", guestfs_lua_scrub_freespace },
-  { "set_append", guestfs_lua_set_append },
-  { "set_attach_method", guestfs_lua_set_attach_method },
-  { "set_autosync", guestfs_lua_set_autosync },
-  { "set_backend", guestfs_lua_set_backend },
-  { "set_backend_setting", guestfs_lua_set_backend_setting },
-  { "set_backend_settings", guestfs_lua_set_backend_settings },
-  { "set_cachedir", guestfs_lua_set_cachedir },
-  { "set_direct", guestfs_lua_set_direct },
-  { "set_e2attrs", guestfs_lua_set_e2attrs },
-  { "set_e2generation", guestfs_lua_set_e2generation },
-  { "set_e2label", guestfs_lua_set_e2label },
-  { "set_e2uuid", guestfs_lua_set_e2uuid },
-  { "set_hv", guestfs_lua_set_hv },
-  { "set_identifier", guestfs_lua_set_identifier },
-  { "set_label", guestfs_lua_set_label },
-  { "set_libvirt_requested_credential", guestfs_lua_set_libvirt_requested_credential },
-  { "set_libvirt_supported_credentials", guestfs_lua_set_libvirt_supported_credentials },
-  { "set_memsize", guestfs_lua_set_memsize },
-  { "set_network", guestfs_lua_set_network },
-  { "set_path", guestfs_lua_set_path },
-  { "set_pgroup", guestfs_lua_set_pgroup },
-  { "set_program", guestfs_lua_set_program },
-  { "set_qemu", guestfs_lua_set_qemu },
-  { "set_recovery_proc", guestfs_lua_set_recovery_proc },
-  { "set_selinux", guestfs_lua_set_selinux },
-  { "set_smp", guestfs_lua_set_smp },
-  { "set_tmpdir", guestfs_lua_set_tmpdir },
-  { "set_trace", guestfs_lua_set_trace },
-  { "set_uuid", guestfs_lua_set_uuid },
-  { "set_uuid_random", guestfs_lua_set_uuid_random },
-  { "set_verbose", guestfs_lua_set_verbose },
-  { "setcon", guestfs_lua_setcon },
-  { "setxattr", guestfs_lua_setxattr },
-  { "sfdisk", guestfs_lua_sfdisk },
-  { "sfdiskM", guestfs_lua_sfdiskM },
-  { "sfdisk_N", guestfs_lua_sfdisk_N },
-  { "sfdisk_disk_geometry", guestfs_lua_sfdisk_disk_geometry },
-  { "sfdisk_kernel_geometry", guestfs_lua_sfdisk_kernel_geometry },
-  { "sfdisk_l", guestfs_lua_sfdisk_l },
-  { "sh", guestfs_lua_sh },
-  { "sh_lines", guestfs_lua_sh_lines },
-  { "shutdown", guestfs_lua_shutdown },
-  { "sleep", guestfs_lua_sleep },
-  { "stat", guestfs_lua_stat },
-  { "statns", guestfs_lua_statns },
-  { "statvfs", guestfs_lua_statvfs },
-  { "strings", guestfs_lua_strings },
-  { "strings_e", guestfs_lua_strings_e },
-  { "swapoff_device", guestfs_lua_swapoff_device },
-  { "swapoff_file", guestfs_lua_swapoff_file },
-  { "swapoff_label", guestfs_lua_swapoff_label },
-  { "swapoff_uuid", guestfs_lua_swapoff_uuid },
-  { "swapon_device", guestfs_lua_swapon_device },
-  { "swapon_file", guestfs_lua_swapon_file },
-  { "swapon_label", guestfs_lua_swapon_label },
-  { "swapon_uuid", guestfs_lua_swapon_uuid },
-  { "sync", guestfs_lua_sync },
-  { "syslinux", guestfs_lua_syslinux },
-  { "tail", guestfs_lua_tail },
-  { "tail_n", guestfs_lua_tail_n },
-  { "tar_in", guestfs_lua_tar_in },
-  { "tar_out", guestfs_lua_tar_out },
-  { "tgz_in", guestfs_lua_tgz_in },
-  { "tgz_out", guestfs_lua_tgz_out },
-  { "touch", guestfs_lua_touch },
-  { "truncate", guestfs_lua_truncate },
-  { "truncate_size", guestfs_lua_truncate_size },
-  { "tune2fs", guestfs_lua_tune2fs },
-  { "tune2fs_l", guestfs_lua_tune2fs_l },
-  { "txz_in", guestfs_lua_txz_in },
-  { "txz_out", guestfs_lua_txz_out },
-  { "umask", guestfs_lua_umask },
-  { "umount", guestfs_lua_umount },
-  { "umount_all", guestfs_lua_umount_all },
-  { "umount_local", guestfs_lua_umount_local },
-  { "upload", guestfs_lua_upload },
-  { "upload_offset", guestfs_lua_upload_offset },
-  { "user_cancel", guestfs_lua_user_cancel },
-  { "utimens", guestfs_lua_utimens },
-  { "utsname", guestfs_lua_utsname },
-  { "version", guestfs_lua_version },
-  { "vfs_label", guestfs_lua_vfs_label },
-  { "vfs_minimum_size", guestfs_lua_vfs_minimum_size },
-  { "vfs_type", guestfs_lua_vfs_type },
-  { "vfs_uuid", guestfs_lua_vfs_uuid },
-  { "vg_activate", guestfs_lua_vg_activate },
-  { "vg_activate_all", guestfs_lua_vg_activate_all },
-  { "vgchange_uuid", guestfs_lua_vgchange_uuid },
-  { "vgchange_uuid_all", guestfs_lua_vgchange_uuid_all },
-  { "vgcreate", guestfs_lua_vgcreate },
-  { "vglvuuids", guestfs_lua_vglvuuids },
-  { "vgmeta", guestfs_lua_vgmeta },
-  { "vgpvuuids", guestfs_lua_vgpvuuids },
-  { "vgremove", guestfs_lua_vgremove },
-  { "vgrename", guestfs_lua_vgrename },
-  { "vgs", guestfs_lua_vgs },
-  { "vgs_full", guestfs_lua_vgs_full },
-  { "vgscan", guestfs_lua_vgscan },
-  { "vguuid", guestfs_lua_vguuid },
-  { "wait_ready", guestfs_lua_wait_ready },
-  { "wc_c", guestfs_lua_wc_c },
-  { "wc_l", guestfs_lua_wc_l },
-  { "wc_w", guestfs_lua_wc_w },
-  { "wipefs", guestfs_lua_wipefs },
-  { "write", guestfs_lua_write },
-  { "write_append", guestfs_lua_write_append },
-  { "write_file", guestfs_lua_write_file },
-  { "xfs_admin", guestfs_lua_xfs_admin },
-  { "xfs_growfs", guestfs_lua_xfs_growfs },
-  { "xfs_info", guestfs_lua_xfs_info },
-  { "xfs_repair", guestfs_lua_xfs_repair },
-  { "zegrep", guestfs_lua_zegrep },
-  { "zegrepi", guestfs_lua_zegrepi },
-  { "zero", guestfs_lua_zero },
-  { "zero_device", guestfs_lua_zero_device },
-  { "zero_free_space", guestfs_lua_zero_free_space },
-  { "zerofree", guestfs_lua_zerofree },
-  { "zfgrep", guestfs_lua_zfgrep },
-  { "zfgrepi", guestfs_lua_zfgrepi },
-  { "zfile", guestfs_lua_zfile },
-  { "zgrep", guestfs_lua_zgrep },
-  { "zgrepi", guestfs_lua_zgrepi },
+  { "acl_delete_def_file", guestfs_int_lua_acl_delete_def_file },
+  { "acl_get_file", guestfs_int_lua_acl_get_file },
+  { "acl_set_file", guestfs_int_lua_acl_set_file },
+  { "add_cdrom", guestfs_int_lua_add_cdrom },
+  { "add_domain", guestfs_int_lua_add_domain },
+  { "add_drive", guestfs_int_lua_add_drive },
+  { "add_drive_ro", guestfs_int_lua_add_drive_ro },
+  { "add_drive_ro_with_if", guestfs_int_lua_add_drive_ro_with_if },
+  { "add_drive_scratch", guestfs_int_lua_add_drive_scratch },
+  { "add_drive_with_if", guestfs_int_lua_add_drive_with_if },
+  { "add_libvirt_dom", guestfs_int_lua_add_libvirt_dom },
+  { "aug_clear", guestfs_int_lua_aug_clear },
+  { "aug_close", guestfs_int_lua_aug_close },
+  { "aug_defnode", guestfs_int_lua_aug_defnode },
+  { "aug_defvar", guestfs_int_lua_aug_defvar },
+  { "aug_get", guestfs_int_lua_aug_get },
+  { "aug_init", guestfs_int_lua_aug_init },
+  { "aug_insert", guestfs_int_lua_aug_insert },
+  { "aug_label", guestfs_int_lua_aug_label },
+  { "aug_load", guestfs_int_lua_aug_load },
+  { "aug_ls", guestfs_int_lua_aug_ls },
+  { "aug_match", guestfs_int_lua_aug_match },
+  { "aug_mv", guestfs_int_lua_aug_mv },
+  { "aug_rm", guestfs_int_lua_aug_rm },
+  { "aug_save", guestfs_int_lua_aug_save },
+  { "aug_set", guestfs_int_lua_aug_set },
+  { "aug_setm", guestfs_int_lua_aug_setm },
+  { "available", guestfs_int_lua_available },
+  { "available_all_groups", guestfs_int_lua_available_all_groups },
+  { "base64_in", guestfs_int_lua_base64_in },
+  { "base64_out", guestfs_int_lua_base64_out },
+  { "blkdiscard", guestfs_int_lua_blkdiscard },
+  { "blkdiscardzeroes", guestfs_int_lua_blkdiscardzeroes },
+  { "blkid", guestfs_int_lua_blkid },
+  { "blockdev_flushbufs", guestfs_int_lua_blockdev_flushbufs },
+  { "blockdev_getbsz", guestfs_int_lua_blockdev_getbsz },
+  { "blockdev_getro", guestfs_int_lua_blockdev_getro },
+  { "blockdev_getsize64", guestfs_int_lua_blockdev_getsize64 },
+  { "blockdev_getss", guestfs_int_lua_blockdev_getss },
+  { "blockdev_getsz", guestfs_int_lua_blockdev_getsz },
+  { "blockdev_rereadpt", guestfs_int_lua_blockdev_rereadpt },
+  { "blockdev_setbsz", guestfs_int_lua_blockdev_setbsz },
+  { "blockdev_setra", guestfs_int_lua_blockdev_setra },
+  { "blockdev_setro", guestfs_int_lua_blockdev_setro },
+  { "blockdev_setrw", guestfs_int_lua_blockdev_setrw },
+  { "btrfs_balance_cancel", guestfs_int_lua_btrfs_balance_cancel },
+  { "btrfs_balance_pause", guestfs_int_lua_btrfs_balance_pause },
+  { "btrfs_balance_resume", guestfs_int_lua_btrfs_balance_resume },
+  { "btrfs_balance_status", guestfs_int_lua_btrfs_balance_status },
+  { "btrfs_device_add", guestfs_int_lua_btrfs_device_add },
+  { "btrfs_device_delete", guestfs_int_lua_btrfs_device_delete },
+  { "btrfs_filesystem_balance", guestfs_int_lua_btrfs_filesystem_balance },
+  { "btrfs_filesystem_defragment", guestfs_int_lua_btrfs_filesystem_defragment },
+  { "btrfs_filesystem_resize", guestfs_int_lua_btrfs_filesystem_resize },
+  { "btrfs_filesystem_sync", guestfs_int_lua_btrfs_filesystem_sync },
+  { "btrfs_fsck", guestfs_int_lua_btrfs_fsck },
+  { "btrfs_image", guestfs_int_lua_btrfs_image },
+  { "btrfs_qgroup_assign", guestfs_int_lua_btrfs_qgroup_assign },
+  { "btrfs_qgroup_create", guestfs_int_lua_btrfs_qgroup_create },
+  { "btrfs_qgroup_destroy", guestfs_int_lua_btrfs_qgroup_destroy },
+  { "btrfs_qgroup_limit", guestfs_int_lua_btrfs_qgroup_limit },
+  { "btrfs_qgroup_remove", guestfs_int_lua_btrfs_qgroup_remove },
+  { "btrfs_qgroup_show", guestfs_int_lua_btrfs_qgroup_show },
+  { "btrfs_quota_enable", guestfs_int_lua_btrfs_quota_enable },
+  { "btrfs_quota_rescan", guestfs_int_lua_btrfs_quota_rescan },
+  { "btrfs_replace", guestfs_int_lua_btrfs_replace },
+  { "btrfs_rescue_chunk_recover", guestfs_int_lua_btrfs_rescue_chunk_recover },
+  { "btrfs_rescue_super_recover", guestfs_int_lua_btrfs_rescue_super_recover },
+  { "btrfs_scrub_cancel", guestfs_int_lua_btrfs_scrub_cancel },
+  { "btrfs_scrub_resume", guestfs_int_lua_btrfs_scrub_resume },
+  { "btrfs_scrub_start", guestfs_int_lua_btrfs_scrub_start },
+  { "btrfs_scrub_status", guestfs_int_lua_btrfs_scrub_status },
+  { "btrfs_set_seeding", guestfs_int_lua_btrfs_set_seeding },
+  { "btrfs_subvolume_create", guestfs_int_lua_btrfs_subvolume_create },
+  { "btrfs_subvolume_delete", guestfs_int_lua_btrfs_subvolume_delete },
+  { "btrfs_subvolume_get_default", guestfs_int_lua_btrfs_subvolume_get_default },
+  { "btrfs_subvolume_list", guestfs_int_lua_btrfs_subvolume_list },
+  { "btrfs_subvolume_set_default", guestfs_int_lua_btrfs_subvolume_set_default },
+  { "btrfs_subvolume_show", guestfs_int_lua_btrfs_subvolume_show },
+  { "btrfs_subvolume_snapshot", guestfs_int_lua_btrfs_subvolume_snapshot },
+  { "btrfstune_enable_extended_inode_refs", guestfs_int_lua_btrfstune_enable_extended_inode_refs },
+  { "btrfstune_enable_skinny_metadata_extent_refs", guestfs_int_lua_btrfstune_enable_skinny_metadata_extent_refs },
+  { "btrfstune_seeding", guestfs_int_lua_btrfstune_seeding },
+  { "c_pointer", guestfs_int_lua_c_pointer },
+  { "canonical_device_name", guestfs_int_lua_canonical_device_name },
+  { "cap_get_file", guestfs_int_lua_cap_get_file },
+  { "cap_set_file", guestfs_int_lua_cap_set_file },
+  { "case_sensitive_path", guestfs_int_lua_case_sensitive_path },
+  { "cat", guestfs_int_lua_cat },
+  { "checksum", guestfs_int_lua_checksum },
+  { "checksum_device", guestfs_int_lua_checksum_device },
+  { "checksums_out", guestfs_int_lua_checksums_out },
+  { "chmod", guestfs_int_lua_chmod },
+  { "chown", guestfs_int_lua_chown },
+  { "clear_backend_setting", guestfs_int_lua_clear_backend_setting },
+  { "command", guestfs_int_lua_command },
+  { "command_lines", guestfs_int_lua_command_lines },
+  { "compress_device_out", guestfs_int_lua_compress_device_out },
+  { "compress_out", guestfs_int_lua_compress_out },
+  { "config", guestfs_int_lua_config },
+  { "copy_attributes", guestfs_int_lua_copy_attributes },
+  { "copy_device_to_device", guestfs_int_lua_copy_device_to_device },
+  { "copy_device_to_file", guestfs_int_lua_copy_device_to_file },
+  { "copy_file_to_device", guestfs_int_lua_copy_file_to_device },
+  { "copy_file_to_file", guestfs_int_lua_copy_file_to_file },
+  { "copy_in", guestfs_int_lua_copy_in },
+  { "copy_out", guestfs_int_lua_copy_out },
+  { "copy_size", guestfs_int_lua_copy_size },
+  { "cp", guestfs_int_lua_cp },
+  { "cp_a", guestfs_int_lua_cp_a },
+  { "cp_r", guestfs_int_lua_cp_r },
+  { "cpio_out", guestfs_int_lua_cpio_out },
+  { "dd", guestfs_int_lua_dd },
+  { "debug", guestfs_int_lua_debug },
+  { "debug_drives", guestfs_int_lua_debug_drives },
+  { "debug_upload", guestfs_int_lua_debug_upload },
+  { "device_index", guestfs_int_lua_device_index },
+  { "df", guestfs_int_lua_df },
+  { "df_h", guestfs_int_lua_df_h },
+  { "disk_create", guestfs_int_lua_disk_create },
+  { "disk_format", guestfs_int_lua_disk_format },
+  { "disk_has_backing_file", guestfs_int_lua_disk_has_backing_file },
+  { "disk_virtual_size", guestfs_int_lua_disk_virtual_size },
+  { "dmesg", guestfs_int_lua_dmesg },
+  { "download", guestfs_int_lua_download },
+  { "download_offset", guestfs_int_lua_download_offset },
+  { "drop_caches", guestfs_int_lua_drop_caches },
+  { "du", guestfs_int_lua_du },
+  { "e2fsck", guestfs_int_lua_e2fsck },
+  { "e2fsck_f", guestfs_int_lua_e2fsck_f },
+  { "echo_daemon", guestfs_int_lua_echo_daemon },
+  { "egrep", guestfs_int_lua_egrep },
+  { "egrepi", guestfs_int_lua_egrepi },
+  { "equal", guestfs_int_lua_equal },
+  { "exists", guestfs_int_lua_exists },
+  { "extlinux", guestfs_int_lua_extlinux },
+  { "fallocate", guestfs_int_lua_fallocate },
+  { "fallocate64", guestfs_int_lua_fallocate64 },
+  { "feature_available", guestfs_int_lua_feature_available },
+  { "fgrep", guestfs_int_lua_fgrep },
+  { "fgrepi", guestfs_int_lua_fgrepi },
+  { "file", guestfs_int_lua_file },
+  { "file_architecture", guestfs_int_lua_file_architecture },
+  { "filesize", guestfs_int_lua_filesize },
+  { "filesystem_available", guestfs_int_lua_filesystem_available },
+  { "fill", guestfs_int_lua_fill },
+  { "fill_dir", guestfs_int_lua_fill_dir },
+  { "fill_pattern", guestfs_int_lua_fill_pattern },
+  { "find", guestfs_int_lua_find },
+  { "find0", guestfs_int_lua_find0 },
+  { "findfs_label", guestfs_int_lua_findfs_label },
+  { "findfs_uuid", guestfs_int_lua_findfs_uuid },
+  { "fsck", guestfs_int_lua_fsck },
+  { "fstrim", guestfs_int_lua_fstrim },
+  { "get_append", guestfs_int_lua_get_append },
+  { "get_attach_method", guestfs_int_lua_get_attach_method },
+  { "get_autosync", guestfs_int_lua_get_autosync },
+  { "get_backend", guestfs_int_lua_get_backend },
+  { "get_backend_setting", guestfs_int_lua_get_backend_setting },
+  { "get_backend_settings", guestfs_int_lua_get_backend_settings },
+  { "get_cachedir", guestfs_int_lua_get_cachedir },
+  { "get_direct", guestfs_int_lua_get_direct },
+  { "get_e2attrs", guestfs_int_lua_get_e2attrs },
+  { "get_e2generation", guestfs_int_lua_get_e2generation },
+  { "get_e2label", guestfs_int_lua_get_e2label },
+  { "get_e2uuid", guestfs_int_lua_get_e2uuid },
+  { "get_hv", guestfs_int_lua_get_hv },
+  { "get_identifier", guestfs_int_lua_get_identifier },
+  { "get_libvirt_requested_credential_challenge", guestfs_int_lua_get_libvirt_requested_credential_challenge },
+  { "get_libvirt_requested_credential_defresult", guestfs_int_lua_get_libvirt_requested_credential_defresult },
+  { "get_libvirt_requested_credential_prompt", guestfs_int_lua_get_libvirt_requested_credential_prompt },
+  { "get_libvirt_requested_credentials", guestfs_int_lua_get_libvirt_requested_credentials },
+  { "get_memsize", guestfs_int_lua_get_memsize },
+  { "get_network", guestfs_int_lua_get_network },
+  { "get_path", guestfs_int_lua_get_path },
+  { "get_pgroup", guestfs_int_lua_get_pgroup },
+  { "get_pid", guestfs_int_lua_get_pid },
+  { "get_program", guestfs_int_lua_get_program },
+  { "get_qemu", guestfs_int_lua_get_qemu },
+  { "get_recovery_proc", guestfs_int_lua_get_recovery_proc },
+  { "get_selinux", guestfs_int_lua_get_selinux },
+  { "get_smp", guestfs_int_lua_get_smp },
+  { "get_state", guestfs_int_lua_get_state },
+  { "get_tmpdir", guestfs_int_lua_get_tmpdir },
+  { "get_trace", guestfs_int_lua_get_trace },
+  { "get_umask", guestfs_int_lua_get_umask },
+  { "get_verbose", guestfs_int_lua_get_verbose },
+  { "getcon", guestfs_int_lua_getcon },
+  { "getxattr", guestfs_int_lua_getxattr },
+  { "getxattrs", guestfs_int_lua_getxattrs },
+  { "glob_expand", guestfs_int_lua_glob_expand },
+  { "grep", guestfs_int_lua_grep },
+  { "grepi", guestfs_int_lua_grepi },
+  { "grub_install", guestfs_int_lua_grub_install },
+  { "head", guestfs_int_lua_head },
+  { "head_n", guestfs_int_lua_head_n },
+  { "hexdump", guestfs_int_lua_hexdump },
+  { "hivex_close", guestfs_int_lua_hivex_close },
+  { "hivex_commit", guestfs_int_lua_hivex_commit },
+  { "hivex_node_add_child", guestfs_int_lua_hivex_node_add_child },
+  { "hivex_node_children", guestfs_int_lua_hivex_node_children },
+  { "hivex_node_delete_child", guestfs_int_lua_hivex_node_delete_child },
+  { "hivex_node_get_child", guestfs_int_lua_hivex_node_get_child },
+  { "hivex_node_get_value", guestfs_int_lua_hivex_node_get_value },
+  { "hivex_node_name", guestfs_int_lua_hivex_node_name },
+  { "hivex_node_parent", guestfs_int_lua_hivex_node_parent },
+  { "hivex_node_set_value", guestfs_int_lua_hivex_node_set_value },
+  { "hivex_node_values", guestfs_int_lua_hivex_node_values },
+  { "hivex_open", guestfs_int_lua_hivex_open },
+  { "hivex_root", guestfs_int_lua_hivex_root },
+  { "hivex_value_key", guestfs_int_lua_hivex_value_key },
+  { "hivex_value_type", guestfs_int_lua_hivex_value_type },
+  { "hivex_value_utf8", guestfs_int_lua_hivex_value_utf8 },
+  { "hivex_value_value", guestfs_int_lua_hivex_value_value },
+  { "initrd_cat", guestfs_int_lua_initrd_cat },
+  { "initrd_list", guestfs_int_lua_initrd_list },
+  { "inotify_add_watch", guestfs_int_lua_inotify_add_watch },
+  { "inotify_close", guestfs_int_lua_inotify_close },
+  { "inotify_files", guestfs_int_lua_inotify_files },
+  { "inotify_init", guestfs_int_lua_inotify_init },
+  { "inotify_read", guestfs_int_lua_inotify_read },
+  { "inotify_rm_watch", guestfs_int_lua_inotify_rm_watch },
+  { "inspect_get_arch", guestfs_int_lua_inspect_get_arch },
+  { "inspect_get_distro", guestfs_int_lua_inspect_get_distro },
+  { "inspect_get_drive_mappings", guestfs_int_lua_inspect_get_drive_mappings },
+  { "inspect_get_filesystems", guestfs_int_lua_inspect_get_filesystems },
+  { "inspect_get_format", guestfs_int_lua_inspect_get_format },
+  { "inspect_get_hostname", guestfs_int_lua_inspect_get_hostname },
+  { "inspect_get_icon", guestfs_int_lua_inspect_get_icon },
+  { "inspect_get_major_version", guestfs_int_lua_inspect_get_major_version },
+  { "inspect_get_minor_version", guestfs_int_lua_inspect_get_minor_version },
+  { "inspect_get_mountpoints", guestfs_int_lua_inspect_get_mountpoints },
+  { "inspect_get_package_format", guestfs_int_lua_inspect_get_package_format },
+  { "inspect_get_package_management", guestfs_int_lua_inspect_get_package_management },
+  { "inspect_get_product_name", guestfs_int_lua_inspect_get_product_name },
+  { "inspect_get_product_variant", guestfs_int_lua_inspect_get_product_variant },
+  { "inspect_get_roots", guestfs_int_lua_inspect_get_roots },
+  { "inspect_get_type", guestfs_int_lua_inspect_get_type },
+  { "inspect_get_windows_current_control_set", guestfs_int_lua_inspect_get_windows_current_control_set },
+  { "inspect_get_windows_systemroot", guestfs_int_lua_inspect_get_windows_systemroot },
+  { "inspect_is_live", guestfs_int_lua_inspect_is_live },
+  { "inspect_is_multipart", guestfs_int_lua_inspect_is_multipart },
+  { "inspect_is_netinst", guestfs_int_lua_inspect_is_netinst },
+  { "inspect_list_applications", guestfs_int_lua_inspect_list_applications },
+  { "inspect_list_applications2", guestfs_int_lua_inspect_list_applications2 },
+  { "inspect_os", guestfs_int_lua_inspect_os },
+  { "internal_exit", guestfs_int_lua_internal_exit },
+  { "internal_test", guestfs_int_lua_internal_test },
+  { "internal_test_63_optargs", guestfs_int_lua_internal_test_63_optargs },
+  { "internal_test_close_output", guestfs_int_lua_internal_test_close_output },
+  { "internal_test_only_optargs", guestfs_int_lua_internal_test_only_optargs },
+  { "internal_test_rbool", guestfs_int_lua_internal_test_rbool },
+  { "internal_test_rboolerr", guestfs_int_lua_internal_test_rboolerr },
+  { "internal_test_rbufferout", guestfs_int_lua_internal_test_rbufferout },
+  { "internal_test_rbufferouterr", guestfs_int_lua_internal_test_rbufferouterr },
+  { "internal_test_rconstoptstring", guestfs_int_lua_internal_test_rconstoptstring },
+  { "internal_test_rconstoptstringerr", guestfs_int_lua_internal_test_rconstoptstringerr },
+  { "internal_test_rconststring", guestfs_int_lua_internal_test_rconststring },
+  { "internal_test_rconststringerr", guestfs_int_lua_internal_test_rconststringerr },
+  { "internal_test_rhashtable", guestfs_int_lua_internal_test_rhashtable },
+  { "internal_test_rhashtableerr", guestfs_int_lua_internal_test_rhashtableerr },
+  { "internal_test_rint", guestfs_int_lua_internal_test_rint },
+  { "internal_test_rint64", guestfs_int_lua_internal_test_rint64 },
+  { "internal_test_rint64err", guestfs_int_lua_internal_test_rint64err },
+  { "internal_test_rinterr", guestfs_int_lua_internal_test_rinterr },
+  { "internal_test_rstring", guestfs_int_lua_internal_test_rstring },
+  { "internal_test_rstringerr", guestfs_int_lua_internal_test_rstringerr },
+  { "internal_test_rstringlist", guestfs_int_lua_internal_test_rstringlist },
+  { "internal_test_rstringlisterr", guestfs_int_lua_internal_test_rstringlisterr },
+  { "internal_test_rstruct", guestfs_int_lua_internal_test_rstruct },
+  { "internal_test_rstructerr", guestfs_int_lua_internal_test_rstructerr },
+  { "internal_test_rstructlist", guestfs_int_lua_internal_test_rstructlist },
+  { "internal_test_rstructlisterr", guestfs_int_lua_internal_test_rstructlisterr },
+  { "internal_test_set_output", guestfs_int_lua_internal_test_set_output },
+  { "is_blockdev", guestfs_int_lua_is_blockdev },
+  { "is_busy", guestfs_int_lua_is_busy },
+  { "is_chardev", guestfs_int_lua_is_chardev },
+  { "is_config", guestfs_int_lua_is_config },
+  { "is_dir", guestfs_int_lua_is_dir },
+  { "is_fifo", guestfs_int_lua_is_fifo },
+  { "is_file", guestfs_int_lua_is_file },
+  { "is_launching", guestfs_int_lua_is_launching },
+  { "is_lv", guestfs_int_lua_is_lv },
+  { "is_ready", guestfs_int_lua_is_ready },
+  { "is_socket", guestfs_int_lua_is_socket },
+  { "is_symlink", guestfs_int_lua_is_symlink },
+  { "is_whole_device", guestfs_int_lua_is_whole_device },
+  { "is_zero", guestfs_int_lua_is_zero },
+  { "is_zero_device", guestfs_int_lua_is_zero_device },
+  { "isoinfo", guestfs_int_lua_isoinfo },
+  { "isoinfo_device", guestfs_int_lua_isoinfo_device },
+  { "journal_close", guestfs_int_lua_journal_close },
+  { "journal_get", guestfs_int_lua_journal_get },
+  { "journal_get_data_threshold", guestfs_int_lua_journal_get_data_threshold },
+  { "journal_get_realtime_usec", guestfs_int_lua_journal_get_realtime_usec },
+  { "journal_next", guestfs_int_lua_journal_next },
+  { "journal_open", guestfs_int_lua_journal_open },
+  { "journal_set_data_threshold", guestfs_int_lua_journal_set_data_threshold },
+  { "journal_skip", guestfs_int_lua_journal_skip },
+  { "kill_subprocess", guestfs_int_lua_kill_subprocess },
+  { "launch", guestfs_int_lua_launch },
+  { "lchown", guestfs_int_lua_lchown },
+  { "ldmtool_create_all", guestfs_int_lua_ldmtool_create_all },
+  { "ldmtool_diskgroup_disks", guestfs_int_lua_ldmtool_diskgroup_disks },
+  { "ldmtool_diskgroup_name", guestfs_int_lua_ldmtool_diskgroup_name },
+  { "ldmtool_diskgroup_volumes", guestfs_int_lua_ldmtool_diskgroup_volumes },
+  { "ldmtool_remove_all", guestfs_int_lua_ldmtool_remove_all },
+  { "ldmtool_scan", guestfs_int_lua_ldmtool_scan },
+  { "ldmtool_scan_devices", guestfs_int_lua_ldmtool_scan_devices },
+  { "ldmtool_volume_hint", guestfs_int_lua_ldmtool_volume_hint },
+  { "ldmtool_volume_partitions", guestfs_int_lua_ldmtool_volume_partitions },
+  { "ldmtool_volume_type", guestfs_int_lua_ldmtool_volume_type },
+  { "lgetxattr", guestfs_int_lua_lgetxattr },
+  { "lgetxattrs", guestfs_int_lua_lgetxattrs },
+  { "list_9p", guestfs_int_lua_list_9p },
+  { "list_devices", guestfs_int_lua_list_devices },
+  { "list_disk_labels", guestfs_int_lua_list_disk_labels },
+  { "list_dm_devices", guestfs_int_lua_list_dm_devices },
+  { "list_filesystems", guestfs_int_lua_list_filesystems },
+  { "list_ldm_partitions", guestfs_int_lua_list_ldm_partitions },
+  { "list_ldm_volumes", guestfs_int_lua_list_ldm_volumes },
+  { "list_md_devices", guestfs_int_lua_list_md_devices },
+  { "list_partitions", guestfs_int_lua_list_partitions },
+  { "ll", guestfs_int_lua_ll },
+  { "llz", guestfs_int_lua_llz },
+  { "ln", guestfs_int_lua_ln },
+  { "ln_f", guestfs_int_lua_ln_f },
+  { "ln_s", guestfs_int_lua_ln_s },
+  { "ln_sf", guestfs_int_lua_ln_sf },
+  { "lremovexattr", guestfs_int_lua_lremovexattr },
+  { "ls", guestfs_int_lua_ls },
+  { "ls0", guestfs_int_lua_ls0 },
+  { "lsetxattr", guestfs_int_lua_lsetxattr },
+  { "lstat", guestfs_int_lua_lstat },
+  { "lstatlist", guestfs_int_lua_lstatlist },
+  { "lstatns", guestfs_int_lua_lstatns },
+  { "lstatnslist", guestfs_int_lua_lstatnslist },
+  { "luks_add_key", guestfs_int_lua_luks_add_key },
+  { "luks_close", guestfs_int_lua_luks_close },
+  { "luks_format", guestfs_int_lua_luks_format },
+  { "luks_format_cipher", guestfs_int_lua_luks_format_cipher },
+  { "luks_kill_slot", guestfs_int_lua_luks_kill_slot },
+  { "luks_open", guestfs_int_lua_luks_open },
+  { "luks_open_ro", guestfs_int_lua_luks_open_ro },
+  { "lvcreate", guestfs_int_lua_lvcreate },
+  { "lvcreate_free", guestfs_int_lua_lvcreate_free },
+  { "lvm_canonical_lv_name", guestfs_int_lua_lvm_canonical_lv_name },
+  { "lvm_clear_filter", guestfs_int_lua_lvm_clear_filter },
+  { "lvm_remove_all", guestfs_int_lua_lvm_remove_all },
+  { "lvm_set_filter", guestfs_int_lua_lvm_set_filter },
+  { "lvremove", guestfs_int_lua_lvremove },
+  { "lvrename", guestfs_int_lua_lvrename },
+  { "lvresize", guestfs_int_lua_lvresize },
+  { "lvresize_free", guestfs_int_lua_lvresize_free },
+  { "lvs", guestfs_int_lua_lvs },
+  { "lvs_full", guestfs_int_lua_lvs_full },
+  { "lvuuid", guestfs_int_lua_lvuuid },
+  { "lxattrlist", guestfs_int_lua_lxattrlist },
+  { "max_disks", guestfs_int_lua_max_disks },
+  { "md_create", guestfs_int_lua_md_create },
+  { "md_detail", guestfs_int_lua_md_detail },
+  { "md_stat", guestfs_int_lua_md_stat },
+  { "md_stop", guestfs_int_lua_md_stop },
+  { "mkdir", guestfs_int_lua_mkdir },
+  { "mkdir_mode", guestfs_int_lua_mkdir_mode },
+  { "mkdir_p", guestfs_int_lua_mkdir_p },
+  { "mkdtemp", guestfs_int_lua_mkdtemp },
+  { "mke2fs", guestfs_int_lua_mke2fs },
+  { "mke2fs_J", guestfs_int_lua_mke2fs_J },
+  { "mke2fs_JL", guestfs_int_lua_mke2fs_JL },
+  { "mke2fs_JU", guestfs_int_lua_mke2fs_JU },
+  { "mke2journal", guestfs_int_lua_mke2journal },
+  { "mke2journal_L", guestfs_int_lua_mke2journal_L },
+  { "mke2journal_U", guestfs_int_lua_mke2journal_U },
+  { "mkfifo", guestfs_int_lua_mkfifo },
+  { "mkfs", guestfs_int_lua_mkfs },
+  { "mkfs_b", guestfs_int_lua_mkfs_b },
+  { "mkfs_btrfs", guestfs_int_lua_mkfs_btrfs },
+  { "mklost_and_found", guestfs_int_lua_mklost_and_found },
+  { "mkmountpoint", guestfs_int_lua_mkmountpoint },
+  { "mknod", guestfs_int_lua_mknod },
+  { "mknod_b", guestfs_int_lua_mknod_b },
+  { "mknod_c", guestfs_int_lua_mknod_c },
+  { "mkswap", guestfs_int_lua_mkswap },
+  { "mkswap_L", guestfs_int_lua_mkswap_L },
+  { "mkswap_U", guestfs_int_lua_mkswap_U },
+  { "mkswap_file", guestfs_int_lua_mkswap_file },
+  { "mktemp", guestfs_int_lua_mktemp },
+  { "modprobe", guestfs_int_lua_modprobe },
+  { "mount", guestfs_int_lua_mount },
+  { "mount_9p", guestfs_int_lua_mount_9p },
+  { "mount_local", guestfs_int_lua_mount_local },
+  { "mount_local_run", guestfs_int_lua_mount_local_run },
+  { "mount_loop", guestfs_int_lua_mount_loop },
+  { "mount_options", guestfs_int_lua_mount_options },
+  { "mount_ro", guestfs_int_lua_mount_ro },
+  { "mount_vfs", guestfs_int_lua_mount_vfs },
+  { "mountpoints", guestfs_int_lua_mountpoints },
+  { "mounts", guestfs_int_lua_mounts },
+  { "mv", guestfs_int_lua_mv },
+  { "nr_devices", guestfs_int_lua_nr_devices },
+  { "ntfs_3g_probe", guestfs_int_lua_ntfs_3g_probe },
+  { "ntfsclone_in", guestfs_int_lua_ntfsclone_in },
+  { "ntfsclone_out", guestfs_int_lua_ntfsclone_out },
+  { "ntfsfix", guestfs_int_lua_ntfsfix },
+  { "ntfsresize", guestfs_int_lua_ntfsresize },
+  { "ntfsresize_size", guestfs_int_lua_ntfsresize_size },
+  { "parse_environment", guestfs_int_lua_parse_environment },
+  { "parse_environment_list", guestfs_int_lua_parse_environment_list },
+  { "part_add", guestfs_int_lua_part_add },
+  { "part_del", guestfs_int_lua_part_del },
+  { "part_disk", guestfs_int_lua_part_disk },
+  { "part_get_bootable", guestfs_int_lua_part_get_bootable },
+  { "part_get_gpt_guid", guestfs_int_lua_part_get_gpt_guid },
+  { "part_get_gpt_type", guestfs_int_lua_part_get_gpt_type },
+  { "part_get_mbr_id", guestfs_int_lua_part_get_mbr_id },
+  { "part_get_mbr_part_type", guestfs_int_lua_part_get_mbr_part_type },
+  { "part_get_name", guestfs_int_lua_part_get_name },
+  { "part_get_parttype", guestfs_int_lua_part_get_parttype },
+  { "part_init", guestfs_int_lua_part_init },
+  { "part_list", guestfs_int_lua_part_list },
+  { "part_set_bootable", guestfs_int_lua_part_set_bootable },
+  { "part_set_gpt_guid", guestfs_int_lua_part_set_gpt_guid },
+  { "part_set_gpt_type", guestfs_int_lua_part_set_gpt_type },
+  { "part_set_mbr_id", guestfs_int_lua_part_set_mbr_id },
+  { "part_set_name", guestfs_int_lua_part_set_name },
+  { "part_to_dev", guestfs_int_lua_part_to_dev },
+  { "part_to_partnum", guestfs_int_lua_part_to_partnum },
+  { "ping_daemon", guestfs_int_lua_ping_daemon },
+  { "pread", guestfs_int_lua_pread },
+  { "pread_device", guestfs_int_lua_pread_device },
+  { "pvchange_uuid", guestfs_int_lua_pvchange_uuid },
+  { "pvchange_uuid_all", guestfs_int_lua_pvchange_uuid_all },
+  { "pvcreate", guestfs_int_lua_pvcreate },
+  { "pvremove", guestfs_int_lua_pvremove },
+  { "pvresize", guestfs_int_lua_pvresize },
+  { "pvresize_size", guestfs_int_lua_pvresize_size },
+  { "pvs", guestfs_int_lua_pvs },
+  { "pvs_full", guestfs_int_lua_pvs_full },
+  { "pvuuid", guestfs_int_lua_pvuuid },
+  { "pwrite", guestfs_int_lua_pwrite },
+  { "pwrite_device", guestfs_int_lua_pwrite_device },
+  { "read_file", guestfs_int_lua_read_file },
+  { "read_lines", guestfs_int_lua_read_lines },
+  { "readdir", guestfs_int_lua_readdir },
+  { "readlink", guestfs_int_lua_readlink },
+  { "readlinklist", guestfs_int_lua_readlinklist },
+  { "realpath", guestfs_int_lua_realpath },
+  { "remount", guestfs_int_lua_remount },
+  { "remove_drive", guestfs_int_lua_remove_drive },
+  { "removexattr", guestfs_int_lua_removexattr },
+  { "rename", guestfs_int_lua_rename },
+  { "resize2fs", guestfs_int_lua_resize2fs },
+  { "resize2fs_M", guestfs_int_lua_resize2fs_M },
+  { "resize2fs_size", guestfs_int_lua_resize2fs_size },
+  { "rm", guestfs_int_lua_rm },
+  { "rm_f", guestfs_int_lua_rm_f },
+  { "rm_rf", guestfs_int_lua_rm_rf },
+  { "rmdir", guestfs_int_lua_rmdir },
+  { "rmmountpoint", guestfs_int_lua_rmmountpoint },
+  { "rsync", guestfs_int_lua_rsync },
+  { "rsync_in", guestfs_int_lua_rsync_in },
+  { "rsync_out", guestfs_int_lua_rsync_out },
+  { "scrub_device", guestfs_int_lua_scrub_device },
+  { "scrub_file", guestfs_int_lua_scrub_file },
+  { "scrub_freespace", guestfs_int_lua_scrub_freespace },
+  { "set_append", guestfs_int_lua_set_append },
+  { "set_attach_method", guestfs_int_lua_set_attach_method },
+  { "set_autosync", guestfs_int_lua_set_autosync },
+  { "set_backend", guestfs_int_lua_set_backend },
+  { "set_backend_setting", guestfs_int_lua_set_backend_setting },
+  { "set_backend_settings", guestfs_int_lua_set_backend_settings },
+  { "set_cachedir", guestfs_int_lua_set_cachedir },
+  { "set_direct", guestfs_int_lua_set_direct },
+  { "set_e2attrs", guestfs_int_lua_set_e2attrs },
+  { "set_e2generation", guestfs_int_lua_set_e2generation },
+  { "set_e2label", guestfs_int_lua_set_e2label },
+  { "set_e2uuid", guestfs_int_lua_set_e2uuid },
+  { "set_hv", guestfs_int_lua_set_hv },
+  { "set_identifier", guestfs_int_lua_set_identifier },
+  { "set_label", guestfs_int_lua_set_label },
+  { "set_libvirt_requested_credential", guestfs_int_lua_set_libvirt_requested_credential },
+  { "set_libvirt_supported_credentials", guestfs_int_lua_set_libvirt_supported_credentials },
+  { "set_memsize", guestfs_int_lua_set_memsize },
+  { "set_network", guestfs_int_lua_set_network },
+  { "set_path", guestfs_int_lua_set_path },
+  { "set_pgroup", guestfs_int_lua_set_pgroup },
+  { "set_program", guestfs_int_lua_set_program },
+  { "set_qemu", guestfs_int_lua_set_qemu },
+  { "set_recovery_proc", guestfs_int_lua_set_recovery_proc },
+  { "set_selinux", guestfs_int_lua_set_selinux },
+  { "set_smp", guestfs_int_lua_set_smp },
+  { "set_tmpdir", guestfs_int_lua_set_tmpdir },
+  { "set_trace", guestfs_int_lua_set_trace },
+  { "set_uuid", guestfs_int_lua_set_uuid },
+  { "set_uuid_random", guestfs_int_lua_set_uuid_random },
+  { "set_verbose", guestfs_int_lua_set_verbose },
+  { "setcon", guestfs_int_lua_setcon },
+  { "setxattr", guestfs_int_lua_setxattr },
+  { "sfdisk", guestfs_int_lua_sfdisk },
+  { "sfdiskM", guestfs_int_lua_sfdiskM },
+  { "sfdisk_N", guestfs_int_lua_sfdisk_N },
+  { "sfdisk_disk_geometry", guestfs_int_lua_sfdisk_disk_geometry },
+  { "sfdisk_kernel_geometry", guestfs_int_lua_sfdisk_kernel_geometry },
+  { "sfdisk_l", guestfs_int_lua_sfdisk_l },
+  { "sh", guestfs_int_lua_sh },
+  { "sh_lines", guestfs_int_lua_sh_lines },
+  { "shutdown", guestfs_int_lua_shutdown },
+  { "sleep", guestfs_int_lua_sleep },
+  { "stat", guestfs_int_lua_stat },
+  { "statns", guestfs_int_lua_statns },
+  { "statvfs", guestfs_int_lua_statvfs },
+  { "strings", guestfs_int_lua_strings },
+  { "strings_e", guestfs_int_lua_strings_e },
+  { "swapoff_device", guestfs_int_lua_swapoff_device },
+  { "swapoff_file", guestfs_int_lua_swapoff_file },
+  { "swapoff_label", guestfs_int_lua_swapoff_label },
+  { "swapoff_uuid", guestfs_int_lua_swapoff_uuid },
+  { "swapon_device", guestfs_int_lua_swapon_device },
+  { "swapon_file", guestfs_int_lua_swapon_file },
+  { "swapon_label", guestfs_int_lua_swapon_label },
+  { "swapon_uuid", guestfs_int_lua_swapon_uuid },
+  { "sync", guestfs_int_lua_sync },
+  { "syslinux", guestfs_int_lua_syslinux },
+  { "tail", guestfs_int_lua_tail },
+  { "tail_n", guestfs_int_lua_tail_n },
+  { "tar_in", guestfs_int_lua_tar_in },
+  { "tar_out", guestfs_int_lua_tar_out },
+  { "tgz_in", guestfs_int_lua_tgz_in },
+  { "tgz_out", guestfs_int_lua_tgz_out },
+  { "touch", guestfs_int_lua_touch },
+  { "truncate", guestfs_int_lua_truncate },
+  { "truncate_size", guestfs_int_lua_truncate_size },
+  { "tune2fs", guestfs_int_lua_tune2fs },
+  { "tune2fs_l", guestfs_int_lua_tune2fs_l },
+  { "txz_in", guestfs_int_lua_txz_in },
+  { "txz_out", guestfs_int_lua_txz_out },
+  { "umask", guestfs_int_lua_umask },
+  { "umount", guestfs_int_lua_umount },
+  { "umount_all", guestfs_int_lua_umount_all },
+  { "umount_local", guestfs_int_lua_umount_local },
+  { "upload", guestfs_int_lua_upload },
+  { "upload_offset", guestfs_int_lua_upload_offset },
+  { "user_cancel", guestfs_int_lua_user_cancel },
+  { "utimens", guestfs_int_lua_utimens },
+  { "utsname", guestfs_int_lua_utsname },
+  { "version", guestfs_int_lua_version },
+  { "vfs_label", guestfs_int_lua_vfs_label },
+  { "vfs_minimum_size", guestfs_int_lua_vfs_minimum_size },
+  { "vfs_type", guestfs_int_lua_vfs_type },
+  { "vfs_uuid", guestfs_int_lua_vfs_uuid },
+  { "vg_activate", guestfs_int_lua_vg_activate },
+  { "vg_activate_all", guestfs_int_lua_vg_activate_all },
+  { "vgchange_uuid", guestfs_int_lua_vgchange_uuid },
+  { "vgchange_uuid_all", guestfs_int_lua_vgchange_uuid_all },
+  { "vgcreate", guestfs_int_lua_vgcreate },
+  { "vglvuuids", guestfs_int_lua_vglvuuids },
+  { "vgmeta", guestfs_int_lua_vgmeta },
+  { "vgpvuuids", guestfs_int_lua_vgpvuuids },
+  { "vgremove", guestfs_int_lua_vgremove },
+  { "vgrename", guestfs_int_lua_vgrename },
+  { "vgs", guestfs_int_lua_vgs },
+  { "vgs_full", guestfs_int_lua_vgs_full },
+  { "vgscan", guestfs_int_lua_vgscan },
+  { "vguuid", guestfs_int_lua_vguuid },
+  { "wait_ready", guestfs_int_lua_wait_ready },
+  { "wc_c", guestfs_int_lua_wc_c },
+  { "wc_l", guestfs_int_lua_wc_l },
+  { "wc_w", guestfs_int_lua_wc_w },
+  { "wipefs", guestfs_int_lua_wipefs },
+  { "write", guestfs_int_lua_write },
+  { "write_append", guestfs_int_lua_write_append },
+  { "write_file", guestfs_int_lua_write_file },
+  { "xfs_admin", guestfs_int_lua_xfs_admin },
+  { "xfs_growfs", guestfs_int_lua_xfs_growfs },
+  { "xfs_info", guestfs_int_lua_xfs_info },
+  { "xfs_repair", guestfs_int_lua_xfs_repair },
+  { "zegrep", guestfs_int_lua_zegrep },
+  { "zegrepi", guestfs_int_lua_zegrepi },
+  { "zero", guestfs_int_lua_zero },
+  { "zero_device", guestfs_int_lua_zero_device },
+  { "zero_free_space", guestfs_int_lua_zero_free_space },
+  { "zerofree", guestfs_int_lua_zerofree },
+  { "zfgrep", guestfs_int_lua_zfgrep },
+  { "zfgrepi", guestfs_int_lua_zfgrepi },
+  { "zfile", guestfs_int_lua_zfile },
+  { "zgrep", guestfs_int_lua_zgrep },
+  { "zgrepi", guestfs_int_lua_zgrepi },
 
   { NULL, NULL }
 };
