@@ -1,3 +1,532 @@
+commit 760daf3081e69da53c3d01f7f79894e9177735e2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 29 11:08:05 2016 +0000
+
+    Version 1.32.2.
+
+commit 2e76beb6f807cbe47127e27f1487c29ccef7c130
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 29 09:46:48 2016 +0000
+
+    v2v: windows: Move all virtio driver installation code to common module.
+    
+    Add a common module `Windows_virtio' and move all the code related to
+    finding and installing Windows virtio drivers to this module.
+    
+    This is just code motion and code refactoring, there is no change in
+    functionality.
+    
+    (cherry picked from commit b76f27142560d47648cc3cba1a19f753a78bafcb)
+
+commit b7362afbea5b4c68b78c46dfbbbc0fdc48da5749
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 28 18:23:55 2016 +0100
+
+    inotify_add_watch: pass IN_ALL_EVENTS as mask for test
+    
+    Instead of pass 0x3fffffff as mask value, pass a simplier 0xfff, which
+    is the value of the IN_ALL_EVENTS define.  This will still catch all
+    the inotify events, and avoid a EINVAL error with Linux 4.4.
+    
+    (cherry picked from commit 0ac8894f6234c9d04ebab6854eb7957bcbfd735e)
+
+commit 99586f9cb8dd12a671785b2ad5c7b7eb4326c09c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 29 08:56:10 2016 +0000
+
+    v2v: windows: Update comment about device number key.
+    
+    Thanks: Vadim Rozenfeld for finding the TechNet documentation
+    related to this key.
+    
+    (cherry picked from commit 6db3c4099f78a438f3f6af571b6c010c9cbe47c3)
+
+commit 6b313b0f19c4f6f25f38cf680b63dc99aa556903
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 29 08:52:09 2016 +0000
+
+    v2v: Add location of SUSE UEFI binaries.
+    
+    Thanks: Jim Fehlig
+    (cherry picked from commit b2a10de6db4f3185d3be1e403404f06742fa81d1)
+
+commit fd98e602b4fd772ed931cd6f69981a3c8c32ab6c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 28 22:03:32 2016 +0000
+
+    ruby: Rename internal C functions with more consistent naming.
+    
+    (cherry picked from commit 52e7085d183ddf44eb7b92770a15363ea5f06610)
+
+commit 229be2bcb246f0a3aeba8a3290ff2172b4d63a55
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 28 21:53:38 2016 +0000
+
+    lua: Rename 'guestfs_lua_' functions to 'guestfs_int_lua_'.
+    
+    Actually these are all static functions, so they don't really need the
+    'guestfs_' prefix at all, but using a prefix avoids any possibility of
+    a collision with a standard C function.
+    
+    This is a mechanical refactoring.
+    
+    (cherry picked from commit f9259c7ba4b91fc7dbe8d0b2d99f629a64c2ad74)
+
+commit 50518225c04719ecf7767b35d990e87291b39bde
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 28 21:49:47 2016 +0000
+
+    python: Rename 'py_guestfs_' functions to 'guestfs_int_py_'.
+    
+    Purely mechanical change, done by a Perl script (hah!)
+    
+    (cherry picked from commit 1a9312c7439c94ebc17d0b4984af8130df6b03a7)
+
+commit 083646ee7ca0a6ce43cb609aad16ac7db2e83666
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 28 21:38:18 2016 +0000
+
+    java: Rename internal C function without guestfs_ prefix.
+    
+    (cherry picked from commit 14cd9a031a898814895faed78f5e3a777b17fbcf)
+
+commit ca4a750f957c8e5567542b3356f2d8b4725e921c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 28 21:25:18 2016 +0000
+
+    ocaml, virt tools: More consistent naming for C functions.
+    
+    For functions linked to virt tools, make sure the name of the function
+    actually matches the virt tool.  Because of the history of moving
+    functions across tools, some names no longer matched.
+    
+    For mllib, use `guestfs_int_mllib_' prefix.
+    
+    For OCaml bindings, use `guestfs_int_ocaml_' prefix.
+    
+    This commit is by no means complete.  There are many other C functions
+    in other language bindings which could do with being more consistently
+    named.
+    
+    There is no functional change, this is just refactoring.
+    
+    (cherry picked from commit 53403fbdef1aa5ebfa7ec2fa4fa9191f19fe899b)
+
+commit e2ab41c072fa32daa7443ca0c9f491b5496ef327
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 28 21:03:22 2016 +0000
+
+    docs: Remove reference to double underscore, which is no longer used in internal identifiers.
+    
+    (cherry picked from commit e32a14ceecbd706052ab4b0282ff33db1ea6db1e)
+
+commit 4b3a54cc1581f45a62cb841b35e1e8d95c5fc1ff
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 28 15:38:11 2016 +0100
+
+    lvm: support lvm2 older than 2.02.107
+    
+    lvm2 2.02.107 adds the -S/--select option used in lvs to filter out only
+    public LVs (see RHBZ#1278878).  To make this work again with versions
+    of lvm2 older than that, only on old versions filter out thin layouts
+    and compose the resulting device strings ourselves.
+    
+    The filtering done is much simplier than what "-S lv_role=public" will
+    do, but should be good enough for our need.
+    
+    (cherry picked from commit f9e8f3b2d2cf1acdf9573faceb844b8d50bae69d)
+
+commit 506cdfdb07f5437a4884731e9cbfc2e58edf3e7c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 28 13:55:20 2016 +0000
+
+    v2v: linux: Find dracut if it is located in /usr/bin.
+    
+    In Fedora 23, dracut moved to /usr/bin.  However we only looked for
+    /sbin/dracut, so we didn't find it.  You would have seen a failure
+    like this:
+    
+      virt-v2v: error: unable to rebuild initrd
+      (/boot/initramfs-4.2.3-300.fc23.x86_64.img) because mkinitrd or dracut was
+      not found in the guest
+    
+    Look for dracut in /usr/bin as well.
+    
+    Thanks: Arnaud Bougeard.
+    (cherry picked from commit 569ad259b4726fbdabf380bdca34da00ca262e1e)
+
+commit e9f8dfc87e1718a981955f29d92da38f84fe0d7d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jan 28 14:23:02 2016 +0100
+
+    python: stop using parens-less print in tests
+    
+    print "" is no more available in Python 3, and print(...) is available
+    since Python 2.7; as one of the tests was using print(), use this form
+    everywhere so the tests can run fine with Python 3.
+    
+    (cherry picked from commit 2bccaa30473d3f638e48486906fbff94f30ee0ed)
+
+commit a18e599455127ef6157ae88993c9a419890902db
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 28 13:00:28 2016 +0000
+
+    v2v: windows: Don't hard code "oem1.inf" string.
+    
+    Find the next free "oem%d.inf" string.
+    
+    Thanks: Vadim Rozenfeld for clarifying what we should be doing
+    in this case.
+    
+    (cherry picked from commit a6c7b39530ace55b98ac7288a5fa4f0723332a54)
+
+commit 31da0fe4524caa16aa1f946c2fbacae479909239
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 28 13:00:16 2016 +0000
+
+    v2v: Abbreviate a couple of comments.
+    
+    No functional change.
+    
+    (cherry picked from commit 58ce08f36f4a83c74bef1329f6dabb78708f8a6e)
+
+commit 7788fd844c0d8e76bb69f929811a173f3c951188
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 28 12:37:33 2016 +0000
+
+    GCC 6: Avoid warning about logical OR of "equal" expressions.
+    
+    The warning (see below) is fairly useless.  This modification to the
+    code avoids it.
+    
+    inotify.c: In function 'do_inotify_read':
+    inotify.c:219:32: error: logical 'or' of equal expressions [-Werror=logical-op]
+           if (errno == EWOULDBLOCK || errno == EAGAIN) /* End of list. */
+                                    ^~
+    
+    (cherry picked from commit b12f0a809f7d1aef9215d25bda2f0a2fd955d0f8)
+
+commit 57de946eb123f7c3f2085d6ec5fed3da997fccc2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 27 14:23:48 2016 +0100
+
+    actions: mark btrfs test case of vfs_minimum_size as TestRunOrUnsupported
+    
+    The btrfs implementation of vfs_minimum_size requires
+    btrfs-progs >= 4.2, erroring with ENOTSUP otherwise; thus mark the btrfs
+    test case of the vfs_minimum_size tests as TestRunOrUnsupported, so it
+    will not cause failures if the available btrfs-progs is not enough.
+    
+    (cherry picked from commit c355b748ce4684a0b5a5d5ff24362b01b7900460)
+
+commit ab6c90adfd04549c08d07ca37495edf98eb4c31d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 27 14:17:22 2016 +0100
+
+    generator: add TestRunOrUnsupported test type
+    
+    Create a new TestRunOrUnsupported test type, which represents a test
+    sequence where a failure with ENOTSUP in the last command only marks the
+    test as skipped.  To be used mainly when testing features available only
+    with some versions of helper tools used in the appliance, for example.
+    
+    (cherry picked from commit ceefa701c6b650a2c5cb7a2faef7c4c261bd25ab)
+
+commit 6acfd6094e909757bdc26aa8bd2c4bfffd283530
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 27 14:09:16 2016 +0100
+
+    btrfs: also check return value of sysroot_path in btrfs_minimum_size
+    
+    Followup of commit 79ac68030f82ade1e686484e4f77d8e05a38c41b.
+    
+    (cherry picked from commit 474e3051c7c503341f0546b837cacdaf422d4e84)
+
+commit 124236109fc51be42c1f47d72f29ffcc008d4b40
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 27 13:45:24 2016 +0100
+
+    btrfs: fix leak in btrfs_minimum_size
+    
+    Make sure the result of sysroot_path is properly free'd.
+    
+    (cherry picked from commit 79ac68030f82ade1e686484e4f77d8e05a38c41b)
+
+commit 6b89634ffe2007d30b1f9237e2b5511f3b1611ec
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jan 27 13:29:16 2016 +0100
+
+    btrfs: fix wrapping in message in btrfs_minimum_size
+    
+    (cherry picked from commit fa262e254061ddd637a62d37f4ff10c99554d020)
+
+commit ed87cf0983ebad50c8a253e63678c5a35db1a558
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 27 11:48:17 2016 +0000
+
+    p2v: Use $program consistently in virt-p2v-make-disk script.
+    
+    (cherry picked from commit 42f8c6e3bdf56ba556329d59473146dc5bdf1cac)
+
+commit 7b1a0af3be513beacafeb13810c5e80ae652c454
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 27 11:38:09 2016 +0000
+
+    p2v: Fix typo in virt-p2v-make-disk manual page.
+    
+    (cherry picked from commit c3ad944555f7d942fbeae2b60902d4ab5e0c523e)
+
+commit 13fbd13a0c51283f7162ed06766e30b39e472213
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 26 18:49:55 2016 +0100
+
+    inspect: resolve symlinks when detecting architecture
+    
+    Resolve the paths of the binaries we are looking in the guest to
+    identify the architecture. This way we can identify also busybox-based
+    guests such as Alpine Linux, where all the "base" binaries in /bin are
+    symlinks to busybox.
+    
+    (cherry picked from commit 7adb8ffa612a3b2f948492a4ac80cc3cc37223de)
+
+commit f8bd3fa507e2b88b77234d1a2e58187dd0caa9bd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 26 11:25:54 2016 +0100
+
+    daemon: fold xfs_admin stdout to stderr
+    
+    Apparent newer versions of that report everything on stdout, including
+    error messages; since we only print something on failure, fold stdout to
+    stderr so we can see everything on failure.
+    
+    (cherry picked from commit 5aa26e76eaba805bcf549c5520187d1bca24d77c)
+
+commit 36d3211f45724e9202aeecf2684e00547c2fd9df
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 26 11:23:25 2016 +0100
+
+    xfs_admin: do not set lazycounter in tests not checking that
+    
+    This flag cannot be disabled (yet) in V5 xfs filesystems; since 2 out
+    of the current 3 tests of xfs_admin check other results than that flag,
+    avoid setting it when not needed.
+    
+    (cherry picked from commit 1d0bd79c08db525c5bda41d5a29f2ce9a823c10d)
+
+commit 3520d585a86beb6cf22dc8bdd2f402dc2b50b09f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 26 11:21:46 2016 +0100
+
+    daemon: improve debugging for "stdout on stderr" flag
+    
+    When the COMMAND_FLAG_FOLD_STDOUT_ON_STDERR flag is passed to
+    command*(), indicate that as stdout=e in debugging message.
+    
+    (cherry picked from commit d2a36f8cbeb468fa01674050fce35571b399e385)
+
+commit 9d0dac73fbf1fe6c49a9ee3fe652336e4ef850f0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 25 19:53:42 2016 +0100
+
+    btrfs_subvolume_show: fix root/toplevel check w/ btrfs-progs >= 4.4
+    
+    In trfs-progs 4.4 the error message has been changed, and our check did
+    not work anymore.  Yes, parsing user messages really sucks...
+    
+    (cherry picked from commit c22dea9871c1d112e1eed66efa128e1751c4d3d3)
+
+commit a66c110199567113b502597ffbb6d95d2aaf312f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jan 25 19:08:14 2016 +0100
+
+    actions: expand partitions for btrfs_image test
+    
+    Apparently with newer btrfs-progs (seen with 4.4) 100M are not enough
+    for a btrfs filesystem; hence double the size of the partitions
+    created in the test of btrfs_image, so now 200M are enough for btrfs.
+    
+    (cherry picked from commit 08bf961d68ccb800d568af8c59122fefdb1f8b56)
+
+commit ded1021b43dbb1d35a1eef2728501da0548eb5b3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 24 15:11:49 2016 +0000
+
+    p2v: Use new miniexpect methods to access the handle fields.
+    
+    (cherry picked from commit f2e201033a36d8a1770b055c9bc17ad48a2a0136)
+
+commit cbffcb6b5e8f44dfef757097f8fa2b206ba504da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 24 15:06:35 2016 +0000
+
+    p2v: Resynch miniexpect with upstream.
+    
+    Upstream miniexpect commit 3df4c0d3e4192cb6bb8e9ed7126346ab6aa98043.
+    
+    (cherry picked from commit 38edddb8e853046794ac51a7756e06ecb56b992d)
+
+commit 6b0a8e2c762d3e087baea50766d4affceadf8058
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 24 15:05:43 2016 +0000
+
+    p2v: Handle mexp_close returning -1 correctly.
+    
+    If a system call fails, this function returns -1 and sets errno.  This
+    case was not handled correctly.
+    
+    (cherry picked from commit 86ec266f22849e17ef076e7255fda8609fa0e4ce)
+
+commit 38ad44f97011da39bd1b09bc61db4817ca2001b7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 22 21:51:18 2016 +0000
+
+    launch: libvirt: Reword an SELinux debug message.
+    
+    (cherry picked from commit 1477c95da4f00577e281463e4c44b6cd2a5cf637)
+
+commit 59603ed6fa2ef277f75db801cb4eb12d0fb14210
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 22 21:47:48 2016 +0000
+
+    launch: libvirt: Refactor destroy_domain function.
+    
+    Small rewrite of commit 7e2f2b0b2410587b81fd42bf741e3a36a5e75f6f.  No
+    functional change.
+    
+    (cherry picked from commit bf469bca13340518c5211f86b16690579cbf3938)
+
+commit c97b93649d0ab4ffd442923d336b6b93e3d3d92f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 22 13:08:24 2016 +0000
+
+    daemon: Link with cleanups.c.
+    
+    And remove the cleanup_* functions from guestfsd.c.
+    
+    This fixes commit d94860d7e8357b70d2a301f381fc41aca49c4369.
+    
+    (cherry picked from commit e23b44e2de9afe6dcd3f0b3c6fb7757af6f20e34)
+
+commit e5fdd39bb827f0ab025f811db4491a4235e76984
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 22 12:52:33 2016 +0000
+
+    Minor fixes to "daemon: Split out command* functions and CLEANUP_* macros."
+    
+    This updates commit d94860d7e8357b70d2a301f381fc41aca49c4369.
+    
+    Thanks: Pino Toscano.
+    (cherry picked from commit 2cb8e5ddb8a3d28c2076254ccc2ef2f53d0815d3)
+
+commit 6d30cdffba3cae2d1d63cccf9957901be46c46cc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 4 16:28:08 2015 +0000
+
+    daemon: Split out command* functions and CLEANUP_* macros.
+    
+    This allows the command* functions and CLEANUP_* macros to be used
+    independently from the daemon.
+    
+    (cherry picked from commit d94860d7e8357b70d2a301f381fc41aca49c4369)
+
+commit 3adcb36702e44424d63b99b883415b1deabee7bb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 4 16:19:43 2015 +0000
+
+    daemon: Rename daemon/command.c -> daemon/sh.c.
+    
+    Simply a file rename, no other change.
+    
+    (cherry picked from commit b5066c67e085ff7e7db7bc84903f9c11ccd38e57)
+
+commit 4d9809c4802c8ed9a320e3a97674052352b70faa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 21 12:35:42 2016 +0000
+
+    p2v: Fix paths to data files in documentation.
+    
+    (cherry picked from commit d5222a3ab997b6bbf4c4e179fb2a9b9ff8a2680c)
+
+commit d6e1dd45e295aa966cf3608d8cc8a49ec6536c5f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 20 17:05:53 2016 +0000
+
+    tests: regressions: Allow test-big-heap to work on machines with less memory.
+    
+    This test would fail on machines with around 4 GB of free memory.
+    Adjust the test so it would now work on such machines (it will however
+    still fail on a machine with around 2 GB of free memory).
+    
+    (cherry picked from commit 4a0905ac3638d441f2cf68d1bd125fbdf6745e82)
+
+commit 6b10873f2357d9413822125702a7ffdbdd7e3f05
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 19 14:09:33 2016 +0000
+
+    lib: Handle slow USB devices more gracefully.
+    
+    Libvirt has a fixed 15 second timeout for qemu to exit.  If qemu is
+    writing to a slow USB key, it can hang (in D state) for much longer
+    than this - many minutes usually.
+    
+    The solution is to check specifically for the libvirt EBUSY error when
+    this happens, and retry the virDomainDestroyFlags operation
+    (indefinitely).
+    
+    See also the description here:
+    https://www.redhat.com/archives/libvir-list/2016-January/msg00767.html
+    
+    Similar to the following OpenStack Nova commit:
+    http://git.openstack.org/cgit/openstack/nova/commit/?id=3907867
+    
+    Thanks: Kashyap Chamarthy and Daniel Berrange.
+    (cherry picked from commit 7e2f2b0b2410587b81fd42bf741e3a36a5e75f6f)
+
+commit 8f2c0b11d545c4239ef239806f4cbe734d92cfea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 19 16:01:46 2016 +0000
+
+    launch: libvirt: In error messages, display err->int1, don't display domain.
+    
+    The err->domain field is essentially random from the point of view
+    of libguestfs.
+    
+    The err->int1 field has some useful information in some circumstances:
+    it has the errno value from the failed system call.
+    
+    (cherry picked from commit c3ebc0a83761c552e6c19163b6d87044ae1ca635)
+
+commit e23dcdc53806d36f04cff6d61701ba997dca72da
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 15 11:27:48 2016 +0100
+
+    daemon: resolve paths for ll and llz
+    
+    Resolve in the guest the given path, so absolute symlinks can be listed
+    using appliance tools without resolution errors.
+    Also remove the note about the possibility to escape the sysroot using
+    ll and llz, since realpath won't return paths outside sysroot.
+    
+    Fixes part of RHBZ#1293276.
+    
+    (cherry picked from commit 40b5698388689b54cf8b213a0adc72b35d6014b2)
+
+commit 01a45fd235b0e9e953fc650ff437894c6de66915
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 18 17:06:36 2016 +0000
+
+    p2v: virt-p2v-make-disk: Use a more robust way to get the latest kernel version.
+    
+    Fedora/i686 does not have a package called 'kernel', so the command
+    'rpm -q kernel' fails.  In any case the method used wasn't exactly
+    very robust.
+    
+    The new method is based on how febootstrap used to do this.
+    
+    This updates commit d723b352f8c10fb5244f17889cf68e13dd85c037.
+    
+    (cherry picked from commit 3f376fa5137d73df681cc5eaaa9b5e4206d57fce)
+
 commit eff7d5c73d3a95547880b989704a3c12f6ed05df
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Jan 15 11:41:06 2016 +0000

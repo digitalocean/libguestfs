@@ -73,13 +73,13 @@ static VALUE m_guestfs;			/* guestfs module */
 static VALUE c_guestfs;			/* guestfs_h handle */
 static VALUE e_Error;			/* used for all errors */
 
-static void ruby_event_callback_wrapper (guestfs_h *g, void *data, uint64_t event, int event_handle, int flags, const char *buf, size_t buf_len, const uint64_t *array, size_t array_len);
-static VALUE ruby_event_callback_wrapper_wrapper (VALUE argv);
-static VALUE ruby_event_callback_handle_exception (VALUE not_used, VALUE exn);
+static void event_callback_wrapper (guestfs_h *g, void *data, uint64_t event, int event_handle, int flags, const char *buf, size_t buf_len, const uint64_t *array, size_t array_len);
+static VALUE event_callback_wrapper_wrapper (VALUE argv);
+static VALUE event_callback_handle_exception (VALUE not_used, VALUE exn);
 static VALUE **get_all_event_callbacks (guestfs_h *g, size_t *len_rtn);
 
 static void
-ruby_guestfs_free (void *gvp)
+free_handle (void *gvp)
 {
   guestfs_h *g = gvp;
 
@@ -114,14 +114,14 @@ ruby_guestfs_free (void *gvp)
  * function).
  */
 static VALUE
-ruby_guestfs_alloc (VALUE klass)
+alloc_handle (VALUE klass)
 {
   guestfs_h *g = NULL;
 
   /* Wrap it, and make sure the close function is called when the
    * handle goes away.
    */
-  return Data_Wrap_Struct (c_guestfs, NULL, ruby_guestfs_free, g);
+  return Data_Wrap_Struct (c_guestfs, NULL, free_handle, g);
 }
 
 static unsigned
@@ -154,7 +154,7 @@ parse_flags (int argc, VALUE *argv)
  * Ruby as an instance of the Guestfs::Guestfs class.
  */
 static VALUE
-ruby_guestfs_initialize (int argc, VALUE *argv, VALUE m)
+initialize_handle (int argc, VALUE *argv, VALUE m)
 {
   guestfs_h *g;
   unsigned flags;
@@ -181,7 +181,7 @@ ruby_guestfs_initialize (int argc, VALUE *argv, VALUE m)
 
 /* For backwards compatibility. */
 static VALUE
-ruby_guestfs_create (int argc, VALUE *argv, VALUE module)
+compat_create_handle (int argc, VALUE *argv, VALUE module)
 {
   guestfs_h *g;
   unsigned flags;
@@ -198,7 +198,7 @@ ruby_guestfs_create (int argc, VALUE *argv, VALUE module)
   /* Don't print error messages to stderr by default. */
   guestfs_set_error_handler (g, NULL, NULL);
 
-  return Data_Wrap_Struct (c_guestfs, NULL, ruby_guestfs_free, g);
+  return Data_Wrap_Struct (c_guestfs, NULL, free_handle, g);
 }
 
 /*
@@ -210,7 +210,7 @@ ruby_guestfs_create (int argc, VALUE *argv, VALUE module)
  * to close the libguestfs handle.
  */
 static VALUE
-ruby_guestfs_close (VALUE gv)
+close_handle (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -219,7 +219,7 @@ ruby_guestfs_close (VALUE gv)
    * close if a close callback does something bad like calling exit.
    */
   DATA_PTR (gv) = NULL;
-  ruby_guestfs_free (g);
+  free_handle (g);
 
   return Qnil;
 }
@@ -233,7 +233,7 @@ ruby_guestfs_close (VALUE gv)
  * to register an event callback.  This returns an event handle.
  */
 static VALUE
-ruby_set_event_callback (VALUE gv, VALUE cbv, VALUE event_bitmaskv)
+set_event_callback (VALUE gv, VALUE cbv, VALUE event_bitmaskv)
 {
   guestfs_h *g;
   uint64_t event_bitmask;
@@ -248,7 +248,7 @@ ruby_set_event_callback (VALUE gv, VALUE cbv, VALUE event_bitmaskv)
   root = guestfs_int_safe_malloc (g, sizeof *root);
   *root = cbv;
 
-  eh = guestfs_set_event_callback (g, ruby_event_callback_wrapper,
+  eh = guestfs_set_event_callback (g, event_callback_wrapper,
                                    event_bitmask, 0, root);
   if (eh == -1) {
     free (root);
@@ -272,7 +272,7 @@ ruby_set_event_callback (VALUE gv, VALUE cbv, VALUE event_bitmaskv)
  * to delete an event callback.
  */
 static VALUE
-ruby_delete_event_callback (VALUE gv, VALUE event_handlev)
+delete_event_callback (VALUE gv, VALUE event_handlev)
 {
   guestfs_h *g;
   char key[64];
@@ -303,7 +303,7 @@ ruby_delete_event_callback (VALUE gv, VALUE event_handlev)
  * to convert an event or event bitmask into a printable string.
  */
 static VALUE
-ruby_event_to_string (VALUE modulev, VALUE eventsv)
+event_to_string (VALUE modulev, VALUE eventsv)
 {
   uint64_t events;
   char *str;
@@ -320,13 +320,13 @@ ruby_event_to_string (VALUE modulev, VALUE eventsv)
 }
 
 static void
-ruby_event_callback_wrapper (guestfs_h *g,
-                             void *data,
-                             uint64_t event,
-                             int event_handle,
-                             int flags,
-                             const char *buf, size_t buf_len,
-                             const uint64_t *array, size_t array_len)
+event_callback_wrapper (guestfs_h *g,
+                        void *data,
+                        uint64_t event,
+                        int event_handle,
+                        int flags,
+                        const char *buf, size_t buf_len,
+                        const uint64_t *array, size_t array_len)
 {
   size_t i;
   volatile VALUE eventv, event_handlev, bufv, arrayv;
@@ -350,12 +350,12 @@ ruby_event_callback_wrapper (guestfs_h *g,
   argv[3] = bufv;
   argv[4] = arrayv;
 
-  rb_rescue (ruby_event_callback_wrapper_wrapper, (VALUE) argv,
-             ruby_event_callback_handle_exception, Qnil);
+  rb_rescue (event_callback_wrapper_wrapper, (VALUE) argv,
+             event_callback_handle_exception, Qnil);
 }
 
 static VALUE
-ruby_event_callback_wrapper_wrapper (VALUE argvv)
+event_callback_wrapper_wrapper (VALUE argvv)
 {
   VALUE *argv = (VALUE *) argvv;
   volatile VALUE fn, eventv, event_handlev, bufv, arrayv;
@@ -386,7 +386,7 @@ ruby_event_callback_wrapper_wrapper (VALUE argvv)
 }
 
 static VALUE
-ruby_event_callback_handle_exception (VALUE not_used, VALUE exn)
+event_callback_handle_exception (VALUE not_used, VALUE exn)
 {
   /* Callbacks aren't supposed to throw exceptions. */
   fprintf (stderr, "libguestfs: exception in callback!\n");
@@ -447,7 +447,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
  *         {guestfs_acl_delete_def_file}[http://libguestfs.org/guestfs.3.html#guestfs_acl_delete_def_file].
  */
 static VALUE
-ruby_guestfs_acl_delete_def_file (VALUE gv, VALUE dirv)
+guestfs_int_ruby_acl_delete_def_file (VALUE gv, VALUE dirv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -492,7 +492,7 @@ ruby_guestfs_acl_delete_def_file (VALUE gv, VALUE dirv)
  *         {guestfs_acl_get_file}[http://libguestfs.org/guestfs.3.html#guestfs_acl_get_file].
  */
 static VALUE
-ruby_guestfs_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
+guestfs_int_ruby_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -558,7 +558,7 @@ ruby_guestfs_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
  *         {guestfs_acl_set_file}[http://libguestfs.org/guestfs.3.html#guestfs_acl_set_file].
  */
 static VALUE
-ruby_guestfs_acl_set_file (VALUE gv, VALUE pathv, VALUE acltypev, VALUE aclv)
+guestfs_int_ruby_acl_set_file (VALUE gv, VALUE pathv, VALUE acltypev, VALUE aclv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -599,7 +599,7 @@ ruby_guestfs_acl_set_file (VALUE gv, VALUE pathv, VALUE acltypev, VALUE aclv)
  *         {guestfs_add_cdrom}[http://libguestfs.org/guestfs.3.html#guestfs_add_cdrom].
  */
 static VALUE
-ruby_guestfs_add_cdrom (VALUE gv, VALUE filenamev)
+guestfs_int_ruby_add_cdrom (VALUE gv, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -716,7 +716,7 @@ ruby_guestfs_add_cdrom (VALUE gv, VALUE filenamev)
  *         {guestfs_add_domain}[http://libguestfs.org/guestfs.3.html#guestfs_add_domain].
  */
 static VALUE
-ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_add_domain (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1045,7 +1045,7 @@ ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_add_drive}[http://libguestfs.org/guestfs.3.html#guestfs_add_drive].
  */
 static VALUE
-ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_add_drive (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1166,7 +1166,7 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_add_drive_ro}[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_ro].
  */
 static VALUE
-ruby_guestfs_add_drive_ro (VALUE gv, VALUE filenamev)
+guestfs_int_ruby_add_drive_ro (VALUE gv, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1203,7 +1203,7 @@ ruby_guestfs_add_drive_ro (VALUE gv, VALUE filenamev)
  *         {guestfs_add_drive_ro_with_if}[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_ro_with_if].
  */
 static VALUE
-ruby_guestfs_add_drive_ro_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
+guestfs_int_ruby_add_drive_ro_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1248,7 +1248,7 @@ ruby_guestfs_add_drive_ro_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
  *         {guestfs_add_drive_scratch}[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_scratch].
  */
 static VALUE
-ruby_guestfs_add_drive_scratch (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_add_drive_scratch (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1305,7 +1305,7 @@ ruby_guestfs_add_drive_scratch (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_add_drive_with_if}[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_with_if].
  */
 static VALUE
-ruby_guestfs_add_drive_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
+guestfs_int_ruby_add_drive_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1379,7 +1379,7 @@ ruby_guestfs_add_drive_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
  *         {guestfs_add_libvirt_dom}[http://libguestfs.org/guestfs.3.html#guestfs_add_libvirt_dom].
  */
 static VALUE
-ruby_guestfs_add_libvirt_dom (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_add_libvirt_dom (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1460,7 +1460,7 @@ ruby_guestfs_add_libvirt_dom (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_aug_clear}[http://libguestfs.org/guestfs.3.html#guestfs_aug_clear].
  */
 static VALUE
-ruby_guestfs_aug_clear (VALUE gv, VALUE augpathv)
+guestfs_int_ruby_aug_clear (VALUE gv, VALUE augpathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1496,7 +1496,7 @@ ruby_guestfs_aug_clear (VALUE gv, VALUE augpathv)
  *         {guestfs_aug_close}[http://libguestfs.org/guestfs.3.html#guestfs_aug_close].
  */
 static VALUE
-ruby_guestfs_aug_close (VALUE gv)
+guestfs_int_ruby_aug_close (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1538,7 +1538,7 @@ ruby_guestfs_aug_close (VALUE gv)
  *         {guestfs_aug_defnode}[http://libguestfs.org/guestfs.3.html#guestfs_aug_defnode].
  */
 static VALUE
-ruby_guestfs_aug_defnode (VALUE gv, VALUE namev, VALUE exprv, VALUE valv)
+guestfs_int_ruby_aug_defnode (VALUE gv, VALUE namev, VALUE exprv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1583,7 +1583,7 @@ ruby_guestfs_aug_defnode (VALUE gv, VALUE namev, VALUE exprv, VALUE valv)
  *         {guestfs_aug_defvar}[http://libguestfs.org/guestfs.3.html#guestfs_aug_defvar].
  */
 static VALUE
-ruby_guestfs_aug_defvar (VALUE gv, VALUE namev, VALUE exprv)
+guestfs_int_ruby_aug_defvar (VALUE gv, VALUE namev, VALUE exprv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1618,7 +1618,7 @@ ruby_guestfs_aug_defvar (VALUE gv, VALUE namev, VALUE exprv)
  *         {guestfs_aug_get}[http://libguestfs.org/guestfs.3.html#guestfs_aug_get].
  */
 static VALUE
-ruby_guestfs_aug_get (VALUE gv, VALUE augpathv)
+guestfs_int_ruby_aug_get (VALUE gv, VALUE augpathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1695,7 +1695,7 @@ ruby_guestfs_aug_get (VALUE gv, VALUE augpathv)
  *         {guestfs_aug_init}[http://libguestfs.org/guestfs.3.html#guestfs_aug_init].
  */
 static VALUE
-ruby_guestfs_aug_init (VALUE gv, VALUE rootv, VALUE flagsv)
+guestfs_int_ruby_aug_init (VALUE gv, VALUE rootv, VALUE flagsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1735,7 +1735,7 @@ ruby_guestfs_aug_init (VALUE gv, VALUE rootv, VALUE flagsv)
  *         {guestfs_aug_insert}[http://libguestfs.org/guestfs.3.html#guestfs_aug_insert].
  */
 static VALUE
-ruby_guestfs_aug_insert (VALUE gv, VALUE augpathv, VALUE labelv, VALUE beforev)
+guestfs_int_ruby_aug_insert (VALUE gv, VALUE augpathv, VALUE labelv, VALUE beforev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1772,7 +1772,7 @@ ruby_guestfs_aug_insert (VALUE gv, VALUE augpathv, VALUE labelv, VALUE beforev)
  *         {guestfs_aug_label}[http://libguestfs.org/guestfs.3.html#guestfs_aug_label].
  */
 static VALUE
-ruby_guestfs_aug_label (VALUE gv, VALUE augpathv)
+guestfs_int_ruby_aug_label (VALUE gv, VALUE augpathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1810,7 +1810,7 @@ ruby_guestfs_aug_label (VALUE gv, VALUE augpathv)
  *         {guestfs_aug_load}[http://libguestfs.org/guestfs.3.html#guestfs_aug_load].
  */
 static VALUE
-ruby_guestfs_aug_load (VALUE gv)
+guestfs_int_ruby_aug_load (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1844,7 +1844,7 @@ ruby_guestfs_aug_load (VALUE gv)
  *         {guestfs_aug_ls}[http://libguestfs.org/guestfs.3.html#guestfs_aug_ls].
  */
 static VALUE
-ruby_guestfs_aug_ls (VALUE gv, VALUE augpathv)
+guestfs_int_ruby_aug_ls (VALUE gv, VALUE augpathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1887,7 +1887,7 @@ ruby_guestfs_aug_ls (VALUE gv, VALUE augpathv)
  *         {guestfs_aug_match}[http://libguestfs.org/guestfs.3.html#guestfs_aug_match].
  */
 static VALUE
-ruby_guestfs_aug_match (VALUE gv, VALUE augpathv)
+guestfs_int_ruby_aug_match (VALUE gv, VALUE augpathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1929,7 +1929,7 @@ ruby_guestfs_aug_match (VALUE gv, VALUE augpathv)
  *         {guestfs_aug_mv}[http://libguestfs.org/guestfs.3.html#guestfs_aug_mv].
  */
 static VALUE
-ruby_guestfs_aug_mv (VALUE gv, VALUE srcv, VALUE destv)
+guestfs_int_ruby_aug_mv (VALUE gv, VALUE srcv, VALUE destv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -1966,7 +1966,7 @@ ruby_guestfs_aug_mv (VALUE gv, VALUE srcv, VALUE destv)
  *         {guestfs_aug_rm}[http://libguestfs.org/guestfs.3.html#guestfs_aug_rm].
  */
 static VALUE
-ruby_guestfs_aug_rm (VALUE gv, VALUE augpathv)
+guestfs_int_ruby_aug_rm (VALUE gv, VALUE augpathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2002,7 +2002,7 @@ ruby_guestfs_aug_rm (VALUE gv, VALUE augpathv)
  *         {guestfs_aug_save}[http://libguestfs.org/guestfs.3.html#guestfs_aug_save].
  */
 static VALUE
-ruby_guestfs_aug_save (VALUE gv)
+guestfs_int_ruby_aug_save (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2039,7 +2039,7 @@ ruby_guestfs_aug_save (VALUE gv)
  *         {guestfs_aug_set}[http://libguestfs.org/guestfs.3.html#guestfs_aug_set].
  */
 static VALUE
-ruby_guestfs_aug_set (VALUE gv, VALUE augpathv, VALUE valv)
+guestfs_int_ruby_aug_set (VALUE gv, VALUE augpathv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2080,7 +2080,7 @@ ruby_guestfs_aug_set (VALUE gv, VALUE augpathv, VALUE valv)
  *         {guestfs_aug_setm}[http://libguestfs.org/guestfs.3.html#guestfs_aug_setm].
  */
 static VALUE
-ruby_guestfs_aug_setm (VALUE gv, VALUE basev, VALUE subv, VALUE valv)
+guestfs_int_ruby_aug_setm (VALUE gv, VALUE basev, VALUE subv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2169,7 +2169,7 @@ ruby_guestfs_aug_setm (VALUE gv, VALUE basev, VALUE subv, VALUE valv)
  *         {guestfs_available}[http://libguestfs.org/guestfs.3.html#guestfs_available].
  */
 static VALUE
-ruby_guestfs_available (VALUE gv, VALUE groupsv)
+guestfs_int_ruby_available (VALUE gv, VALUE groupsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2222,7 +2222,7 @@ ruby_guestfs_available (VALUE gv, VALUE groupsv)
  *         {guestfs_available_all_groups}[http://libguestfs.org/guestfs.3.html#guestfs_available_all_groups].
  */
 static VALUE
-ruby_guestfs_available_all_groups (VALUE gv)
+guestfs_int_ruby_available_all_groups (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2263,7 +2263,7 @@ ruby_guestfs_available_all_groups (VALUE gv)
  *         {guestfs_base64_in}[http://libguestfs.org/guestfs.3.html#guestfs_base64_in].
  */
 static VALUE
-ruby_guestfs_base64_in (VALUE gv, VALUE base64filev, VALUE filenamev)
+guestfs_int_ruby_base64_in (VALUE gv, VALUE base64filev, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2298,7 +2298,7 @@ ruby_guestfs_base64_in (VALUE gv, VALUE base64filev, VALUE filenamev)
  *         {guestfs_base64_out}[http://libguestfs.org/guestfs.3.html#guestfs_base64_out].
  */
 static VALUE
-ruby_guestfs_base64_out (VALUE gv, VALUE filenamev, VALUE base64filev)
+guestfs_int_ruby_base64_out (VALUE gv, VALUE filenamev, VALUE base64filev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2340,7 +2340,7 @@ ruby_guestfs_base64_out (VALUE gv, VALUE filenamev, VALUE base64filev)
  *         {guestfs_blkdiscard}[http://libguestfs.org/guestfs.3.html#guestfs_blkdiscard].
  */
 static VALUE
-ruby_guestfs_blkdiscard (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blkdiscard (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2378,7 +2378,7 @@ ruby_guestfs_blkdiscard (VALUE gv, VALUE devicev)
  *         {guestfs_blkdiscardzeroes}[http://libguestfs.org/guestfs.3.html#guestfs_blkdiscardzeroes].
  */
 static VALUE
-ruby_guestfs_blkdiscardzeroes (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blkdiscardzeroes (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2429,7 +2429,7 @@ ruby_guestfs_blkdiscardzeroes (VALUE gv, VALUE devicev)
  *         {guestfs_blkid}[http://libguestfs.org/guestfs.3.html#guestfs_blkid].
  */
 static VALUE
-ruby_guestfs_blkid (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blkid (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2473,7 +2473,7 @@ ruby_guestfs_blkid (VALUE gv, VALUE devicev)
  *         {guestfs_blockdev_flushbufs}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_flushbufs].
  */
 static VALUE
-ruby_guestfs_blockdev_flushbufs (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blockdev_flushbufs (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2514,7 +2514,7 @@ ruby_guestfs_blockdev_flushbufs (VALUE gv, VALUE devicev)
  *         {guestfs_blockdev_getbsz}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getbsz].
  */
 static VALUE
-ruby_guestfs_blockdev_getbsz (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blockdev_getbsz (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2550,7 +2550,7 @@ ruby_guestfs_blockdev_getbsz (VALUE gv, VALUE devicev)
  *         {guestfs_blockdev_getro}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getro].
  */
 static VALUE
-ruby_guestfs_blockdev_getro (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blockdev_getro (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2587,7 +2587,7 @@ ruby_guestfs_blockdev_getro (VALUE gv, VALUE devicev)
  *         {guestfs_blockdev_getsize64}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getsize64].
  */
 static VALUE
-ruby_guestfs_blockdev_getsize64 (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blockdev_getsize64 (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2626,7 +2626,7 @@ ruby_guestfs_blockdev_getsize64 (VALUE gv, VALUE devicev)
  *         {guestfs_blockdev_getss}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getss].
  */
 static VALUE
-ruby_guestfs_blockdev_getss (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blockdev_getss (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2667,7 +2667,7 @@ ruby_guestfs_blockdev_getss (VALUE gv, VALUE devicev)
  *         {guestfs_blockdev_getsz}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_getsz].
  */
 static VALUE
-ruby_guestfs_blockdev_getsz (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blockdev_getsz (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2702,7 +2702,7 @@ ruby_guestfs_blockdev_getsz (VALUE gv, VALUE devicev)
  *         {guestfs_blockdev_rereadpt}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_rereadpt].
  */
 static VALUE
-ruby_guestfs_blockdev_rereadpt (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blockdev_rereadpt (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2741,7 +2741,7 @@ ruby_guestfs_blockdev_rereadpt (VALUE gv, VALUE devicev)
  *         {guestfs_blockdev_setbsz}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setbsz].
  */
 static VALUE
-ruby_guestfs_blockdev_setbsz (VALUE gv, VALUE devicev, VALUE blocksizev)
+guestfs_int_ruby_blockdev_setbsz (VALUE gv, VALUE devicev, VALUE blocksizev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2777,7 +2777,7 @@ ruby_guestfs_blockdev_setbsz (VALUE gv, VALUE devicev, VALUE blocksizev)
  *         {guestfs_blockdev_setra}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setra].
  */
 static VALUE
-ruby_guestfs_blockdev_setra (VALUE gv, VALUE devicev, VALUE sectorsv)
+guestfs_int_ruby_blockdev_setra (VALUE gv, VALUE devicev, VALUE sectorsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2813,7 +2813,7 @@ ruby_guestfs_blockdev_setra (VALUE gv, VALUE devicev, VALUE sectorsv)
  *         {guestfs_blockdev_setro}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setro].
  */
 static VALUE
-ruby_guestfs_blockdev_setro (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blockdev_setro (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2848,7 +2848,7 @@ ruby_guestfs_blockdev_setro (VALUE gv, VALUE devicev)
  *         {guestfs_blockdev_setrw}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setrw].
  */
 static VALUE
-ruby_guestfs_blockdev_setrw (VALUE gv, VALUE devicev)
+guestfs_int_ruby_blockdev_setrw (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2881,7 +2881,7 @@ ruby_guestfs_blockdev_setrw (VALUE gv, VALUE devicev)
  *         {guestfs_btrfs_balance_cancel}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_cancel].
  */
 static VALUE
-ruby_guestfs_btrfs_balance_cancel (VALUE gv, VALUE pathv)
+guestfs_int_ruby_btrfs_balance_cancel (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2914,7 +2914,7 @@ ruby_guestfs_btrfs_balance_cancel (VALUE gv, VALUE pathv)
  *         {guestfs_btrfs_balance_pause}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_pause].
  */
 static VALUE
-ruby_guestfs_btrfs_balance_pause (VALUE gv, VALUE pathv)
+guestfs_int_ruby_btrfs_balance_pause (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2947,7 +2947,7 @@ ruby_guestfs_btrfs_balance_pause (VALUE gv, VALUE pathv)
  *         {guestfs_btrfs_balance_resume}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_resume].
  */
 static VALUE
-ruby_guestfs_btrfs_balance_resume (VALUE gv, VALUE pathv)
+guestfs_int_ruby_btrfs_balance_resume (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -2981,7 +2981,7 @@ ruby_guestfs_btrfs_balance_resume (VALUE gv, VALUE pathv)
  *         {guestfs_btrfs_balance_status}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_status].
  */
 static VALUE
-ruby_guestfs_btrfs_balance_status (VALUE gv, VALUE pathv)
+guestfs_int_ruby_btrfs_balance_status (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3023,7 +3023,7 @@ ruby_guestfs_btrfs_balance_status (VALUE gv, VALUE pathv)
  *         {guestfs_btrfs_device_add}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_device_add].
  */
 static VALUE
-ruby_guestfs_btrfs_device_add (VALUE gv, VALUE devicesv, VALUE fsv)
+guestfs_int_ruby_btrfs_device_add (VALUE gv, VALUE devicesv, VALUE fsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3071,7 +3071,7 @@ ruby_guestfs_btrfs_device_add (VALUE gv, VALUE devicesv, VALUE fsv)
  *         {guestfs_btrfs_device_delete}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_device_delete].
  */
 static VALUE
-ruby_guestfs_btrfs_device_delete (VALUE gv, VALUE devicesv, VALUE fsv)
+guestfs_int_ruby_btrfs_device_delete (VALUE gv, VALUE devicesv, VALUE fsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3118,7 +3118,7 @@ ruby_guestfs_btrfs_device_delete (VALUE gv, VALUE devicesv, VALUE fsv)
  *         {guestfs_btrfs_filesystem_balance}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_balance].
  */
 static VALUE
-ruby_guestfs_btrfs_filesystem_balance (VALUE gv, VALUE fsv)
+guestfs_int_ruby_btrfs_filesystem_balance (VALUE gv, VALUE fsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3156,7 +3156,7 @@ ruby_guestfs_btrfs_filesystem_balance (VALUE gv, VALUE fsv)
  *         {guestfs_btrfs_filesystem_defragment}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_defragment].
  */
 static VALUE
-ruby_guestfs_btrfs_filesystem_defragment (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_btrfs_filesystem_defragment (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3227,7 +3227,7 @@ ruby_guestfs_btrfs_filesystem_defragment (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_btrfs_filesystem_resize}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_resize].
  */
 static VALUE
-ruby_guestfs_btrfs_filesystem_resize (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_btrfs_filesystem_resize (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3276,7 +3276,7 @@ ruby_guestfs_btrfs_filesystem_resize (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_btrfs_filesystem_sync}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_sync].
  */
 static VALUE
-ruby_guestfs_btrfs_filesystem_sync (VALUE gv, VALUE fsv)
+guestfs_int_ruby_btrfs_filesystem_sync (VALUE gv, VALUE fsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3314,7 +3314,7 @@ ruby_guestfs_btrfs_filesystem_sync (VALUE gv, VALUE fsv)
  *         {guestfs_btrfs_fsck}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_fsck].
  */
 static VALUE
-ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3374,7 +3374,7 @@ ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_btrfs_image}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_image].
  */
 static VALUE
-ruby_guestfs_btrfs_image (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_btrfs_image (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3439,7 +3439,7 @@ ruby_guestfs_btrfs_image (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_btrfs_qgroup_assign}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_assign].
  */
 static VALUE
-ruby_guestfs_btrfs_qgroup_assign (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
+guestfs_int_ruby_btrfs_qgroup_assign (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3475,7 +3475,7 @@ ruby_guestfs_btrfs_qgroup_assign (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
  *         {guestfs_btrfs_qgroup_create}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_create].
  */
 static VALUE
-ruby_guestfs_btrfs_qgroup_create (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
+guestfs_int_ruby_btrfs_qgroup_create (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3509,7 +3509,7 @@ ruby_guestfs_btrfs_qgroup_create (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
  *         {guestfs_btrfs_qgroup_destroy}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_destroy].
  */
 static VALUE
-ruby_guestfs_btrfs_qgroup_destroy (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
+guestfs_int_ruby_btrfs_qgroup_destroy (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3544,7 +3544,7 @@ ruby_guestfs_btrfs_qgroup_destroy (VALUE gv, VALUE qgroupidv, VALUE subvolumev)
  *         {guestfs_btrfs_qgroup_limit}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_limit].
  */
 static VALUE
-ruby_guestfs_btrfs_qgroup_limit (VALUE gv, VALUE subvolumev, VALUE sizev)
+guestfs_int_ruby_btrfs_qgroup_limit (VALUE gv, VALUE subvolumev, VALUE sizev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3578,7 +3578,7 @@ ruby_guestfs_btrfs_qgroup_limit (VALUE gv, VALUE subvolumev, VALUE sizev)
  *         {guestfs_btrfs_qgroup_remove}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_remove].
  */
 static VALUE
-ruby_guestfs_btrfs_qgroup_remove (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
+guestfs_int_ruby_btrfs_qgroup_remove (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3614,7 +3614,7 @@ ruby_guestfs_btrfs_qgroup_remove (VALUE gv, VALUE srcv, VALUE dstv, VALUE pathv)
  *         {guestfs_btrfs_qgroup_show}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_show].
  */
 static VALUE
-ruby_guestfs_btrfs_qgroup_show (VALUE gv, VALUE pathv)
+guestfs_int_ruby_btrfs_qgroup_show (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3658,7 +3658,7 @@ ruby_guestfs_btrfs_qgroup_show (VALUE gv, VALUE pathv)
  *         {guestfs_btrfs_quota_enable}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_quota_enable].
  */
 static VALUE
-ruby_guestfs_btrfs_quota_enable (VALUE gv, VALUE fsv, VALUE enablev)
+guestfs_int_ruby_btrfs_quota_enable (VALUE gv, VALUE fsv, VALUE enablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3693,7 +3693,7 @@ ruby_guestfs_btrfs_quota_enable (VALUE gv, VALUE fsv, VALUE enablev)
  *         {guestfs_btrfs_quota_rescan}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_quota_rescan].
  */
 static VALUE
-ruby_guestfs_btrfs_quota_rescan (VALUE gv, VALUE fsv)
+guestfs_int_ruby_btrfs_quota_rescan (VALUE gv, VALUE fsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3734,7 +3734,7 @@ ruby_guestfs_btrfs_quota_rescan (VALUE gv, VALUE fsv)
  *         {guestfs_btrfs_replace}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_replace].
  */
 static VALUE
-ruby_guestfs_btrfs_replace (VALUE gv, VALUE srcdevv, VALUE targetdevv, VALUE mntpointv)
+guestfs_int_ruby_btrfs_replace (VALUE gv, VALUE srcdevv, VALUE targetdevv, VALUE mntpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3770,7 +3770,7 @@ ruby_guestfs_btrfs_replace (VALUE gv, VALUE srcdevv, VALUE targetdevv, VALUE mnt
  *         {guestfs_btrfs_rescue_chunk_recover}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_rescue_chunk_recover].
  */
 static VALUE
-ruby_guestfs_btrfs_rescue_chunk_recover (VALUE gv, VALUE devicev)
+guestfs_int_ruby_btrfs_rescue_chunk_recover (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3803,7 +3803,7 @@ ruby_guestfs_btrfs_rescue_chunk_recover (VALUE gv, VALUE devicev)
  *         {guestfs_btrfs_rescue_super_recover}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_rescue_super_recover].
  */
 static VALUE
-ruby_guestfs_btrfs_rescue_super_recover (VALUE gv, VALUE devicev)
+guestfs_int_ruby_btrfs_rescue_super_recover (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3836,7 +3836,7 @@ ruby_guestfs_btrfs_rescue_super_recover (VALUE gv, VALUE devicev)
  *         {guestfs_btrfs_scrub_cancel}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_cancel].
  */
 static VALUE
-ruby_guestfs_btrfs_scrub_cancel (VALUE gv, VALUE pathv)
+guestfs_int_ruby_btrfs_scrub_cancel (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3870,7 +3870,7 @@ ruby_guestfs_btrfs_scrub_cancel (VALUE gv, VALUE pathv)
  *         {guestfs_btrfs_scrub_resume}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_resume].
  */
 static VALUE
-ruby_guestfs_btrfs_scrub_resume (VALUE gv, VALUE pathv)
+guestfs_int_ruby_btrfs_scrub_resume (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3905,7 +3905,7 @@ ruby_guestfs_btrfs_scrub_resume (VALUE gv, VALUE pathv)
  *         {guestfs_btrfs_scrub_start}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_start].
  */
 static VALUE
-ruby_guestfs_btrfs_scrub_start (VALUE gv, VALUE pathv)
+guestfs_int_ruby_btrfs_scrub_start (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3939,7 +3939,7 @@ ruby_guestfs_btrfs_scrub_start (VALUE gv, VALUE pathv)
  *         {guestfs_btrfs_scrub_status}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_status].
  */
 static VALUE
-ruby_guestfs_btrfs_scrub_status (VALUE gv, VALUE pathv)
+guestfs_int_ruby_btrfs_scrub_status (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -3990,7 +3990,7 @@ ruby_guestfs_btrfs_scrub_status (VALUE gv, VALUE pathv)
  *         {guestfs_btrfs_set_seeding}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_set_seeding].
  */
 static VALUE
-ruby_guestfs_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
+guestfs_int_ruby_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4032,7 +4032,7 @@ ruby_guestfs_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
  *         {guestfs_btrfs_subvolume_create}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_create].
  */
 static VALUE
-ruby_guestfs_btrfs_subvolume_create (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_btrfs_subvolume_create (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4081,7 +4081,7 @@ ruby_guestfs_btrfs_subvolume_create (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_btrfs_subvolume_delete}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_delete].
  */
 static VALUE
-ruby_guestfs_btrfs_subvolume_delete (VALUE gv, VALUE subvolumev)
+guestfs_int_ruby_btrfs_subvolume_delete (VALUE gv, VALUE subvolumev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4115,7 +4115,7 @@ ruby_guestfs_btrfs_subvolume_delete (VALUE gv, VALUE subvolumev)
  *         {guestfs_btrfs_subvolume_get_default}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_get_default].
  */
 static VALUE
-ruby_guestfs_btrfs_subvolume_get_default (VALUE gv, VALUE fsv)
+guestfs_int_ruby_btrfs_subvolume_get_default (VALUE gv, VALUE fsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4149,7 +4149,7 @@ ruby_guestfs_btrfs_subvolume_get_default (VALUE gv, VALUE fsv)
  *         {guestfs_btrfs_subvolume_list}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_list].
  */
 static VALUE
-ruby_guestfs_btrfs_subvolume_list (VALUE gv, VALUE fsv)
+guestfs_int_ruby_btrfs_subvolume_list (VALUE gv, VALUE fsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4194,7 +4194,7 @@ ruby_guestfs_btrfs_subvolume_list (VALUE gv, VALUE fsv)
  *         {guestfs_btrfs_subvolume_set_default}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_set_default].
  */
 static VALUE
-ruby_guestfs_btrfs_subvolume_set_default (VALUE gv, VALUE idv, VALUE fsv)
+guestfs_int_ruby_btrfs_subvolume_set_default (VALUE gv, VALUE idv, VALUE fsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4228,7 +4228,7 @@ ruby_guestfs_btrfs_subvolume_set_default (VALUE gv, VALUE idv, VALUE fsv)
  *         {guestfs_btrfs_subvolume_show}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_show].
  */
 static VALUE
-ruby_guestfs_btrfs_subvolume_show (VALUE gv, VALUE subvolumev)
+guestfs_int_ruby_btrfs_subvolume_show (VALUE gv, VALUE subvolumev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4280,7 +4280,7 @@ ruby_guestfs_btrfs_subvolume_show (VALUE gv, VALUE subvolumev)
  *         {guestfs_btrfs_subvolume_snapshot}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_snapshot].
  */
 static VALUE
-ruby_guestfs_btrfs_subvolume_snapshot (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_btrfs_subvolume_snapshot (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4336,7 +4336,7 @@ ruby_guestfs_btrfs_subvolume_snapshot (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_btrfstune_enable_extended_inode_refs}[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_enable_extended_inode_refs].
  */
 static VALUE
-ruby_guestfs_btrfstune_enable_extended_inode_refs (VALUE gv, VALUE devicev)
+guestfs_int_ruby_btrfstune_enable_extended_inode_refs (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4369,7 +4369,7 @@ ruby_guestfs_btrfstune_enable_extended_inode_refs (VALUE gv, VALUE devicev)
  *         {guestfs_btrfstune_enable_skinny_metadata_extent_refs}[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_enable_skinny_metadata_extent_refs].
  */
 static VALUE
-ruby_guestfs_btrfstune_enable_skinny_metadata_extent_refs (VALUE gv, VALUE devicev)
+guestfs_int_ruby_btrfstune_enable_skinny_metadata_extent_refs (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4404,7 +4404,7 @@ ruby_guestfs_btrfstune_enable_skinny_metadata_extent_refs (VALUE gv, VALUE devic
  *         {guestfs_btrfstune_seeding}[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_seeding].
  */
 static VALUE
-ruby_guestfs_btrfstune_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
+guestfs_int_ruby_btrfstune_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4441,7 +4441,7 @@ ruby_guestfs_btrfstune_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
  *         {guestfs_c_pointer}[http://libguestfs.org/guestfs.3.html#guestfs_c_pointer].
  */
 static VALUE
-ruby_guestfs_c_pointer (VALUE gv)
+guestfs_int_ruby_c_pointer (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4489,7 +4489,7 @@ ruby_guestfs_c_pointer (VALUE gv)
  *         {guestfs_canonical_device_name}[http://libguestfs.org/guestfs.3.html#guestfs_canonical_device_name].
  */
 static VALUE
-ruby_guestfs_canonical_device_name (VALUE gv, VALUE devicev)
+guestfs_int_ruby_canonical_device_name (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4529,7 +4529,7 @@ ruby_guestfs_canonical_device_name (VALUE gv, VALUE devicev)
  *         {guestfs_cap_get_file}[http://libguestfs.org/guestfs.3.html#guestfs_cap_get_file].
  */
 static VALUE
-ruby_guestfs_cap_get_file (VALUE gv, VALUE pathv)
+guestfs_int_ruby_cap_get_file (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4566,7 +4566,7 @@ ruby_guestfs_cap_get_file (VALUE gv, VALUE pathv)
  *         {guestfs_cap_set_file}[http://libguestfs.org/guestfs.3.html#guestfs_cap_set_file].
  */
 static VALUE
-ruby_guestfs_cap_set_file (VALUE gv, VALUE pathv, VALUE capv)
+guestfs_int_ruby_cap_set_file (VALUE gv, VALUE pathv, VALUE capv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4647,7 +4647,7 @@ ruby_guestfs_cap_set_file (VALUE gv, VALUE pathv, VALUE capv)
  *         {guestfs_case_sensitive_path}[http://libguestfs.org/guestfs.3.html#guestfs_case_sensitive_path].
  */
 static VALUE
-ruby_guestfs_case_sensitive_path (VALUE gv, VALUE pathv)
+guestfs_int_ruby_case_sensitive_path (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4687,7 +4687,7 @@ ruby_guestfs_case_sensitive_path (VALUE gv, VALUE pathv)
  *         {guestfs_cat}[http://libguestfs.org/guestfs.3.html#guestfs_cat].
  */
 static VALUE
-ruby_guestfs_cat (VALUE gv, VALUE pathv)
+guestfs_int_ruby_cat (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4761,7 +4761,7 @@ ruby_guestfs_cat (VALUE gv, VALUE pathv)
  *         {guestfs_checksum}[http://libguestfs.org/guestfs.3.html#guestfs_checksum].
  */
 static VALUE
-ruby_guestfs_checksum (VALUE gv, VALUE csumtypev, VALUE pathv)
+guestfs_int_ruby_checksum (VALUE gv, VALUE csumtypev, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4799,7 +4799,7 @@ ruby_guestfs_checksum (VALUE gv, VALUE csumtypev, VALUE pathv)
  *         {guestfs_checksum_device}[http://libguestfs.org/guestfs.3.html#guestfs_checksum_device].
  */
 static VALUE
-ruby_guestfs_checksum_device (VALUE gv, VALUE csumtypev, VALUE devicev)
+guestfs_int_ruby_checksum_device (VALUE gv, VALUE csumtypev, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4845,7 +4845,7 @@ ruby_guestfs_checksum_device (VALUE gv, VALUE csumtypev, VALUE devicev)
  *         {guestfs_checksums_out}[http://libguestfs.org/guestfs.3.html#guestfs_checksums_out].
  */
 static VALUE
-ruby_guestfs_checksums_out (VALUE gv, VALUE csumtypev, VALUE directoryv, VALUE sumsfilev)
+guestfs_int_ruby_checksums_out (VALUE gv, VALUE csumtypev, VALUE directoryv, VALUE sumsfilev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4887,7 +4887,7 @@ ruby_guestfs_checksums_out (VALUE gv, VALUE csumtypev, VALUE directoryv, VALUE s
  *         {guestfs_chmod}[http://libguestfs.org/guestfs.3.html#guestfs_chmod].
  */
 static VALUE
-ruby_guestfs_chmod (VALUE gv, VALUE modev, VALUE pathv)
+guestfs_int_ruby_chmod (VALUE gv, VALUE modev, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4926,7 +4926,7 @@ ruby_guestfs_chmod (VALUE gv, VALUE modev, VALUE pathv)
  *         {guestfs_chown}[http://libguestfs.org/guestfs.3.html#guestfs_chown].
  */
 static VALUE
-ruby_guestfs_chown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
+guestfs_int_ruby_chown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -4969,7 +4969,7 @@ ruby_guestfs_chown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
  *         {guestfs_clear_backend_setting}[http://libguestfs.org/guestfs.3.html#guestfs_clear_backend_setting].
  */
 static VALUE
-ruby_guestfs_clear_backend_setting (VALUE gv, VALUE namev)
+guestfs_int_ruby_clear_backend_setting (VALUE gv, VALUE namev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5034,7 +5034,7 @@ ruby_guestfs_clear_backend_setting (VALUE gv, VALUE namev)
  *         {guestfs_command}[http://libguestfs.org/guestfs.3.html#guestfs_command].
  */
 static VALUE
-ruby_guestfs_command (VALUE gv, VALUE argumentsv)
+guestfs_int_ruby_command (VALUE gv, VALUE argumentsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5088,7 +5088,7 @@ ruby_guestfs_command (VALUE gv, VALUE argumentsv)
  *         {guestfs_command_lines}[http://libguestfs.org/guestfs.3.html#guestfs_command_lines].
  */
 static VALUE
-ruby_guestfs_command_lines (VALUE gv, VALUE argumentsv)
+guestfs_int_ruby_command_lines (VALUE gv, VALUE argumentsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5149,7 +5149,7 @@ ruby_guestfs_command_lines (VALUE gv, VALUE argumentsv)
  *         {guestfs_compress_device_out}[http://libguestfs.org/guestfs.3.html#guestfs_compress_device_out].
  */
 static VALUE
-ruby_guestfs_compress_device_out (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_compress_device_out (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5218,7 +5218,7 @@ ruby_guestfs_compress_device_out (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_compress_out}[http://libguestfs.org/guestfs.3.html#guestfs_compress_out].
  */
 static VALUE
-ruby_guestfs_compress_out (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_compress_out (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5279,7 +5279,7 @@ ruby_guestfs_compress_out (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_config}[http://libguestfs.org/guestfs.3.html#guestfs_config].
  */
 static VALUE
-ruby_guestfs_config (VALUE gv, VALUE hvparamv, VALUE hvvaluev)
+guestfs_int_ruby_config (VALUE gv, VALUE hvparamv, VALUE hvvaluev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5344,7 +5344,7 @@ ruby_guestfs_config (VALUE gv, VALUE hvparamv, VALUE hvvaluev)
  *         {guestfs_copy_attributes}[http://libguestfs.org/guestfs.3.html#guestfs_copy_attributes].
  */
 static VALUE
-ruby_guestfs_copy_attributes (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_copy_attributes (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5444,7 +5444,7 @@ ruby_guestfs_copy_attributes (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_copy_device_to_device}[http://libguestfs.org/guestfs.3.html#guestfs_copy_device_to_device].
  */
 static VALUE
-ruby_guestfs_copy_device_to_device (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_copy_device_to_device (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5520,7 +5520,7 @@ ruby_guestfs_copy_device_to_device (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_copy_device_to_file}[http://libguestfs.org/guestfs.3.html#guestfs_copy_device_to_file].
  */
 static VALUE
-ruby_guestfs_copy_device_to_file (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_copy_device_to_file (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5596,7 +5596,7 @@ ruby_guestfs_copy_device_to_file (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_copy_file_to_device}[http://libguestfs.org/guestfs.3.html#guestfs_copy_file_to_device].
  */
 static VALUE
-ruby_guestfs_copy_file_to_device (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_copy_file_to_device (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5677,7 +5677,7 @@ ruby_guestfs_copy_file_to_device (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_copy_file_to_file}[http://libguestfs.org/guestfs.3.html#guestfs_copy_file_to_file].
  */
 static VALUE
-ruby_guestfs_copy_file_to_file (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_copy_file_to_file (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5752,7 +5752,7 @@ ruby_guestfs_copy_file_to_file (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_copy_in}[http://libguestfs.org/guestfs.3.html#guestfs_copy_in].
  */
 static VALUE
-ruby_guestfs_copy_in (VALUE gv, VALUE localpathv, VALUE remotedirv)
+guestfs_int_ruby_copy_in (VALUE gv, VALUE localpathv, VALUE remotedirv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5795,7 +5795,7 @@ ruby_guestfs_copy_in (VALUE gv, VALUE localpathv, VALUE remotedirv)
  *         {guestfs_copy_out}[http://libguestfs.org/guestfs.3.html#guestfs_copy_out].
  */
 static VALUE
-ruby_guestfs_copy_out (VALUE gv, VALUE remotepathv, VALUE localdirv)
+guestfs_int_ruby_copy_out (VALUE gv, VALUE remotepathv, VALUE localdirv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5836,7 +5836,7 @@ ruby_guestfs_copy_out (VALUE gv, VALUE remotepathv, VALUE localdirv)
  *         {guestfs_copy_size}[http://libguestfs.org/guestfs.3.html#guestfs_copy_size].
  */
 static VALUE
-ruby_guestfs_copy_size (VALUE gv, VALUE srcv, VALUE destv, VALUE sizev)
+guestfs_int_ruby_copy_size (VALUE gv, VALUE srcv, VALUE destv, VALUE sizev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5872,7 +5872,7 @@ ruby_guestfs_copy_size (VALUE gv, VALUE srcv, VALUE destv, VALUE sizev)
  *         {guestfs_cp}[http://libguestfs.org/guestfs.3.html#guestfs_cp].
  */
 static VALUE
-ruby_guestfs_cp (VALUE gv, VALUE srcv, VALUE destv)
+guestfs_int_ruby_cp (VALUE gv, VALUE srcv, VALUE destv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5907,7 +5907,7 @@ ruby_guestfs_cp (VALUE gv, VALUE srcv, VALUE destv)
  *         {guestfs_cp_a}[http://libguestfs.org/guestfs.3.html#guestfs_cp_a].
  */
 static VALUE
-ruby_guestfs_cp_a (VALUE gv, VALUE srcv, VALUE destv)
+guestfs_int_ruby_cp_a (VALUE gv, VALUE srcv, VALUE destv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -5947,7 +5947,7 @@ ruby_guestfs_cp_a (VALUE gv, VALUE srcv, VALUE destv)
  *         {guestfs_cp_r}[http://libguestfs.org/guestfs.3.html#guestfs_cp_r].
  */
 static VALUE
-ruby_guestfs_cp_r (VALUE gv, VALUE srcv, VALUE destv)
+guestfs_int_ruby_cp_r (VALUE gv, VALUE srcv, VALUE destv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6000,7 +6000,7 @@ ruby_guestfs_cp_r (VALUE gv, VALUE srcv, VALUE destv)
  *         {guestfs_cpio_out}[http://libguestfs.org/guestfs.3.html#guestfs_cpio_out].
  */
 static VALUE
-ruby_guestfs_cpio_out (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_cpio_out (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6061,7 +6061,7 @@ ruby_guestfs_cpio_out (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_dd}[http://libguestfs.org/guestfs.3.html#guestfs_dd].
  */
 static VALUE
-ruby_guestfs_dd (VALUE gv, VALUE srcv, VALUE destv)
+guestfs_int_ruby_dd (VALUE gv, VALUE srcv, VALUE destv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6087,7 +6087,7 @@ ruby_guestfs_dd (VALUE gv, VALUE srcv, VALUE destv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_debug (VALUE gv, VALUE subcmdv, VALUE extraargsv)
+guestfs_int_ruby_debug (VALUE gv, VALUE subcmdv, VALUE extraargsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6127,7 +6127,7 @@ ruby_guestfs_debug (VALUE gv, VALUE subcmdv, VALUE extraargsv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_debug_drives (VALUE gv)
+guestfs_int_ruby_debug_drives (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6159,7 +6159,7 @@ ruby_guestfs_debug_drives (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_debug_upload (VALUE gv, VALUE filenamev, VALUE tmpnamev, VALUE modev)
+guestfs_int_ruby_debug_upload (VALUE gv, VALUE filenamev, VALUE tmpnamev, VALUE modev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6200,7 +6200,7 @@ ruby_guestfs_debug_upload (VALUE gv, VALUE filenamev, VALUE tmpnamev, VALUE mode
  *         {guestfs_device_index}[http://libguestfs.org/guestfs.3.html#guestfs_device_index].
  */
 static VALUE
-ruby_guestfs_device_index (VALUE gv, VALUE devicev)
+guestfs_int_ruby_device_index (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6238,7 +6238,7 @@ ruby_guestfs_device_index (VALUE gv, VALUE devicev)
  *         {guestfs_df}[http://libguestfs.org/guestfs.3.html#guestfs_df].
  */
 static VALUE
-ruby_guestfs_df (VALUE gv)
+guestfs_int_ruby_df (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6277,7 +6277,7 @@ ruby_guestfs_df (VALUE gv)
  *         {guestfs_df_h}[http://libguestfs.org/guestfs.3.html#guestfs_df_h].
  */
 static VALUE
-ruby_guestfs_df_h (VALUE gv)
+guestfs_int_ruby_df_h (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6354,7 +6354,7 @@ ruby_guestfs_df_h (VALUE gv)
  *         {guestfs_disk_create}[http://libguestfs.org/guestfs.3.html#guestfs_disk_create].
  */
 static VALUE
-ruby_guestfs_disk_create (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_disk_create (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6436,7 +6436,7 @@ ruby_guestfs_disk_create (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_disk_format}[http://libguestfs.org/guestfs.3.html#guestfs_disk_format].
  */
 static VALUE
-ruby_guestfs_disk_format (VALUE gv, VALUE filenamev)
+guestfs_int_ruby_disk_format (VALUE gv, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6475,7 +6475,7 @@ ruby_guestfs_disk_format (VALUE gv, VALUE filenamev)
  *         {guestfs_disk_has_backing_file}[http://libguestfs.org/guestfs.3.html#guestfs_disk_has_backing_file].
  */
 static VALUE
-ruby_guestfs_disk_has_backing_file (VALUE gv, VALUE filenamev)
+guestfs_int_ruby_disk_has_backing_file (VALUE gv, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6512,7 +6512,7 @@ ruby_guestfs_disk_has_backing_file (VALUE gv, VALUE filenamev)
  *         {guestfs_disk_virtual_size}[http://libguestfs.org/guestfs.3.html#guestfs_disk_virtual_size].
  */
 static VALUE
-ruby_guestfs_disk_virtual_size (VALUE gv, VALUE filenamev)
+guestfs_int_ruby_disk_virtual_size (VALUE gv, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6552,7 +6552,7 @@ ruby_guestfs_disk_virtual_size (VALUE gv, VALUE filenamev)
  *         {guestfs_dmesg}[http://libguestfs.org/guestfs.3.html#guestfs_dmesg].
  */
 static VALUE
-ruby_guestfs_dmesg (VALUE gv)
+guestfs_int_ruby_dmesg (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6591,7 +6591,7 @@ ruby_guestfs_dmesg (VALUE gv)
  *         {guestfs_download}[http://libguestfs.org/guestfs.3.html#guestfs_download].
  */
 static VALUE
-ruby_guestfs_download (VALUE gv, VALUE remotefilenamev, VALUE filenamev)
+guestfs_int_ruby_download (VALUE gv, VALUE remotefilenamev, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6637,7 +6637,7 @@ ruby_guestfs_download (VALUE gv, VALUE remotefilenamev, VALUE filenamev)
  *         {guestfs_download_offset}[http://libguestfs.org/guestfs.3.html#guestfs_download_offset].
  */
 static VALUE
-ruby_guestfs_download_offset (VALUE gv, VALUE remotefilenamev, VALUE filenamev, VALUE offsetv, VALUE sizev)
+guestfs_int_ruby_download_offset (VALUE gv, VALUE remotefilenamev, VALUE filenamev, VALUE offsetv, VALUE sizev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6681,7 +6681,7 @@ ruby_guestfs_download_offset (VALUE gv, VALUE remotefilenamev, VALUE filenamev, 
  *         {guestfs_drop_caches}[http://libguestfs.org/guestfs.3.html#guestfs_drop_caches].
  */
 static VALUE
-ruby_guestfs_drop_caches (VALUE gv, VALUE whattodropv)
+guestfs_int_ruby_drop_caches (VALUE gv, VALUE whattodropv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6722,7 +6722,7 @@ ruby_guestfs_drop_caches (VALUE gv, VALUE whattodropv)
  *         {guestfs_du}[http://libguestfs.org/guestfs.3.html#guestfs_du].
  */
 static VALUE
-ruby_guestfs_du (VALUE gv, VALUE pathv)
+guestfs_int_ruby_du (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6776,7 +6776,7 @@ ruby_guestfs_du (VALUE gv, VALUE pathv)
  *         {guestfs_e2fsck}[http://libguestfs.org/guestfs.3.html#guestfs_e2fsck].
  */
 static VALUE
-ruby_guestfs_e2fsck (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_e2fsck (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6834,7 +6834,7 @@ ruby_guestfs_e2fsck (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_e2fsck_f}[http://libguestfs.org/guestfs.3.html#guestfs_e2fsck_f].
  */
 static VALUE
-ruby_guestfs_e2fsck_f (VALUE gv, VALUE devicev)
+guestfs_int_ruby_e2fsck_f (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6874,7 +6874,7 @@ ruby_guestfs_e2fsck_f (VALUE gv, VALUE devicev)
  *         {guestfs_echo_daemon}[http://libguestfs.org/guestfs.3.html#guestfs_echo_daemon].
  */
 static VALUE
-ruby_guestfs_echo_daemon (VALUE gv, VALUE wordsv)
+guestfs_int_ruby_echo_daemon (VALUE gv, VALUE wordsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6928,7 +6928,7 @@ ruby_guestfs_echo_daemon (VALUE gv, VALUE wordsv)
  *         {guestfs_egrep}[http://libguestfs.org/guestfs.3.html#guestfs_egrep].
  */
 static VALUE
-ruby_guestfs_egrep (VALUE gv, VALUE regexv, VALUE pathv)
+guestfs_int_ruby_egrep (VALUE gv, VALUE regexv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -6977,7 +6977,7 @@ ruby_guestfs_egrep (VALUE gv, VALUE regexv, VALUE pathv)
  *         {guestfs_egrepi}[http://libguestfs.org/guestfs.3.html#guestfs_egrepi].
  */
 static VALUE
-ruby_guestfs_egrepi (VALUE gv, VALUE regexv, VALUE pathv)
+guestfs_int_ruby_egrepi (VALUE gv, VALUE regexv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7023,7 +7023,7 @@ ruby_guestfs_egrepi (VALUE gv, VALUE regexv, VALUE pathv)
  *         {guestfs_equal}[http://libguestfs.org/guestfs.3.html#guestfs_equal].
  */
 static VALUE
-ruby_guestfs_equal (VALUE gv, VALUE file1v, VALUE file2v)
+guestfs_int_ruby_equal (VALUE gv, VALUE file1v, VALUE file2v)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7060,7 +7060,7 @@ ruby_guestfs_equal (VALUE gv, VALUE file1v, VALUE file2v)
  *         {guestfs_exists}[http://libguestfs.org/guestfs.3.html#guestfs_exists].
  */
 static VALUE
-ruby_guestfs_exists (VALUE gv, VALUE pathv)
+guestfs_int_ruby_exists (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7113,7 +7113,7 @@ ruby_guestfs_exists (VALUE gv, VALUE pathv)
  *         {guestfs_extlinux}[http://libguestfs.org/guestfs.3.html#guestfs_extlinux].
  */
 static VALUE
-ruby_guestfs_extlinux (VALUE gv, VALUE directoryv)
+guestfs_int_ruby_extlinux (VALUE gv, VALUE directoryv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7154,7 +7154,7 @@ ruby_guestfs_extlinux (VALUE gv, VALUE directoryv)
  *         {guestfs_fallocate}[http://libguestfs.org/guestfs.3.html#guestfs_fallocate].
  */
 static VALUE
-ruby_guestfs_fallocate (VALUE gv, VALUE pathv, VALUE lenv)
+guestfs_int_ruby_fallocate (VALUE gv, VALUE pathv, VALUE lenv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7202,7 +7202,7 @@ ruby_guestfs_fallocate (VALUE gv, VALUE pathv, VALUE lenv)
  *         {guestfs_fallocate64}[http://libguestfs.org/guestfs.3.html#guestfs_fallocate64].
  */
 static VALUE
-ruby_guestfs_fallocate64 (VALUE gv, VALUE pathv, VALUE lenv)
+guestfs_int_ruby_fallocate64 (VALUE gv, VALUE pathv, VALUE lenv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7239,7 +7239,7 @@ ruby_guestfs_fallocate64 (VALUE gv, VALUE pathv, VALUE lenv)
  *         {guestfs_feature_available}[http://libguestfs.org/guestfs.3.html#guestfs_feature_available].
  */
 static VALUE
-ruby_guestfs_feature_available (VALUE gv, VALUE groupsv)
+guestfs_int_ruby_feature_available (VALUE gv, VALUE groupsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7291,7 +7291,7 @@ ruby_guestfs_feature_available (VALUE gv, VALUE groupsv)
  *         {guestfs_fgrep}[http://libguestfs.org/guestfs.3.html#guestfs_fgrep].
  */
 static VALUE
-ruby_guestfs_fgrep (VALUE gv, VALUE patternv, VALUE pathv)
+guestfs_int_ruby_fgrep (VALUE gv, VALUE patternv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7340,7 +7340,7 @@ ruby_guestfs_fgrep (VALUE gv, VALUE patternv, VALUE pathv)
  *         {guestfs_fgrepi}[http://libguestfs.org/guestfs.3.html#guestfs_fgrepi].
  */
 static VALUE
-ruby_guestfs_fgrepi (VALUE gv, VALUE patternv, VALUE pathv)
+guestfs_int_ruby_fgrepi (VALUE gv, VALUE patternv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7398,7 +7398,7 @@ ruby_guestfs_fgrepi (VALUE gv, VALUE patternv, VALUE pathv)
  *         {guestfs_file}[http://libguestfs.org/guestfs.3.html#guestfs_file].
  */
 static VALUE
-ruby_guestfs_file (VALUE gv, VALUE pathv)
+guestfs_int_ruby_file (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7504,7 +7504,7 @@ ruby_guestfs_file (VALUE gv, VALUE pathv)
  *         {guestfs_file_architecture}[http://libguestfs.org/guestfs.3.html#guestfs_file_architecture].
  */
 static VALUE
-ruby_guestfs_file_architecture (VALUE gv, VALUE filenamev)
+guestfs_int_ruby_file_architecture (VALUE gv, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7543,7 +7543,7 @@ ruby_guestfs_file_architecture (VALUE gv, VALUE filenamev)
  *         {guestfs_filesize}[http://libguestfs.org/guestfs.3.html#guestfs_filesize].
  */
 static VALUE
-ruby_guestfs_filesize (VALUE gv, VALUE filev)
+guestfs_int_ruby_filesize (VALUE gv, VALUE filev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7590,7 +7590,7 @@ ruby_guestfs_filesize (VALUE gv, VALUE filev)
  *         {guestfs_filesystem_available}[http://libguestfs.org/guestfs.3.html#guestfs_filesystem_available].
  */
 static VALUE
-ruby_guestfs_filesystem_available (VALUE gv, VALUE filesystemv)
+guestfs_int_ruby_filesystem_available (VALUE gv, VALUE filesystemv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7630,7 +7630,7 @@ ruby_guestfs_filesystem_available (VALUE gv, VALUE filesystemv)
  *         {guestfs_fill}[http://libguestfs.org/guestfs.3.html#guestfs_fill].
  */
 static VALUE
-ruby_guestfs_fill (VALUE gv, VALUE cv, VALUE lenv, VALUE pathv)
+guestfs_int_ruby_fill (VALUE gv, VALUE cv, VALUE lenv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7668,7 +7668,7 @@ ruby_guestfs_fill (VALUE gv, VALUE cv, VALUE lenv, VALUE pathv)
  *         {guestfs_fill_dir}[http://libguestfs.org/guestfs.3.html#guestfs_fill_dir].
  */
 static VALUE
-ruby_guestfs_fill_dir (VALUE gv, VALUE dirv, VALUE nrv)
+guestfs_int_ruby_fill_dir (VALUE gv, VALUE dirv, VALUE nrv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7706,7 +7706,7 @@ ruby_guestfs_fill_dir (VALUE gv, VALUE dirv, VALUE nrv)
  *         {guestfs_fill_pattern}[http://libguestfs.org/guestfs.3.html#guestfs_fill_pattern].
  */
 static VALUE
-ruby_guestfs_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
+guestfs_int_ruby_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7765,7 +7765,7 @@ ruby_guestfs_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
  *         {guestfs_find}[http://libguestfs.org/guestfs.3.html#guestfs_find].
  */
 static VALUE
-ruby_guestfs_find (VALUE gv, VALUE directoryv)
+guestfs_int_ruby_find (VALUE gv, VALUE directoryv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7818,7 +7818,7 @@ ruby_guestfs_find (VALUE gv, VALUE directoryv)
  *         {guestfs_find0}[http://libguestfs.org/guestfs.3.html#guestfs_find0].
  */
 static VALUE
-ruby_guestfs_find0 (VALUE gv, VALUE directoryv, VALUE filesv)
+guestfs_int_ruby_find0 (VALUE gv, VALUE directoryv, VALUE filesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7856,7 +7856,7 @@ ruby_guestfs_find0 (VALUE gv, VALUE directoryv, VALUE filesv)
  *         {guestfs_findfs_label}[http://libguestfs.org/guestfs.3.html#guestfs_findfs_label].
  */
 static VALUE
-ruby_guestfs_findfs_label (VALUE gv, VALUE labelv)
+guestfs_int_ruby_findfs_label (VALUE gv, VALUE labelv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7895,7 +7895,7 @@ ruby_guestfs_findfs_label (VALUE gv, VALUE labelv)
  *         {guestfs_findfs_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_findfs_uuid].
  */
 static VALUE
-ruby_guestfs_findfs_uuid (VALUE gv, VALUE uuidv)
+guestfs_int_ruby_findfs_uuid (VALUE gv, VALUE uuidv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -7948,7 +7948,7 @@ ruby_guestfs_findfs_uuid (VALUE gv, VALUE uuidv)
  *         {guestfs_fsck}[http://libguestfs.org/guestfs.3.html#guestfs_fsck].
  */
 static VALUE
-ruby_guestfs_fsck (VALUE gv, VALUE fstypev, VALUE devicev)
+guestfs_int_ruby_fsck (VALUE gv, VALUE fstypev, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8003,7 +8003,7 @@ ruby_guestfs_fsck (VALUE gv, VALUE fstypev, VALUE devicev)
  *         {guestfs_fstrim}[http://libguestfs.org/guestfs.3.html#guestfs_fstrim].
  */
 static VALUE
-ruby_guestfs_fstrim (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_fstrim (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8065,7 +8065,7 @@ ruby_guestfs_fstrim (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_get_append}[http://libguestfs.org/guestfs.3.html#guestfs_get_append].
  */
 static VALUE
-ruby_guestfs_get_append (VALUE gv)
+guestfs_int_ruby_get_append (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8102,7 +8102,7 @@ ruby_guestfs_get_append (VALUE gv)
  *         {guestfs_get_attach_method}[http://libguestfs.org/guestfs.3.html#guestfs_get_attach_method].
  */
 static VALUE
-ruby_guestfs_get_attach_method (VALUE gv)
+guestfs_int_ruby_get_attach_method (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8136,7 +8136,7 @@ ruby_guestfs_get_attach_method (VALUE gv)
  *         {guestfs_get_autosync}[http://libguestfs.org/guestfs.3.html#guestfs_get_autosync].
  */
 static VALUE
-ruby_guestfs_get_autosync (VALUE gv)
+guestfs_int_ruby_get_autosync (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8173,7 +8173,7 @@ ruby_guestfs_get_autosync (VALUE gv)
  *         {guestfs_get_backend}[http://libguestfs.org/guestfs.3.html#guestfs_get_backend].
  */
 static VALUE
-ruby_guestfs_get_backend (VALUE gv)
+guestfs_int_ruby_get_backend (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8217,7 +8217,7 @@ ruby_guestfs_get_backend (VALUE gv)
  *         {guestfs_get_backend_setting}[http://libguestfs.org/guestfs.3.html#guestfs_get_backend_setting].
  */
 static VALUE
-ruby_guestfs_get_backend_setting (VALUE gv, VALUE namev)
+guestfs_int_ruby_get_backend_setting (VALUE gv, VALUE namev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8259,7 +8259,7 @@ ruby_guestfs_get_backend_setting (VALUE gv, VALUE namev)
  *         {guestfs_get_backend_settings}[http://libguestfs.org/guestfs.3.html#guestfs_get_backend_settings].
  */
 static VALUE
-ruby_guestfs_get_backend_settings (VALUE gv)
+guestfs_int_ruby_get_backend_settings (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8300,7 +8300,7 @@ ruby_guestfs_get_backend_settings (VALUE gv)
  *         {guestfs_get_cachedir}[http://libguestfs.org/guestfs.3.html#guestfs_get_cachedir].
  */
 static VALUE
-ruby_guestfs_get_cachedir (VALUE gv)
+guestfs_int_ruby_get_cachedir (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8334,7 +8334,7 @@ ruby_guestfs_get_cachedir (VALUE gv)
  *         {guestfs_get_direct}[http://libguestfs.org/guestfs.3.html#guestfs_get_direct].
  */
 static VALUE
-ruby_guestfs_get_direct (VALUE gv)
+guestfs_int_ruby_get_direct (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8441,7 +8441,7 @@ ruby_guestfs_get_direct (VALUE gv)
  *         {guestfs_get_e2attrs}[http://libguestfs.org/guestfs.3.html#guestfs_get_e2attrs].
  */
 static VALUE
-ruby_guestfs_get_e2attrs (VALUE gv, VALUE filev)
+guestfs_int_ruby_get_e2attrs (VALUE gv, VALUE filev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8485,7 +8485,7 @@ ruby_guestfs_get_e2attrs (VALUE gv, VALUE filev)
  *         {guestfs_get_e2generation}[http://libguestfs.org/guestfs.3.html#guestfs_get_e2generation].
  */
 static VALUE
-ruby_guestfs_get_e2generation (VALUE gv, VALUE filev)
+guestfs_int_ruby_get_e2generation (VALUE gv, VALUE filev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8521,7 +8521,7 @@ ruby_guestfs_get_e2generation (VALUE gv, VALUE filev)
  *         {guestfs_get_e2label}[http://libguestfs.org/guestfs.3.html#guestfs_get_e2label].
  */
 static VALUE
-ruby_guestfs_get_e2label (VALUE gv, VALUE devicev)
+guestfs_int_ruby_get_e2label (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8559,7 +8559,7 @@ ruby_guestfs_get_e2label (VALUE gv, VALUE devicev)
  *         {guestfs_get_e2uuid}[http://libguestfs.org/guestfs.3.html#guestfs_get_e2uuid].
  */
 static VALUE
-ruby_guestfs_get_e2uuid (VALUE gv, VALUE devicev)
+guestfs_int_ruby_get_e2uuid (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8597,7 +8597,7 @@ ruby_guestfs_get_e2uuid (VALUE gv, VALUE devicev)
  *         {guestfs_get_hv}[http://libguestfs.org/guestfs.3.html#guestfs_get_hv].
  */
 static VALUE
-ruby_guestfs_get_hv (VALUE gv)
+guestfs_int_ruby_get_hv (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8631,7 +8631,7 @@ ruby_guestfs_get_hv (VALUE gv)
  *         {guestfs_get_identifier}[http://libguestfs.org/guestfs.3.html#guestfs_get_identifier].
  */
 static VALUE
-ruby_guestfs_get_identifier (VALUE gv)
+guestfs_int_ruby_get_identifier (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8668,7 +8668,7 @@ ruby_guestfs_get_identifier (VALUE gv)
  *         {guestfs_get_libvirt_requested_credential_challenge}[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_challenge].
  */
 static VALUE
-ruby_guestfs_get_libvirt_requested_credential_challenge (VALUE gv, VALUE indexv)
+guestfs_int_ruby_get_libvirt_requested_credential_challenge (VALUE gv, VALUE indexv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8709,7 +8709,7 @@ ruby_guestfs_get_libvirt_requested_credential_challenge (VALUE gv, VALUE indexv)
  *         {guestfs_get_libvirt_requested_credential_defresult}[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_defresult].
  */
 static VALUE
-ruby_guestfs_get_libvirt_requested_credential_defresult (VALUE gv, VALUE indexv)
+guestfs_int_ruby_get_libvirt_requested_credential_defresult (VALUE gv, VALUE indexv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8749,7 +8749,7 @@ ruby_guestfs_get_libvirt_requested_credential_defresult (VALUE gv, VALUE indexv)
  *         {guestfs_get_libvirt_requested_credential_prompt}[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_prompt].
  */
 static VALUE
-ruby_guestfs_get_libvirt_requested_credential_prompt (VALUE gv, VALUE indexv)
+guestfs_int_ruby_get_libvirt_requested_credential_prompt (VALUE gv, VALUE indexv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8792,7 +8792,7 @@ ruby_guestfs_get_libvirt_requested_credential_prompt (VALUE gv, VALUE indexv)
  *         {guestfs_get_libvirt_requested_credentials}[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credentials].
  */
 static VALUE
-ruby_guestfs_get_libvirt_requested_credentials (VALUE gv)
+guestfs_int_ruby_get_libvirt_requested_credentials (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8840,7 +8840,7 @@ ruby_guestfs_get_libvirt_requested_credentials (VALUE gv)
  *         {guestfs_get_memsize}[http://libguestfs.org/guestfs.3.html#guestfs_get_memsize].
  */
 static VALUE
-ruby_guestfs_get_memsize (VALUE gv)
+guestfs_int_ruby_get_memsize (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8872,7 +8872,7 @@ ruby_guestfs_get_memsize (VALUE gv)
  *         {guestfs_get_network}[http://libguestfs.org/guestfs.3.html#guestfs_get_network].
  */
 static VALUE
-ruby_guestfs_get_network (VALUE gv)
+guestfs_int_ruby_get_network (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8907,7 +8907,7 @@ ruby_guestfs_get_network (VALUE gv)
  *         {guestfs_get_path}[http://libguestfs.org/guestfs.3.html#guestfs_get_path].
  */
 static VALUE
-ruby_guestfs_get_path (VALUE gv)
+guestfs_int_ruby_get_path (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8939,7 +8939,7 @@ ruby_guestfs_get_path (VALUE gv)
  *         {guestfs_get_pgroup}[http://libguestfs.org/guestfs.3.html#guestfs_get_pgroup].
  */
 static VALUE
-ruby_guestfs_get_pgroup (VALUE gv)
+guestfs_int_ruby_get_pgroup (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -8974,7 +8974,7 @@ ruby_guestfs_get_pgroup (VALUE gv)
  *         {guestfs_get_pid}[http://libguestfs.org/guestfs.3.html#guestfs_get_pid].
  */
 static VALUE
-ruby_guestfs_get_pid (VALUE gv)
+guestfs_int_ruby_get_pid (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9006,7 +9006,7 @@ ruby_guestfs_get_pid (VALUE gv)
  *         {guestfs_get_program}[http://libguestfs.org/guestfs.3.html#guestfs_get_program].
  */
 static VALUE
-ruby_guestfs_get_program (VALUE gv)
+guestfs_int_ruby_get_program (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9043,7 +9043,7 @@ ruby_guestfs_get_program (VALUE gv)
  *         {guestfs_get_qemu}[http://libguestfs.org/guestfs.3.html#guestfs_get_qemu].
  */
 static VALUE
-ruby_guestfs_get_qemu (VALUE gv)
+guestfs_int_ruby_get_qemu (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9075,7 +9075,7 @@ ruby_guestfs_get_qemu (VALUE gv)
  *         {guestfs_get_recovery_proc}[http://libguestfs.org/guestfs.3.html#guestfs_get_recovery_proc].
  */
 static VALUE
-ruby_guestfs_get_recovery_proc (VALUE gv)
+guestfs_int_ruby_get_recovery_proc (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9112,7 +9112,7 @@ ruby_guestfs_get_recovery_proc (VALUE gv)
  *         {guestfs_get_selinux}[http://libguestfs.org/guestfs.3.html#guestfs_get_selinux].
  */
 static VALUE
-ruby_guestfs_get_selinux (VALUE gv)
+guestfs_int_ruby_get_selinux (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9145,7 +9145,7 @@ ruby_guestfs_get_selinux (VALUE gv)
  *         {guestfs_get_smp}[http://libguestfs.org/guestfs.3.html#guestfs_get_smp].
  */
 static VALUE
-ruby_guestfs_get_smp (VALUE gv)
+guestfs_int_ruby_get_smp (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9181,7 +9181,7 @@ ruby_guestfs_get_smp (VALUE gv)
  *         {guestfs_get_state}[http://libguestfs.org/guestfs.3.html#guestfs_get_state].
  */
 static VALUE
-ruby_guestfs_get_state (VALUE gv)
+guestfs_int_ruby_get_state (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9214,7 +9214,7 @@ ruby_guestfs_get_state (VALUE gv)
  *         {guestfs_get_tmpdir}[http://libguestfs.org/guestfs.3.html#guestfs_get_tmpdir].
  */
 static VALUE
-ruby_guestfs_get_tmpdir (VALUE gv)
+guestfs_int_ruby_get_tmpdir (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9248,7 +9248,7 @@ ruby_guestfs_get_tmpdir (VALUE gv)
  *         {guestfs_get_trace}[http://libguestfs.org/guestfs.3.html#guestfs_get_trace].
  */
 static VALUE
-ruby_guestfs_get_trace (VALUE gv)
+guestfs_int_ruby_get_trace (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9281,7 +9281,7 @@ ruby_guestfs_get_trace (VALUE gv)
  *         {guestfs_get_umask}[http://libguestfs.org/guestfs.3.html#guestfs_get_umask].
  */
 static VALUE
-ruby_guestfs_get_umask (VALUE gv)
+guestfs_int_ruby_get_umask (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9313,7 +9313,7 @@ ruby_guestfs_get_umask (VALUE gv)
  *         {guestfs_get_verbose}[http://libguestfs.org/guestfs.3.html#guestfs_get_verbose].
  */
 static VALUE
-ruby_guestfs_get_verbose (VALUE gv)
+guestfs_int_ruby_get_verbose (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9348,7 +9348,7 @@ ruby_guestfs_get_verbose (VALUE gv)
  *         {guestfs_getcon}[http://libguestfs.org/guestfs.3.html#guestfs_getcon].
  */
 static VALUE
-ruby_guestfs_getcon (VALUE gv)
+guestfs_int_ruby_getcon (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9399,7 +9399,7 @@ ruby_guestfs_getcon (VALUE gv)
  *         {guestfs_getxattr}[http://libguestfs.org/guestfs.3.html#guestfs_getxattr].
  */
 static VALUE
-ruby_guestfs_getxattr (VALUE gv, VALUE pathv, VALUE namev)
+guestfs_int_ruby_getxattr (VALUE gv, VALUE pathv, VALUE namev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9442,7 +9442,7 @@ ruby_guestfs_getxattr (VALUE gv, VALUE pathv, VALUE namev)
  *         {guestfs_getxattrs}[http://libguestfs.org/guestfs.3.html#guestfs_getxattrs].
  */
 static VALUE
-ruby_guestfs_getxattrs (VALUE gv, VALUE pathv)
+guestfs_int_ruby_getxattrs (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9497,7 +9497,7 @@ ruby_guestfs_getxattrs (VALUE gv, VALUE pathv)
  *         {guestfs_glob_expand}[http://libguestfs.org/guestfs.3.html#guestfs_glob_expand].
  */
 static VALUE
-ruby_guestfs_glob_expand (VALUE gv, VALUE patternv)
+guestfs_int_ruby_glob_expand (VALUE gv, VALUE patternv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9565,7 +9565,7 @@ ruby_guestfs_glob_expand (VALUE gv, VALUE patternv)
  *         {guestfs_grep}[http://libguestfs.org/guestfs.3.html#guestfs_grep].
  */
 static VALUE
-ruby_guestfs_grep (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_grep (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9646,7 +9646,7 @@ ruby_guestfs_grep (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_grepi}[http://libguestfs.org/guestfs.3.html#guestfs_grepi].
  */
 static VALUE
-ruby_guestfs_grepi (VALUE gv, VALUE regexv, VALUE pathv)
+guestfs_int_ruby_grepi (VALUE gv, VALUE regexv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9716,7 +9716,7 @@ ruby_guestfs_grepi (VALUE gv, VALUE regexv, VALUE pathv)
  *         {guestfs_grub_install}[http://libguestfs.org/guestfs.3.html#guestfs_grub_install].
  */
 static VALUE
-ruby_guestfs_grub_install (VALUE gv, VALUE rootv, VALUE devicev)
+guestfs_int_ruby_grub_install (VALUE gv, VALUE rootv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9755,7 +9755,7 @@ ruby_guestfs_grub_install (VALUE gv, VALUE rootv, VALUE devicev)
  *         {guestfs_head}[http://libguestfs.org/guestfs.3.html#guestfs_head].
  */
 static VALUE
-ruby_guestfs_head (VALUE gv, VALUE pathv)
+guestfs_int_ruby_head (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9808,7 +9808,7 @@ ruby_guestfs_head (VALUE gv, VALUE pathv)
  *         {guestfs_head_n}[http://libguestfs.org/guestfs.3.html#guestfs_head_n].
  */
 static VALUE
-ruby_guestfs_head_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
+guestfs_int_ruby_head_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9855,7 +9855,7 @@ ruby_guestfs_head_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
  *         {guestfs_hexdump}[http://libguestfs.org/guestfs.3.html#guestfs_hexdump].
  */
 static VALUE
-ruby_guestfs_hexdump (VALUE gv, VALUE pathv)
+guestfs_int_ruby_hexdump (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9893,7 +9893,7 @@ ruby_guestfs_hexdump (VALUE gv, VALUE pathv)
  *         {guestfs_hivex_close}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_close].
  */
 static VALUE
-ruby_guestfs_hivex_close (VALUE gv)
+guestfs_int_ruby_hivex_close (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9934,7 +9934,7 @@ ruby_guestfs_hivex_close (VALUE gv)
  *         {guestfs_hivex_commit}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_commit].
  */
 static VALUE
-ruby_guestfs_hivex_commit (VALUE gv, VALUE filenamev)
+guestfs_int_ruby_hivex_commit (VALUE gv, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9970,7 +9970,7 @@ ruby_guestfs_hivex_commit (VALUE gv, VALUE filenamev)
  *         {guestfs_hivex_node_add_child}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_add_child].
  */
 static VALUE
-ruby_guestfs_hivex_node_add_child (VALUE gv, VALUE parentv, VALUE namev)
+guestfs_int_ruby_hivex_node_add_child (VALUE gv, VALUE parentv, VALUE namev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10007,7 +10007,7 @@ ruby_guestfs_hivex_node_add_child (VALUE gv, VALUE parentv, VALUE namev)
  *         {guestfs_hivex_node_children}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_children].
  */
 static VALUE
-ruby_guestfs_hivex_node_children (VALUE gv, VALUE nodehv)
+guestfs_int_ruby_hivex_node_children (VALUE gv, VALUE nodehv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10051,7 +10051,7 @@ ruby_guestfs_hivex_node_children (VALUE gv, VALUE nodehv)
  *         {guestfs_hivex_node_delete_child}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_delete_child].
  */
 static VALUE
-ruby_guestfs_hivex_node_delete_child (VALUE gv, VALUE nodehv)
+guestfs_int_ruby_hivex_node_delete_child (VALUE gv, VALUE nodehv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10089,7 +10089,7 @@ ruby_guestfs_hivex_node_delete_child (VALUE gv, VALUE nodehv)
  *         {guestfs_hivex_node_get_child}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_get_child].
  */
 static VALUE
-ruby_guestfs_hivex_node_get_child (VALUE gv, VALUE nodehv, VALUE namev)
+guestfs_int_ruby_hivex_node_get_child (VALUE gv, VALUE nodehv, VALUE namev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10128,7 +10128,7 @@ ruby_guestfs_hivex_node_get_child (VALUE gv, VALUE nodehv, VALUE namev)
  *         {guestfs_hivex_node_get_value}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_get_value].
  */
 static VALUE
-ruby_guestfs_hivex_node_get_value (VALUE gv, VALUE nodehv, VALUE keyv)
+guestfs_int_ruby_hivex_node_get_value (VALUE gv, VALUE nodehv, VALUE keyv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10165,7 +10165,7 @@ ruby_guestfs_hivex_node_get_value (VALUE gv, VALUE nodehv, VALUE keyv)
  *         {guestfs_hivex_node_name}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_name].
  */
 static VALUE
-ruby_guestfs_hivex_node_name (VALUE gv, VALUE nodehv)
+guestfs_int_ruby_hivex_node_name (VALUE gv, VALUE nodehv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10203,7 +10203,7 @@ ruby_guestfs_hivex_node_name (VALUE gv, VALUE nodehv)
  *         {guestfs_hivex_node_parent}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_parent].
  */
 static VALUE
-ruby_guestfs_hivex_node_parent (VALUE gv, VALUE nodehv)
+guestfs_int_ruby_hivex_node_parent (VALUE gv, VALUE nodehv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10241,7 +10241,7 @@ ruby_guestfs_hivex_node_parent (VALUE gv, VALUE nodehv)
  *         {guestfs_hivex_node_set_value}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_set_value].
  */
 static VALUE
-ruby_guestfs_hivex_node_set_value (VALUE gv, VALUE nodehv, VALUE keyv, VALUE tv, VALUE valv)
+guestfs_int_ruby_hivex_node_set_value (VALUE gv, VALUE nodehv, VALUE keyv, VALUE tv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10286,7 +10286,7 @@ ruby_guestfs_hivex_node_set_value (VALUE gv, VALUE nodehv, VALUE keyv, VALUE tv,
  *         {guestfs_hivex_node_values}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_values].
  */
 static VALUE
-ruby_guestfs_hivex_node_values (VALUE gv, VALUE nodehv)
+guestfs_int_ruby_hivex_node_values (VALUE gv, VALUE nodehv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10336,7 +10336,7 @@ ruby_guestfs_hivex_node_values (VALUE gv, VALUE nodehv)
  *         {guestfs_hivex_open}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_open].
  */
 static VALUE
-ruby_guestfs_hivex_open (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_hivex_open (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10398,7 +10398,7 @@ ruby_guestfs_hivex_open (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_hivex_root}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_root].
  */
 static VALUE
-ruby_guestfs_hivex_root (VALUE gv)
+guestfs_int_ruby_hivex_root (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10434,7 +10434,7 @@ ruby_guestfs_hivex_root (VALUE gv)
  *         {guestfs_hivex_value_key}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_key].
  */
 static VALUE
-ruby_guestfs_hivex_value_key (VALUE gv, VALUE valuehv)
+guestfs_int_ruby_hivex_value_key (VALUE gv, VALUE valuehv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10473,7 +10473,7 @@ ruby_guestfs_hivex_value_key (VALUE gv, VALUE valuehv)
  *         {guestfs_hivex_value_type}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_type].
  */
 static VALUE
-ruby_guestfs_hivex_value_type (VALUE gv, VALUE valuehv)
+guestfs_int_ruby_hivex_value_type (VALUE gv, VALUE valuehv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10515,7 +10515,7 @@ ruby_guestfs_hivex_value_type (VALUE gv, VALUE valuehv)
  *         {guestfs_hivex_value_utf8}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_utf8].
  */
 static VALUE
-ruby_guestfs_hivex_value_utf8 (VALUE gv, VALUE valuehv)
+guestfs_int_ruby_hivex_value_utf8 (VALUE gv, VALUE valuehv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10555,7 +10555,7 @@ ruby_guestfs_hivex_value_utf8 (VALUE gv, VALUE valuehv)
  *         {guestfs_hivex_value_value}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_value].
  */
 static VALUE
-ruby_guestfs_hivex_value_value (VALUE gv, VALUE valuehv)
+guestfs_int_ruby_hivex_value_value (VALUE gv, VALUE valuehv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10605,7 +10605,7 @@ ruby_guestfs_hivex_value_value (VALUE gv, VALUE valuehv)
  *         {guestfs_initrd_cat}[http://libguestfs.org/guestfs.3.html#guestfs_initrd_cat].
  */
 static VALUE
-ruby_guestfs_initrd_cat (VALUE gv, VALUE initrdpathv, VALUE filenamev)
+guestfs_int_ruby_initrd_cat (VALUE gv, VALUE initrdpathv, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10651,7 +10651,7 @@ ruby_guestfs_initrd_cat (VALUE gv, VALUE initrdpathv, VALUE filenamev)
  *         {guestfs_initrd_list}[http://libguestfs.org/guestfs.3.html#guestfs_initrd_list].
  */
 static VALUE
-ruby_guestfs_initrd_list (VALUE gv, VALUE pathv)
+guestfs_int_ruby_initrd_list (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10700,7 +10700,7 @@ ruby_guestfs_initrd_list (VALUE gv, VALUE pathv)
  *         {guestfs_inotify_add_watch}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_add_watch].
  */
 static VALUE
-ruby_guestfs_inotify_add_watch (VALUE gv, VALUE pathv, VALUE maskv)
+guestfs_int_ruby_inotify_add_watch (VALUE gv, VALUE pathv, VALUE maskv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10736,7 +10736,7 @@ ruby_guestfs_inotify_add_watch (VALUE gv, VALUE pathv, VALUE maskv)
  *         {guestfs_inotify_close}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_close].
  */
 static VALUE
-ruby_guestfs_inotify_close (VALUE gv)
+guestfs_int_ruby_inotify_close (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10771,7 +10771,7 @@ ruby_guestfs_inotify_close (VALUE gv)
  *         {guestfs_inotify_files}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_files].
  */
 static VALUE
-ruby_guestfs_inotify_files (VALUE gv)
+guestfs_int_ruby_inotify_files (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10841,7 +10841,7 @@ ruby_guestfs_inotify_files (VALUE gv)
  *         {guestfs_inotify_init}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_init].
  */
 static VALUE
-ruby_guestfs_inotify_init (VALUE gv, VALUE maxeventsv)
+guestfs_int_ruby_inotify_init (VALUE gv, VALUE maxeventsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10883,7 +10883,7 @@ ruby_guestfs_inotify_init (VALUE gv, VALUE maxeventsv)
  *         {guestfs_inotify_read}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_read].
  */
 static VALUE
-ruby_guestfs_inotify_read (VALUE gv)
+guestfs_int_ruby_inotify_read (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10927,7 +10927,7 @@ ruby_guestfs_inotify_read (VALUE gv)
  *         {guestfs_inotify_rm_watch}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_rm_watch].
  */
 static VALUE
-ruby_guestfs_inotify_rm_watch (VALUE gv, VALUE wdv)
+guestfs_int_ruby_inotify_rm_watch (VALUE gv, VALUE wdv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -10967,7 +10967,7 @@ ruby_guestfs_inotify_rm_watch (VALUE gv, VALUE wdv)
  *         {guestfs_inspect_get_arch}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_arch].
  */
 static VALUE
-ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_arch (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11112,7 +11112,7 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_distro}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_distro].
  */
 static VALUE
-ruby_guestfs_inspect_get_distro (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_distro (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11178,7 +11178,7 @@ ruby_guestfs_inspect_get_distro (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_drive_mappings}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_drive_mappings].
  */
 static VALUE
-ruby_guestfs_inspect_get_drive_mappings (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_drive_mappings (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11229,7 +11229,7 @@ ruby_guestfs_inspect_get_drive_mappings (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_filesystems}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_filesystems].
  */
 static VALUE
-ruby_guestfs_inspect_get_filesystems (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_filesystems (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11291,7 +11291,7 @@ ruby_guestfs_inspect_get_filesystems (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_format}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_format].
  */
 static VALUE
-ruby_guestfs_inspect_get_format (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_format (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11333,7 +11333,7 @@ ruby_guestfs_inspect_get_format (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_hostname}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_hostname].
  */
 static VALUE
-ruby_guestfs_inspect_get_hostname (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_hostname (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11422,7 +11422,7 @@ ruby_guestfs_inspect_get_hostname (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_icon}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_icon].
  */
 static VALUE
-ruby_guestfs_inspect_get_icon (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_inspect_get_icon (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11492,7 +11492,7 @@ ruby_guestfs_inspect_get_icon (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_inspect_get_major_version}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_major_version].
  */
 static VALUE
-ruby_guestfs_inspect_get_major_version (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_major_version (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11532,7 +11532,7 @@ ruby_guestfs_inspect_get_major_version (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_minor_version}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_minor_version].
  */
 static VALUE
-ruby_guestfs_inspect_get_minor_version (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_minor_version (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11589,7 +11589,7 @@ ruby_guestfs_inspect_get_minor_version (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_mountpoints}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_mountpoints].
  */
 static VALUE
-ruby_guestfs_inspect_get_mountpoints (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_mountpoints (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11645,7 +11645,7 @@ ruby_guestfs_inspect_get_mountpoints (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_package_format}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_package_format].
  */
 static VALUE
-ruby_guestfs_inspect_get_package_format (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_package_format (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11696,7 +11696,7 @@ ruby_guestfs_inspect_get_package_format (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_package_management}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_package_management].
  */
 static VALUE
-ruby_guestfs_inspect_get_package_management (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_package_management (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11739,7 +11739,7 @@ ruby_guestfs_inspect_get_package_management (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_product_name}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_product_name].
  */
 static VALUE
-ruby_guestfs_inspect_get_product_name (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_product_name (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11796,7 +11796,7 @@ ruby_guestfs_inspect_get_product_name (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_product_variant}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_product_variant].
  */
 static VALUE
-ruby_guestfs_inspect_get_product_variant (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_product_variant (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11839,7 +11839,7 @@ ruby_guestfs_inspect_get_product_variant (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_roots}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_roots].
  */
 static VALUE
-ruby_guestfs_inspect_get_roots (VALUE gv)
+guestfs_int_ruby_inspect_get_roots (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11913,7 +11913,7 @@ ruby_guestfs_inspect_get_roots (VALUE gv)
  *         {guestfs_inspect_get_type}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_type].
  */
 static VALUE
-ruby_guestfs_inspect_get_type (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_type (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11956,7 +11956,7 @@ ruby_guestfs_inspect_get_type (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_windows_current_control_set}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_windows_current_control_set].
  */
 static VALUE
-ruby_guestfs_inspect_get_windows_current_control_set (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_windows_current_control_set (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -11999,7 +11999,7 @@ ruby_guestfs_inspect_get_windows_current_control_set (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_get_windows_systemroot}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_windows_systemroot].
  */
 static VALUE
-ruby_guestfs_inspect_get_windows_systemroot (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_get_windows_systemroot (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -12038,7 +12038,7 @@ ruby_guestfs_inspect_get_windows_systemroot (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_is_live}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_live].
  */
 static VALUE
-ruby_guestfs_inspect_is_live (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_is_live (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -12075,7 +12075,7 @@ ruby_guestfs_inspect_is_live (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_is_multipart}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_multipart].
  */
 static VALUE
-ruby_guestfs_inspect_is_multipart (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_is_multipart (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -12114,7 +12114,7 @@ ruby_guestfs_inspect_is_multipart (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_is_netinst}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_netinst].
  */
 static VALUE
-ruby_guestfs_inspect_is_netinst (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_is_netinst (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -12234,7 +12234,7 @@ ruby_guestfs_inspect_is_netinst (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_list_applications}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_list_applications].
  */
 static VALUE
-ruby_guestfs_inspect_list_applications (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_list_applications (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -12376,7 +12376,7 @@ ruby_guestfs_inspect_list_applications (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_list_applications2}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_list_applications2].
  */
 static VALUE
-ruby_guestfs_inspect_list_applications2 (VALUE gv, VALUE rootv)
+guestfs_int_ruby_inspect_list_applications2 (VALUE gv, VALUE rootv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -12467,7 +12467,7 @@ ruby_guestfs_inspect_list_applications2 (VALUE gv, VALUE rootv)
  *         {guestfs_inspect_os}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_os].
  */
 static VALUE
-ruby_guestfs_inspect_os (VALUE gv)
+guestfs_int_ruby_inspect_os (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -12499,7 +12499,7 @@ ruby_guestfs_inspect_os (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_exit (VALUE gv)
+guestfs_int_ruby_internal_exit (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -12523,7 +12523,7 @@ ruby_guestfs_internal_exit (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_internal_test (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -12630,7 +12630,7 @@ ruby_guestfs_internal_test (int argc, VALUE *argv, VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_63_optargs (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_internal_test_63_optargs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -12979,7 +12979,7 @@ ruby_guestfs_internal_test_63_optargs (int argc, VALUE *argv, VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_close_output (VALUE gv)
+guestfs_int_ruby_internal_test_close_output (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13003,7 +13003,7 @@ ruby_guestfs_internal_test_close_output (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_only_optargs (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_internal_test_only_optargs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13042,7 +13042,7 @@ ruby_guestfs_internal_test_only_optargs (int argc, VALUE *argv, VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rbool (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rbool (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13067,7 +13067,7 @@ ruby_guestfs_internal_test_rbool (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rboolerr (VALUE gv)
+guestfs_int_ruby_internal_test_rboolerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13091,7 +13091,7 @@ ruby_guestfs_internal_test_rboolerr (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rbufferout (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rbufferout (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13119,7 +13119,7 @@ ruby_guestfs_internal_test_rbufferout (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rbufferouterr (VALUE gv)
+guestfs_int_ruby_internal_test_rbufferouterr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13146,7 +13146,7 @@ ruby_guestfs_internal_test_rbufferouterr (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rconstoptstring (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rconstoptstring (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13172,7 +13172,7 @@ ruby_guestfs_internal_test_rconstoptstring (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rconstoptstringerr (VALUE gv)
+guestfs_int_ruby_internal_test_rconstoptstringerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13197,7 +13197,7 @@ ruby_guestfs_internal_test_rconstoptstringerr (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rconststring (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rconststring (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13222,7 +13222,7 @@ ruby_guestfs_internal_test_rconststring (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rconststringerr (VALUE gv)
+guestfs_int_ruby_internal_test_rconststringerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13246,7 +13246,7 @@ ruby_guestfs_internal_test_rconststringerr (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rhashtable (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rhashtable (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13279,7 +13279,7 @@ ruby_guestfs_internal_test_rhashtable (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rhashtableerr (VALUE gv)
+guestfs_int_ruby_internal_test_rhashtableerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13311,7 +13311,7 @@ ruby_guestfs_internal_test_rhashtableerr (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rint (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rint (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13336,7 +13336,7 @@ ruby_guestfs_internal_test_rint (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rint64 (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rint64 (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13361,7 +13361,7 @@ ruby_guestfs_internal_test_rint64 (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rint64err (VALUE gv)
+guestfs_int_ruby_internal_test_rint64err (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13385,7 +13385,7 @@ ruby_guestfs_internal_test_rint64err (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rinterr (VALUE gv)
+guestfs_int_ruby_internal_test_rinterr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13409,7 +13409,7 @@ ruby_guestfs_internal_test_rinterr (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rstring (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rstring (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13436,7 +13436,7 @@ ruby_guestfs_internal_test_rstring (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rstringerr (VALUE gv)
+guestfs_int_ruby_internal_test_rstringerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13462,7 +13462,7 @@ ruby_guestfs_internal_test_rstringerr (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rstringlist (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rstringlist (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13495,7 +13495,7 @@ ruby_guestfs_internal_test_rstringlist (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rstringlisterr (VALUE gv)
+guestfs_int_ruby_internal_test_rstringlisterr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13527,7 +13527,7 @@ ruby_guestfs_internal_test_rstringlisterr (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rstruct (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rstruct (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13568,7 +13568,7 @@ ruby_guestfs_internal_test_rstruct (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rstructerr (VALUE gv)
+guestfs_int_ruby_internal_test_rstructerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13608,7 +13608,7 @@ ruby_guestfs_internal_test_rstructerr (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rstructlist (VALUE gv, VALUE valv)
+guestfs_int_ruby_internal_test_rstructlist (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13654,7 +13654,7 @@ ruby_guestfs_internal_test_rstructlist (VALUE gv, VALUE valv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_rstructlisterr (VALUE gv)
+guestfs_int_ruby_internal_test_rstructlisterr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13699,7 +13699,7 @@ ruby_guestfs_internal_test_rstructlisterr (VALUE gv)
  * :nodoc:
  */
 static VALUE
-ruby_guestfs_internal_test_set_output (VALUE gv, VALUE filenamev)
+guestfs_int_ruby_internal_test_set_output (VALUE gv, VALUE filenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13748,7 +13748,7 @@ ruby_guestfs_internal_test_set_output (VALUE gv, VALUE filenamev)
  *         {guestfs_is_blockdev}[http://libguestfs.org/guestfs.3.html#guestfs_is_blockdev].
  */
 static VALUE
-ruby_guestfs_is_blockdev (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_is_blockdev (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13800,7 +13800,7 @@ ruby_guestfs_is_blockdev (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_is_busy}[http://libguestfs.org/guestfs.3.html#guestfs_is_busy].
  */
 static VALUE
-ruby_guestfs_is_busy (VALUE gv)
+guestfs_int_ruby_is_busy (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13843,7 +13843,7 @@ ruby_guestfs_is_busy (VALUE gv)
  *         {guestfs_is_chardev}[http://libguestfs.org/guestfs.3.html#guestfs_is_chardev].
  */
 static VALUE
-ruby_guestfs_is_chardev (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_is_chardev (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13895,7 +13895,7 @@ ruby_guestfs_is_chardev (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_is_config}[http://libguestfs.org/guestfs.3.html#guestfs_is_config].
  */
 static VALUE
-ruby_guestfs_is_config (VALUE gv)
+guestfs_int_ruby_is_config (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13939,7 +13939,7 @@ ruby_guestfs_is_config (VALUE gv)
  *         {guestfs_is_dir}[http://libguestfs.org/guestfs.3.html#guestfs_is_dir].
  */
 static VALUE
-ruby_guestfs_is_dir (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_is_dir (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -13999,7 +13999,7 @@ ruby_guestfs_is_dir (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_is_fifo}[http://libguestfs.org/guestfs.3.html#guestfs_is_fifo].
  */
 static VALUE
-ruby_guestfs_is_fifo (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_is_fifo (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14060,7 +14060,7 @@ ruby_guestfs_is_fifo (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_is_file}[http://libguestfs.org/guestfs.3.html#guestfs_is_file].
  */
 static VALUE
-ruby_guestfs_is_file (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_is_file (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14112,7 +14112,7 @@ ruby_guestfs_is_file (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_is_launching}[http://libguestfs.org/guestfs.3.html#guestfs_is_launching].
  */
 static VALUE
-ruby_guestfs_is_launching (VALUE gv)
+guestfs_int_ruby_is_launching (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14145,7 +14145,7 @@ ruby_guestfs_is_launching (VALUE gv)
  *         {guestfs_is_lv}[http://libguestfs.org/guestfs.3.html#guestfs_is_lv].
  */
 static VALUE
-ruby_guestfs_is_lv (VALUE gv, VALUE devicev)
+guestfs_int_ruby_is_lv (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14181,7 +14181,7 @@ ruby_guestfs_is_lv (VALUE gv, VALUE devicev)
  *         {guestfs_is_ready}[http://libguestfs.org/guestfs.3.html#guestfs_is_ready].
  */
 static VALUE
-ruby_guestfs_is_ready (VALUE gv)
+guestfs_int_ruby_is_ready (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14224,7 +14224,7 @@ ruby_guestfs_is_ready (VALUE gv)
  *         {guestfs_is_socket}[http://libguestfs.org/guestfs.3.html#guestfs_is_socket].
  */
 static VALUE
-ruby_guestfs_is_socket (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_is_socket (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14276,7 +14276,7 @@ ruby_guestfs_is_socket (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_is_symlink}[http://libguestfs.org/guestfs.3.html#guestfs_is_symlink].
  */
 static VALUE
-ruby_guestfs_is_symlink (VALUE gv, VALUE pathv)
+guestfs_int_ruby_is_symlink (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14311,7 +14311,7 @@ ruby_guestfs_is_symlink (VALUE gv, VALUE pathv)
  *         {guestfs_is_whole_device}[http://libguestfs.org/guestfs.3.html#guestfs_is_whole_device].
  */
 static VALUE
-ruby_guestfs_is_whole_device (VALUE gv, VALUE devicev)
+guestfs_int_ruby_is_whole_device (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14345,7 +14345,7 @@ ruby_guestfs_is_whole_device (VALUE gv, VALUE devicev)
  *         {guestfs_is_zero}[http://libguestfs.org/guestfs.3.html#guestfs_is_zero].
  */
 static VALUE
-ruby_guestfs_is_zero (VALUE gv, VALUE pathv)
+guestfs_int_ruby_is_zero (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14382,7 +14382,7 @@ ruby_guestfs_is_zero (VALUE gv, VALUE pathv)
  *         {guestfs_is_zero_device}[http://libguestfs.org/guestfs.3.html#guestfs_is_zero_device].
  */
 static VALUE
-ruby_guestfs_is_zero_device (VALUE gv, VALUE devicev)
+guestfs_int_ruby_is_zero_device (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14420,7 +14420,7 @@ ruby_guestfs_is_zero_device (VALUE gv, VALUE devicev)
  *         {guestfs_isoinfo}[http://libguestfs.org/guestfs.3.html#guestfs_isoinfo].
  */
 static VALUE
-ruby_guestfs_isoinfo (VALUE gv, VALUE isofilev)
+guestfs_int_ruby_isoinfo (VALUE gv, VALUE isofilev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14483,7 +14483,7 @@ ruby_guestfs_isoinfo (VALUE gv, VALUE isofilev)
  *         {guestfs_isoinfo_device}[http://libguestfs.org/guestfs.3.html#guestfs_isoinfo_device].
  */
 static VALUE
-ruby_guestfs_isoinfo_device (VALUE gv, VALUE devicev)
+guestfs_int_ruby_isoinfo_device (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14535,7 +14535,7 @@ ruby_guestfs_isoinfo_device (VALUE gv, VALUE devicev)
  *         {guestfs_journal_close}[http://libguestfs.org/guestfs.3.html#guestfs_journal_close].
  */
 static VALUE
-ruby_guestfs_journal_close (VALUE gv)
+guestfs_int_ruby_journal_close (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14581,7 +14581,7 @@ ruby_guestfs_journal_close (VALUE gv)
  *         {guestfs_journal_get}[http://libguestfs.org/guestfs.3.html#guestfs_journal_get].
  */
 static VALUE
-ruby_guestfs_journal_get (VALUE gv)
+guestfs_int_ruby_journal_get (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14628,7 +14628,7 @@ ruby_guestfs_journal_get (VALUE gv)
  *         {guestfs_journal_get_data_threshold}[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_data_threshold].
  */
 static VALUE
-ruby_guestfs_journal_get_data_threshold (VALUE gv)
+guestfs_int_ruby_journal_get_data_threshold (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14661,7 +14661,7 @@ ruby_guestfs_journal_get_data_threshold (VALUE gv)
  *         {guestfs_journal_get_realtime_usec}[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_realtime_usec].
  */
 static VALUE
-ruby_guestfs_journal_get_realtime_usec (VALUE gv)
+guestfs_int_ruby_journal_get_realtime_usec (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14700,7 +14700,7 @@ ruby_guestfs_journal_get_realtime_usec (VALUE gv)
  *         {guestfs_journal_next}[http://libguestfs.org/guestfs.3.html#guestfs_journal_next].
  */
 static VALUE
-ruby_guestfs_journal_next (VALUE gv)
+guestfs_int_ruby_journal_next (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14739,7 +14739,7 @@ ruby_guestfs_journal_next (VALUE gv)
  *         {guestfs_journal_open}[http://libguestfs.org/guestfs.3.html#guestfs_journal_open].
  */
 static VALUE
-ruby_guestfs_journal_open (VALUE gv, VALUE directoryv)
+guestfs_int_ruby_journal_open (VALUE gv, VALUE directoryv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14778,7 +14778,7 @@ ruby_guestfs_journal_open (VALUE gv, VALUE directoryv)
  *         {guestfs_journal_set_data_threshold}[http://libguestfs.org/guestfs.3.html#guestfs_journal_set_data_threshold].
  */
 static VALUE
-ruby_guestfs_journal_set_data_threshold (VALUE gv, VALUE thresholdv)
+guestfs_int_ruby_journal_set_data_threshold (VALUE gv, VALUE thresholdv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14818,7 +14818,7 @@ ruby_guestfs_journal_set_data_threshold (VALUE gv, VALUE thresholdv)
  *         {guestfs_journal_skip}[http://libguestfs.org/guestfs.3.html#guestfs_journal_skip].
  */
 static VALUE
-ruby_guestfs_journal_skip (VALUE gv, VALUE skipv)
+guestfs_int_ruby_journal_skip (VALUE gv, VALUE skipv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14855,7 +14855,7 @@ ruby_guestfs_journal_skip (VALUE gv, VALUE skipv)
  *         {guestfs_kill_subprocess}[http://libguestfs.org/guestfs.3.html#guestfs_kill_subprocess].
  */
 static VALUE
-ruby_guestfs_kill_subprocess (VALUE gv)
+guestfs_int_ruby_kill_subprocess (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14894,7 +14894,7 @@ ruby_guestfs_kill_subprocess (VALUE gv)
  *         {guestfs_launch}[http://libguestfs.org/guestfs.3.html#guestfs_launch].
  */
 static VALUE
-ruby_guestfs_launch (VALUE gv)
+guestfs_int_ruby_launch (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14933,7 +14933,7 @@ ruby_guestfs_launch (VALUE gv)
  *         {guestfs_lchown}[http://libguestfs.org/guestfs.3.html#guestfs_lchown].
  */
 static VALUE
-ruby_guestfs_lchown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
+guestfs_int_ruby_lchown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -14979,7 +14979,7 @@ ruby_guestfs_lchown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
  *         {guestfs_ldmtool_create_all}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_create_all].
  */
 static VALUE
-ruby_guestfs_ldmtool_create_all (VALUE gv)
+guestfs_int_ruby_ldmtool_create_all (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15014,7 +15014,7 @@ ruby_guestfs_ldmtool_create_all (VALUE gv)
  *         {guestfs_ldmtool_diskgroup_disks}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_disks].
  */
 static VALUE
-ruby_guestfs_ldmtool_diskgroup_disks (VALUE gv, VALUE diskgroupv)
+guestfs_int_ruby_ldmtool_diskgroup_disks (VALUE gv, VALUE diskgroupv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15058,7 +15058,7 @@ ruby_guestfs_ldmtool_diskgroup_disks (VALUE gv, VALUE diskgroupv)
  *         {guestfs_ldmtool_diskgroup_name}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_name].
  */
 static VALUE
-ruby_guestfs_ldmtool_diskgroup_name (VALUE gv, VALUE diskgroupv)
+guestfs_int_ruby_ldmtool_diskgroup_name (VALUE gv, VALUE diskgroupv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15096,7 +15096,7 @@ ruby_guestfs_ldmtool_diskgroup_name (VALUE gv, VALUE diskgroupv)
  *         {guestfs_ldmtool_diskgroup_volumes}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_volumes].
  */
 static VALUE
-ruby_guestfs_ldmtool_diskgroup_volumes (VALUE gv, VALUE diskgroupv)
+guestfs_int_ruby_ldmtool_diskgroup_volumes (VALUE gv, VALUE diskgroupv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15139,7 +15139,7 @@ ruby_guestfs_ldmtool_diskgroup_volumes (VALUE gv, VALUE diskgroupv)
  *         {guestfs_ldmtool_remove_all}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_remove_all].
  */
 static VALUE
-ruby_guestfs_ldmtool_remove_all (VALUE gv)
+guestfs_int_ruby_ldmtool_remove_all (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15177,7 +15177,7 @@ ruby_guestfs_ldmtool_remove_all (VALUE gv)
  *         {guestfs_ldmtool_scan}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_scan].
  */
 static VALUE
-ruby_guestfs_ldmtool_scan (VALUE gv)
+guestfs_int_ruby_ldmtool_scan (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15224,7 +15224,7 @@ ruby_guestfs_ldmtool_scan (VALUE gv)
  *         {guestfs_ldmtool_scan_devices}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_scan_devices].
  */
 static VALUE
-ruby_guestfs_ldmtool_scan_devices (VALUE gv, VALUE devicesv)
+guestfs_int_ruby_ldmtool_scan_devices (VALUE gv, VALUE devicesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15281,7 +15281,7 @@ ruby_guestfs_ldmtool_scan_devices (VALUE gv, VALUE devicesv)
  *         {guestfs_ldmtool_volume_hint}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_hint].
  */
 static VALUE
-ruby_guestfs_ldmtool_volume_hint (VALUE gv, VALUE diskgroupv, VALUE volumev)
+guestfs_int_ruby_ldmtool_volume_hint (VALUE gv, VALUE diskgroupv, VALUE volumev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15318,7 +15318,7 @@ ruby_guestfs_ldmtool_volume_hint (VALUE gv, VALUE diskgroupv, VALUE volumev)
  *         {guestfs_ldmtool_volume_partitions}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_partitions].
  */
 static VALUE
-ruby_guestfs_ldmtool_volume_partitions (VALUE gv, VALUE diskgroupv, VALUE volumev)
+guestfs_int_ruby_ldmtool_volume_partitions (VALUE gv, VALUE diskgroupv, VALUE volumev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15365,7 +15365,7 @@ ruby_guestfs_ldmtool_volume_partitions (VALUE gv, VALUE diskgroupv, VALUE volume
  *         {guestfs_ldmtool_volume_type}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_type].
  */
 static VALUE
-ruby_guestfs_ldmtool_volume_type (VALUE gv, VALUE diskgroupv, VALUE volumev)
+guestfs_int_ruby_ldmtool_volume_type (VALUE gv, VALUE diskgroupv, VALUE volumev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15417,7 +15417,7 @@ ruby_guestfs_ldmtool_volume_type (VALUE gv, VALUE diskgroupv, VALUE volumev)
  *         {guestfs_lgetxattr}[http://libguestfs.org/guestfs.3.html#guestfs_lgetxattr].
  */
 static VALUE
-ruby_guestfs_lgetxattr (VALUE gv, VALUE pathv, VALUE namev)
+guestfs_int_ruby_lgetxattr (VALUE gv, VALUE pathv, VALUE namev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15456,7 +15456,7 @@ ruby_guestfs_lgetxattr (VALUE gv, VALUE pathv, VALUE namev)
  *         {guestfs_lgetxattrs}[http://libguestfs.org/guestfs.3.html#guestfs_lgetxattrs].
  */
 static VALUE
-ruby_guestfs_lgetxattrs (VALUE gv, VALUE pathv)
+guestfs_int_ruby_lgetxattrs (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15499,7 +15499,7 @@ ruby_guestfs_lgetxattrs (VALUE gv, VALUE pathv)
  *         {guestfs_list_9p}[http://libguestfs.org/guestfs.3.html#guestfs_list_9p].
  */
 static VALUE
-ruby_guestfs_list_9p (VALUE gv)
+guestfs_int_ruby_list_9p (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15543,7 +15543,7 @@ ruby_guestfs_list_9p (VALUE gv)
  *         {guestfs_list_devices}[http://libguestfs.org/guestfs.3.html#guestfs_list_devices].
  */
 static VALUE
-ruby_guestfs_list_devices (VALUE gv)
+guestfs_int_ruby_list_devices (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15591,7 +15591,7 @@ ruby_guestfs_list_devices (VALUE gv)
  *         {guestfs_list_disk_labels}[http://libguestfs.org/guestfs.3.html#guestfs_list_disk_labels].
  */
 static VALUE
-ruby_guestfs_list_disk_labels (VALUE gv)
+guestfs_int_ruby_list_disk_labels (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15638,7 +15638,7 @@ ruby_guestfs_list_disk_labels (VALUE gv)
  *         {guestfs_list_dm_devices}[http://libguestfs.org/guestfs.3.html#guestfs_list_dm_devices].
  */
 static VALUE
-ruby_guestfs_list_dm_devices (VALUE gv)
+guestfs_int_ruby_list_dm_devices (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15711,7 +15711,7 @@ ruby_guestfs_list_dm_devices (VALUE gv)
  *         {guestfs_list_filesystems}[http://libguestfs.org/guestfs.3.html#guestfs_list_filesystems].
  */
 static VALUE
-ruby_guestfs_list_filesystems (VALUE gv)
+guestfs_int_ruby_list_filesystems (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15753,7 +15753,7 @@ ruby_guestfs_list_filesystems (VALUE gv)
  *         {guestfs_list_ldm_partitions}[http://libguestfs.org/guestfs.3.html#guestfs_list_ldm_partitions].
  */
 static VALUE
-ruby_guestfs_list_ldm_partitions (VALUE gv)
+guestfs_int_ruby_list_ldm_partitions (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15795,7 +15795,7 @@ ruby_guestfs_list_ldm_partitions (VALUE gv)
  *         {guestfs_list_ldm_volumes}[http://libguestfs.org/guestfs.3.html#guestfs_list_ldm_volumes].
  */
 static VALUE
-ruby_guestfs_list_ldm_volumes (VALUE gv)
+guestfs_int_ruby_list_ldm_volumes (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15835,7 +15835,7 @@ ruby_guestfs_list_ldm_volumes (VALUE gv)
  *         {guestfs_list_md_devices}[http://libguestfs.org/guestfs.3.html#guestfs_list_md_devices].
  */
 static VALUE
-ruby_guestfs_list_md_devices (VALUE gv)
+guestfs_int_ruby_list_md_devices (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15883,7 +15883,7 @@ ruby_guestfs_list_md_devices (VALUE gv)
  *         {guestfs_list_partitions}[http://libguestfs.org/guestfs.3.html#guestfs_list_partitions].
  */
 static VALUE
-ruby_guestfs_list_partitions (VALUE gv)
+guestfs_int_ruby_list_partitions (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15928,7 +15928,7 @@ ruby_guestfs_list_partitions (VALUE gv)
  *         {guestfs_ll}[http://libguestfs.org/guestfs.3.html#guestfs_ll].
  */
 static VALUE
-ruby_guestfs_ll (VALUE gv, VALUE directoryv)
+guestfs_int_ruby_ll (VALUE gv, VALUE directoryv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -15967,7 +15967,7 @@ ruby_guestfs_ll (VALUE gv, VALUE directoryv)
  *         {guestfs_llz}[http://libguestfs.org/guestfs.3.html#guestfs_llz].
  */
 static VALUE
-ruby_guestfs_llz (VALUE gv, VALUE directoryv)
+guestfs_int_ruby_llz (VALUE gv, VALUE directoryv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16002,7 +16002,7 @@ ruby_guestfs_llz (VALUE gv, VALUE directoryv)
  *         {guestfs_ln}[http://libguestfs.org/guestfs.3.html#guestfs_ln].
  */
 static VALUE
-ruby_guestfs_ln (VALUE gv, VALUE targetv, VALUE linknamev)
+guestfs_int_ruby_ln (VALUE gv, VALUE targetv, VALUE linknamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16038,7 +16038,7 @@ ruby_guestfs_ln (VALUE gv, VALUE targetv, VALUE linknamev)
  *         {guestfs_ln_f}[http://libguestfs.org/guestfs.3.html#guestfs_ln_f].
  */
 static VALUE
-ruby_guestfs_ln_f (VALUE gv, VALUE targetv, VALUE linknamev)
+guestfs_int_ruby_ln_f (VALUE gv, VALUE targetv, VALUE linknamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16073,7 +16073,7 @@ ruby_guestfs_ln_f (VALUE gv, VALUE targetv, VALUE linknamev)
  *         {guestfs_ln_s}[http://libguestfs.org/guestfs.3.html#guestfs_ln_s].
  */
 static VALUE
-ruby_guestfs_ln_s (VALUE gv, VALUE targetv, VALUE linknamev)
+guestfs_int_ruby_ln_s (VALUE gv, VALUE targetv, VALUE linknamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16109,7 +16109,7 @@ ruby_guestfs_ln_s (VALUE gv, VALUE targetv, VALUE linknamev)
  *         {guestfs_ln_sf}[http://libguestfs.org/guestfs.3.html#guestfs_ln_sf].
  */
 static VALUE
-ruby_guestfs_ln_sf (VALUE gv, VALUE targetv, VALUE linknamev)
+guestfs_int_ruby_ln_sf (VALUE gv, VALUE targetv, VALUE linknamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16145,7 +16145,7 @@ ruby_guestfs_ln_sf (VALUE gv, VALUE targetv, VALUE linknamev)
  *         {guestfs_lremovexattr}[http://libguestfs.org/guestfs.3.html#guestfs_lremovexattr].
  */
 static VALUE
-ruby_guestfs_lremovexattr (VALUE gv, VALUE xattrv, VALUE pathv)
+guestfs_int_ruby_lremovexattr (VALUE gv, VALUE xattrv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16181,7 +16181,7 @@ ruby_guestfs_lremovexattr (VALUE gv, VALUE xattrv, VALUE pathv)
  *         {guestfs_ls}[http://libguestfs.org/guestfs.3.html#guestfs_ls].
  */
 static VALUE
-ruby_guestfs_ls (VALUE gv, VALUE directoryv)
+guestfs_int_ruby_ls (VALUE gv, VALUE directoryv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16230,7 +16230,7 @@ ruby_guestfs_ls (VALUE gv, VALUE directoryv)
  *         {guestfs_ls0}[http://libguestfs.org/guestfs.3.html#guestfs_ls0].
  */
 static VALUE
-ruby_guestfs_ls0 (VALUE gv, VALUE dirv, VALUE filenamesv)
+guestfs_int_ruby_ls0 (VALUE gv, VALUE dirv, VALUE filenamesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16266,7 +16266,7 @@ ruby_guestfs_ls0 (VALUE gv, VALUE dirv, VALUE filenamesv)
  *         {guestfs_lsetxattr}[http://libguestfs.org/guestfs.3.html#guestfs_lsetxattr].
  */
 static VALUE
-ruby_guestfs_lsetxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE pathv)
+guestfs_int_ruby_lsetxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16310,7 +16310,7 @@ ruby_guestfs_lsetxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE
  *         {guestfs_lstat}[http://libguestfs.org/guestfs.3.html#guestfs_lstat].
  */
 static VALUE
-ruby_guestfs_lstat (VALUE gv, VALUE pathv)
+guestfs_int_ruby_lstat (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16374,7 +16374,7 @@ ruby_guestfs_lstat (VALUE gv, VALUE pathv)
  *         {guestfs_lstatlist}[http://libguestfs.org/guestfs.3.html#guestfs_lstatlist].
  */
 static VALUE
-ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
+guestfs_int_ruby_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16446,7 +16446,7 @@ ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
  *         {guestfs_lstatns}[http://libguestfs.org/guestfs.3.html#guestfs_lstatns].
  */
 static VALUE
-ruby_guestfs_lstatns (VALUE gv, VALUE pathv)
+guestfs_int_ruby_lstatns (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16517,7 +16517,7 @@ ruby_guestfs_lstatns (VALUE gv, VALUE pathv)
  *         {guestfs_lstatnslist}[http://libguestfs.org/guestfs.3.html#guestfs_lstatnslist].
  */
 static VALUE
-ruby_guestfs_lstatnslist (VALUE gv, VALUE pathv, VALUE namesv)
+guestfs_int_ruby_lstatnslist (VALUE gv, VALUE pathv, VALUE namesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16599,7 +16599,7 @@ ruby_guestfs_lstatnslist (VALUE gv, VALUE pathv, VALUE namesv)
  *         {guestfs_luks_add_key}[http://libguestfs.org/guestfs.3.html#guestfs_luks_add_key].
  */
 static VALUE
-ruby_guestfs_luks_add_key (VALUE gv, VALUE devicev, VALUE keyv, VALUE newkeyv, VALUE keyslotv)
+guestfs_int_ruby_luks_add_key (VALUE gv, VALUE devicev, VALUE keyv, VALUE newkeyv, VALUE keyslotv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16639,7 +16639,7 @@ ruby_guestfs_luks_add_key (VALUE gv, VALUE devicev, VALUE keyv, VALUE newkeyv, V
  *         {guestfs_luks_close}[http://libguestfs.org/guestfs.3.html#guestfs_luks_close].
  */
 static VALUE
-ruby_guestfs_luks_close (VALUE gv, VALUE devicev)
+guestfs_int_ruby_luks_close (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16675,7 +16675,7 @@ ruby_guestfs_luks_close (VALUE gv, VALUE devicev)
  *         {guestfs_luks_format}[http://libguestfs.org/guestfs.3.html#guestfs_luks_format].
  */
 static VALUE
-ruby_guestfs_luks_format (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv)
+guestfs_int_ruby_luks_format (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16711,7 +16711,7 @@ ruby_guestfs_luks_format (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv)
  *         {guestfs_luks_format_cipher}[http://libguestfs.org/guestfs.3.html#guestfs_luks_format_cipher].
  */
 static VALUE
-ruby_guestfs_luks_format_cipher (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv, VALUE cipherv)
+guestfs_int_ruby_luks_format_cipher (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv, VALUE cipherv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16749,7 +16749,7 @@ ruby_guestfs_luks_format_cipher (VALUE gv, VALUE devicev, VALUE keyv, VALUE keys
  *         {guestfs_luks_kill_slot}[http://libguestfs.org/guestfs.3.html#guestfs_luks_kill_slot].
  */
 static VALUE
-ruby_guestfs_luks_kill_slot (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv)
+guestfs_int_ruby_luks_kill_slot (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16803,7 +16803,7 @@ ruby_guestfs_luks_kill_slot (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv
  *         {guestfs_luks_open}[http://libguestfs.org/guestfs.3.html#guestfs_luks_open].
  */
 static VALUE
-ruby_guestfs_luks_open (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
+guestfs_int_ruby_luks_open (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16839,7 +16839,7 @@ ruby_guestfs_luks_open (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
  *         {guestfs_luks_open_ro}[http://libguestfs.org/guestfs.3.html#guestfs_luks_open_ro].
  */
 static VALUE
-ruby_guestfs_luks_open_ro (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
+guestfs_int_ruby_luks_open_ro (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16875,7 +16875,7 @@ ruby_guestfs_luks_open_ro (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
  *         {guestfs_lvcreate}[http://libguestfs.org/guestfs.3.html#guestfs_lvcreate].
  */
 static VALUE
-ruby_guestfs_lvcreate (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE mbytesv)
+guestfs_int_ruby_lvcreate (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE mbytesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16914,7 +16914,7 @@ ruby_guestfs_lvcreate (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE mbytesv)
  *         {guestfs_lvcreate_free}[http://libguestfs.org/guestfs.3.html#guestfs_lvcreate_free].
  */
 static VALUE
-ruby_guestfs_lvcreate_free (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE percentv)
+guestfs_int_ruby_lvcreate_free (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE percentv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16956,7 +16956,7 @@ ruby_guestfs_lvcreate_free (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE perc
  *         {guestfs_lvm_canonical_lv_name}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_canonical_lv_name].
  */
 static VALUE
-ruby_guestfs_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev)
+guestfs_int_ruby_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -16995,7 +16995,7 @@ ruby_guestfs_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev)
  *         {guestfs_lvm_clear_filter}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_clear_filter].
  */
 static VALUE
-ruby_guestfs_lvm_clear_filter (VALUE gv)
+guestfs_int_ruby_lvm_clear_filter (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17028,7 +17028,7 @@ ruby_guestfs_lvm_clear_filter (VALUE gv)
  *         {guestfs_lvm_remove_all}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_remove_all].
  */
 static VALUE
-ruby_guestfs_lvm_remove_all (VALUE gv)
+guestfs_int_ruby_lvm_remove_all (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17082,7 +17082,7 @@ ruby_guestfs_lvm_remove_all (VALUE gv)
  *         {guestfs_lvm_set_filter}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_set_filter].
  */
 static VALUE
-ruby_guestfs_lvm_set_filter (VALUE gv, VALUE devicesv)
+guestfs_int_ruby_lvm_set_filter (VALUE gv, VALUE devicesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17131,7 +17131,7 @@ ruby_guestfs_lvm_set_filter (VALUE gv, VALUE devicesv)
  *         {guestfs_lvremove}[http://libguestfs.org/guestfs.3.html#guestfs_lvremove].
  */
 static VALUE
-ruby_guestfs_lvremove (VALUE gv, VALUE devicev)
+guestfs_int_ruby_lvremove (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17165,7 +17165,7 @@ ruby_guestfs_lvremove (VALUE gv, VALUE devicev)
  *         {guestfs_lvrename}[http://libguestfs.org/guestfs.3.html#guestfs_lvrename].
  */
 static VALUE
-ruby_guestfs_lvrename (VALUE gv, VALUE logvolv, VALUE newlogvolv)
+guestfs_int_ruby_lvrename (VALUE gv, VALUE logvolv, VALUE newlogvolv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17201,7 +17201,7 @@ ruby_guestfs_lvrename (VALUE gv, VALUE logvolv, VALUE newlogvolv)
  *         {guestfs_lvresize}[http://libguestfs.org/guestfs.3.html#guestfs_lvresize].
  */
 static VALUE
-ruby_guestfs_lvresize (VALUE gv, VALUE devicev, VALUE mbytesv)
+guestfs_int_ruby_lvresize (VALUE gv, VALUE devicev, VALUE mbytesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17239,7 +17239,7 @@ ruby_guestfs_lvresize (VALUE gv, VALUE devicev, VALUE mbytesv)
  *         {guestfs_lvresize_free}[http://libguestfs.org/guestfs.3.html#guestfs_lvresize_free].
  */
 static VALUE
-ruby_guestfs_lvresize_free (VALUE gv, VALUE lvv, VALUE percentv)
+guestfs_int_ruby_lvresize_free (VALUE gv, VALUE lvv, VALUE percentv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17279,7 +17279,7 @@ ruby_guestfs_lvresize_free (VALUE gv, VALUE lvv, VALUE percentv)
  *         {guestfs_lvs}[http://libguestfs.org/guestfs.3.html#guestfs_lvs].
  */
 static VALUE
-ruby_guestfs_lvs (VALUE gv)
+guestfs_int_ruby_lvs (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17321,7 +17321,7 @@ ruby_guestfs_lvs (VALUE gv)
  *         {guestfs_lvs_full}[http://libguestfs.org/guestfs.3.html#guestfs_lvs_full].
  */
 static VALUE
-ruby_guestfs_lvs_full (VALUE gv)
+guestfs_int_ruby_lvs_full (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17376,7 +17376,7 @@ ruby_guestfs_lvs_full (VALUE gv)
  *         {guestfs_lvuuid}[http://libguestfs.org/guestfs.3.html#guestfs_lvuuid].
  */
 static VALUE
-ruby_guestfs_lvuuid (VALUE gv, VALUE devicev)
+guestfs_int_ruby_lvuuid (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17430,7 +17430,7 @@ ruby_guestfs_lvuuid (VALUE gv, VALUE devicev)
  *         {guestfs_lxattrlist}[http://libguestfs.org/guestfs.3.html#guestfs_lxattrlist].
  */
 static VALUE
-ruby_guestfs_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
+guestfs_int_ruby_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17492,7 +17492,7 @@ ruby_guestfs_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
  *         {guestfs_max_disks}[http://libguestfs.org/guestfs.3.html#guestfs_max_disks].
  */
 static VALUE
-ruby_guestfs_max_disks (VALUE gv)
+guestfs_int_ruby_max_disks (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17575,7 +17575,7 @@ ruby_guestfs_max_disks (VALUE gv)
  *         {guestfs_md_create}[http://libguestfs.org/guestfs.3.html#guestfs_md_create].
  */
 static VALUE
-ruby_guestfs_md_create (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_md_create (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17675,7 +17675,7 @@ ruby_guestfs_md_create (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_md_detail}[http://libguestfs.org/guestfs.3.html#guestfs_md_detail].
  */
 static VALUE
-ruby_guestfs_md_detail (VALUE gv, VALUE mdv)
+guestfs_int_ruby_md_detail (VALUE gv, VALUE mdv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17742,7 +17742,7 @@ ruby_guestfs_md_detail (VALUE gv, VALUE mdv)
  *         {guestfs_md_stat}[http://libguestfs.org/guestfs.3.html#guestfs_md_stat].
  */
 static VALUE
-ruby_guestfs_md_stat (VALUE gv, VALUE mdv)
+guestfs_int_ruby_md_stat (VALUE gv, VALUE mdv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17786,7 +17786,7 @@ ruby_guestfs_md_stat (VALUE gv, VALUE mdv)
  *         {guestfs_md_stop}[http://libguestfs.org/guestfs.3.html#guestfs_md_stop].
  */
 static VALUE
-ruby_guestfs_md_stop (VALUE gv, VALUE mdv)
+guestfs_int_ruby_md_stop (VALUE gv, VALUE mdv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17819,7 +17819,7 @@ ruby_guestfs_md_stop (VALUE gv, VALUE mdv)
  *         {guestfs_mkdir}[http://libguestfs.org/guestfs.3.html#guestfs_mkdir].
  */
 static VALUE
-ruby_guestfs_mkdir (VALUE gv, VALUE pathv)
+guestfs_int_ruby_mkdir (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17859,7 +17859,7 @@ ruby_guestfs_mkdir (VALUE gv, VALUE pathv)
  *         {guestfs_mkdir_mode}[http://libguestfs.org/guestfs.3.html#guestfs_mkdir_mode].
  */
 static VALUE
-ruby_guestfs_mkdir_mode (VALUE gv, VALUE pathv, VALUE modev)
+guestfs_int_ruby_mkdir_mode (VALUE gv, VALUE pathv, VALUE modev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17895,7 +17895,7 @@ ruby_guestfs_mkdir_mode (VALUE gv, VALUE pathv, VALUE modev)
  *         {guestfs_mkdir_p}[http://libguestfs.org/guestfs.3.html#guestfs_mkdir_p].
  */
 static VALUE
-ruby_guestfs_mkdir_p (VALUE gv, VALUE pathv)
+guestfs_int_ruby_mkdir_p (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17946,7 +17946,7 @@ ruby_guestfs_mkdir_p (VALUE gv, VALUE pathv)
  *         {guestfs_mkdtemp}[http://libguestfs.org/guestfs.3.html#guestfs_mkdtemp].
  */
 static VALUE
-ruby_guestfs_mkdtemp (VALUE gv, VALUE tmplv)
+guestfs_int_ruby_mkdtemp (VALUE gv, VALUE tmplv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -17992,7 +17992,7 @@ ruby_guestfs_mkdtemp (VALUE gv, VALUE tmplv)
  *         {guestfs_mke2fs}[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs].
  */
 static VALUE
-ruby_guestfs_mke2fs (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_mke2fs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18234,7 +18234,7 @@ ruby_guestfs_mke2fs (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_mke2fs_J}[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs_J].
  */
 static VALUE
-ruby_guestfs_mke2fs_J (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev, VALUE journalv)
+guestfs_int_ruby_mke2fs_J (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev, VALUE journalv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18275,7 +18275,7 @@ ruby_guestfs_mke2fs_J (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev,
  *         {guestfs_mke2fs_JL}[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs_JL].
  */
 static VALUE
-ruby_guestfs_mke2fs_JL (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev, VALUE labelv)
+guestfs_int_ruby_mke2fs_JL (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev, VALUE labelv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18316,7 +18316,7 @@ ruby_guestfs_mke2fs_JL (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev
  *         {guestfs_mke2fs_JU}[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs_JU].
  */
 static VALUE
-ruby_guestfs_mke2fs_JU (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev, VALUE uuidv)
+guestfs_int_ruby_mke2fs_JU (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev, VALUE uuidv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18357,7 +18357,7 @@ ruby_guestfs_mke2fs_JU (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev
  *         {guestfs_mke2journal}[http://libguestfs.org/guestfs.3.html#guestfs_mke2journal].
  */
 static VALUE
-ruby_guestfs_mke2journal (VALUE gv, VALUE blocksizev, VALUE devicev)
+guestfs_int_ruby_mke2journal (VALUE gv, VALUE blocksizev, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18394,7 +18394,7 @@ ruby_guestfs_mke2journal (VALUE gv, VALUE blocksizev, VALUE devicev)
  *         {guestfs_mke2journal_L}[http://libguestfs.org/guestfs.3.html#guestfs_mke2journal_L].
  */
 static VALUE
-ruby_guestfs_mke2journal_L (VALUE gv, VALUE blocksizev, VALUE labelv, VALUE devicev)
+guestfs_int_ruby_mke2journal_L (VALUE gv, VALUE blocksizev, VALUE labelv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18432,7 +18432,7 @@ ruby_guestfs_mke2journal_L (VALUE gv, VALUE blocksizev, VALUE labelv, VALUE devi
  *         {guestfs_mke2journal_U}[http://libguestfs.org/guestfs.3.html#guestfs_mke2journal_U].
  */
 static VALUE
-ruby_guestfs_mke2journal_U (VALUE gv, VALUE blocksizev, VALUE uuidv, VALUE devicev)
+guestfs_int_ruby_mke2journal_U (VALUE gv, VALUE blocksizev, VALUE uuidv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18474,7 +18474,7 @@ ruby_guestfs_mke2journal_U (VALUE gv, VALUE blocksizev, VALUE uuidv, VALUE devic
  *         {guestfs_mkfifo}[http://libguestfs.org/guestfs.3.html#guestfs_mkfifo].
  */
 static VALUE
-ruby_guestfs_mkfifo (VALUE gv, VALUE modev, VALUE pathv)
+guestfs_int_ruby_mkfifo (VALUE gv, VALUE modev, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18546,7 +18546,7 @@ ruby_guestfs_mkfifo (VALUE gv, VALUE modev, VALUE pathv)
  *         {guestfs_mkfs}[http://libguestfs.org/guestfs.3.html#guestfs_mkfs].
  */
 static VALUE
-ruby_guestfs_mkfs (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_mkfs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18625,7 +18625,7 @@ ruby_guestfs_mkfs (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_mkfs_b}[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_b].
  */
 static VALUE
-ruby_guestfs_mkfs_b (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev)
+guestfs_int_ruby_mkfs_b (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18671,7 +18671,7 @@ ruby_guestfs_mkfs_b (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev)
  *         {guestfs_mkfs_btrfs}[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_btrfs].
  */
 static VALUE
-ruby_guestfs_mkfs_btrfs (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_mkfs_btrfs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18770,7 +18770,7 @@ ruby_guestfs_mkfs_btrfs (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_mklost_and_found}[http://libguestfs.org/guestfs.3.html#guestfs_mklost_and_found].
  */
 static VALUE
-ruby_guestfs_mklost_and_found (VALUE gv, VALUE mountpointv)
+guestfs_int_ruby_mklost_and_found (VALUE gv, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18845,7 +18845,7 @@ ruby_guestfs_mklost_and_found (VALUE gv, VALUE mountpointv)
  *         {guestfs_mkmountpoint}[http://libguestfs.org/guestfs.3.html#guestfs_mkmountpoint].
  */
 static VALUE
-ruby_guestfs_mkmountpoint (VALUE gv, VALUE exemptpathv)
+guestfs_int_ruby_mkmountpoint (VALUE gv, VALUE exemptpathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18894,7 +18894,7 @@ ruby_guestfs_mkmountpoint (VALUE gv, VALUE exemptpathv)
  *         {guestfs_mknod}[http://libguestfs.org/guestfs.3.html#guestfs_mknod].
  */
 static VALUE
-ruby_guestfs_mknod (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv)
+guestfs_int_ruby_mknod (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18938,7 +18938,7 @@ ruby_guestfs_mknod (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VAL
  *         {guestfs_mknod_b}[http://libguestfs.org/guestfs.3.html#guestfs_mknod_b].
  */
 static VALUE
-ruby_guestfs_mknod_b (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv)
+guestfs_int_ruby_mknod_b (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -18982,7 +18982,7 @@ ruby_guestfs_mknod_b (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, V
  *         {guestfs_mknod_c}[http://libguestfs.org/guestfs.3.html#guestfs_mknod_c].
  */
 static VALUE
-ruby_guestfs_mknod_c (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv)
+guestfs_int_ruby_mknod_c (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19025,7 +19025,7 @@ ruby_guestfs_mknod_c (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, V
  *         {guestfs_mkswap}[http://libguestfs.org/guestfs.3.html#guestfs_mkswap].
  */
 static VALUE
-ruby_guestfs_mkswap (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_mkswap (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19085,7 +19085,7 @@ ruby_guestfs_mkswap (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_mkswap_L}[http://libguestfs.org/guestfs.3.html#guestfs_mkswap_L].
  */
 static VALUE
-ruby_guestfs_mkswap_L (VALUE gv, VALUE labelv, VALUE devicev)
+guestfs_int_ruby_mkswap_L (VALUE gv, VALUE labelv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19121,7 +19121,7 @@ ruby_guestfs_mkswap_L (VALUE gv, VALUE labelv, VALUE devicev)
  *         {guestfs_mkswap_U}[http://libguestfs.org/guestfs.3.html#guestfs_mkswap_U].
  */
 static VALUE
-ruby_guestfs_mkswap_U (VALUE gv, VALUE uuidv, VALUE devicev)
+guestfs_int_ruby_mkswap_U (VALUE gv, VALUE uuidv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19159,7 +19159,7 @@ ruby_guestfs_mkswap_U (VALUE gv, VALUE uuidv, VALUE devicev)
  *         {guestfs_mkswap_file}[http://libguestfs.org/guestfs.3.html#guestfs_mkswap_file].
  */
 static VALUE
-ruby_guestfs_mkswap_file (VALUE gv, VALUE pathv)
+guestfs_int_ruby_mkswap_file (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19217,7 +19217,7 @@ ruby_guestfs_mkswap_file (VALUE gv, VALUE pathv)
  *         {guestfs_mktemp}[http://libguestfs.org/guestfs.3.html#guestfs_mktemp].
  */
 static VALUE
-ruby_guestfs_mktemp (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_mktemp (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19268,7 +19268,7 @@ ruby_guestfs_mktemp (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_modprobe}[http://libguestfs.org/guestfs.3.html#guestfs_modprobe].
  */
 static VALUE
-ruby_guestfs_modprobe (VALUE gv, VALUE modulenamev)
+guestfs_int_ruby_modprobe (VALUE gv, VALUE modulenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19323,7 +19323,7 @@ ruby_guestfs_modprobe (VALUE gv, VALUE modulenamev)
  *         {guestfs_mount}[http://libguestfs.org/guestfs.3.html#guestfs_mount].
  */
 static VALUE
-ruby_guestfs_mount (VALUE gv, VALUE mountablev, VALUE mountpointv)
+guestfs_int_ruby_mount (VALUE gv, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19366,7 +19366,7 @@ ruby_guestfs_mount (VALUE gv, VALUE mountablev, VALUE mountpointv)
  *         {guestfs_mount_9p}[http://libguestfs.org/guestfs.3.html#guestfs_mount_9p].
  */
 static VALUE
-ruby_guestfs_mount_9p (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_mount_9p (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19445,7 +19445,7 @@ ruby_guestfs_mount_9p (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_mount_local}[http://libguestfs.org/guestfs.3.html#guestfs_mount_local].
  */
 static VALUE
-ruby_guestfs_mount_local (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_mount_local (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19524,7 +19524,7 @@ ruby_guestfs_mount_local (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_mount_local_run}[http://libguestfs.org/guestfs.3.html#guestfs_mount_local_run].
  */
 static VALUE
-ruby_guestfs_mount_local_run (VALUE gv)
+guestfs_int_ruby_mount_local_run (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19558,7 +19558,7 @@ ruby_guestfs_mount_local_run (VALUE gv)
  *         {guestfs_mount_loop}[http://libguestfs.org/guestfs.3.html#guestfs_mount_loop].
  */
 static VALUE
-ruby_guestfs_mount_loop (VALUE gv, VALUE filev, VALUE mountpointv)
+guestfs_int_ruby_mount_loop (VALUE gv, VALUE filev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19598,7 +19598,7 @@ ruby_guestfs_mount_loop (VALUE gv, VALUE filev, VALUE mountpointv)
  *         {guestfs_mount_options}[http://libguestfs.org/guestfs.3.html#guestfs_mount_options].
  */
 static VALUE
-ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE mountablev, VALUE mountpointv)
+guestfs_int_ruby_mount_options (VALUE gv, VALUE optionsv, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19634,7 +19634,7 @@ ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE mountablev, VALUE mo
  *         {guestfs_mount_ro}[http://libguestfs.org/guestfs.3.html#guestfs_mount_ro].
  */
 static VALUE
-ruby_guestfs_mount_ro (VALUE gv, VALUE mountablev, VALUE mountpointv)
+guestfs_int_ruby_mount_ro (VALUE gv, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19670,7 +19670,7 @@ ruby_guestfs_mount_ro (VALUE gv, VALUE mountablev, VALUE mountpointv)
  *         {guestfs_mount_vfs}[http://libguestfs.org/guestfs.3.html#guestfs_mount_vfs].
  */
 static VALUE
-ruby_guestfs_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE mountablev, VALUE mountpointv)
+guestfs_int_ruby_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19708,7 +19708,7 @@ ruby_guestfs_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE mountabl
  *         {guestfs_mountpoints}[http://libguestfs.org/guestfs.3.html#guestfs_mountpoints].
  */
 static VALUE
-ruby_guestfs_mountpoints (VALUE gv)
+guestfs_int_ruby_mountpoints (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19754,7 +19754,7 @@ ruby_guestfs_mountpoints (VALUE gv)
  *         {guestfs_mounts}[http://libguestfs.org/guestfs.3.html#guestfs_mounts].
  */
 static VALUE
-ruby_guestfs_mounts (VALUE gv)
+guestfs_int_ruby_mounts (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19797,7 +19797,7 @@ ruby_guestfs_mounts (VALUE gv)
  *         {guestfs_mv}[http://libguestfs.org/guestfs.3.html#guestfs_mv].
  */
 static VALUE
-ruby_guestfs_mv (VALUE gv, VALUE srcv, VALUE destv)
+guestfs_int_ruby_mv (VALUE gv, VALUE srcv, VALUE destv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19836,7 +19836,7 @@ ruby_guestfs_mv (VALUE gv, VALUE srcv, VALUE destv)
  *         {guestfs_nr_devices}[http://libguestfs.org/guestfs.3.html#guestfs_nr_devices].
  */
 static VALUE
-ruby_guestfs_nr_devices (VALUE gv)
+guestfs_int_ruby_nr_devices (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19880,7 +19880,7 @@ ruby_guestfs_nr_devices (VALUE gv)
  *         {guestfs_ntfs_3g_probe}[http://libguestfs.org/guestfs.3.html#guestfs_ntfs_3g_probe].
  */
 static VALUE
-ruby_guestfs_ntfs_3g_probe (VALUE gv, VALUE rwv, VALUE devicev)
+guestfs_int_ruby_ntfs_3g_probe (VALUE gv, VALUE rwv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19916,7 +19916,7 @@ ruby_guestfs_ntfs_3g_probe (VALUE gv, VALUE rwv, VALUE devicev)
  *         {guestfs_ntfsclone_in}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_in].
  */
 static VALUE
-ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
+guestfs_int_ruby_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -19967,7 +19967,7 @@ ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
  *         {guestfs_ntfsclone_out}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_out].
  */
 static VALUE
-ruby_guestfs_ntfsclone_out (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_ntfsclone_out (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20052,7 +20052,7 @@ ruby_guestfs_ntfsclone_out (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_ntfsfix}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsfix].
  */
 static VALUE
-ruby_guestfs_ntfsfix (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_ntfsfix (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20129,7 +20129,7 @@ ruby_guestfs_ntfsfix (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_ntfsresize}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize].
  */
 static VALUE
-ruby_guestfs_ntfsresize (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_ntfsresize (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20187,7 +20187,7 @@ ruby_guestfs_ntfsresize (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_ntfsresize_size}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize_size].
  */
 static VALUE
-ruby_guestfs_ntfsresize_size (VALUE gv, VALUE devicev, VALUE sizev)
+guestfs_int_ruby_ntfsresize_size (VALUE gv, VALUE devicev, VALUE sizev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20231,7 +20231,7 @@ ruby_guestfs_ntfsresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  *         {guestfs_parse_environment}[http://libguestfs.org/guestfs.3.html#guestfs_parse_environment].
  */
 static VALUE
-ruby_guestfs_parse_environment (VALUE gv)
+guestfs_int_ruby_parse_environment (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20270,7 +20270,7 @@ ruby_guestfs_parse_environment (VALUE gv)
  *         {guestfs_parse_environment_list}[http://libguestfs.org/guestfs.3.html#guestfs_parse_environment_list].
  */
 static VALUE
-ruby_guestfs_parse_environment_list (VALUE gv, VALUE environmentv)
+guestfs_int_ruby_parse_environment_list (VALUE gv, VALUE environmentv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20330,7 +20330,7 @@ ruby_guestfs_parse_environment_list (VALUE gv, VALUE environmentv)
  *         {guestfs_part_add}[http://libguestfs.org/guestfs.3.html#guestfs_part_add].
  */
 static VALUE
-ruby_guestfs_part_add (VALUE gv, VALUE devicev, VALUE prlogexv, VALUE startsectv, VALUE endsectv)
+guestfs_int_ruby_part_add (VALUE gv, VALUE devicev, VALUE prlogexv, VALUE startsectv, VALUE endsectv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20371,7 +20371,7 @@ ruby_guestfs_part_add (VALUE gv, VALUE devicev, VALUE prlogexv, VALUE startsectv
  *         {guestfs_part_del}[http://libguestfs.org/guestfs.3.html#guestfs_part_del].
  */
 static VALUE
-ruby_guestfs_part_del (VALUE gv, VALUE devicev, VALUE partnumv)
+guestfs_int_ruby_part_del (VALUE gv, VALUE devicev, VALUE partnumv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20411,7 +20411,7 @@ ruby_guestfs_part_del (VALUE gv, VALUE devicev, VALUE partnumv)
  *         {guestfs_part_disk}[http://libguestfs.org/guestfs.3.html#guestfs_part_disk].
  */
 static VALUE
-ruby_guestfs_part_disk (VALUE gv, VALUE devicev, VALUE parttypev)
+guestfs_int_ruby_part_disk (VALUE gv, VALUE devicev, VALUE parttypev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20448,7 +20448,7 @@ ruby_guestfs_part_disk (VALUE gv, VALUE devicev, VALUE parttypev)
  *         {guestfs_part_get_bootable}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_bootable].
  */
 static VALUE
-ruby_guestfs_part_get_bootable (VALUE gv, VALUE devicev, VALUE partnumv)
+guestfs_int_ruby_part_get_bootable (VALUE gv, VALUE devicev, VALUE partnumv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20482,7 +20482,7 @@ ruby_guestfs_part_get_bootable (VALUE gv, VALUE devicev, VALUE partnumv)
  *         {guestfs_part_get_gpt_guid}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_guid].
  */
 static VALUE
-ruby_guestfs_part_get_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv)
+guestfs_int_ruby_part_get_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20521,7 +20521,7 @@ ruby_guestfs_part_get_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv)
  *         {guestfs_part_get_gpt_type}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_type].
  */
 static VALUE
-ruby_guestfs_part_get_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv)
+guestfs_int_ruby_part_get_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20562,7 +20562,7 @@ ruby_guestfs_part_get_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv)
  *         {guestfs_part_get_mbr_id}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_mbr_id].
  */
 static VALUE
-ruby_guestfs_part_get_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv)
+guestfs_int_ruby_part_get_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20599,7 +20599,7 @@ ruby_guestfs_part_get_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv)
  *         {guestfs_part_get_mbr_part_type}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_mbr_part_type].
  */
 static VALUE
-ruby_guestfs_part_get_mbr_part_type (VALUE gv, VALUE devicev, VALUE partnumv)
+guestfs_int_ruby_part_get_mbr_part_type (VALUE gv, VALUE devicev, VALUE partnumv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20641,7 +20641,7 @@ ruby_guestfs_part_get_mbr_part_type (VALUE gv, VALUE devicev, VALUE partnumv)
  *         {guestfs_part_get_name}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_name].
  */
 static VALUE
-ruby_guestfs_part_get_name (VALUE gv, VALUE devicev, VALUE partnumv)
+guestfs_int_ruby_part_get_name (VALUE gv, VALUE devicev, VALUE partnumv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20684,7 +20684,7 @@ ruby_guestfs_part_get_name (VALUE gv, VALUE devicev, VALUE partnumv)
  *         {guestfs_part_get_parttype}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_parttype].
  */
 static VALUE
-ruby_guestfs_part_get_parttype (VALUE gv, VALUE devicev)
+guestfs_int_ruby_part_get_parttype (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20763,7 +20763,7 @@ ruby_guestfs_part_get_parttype (VALUE gv, VALUE devicev)
  *         {guestfs_part_init}[http://libguestfs.org/guestfs.3.html#guestfs_part_init].
  */
 static VALUE
-ruby_guestfs_part_init (VALUE gv, VALUE devicev, VALUE parttypev)
+guestfs_int_ruby_part_init (VALUE gv, VALUE devicev, VALUE parttypev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20814,7 +20814,7 @@ ruby_guestfs_part_init (VALUE gv, VALUE devicev, VALUE parttypev)
  *         {guestfs_part_list}[http://libguestfs.org/guestfs.3.html#guestfs_part_list].
  */
 static VALUE
-ruby_guestfs_part_list (VALUE gv, VALUE devicev)
+guestfs_int_ruby_part_list (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20864,7 +20864,7 @@ ruby_guestfs_part_list (VALUE gv, VALUE devicev)
  *         {guestfs_part_set_bootable}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_bootable].
  */
 static VALUE
-ruby_guestfs_part_set_bootable (VALUE gv, VALUE devicev, VALUE partnumv, VALUE bootablev)
+guestfs_int_ruby_part_set_bootable (VALUE gv, VALUE devicev, VALUE partnumv, VALUE bootablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20901,7 +20901,7 @@ ruby_guestfs_part_set_bootable (VALUE gv, VALUE devicev, VALUE partnumv, VALUE b
  *         {guestfs_part_set_gpt_guid}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_guid].
  */
 static VALUE
-ruby_guestfs_part_set_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv)
+guestfs_int_ruby_part_set_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20942,7 +20942,7 @@ ruby_guestfs_part_set_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv, VALUE g
  *         {guestfs_part_set_gpt_type}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_type].
  */
 static VALUE
-ruby_guestfs_part_set_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv)
+guestfs_int_ruby_part_set_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -20985,7 +20985,7 @@ ruby_guestfs_part_set_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv, VALUE g
  *         {guestfs_part_set_mbr_id}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_mbr_id].
  */
 static VALUE
-ruby_guestfs_part_set_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv, VALUE idbytev)
+guestfs_int_ruby_part_set_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv, VALUE idbytev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21026,7 +21026,7 @@ ruby_guestfs_part_set_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv, VALUE idb
  *         {guestfs_part_set_name}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_name].
  */
 static VALUE
-ruby_guestfs_part_set_name (VALUE gv, VALUE devicev, VALUE partnumv, VALUE namev)
+guestfs_int_ruby_part_set_name (VALUE gv, VALUE devicev, VALUE partnumv, VALUE namev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21068,7 +21068,7 @@ ruby_guestfs_part_set_name (VALUE gv, VALUE devicev, VALUE partnumv, VALUE namev
  *         {guestfs_part_to_dev}[http://libguestfs.org/guestfs.3.html#guestfs_part_to_dev].
  */
 static VALUE
-ruby_guestfs_part_to_dev (VALUE gv, VALUE partitionv)
+guestfs_int_ruby_part_to_dev (VALUE gv, VALUE partitionv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21109,7 +21109,7 @@ ruby_guestfs_part_to_dev (VALUE gv, VALUE partitionv)
  *         {guestfs_part_to_partnum}[http://libguestfs.org/guestfs.3.html#guestfs_part_to_partnum].
  */
 static VALUE
-ruby_guestfs_part_to_partnum (VALUE gv, VALUE partitionv)
+guestfs_int_ruby_part_to_partnum (VALUE gv, VALUE partitionv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21146,7 +21146,7 @@ ruby_guestfs_part_to_partnum (VALUE gv, VALUE partitionv)
  *         {guestfs_ping_daemon}[http://libguestfs.org/guestfs.3.html#guestfs_ping_daemon].
  */
 static VALUE
-ruby_guestfs_ping_daemon (VALUE gv)
+guestfs_int_ruby_ping_daemon (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21189,7 +21189,7 @@ ruby_guestfs_ping_daemon (VALUE gv)
  *         {guestfs_pread}[http://libguestfs.org/guestfs.3.html#guestfs_pread].
  */
 static VALUE
-ruby_guestfs_pread (VALUE gv, VALUE pathv, VALUE countv, VALUE offsetv)
+guestfs_int_ruby_pread (VALUE gv, VALUE pathv, VALUE countv, VALUE offsetv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21237,7 +21237,7 @@ ruby_guestfs_pread (VALUE gv, VALUE pathv, VALUE countv, VALUE offsetv)
  *         {guestfs_pread_device}[http://libguestfs.org/guestfs.3.html#guestfs_pread_device].
  */
 static VALUE
-ruby_guestfs_pread_device (VALUE gv, VALUE devicev, VALUE countv, VALUE offsetv)
+guestfs_int_ruby_pread_device (VALUE gv, VALUE devicev, VALUE countv, VALUE offsetv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21276,7 +21276,7 @@ ruby_guestfs_pread_device (VALUE gv, VALUE devicev, VALUE countv, VALUE offsetv)
  *         {guestfs_pvchange_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_pvchange_uuid].
  */
 static VALUE
-ruby_guestfs_pvchange_uuid (VALUE gv, VALUE devicev)
+guestfs_int_ruby_pvchange_uuid (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21309,7 +21309,7 @@ ruby_guestfs_pvchange_uuid (VALUE gv, VALUE devicev)
  *         {guestfs_pvchange_uuid_all}[http://libguestfs.org/guestfs.3.html#guestfs_pvchange_uuid_all].
  */
 static VALUE
-ruby_guestfs_pvchange_uuid_all (VALUE gv)
+guestfs_int_ruby_pvchange_uuid_all (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21343,7 +21343,7 @@ ruby_guestfs_pvchange_uuid_all (VALUE gv)
  *         {guestfs_pvcreate}[http://libguestfs.org/guestfs.3.html#guestfs_pvcreate].
  */
 static VALUE
-ruby_guestfs_pvcreate (VALUE gv, VALUE devicev)
+guestfs_int_ruby_pvcreate (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21381,7 +21381,7 @@ ruby_guestfs_pvcreate (VALUE gv, VALUE devicev)
  *         {guestfs_pvremove}[http://libguestfs.org/guestfs.3.html#guestfs_pvremove].
  */
 static VALUE
-ruby_guestfs_pvremove (VALUE gv, VALUE devicev)
+guestfs_int_ruby_pvremove (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21416,7 +21416,7 @@ ruby_guestfs_pvremove (VALUE gv, VALUE devicev)
  *         {guestfs_pvresize}[http://libguestfs.org/guestfs.3.html#guestfs_pvresize].
  */
 static VALUE
-ruby_guestfs_pvresize (VALUE gv, VALUE devicev)
+guestfs_int_ruby_pvresize (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21451,7 +21451,7 @@ ruby_guestfs_pvresize (VALUE gv, VALUE devicev)
  *         {guestfs_pvresize_size}[http://libguestfs.org/guestfs.3.html#guestfs_pvresize_size].
  */
 static VALUE
-ruby_guestfs_pvresize_size (VALUE gv, VALUE devicev, VALUE sizev)
+guestfs_int_ruby_pvresize_size (VALUE gv, VALUE devicev, VALUE sizev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21491,7 +21491,7 @@ ruby_guestfs_pvresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  *         {guestfs_pvs}[http://libguestfs.org/guestfs.3.html#guestfs_pvs].
  */
 static VALUE
-ruby_guestfs_pvs (VALUE gv)
+guestfs_int_ruby_pvs (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21533,7 +21533,7 @@ ruby_guestfs_pvs (VALUE gv)
  *         {guestfs_pvs_full}[http://libguestfs.org/guestfs.3.html#guestfs_pvs_full].
  */
 static VALUE
-ruby_guestfs_pvs_full (VALUE gv)
+guestfs_int_ruby_pvs_full (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21586,7 +21586,7 @@ ruby_guestfs_pvs_full (VALUE gv)
  *         {guestfs_pvuuid}[http://libguestfs.org/guestfs.3.html#guestfs_pvuuid].
  */
 static VALUE
-ruby_guestfs_pvuuid (VALUE gv, VALUE devicev)
+guestfs_int_ruby_pvuuid (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21636,7 +21636,7 @@ ruby_guestfs_pvuuid (VALUE gv, VALUE devicev)
  *         {guestfs_pwrite}[http://libguestfs.org/guestfs.3.html#guestfs_pwrite].
  */
 static VALUE
-ruby_guestfs_pwrite (VALUE gv, VALUE pathv, VALUE contentv, VALUE offsetv)
+guestfs_int_ruby_pwrite (VALUE gv, VALUE pathv, VALUE contentv, VALUE offsetv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21690,7 +21690,7 @@ ruby_guestfs_pwrite (VALUE gv, VALUE pathv, VALUE contentv, VALUE offsetv)
  *         {guestfs_pwrite_device}[http://libguestfs.org/guestfs.3.html#guestfs_pwrite_device].
  */
 static VALUE
-ruby_guestfs_pwrite_device (VALUE gv, VALUE devicev, VALUE contentv, VALUE offsetv)
+guestfs_int_ruby_pwrite_device (VALUE gv, VALUE devicev, VALUE contentv, VALUE offsetv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21734,7 +21734,7 @@ ruby_guestfs_pwrite_device (VALUE gv, VALUE devicev, VALUE contentv, VALUE offse
  *         {guestfs_read_file}[http://libguestfs.org/guestfs.3.html#guestfs_read_file].
  */
 static VALUE
-ruby_guestfs_read_file (VALUE gv, VALUE pathv)
+guestfs_int_ruby_read_file (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21780,7 +21780,7 @@ ruby_guestfs_read_file (VALUE gv, VALUE pathv)
  *         {guestfs_read_lines}[http://libguestfs.org/guestfs.3.html#guestfs_read_lines].
  */
 static VALUE
-ruby_guestfs_read_lines (VALUE gv, VALUE pathv)
+guestfs_int_ruby_read_lines (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21857,7 +21857,7 @@ ruby_guestfs_read_lines (VALUE gv, VALUE pathv)
  *         {guestfs_readdir}[http://libguestfs.org/guestfs.3.html#guestfs_readdir].
  */
 static VALUE
-ruby_guestfs_readdir (VALUE gv, VALUE dirv)
+guestfs_int_ruby_readdir (VALUE gv, VALUE dirv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21900,7 +21900,7 @@ ruby_guestfs_readdir (VALUE gv, VALUE dirv)
  *         {guestfs_readlink}[http://libguestfs.org/guestfs.3.html#guestfs_readlink].
  */
 static VALUE
-ruby_guestfs_readlink (VALUE gv, VALUE pathv)
+guestfs_int_ruby_readlink (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -21953,7 +21953,7 @@ ruby_guestfs_readlink (VALUE gv, VALUE pathv)
  *         {guestfs_readlinklist}[http://libguestfs.org/guestfs.3.html#guestfs_readlinklist].
  */
 static VALUE
-ruby_guestfs_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
+guestfs_int_ruby_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22009,7 +22009,7 @@ ruby_guestfs_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
  *         {guestfs_realpath}[http://libguestfs.org/guestfs.3.html#guestfs_realpath].
  */
 static VALUE
-ruby_guestfs_realpath (VALUE gv, VALUE pathv)
+guestfs_int_ruby_realpath (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22055,7 +22055,7 @@ ruby_guestfs_realpath (VALUE gv, VALUE pathv)
  *         {guestfs_remount}[http://libguestfs.org/guestfs.3.html#guestfs_remount].
  */
 static VALUE
-ruby_guestfs_remount (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_remount (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22118,7 +22118,7 @@ ruby_guestfs_remount (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_remove_drive}[http://libguestfs.org/guestfs.3.html#guestfs_remove_drive].
  */
 static VALUE
-ruby_guestfs_remove_drive (VALUE gv, VALUE labelv)
+guestfs_int_ruby_remove_drive (VALUE gv, VALUE labelv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22154,7 +22154,7 @@ ruby_guestfs_remove_drive (VALUE gv, VALUE labelv)
  *         {guestfs_removexattr}[http://libguestfs.org/guestfs.3.html#guestfs_removexattr].
  */
 static VALUE
-ruby_guestfs_removexattr (VALUE gv, VALUE xattrv, VALUE pathv)
+guestfs_int_ruby_removexattr (VALUE gv, VALUE xattrv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22190,7 +22190,7 @@ ruby_guestfs_removexattr (VALUE gv, VALUE xattrv, VALUE pathv)
  *         {guestfs_rename}[http://libguestfs.org/guestfs.3.html#guestfs_rename].
  */
 static VALUE
-ruby_guestfs_rename (VALUE gv, VALUE oldpathv, VALUE newpathv)
+guestfs_int_ruby_rename (VALUE gv, VALUE oldpathv, VALUE newpathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22227,7 +22227,7 @@ ruby_guestfs_rename (VALUE gv, VALUE oldpathv, VALUE newpathv)
  *         {guestfs_resize2fs}[http://libguestfs.org/guestfs.3.html#guestfs_resize2fs].
  */
 static VALUE
-ruby_guestfs_resize2fs (VALUE gv, VALUE devicev)
+guestfs_int_ruby_resize2fs (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22270,7 +22270,7 @@ ruby_guestfs_resize2fs (VALUE gv, VALUE devicev)
  *         {guestfs_resize2fs_M}[http://libguestfs.org/guestfs.3.html#guestfs_resize2fs_M].
  */
 static VALUE
-ruby_guestfs_resize2fs_M (VALUE gv, VALUE devicev)
+guestfs_int_ruby_resize2fs_M (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22307,7 +22307,7 @@ ruby_guestfs_resize2fs_M (VALUE gv, VALUE devicev)
  *         {guestfs_resize2fs_size}[http://libguestfs.org/guestfs.3.html#guestfs_resize2fs_size].
  */
 static VALUE
-ruby_guestfs_resize2fs_size (VALUE gv, VALUE devicev, VALUE sizev)
+guestfs_int_ruby_resize2fs_size (VALUE gv, VALUE devicev, VALUE sizev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22341,7 +22341,7 @@ ruby_guestfs_resize2fs_size (VALUE gv, VALUE devicev, VALUE sizev)
  *         {guestfs_rm}[http://libguestfs.org/guestfs.3.html#guestfs_rm].
  */
 static VALUE
-ruby_guestfs_rm (VALUE gv, VALUE pathv)
+guestfs_int_ruby_rm (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22381,7 +22381,7 @@ ruby_guestfs_rm (VALUE gv, VALUE pathv)
  *         {guestfs_rm_f}[http://libguestfs.org/guestfs.3.html#guestfs_rm_f].
  */
 static VALUE
-ruby_guestfs_rm_f (VALUE gv, VALUE pathv)
+guestfs_int_ruby_rm_f (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22416,7 +22416,7 @@ ruby_guestfs_rm_f (VALUE gv, VALUE pathv)
  *         {guestfs_rm_rf}[http://libguestfs.org/guestfs.3.html#guestfs_rm_rf].
  */
 static VALUE
-ruby_guestfs_rm_rf (VALUE gv, VALUE pathv)
+guestfs_int_ruby_rm_rf (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22449,7 +22449,7 @@ ruby_guestfs_rm_rf (VALUE gv, VALUE pathv)
  *         {guestfs_rmdir}[http://libguestfs.org/guestfs.3.html#guestfs_rmdir].
  */
 static VALUE
-ruby_guestfs_rmdir (VALUE gv, VALUE pathv)
+guestfs_int_ruby_rmdir (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22484,7 +22484,7 @@ ruby_guestfs_rmdir (VALUE gv, VALUE pathv)
  *         {guestfs_rmmountpoint}[http://libguestfs.org/guestfs.3.html#guestfs_rmmountpoint].
  */
 static VALUE
-ruby_guestfs_rmmountpoint (VALUE gv, VALUE exemptpathv)
+guestfs_int_ruby_rmmountpoint (VALUE gv, VALUE exemptpathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22537,7 +22537,7 @@ ruby_guestfs_rmmountpoint (VALUE gv, VALUE exemptpathv)
  *         {guestfs_rsync}[http://libguestfs.org/guestfs.3.html#guestfs_rsync].
  */
 static VALUE
-ruby_guestfs_rsync (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_rsync (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22617,7 +22617,7 @@ ruby_guestfs_rsync (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_rsync_in}[http://libguestfs.org/guestfs.3.html#guestfs_rsync_in].
  */
 static VALUE
-ruby_guestfs_rsync_in (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_rsync_in (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22704,7 +22704,7 @@ ruby_guestfs_rsync_in (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_rsync_out}[http://libguestfs.org/guestfs.3.html#guestfs_rsync_out].
  */
 static VALUE
-ruby_guestfs_rsync_out (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_rsync_out (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22764,7 +22764,7 @@ ruby_guestfs_rsync_out (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_scrub_device}[http://libguestfs.org/guestfs.3.html#guestfs_scrub_device].
  */
 static VALUE
-ruby_guestfs_scrub_device (VALUE gv, VALUE devicev)
+guestfs_int_ruby_scrub_device (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22803,7 +22803,7 @@ ruby_guestfs_scrub_device (VALUE gv, VALUE devicev)
  *         {guestfs_scrub_file}[http://libguestfs.org/guestfs.3.html#guestfs_scrub_file].
  */
 static VALUE
-ruby_guestfs_scrub_file (VALUE gv, VALUE filev)
+guestfs_int_ruby_scrub_file (VALUE gv, VALUE filev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22843,7 +22843,7 @@ ruby_guestfs_scrub_file (VALUE gv, VALUE filev)
  *         {guestfs_scrub_freespace}[http://libguestfs.org/guestfs.3.html#guestfs_scrub_freespace].
  */
 static VALUE
-ruby_guestfs_scrub_freespace (VALUE gv, VALUE dirv)
+guestfs_int_ruby_scrub_freespace (VALUE gv, VALUE dirv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22883,7 +22883,7 @@ ruby_guestfs_scrub_freespace (VALUE gv, VALUE dirv)
  *         {guestfs_set_append}[http://libguestfs.org/guestfs.3.html#guestfs_set_append].
  */
 static VALUE
-ruby_guestfs_set_append (VALUE gv, VALUE appendv)
+guestfs_int_ruby_set_append (VALUE gv, VALUE appendv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22921,7 +22921,7 @@ ruby_guestfs_set_append (VALUE gv, VALUE appendv)
  *         {guestfs_set_attach_method}[http://libguestfs.org/guestfs.3.html#guestfs_set_attach_method].
  */
 static VALUE
-ruby_guestfs_set_attach_method (VALUE gv, VALUE backendv)
+guestfs_int_ruby_set_attach_method (VALUE gv, VALUE backendv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22960,7 +22960,7 @@ ruby_guestfs_set_attach_method (VALUE gv, VALUE backendv)
  *         {guestfs_set_autosync}[http://libguestfs.org/guestfs.3.html#guestfs_set_autosync].
  */
 static VALUE
-ruby_guestfs_set_autosync (VALUE gv, VALUE autosyncv)
+guestfs_int_ruby_set_autosync (VALUE gv, VALUE autosyncv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -22999,7 +22999,7 @@ ruby_guestfs_set_autosync (VALUE gv, VALUE autosyncv)
  *         {guestfs_set_backend}[http://libguestfs.org/guestfs.3.html#guestfs_set_backend].
  */
 static VALUE
-ruby_guestfs_set_backend (VALUE gv, VALUE backendv)
+guestfs_int_ruby_set_backend (VALUE gv, VALUE backendv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23037,7 +23037,7 @@ ruby_guestfs_set_backend (VALUE gv, VALUE backendv)
  *         {guestfs_set_backend_setting}[http://libguestfs.org/guestfs.3.html#guestfs_set_backend_setting].
  */
 static VALUE
-ruby_guestfs_set_backend_setting (VALUE gv, VALUE namev, VALUE valv)
+guestfs_int_ruby_set_backend_setting (VALUE gv, VALUE namev, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23087,7 +23087,7 @@ ruby_guestfs_set_backend_setting (VALUE gv, VALUE namev, VALUE valv)
  *         {guestfs_set_backend_settings}[http://libguestfs.org/guestfs.3.html#guestfs_set_backend_settings].
  */
 static VALUE
-ruby_guestfs_set_backend_settings (VALUE gv, VALUE settingsv)
+guestfs_int_ruby_set_backend_settings (VALUE gv, VALUE settingsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23141,7 +23141,7 @@ ruby_guestfs_set_backend_settings (VALUE gv, VALUE settingsv)
  *         {guestfs_set_cachedir}[http://libguestfs.org/guestfs.3.html#guestfs_set_cachedir].
  */
 static VALUE
-ruby_guestfs_set_cachedir (VALUE gv, VALUE cachedirv)
+guestfs_int_ruby_set_cachedir (VALUE gv, VALUE cachedirv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23185,7 +23185,7 @@ ruby_guestfs_set_cachedir (VALUE gv, VALUE cachedirv)
  *         {guestfs_set_direct}[http://libguestfs.org/guestfs.3.html#guestfs_set_direct].
  */
 static VALUE
-ruby_guestfs_set_direct (VALUE gv, VALUE directv)
+guestfs_int_ruby_set_direct (VALUE gv, VALUE directv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23240,7 +23240,7 @@ ruby_guestfs_set_direct (VALUE gv, VALUE directv)
  *         {guestfs_set_e2attrs}[http://libguestfs.org/guestfs.3.html#guestfs_set_e2attrs].
  */
 static VALUE
-ruby_guestfs_set_e2attrs (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_set_e2attrs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23293,7 +23293,7 @@ ruby_guestfs_set_e2attrs (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_set_e2generation}[http://libguestfs.org/guestfs.3.html#guestfs_set_e2generation].
  */
 static VALUE
-ruby_guestfs_set_e2generation (VALUE gv, VALUE filev, VALUE generationv)
+guestfs_int_ruby_set_e2generation (VALUE gv, VALUE filev, VALUE generationv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23334,7 +23334,7 @@ ruby_guestfs_set_e2generation (VALUE gv, VALUE filev, VALUE generationv)
  *         {guestfs_set_e2label}[http://libguestfs.org/guestfs.3.html#guestfs_set_e2label].
  */
 static VALUE
-ruby_guestfs_set_e2label (VALUE gv, VALUE devicev, VALUE labelv)
+guestfs_int_ruby_set_e2label (VALUE gv, VALUE devicev, VALUE labelv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23376,7 +23376,7 @@ ruby_guestfs_set_e2label (VALUE gv, VALUE devicev, VALUE labelv)
  *         {guestfs_set_e2uuid}[http://libguestfs.org/guestfs.3.html#guestfs_set_e2uuid].
  */
 static VALUE
-ruby_guestfs_set_e2uuid (VALUE gv, VALUE devicev, VALUE uuidv)
+guestfs_int_ruby_set_e2uuid (VALUE gv, VALUE devicev, VALUE uuidv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23429,7 +23429,7 @@ ruby_guestfs_set_e2uuid (VALUE gv, VALUE devicev, VALUE uuidv)
  *         {guestfs_set_hv}[http://libguestfs.org/guestfs.3.html#guestfs_set_hv].
  */
 static VALUE
-ruby_guestfs_set_hv (VALUE gv, VALUE hvv)
+guestfs_int_ruby_set_hv (VALUE gv, VALUE hvv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23486,7 +23486,7 @@ ruby_guestfs_set_hv (VALUE gv, VALUE hvv)
  *         {guestfs_set_identifier}[http://libguestfs.org/guestfs.3.html#guestfs_set_identifier].
  */
 static VALUE
-ruby_guestfs_set_identifier (VALUE gv, VALUE identifierv)
+guestfs_int_ruby_set_identifier (VALUE gv, VALUE identifierv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23547,7 +23547,7 @@ ruby_guestfs_set_identifier (VALUE gv, VALUE identifierv)
  *         {guestfs_set_label}[http://libguestfs.org/guestfs.3.html#guestfs_set_label].
  */
 static VALUE
-ruby_guestfs_set_label (VALUE gv, VALUE mountablev, VALUE labelv)
+guestfs_int_ruby_set_label (VALUE gv, VALUE mountablev, VALUE labelv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23586,7 +23586,7 @@ ruby_guestfs_set_label (VALUE gv, VALUE mountablev, VALUE labelv)
  *         {guestfs_set_libvirt_requested_credential}[http://libguestfs.org/guestfs.3.html#guestfs_set_libvirt_requested_credential].
  */
 static VALUE
-ruby_guestfs_set_libvirt_requested_credential (VALUE gv, VALUE indexv, VALUE credv)
+guestfs_int_ruby_set_libvirt_requested_credential (VALUE gv, VALUE indexv, VALUE credv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23646,7 +23646,7 @@ ruby_guestfs_set_libvirt_requested_credential (VALUE gv, VALUE indexv, VALUE cre
  *         {guestfs_set_libvirt_supported_credentials}[http://libguestfs.org/guestfs.3.html#guestfs_set_libvirt_supported_credentials].
  */
 static VALUE
-ruby_guestfs_set_libvirt_supported_credentials (VALUE gv, VALUE credsv)
+guestfs_int_ruby_set_libvirt_supported_credentials (VALUE gv, VALUE credsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23700,7 +23700,7 @@ ruby_guestfs_set_libvirt_supported_credentials (VALUE gv, VALUE credsv)
  *         {guestfs_set_memsize}[http://libguestfs.org/guestfs.3.html#guestfs_set_memsize].
  */
 static VALUE
-ruby_guestfs_set_memsize (VALUE gv, VALUE memsizev)
+guestfs_int_ruby_set_memsize (VALUE gv, VALUE memsizev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23740,7 +23740,7 @@ ruby_guestfs_set_memsize (VALUE gv, VALUE memsizev)
  *         {guestfs_set_network}[http://libguestfs.org/guestfs.3.html#guestfs_set_network].
  */
 static VALUE
-ruby_guestfs_set_network (VALUE gv, VALUE networkv)
+guestfs_int_ruby_set_network (VALUE gv, VALUE networkv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23779,7 +23779,7 @@ ruby_guestfs_set_network (VALUE gv, VALUE networkv)
  *         {guestfs_set_path}[http://libguestfs.org/guestfs.3.html#guestfs_set_path].
  */
 static VALUE
-ruby_guestfs_set_path (VALUE gv, VALUE searchpathv)
+guestfs_int_ruby_set_path (VALUE gv, VALUE searchpathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23823,7 +23823,7 @@ ruby_guestfs_set_path (VALUE gv, VALUE searchpathv)
  *         {guestfs_set_pgroup}[http://libguestfs.org/guestfs.3.html#guestfs_set_pgroup].
  */
 static VALUE
-ruby_guestfs_set_pgroup (VALUE gv, VALUE pgroupv)
+guestfs_int_ruby_set_pgroup (VALUE gv, VALUE pgroupv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23862,7 +23862,7 @@ ruby_guestfs_set_pgroup (VALUE gv, VALUE pgroupv)
  *         {guestfs_set_program}[http://libguestfs.org/guestfs.3.html#guestfs_set_program].
  */
 static VALUE
-ruby_guestfs_set_program (VALUE gv, VALUE programv)
+guestfs_int_ruby_set_program (VALUE gv, VALUE programv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23915,7 +23915,7 @@ ruby_guestfs_set_program (VALUE gv, VALUE programv)
  *         {guestfs_set_qemu}[http://libguestfs.org/guestfs.3.html#guestfs_set_qemu].
  */
 static VALUE
-ruby_guestfs_set_qemu (VALUE gv, VALUE hvv)
+guestfs_int_ruby_set_qemu (VALUE gv, VALUE hvv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -23962,7 +23962,7 @@ ruby_guestfs_set_qemu (VALUE gv, VALUE hvv)
  *         {guestfs_set_recovery_proc}[http://libguestfs.org/guestfs.3.html#guestfs_set_recovery_proc].
  */
 static VALUE
-ruby_guestfs_set_recovery_proc (VALUE gv, VALUE recoveryprocv)
+guestfs_int_ruby_set_recovery_proc (VALUE gv, VALUE recoveryprocv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24003,7 +24003,7 @@ ruby_guestfs_set_recovery_proc (VALUE gv, VALUE recoveryprocv)
  *         {guestfs_set_selinux}[http://libguestfs.org/guestfs.3.html#guestfs_set_selinux].
  */
 static VALUE
-ruby_guestfs_set_selinux (VALUE gv, VALUE selinuxv)
+guestfs_int_ruby_set_selinux (VALUE gv, VALUE selinuxv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24040,7 +24040,7 @@ ruby_guestfs_set_selinux (VALUE gv, VALUE selinuxv)
  *         {guestfs_set_smp}[http://libguestfs.org/guestfs.3.html#guestfs_set_smp].
  */
 static VALUE
-ruby_guestfs_set_smp (VALUE gv, VALUE smpv)
+guestfs_int_ruby_set_smp (VALUE gv, VALUE smpv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24080,7 +24080,7 @@ ruby_guestfs_set_smp (VALUE gv, VALUE smpv)
  *         {guestfs_set_tmpdir}[http://libguestfs.org/guestfs.3.html#guestfs_set_tmpdir].
  */
 static VALUE
-ruby_guestfs_set_tmpdir (VALUE gv, VALUE tmpdirv)
+guestfs_int_ruby_set_tmpdir (VALUE gv, VALUE tmpdirv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24125,7 +24125,7 @@ ruby_guestfs_set_tmpdir (VALUE gv, VALUE tmpdirv)
  *         {guestfs_set_trace}[http://libguestfs.org/guestfs.3.html#guestfs_set_trace].
  */
 static VALUE
-ruby_guestfs_set_trace (VALUE gv, VALUE tracev)
+guestfs_int_ruby_set_trace (VALUE gv, VALUE tracev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24165,7 +24165,7 @@ ruby_guestfs_set_trace (VALUE gv, VALUE tracev)
  *         {guestfs_set_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_set_uuid].
  */
 static VALUE
-ruby_guestfs_set_uuid (VALUE gv, VALUE devicev, VALUE uuidv)
+guestfs_int_ruby_set_uuid (VALUE gv, VALUE devicev, VALUE uuidv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24206,7 +24206,7 @@ ruby_guestfs_set_uuid (VALUE gv, VALUE devicev, VALUE uuidv)
  *         {guestfs_set_uuid_random}[http://libguestfs.org/guestfs.3.html#guestfs_set_uuid_random].
  */
 static VALUE
-ruby_guestfs_set_uuid_random (VALUE gv, VALUE devicev)
+guestfs_int_ruby_set_uuid_random (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24246,7 +24246,7 @@ ruby_guestfs_set_uuid_random (VALUE gv, VALUE devicev)
  *         {guestfs_set_verbose}[http://libguestfs.org/guestfs.3.html#guestfs_set_verbose].
  */
 static VALUE
-ruby_guestfs_set_verbose (VALUE gv, VALUE verbosev)
+guestfs_int_ruby_set_verbose (VALUE gv, VALUE verbosev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24282,7 +24282,7 @@ ruby_guestfs_set_verbose (VALUE gv, VALUE verbosev)
  *         {guestfs_setcon}[http://libguestfs.org/guestfs.3.html#guestfs_setcon].
  */
 static VALUE
-ruby_guestfs_setcon (VALUE gv, VALUE contextv)
+guestfs_int_ruby_setcon (VALUE gv, VALUE contextv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24319,7 +24319,7 @@ ruby_guestfs_setcon (VALUE gv, VALUE contextv)
  *         {guestfs_setxattr}[http://libguestfs.org/guestfs.3.html#guestfs_setxattr].
  */
 static VALUE
-ruby_guestfs_setxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE pathv)
+guestfs_int_ruby_setxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24379,7 +24379,7 @@ ruby_guestfs_setxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE 
  *         {guestfs_sfdisk}[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk].
  */
 static VALUE
-ruby_guestfs_sfdisk (VALUE gv, VALUE devicev, VALUE cylsv, VALUE headsv, VALUE sectorsv, VALUE linesv)
+guestfs_int_ruby_sfdisk (VALUE gv, VALUE devicev, VALUE cylsv, VALUE headsv, VALUE sectorsv, VALUE linesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24437,7 +24437,7 @@ ruby_guestfs_sfdisk (VALUE gv, VALUE devicev, VALUE cylsv, VALUE headsv, VALUE s
  *         {guestfs_sfdiskM}[http://libguestfs.org/guestfs.3.html#guestfs_sfdiskM].
  */
 static VALUE
-ruby_guestfs_sfdiskM (VALUE gv, VALUE devicev, VALUE linesv)
+guestfs_int_ruby_sfdiskM (VALUE gv, VALUE devicev, VALUE linesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24491,7 +24491,7 @@ ruby_guestfs_sfdiskM (VALUE gv, VALUE devicev, VALUE linesv)
  *         {guestfs_sfdisk_N}[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_N].
  */
 static VALUE
-ruby_guestfs_sfdisk_N (VALUE gv, VALUE devicev, VALUE partnumv, VALUE cylsv, VALUE headsv, VALUE sectorsv, VALUE linev)
+guestfs_int_ruby_sfdisk_N (VALUE gv, VALUE devicev, VALUE partnumv, VALUE cylsv, VALUE headsv, VALUE sectorsv, VALUE linev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24536,7 +24536,7 @@ ruby_guestfs_sfdisk_N (VALUE gv, VALUE devicev, VALUE partnumv, VALUE cylsv, VAL
  *         {guestfs_sfdisk_disk_geometry}[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_disk_geometry].
  */
 static VALUE
-ruby_guestfs_sfdisk_disk_geometry (VALUE gv, VALUE devicev)
+guestfs_int_ruby_sfdisk_disk_geometry (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24575,7 +24575,7 @@ ruby_guestfs_sfdisk_disk_geometry (VALUE gv, VALUE devicev)
  *         {guestfs_sfdisk_kernel_geometry}[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_kernel_geometry].
  */
 static VALUE
-ruby_guestfs_sfdisk_kernel_geometry (VALUE gv, VALUE devicev)
+guestfs_int_ruby_sfdisk_kernel_geometry (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24616,7 +24616,7 @@ ruby_guestfs_sfdisk_kernel_geometry (VALUE gv, VALUE devicev)
  *         {guestfs_sfdisk_l}[http://libguestfs.org/guestfs.3.html#guestfs_sfdisk_l].
  */
 static VALUE
-ruby_guestfs_sfdisk_l (VALUE gv, VALUE devicev)
+guestfs_int_ruby_sfdisk_l (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24662,7 +24662,7 @@ ruby_guestfs_sfdisk_l (VALUE gv, VALUE devicev)
  *         {guestfs_sh}[http://libguestfs.org/guestfs.3.html#guestfs_sh].
  */
 static VALUE
-ruby_guestfs_sh (VALUE gv, VALUE commandv)
+guestfs_int_ruby_sh (VALUE gv, VALUE commandv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24700,7 +24700,7 @@ ruby_guestfs_sh (VALUE gv, VALUE commandv)
  *         {guestfs_sh_lines}[http://libguestfs.org/guestfs.3.html#guestfs_sh_lines].
  */
 static VALUE
-ruby_guestfs_sh_lines (VALUE gv, VALUE commandv)
+guestfs_int_ruby_sh_lines (VALUE gv, VALUE commandv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24758,7 +24758,7 @@ ruby_guestfs_sh_lines (VALUE gv, VALUE commandv)
  *         {guestfs_shutdown}[http://libguestfs.org/guestfs.3.html#guestfs_shutdown].
  */
 static VALUE
-ruby_guestfs_shutdown (VALUE gv)
+guestfs_int_ruby_shutdown (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24790,7 +24790,7 @@ ruby_guestfs_shutdown (VALUE gv)
  *         {guestfs_sleep}[http://libguestfs.org/guestfs.3.html#guestfs_sleep].
  */
 static VALUE
-ruby_guestfs_sleep (VALUE gv, VALUE secsv)
+guestfs_int_ruby_sleep (VALUE gv, VALUE secsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24827,7 +24827,7 @@ ruby_guestfs_sleep (VALUE gv, VALUE secsv)
  *         {guestfs_stat}[http://libguestfs.org/guestfs.3.html#guestfs_stat].
  */
 static VALUE
-ruby_guestfs_stat (VALUE gv, VALUE pathv)
+guestfs_int_ruby_stat (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24877,7 +24877,7 @@ ruby_guestfs_stat (VALUE gv, VALUE pathv)
  *         {guestfs_statns}[http://libguestfs.org/guestfs.3.html#guestfs_statns].
  */
 static VALUE
-ruby_guestfs_statns (VALUE gv, VALUE pathv)
+guestfs_int_ruby_statns (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24939,7 +24939,7 @@ ruby_guestfs_statns (VALUE gv, VALUE pathv)
  *         {guestfs_statvfs}[http://libguestfs.org/guestfs.3.html#guestfs_statvfs].
  */
 static VALUE
-ruby_guestfs_statvfs (VALUE gv, VALUE pathv)
+guestfs_int_ruby_statvfs (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -24995,7 +24995,7 @@ ruby_guestfs_statvfs (VALUE gv, VALUE pathv)
  *         {guestfs_strings}[http://libguestfs.org/guestfs.3.html#guestfs_strings].
  */
 static VALUE
-ruby_guestfs_strings (VALUE gv, VALUE pathv)
+guestfs_int_ruby_strings (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25069,7 +25069,7 @@ ruby_guestfs_strings (VALUE gv, VALUE pathv)
  *         {guestfs_strings_e}[http://libguestfs.org/guestfs.3.html#guestfs_strings_e].
  */
 static VALUE
-ruby_guestfs_strings_e (VALUE gv, VALUE encodingv, VALUE pathv)
+guestfs_int_ruby_strings_e (VALUE gv, VALUE encodingv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25113,7 +25113,7 @@ ruby_guestfs_strings_e (VALUE gv, VALUE encodingv, VALUE pathv)
  *         {guestfs_swapoff_device}[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_device].
  */
 static VALUE
-ruby_guestfs_swapoff_device (VALUE gv, VALUE devicev)
+guestfs_int_ruby_swapoff_device (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25147,7 +25147,7 @@ ruby_guestfs_swapoff_device (VALUE gv, VALUE devicev)
  *         {guestfs_swapoff_file}[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_file].
  */
 static VALUE
-ruby_guestfs_swapoff_file (VALUE gv, VALUE filev)
+guestfs_int_ruby_swapoff_file (VALUE gv, VALUE filev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25181,7 +25181,7 @@ ruby_guestfs_swapoff_file (VALUE gv, VALUE filev)
  *         {guestfs_swapoff_label}[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_label].
  */
 static VALUE
-ruby_guestfs_swapoff_label (VALUE gv, VALUE labelv)
+guestfs_int_ruby_swapoff_label (VALUE gv, VALUE labelv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25215,7 +25215,7 @@ ruby_guestfs_swapoff_label (VALUE gv, VALUE labelv)
  *         {guestfs_swapoff_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_uuid].
  */
 static VALUE
-ruby_guestfs_swapoff_uuid (VALUE gv, VALUE uuidv)
+guestfs_int_ruby_swapoff_uuid (VALUE gv, VALUE uuidv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25259,7 +25259,7 @@ ruby_guestfs_swapoff_uuid (VALUE gv, VALUE uuidv)
  *         {guestfs_swapon_device}[http://libguestfs.org/guestfs.3.html#guestfs_swapon_device].
  */
 static VALUE
-ruby_guestfs_swapon_device (VALUE gv, VALUE devicev)
+guestfs_int_ruby_swapon_device (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25293,7 +25293,7 @@ ruby_guestfs_swapon_device (VALUE gv, VALUE devicev)
  *         {guestfs_swapon_file}[http://libguestfs.org/guestfs.3.html#guestfs_swapon_file].
  */
 static VALUE
-ruby_guestfs_swapon_file (VALUE gv, VALUE filev)
+guestfs_int_ruby_swapon_file (VALUE gv, VALUE filev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25327,7 +25327,7 @@ ruby_guestfs_swapon_file (VALUE gv, VALUE filev)
  *         {guestfs_swapon_label}[http://libguestfs.org/guestfs.3.html#guestfs_swapon_label].
  */
 static VALUE
-ruby_guestfs_swapon_label (VALUE gv, VALUE labelv)
+guestfs_int_ruby_swapon_label (VALUE gv, VALUE labelv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25361,7 +25361,7 @@ ruby_guestfs_swapon_label (VALUE gv, VALUE labelv)
  *         {guestfs_swapon_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_swapon_uuid].
  */
 static VALUE
-ruby_guestfs_swapon_uuid (VALUE gv, VALUE uuidv)
+guestfs_int_ruby_swapon_uuid (VALUE gv, VALUE uuidv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25398,7 +25398,7 @@ ruby_guestfs_swapon_uuid (VALUE gv, VALUE uuidv)
  *         {guestfs_sync}[http://libguestfs.org/guestfs.3.html#guestfs_sync].
  */
 static VALUE
-ruby_guestfs_sync (VALUE gv)
+guestfs_int_ruby_sync (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25459,7 +25459,7 @@ ruby_guestfs_sync (VALUE gv)
  *         {guestfs_syslinux}[http://libguestfs.org/guestfs.3.html#guestfs_syslinux].
  */
 static VALUE
-ruby_guestfs_syslinux (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_syslinux (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25513,7 +25513,7 @@ ruby_guestfs_syslinux (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_tail}[http://libguestfs.org/guestfs.3.html#guestfs_tail].
  */
 static VALUE
-ruby_guestfs_tail (VALUE gv, VALUE pathv)
+guestfs_int_ruby_tail (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25566,7 +25566,7 @@ ruby_guestfs_tail (VALUE gv, VALUE pathv)
  *         {guestfs_tail_n}[http://libguestfs.org/guestfs.3.html#guestfs_tail_n].
  */
 static VALUE
-ruby_guestfs_tail_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
+guestfs_int_ruby_tail_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25635,7 +25635,7 @@ ruby_guestfs_tail_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
  *         {guestfs_tar_in}[http://libguestfs.org/guestfs.3.html#guestfs_tar_in].
  */
 static VALUE
-ruby_guestfs_tar_in (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_tar_in (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25736,7 +25736,7 @@ ruby_guestfs_tar_in (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_tar_out}[http://libguestfs.org/guestfs.3.html#guestfs_tar_out].
  */
 static VALUE
-ruby_guestfs_tar_out (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_tar_out (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25828,7 +25828,7 @@ ruby_guestfs_tar_out (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_tgz_in}[http://libguestfs.org/guestfs.3.html#guestfs_tgz_in].
  */
 static VALUE
-ruby_guestfs_tgz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
+guestfs_int_ruby_tgz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25865,7 +25865,7 @@ ruby_guestfs_tgz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
  *         {guestfs_tgz_out}[http://libguestfs.org/guestfs.3.html#guestfs_tgz_out].
  */
 static VALUE
-ruby_guestfs_tgz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
+guestfs_int_ruby_tgz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25905,7 +25905,7 @@ ruby_guestfs_tgz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
  *         {guestfs_touch}[http://libguestfs.org/guestfs.3.html#guestfs_touch].
  */
 static VALUE
-ruby_guestfs_touch (VALUE gv, VALUE pathv)
+guestfs_int_ruby_touch (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25939,7 +25939,7 @@ ruby_guestfs_touch (VALUE gv, VALUE pathv)
  *         {guestfs_truncate}[http://libguestfs.org/guestfs.3.html#guestfs_truncate].
  */
 static VALUE
-ruby_guestfs_truncate (VALUE gv, VALUE pathv)
+guestfs_int_ruby_truncate (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -25980,7 +25980,7 @@ ruby_guestfs_truncate (VALUE gv, VALUE pathv)
  *         {guestfs_truncate_size}[http://libguestfs.org/guestfs.3.html#guestfs_truncate_size].
  */
 static VALUE
-ruby_guestfs_truncate_size (VALUE gv, VALUE pathv, VALUE sizev)
+guestfs_int_ruby_truncate_size (VALUE gv, VALUE pathv, VALUE sizev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26080,7 +26080,7 @@ ruby_guestfs_truncate_size (VALUE gv, VALUE pathv, VALUE sizev)
  *         {guestfs_tune2fs}[http://libguestfs.org/guestfs.3.html#guestfs_tune2fs].
  */
 static VALUE
-ruby_guestfs_tune2fs (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_tune2fs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26181,7 +26181,7 @@ ruby_guestfs_tune2fs (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_tune2fs_l}[http://libguestfs.org/guestfs.3.html#guestfs_tune2fs_l].
  */
 static VALUE
-ruby_guestfs_tune2fs_l (VALUE gv, VALUE devicev)
+guestfs_int_ruby_tune2fs_l (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26225,7 +26225,7 @@ ruby_guestfs_tune2fs_l (VALUE gv, VALUE devicev)
  *         {guestfs_txz_in}[http://libguestfs.org/guestfs.3.html#guestfs_txz_in].
  */
 static VALUE
-ruby_guestfs_txz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
+guestfs_int_ruby_txz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26263,7 +26263,7 @@ ruby_guestfs_txz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
  *         {guestfs_txz_out}[http://libguestfs.org/guestfs.3.html#guestfs_txz_out].
  */
 static VALUE
-ruby_guestfs_txz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
+guestfs_int_ruby_txz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26311,7 +26311,7 @@ ruby_guestfs_txz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
  *         {guestfs_umask}[http://libguestfs.org/guestfs.3.html#guestfs_umask].
  */
 static VALUE
-ruby_guestfs_umask (VALUE gv, VALUE maskv)
+guestfs_int_ruby_umask (VALUE gv, VALUE maskv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26350,7 +26350,7 @@ ruby_guestfs_umask (VALUE gv, VALUE maskv)
  *         {guestfs_umount}[http://libguestfs.org/guestfs.3.html#guestfs_umount].
  */
 static VALUE
-ruby_guestfs_umount (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_umount (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26406,7 +26406,7 @@ ruby_guestfs_umount (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_umount_all}[http://libguestfs.org/guestfs.3.html#guestfs_umount_all].
  */
 static VALUE
-ruby_guestfs_umount_all (VALUE gv)
+guestfs_int_ruby_umount_all (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26445,7 +26445,7 @@ ruby_guestfs_umount_all (VALUE gv)
  *         {guestfs_umount_local}[http://libguestfs.org/guestfs.3.html#guestfs_umount_local].
  */
 static VALUE
-ruby_guestfs_umount_local (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_umount_local (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26497,7 +26497,7 @@ ruby_guestfs_umount_local (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_upload}[http://libguestfs.org/guestfs.3.html#guestfs_upload].
  */
 static VALUE
-ruby_guestfs_upload (VALUE gv, VALUE filenamev, VALUE remotefilenamev)
+guestfs_int_ruby_upload (VALUE gv, VALUE filenamev, VALUE remotefilenamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26546,7 +26546,7 @@ ruby_guestfs_upload (VALUE gv, VALUE filenamev, VALUE remotefilenamev)
  *         {guestfs_upload_offset}[http://libguestfs.org/guestfs.3.html#guestfs_upload_offset].
  */
 static VALUE
-ruby_guestfs_upload_offset (VALUE gv, VALUE filenamev, VALUE remotefilenamev, VALUE offsetv)
+guestfs_int_ruby_upload_offset (VALUE gv, VALUE filenamev, VALUE remotefilenamev, VALUE offsetv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26611,7 +26611,7 @@ ruby_guestfs_upload_offset (VALUE gv, VALUE filenamev, VALUE remotefilenamev, VA
  *         {guestfs_user_cancel}[http://libguestfs.org/guestfs.3.html#guestfs_user_cancel].
  */
 static VALUE
-ruby_guestfs_user_cancel (VALUE gv)
+guestfs_int_ruby_user_cancel (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26658,7 +26658,7 @@ ruby_guestfs_user_cancel (VALUE gv)
  *         {guestfs_utimens}[http://libguestfs.org/guestfs.3.html#guestfs_utimens].
  */
 static VALUE
-ruby_guestfs_utimens (VALUE gv, VALUE pathv, VALUE atsecsv, VALUE atnsecsv, VALUE mtsecsv, VALUE mtnsecsv)
+guestfs_int_ruby_utimens (VALUE gv, VALUE pathv, VALUE atsecsv, VALUE atnsecsv, VALUE mtsecsv, VALUE mtnsecsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26698,7 +26698,7 @@ ruby_guestfs_utimens (VALUE gv, VALUE pathv, VALUE atsecsv, VALUE atnsecsv, VALU
  *         {guestfs_utsname}[http://libguestfs.org/guestfs.3.html#guestfs_utsname].
  */
 static VALUE
-ruby_guestfs_utsname (VALUE gv)
+guestfs_int_ruby_utsname (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26766,7 +26766,7 @@ ruby_guestfs_utsname (VALUE gv)
  *         {guestfs_version}[http://libguestfs.org/guestfs.3.html#guestfs_version].
  */
 static VALUE
-ruby_guestfs_version (VALUE gv)
+guestfs_int_ruby_version (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26810,7 +26810,7 @@ ruby_guestfs_version (VALUE gv)
  *         {guestfs_vfs_label}[http://libguestfs.org/guestfs.3.html#guestfs_vfs_label].
  */
 static VALUE
-ruby_guestfs_vfs_label (VALUE gv, VALUE mountablev)
+guestfs_int_ruby_vfs_label (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26852,7 +26852,7 @@ ruby_guestfs_vfs_label (VALUE gv, VALUE mountablev)
  *         {guestfs_vfs_minimum_size}[http://libguestfs.org/guestfs.3.html#guestfs_vfs_minimum_size].
  */
 static VALUE
-ruby_guestfs_vfs_minimum_size (VALUE gv, VALUE mountablev)
+guestfs_int_ruby_vfs_minimum_size (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26892,7 +26892,7 @@ ruby_guestfs_vfs_minimum_size (VALUE gv, VALUE mountablev)
  *         {guestfs_vfs_type}[http://libguestfs.org/guestfs.3.html#guestfs_vfs_type].
  */
 static VALUE
-ruby_guestfs_vfs_type (VALUE gv, VALUE mountablev)
+guestfs_int_ruby_vfs_type (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26933,7 +26933,7 @@ ruby_guestfs_vfs_type (VALUE gv, VALUE mountablev)
  *         {guestfs_vfs_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_vfs_uuid].
  */
 static VALUE
-ruby_guestfs_vfs_uuid (VALUE gv, VALUE mountablev)
+guestfs_int_ruby_vfs_uuid (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -26976,7 +26976,7 @@ ruby_guestfs_vfs_uuid (VALUE gv, VALUE mountablev)
  *         {guestfs_vg_activate}[http://libguestfs.org/guestfs.3.html#guestfs_vg_activate].
  */
 static VALUE
-ruby_guestfs_vg_activate (VALUE gv, VALUE activatev, VALUE volgroupsv)
+guestfs_int_ruby_vg_activate (VALUE gv, VALUE activatev, VALUE volgroupsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27025,7 +27025,7 @@ ruby_guestfs_vg_activate (VALUE gv, VALUE activatev, VALUE volgroupsv)
  *         {guestfs_vg_activate_all}[http://libguestfs.org/guestfs.3.html#guestfs_vg_activate_all].
  */
 static VALUE
-ruby_guestfs_vg_activate_all (VALUE gv, VALUE activatev)
+guestfs_int_ruby_vg_activate_all (VALUE gv, VALUE activatev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27058,7 +27058,7 @@ ruby_guestfs_vg_activate_all (VALUE gv, VALUE activatev)
  *         {guestfs_vgchange_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_vgchange_uuid].
  */
 static VALUE
-ruby_guestfs_vgchange_uuid (VALUE gv, VALUE vgv)
+guestfs_int_ruby_vgchange_uuid (VALUE gv, VALUE vgv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27091,7 +27091,7 @@ ruby_guestfs_vgchange_uuid (VALUE gv, VALUE vgv)
  *         {guestfs_vgchange_uuid_all}[http://libguestfs.org/guestfs.3.html#guestfs_vgchange_uuid_all].
  */
 static VALUE
-ruby_guestfs_vgchange_uuid_all (VALUE gv)
+guestfs_int_ruby_vgchange_uuid_all (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27124,7 +27124,7 @@ ruby_guestfs_vgchange_uuid_all (VALUE gv)
  *         {guestfs_vgcreate}[http://libguestfs.org/guestfs.3.html#guestfs_vgcreate].
  */
 static VALUE
-ruby_guestfs_vgcreate (VALUE gv, VALUE volgroupv, VALUE physvolsv)
+guestfs_int_ruby_vgcreate (VALUE gv, VALUE volgroupv, VALUE physvolsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27176,7 +27176,7 @@ ruby_guestfs_vgcreate (VALUE gv, VALUE volgroupv, VALUE physvolsv)
  *         {guestfs_vglvuuids}[http://libguestfs.org/guestfs.3.html#guestfs_vglvuuids].
  */
 static VALUE
-ruby_guestfs_vglvuuids (VALUE gv, VALUE vgnamev)
+guestfs_int_ruby_vglvuuids (VALUE gv, VALUE vgnamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27222,7 +27222,7 @@ ruby_guestfs_vglvuuids (VALUE gv, VALUE vgnamev)
  *         {guestfs_vgmeta}[http://libguestfs.org/guestfs.3.html#guestfs_vgmeta].
  */
 static VALUE
-ruby_guestfs_vgmeta (VALUE gv, VALUE vgnamev)
+guestfs_int_ruby_vgmeta (VALUE gv, VALUE vgnamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27265,7 +27265,7 @@ ruby_guestfs_vgmeta (VALUE gv, VALUE vgnamev)
  *         {guestfs_vgpvuuids}[http://libguestfs.org/guestfs.3.html#guestfs_vgpvuuids].
  */
 static VALUE
-ruby_guestfs_vgpvuuids (VALUE gv, VALUE vgnamev)
+guestfs_int_ruby_vgpvuuids (VALUE gv, VALUE vgnamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27309,7 +27309,7 @@ ruby_guestfs_vgpvuuids (VALUE gv, VALUE vgnamev)
  *         {guestfs_vgremove}[http://libguestfs.org/guestfs.3.html#guestfs_vgremove].
  */
 static VALUE
-ruby_guestfs_vgremove (VALUE gv, VALUE vgnamev)
+guestfs_int_ruby_vgremove (VALUE gv, VALUE vgnamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27343,7 +27343,7 @@ ruby_guestfs_vgremove (VALUE gv, VALUE vgnamev)
  *         {guestfs_vgrename}[http://libguestfs.org/guestfs.3.html#guestfs_vgrename].
  */
 static VALUE
-ruby_guestfs_vgrename (VALUE gv, VALUE volgroupv, VALUE newvolgroupv)
+guestfs_int_ruby_vgrename (VALUE gv, VALUE volgroupv, VALUE newvolgroupv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27383,7 +27383,7 @@ ruby_guestfs_vgrename (VALUE gv, VALUE volgroupv, VALUE newvolgroupv)
  *         {guestfs_vgs}[http://libguestfs.org/guestfs.3.html#guestfs_vgs].
  */
 static VALUE
-ruby_guestfs_vgs (VALUE gv)
+guestfs_int_ruby_vgs (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27425,7 +27425,7 @@ ruby_guestfs_vgs (VALUE gv)
  *         {guestfs_vgs_full}[http://libguestfs.org/guestfs.3.html#guestfs_vgs_full].
  */
 static VALUE
-ruby_guestfs_vgs_full (VALUE gv)
+guestfs_int_ruby_vgs_full (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27484,7 +27484,7 @@ ruby_guestfs_vgs_full (VALUE gv)
  *         {guestfs_vgscan}[http://libguestfs.org/guestfs.3.html#guestfs_vgscan].
  */
 static VALUE
-ruby_guestfs_vgscan (VALUE gv)
+guestfs_int_ruby_vgscan (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27517,7 +27517,7 @@ ruby_guestfs_vgscan (VALUE gv)
  *         {guestfs_vguuid}[http://libguestfs.org/guestfs.3.html#guestfs_vguuid].
  */
 static VALUE
-ruby_guestfs_vguuid (VALUE gv, VALUE vgnamev)
+guestfs_int_ruby_vguuid (VALUE gv, VALUE vgnamev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27563,7 +27563,7 @@ ruby_guestfs_vguuid (VALUE gv, VALUE vgnamev)
  *         {guestfs_wait_ready}[http://libguestfs.org/guestfs.3.html#guestfs_wait_ready].
  */
 static VALUE
-ruby_guestfs_wait_ready (VALUE gv)
+guestfs_int_ruby_wait_ready (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27596,7 +27596,7 @@ ruby_guestfs_wait_ready (VALUE gv)
  *         {guestfs_wc_c}[http://libguestfs.org/guestfs.3.html#guestfs_wc_c].
  */
 static VALUE
-ruby_guestfs_wc_c (VALUE gv, VALUE pathv)
+guestfs_int_ruby_wc_c (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27630,7 +27630,7 @@ ruby_guestfs_wc_c (VALUE gv, VALUE pathv)
  *         {guestfs_wc_l}[http://libguestfs.org/guestfs.3.html#guestfs_wc_l].
  */
 static VALUE
-ruby_guestfs_wc_l (VALUE gv, VALUE pathv)
+guestfs_int_ruby_wc_l (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27664,7 +27664,7 @@ ruby_guestfs_wc_l (VALUE gv, VALUE pathv)
  *         {guestfs_wc_w}[http://libguestfs.org/guestfs.3.html#guestfs_wc_w].
  */
 static VALUE
-ruby_guestfs_wc_w (VALUE gv, VALUE pathv)
+guestfs_int_ruby_wc_w (VALUE gv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27705,7 +27705,7 @@ ruby_guestfs_wc_w (VALUE gv, VALUE pathv)
  *         {guestfs_wipefs}[http://libguestfs.org/guestfs.3.html#guestfs_wipefs].
  */
 static VALUE
-ruby_guestfs_wipefs (VALUE gv, VALUE devicev)
+guestfs_int_ruby_wipefs (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27742,7 +27742,7 @@ ruby_guestfs_wipefs (VALUE gv, VALUE devicev)
  *         {guestfs_write}[http://libguestfs.org/guestfs.3.html#guestfs_write].
  */
 static VALUE
-ruby_guestfs_write (VALUE gv, VALUE pathv, VALUE contentv)
+guestfs_int_ruby_write (VALUE gv, VALUE pathv, VALUE contentv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27784,7 +27784,7 @@ ruby_guestfs_write (VALUE gv, VALUE pathv, VALUE contentv)
  *         {guestfs_write_append}[http://libguestfs.org/guestfs.3.html#guestfs_write_append].
  */
 static VALUE
-ruby_guestfs_write_append (VALUE gv, VALUE pathv, VALUE contentv)
+guestfs_int_ruby_write_append (VALUE gv, VALUE pathv, VALUE contentv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27839,7 +27839,7 @@ ruby_guestfs_write_append (VALUE gv, VALUE pathv, VALUE contentv)
  *         {guestfs_write_file}[http://libguestfs.org/guestfs.3.html#guestfs_write_file].
  */
 static VALUE
-ruby_guestfs_write_file (VALUE gv, VALUE pathv, VALUE contentv, VALUE sizev)
+guestfs_int_ruby_write_file (VALUE gv, VALUE pathv, VALUE contentv, VALUE sizev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27886,7 +27886,7 @@ ruby_guestfs_write_file (VALUE gv, VALUE pathv, VALUE contentv, VALUE sizev)
  *         {guestfs_xfs_admin}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_admin].
  */
 static VALUE
-ruby_guestfs_xfs_admin (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_xfs_admin (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -27973,7 +27973,7 @@ ruby_guestfs_xfs_admin (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_xfs_growfs}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_growfs].
  */
 static VALUE
-ruby_guestfs_xfs_growfs (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_xfs_growfs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28063,7 +28063,7 @@ ruby_guestfs_xfs_growfs (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_xfs_info}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_info].
  */
 static VALUE
-ruby_guestfs_xfs_info (VALUE gv, VALUE pathordevicev)
+guestfs_int_ruby_xfs_info (VALUE gv, VALUE pathordevicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28142,7 +28142,7 @@ ruby_guestfs_xfs_info (VALUE gv, VALUE pathordevicev)
  *         {guestfs_xfs_repair}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_repair].
  */
 static VALUE
-ruby_guestfs_xfs_repair (int argc, VALUE *argv, VALUE gv)
+guestfs_int_ruby_xfs_repair (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28243,7 +28243,7 @@ ruby_guestfs_xfs_repair (int argc, VALUE *argv, VALUE gv)
  *         {guestfs_zegrep}[http://libguestfs.org/guestfs.3.html#guestfs_zegrep].
  */
 static VALUE
-ruby_guestfs_zegrep (VALUE gv, VALUE regexv, VALUE pathv)
+guestfs_int_ruby_zegrep (VALUE gv, VALUE regexv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28292,7 +28292,7 @@ ruby_guestfs_zegrep (VALUE gv, VALUE regexv, VALUE pathv)
  *         {guestfs_zegrepi}[http://libguestfs.org/guestfs.3.html#guestfs_zegrepi].
  */
 static VALUE
-ruby_guestfs_zegrepi (VALUE gv, VALUE regexv, VALUE pathv)
+guestfs_int_ruby_zegrepi (VALUE gv, VALUE regexv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28347,7 +28347,7 @@ ruby_guestfs_zegrepi (VALUE gv, VALUE regexv, VALUE pathv)
  *         {guestfs_zero}[http://libguestfs.org/guestfs.3.html#guestfs_zero].
  */
 static VALUE
-ruby_guestfs_zero (VALUE gv, VALUE devicev)
+guestfs_int_ruby_zero (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28386,7 +28386,7 @@ ruby_guestfs_zero (VALUE gv, VALUE devicev)
  *         {guestfs_zero_device}[http://libguestfs.org/guestfs.3.html#guestfs_zero_device].
  */
 static VALUE
-ruby_guestfs_zero_device (VALUE gv, VALUE devicev)
+guestfs_int_ruby_zero_device (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28427,7 +28427,7 @@ ruby_guestfs_zero_device (VALUE gv, VALUE devicev)
  *         {guestfs_zero_free_space}[http://libguestfs.org/guestfs.3.html#guestfs_zero_free_space].
  */
 static VALUE
-ruby_guestfs_zero_free_space (VALUE gv, VALUE directoryv)
+guestfs_int_ruby_zero_free_space (VALUE gv, VALUE directoryv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28469,7 +28469,7 @@ ruby_guestfs_zero_free_space (VALUE gv, VALUE directoryv)
  *         {guestfs_zerofree}[http://libguestfs.org/guestfs.3.html#guestfs_zerofree].
  */
 static VALUE
-ruby_guestfs_zerofree (VALUE gv, VALUE devicev)
+guestfs_int_ruby_zerofree (VALUE gv, VALUE devicev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28509,7 +28509,7 @@ ruby_guestfs_zerofree (VALUE gv, VALUE devicev)
  *         {guestfs_zfgrep}[http://libguestfs.org/guestfs.3.html#guestfs_zfgrep].
  */
 static VALUE
-ruby_guestfs_zfgrep (VALUE gv, VALUE patternv, VALUE pathv)
+guestfs_int_ruby_zfgrep (VALUE gv, VALUE patternv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28558,7 +28558,7 @@ ruby_guestfs_zfgrep (VALUE gv, VALUE patternv, VALUE pathv)
  *         {guestfs_zfgrepi}[http://libguestfs.org/guestfs.3.html#guestfs_zfgrepi].
  */
 static VALUE
-ruby_guestfs_zfgrepi (VALUE gv, VALUE patternv, VALUE pathv)
+guestfs_int_ruby_zfgrepi (VALUE gv, VALUE patternv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28608,7 +28608,7 @@ ruby_guestfs_zfgrepi (VALUE gv, VALUE patternv, VALUE pathv)
  *         {guestfs_zfile}[http://libguestfs.org/guestfs.3.html#guestfs_zfile].
  */
 static VALUE
-ruby_guestfs_zfile (VALUE gv, VALUE methv, VALUE pathv)
+guestfs_int_ruby_zfile (VALUE gv, VALUE methv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28651,7 +28651,7 @@ ruby_guestfs_zfile (VALUE gv, VALUE methv, VALUE pathv)
  *         {guestfs_zgrep}[http://libguestfs.org/guestfs.3.html#guestfs_zgrep].
  */
 static VALUE
-ruby_guestfs_zgrep (VALUE gv, VALUE regexv, VALUE pathv)
+guestfs_int_ruby_zgrep (VALUE gv, VALUE regexv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28700,7 +28700,7 @@ ruby_guestfs_zgrep (VALUE gv, VALUE regexv, VALUE pathv)
  *         {guestfs_zgrepi}[http://libguestfs.org/guestfs.3.html#guestfs_zgrepi].
  */
 static VALUE
-ruby_guestfs_zgrepi (VALUE gv, VALUE regexv, VALUE pathv)
+guestfs_int_ruby_zgrepi (VALUE gv, VALUE regexv, VALUE pathv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -28741,22 +28741,25 @@ Init__guestfs (void)
 #ifndef HAVE_TYPE_RB_ALLOC_FUNC_T
 #define rb_alloc_func_t void*
 #endif
-  rb_define_alloc_func (c_guestfs, (rb_alloc_func_t) ruby_guestfs_alloc);
+  rb_define_alloc_func (c_guestfs, (rb_alloc_func_t) alloc_handle);
 #endif
 
-  rb_define_method (c_guestfs, "initialize", ruby_guestfs_initialize, -1);
-  rb_define_method (c_guestfs, "close", ruby_guestfs_close, 0);
+  rb_define_method (c_guestfs, "initialize",
+                    initialize_handle, -1);
+  rb_define_method (c_guestfs, "close",
+                    close_handle, 0);
   rb_define_method (c_guestfs, "set_event_callback",
-                    ruby_set_event_callback, 2);
+                    set_event_callback, 2);
   rb_define_method (c_guestfs, "delete_event_callback",
-                    ruby_delete_event_callback, 1);
+                    delete_event_callback, 1);
   rb_define_module_function (m_guestfs, "event_to_string",
-                    ruby_event_to_string, 1);
+                             event_to_string, 1);
 
   /* For backwards compatibility with older code, define a ::create
    * module function.
    */
-  rb_define_module_function (m_guestfs, "create", ruby_guestfs_create, -1);
+  rb_define_module_function (m_guestfs, "create",
+                             compat_create_handle, -1);
 
   rb_define_const (m_guestfs, "EVENT_CLOSE",
                    ULL2NUM (UINT64_C (0x1)));
@@ -28782,1211 +28785,1211 @@ Init__guestfs (void)
                    ULL2NUM (UINT64_C (0x3ff)));
 
   rb_define_method (c_guestfs, "acl_delete_def_file",
-        ruby_guestfs_acl_delete_def_file, 1);
+                    guestfs_int_ruby_acl_delete_def_file, 1);
   rb_define_method (c_guestfs, "acl_get_file",
-        ruby_guestfs_acl_get_file, 2);
+                    guestfs_int_ruby_acl_get_file, 2);
   rb_define_method (c_guestfs, "acl_set_file",
-        ruby_guestfs_acl_set_file, 3);
+                    guestfs_int_ruby_acl_set_file, 3);
   rb_define_method (c_guestfs, "add_cdrom",
-        ruby_guestfs_add_cdrom, 1);
+                    guestfs_int_ruby_add_cdrom, 1);
   rb_define_method (c_guestfs, "add_domain",
-        ruby_guestfs_add_domain, -1);
+                    guestfs_int_ruby_add_domain, -1);
   rb_define_method (c_guestfs, "add_drive",
-        ruby_guestfs_add_drive, -1);
+                    guestfs_int_ruby_add_drive, -1);
   rb_define_method (c_guestfs, "add_drive_opts",
-        ruby_guestfs_add_drive, -1);
+                    guestfs_int_ruby_add_drive, -1);
   rb_define_method (c_guestfs, "add_drive_ro",
-        ruby_guestfs_add_drive_ro, 1);
+                    guestfs_int_ruby_add_drive_ro, 1);
   rb_define_method (c_guestfs, "add_drive_ro_with_if",
-        ruby_guestfs_add_drive_ro_with_if, 2);
+                    guestfs_int_ruby_add_drive_ro_with_if, 2);
   rb_define_method (c_guestfs, "add_drive_scratch",
-        ruby_guestfs_add_drive_scratch, -1);
+                    guestfs_int_ruby_add_drive_scratch, -1);
   rb_define_method (c_guestfs, "add_drive_with_if",
-        ruby_guestfs_add_drive_with_if, 2);
+                    guestfs_int_ruby_add_drive_with_if, 2);
   rb_define_method (c_guestfs, "add_libvirt_dom",
-        ruby_guestfs_add_libvirt_dom, -1);
+                    guestfs_int_ruby_add_libvirt_dom, -1);
   rb_define_method (c_guestfs, "aug_clear",
-        ruby_guestfs_aug_clear, 1);
+                    guestfs_int_ruby_aug_clear, 1);
   rb_define_method (c_guestfs, "aug_close",
-        ruby_guestfs_aug_close, 0);
+                    guestfs_int_ruby_aug_close, 0);
   rb_define_method (c_guestfs, "aug_defnode",
-        ruby_guestfs_aug_defnode, 3);
+                    guestfs_int_ruby_aug_defnode, 3);
   rb_define_method (c_guestfs, "aug_defvar",
-        ruby_guestfs_aug_defvar, 2);
+                    guestfs_int_ruby_aug_defvar, 2);
   rb_define_method (c_guestfs, "aug_get",
-        ruby_guestfs_aug_get, 1);
+                    guestfs_int_ruby_aug_get, 1);
   rb_define_method (c_guestfs, "aug_init",
-        ruby_guestfs_aug_init, 2);
+                    guestfs_int_ruby_aug_init, 2);
   rb_define_method (c_guestfs, "aug_insert",
-        ruby_guestfs_aug_insert, 3);
+                    guestfs_int_ruby_aug_insert, 3);
   rb_define_method (c_guestfs, "aug_label",
-        ruby_guestfs_aug_label, 1);
+                    guestfs_int_ruby_aug_label, 1);
   rb_define_method (c_guestfs, "aug_load",
-        ruby_guestfs_aug_load, 0);
+                    guestfs_int_ruby_aug_load, 0);
   rb_define_method (c_guestfs, "aug_ls",
-        ruby_guestfs_aug_ls, 1);
+                    guestfs_int_ruby_aug_ls, 1);
   rb_define_method (c_guestfs, "aug_match",
-        ruby_guestfs_aug_match, 1);
+                    guestfs_int_ruby_aug_match, 1);
   rb_define_method (c_guestfs, "aug_mv",
-        ruby_guestfs_aug_mv, 2);
+                    guestfs_int_ruby_aug_mv, 2);
   rb_define_method (c_guestfs, "aug_rm",
-        ruby_guestfs_aug_rm, 1);
+                    guestfs_int_ruby_aug_rm, 1);
   rb_define_method (c_guestfs, "aug_save",
-        ruby_guestfs_aug_save, 0);
+                    guestfs_int_ruby_aug_save, 0);
   rb_define_method (c_guestfs, "aug_set",
-        ruby_guestfs_aug_set, 2);
+                    guestfs_int_ruby_aug_set, 2);
   rb_define_method (c_guestfs, "aug_setm",
-        ruby_guestfs_aug_setm, 3);
+                    guestfs_int_ruby_aug_setm, 3);
   rb_define_method (c_guestfs, "available",
-        ruby_guestfs_available, 1);
+                    guestfs_int_ruby_available, 1);
   rb_define_method (c_guestfs, "available_all_groups",
-        ruby_guestfs_available_all_groups, 0);
+                    guestfs_int_ruby_available_all_groups, 0);
   rb_define_method (c_guestfs, "base64_in",
-        ruby_guestfs_base64_in, 2);
+                    guestfs_int_ruby_base64_in, 2);
   rb_define_method (c_guestfs, "base64_out",
-        ruby_guestfs_base64_out, 2);
+                    guestfs_int_ruby_base64_out, 2);
   rb_define_method (c_guestfs, "blkdiscard",
-        ruby_guestfs_blkdiscard, 1);
+                    guestfs_int_ruby_blkdiscard, 1);
   rb_define_method (c_guestfs, "blkdiscardzeroes",
-        ruby_guestfs_blkdiscardzeroes, 1);
+                    guestfs_int_ruby_blkdiscardzeroes, 1);
   rb_define_method (c_guestfs, "blkid",
-        ruby_guestfs_blkid, 1);
+                    guestfs_int_ruby_blkid, 1);
   rb_define_method (c_guestfs, "blockdev_flushbufs",
-        ruby_guestfs_blockdev_flushbufs, 1);
+                    guestfs_int_ruby_blockdev_flushbufs, 1);
   rb_define_method (c_guestfs, "blockdev_getbsz",
-        ruby_guestfs_blockdev_getbsz, 1);
+                    guestfs_int_ruby_blockdev_getbsz, 1);
   rb_define_method (c_guestfs, "blockdev_getro",
-        ruby_guestfs_blockdev_getro, 1);
+                    guestfs_int_ruby_blockdev_getro, 1);
   rb_define_method (c_guestfs, "blockdev_getsize64",
-        ruby_guestfs_blockdev_getsize64, 1);
+                    guestfs_int_ruby_blockdev_getsize64, 1);
   rb_define_method (c_guestfs, "blockdev_getss",
-        ruby_guestfs_blockdev_getss, 1);
+                    guestfs_int_ruby_blockdev_getss, 1);
   rb_define_method (c_guestfs, "blockdev_getsz",
-        ruby_guestfs_blockdev_getsz, 1);
+                    guestfs_int_ruby_blockdev_getsz, 1);
   rb_define_method (c_guestfs, "blockdev_rereadpt",
-        ruby_guestfs_blockdev_rereadpt, 1);
+                    guestfs_int_ruby_blockdev_rereadpt, 1);
   rb_define_method (c_guestfs, "blockdev_setbsz",
-        ruby_guestfs_blockdev_setbsz, 2);
+                    guestfs_int_ruby_blockdev_setbsz, 2);
   rb_define_method (c_guestfs, "blockdev_setra",
-        ruby_guestfs_blockdev_setra, 2);
+                    guestfs_int_ruby_blockdev_setra, 2);
   rb_define_method (c_guestfs, "blockdev_setro",
-        ruby_guestfs_blockdev_setro, 1);
+                    guestfs_int_ruby_blockdev_setro, 1);
   rb_define_method (c_guestfs, "blockdev_setrw",
-        ruby_guestfs_blockdev_setrw, 1);
+                    guestfs_int_ruby_blockdev_setrw, 1);
   rb_define_method (c_guestfs, "btrfs_balance_cancel",
-        ruby_guestfs_btrfs_balance_cancel, 1);
+                    guestfs_int_ruby_btrfs_balance_cancel, 1);
   rb_define_method (c_guestfs, "btrfs_balance_pause",
-        ruby_guestfs_btrfs_balance_pause, 1);
+                    guestfs_int_ruby_btrfs_balance_pause, 1);
   rb_define_method (c_guestfs, "btrfs_balance_resume",
-        ruby_guestfs_btrfs_balance_resume, 1);
+                    guestfs_int_ruby_btrfs_balance_resume, 1);
   rb_define_method (c_guestfs, "btrfs_balance_status",
-        ruby_guestfs_btrfs_balance_status, 1);
+                    guestfs_int_ruby_btrfs_balance_status, 1);
   rb_define_method (c_guestfs, "btrfs_device_add",
-        ruby_guestfs_btrfs_device_add, 2);
+                    guestfs_int_ruby_btrfs_device_add, 2);
   rb_define_method (c_guestfs, "btrfs_device_delete",
-        ruby_guestfs_btrfs_device_delete, 2);
+                    guestfs_int_ruby_btrfs_device_delete, 2);
   rb_define_method (c_guestfs, "btrfs_filesystem_balance",
-        ruby_guestfs_btrfs_filesystem_balance, 1);
+                    guestfs_int_ruby_btrfs_filesystem_balance, 1);
   rb_define_method (c_guestfs, "btrfs_filesystem_defragment",
-        ruby_guestfs_btrfs_filesystem_defragment, -1);
+                    guestfs_int_ruby_btrfs_filesystem_defragment, -1);
   rb_define_method (c_guestfs, "btrfs_filesystem_resize",
-        ruby_guestfs_btrfs_filesystem_resize, -1);
+                    guestfs_int_ruby_btrfs_filesystem_resize, -1);
   rb_define_method (c_guestfs, "btrfs_filesystem_sync",
-        ruby_guestfs_btrfs_filesystem_sync, 1);
+                    guestfs_int_ruby_btrfs_filesystem_sync, 1);
   rb_define_method (c_guestfs, "btrfs_fsck",
-        ruby_guestfs_btrfs_fsck, -1);
+                    guestfs_int_ruby_btrfs_fsck, -1);
   rb_define_method (c_guestfs, "btrfs_image",
-        ruby_guestfs_btrfs_image, -1);
+                    guestfs_int_ruby_btrfs_image, -1);
   rb_define_method (c_guestfs, "btrfs_qgroup_assign",
-        ruby_guestfs_btrfs_qgroup_assign, 3);
+                    guestfs_int_ruby_btrfs_qgroup_assign, 3);
   rb_define_method (c_guestfs, "btrfs_qgroup_create",
-        ruby_guestfs_btrfs_qgroup_create, 2);
+                    guestfs_int_ruby_btrfs_qgroup_create, 2);
   rb_define_method (c_guestfs, "btrfs_qgroup_destroy",
-        ruby_guestfs_btrfs_qgroup_destroy, 2);
+                    guestfs_int_ruby_btrfs_qgroup_destroy, 2);
   rb_define_method (c_guestfs, "btrfs_qgroup_limit",
-        ruby_guestfs_btrfs_qgroup_limit, 2);
+                    guestfs_int_ruby_btrfs_qgroup_limit, 2);
   rb_define_method (c_guestfs, "btrfs_qgroup_remove",
-        ruby_guestfs_btrfs_qgroup_remove, 3);
+                    guestfs_int_ruby_btrfs_qgroup_remove, 3);
   rb_define_method (c_guestfs, "btrfs_qgroup_show",
-        ruby_guestfs_btrfs_qgroup_show, 1);
+                    guestfs_int_ruby_btrfs_qgroup_show, 1);
   rb_define_method (c_guestfs, "btrfs_quota_enable",
-        ruby_guestfs_btrfs_quota_enable, 2);
+                    guestfs_int_ruby_btrfs_quota_enable, 2);
   rb_define_method (c_guestfs, "btrfs_quota_rescan",
-        ruby_guestfs_btrfs_quota_rescan, 1);
+                    guestfs_int_ruby_btrfs_quota_rescan, 1);
   rb_define_method (c_guestfs, "btrfs_replace",
-        ruby_guestfs_btrfs_replace, 3);
+                    guestfs_int_ruby_btrfs_replace, 3);
   rb_define_method (c_guestfs, "btrfs_rescue_chunk_recover",
-        ruby_guestfs_btrfs_rescue_chunk_recover, 1);
+                    guestfs_int_ruby_btrfs_rescue_chunk_recover, 1);
   rb_define_method (c_guestfs, "btrfs_rescue_super_recover",
-        ruby_guestfs_btrfs_rescue_super_recover, 1);
+                    guestfs_int_ruby_btrfs_rescue_super_recover, 1);
   rb_define_method (c_guestfs, "btrfs_scrub_cancel",
-        ruby_guestfs_btrfs_scrub_cancel, 1);
+                    guestfs_int_ruby_btrfs_scrub_cancel, 1);
   rb_define_method (c_guestfs, "btrfs_scrub_resume",
-        ruby_guestfs_btrfs_scrub_resume, 1);
+                    guestfs_int_ruby_btrfs_scrub_resume, 1);
   rb_define_method (c_guestfs, "btrfs_scrub_start",
-        ruby_guestfs_btrfs_scrub_start, 1);
+                    guestfs_int_ruby_btrfs_scrub_start, 1);
   rb_define_method (c_guestfs, "btrfs_scrub_status",
-        ruby_guestfs_btrfs_scrub_status, 1);
+                    guestfs_int_ruby_btrfs_scrub_status, 1);
   rb_define_method (c_guestfs, "btrfs_set_seeding",
-        ruby_guestfs_btrfs_set_seeding, 2);
+                    guestfs_int_ruby_btrfs_set_seeding, 2);
   rb_define_method (c_guestfs, "btrfs_subvolume_create",
-        ruby_guestfs_btrfs_subvolume_create, -1);
+                    guestfs_int_ruby_btrfs_subvolume_create, -1);
   rb_define_method (c_guestfs, "btrfs_subvolume_create_opts",
-        ruby_guestfs_btrfs_subvolume_create, -1);
+                    guestfs_int_ruby_btrfs_subvolume_create, -1);
   rb_define_method (c_guestfs, "btrfs_subvolume_delete",
-        ruby_guestfs_btrfs_subvolume_delete, 1);
+                    guestfs_int_ruby_btrfs_subvolume_delete, 1);
   rb_define_method (c_guestfs, "btrfs_subvolume_get_default",
-        ruby_guestfs_btrfs_subvolume_get_default, 1);
+                    guestfs_int_ruby_btrfs_subvolume_get_default, 1);
   rb_define_method (c_guestfs, "btrfs_subvolume_list",
-        ruby_guestfs_btrfs_subvolume_list, 1);
+                    guestfs_int_ruby_btrfs_subvolume_list, 1);
   rb_define_method (c_guestfs, "btrfs_subvolume_set_default",
-        ruby_guestfs_btrfs_subvolume_set_default, 2);
+                    guestfs_int_ruby_btrfs_subvolume_set_default, 2);
   rb_define_method (c_guestfs, "btrfs_subvolume_show",
-        ruby_guestfs_btrfs_subvolume_show, 1);
+                    guestfs_int_ruby_btrfs_subvolume_show, 1);
   rb_define_method (c_guestfs, "btrfs_subvolume_snapshot",
-        ruby_guestfs_btrfs_subvolume_snapshot, -1);
+                    guestfs_int_ruby_btrfs_subvolume_snapshot, -1);
   rb_define_method (c_guestfs, "btrfs_subvolume_snapshot_opts",
-        ruby_guestfs_btrfs_subvolume_snapshot, -1);
+                    guestfs_int_ruby_btrfs_subvolume_snapshot, -1);
   rb_define_method (c_guestfs, "btrfstune_enable_extended_inode_refs",
-        ruby_guestfs_btrfstune_enable_extended_inode_refs, 1);
+                    guestfs_int_ruby_btrfstune_enable_extended_inode_refs, 1);
   rb_define_method (c_guestfs, "btrfstune_enable_skinny_metadata_extent_refs",
-        ruby_guestfs_btrfstune_enable_skinny_metadata_extent_refs, 1);
+                    guestfs_int_ruby_btrfstune_enable_skinny_metadata_extent_refs, 1);
   rb_define_method (c_guestfs, "btrfstune_seeding",
-        ruby_guestfs_btrfstune_seeding, 2);
+                    guestfs_int_ruby_btrfstune_seeding, 2);
   rb_define_method (c_guestfs, "c_pointer",
-        ruby_guestfs_c_pointer, 0);
+                    guestfs_int_ruby_c_pointer, 0);
   rb_define_method (c_guestfs, "canonical_device_name",
-        ruby_guestfs_canonical_device_name, 1);
+                    guestfs_int_ruby_canonical_device_name, 1);
   rb_define_method (c_guestfs, "cap_get_file",
-        ruby_guestfs_cap_get_file, 1);
+                    guestfs_int_ruby_cap_get_file, 1);
   rb_define_method (c_guestfs, "cap_set_file",
-        ruby_guestfs_cap_set_file, 2);
+                    guestfs_int_ruby_cap_set_file, 2);
   rb_define_method (c_guestfs, "case_sensitive_path",
-        ruby_guestfs_case_sensitive_path, 1);
+                    guestfs_int_ruby_case_sensitive_path, 1);
   rb_define_method (c_guestfs, "cat",
-        ruby_guestfs_cat, 1);
+                    guestfs_int_ruby_cat, 1);
   rb_define_method (c_guestfs, "checksum",
-        ruby_guestfs_checksum, 2);
+                    guestfs_int_ruby_checksum, 2);
   rb_define_method (c_guestfs, "checksum_device",
-        ruby_guestfs_checksum_device, 2);
+                    guestfs_int_ruby_checksum_device, 2);
   rb_define_method (c_guestfs, "checksums_out",
-        ruby_guestfs_checksums_out, 3);
+                    guestfs_int_ruby_checksums_out, 3);
   rb_define_method (c_guestfs, "chmod",
-        ruby_guestfs_chmod, 2);
+                    guestfs_int_ruby_chmod, 2);
   rb_define_method (c_guestfs, "chown",
-        ruby_guestfs_chown, 3);
+                    guestfs_int_ruby_chown, 3);
   rb_define_method (c_guestfs, "clear_backend_setting",
-        ruby_guestfs_clear_backend_setting, 1);
+                    guestfs_int_ruby_clear_backend_setting, 1);
   rb_define_method (c_guestfs, "command",
-        ruby_guestfs_command, 1);
+                    guestfs_int_ruby_command, 1);
   rb_define_method (c_guestfs, "command_lines",
-        ruby_guestfs_command_lines, 1);
+                    guestfs_int_ruby_command_lines, 1);
   rb_define_method (c_guestfs, "compress_device_out",
-        ruby_guestfs_compress_device_out, -1);
+                    guestfs_int_ruby_compress_device_out, -1);
   rb_define_method (c_guestfs, "compress_out",
-        ruby_guestfs_compress_out, -1);
+                    guestfs_int_ruby_compress_out, -1);
   rb_define_method (c_guestfs, "config",
-        ruby_guestfs_config, 2);
+                    guestfs_int_ruby_config, 2);
   rb_define_method (c_guestfs, "copy_attributes",
-        ruby_guestfs_copy_attributes, -1);
+                    guestfs_int_ruby_copy_attributes, -1);
   rb_define_method (c_guestfs, "copy_device_to_device",
-        ruby_guestfs_copy_device_to_device, -1);
+                    guestfs_int_ruby_copy_device_to_device, -1);
   rb_define_method (c_guestfs, "copy_device_to_file",
-        ruby_guestfs_copy_device_to_file, -1);
+                    guestfs_int_ruby_copy_device_to_file, -1);
   rb_define_method (c_guestfs, "copy_file_to_device",
-        ruby_guestfs_copy_file_to_device, -1);
+                    guestfs_int_ruby_copy_file_to_device, -1);
   rb_define_method (c_guestfs, "copy_file_to_file",
-        ruby_guestfs_copy_file_to_file, -1);
+                    guestfs_int_ruby_copy_file_to_file, -1);
   rb_define_method (c_guestfs, "copy_in",
-        ruby_guestfs_copy_in, 2);
+                    guestfs_int_ruby_copy_in, 2);
   rb_define_method (c_guestfs, "copy_out",
-        ruby_guestfs_copy_out, 2);
+                    guestfs_int_ruby_copy_out, 2);
   rb_define_method (c_guestfs, "copy_size",
-        ruby_guestfs_copy_size, 3);
+                    guestfs_int_ruby_copy_size, 3);
   rb_define_method (c_guestfs, "cp",
-        ruby_guestfs_cp, 2);
+                    guestfs_int_ruby_cp, 2);
   rb_define_method (c_guestfs, "cp_a",
-        ruby_guestfs_cp_a, 2);
+                    guestfs_int_ruby_cp_a, 2);
   rb_define_method (c_guestfs, "cp_r",
-        ruby_guestfs_cp_r, 2);
+                    guestfs_int_ruby_cp_r, 2);
   rb_define_method (c_guestfs, "cpio_out",
-        ruby_guestfs_cpio_out, -1);
+                    guestfs_int_ruby_cpio_out, -1);
   rb_define_method (c_guestfs, "dd",
-        ruby_guestfs_dd, 2);
+                    guestfs_int_ruby_dd, 2);
   rb_define_method (c_guestfs, "debug",
-        ruby_guestfs_debug, 2);
+                    guestfs_int_ruby_debug, 2);
   rb_define_method (c_guestfs, "debug_drives",
-        ruby_guestfs_debug_drives, 0);
+                    guestfs_int_ruby_debug_drives, 0);
   rb_define_method (c_guestfs, "debug_upload",
-        ruby_guestfs_debug_upload, 3);
+                    guestfs_int_ruby_debug_upload, 3);
   rb_define_method (c_guestfs, "device_index",
-        ruby_guestfs_device_index, 1);
+                    guestfs_int_ruby_device_index, 1);
   rb_define_method (c_guestfs, "df",
-        ruby_guestfs_df, 0);
+                    guestfs_int_ruby_df, 0);
   rb_define_method (c_guestfs, "df_h",
-        ruby_guestfs_df_h, 0);
+                    guestfs_int_ruby_df_h, 0);
   rb_define_method (c_guestfs, "disk_create",
-        ruby_guestfs_disk_create, -1);
+                    guestfs_int_ruby_disk_create, -1);
   rb_define_method (c_guestfs, "disk_format",
-        ruby_guestfs_disk_format, 1);
+                    guestfs_int_ruby_disk_format, 1);
   rb_define_method (c_guestfs, "disk_has_backing_file",
-        ruby_guestfs_disk_has_backing_file, 1);
+                    guestfs_int_ruby_disk_has_backing_file, 1);
   rb_define_method (c_guestfs, "disk_virtual_size",
-        ruby_guestfs_disk_virtual_size, 1);
+                    guestfs_int_ruby_disk_virtual_size, 1);
   rb_define_method (c_guestfs, "dmesg",
-        ruby_guestfs_dmesg, 0);
+                    guestfs_int_ruby_dmesg, 0);
   rb_define_method (c_guestfs, "download",
-        ruby_guestfs_download, 2);
+                    guestfs_int_ruby_download, 2);
   rb_define_method (c_guestfs, "download_offset",
-        ruby_guestfs_download_offset, 4);
+                    guestfs_int_ruby_download_offset, 4);
   rb_define_method (c_guestfs, "drop_caches",
-        ruby_guestfs_drop_caches, 1);
+                    guestfs_int_ruby_drop_caches, 1);
   rb_define_method (c_guestfs, "du",
-        ruby_guestfs_du, 1);
+                    guestfs_int_ruby_du, 1);
   rb_define_method (c_guestfs, "e2fsck",
-        ruby_guestfs_e2fsck, -1);
+                    guestfs_int_ruby_e2fsck, -1);
   rb_define_method (c_guestfs, "e2fsck_f",
-        ruby_guestfs_e2fsck_f, 1);
+                    guestfs_int_ruby_e2fsck_f, 1);
   rb_define_method (c_guestfs, "echo_daemon",
-        ruby_guestfs_echo_daemon, 1);
+                    guestfs_int_ruby_echo_daemon, 1);
   rb_define_method (c_guestfs, "egrep",
-        ruby_guestfs_egrep, 2);
+                    guestfs_int_ruby_egrep, 2);
   rb_define_method (c_guestfs, "egrepi",
-        ruby_guestfs_egrepi, 2);
+                    guestfs_int_ruby_egrepi, 2);
   rb_define_method (c_guestfs, "equal",
-        ruby_guestfs_equal, 2);
+                    guestfs_int_ruby_equal, 2);
   rb_define_method (c_guestfs, "exists",
-        ruby_guestfs_exists, 1);
+                    guestfs_int_ruby_exists, 1);
   rb_define_method (c_guestfs, "extlinux",
-        ruby_guestfs_extlinux, 1);
+                    guestfs_int_ruby_extlinux, 1);
   rb_define_method (c_guestfs, "fallocate",
-        ruby_guestfs_fallocate, 2);
+                    guestfs_int_ruby_fallocate, 2);
   rb_define_method (c_guestfs, "fallocate64",
-        ruby_guestfs_fallocate64, 2);
+                    guestfs_int_ruby_fallocate64, 2);
   rb_define_method (c_guestfs, "feature_available",
-        ruby_guestfs_feature_available, 1);
+                    guestfs_int_ruby_feature_available, 1);
   rb_define_method (c_guestfs, "fgrep",
-        ruby_guestfs_fgrep, 2);
+                    guestfs_int_ruby_fgrep, 2);
   rb_define_method (c_guestfs, "fgrepi",
-        ruby_guestfs_fgrepi, 2);
+                    guestfs_int_ruby_fgrepi, 2);
   rb_define_method (c_guestfs, "file",
-        ruby_guestfs_file, 1);
+                    guestfs_int_ruby_file, 1);
   rb_define_method (c_guestfs, "file_architecture",
-        ruby_guestfs_file_architecture, 1);
+                    guestfs_int_ruby_file_architecture, 1);
   rb_define_method (c_guestfs, "filesize",
-        ruby_guestfs_filesize, 1);
+                    guestfs_int_ruby_filesize, 1);
   rb_define_method (c_guestfs, "filesystem_available",
-        ruby_guestfs_filesystem_available, 1);
+                    guestfs_int_ruby_filesystem_available, 1);
   rb_define_method (c_guestfs, "fill",
-        ruby_guestfs_fill, 3);
+                    guestfs_int_ruby_fill, 3);
   rb_define_method (c_guestfs, "fill_dir",
-        ruby_guestfs_fill_dir, 2);
+                    guestfs_int_ruby_fill_dir, 2);
   rb_define_method (c_guestfs, "fill_pattern",
-        ruby_guestfs_fill_pattern, 3);
+                    guestfs_int_ruby_fill_pattern, 3);
   rb_define_method (c_guestfs, "find",
-        ruby_guestfs_find, 1);
+                    guestfs_int_ruby_find, 1);
   rb_define_method (c_guestfs, "find0",
-        ruby_guestfs_find0, 2);
+                    guestfs_int_ruby_find0, 2);
   rb_define_method (c_guestfs, "findfs_label",
-        ruby_guestfs_findfs_label, 1);
+                    guestfs_int_ruby_findfs_label, 1);
   rb_define_method (c_guestfs, "findfs_uuid",
-        ruby_guestfs_findfs_uuid, 1);
+                    guestfs_int_ruby_findfs_uuid, 1);
   rb_define_method (c_guestfs, "fsck",
-        ruby_guestfs_fsck, 2);
+                    guestfs_int_ruby_fsck, 2);
   rb_define_method (c_guestfs, "fstrim",
-        ruby_guestfs_fstrim, -1);
+                    guestfs_int_ruby_fstrim, -1);
   rb_define_method (c_guestfs, "get_append",
-        ruby_guestfs_get_append, 0);
+                    guestfs_int_ruby_get_append, 0);
   rb_define_method (c_guestfs, "get_attach_method",
-        ruby_guestfs_get_attach_method, 0);
+                    guestfs_int_ruby_get_attach_method, 0);
   rb_define_method (c_guestfs, "get_autosync",
-        ruby_guestfs_get_autosync, 0);
+                    guestfs_int_ruby_get_autosync, 0);
   rb_define_method (c_guestfs, "get_backend",
-        ruby_guestfs_get_backend, 0);
+                    guestfs_int_ruby_get_backend, 0);
   rb_define_method (c_guestfs, "get_backend_setting",
-        ruby_guestfs_get_backend_setting, 1);
+                    guestfs_int_ruby_get_backend_setting, 1);
   rb_define_method (c_guestfs, "get_backend_settings",
-        ruby_guestfs_get_backend_settings, 0);
+                    guestfs_int_ruby_get_backend_settings, 0);
   rb_define_method (c_guestfs, "get_cachedir",
-        ruby_guestfs_get_cachedir, 0);
+                    guestfs_int_ruby_get_cachedir, 0);
   rb_define_method (c_guestfs, "get_direct",
-        ruby_guestfs_get_direct, 0);
+                    guestfs_int_ruby_get_direct, 0);
   rb_define_method (c_guestfs, "get_e2attrs",
-        ruby_guestfs_get_e2attrs, 1);
+                    guestfs_int_ruby_get_e2attrs, 1);
   rb_define_method (c_guestfs, "get_e2generation",
-        ruby_guestfs_get_e2generation, 1);
+                    guestfs_int_ruby_get_e2generation, 1);
   rb_define_method (c_guestfs, "get_e2label",
-        ruby_guestfs_get_e2label, 1);
+                    guestfs_int_ruby_get_e2label, 1);
   rb_define_method (c_guestfs, "get_e2uuid",
-        ruby_guestfs_get_e2uuid, 1);
+                    guestfs_int_ruby_get_e2uuid, 1);
   rb_define_method (c_guestfs, "get_hv",
-        ruby_guestfs_get_hv, 0);
+                    guestfs_int_ruby_get_hv, 0);
   rb_define_method (c_guestfs, "get_identifier",
-        ruby_guestfs_get_identifier, 0);
+                    guestfs_int_ruby_get_identifier, 0);
   rb_define_method (c_guestfs, "get_libvirt_requested_credential_challenge",
-        ruby_guestfs_get_libvirt_requested_credential_challenge, 1);
+                    guestfs_int_ruby_get_libvirt_requested_credential_challenge, 1);
   rb_define_method (c_guestfs, "get_libvirt_requested_credential_defresult",
-        ruby_guestfs_get_libvirt_requested_credential_defresult, 1);
+                    guestfs_int_ruby_get_libvirt_requested_credential_defresult, 1);
   rb_define_method (c_guestfs, "get_libvirt_requested_credential_prompt",
-        ruby_guestfs_get_libvirt_requested_credential_prompt, 1);
+                    guestfs_int_ruby_get_libvirt_requested_credential_prompt, 1);
   rb_define_method (c_guestfs, "get_libvirt_requested_credentials",
-        ruby_guestfs_get_libvirt_requested_credentials, 0);
+                    guestfs_int_ruby_get_libvirt_requested_credentials, 0);
   rb_define_method (c_guestfs, "get_memsize",
-        ruby_guestfs_get_memsize, 0);
+                    guestfs_int_ruby_get_memsize, 0);
   rb_define_method (c_guestfs, "get_network",
-        ruby_guestfs_get_network, 0);
+                    guestfs_int_ruby_get_network, 0);
   rb_define_method (c_guestfs, "get_path",
-        ruby_guestfs_get_path, 0);
+                    guestfs_int_ruby_get_path, 0);
   rb_define_method (c_guestfs, "get_pgroup",
-        ruby_guestfs_get_pgroup, 0);
+                    guestfs_int_ruby_get_pgroup, 0);
   rb_define_method (c_guestfs, "get_pid",
-        ruby_guestfs_get_pid, 0);
+                    guestfs_int_ruby_get_pid, 0);
   rb_define_method (c_guestfs, "get_program",
-        ruby_guestfs_get_program, 0);
+                    guestfs_int_ruby_get_program, 0);
   rb_define_method (c_guestfs, "get_qemu",
-        ruby_guestfs_get_qemu, 0);
+                    guestfs_int_ruby_get_qemu, 0);
   rb_define_method (c_guestfs, "get_recovery_proc",
-        ruby_guestfs_get_recovery_proc, 0);
+                    guestfs_int_ruby_get_recovery_proc, 0);
   rb_define_method (c_guestfs, "get_selinux",
-        ruby_guestfs_get_selinux, 0);
+                    guestfs_int_ruby_get_selinux, 0);
   rb_define_method (c_guestfs, "get_smp",
-        ruby_guestfs_get_smp, 0);
+                    guestfs_int_ruby_get_smp, 0);
   rb_define_method (c_guestfs, "get_state",
-        ruby_guestfs_get_state, 0);
+                    guestfs_int_ruby_get_state, 0);
   rb_define_method (c_guestfs, "get_tmpdir",
-        ruby_guestfs_get_tmpdir, 0);
+                    guestfs_int_ruby_get_tmpdir, 0);
   rb_define_method (c_guestfs, "get_trace",
-        ruby_guestfs_get_trace, 0);
+                    guestfs_int_ruby_get_trace, 0);
   rb_define_method (c_guestfs, "get_umask",
-        ruby_guestfs_get_umask, 0);
+                    guestfs_int_ruby_get_umask, 0);
   rb_define_method (c_guestfs, "get_verbose",
-        ruby_guestfs_get_verbose, 0);
+                    guestfs_int_ruby_get_verbose, 0);
   rb_define_method (c_guestfs, "getcon",
-        ruby_guestfs_getcon, 0);
+                    guestfs_int_ruby_getcon, 0);
   rb_define_method (c_guestfs, "getxattr",
-        ruby_guestfs_getxattr, 2);
+                    guestfs_int_ruby_getxattr, 2);
   rb_define_method (c_guestfs, "getxattrs",
-        ruby_guestfs_getxattrs, 1);
+                    guestfs_int_ruby_getxattrs, 1);
   rb_define_method (c_guestfs, "glob_expand",
-        ruby_guestfs_glob_expand, 1);
+                    guestfs_int_ruby_glob_expand, 1);
   rb_define_method (c_guestfs, "grep",
-        ruby_guestfs_grep, -1);
+                    guestfs_int_ruby_grep, -1);
   rb_define_method (c_guestfs, "grep_opts",
-        ruby_guestfs_grep, -1);
+                    guestfs_int_ruby_grep, -1);
   rb_define_method (c_guestfs, "grepi",
-        ruby_guestfs_grepi, 2);
+                    guestfs_int_ruby_grepi, 2);
   rb_define_method (c_guestfs, "grub_install",
-        ruby_guestfs_grub_install, 2);
+                    guestfs_int_ruby_grub_install, 2);
   rb_define_method (c_guestfs, "head",
-        ruby_guestfs_head, 1);
+                    guestfs_int_ruby_head, 1);
   rb_define_method (c_guestfs, "head_n",
-        ruby_guestfs_head_n, 2);
+                    guestfs_int_ruby_head_n, 2);
   rb_define_method (c_guestfs, "hexdump",
-        ruby_guestfs_hexdump, 1);
+                    guestfs_int_ruby_hexdump, 1);
   rb_define_method (c_guestfs, "hivex_close",
-        ruby_guestfs_hivex_close, 0);
+                    guestfs_int_ruby_hivex_close, 0);
   rb_define_method (c_guestfs, "hivex_commit",
-        ruby_guestfs_hivex_commit, 1);
+                    guestfs_int_ruby_hivex_commit, 1);
   rb_define_method (c_guestfs, "hivex_node_add_child",
-        ruby_guestfs_hivex_node_add_child, 2);
+                    guestfs_int_ruby_hivex_node_add_child, 2);
   rb_define_method (c_guestfs, "hivex_node_children",
-        ruby_guestfs_hivex_node_children, 1);
+                    guestfs_int_ruby_hivex_node_children, 1);
   rb_define_method (c_guestfs, "hivex_node_delete_child",
-        ruby_guestfs_hivex_node_delete_child, 1);
+                    guestfs_int_ruby_hivex_node_delete_child, 1);
   rb_define_method (c_guestfs, "hivex_node_get_child",
-        ruby_guestfs_hivex_node_get_child, 2);
+                    guestfs_int_ruby_hivex_node_get_child, 2);
   rb_define_method (c_guestfs, "hivex_node_get_value",
-        ruby_guestfs_hivex_node_get_value, 2);
+                    guestfs_int_ruby_hivex_node_get_value, 2);
   rb_define_method (c_guestfs, "hivex_node_name",
-        ruby_guestfs_hivex_node_name, 1);
+                    guestfs_int_ruby_hivex_node_name, 1);
   rb_define_method (c_guestfs, "hivex_node_parent",
-        ruby_guestfs_hivex_node_parent, 1);
+                    guestfs_int_ruby_hivex_node_parent, 1);
   rb_define_method (c_guestfs, "hivex_node_set_value",
-        ruby_guestfs_hivex_node_set_value, 4);
+                    guestfs_int_ruby_hivex_node_set_value, 4);
   rb_define_method (c_guestfs, "hivex_node_values",
-        ruby_guestfs_hivex_node_values, 1);
+                    guestfs_int_ruby_hivex_node_values, 1);
   rb_define_method (c_guestfs, "hivex_open",
-        ruby_guestfs_hivex_open, -1);
+                    guestfs_int_ruby_hivex_open, -1);
   rb_define_method (c_guestfs, "hivex_root",
-        ruby_guestfs_hivex_root, 0);
+                    guestfs_int_ruby_hivex_root, 0);
   rb_define_method (c_guestfs, "hivex_value_key",
-        ruby_guestfs_hivex_value_key, 1);
+                    guestfs_int_ruby_hivex_value_key, 1);
   rb_define_method (c_guestfs, "hivex_value_type",
-        ruby_guestfs_hivex_value_type, 1);
+                    guestfs_int_ruby_hivex_value_type, 1);
   rb_define_method (c_guestfs, "hivex_value_utf8",
-        ruby_guestfs_hivex_value_utf8, 1);
+                    guestfs_int_ruby_hivex_value_utf8, 1);
   rb_define_method (c_guestfs, "hivex_value_value",
-        ruby_guestfs_hivex_value_value, 1);
+                    guestfs_int_ruby_hivex_value_value, 1);
   rb_define_method (c_guestfs, "initrd_cat",
-        ruby_guestfs_initrd_cat, 2);
+                    guestfs_int_ruby_initrd_cat, 2);
   rb_define_method (c_guestfs, "initrd_list",
-        ruby_guestfs_initrd_list, 1);
+                    guestfs_int_ruby_initrd_list, 1);
   rb_define_method (c_guestfs, "inotify_add_watch",
-        ruby_guestfs_inotify_add_watch, 2);
+                    guestfs_int_ruby_inotify_add_watch, 2);
   rb_define_method (c_guestfs, "inotify_close",
-        ruby_guestfs_inotify_close, 0);
+                    guestfs_int_ruby_inotify_close, 0);
   rb_define_method (c_guestfs, "inotify_files",
-        ruby_guestfs_inotify_files, 0);
+                    guestfs_int_ruby_inotify_files, 0);
   rb_define_method (c_guestfs, "inotify_init",
-        ruby_guestfs_inotify_init, 1);
+                    guestfs_int_ruby_inotify_init, 1);
   rb_define_method (c_guestfs, "inotify_read",
-        ruby_guestfs_inotify_read, 0);
+                    guestfs_int_ruby_inotify_read, 0);
   rb_define_method (c_guestfs, "inotify_rm_watch",
-        ruby_guestfs_inotify_rm_watch, 1);
+                    guestfs_int_ruby_inotify_rm_watch, 1);
   rb_define_method (c_guestfs, "inspect_get_arch",
-        ruby_guestfs_inspect_get_arch, 1);
+                    guestfs_int_ruby_inspect_get_arch, 1);
   rb_define_method (c_guestfs, "inspect_get_distro",
-        ruby_guestfs_inspect_get_distro, 1);
+                    guestfs_int_ruby_inspect_get_distro, 1);
   rb_define_method (c_guestfs, "inspect_get_drive_mappings",
-        ruby_guestfs_inspect_get_drive_mappings, 1);
+                    guestfs_int_ruby_inspect_get_drive_mappings, 1);
   rb_define_method (c_guestfs, "inspect_get_filesystems",
-        ruby_guestfs_inspect_get_filesystems, 1);
+                    guestfs_int_ruby_inspect_get_filesystems, 1);
   rb_define_method (c_guestfs, "inspect_get_format",
-        ruby_guestfs_inspect_get_format, 1);
+                    guestfs_int_ruby_inspect_get_format, 1);
   rb_define_method (c_guestfs, "inspect_get_hostname",
-        ruby_guestfs_inspect_get_hostname, 1);
+                    guestfs_int_ruby_inspect_get_hostname, 1);
   rb_define_method (c_guestfs, "inspect_get_icon",
-        ruby_guestfs_inspect_get_icon, -1);
+                    guestfs_int_ruby_inspect_get_icon, -1);
   rb_define_method (c_guestfs, "inspect_get_major_version",
-        ruby_guestfs_inspect_get_major_version, 1);
+                    guestfs_int_ruby_inspect_get_major_version, 1);
   rb_define_method (c_guestfs, "inspect_get_minor_version",
-        ruby_guestfs_inspect_get_minor_version, 1);
+                    guestfs_int_ruby_inspect_get_minor_version, 1);
   rb_define_method (c_guestfs, "inspect_get_mountpoints",
-        ruby_guestfs_inspect_get_mountpoints, 1);
+                    guestfs_int_ruby_inspect_get_mountpoints, 1);
   rb_define_method (c_guestfs, "inspect_get_package_format",
-        ruby_guestfs_inspect_get_package_format, 1);
+                    guestfs_int_ruby_inspect_get_package_format, 1);
   rb_define_method (c_guestfs, "inspect_get_package_management",
-        ruby_guestfs_inspect_get_package_management, 1);
+                    guestfs_int_ruby_inspect_get_package_management, 1);
   rb_define_method (c_guestfs, "inspect_get_product_name",
-        ruby_guestfs_inspect_get_product_name, 1);
+                    guestfs_int_ruby_inspect_get_product_name, 1);
   rb_define_method (c_guestfs, "inspect_get_product_variant",
-        ruby_guestfs_inspect_get_product_variant, 1);
+                    guestfs_int_ruby_inspect_get_product_variant, 1);
   rb_define_method (c_guestfs, "inspect_get_roots",
-        ruby_guestfs_inspect_get_roots, 0);
+                    guestfs_int_ruby_inspect_get_roots, 0);
   rb_define_method (c_guestfs, "inspect_get_type",
-        ruby_guestfs_inspect_get_type, 1);
+                    guestfs_int_ruby_inspect_get_type, 1);
   rb_define_method (c_guestfs, "inspect_get_windows_current_control_set",
-        ruby_guestfs_inspect_get_windows_current_control_set, 1);
+                    guestfs_int_ruby_inspect_get_windows_current_control_set, 1);
   rb_define_method (c_guestfs, "inspect_get_windows_systemroot",
-        ruby_guestfs_inspect_get_windows_systemroot, 1);
+                    guestfs_int_ruby_inspect_get_windows_systemroot, 1);
   rb_define_method (c_guestfs, "inspect_is_live",
-        ruby_guestfs_inspect_is_live, 1);
+                    guestfs_int_ruby_inspect_is_live, 1);
   rb_define_method (c_guestfs, "inspect_is_multipart",
-        ruby_guestfs_inspect_is_multipart, 1);
+                    guestfs_int_ruby_inspect_is_multipart, 1);
   rb_define_method (c_guestfs, "inspect_is_netinst",
-        ruby_guestfs_inspect_is_netinst, 1);
+                    guestfs_int_ruby_inspect_is_netinst, 1);
   rb_define_method (c_guestfs, "inspect_list_applications",
-        ruby_guestfs_inspect_list_applications, 1);
+                    guestfs_int_ruby_inspect_list_applications, 1);
   rb_define_method (c_guestfs, "inspect_list_applications2",
-        ruby_guestfs_inspect_list_applications2, 1);
+                    guestfs_int_ruby_inspect_list_applications2, 1);
   rb_define_method (c_guestfs, "inspect_os",
-        ruby_guestfs_inspect_os, 0);
+                    guestfs_int_ruby_inspect_os, 0);
   rb_define_method (c_guestfs, "internal_exit",
-        ruby_guestfs_internal_exit, 0);
+                    guestfs_int_ruby_internal_exit, 0);
   rb_define_method (c_guestfs, "internal_test",
-        ruby_guestfs_internal_test, -1);
+                    guestfs_int_ruby_internal_test, -1);
   rb_define_method (c_guestfs, "internal_test_63_optargs",
-        ruby_guestfs_internal_test_63_optargs, -1);
+                    guestfs_int_ruby_internal_test_63_optargs, -1);
   rb_define_method (c_guestfs, "internal_test_close_output",
-        ruby_guestfs_internal_test_close_output, 0);
+                    guestfs_int_ruby_internal_test_close_output, 0);
   rb_define_method (c_guestfs, "internal_test_only_optargs",
-        ruby_guestfs_internal_test_only_optargs, -1);
+                    guestfs_int_ruby_internal_test_only_optargs, -1);
   rb_define_method (c_guestfs, "internal_test_rbool",
-        ruby_guestfs_internal_test_rbool, 1);
+                    guestfs_int_ruby_internal_test_rbool, 1);
   rb_define_method (c_guestfs, "internal_test_rboolerr",
-        ruby_guestfs_internal_test_rboolerr, 0);
+                    guestfs_int_ruby_internal_test_rboolerr, 0);
   rb_define_method (c_guestfs, "internal_test_rbufferout",
-        ruby_guestfs_internal_test_rbufferout, 1);
+                    guestfs_int_ruby_internal_test_rbufferout, 1);
   rb_define_method (c_guestfs, "internal_test_rbufferouterr",
-        ruby_guestfs_internal_test_rbufferouterr, 0);
+                    guestfs_int_ruby_internal_test_rbufferouterr, 0);
   rb_define_method (c_guestfs, "internal_test_rconstoptstring",
-        ruby_guestfs_internal_test_rconstoptstring, 1);
+                    guestfs_int_ruby_internal_test_rconstoptstring, 1);
   rb_define_method (c_guestfs, "internal_test_rconstoptstringerr",
-        ruby_guestfs_internal_test_rconstoptstringerr, 0);
+                    guestfs_int_ruby_internal_test_rconstoptstringerr, 0);
   rb_define_method (c_guestfs, "internal_test_rconststring",
-        ruby_guestfs_internal_test_rconststring, 1);
+                    guestfs_int_ruby_internal_test_rconststring, 1);
   rb_define_method (c_guestfs, "internal_test_rconststringerr",
-        ruby_guestfs_internal_test_rconststringerr, 0);
+                    guestfs_int_ruby_internal_test_rconststringerr, 0);
   rb_define_method (c_guestfs, "internal_test_rhashtable",
-        ruby_guestfs_internal_test_rhashtable, 1);
+                    guestfs_int_ruby_internal_test_rhashtable, 1);
   rb_define_method (c_guestfs, "internal_test_rhashtableerr",
-        ruby_guestfs_internal_test_rhashtableerr, 0);
+                    guestfs_int_ruby_internal_test_rhashtableerr, 0);
   rb_define_method (c_guestfs, "internal_test_rint",
-        ruby_guestfs_internal_test_rint, 1);
+                    guestfs_int_ruby_internal_test_rint, 1);
   rb_define_method (c_guestfs, "internal_test_rint64",
-        ruby_guestfs_internal_test_rint64, 1);
+                    guestfs_int_ruby_internal_test_rint64, 1);
   rb_define_method (c_guestfs, "internal_test_rint64err",
-        ruby_guestfs_internal_test_rint64err, 0);
+                    guestfs_int_ruby_internal_test_rint64err, 0);
   rb_define_method (c_guestfs, "internal_test_rinterr",
-        ruby_guestfs_internal_test_rinterr, 0);
+                    guestfs_int_ruby_internal_test_rinterr, 0);
   rb_define_method (c_guestfs, "internal_test_rstring",
-        ruby_guestfs_internal_test_rstring, 1);
+                    guestfs_int_ruby_internal_test_rstring, 1);
   rb_define_method (c_guestfs, "internal_test_rstringerr",
-        ruby_guestfs_internal_test_rstringerr, 0);
+                    guestfs_int_ruby_internal_test_rstringerr, 0);
   rb_define_method (c_guestfs, "internal_test_rstringlist",
-        ruby_guestfs_internal_test_rstringlist, 1);
+                    guestfs_int_ruby_internal_test_rstringlist, 1);
   rb_define_method (c_guestfs, "internal_test_rstringlisterr",
-        ruby_guestfs_internal_test_rstringlisterr, 0);
+                    guestfs_int_ruby_internal_test_rstringlisterr, 0);
   rb_define_method (c_guestfs, "internal_test_rstruct",
-        ruby_guestfs_internal_test_rstruct, 1);
+                    guestfs_int_ruby_internal_test_rstruct, 1);
   rb_define_method (c_guestfs, "internal_test_rstructerr",
-        ruby_guestfs_internal_test_rstructerr, 0);
+                    guestfs_int_ruby_internal_test_rstructerr, 0);
   rb_define_method (c_guestfs, "internal_test_rstructlist",
-        ruby_guestfs_internal_test_rstructlist, 1);
+                    guestfs_int_ruby_internal_test_rstructlist, 1);
   rb_define_method (c_guestfs, "internal_test_rstructlisterr",
-        ruby_guestfs_internal_test_rstructlisterr, 0);
+                    guestfs_int_ruby_internal_test_rstructlisterr, 0);
   rb_define_method (c_guestfs, "internal_test_set_output",
-        ruby_guestfs_internal_test_set_output, 1);
+                    guestfs_int_ruby_internal_test_set_output, 1);
   rb_define_method (c_guestfs, "is_blockdev",
-        ruby_guestfs_is_blockdev, -1);
+                    guestfs_int_ruby_is_blockdev, -1);
   rb_define_method (c_guestfs, "is_blockdev_opts",
-        ruby_guestfs_is_blockdev, -1);
+                    guestfs_int_ruby_is_blockdev, -1);
   rb_define_method (c_guestfs, "is_busy",
-        ruby_guestfs_is_busy, 0);
+                    guestfs_int_ruby_is_busy, 0);
   rb_define_method (c_guestfs, "is_chardev",
-        ruby_guestfs_is_chardev, -1);
+                    guestfs_int_ruby_is_chardev, -1);
   rb_define_method (c_guestfs, "is_chardev_opts",
-        ruby_guestfs_is_chardev, -1);
+                    guestfs_int_ruby_is_chardev, -1);
   rb_define_method (c_guestfs, "is_config",
-        ruby_guestfs_is_config, 0);
+                    guestfs_int_ruby_is_config, 0);
   rb_define_method (c_guestfs, "is_dir",
-        ruby_guestfs_is_dir, -1);
+                    guestfs_int_ruby_is_dir, -1);
   rb_define_method (c_guestfs, "is_dir_opts",
-        ruby_guestfs_is_dir, -1);
+                    guestfs_int_ruby_is_dir, -1);
   rb_define_method (c_guestfs, "is_fifo",
-        ruby_guestfs_is_fifo, -1);
+                    guestfs_int_ruby_is_fifo, -1);
   rb_define_method (c_guestfs, "is_fifo_opts",
-        ruby_guestfs_is_fifo, -1);
+                    guestfs_int_ruby_is_fifo, -1);
   rb_define_method (c_guestfs, "is_file",
-        ruby_guestfs_is_file, -1);
+                    guestfs_int_ruby_is_file, -1);
   rb_define_method (c_guestfs, "is_file_opts",
-        ruby_guestfs_is_file, -1);
+                    guestfs_int_ruby_is_file, -1);
   rb_define_method (c_guestfs, "is_launching",
-        ruby_guestfs_is_launching, 0);
+                    guestfs_int_ruby_is_launching, 0);
   rb_define_method (c_guestfs, "is_lv",
-        ruby_guestfs_is_lv, 1);
+                    guestfs_int_ruby_is_lv, 1);
   rb_define_method (c_guestfs, "is_ready",
-        ruby_guestfs_is_ready, 0);
+                    guestfs_int_ruby_is_ready, 0);
   rb_define_method (c_guestfs, "is_socket",
-        ruby_guestfs_is_socket, -1);
+                    guestfs_int_ruby_is_socket, -1);
   rb_define_method (c_guestfs, "is_socket_opts",
-        ruby_guestfs_is_socket, -1);
+                    guestfs_int_ruby_is_socket, -1);
   rb_define_method (c_guestfs, "is_symlink",
-        ruby_guestfs_is_symlink, 1);
+                    guestfs_int_ruby_is_symlink, 1);
   rb_define_method (c_guestfs, "is_whole_device",
-        ruby_guestfs_is_whole_device, 1);
+                    guestfs_int_ruby_is_whole_device, 1);
   rb_define_method (c_guestfs, "is_zero",
-        ruby_guestfs_is_zero, 1);
+                    guestfs_int_ruby_is_zero, 1);
   rb_define_method (c_guestfs, "is_zero_device",
-        ruby_guestfs_is_zero_device, 1);
+                    guestfs_int_ruby_is_zero_device, 1);
   rb_define_method (c_guestfs, "isoinfo",
-        ruby_guestfs_isoinfo, 1);
+                    guestfs_int_ruby_isoinfo, 1);
   rb_define_method (c_guestfs, "isoinfo_device",
-        ruby_guestfs_isoinfo_device, 1);
+                    guestfs_int_ruby_isoinfo_device, 1);
   rb_define_method (c_guestfs, "journal_close",
-        ruby_guestfs_journal_close, 0);
+                    guestfs_int_ruby_journal_close, 0);
   rb_define_method (c_guestfs, "journal_get",
-        ruby_guestfs_journal_get, 0);
+                    guestfs_int_ruby_journal_get, 0);
   rb_define_method (c_guestfs, "journal_get_data_threshold",
-        ruby_guestfs_journal_get_data_threshold, 0);
+                    guestfs_int_ruby_journal_get_data_threshold, 0);
   rb_define_method (c_guestfs, "journal_get_realtime_usec",
-        ruby_guestfs_journal_get_realtime_usec, 0);
+                    guestfs_int_ruby_journal_get_realtime_usec, 0);
   rb_define_method (c_guestfs, "journal_next",
-        ruby_guestfs_journal_next, 0);
+                    guestfs_int_ruby_journal_next, 0);
   rb_define_method (c_guestfs, "journal_open",
-        ruby_guestfs_journal_open, 1);
+                    guestfs_int_ruby_journal_open, 1);
   rb_define_method (c_guestfs, "journal_set_data_threshold",
-        ruby_guestfs_journal_set_data_threshold, 1);
+                    guestfs_int_ruby_journal_set_data_threshold, 1);
   rb_define_method (c_guestfs, "journal_skip",
-        ruby_guestfs_journal_skip, 1);
+                    guestfs_int_ruby_journal_skip, 1);
   rb_define_method (c_guestfs, "kill_subprocess",
-        ruby_guestfs_kill_subprocess, 0);
+                    guestfs_int_ruby_kill_subprocess, 0);
   rb_define_method (c_guestfs, "launch",
-        ruby_guestfs_launch, 0);
+                    guestfs_int_ruby_launch, 0);
   rb_define_method (c_guestfs, "lchown",
-        ruby_guestfs_lchown, 3);
+                    guestfs_int_ruby_lchown, 3);
   rb_define_method (c_guestfs, "ldmtool_create_all",
-        ruby_guestfs_ldmtool_create_all, 0);
+                    guestfs_int_ruby_ldmtool_create_all, 0);
   rb_define_method (c_guestfs, "ldmtool_diskgroup_disks",
-        ruby_guestfs_ldmtool_diskgroup_disks, 1);
+                    guestfs_int_ruby_ldmtool_diskgroup_disks, 1);
   rb_define_method (c_guestfs, "ldmtool_diskgroup_name",
-        ruby_guestfs_ldmtool_diskgroup_name, 1);
+                    guestfs_int_ruby_ldmtool_diskgroup_name, 1);
   rb_define_method (c_guestfs, "ldmtool_diskgroup_volumes",
-        ruby_guestfs_ldmtool_diskgroup_volumes, 1);
+                    guestfs_int_ruby_ldmtool_diskgroup_volumes, 1);
   rb_define_method (c_guestfs, "ldmtool_remove_all",
-        ruby_guestfs_ldmtool_remove_all, 0);
+                    guestfs_int_ruby_ldmtool_remove_all, 0);
   rb_define_method (c_guestfs, "ldmtool_scan",
-        ruby_guestfs_ldmtool_scan, 0);
+                    guestfs_int_ruby_ldmtool_scan, 0);
   rb_define_method (c_guestfs, "ldmtool_scan_devices",
-        ruby_guestfs_ldmtool_scan_devices, 1);
+                    guestfs_int_ruby_ldmtool_scan_devices, 1);
   rb_define_method (c_guestfs, "ldmtool_volume_hint",
-        ruby_guestfs_ldmtool_volume_hint, 2);
+                    guestfs_int_ruby_ldmtool_volume_hint, 2);
   rb_define_method (c_guestfs, "ldmtool_volume_partitions",
-        ruby_guestfs_ldmtool_volume_partitions, 2);
+                    guestfs_int_ruby_ldmtool_volume_partitions, 2);
   rb_define_method (c_guestfs, "ldmtool_volume_type",
-        ruby_guestfs_ldmtool_volume_type, 2);
+                    guestfs_int_ruby_ldmtool_volume_type, 2);
   rb_define_method (c_guestfs, "lgetxattr",
-        ruby_guestfs_lgetxattr, 2);
+                    guestfs_int_ruby_lgetxattr, 2);
   rb_define_method (c_guestfs, "lgetxattrs",
-        ruby_guestfs_lgetxattrs, 1);
+                    guestfs_int_ruby_lgetxattrs, 1);
   rb_define_method (c_guestfs, "list_9p",
-        ruby_guestfs_list_9p, 0);
+                    guestfs_int_ruby_list_9p, 0);
   rb_define_method (c_guestfs, "list_devices",
-        ruby_guestfs_list_devices, 0);
+                    guestfs_int_ruby_list_devices, 0);
   rb_define_method (c_guestfs, "list_disk_labels",
-        ruby_guestfs_list_disk_labels, 0);
+                    guestfs_int_ruby_list_disk_labels, 0);
   rb_define_method (c_guestfs, "list_dm_devices",
-        ruby_guestfs_list_dm_devices, 0);
+                    guestfs_int_ruby_list_dm_devices, 0);
   rb_define_method (c_guestfs, "list_filesystems",
-        ruby_guestfs_list_filesystems, 0);
+                    guestfs_int_ruby_list_filesystems, 0);
   rb_define_method (c_guestfs, "list_ldm_partitions",
-        ruby_guestfs_list_ldm_partitions, 0);
+                    guestfs_int_ruby_list_ldm_partitions, 0);
   rb_define_method (c_guestfs, "list_ldm_volumes",
-        ruby_guestfs_list_ldm_volumes, 0);
+                    guestfs_int_ruby_list_ldm_volumes, 0);
   rb_define_method (c_guestfs, "list_md_devices",
-        ruby_guestfs_list_md_devices, 0);
+                    guestfs_int_ruby_list_md_devices, 0);
   rb_define_method (c_guestfs, "list_partitions",
-        ruby_guestfs_list_partitions, 0);
+                    guestfs_int_ruby_list_partitions, 0);
   rb_define_method (c_guestfs, "ll",
-        ruby_guestfs_ll, 1);
+                    guestfs_int_ruby_ll, 1);
   rb_define_method (c_guestfs, "llz",
-        ruby_guestfs_llz, 1);
+                    guestfs_int_ruby_llz, 1);
   rb_define_method (c_guestfs, "ln",
-        ruby_guestfs_ln, 2);
+                    guestfs_int_ruby_ln, 2);
   rb_define_method (c_guestfs, "ln_f",
-        ruby_guestfs_ln_f, 2);
+                    guestfs_int_ruby_ln_f, 2);
   rb_define_method (c_guestfs, "ln_s",
-        ruby_guestfs_ln_s, 2);
+                    guestfs_int_ruby_ln_s, 2);
   rb_define_method (c_guestfs, "ln_sf",
-        ruby_guestfs_ln_sf, 2);
+                    guestfs_int_ruby_ln_sf, 2);
   rb_define_method (c_guestfs, "lremovexattr",
-        ruby_guestfs_lremovexattr, 2);
+                    guestfs_int_ruby_lremovexattr, 2);
   rb_define_method (c_guestfs, "ls",
-        ruby_guestfs_ls, 1);
+                    guestfs_int_ruby_ls, 1);
   rb_define_method (c_guestfs, "ls0",
-        ruby_guestfs_ls0, 2);
+                    guestfs_int_ruby_ls0, 2);
   rb_define_method (c_guestfs, "lsetxattr",
-        ruby_guestfs_lsetxattr, 4);
+                    guestfs_int_ruby_lsetxattr, 4);
   rb_define_method (c_guestfs, "lstat",
-        ruby_guestfs_lstat, 1);
+                    guestfs_int_ruby_lstat, 1);
   rb_define_method (c_guestfs, "lstatlist",
-        ruby_guestfs_lstatlist, 2);
+                    guestfs_int_ruby_lstatlist, 2);
   rb_define_method (c_guestfs, "lstatns",
-        ruby_guestfs_lstatns, 1);
+                    guestfs_int_ruby_lstatns, 1);
   rb_define_method (c_guestfs, "lstatnslist",
-        ruby_guestfs_lstatnslist, 2);
+                    guestfs_int_ruby_lstatnslist, 2);
   rb_define_method (c_guestfs, "luks_add_key",
-        ruby_guestfs_luks_add_key, 4);
+                    guestfs_int_ruby_luks_add_key, 4);
   rb_define_method (c_guestfs, "luks_close",
-        ruby_guestfs_luks_close, 1);
+                    guestfs_int_ruby_luks_close, 1);
   rb_define_method (c_guestfs, "luks_format",
-        ruby_guestfs_luks_format, 3);
+                    guestfs_int_ruby_luks_format, 3);
   rb_define_method (c_guestfs, "luks_format_cipher",
-        ruby_guestfs_luks_format_cipher, 4);
+                    guestfs_int_ruby_luks_format_cipher, 4);
   rb_define_method (c_guestfs, "luks_kill_slot",
-        ruby_guestfs_luks_kill_slot, 3);
+                    guestfs_int_ruby_luks_kill_slot, 3);
   rb_define_method (c_guestfs, "luks_open",
-        ruby_guestfs_luks_open, 3);
+                    guestfs_int_ruby_luks_open, 3);
   rb_define_method (c_guestfs, "luks_open_ro",
-        ruby_guestfs_luks_open_ro, 3);
+                    guestfs_int_ruby_luks_open_ro, 3);
   rb_define_method (c_guestfs, "lvcreate",
-        ruby_guestfs_lvcreate, 3);
+                    guestfs_int_ruby_lvcreate, 3);
   rb_define_method (c_guestfs, "lvcreate_free",
-        ruby_guestfs_lvcreate_free, 3);
+                    guestfs_int_ruby_lvcreate_free, 3);
   rb_define_method (c_guestfs, "lvm_canonical_lv_name",
-        ruby_guestfs_lvm_canonical_lv_name, 1);
+                    guestfs_int_ruby_lvm_canonical_lv_name, 1);
   rb_define_method (c_guestfs, "lvm_clear_filter",
-        ruby_guestfs_lvm_clear_filter, 0);
+                    guestfs_int_ruby_lvm_clear_filter, 0);
   rb_define_method (c_guestfs, "lvm_remove_all",
-        ruby_guestfs_lvm_remove_all, 0);
+                    guestfs_int_ruby_lvm_remove_all, 0);
   rb_define_method (c_guestfs, "lvm_set_filter",
-        ruby_guestfs_lvm_set_filter, 1);
+                    guestfs_int_ruby_lvm_set_filter, 1);
   rb_define_method (c_guestfs, "lvremove",
-        ruby_guestfs_lvremove, 1);
+                    guestfs_int_ruby_lvremove, 1);
   rb_define_method (c_guestfs, "lvrename",
-        ruby_guestfs_lvrename, 2);
+                    guestfs_int_ruby_lvrename, 2);
   rb_define_method (c_guestfs, "lvresize",
-        ruby_guestfs_lvresize, 2);
+                    guestfs_int_ruby_lvresize, 2);
   rb_define_method (c_guestfs, "lvresize_free",
-        ruby_guestfs_lvresize_free, 2);
+                    guestfs_int_ruby_lvresize_free, 2);
   rb_define_method (c_guestfs, "lvs",
-        ruby_guestfs_lvs, 0);
+                    guestfs_int_ruby_lvs, 0);
   rb_define_method (c_guestfs, "lvs_full",
-        ruby_guestfs_lvs_full, 0);
+                    guestfs_int_ruby_lvs_full, 0);
   rb_define_method (c_guestfs, "lvuuid",
-        ruby_guestfs_lvuuid, 1);
+                    guestfs_int_ruby_lvuuid, 1);
   rb_define_method (c_guestfs, "lxattrlist",
-        ruby_guestfs_lxattrlist, 2);
+                    guestfs_int_ruby_lxattrlist, 2);
   rb_define_method (c_guestfs, "max_disks",
-        ruby_guestfs_max_disks, 0);
+                    guestfs_int_ruby_max_disks, 0);
   rb_define_method (c_guestfs, "md_create",
-        ruby_guestfs_md_create, -1);
+                    guestfs_int_ruby_md_create, -1);
   rb_define_method (c_guestfs, "md_detail",
-        ruby_guestfs_md_detail, 1);
+                    guestfs_int_ruby_md_detail, 1);
   rb_define_method (c_guestfs, "md_stat",
-        ruby_guestfs_md_stat, 1);
+                    guestfs_int_ruby_md_stat, 1);
   rb_define_method (c_guestfs, "md_stop",
-        ruby_guestfs_md_stop, 1);
+                    guestfs_int_ruby_md_stop, 1);
   rb_define_method (c_guestfs, "mkdir",
-        ruby_guestfs_mkdir, 1);
+                    guestfs_int_ruby_mkdir, 1);
   rb_define_method (c_guestfs, "mkdir_mode",
-        ruby_guestfs_mkdir_mode, 2);
+                    guestfs_int_ruby_mkdir_mode, 2);
   rb_define_method (c_guestfs, "mkdir_p",
-        ruby_guestfs_mkdir_p, 1);
+                    guestfs_int_ruby_mkdir_p, 1);
   rb_define_method (c_guestfs, "mkdtemp",
-        ruby_guestfs_mkdtemp, 1);
+                    guestfs_int_ruby_mkdtemp, 1);
   rb_define_method (c_guestfs, "mke2fs",
-        ruby_guestfs_mke2fs, -1);
+                    guestfs_int_ruby_mke2fs, -1);
   rb_define_method (c_guestfs, "mke2fs_J",
-        ruby_guestfs_mke2fs_J, 4);
+                    guestfs_int_ruby_mke2fs_J, 4);
   rb_define_method (c_guestfs, "mke2fs_JL",
-        ruby_guestfs_mke2fs_JL, 4);
+                    guestfs_int_ruby_mke2fs_JL, 4);
   rb_define_method (c_guestfs, "mke2fs_JU",
-        ruby_guestfs_mke2fs_JU, 4);
+                    guestfs_int_ruby_mke2fs_JU, 4);
   rb_define_method (c_guestfs, "mke2journal",
-        ruby_guestfs_mke2journal, 2);
+                    guestfs_int_ruby_mke2journal, 2);
   rb_define_method (c_guestfs, "mke2journal_L",
-        ruby_guestfs_mke2journal_L, 3);
+                    guestfs_int_ruby_mke2journal_L, 3);
   rb_define_method (c_guestfs, "mke2journal_U",
-        ruby_guestfs_mke2journal_U, 3);
+                    guestfs_int_ruby_mke2journal_U, 3);
   rb_define_method (c_guestfs, "mkfifo",
-        ruby_guestfs_mkfifo, 2);
+                    guestfs_int_ruby_mkfifo, 2);
   rb_define_method (c_guestfs, "mkfs",
-        ruby_guestfs_mkfs, -1);
+                    guestfs_int_ruby_mkfs, -1);
   rb_define_method (c_guestfs, "mkfs_opts",
-        ruby_guestfs_mkfs, -1);
+                    guestfs_int_ruby_mkfs, -1);
   rb_define_method (c_guestfs, "mkfs_b",
-        ruby_guestfs_mkfs_b, 3);
+                    guestfs_int_ruby_mkfs_b, 3);
   rb_define_method (c_guestfs, "mkfs_btrfs",
-        ruby_guestfs_mkfs_btrfs, -1);
+                    guestfs_int_ruby_mkfs_btrfs, -1);
   rb_define_method (c_guestfs, "mklost_and_found",
-        ruby_guestfs_mklost_and_found, 1);
+                    guestfs_int_ruby_mklost_and_found, 1);
   rb_define_method (c_guestfs, "mkmountpoint",
-        ruby_guestfs_mkmountpoint, 1);
+                    guestfs_int_ruby_mkmountpoint, 1);
   rb_define_method (c_guestfs, "mknod",
-        ruby_guestfs_mknod, 4);
+                    guestfs_int_ruby_mknod, 4);
   rb_define_method (c_guestfs, "mknod_b",
-        ruby_guestfs_mknod_b, 4);
+                    guestfs_int_ruby_mknod_b, 4);
   rb_define_method (c_guestfs, "mknod_c",
-        ruby_guestfs_mknod_c, 4);
+                    guestfs_int_ruby_mknod_c, 4);
   rb_define_method (c_guestfs, "mkswap",
-        ruby_guestfs_mkswap, -1);
+                    guestfs_int_ruby_mkswap, -1);
   rb_define_method (c_guestfs, "mkswap_opts",
-        ruby_guestfs_mkswap, -1);
+                    guestfs_int_ruby_mkswap, -1);
   rb_define_method (c_guestfs, "mkswap_L",
-        ruby_guestfs_mkswap_L, 2);
+                    guestfs_int_ruby_mkswap_L, 2);
   rb_define_method (c_guestfs, "mkswap_U",
-        ruby_guestfs_mkswap_U, 2);
+                    guestfs_int_ruby_mkswap_U, 2);
   rb_define_method (c_guestfs, "mkswap_file",
-        ruby_guestfs_mkswap_file, 1);
+                    guestfs_int_ruby_mkswap_file, 1);
   rb_define_method (c_guestfs, "mktemp",
-        ruby_guestfs_mktemp, -1);
+                    guestfs_int_ruby_mktemp, -1);
   rb_define_method (c_guestfs, "modprobe",
-        ruby_guestfs_modprobe, 1);
+                    guestfs_int_ruby_modprobe, 1);
   rb_define_method (c_guestfs, "mount",
-        ruby_guestfs_mount, 2);
+                    guestfs_int_ruby_mount, 2);
   rb_define_method (c_guestfs, "mount_9p",
-        ruby_guestfs_mount_9p, -1);
+                    guestfs_int_ruby_mount_9p, -1);
   rb_define_method (c_guestfs, "mount_local",
-        ruby_guestfs_mount_local, -1);
+                    guestfs_int_ruby_mount_local, -1);
   rb_define_method (c_guestfs, "mount_local_run",
-        ruby_guestfs_mount_local_run, 0);
+                    guestfs_int_ruby_mount_local_run, 0);
   rb_define_method (c_guestfs, "mount_loop",
-        ruby_guestfs_mount_loop, 2);
+                    guestfs_int_ruby_mount_loop, 2);
   rb_define_method (c_guestfs, "mount_options",
-        ruby_guestfs_mount_options, 3);
+                    guestfs_int_ruby_mount_options, 3);
   rb_define_method (c_guestfs, "mount_ro",
-        ruby_guestfs_mount_ro, 2);
+                    guestfs_int_ruby_mount_ro, 2);
   rb_define_method (c_guestfs, "mount_vfs",
-        ruby_guestfs_mount_vfs, 4);
+                    guestfs_int_ruby_mount_vfs, 4);
   rb_define_method (c_guestfs, "mountpoints",
-        ruby_guestfs_mountpoints, 0);
+                    guestfs_int_ruby_mountpoints, 0);
   rb_define_method (c_guestfs, "mounts",
-        ruby_guestfs_mounts, 0);
+                    guestfs_int_ruby_mounts, 0);
   rb_define_method (c_guestfs, "mv",
-        ruby_guestfs_mv, 2);
+                    guestfs_int_ruby_mv, 2);
   rb_define_method (c_guestfs, "nr_devices",
-        ruby_guestfs_nr_devices, 0);
+                    guestfs_int_ruby_nr_devices, 0);
   rb_define_method (c_guestfs, "ntfs_3g_probe",
-        ruby_guestfs_ntfs_3g_probe, 2);
+                    guestfs_int_ruby_ntfs_3g_probe, 2);
   rb_define_method (c_guestfs, "ntfsclone_in",
-        ruby_guestfs_ntfsclone_in, 2);
+                    guestfs_int_ruby_ntfsclone_in, 2);
   rb_define_method (c_guestfs, "ntfsclone_out",
-        ruby_guestfs_ntfsclone_out, -1);
+                    guestfs_int_ruby_ntfsclone_out, -1);
   rb_define_method (c_guestfs, "ntfsfix",
-        ruby_guestfs_ntfsfix, -1);
+                    guestfs_int_ruby_ntfsfix, -1);
   rb_define_method (c_guestfs, "ntfsresize",
-        ruby_guestfs_ntfsresize, -1);
+                    guestfs_int_ruby_ntfsresize, -1);
   rb_define_method (c_guestfs, "ntfsresize_opts",
-        ruby_guestfs_ntfsresize, -1);
+                    guestfs_int_ruby_ntfsresize, -1);
   rb_define_method (c_guestfs, "ntfsresize_size",
-        ruby_guestfs_ntfsresize_size, 2);
+                    guestfs_int_ruby_ntfsresize_size, 2);
   rb_define_method (c_guestfs, "parse_environment",
-        ruby_guestfs_parse_environment, 0);
+                    guestfs_int_ruby_parse_environment, 0);
   rb_define_method (c_guestfs, "parse_environment_list",
-        ruby_guestfs_parse_environment_list, 1);
+                    guestfs_int_ruby_parse_environment_list, 1);
   rb_define_method (c_guestfs, "part_add",
-        ruby_guestfs_part_add, 4);
+                    guestfs_int_ruby_part_add, 4);
   rb_define_method (c_guestfs, "part_del",
-        ruby_guestfs_part_del, 2);
+                    guestfs_int_ruby_part_del, 2);
   rb_define_method (c_guestfs, "part_disk",
-        ruby_guestfs_part_disk, 2);
+                    guestfs_int_ruby_part_disk, 2);
   rb_define_method (c_guestfs, "part_get_bootable",
-        ruby_guestfs_part_get_bootable, 2);
+                    guestfs_int_ruby_part_get_bootable, 2);
   rb_define_method (c_guestfs, "part_get_gpt_guid",
-        ruby_guestfs_part_get_gpt_guid, 2);
+                    guestfs_int_ruby_part_get_gpt_guid, 2);
   rb_define_method (c_guestfs, "part_get_gpt_type",
-        ruby_guestfs_part_get_gpt_type, 2);
+                    guestfs_int_ruby_part_get_gpt_type, 2);
   rb_define_method (c_guestfs, "part_get_mbr_id",
-        ruby_guestfs_part_get_mbr_id, 2);
+                    guestfs_int_ruby_part_get_mbr_id, 2);
   rb_define_method (c_guestfs, "part_get_mbr_part_type",
-        ruby_guestfs_part_get_mbr_part_type, 2);
+                    guestfs_int_ruby_part_get_mbr_part_type, 2);
   rb_define_method (c_guestfs, "part_get_name",
-        ruby_guestfs_part_get_name, 2);
+                    guestfs_int_ruby_part_get_name, 2);
   rb_define_method (c_guestfs, "part_get_parttype",
-        ruby_guestfs_part_get_parttype, 1);
+                    guestfs_int_ruby_part_get_parttype, 1);
   rb_define_method (c_guestfs, "part_init",
-        ruby_guestfs_part_init, 2);
+                    guestfs_int_ruby_part_init, 2);
   rb_define_method (c_guestfs, "part_list",
-        ruby_guestfs_part_list, 1);
+                    guestfs_int_ruby_part_list, 1);
   rb_define_method (c_guestfs, "part_set_bootable",
-        ruby_guestfs_part_set_bootable, 3);
+                    guestfs_int_ruby_part_set_bootable, 3);
   rb_define_method (c_guestfs, "part_set_gpt_guid",
-        ruby_guestfs_part_set_gpt_guid, 3);
+                    guestfs_int_ruby_part_set_gpt_guid, 3);
   rb_define_method (c_guestfs, "part_set_gpt_type",
-        ruby_guestfs_part_set_gpt_type, 3);
+                    guestfs_int_ruby_part_set_gpt_type, 3);
   rb_define_method (c_guestfs, "part_set_mbr_id",
-        ruby_guestfs_part_set_mbr_id, 3);
+                    guestfs_int_ruby_part_set_mbr_id, 3);
   rb_define_method (c_guestfs, "part_set_name",
-        ruby_guestfs_part_set_name, 3);
+                    guestfs_int_ruby_part_set_name, 3);
   rb_define_method (c_guestfs, "part_to_dev",
-        ruby_guestfs_part_to_dev, 1);
+                    guestfs_int_ruby_part_to_dev, 1);
   rb_define_method (c_guestfs, "part_to_partnum",
-        ruby_guestfs_part_to_partnum, 1);
+                    guestfs_int_ruby_part_to_partnum, 1);
   rb_define_method (c_guestfs, "ping_daemon",
-        ruby_guestfs_ping_daemon, 0);
+                    guestfs_int_ruby_ping_daemon, 0);
   rb_define_method (c_guestfs, "pread",
-        ruby_guestfs_pread, 3);
+                    guestfs_int_ruby_pread, 3);
   rb_define_method (c_guestfs, "pread_device",
-        ruby_guestfs_pread_device, 3);
+                    guestfs_int_ruby_pread_device, 3);
   rb_define_method (c_guestfs, "pvchange_uuid",
-        ruby_guestfs_pvchange_uuid, 1);
+                    guestfs_int_ruby_pvchange_uuid, 1);
   rb_define_method (c_guestfs, "pvchange_uuid_all",
-        ruby_guestfs_pvchange_uuid_all, 0);
+                    guestfs_int_ruby_pvchange_uuid_all, 0);
   rb_define_method (c_guestfs, "pvcreate",
-        ruby_guestfs_pvcreate, 1);
+                    guestfs_int_ruby_pvcreate, 1);
   rb_define_method (c_guestfs, "pvremove",
-        ruby_guestfs_pvremove, 1);
+                    guestfs_int_ruby_pvremove, 1);
   rb_define_method (c_guestfs, "pvresize",
-        ruby_guestfs_pvresize, 1);
+                    guestfs_int_ruby_pvresize, 1);
   rb_define_method (c_guestfs, "pvresize_size",
-        ruby_guestfs_pvresize_size, 2);
+                    guestfs_int_ruby_pvresize_size, 2);
   rb_define_method (c_guestfs, "pvs",
-        ruby_guestfs_pvs, 0);
+                    guestfs_int_ruby_pvs, 0);
   rb_define_method (c_guestfs, "pvs_full",
-        ruby_guestfs_pvs_full, 0);
+                    guestfs_int_ruby_pvs_full, 0);
   rb_define_method (c_guestfs, "pvuuid",
-        ruby_guestfs_pvuuid, 1);
+                    guestfs_int_ruby_pvuuid, 1);
   rb_define_method (c_guestfs, "pwrite",
-        ruby_guestfs_pwrite, 3);
+                    guestfs_int_ruby_pwrite, 3);
   rb_define_method (c_guestfs, "pwrite_device",
-        ruby_guestfs_pwrite_device, 3);
+                    guestfs_int_ruby_pwrite_device, 3);
   rb_define_method (c_guestfs, "read_file",
-        ruby_guestfs_read_file, 1);
+                    guestfs_int_ruby_read_file, 1);
   rb_define_method (c_guestfs, "read_lines",
-        ruby_guestfs_read_lines, 1);
+                    guestfs_int_ruby_read_lines, 1);
   rb_define_method (c_guestfs, "readdir",
-        ruby_guestfs_readdir, 1);
+                    guestfs_int_ruby_readdir, 1);
   rb_define_method (c_guestfs, "readlink",
-        ruby_guestfs_readlink, 1);
+                    guestfs_int_ruby_readlink, 1);
   rb_define_method (c_guestfs, "readlinklist",
-        ruby_guestfs_readlinklist, 2);
+                    guestfs_int_ruby_readlinklist, 2);
   rb_define_method (c_guestfs, "realpath",
-        ruby_guestfs_realpath, 1);
+                    guestfs_int_ruby_realpath, 1);
   rb_define_method (c_guestfs, "remount",
-        ruby_guestfs_remount, -1);
+                    guestfs_int_ruby_remount, -1);
   rb_define_method (c_guestfs, "remove_drive",
-        ruby_guestfs_remove_drive, 1);
+                    guestfs_int_ruby_remove_drive, 1);
   rb_define_method (c_guestfs, "removexattr",
-        ruby_guestfs_removexattr, 2);
+                    guestfs_int_ruby_removexattr, 2);
   rb_define_method (c_guestfs, "rename",
-        ruby_guestfs_rename, 2);
+                    guestfs_int_ruby_rename, 2);
   rb_define_method (c_guestfs, "resize2fs",
-        ruby_guestfs_resize2fs, 1);
+                    guestfs_int_ruby_resize2fs, 1);
   rb_define_method (c_guestfs, "resize2fs_M",
-        ruby_guestfs_resize2fs_M, 1);
+                    guestfs_int_ruby_resize2fs_M, 1);
   rb_define_method (c_guestfs, "resize2fs_size",
-        ruby_guestfs_resize2fs_size, 2);
+                    guestfs_int_ruby_resize2fs_size, 2);
   rb_define_method (c_guestfs, "rm",
-        ruby_guestfs_rm, 1);
+                    guestfs_int_ruby_rm, 1);
   rb_define_method (c_guestfs, "rm_f",
-        ruby_guestfs_rm_f, 1);
+                    guestfs_int_ruby_rm_f, 1);
   rb_define_method (c_guestfs, "rm_rf",
-        ruby_guestfs_rm_rf, 1);
+                    guestfs_int_ruby_rm_rf, 1);
   rb_define_method (c_guestfs, "rmdir",
-        ruby_guestfs_rmdir, 1);
+                    guestfs_int_ruby_rmdir, 1);
   rb_define_method (c_guestfs, "rmmountpoint",
-        ruby_guestfs_rmmountpoint, 1);
+                    guestfs_int_ruby_rmmountpoint, 1);
   rb_define_method (c_guestfs, "rsync",
-        ruby_guestfs_rsync, -1);
+                    guestfs_int_ruby_rsync, -1);
   rb_define_method (c_guestfs, "rsync_in",
-        ruby_guestfs_rsync_in, -1);
+                    guestfs_int_ruby_rsync_in, -1);
   rb_define_method (c_guestfs, "rsync_out",
-        ruby_guestfs_rsync_out, -1);
+                    guestfs_int_ruby_rsync_out, -1);
   rb_define_method (c_guestfs, "scrub_device",
-        ruby_guestfs_scrub_device, 1);
+                    guestfs_int_ruby_scrub_device, 1);
   rb_define_method (c_guestfs, "scrub_file",
-        ruby_guestfs_scrub_file, 1);
+                    guestfs_int_ruby_scrub_file, 1);
   rb_define_method (c_guestfs, "scrub_freespace",
-        ruby_guestfs_scrub_freespace, 1);
+                    guestfs_int_ruby_scrub_freespace, 1);
   rb_define_method (c_guestfs, "set_append",
-        ruby_guestfs_set_append, 1);
+                    guestfs_int_ruby_set_append, 1);
   rb_define_method (c_guestfs, "set_attach_method",
-        ruby_guestfs_set_attach_method, 1);
+                    guestfs_int_ruby_set_attach_method, 1);
   rb_define_method (c_guestfs, "set_autosync",
-        ruby_guestfs_set_autosync, 1);
+                    guestfs_int_ruby_set_autosync, 1);
   rb_define_method (c_guestfs, "set_backend",
-        ruby_guestfs_set_backend, 1);
+                    guestfs_int_ruby_set_backend, 1);
   rb_define_method (c_guestfs, "set_backend_setting",
-        ruby_guestfs_set_backend_setting, 2);
+                    guestfs_int_ruby_set_backend_setting, 2);
   rb_define_method (c_guestfs, "set_backend_settings",
-        ruby_guestfs_set_backend_settings, 1);
+                    guestfs_int_ruby_set_backend_settings, 1);
   rb_define_method (c_guestfs, "set_cachedir",
-        ruby_guestfs_set_cachedir, 1);
+                    guestfs_int_ruby_set_cachedir, 1);
   rb_define_method (c_guestfs, "set_direct",
-        ruby_guestfs_set_direct, 1);
+                    guestfs_int_ruby_set_direct, 1);
   rb_define_method (c_guestfs, "set_e2attrs",
-        ruby_guestfs_set_e2attrs, -1);
+                    guestfs_int_ruby_set_e2attrs, -1);
   rb_define_method (c_guestfs, "set_e2generation",
-        ruby_guestfs_set_e2generation, 2);
+                    guestfs_int_ruby_set_e2generation, 2);
   rb_define_method (c_guestfs, "set_e2label",
-        ruby_guestfs_set_e2label, 2);
+                    guestfs_int_ruby_set_e2label, 2);
   rb_define_method (c_guestfs, "set_e2uuid",
-        ruby_guestfs_set_e2uuid, 2);
+                    guestfs_int_ruby_set_e2uuid, 2);
   rb_define_method (c_guestfs, "set_hv",
-        ruby_guestfs_set_hv, 1);
+                    guestfs_int_ruby_set_hv, 1);
   rb_define_method (c_guestfs, "set_identifier",
-        ruby_guestfs_set_identifier, 1);
+                    guestfs_int_ruby_set_identifier, 1);
   rb_define_method (c_guestfs, "set_label",
-        ruby_guestfs_set_label, 2);
+                    guestfs_int_ruby_set_label, 2);
   rb_define_method (c_guestfs, "set_libvirt_requested_credential",
-        ruby_guestfs_set_libvirt_requested_credential, 2);
+                    guestfs_int_ruby_set_libvirt_requested_credential, 2);
   rb_define_method (c_guestfs, "set_libvirt_supported_credentials",
-        ruby_guestfs_set_libvirt_supported_credentials, 1);
+                    guestfs_int_ruby_set_libvirt_supported_credentials, 1);
   rb_define_method (c_guestfs, "set_memsize",
-        ruby_guestfs_set_memsize, 1);
+                    guestfs_int_ruby_set_memsize, 1);
   rb_define_method (c_guestfs, "set_network",
-        ruby_guestfs_set_network, 1);
+                    guestfs_int_ruby_set_network, 1);
   rb_define_method (c_guestfs, "set_path",
-        ruby_guestfs_set_path, 1);
+                    guestfs_int_ruby_set_path, 1);
   rb_define_method (c_guestfs, "set_pgroup",
-        ruby_guestfs_set_pgroup, 1);
+                    guestfs_int_ruby_set_pgroup, 1);
   rb_define_method (c_guestfs, "set_program",
-        ruby_guestfs_set_program, 1);
+                    guestfs_int_ruby_set_program, 1);
   rb_define_method (c_guestfs, "set_qemu",
-        ruby_guestfs_set_qemu, 1);
+                    guestfs_int_ruby_set_qemu, 1);
   rb_define_method (c_guestfs, "set_recovery_proc",
-        ruby_guestfs_set_recovery_proc, 1);
+                    guestfs_int_ruby_set_recovery_proc, 1);
   rb_define_method (c_guestfs, "set_selinux",
-        ruby_guestfs_set_selinux, 1);
+                    guestfs_int_ruby_set_selinux, 1);
   rb_define_method (c_guestfs, "set_smp",
-        ruby_guestfs_set_smp, 1);
+                    guestfs_int_ruby_set_smp, 1);
   rb_define_method (c_guestfs, "set_tmpdir",
-        ruby_guestfs_set_tmpdir, 1);
+                    guestfs_int_ruby_set_tmpdir, 1);
   rb_define_method (c_guestfs, "set_trace",
-        ruby_guestfs_set_trace, 1);
+                    guestfs_int_ruby_set_trace, 1);
   rb_define_method (c_guestfs, "set_uuid",
-        ruby_guestfs_set_uuid, 2);
+                    guestfs_int_ruby_set_uuid, 2);
   rb_define_method (c_guestfs, "set_uuid_random",
-        ruby_guestfs_set_uuid_random, 1);
+                    guestfs_int_ruby_set_uuid_random, 1);
   rb_define_method (c_guestfs, "set_verbose",
-        ruby_guestfs_set_verbose, 1);
+                    guestfs_int_ruby_set_verbose, 1);
   rb_define_method (c_guestfs, "setcon",
-        ruby_guestfs_setcon, 1);
+                    guestfs_int_ruby_setcon, 1);
   rb_define_method (c_guestfs, "setxattr",
-        ruby_guestfs_setxattr, 4);
+                    guestfs_int_ruby_setxattr, 4);
   rb_define_method (c_guestfs, "sfdisk",
-        ruby_guestfs_sfdisk, 5);
+                    guestfs_int_ruby_sfdisk, 5);
   rb_define_method (c_guestfs, "sfdiskM",
-        ruby_guestfs_sfdiskM, 2);
+                    guestfs_int_ruby_sfdiskM, 2);
   rb_define_method (c_guestfs, "sfdisk_N",
-        ruby_guestfs_sfdisk_N, 6);
+                    guestfs_int_ruby_sfdisk_N, 6);
   rb_define_method (c_guestfs, "sfdisk_disk_geometry",
-        ruby_guestfs_sfdisk_disk_geometry, 1);
+                    guestfs_int_ruby_sfdisk_disk_geometry, 1);
   rb_define_method (c_guestfs, "sfdisk_kernel_geometry",
-        ruby_guestfs_sfdisk_kernel_geometry, 1);
+                    guestfs_int_ruby_sfdisk_kernel_geometry, 1);
   rb_define_method (c_guestfs, "sfdisk_l",
-        ruby_guestfs_sfdisk_l, 1);
+                    guestfs_int_ruby_sfdisk_l, 1);
   rb_define_method (c_guestfs, "sh",
-        ruby_guestfs_sh, 1);
+                    guestfs_int_ruby_sh, 1);
   rb_define_method (c_guestfs, "sh_lines",
-        ruby_guestfs_sh_lines, 1);
+                    guestfs_int_ruby_sh_lines, 1);
   rb_define_method (c_guestfs, "shutdown",
-        ruby_guestfs_shutdown, 0);
+                    guestfs_int_ruby_shutdown, 0);
   rb_define_method (c_guestfs, "sleep",
-        ruby_guestfs_sleep, 1);
+                    guestfs_int_ruby_sleep, 1);
   rb_define_method (c_guestfs, "stat",
-        ruby_guestfs_stat, 1);
+                    guestfs_int_ruby_stat, 1);
   rb_define_method (c_guestfs, "statns",
-        ruby_guestfs_statns, 1);
+                    guestfs_int_ruby_statns, 1);
   rb_define_method (c_guestfs, "statvfs",
-        ruby_guestfs_statvfs, 1);
+                    guestfs_int_ruby_statvfs, 1);
   rb_define_method (c_guestfs, "strings",
-        ruby_guestfs_strings, 1);
+                    guestfs_int_ruby_strings, 1);
   rb_define_method (c_guestfs, "strings_e",
-        ruby_guestfs_strings_e, 2);
+                    guestfs_int_ruby_strings_e, 2);
   rb_define_method (c_guestfs, "swapoff_device",
-        ruby_guestfs_swapoff_device, 1);
+                    guestfs_int_ruby_swapoff_device, 1);
   rb_define_method (c_guestfs, "swapoff_file",
-        ruby_guestfs_swapoff_file, 1);
+                    guestfs_int_ruby_swapoff_file, 1);
   rb_define_method (c_guestfs, "swapoff_label",
-        ruby_guestfs_swapoff_label, 1);
+                    guestfs_int_ruby_swapoff_label, 1);
   rb_define_method (c_guestfs, "swapoff_uuid",
-        ruby_guestfs_swapoff_uuid, 1);
+                    guestfs_int_ruby_swapoff_uuid, 1);
   rb_define_method (c_guestfs, "swapon_device",
-        ruby_guestfs_swapon_device, 1);
+                    guestfs_int_ruby_swapon_device, 1);
   rb_define_method (c_guestfs, "swapon_file",
-        ruby_guestfs_swapon_file, 1);
+                    guestfs_int_ruby_swapon_file, 1);
   rb_define_method (c_guestfs, "swapon_label",
-        ruby_guestfs_swapon_label, 1);
+                    guestfs_int_ruby_swapon_label, 1);
   rb_define_method (c_guestfs, "swapon_uuid",
-        ruby_guestfs_swapon_uuid, 1);
+                    guestfs_int_ruby_swapon_uuid, 1);
   rb_define_method (c_guestfs, "sync",
-        ruby_guestfs_sync, 0);
+                    guestfs_int_ruby_sync, 0);
   rb_define_method (c_guestfs, "syslinux",
-        ruby_guestfs_syslinux, -1);
+                    guestfs_int_ruby_syslinux, -1);
   rb_define_method (c_guestfs, "tail",
-        ruby_guestfs_tail, 1);
+                    guestfs_int_ruby_tail, 1);
   rb_define_method (c_guestfs, "tail_n",
-        ruby_guestfs_tail_n, 2);
+                    guestfs_int_ruby_tail_n, 2);
   rb_define_method (c_guestfs, "tar_in",
-        ruby_guestfs_tar_in, -1);
+                    guestfs_int_ruby_tar_in, -1);
   rb_define_method (c_guestfs, "tar_in_opts",
-        ruby_guestfs_tar_in, -1);
+                    guestfs_int_ruby_tar_in, -1);
   rb_define_method (c_guestfs, "tar_out",
-        ruby_guestfs_tar_out, -1);
+                    guestfs_int_ruby_tar_out, -1);
   rb_define_method (c_guestfs, "tar_out_opts",
-        ruby_guestfs_tar_out, -1);
+                    guestfs_int_ruby_tar_out, -1);
   rb_define_method (c_guestfs, "tgz_in",
-        ruby_guestfs_tgz_in, 2);
+                    guestfs_int_ruby_tgz_in, 2);
   rb_define_method (c_guestfs, "tgz_out",
-        ruby_guestfs_tgz_out, 2);
+                    guestfs_int_ruby_tgz_out, 2);
   rb_define_method (c_guestfs, "touch",
-        ruby_guestfs_touch, 1);
+                    guestfs_int_ruby_touch, 1);
   rb_define_method (c_guestfs, "truncate",
-        ruby_guestfs_truncate, 1);
+                    guestfs_int_ruby_truncate, 1);
   rb_define_method (c_guestfs, "truncate_size",
-        ruby_guestfs_truncate_size, 2);
+                    guestfs_int_ruby_truncate_size, 2);
   rb_define_method (c_guestfs, "tune2fs",
-        ruby_guestfs_tune2fs, -1);
+                    guestfs_int_ruby_tune2fs, -1);
   rb_define_method (c_guestfs, "tune2fs_l",
-        ruby_guestfs_tune2fs_l, 1);
+                    guestfs_int_ruby_tune2fs_l, 1);
   rb_define_method (c_guestfs, "txz_in",
-        ruby_guestfs_txz_in, 2);
+                    guestfs_int_ruby_txz_in, 2);
   rb_define_method (c_guestfs, "txz_out",
-        ruby_guestfs_txz_out, 2);
+                    guestfs_int_ruby_txz_out, 2);
   rb_define_method (c_guestfs, "umask",
-        ruby_guestfs_umask, 1);
+                    guestfs_int_ruby_umask, 1);
   rb_define_method (c_guestfs, "umount",
-        ruby_guestfs_umount, -1);
+                    guestfs_int_ruby_umount, -1);
   rb_define_method (c_guestfs, "umount_opts",
-        ruby_guestfs_umount, -1);
+                    guestfs_int_ruby_umount, -1);
   rb_define_method (c_guestfs, "umount_all",
-        ruby_guestfs_umount_all, 0);
+                    guestfs_int_ruby_umount_all, 0);
   rb_define_method (c_guestfs, "umount_local",
-        ruby_guestfs_umount_local, -1);
+                    guestfs_int_ruby_umount_local, -1);
   rb_define_method (c_guestfs, "upload",
-        ruby_guestfs_upload, 2);
+                    guestfs_int_ruby_upload, 2);
   rb_define_method (c_guestfs, "upload_offset",
-        ruby_guestfs_upload_offset, 3);
+                    guestfs_int_ruby_upload_offset, 3);
   rb_define_method (c_guestfs, "user_cancel",
-        ruby_guestfs_user_cancel, 0);
+                    guestfs_int_ruby_user_cancel, 0);
   rb_define_method (c_guestfs, "utimens",
-        ruby_guestfs_utimens, 5);
+                    guestfs_int_ruby_utimens, 5);
   rb_define_method (c_guestfs, "utsname",
-        ruby_guestfs_utsname, 0);
+                    guestfs_int_ruby_utsname, 0);
   rb_define_method (c_guestfs, "version",
-        ruby_guestfs_version, 0);
+                    guestfs_int_ruby_version, 0);
   rb_define_method (c_guestfs, "vfs_label",
-        ruby_guestfs_vfs_label, 1);
+                    guestfs_int_ruby_vfs_label, 1);
   rb_define_method (c_guestfs, "vfs_minimum_size",
-        ruby_guestfs_vfs_minimum_size, 1);
+                    guestfs_int_ruby_vfs_minimum_size, 1);
   rb_define_method (c_guestfs, "vfs_type",
-        ruby_guestfs_vfs_type, 1);
+                    guestfs_int_ruby_vfs_type, 1);
   rb_define_method (c_guestfs, "vfs_uuid",
-        ruby_guestfs_vfs_uuid, 1);
+                    guestfs_int_ruby_vfs_uuid, 1);
   rb_define_method (c_guestfs, "vg_activate",
-        ruby_guestfs_vg_activate, 2);
+                    guestfs_int_ruby_vg_activate, 2);
   rb_define_method (c_guestfs, "vg_activate_all",
-        ruby_guestfs_vg_activate_all, 1);
+                    guestfs_int_ruby_vg_activate_all, 1);
   rb_define_method (c_guestfs, "vgchange_uuid",
-        ruby_guestfs_vgchange_uuid, 1);
+                    guestfs_int_ruby_vgchange_uuid, 1);
   rb_define_method (c_guestfs, "vgchange_uuid_all",
-        ruby_guestfs_vgchange_uuid_all, 0);
+                    guestfs_int_ruby_vgchange_uuid_all, 0);
   rb_define_method (c_guestfs, "vgcreate",
-        ruby_guestfs_vgcreate, 2);
+                    guestfs_int_ruby_vgcreate, 2);
   rb_define_method (c_guestfs, "vglvuuids",
-        ruby_guestfs_vglvuuids, 1);
+                    guestfs_int_ruby_vglvuuids, 1);
   rb_define_method (c_guestfs, "vgmeta",
-        ruby_guestfs_vgmeta, 1);
+                    guestfs_int_ruby_vgmeta, 1);
   rb_define_method (c_guestfs, "vgpvuuids",
-        ruby_guestfs_vgpvuuids, 1);
+                    guestfs_int_ruby_vgpvuuids, 1);
   rb_define_method (c_guestfs, "vgremove",
-        ruby_guestfs_vgremove, 1);
+                    guestfs_int_ruby_vgremove, 1);
   rb_define_method (c_guestfs, "vgrename",
-        ruby_guestfs_vgrename, 2);
+                    guestfs_int_ruby_vgrename, 2);
   rb_define_method (c_guestfs, "vgs",
-        ruby_guestfs_vgs, 0);
+                    guestfs_int_ruby_vgs, 0);
   rb_define_method (c_guestfs, "vgs_full",
-        ruby_guestfs_vgs_full, 0);
+                    guestfs_int_ruby_vgs_full, 0);
   rb_define_method (c_guestfs, "vgscan",
-        ruby_guestfs_vgscan, 0);
+                    guestfs_int_ruby_vgscan, 0);
   rb_define_method (c_guestfs, "vguuid",
-        ruby_guestfs_vguuid, 1);
+                    guestfs_int_ruby_vguuid, 1);
   rb_define_method (c_guestfs, "wait_ready",
-        ruby_guestfs_wait_ready, 0);
+                    guestfs_int_ruby_wait_ready, 0);
   rb_define_method (c_guestfs, "wc_c",
-        ruby_guestfs_wc_c, 1);
+                    guestfs_int_ruby_wc_c, 1);
   rb_define_method (c_guestfs, "wc_l",
-        ruby_guestfs_wc_l, 1);
+                    guestfs_int_ruby_wc_l, 1);
   rb_define_method (c_guestfs, "wc_w",
-        ruby_guestfs_wc_w, 1);
+                    guestfs_int_ruby_wc_w, 1);
   rb_define_method (c_guestfs, "wipefs",
-        ruby_guestfs_wipefs, 1);
+                    guestfs_int_ruby_wipefs, 1);
   rb_define_method (c_guestfs, "write",
-        ruby_guestfs_write, 2);
+                    guestfs_int_ruby_write, 2);
   rb_define_method (c_guestfs, "write_append",
-        ruby_guestfs_write_append, 2);
+                    guestfs_int_ruby_write_append, 2);
   rb_define_method (c_guestfs, "write_file",
-        ruby_guestfs_write_file, 3);
+                    guestfs_int_ruby_write_file, 3);
   rb_define_method (c_guestfs, "xfs_admin",
-        ruby_guestfs_xfs_admin, -1);
+                    guestfs_int_ruby_xfs_admin, -1);
   rb_define_method (c_guestfs, "xfs_growfs",
-        ruby_guestfs_xfs_growfs, -1);
+                    guestfs_int_ruby_xfs_growfs, -1);
   rb_define_method (c_guestfs, "xfs_info",
-        ruby_guestfs_xfs_info, 1);
+                    guestfs_int_ruby_xfs_info, 1);
   rb_define_method (c_guestfs, "xfs_repair",
-        ruby_guestfs_xfs_repair, -1);
+                    guestfs_int_ruby_xfs_repair, -1);
   rb_define_method (c_guestfs, "zegrep",
-        ruby_guestfs_zegrep, 2);
+                    guestfs_int_ruby_zegrep, 2);
   rb_define_method (c_guestfs, "zegrepi",
-        ruby_guestfs_zegrepi, 2);
+                    guestfs_int_ruby_zegrepi, 2);
   rb_define_method (c_guestfs, "zero",
-        ruby_guestfs_zero, 1);
+                    guestfs_int_ruby_zero, 1);
   rb_define_method (c_guestfs, "zero_device",
-        ruby_guestfs_zero_device, 1);
+                    guestfs_int_ruby_zero_device, 1);
   rb_define_method (c_guestfs, "zero_free_space",
-        ruby_guestfs_zero_free_space, 1);
+                    guestfs_int_ruby_zero_free_space, 1);
   rb_define_method (c_guestfs, "zerofree",
-        ruby_guestfs_zerofree, 1);
+                    guestfs_int_ruby_zerofree, 1);
   rb_define_method (c_guestfs, "zfgrep",
-        ruby_guestfs_zfgrep, 2);
+                    guestfs_int_ruby_zfgrep, 2);
   rb_define_method (c_guestfs, "zfgrepi",
-        ruby_guestfs_zfgrepi, 2);
+                    guestfs_int_ruby_zfgrepi, 2);
   rb_define_method (c_guestfs, "zfile",
-        ruby_guestfs_zfile, 2);
+                    guestfs_int_ruby_zfile, 2);
   rb_define_method (c_guestfs, "zgrep",
-        ruby_guestfs_zgrep, 2);
+                    guestfs_int_ruby_zgrep, 2);
   rb_define_method (c_guestfs, "zgrepi",
-        ruby_guestfs_zgrepi, 2);
+                    guestfs_int_ruby_zgrepi, 2);
 }

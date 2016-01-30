@@ -1029,9 +1029,12 @@ do_btrfs_subvolume_show (const char *subvolume)
   }
 
   /* If the path is the btrfs root, `btrfs subvolume show' reports:
-   *   <path> is btrfs root
+   *   <path> is btrfs root [in btrfs-progs < 4.4]
+   *   <path> is toplevel subvolume
    */
-  if (out && strstr (out, "is btrfs root") != NULL) {
+  if (out &&
+      (strstr (out, "is btrfs root") != NULL ||
+       strstr (out, "is toplevel subvolume") != NULL)) {
     reply_with_error ("%s is btrfs root", subvolume);
     return NULL;
   }
@@ -2227,7 +2230,7 @@ test_btrfs_min_dev_size (void)
 int64_t
 btrfs_minimum_size (const char *path)
 {
-  CLEANUP_FREE char *err = NULL, *out = NULL;
+  CLEANUP_FREE char *buf = NULL, *err = NULL, *out = NULL;
   int64_t ret = 0;
   int r;
   int min_size_supported = test_btrfs_min_dev_size ();
@@ -2235,11 +2238,17 @@ btrfs_minimum_size (const char *path)
   if (min_size_supported == -1)
     return -1;
   else if (min_size_supported == 0)
-    NOT_SUPPORTED (-1, "'btrfs inspect-internal min-dev-size' \
-                        needs btrfs-progs >= 4.2");
+    NOT_SUPPORTED (-1, "'btrfs inspect-internal min-dev-size' "
+                       "needs btrfs-progs >= 4.2");
+
+  buf = sysroot_path (path);
+  if (buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
 
   r = command (&out, &err, str_btrfs, "inspect-internal",
-               "min-dev-size", sysroot_path (path), NULL);
+               "min-dev-size", buf, NULL);
 
   if (r == -1) {
     reply_with_error ("%s", err);

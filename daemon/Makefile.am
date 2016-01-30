@@ -95,8 +95,11 @@ guestfsd_SOURCES = \
 	btrfs.c \
 	cap.c \
 	checksum.c \
+	cleanups.c \
+	cleanups.h \
 	cmp.c \
 	command.c \
+	command.h \
 	compress.c \
 	copy.c \
 	cpio.c \
@@ -166,6 +169,7 @@ guestfsd_SOURCES = \
 	scrub.c \
 	selinux.c \
 	sfdisk.c \
+	sh.c \
 	sleep.c \
 	stat.c \
 	statvfs.c \
