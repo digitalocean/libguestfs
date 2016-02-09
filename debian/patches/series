@@ -2,3 +2,4 @@
 0002-golang-Fix-for-out-of-tree-builds.patch
 0003-Do-not-use-DTB-for-armel.patch
 0004-Generate-tarballs-for-supermin-appliance-using-repro.patch
+0005-Run-gzip-inside-of-tar-zcf-with-n.patch

@@ -1,0 +1,29 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Tue, 9 Feb 2016 23:21:11 +0100
+Subject: Run gzip (inside of tar zcf) with -n
+
+---
+ appliance/Makefile.am | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/appliance/Makefile.am b/appliance/Makefile.am
+index a444712..e083a4d 100644
+--- a/appliance/Makefile.am
++++ b/appliance/Makefile.am
+@@ -45,13 +45,14 @@ superminfs_DATA = \
+ supermin.d/base.tar.gz supermin.d/packages: stamp-supermin
+ stamp-supermin: make.sh packagelist supermin.d/excludefiles
+ 	rm -f $@ supermin.d/base.tar.gz supermin.d/packages
+-	./make.sh
++	GZIP=-n ./make.sh
+ 	$(MAKE) \
+ 	  supermin.d/daemon.tar.gz \
+ 	  supermin.d/excludefiles \
+ 	  supermin.d/hostfiles \
+ 	  supermin.d/init.tar.gz \
+-	  supermin.d/udev-rules.tar.gz
++	  supermin.d/udev-rules.tar.gz \
++	  GZIP=-n
+ 	touch $@
+ 
+ # This used to be a configure-generated file.  However config.status
