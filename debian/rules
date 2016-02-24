@@ -51,20 +51,19 @@ override_dh_auto_configure:
 		--enable-install-daemon \
 		--with-java=/usr/lib/jvm/default-java \
 		RUBY=$(RUBY_DEFAULT) \
-		RAKE=$(patsubst ruby%,rake%,$(RUBY_DEFAULT)) \
+		RAKE="$(RUBY_DEFAULT) -S rake" \
 		PYTHON=$(PYTHON_DEFAULT) \
 		LUA=$(LUA_DEFAULT) \
 		JNI_INSTALL_DIR='$${libdir}/jni'
 
-	set -e; for v in $(patsubst ruby%,%,$(filter-out $(RUBY_DEFAULT), $(RUBIES))) \
+	set -e; for r in $(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
 	; do \
-		if [ $$v = 1.8 ]; then rake=rake; else rake=rake$$v; fi ; \
 		dh_auto_configure --builddir=$(CURDIR)/debian/build-ruby$$v \
 			-- \
 			$(BARE_CONFIG_FLAGS) \
 			--disable-lua \
 			--disable-python \
-			RUBY=ruby$$v RAKE=$$rake ; \
+			RUBY=$$r RAKE="$$r -S rake" ; \
 	done
 
 	set -e; for p in $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
