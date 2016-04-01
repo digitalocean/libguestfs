@@ -1,6 +1,7 @@
 /* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/c.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -35,6 +36,7 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 #include "errnostring.h"
+#include "structs-print.h"
 
 GUESTFS_DLL_PUBLIC int
 guestfs_internal_test_rint (guestfs_h *g,
@@ -183,7 +185,9 @@ guestfs_internal_test_rstruct (guestfs_h *g,
     if (trace_flag) {
       guestfs_int_trace_open (&trace_buffer);
       fprintf (trace_buffer.fp, "%s = ", "internal_test_rstruct");
-      fprintf (trace_buffer.fp, "<struct guestfs_lvm_pv *>");
+      fprintf (trace_buffer.fp, "<struct guestfs_lvm_pv = ");
+      guestfs_int_print_lvm_pv_indent (r, trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, ">");
       guestfs_int_trace_send_line (g, &trace_buffer);
     }
 
@@ -3546,9 +3550,21 @@ guestfs_inotify_read (guestfs_h *g)
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.events, sizeof (ret.events));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "inotify_read");
-    fprintf (trace_buffer.fp, "<struct guestfs_inotify_event_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_inotify_event_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_inotify_event_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -5630,7 +5646,9 @@ guestfs_isoinfo (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "isoinfo");
-    fprintf (trace_buffer.fp, "<struct guestfs_isoinfo *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_isoinfo = ");
+    guestfs_int_print_isoinfo_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -6317,9 +6335,21 @@ guestfs_hivex_node_values (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.valuehs, sizeof (ret.valuehs));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "hivex_node_values");
-    fprintf (trace_buffer.fp, "<struct guestfs_hivex_value_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_hivex_value_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_hivex_value_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -6736,7 +6766,9 @@ guestfs_internal_parse_mountable (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "internal_parse_mountable");
-    fprintf (trace_buffer.fp, "<struct guestfs_internal_mountable *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_internal_mountable = ");
+    guestfs_int_print_internal_mountable_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 

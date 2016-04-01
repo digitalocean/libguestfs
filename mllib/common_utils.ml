@@ -271,6 +271,15 @@ let may f = function
   | None -> ()
   | Some x -> f x
 
+type ('a, 'b) maybe = Either of 'a | Or of 'b
+
+let protect ~f ~finally =
+  let r =
+    try Either (f ())
+    with exn -> Or exn in
+  finally ();
+  match r with Either ret -> ret | Or exn -> raise exn
+
 let istty chan =
   Unix.isatty (Unix.descr_of_out_channel chan)
 

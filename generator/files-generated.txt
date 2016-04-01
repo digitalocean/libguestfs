@@ -270,4 +270,6 @@ src/structs-cleanup.c
 src/structs-compare.c
 src/structs-copy.c
 src/structs-free.c
+src/structs-print.c
+src/structs-print.h
 tests/c-api/tests.c

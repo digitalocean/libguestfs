@@ -105,7 +105,8 @@ clean-local:
 
 endif
 
-TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+LOG_COMPILER = $(VG)
 
 test_progs_bc = \
 	t/guestfs_010_load.bc \
@@ -116,6 +117,7 @@ test_progs_bc = \
 	t/guestfs_060_explicit_close.bc \
 	t/guestfs_065_implicit_close.bc \
 	t/guestfs_070_optargs.bc \
+	t/guestfs_080_version.bc \
 	t/guestfs_410_close_event.bc \
 	t/guestfs_420_log_messages.bc
 
@@ -128,6 +130,7 @@ test_progs_opt = \
 	t/guestfs_060_explicit_close.opt \
 	t/guestfs_065_implicit_close.opt \
 	t/guestfs_070_optargs.opt \
+	t/guestfs_080_version.opt \
 	t/guestfs_410_close_event.opt \
 	t/guestfs_420_log_messages.opt
 
@@ -162,7 +165,7 @@ if HAVE_OCAMLOPT
 endif
 
 check-valgrind:
-	$(MAKE) VG="$(top_builddir)/run @VG@" TESTS="$(test_progs_all)" check
+	$(MAKE) VG="@VG@" TESTS="$(test_progs_all)" check
 
 CLEANFILES += bindtests.tmp
 

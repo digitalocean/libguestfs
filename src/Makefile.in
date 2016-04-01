@@ -419,7 +419,8 @@ libprotocol_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$@
 libutils_la_LIBADD =
 am_libutils_la_OBJECTS = libutils_la-cleanup.lo \
-	libutils_la-structs-cleanup.lo libutils_la-utils.lo
+	libutils_la-structs-cleanup.lo libutils_la-structs-print.lo \
+	libutils_la-utils.lo
 libutils_la_OBJECTS = $(am_libutils_la_OBJECTS)
 libutils_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libutils_la_CFLAGS) \
@@ -1843,7 +1844,9 @@ generator_built = \
 	structs-cleanup.c \
 	structs-compare.c \
 	structs-copy.c \
-	structs-free.c
+	structs-free.c \
+	structs-print.c \
+	structs-print.h
 
 BUILT_SOURCES = \
 	$(generator_built) \
@@ -1974,6 +1977,8 @@ libprotocol_la_CFLAGS = \
 libutils_la_SOURCES = \
 	cleanup.c \
 	structs-cleanup.c \
+	structs-print.c \
+	structs-print.h \
 	utils.c
 
 libutils_la_CPPFLAGS = $(libguestfs_la_CPPFLAGS)
@@ -1994,7 +1999,8 @@ libutils_la_CFLAGS = $(libguestfs_la_CFLAGS)
 # Tests: main tests are in tests/c-api.  Here we just have some
 # internal tests of utility functions.  Note we don't just test what's
 # in utils.c, we can test other functions as well here.
-TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+LOG_COMPILER = $(VG)
 test_utils_SOURCES = test-utils.c
 test_utils_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
@@ -2206,6 +2212,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libprotocol_la-guestfs_protocol.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-cleanup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-structs-cleanup.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-structs-print.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libvirt_is_version-libvirt-is-version.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_utils-test-utils.Po@am__quote@
@@ -2660,6 +2667,13 @@ libutils_la-structs-cleanup.lo: structs-cleanup.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs-cleanup.c' object='libutils_la-structs-cleanup.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-structs-cleanup.lo `test -f 'structs-cleanup.c' || echo '$(srcdir)/'`structs-cleanup.c
+
+libutils_la-structs-print.lo: structs-print.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-structs-print.lo -MD -MP -MF $(DEPDIR)/libutils_la-structs-print.Tpo -c -o libutils_la-structs-print.lo `test -f 'structs-print.c' || echo '$(srcdir)/'`structs-print.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutils_la-structs-print.Tpo $(DEPDIR)/libutils_la-structs-print.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs-print.c' object='libutils_la-structs-print.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-structs-print.lo `test -f 'structs-print.c' || echo '$(srcdir)/'`structs-print.c
 
 libutils_la-utils.lo: utils.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-utils.lo -MD -MP -MF $(DEPDIR)/libutils_la-utils.Tpo -c -o libutils_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c

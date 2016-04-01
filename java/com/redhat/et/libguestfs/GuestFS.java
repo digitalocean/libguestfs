@@ -1,6 +1,7 @@
 /* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/java.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -62,7 +63,7 @@ public class GuestFS {
   /**
    * Create a libguestfs handle, setting flags.
    *
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public GuestFS (Map<String, Object> optargs) throws LibGuestFSException
   {
@@ -86,7 +87,7 @@ public class GuestFS {
   /**
    * Create a libguestfs handle.
    *
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public GuestFS () throws LibGuestFSException
   {
@@ -106,7 +107,7 @@ public class GuestFS {
    * exception.
    * </p>
    *
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void close () throws LibGuestFSException
   {
@@ -238,7 +239,7 @@ public class GuestFS {
    * the libguestfs handle is closed.
    * </p>
    *
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    * @see "The section &quot;EVENTS&quot; in the guestfs(3) manual"
    * @see #delete_event_callback
    * @return handle for the event
@@ -268,7 +269,7 @@ public class GuestFS {
    * libguestfs handle is closed.
    * </p>
    *
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    * @see #set_event_callback
    */
   public void delete_event_callback (int eh)
@@ -291,7 +292,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.63
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void acl_delete_def_file (String dir)
     throws LibGuestFSException
@@ -325,7 +326,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.63
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String acl_get_file (String path, String acltype)
     throws LibGuestFSException
@@ -377,7 +378,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.63
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void acl_set_file (String path, String acltype, String acl)
     throws LibGuestFSException
@@ -404,7 +405,7 @@ public class GuestFS {
    * </p>
    * @since 0.3
    * @deprecated In new code, use {@link #add_drive_ro} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void add_cdrom (String filename)
     throws LibGuestFSException
@@ -511,7 +512,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.7.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int add_domain (String dom, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -856,7 +857,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void add_drive (String filename, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -1000,7 +1001,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.38
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void add_drive_ro (String filename)
     throws LibGuestFSException
@@ -1025,7 +1026,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.84
    * @deprecated In new code, use {@link #add_drive} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void add_drive_ro_with_if (String filename, String iface)
     throws LibGuestFSException
@@ -1059,7 +1060,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void add_drive_scratch (long size, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -1109,7 +1110,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.84
    * @deprecated In new code, use {@link #add_drive} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void add_drive_with_if (String filename, String iface)
     throws LibGuestFSException
@@ -1172,7 +1173,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.14
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int add_libvirt_dom (long dom, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -1261,7 +1262,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void aug_clear (String augpath)
     throws LibGuestFSException
@@ -1286,7 +1287,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void aug_close ()
     throws LibGuestFSException
@@ -1318,7 +1319,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public IntBool aug_defnode (String name, String expr, String val)
     throws LibGuestFSException
@@ -1346,7 +1347,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int aug_defvar (String name, String expr)
     throws LibGuestFSException
@@ -1369,7 +1370,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String aug_get (String augpath)
     throws LibGuestFSException
@@ -1433,7 +1434,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void aug_init (String root, int flags)
     throws LibGuestFSException
@@ -1461,7 +1462,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void aug_insert (String augpath, String label, boolean before)
     throws LibGuestFSException
@@ -1485,7 +1486,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.14
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String aug_label (String augpath)
     throws LibGuestFSException
@@ -1510,7 +1511,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void aug_load ()
     throws LibGuestFSException
@@ -1534,7 +1535,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] aug_ls (String augpath)
     throws LibGuestFSException
@@ -1558,7 +1559,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] aug_match (String augpath)
     throws LibGuestFSException
@@ -1581,7 +1582,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void aug_mv (String src, String dest)
     throws LibGuestFSException
@@ -1606,7 +1607,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int aug_rm (String augpath)
     throws LibGuestFSException
@@ -1631,7 +1632,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void aug_save ()
     throws LibGuestFSException
@@ -1658,7 +1659,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void aug_set (String augpath, String val)
     throws LibGuestFSException
@@ -1687,7 +1688,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.14
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int aug_setm (String base, String sub, String val)
     throws LibGuestFSException
@@ -1763,7 +1764,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.80
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void available (String[] groups)
     throws LibGuestFSException
@@ -1793,7 +1794,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.15
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] available_all_groups ()
     throws LibGuestFSException
@@ -1816,7 +1817,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.5
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void base64_in (String base64file, String filename)
     throws LibGuestFSException
@@ -1839,7 +1840,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.5
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void base64_out (String filename, String base64file)
     throws LibGuestFSException
@@ -1869,7 +1870,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.25.44
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void blkdiscard (String device)
     throws LibGuestFSException
@@ -1896,7 +1897,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.25.44
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean blkdiscardzeroes (String device)
     throws LibGuestFSException
@@ -1936,7 +1937,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.15.9
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Map<String,String> blkid (String device)
     throws LibGuestFSException
@@ -1966,7 +1967,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void blockdev_flushbufs (String device)
     throws LibGuestFSException
@@ -1996,7 +1997,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int blockdev_getbsz (String device)
     throws LibGuestFSException
@@ -2021,7 +2022,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean blockdev_getro (String device)
     throws LibGuestFSException
@@ -2047,7 +2048,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long blockdev_getsize64 (String device)
     throws LibGuestFSException
@@ -2075,7 +2076,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int blockdev_getss (String device)
     throws LibGuestFSException
@@ -2105,7 +2106,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long blockdev_getsz (String device)
     throws LibGuestFSException
@@ -2129,7 +2130,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void blockdev_rereadpt (String device)
     throws LibGuestFSException
@@ -2156,7 +2157,7 @@ public class GuestFS {
    * </p>
    * @since 1.9.3
    * @deprecated In new code, use {@link #mkfs} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void blockdev_setbsz (String device, int blocksize)
     throws LibGuestFSException
@@ -2180,7 +2181,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void blockdev_setra (String device, int sectors)
     throws LibGuestFSException
@@ -2204,7 +2205,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void blockdev_setro (String device)
     throws LibGuestFSException
@@ -2228,7 +2229,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void blockdev_setrw (String device)
     throws LibGuestFSException
@@ -2250,7 +2251,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_balance_cancel (String path)
     throws LibGuestFSException
@@ -2272,7 +2273,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_balance_pause (String path)
     throws LibGuestFSException
@@ -2294,7 +2295,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_balance_resume (String path)
     throws LibGuestFSException
@@ -2317,7 +2318,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public BTRFSBalance btrfs_balance_status (String path)
     throws LibGuestFSException
@@ -2341,7 +2342,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_device_add (String[] devices, String fs)
     throws LibGuestFSException
@@ -2365,7 +2366,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_device_delete (String[] devices, String fs)
     throws LibGuestFSException
@@ -2388,7 +2389,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_filesystem_balance (String fs)
     throws LibGuestFSException
@@ -2416,7 +2417,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_filesystem_defragment (String path, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -2482,7 +2483,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_filesystem_resize (String mountpoint, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -2522,7 +2523,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_filesystem_sync (String fs)
     throws LibGuestFSException
@@ -2550,7 +2551,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.43
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_fsck (String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -2605,7 +2606,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.32
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_image (String[] source, String image, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -2647,7 +2648,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_qgroup_assign (String src, String dst, String path)
     throws LibGuestFSException
@@ -2670,7 +2671,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_qgroup_create (String qgroupid, String subvolume)
     throws LibGuestFSException
@@ -2692,7 +2693,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_qgroup_destroy (String qgroupid, String subvolume)
     throws LibGuestFSException
@@ -2715,7 +2716,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_qgroup_limit (String subvolume, long size)
     throws LibGuestFSException
@@ -2737,7 +2738,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_qgroup_remove (String src, String dst, String path)
     throws LibGuestFSException
@@ -2760,7 +2761,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public BTRFSQgroup[] btrfs_qgroup_show (String path)
     throws LibGuestFSException
@@ -2783,7 +2784,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_quota_enable (String fs, boolean enable)
     throws LibGuestFSException
@@ -2806,7 +2807,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_quota_rescan (String fs)
     throws LibGuestFSException
@@ -2836,7 +2837,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.48
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_replace (String srcdev, String targetdev, String mntpoint)
     throws LibGuestFSException
@@ -2859,7 +2860,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_rescue_chunk_recover (String device)
     throws LibGuestFSException
@@ -2881,7 +2882,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_rescue_super_recover (String device)
     throws LibGuestFSException
@@ -2903,7 +2904,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_scrub_cancel (String path)
     throws LibGuestFSException
@@ -2926,7 +2927,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_scrub_resume (String path)
     throws LibGuestFSException
@@ -2950,7 +2951,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_scrub_start (String path)
     throws LibGuestFSException
@@ -2973,7 +2974,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public BTRFSScrub btrfs_scrub_status (String path)
     throws LibGuestFSException
@@ -2996,7 +2997,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.43
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_set_seeding (String device, boolean seeding)
     throws LibGuestFSException
@@ -3027,7 +3028,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_subvolume_create (String dest, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -3079,7 +3080,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_subvolume_delete (String subvolume)
     throws LibGuestFSException
@@ -3102,7 +3103,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long btrfs_subvolume_get_default (String fs)
     throws LibGuestFSException
@@ -3125,7 +3126,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public BTRFSSubvolume[] btrfs_subvolume_list (String fs)
     throws LibGuestFSException
@@ -3149,7 +3150,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_subvolume_set_default (long id, String fs)
     throws LibGuestFSException
@@ -3171,7 +3172,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Map<String,String> btrfs_subvolume_show (String subvolume)
     throws LibGuestFSException
@@ -3210,7 +3211,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfs_subvolume_snapshot (String source, String dest, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -3270,7 +3271,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.29
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfstune_enable_extended_inode_refs (String device)
     throws LibGuestFSException
@@ -3292,7 +3293,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.29
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfstune_enable_skinny_metadata_extent_refs (String device)
     throws LibGuestFSException
@@ -3316,7 +3317,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.29
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void btrfstune_seeding (String device, boolean seeding)
     throws LibGuestFSException
@@ -3341,7 +3342,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long c_pointer ()
     throws LibGuestFSException
@@ -3379,7 +3380,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String canonical_device_name (String device)
     throws LibGuestFSException
@@ -3406,7 +3407,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.63
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String cap_get_file (String path)
     throws LibGuestFSException
@@ -3430,7 +3431,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.63
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void cap_set_file (String path, String cap)
     throws LibGuestFSException
@@ -3499,7 +3500,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.75
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String case_sensitive_path (String path)
     throws LibGuestFSException
@@ -3526,7 +3527,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String cat (String path)
     throws LibGuestFSException
@@ -3587,7 +3588,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String checksum (String csumtype, String path)
     throws LibGuestFSException
@@ -3611,7 +3612,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String checksum_device (String csumtype, String device)
     throws LibGuestFSException
@@ -3643,7 +3644,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void checksums_out (String csumtype, String directory, String sumsfile)
     throws LibGuestFSException
@@ -3672,7 +3673,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void chmod (int mode, String path)
     throws LibGuestFSException
@@ -3699,7 +3700,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void chown (int owner, int group, String path)
     throws LibGuestFSException
@@ -3729,7 +3730,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.27.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int clear_backend_setting (String name)
     throws LibGuestFSException
@@ -3783,7 +3784,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String command (String[] arguments)
     throws LibGuestFSException
@@ -3812,7 +3813,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] command_lines (String[] arguments)
     throws LibGuestFSException
@@ -3843,7 +3844,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.13.15
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void compress_device_out (String ctype, String device, String zdevice, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -3900,7 +3901,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.13.15
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void compress_out (String ctype, String file, String zfile, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -3948,7 +3949,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void config (String hvparam, String hvvalue)
     throws LibGuestFSException
@@ -4002,7 +4003,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.25.21
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void copy_attributes (String src, String dest, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -4101,7 +4102,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.13.25
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void copy_device_to_device (String src, String dest, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -4179,7 +4180,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.13.25
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void copy_device_to_file (String src, String dest, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -4257,7 +4258,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.13.25
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void copy_file_to_device (String src, String dest, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -4340,7 +4341,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.13.25
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void copy_file_to_file (String src, String dest, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -4416,7 +4417,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.24
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void copy_in (String localpath, String remotedir)
     throws LibGuestFSException
@@ -4447,7 +4448,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.24
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void copy_out (String remotepath, String localdir)
     throws LibGuestFSException
@@ -4475,7 +4476,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.87
    * @deprecated In new code, use {@link #copy_device_to_device} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void copy_size (String src, String dest, long size)
     throws LibGuestFSException
@@ -4498,7 +4499,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void cp (String src, String dest)
     throws LibGuestFSException
@@ -4521,7 +4522,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void cp_a (String src, String dest)
     throws LibGuestFSException
@@ -4549,7 +4550,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.38
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void cp_r (String src, String dest)
     throws LibGuestFSException
@@ -4591,7 +4592,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.27.9
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void cpio_out (String directory, String cpiofile, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -4640,7 +4641,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.80
    * @deprecated In new code, use {@link #copy_device_to_device} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void dd (String src, String dest)
     throws LibGuestFSException
@@ -4704,7 +4705,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int device_index (String device)
     throws LibGuestFSException
@@ -4731,7 +4732,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String df ()
     throws LibGuestFSException
@@ -4758,7 +4759,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String df_h ()
     throws LibGuestFSException
@@ -4824,7 +4825,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.25.31
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void disk_create (String filename, String format, long size, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -4905,7 +4906,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.38
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String disk_format (String filename)
     throws LibGuestFSException
@@ -4931,7 +4932,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.39
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean disk_has_backing_file (String filename)
     throws LibGuestFSException
@@ -4957,7 +4958,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.39
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long disk_virtual_size (String filename)
     throws LibGuestFSException
@@ -4986,7 +4987,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String dmesg ()
     throws LibGuestFSException
@@ -5013,7 +5014,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void download (String remotefilename, String filename)
     throws LibGuestFSException
@@ -5047,7 +5048,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void download_offset (String remotefilename, String filename, long offset, long size)
     throws LibGuestFSException
@@ -5077,7 +5078,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void drop_caches (int whattodrop)
     throws LibGuestFSException
@@ -5107,7 +5108,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long du (String path)
     throws LibGuestFSException
@@ -5151,7 +5152,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.15.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void e2fsck (String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -5202,7 +5203,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.29
    * @deprecated In new code, use {@link #e2fsck} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void e2fsck_f (String device)
     throws LibGuestFSException
@@ -5231,7 +5232,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.69
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String echo_daemon (String[] words)
     throws LibGuestFSException
@@ -5259,7 +5260,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] egrep (String regex, String path)
     throws LibGuestFSException
@@ -5287,7 +5288,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] egrepi (String regex, String path)
     throws LibGuestFSException
@@ -5313,7 +5314,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean equal (String file1, String file2)
     throws LibGuestFSException
@@ -5338,7 +5339,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean exists (String path)
     throws LibGuestFSException
@@ -5380,7 +5381,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.27
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void extlinux (String directory)
     throws LibGuestFSException
@@ -5409,7 +5410,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #fallocate64} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void fallocate (String path, int len)
     throws LibGuestFSException
@@ -5445,7 +5446,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void fallocate64 (String path, long len)
     throws LibGuestFSException
@@ -5470,7 +5471,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean feature_available (String[] groups)
     throws LibGuestFSException
@@ -5498,7 +5499,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] fgrep (String pattern, String path)
     throws LibGuestFSException
@@ -5526,7 +5527,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] fgrepi (String pattern, String path)
     throws LibGuestFSException
@@ -5564,7 +5565,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String file (String path)
     throws LibGuestFSException
@@ -5657,7 +5658,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String file_architecture (String filename)
     throws LibGuestFSException
@@ -5683,7 +5684,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.82
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long filesize (String file)
     throws LibGuestFSException
@@ -5719,7 +5720,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.5
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean filesystem_available (String filesystem)
     throws LibGuestFSException
@@ -5748,7 +5749,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.79
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void fill (int c, int len, String path)
     throws LibGuestFSException
@@ -5773,7 +5774,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.32
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void fill_dir (String dir, int nr)
     throws LibGuestFSException
@@ -5799,7 +5800,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.12
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void fill_pattern (String pattern, int len, String path)
     throws LibGuestFSException
@@ -5845,7 +5846,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.27
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] find (String directory)
     throws LibGuestFSException
@@ -5879,7 +5880,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.74
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void find0 (String directory, String files)
     throws LibGuestFSException
@@ -5905,7 +5906,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String findfs_label (String label)
     throws LibGuestFSException
@@ -5931,7 +5932,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String findfs_uuid (String uuid)
     throws LibGuestFSException
@@ -5971,7 +5972,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.16
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int fsck (String fstype, String device)
     throws LibGuestFSException
@@ -6015,7 +6016,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.6
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void fstrim (String mountpoint, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -6074,7 +6075,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_append ()
     throws LibGuestFSException
@@ -6099,7 +6100,7 @@ public class GuestFS {
    * </p>
    * @since 1.9.8
    * @deprecated In new code, use {@link #get_backend} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String get_attach_method ()
     throws LibGuestFSException
@@ -6121,7 +6122,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean get_autosync ()
     throws LibGuestFSException
@@ -6148,7 +6149,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_backend ()
     throws LibGuestFSException
@@ -6180,7 +6181,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.27.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_backend_setting (String name)
     throws LibGuestFSException
@@ -6209,7 +6210,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.25.24
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] get_backend_settings ()
     throws LibGuestFSException
@@ -6232,7 +6233,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.58
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_cachedir ()
     throws LibGuestFSException
@@ -6254,7 +6255,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.72
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean get_direct ()
     throws LibGuestFSException
@@ -6351,7 +6352,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.31
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_e2attrs (String file)
     throws LibGuestFSException
@@ -6382,7 +6383,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.31
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long get_e2generation (String file)
     throws LibGuestFSException
@@ -6406,7 +6407,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.15
    * @deprecated In new code, use {@link #vfs_label} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String get_e2label (String device)
     throws LibGuestFSException
@@ -6430,7 +6431,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.15
    * @deprecated In new code, use {@link #vfs_uuid} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String get_e2uuid (String device)
     throws LibGuestFSException
@@ -6455,7 +6456,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_hv ()
     throws LibGuestFSException
@@ -6477,7 +6478,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.31.14
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_identifier ()
     throws LibGuestFSException
@@ -6504,7 +6505,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.52
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_libvirt_requested_credential_challenge (int index)
     throws LibGuestFSException
@@ -6532,7 +6533,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.52
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_libvirt_requested_credential_defresult (int index)
     throws LibGuestFSException
@@ -6559,7 +6560,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.52
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_libvirt_requested_credential_prompt (int index)
     throws LibGuestFSException
@@ -6589,7 +6590,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.52
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] get_libvirt_requested_credentials ()
     throws LibGuestFSException
@@ -6619,7 +6620,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.55
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int get_memsize ()
     throws LibGuestFSException
@@ -6641,7 +6642,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean get_network ()
     throws LibGuestFSException
@@ -6666,7 +6667,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_path ()
     throws LibGuestFSException
@@ -6688,7 +6689,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean get_pgroup ()
     throws LibGuestFSException
@@ -6713,7 +6714,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.56
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int get_pid ()
     throws LibGuestFSException
@@ -6735,7 +6736,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.29
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_program ()
     throws LibGuestFSException
@@ -6761,7 +6762,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.6
    * @deprecated In new code, use {@link #get_hv} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String get_qemu ()
     throws LibGuestFSException
@@ -6783,7 +6784,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.77
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean get_recovery_proc ()
     throws LibGuestFSException
@@ -6810,7 +6811,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.67
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean get_selinux ()
     throws LibGuestFSException
@@ -6833,7 +6834,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.13.15
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int get_smp ()
     throws LibGuestFSException
@@ -6859,7 +6860,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int get_state ()
     throws LibGuestFSException
@@ -6882,7 +6883,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.58
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String get_tmpdir ()
     throws LibGuestFSException
@@ -6904,7 +6905,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.69
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean get_trace ()
     throws LibGuestFSException
@@ -6927,7 +6928,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int get_umask ()
     throws LibGuestFSException
@@ -6949,7 +6950,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean get_verbose ()
     throws LibGuestFSException
@@ -6974,7 +6975,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.67
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String getcon ()
     throws LibGuestFSException
@@ -7013,7 +7014,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.7.24
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String getxattr (String path, String name)
     throws LibGuestFSException
@@ -7041,7 +7042,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.59
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public XAttr[] getxattrs (String path)
     throws LibGuestFSException
@@ -7076,7 +7077,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.50
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] glob_expand (String pattern)
     throws LibGuestFSException
@@ -7126,7 +7127,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] grep (String regex, String path, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -7208,7 +7209,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] grepi (String regex, String path)
     throws LibGuestFSException
@@ -7258,7 +7259,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void grub_install (String root, String device)
     throws LibGuestFSException
@@ -7285,7 +7286,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] head (String path)
     throws LibGuestFSException
@@ -7319,7 +7320,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] head_n (int nrlines, String path)
     throws LibGuestFSException
@@ -7346,7 +7347,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String hexdump (String path)
     throws LibGuestFSException
@@ -7371,7 +7372,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void hivex_close ()
     throws LibGuestFSException
@@ -7402,7 +7403,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void hivex_commit (String filename)
     throws LibGuestFSException
@@ -7427,7 +7428,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long hivex_node_add_child (long parent, String name)
     throws LibGuestFSException
@@ -7452,7 +7453,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public HivexNode[] hivex_node_children (long nodeh)
     throws LibGuestFSException
@@ -7477,7 +7478,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void hivex_node_delete_child (long nodeh)
     throws LibGuestFSException
@@ -7504,7 +7505,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long hivex_node_get_child (long nodeh, String name)
     throws LibGuestFSException
@@ -7531,7 +7532,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long hivex_node_get_value (long nodeh, String key)
     throws LibGuestFSException
@@ -7556,7 +7557,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String hivex_node_name (long nodeh)
     throws LibGuestFSException
@@ -7581,7 +7582,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long hivex_node_parent (long nodeh)
     throws LibGuestFSException
@@ -7608,7 +7609,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void hivex_node_set_value (long nodeh, String key, long t, byte[] val)
     throws LibGuestFSException
@@ -7634,7 +7635,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public HivexValue[] hivex_node_values (long nodeh)
     throws LibGuestFSException
@@ -7666,7 +7667,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void hivex_open (String filename, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -7725,7 +7726,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long hivex_root ()
     throws LibGuestFSException
@@ -7751,7 +7752,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String hivex_value_key (long valueh)
     throws LibGuestFSException
@@ -7777,7 +7778,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long hivex_value_type (long valueh)
     throws LibGuestFSException
@@ -7808,7 +7809,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String hivex_value_utf8 (long valueh)
     throws LibGuestFSException
@@ -7835,7 +7836,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.35
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String hivex_value_value (long valueh)
     throws LibGuestFSException
@@ -7871,7 +7872,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.84
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String initrd_cat (String initrdpath, String filename)
     throws LibGuestFSException
@@ -7902,7 +7903,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] initrd_list (String path)
     throws LibGuestFSException
@@ -7932,7 +7933,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long inotify_add_watch (String path, int mask)
     throws LibGuestFSException
@@ -7956,7 +7957,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void inotify_close ()
     throws LibGuestFSException
@@ -7981,7 +7982,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] inotify_files ()
     throws LibGuestFSException
@@ -8033,7 +8034,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void inotify_init (int maxevents)
     throws LibGuestFSException
@@ -8064,7 +8065,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public INotifyEvent[] inotify_read ()
     throws LibGuestFSException
@@ -8087,7 +8088,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void inotify_rm_watch (int wd)
     throws LibGuestFSException
@@ -8116,7 +8117,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_arch (String root)
     throws LibGuestFSException
@@ -8248,7 +8249,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_distro (String root)
     throws LibGuestFSException
@@ -8301,7 +8302,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Map<String,String> inspect_get_drive_mappings (String root)
     throws LibGuestFSException
@@ -8338,7 +8339,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] inspect_get_filesystems (String root)
     throws LibGuestFSException
@@ -8381,7 +8382,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_format (String root)
     throws LibGuestFSException
@@ -8410,7 +8411,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.7.9
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_hostname (String root)
     throws LibGuestFSException
@@ -8487,7 +8488,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.12
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_icon (String root, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -8548,7 +8549,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int inspect_get_major_version (String root)
     throws LibGuestFSException
@@ -8577,7 +8578,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int inspect_get_minor_version (String root)
     throws LibGuestFSException
@@ -8623,7 +8624,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Map<String,String> inspect_get_mountpoints (String root)
     throws LibGuestFSException
@@ -8665,7 +8666,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.7.5
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_package_format (String root)
     throws LibGuestFSException
@@ -8703,7 +8704,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.7.5
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_package_management (String root)
     throws LibGuestFSException
@@ -8733,7 +8734,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_product_name (String root)
     throws LibGuestFSException
@@ -8777,7 +8778,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.13
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_product_variant (String root)
     throws LibGuestFSException
@@ -8807,7 +8808,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.7.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] inspect_get_roots ()
     throws LibGuestFSException
@@ -8863,7 +8864,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_type (String root)
     throws LibGuestFSException
@@ -8893,7 +8894,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_windows_current_control_set (String root)
     throws LibGuestFSException
@@ -8923,7 +8924,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.25
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String inspect_get_windows_systemroot (String root)
     throws LibGuestFSException
@@ -8949,7 +8950,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean inspect_is_live (String root)
     throws LibGuestFSException
@@ -8975,7 +8976,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean inspect_is_multipart (String root)
     throws LibGuestFSException
@@ -9003,7 +9004,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean inspect_is_netinst (String root)
     throws LibGuestFSException
@@ -9111,7 +9112,7 @@ public class GuestFS {
    * </p>
    * @since 1.7.8
    * @deprecated In new code, use {@link #inspect_list_applications2} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public Application[] inspect_list_applications (String root)
     throws LibGuestFSException
@@ -9223,7 +9224,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.56
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Application2[] inspect_list_applications2 (String root)
     throws LibGuestFSException
@@ -9279,7 +9280,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] inspect_os ()
     throws LibGuestFSException
@@ -10246,7 +10247,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_blockdev (String path, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -10301,7 +10302,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_busy ()
     throws LibGuestFSException
@@ -10335,7 +10336,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_chardev (String path, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -10390,7 +10391,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_config ()
     throws LibGuestFSException
@@ -10425,7 +10426,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_dir (String path, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -10489,7 +10490,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_fifo (String path, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -10554,7 +10555,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_file (String path, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -10609,7 +10610,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_launching ()
     throws LibGuestFSException
@@ -10632,7 +10633,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_lv (String device)
     throws LibGuestFSException
@@ -10657,7 +10658,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_ready ()
     throws LibGuestFSException
@@ -10691,7 +10692,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_socket (String path, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -10746,7 +10747,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_symlink (String path)
     throws LibGuestFSException
@@ -10770,7 +10771,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.9
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_whole_device (String device)
     throws LibGuestFSException
@@ -10793,7 +10794,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_zero (String path)
     throws LibGuestFSException
@@ -10819,7 +10820,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean is_zero_device (String device)
     throws LibGuestFSException
@@ -10846,7 +10847,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.19
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public ISOInfo isoinfo (String isofile)
     throws LibGuestFSException
@@ -10879,7 +10880,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.19
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public ISOInfo isoinfo_device (String device)
     throws LibGuestFSException
@@ -10901,7 +10902,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.11
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void journal_close ()
     throws LibGuestFSException
@@ -10937,7 +10938,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.11
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public XAttr[] journal_get ()
     throws LibGuestFSException
@@ -10965,7 +10966,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.11
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long journal_get_data_threshold ()
     throws LibGuestFSException
@@ -10988,7 +10989,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.27.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long journal_get_realtime_usec ()
     throws LibGuestFSException
@@ -11017,7 +11018,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.11
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean journal_next ()
     throws LibGuestFSException
@@ -11046,7 +11047,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.11
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void journal_open (String directory)
     throws LibGuestFSException
@@ -11074,7 +11075,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.11
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void journal_set_data_threshold (long threshold)
     throws LibGuestFSException
@@ -11103,7 +11104,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.11
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long journal_skip (long skip)
     throws LibGuestFSException
@@ -11128,7 +11129,7 @@ public class GuestFS {
    * </p>
    * @since 0.3
    * @deprecated In new code, use {@link #shutdown} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void kill_subprocess ()
     throws LibGuestFSException
@@ -11157,7 +11158,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void launch ()
     throws LibGuestFSException
@@ -11186,7 +11187,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.77
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lchown (int owner, int group, String path)
     throws LibGuestFSException
@@ -11219,7 +11220,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ldmtool_create_all ()
     throws LibGuestFSException
@@ -11244,7 +11245,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] ldmtool_diskgroup_disks (String diskgroup)
     throws LibGuestFSException
@@ -11269,7 +11270,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String ldmtool_diskgroup_name (String diskgroup)
     throws LibGuestFSException
@@ -11294,7 +11295,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] ldmtool_diskgroup_volumes (String diskgroup)
     throws LibGuestFSException
@@ -11318,7 +11319,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ldmtool_remove_all ()
     throws LibGuestFSException
@@ -11346,7 +11347,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] ldmtool_scan ()
     throws LibGuestFSException
@@ -11375,7 +11376,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] ldmtool_scan_devices (String[] devices)
     throws LibGuestFSException
@@ -11401,7 +11402,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String ldmtool_volume_hint (String diskgroup, String volume)
     throws LibGuestFSException
@@ -11424,7 +11425,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] ldmtool_volume_partitions (String diskgroup, String volume)
     throws LibGuestFSException
@@ -11451,7 +11452,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String ldmtool_volume_type (String diskgroup, String volume)
     throws LibGuestFSException
@@ -11489,7 +11490,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.7.24
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String lgetxattr (String path, String name)
     throws LibGuestFSException
@@ -11513,7 +11514,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.59
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public XAttr[] lgetxattrs (String path)
     throws LibGuestFSException
@@ -11536,7 +11537,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.12
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] list_9p ()
     throws LibGuestFSException
@@ -11562,7 +11563,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] list_devices ()
     throws LibGuestFSException
@@ -11592,7 +11593,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.49
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Map<String,String> list_disk_labels ()
     throws LibGuestFSException
@@ -11626,7 +11627,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.15
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] list_dm_devices ()
     throws LibGuestFSException
@@ -11681,7 +11682,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.15
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Map<String,String> list_filesystems ()
     throws LibGuestFSException
@@ -11710,7 +11711,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] list_ldm_partitions ()
     throws LibGuestFSException
@@ -11734,7 +11735,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.20.0
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] list_ldm_volumes ()
     throws LibGuestFSException
@@ -11756,7 +11757,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.15.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] list_md_devices ()
     throws LibGuestFSException
@@ -11786,7 +11787,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] list_partitions ()
     throws LibGuestFSException
@@ -11813,7 +11814,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String ll (String directory)
     throws LibGuestFSException
@@ -11839,7 +11840,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.6
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String llz (String directory)
     throws LibGuestFSException
@@ -11861,7 +11862,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ln (String target, String linkname)
     throws LibGuestFSException
@@ -11885,7 +11886,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ln_f (String target, String linkname)
     throws LibGuestFSException
@@ -11908,7 +11909,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ln_s (String target, String linkname)
     throws LibGuestFSException
@@ -11932,7 +11933,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ln_sf (String target, String linkname)
     throws LibGuestFSException
@@ -11956,7 +11957,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.59
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lremovexattr (String xattr, String path)
     throws LibGuestFSException
@@ -11980,7 +11981,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] ls (String directory)
     throws LibGuestFSException
@@ -12010,7 +12011,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.32
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ls0 (String dir, String filenames)
     throws LibGuestFSException
@@ -12034,7 +12035,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.59
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lsetxattr (String xattr, String val, int vallen, String path)
     throws LibGuestFSException
@@ -12063,7 +12064,7 @@ public class GuestFS {
    * </p>
    * @since 1.9.2
    * @deprecated In new code, use {@link #lstatns} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public Stat lstat (String path)
     throws LibGuestFSException
@@ -12100,7 +12101,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.77
    * @deprecated In new code, use {@link #lstatnslist} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public Stat[] lstatlist (String path, String[] names)
     throws LibGuestFSException
@@ -12128,7 +12129,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.27.53
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public StatNS lstatns (String path)
     throws LibGuestFSException
@@ -12164,7 +12165,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.27.53
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public StatNS[] lstatnslist (String path, String[] names)
     throws LibGuestFSException
@@ -12193,7 +12194,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void luks_add_key (String device, String key, String newkey, int keyslot)
     throws LibGuestFSException
@@ -12219,7 +12220,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void luks_close (String device)
     throws LibGuestFSException
@@ -12244,7 +12245,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void luks_format (String device, String key, int keyslot)
     throws LibGuestFSException
@@ -12267,7 +12268,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void luks_format_cipher (String device, String key, int keyslot, String cipher)
     throws LibGuestFSException
@@ -12291,7 +12292,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void luks_kill_slot (String device, String key, int keyslot)
     throws LibGuestFSException
@@ -12332,7 +12333,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void luks_open (String device, String key, String mapname)
     throws LibGuestFSException
@@ -12355,7 +12356,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void luks_open_ro (String device, String key, String mapname)
     throws LibGuestFSException
@@ -12378,7 +12379,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lvcreate (String logvol, String volgroup, int mbytes)
     throws LibGuestFSException
@@ -12404,7 +12405,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lvcreate_free (String logvol, String volgroup, int percent)
     throws LibGuestFSException
@@ -12433,7 +12434,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.24
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String lvm_canonical_lv_name (String lvname)
     throws LibGuestFSException
@@ -12459,7 +12460,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lvm_clear_filter ()
     throws LibGuestFSException
@@ -12482,7 +12483,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lvm_remove_all ()
     throws LibGuestFSException
@@ -12526,7 +12527,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lvm_set_filter (String[] devices)
     throws LibGuestFSException
@@ -12552,7 +12553,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.13
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lvremove (String device)
     throws LibGuestFSException
@@ -12575,7 +12576,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.83
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lvrename (String logvol, String newlogvol)
     throws LibGuestFSException
@@ -12599,7 +12600,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.27
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lvresize (String device, int mbytes)
     throws LibGuestFSException
@@ -12625,7 +12626,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void lvresize_free (String lv, int percent)
     throws LibGuestFSException
@@ -12653,7 +12654,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] lvs ()
     throws LibGuestFSException
@@ -12677,7 +12678,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public LV[] lvs_full ()
     throws LibGuestFSException
@@ -12699,7 +12700,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.87
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String lvuuid (String device)
     throws LibGuestFSException
@@ -12740,7 +12741,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.77
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public XAttr[] lxattrlist (String path, String[] names)
     throws LibGuestFSException
@@ -12769,7 +12770,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int max_disks ()
     throws LibGuestFSException
@@ -12843,7 +12844,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.15.6
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void md_create (String name, String[] devices, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -12932,7 +12933,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.15.6
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Map<String,String> md_detail (String md)
     throws LibGuestFSException
@@ -12985,7 +12986,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.21
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public MDStat[] md_stat (String md)
     throws LibGuestFSException
@@ -13008,7 +13009,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.15.6
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void md_stop (String md)
     throws LibGuestFSException
@@ -13030,7 +13031,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mkdir (String path)
     throws LibGuestFSException
@@ -13059,7 +13060,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.77
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mkdir_mode (String path, int mode)
     throws LibGuestFSException
@@ -13083,7 +13084,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mkdir_p (String path)
     throws LibGuestFSException
@@ -13123,7 +13124,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String mkdtemp (String tmpl)
     throws LibGuestFSException
@@ -13157,7 +13158,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.44
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mke2fs (String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -13500,7 +13501,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void mke2fs_J (String fstype, int blocksize, String device, String journal)
     throws LibGuestFSException
@@ -13526,7 +13527,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void mke2fs_JL (String fstype, int blocksize, String device, String label)
     throws LibGuestFSException
@@ -13552,7 +13553,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void mke2fs_JU (String fstype, int blocksize, String device, String uuid)
     throws LibGuestFSException
@@ -13578,7 +13579,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void mke2journal (int blocksize, String device)
     throws LibGuestFSException
@@ -13602,7 +13603,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void mke2journal_L (int blocksize, String label, String device)
     throws LibGuestFSException
@@ -13626,7 +13627,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void mke2journal_U (int blocksize, String uuid, String device)
     throws LibGuestFSException
@@ -13655,7 +13656,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.55
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mkfifo (int mode, String path)
     throws LibGuestFSException
@@ -13716,7 +13717,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mkfs (String fstype, String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -13807,7 +13808,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mkfs} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void mkfs_b (String fstype, int blocksize, String device)
     throws LibGuestFSException
@@ -13841,7 +13842,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.25
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mkfs_btrfs (String[] devices, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -13940,7 +13941,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.56
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mklost_and_found (String mountpoint)
     throws LibGuestFSException
@@ -14004,7 +14005,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.62
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mkmountpoint (String exemptpath)
     throws LibGuestFSException
@@ -14042,7 +14043,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.55
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mknod (int mode, int devmajor, int devminor, String path)
     throws LibGuestFSException
@@ -14072,7 +14073,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.55
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mknod_b (int mode, int devmajor, int devminor, String path)
     throws LibGuestFSException
@@ -14102,7 +14103,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.55
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mknod_c (int mode, int devmajor, int devminor, String path)
     throws LibGuestFSException
@@ -14132,7 +14133,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.55
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mkswap (String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -14197,7 +14198,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.55
    * @deprecated In new code, use {@link #mkswap} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void mkswap_L (String label, String device)
     throws LibGuestFSException
@@ -14220,7 +14221,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.55
    * @deprecated In new code, use {@link #mkswap} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void mkswap_U (String uuid, String device)
     throws LibGuestFSException
@@ -14246,7 +14247,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mkswap_file (String path)
     throws LibGuestFSException
@@ -14294,7 +14295,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.53
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String mktemp (String tmpl, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -14334,7 +14335,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.68
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void modprobe (String modulename)
     throws LibGuestFSException
@@ -14378,7 +14379,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mount (String mountable, String mountpoint)
     throws LibGuestFSException
@@ -14410,7 +14411,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.12
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mount_9p (String mounttag, String mountpoint, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -14479,7 +14480,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mount_local (String localmountpoint, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -14558,7 +14559,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mount_local_run ()
     throws LibGuestFSException
@@ -14582,7 +14583,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mount_loop (String file, String mountpoint)
     throws LibGuestFSException
@@ -14610,7 +14611,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mount_options (String options, String mountable, String mountpoint)
     throws LibGuestFSException
@@ -14633,7 +14634,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mount_ro (String mountable, String mountpoint)
     throws LibGuestFSException
@@ -14657,7 +14658,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mount_vfs (String options, String vfstype, String mountable, String mountpoint)
     throws LibGuestFSException
@@ -14681,7 +14682,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.62
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Map<String,String> mountpoints ()
     throws LibGuestFSException
@@ -14714,7 +14715,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] mounts ()
     throws LibGuestFSException
@@ -14739,7 +14740,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void mv (String src, String dest)
     throws LibGuestFSException
@@ -14766,7 +14767,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.15
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int nr_devices ()
     throws LibGuestFSException
@@ -14800,7 +14801,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.43
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int ntfs_3g_probe (boolean rw, String device)
     throws LibGuestFSException
@@ -14824,7 +14825,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.9
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ntfsclone_in (String backupfile, String device)
     throws LibGuestFSException
@@ -14864,7 +14865,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.9
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ntfsclone_out (String device, String backupfile, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -14951,7 +14952,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.9
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ntfsfix (String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -15020,7 +15021,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ntfsresize (String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -15083,7 +15084,7 @@ public class GuestFS {
    * </p>
    * @since 1.3.14
    * @deprecated In new code, use {@link #ntfsresize} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void ntfsresize_size (String device, long size)
     throws LibGuestFSException
@@ -15115,7 +15116,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.53
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void parse_environment ()
     throws LibGuestFSException
@@ -15144,7 +15145,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.53
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void parse_environment_list (String[] environment)
     throws LibGuestFSException
@@ -15181,7 +15182,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.78
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void part_add (String device, String prlogex, long startsect, long endsect)
     throws LibGuestFSException
@@ -15208,7 +15209,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void part_del (String device, int partnum)
     throws LibGuestFSException
@@ -15236,7 +15237,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.78
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void part_disk (String device, String parttype)
     throws LibGuestFSException
@@ -15261,7 +15262,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public boolean part_get_bootable (String device, int partnum)
     throws LibGuestFSException
@@ -15283,7 +15284,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.25
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String part_get_gpt_guid (String device, int partnum)
     throws LibGuestFSException
@@ -15308,7 +15309,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String part_get_gpt_type (String device, int partnum)
     throws LibGuestFSException
@@ -15335,7 +15336,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int part_get_mbr_id (String device, int partnum)
     throws LibGuestFSException
@@ -15360,7 +15361,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.32
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String part_get_mbr_part_type (String device, int partnum)
     throws LibGuestFSException
@@ -15388,7 +15389,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.25.33
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String part_get_name (String device, int partnum)
     throws LibGuestFSException
@@ -15417,7 +15418,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.78
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String part_get_parttype (String device)
     throws LibGuestFSException
@@ -15483,7 +15484,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.78
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void part_init (String device, String parttype)
     throws LibGuestFSException
@@ -15522,7 +15523,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.78
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Partition[] part_list (String device)
     throws LibGuestFSException
@@ -15550,7 +15551,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.78
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void part_set_bootable (String device, int partnum, boolean bootable)
     throws LibGuestFSException
@@ -15574,7 +15575,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.25
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void part_set_gpt_guid (String device, int partnum, String guid)
     throws LibGuestFSException
@@ -15602,7 +15603,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void part_set_gpt_type (String device, int partnum, String guid)
     throws LibGuestFSException
@@ -15632,7 +15633,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void part_set_mbr_id (String device, int partnum, int idbyte)
     throws LibGuestFSException
@@ -15660,7 +15661,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.78
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void part_set_name (String device, int partnum, String name)
     throws LibGuestFSException
@@ -15689,7 +15690,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.15
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String part_to_dev (String partition)
     throws LibGuestFSException
@@ -15717,7 +15718,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.13.25
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int part_to_partnum (String partition)
     throws LibGuestFSException
@@ -15743,7 +15744,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void ping_daemon ()
     throws LibGuestFSException
@@ -15776,7 +15777,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.77
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String pread (String path, int count, long offset)
     throws LibGuestFSException
@@ -15808,7 +15809,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.21
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String pread_device (String device, int count, long offset)
     throws LibGuestFSException
@@ -15831,7 +15832,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void pvchange_uuid (String device)
     throws LibGuestFSException
@@ -15853,7 +15854,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void pvchange_uuid_all ()
     throws LibGuestFSException
@@ -15877,7 +15878,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void pvcreate (String device)
     throws LibGuestFSException
@@ -15904,7 +15905,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.13
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void pvremove (String device)
     throws LibGuestFSException
@@ -15928,7 +15929,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void pvresize (String device)
     throws LibGuestFSException
@@ -15952,7 +15953,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.14
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void pvresize_size (String device, long size)
     throws LibGuestFSException
@@ -15980,7 +15981,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] pvs ()
     throws LibGuestFSException
@@ -16004,7 +16005,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public PV[] pvs_full ()
     throws LibGuestFSException
@@ -16026,7 +16027,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.87
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String pvuuid (String device)
     throws LibGuestFSException
@@ -16063,7 +16064,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.14
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int pwrite (String path, byte[] content, long offset)
     throws LibGuestFSException
@@ -16099,7 +16100,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.20
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int pwrite_device (String device, byte[] content, long offset)
     throws LibGuestFSException
@@ -16125,7 +16126,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.63
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String read_file (String path)
     throws LibGuestFSException
@@ -16157,7 +16158,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.7
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] read_lines (String path)
     throws LibGuestFSException
@@ -16215,7 +16216,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.55
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Dirent[] readdir (String dir)
     throws LibGuestFSException
@@ -16237,7 +16238,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String readlink (String path)
     throws LibGuestFSException
@@ -16277,7 +16278,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.77
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] readlinklist (String path, String[] names)
     throws LibGuestFSException
@@ -16301,7 +16302,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String realpath (String path)
     throws LibGuestFSException
@@ -16335,7 +16336,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void remount (String mountpoint, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -16389,7 +16390,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.49
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void remove_drive (String label)
     throws LibGuestFSException
@@ -16414,7 +16415,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.59
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void removexattr (String xattr, String path)
     throws LibGuestFSException
@@ -16438,7 +16439,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.5
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void rename (String oldpath, String newpath)
     throws LibGuestFSException
@@ -16463,7 +16464,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.27
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void resize2fs (String device)
     throws LibGuestFSException
@@ -16495,7 +16496,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void resize2fs_M (String device)
     throws LibGuestFSException
@@ -16521,7 +16522,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.14
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void resize2fs_size (String device, long size)
     throws LibGuestFSException
@@ -16543,7 +16544,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void rm (String path)
     throws LibGuestFSException
@@ -16572,7 +16573,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.42
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void rm_f (String path)
     throws LibGuestFSException
@@ -16596,7 +16597,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void rm_rf (String path)
     throws LibGuestFSException
@@ -16618,7 +16619,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void rmdir (String path)
     throws LibGuestFSException
@@ -16642,7 +16643,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.62
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void rmmountpoint (String exemptpath)
     throws LibGuestFSException
@@ -16685,7 +16686,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.29
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void rsync (String src, String dest, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -16758,7 +16759,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.29
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void rsync_in (String remote, String dest, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -16838,7 +16839,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.29
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void rsync_out (String src, String remote, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -16890,7 +16891,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.52
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void scrub_device (String device)
     throws LibGuestFSException
@@ -16918,7 +16919,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.52
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void scrub_file (String file)
     throws LibGuestFSException
@@ -16947,7 +16948,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.52
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void scrub_freespace (String dir)
     throws LibGuestFSException
@@ -16976,7 +16977,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_append (String append)
     throws LibGuestFSException
@@ -17002,7 +17003,7 @@ public class GuestFS {
    * </p>
    * @since 1.9.8
    * @deprecated In new code, use {@link #set_backend} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void set_attach_method (String backend)
     throws LibGuestFSException
@@ -17030,7 +17031,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_autosync (boolean autosync)
     throws LibGuestFSException
@@ -17058,7 +17059,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_backend (String backend)
     throws LibGuestFSException
@@ -17085,7 +17086,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.27.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_backend_setting (String name, String val)
     throws LibGuestFSException
@@ -17123,7 +17124,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.25.24
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_backend_settings (String[] settings)
     throws LibGuestFSException
@@ -17154,7 +17155,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.58
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_cachedir (String cachedir)
     throws LibGuestFSException
@@ -17187,7 +17188,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.72
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_direct (boolean direct)
     throws LibGuestFSException
@@ -17232,7 +17233,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.31
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_e2attrs (String file, String attrs, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -17274,7 +17275,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.31
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_e2generation (String file, long generation)
     throws LibGuestFSException
@@ -17302,7 +17303,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.15
    * @deprecated In new code, use {@link #set_label} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void set_e2label (String device, String label)
     throws LibGuestFSException
@@ -17331,7 +17332,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.15
    * @deprecated In new code, use {@link #set_uuid} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void set_e2uuid (String device, String uuid)
     throws LibGuestFSException
@@ -17372,7 +17373,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_hv (String hv)
     throws LibGuestFSException
@@ -17418,7 +17419,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.31.14
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_identifier (String identifier)
     throws LibGuestFSException
@@ -17468,7 +17469,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.9
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_label (String mountable, String label)
     throws LibGuestFSException
@@ -17495,7 +17496,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.52
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_libvirt_requested_credential (int index, byte[] cred)
     throws LibGuestFSException
@@ -17538,7 +17539,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.52
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_libvirt_supported_credentials (String[] creds)
     throws LibGuestFSException
@@ -17569,7 +17570,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.55
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_memsize (int memsize)
     throws LibGuestFSException
@@ -17598,7 +17599,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_network (boolean network)
     throws LibGuestFSException
@@ -17626,7 +17627,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_path (String searchpath)
     throws LibGuestFSException
@@ -17659,7 +17660,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_pgroup (boolean pgroup)
     throws LibGuestFSException
@@ -17687,7 +17688,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.29
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_program (String program)
     throws LibGuestFSException
@@ -17728,7 +17729,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.6
    * @deprecated In new code, use {@link #set_hv} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void set_qemu (String hv)
     throws LibGuestFSException
@@ -17764,7 +17765,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.77
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_recovery_proc (boolean recoveryproc)
     throws LibGuestFSException
@@ -17794,7 +17795,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.67
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_selinux (boolean selinux)
     throws LibGuestFSException
@@ -17820,7 +17821,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.13.15
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_smp (int smp)
     throws LibGuestFSException
@@ -17849,7 +17850,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.58
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_tmpdir (String tmpdir)
     throws LibGuestFSException
@@ -17883,7 +17884,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.69
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_trace (boolean trace)
     throws LibGuestFSException
@@ -17912,7 +17913,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.23.10
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_uuid (String device, String uuid)
     throws LibGuestFSException
@@ -17941,7 +17942,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.29.50
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_uuid_random (String device)
     throws LibGuestFSException
@@ -17970,7 +17971,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void set_verbose (boolean verbose)
     throws LibGuestFSException
@@ -17995,7 +17996,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.67
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void setcon (String context)
     throws LibGuestFSException
@@ -18021,7 +18022,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.59
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void setxattr (String xattr, String val, int vallen, String path)
     throws LibGuestFSException
@@ -18066,7 +18067,7 @@ public class GuestFS {
    * </p>
    * @since 0.8
    * @deprecated In new code, use {@link #part_add} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void sfdisk (String device, int cyls, int heads, int sectors, String[] lines)
     throws LibGuestFSException
@@ -18096,7 +18097,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.55
    * @deprecated In new code, use {@link #part_add} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void sfdiskM (String device, String[] lines)
     throws LibGuestFSException
@@ -18125,7 +18126,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.26
    * @deprecated In new code, use {@link #part_add} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void sfdisk_N (String device, int partnum, int cyls, int heads, int sectors, String line)
     throws LibGuestFSException
@@ -18154,7 +18155,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String sfdisk_disk_geometry (String device)
     throws LibGuestFSException
@@ -18180,7 +18181,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String sfdisk_kernel_geometry (String device)
     throws LibGuestFSException
@@ -18207,7 +18208,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.26
    * @deprecated In new code, use {@link #part_list} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String sfdisk_l (String device)
     throws LibGuestFSException
@@ -18240,7 +18241,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.50
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String sh (String command)
     throws LibGuestFSException
@@ -18265,7 +18266,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.50
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] sh_lines (String command)
     throws LibGuestFSException
@@ -18304,7 +18305,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.16
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void shutdown ()
     throws LibGuestFSException
@@ -18326,7 +18327,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.41
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void sleep (int secs)
     throws LibGuestFSException
@@ -18351,7 +18352,7 @@ public class GuestFS {
    * </p>
    * @since 1.9.2
    * @deprecated In new code, use {@link #statns} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public Stat stat (String path)
     throws LibGuestFSException
@@ -18375,7 +18376,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.27.53
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public StatNS statns (String path)
     throws LibGuestFSException
@@ -18402,7 +18403,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public StatVFS statvfs (String path)
     throws LibGuestFSException
@@ -18434,7 +18435,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] strings (String path)
     throws LibGuestFSException
@@ -18489,7 +18490,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] strings_e (String encoding, String path)
     throws LibGuestFSException
@@ -18513,7 +18514,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void swapoff_device (String device)
     throws LibGuestFSException
@@ -18536,7 +18537,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void swapoff_file (String file)
     throws LibGuestFSException
@@ -18559,7 +18560,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void swapoff_label (String label)
     throws LibGuestFSException
@@ -18582,7 +18583,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void swapoff_uuid (String uuid)
     throws LibGuestFSException
@@ -18615,7 +18616,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void swapon_device (String device)
     throws LibGuestFSException
@@ -18638,7 +18639,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void swapon_file (String file)
     throws LibGuestFSException
@@ -18661,7 +18662,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void swapon_label (String label)
     throws LibGuestFSException
@@ -18684,7 +18685,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.66
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void swapon_uuid (String uuid)
     throws LibGuestFSException
@@ -18710,7 +18711,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void sync ()
     throws LibGuestFSException
@@ -18762,7 +18763,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.21.27
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void syslinux (String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -18807,7 +18808,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] tail (String path)
     throws LibGuestFSException
@@ -18841,7 +18842,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] tail_n (int nrlines, String path)
     throws LibGuestFSException
@@ -18891,7 +18892,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void tar_in (String tarfile, String directory, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -19003,7 +19004,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void tar_out (String directory, String tarfile, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -19097,7 +19098,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.3
    * @deprecated In new code, use {@link #tar_in} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void tgz_in (String tarball, String directory)
     throws LibGuestFSException
@@ -19121,7 +19122,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.3
    * @deprecated In new code, use {@link #tar_out} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void tgz_out (String directory, String tarball)
     throws LibGuestFSException
@@ -19149,7 +19150,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.3
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void touch (String path)
     throws LibGuestFSException
@@ -19172,7 +19173,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.77
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void truncate (String path)
     throws LibGuestFSException
@@ -19202,7 +19203,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.77
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void truncate_size (String path, long size)
     throws LibGuestFSException
@@ -19291,7 +19292,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.15.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void tune2fs (String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -19410,7 +19411,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.9.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Map<String,String> tune2fs_l (String device)
     throws LibGuestFSException
@@ -19439,7 +19440,7 @@ public class GuestFS {
    * </p>
    * @since 1.3.2
    * @deprecated In new code, use {@link #tar_in} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void txz_in (String tarball, String directory)
     throws LibGuestFSException
@@ -19464,7 +19465,7 @@ public class GuestFS {
    * </p>
    * @since 1.3.2
    * @deprecated In new code, use {@link #tar_out} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void txz_out (String directory, String tarball)
     throws LibGuestFSException
@@ -19500,7 +19501,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.55
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int umask (int mask)
     throws LibGuestFSException
@@ -19529,7 +19530,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void umount (String pathordevice, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -19591,7 +19592,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void umount_all ()
     throws LibGuestFSException
@@ -19621,7 +19622,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.22
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void umount_local (Map<String, Object> optargs)
     throws LibGuestFSException
@@ -19666,7 +19667,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void upload (String filename, String remotefilename)
     throws LibGuestFSException
@@ -19703,7 +19704,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.5.17
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void upload_offset (String filename, String remotefilename, long offset)
     throws LibGuestFSException
@@ -19755,7 +19756,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void user_cancel ()
     throws LibGuestFSException
@@ -19792,7 +19793,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.77
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void utimens (String path, long atsecs, long atnsecs, long mtsecs, long mtnsecs)
     throws LibGuestFSException
@@ -19817,7 +19818,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.27
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public UTSName utsname ()
     throws LibGuestFSException
@@ -19869,7 +19870,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.58
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public Version version ()
     throws LibGuestFSException
@@ -19897,7 +19898,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String vfs_label (String mountable)
     throws LibGuestFSException
@@ -19926,7 +19927,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.31.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public long vfs_minimum_size (String mountable)
     throws LibGuestFSException
@@ -19955,7 +19956,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.75
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String vfs_type (String mountable)
     throws LibGuestFSException
@@ -19983,7 +19984,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String vfs_uuid (String mountable)
     throws LibGuestFSException
@@ -20013,7 +20014,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void vg_activate (boolean activate, String[] volgroups)
     throws LibGuestFSException
@@ -20038,7 +20039,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void vg_activate_all (boolean activate)
     throws LibGuestFSException
@@ -20060,7 +20061,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void vgchange_uuid (String vg)
     throws LibGuestFSException
@@ -20082,7 +20083,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void vgchange_uuid_all ()
     throws LibGuestFSException
@@ -20105,7 +20106,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.8
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void vgcreate (String volgroup, String[] physvols)
     throws LibGuestFSException
@@ -20133,7 +20134,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.87
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] vglvuuids (String vgname)
     throws LibGuestFSException
@@ -20160,7 +20161,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.20
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String vgmeta (String vgname)
     throws LibGuestFSException
@@ -20189,7 +20190,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.87
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] vgpvuuids (String vgname)
     throws LibGuestFSException
@@ -20214,7 +20215,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.13
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void vgremove (String vgname)
     throws LibGuestFSException
@@ -20237,7 +20238,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.83
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void vgrename (String volgroup, String newvolgroup)
     throws LibGuestFSException
@@ -20265,7 +20266,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String[] vgs ()
     throws LibGuestFSException
@@ -20289,7 +20290,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 0.4
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public VG[] vgs_full ()
     throws LibGuestFSException
@@ -20312,7 +20313,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.2
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void vgscan ()
     throws LibGuestFSException
@@ -20335,7 +20336,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.87
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public String vguuid (String vgname)
     throws LibGuestFSException
@@ -20367,7 +20368,7 @@ public class GuestFS {
    * </p>
    * @since 0.3
    * @deprecated In new code, use {@link #launch} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void wait_ready ()
     throws LibGuestFSException
@@ -20390,7 +20391,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int wc_c (String path)
     throws LibGuestFSException
@@ -20413,7 +20414,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int wc_l (String path)
     throws LibGuestFSException
@@ -20436,7 +20437,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.54
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int wc_w (String path)
     throws LibGuestFSException
@@ -20466,7 +20467,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.6
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void wipefs (String device)
     throws LibGuestFSException
@@ -20492,7 +20493,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.14
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void write (String path, byte[] content)
     throws LibGuestFSException
@@ -20517,7 +20518,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.11.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void write_append (String path, byte[] content)
     throws LibGuestFSException
@@ -20554,7 +20555,7 @@ public class GuestFS {
    * </p>
    * @since 0.8
    * @deprecated In new code, use {@link #write} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void write_file (String path, String content, int size)
     throws LibGuestFSException
@@ -20589,7 +20590,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.33
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void xfs_admin (String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -20686,7 +20687,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.28
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void xfs_growfs (String path, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -20788,7 +20789,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.21
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public XFSInfo xfs_info (String pathordevice)
     throws LibGuestFSException
@@ -20830,7 +20831,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.19.36
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public int xfs_repair (String device, Map<String, Object> optargs)
     throws LibGuestFSException
@@ -20948,7 +20949,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] zegrep (String regex, String path)
     throws LibGuestFSException
@@ -20976,7 +20977,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] zegrepi (String regex, String path)
     throws LibGuestFSException
@@ -21011,7 +21012,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.16
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void zero (String device)
     throws LibGuestFSException
@@ -21039,7 +21040,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.3.1
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void zero_device (String device)
     throws LibGuestFSException
@@ -21069,7 +21070,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.17.18
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void zero_free_space (String directory)
     throws LibGuestFSException
@@ -21100,7 +21101,7 @@ public class GuestFS {
    * </p><p>
    * </p>
    * @since 1.0.26
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void zerofree (String device)
     throws LibGuestFSException
@@ -21128,7 +21129,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] zfgrep (String pattern, String path)
     throws LibGuestFSException
@@ -21156,7 +21157,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] zfgrepi (String pattern, String path)
     throws LibGuestFSException
@@ -21185,7 +21186,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.59
    * @deprecated In new code, use {@link #file} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String zfile (String meth, String path)
     throws LibGuestFSException
@@ -21213,7 +21214,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] zgrep (String regex, String path)
     throws LibGuestFSException
@@ -21241,7 +21242,7 @@ public class GuestFS {
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public String[] zgrepi (String regex, String path)
     throws LibGuestFSException

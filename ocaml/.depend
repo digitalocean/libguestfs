@@ -19,6 +19,8 @@
  ./t/guestfs_065_implicit_close.cmx : guestfs.cmx
  ./t/guestfs_070_optargs.cmo : guestfs.cmi
  ./t/guestfs_070_optargs.cmx : guestfs.cmx
+ ./t/guestfs_080_version.cmo : guestfs.cmi
+ ./t/guestfs_080_version.cmx : guestfs.cmx
  ./t/guestfs_100_launch.cmo : guestfs.cmi
  ./t/guestfs_100_launch.cmx : guestfs.cmx
  ./t/guestfs_410_close_event.cmo : guestfs.cmi

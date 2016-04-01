@@ -1,6 +1,7 @@
 /* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/c.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -35,6 +36,7 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 #include "errnostring.h"
+#include "structs-print.h"
 
 GUESTFS_DLL_PUBLIC int
 guestfs_internal_test_only_optargs_argv (guestfs_h *g,
@@ -271,7 +273,9 @@ guestfs_version (guestfs_h *g)
     if (trace_flag) {
       guestfs_int_trace_open (&trace_buffer);
       fprintf (trace_buffer.fp, "%s = ", "version");
-      fprintf (trace_buffer.fp, "<struct guestfs_version *>");
+      fprintf (trace_buffer.fp, "<struct guestfs_version = ");
+      guestfs_int_print_version_indent (r, trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, ">");
       guestfs_int_trace_send_line (g, &trace_buffer);
     }
 
@@ -612,9 +616,21 @@ guestfs_lxattrlist (guestfs_h *g,
 
   if (r != NULL) {
     if (trace_flag) {
+      size_t i;
+
       guestfs_int_trace_open (&trace_buffer);
       fprintf (trace_buffer.fp, "%s = ", "lxattrlist");
-      fprintf (trace_buffer.fp, "<struct guestfs_xattr_list *>");
+      fprintf (trace_buffer.fp, "<struct guestfs_xattr_list(%u)", r->len);
+      if (r->len > 0)
+        fprintf (trace_buffer.fp, " = ");
+      for (i = 0; i < r->len; ++i) {
+        if (i != 0)
+          fprintf (trace_buffer.fp, " ");
+        fprintf (trace_buffer.fp, "[%zu]{", i);
+        guestfs_int_print_xattr_indent (&r->val[i], trace_buffer.fp, ", ", "");
+        fprintf (trace_buffer.fp, "}");
+      }
+      fprintf (trace_buffer.fp, ">");
       guestfs_int_trace_send_line (g, &trace_buffer);
     }
 
@@ -1523,7 +1539,9 @@ guestfs_aug_defnode (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "aug_defnode");
-    fprintf (trace_buffer.fp, "<struct guestfs_int_bool *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_int_bool = ");
+    guestfs_int_print_int_bool_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -2527,7 +2545,9 @@ guestfs_statvfs (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "statvfs");
-    fprintf (trace_buffer.fp, "<struct guestfs_statvfs *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_statvfs = ");
+    guestfs_int_print_statvfs_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -6630,9 +6650,21 @@ guestfs_btrfs_subvolume_list (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.subvolumes, sizeof (ret.subvolumes));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "btrfs_subvolume_list");
-    fprintf (trace_buffer.fp, "<struct guestfs_btrfssubvolume_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_btrfssubvolume_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_btrfssubvolume_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -9109,7 +9141,9 @@ guestfs_lstatns (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "lstatns");
-    fprintf (trace_buffer.fp, "<struct guestfs_statns *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_statns = ");
+    guestfs_int_print_statns_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -9440,7 +9474,9 @@ guestfs_btrfs_balance_status (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "btrfs_balance_status");
-    fprintf (trace_buffer.fp, "<struct guestfs_btrfsbalance *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_btrfsbalance = ");
+    guestfs_int_print_btrfsbalance_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 

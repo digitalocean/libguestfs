@@ -1723,7 +1723,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
-@HAVE_FUSE_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
+@HAVE_FUSE_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
+@HAVE_FUSE_TRUE@LOG_COMPILER = $(VG)
 @HAVE_FUSE_TRUE@test_parallel_mount_local_SOURCES = \
 @HAVE_FUSE_TRUE@	test-parallel-mount-local.c \
 @HAVE_FUSE_TRUE@	../../df/estimate-max-threads.c \
@@ -2274,7 +2275,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 @HAVE_FUSE_TRUE@check-valgrind:
-@HAVE_FUSE_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check
+@HAVE_FUSE_TRUE@	$(MAKE) VG="@VG@" check
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

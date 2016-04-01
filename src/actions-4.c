@@ -1,6 +1,7 @@
 /* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/c.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -35,6 +36,7 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 #include "errnostring.h"
+#include "structs-print.h"
 
 GUESTFS_DLL_PUBLIC int
 guestfs_internal_test_rbool (guestfs_h *g,
@@ -2497,9 +2499,21 @@ guestfs_lgetxattrs (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.xattrs, sizeof (ret.xattrs));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "lgetxattrs");
-    fprintf (trace_buffer.fp, "<struct guestfs_xattr_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_xattr_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_xattr_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -3249,9 +3263,21 @@ guestfs_internal_lxattrlist (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.xattrs, sizeof (ret.xattrs));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "internal_lxattrlist");
-    fprintf (trace_buffer.fp, "<struct guestfs_xattr_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_xattr_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_xattr_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -5727,9 +5753,21 @@ guestfs_hivex_node_children (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.nodehs, sizeof (ret.nodehs));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "hivex_node_children");
-    fprintf (trace_buffer.fp, "<struct guestfs_hivex_node_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_hivex_node_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_hivex_node_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -6363,9 +6401,21 @@ guestfs_internal_lstatnslist (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.statbufs, sizeof (ret.statbufs));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "internal_lstatnslist");
-    fprintf (trace_buffer.fp, "<struct guestfs_statns_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_statns_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_statns_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -6756,7 +6806,9 @@ guestfs_btrfs_scrub_status (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "btrfs_scrub_status");
-    fprintf (trace_buffer.fp, "<struct guestfs_btrfsscrub *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_btrfsscrub = ");
+    guestfs_int_print_btrfsscrub_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 

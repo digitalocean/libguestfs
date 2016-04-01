@@ -1778,7 +1778,7 @@ CLEANFILES = \
 @HAVE_LUA_TRUE@noinst_DATA = guestfs.so
 
 # Tests.
-@HAVE_LUA_TRUE@TESTS_ENVIRONMENT = LC_ALL=C $(top_builddir)/run --test $(VG)
+@HAVE_LUA_TRUE@TESTS_ENVIRONMENT = LC_ALL=C $(top_builddir)/run --test
 @HAVE_LUA_TRUE@TESTS = run-bindtests tests/010-load.lua \
 @HAVE_LUA_TRUE@	tests/015-globals.lua tests/020-create.lua \
 @HAVE_LUA_TRUE@	tests/025-create-flags.lua \

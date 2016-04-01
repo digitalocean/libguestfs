@@ -156,7 +156,6 @@ bin_PROGRAMS = guestfish$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@	test-find0.sh \
 @ENABLE_APPLIANCE_TRUE@	test-inspect.sh \
 @ENABLE_APPLIANCE_TRUE@	test-glob.sh \
-@ENABLE_APPLIANCE_TRUE@	test-mount-local.sh \
 @ENABLE_APPLIANCE_TRUE@	test-prep.sh \
 @ENABLE_APPLIANCE_TRUE@	test-read-file.sh \
 @ENABLE_APPLIANCE_TRUE@	test-remote.sh \
@@ -165,6 +164,9 @@ bin_PROGRAMS = guestfish$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@	test-run.sh \
 @ENABLE_APPLIANCE_TRUE@	test-stringlist.sh \
 @ENABLE_APPLIANCE_TRUE@	test-upload-to-dir.sh
+
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@am__append_4 = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-mount-local.sh
 
 subdir = fish
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -1937,7 +1939,7 @@ toolsconf_DATA = libguestfs-tools.conf
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 TESTS = test-a.sh test-add-domain.sh test-add-uri.sh test-d.sh \
 	test-escapes.sh test-events.sh test-invalid-params.sh \
-	test-tilde.sh $(am__append_3)
+	test-tilde.sh $(am__append_3) $(am__append_4)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -3100,13 +3102,6 @@ test-glob.sh.log: test-glob.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-mount-local.sh.log: test-mount-local.sh
-	@p='test-mount-local.sh'; \
-	b='test-mount-local.sh'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-prep.sh.log: test-prep.sh
 	@p='test-prep.sh'; \
 	b='test-prep.sh'; \
@@ -3159,6 +3154,13 @@ test-stringlist.sh.log: test-stringlist.sh
 test-upload-to-dir.sh.log: test-upload-to-dir.sh
 	@p='test-upload-to-dir.sh'; \
 	b='test-upload-to-dir.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mount-local.sh.log: test-mount-local.sh
+	@p='test-mount-local.sh'; \
+	b='test-mount-local.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

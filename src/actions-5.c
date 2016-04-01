@@ -1,6 +1,7 @@
 /* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/c.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -35,6 +36,7 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 #include "errnostring.h"
+#include "structs-print.h"
 
 GUESTFS_DLL_PUBLIC int
 guestfs_internal_test_argv (guestfs_h *g,
@@ -1050,7 +1052,9 @@ guestfs_stat (guestfs_h *g,
     if (trace_flag) {
       guestfs_int_trace_open (&trace_buffer);
       fprintf (trace_buffer.fp, "%s = ", "stat");
-      fprintf (trace_buffer.fp, "<struct guestfs_stat *>");
+      fprintf (trace_buffer.fp, "<struct guestfs_stat = ");
+      guestfs_int_print_stat_indent (r, trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, ">");
       guestfs_int_trace_send_line (g, &trace_buffer);
     }
 
@@ -1225,9 +1229,21 @@ guestfs_lvs_full (guestfs_h *g)
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.logvols, sizeof (ret.logvols));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "lvs_full");
-    fprintf (trace_buffer.fp, "<struct guestfs_lvm_lv_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_lvm_lv_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_lvm_lv_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -6125,7 +6141,9 @@ guestfs_isoinfo_device (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "isoinfo_device");
-    fprintf (trace_buffer.fp, "<struct guestfs_isoinfo *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_isoinfo = ");
+    guestfs_int_print_isoinfo_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -6221,9 +6239,21 @@ guestfs_md_stat (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.devices, sizeof (ret.devices));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "md_stat");
-    fprintf (trace_buffer.fp, "<struct guestfs_mdstat_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_mdstat_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_mdstat_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -6614,7 +6644,9 @@ guestfs_xfs_info (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "xfs_info");
-    fprintf (trace_buffer.fp, "<struct guestfs_xfsinfo *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_xfsinfo = ");
+    guestfs_int_print_xfsinfo_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
