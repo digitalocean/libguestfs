@@ -58,7 +58,6 @@ GuestfsMDCreate
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_md_create_new ##### -->
 <para>

@@ -38,7 +38,6 @@ GuestfsBTRFSFilesystemResize
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_btrfs_filesystem_resize_new ##### -->
 <para>

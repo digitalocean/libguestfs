@@ -421,7 +421,7 @@ let rec argspec () =
       Arg.Set selinux_relabel,
       " " ^ s_"Relabel files with correct SELinux labels"
     ),
-    None, "Relabel files in the guest so that they have the correct SELinux label.\n\nYou should only use this option for guests which support SELinux.";
+    None, "Relabel files in the guest so that they have the correct SELinux label.\n\nThis will attempt to relabel files immediately, but if the operation fails\nthis will instead touch F</.autorelabel> on the image to schedule a\nrelabel operation for the next time the image boots.\n\nYou should only use this option for guests which support SELinux.";
     (
       "--sm-credentials",
       Arg.String (

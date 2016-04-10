@@ -225,10 +225,12 @@ put_table (char * const * const argv)
         | name, FChar ->
             pr "#ifdef HAVE_PYSTRING_ASSTRING\n";
             pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "                        PyString_FromStringAndSize (&dirent->%s, 1));\n" name;
+            pr "                        PyString_FromStringAndSize (&%s->%s, 1));\n"
+              typ name;
             pr "#else\n";
             pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "                        PyUnicode_FromStringAndSize (&dirent->%s, 1));\n" name;
+            pr "                        PyUnicode_FromStringAndSize (&%s->%s, 1));\n"
+              typ name;
             pr "#endif\n"
       ) cols;
       pr "  return dict;\n";
@@ -817,6 +819,11 @@ class GuestFS(object):
           match deprecation_notice f with
           | None -> doc
           | Some txt -> doc ^ "\n\n" ^ txt in
+        let doc =
+          match f.optional with
+          | None -> doc
+          | Some opt ->
+            doc ^ sprintf "\n\nThis function depends on the feature C<%s>.  See also C<g.feature-available>." opt in
         let doc = pod2text ~width:60 f.name doc in
         let doc = List.map (fun line -> replace_str line "\\" "\\\\") doc in
         let doc = String.concat "\n        " doc in

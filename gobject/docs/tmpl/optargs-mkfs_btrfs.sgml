@@ -73,7 +73,6 @@ GuestfsMkfsBtrfs
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_mkfs_btrfs_new ##### -->
 <para>

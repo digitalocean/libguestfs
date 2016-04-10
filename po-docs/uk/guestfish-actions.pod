@@ -32,6 +32,8 @@ libguestfs generated file
 This function deletes the default POSIX Access Control List (ACL)  attached
 to directory C<dir>.
 
+This command depends on the feature C<acl>.  See also L</feature-available>.
+
 =head2 acl-get-file
 
  acl-get-file шлях тип-acl
@@ -54,6 +56,8 @@ Return the default ACL.  Normally this only makes sense if C<path> is a
 directory.
 
 =back
+
+This command depends on the feature C<acl>.  See also L</feature-available>.
 
 =head2 acl-set-file
 
@@ -92,6 +96,8 @@ C<g:I<ID>:...> field(s).  A full ACL string might therefore look like this:
 You should use numeric UIDs and GIDs.  To map usernames and groupnames to
 the correct numeric ID in the context of the guest, use the Augeas functions
 (see L</aug-init>).
+
+This command depends on the feature C<acl>.  See also L</feature-available>.
 
 =head2 add-cdrom
 
@@ -793,6 +799,9 @@ the host kernel.  If this support isn't present it may give an error or even
 appear to run but do nothing.  You must also set the C<discard> attribute on
 the underlying drive (see L</add-drive-opts>).
 
+This command depends on the feature C<blkdiscard>.  See also
+L</feature-available>.
+
 =head2 blkdiscardzeroes
 
  blkdiscardzeroes device
@@ -803,6 +812,9 @@ next time.
 
 If it returns false, then it may be that discarded blocks are read as stale
 or random data.
+
+This command depends on the feature C<blkdiscardzeroes>.  See also
+L</feature-available>.
 
 =head2 blkid
 
@@ -953,17 +965,26 @@ Sets the block device named C<device> to read-write.
 
 Cancel a running balance on a btrfs filesystem.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-balance-pause
 
  btrfs-balance-pause path
 
 Призупинити запущений баланс у файловій системі btrfs
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-balance-resume
 
  btrfs-balance-resume path
 
 Поновити призупинений баланс на файловій системі btrfs.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-balance-status
 
@@ -972,6 +993,9 @@ Cancel a running balance on a btrfs filesystem.
 Показати стан використовуваного або призупиненого балансу на файловій
 системі btrfs.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-device-add
 
  btrfs-device-add 'пристрої ...' файлова система
@@ -979,12 +1003,18 @@ Cancel a running balance on a btrfs filesystem.
 Add the list of device(s) in C<devices> to the btrfs filesystem mounted at
 C<fs>.  If C<devices> is an empty list, this does nothing.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-device-delete
 
  btrfs-device-delete 'пристрої ...' файлова система
 
 Remove the C<devices> from the btrfs filesystem mounted at C<fs>.  If
 C<devices> is an empty list, this does nothing.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-filesystem-balance
 
@@ -995,6 +1025,9 @@ C<devices> is an empty list, this does nothing.
 Balance the chunks in the btrfs filesystem mounted at C<fs> across the
 underlying devices.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-filesystem-defragment
 
  btrfs-filesystem-defragment path [flush:true|false] [compress:..]
@@ -1004,6 +1037,9 @@ zlib or lzo.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-filesystem-resize
 
@@ -1031,11 +1067,17 @@ resized to the maximum size.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-filesystem-sync
 
  btrfs-filesystem-sync файлова_система
 
 Force sync on the btrfs filesystem mounted at C<fs>.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-fsck
 
@@ -1047,6 +1089,9 @@ filesystem is stored.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-image
 
  btrfs-image 'source ...' image [compresslevel:N]
@@ -1057,6 +1102,9 @@ zeroed, but metadata and the like is preserved.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-qgroup-assign
 
  btrfs-qgroup-assign src dst path
@@ -1064,17 +1112,26 @@ ARGUMENTS>.
 Add qgroup C<src> to parent qgroup C<dst>. This command can group several
 qgroups into a parent qgroup to share common limit.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-qgroup-create
 
  btrfs-qgroup-create qgroupid subvolume
 
 Create a quota group (qgroup) for subvolume at C<subvolume>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-qgroup-destroy
 
  btrfs-qgroup-destroy qgroupid subvolume
 
 Destroy a quota group.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-qgroup-limit
 
@@ -1083,11 +1140,17 @@ Destroy a quota group.
 Limit the size of a subvolume which's path is C<subvolume>. C<size> can have
 suffix of G, M, or K.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-qgroup-remove
 
  btrfs-qgroup-remove джерело призначення шлях
 
 Remove qgroup C<src> from the parent qgroup C<dst>.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-qgroup-show
 
@@ -1096,6 +1159,9 @@ Remove qgroup C<src> from the parent qgroup C<dst>.
 Show all subvolume quota groups in a btrfs filesystem, including their
 usages.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-quota-enable
 
  btrfs-quota-enable fs true|false
@@ -1103,12 +1169,18 @@ usages.
 Enable or disable subvolume quota support for filesystem which contains
 C<path>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-quota-rescan
 
  btrfs-quota-rescan fs
 
 Викинути усі числові дані qgroup і виконати повторне сканування з поточними
 налаштуваннями.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-replace
 
@@ -1123,6 +1195,9 @@ The C<targetdev> needs to be same size or larger than the C<srcdev>. Devices
 which are currently mounted are never allowed to be used as the
 C<targetdev>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-rescue-chunk-recover
 
  btrfs-rescue-chunk-recover device
@@ -1130,11 +1205,17 @@ C<targetdev>.
 Recover the chunk tree of btrfs filesystem by scanning the devices one by
 one.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-rescue-super-recover
 
  btrfs-rescue-super-recover device
 
 Відновити пошкоджені суперблоки із якісних копій.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-scrub-cancel
 
@@ -1142,11 +1223,17 @@ one.
 
 Скасувати витирання, що виконується у файловій системі btrfs.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-scrub-resume
 
  btrfs-scrub-resume path
 
 Resume a previously canceled or interrupted scrub on a btrfs filesystem.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-scrub-start
 
@@ -1156,6 +1243,9 @@ Reads all the data and metadata on the filesystem, and uses checksums and
 the duplicate copies from RAID storage to identify and repair any corrupt
 data.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-scrub-status
 
  btrfs-scrub-status path
@@ -1163,12 +1253,18 @@ data.
 Показати дані щодо стану витирання, яке виконується або завершено на
 файловій системі btrfs.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-set-seeding
 
  btrfs-set-seeding пристрій true|false
 
 Enable or disable the seeding feature of a device that contains a btrfs
 filesystem.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-subvolume-create
 
@@ -1184,11 +1280,17 @@ subvolume will be added to.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-subvolume-delete
 
  btrfs-subvolume-delete підтом
 
 Вилучити вказаний за назвою підтом або знімок btrfs.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-subvolume-get-default
 
@@ -1197,12 +1299,18 @@ ARGUMENTS>.
 Get the default subvolume or snapshot of a filesystem mounted at
 C<mountpoint>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-subvolume-list
 
  btrfs-subvolume-list фс
 
 List the btrfs snapshots and subvolumes of the btrfs filesystem which is
 mounted at C<fs>.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-subvolume-set-default
 
@@ -1211,11 +1319,17 @@ mounted at C<fs>.
 Set the subvolume of the btrfs filesystem C<fs> which will be mounted by
 default.  See L</btrfs-subvolume-list> to get a list of subvolumes.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-subvolume-show
 
  btrfs-subvolume-show subvolume
 
 Повернути докладні дані щодо підтому.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-subvolume-snapshot
 
@@ -1233,11 +1347,17 @@ newly created snapshot will be added to.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfstune-enable-extended-inode-refs
 
  btrfstune-enable-extended-inode-refs device
 
 This will Enable extended inode refs.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfstune-enable-skinny-metadata-extent-refs
 
@@ -1245,12 +1365,18 @@ This will Enable extended inode refs.
 
 This enable skinny metadata extent refs.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfstune-seeding
 
  btrfstune-seeding device true|false
 
 Enable seeding of a btrfs device, this will force a fs readonly so that you
 can use it to build other filesystems.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 c-pointer
 
@@ -1297,6 +1423,9 @@ capabilities set is returned in text form (see L<cap_to_text(3)>).
 
 If no capabilities are attached to a file, an empty string is returned.
 
+This command depends on the feature C<linuxcaps>.  See also
+L</feature-available>.
+
 =head2 cap-set-file
 
  cap-set-file path cap
@@ -1304,6 +1433,9 @@ If no capabilities are attached to a file, an empty string is returned.
 This function sets the Linux capabilities attached to C<path>.  The
 capabilities set C<cap> should be passed in text form (see
 L<cap_from_text(3)>).
+
+This command depends on the feature C<linuxcaps>.  See also
+L</feature-available>.
 
 =head2 case-sensitive-path
 
@@ -2062,6 +2194,9 @@ information about the contents of this file, see L<extlinux(1)>.
 
 Див. також L</syslinux>.
 
+This command depends on the feature C<extlinux>.  See also
+L</feature-available>.
+
 =head2 fallocate
 
  fallocate шлях довжина
@@ -2451,6 +2586,9 @@ L</fstrim> either instead of, or after calling L</zero-free-space>.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
+
+This command depends on the feature C<fstrim>.  See also
+L</feature-available>.
 
 =head2 get-append
 
@@ -2855,6 +2993,9 @@ This gets the SELinux security context of the daemon.
 
 See the documentation about SELINUX in L<guestfs(3)>, and L</setcon>
 
+This command depends on the feature C<selinux>.  See also
+L</feature-available>.
+
 =head2 getxattr
 
  getxattr шлях назва
@@ -2874,6 +3015,9 @@ attribute named C<name>, this returns an error.
 
 Див. також L</getxattrs>, L</lgetxattr>, L<attr(5)>.
 
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
+
 =head2 getxattrs
 
  getxattrs шлях
@@ -2884,6 +3028,9 @@ At the system call level, this is a combination of the L<listxattr(2)> and
 L<getxattr(2)> calls.
 
 Див. також L</lgetxattrs>, L<attr(5)>.
+
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
 
 =head2 glob-expand
 
@@ -2991,6 +3138,9 @@ replacing F</dev/vda> with the name of the installation device.
 
 =back
 
+This command depends on the feature C<grub>.  See also
+L</feature-available>.
+
 =head2 head
 
  head шлях
@@ -3034,6 +3184,9 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-commit
 
  hivex-commit назва_файла
@@ -3047,6 +3200,9 @@ untouched.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-add-child
 
  hivex-node-add-child parent name
@@ -3054,6 +3210,9 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 Add a child node to C<parent> named C<name>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-node-children
 
@@ -3063,6 +3222,9 @@ Return the list of nodes which are subkeys of C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-delete-child
 
  hivex-node-delete-child nodeh
@@ -3070,6 +3232,9 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 Delete C<nodeh>, recursively if necessary.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-node-get-child
 
@@ -3080,6 +3245,9 @@ return C<0> meaning the name was not found.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-get-value
 
  hivex-node-get-value nodeh ключ
@@ -3089,6 +3257,9 @@ exists.  This can return C<0> meaning the key was not found.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-name
 
  hivex-node-name nodeh
@@ -3097,6 +3268,9 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-parent
 
  hivex-node-parent nodeh
@@ -3104,6 +3278,9 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 Повернути батьківський вузол C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-node-set-value
 
@@ -3114,6 +3291,9 @@ name, C<t> is the type, and C<val> is the data.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-values
 
  hivex-node-values nodeh
@@ -3121,6 +3301,9 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 Return the array of (key, datatype, data) tuples attached to C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-open
 
@@ -3135,6 +3318,9 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-root
 
  hivex-root
@@ -3142,6 +3328,9 @@ ARGUMENTS>.
 Повернути кореневий вузол гілки.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-value-key
 
@@ -3151,6 +3340,9 @@ Return the key (name) field of a (key, datatype, data) tuple.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-value-type
 
  hivex-value-type valueh
@@ -3158,6 +3350,9 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 Return the data type field from a (key, datatype, data) tuple.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-value-utf8
 
@@ -3172,6 +3367,9 @@ This is useful for reading strings out of the Windows registry.  However it
 is not foolproof because the registry is not strongly-typed and fields can
 contain arbitrary or unexpected data.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-value-value
 
  hivex-value-value valueh
@@ -3181,6 +3379,9 @@ Return the data field of a (key, datatype, data) tuple.
 This is a wrapper around the L<hivex(3)> call of the same name.
 
 Див. також L</hivex-value-utf8>.
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 initrd-cat
 
@@ -3227,6 +3428,9 @@ watched, but this does I<not> happen recursively (in subdirectories).
 Note for non-C or non-Linux callers: the inotify events are defined by the
 Linux kernel ABI and are listed in F</usr/include/sys/inotify.h>.
 
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
+
 =head2 inotify-close
 
  inotify-close
@@ -3235,6 +3439,9 @@ This closes the inotify handle which was previously opened by inotify_init.
 It removes all watches, throws away any pending events, and deallocates all
 resources.
 
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
+
 =head2 inotify-files
 
  inotify-files
@@ -3242,6 +3449,9 @@ resources.
 This function is a helpful wrapper around L</inotify-read> which just
 returns a list of pathnames of objects that were touched.  The returned
 pathnames are sorted and deduplicated.
+
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
 
 =head2 inotify-init
 
@@ -3272,6 +3482,9 @@ See also L<inotify(7)> for an overview of the inotify interface as exposed
 by the Linux kernel, which is roughly what we expose via libguestfs.  Note
 that there is one global inotify handle per libguestfs instance.
 
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
+
 =head2 inotify-read
 
  inotify-read
@@ -3286,11 +3499,17 @@ this function repeatedly until it returns an empty list.  The reason is that
 the call will read events up to the maximum appliance-to-host message size
 and leave remaining events in the queue.
 
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
+
 =head2 inotify-rm-watch
 
  inotify-rm-watch wd
 
 Remove a previously defined inotify watch.  See L</inotify-add-watch>.
+
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
 
 =head2 inspect-get-arch
 
@@ -4263,6 +4482,9 @@ L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 
 Завершити роботу обробника журналу.
 
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
+
 =head2 journal-get
 
  journal-get
@@ -4281,6 +4503,9 @@ L</journal-set-data-threshold>, L</journal-get-data-threshold>).
 If you set the data threshold to unlimited (C<0>) then this call can read a
 journal entry of any size, ie. it is not limited by the libguestfs protocol.
 
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
+
 =head2 journal-get-data-threshold
 
  journal-get-data-threshold
@@ -4292,11 +4517,17 @@ the threshold is unlimited.
 
 Див. також L</journal-set-data-threshold>.
 
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
+
 =head2 journal-get-realtime-usec
 
  journal-get-realtime-usec
 
 Get the realtime (wallclock) timestamp of the current journal entry.
+
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
 
 =head2 journal-next
 
@@ -4309,6 +4540,9 @@ The returned boolean tells you if there are any more journal records to
 read.  C<true> means you can read the next record (eg. using
 L</journal-get>), and C<false> means you have reached the end of the
 journal.
+
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
 
 =head2 journal-open
 
@@ -4323,6 +4557,9 @@ L</journal-get>.
 After you have finished using the journal, you should close the handle by
 calling L</journal-close>.
 
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
+
 =head2 journal-set-data-threshold
 
  journal-set-data-threshold порогове_значення
@@ -4333,6 +4570,9 @@ journal that it may truncate data fields to this size when reading them
 the threshold is unlimited.
 
 Див. також L</journal-get-data-threshold>.
+
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
 
 =head2 journal-skip
 
@@ -4345,6 +4585,9 @@ The number of entries actually skipped is returned (note S<C<rskip E<ge>
 0>>).  If this is not the same as the absolute value of the skip parameter
 (C<|skip|>) you passed in then it means you have reached the end or the
 start of the journal.
+
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
 
 =head2 kill-subprocess
 
@@ -4401,6 +4644,8 @@ done automatically at L</launch> time.  However you might want to call this
 function if you have hotplugged disks or have just created a Windows dynamic
 disk.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-diskgroup-disks
 
  ldmtool-diskgroup-disks група_дисків
@@ -4408,6 +4653,8 @@ disk.
 Return the disks in a Windows dynamic disk group.  The C<diskgroup>
 parameter should be the GUID of a disk group, one element from the list
 returned by L</ldmtool-scan>.
+
+This command depends on the feature C<ldm>.  See also L</feature-available>.
 
 =head2 ldmtool-diskgroup-name
 
@@ -4417,6 +4664,8 @@ Return the name of a Windows dynamic disk group.  The C<diskgroup> parameter
 should be the GUID of a disk group, one element from the list returned by
 L</ldmtool-scan>.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-diskgroup-volumes
 
  ldmtool-diskgroup-volumes група_дисків
@@ -4425,12 +4674,16 @@ Return the volumes in a Windows dynamic disk group.  The C<diskgroup>
 parameter should be the GUID of a disk group, one element from the list
 returned by L</ldmtool-scan>.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-remove-all
 
  ldmtool-remove-all
 
 This is essentially the opposite of L</ldmtool-create-all>.  It removes the
 device mapper mappings for all Windows dynamic disk volumes
+
+This command depends on the feature C<ldm>.  See also L</feature-available>.
 
 =head2 ldmtool-scan
 
@@ -4443,6 +4696,8 @@ can be passed to other L</ldmtool-*> functions.
 This function scans all block devices.  To scan a subset of block devices,
 call L</ldmtool-scan-devices> instead.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-scan-devices
 
  ldmtool-scan-devices 'пристрої...'
@@ -4454,6 +4709,8 @@ can be passed to other L</ldmtool-*> functions.
 The parameter C<devices> is a list of block devices which are scanned.  If
 this list is empty, all block devices are scanned.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-volume-hint
 
  ldmtool-volume-hint група_дисків том
@@ -4463,12 +4720,16 @@ GUID C<diskgroup>.  This may not be defined, in which case the empty string
 is returned.  The hint field is often, though not always, the name of a
 Windows drive, eg. C<E:>.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-volume-partitions
 
  ldmtool-volume-partitions група_дисків том
 
 Return the list of partitions in the volume named C<volume> in the disk
 group with GUID C<diskgroup>.
+
+This command depends on the feature C<ldm>.  See also L</feature-available>.
 
 =head2 ldmtool-volume-type
 
@@ -4480,6 +4741,8 @@ C<diskgroup>.
 Possible volume types that can be returned here include: C<simple>,
 C<spanned>, C<striped>, C<mirrored>, C<raid5>.  Other types may also be
 returned.
+
+This command depends on the feature C<ldm>.  See also L</feature-available>.
 
 =head2 lgetxattr
 
@@ -4499,12 +4762,18 @@ attribute named C<name>, this returns an error.
 
 Див. також L</lgetxattrs>, L</getxattr>, L<attr(5)>.
 
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
+
 =head2 lgetxattrs
 
  lgetxattrs шлях
 
 This is the same as L</getxattrs>, but if C<path> is a symbolic link, then
 it returns the extended attributes of the link itself.
+
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
 
 =head2 list-9p
 
@@ -4586,12 +4855,16 @@ single logical operating system (use L</inspect-os> to look for OSes).
 This function returns all Windows dynamic disk partitions that were found at
 launch time.  It returns a list of device names.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 list-ldm-volumes
 
  list-ldm-volumes
 
 This function returns all Windows dynamic disk volumes that were found at
 launch time.  It returns a list of device names.
+
+This command depends on the feature C<ldm>.  See also L</feature-available>.
 
 =head2 list-md-devices
 
@@ -4664,6 +4937,9 @@ option removes the link (C<linkname>) if it exists already.
 This is the same as L</removexattr>, but if C<path> is a symbolic link, then
 it removes an extended attribute of the link itself.
 
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
+
 =head2 ls
 
  ls каталог
@@ -4692,6 +4968,9 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
 This is the same as L</setxattr>, but if C<path> is a symbolic link, then it
 sets an extended attribute of the link itself.
+
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
 
 =head2 lstat
 
@@ -4775,6 +5054,9 @@ fail.  You have to use L</luks-kill-slot> first to remove that key.
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
+
 =head2 luks-close
 
  luks-close пристрій
@@ -4783,6 +5065,9 @@ This closes a LUKS device that was created earlier by L</luks-open> or
 L</luks-open-ro>.  The C<device> parameter must be the name of the LUKS
 mapping device (ie. F</dev/mapper/mapname>) and I<not> the name of the
 underlying block device.
+
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
 
 =head2 luks-format
 
@@ -4795,6 +5080,9 @@ slot C<slot>.  (LUKS supports 8 key slots, numbered 0-7).
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
+
 =head2 luks-format-cipher
 
  luks-format-cipher device keyslot cipher
@@ -4805,6 +5093,9 @@ the C<cipher> used.
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
+
 =head2 luks-kill-slot
 
  luks-kill-slot device keyslot
@@ -4814,6 +5105,9 @@ device C<device>.  C<key> must be one of the I<other> keys.
 
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
+
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
 
 =head2 luks-open
 
@@ -4839,6 +5133,9 @@ Use L</list-dm-devices> to list all device mapper devices.
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
+
 =head2 luks-open-ro
 
  luks-open-ro device mapname
@@ -4849,12 +5146,18 @@ created.
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
+
 =head2 lvcreate
 
  lvcreate logvol volgroup mbytes
 
 This creates an LVM logical volume called C<logvol> on the volume group
 C<volgroup>, with C<size> megabytes.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 lvcreate-free
 
@@ -4864,6 +5167,9 @@ Create an LVM logical volume called F</dev/volgroup/logvol>, using
 approximately C<percent> % of the free space remaining in the volume group.
 Most usefully, when C<percent> is C<100> this will create the largest
 possible LV.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 lvm-canonical-lv-name
 
@@ -4894,6 +5200,9 @@ This command also clears the LVM cache and performs a volume group scan.
 This command removes all LVM logical volumes, volume groups and physical
 volumes.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 lvm-set-filter
 
  lvm-set-filter 'пристрої...'
@@ -4917,6 +5226,9 @@ You can filter whole block devices or individual partitions.
 You cannot use this if any VG is currently in use (eg.  contains a mounted
 filesystem), even if you are not filtering out that VG.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 lvremove
 
  lvremove пристрій
@@ -4926,6 +5238,9 @@ LV, such as F</dev/VG/LV>.
 
 You can also remove all LVs in a volume group by specifying the VG name,
 F</dev/VG>.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 lvrename
 
@@ -4940,6 +5255,9 @@ Rename a logical volume C<logvol> with the new name C<newlogvol>.
 This resizes (expands or shrinks) an existing LVM logical volume to
 C<mbytes>.  When reducing, data in the reduced part is lost.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 lvresize-free
 
  lvresize-free lv percent
@@ -4948,6 +5266,9 @@ This expands an existing logical volume C<lv> so that it fills C<pc>% of the
 remaining free space in the volume group.  Commonly you would call this with
 pc = 100 which expands the logical volume as much as possible, using all
 remaining free space in the volume group.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 lvs
 
@@ -4961,12 +5282,18 @@ This returns a list of the logical volume device names
 
 Див. також L</lvs-full>, L</list-filesystems>.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 lvs-full
 
  lvs-full
 
 List all the logical volumes detected.  This is the equivalent of the
 L<lvs(8)> command.  The "full" version includes all fields.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 lvuuid
 
@@ -4993,6 +5320,9 @@ for the first named file.  This repeats for the second and subsequent files.
 This call is intended for programs that want to efficiently list a directory
 contents without making many round-trips.  See also L</lstatlist> for a
 similarly efficient call for getting standard stats.
+
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
 
 =head2 max-disks
 
@@ -5068,6 +5398,9 @@ If not set, this defaults to C<raid1>.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<mdadm>.  See also
+L</feature-available>.
+
 =head2 md-detail
 
  md-detail md
@@ -5099,6 +5432,9 @@ The UUID of the MD device.
 The name of the MD device.
 
 =back
+
+This command depends on the feature C<mdadm>.  See also
+L</feature-available>.
 
 =head2 md-stat
 
@@ -5149,12 +5485,18 @@ write-mostly
 
 =back
 
+This command depends on the feature C<mdadm>.  See also
+L</feature-available>.
+
 =head2 md-stop
 
  md-stop md
 
 This command deactivates the MD array named C<md>.  The device is stopped,
 but it is not destroyed or zeroed.
+
+This command depends on the feature C<mdadm>.  See also
+L</feature-available>.
 
 =head2 mkdir
 
@@ -5266,6 +5608,9 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+This command depends on the feature C<linuxfsuuid>.  See also
+L</feature-available>.
+
 =head2 mke2journal
 
  mke2journal blocksize device
@@ -5308,6 +5653,9 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+This command depends on the feature C<linuxfsuuid>.  See also
+L</feature-available>.
+
 =head2 mkfifo
 
  mkfifo режим шлях
@@ -5318,6 +5666,9 @@ is just a convenient wrapper around L</mknod>.
 Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
 
 The mode actually set is affected by the umask.
+
+This command depends on the feature C<mknod>.  See also
+L</feature-available>.
 
 =head2 mkfs
 
@@ -5400,6 +5751,9 @@ To create general filesystems, use L</mkfs>.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 mklost-and-found
 
  mklost-and-found mountpoint
@@ -5468,6 +5822,9 @@ for you.
 
 The mode actually set is affected by the umask.
 
+This command depends on the feature C<mknod>.  See also
+L</feature-available>.
+
 =head2 mknod-b
 
  mknod-b mode devmajor devminor path
@@ -5480,6 +5837,9 @@ Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
 
 The mode actually set is affected by the umask.
 
+This command depends on the feature C<mknod>.  See also
+L</feature-available>.
+
 =head2 mknod-c
 
  mknod-c mode devmajor devminor path
@@ -5491,6 +5851,9 @@ wrapper around L</mknod>.
 Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
 
 The mode actually set is affected by the umask.
+
+This command depends on the feature C<mknod>.  See also
+L</feature-available>.
 
 =head2 mkswap
 
@@ -5536,6 +5899,9 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+This command depends on the feature C<linuxfsuuid>.  See also
+L</feature-available>.
+
 =head2 mkswap-file
 
  mkswap-file шлях
@@ -5575,6 +5941,9 @@ ARGUMENTS>.
  modprobe назва_модуля
 
 This loads a kernel module in the appliance.
+
+This command depends on the feature C<linuxmodules>.  See also
+L</feature-available>.
 
 =head2 mount
 
@@ -5747,6 +6116,9 @@ volume can be mounted read-only.
 The return value is an integer which C<0> if the operation would succeed, or
 some non-zero value documented in the L<ntfs-3g.probe(8)> manual page.
 
+This command depends on the feature C<ntfs3g>.  See also
+L</feature-available>.
+
 =head2 ntfsclone-in
 
  ntfsclone-in (backupfile|-) device
@@ -5755,6 +6127,9 @@ Restore the C<backupfile> (from a previous call to L</ntfsclone-out>) to
 C<device>, overwriting any existing contents of this device.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+This command depends on the feature C<ntfs3g>.  See also
+L</feature-available>.
 
 =head2 ntfsclone-out
 
@@ -5778,6 +6153,9 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<ntfs3g>.  See also
+L</feature-available>.
+
 =head2 ntfsfix
 
  ntfsfix device [clearbadsectors:true|false]
@@ -5794,6 +6172,9 @@ is useful after cloning a disk with bad sectors to a new disk.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
+
+This command depends on the feature C<ntfs3g>.  See also
+L</feature-available>.
 
 =head2 ntfsresize
 
@@ -5831,6 +6212,9 @@ single filesystem without booting into Windows between each resize.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<ntfsprogs>.  See also
+L</feature-available>.
+
 =head2 ntfsresize-size
 
  ntfsresize-size пристрій розмір
@@ -5844,6 +6228,9 @@ instead.
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+This command depends on the feature C<ntfsprogs>.  See also
+L</feature-available>.
 
 =head2 parse-environment
 
@@ -5923,6 +6310,9 @@ bootable flag set.
 
 Return the GUID of numbered GPT partition C<partnum>.
 
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
+
 =head2 part-get-gpt-type
 
  part-get-gpt-type device partnum
@@ -5930,6 +6320,9 @@ Return the GUID of numbered GPT partition C<partnum>.
 Return the type GUID of numbered GPT partition C<partnum>. For MBR
 partitions, return an appropriate GUID corresponding to the MBR
 type. Behaviour is undefined for other partition types.
+
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
 
 =head2 part-get-mbr-id
 
@@ -6096,6 +6489,9 @@ Set the GUID of numbered GPT partition C<partnum> to C<guid>.  Return an
 error if the partition table of C<device> isn't GPT, or if C<guid> is not a
 valid GUID.
 
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
+
 =head2 part-set-gpt-type
 
  part-set-gpt-type device partnum guid
@@ -6107,6 +6503,9 @@ valid GUID.
 See
 L<http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>
 for a useful list of type GUIDs.
+
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
 
 =head2 part-set-mbr-id
 
@@ -6200,11 +6599,17 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 Generate a new random UUID for the physical volume C<device>.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 pvchange-uuid-all
 
  pvchange-uuid-all
 
 Створити нові випадкові UUID для всіх фізичних томів.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 pvcreate
 
@@ -6212,6 +6617,9 @@ Generate a new random UUID for the physical volume C<device>.
 
 This creates an LVM physical volume on the named C<device>, where C<device>
 should usually be a partition name such as F</dev/sda1>.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 pvremove
 
@@ -6224,6 +6632,9 @@ The implementation uses the C<pvremove> command which refuses to wipe
 physical volumes that contain any volume groups, so you have to remove those
 first.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 pvresize
 
  pvresize пристрій
@@ -6231,12 +6642,18 @@ first.
 This resizes (expands or shrinks) an existing LVM physical volume to match
 the new size of the underlying device.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 pvresize-size
 
  pvresize-size пристрій розмір
 
 This command is the same as L</pvresize> except that it allows you to
 specify the new size (in bytes) explicitly.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 pvs
 
@@ -6250,12 +6667,18 @@ This returns a list of just the device names that contain PVs
 
 Див. також L</pvs-full>.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 pvs-full
 
  pvs-full
 
 List all the physical volumes detected.  This is the equivalent of the
 L<pvs(8)> command.  The "full" version includes all fields.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 pvuuid
 
@@ -6452,6 +6875,9 @@ This call removes the extended attribute named C<xattr> of the file C<path>.
 
 Див. також L</lremovexattr>, L<attr(5)>.
 
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
+
 =head2 rename
 
  rename стара_адреса нова_адреса
@@ -6560,6 +6986,9 @@ Delete files at the destination that do not exist at the source.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<rsync>.  See also
+L</feature-available>.
+
 =head2 rsync-in
 
  rsync-in remote dest [archive:true|false] [deletedest:true|false]
@@ -6583,6 +7012,9 @@ The optional arguments are the same as those of L</rsync>.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
+
+This command depends on the feature C<rsync>.  See also
+L</feature-available>.
 
 =head2 rsync-out
 
@@ -6615,6 +7047,9 @@ example:
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<rsync>.  See also
+L</feature-available>.
+
 =head2 scrub-device
 
  scrub-device пристрій
@@ -6624,6 +7059,9 @@ difficult.
 
 It is an interface to the L<scrub(1)> program.  See that manual page for
 more details.
+
+This command depends on the feature C<scrub>.  See also
+L</feature-available>.
 
 =head2 scrub-file
 
@@ -6637,6 +7075,9 @@ The file is I<removed> after scrubbing.
 It is an interface to the L<scrub(1)> program.  See that manual page for
 more details.
 
+This command depends on the feature C<scrub>.  See also
+L</feature-available>.
+
 =head2 scrub-freespace
 
  scrub-freespace каталог
@@ -6648,6 +7089,9 @@ containing C<dir>.
 
 It is an interface to the L<scrub(1)> program.  See that manual page for
 more details.
+
+This command depends on the feature C<scrub>.  See also
+L</feature-available>.
 
 =head2 set-append
 
@@ -7196,6 +7640,9 @@ C<context>.
 
 See the documentation about SELINUX in L<guestfs(3)>.
 
+This command depends on the feature C<selinux>.  See also
+L</feature-available>.
+
 =head2 setxattr
 
  setxattr xattr val vallen path
@@ -7204,6 +7651,9 @@ This call sets the extended attribute named C<xattr> of the file C<path> to
 the value C<val> (of length C<vallen>).  The value is arbitrary 8 bit data.
 
 Див. також L</lsetxattr>, L<attr(5)>.
+
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
 
 =head2 sfdisk
 
@@ -7481,6 +7931,9 @@ partition.
 This command disables the libguestfs appliance swap partition with the given
 UUID.
 
+This command depends on the feature C<linuxfsuuid>.  See also
+L</feature-available>.
+
 =head2 swapon-device
 
  swapon-device пристрій
@@ -7514,6 +7967,9 @@ L</swapon-device> for other notes.
 
 This command enables swap to a swap partition with the given UUID.  See
 L</swapon-device> for other notes.
+
+This command depends on the feature C<linuxfsuuid>.  See also
+L</feature-available>.
 
 =head2 sync
 
@@ -7559,6 +8015,9 @@ information about the contents of this file, see L<syslinux(1)>.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
+
+This command depends on the feature C<syslinux>.  See also
+L</feature-available>.
 
 =head2 tail
 
@@ -7833,6 +8292,8 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+This command depends on the feature C<xz>.  See also L</feature-available>.
+
 =head2 txz-out
 
  txz-out каталог (архів tar|-)
@@ -7848,6 +8309,8 @@ instead.
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+This command depends on the feature C<xz>.  See also L</feature-available>.
 
 =head2 umask
 
@@ -8080,6 +8543,9 @@ This command is the same as running C<vgchange -a y|n volgroups...>
 Note that if C<volgroups> is an empty list then B<all> volume groups are
 activated or deactivated.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vg-activate-all
 
  vg-activate-all true|false
@@ -8089,11 +8555,17 @@ volumes in all volume groups.
 
 This command is the same as running C<vgchange -a y|n>
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vgchange-uuid
 
  vgchange-uuid vg
 
 Generate a new random UUID for the volume group C<vg>.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 vgchange-uuid-all
 
@@ -8101,12 +8573,18 @@ Generate a new random UUID for the volume group C<vg>.
 
 Створити нові випадкові UUID для всіх груп томів.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vgcreate
 
  vgcreate volgroup 'physvols ...'
 
 This creates an LVM volume group called C<volgroup> from the non-empty list
 of physical volumes C<physvols>.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 vglvuuids
 
@@ -8130,6 +8608,9 @@ and returns its metadata.
 Note that the metadata is an internal structure used by LVM, subject to
 change at any time, and is provided for information only.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vgpvuuids
 
  vgpvuuids vgname
@@ -8150,6 +8631,9 @@ Remove an LVM volume group C<vgname>, (for example C<VG>).
 
 This also forcibly removes all logical volumes in the volume group (if any).
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vgrename
 
  vgrename volgroup newvolgroup
@@ -8168,12 +8652,18 @@ This returns a list of just the volume group names that were detected
 
 Див. також L</vgs-full>.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vgs-full
 
  vgs-full
 
 List all the volumes groups detected.  This is the equivalent of the
 L<vgs(8)> command.  The "full" version includes all fields.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 vgscan
 
@@ -8220,6 +8710,9 @@ This does not erase the filesystem itself nor any other data from the
 C<device>.
 
 Compare with L</zero> which zeroes the first few blocks of a device.
+
+This command depends on the feature C<wipefs>.  See also
+L</feature-available>.
 
 =head2 write
 
@@ -8276,6 +8769,8 @@ using the L</xfs-info> and L</xfs-growfs> calls.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<xfs>.  See also L</feature-available>.
+
 =head2 xfs-growfs
 
  xfs-growfs path [datasec:true|false] [logsec:true|false] [rtsec:true|false] [datasize:N] [logsize:N] [rtsize:N] [rtextsize:N] [maxpct:N]
@@ -8288,6 +8783,8 @@ returned as C<-1> (for numeric fields) or empty string.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+This command depends on the feature C<xfs>.  See also L</feature-available>.
+
 =head2 xfs-info
 
  xfs-info шлях_або_пристрій
@@ -8297,6 +8794,8 @@ filesystem.  This command returns the geometry of the filesystem.
 
 The returned struct contains geometry information.  Missing fields are
 returned as C<-1> (for numeric fields) or empty string.
+
+This command depends on the feature C<xfs>.  See also L</feature-available>.
 
 =head2 xfs-repair
 
@@ -8318,6 +8817,8 @@ The returned status indicates whether filesystem corruption was detected
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
+
+This command depends on the feature C<xfs>.  See also L</feature-available>.
 
 =head2 zegrep
 
@@ -8401,6 +8902,9 @@ You should B<not> run this program if the filesystem is mounted.
 
 It is possible that using this program can damage the filesystem or data on
 the filesystem.
+
+This command depends on the feature C<zerofree>.  See also
+L</feature-available>.
 
 =head2 zfgrep
 

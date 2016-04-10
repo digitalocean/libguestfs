@@ -64,6 +64,9 @@ poweroff
 # Rerun dracut for the installed kernel (not the running kernel):
 KERNEL_VERSION=$(rpm -q kernel --qf '%{version}-%{release}.%{arch}\n')
 dracut -f /boot/initramfs-$KERNEL_VERSION.img $KERNEL_VERSION
+
+# Ensure the installation is up-to-date:
+dnf -y --best upgrade
 %end
 EOF
 
@@ -78,8 +81,9 @@ trap cleanup INT QUIT TERM EXIT ERR
 virt-install \
     --name=$tmpname \
     --ram=1024 \
-    --cpu=host --vcpus=2 \
-    --os-type=linux --os-variant=fedora21 \
+    --vcpus=1 \
+    --arch armv7l \
+    --os-type=linux --os-variant=fedora22 \
     --initrd-inject=$ks \
     --extra-args="ks=file:/`basename $ks` console=tty0 console=ttyAMA0,115200 proxy=$http_proxy" \
     --disk $(pwd)/$output,size=6,format=raw \

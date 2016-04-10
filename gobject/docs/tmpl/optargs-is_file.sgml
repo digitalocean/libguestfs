@@ -38,7 +38,6 @@ GuestfsIsFile
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_is_file_new ##### -->
 <para>

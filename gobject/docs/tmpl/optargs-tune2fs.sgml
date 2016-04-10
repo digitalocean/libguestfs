@@ -83,7 +83,6 @@ GuestfsTune2FS
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_tune2fs_new ##### -->
 <para>

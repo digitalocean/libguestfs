@@ -43,7 +43,6 @@ GuestfsBtrfsFsck
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_btrfs_fsck_new ##### -->
 <para>

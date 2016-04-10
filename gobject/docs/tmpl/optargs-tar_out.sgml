@@ -58,7 +58,6 @@ GuestfsTarOut
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_tar_out_new ##### -->
 <para>

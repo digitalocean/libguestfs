@@ -300,6 +300,9 @@ errnos:
 This function deletes the default POSIX Access Control List (ACL)
 attached to directory C<dir>.
 
+This function depends on the feature C<acl>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $acl = $g->acl_get_file ($path, $acltype);
 
 This function returns the POSIX Access Control List (ACL) attached
@@ -320,6 +323,9 @@ Return the default ACL.  Normally this only makes sense if
 C<path> is a directory.
 
 =back
+
+This function depends on the feature C<acl>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->acl_set_file ($path, $acltype, $acl);
 
@@ -358,6 +364,9 @@ string might therefore look like this:
 You should use numeric UIDs and GIDs.  To map usernames and
 groupnames to the correct numeric ID in the context of the
 guest, use the Augeas functions (see C<$g-E<gt>aug_init>).
+
+This function depends on the feature C<acl>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->add_cdrom ($filename);
 
@@ -1067,6 +1076,9 @@ an error or even appear to run but do nothing.  You must also
 set the C<discard> attribute on the underlying drive (see
 C<$g-E<gt>add_drive_opts>).
 
+This function depends on the feature C<blkdiscard>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $zeroes = $g->blkdiscardzeroes ($device);
 
 This call returns true if blocks on C<device> that have been
@@ -1075,6 +1087,9 @@ blocks of zero bytes when read the next time.
 
 If it returns false, then it may be that discarded blocks are
 read as stale or random data.
+
+This function depends on the feature C<blkdiscardzeroes>.  See also
+C<$g-E<gt>feature-available>.
 
 =item %info = $g->blkid ($device);
 
@@ -1203,36 +1218,60 @@ This uses the L<blockdev(8)> command.
 
 Cancel a running balance on a btrfs filesystem.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_balance_pause ($path);
 
 Pause a running balance on a btrfs filesystem.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_balance_resume ($path);
 
 Resume a paused balance on a btrfs filesystem.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item %status = $g->btrfs_balance_status ($path);
 
 Show the status of a running or paused balance on a btrfs filesystem.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_device_add (\@devices, $fs);
 
 Add the list of device(s) in C<devices> to the btrfs filesystem
 mounted at C<fs>.  If C<devices> is an empty list, this does nothing.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_device_delete (\@devices, $fs);
 
 Remove the C<devices> from the btrfs filesystem mounted at C<fs>.
 If C<devices> is an empty list, this does nothing.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_filesystem_balance ($fs);
 
 Balance the chunks in the btrfs filesystem mounted at C<fs>
 across the underlying devices.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_filesystem_defragment ($path [, flush => $flush] [, compress => $compress]);
 
 Defragment a file or directory on a btrfs filesystem. compress is one of zlib or lzo.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_filesystem_resize ($mountpoint [, size => $size]);
 
@@ -1255,54 +1294,90 @@ is resized to the maximum size.
 
 See also L<btrfs(8)>.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_filesystem_sync ($fs);
 
 Force sync on the btrfs filesystem mounted at C<fs>.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_fsck ($device [, superblock => $superblock] [, repair => $repair]);
 
 Used to check a btrfs filesystem, C<device> is the device file where the
 filesystem is stored.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_image (\@source, $image [, compresslevel => $compresslevel]);
 
 This is used to create an image of a btrfs filesystem.
 All data will be zeroed, but metadata and the like is preserved.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_qgroup_assign ($src, $dst, $path);
 
 Add qgroup C<src> to parent qgroup C<dst>. This command can group
 several qgroups into a parent qgroup to share common limit.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_qgroup_create ($qgroupid, $subvolume);
 
 Create a quota group (qgroup) for subvolume at C<subvolume>.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_qgroup_destroy ($qgroupid, $subvolume);
 
 Destroy a quota group.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_qgroup_limit ($subvolume, $size);
 
 Limit the size of a subvolume which's path is C<subvolume>. C<size>
 can have suffix of G, M, or K. 
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_qgroup_remove ($src, $dst, $path);
 
 Remove qgroup C<src> from the parent qgroup C<dst>.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @qgroups = $g->btrfs_qgroup_show ($path);
 
 Show all subvolume quota groups in a btrfs filesystem, including their
 usages.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_quota_enable ($fs, $enable);
 
 Enable or disable subvolume quota support for filesystem which contains C<path>.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_quota_rescan ($fs);
 
 Trash all qgroup numbers and scan the metadata again with the current config.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_replace ($srcdev, $targetdev, $mntpoint);
 
@@ -1314,21 +1389,36 @@ removed from the filesystem.
 The C<targetdev> needs to be same size or larger than the C<srcdev>. Devices
 which are currently mounted are never allowed to be used as the C<targetdev>.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_rescue_chunk_recover ($device);
 
 Recover the chunk tree of btrfs filesystem by scanning the devices one by one.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_rescue_super_recover ($device);
 
 Recover bad superblocks from good copies.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_scrub_cancel ($path);
 
 Cancel a running scrub on a btrfs filesystem.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_scrub_resume ($path);
 
 Resume a previously canceled or interrupted scrub on a btrfs filesystem.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_scrub_start ($path);
 
@@ -1336,14 +1426,23 @@ Reads all the data and metadata on the filesystem, and uses checksums
 and the duplicate copies from RAID storage to identify and repair any
 corrupt data.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item %status = $g->btrfs_scrub_status ($path);
 
 Show status of running or finished scrub on a btrfs filesystem.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_set_seeding ($device, $seeding);
 
 Enable or disable the seeding feature of a device that contains
 a btrfs filesystem.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_subvolume_create ($dest [, qgroupid => $qgroupid]);
 
@@ -1351,6 +1450,9 @@ Create a btrfs subvolume.  The C<dest> argument is the destination
 directory and the name of the subvolume, in the form F</path/to/dest/name>.
 The optional parameter C<qgroupid> represents the qgroup which the newly
 created subvolume will be added to.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_subvolume_create_opts ($dest [, qgroupid => $qgroupid]);
 
@@ -1368,14 +1470,23 @@ sub btrfs_subvolume_create_opts {
 
 Delete the named btrfs subvolume or snapshot.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $id = $g->btrfs_subvolume_get_default ($fs);
 
 Get the default subvolume or snapshot of a filesystem mounted at C<mountpoint>.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @subvolumes = $g->btrfs_subvolume_list ($fs);
 
 List the btrfs snapshots and subvolumes of the btrfs filesystem
 which is mounted at C<fs>.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_subvolume_set_default ($id, $fs);
 
@@ -1383,9 +1494,15 @@ Set the subvolume of the btrfs filesystem C<fs> which will
 be mounted by default.  See C<$g-E<gt>btrfs_subvolume_list> to
 get a list of subvolumes.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item %btrfssubvolumeinfo = $g->btrfs_subvolume_show ($subvolume);
 
 Return detailed information of the subvolume.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_subvolume_snapshot ($source, $dest [, ro => $ro] [, qgroupid => $qgroupid]);
 
@@ -1396,6 +1513,9 @@ the newly created snapshot is writable, if the value of optional
 parameter C<ro> is true, then a readonly snapshot is created. The
 optional parameter C<qgroupid> represents the qgroup which the
 newly created snapshot will be added to.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_subvolume_snapshot_opts ($source, $dest [, ro => $ro] [, qgroupid => $qgroupid]);
 
@@ -1413,14 +1533,23 @@ sub btrfs_subvolume_snapshot_opts {
 
 This will Enable extended inode refs.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfstune_enable_skinny_metadata_extent_refs ($device);
 
 This enable skinny metadata extent refs.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->btrfstune_seeding ($device, $seeding);
 
 Enable seeding of a btrfs device, this will force a fs readonly
 so that you can use it to build other filesystems.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $ptr = $g->c_pointer ();
 
@@ -1461,11 +1590,17 @@ The capabilities set is returned in text form (see L<cap_to_text(3)>).
 
 If no capabilities are attached to a file, an empty string is returned.
 
+This function depends on the feature C<linuxcaps>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->cap_set_file ($path, $cap);
 
 This function sets the Linux capabilities attached to C<path>.
 The capabilities set C<cap> should be passed in text form
 (see L<cap_from_text(3)>).
+
+This function depends on the feature C<linuxcaps>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $rpath = $g->case_sensitive_path ($path);
 
@@ -2163,6 +2298,9 @@ about the contents of this file, see L<extlinux(1)>.
 
 See also C<$g-E<gt>syslinux>.
 
+This function depends on the feature C<extlinux>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->fallocate ($path, $len);
 
 This command preallocates a file (containing zero bytes) named
@@ -2535,6 +2673,9 @@ different operation that turns free space in the filesystem
 into zeroes.  It is valid to call C<$g-E<gt>fstrim> either
 instead of, or after calling C<$g-E<gt>zero_free_space>.
 
+This function depends on the feature C<fstrim>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $append = $g->get_append ();
 
 Return the additional kernel options which are added to the
@@ -2888,6 +3029,9 @@ This gets the SELinux security context of the daemon.
 See the documentation about SELINUX in L<guestfs(3)>,
 and C<$g-E<gt>setcon>
 
+This function depends on the feature C<selinux>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $xattr = $g->getxattr ($path, $name);
 
 Get a single extended attribute from file C<path> named C<name>.
@@ -2906,6 +3050,9 @@ is no extended attribute named C<name>, this returns an error.
 
 See also: C<$g-E<gt>getxattrs>, C<$g-E<gt>lgetxattr>, L<attr(5)>.
 
+This function depends on the feature C<linuxxattrs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @xattrs = $g->getxattrs ($path);
 
 This call lists the extended attributes of the file or directory
@@ -2915,6 +3062,9 @@ At the system call level, this is a combination of the
 L<listxattr(2)> and L<getxattr(2)> calls.
 
 See also: C<$g-E<gt>lgetxattrs>, L<attr(5)>.
+
+This function depends on the feature C<linuxxattrs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @paths = $g->glob_expand ($pattern);
 
@@ -3031,6 +3181,9 @@ replacing F</dev/vda> with the name of the installation device.
 
 =back
 
+This function depends on the feature C<grub>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @lines = $g->head ($path);
 
 This command returns up to the first 10 lines of a file as
@@ -3066,6 +3219,9 @@ Close the current hivex handle.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->hivex_commit ($filename);
 
 Commit (write) changes to the hive.
@@ -3077,11 +3233,17 @@ and the original hive is left untouched.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $nodeh = $g->hivex_node_add_child ($parent, $name);
 
 Add a child node to C<parent> named C<name>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @nodehs = $g->hivex_node_children ($nodeh);
 
@@ -3089,11 +3251,17 @@ Return the list of nodes which are subkeys of C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->hivex_node_delete_child ($nodeh);
 
 Delete C<nodeh>, recursively if necessary.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $child = $g->hivex_node_get_child ($nodeh, $name);
 
@@ -3101,6 +3269,9 @@ Return the child of C<nodeh> with the name C<name>, if it exists.
 This can return C<0> meaning the name was not found.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $valueh = $g->hivex_node_get_value ($nodeh, $key);
 
@@ -3110,17 +3281,26 @@ the key was not found.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $name = $g->hivex_node_name ($nodeh);
 
 Return the name of C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $parent = $g->hivex_node_parent ($nodeh);
 
 Return the parent node of C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->hivex_node_set_value ($nodeh, $key, $t, $val);
 
@@ -3129,11 +3309,17 @@ C<key> is the name, C<t> is the type, and C<val> is the data.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @valuehs = $g->hivex_node_values ($nodeh);
 
 Return the array of (key, datatype, data) tuples attached to C<nodeh>.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->hivex_open ($filename [, verbose => $verbose] [, debug => $debug] [, write => $write]);
 
@@ -3143,11 +3329,17 @@ guestfs session, then it is closed.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $nodeh = $g->hivex_root ();
 
 Return the root node of the hive.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $key = $g->hivex_value_key ($valueh);
 
@@ -3155,11 +3347,17 @@ Return the key (name) field of a (key, datatype, data) tuple.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
 
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $datatype = $g->hivex_value_type ($valueh);
 
 Return the data type field from a (key, datatype, data) tuple.
 
 This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $databuf = $g->hivex_value_utf8 ($valueh);
 
@@ -3173,6 +3371,9 @@ However it is not foolproof because the registry is not
 strongly-typed and fields can contain arbitrary or unexpected
 data.
 
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $databuf = $g->hivex_value_value ($valueh);
 
 Return the data field of a (key, datatype, data) tuple.
@@ -3180,6 +3381,9 @@ Return the data field of a (key, datatype, data) tuple.
 This is a wrapper around the L<hivex(3)> call of the same name.
 
 See also: C<$g-E<gt>hivex_value_utf8>.
+
+This function depends on the feature C<hivex>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $content = $g->initrd_cat ($initrdpath, $filename);
 
@@ -3222,17 +3426,26 @@ Note for non-C or non-Linux callers: the inotify events are
 defined by the Linux kernel ABI and are listed in
 F</usr/include/sys/inotify.h>.
 
+This function depends on the feature C<inotify>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->inotify_close ();
 
 This closes the inotify handle which was previously
 opened by inotify_init.  It removes all watches, throws
 away any pending events, and deallocates all resources.
 
+This function depends on the feature C<inotify>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @paths = $g->inotify_files ();
 
 This function is a helpful wrapper around C<$g-E<gt>inotify_read>
 which just returns a list of pathnames of objects that were
 touched.  The returned pathnames are sorted and deduplicated.
+
+This function depends on the feature C<inotify>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->inotify_init ($maxevents);
 
@@ -3270,6 +3483,9 @@ as exposed by the Linux kernel, which is roughly what we expose
 via libguestfs.  Note that there is one global inotify handle
 per libguestfs instance.
 
+This function depends on the feature C<inotify>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @events = $g->inotify_read ();
 
 Return the complete queue of events that have happened
@@ -3283,10 +3499,16 @@ returns an empty list.  The reason is that the call will
 read events up to the maximum appliance-to-host message
 size and leave remaining events in the queue.
 
+This function depends on the feature C<inotify>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->inotify_rm_watch ($wd);
 
 Remove a previously defined inotify watch.
 See C<$g-E<gt>inotify_add_watch>.
+
+This function depends on the feature C<inotify>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $arch = $g->inspect_get_arch ($root);
 
@@ -4290,6 +4512,9 @@ L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 
 Close the journal handle.
 
+This function depends on the feature C<journal>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @fields = $g->journal_get ();
 
 Read the current journal entry.  This returns all the fields
@@ -4308,6 +4533,9 @@ If you set the data threshold to unlimited (C<0>) then this call
 can read a journal entry of any size, ie. it is not limited by
 the libguestfs protocol.
 
+This function depends on the feature C<journal>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $threshold = $g->journal_get_data_threshold ();
 
 Get the current data threshold for reading journal entries.
@@ -4317,9 +4545,15 @@ If this returns C<0>, then the threshold is unlimited.
 
 See also C<$g-E<gt>journal_set_data_threshold>.
 
+This function depends on the feature C<journal>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $usec = $g->journal_get_realtime_usec ();
 
 Get the realtime (wallclock) timestamp of the current journal entry.
+
+This function depends on the feature C<journal>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $more = $g->journal_next ();
 
@@ -4332,6 +4566,9 @@ records to read.  C<true> means you can read the next record
 (eg. using C<$g-E<gt>journal_get>), and C<false> means you
 have reached the end of the journal.
 
+This function depends on the feature C<journal>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->journal_open ($directory);
 
 Open the systemd journal located in F<directory>.  Any previously
@@ -4343,6 +4580,9 @@ and C<$g-E<gt>journal_get>.
 After you have finished using the journal, you should close the
 handle by calling C<$g-E<gt>journal_close>.
 
+This function depends on the feature C<journal>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->journal_set_data_threshold ($threshold);
 
 Set the data threshold for reading journal entries.
@@ -4351,6 +4591,9 @@ this size when reading them (note also that it may not truncate them).
 If you set this to C<0>, then the threshold is unlimited.
 
 See also C<$g-E<gt>journal_get_data_threshold>.
+
+This function depends on the feature C<journal>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $rskip = $g->journal_skip ($skip);
 
@@ -4361,6 +4604,9 @@ The number of entries actually skipped is returned (note S<C<rskip E<ge> 0>>).
 If this is not the same as the absolute value of the skip parameter
 (C<|skip|>) you passed in then it means you have reached the end or
 the start of the journal.
+
+This function depends on the feature C<journal>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->kill_subprocess ();
 
@@ -4409,11 +4655,17 @@ since it is done automatically at C<$g-E<gt>launch> time.
 However you might want to call this function if you have
 hotplugged disks or have just created a Windows dynamic disk.
 
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @disks = $g->ldmtool_diskgroup_disks ($diskgroup);
 
 Return the disks in a Windows dynamic disk group.  The C<diskgroup>
 parameter should be the GUID of a disk group, one element from
 the list returned by C<$g-E<gt>ldmtool_scan>.
+
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $name = $g->ldmtool_diskgroup_name ($diskgroup);
 
@@ -4421,17 +4673,26 @@ Return the name of a Windows dynamic disk group.  The C<diskgroup>
 parameter should be the GUID of a disk group, one element from
 the list returned by C<$g-E<gt>ldmtool_scan>.
 
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @volumes = $g->ldmtool_diskgroup_volumes ($diskgroup);
 
 Return the volumes in a Windows dynamic disk group.  The C<diskgroup>
 parameter should be the GUID of a disk group, one element from
 the list returned by C<$g-E<gt>ldmtool_scan>.
 
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->ldmtool_remove_all ();
 
 This is essentially the opposite of C<$g-E<gt>ldmtool_create_all>.
 It removes the device mapper mappings for all Windows dynamic disk
 volumes
+
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @guids = $g->ldmtool_scan ();
 
@@ -4442,6 +4703,9 @@ identifiers can be passed to other C<$g-E<gt>ldmtool_*> functions.
 This function scans all block devices.  To scan a subset of
 block devices, call C<$g-E<gt>ldmtool_scan_devices> instead.
 
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @guids = $g->ldmtool_scan_devices (\@devices);
 
 This function scans for Windows dynamic disks.  It returns a list
@@ -4451,6 +4715,9 @@ identifiers can be passed to other C<$g-E<gt>ldmtool_*> functions.
 The parameter C<devices> is a list of block devices which are
 scanned.  If this list is empty, all block devices are scanned.
 
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $hint = $g->ldmtool_volume_hint ($diskgroup, $volume);
 
 Return the hint field of the volume named C<volume> in the disk
@@ -4458,10 +4725,16 @@ group with GUID C<diskgroup>.  This may not be defined, in which
 case the empty string is returned.  The hint field is often, though
 not always, the name of a Windows drive, eg. C<E:>.
 
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @partitions = $g->ldmtool_volume_partitions ($diskgroup, $volume);
 
 Return the list of partitions in the volume named C<volume> in the disk
 group with GUID C<diskgroup>.
+
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $voltype = $g->ldmtool_volume_type ($diskgroup, $volume);
 
@@ -4471,6 +4744,9 @@ group with GUID C<diskgroup>.
 Possible volume types that can be returned here include:
 C<simple>, C<spanned>, C<striped>, C<mirrored>, C<raid5>.
 Other types may also be returned.
+
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $xattr = $g->lgetxattr ($path, $name);
 
@@ -4490,11 +4766,17 @@ is no extended attribute named C<name>, this returns an error.
 
 See also: C<$g-E<gt>lgetxattrs>, C<$g-E<gt>getxattr>, L<attr(5)>.
 
+This function depends on the feature C<linuxxattrs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @xattrs = $g->lgetxattrs ($path);
 
 This is the same as C<$g-E<gt>getxattrs>, but if C<path>
 is a symbolic link, then it returns the extended attributes
 of the link itself.
+
+This function depends on the feature C<linuxxattrs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @mounttags = $g->list_9p ();
 
@@ -4572,11 +4854,17 @@ This function returns all Windows dynamic disk partitions
 that were found at launch time.  It returns a list of
 device names.
 
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @devices = $g->list_ldm_volumes ();
 
 This function returns all Windows dynamic disk volumes
 that were found at launch time.  It returns a list of
 device names.
+
+This function depends on the feature C<ldm>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @devices = $g->list_md_devices ();
 
@@ -4632,6 +4920,9 @@ This is the same as C<$g-E<gt>removexattr>, but if C<path>
 is a symbolic link, then it removes an extended attribute
 of the link itself.
 
+This function depends on the feature C<linuxxattrs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @listing = $g->ls ($directory);
 
 List the files in F<directory> (relative to the root directory,
@@ -4653,6 +4944,9 @@ C<.> and C<..> are not returned.  The filenames are not sorted.
 This is the same as C<$g-E<gt>setxattr>, but if C<path>
 is a symbolic link, then it sets an extended attribute
 of the link itself.
+
+This function depends on the feature C<linuxxattrs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item %statbuf = $g->lstat ($path);
 
@@ -4731,6 +5025,9 @@ Note that if C<keyslot> already contains a key, then this
 command will fail.  You have to use C<$g-E<gt>luks_kill_slot>
 first to remove that key.
 
+This function depends on the feature C<luks>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->luks_close ($device);
 
 This closes a LUKS device that was created earlier by
@@ -4739,6 +5036,9 @@ C<device> parameter must be the name of the LUKS mapping
 device (ie. F</dev/mapper/mapname>) and I<not> the name
 of the underlying block device.
 
+This function depends on the feature C<luks>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->luks_format ($device, $key, $keyslot);
 
 This command erases existing data on C<device> and formats
@@ -4746,16 +5046,25 @@ the device as a LUKS encrypted device.  C<key> is the
 initial key, which is added to key slot C<slot>.  (LUKS
 supports 8 key slots, numbered 0-7).
 
+This function depends on the feature C<luks>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->luks_format_cipher ($device, $key, $keyslot, $cipher);
 
 This command is the same as C<$g-E<gt>luks_format> but
 it also allows you to set the C<cipher> used.
+
+This function depends on the feature C<luks>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->luks_kill_slot ($device, $key, $keyslot);
 
 This command deletes the key in key slot C<keyslot> from the
 encrypted LUKS device C<device>.  C<key> must be one of the
 I<other> keys.
+
+This function depends on the feature C<luks>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->luks_open ($device, $key, $mapname);
 
@@ -4778,15 +5087,24 @@ will make them visible.
 Use C<$g-E<gt>list_dm_devices> to list all device mapper
 devices.
 
+This function depends on the feature C<luks>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->luks_open_ro ($device, $key, $mapname);
 
 This is the same as C<$g-E<gt>luks_open> except that a read-only
 mapping is created.
 
+This function depends on the feature C<luks>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->lvcreate ($logvol, $volgroup, $mbytes);
 
 This creates an LVM logical volume called C<logvol>
 on the volume group C<volgroup>, with C<size> megabytes.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->lvcreate_free ($logvol, $volgroup, $percent);
 
@@ -4794,6 +5112,9 @@ Create an LVM logical volume called F</dev/volgroup/logvol>,
 using approximately C<percent> % of the free space remaining
 in the volume group.  Most usefully, when C<percent> is C<100>
 this will create the largest possible LV.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $lv = $g->lvm_canonical_lv_name ($lvname);
 
@@ -4818,6 +5139,9 @@ group scan.
 
 This command removes all LVM logical volumes, volume groups
 and physical volumes.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->lvm_set_filter (\@devices);
 
@@ -4844,6 +5168,9 @@ You cannot use this if any VG is currently in use (eg.
 contains a mounted filesystem), even if you are not
 filtering out that VG.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->lvremove ($device);
 
 Remove an LVM logical volume C<device>, where C<device> is
@@ -4851,6 +5178,9 @@ the path to the LV, such as F</dev/VG/LV>.
 
 You can also remove all LVs in a volume group by specifying
 the VG name, F</dev/VG>.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->lvrename ($logvol, $newlogvol);
 
@@ -4862,6 +5192,9 @@ This resizes (expands or shrinks) an existing LVM logical
 volume to C<mbytes>.  When reducing, data in the reduced part
 is lost.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->lvresize_free ($lv, $percent);
 
 This expands an existing logical volume C<lv> so that it fills
@@ -4869,6 +5202,9 @@ C<pc>% of the remaining free space in the volume group.  Commonly
 you would call this with pc = 100 which expands the logical volume
 as much as possible, using all remaining free space in the volume
 group.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @logvols = $g->lvs ();
 
@@ -4880,10 +5216,16 @@ This returns a list of the logical volume device names
 
 See also C<$g-E<gt>lvs_full>, C<$g-E<gt>list_filesystems>.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @logvols = $g->lvs_full ();
 
 List all the logical volumes detected.  This is the equivalent
 of the L<lvs(8)> command.  The "full" version includes all fields.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $uuid = $g->lvuuid ($device);
 
@@ -4909,6 +5251,9 @@ This call is intended for programs that want to efficiently
 list a directory contents without making many round-trips.
 See also C<$g-E<gt>lstatlist> for a similarly efficient call
 for getting standard stats.
+
+This function depends on the feature C<linuxxattrs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $disks = $g->max_disks ();
 
@@ -4977,6 +5322,9 @@ If not set, this defaults to C<raid1>.
 
 =back
 
+This function depends on the feature C<mdadm>.  See also
+C<$g-E<gt>feature-available>.
+
 =item %info = $g->md_detail ($md);
 
 This command exposes the output of 'mdadm -DY E<lt>mdE<gt>'.
@@ -5006,6 +5354,9 @@ The UUID of the MD device.
 The name of the MD device.
 
 =back
+
+This function depends on the feature C<mdadm>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @devices = $g->md_stat ($md);
 
@@ -5054,10 +5405,16 @@ replacement
 
 =back
 
+This function depends on the feature C<mdadm>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->md_stop ($md);
 
 This command deactivates the MD array named C<md>.  The
 device is stopped, but it is not destroyed or zeroed.
+
+This function depends on the feature C<mdadm>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->mkdir ($path);
 
@@ -5148,6 +5505,9 @@ an external journal on the journal with UUID C<uuid>.
 
 See also C<$g-E<gt>mke2journal_U>.
 
+This function depends on the feature C<linuxfsuuid>.  See also
+C<$g-E<gt>feature-available>.
+
 I<This function is deprecated.>
 In new code, use the L</mke2fs> call instead.
 
@@ -5184,6 +5544,9 @@ with correct use of these functions.
 
 This creates an ext2 external journal on C<device> with UUID C<uuid>.
 
+This function depends on the feature C<linuxfsuuid>.  See also
+C<$g-E<gt>feature-available>.
+
 I<This function is deprecated.>
 In new code, use the L</mke2fs> call instead.
 
@@ -5201,6 +5564,9 @@ Unlike with C<$g-E<gt>mknod>, C<mode> B<must> contain only permissions
 bits.
 
 The mode actually set is affected by the umask.
+
+This function depends on the feature C<mknod>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->mkfs ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize] [, label => $label]);
 
@@ -5284,6 +5650,9 @@ non-empty list of devices.
 
 To create general filesystems, use C<$g-E<gt>mkfs>.
 
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->mklost_and_found ($mountpoint);
 
 Make the C<lost+found> directory, normally in the root directory
@@ -5351,6 +5720,9 @@ in the appropriate constant for you.
 
 The mode actually set is affected by the umask.
 
+This function depends on the feature C<mknod>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->mknod_b ($mode, $devmajor, $devminor, $path);
 
 This call creates a block device node called C<path> with
@@ -5362,6 +5734,9 @@ bits.
 
 The mode actually set is affected by the umask.
 
+This function depends on the feature C<mknod>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->mknod_c ($mode, $devmajor, $devminor, $path);
 
 This call creates a char device node called C<path> with
@@ -5372,6 +5747,9 @@ Unlike with C<$g-E<gt>mknod>, C<mode> B<must> contain only permissions
 bits.
 
 The mode actually set is affected by the umask.
+
+This function depends on the feature C<mknod>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->mkswap ($device [, label => $label] [, uuid => $uuid]);
 
@@ -5410,6 +5788,9 @@ with correct use of these functions.
 =item $g->mkswap_U ($uuid, $device);
 
 Create a swap partition on C<device> with UUID C<uuid>.
+
+This function depends on the feature C<linuxfsuuid>.  See also
+C<$g-E<gt>feature-available>.
 
 I<This function is deprecated.>
 In new code, use the L</mkswap> call instead.
@@ -5452,6 +5833,9 @@ See also: C<$g-E<gt>mkdtemp>.
 =item $g->modprobe ($modulename);
 
 This loads a kernel module in the appliance.
+
+This function depends on the feature C<linuxmodules>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->mount ($mountable, $mountpoint);
 
@@ -5603,11 +5987,17 @@ The return value is an integer which C<0> if the operation
 would succeed, or some non-zero value documented in the
 L<ntfs-3g.probe(8)> manual page.
 
+This function depends on the feature C<ntfs3g>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->ntfsclone_in ($backupfile, $device);
 
 Restore the C<backupfile> (from a previous call to
 C<$g-E<gt>ntfsclone_out>) to C<device>, overwriting
 any existing contents of this device.
+
+This function depends on the feature C<ntfs3g>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->ntfsclone_out ($device, $backupfile [, metadataonly => $metadataonly] [, rescue => $rescue] [, ignorefscheck => $ignorefscheck] [, preservetimestamps => $preservetimestamps] [, force => $force]);
 
@@ -5626,6 +6016,9 @@ L<ntfsclone(8)> man page.
 Use C<$g-E<gt>ntfsclone_in> to restore the file back to a
 libguestfs device.
 
+This function depends on the feature C<ntfs3g>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->ntfsfix ($device [, clearbadsectors => $clearbadsectors]);
 
 This command repairs some fundamental NTFS inconsistencies,
@@ -5637,6 +6030,9 @@ scan the filesystem for inconsistencies.
 
 The optional C<clearbadsectors> flag clears the list of bad sectors.
 This is useful after cloning a disk with bad sectors to a new disk.
+
+This function depends on the feature C<ntfs3g>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->ntfsresize ($device [, size => $size] [, force => $force]);
 
@@ -5668,6 +6064,9 @@ single filesystem without booting into Windows between each resize.
 
 See also L<ntfsresize(8)>.
 
+This function depends on the feature C<ntfsprogs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->ntfsresize_opts ($device [, size => $size] [, force => $force]);
 
 This is an alias of L</ntfsresize>.
@@ -5684,6 +6083,9 @@ sub ntfsresize_opts {
 
 This command is the same as C<$g-E<gt>ntfsresize> except that it
 allows you to specify the new size (in bytes) explicitly.
+
+This function depends on the feature C<ntfsprogs>.  See also
+C<$g-E<gt>feature-available>.
 
 I<This function is deprecated.>
 In new code, use the L</ntfsresize> call instead.
@@ -5762,11 +6164,17 @@ See also C<$g-E<gt>part_set_bootable>.
 
 Return the GUID of numbered GPT partition C<partnum>.
 
+This function depends on the feature C<gdisk>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $guid = $g->part_get_gpt_type ($device, $partnum);
 
 Return the type GUID of numbered GPT partition C<partnum>. For MBR partitions,
 return an appropriate GUID corresponding to the MBR type. Behaviour is undefined
 for other partition types.
+
+This function depends on the feature C<gdisk>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $idbyte = $g->part_get_mbr_id ($device, $partnum);
 
@@ -5920,6 +6328,9 @@ Set the GUID of numbered GPT partition C<partnum> to C<guid>.  Return an
 error if the partition table of C<device> isn't GPT, or if C<guid> is not a
 valid GUID.
 
+This function depends on the feature C<gdisk>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->part_set_gpt_type ($device, $partnum, $guid);
 
 Set the type GUID of numbered GPT partition C<partnum> to C<guid>. Return an
@@ -5928,6 +6339,9 @@ valid GUID.
 
 See L<http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>
 for a useful list of type GUIDs.
+
+This function depends on the feature C<gdisk>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->part_set_mbr_id ($device, $partnum, $idbyte);
 
@@ -6007,15 +6421,24 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 Generate a new random UUID for the physical volume C<device>.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->pvchange_uuid_all ();
 
 Generate new random UUIDs for all physical volumes.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->pvcreate ($device);
 
 This creates an LVM physical volume on the named C<device>,
 where C<device> should usually be a partition name such
 as F</dev/sda1>.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->pvremove ($device);
 
@@ -6026,15 +6449,24 @@ The implementation uses the C<pvremove> command which refuses to
 wipe physical volumes that contain any volume groups, so you have
 to remove those first.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->pvresize ($device);
 
 This resizes (expands or shrinks) an existing LVM physical
 volume to match the new size of the underlying device.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->pvresize_size ($device, $size);
 
 This command is the same as C<$g-E<gt>pvresize> except that it
 allows you to specify the new size (in bytes) explicitly.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @physvols = $g->pvs ();
 
@@ -6046,10 +6478,16 @@ PVs (eg. F</dev/sda2>).
 
 See also C<$g-E<gt>pvs_full>.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @physvols = $g->pvs_full ();
 
 List all the physical volumes detected.  This is the equivalent
 of the L<pvs(8)> command.  The "full" version includes all fields.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $uuid = $g->pvuuid ($device);
 
@@ -6225,6 +6663,9 @@ of the file C<path>.
 
 See also: C<$g-E<gt>lremovexattr>, L<attr(5)>.
 
+This function depends on the feature C<linuxxattrs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->rename ($oldpath, $newpath);
 
 Rename a file to a new place on the same filesystem.  This is
@@ -6314,6 +6755,9 @@ Delete files at the destination that do not exist at the source.
 
 =back
 
+This function depends on the feature C<rsync>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->rsync_in ($remote, $dest [, archive => $archive] [, deletedest => $deletedest]);
 
 This call may be used to copy or synchronize the filesystem
@@ -6333,6 +6777,9 @@ Note that there is no way to supply a password or passphrase
 so the target must be set up not to require one.
 
 The optional arguments are the same as those of C<$g-E<gt>rsync>.
+
+This function depends on the feature C<rsync>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->rsync_out ($src, $remote [, archive => $archive] [, deletedest => $deletedest]);
 
@@ -6361,6 +6808,9 @@ command (see L<guestfish(1)/glob>), for example:
 
  ><fs> glob rsync-out /* rsync://remote/
 
+This function depends on the feature C<rsync>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->scrub_device ($device);
 
 This command writes patterns over C<device> to make data retrieval
@@ -6368,6 +6818,9 @@ more difficult.
 
 It is an interface to the L<scrub(1)> program.  See that
 manual page for more details.
+
+This function depends on the feature C<scrub>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->scrub_file ($file);
 
@@ -6379,6 +6832,9 @@ The file is I<removed> after scrubbing.
 It is an interface to the L<scrub(1)> program.  See that
 manual page for more details.
 
+This function depends on the feature C<scrub>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->scrub_freespace ($dir);
 
 This command creates the directory C<dir> and then fills it
@@ -6389,6 +6845,9 @@ containing C<dir>.
 
 It is an interface to the L<scrub(1)> program.  See that
 manual page for more details.
+
+This function depends on the feature C<scrub>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->set_append ($append);
 
@@ -6861,6 +7320,9 @@ to the string C<context>.
 
 See the documentation about SELINUX in L<guestfs(3)>.
 
+This function depends on the feature C<selinux>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->setxattr ($xattr, $val, $vallen, $path);
 
 This call sets the extended attribute named C<xattr>
@@ -6868,6 +7330,9 @@ of the file C<path> to the value C<val> (of length C<vallen>).
 The value is arbitrary 8 bit data.
 
 See also: C<$g-E<gt>lsetxattr>, L<attr(5)>.
+
+This function depends on the feature C<linuxxattrs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->sfdisk ($device, $cyls, $heads, $sectors, \@lines);
 
@@ -7119,6 +7584,9 @@ labeled swap partition.
 This command disables the libguestfs appliance swap partition
 with the given UUID.
 
+This function depends on the feature C<linuxfsuuid>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->swapon_device ($device);
 
 This command enables the libguestfs appliance to use the
@@ -7147,6 +7615,9 @@ See C<$g-E<gt>swapon_device> for other notes.
 
 This command enables swap to a swap partition with the given UUID.
 See C<$g-E<gt>swapon_device> for other notes.
+
+This function depends on the feature C<linuxfsuuid>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->sync ();
 
@@ -7187,6 +7658,9 @@ optional argument is being used.  For further information
 about the contents of this file, see L<syslinux(1)>.
 
 See also C<$g-E<gt>extlinux>.
+
+This function depends on the feature C<syslinux>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @lines = $g->tail ($path);
 
@@ -7441,6 +7915,9 @@ that libguestfs was built against, and the filesystem itself.
 This command uploads and unpacks local file C<tarball> (an
 I<xz compressed> tar file) into F<directory>.
 
+This function depends on the feature C<xz>.  See also
+C<$g-E<gt>feature-available>.
+
 I<This function is deprecated.>
 In new code, use the L</tar_in> call instead.
 
@@ -7452,6 +7929,9 @@ with correct use of these functions.
 
 This command packs the contents of F<directory> and downloads
 it to local file C<tarball> (as an xz compressed tar archive).
+
+This function depends on the feature C<xz>.  See also
+C<$g-E<gt>feature-available>.
 
 I<This function is deprecated.>
 In new code, use the L</tar_out> call instead.
@@ -7671,6 +8151,9 @@ This command is the same as running C<vgchange -a y|n volgroups...>
 Note that if C<volgroups> is an empty list then B<all> volume groups
 are activated or deactivated.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->vg_activate_all ($activate);
 
 This command activates or (if C<activate> is false) deactivates
@@ -7678,18 +8161,30 @@ all logical volumes in all volume groups.
 
 This command is the same as running C<vgchange -a y|n>
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->vgchange_uuid ($vg);
 
 Generate a new random UUID for the volume group C<vg>.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->vgchange_uuid_all ();
 
 Generate new random UUIDs for all volume groups.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->vgcreate ($volgroup, \@physvols);
 
 This creates an LVM volume group called C<volgroup>
 from the non-empty list of physical volumes C<physvols>.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @uuids = $g->vglvuuids ($vgname);
 
@@ -7709,6 +8204,9 @@ volume group and returns its metadata.
 Note that the metadata is an internal structure used by LVM,
 subject to change at any time, and is provided for information only.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @uuids = $g->vgpvuuids ($vgname);
 
 Given a VG called C<vgname>, this returns the UUIDs of all
@@ -7726,6 +8224,9 @@ Remove an LVM volume group C<vgname>, (for example C<VG>).
 This also forcibly removes all logical volumes in the volume
 group (if any).
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->vgrename ($volgroup, $newvolgroup);
 
 Rename a volume group C<volgroup> with the new name C<newvolgroup>.
@@ -7740,10 +8241,16 @@ detected (eg. C<VolGroup00>).
 
 See also C<$g-E<gt>vgs_full>.
 
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
+
 =item @volgroups = $g->vgs_full ();
 
 List all the volumes groups detected.  This is the equivalent
 of the L<vgs(8)> command.  The "full" version includes all fields.
+
+This function depends on the feature C<lvm2>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->vgscan ();
 
@@ -7800,6 +8307,9 @@ C<device>.
 Compare with C<$g-E<gt>zero> which zeroes the first few blocks of a
 device.
 
+This function depends on the feature C<wipefs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->write ($path, $content);
 
 This call creates a file called C<path>.  The content of the
@@ -7849,6 +8359,9 @@ Some of the parameters of a mounted filesystem can be examined
 and modified using the C<$g-E<gt>xfs_info> and
 C<$g-E<gt>xfs_growfs> calls.
 
+This function depends on the feature C<xfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->xfs_growfs ($path [, datasec => $datasec] [, logsec => $logsec] [, rtsec => $rtsec] [, datasize => $datasize] [, logsize => $logsize] [, rtsize => $rtsize] [, rtextsize => $rtextsize] [, maxpct => $maxpct]);
 
 Grow the XFS filesystem mounted at C<path>.
@@ -7856,6 +8369,9 @@ Grow the XFS filesystem mounted at C<path>.
 The returned struct contains geometry information.  Missing
 fields are returned as C<-1> (for numeric fields) or empty
 string.
+
+This function depends on the feature C<xfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item %info = $g->xfs_info ($pathordevice);
 
@@ -7865,6 +8381,9 @@ an XFS filesystem.  This command returns the geometry of the filesystem.
 The returned struct contains geometry information.  Missing
 fields are returned as C<-1> (for numeric fields) or empty
 string.
+
+This function depends on the feature C<xfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $status = $g->xfs_repair ($device [, forcelogzero => $forcelogzero] [, nomodify => $nomodify] [, noprefetch => $noprefetch] [, forcegeometry => $forcegeometry] [, maxmem => $maxmem] [, ihashsize => $ihashsize] [, bhashsize => $bhashsize] [, agstride => $agstride] [, logdev => $logdev] [, rtdev => $rtdev]);
 
@@ -7881,6 +8400,9 @@ the resulting filesystem may be inconsistent or corrupt.
 
 The returned status indicates whether filesystem corruption was
 detected (returns C<1>) or was not detected (returns C<0>).
+
+This function depends on the feature C<xfs>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @lines = $g->zegrep ($regex, $path);
 
@@ -7961,6 +8483,9 @@ mounted.
 
 It is possible that using this program can damage the filesystem
 or data on the filesystem.
+
+This function depends on the feature C<zerofree>.  See also
+C<$g-E<gt>feature-available>.
 
 =item @lines = $g->zfgrep ($pattern, $path);
 

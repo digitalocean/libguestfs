@@ -43,7 +43,6 @@ GuestfsInspectGetIcon
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_inspect_get_icon_new ##### -->
 <para>

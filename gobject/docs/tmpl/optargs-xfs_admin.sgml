@@ -68,7 +68,6 @@ GuestfsXfsAdmin
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_xfs_admin_new ##### -->
 <para>

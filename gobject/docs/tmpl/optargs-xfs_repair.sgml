@@ -83,7 +83,6 @@ GuestfsXfsRepair
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_xfs_repair_new ##### -->
 <para>

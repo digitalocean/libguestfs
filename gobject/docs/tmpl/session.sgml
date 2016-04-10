@@ -135,7 +135,6 @@ GuestfsSession
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_session_new ##### -->
 <para>

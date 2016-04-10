@@ -96,6 +96,9 @@
 /* Define to 1 if ungetc is broken when used on arbitrary bytes. */
 #undef FUNC_UNGETC_BROKEN
 
+/* Name of fuser program. */
+#undef FUSER
+
 /* Define to 1 if futimesat mishandles a NULL file name. */
 #undef FUTIMESAT_NULL_BUG
 
@@ -2433,6 +2436,9 @@
 
 /* Name of supermin program */
 #undef SUPERMIN
+
+/* Name of 'true' program. */
+#undef TOOL_TRUE
 
 /* Define to 1 if the type of the st_atim member of a struct stat is struct
    timespec. */

@@ -32,6 +32,13 @@ open C
 
 let generate_header = generate_header ~inputs:["generator/java.ml"]
 
+let drop_empty_trailing_lines l =
+  let rec loop = function
+    | "" :: tl -> loop tl
+    | x -> x
+  in
+  List.rev (loop (List.rev l))
+
 (* Generate Java bindings GuestFS.java file. *)
 let rec generate_java_java () =
   generate_header CStyle LGPLv2plus;
@@ -262,6 +269,7 @@ public class GuestFS {
             doc ^ "\n\n" ^ protocol_limit_warning
           else doc in
         let doc = pod2text ~width:60 f.name doc in
+        let doc = drop_empty_trailing_lines doc in
         let doc = List.map (		(* RHBZ#501883 *)
           function
           | "" -> "</p><p>"
@@ -274,6 +282,13 @@ public class GuestFS {
         pr "   * %s\n" f.shortdesc;
         pr "   * </p><p>\n";
         pr "   * %s\n" doc;
+        (match f.optional with
+        | None -> ()
+        | Some opt ->
+          pr "   * </p><p>\n";
+          pr "   * This function depends on the feature \"%s\".  See also {@link #feature_available}.\n"
+            opt;
+        );
         pr "   * </p>\n";
         (match version_added f with
         | None -> ()

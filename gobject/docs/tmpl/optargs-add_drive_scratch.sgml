@@ -43,7 +43,6 @@ GuestfsAddDriveScratch
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_add_drive_scratch_new ##### -->
 <para>

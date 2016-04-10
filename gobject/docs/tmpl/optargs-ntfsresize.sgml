@@ -43,7 +43,6 @@ GuestfsNTFSResizeOpts
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_ntfsresize_new ##### -->
 <para>

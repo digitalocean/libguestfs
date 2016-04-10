@@ -58,7 +58,6 @@ GuestfsMkfs
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_mkfs_new ##### -->
 <para>

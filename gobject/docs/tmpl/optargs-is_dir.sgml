@@ -38,7 +38,6 @@ GuestfsIsDir
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_is_dir_new ##### -->
 <para>

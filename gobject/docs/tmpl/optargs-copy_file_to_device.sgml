@@ -58,7 +58,6 @@ GuestfsCopyFileToDevice
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_copy_file_to_device_new ##### -->
 <para>

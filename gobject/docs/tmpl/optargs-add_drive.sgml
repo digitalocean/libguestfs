@@ -88,7 +88,6 @@ GuestfsAddDrive
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_add_drive_new ##### -->
 <para>

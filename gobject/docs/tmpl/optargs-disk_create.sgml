@@ -58,7 +58,6 @@ GuestfsDiskCreate
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_disk_create_new ##### -->
 <para>

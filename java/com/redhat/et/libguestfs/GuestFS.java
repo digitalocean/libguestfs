@@ -290,6 +290,7 @@ public class GuestFS {
    * This function deletes the default POSIX Access Control
    * List (ACL) attached to directory "dir".
    * </p><p>
+   * This function depends on the feature "acl".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.63
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -324,6 +325,7 @@ public class GuestFS {
    * Return the default ACL. Normally this only makes
    * sense if "path" is a directory.
    * </p><p>
+   * This function depends on the feature "acl".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.63
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -376,6 +378,7 @@ public class GuestFS {
    * of the guest, use the Augeas functions (see
    * "g.aug_init").
    * </p><p>
+   * This function depends on the feature "acl".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.63
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -401,7 +404,6 @@ public class GuestFS {
    * </p><p>
    * The image is added as read-only drive, so this function
    * is equivalent of "g.add_drive_ro".
-   * </p><p>
    * </p>
    * @since 0.3
    * @deprecated In new code, use {@link #add_drive_ro} instead
@@ -509,7 +511,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.7.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -854,7 +855,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -998,7 +998,6 @@ public class GuestFS {
    * "GUESTFS_ADD_DRIVE_OPTS_READONLY" set to 1, so the disk
    * is added read-only, with the format being detected
    * automatically.
-   * </p><p>
    * </p>
    * @since 1.0.38
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1022,7 +1021,6 @@ public class GuestFS {
    * This is the same as "g.add_drive_ro" but it allows you
    * to specify the QEMU interface emulation to use at run
    * time.
-   * </p><p>
    * </p>
    * @since 1.0.84
    * @deprecated In new code, use {@link #add_drive} instead
@@ -1057,7 +1055,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.23.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1106,7 +1103,6 @@ public class GuestFS {
    * </p><p>
    * This is the same as "g.add_drive" but it allows you to
    * specify the QEMU interface emulation to use at run time.
-   * </p><p>
    * </p>
    * @since 1.0.84
    * @deprecated In new code, use {@link #add_drive} instead
@@ -1170,7 +1166,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.29.14
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1259,7 +1254,6 @@ public class GuestFS {
    * </p><p>
    * Set the value associated with "path" to "NULL". This is
    * the same as the augtool(1) "clear" command.
-   * </p><p>
    * </p>
    * @since 1.3.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1284,7 +1278,6 @@ public class GuestFS {
    * resources used by it. After calling this, you have to
    * call "g.aug_init" again before you can use any other
    * Augeas functions.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1316,7 +1309,6 @@ public class GuestFS {
    * On success this returns a pair containing the number of
    * nodes in the nodeset, and a boolean flag if a node was
    * created.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1344,7 +1336,6 @@ public class GuestFS {
    * On success this returns the number of nodes in "expr",
    * or 0 if "expr" evaluates to something which is not a
    * nodeset.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1367,7 +1358,6 @@ public class GuestFS {
    * </p><p>
    * Look up the value associated with "path". If "path"
    * matches exactly one node, the "value" is returned.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1431,7 +1421,6 @@ public class GuestFS {
    * To close the handle, you can call "g.aug_close".
    * </p><p>
    * To find out more about Augeas, see &lt;http://augeas.net/&gt;.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1459,7 +1448,6 @@ public class GuestFS {
    * "path" must match exactly one existing node in the tree,
    * and "label" must be a label, ie. not contain /, "*" or
    * end with a bracketed index "[N]".
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1483,7 +1471,6 @@ public class GuestFS {
    * The label (name of the last element) of the Augeas path
    * expression "augpath" is returned. "augpath" must match
    * exactly one node, else this function returns an error.
-   * </p><p>
    * </p>
    * @since 1.23.14
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1508,7 +1495,6 @@ public class GuestFS {
    * </p><p>
    * See "aug_load" in the Augeas documentation for the full
    * gory details.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1532,7 +1518,6 @@ public class GuestFS {
    * This is just a shortcut for listing "g.aug_match"
    * "path/*" and sorting the resulting nodes into
    * alphabetical order.
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1556,7 +1541,6 @@ public class GuestFS {
    * Returns a list of paths which match the path expression
    * "path". The returned paths are sufficiently qualified so
    * that they match exactly one node in the current tree.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1579,7 +1563,6 @@ public class GuestFS {
    * </p><p>
    * Move the node "src" to "dest". "src" must match exactly
    * one node. "dest" is overwritten if it exists.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1604,7 +1587,6 @@ public class GuestFS {
    * </p><p>
    * On success this returns the number of entries which were
    * removed.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1629,7 +1611,6 @@ public class GuestFS {
    * </p><p>
    * The flags which were passed to "g.aug_init" affect
    * exactly how files are saved.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1656,7 +1637,6 @@ public class GuestFS {
    * setting the value to NULL. Due to an oversight in the
    * libguestfs API you cannot do that with this call.
    * Instead you must use the "g.aug_clear" call.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1685,7 +1665,6 @@ public class GuestFS {
    * case the "base" nodes are modified.
    * </p><p>
    * This returns the number of nodes modified.
-   * </p><p>
    * </p>
    * @since 1.23.14
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1761,7 +1740,6 @@ public class GuestFS {
    * daemon implemented it. See also "g.version".
    * </p><p>
    * See also "g.filesystem_available".
-   * </p><p>
    * </p>
    * @since 1.0.80
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1791,7 +1769,6 @@ public class GuestFS {
    * </p><p>
    * See also "g.available", "g.feature_available" and
    * "AVAILABILITY" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.3.15
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1814,7 +1791,6 @@ public class GuestFS {
    * </p><p>
    * This command uploads base64-encoded data from
    * "base64file" to filename.
-   * </p><p>
    * </p>
    * @since 1.3.5
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1837,7 +1813,6 @@ public class GuestFS {
    * </p><p>
    * This command downloads the contents of filename, writing
    * it out to local file "base64file" encoded as base64.
-   * </p><p>
    * </p>
    * @since 1.3.5
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1868,6 +1843,7 @@ public class GuestFS {
    * attribute on the underlying drive (see
    * "g.add_drive_opts").
    * </p><p>
+   * This function depends on the feature "blkdiscard".  See also {@link #feature_available}.
    * </p>
    * @since 1.25.44
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1895,6 +1871,7 @@ public class GuestFS {
    * If it returns false, then it may be that discarded
    * blocks are read as stale or random data.
    * </p><p>
+   * This function depends on the feature "blkdiscardzeroes".  See also {@link #feature_available}.
    * </p>
    * @since 1.25.44
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1934,7 +1911,6 @@ public class GuestFS {
    * "USAGE"
    * The usage of this device, for example "filesystem"
    * or "raid".
-   * </p><p>
    * </p>
    * @since 1.15.9
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1964,7 +1940,6 @@ public class GuestFS {
    * associated with "device".
    * </p><p>
    * This uses the blockdev(8) command.
-   * </p><p>
    * </p>
    * @since 1.9.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -1994,7 +1969,6 @@ public class GuestFS {
    * block size to choose.
    * </p><p>
    * This uses the blockdev(8) command.
-   * </p><p>
    * </p>
    * @since 1.9.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2019,7 +1993,6 @@ public class GuestFS {
    * read-only (true if read-only, false if not).
    * </p><p>
    * This uses the blockdev(8) command.
-   * </p><p>
    * </p>
    * @since 1.9.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2045,7 +2018,6 @@ public class GuestFS {
    * See also "g.blockdev_getsz".
    * </p><p>
    * This uses the blockdev(8) command.
-   * </p><p>
    * </p>
    * @since 1.9.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2073,7 +2045,6 @@ public class GuestFS {
    * "g.blockdev_getsz" for that).
    * </p><p>
    * This uses the blockdev(8) command.
-   * </p><p>
    * </p>
    * @since 1.9.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2103,7 +2074,6 @@ public class GuestFS {
    * useful *size in bytes*.
    * </p><p>
    * This uses the blockdev(8) command.
-   * </p><p>
    * </p>
    * @since 1.9.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2127,7 +2097,6 @@ public class GuestFS {
    * Reread the partition table on "device".
    * </p><p>
    * This uses the blockdev(8) command.
-   * </p><p>
    * </p>
    * @since 1.9.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2153,7 +2122,6 @@ public class GuestFS {
    * </p><p>
    * If you need to set the filesystem block size, use the
    * "blocksize" option of "g.mkfs".
-   * </p><p>
    * </p>
    * @since 1.9.3
    * @deprecated In new code, use {@link #mkfs} instead
@@ -2178,7 +2146,6 @@ public class GuestFS {
    * Set readahead (in 512-byte sectors) for the device.
    * </p><p>
    * This uses the blockdev(8) command.
-   * </p><p>
    * </p>
    * @since 1.29.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2202,7 +2169,6 @@ public class GuestFS {
    * Sets the block device named "device" to read-only.
    * </p><p>
    * This uses the blockdev(8) command.
-   * </p><p>
    * </p>
    * @since 1.9.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2226,7 +2192,6 @@ public class GuestFS {
    * Sets the block device named "device" to read-write.
    * </p><p>
    * This uses the blockdev(8) command.
-   * </p><p>
    * </p>
    * @since 1.9.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2249,6 +2214,7 @@ public class GuestFS {
    * </p><p>
    * Cancel a running balance on a btrfs filesystem.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2271,6 +2237,7 @@ public class GuestFS {
    * </p><p>
    * Pause a running balance on a btrfs filesystem.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2293,6 +2260,7 @@ public class GuestFS {
    * </p><p>
    * Resume a paused balance on a btrfs filesystem.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2316,6 +2284,7 @@ public class GuestFS {
    * Show the status of a running or paused balance on a
    * btrfs filesystem.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2340,6 +2309,7 @@ public class GuestFS {
    * filesystem mounted at "fs". If "devices" is an empty
    * list, this does nothing.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2364,6 +2334,7 @@ public class GuestFS {
    * at "fs". If "devices" is an empty list, this does
    * nothing.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2387,6 +2358,7 @@ public class GuestFS {
    * Balance the chunks in the btrfs filesystem mounted at
    * "fs" across the underlying devices.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2415,6 +2387,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2481,6 +2454,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.11.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2521,6 +2495,7 @@ public class GuestFS {
    * </p><p>
    * Force sync on the btrfs filesystem mounted at "fs".
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2549,6 +2524,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.43
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2604,6 +2580,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.32
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2646,6 +2623,7 @@ public class GuestFS {
    * can group several qgroups into a parent qgroup to share
    * common limit.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2669,6 +2647,7 @@ public class GuestFS {
    * Create a quota group (qgroup) for subvolume at
    * "subvolume".
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2691,6 +2670,7 @@ public class GuestFS {
    * </p><p>
    * Destroy a quota group.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2714,6 +2694,7 @@ public class GuestFS {
    * Limit the size of a subvolume which's path is
    * "subvolume". "size" can have suffix of G, M, or K.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2736,6 +2717,7 @@ public class GuestFS {
    * </p><p>
    * Remove qgroup "src" from the parent qgroup "dst".
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2759,6 +2741,7 @@ public class GuestFS {
    * Show all subvolume quota groups in a btrfs filesystem,
    * including their usages.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2782,6 +2765,7 @@ public class GuestFS {
    * Enable or disable subvolume quota support for filesystem
    * which contains "path".
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2805,6 +2789,7 @@ public class GuestFS {
    * Trash all qgroup numbers and scan the metadata again
    * with the current config.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2835,6 +2820,7 @@ public class GuestFS {
    * "srcdev". Devices which are currently mounted are never
    * allowed to be used as the "targetdev".
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.48
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2858,6 +2844,7 @@ public class GuestFS {
    * Recover the chunk tree of btrfs filesystem by scanning
    * the devices one by one.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2880,6 +2867,7 @@ public class GuestFS {
    * </p><p>
    * Recover bad superblocks from good copies.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2902,6 +2890,7 @@ public class GuestFS {
    * </p><p>
    * Cancel a running scrub on a btrfs filesystem.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2925,6 +2914,7 @@ public class GuestFS {
    * Resume a previously canceled or interrupted scrub on a
    * btrfs filesystem.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2949,6 +2939,7 @@ public class GuestFS {
    * uses checksums and the duplicate copies from RAID
    * storage to identify and repair any corrupt data.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2972,6 +2963,7 @@ public class GuestFS {
    * Show status of running or finished scrub on a btrfs
    * filesystem.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -2995,6 +2987,7 @@ public class GuestFS {
    * Enable or disable the seeding feature of a device that
    * contains a btrfs filesystem.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.43
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3026,6 +3019,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3078,6 +3072,7 @@ public class GuestFS {
    * </p><p>
    * Delete the named btrfs subvolume or snapshot.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3101,6 +3096,7 @@ public class GuestFS {
    * Get the default subvolume or snapshot of a filesystem
    * mounted at "mountpoint".
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3124,6 +3120,7 @@ public class GuestFS {
    * List the btrfs snapshots and subvolumes of the btrfs
    * filesystem which is mounted at "fs".
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3148,6 +3145,7 @@ public class GuestFS {
    * will be mounted by default. See "g.btrfs_subvolume_list"
    * to get a list of subvolumes.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3170,6 +3168,7 @@ public class GuestFS {
    * </p><p>
    * Return detailed information of the subvolume.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3209,6 +3208,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3269,6 +3269,7 @@ public class GuestFS {
    * </p><p>
    * This will Enable extended inode refs.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.29
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3291,6 +3292,7 @@ public class GuestFS {
    * </p><p>
    * This enable skinny metadata extent refs.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.29
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3315,6 +3317,7 @@ public class GuestFS {
    * readonly so that you can use it to build other
    * filesystems.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.29
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3339,7 +3342,6 @@ public class GuestFS {
    * the underlying C pointer to the handle (ie. "g.h *").
    * The purpose of this is to allow other libraries to
    * interwork with libguestfs.
-   * </p><p>
    * </p>
    * @since 1.29.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3377,7 +3379,6 @@ public class GuestFS {
    * "g.lvm_canonical_lv_name".
    * </p><p>
    * Other strings are returned unmodified.
-   * </p><p>
    * </p>
    * @since 1.19.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3405,6 +3406,7 @@ public class GuestFS {
    * If no capabilities are attached to a file, an empty
    * string is returned.
    * </p><p>
+   * This function depends on the feature "linuxcaps".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.63
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3429,6 +3431,7 @@ public class GuestFS {
    * "path". The capabilities set "cap" should be passed in
    * text form (see cap_from_text(3)).
    * </p><p>
+   * This function depends on the feature "linuxcaps".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.63
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3497,7 +3500,6 @@ public class GuestFS {
    * backslashes etc.
    * </p><p>
    * See also "g.realpath".
-   * </p><p>
    * </p>
    * @since 1.0.75
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3524,7 +3526,6 @@ public class GuestFS {
    * is no way to differentiate between a "\0" character in a
    * file and end of string. To handle binary files, use the
    * "g.read_file" or "g.download" functions.
-   * </p><p>
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3585,7 +3586,6 @@ public class GuestFS {
    * </p><p>
    * To get the checksums for many files, use
    * "g.checksums_out".
-   * </p><p>
    * </p>
    * @since 1.0.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3609,7 +3609,6 @@ public class GuestFS {
    * This call computes the MD5, SHAx or CRC checksum of the
    * contents of the device named "device". For the types of
    * checksums supported see the "g.checksum" command.
-   * </p><p>
    * </p>
    * @since 1.3.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3641,7 +3640,6 @@ public class GuestFS {
    * particular when the filename is not printable, coreutils
    * uses a special backslash syntax. For more information,
    * see the GNU coreutils info file.
-   * </p><p>
    * </p>
    * @since 1.3.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3670,7 +3668,6 @@ public class GuestFS {
    * to get octal, ie. use 0700 not 700.
    * </p><p>
    * The mode actually set is affected by the umask.
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3697,7 +3694,6 @@ public class GuestFS {
    * use names, you will need to locate and parse the
    * password file yourself (Augeas support makes this
    * relatively easy).
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3727,7 +3723,6 @@ public class GuestFS {
    * </p><p>
    * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
    * guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.27.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3781,7 +3776,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.9.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3810,7 +3804,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.9.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3841,7 +3834,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.13.15
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3898,7 +3890,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.13.15
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -3946,7 +3937,6 @@ public class GuestFS {
    * (dash).
    * </p><p>
    * "hvvalue" can be NULL.
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4000,7 +3990,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.25.21
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4099,7 +4088,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.13.25
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4177,7 +4165,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.13.25
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4255,7 +4242,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.13.25
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4338,7 +4324,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.13.25
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4414,7 +4399,6 @@ public class GuestFS {
    * directory called "remotedir" (which must exist).
    * </p><p>
    * Wildcards cannot be used.
-   * </p><p>
    * </p>
    * @since 1.29.24
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4445,7 +4429,6 @@ public class GuestFS {
    * C&lt;g.copy_out&gt; /home .
    * </p><p>
    * Wildcards cannot be used.
-   * </p><p>
    * </p>
    * @since 1.29.24
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4472,7 +4455,6 @@ public class GuestFS {
    * </p><p>
    * Note this will fail if the source is too short or if the
    * destination is not large enough.
-   * </p><p>
    * </p>
    * @since 1.0.87
    * @deprecated In new code, use {@link #copy_device_to_device} instead
@@ -4496,7 +4478,6 @@ public class GuestFS {
    * </p><p>
    * This copies a file from "src" to "dest" where "dest" is
    * either a destination filename or destination directory.
-   * </p><p>
    * </p>
    * @since 1.0.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4519,7 +4500,6 @@ public class GuestFS {
    * </p><p>
    * This copies a file or directory from "src" to "dest"
    * recursively using the "cp -a" command.
-   * </p><p>
    * </p>
    * @since 1.0.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4547,7 +4527,6 @@ public class GuestFS {
    * useful when you don't want to preserve permissions,
    * because the target filesystem does not support it
    * (primarily when writing to DOS FAT filesystems).
-   * </p><p>
    * </p>
    * @since 1.21.38
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4589,7 +4568,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.27.9
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4637,7 +4615,6 @@ public class GuestFS {
    * larger than the source file or device, otherwise the
    * copy will fail. This command cannot do partial copies
    * (see "g.copy_device_to_device").
-   * </p><p>
    * </p>
    * @since 1.0.80
    * @deprecated In new code, use {@link #copy_device_to_device} instead
@@ -4702,7 +4679,6 @@ public class GuestFS {
    * for example as a string returned from "g.list_devices".
    * </p><p>
    * See also "g.list_devices", "g.part_to_dev".
-   * </p><p>
    * </p>
    * @since 1.19.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4729,7 +4705,6 @@ public class GuestFS {
    * This command is mostly useful for interactive sessions.
    * It is *not* intended that you try to parse the output
    * string. Use "g.statvfs" from programs.
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4756,7 +4731,6 @@ public class GuestFS {
    * This command is mostly useful for interactive sessions.
    * It is *not* intended that you try to parse the output
    * string. Use "g.statvfs" from programs.
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4822,7 +4796,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.25.31
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4903,7 +4876,6 @@ public class GuestFS {
    * guestfs(3).
    * </p><p>
    * See also: "DISK IMAGE FORMATS" in guestfs(3)
-   * </p><p>
    * </p>
    * @since 1.19.38
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4929,7 +4901,6 @@ public class GuestFS {
    * </p><p>
    * Note that detecting disk features can be insecure under
    * some circumstances. See "CVE-2010-3851" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.19.39
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4955,7 +4926,6 @@ public class GuestFS {
    * </p><p>
    * Note that detecting disk features can be insecure under
    * some circumstances. See "CVE-2010-3851" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.19.39
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -4984,7 +4954,6 @@ public class GuestFS {
    * verbose messages with "g.set_verbose" or by setting the
    * environment variable "LIBGUESTFS_DEBUG=1" before running
    * the program.
-   * </p><p>
    * </p>
    * @since 1.0.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5011,7 +4980,6 @@ public class GuestFS {
    * filename can also be a named pipe.
    * </p><p>
    * See also "g.upload", "g.cat".
-   * </p><p>
    * </p>
    * @since 1.0.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5045,7 +5013,6 @@ public class GuestFS {
    * error occurs.
    * </p><p>
    * See also "g.download", "g.pread".
-   * </p><p>
    * </p>
    * @since 1.5.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5075,7 +5042,6 @@ public class GuestFS {
    * </p><p>
    * This automatically calls sync(2) before the operation,
    * so that the maximum guest memory is freed.
-   * </p><p>
    * </p>
    * @since 1.0.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5105,7 +5071,6 @@ public class GuestFS {
    * </p><p>
    * The result is the estimated size in *kilobytes* (ie.
    * units of 1024 bytes).
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5149,7 +5114,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.15.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5199,7 +5163,6 @@ public class GuestFS {
    * This runs "e2fsck -p -f device", ie. runs the ext2/ext3
    * filesystem checker on "device", noninteractively (*-p*),
    * even if the filesystem appears to be clean (*-f*).
-   * </p><p>
    * </p>
    * @since 1.0.29
    * @deprecated In new code, use {@link #e2fsck} instead
@@ -5229,7 +5192,6 @@ public class GuestFS {
    * to the daemon.
    * </p><p>
    * See also "g.ping_daemon".
-   * </p><p>
    * </p>
    * @since 1.0.69
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5256,7 +5218,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
@@ -5284,7 +5245,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
@@ -5311,7 +5271,6 @@ public class GuestFS {
    * otherwise.
    * </p><p>
    * The external cmp(1) program is used for the comparison.
-   * </p><p>
    * </p>
    * @since 1.0.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5336,7 +5295,6 @@ public class GuestFS {
    * directory (or anything) with the given "path" name.
    * </p><p>
    * See also "g.is_file", "g.is_dir", "g.stat".
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5379,6 +5337,7 @@ public class GuestFS {
    * </p><p>
    * See also "g.syslinux".
    * </p><p>
+   * This function depends on the feature "extlinux".  See also {@link #feature_available}.
    * </p>
    * @since 1.21.27
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5406,7 +5365,6 @@ public class GuestFS {
    * Do not confuse this with the guestfish-specific "alloc"
    * command which allocates a file in the host and attaches
    * it as a device.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #fallocate64} instead
@@ -5443,7 +5401,6 @@ public class GuestFS {
    * Do not confuse this with the guestfish-specific "alloc"
    * and "sparse" commands which create a file in the host
    * and attach it as a device.
-   * </p><p>
    * </p>
    * @since 1.3.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5468,7 +5425,6 @@ public class GuestFS {
    * it returns a simple true/false boolean result, instead
    * of throwing an exception if a feature is not found. For
    * other documentation see "g.available".
-   * </p><p>
    * </p>
    * @since 1.21.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5495,7 +5451,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
@@ -5523,7 +5478,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
@@ -5562,7 +5516,6 @@ public class GuestFS {
    * </p><p>
    * See also: file(1), "g.vfs_type", "g.lstat", "g.is_file",
    * "g.is_blockdev" (etc), "g.is_zero".
-   * </p><p>
    * </p>
    * @since 1.9.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5655,7 +5608,6 @@ public class GuestFS {
    * hard to unpack. If you want to find the architecture
    * of a kernel, use the architecture of the associated
    * initrd or kernel module(s) instead.
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5681,7 +5633,6 @@ public class GuestFS {
    * To get other stats about a file, use "g.stat",
    * "g.lstat", "g.is_dir", "g.is_file" etc. To get the size
    * of block devices, use "g.blockdev_getsize64".
-   * </p><p>
    * </p>
    * @since 1.0.82
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5717,7 +5668,6 @@ public class GuestFS {
    * </p><p>
    * See also "g.available", "g.feature_available",
    * "AVAILABILITY" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.19.5
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5746,7 +5696,6 @@ public class GuestFS {
    * more efficient to use "g.truncate_size". To create a
    * file with a pattern of repeating bytes use
    * "g.fill_pattern".
-   * </p><p>
    * </p>
    * @since 1.0.79
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5771,7 +5720,6 @@ public class GuestFS {
    * "nr" empty files in the directory "dir" with names
    * 00000000 through "nr-1" (ie. each file name is 8 digits
    * long padded with zeroes).
-   * </p><p>
    * </p>
    * @since 1.19.32
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5797,7 +5745,6 @@ public class GuestFS {
    * pattern of bytes in "pattern". The pattern is truncated
    * if necessary to ensure the length of the file is exactly
    * "len" bytes.
-   * </p><p>
    * </p>
    * @since 1.3.12
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5843,7 +5790,6 @@ public class GuestFS {
    * returns an error.
    * </p><p>
    * The returned list is sorted.
-   * </p><p>
    * </p>
    * @since 1.0.27
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5877,7 +5823,6 @@ public class GuestFS {
    * "\0" characters. See find(1) option *-print0*.
    * </p><p>
    * *   The result list is not sorted.
-   * </p><p>
    * </p>
    * @since 1.0.74
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5903,7 +5848,6 @@ public class GuestFS {
    * no such filesystem can be found.
    * </p><p>
    * To find the label of a filesystem, use "g.vfs_label".
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5929,7 +5873,6 @@ public class GuestFS {
    * such filesystem can be found.
    * </p><p>
    * To find the UUID of a filesystem, use "g.vfs_uuid".
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -5969,7 +5912,6 @@ public class GuestFS {
    * </p><p>
    * This command is entirely equivalent to running "fsck -a
    * -t fstype device".
-   * </p><p>
    * </p>
    * @since 1.0.16
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6014,6 +5956,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "fstrim".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.6
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6072,7 +6015,6 @@ public class GuestFS {
    * the libguestfs appliance kernel command line.
    * </p><p>
    * If "NULL" then no options are added.
-   * </p><p>
    * </p>
    * @since 1.0.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6096,7 +6038,6 @@ public class GuestFS {
    * Return the current backend.
    * </p><p>
    * See "g.set_backend" and "BACKEND" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.9.8
    * @deprecated In new code, use {@link #get_backend} instead
@@ -6119,7 +6060,6 @@ public class GuestFS {
    * get autosync mode
    * </p><p>
    * Get the autosync flag.
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6146,7 +6086,6 @@ public class GuestFS {
    * method".
    * </p><p>
    * See "g.set_backend" and "BACKEND" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.21.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6178,7 +6117,6 @@ public class GuestFS {
    * </p><p>
    * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
    * guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.27.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6207,7 +6145,6 @@ public class GuestFS {
    * </p><p>
    * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
    * guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.25.24
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6230,7 +6167,6 @@ public class GuestFS {
    * </p><p>
    * Get the directory used by the handle to store the
    * appliance cache.
-   * </p><p>
    * </p>
    * @since 1.19.58
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6252,7 +6188,6 @@ public class GuestFS {
    * get direct appliance mode flag
    * </p><p>
    * Return the direct appliance mode flag.
-   * </p><p>
    * </p>
    * @since 1.0.72
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6349,7 +6284,6 @@ public class GuestFS {
    * </p><p>
    * Don't confuse these attributes with extended attributes
    * (see "g.getxattr").
-   * </p><p>
    * </p>
    * @since 1.17.31
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6380,7 +6314,6 @@ public class GuestFS {
    * filesystem types will result in an error.
    * </p><p>
    * See "g.set_e2generation".
-   * </p><p>
    * </p>
    * @since 1.17.31
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6403,7 +6336,6 @@ public class GuestFS {
    * </p><p>
    * This returns the ext2/3/4 filesystem label of the
    * filesystem on "device".
-   * </p><p>
    * </p>
    * @since 1.0.15
    * @deprecated In new code, use {@link #vfs_label} instead
@@ -6427,7 +6359,6 @@ public class GuestFS {
    * </p><p>
    * This returns the ext2/3/4 filesystem UUID of the
    * filesystem on "device".
-   * </p><p>
    * </p>
    * @since 1.0.15
    * @deprecated In new code, use {@link #vfs_uuid} instead
@@ -6453,7 +6384,6 @@ public class GuestFS {
    * </p><p>
    * This is always non-NULL. If it wasn't set already, then
    * this will return the default qemu binary name.
-   * </p><p>
    * </p>
    * @since 1.23.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6475,7 +6405,6 @@ public class GuestFS {
    * get the handle identifier
    * </p><p>
    * Get the handle identifier. See "g.set_identifier".
-   * </p><p>
    * </p>
    * @since 1.31.14
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6502,7 +6431,6 @@ public class GuestFS {
    * </p><p>
    * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
    * documentation and example code.
-   * </p><p>
    * </p>
    * @since 1.19.52
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6530,7 +6458,6 @@ public class GuestFS {
    * </p><p>
    * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
    * documentation and example code.
-   * </p><p>
    * </p>
    * @since 1.19.52
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6557,7 +6484,6 @@ public class GuestFS {
    * </p><p>
    * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
    * documentation and example code.
-   * </p><p>
    * </p>
    * @since 1.19.52
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6587,7 +6513,6 @@ public class GuestFS {
    * </p><p>
    * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
    * documentation and example code.
-   * </p><p>
    * </p>
    * @since 1.19.52
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6617,7 +6542,6 @@ public class GuestFS {
    * </p><p>
    * For more information on the architecture of libguestfs,
    * see guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.55
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6639,7 +6563,6 @@ public class GuestFS {
    * get enable network flag
    * </p><p>
    * This returns the enable network flag.
-   * </p><p>
    * </p>
    * @since 1.5.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6664,7 +6587,6 @@ public class GuestFS {
    * </p><p>
    * This is always non-NULL. If it wasn't set already, then
    * this will return the default path.
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6686,7 +6608,6 @@ public class GuestFS {
    * get process group flag
    * </p><p>
    * This returns the process group flag.
-   * </p><p>
    * </p>
    * @since 1.11.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6711,7 +6632,6 @@ public class GuestFS {
    * hypervisor running, then this will return an error.
    * </p><p>
    * This is an internal call used for debugging and testing.
-   * </p><p>
    * </p>
    * @since 1.0.56
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6733,7 +6653,6 @@ public class GuestFS {
    * get the program name
    * </p><p>
    * Get the program name. See "g.set_program".
-   * </p><p>
    * </p>
    * @since 1.21.29
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6758,7 +6677,6 @@ public class GuestFS {
    * </p><p>
    * This is always non-NULL. If it wasn't set already, then
    * this will return the default qemu binary name.
-   * </p><p>
    * </p>
    * @since 1.0.6
    * @deprecated In new code, use {@link #get_hv} instead
@@ -6781,7 +6699,6 @@ public class GuestFS {
    * get recovery process enabled flag
    * </p><p>
    * Return the recovery process enabled flag.
-   * </p><p>
    * </p>
    * @since 1.0.77
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6808,7 +6725,6 @@ public class GuestFS {
    * </p><p>
    * For more information on the architecture of libguestfs,
    * see guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.67
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6831,7 +6747,6 @@ public class GuestFS {
    * </p><p>
    * This returns the number of virtual CPUs assigned to the
    * appliance.
-   * </p><p>
    * </p>
    * @since 1.13.15
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6857,7 +6772,6 @@ public class GuestFS {
    * error messages.
    * </p><p>
    * For more information on states, see guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6880,7 +6794,6 @@ public class GuestFS {
    * </p><p>
    * Get the directory used by the handle to store temporary
    * files.
-   * </p><p>
    * </p>
    * @since 1.19.58
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6902,7 +6815,6 @@ public class GuestFS {
    * get command trace enabled flag
    * </p><p>
    * Return the command trace flag.
-   * </p><p>
    * </p>
    * @since 1.0.69
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6925,7 +6837,6 @@ public class GuestFS {
    * </p><p>
    * Return the current umask. By default the umask is 022
    * unless it has been set by calling "g.umask".
-   * </p><p>
    * </p>
    * @since 1.3.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6947,7 +6858,6 @@ public class GuestFS {
    * get verbose mode
    * </p><p>
    * This returns the verbose messages flag.
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -6973,6 +6883,7 @@ public class GuestFS {
    * See the documentation about SELINUX in guestfs(3), and
    * "g.setcon"
    * </p><p>
+   * This function depends on the feature "selinux".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.67
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7012,6 +6923,7 @@ public class GuestFS {
    * </p><p>
    * See also: "g.getxattrs", "g.lgetxattr", attr(5).
    * </p><p>
+   * This function depends on the feature "linuxxattrs".  See also {@link #feature_available}.
    * </p>
    * @since 1.7.24
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7040,6 +6952,7 @@ public class GuestFS {
    * </p><p>
    * See also: "g.lgetxattrs", attr(5).
    * </p><p>
+   * This function depends on the feature "linuxxattrs".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.59
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7074,7 +6987,6 @@ public class GuestFS {
    * Notice that there is no equivalent command for expanding
    * a device name (eg. /dev/sd*). Use "g.list_devices",
    * "g.list_partitions" etc functions instead.
-   * </p><p>
    * </p>
    * @since 1.0.50
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7124,7 +7036,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7205,7 +7116,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
@@ -7257,6 +7167,7 @@ public class GuestFS {
    * replacing /dev/vda with the name of the installation
    * device.
    * </p><p>
+   * This function depends on the feature "grub".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7283,7 +7194,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7317,7 +7227,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7344,7 +7253,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7370,6 +7278,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7401,6 +7310,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7426,6 +7336,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7451,6 +7362,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7476,6 +7388,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7503,6 +7416,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7530,6 +7444,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7555,6 +7470,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7580,6 +7496,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7607,6 +7524,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7633,6 +7551,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7665,6 +7584,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7724,6 +7644,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7750,6 +7671,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7776,6 +7698,7 @@ public class GuestFS {
    * This is a wrapper around the hivex(3) call of the same
    * name.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7807,6 +7730,7 @@ public class GuestFS {
    * registry is not strongly-typed and fields can contain
    * arbitrary or unexpected data.
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7834,6 +7758,7 @@ public class GuestFS {
    * </p><p>
    * See also: "g.hivex_value_utf8".
    * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7869,7 +7794,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.84
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7900,7 +7824,6 @@ public class GuestFS {
    * Old Linux kernels (2.4 and earlier) used a compressed
    * ext2 filesystem as initrd. We *only* support the newer
    * initramfs format (compressed cpio files).
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7931,6 +7854,7 @@ public class GuestFS {
    * are defined by the Linux kernel ABI and are listed in
    * /usr/include/sys/inotify.h.
    * </p><p>
+   * This function depends on the feature "inotify".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7955,6 +7879,7 @@ public class GuestFS {
    * opened by inotify_init. It removes all watches, throws
    * away any pending events, and deallocates all resources.
    * </p><p>
+   * This function depends on the feature "inotify".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -7980,6 +7905,7 @@ public class GuestFS {
    * of objects that were touched. The returned pathnames are
    * sorted and deduplicated.
    * </p><p>
+   * This function depends on the feature "inotify".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8032,6 +7958,7 @@ public class GuestFS {
    * roughly what we expose via libguestfs. Note that there
    * is one global inotify handle per libguestfs instance.
    * </p><p>
+   * This function depends on the feature "inotify".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8063,6 +7990,7 @@ public class GuestFS {
    * read events up to the maximum appliance-to-host message
    * size and leave remaining events in the queue.
    * </p><p>
+   * This function depends on the feature "inotify".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8086,6 +8014,7 @@ public class GuestFS {
    * Remove a previously defined inotify watch. See
    * "g.inotify_add_watch".
    * </p><p>
+   * This function depends on the feature "inotify".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8114,7 +8043,6 @@ public class GuestFS {
    * string "unknown" is returned.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8246,7 +8174,6 @@ public class GuestFS {
    * string.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8299,7 +8226,6 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * See also "g.inspect_get_mountpoints",
    * "g.inspect_get_filesystems".
-   * </p><p>
    * </p>
    * @since 1.9.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8336,7 +8262,6 @@ public class GuestFS {
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * See also "g.inspect_get_mountpoints".
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8379,7 +8304,6 @@ public class GuestFS {
    * string.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.9.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8408,7 +8332,6 @@ public class GuestFS {
    * "unknown" is returned.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.7.9
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8485,7 +8408,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.11.12
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8546,7 +8468,6 @@ public class GuestFS {
    * returned.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8575,7 +8496,6 @@ public class GuestFS {
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * See also "g.inspect_get_major_version".
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8621,7 +8541,6 @@ public class GuestFS {
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * See also "g.inspect_get_filesystems".
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8663,7 +8582,6 @@ public class GuestFS {
    * libguestfs may return other strings.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.7.5
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8701,7 +8619,6 @@ public class GuestFS {
    * libguestfs may return other strings.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.7.5
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8731,7 +8648,6 @@ public class GuestFS {
    * string "unknown" is returned.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8775,7 +8691,6 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * See also "g.inspect_get_product_name",
    * "g.inspect_get_major_version".
-   * </p><p>
    * </p>
    * @since 1.9.13
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8805,7 +8720,6 @@ public class GuestFS {
    * were found or the caller has not called "g.inspect_os".
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.7.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8861,7 +8775,6 @@ public class GuestFS {
    * string.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8891,7 +8804,6 @@ public class GuestFS {
    * the case then an error is returned.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.9.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8921,7 +8833,6 @@ public class GuestFS {
    * not the case then an error is returned.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.5.25
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8947,7 +8858,6 @@ public class GuestFS {
    * was detected on the disk.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.9.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -8973,7 +8883,6 @@ public class GuestFS {
    * part of a set.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.9.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -9001,7 +8910,6 @@ public class GuestFS {
    * complete the install.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.9.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -9108,7 +9016,6 @@ public class GuestFS {
    * "".
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.7.8
    * @deprecated In new code, use {@link #inspect_list_applications2} instead
@@ -9221,7 +9128,6 @@ public class GuestFS {
    * "".
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
-   * </p><p>
    * </p>
    * @since 1.19.56
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -9277,7 +9183,6 @@ public class GuestFS {
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p><p>
    * See also "g.list_filesystems".
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10244,7 +10149,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.5.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10299,7 +10203,6 @@ public class GuestFS {
    * with no replacement. Do not use this function.
    * </p><p>
    * For more information on states, see guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10333,7 +10236,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.5.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10388,7 +10290,6 @@ public class GuestFS {
    * (in the "CONFIG" state).
    * </p><p>
    * For more information on states, see guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10423,7 +10324,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10487,7 +10387,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.5.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10552,7 +10451,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10607,7 +10505,6 @@ public class GuestFS {
    * subprocess (in the "LAUNCHING" state).
    * </p><p>
    * For more information on states, see guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10630,7 +10527,6 @@ public class GuestFS {
    * </p><p>
    * This command tests whether "device" is a logical volume,
    * and returns true iff this is the case.
-   * </p><p>
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10655,7 +10551,6 @@ public class GuestFS {
    * commands (in the "READY" state).
    * </p><p>
    * For more information on states, see guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10689,7 +10584,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.5.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10744,7 +10638,6 @@ public class GuestFS {
    * link with the given "path" name.
    * </p><p>
    * See also "g.stat".
-   * </p><p>
    * </p>
    * @since 1.5.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10768,7 +10661,6 @@ public class GuestFS {
    * This returns "true" if and only if "device" refers to a
    * whole block device. That is, not a partition or a
    * logical device.
-   * </p><p>
    * </p>
    * @since 1.21.9
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10791,7 +10683,6 @@ public class GuestFS {
    * </p><p>
    * This returns true iff the file exists and the file is
    * empty or it contains all zero bytes.
-   * </p><p>
    * </p>
    * @since 1.11.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10817,7 +10708,6 @@ public class GuestFS {
    * </p><p>
    * Note that for large devices this can take a long time to
    * run.
-   * </p><p>
    * </p>
    * @since 1.11.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10844,7 +10734,6 @@ public class GuestFS {
    * added an ISO file as a libguestfs device, you would
    * *not* call this. Instead you would call
    * "g.isoinfo_device".
-   * </p><p>
    * </p>
    * @since 1.17.19
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10877,7 +10766,6 @@ public class GuestFS {
    * see
    * &lt;http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descr
    * iptor&gt;
-   * </p><p>
    * </p>
    * @since 1.17.19
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10900,6 +10788,7 @@ public class GuestFS {
    * </p><p>
    * Close the journal handle.
    * </p><p>
+   * This function depends on the feature "journal".  See also {@link #feature_available}.
    * </p>
    * @since 1.23.11
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10936,6 +10825,7 @@ public class GuestFS {
    * call can read a journal entry of any size, ie. it is not
    * limited by the libguestfs protocol.
    * </p><p>
+   * This function depends on the feature "journal".  See also {@link #feature_available}.
    * </p>
    * @since 1.23.11
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10964,6 +10854,7 @@ public class GuestFS {
    * </p><p>
    * See also "g.journal_set_data_threshold".
    * </p><p>
+   * This function depends on the feature "journal".  See also {@link #feature_available}.
    * </p>
    * @since 1.23.11
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -10987,6 +10878,7 @@ public class GuestFS {
    * Get the realtime (wallclock) timestamp of the current
    * journal entry.
    * </p><p>
+   * This function depends on the feature "journal".  See also {@link #feature_available}.
    * </p>
    * @since 1.27.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11016,6 +10908,7 @@ public class GuestFS {
    * next record (eg. using "g.journal_get"), and "false"
    * means you have reached the end of the journal.
    * </p><p>
+   * This function depends on the feature "journal".  See also {@link #feature_available}.
    * </p>
    * @since 1.23.11
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11045,6 +10938,7 @@ public class GuestFS {
    * After you have finished using the journal, you should
    * close the handle by calling "g.journal_close".
    * </p><p>
+   * This function depends on the feature "journal".  See also {@link #feature_available}.
    * </p>
    * @since 1.23.11
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11073,6 +10967,7 @@ public class GuestFS {
    * </p><p>
    * See also "g.journal_get_data_threshold".
    * </p><p>
+   * This function depends on the feature "journal".  See also {@link #feature_available}.
    * </p>
    * @since 1.23.11
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11102,6 +10997,7 @@ public class GuestFS {
    * then it means you have reached the end or the start of
    * the journal.
    * </p><p>
+   * This function depends on the feature "journal".  See also {@link #feature_available}.
    * </p>
    * @since 1.23.11
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11125,7 +11021,6 @@ public class GuestFS {
    * This kills the hypervisor.
    * </p><p>
    * Do not call this. See: "g.shutdown" instead.
-   * </p><p>
    * </p>
    * @since 0.3
    * @deprecated In new code, use {@link #shutdown} instead
@@ -11155,7 +11050,6 @@ public class GuestFS {
    * reasons), the precise behaviour when you do this is not
    * well defined. Handles are very cheap to create, so
    * create a new one for each launch.
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11184,7 +11078,6 @@ public class GuestFS {
    * use names, you will need to locate and parse the
    * password file yourself (Augeas support makes this
    * relatively easy).
-   * </p><p>
    * </p>
    * @since 1.0.77
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11218,6 +11111,7 @@ public class GuestFS {
    * you have hotplugged disks or have just created a Windows
    * dynamic disk.
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11243,6 +11137,7 @@ public class GuestFS {
    * group, one element from the list returned by
    * "g.ldmtool_scan".
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11268,6 +11163,7 @@ public class GuestFS {
    * group, one element from the list returned by
    * "g.ldmtool_scan".
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11293,6 +11189,7 @@ public class GuestFS {
    * group, one element from the list returned by
    * "g.ldmtool_scan".
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11317,6 +11214,7 @@ public class GuestFS {
    * "g.ldmtool_create_all". It removes the device mapper
    * mappings for all Windows dynamic disk volumes
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11345,6 +11243,7 @@ public class GuestFS {
    * This function scans all block devices. To scan a subset
    * of block devices, call "g.ldmtool_scan_devices" instead.
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11374,6 +11273,7 @@ public class GuestFS {
    * are scanned. If this list is empty, all block devices
    * are scanned.
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11400,6 +11300,7 @@ public class GuestFS {
    * hint field is often, though not always, the name of a
    * Windows drive, eg. "E:".
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11423,6 +11324,7 @@ public class GuestFS {
    * Return the list of partitions in the volume named
    * "volume" in the disk group with GUID "diskgroup".
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11450,6 +11352,7 @@ public class GuestFS {
    * "simple", "spanned", "striped", "mirrored", "raid5".
    * Other types may also be returned.
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11488,6 +11391,7 @@ public class GuestFS {
    * </p><p>
    * See also: "g.lgetxattrs", "g.getxattr", attr(5).
    * </p><p>
+   * This function depends on the feature "linuxxattrs".  See also {@link #feature_available}.
    * </p>
    * @since 1.7.24
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11512,6 +11416,7 @@ public class GuestFS {
    * symbolic link, then it returns the extended attributes
    * of the link itself.
    * </p><p>
+   * This function depends on the feature "linuxxattrs".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.59
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11534,7 +11439,6 @@ public class GuestFS {
    * </p><p>
    * List all 9p filesystems attached to the guest. A list of
    * mount tags is returned.
-   * </p><p>
    * </p>
    * @since 1.11.12
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11560,7 +11464,6 @@ public class GuestFS {
    * The full block device names are returned, eg. /dev/sda.
    * </p><p>
    * See also "g.list_filesystems".
-   * </p><p>
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11590,7 +11493,6 @@ public class GuestFS {
    * (*without* the /dev/disk/guestfs prefix), and the values
    * are the full raw block device and partition names (eg.
    * /dev/sda and /dev/sda1).
-   * </p><p>
    * </p>
    * @since 1.19.49
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11624,7 +11526,6 @@ public class GuestFS {
    * Device mapper devices which correspond to logical
    * volumes are *not* returned in this list. Call "g.lvs" if
    * you want to list logical volumes.
-   * </p><p>
    * </p>
    * @since 1.11.15
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11679,7 +11580,6 @@ public class GuestFS {
    * be mountable but require special options. Filesystems
    * may not all belong to a single logical operating system
    * (use "g.inspect_os" to look for OSes).
-   * </p><p>
    * </p>
    * @since 1.5.15
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11709,6 +11609,7 @@ public class GuestFS {
    * partitions that were found at launch time. It returns a
    * list of device names.
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11733,6 +11634,7 @@ public class GuestFS {
    * that were found at launch time. It returns a list of
    * device names.
    * </p><p>
+   * This function depends on the feature "ldm".  See also {@link #feature_available}.
    * </p>
    * @since 1.20.0
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11754,7 +11656,6 @@ public class GuestFS {
    * list Linux md (RAID) devices
    * </p><p>
    * List all Linux md devices.
-   * </p><p>
    * </p>
    * @since 1.15.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11784,7 +11685,6 @@ public class GuestFS {
    * need to call "g.lvs".
    * </p><p>
    * See also "g.list_filesystems".
-   * </p><p>
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11811,7 +11711,6 @@ public class GuestFS {
    * This command is mostly useful for interactive sessions.
    * It is *not* intended that you try to parse the output
    * string.
-   * </p><p>
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11837,7 +11736,6 @@ public class GuestFS {
    * This command is mostly useful for interactive sessions.
    * It is *not* intended that you try to parse the output
    * string.
-   * </p><p>
    * </p>
    * @since 1.17.6
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11859,7 +11757,6 @@ public class GuestFS {
    * create a hard link
    * </p><p>
    * This command creates a hard link using the "ln" command.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11883,7 +11780,6 @@ public class GuestFS {
    * This command creates a hard link using the "ln -f"
    * command. The *-f* option removes the link ("linkname")
    * if it exists already.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11906,7 +11802,6 @@ public class GuestFS {
    * </p><p>
    * This command creates a symbolic link using the "ln -s"
    * command.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11930,7 +11825,6 @@ public class GuestFS {
    * This command creates a symbolic link using the "ln -sf"
    * command, The *-f* option removes the link ("linkname")
    * if it exists already.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11955,6 +11849,7 @@ public class GuestFS {
    * symbolic link, then it removes an extended attribute of
    * the link itself.
    * </p><p>
+   * This function depends on the feature "linuxxattrs".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.59
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -11978,7 +11873,6 @@ public class GuestFS {
    * List the files in directory (relative to the root
    * directory, there is no cwd). The '.' and '..' entries
    * are not returned, but hidden files are shown.
-   * </p><p>
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12008,7 +11902,6 @@ public class GuestFS {
    * </p><p>
    * "." and ".." are not returned. The filenames are not
    * sorted.
-   * </p><p>
    * </p>
    * @since 1.19.32
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12033,6 +11926,7 @@ public class GuestFS {
    * symbolic link, then it sets an extended attribute of the
    * link itself.
    * </p><p>
+   * This function depends on the feature "linuxxattrs".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.59
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12060,7 +11954,6 @@ public class GuestFS {
    * refers to.
    * </p><p>
    * This is the same as the lstat(2) system call.
-   * </p><p>
    * </p>
    * @since 1.9.2
    * @deprecated In new code, use {@link #lstatns} instead
@@ -12097,7 +11990,6 @@ public class GuestFS {
    * many round-trips. See also "g.lxattrlist" for a
    * similarly efficient call for getting extended
    * attributes.
-   * </p><p>
    * </p>
    * @since 1.0.77
    * @deprecated In new code, use {@link #lstatnslist} instead
@@ -12126,7 +12018,6 @@ public class GuestFS {
    * it refers to.
    * </p><p>
    * This is the same as the lstat(2) system call.
-   * </p><p>
    * </p>
    * @since 1.27.53
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12162,7 +12053,6 @@ public class GuestFS {
    * many round-trips. See also "g.lxattrlist" for a
    * similarly efficient call for getting extended
    * attributes.
-   * </p><p>
    * </p>
    * @since 1.27.53
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12192,6 +12082,7 @@ public class GuestFS {
    * command will fail. You have to use "g.luks_kill_slot"
    * first to remove that key.
    * </p><p>
+   * This function depends on the feature "luks".  See also {@link #feature_available}.
    * </p>
    * @since 1.5.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12218,6 +12109,7 @@ public class GuestFS {
    * (ie. /dev/mapper/mapname) and *not* the name of the
    * underlying block device.
    * </p><p>
+   * This function depends on the feature "luks".  See also {@link #feature_available}.
    * </p>
    * @since 1.5.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12243,6 +12135,7 @@ public class GuestFS {
    * the initial key, which is added to key slot "slot".
    * (LUKS supports 8 key slots, numbered 0-7).
    * </p><p>
+   * This function depends on the feature "luks".  See also {@link #feature_available}.
    * </p>
    * @since 1.5.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12266,6 +12159,7 @@ public class GuestFS {
    * This command is the same as "g.luks_format" but it also
    * allows you to set the "cipher" used.
    * </p><p>
+   * This function depends on the feature "luks".  See also {@link #feature_available}.
    * </p>
    * @since 1.5.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12290,6 +12184,7 @@ public class GuestFS {
    * the encrypted LUKS device "device". "key" must be one of
    * the *other* keys.
    * </p><p>
+   * This function depends on the feature "luks".  See also {@link #feature_available}.
    * </p>
    * @since 1.5.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12331,6 +12226,7 @@ public class GuestFS {
    * Use "g.list_dm_devices" to list all device mapper
    * devices.
    * </p><p>
+   * This function depends on the feature "luks".  See also {@link #feature_available}.
    * </p>
    * @since 1.5.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12354,6 +12250,7 @@ public class GuestFS {
    * This is the same as "g.luks_open" except that a
    * read-only mapping is created.
    * </p><p>
+   * This function depends on the feature "luks".  See also {@link #feature_available}.
    * </p>
    * @since 1.5.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12377,6 +12274,7 @@ public class GuestFS {
    * This creates an LVM logical volume called "logvol" on
    * the volume group "volgroup", with "size" megabytes.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12403,6 +12301,7 @@ public class GuestFS {
    * usefully, when "percent" is 100 this will create the
    * largest possible LV.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12431,7 +12330,6 @@ public class GuestFS {
    * does not refer to a logical volume.
    * </p><p>
    * See also "g.is_lv", "g.canonical_device_name".
-   * </p><p>
    * </p>
    * @since 1.5.24
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12457,7 +12355,6 @@ public class GuestFS {
    * </p><p>
    * This command also clears the LVM cache and performs a
    * volume group scan.
-   * </p><p>
    * </p>
    * @since 1.5.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12481,6 +12378,7 @@ public class GuestFS {
    * This command removes all LVM logical volumes, volume
    * groups and physical volumes.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12525,6 +12423,7 @@ public class GuestFS {
    * contains a mounted filesystem), even if you are not
    * filtering out that VG.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.5.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12551,6 +12450,7 @@ public class GuestFS {
    * You can also remove all LVs in a volume group by
    * specifying the VG name, /dev/VG.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.13
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12573,7 +12473,6 @@ public class GuestFS {
    * </p><p>
    * Rename a logical volume "logvol" with the new name
    * "newlogvol".
-   * </p><p>
    * </p>
    * @since 1.0.83
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12598,6 +12497,7 @@ public class GuestFS {
    * logical volume to "mbytes". When reducing, data in the
    * reduced part is lost.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.27
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12624,6 +12524,7 @@ public class GuestFS {
    * expands the logical volume as much as possible, using
    * all remaining free space in the volume group.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.3.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12652,6 +12553,7 @@ public class GuestFS {
    * </p><p>
    * See also "g.lvs_full", "g.list_filesystems".
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12676,6 +12578,7 @@ public class GuestFS {
    * equivalent of the lvs(8) command. The "full" version
    * includes all fields.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12697,7 +12600,6 @@ public class GuestFS {
    * get the UUID of a logical volume
    * </p><p>
    * This command returns the UUID of the LVM LV "device".
-   * </p><p>
    * </p>
    * @since 1.0.87
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12739,6 +12641,7 @@ public class GuestFS {
    * many round-trips. See also "g.lstatlist" for a similarly
    * efficient call for getting standard stats.
    * </p><p>
+   * This function depends on the feature "linuxxattrs".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.77
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12767,7 +12670,6 @@ public class GuestFS {
    * </p><p>
    * See "MAXIMUM NUMBER OF DISKS" in guestfs(3) for
    * additional information on this topic.
-   * </p><p>
    * </p>
    * @since 1.19.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12842,6 +12744,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "mdadm".  See also {@link #feature_available}.
    * </p>
    * @since 1.15.6
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12931,6 +12834,7 @@ public class GuestFS {
    * "name"
    * The name of the MD device.
    * </p><p>
+   * This function depends on the feature "mdadm".  See also {@link #feature_available}.
    * </p>
    * @since 1.15.6
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -12984,6 +12888,7 @@ public class GuestFS {
    * </p><p>
    * "R" replacement
    * </p><p>
+   * This function depends on the feature "mdadm".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.21
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -13007,6 +12912,7 @@ public class GuestFS {
    * This command deactivates the MD array named "md". The
    * device is stopped, but it is not destroyed or zeroed.
    * </p><p>
+   * This function depends on the feature "mdadm".  See also {@link #feature_available}.
    * </p>
    * @since 1.15.6
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -13028,7 +12934,6 @@ public class GuestFS {
    * create a directory
    * </p><p>
    * Create a directory named "path".
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -13057,7 +12962,6 @@ public class GuestFS {
    * filesystems may interpret the mode in other ways.
    * </p><p>
    * See also "g.mkdir", "g.umask"
-   * </p><p>
    * </p>
    * @since 1.0.77
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -13081,7 +12985,6 @@ public class GuestFS {
    * Create a directory named "path", creating any parent
    * directories as necessary. This is like the "mkdir -p"
    * shell command.
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -13121,7 +13024,6 @@ public class GuestFS {
    * directory and its contents after use.
    * </p><p>
    * See also: mkdtemp(3)
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -13155,7 +13057,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.19.44
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -13497,7 +13398,6 @@ public class GuestFS {
    * mke2fs -t fstype -b blocksize -J device=&lt;journal&gt; &lt;device&gt;
    * </p><p>
    * See also "g.mke2journal".
-   * </p><p>
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
@@ -13523,7 +13423,6 @@ public class GuestFS {
    * external journal on the journal labeled "label".
    * </p><p>
    * See also "g.mke2journal_L".
-   * </p><p>
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
@@ -13550,6 +13449,7 @@ public class GuestFS {
    * </p><p>
    * See also "g.mke2journal_U".
    * </p><p>
+   * This function depends on the feature "linuxfsuuid".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
@@ -13575,7 +13475,6 @@ public class GuestFS {
    * equivalent to the command:
    * </p><p>
    * mke2fs -O journal_dev -b blocksize device
-   * </p><p>
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
@@ -13599,7 +13498,6 @@ public class GuestFS {
    * </p><p>
    * This creates an ext2 external journal on "device" with
    * label "label".
-   * </p><p>
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
@@ -13624,6 +13522,7 @@ public class GuestFS {
    * This creates an ext2 external journal on "device" with
    * UUID "uuid".
    * </p><p>
+   * This function depends on the feature "linuxfsuuid".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mke2fs} instead
@@ -13654,6 +13553,7 @@ public class GuestFS {
    * </p><p>
    * The mode actually set is affected by the umask.
    * </p><p>
+   * This function depends on the feature "mknod".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.55
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -13714,7 +13614,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -13804,7 +13703,6 @@ public class GuestFS {
    * </p><p>
    * For VFAT and NTFS the "blocksize" parameter is treated
    * as the requested cluster size.
-   * </p><p>
    * </p>
    * @since 1.0.68
    * @deprecated In new code, use {@link #mkfs} instead
@@ -13840,6 +13738,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.25
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -13938,7 +13837,6 @@ public class GuestFS {
    * directory of an ext2/3/4 filesystem. "mountpoint" is the
    * directory under which we try to create the "lost+found"
    * directory.
-   * </p><p>
    * </p>
    * @since 1.19.56
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14002,7 +13900,6 @@ public class GuestFS {
    * on handles] can cause "g.umount_all" to be called when
    * the handle is closed which can also trigger these
    * issues.
-   * </p><p>
    * </p>
    * @since 1.0.62
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14041,6 +13938,7 @@ public class GuestFS {
    * </p><p>
    * The mode actually set is affected by the umask.
    * </p><p>
+   * This function depends on the feature "mknod".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.55
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14071,6 +13969,7 @@ public class GuestFS {
    * </p><p>
    * The mode actually set is affected by the umask.
    * </p><p>
+   * This function depends on the feature "mknod".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.55
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14101,6 +14000,7 @@ public class GuestFS {
    * </p><p>
    * The mode actually set is affected by the umask.
    * </p><p>
+   * This function depends on the feature "mknod".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.55
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14130,7 +14030,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.0.55
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14194,7 +14093,6 @@ public class GuestFS {
    * Note that you cannot attach a swap label to a block
    * device (eg. /dev/sda), just to a partition. This appears
    * to be a limitation of the kernel or swap tools.
-   * </p><p>
    * </p>
    * @since 1.0.55
    * @deprecated In new code, use {@link #mkswap} instead
@@ -14218,6 +14116,7 @@ public class GuestFS {
    * </p><p>
    * Create a swap partition on "device" with UUID "uuid".
    * </p><p>
+   * This function depends on the feature "linuxfsuuid".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.55
    * @deprecated In new code, use {@link #mkswap} instead
@@ -14244,7 +14143,6 @@ public class GuestFS {
    * This command just writes a swap file signature to an
    * existing file. To create the file itself, use something
    * like "g.fallocate".
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14292,7 +14190,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.19.53
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14333,6 +14230,7 @@ public class GuestFS {
    * </p><p>
    * This loads a kernel module in the appliance.
    * </p><p>
+   * This function depends on the feature "linuxmodules".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.68
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14376,7 +14274,6 @@ public class GuestFS {
    * versions of libguestfs, use "g.mount_options" instead
    * (using an empty string for the first parameter if you
    * don't want any options).
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14408,7 +14305,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.11.12
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14477,7 +14373,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.17.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14556,7 +14451,6 @@ public class GuestFS {
    * MULTIPLE THREADS" in guestfs(3)).
    * </p><p>
    * See "MOUNT LOCAL" in guestfs(3) for full documentation.
-   * </p><p>
    * </p>
    * @since 1.17.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14580,7 +14474,6 @@ public class GuestFS {
    * This command lets you mount file (a filesystem image in
    * a file) on a mount point. It is entirely equivalent to
    * the command "mount -o loop file mountpoint".
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14608,7 +14501,6 @@ public class GuestFS {
    * If the "options" parameter is an empty string, then no
    * options are passed (all options default to whatever the
    * filesystem uses).
-   * </p><p>
    * </p>
    * @since 1.0.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14631,7 +14523,6 @@ public class GuestFS {
    * </p><p>
    * This is the same as the "g.mount" command, but it mounts
    * the filesystem with the read-only (*-o ro*) flag.
-   * </p><p>
    * </p>
    * @since 1.0.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14655,7 +14546,6 @@ public class GuestFS {
    * This is the same as the "g.mount" command, but it allows
    * you to set both the mount options and the vfstype as for
    * the mount(8) *-o* and *-t* flags.
-   * </p><p>
    * </p>
    * @since 1.0.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14679,7 +14569,6 @@ public class GuestFS {
    * This call is similar to "g.mounts". That call returns a
    * list of devices. This one returns a hash table (map) of
    * device name to directory where the device is mounted.
-   * </p><p>
    * </p>
    * @since 1.0.62
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14712,7 +14601,6 @@ public class GuestFS {
    * Some internal mounts are not shown.
    * </p><p>
    * See also: "g.mountpoints"
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14737,7 +14625,6 @@ public class GuestFS {
    * either a destination filename or destination directory.
    * </p><p>
    * See also: "g.rename".
-   * </p><p>
    * </p>
    * @since 1.0.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14764,7 +14651,6 @@ public class GuestFS {
    * </p><p>
    * To find out the maximum number of devices that could be
    * added, call "g.max_disks".
-   * </p><p>
    * </p>
    * @since 1.19.15
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14799,6 +14685,7 @@ public class GuestFS {
    * would succeed, or some non-zero value documented in the
    * ntfs-3g.probe(8) manual page.
    * </p><p>
+   * This function depends on the feature "ntfs3g".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.43
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14823,6 +14710,7 @@ public class GuestFS {
    * "g.ntfsclone_out") to "device", overwriting any existing
    * contents of this device.
    * </p><p>
+   * This function depends on the feature "ntfs3g".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.9
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14863,6 +14751,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "ntfs3g".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.9
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -14950,6 +14839,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "ntfs3g".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.9
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15019,6 +14909,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "ntfsprogs".  See also {@link #feature_available}.
    * </p>
    * @since 1.3.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15081,6 +14972,7 @@ public class GuestFS {
    * it allows you to specify the new size (in bytes)
    * explicitly.
    * </p><p>
+   * This function depends on the feature "ntfsprogs".  See also {@link #feature_available}.
    * </p>
    * @since 1.3.14
    * @deprecated In new code, use {@link #ntfsresize} instead
@@ -15113,7 +15005,6 @@ public class GuestFS {
    * environment variables that can affect libguestfs
    * handles. See also "guestfs_create_flags" in guestfs(3),
    * and "g.parse_environment_list".
-   * </p><p>
    * </p>
    * @since 1.19.53
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15142,7 +15033,6 @@ public class GuestFS {
    * This is the same as "g.parse_environment" except that it
    * parses an explicit list of strings instead of the
    * program's environment.
-   * </p><p>
    * </p>
    * @since 1.19.53
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15179,7 +15069,6 @@ public class GuestFS {
    * </p><p>
    * Creating a partition which covers the whole disk is not
    * so easy. Use "g.part_disk" to do that.
-   * </p><p>
    * </p>
    * @since 1.0.78
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15206,7 +15095,6 @@ public class GuestFS {
    * Note that in the case of MBR partitioning, deleting an
    * extended partition also deletes any logical partitions
    * it contains.
-   * </p><p>
    * </p>
    * @since 1.3.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15234,7 +15122,6 @@ public class GuestFS {
    * "parttype" is the partition table type, usually "mbr" or
    * "gpt", but other possible values are described in
    * "g.part_init".
-   * </p><p>
    * </p>
    * @since 1.0.78
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15259,7 +15146,6 @@ public class GuestFS {
    * "device" has the bootable flag set.
    * </p><p>
    * See also "g.part_set_bootable".
-   * </p><p>
    * </p>
    * @since 1.3.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15282,6 +15168,7 @@ public class GuestFS {
    * </p><p>
    * Return the GUID of numbered GPT partition "partnum".
    * </p><p>
+   * This function depends on the feature "gdisk".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.25
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15307,6 +15194,7 @@ public class GuestFS {
    * GUID corresponding to the MBR type. Behaviour is
    * undefined for other partition types.
    * </p><p>
+   * This function depends on the feature "gdisk".  See also {@link #feature_available}.
    * </p>
    * @since 1.21.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15333,7 +15221,6 @@ public class GuestFS {
    * Note that only MBR (old DOS-style) partitions have type
    * bytes. You will get undefined results for other
    * partition table types (see "g.part_get_parttype").
-   * </p><p>
    * </p>
    * @since 1.3.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15358,7 +15245,6 @@ public class GuestFS {
    * numbered "partnum" on device "device".
    * </p><p>
    * It returns "primary", "logical", or "extended".
-   * </p><p>
    * </p>
    * @since 1.29.32
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15386,7 +15272,6 @@ public class GuestFS {
    * The partition name can only be read on certain types of
    * partition table. This works on "gpt" but not on "mbr"
    * partitions.
-   * </p><p>
    * </p>
    * @since 1.25.33
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15415,7 +15300,6 @@ public class GuestFS {
    * style MBR partition table), "gpt" (a GPT/EFI-style
    * partition table). Other values are possible, although
    * unusual. See "g.part_init" for a full list.
-   * </p><p>
    * </p>
    * @since 1.0.78
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15481,7 +15365,6 @@ public class GuestFS {
    * NEC PC-98 format, common in Japan apparently.
    * </p><p>
    * sun Sun disk labels.
-   * </p><p>
    * </p>
    * @since 1.0.78
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15520,7 +15403,6 @@ public class GuestFS {
    * </p><p>
    * part_size
    * Size of the partition in bytes.
-   * </p><p>
    * </p>
    * @since 1.0.78
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15548,7 +15430,6 @@ public class GuestFS {
    * The bootable flag is used by some operating systems
    * (notably Windows) to determine which partition to boot
    * from. It is by no means universally recognized.
-   * </p><p>
    * </p>
    * @since 1.0.78
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15573,6 +15454,7 @@ public class GuestFS {
    * "guid". Return an error if the partition table of
    * "device" isn't GPT, or if "guid" is not a valid GUID.
    * </p><p>
+   * This function depends on the feature "gdisk".  See also {@link #feature_available}.
    * </p>
    * @since 1.29.25
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15601,6 +15483,7 @@ public class GuestFS {
    * &lt;http://en.wikipedia.org/wiki/GUID_Partition_Table#Parti
    * tion_type_GUIDs&gt; for a useful list of type GUIDs.
    * </p><p>
+   * This function depends on the feature "gdisk".  See also {@link #feature_available}.
    * </p>
    * @since 1.21.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15630,7 +15513,6 @@ public class GuestFS {
    * Note that only MBR (old DOS-style) partitions have type
    * bytes. You will get undefined results for other
    * partition table types (see "g.part_get_parttype").
-   * </p><p>
    * </p>
    * @since 1.3.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15658,7 +15540,6 @@ public class GuestFS {
    * The partition name can only be set on certain types of
    * partition table. This works on "gpt" but not on "mbr"
    * partitions.
-   * </p><p>
    * </p>
    * @since 1.0.78
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15687,7 +15568,6 @@ public class GuestFS {
    * returned from "g.list_partitions".
    * </p><p>
    * See also "g.part_to_partnum", "g.device_index".
-   * </p><p>
    * </p>
    * @since 1.5.15
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15715,7 +15595,6 @@ public class GuestFS {
    * returned from "g.list_partitions".
    * </p><p>
    * See also "g.part_to_dev".
-   * </p><p>
    * </p>
    * @since 1.13.25
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15741,7 +15620,6 @@ public class GuestFS {
    * checks that the daemon responds to the ping message,
    * without affecting the daemon or attached block device(s)
    * in any other way.
-   * </p><p>
    * </p>
    * @since 1.0.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15774,7 +15652,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.77
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15806,7 +15683,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.5.21
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15830,6 +15706,7 @@ public class GuestFS {
    * Generate a new random UUID for the physical volume
    * "device".
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15852,6 +15729,7 @@ public class GuestFS {
    * </p><p>
    * Generate new random UUIDs for all physical volumes.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15876,6 +15754,7 @@ public class GuestFS {
    * "device", where "device" should usually be a partition
    * name such as /dev/sda1.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15903,6 +15782,7 @@ public class GuestFS {
    * refuses to wipe physical volumes that contain any volume
    * groups, so you have to remove those first.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.13
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15927,6 +15807,7 @@ public class GuestFS {
    * physical volume to match the new size of the underlying
    * device.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15951,6 +15832,7 @@ public class GuestFS {
    * allows you to specify the new size (in bytes)
    * explicitly.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.3.14
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -15979,6 +15861,7 @@ public class GuestFS {
    * </p><p>
    * See also "g.pvs_full".
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16003,6 +15886,7 @@ public class GuestFS {
    * equivalent of the pvs(8) command. The "full" version
    * includes all fields.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16024,7 +15908,6 @@ public class GuestFS {
    * get the UUID of a physical volume
    * </p><p>
    * This command returns the UUID of the LVM PV "device".
-   * </p><p>
    * </p>
    * @since 1.0.87
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16061,7 +15944,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.3.14
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16097,7 +15979,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.5.20
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16123,7 +16004,6 @@ public class GuestFS {
    * </p><p>
    * Unlike "g.cat", this function can correctly handle files
    * that contain embedded ASCII NUL characters.
-   * </p><p>
    * </p>
    * @since 1.0.63
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16155,7 +16035,6 @@ public class GuestFS {
    * which is treated as end of string). For those you need
    * to use the "g.read_file" function and split the buffer
    * into lines yourself.
-   * </p><p>
    * </p>
    * @since 0.7
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16213,7 +16092,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.55
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16235,7 +16113,6 @@ public class GuestFS {
    * read the target of a symbolic link
    * </p><p>
    * This command reads the target of a symbolic link.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16275,7 +16152,6 @@ public class GuestFS {
    * This call is intended for programs that want to
    * efficiently list a directory contents without making
    * many round-trips.
-   * </p><p>
    * </p>
    * @since 1.0.77
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16299,7 +16175,6 @@ public class GuestFS {
    * Return the canonicalized absolute pathname of "path".
    * The returned path has no ".", ".." or symbolic link path
    * elements.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16333,7 +16208,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.23.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16387,7 +16261,6 @@ public class GuestFS {
    * guestfs(3). The disk must not be in use (eg. mounted)
    * when you do this. We try to detect if the disk is in use
    * and stop you from doing this.
-   * </p><p>
    * </p>
    * @since 1.19.49
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16413,6 +16286,7 @@ public class GuestFS {
    * </p><p>
    * See also: "g.lremovexattr", attr(5).
    * </p><p>
+   * This function depends on the feature "linuxxattrs".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.59
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16436,7 +16310,6 @@ public class GuestFS {
    * Rename a file to a new place on the same filesystem.
    * This is the same as the Linux rename(2) system call. In
    * most cases you are better to use "g.mv" instead.
-   * </p><p>
    * </p>
    * @since 1.21.5
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16461,7 +16334,6 @@ public class GuestFS {
    * the size of the underlying device.
    * </p><p>
    * See also "RESIZE2FS ERRORS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.27
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16493,7 +16365,6 @@ public class GuestFS {
    * bytes.
    * </p><p>
    * See also "RESIZE2FS ERRORS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.9.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16519,7 +16390,6 @@ public class GuestFS {
    * explicitly.
    * </p><p>
    * See also "RESIZE2FS ERRORS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.3.14
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16541,7 +16411,6 @@ public class GuestFS {
    * remove a file
    * </p><p>
    * Remove the single file "path".
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16570,7 +16439,6 @@ public class GuestFS {
    * This call cannot remove directories. Use "g.rmdir" to
    * remove an empty directory, or "g.rm_rf" to remove
    * directories recursively.
-   * </p><p>
    * </p>
    * @since 1.19.42
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16594,7 +16462,6 @@ public class GuestFS {
    * Remove the file or directory "path", recursively
    * removing the contents if its a directory. This is like
    * the "rm -rf" shell command.
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16616,7 +16483,6 @@ public class GuestFS {
    * remove a directory
    * </p><p>
    * Remove the single directory "path".
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16640,7 +16506,6 @@ public class GuestFS {
    * This calls removes a mountpoint that was previously
    * created with "g.mkmountpoint". See "g.mkmountpoint" for
    * full details.
-   * </p><p>
    * </p>
    * @since 1.0.62
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16684,6 +16549,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "rsync".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.29
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16757,6 +16623,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "rsync".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.29
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16837,6 +16704,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "rsync".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.29
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16889,6 +16757,7 @@ public class GuestFS {
    * It is an interface to the scrub(1) program. See that
    * manual page for more details.
    * </p><p>
+   * This function depends on the feature "scrub".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.52
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16917,6 +16786,7 @@ public class GuestFS {
    * It is an interface to the scrub(1) program. See that
    * manual page for more details.
    * </p><p>
+   * This function depends on the feature "scrub".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.52
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16946,6 +16816,7 @@ public class GuestFS {
    * It is an interface to the scrub(1) program. See that
    * manual page for more details.
    * </p><p>
+   * This function depends on the feature "scrub".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.52
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16974,7 +16845,6 @@ public class GuestFS {
    * </p><p>
    * Setting "append" to "NULL" means *no* additional options
    * are passed (libguestfs always adds a few of its own).
-   * </p><p>
    * </p>
    * @since 1.0.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -16999,7 +16869,6 @@ public class GuestFS {
    * backend guestfsd daemon.
    * </p><p>
    * See "BACKEND" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.9.8
    * @deprecated In new code, use {@link #set_backend} instead
@@ -17028,7 +16897,6 @@ public class GuestFS {
    * </p><p>
    * This is enabled by default (since libguestfs 1.5.24,
    * previously it was disabled by default).
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17056,7 +16924,6 @@ public class GuestFS {
    * method".
    * </p><p>
    * See "BACKEND" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.21.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17083,7 +16950,6 @@ public class GuestFS {
    * </p><p>
    * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
    * guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.27.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17121,7 +16987,6 @@ public class GuestFS {
    * </p><p>
    * See "BACKEND" in guestfs(3), "BACKEND SETTINGS" in
    * guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.25.24
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17152,7 +17017,6 @@ public class GuestFS {
    * "LIBGUESTFS_CACHEDIR" is set, then that is the default.
    * Else if "TMPDIR" is set, then that is the default. Else
    * /var/tmp is the default.
-   * </p><p>
    * </p>
    * @since 1.19.58
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17185,7 +17049,6 @@ public class GuestFS {
    * you are doing.
    * </p><p>
    * The default is disabled.
-   * </p><p>
    * </p>
    * @since 1.0.72
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17230,7 +17093,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.17.31
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17272,7 +17134,6 @@ public class GuestFS {
    * This sets the ext2 file generation of a file.
    * </p><p>
    * See "g.get_e2generation".
-   * </p><p>
    * </p>
    * @since 1.17.31
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17299,7 +17160,6 @@ public class GuestFS {
    * </p><p>
    * You can use either "g.tune2fs_l" or "g.get_e2label" to
    * return the existing label on a filesystem.
-   * </p><p>
    * </p>
    * @since 1.0.15
    * @deprecated In new code, use {@link #set_label} instead
@@ -17328,7 +17188,6 @@ public class GuestFS {
    * </p><p>
    * You can use "g.vfs_uuid" to return the existing UUID of
    * a filesystem.
-   * </p><p>
    * </p>
    * @since 1.0.15
    * @deprecated In new code, use {@link #set_uuid} instead
@@ -17370,7 +17229,6 @@ public class GuestFS {
    * inconsistent results. Using the environment variable
    * "LIBGUESTFS_HV" is safest of all since that picks the
    * qemu binary at the same time as the handle is created.
-   * </p><p>
    * </p>
    * @since 1.23.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17416,7 +17274,6 @@ public class GuestFS {
    * </p><p>
    * See also "g.set_program", "g.set_trace",
    * "g.get_identifier".
-   * </p><p>
    * </p>
    * @since 1.31.14
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17466,7 +17323,6 @@ public class GuestFS {
    * and set errno as ENOTSUP.
    * </p><p>
    * To read the label on a filesystem, call "g.vfs_label".
-   * </p><p>
    * </p>
    * @since 1.17.9
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17493,7 +17349,6 @@ public class GuestFS {
    * </p><p>
    * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
    * documentation and example code.
-   * </p><p>
    * </p>
    * @since 1.19.52
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17536,7 +17391,6 @@ public class GuestFS {
    * </p><p>
    * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
    * documentation and example code.
-   * </p><p>
    * </p>
    * @since 1.19.52
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17567,7 +17421,6 @@ public class GuestFS {
    * </p><p>
    * For more information on the architecture of libguestfs,
    * see guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.55
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17596,7 +17449,6 @@ public class GuestFS {
    * </p><p>
    * You must call this before calling "g.launch", otherwise
    * it has no effect.
-   * </p><p>
    * </p>
    * @since 1.5.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17624,7 +17476,6 @@ public class GuestFS {
    * setting "LIBGUESTFS_PATH" environment variable.
    * </p><p>
    * Setting "path" to "NULL" restores the default path.
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17657,7 +17508,6 @@ public class GuestFS {
    * flag to true when used interactively, so that "^C" can
    * cancel long-running commands gracefully (see
    * "g.user_cancel").
-   * </p><p>
    * </p>
    * @since 1.11.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17685,7 +17535,6 @@ public class GuestFS {
    * handle is set to the basename from "argv[0]". If that
    * was not possible, it is set to the empty string (but
    * never "NULL").
-   * </p><p>
    * </p>
    * @since 1.21.29
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17725,7 +17574,6 @@ public class GuestFS {
    * inconsistent results. Using the environment variable
    * "LIBGUESTFS_HV" is safest of all since that picks the
    * qemu binary at the same time as the handle is created.
-   * </p><p>
    * </p>
    * @since 1.0.6
    * @deprecated In new code, use {@link #set_hv} instead
@@ -17762,7 +17610,6 @@ public class GuestFS {
    * recovery process thinks that the main program has
    * disappeared and so kills the hypervisor, which is not
    * very helpful.
-   * </p><p>
    * </p>
    * @since 1.0.77
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17792,7 +17639,6 @@ public class GuestFS {
    * </p><p>
    * For more information on the architecture of libguestfs,
    * see guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.67
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17818,7 +17664,6 @@ public class GuestFS {
    * performance, though often it has no effect.
    * </p><p>
    * This function must be called before "g.launch".
-   * </p><p>
    * </p>
    * @since 1.13.15
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17847,7 +17692,6 @@ public class GuestFS {
    * "LIBGUESTFS_TMPDIR" is set, then that is the default.
    * Else if "TMPDIR" is set, then that is the default. Else
    * /tmp is the default.
-   * </p><p>
    * </p>
    * @since 1.19.58
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17881,7 +17725,6 @@ public class GuestFS {
    * Trace messages are normally sent to "stderr", unless you
    * register a callback to send them somewhere else (see
    * "g.set_event_callback").
-   * </p><p>
    * </p>
    * @since 1.0.69
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17910,7 +17753,6 @@ public class GuestFS {
    * Only some filesystem types support setting UUIDs.
    * </p><p>
    * To read the UUID on a filesystem, call "g.vfs_uuid".
-   * </p><p>
    * </p>
    * @since 1.23.10
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17939,7 +17781,6 @@ public class GuestFS {
    * Only some filesystem types support setting UUIDs.
    * </p><p>
    * To read the UUID on a filesystem, call "g.vfs_uuid".
-   * </p><p>
    * </p>
    * @since 1.29.50
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17968,7 +17809,6 @@ public class GuestFS {
    * Verbose messages are normally sent to "stderr", unless
    * you register a callback to send them somewhere else (see
    * "g.set_event_callback").
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -17994,6 +17834,7 @@ public class GuestFS {
    * </p><p>
    * See the documentation about SELINUX in guestfs(3).
    * </p><p>
+   * This function depends on the feature "selinux".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.67
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18020,6 +17861,7 @@ public class GuestFS {
    * </p><p>
    * See also: "g.lsetxattr", attr(5).
    * </p><p>
+   * This function depends on the feature "linuxxattrs".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.59
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18063,7 +17905,6 @@ public class GuestFS {
    * the single element being the string "," (comma).
    * </p><p>
    * See also: "g.sfdisk_l", "g.sfdisk_N", "g.part_init"
-   * </p><p>
    * </p>
    * @since 0.8
    * @deprecated In new code, use {@link #part_add} instead
@@ -18093,7 +17934,6 @@ public class GuestFS {
    * </p><p>
    * See also: "g.sfdisk", the sfdisk(8) manpage and
    * "g.part_disk"
-   * </p><p>
    * </p>
    * @since 1.0.55
    * @deprecated In new code, use {@link #part_add} instead
@@ -18122,7 +17962,6 @@ public class GuestFS {
    * pass 0 for the cyls/heads/sectors parameters.
    * </p><p>
    * See also: "g.part_add"
-   * </p><p>
    * </p>
    * @since 1.0.26
    * @deprecated In new code, use {@link #part_add} instead
@@ -18152,7 +17991,6 @@ public class GuestFS {
    * </p><p>
    * The result is in human-readable format, and not designed
    * to be parsed.
-   * </p><p>
    * </p>
    * @since 1.0.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18178,7 +18016,6 @@ public class GuestFS {
    * </p><p>
    * The result is in human-readable format, and not designed
    * to be parsed.
-   * </p><p>
    * </p>
    * @since 1.0.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18204,7 +18041,6 @@ public class GuestFS {
    * not intended to be parsed.
    * </p><p>
    * See also: "g.part_list"
-   * </p><p>
    * </p>
    * @since 1.0.26
    * @deprecated In new code, use {@link #part_list} instead
@@ -18238,7 +18074,6 @@ public class GuestFS {
    * interpolated and so on.
    * </p><p>
    * All the provisos about "g.command" apply to this call.
-   * </p><p>
    * </p>
    * @since 1.0.50
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18263,7 +18098,6 @@ public class GuestFS {
    * list of lines.
    * </p><p>
    * See also: "g.command_lines"
-   * </p><p>
    * </p>
    * @since 1.0.50
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18302,7 +18136,6 @@ public class GuestFS {
    * </p><p>
    * "g.close" will call this if you don't do it explicitly,
    * but note that any errors are ignored in that case.
-   * </p><p>
    * </p>
    * @since 1.19.16
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18324,7 +18157,6 @@ public class GuestFS {
    * sleep for some seconds
    * </p><p>
    * Sleep for "secs" seconds.
-   * </p><p>
    * </p>
    * @since 1.0.41
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18348,7 +18180,6 @@ public class GuestFS {
    * Returns file information for the given "path".
    * </p><p>
    * This is the same as the stat(2) system call.
-   * </p><p>
    * </p>
    * @since 1.9.2
    * @deprecated In new code, use {@link #statns} instead
@@ -18373,7 +18204,6 @@ public class GuestFS {
    * Returns file information for the given "path".
    * </p><p>
    * This is the same as the stat(2) system call.
-   * </p><p>
    * </p>
    * @since 1.27.53
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18400,7 +18230,6 @@ public class GuestFS {
    * itself, but it doesn't need to be).
    * </p><p>
    * This is the same as the statvfs(2) system call.
-   * </p><p>
    * </p>
    * @since 1.9.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18432,7 +18261,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18487,7 +18315,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18511,7 +18338,6 @@ public class GuestFS {
    * This command disables the libguestfs appliance swap
    * device or partition named "device". See
    * "g.swapon_device".
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18534,7 +18360,6 @@ public class GuestFS {
    * </p><p>
    * This command disables the libguestfs appliance swap on
    * file.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18557,7 +18382,6 @@ public class GuestFS {
    * </p><p>
    * This command disables the libguestfs appliance swap on
    * labeled swap partition.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18581,6 +18405,7 @@ public class GuestFS {
    * This command disables the libguestfs appliance swap
    * partition with the given UUID.
    * </p><p>
+   * This function depends on the feature "linuxfsuuid".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18613,7 +18438,6 @@ public class GuestFS {
    * leaking information about the host to the guest this
    * way. Instead, attach a new host device to the guest and
    * swap on that.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18636,7 +18460,6 @@ public class GuestFS {
    * </p><p>
    * This command enables swap to a file. See
    * "g.swapon_device" for other notes.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18659,7 +18482,6 @@ public class GuestFS {
    * </p><p>
    * This command enables swap to a labeled swap partition.
    * See "g.swapon_device" for other notes.
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18683,6 +18505,7 @@ public class GuestFS {
    * This command enables swap to a swap partition with the
    * given UUID. See "g.swapon_device" for other notes.
    * </p><p>
+   * This function depends on the feature "linuxfsuuid".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.66
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18708,7 +18531,6 @@ public class GuestFS {
    * </p><p>
    * You should always call this if you have modified a disk
    * image, before closing the handle.
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18761,6 +18583,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "syslinux".  See also {@link #feature_available}.
    * </p>
    * @since 1.21.27
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18805,7 +18628,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18839,7 +18661,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -18889,7 +18710,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19001,7 +18821,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19094,7 +18913,6 @@ public class GuestFS {
    * </p><p>
    * This command uploads and unpacks local file "tarball" (a
    * *gzip compressed* tar file) into directory.
-   * </p><p>
    * </p>
    * @since 1.0.3
    * @deprecated In new code, use {@link #tar_in} instead
@@ -19118,7 +18936,6 @@ public class GuestFS {
    * </p><p>
    * This command packs the contents of directory and
    * downloads it to local file "tarball".
-   * </p><p>
    * </p>
    * @since 1.0.3
    * @deprecated In new code, use {@link #tar_out} instead
@@ -19147,7 +18964,6 @@ public class GuestFS {
    * This command only works on regular files, and will fail
    * on other file types such as directories, symbolic links,
    * block special etc.
-   * </p><p>
    * </p>
    * @since 0.3
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19170,7 +18986,6 @@ public class GuestFS {
    * </p><p>
    * This command truncates "path" to a zero-length file. The
    * file must exist already.
-   * </p><p>
    * </p>
    * @since 1.0.77
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19200,7 +19015,6 @@ public class GuestFS {
    * allocated for the file until you write to it). To create
    * a non-sparse file of zeroes, use "g.fallocate64"
    * instead.
-   * </p><p>
    * </p>
    * @since 1.0.77
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19289,7 +19103,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.15.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19408,7 +19221,6 @@ public class GuestFS {
    * returned isn't clearly defined, and depends on both the
    * version of "tune2fs" that libguestfs was built against,
    * and the filesystem itself.
-   * </p><p>
    * </p>
    * @since 1.9.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19437,6 +19249,7 @@ public class GuestFS {
    * This command uploads and unpacks local file "tarball"
    * (an *xz compressed* tar file) into directory.
    * </p><p>
+   * This function depends on the feature "xz".  See also {@link #feature_available}.
    * </p>
    * @since 1.3.2
    * @deprecated In new code, use {@link #tar_in} instead
@@ -19462,6 +19275,7 @@ public class GuestFS {
    * downloads it to local file "tarball" (as an xz
    * compressed tar archive).
    * </p><p>
+   * This function depends on the feature "xz".  See also {@link #feature_available}.
    * </p>
    * @since 1.3.2
    * @deprecated In new code, use {@link #tar_out} instead
@@ -19498,7 +19312,6 @@ public class GuestFS {
    * See also "g.get_umask", umask(2), "g.mknod", "g.mkdir".
    * </p><p>
    * This call returns the previous umask.
-   * </p><p>
    * </p>
    * @since 1.0.55
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19527,7 +19340,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19589,7 +19401,6 @@ public class GuestFS {
    * This unmounts all mounted filesystems.
    * </p><p>
    * Some internal mounts are not unmounted by this call.
-   * </p><p>
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19619,7 +19430,6 @@ public class GuestFS {
    * Map&lt;String,Object&gt; parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
-   * </p><p>
    * </p>
    * @since 1.17.22
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19664,7 +19474,6 @@ public class GuestFS {
    * filename can also be a named pipe.
    * </p><p>
    * See also "g.download".
-   * </p><p>
    * </p>
    * @since 1.0.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19701,7 +19510,6 @@ public class GuestFS {
    * error occurs.
    * </p><p>
    * See also "g.upload", "g.pwrite".
-   * </p><p>
    * </p>
    * @since 1.5.17
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19753,7 +19561,6 @@ public class GuestFS {
    * In a graphical program, when the main thread is
    * displaying a progress bar with a cancel button, wire up
    * the cancel button to call this function.
-   * </p><p>
    * </p>
    * @since 1.11.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19790,7 +19597,6 @@ public class GuestFS {
    * If the *nsecs field contains the special value -2 then
    * the corresponding timestamp is left unchanged. (The
    * *secs field is ignored in this case).
-   * </p><p>
    * </p>
    * @since 1.0.77
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19815,7 +19621,6 @@ public class GuestFS {
    * this is available. This information is only useful for
    * debugging. Nothing in the returned structure is defined
    * by the API.
-   * </p><p>
    * </p>
    * @since 1.19.27
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19867,7 +19672,6 @@ public class GuestFS {
    * features from later versions into earlier versions,
    * making this an unreliable way to test for features. Use
    * "g.available" or "g.feature_available" instead.
-   * </p><p>
    * </p>
    * @since 1.0.58
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19895,7 +19699,6 @@ public class GuestFS {
    * </p><p>
    * To find a filesystem from the label, use
    * "g.findfs_label".
-   * </p><p>
    * </p>
    * @since 1.3.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19924,7 +19727,6 @@ public class GuestFS {
    * </p><p>
    * See also ntfsresize(8), resize2fs(8), btrfs(8),
    * xfs_info(8).
-   * </p><p>
    * </p>
    * @since 1.31.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19953,7 +19755,6 @@ public class GuestFS {
    * filesystem if you mounted it without specifying the
    * filesystem type. For example a string such as "ext3" or
    * "ntfs".
-   * </p><p>
    * </p>
    * @since 1.0.75
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -19981,7 +19782,6 @@ public class GuestFS {
    * empty string.
    * </p><p>
    * To find a filesystem from the UUID, use "g.findfs_uuid".
-   * </p><p>
    * </p>
    * @since 1.3.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20012,6 +19812,7 @@ public class GuestFS {
    * Note that if "volgroups" is an empty list then all
    * volume groups are activated or deactivated.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20037,6 +19838,7 @@ public class GuestFS {
    * </p><p>
    * This command is the same as running "vgchange -a y|n"
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20059,6 +19861,7 @@ public class GuestFS {
    * </p><p>
    * Generate a new random UUID for the volume group "vg".
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20081,6 +19884,7 @@ public class GuestFS {
    * </p><p>
    * Generate new random UUIDs for all volume groups.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20104,6 +19908,7 @@ public class GuestFS {
    * This creates an LVM volume group called "volgroup" from
    * the non-empty list of physical volumes "physvols".
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 0.8
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20131,7 +19936,6 @@ public class GuestFS {
    * to associate logical volumes and volume groups.
    * </p><p>
    * See also "g.vgpvuuids".
-   * </p><p>
    * </p>
    * @since 1.0.87
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20159,6 +19963,7 @@ public class GuestFS {
    * LVM, subject to change at any time, and is provided for
    * information only.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.20
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20187,7 +19992,6 @@ public class GuestFS {
    * to associate physical volumes and volume groups.
    * </p><p>
    * See also "g.vglvuuids".
-   * </p><p>
    * </p>
    * @since 1.0.87
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20213,6 +20017,7 @@ public class GuestFS {
    * This also forcibly removes all logical volumes in the
    * volume group (if any).
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.13
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20235,7 +20040,6 @@ public class GuestFS {
    * </p><p>
    * Rename a volume group "volgroup" with the new name
    * "newvolgroup".
-   * </p><p>
    * </p>
    * @since 1.0.83
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20264,6 +20068,7 @@ public class GuestFS {
    * </p><p>
    * See also "g.vgs_full".
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20288,6 +20093,7 @@ public class GuestFS {
    * equivalent of the vgs(8) command. The "full" version
    * includes all fields.
    * </p><p>
+   * This function depends on the feature "lvm2".  See also {@link #feature_available}.
    * </p>
    * @since 0.4
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20310,7 +20116,6 @@ public class GuestFS {
    * </p><p>
    * This rescans all block devices and rebuilds the list of
    * LVM physical volumes, volume groups and logical volumes.
-   * </p><p>
    * </p>
    * @since 1.3.2
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20333,7 +20138,6 @@ public class GuestFS {
    * </p><p>
    * This command returns the UUID of the LVM VG named
    * "vgname".
-   * </p><p>
    * </p>
    * @since 1.0.87
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20364,7 +20168,6 @@ public class GuestFS {
    * If you see any calls to this function in code then you
    * can just remove them, unless you want to retain
    * compatibility with older versions of the API.
-   * </p><p>
    * </p>
    * @since 0.3
    * @deprecated In new code, use {@link #launch} instead
@@ -20388,7 +20191,6 @@ public class GuestFS {
    * </p><p>
    * This command counts the characters in a file, using the
    * "wc -c" external command.
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20411,7 +20213,6 @@ public class GuestFS {
    * </p><p>
    * This command counts the lines in a file, using the "wc
    * -l" external command.
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20434,7 +20235,6 @@ public class GuestFS {
    * </p><p>
    * This command counts the words in a file, using the "wc
    * -w" external command.
-   * </p><p>
    * </p>
    * @since 1.0.54
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20465,6 +20265,7 @@ public class GuestFS {
    * Compare with "g.zero" which zeroes the first few blocks
    * of a device.
    * </p><p>
+   * This function depends on the feature "wipefs".  See also {@link #feature_available}.
    * </p>
    * @since 1.17.6
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20490,7 +20291,6 @@ public class GuestFS {
    * 8 bit data).
    * </p><p>
    * See also "g.write_append".
-   * </p><p>
    * </p>
    * @since 1.3.14
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20515,7 +20315,6 @@ public class GuestFS {
    * If "path" does not exist, then a new file is created.
    * </p><p>
    * See also "g.write".
-   * </p><p>
    * </p>
    * @since 1.11.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20551,7 +20350,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 0.8
    * @deprecated In new code, use {@link #write} instead
@@ -20588,6 +20386,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "xfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.33
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20685,6 +20484,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "xfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.28
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20787,6 +20587,7 @@ public class GuestFS {
    * Missing fields are returned as -1 (for numeric fields)
    * or empty string.
    * </p><p>
+   * This function depends on the feature "xfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.21
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20829,6 +20630,7 @@ public class GuestFS {
    * argument name to its value (cast to Object). Pass an
    * empty Map or null for no optional arguments.
    * </p><p>
+   * This function depends on the feature "xfs".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.36
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -20945,7 +20747,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
@@ -20973,7 +20774,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
@@ -21009,7 +20809,6 @@ public class GuestFS {
    * </p><p>
    * See also: "g.zero_device", "g.scrub_device",
    * "g.is_zero_device"
-   * </p><p>
    * </p>
    * @since 1.0.16
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -21037,7 +20836,6 @@ public class GuestFS {
    * If blocks are already zero, then this command avoids
    * writing zeroes. This prevents the underlying device from
    * becoming non-sparse or growing unnecessarily.
-   * </p><p>
    * </p>
    * @since 1.3.1
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -21067,7 +20865,6 @@ public class GuestFS {
    * Free space is not "trimmed". You may want to call
    * "g.fstrim" either as an alternative to this, or after
    * calling this, depending on your requirements.
-   * </p><p>
    * </p>
    * @since 1.17.18
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -21099,6 +20896,7 @@ public class GuestFS {
    * It is possible that using this program can damage the
    * filesystem or data on the filesystem.
    * </p><p>
+   * This function depends on the feature "zerofree".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.26
    * @throws LibGuestFSException If there is a libguestfs error.
@@ -21125,7 +20923,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
@@ -21153,7 +20950,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
@@ -21182,7 +20978,6 @@ public class GuestFS {
    * </p><p>
    * Since 1.0.63, use "g.file" instead which can now process
    * compressed files.
-   * </p><p>
    * </p>
    * @since 1.0.59
    * @deprecated In new code, use {@link #file} instead
@@ -21210,7 +21005,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead
@@ -21238,7 +21032,6 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
-   * </p><p>
    * </p>
    * @since 1.0.66
    * @deprecated In new code, use {@link #grep} instead

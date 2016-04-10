@@ -38,7 +38,6 @@ GuestfsInternalTestOnlyOptargs
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_internal_test_only_optargs_new ##### -->
 <para>
