@@ -111,7 +111,7 @@ Vcs-Browser: http://anonscm.debian.org/?p=pkg-libvirt/libguestfs.git
 XS-Ruby-Versions: all
 
 Package: guestfsd
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: ${shlibs:Depends}, ${misc:Depends},
   bsdmainutils,
   diffutils,
@@ -140,7 +140,7 @@ Description: Daemon to access to guest virtual machine through virtio serial
 
 Package: libguestfs-dev
 Section: libdevel
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Depends: libguestfs0 (= ${binary:Version}), ${misc:Depends}
 Conflicts: libguestfs0 (<< 1:1.14.9-1~)
@@ -152,7 +152,7 @@ Description: guest disk image management system - development headers
 
 Package: libguestfs0
 Section: libs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
@@ -195,7 +195,7 @@ Description: guest disk image management system - shared library
 
 Package: libguestfs-gfs2
 Section: libs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
@@ -209,7 +209,7 @@ Description: guest disk image management system - GFS2 support
 
 Package: libguestfs-hfsplus
 Section: libs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
@@ -222,7 +222,7 @@ Description: guest disk image management system - HFS+ support
 
 Package: libguestfs-jfs
 Section: libs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
@@ -235,7 +235,7 @@ Description: guest disk image management system - JFS support
 
 Package: libguestfs-nilfs
 Section: libs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
@@ -248,7 +248,7 @@ Description: guest disk image management system - NILFS v2 support
 
 Package: libguestfs-reiserfs
 Section: libs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
@@ -261,7 +261,7 @@ Description: guest disk image management system - ReiserFS support
 
 Package: libguestfs-rescue
 Section: libs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
@@ -276,7 +276,7 @@ Description: guest disk image management system - virt-rescue enhancements
 
 Package: libguestfs-rsync
 Section: libs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
@@ -290,7 +290,7 @@ Description: guest disk image management system - rsync support
 
 Package: libguestfs-xfs
 Section: libs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
@@ -316,7 +316,7 @@ Description: guest disk image management system - ZFS support
 
 Package: libguestfs-tools
 Section: admin
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
  libsys-virt-perl, libguestfs-perl (= ${binary:Version}),
  libwin-hivex-perl,
@@ -340,7 +340,7 @@ Description: guest disk image management system - tools
 
 Package: libguestfs0-dbg
 Section: debug
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version})
 Description: guest disk image management system - debug symbols
@@ -351,7 +351,7 @@ Description: guest disk image management system - debug symbols
 
 Package: python-guestfs
 Section: python
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, libguestfs0 (= ${binary:Version})
 Provides: python-libguestfs
 Conflicts: python-libguestfs, libguestfs-dev (<< 1:1.14.9-1~)
@@ -363,7 +363,7 @@ Description: guest disk image management system - Python bindings
  
 Package: python3-guestfs
 Section: python
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
 Breaks: python-guestfs (<< 1:1.22.2-1~)
 Description: guest disk image management system - Python 3 bindings
@@ -374,7 +374,7 @@ Description: guest disk image management system - Python 3 bindings
 
 Package: libguestfs-perl
 Section: perl
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
  ${perl:Depends},
  libxml-xpath-perl,
@@ -388,7 +388,7 @@ Description: guest disk image management system - Perl bindings
  
 Package: libguestfs-ocaml
 Section: ocaml
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
  ${ocaml:Depends}
 Provides: ${ocaml:Provides}
@@ -400,7 +400,7 @@ Description: guest disk image management system - OCaml bindings
  
 Package: libguestfs-ocaml-dev
 Section: ocaml
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libguestfs0 (= ${binary:Version}),
  libguestfs-dev (= ${binary:Version}), 
@@ -416,7 +416,7 @@ Description: guest disk image management system - OCaml development files
 
 Package: erlang-guestfs
 Section: interpreters
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: ${erlang-base:Depends}, ${erlang-abi:Depends}, ${shlibs:Depends}, ${misc:Depends}
 Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
 Description: guest disk image management system - Erlang bindings
@@ -427,7 +427,7 @@ Description: guest disk image management system - Erlang bindings
 
 Package: libguestfs-java
 Section: java
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Conflicts: libguestfs-dev (<< 1:1.15.15-1~)
 Description: guest disk image management system - Java bindings
@@ -439,7 +439,7 @@ Description: guest disk image management system - Java bindings
 Package: ruby-guestfs
 Section: ruby
 XB-Ruby-Versions: ${ruby:Versions}
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: ${shlibs:Depends}, ${misc:Depends}, ruby | ruby-interpreter
 Conflicts: libguestfs-dev (<< 1:1.15.15-1~)
 Description: guest disk image management system - Ruby bindings
@@ -450,7 +450,7 @@ Description: guest disk image management system - Ruby bindings
 
 Package: libguestfs-gobject-1.0-0
 Section: libs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
@@ -463,7 +463,7 @@ Description: guest disk image management system - GObject bindings
 
 Package: libguestfs-gobject-dev
 Section: libdevel
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${misc:Depends}
 Conflicts: libguestfs0 (<< 1:1.14.9-1~)
@@ -476,7 +476,7 @@ Description: guest disk image management system - GObject development headers
 
 Package: gir1.2-guestfs-1.0
 Section: introspection
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${gir:Depends}, ${misc:Depends}
 Conflicts: libguestfs0 (<< 1:1.14.9-1~)
 Description: guest disk image management system - GObject introspection files
@@ -486,7 +486,7 @@ Description: guest disk image management system - GObject introspection files
  This package contains the GObject introspection data.
 
 Package: lua-guestfs
-Architecture: linux-any
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
