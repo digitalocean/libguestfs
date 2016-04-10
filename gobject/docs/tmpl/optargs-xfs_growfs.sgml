@@ -73,7 +73,6 @@ GuestfsXfsGrowfs
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_xfs_growfs_new ##### -->
 <para>

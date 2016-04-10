@@ -43,7 +43,6 @@ GuestfsUmount
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_umount_new ##### -->
 <para>

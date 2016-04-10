@@ -1,6 +1,7 @@
 /* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/ruby.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -443,6 +444,8 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
  *
  * [Since] Added in version 1.19.63.
  *
+ * [Feature] This function depends on the feature +acl+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_acl_delete_def_file}[http://libguestfs.org/guestfs.3.html#guestfs_acl_delete_def_file].
  */
@@ -487,6 +490,8 @@ guestfs_int_ruby_acl_delete_def_file (VALUE gv, VALUE dirv)
  *
  *
  * [Since] Added in version 1.19.63.
+ *
+ * [Feature] This function depends on the feature +acl+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_acl_get_file}[http://libguestfs.org/guestfs.3.html#guestfs_acl_get_file].
@@ -553,6 +558,8 @@ guestfs_int_ruby_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
  *
  *
  * [Since] Added in version 1.19.63.
+ *
+ * [Feature] This function depends on the feature +acl+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_acl_set_file}[http://libguestfs.org/guestfs.3.html#guestfs_acl_set_file].
@@ -2336,6 +2343,8 @@ guestfs_int_ruby_base64_out (VALUE gv, VALUE filenamev, VALUE base64filev)
  *
  * [Since] Added in version 1.25.44.
  *
+ * [Feature] This function depends on the feature +blkdiscard+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_blkdiscard}[http://libguestfs.org/guestfs.3.html#guestfs_blkdiscard].
  */
@@ -2373,6 +2382,8 @@ guestfs_int_ruby_blkdiscard (VALUE gv, VALUE devicev)
  *
  *
  * [Since] Added in version 1.25.44.
+ *
+ * [Feature] This function depends on the feature +blkdiscardzeroes+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_blkdiscardzeroes}[http://libguestfs.org/guestfs.3.html#guestfs_blkdiscardzeroes].
@@ -2877,6 +2888,8 @@ guestfs_int_ruby_blockdev_setrw (VALUE gv, VALUE devicev)
  *
  * [Since] Added in version 1.29.22.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_balance_cancel}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_cancel].
  */
@@ -2909,6 +2922,8 @@ guestfs_int_ruby_btrfs_balance_cancel (VALUE gv, VALUE pathv)
  *
  *
  * [Since] Added in version 1.29.22.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_balance_pause}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_pause].
@@ -2943,6 +2958,8 @@ guestfs_int_ruby_btrfs_balance_pause (VALUE gv, VALUE pathv)
  *
  * [Since] Added in version 1.29.22.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_balance_resume}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_resume].
  */
@@ -2976,6 +2993,8 @@ guestfs_int_ruby_btrfs_balance_resume (VALUE gv, VALUE pathv)
  *
  *
  * [Since] Added in version 1.29.26.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_balance_status}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_balance_status].
@@ -3018,6 +3037,8 @@ guestfs_int_ruby_btrfs_balance_status (VALUE gv, VALUE pathv)
  *
  *
  * [Since] Added in version 1.17.35.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_device_add}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_device_add].
@@ -3067,6 +3088,8 @@ guestfs_int_ruby_btrfs_device_add (VALUE gv, VALUE devicesv, VALUE fsv)
  *
  * [Since] Added in version 1.17.35.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_device_delete}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_device_delete].
  */
@@ -3114,6 +3137,8 @@ guestfs_int_ruby_btrfs_device_delete (VALUE gv, VALUE devicesv, VALUE fsv)
  *
  * [Since] Added in version 1.17.35.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_filesystem_balance}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_balance].
  */
@@ -3151,6 +3176,8 @@ guestfs_int_ruby_btrfs_filesystem_balance (VALUE gv, VALUE fsv)
  *
  *
  * [Since] Added in version 1.29.22.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_filesystem_defragment}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_defragment].
@@ -3223,6 +3250,8 @@ guestfs_int_ruby_btrfs_filesystem_defragment (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.11.17.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_filesystem_resize}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_resize].
  */
@@ -3272,6 +3301,8 @@ guestfs_int_ruby_btrfs_filesystem_resize (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.17.35.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_filesystem_sync}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_sync].
  */
@@ -3309,6 +3340,8 @@ guestfs_int_ruby_btrfs_filesystem_sync (VALUE gv, VALUE fsv)
  *
  *
  * [Since] Added in version 1.17.43.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_fsck}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_fsck].
@@ -3369,6 +3402,8 @@ guestfs_int_ruby_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
  *
  *
  * [Since] Added in version 1.29.32.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_image}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_image].
@@ -3435,6 +3470,8 @@ guestfs_int_ruby_btrfs_image (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.29.17.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_qgroup_assign}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_assign].
  */
@@ -3471,6 +3508,8 @@ guestfs_int_ruby_btrfs_qgroup_assign (VALUE gv, VALUE srcv, VALUE dstv, VALUE pa
  *
  * [Since] Added in version 1.29.17.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_qgroup_create}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_create].
  */
@@ -3504,6 +3543,8 @@ guestfs_int_ruby_btrfs_qgroup_create (VALUE gv, VALUE qgroupidv, VALUE subvolume
  *
  *
  * [Since] Added in version 1.29.17.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_qgroup_destroy}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_destroy].
@@ -3540,6 +3581,8 @@ guestfs_int_ruby_btrfs_qgroup_destroy (VALUE gv, VALUE qgroupidv, VALUE subvolum
  *
  * [Since] Added in version 1.29.17.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_qgroup_limit}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_limit].
  */
@@ -3573,6 +3616,8 @@ guestfs_int_ruby_btrfs_qgroup_limit (VALUE gv, VALUE subvolumev, VALUE sizev)
  *
  *
  * [Since] Added in version 1.29.17.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_qgroup_remove}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_remove].
@@ -3609,6 +3654,8 @@ guestfs_int_ruby_btrfs_qgroup_remove (VALUE gv, VALUE srcv, VALUE dstv, VALUE pa
  *
  *
  * [Since] Added in version 1.29.17.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_qgroup_show}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_qgroup_show].
@@ -3654,6 +3701,8 @@ guestfs_int_ruby_btrfs_qgroup_show (VALUE gv, VALUE pathv)
  *
  * [Since] Added in version 1.29.17.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_quota_enable}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_quota_enable].
  */
@@ -3688,6 +3737,8 @@ guestfs_int_ruby_btrfs_quota_enable (VALUE gv, VALUE fsv, VALUE enablev)
  *
  *
  * [Since] Added in version 1.29.17.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_quota_rescan}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_quota_rescan].
@@ -3730,6 +3781,8 @@ guestfs_int_ruby_btrfs_quota_rescan (VALUE gv, VALUE fsv)
  *
  * [Since] Added in version 1.29.48.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_replace}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_replace].
  */
@@ -3766,6 +3819,8 @@ guestfs_int_ruby_btrfs_replace (VALUE gv, VALUE srcdevv, VALUE targetdevv, VALUE
  *
  * [Since] Added in version 1.29.22.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_rescue_chunk_recover}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_rescue_chunk_recover].
  */
@@ -3798,6 +3853,8 @@ guestfs_int_ruby_btrfs_rescue_chunk_recover (VALUE gv, VALUE devicev)
  *
  *
  * [Since] Added in version 1.29.22.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_rescue_super_recover}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_rescue_super_recover].
@@ -3832,6 +3889,8 @@ guestfs_int_ruby_btrfs_rescue_super_recover (VALUE gv, VALUE devicev)
  *
  * [Since] Added in version 1.29.22.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_scrub_cancel}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_cancel].
  */
@@ -3865,6 +3924,8 @@ guestfs_int_ruby_btrfs_scrub_cancel (VALUE gv, VALUE pathv)
  *
  *
  * [Since] Added in version 1.29.22.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_scrub_resume}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_resume].
@@ -3901,6 +3962,8 @@ guestfs_int_ruby_btrfs_scrub_resume (VALUE gv, VALUE pathv)
  *
  * [Since] Added in version 1.29.22.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_scrub_start}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_start].
  */
@@ -3934,6 +3997,8 @@ guestfs_int_ruby_btrfs_scrub_start (VALUE gv, VALUE pathv)
  *
  *
  * [Since] Added in version 1.29.26.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_scrub_status}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_scrub_status].
@@ -3986,6 +4051,8 @@ guestfs_int_ruby_btrfs_scrub_status (VALUE gv, VALUE pathv)
  *
  * [Since] Added in version 1.17.43.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_set_seeding}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_set_seeding].
  */
@@ -4027,6 +4094,8 @@ guestfs_int_ruby_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
  *
  *
  * [Since] Added in version 1.17.35.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_subvolume_create}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_create].
@@ -4077,6 +4146,8 @@ guestfs_int_ruby_btrfs_subvolume_create (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.17.35.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_subvolume_delete}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_delete].
  */
@@ -4111,6 +4182,8 @@ guestfs_int_ruby_btrfs_subvolume_delete (VALUE gv, VALUE subvolumev)
  *
  * [Since] Added in version 1.29.17.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_subvolume_get_default}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_get_default].
  */
@@ -4144,6 +4217,8 @@ guestfs_int_ruby_btrfs_subvolume_get_default (VALUE gv, VALUE fsv)
  *
  *
  * [Since] Added in version 1.17.35.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_subvolume_list}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_list].
@@ -4190,6 +4265,8 @@ guestfs_int_ruby_btrfs_subvolume_list (VALUE gv, VALUE fsv)
  *
  * [Since] Added in version 1.17.35.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_subvolume_set_default}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_set_default].
  */
@@ -4223,6 +4300,8 @@ guestfs_int_ruby_btrfs_subvolume_set_default (VALUE gv, VALUE idv, VALUE fsv)
  *
  *
  * [Since] Added in version 1.29.17.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_subvolume_show}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_show].
@@ -4275,6 +4354,8 @@ guestfs_int_ruby_btrfs_subvolume_show (VALUE gv, VALUE subvolumev)
  *
  *
  * [Since] Added in version 1.17.35.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfs_subvolume_snapshot}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_snapshot].
@@ -4332,6 +4413,8 @@ guestfs_int_ruby_btrfs_subvolume_snapshot (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.29.29.
  *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfstune_enable_extended_inode_refs}[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_enable_extended_inode_refs].
  */
@@ -4364,6 +4447,8 @@ guestfs_int_ruby_btrfstune_enable_extended_inode_refs (VALUE gv, VALUE devicev)
  *
  *
  * [Since] Added in version 1.29.29.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfstune_enable_skinny_metadata_extent_refs}[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_enable_skinny_metadata_extent_refs].
@@ -4399,6 +4484,8 @@ guestfs_int_ruby_btrfstune_enable_skinny_metadata_extent_refs (VALUE gv, VALUE d
  *
  *
  * [Since] Added in version 1.29.29.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_btrfstune_seeding}[http://libguestfs.org/guestfs.3.html#guestfs_btrfstune_seeding].
@@ -4525,6 +4612,8 @@ guestfs_int_ruby_canonical_device_name (VALUE gv, VALUE devicev)
  *
  * [Since] Added in version 1.19.63.
  *
+ * [Feature] This function depends on the feature +linuxcaps+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_cap_get_file}[http://libguestfs.org/guestfs.3.html#guestfs_cap_get_file].
  */
@@ -4561,6 +4650,8 @@ guestfs_int_ruby_cap_get_file (VALUE gv, VALUE pathv)
  *
  *
  * [Since] Added in version 1.19.63.
+ *
+ * [Feature] This function depends on the feature +linuxcaps+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_cap_set_file}[http://libguestfs.org/guestfs.3.html#guestfs_cap_set_file].
@@ -7109,6 +7200,8 @@ guestfs_int_ruby_exists (VALUE gv, VALUE pathv)
  *
  * [Since] Added in version 1.21.27.
  *
+ * [Feature] This function depends on the feature +extlinux+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_extlinux}[http://libguestfs.org/guestfs.3.html#guestfs_extlinux].
  */
@@ -7998,6 +8091,8 @@ guestfs_int_ruby_fsck (VALUE gv, VALUE fstypev, VALUE devicev)
  *
  *
  * [Since] Added in version 1.19.6.
+ *
+ * [Feature] This function depends on the feature +fstrim+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_fstrim}[http://libguestfs.org/guestfs.3.html#guestfs_fstrim].
@@ -9344,6 +9439,8 @@ guestfs_int_ruby_get_verbose (VALUE gv)
  *
  * [Since] Added in version 1.0.67.
  *
+ * [Feature] This function depends on the feature +selinux+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_getcon}[http://libguestfs.org/guestfs.3.html#guestfs_getcon].
  */
@@ -9395,6 +9492,8 @@ guestfs_int_ruby_getcon (VALUE gv)
  *
  * [Since] Added in version 1.7.24.
  *
+ * [Feature] This function depends on the feature +linuxxattrs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_getxattr}[http://libguestfs.org/guestfs.3.html#guestfs_getxattr].
  */
@@ -9437,6 +9536,8 @@ guestfs_int_ruby_getxattr (VALUE gv, VALUE pathv, VALUE namev)
  *
  *
  * [Since] Added in version 1.0.59.
+ *
+ * [Feature] This function depends on the feature +linuxxattrs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_getxattrs}[http://libguestfs.org/guestfs.3.html#guestfs_getxattrs].
@@ -9712,6 +9813,8 @@ guestfs_int_ruby_grepi (VALUE gv, VALUE regexv, VALUE pathv)
  *
  * [Since] Added in version 1.0.17.
  *
+ * [Feature] This function depends on the feature +grub+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_grub_install}[http://libguestfs.org/guestfs.3.html#guestfs_grub_install].
  */
@@ -9889,6 +9992,8 @@ guestfs_int_ruby_hexdump (VALUE gv, VALUE pathv)
  *
  * [Since] Added in version 1.19.35.
  *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_close}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_close].
  */
@@ -9930,6 +10035,8 @@ guestfs_int_ruby_hivex_close (VALUE gv)
  *
  * [Since] Added in version 1.19.35.
  *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_commit}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_commit].
  */
@@ -9965,6 +10072,8 @@ guestfs_int_ruby_hivex_commit (VALUE gv, VALUE filenamev)
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_node_add_child}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_add_child].
@@ -10002,6 +10111,8 @@ guestfs_int_ruby_hivex_node_add_child (VALUE gv, VALUE parentv, VALUE namev)
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_node_children}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_children].
@@ -10047,6 +10158,8 @@ guestfs_int_ruby_hivex_node_children (VALUE gv, VALUE nodehv)
  *
  * [Since] Added in version 1.19.35.
  *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_node_delete_child}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_delete_child].
  */
@@ -10084,6 +10197,8 @@ guestfs_int_ruby_hivex_node_delete_child (VALUE gv, VALUE nodehv)
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_node_get_child}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_get_child].
@@ -10124,6 +10239,8 @@ guestfs_int_ruby_hivex_node_get_child (VALUE gv, VALUE nodehv, VALUE namev)
  *
  * [Since] Added in version 1.19.35.
  *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_node_get_value}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_get_value].
  */
@@ -10160,6 +10277,8 @@ guestfs_int_ruby_hivex_node_get_value (VALUE gv, VALUE nodehv, VALUE keyv)
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_node_name}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_name].
@@ -10199,6 +10318,8 @@ guestfs_int_ruby_hivex_node_name (VALUE gv, VALUE nodehv)
  *
  * [Since] Added in version 1.19.35.
  *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_node_parent}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_parent].
  */
@@ -10236,6 +10357,8 @@ guestfs_int_ruby_hivex_node_parent (VALUE gv, VALUE nodehv)
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_node_set_value}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_set_value].
@@ -10281,6 +10404,8 @@ guestfs_int_ruby_hivex_node_set_value (VALUE gv, VALUE nodehv, VALUE keyv, VALUE
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_node_values}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_values].
@@ -10331,6 +10456,8 @@ guestfs_int_ruby_hivex_node_values (VALUE gv, VALUE nodehv)
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_open}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_open].
@@ -10394,6 +10521,8 @@ guestfs_int_ruby_hivex_open (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.19.35.
  *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_root}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_root].
  */
@@ -10429,6 +10558,8 @@ guestfs_int_ruby_hivex_root (VALUE gv)
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_value_key}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_key].
@@ -10468,6 +10599,8 @@ guestfs_int_ruby_hivex_value_key (VALUE gv, VALUE valuehv)
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_value_type}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_type].
@@ -10511,6 +10644,8 @@ guestfs_int_ruby_hivex_value_type (VALUE gv, VALUE valuehv)
  *
  * [Since] Added in version 1.19.35.
  *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_value_utf8}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_utf8].
  */
@@ -10550,6 +10685,8 @@ guestfs_int_ruby_hivex_value_utf8 (VALUE gv, VALUE valuehv)
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_hivex_value_value}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_value].
@@ -10696,6 +10833,8 @@ guestfs_int_ruby_initrd_list (VALUE gv, VALUE pathv)
  *
  * [Since] Added in version 1.0.66.
  *
+ * [Feature] This function depends on the feature +inotify+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_inotify_add_watch}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_add_watch].
  */
@@ -10732,6 +10871,8 @@ guestfs_int_ruby_inotify_add_watch (VALUE gv, VALUE pathv, VALUE maskv)
  *
  * [Since] Added in version 1.0.66.
  *
+ * [Feature] This function depends on the feature +inotify+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_inotify_close}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_close].
  */
@@ -10766,6 +10907,8 @@ guestfs_int_ruby_inotify_close (VALUE gv)
  *
  *
  * [Since] Added in version 1.0.66.
+ *
+ * [Feature] This function depends on the feature +inotify+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_inotify_files}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_files].
@@ -10837,6 +10980,8 @@ guestfs_int_ruby_inotify_files (VALUE gv)
  *
  * [Since] Added in version 1.0.66.
  *
+ * [Feature] This function depends on the feature +inotify+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_inotify_init}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_init].
  */
@@ -10878,6 +11023,8 @@ guestfs_int_ruby_inotify_init (VALUE gv, VALUE maxeventsv)
  *
  *
  * [Since] Added in version 1.0.66.
+ *
+ * [Feature] This function depends on the feature +inotify+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_inotify_read}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_read].
@@ -10922,6 +11069,8 @@ guestfs_int_ruby_inotify_read (VALUE gv)
  *
  *
  * [Since] Added in version 1.0.66.
+ *
+ * [Feature] This function depends on the feature +inotify+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_inotify_rm_watch}[http://libguestfs.org/guestfs.3.html#guestfs_inotify_rm_watch].
@@ -14531,6 +14680,8 @@ guestfs_int_ruby_isoinfo_device (VALUE gv, VALUE devicev)
  *
  * [Since] Added in version 1.23.11.
  *
+ * [Feature] This function depends on the feature +journal+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_journal_close}[http://libguestfs.org/guestfs.3.html#guestfs_journal_close].
  */
@@ -14576,6 +14727,8 @@ guestfs_int_ruby_journal_close (VALUE gv)
  *
  *
  * [Since] Added in version 1.23.11.
+ *
+ * [Feature] This function depends on the feature +journal+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_journal_get}[http://libguestfs.org/guestfs.3.html#guestfs_journal_get].
@@ -14624,6 +14777,8 @@ guestfs_int_ruby_journal_get (VALUE gv)
  *
  * [Since] Added in version 1.23.11.
  *
+ * [Feature] This function depends on the feature +journal+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_journal_get_data_threshold}[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_data_threshold].
  */
@@ -14656,6 +14811,8 @@ guestfs_int_ruby_journal_get_data_threshold (VALUE gv)
  *
  *
  * [Since] Added in version 1.27.18.
+ *
+ * [Feature] This function depends on the feature +journal+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_journal_get_realtime_usec}[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_realtime_usec].
@@ -14696,6 +14853,8 @@ guestfs_int_ruby_journal_get_realtime_usec (VALUE gv)
  *
  * [Since] Added in version 1.23.11.
  *
+ * [Feature] This function depends on the feature +journal+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_journal_next}[http://libguestfs.org/guestfs.3.html#guestfs_journal_next].
  */
@@ -14734,6 +14893,8 @@ guestfs_int_ruby_journal_next (VALUE gv)
  *
  *
  * [Since] Added in version 1.23.11.
+ *
+ * [Feature] This function depends on the feature +journal+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_journal_open}[http://libguestfs.org/guestfs.3.html#guestfs_journal_open].
@@ -14774,6 +14935,8 @@ guestfs_int_ruby_journal_open (VALUE gv, VALUE directoryv)
  *
  * [Since] Added in version 1.23.11.
  *
+ * [Feature] This function depends on the feature +journal+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_journal_set_data_threshold}[http://libguestfs.org/guestfs.3.html#guestfs_journal_set_data_threshold].
  */
@@ -14813,6 +14976,8 @@ guestfs_int_ruby_journal_set_data_threshold (VALUE gv, VALUE thresholdv)
  *
  *
  * [Since] Added in version 1.23.11.
+ *
+ * [Feature] This function depends on the feature +journal+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_journal_skip}[http://libguestfs.org/guestfs.3.html#guestfs_journal_skip].
@@ -14975,6 +15140,8 @@ guestfs_int_ruby_lchown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
  *
  * [Since] Added in version 1.20.0.
  *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ldmtool_create_all}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_create_all].
  */
@@ -15009,6 +15176,8 @@ guestfs_int_ruby_ldmtool_create_all (VALUE gv)
  *
  *
  * [Since] Added in version 1.20.0.
+ *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ldmtool_diskgroup_disks}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_disks].
@@ -15054,6 +15223,8 @@ guestfs_int_ruby_ldmtool_diskgroup_disks (VALUE gv, VALUE diskgroupv)
  *
  * [Since] Added in version 1.20.0.
  *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ldmtool_diskgroup_name}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_name].
  */
@@ -15091,6 +15262,8 @@ guestfs_int_ruby_ldmtool_diskgroup_name (VALUE gv, VALUE diskgroupv)
  *
  *
  * [Since] Added in version 1.20.0.
+ *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ldmtool_diskgroup_volumes}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_volumes].
@@ -15135,6 +15308,8 @@ guestfs_int_ruby_ldmtool_diskgroup_volumes (VALUE gv, VALUE diskgroupv)
  *
  * [Since] Added in version 1.20.0.
  *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ldmtool_remove_all}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_remove_all].
  */
@@ -15172,6 +15347,8 @@ guestfs_int_ruby_ldmtool_remove_all (VALUE gv)
  *
  *
  * [Since] Added in version 1.20.0.
+ *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ldmtool_scan}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_scan].
@@ -15219,6 +15396,8 @@ guestfs_int_ruby_ldmtool_scan (VALUE gv)
  *
  *
  * [Since] Added in version 1.20.0.
+ *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ldmtool_scan_devices}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_scan_devices].
@@ -15277,6 +15456,8 @@ guestfs_int_ruby_ldmtool_scan_devices (VALUE gv, VALUE devicesv)
  *
  * [Since] Added in version 1.20.0.
  *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ldmtool_volume_hint}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_hint].
  */
@@ -15313,6 +15494,8 @@ guestfs_int_ruby_ldmtool_volume_hint (VALUE gv, VALUE diskgroupv, VALUE volumev)
  *
  *
  * [Since] Added in version 1.20.0.
+ *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ldmtool_volume_partitions}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_partitions].
@@ -15360,6 +15543,8 @@ guestfs_int_ruby_ldmtool_volume_partitions (VALUE gv, VALUE diskgroupv, VALUE vo
  *
  *
  * [Since] Added in version 1.20.0.
+ *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ldmtool_volume_type}[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_type].
@@ -15413,6 +15598,8 @@ guestfs_int_ruby_ldmtool_volume_type (VALUE gv, VALUE diskgroupv, VALUE volumev)
  *
  * [Since] Added in version 1.7.24.
  *
+ * [Feature] This function depends on the feature +linuxxattrs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lgetxattr}[http://libguestfs.org/guestfs.3.html#guestfs_lgetxattr].
  */
@@ -15451,6 +15638,8 @@ guestfs_int_ruby_lgetxattr (VALUE gv, VALUE pathv, VALUE namev)
  *
  *
  * [Since] Added in version 1.0.59.
+ *
+ * [Feature] This function depends on the feature +linuxxattrs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lgetxattrs}[http://libguestfs.org/guestfs.3.html#guestfs_lgetxattrs].
@@ -15749,6 +15938,8 @@ guestfs_int_ruby_list_filesystems (VALUE gv)
  *
  * [Since] Added in version 1.20.0.
  *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_list_ldm_partitions}[http://libguestfs.org/guestfs.3.html#guestfs_list_ldm_partitions].
  */
@@ -15790,6 +15981,8 @@ guestfs_int_ruby_list_ldm_partitions (VALUE gv)
  *
  *
  * [Since] Added in version 1.20.0.
+ *
+ * [Feature] This function depends on the feature +ldm+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_list_ldm_volumes}[http://libguestfs.org/guestfs.3.html#guestfs_list_ldm_volumes].
@@ -16141,6 +16334,8 @@ guestfs_int_ruby_ln_sf (VALUE gv, VALUE targetv, VALUE linknamev)
  *
  * [Since] Added in version 1.0.59.
  *
+ * [Feature] This function depends on the feature +linuxxattrs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lremovexattr}[http://libguestfs.org/guestfs.3.html#guestfs_lremovexattr].
  */
@@ -16261,6 +16456,8 @@ guestfs_int_ruby_ls0 (VALUE gv, VALUE dirv, VALUE filenamesv)
  *
  *
  * [Since] Added in version 1.0.59.
+ *
+ * [Feature] This function depends on the feature +linuxxattrs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lsetxattr}[http://libguestfs.org/guestfs.3.html#guestfs_lsetxattr].
@@ -16595,6 +16792,8 @@ guestfs_int_ruby_lstatnslist (VALUE gv, VALUE pathv, VALUE namesv)
  *
  * [Since] Added in version 1.5.2.
  *
+ * [Feature] This function depends on the feature +luks+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_luks_add_key}[http://libguestfs.org/guestfs.3.html#guestfs_luks_add_key].
  */
@@ -16635,6 +16834,8 @@ guestfs_int_ruby_luks_add_key (VALUE gv, VALUE devicev, VALUE keyv, VALUE newkey
  *
  * [Since] Added in version 1.5.1.
  *
+ * [Feature] This function depends on the feature +luks+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_luks_close}[http://libguestfs.org/guestfs.3.html#guestfs_luks_close].
  */
@@ -16671,6 +16872,8 @@ guestfs_int_ruby_luks_close (VALUE gv, VALUE devicev)
  *
  * [Since] Added in version 1.5.2.
  *
+ * [Feature] This function depends on the feature +luks+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_luks_format}[http://libguestfs.org/guestfs.3.html#guestfs_luks_format].
  */
@@ -16706,6 +16909,8 @@ guestfs_int_ruby_luks_format (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslot
  *
  *
  * [Since] Added in version 1.5.2.
+ *
+ * [Feature] This function depends on the feature +luks+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_luks_format_cipher}[http://libguestfs.org/guestfs.3.html#guestfs_luks_format_cipher].
@@ -16744,6 +16949,8 @@ guestfs_int_ruby_luks_format_cipher (VALUE gv, VALUE devicev, VALUE keyv, VALUE 
  *
  *
  * [Since] Added in version 1.5.2.
+ *
+ * [Feature] This function depends on the feature +luks+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_luks_kill_slot}[http://libguestfs.org/guestfs.3.html#guestfs_luks_kill_slot].
@@ -16799,6 +17006,8 @@ guestfs_int_ruby_luks_kill_slot (VALUE gv, VALUE devicev, VALUE keyv, VALUE keys
  *
  * [Since] Added in version 1.5.1.
  *
+ * [Feature] This function depends on the feature +luks+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_luks_open}[http://libguestfs.org/guestfs.3.html#guestfs_luks_open].
  */
@@ -16835,6 +17044,8 @@ guestfs_int_ruby_luks_open (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnamev)
  *
  * [Since] Added in version 1.5.1.
  *
+ * [Feature] This function depends on the feature +luks+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_luks_open_ro}[http://libguestfs.org/guestfs.3.html#guestfs_luks_open_ro].
  */
@@ -16870,6 +17081,8 @@ guestfs_int_ruby_luks_open_ro (VALUE gv, VALUE devicev, VALUE keyv, VALUE mapnam
  *
  *
  * [Since] Added in version 0.8.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lvcreate}[http://libguestfs.org/guestfs.3.html#guestfs_lvcreate].
@@ -16909,6 +17122,8 @@ guestfs_int_ruby_lvcreate (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE mbyte
  *
  *
  * [Since] Added in version 1.17.18.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lvcreate_free}[http://libguestfs.org/guestfs.3.html#guestfs_lvcreate_free].
@@ -17024,6 +17239,8 @@ guestfs_int_ruby_lvm_clear_filter (VALUE gv)
  *
  * [Since] Added in version 0.8.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lvm_remove_all}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_remove_all].
  */
@@ -17078,6 +17295,8 @@ guestfs_int_ruby_lvm_remove_all (VALUE gv)
  *
  * [Since] Added in version 1.5.1.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lvm_set_filter}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_set_filter].
  */
@@ -17126,6 +17345,8 @@ guestfs_int_ruby_lvm_set_filter (VALUE gv, VALUE devicesv)
  *
  *
  * [Since] Added in version 1.0.13.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lvremove}[http://libguestfs.org/guestfs.3.html#guestfs_lvremove].
@@ -17197,6 +17418,8 @@ guestfs_int_ruby_lvrename (VALUE gv, VALUE logvolv, VALUE newlogvolv)
  *
  * [Since] Added in version 1.0.27.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lvresize}[http://libguestfs.org/guestfs.3.html#guestfs_lvresize].
  */
@@ -17234,6 +17457,8 @@ guestfs_int_ruby_lvresize (VALUE gv, VALUE devicev, VALUE mbytesv)
  *
  *
  * [Since] Added in version 1.3.3.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lvresize_free}[http://libguestfs.org/guestfs.3.html#guestfs_lvresize_free].
@@ -17274,6 +17499,8 @@ guestfs_int_ruby_lvresize_free (VALUE gv, VALUE lvv, VALUE percentv)
  *
  *
  * [Since] Added in version 0.4.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lvs}[http://libguestfs.org/guestfs.3.html#guestfs_lvs].
@@ -17316,6 +17543,8 @@ guestfs_int_ruby_lvs (VALUE gv)
  *
  *
  * [Since] Added in version 0.4.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lvs_full}[http://libguestfs.org/guestfs.3.html#guestfs_lvs_full].
@@ -17425,6 +17654,8 @@ guestfs_int_ruby_lvuuid (VALUE gv, VALUE devicev)
  *
  *
  * [Since] Added in version 1.0.77.
+ *
+ * [Feature] This function depends on the feature +linuxxattrs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_lxattrlist}[http://libguestfs.org/guestfs.3.html#guestfs_lxattrlist].
@@ -17571,6 +17802,8 @@ guestfs_int_ruby_max_disks (VALUE gv)
  *
  * [Since] Added in version 1.15.6.
  *
+ * [Feature] This function depends on the feature +mdadm+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_md_create}[http://libguestfs.org/guestfs.3.html#guestfs_md_create].
  */
@@ -17671,6 +17904,8 @@ guestfs_int_ruby_md_create (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.15.6.
  *
+ * [Feature] This function depends on the feature +mdadm+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_md_detail}[http://libguestfs.org/guestfs.3.html#guestfs_md_detail].
  */
@@ -17738,6 +17973,8 @@ guestfs_int_ruby_md_detail (VALUE gv, VALUE mdv)
  *
  * [Since] Added in version 1.17.21.
  *
+ * [Feature] This function depends on the feature +mdadm+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_md_stat}[http://libguestfs.org/guestfs.3.html#guestfs_md_stat].
  */
@@ -17781,6 +18018,8 @@ guestfs_int_ruby_md_stat (VALUE gv, VALUE mdv)
  *
  *
  * [Since] Added in version 1.15.6.
+ *
+ * [Feature] This function depends on the feature +mdadm+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_md_stop}[http://libguestfs.org/guestfs.3.html#guestfs_md_stop].
@@ -18312,6 +18551,8 @@ guestfs_int_ruby_mke2fs_JL (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE dev
  *
  * [Deprecated] In new code, use rdoc-ref:mke2fs instead.
  *
+ * [Feature] This function depends on the feature +linuxfsuuid+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_mke2fs_JU}[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs_JU].
  */
@@ -18428,6 +18669,8 @@ guestfs_int_ruby_mke2journal_L (VALUE gv, VALUE blocksizev, VALUE labelv, VALUE 
  *
  * [Deprecated] In new code, use rdoc-ref:mke2fs instead.
  *
+ * [Feature] This function depends on the feature +linuxfsuuid+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_mke2journal_U}[http://libguestfs.org/guestfs.3.html#guestfs_mke2journal_U].
  */
@@ -18469,6 +18712,8 @@ guestfs_int_ruby_mke2journal_U (VALUE gv, VALUE blocksizev, VALUE uuidv, VALUE d
  *
  *
  * [Since] Added in version 1.0.55.
+ *
+ * [Feature] This function depends on the feature +mknod+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_mkfifo}[http://libguestfs.org/guestfs.3.html#guestfs_mkfifo].
@@ -18666,6 +18911,8 @@ guestfs_int_ruby_mkfs_b (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE device
  *
  *
  * [Since] Added in version 1.17.25.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_mkfs_btrfs}[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_btrfs].
@@ -18890,6 +19137,8 @@ guestfs_int_ruby_mkmountpoint (VALUE gv, VALUE exemptpathv)
  *
  * [Since] Added in version 1.0.55.
  *
+ * [Feature] This function depends on the feature +mknod+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_mknod}[http://libguestfs.org/guestfs.3.html#guestfs_mknod].
  */
@@ -18934,6 +19183,8 @@ guestfs_int_ruby_mknod (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv,
  *
  * [Since] Added in version 1.0.55.
  *
+ * [Feature] This function depends on the feature +mknod+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_mknod_b}[http://libguestfs.org/guestfs.3.html#guestfs_mknod_b].
  */
@@ -18977,6 +19228,8 @@ guestfs_int_ruby_mknod_b (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminor
  *
  *
  * [Since] Added in version 1.0.55.
+ *
+ * [Feature] This function depends on the feature +mknod+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_mknod_c}[http://libguestfs.org/guestfs.3.html#guestfs_mknod_c].
@@ -19116,6 +19369,8 @@ guestfs_int_ruby_mkswap_L (VALUE gv, VALUE labelv, VALUE devicev)
  * [Since] Added in version 1.0.55.
  *
  * [Deprecated] In new code, use rdoc-ref:mkswap instead.
+ *
+ * [Feature] This function depends on the feature +linuxfsuuid+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_mkswap_U}[http://libguestfs.org/guestfs.3.html#guestfs_mkswap_U].
@@ -19263,6 +19518,8 @@ guestfs_int_ruby_mktemp (int argc, VALUE *argv, VALUE gv)
  *
  *
  * [Since] Added in version 1.0.68.
+ *
+ * [Feature] This function depends on the feature +linuxmodules+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_modprobe}[http://libguestfs.org/guestfs.3.html#guestfs_modprobe].
@@ -19876,6 +20133,8 @@ guestfs_int_ruby_nr_devices (VALUE gv)
  *
  * [Since] Added in version 1.0.43.
  *
+ * [Feature] This function depends on the feature +ntfs3g+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ntfs_3g_probe}[http://libguestfs.org/guestfs.3.html#guestfs_ntfs_3g_probe].
  */
@@ -19911,6 +20170,8 @@ guestfs_int_ruby_ntfs_3g_probe (VALUE gv, VALUE rwv, VALUE devicev)
  *
  *
  * [Since] Added in version 1.17.9.
+ *
+ * [Feature] This function depends on the feature +ntfs3g+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ntfsclone_in}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_in].
@@ -19962,6 +20223,8 @@ guestfs_int_ruby_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
  *
  *
  * [Since] Added in version 1.17.9.
+ *
+ * [Feature] This function depends on the feature +ntfs3g+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ntfsclone_out}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_out].
@@ -20048,6 +20311,8 @@ guestfs_int_ruby_ntfsclone_out (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.17.9.
  *
+ * [Feature] This function depends on the feature +ntfs3g+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ntfsfix}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsfix].
  */
@@ -20125,6 +20390,8 @@ guestfs_int_ruby_ntfsfix (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.3.2.
  *
+ * [Feature] This function depends on the feature +ntfsprogs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ntfsresize}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize].
  */
@@ -20182,6 +20449,8 @@ guestfs_int_ruby_ntfsresize (int argc, VALUE *argv, VALUE gv)
  * [Since] Added in version 1.3.14.
  *
  * [Deprecated] In new code, use rdoc-ref:ntfsresize instead.
+ *
+ * [Feature] This function depends on the feature +ntfsprogs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_ntfsresize_size}[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize_size].
@@ -20478,6 +20747,8 @@ guestfs_int_ruby_part_get_bootable (VALUE gv, VALUE devicev, VALUE partnumv)
  *
  * [Since] Added in version 1.29.25.
  *
+ * [Feature] This function depends on the feature +gdisk+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_part_get_gpt_guid}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_guid].
  */
@@ -20516,6 +20787,8 @@ guestfs_int_ruby_part_get_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv)
  *
  *
  * [Since] Added in version 1.21.1.
+ *
+ * [Feature] This function depends on the feature +gdisk+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_part_get_gpt_type}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_type].
@@ -20897,6 +21170,8 @@ guestfs_int_ruby_part_set_bootable (VALUE gv, VALUE devicev, VALUE partnumv, VAL
  *
  * [Since] Added in version 1.29.25.
  *
+ * [Feature] This function depends on the feature +gdisk+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_part_set_gpt_guid}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_guid].
  */
@@ -20937,6 +21212,8 @@ guestfs_int_ruby_part_set_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv, VAL
  *
  *
  * [Since] Added in version 1.21.1.
+ *
+ * [Feature] This function depends on the feature +gdisk+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_part_set_gpt_type}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_type].
@@ -21272,6 +21549,8 @@ guestfs_int_ruby_pread_device (VALUE gv, VALUE devicev, VALUE countv, VALUE offs
  *
  * [Since] Added in version 1.19.26.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_pvchange_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_pvchange_uuid].
  */
@@ -21304,6 +21583,8 @@ guestfs_int_ruby_pvchange_uuid (VALUE gv, VALUE devicev)
  *
  *
  * [Since] Added in version 1.19.26.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_pvchange_uuid_all}[http://libguestfs.org/guestfs.3.html#guestfs_pvchange_uuid_all].
@@ -21338,6 +21619,8 @@ guestfs_int_ruby_pvchange_uuid_all (VALUE gv)
  *
  *
  * [Since] Added in version 0.8.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_pvcreate}[http://libguestfs.org/guestfs.3.html#guestfs_pvcreate].
@@ -21377,6 +21660,8 @@ guestfs_int_ruby_pvcreate (VALUE gv, VALUE devicev)
  *
  * [Since] Added in version 1.0.13.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_pvremove}[http://libguestfs.org/guestfs.3.html#guestfs_pvremove].
  */
@@ -21412,6 +21697,8 @@ guestfs_int_ruby_pvremove (VALUE gv, VALUE devicev)
  *
  * [Since] Added in version 1.0.26.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_pvresize}[http://libguestfs.org/guestfs.3.html#guestfs_pvresize].
  */
@@ -21446,6 +21733,8 @@ guestfs_int_ruby_pvresize (VALUE gv, VALUE devicev)
  *
  *
  * [Since] Added in version 1.3.14.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_pvresize_size}[http://libguestfs.org/guestfs.3.html#guestfs_pvresize_size].
@@ -21486,6 +21775,8 @@ guestfs_int_ruby_pvresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  *
  *
  * [Since] Added in version 0.4.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_pvs}[http://libguestfs.org/guestfs.3.html#guestfs_pvs].
@@ -21528,6 +21819,8 @@ guestfs_int_ruby_pvs (VALUE gv)
  *
  *
  * [Since] Added in version 0.4.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_pvs_full}[http://libguestfs.org/guestfs.3.html#guestfs_pvs_full].
@@ -22150,6 +22443,8 @@ guestfs_int_ruby_remove_drive (VALUE gv, VALUE labelv)
  *
  * [Since] Added in version 1.0.59.
  *
+ * [Feature] This function depends on the feature +linuxxattrs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_removexattr}[http://libguestfs.org/guestfs.3.html#guestfs_removexattr].
  */
@@ -22533,6 +22828,8 @@ guestfs_int_ruby_rmmountpoint (VALUE gv, VALUE exemptpathv)
  *
  * [Since] Added in version 1.19.29.
  *
+ * [Feature] This function depends on the feature +rsync+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_rsync}[http://libguestfs.org/guestfs.3.html#guestfs_rsync].
  */
@@ -22612,6 +22909,8 @@ guestfs_int_ruby_rsync (int argc, VALUE *argv, VALUE gv)
  *
  *
  * [Since] Added in version 1.19.29.
+ *
+ * [Feature] This function depends on the feature +rsync+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_rsync_in}[http://libguestfs.org/guestfs.3.html#guestfs_rsync_in].
@@ -22700,6 +22999,8 @@ guestfs_int_ruby_rsync_in (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.19.29.
  *
+ * [Feature] This function depends on the feature +rsync+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_rsync_out}[http://libguestfs.org/guestfs.3.html#guestfs_rsync_out].
  */
@@ -22760,6 +23061,8 @@ guestfs_int_ruby_rsync_out (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.0.52.
  *
+ * [Feature] This function depends on the feature +scrub+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_scrub_device}[http://libguestfs.org/guestfs.3.html#guestfs_scrub_device].
  */
@@ -22798,6 +23101,8 @@ guestfs_int_ruby_scrub_device (VALUE gv, VALUE devicev)
  *
  *
  * [Since] Added in version 1.0.52.
+ *
+ * [Feature] This function depends on the feature +scrub+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_scrub_file}[http://libguestfs.org/guestfs.3.html#guestfs_scrub_file].
@@ -22838,6 +23143,8 @@ guestfs_int_ruby_scrub_file (VALUE gv, VALUE filev)
  *
  *
  * [Since] Added in version 1.0.52.
+ *
+ * [Feature] This function depends on the feature +scrub+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_scrub_freespace}[http://libguestfs.org/guestfs.3.html#guestfs_scrub_freespace].
@@ -24278,6 +24585,8 @@ guestfs_int_ruby_set_verbose (VALUE gv, VALUE verbosev)
  *
  * [Since] Added in version 1.0.67.
  *
+ * [Feature] This function depends on the feature +selinux+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_setcon}[http://libguestfs.org/guestfs.3.html#guestfs_setcon].
  */
@@ -24314,6 +24623,8 @@ guestfs_int_ruby_setcon (VALUE gv, VALUE contextv)
  *
  *
  * [Since] Added in version 1.0.59.
+ *
+ * [Feature] This function depends on the feature +linuxxattrs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_setxattr}[http://libguestfs.org/guestfs.3.html#guestfs_setxattr].
@@ -25211,6 +25522,8 @@ guestfs_int_ruby_swapoff_label (VALUE gv, VALUE labelv)
  *
  * [Since] Added in version 1.0.66.
  *
+ * [Feature] This function depends on the feature +linuxfsuuid+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_swapoff_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_swapoff_uuid].
  */
@@ -25357,6 +25670,8 @@ guestfs_int_ruby_swapon_label (VALUE gv, VALUE labelv)
  *
  * [Since] Added in version 1.0.66.
  *
+ * [Feature] This function depends on the feature +linuxfsuuid+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_swapon_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_swapon_uuid].
  */
@@ -25454,6 +25769,8 @@ guestfs_int_ruby_sync (VALUE gv)
  *
  *
  * [Since] Added in version 1.21.27.
+ *
+ * [Feature] This function depends on the feature +syslinux+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_syslinux}[http://libguestfs.org/guestfs.3.html#guestfs_syslinux].
@@ -26221,6 +26538,8 @@ guestfs_int_ruby_tune2fs_l (VALUE gv, VALUE devicev)
  *
  * [Deprecated] In new code, use rdoc-ref:tar_in instead.
  *
+ * [Feature] This function depends on the feature +xz+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_txz_in}[http://libguestfs.org/guestfs.3.html#guestfs_txz_in].
  */
@@ -26258,6 +26577,8 @@ guestfs_int_ruby_txz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
  * [Since] Added in version 1.3.2.
  *
  * [Deprecated] In new code, use rdoc-ref:tar_out instead.
+ *
+ * [Feature] This function depends on the feature +xz+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_txz_out}[http://libguestfs.org/guestfs.3.html#guestfs_txz_out].
@@ -26972,6 +27293,8 @@ guestfs_int_ruby_vfs_uuid (VALUE gv, VALUE mountablev)
  *
  * [Since] Added in version 1.0.26.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_vg_activate}[http://libguestfs.org/guestfs.3.html#guestfs_vg_activate].
  */
@@ -27021,6 +27344,8 @@ guestfs_int_ruby_vg_activate (VALUE gv, VALUE activatev, VALUE volgroupsv)
  *
  * [Since] Added in version 1.0.26.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_vg_activate_all}[http://libguestfs.org/guestfs.3.html#guestfs_vg_activate_all].
  */
@@ -27053,6 +27378,8 @@ guestfs_int_ruby_vg_activate_all (VALUE gv, VALUE activatev)
  *
  *
  * [Since] Added in version 1.19.26.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_vgchange_uuid}[http://libguestfs.org/guestfs.3.html#guestfs_vgchange_uuid].
@@ -27087,6 +27414,8 @@ guestfs_int_ruby_vgchange_uuid (VALUE gv, VALUE vgv)
  *
  * [Since] Added in version 1.19.26.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_vgchange_uuid_all}[http://libguestfs.org/guestfs.3.html#guestfs_vgchange_uuid_all].
  */
@@ -27119,6 +27448,8 @@ guestfs_int_ruby_vgchange_uuid_all (VALUE gv)
  *
  *
  * [Since] Added in version 0.8.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_vgcreate}[http://libguestfs.org/guestfs.3.html#guestfs_vgcreate].
@@ -27218,6 +27549,8 @@ guestfs_int_ruby_vglvuuids (VALUE gv, VALUE vgnamev)
  *
  * [Since] Added in version 1.17.20.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_vgmeta}[http://libguestfs.org/guestfs.3.html#guestfs_vgmeta].
  */
@@ -27305,6 +27638,8 @@ guestfs_int_ruby_vgpvuuids (VALUE gv, VALUE vgnamev)
  *
  * [Since] Added in version 1.0.13.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_vgremove}[http://libguestfs.org/guestfs.3.html#guestfs_vgremove].
  */
@@ -27379,6 +27714,8 @@ guestfs_int_ruby_vgrename (VALUE gv, VALUE volgroupv, VALUE newvolgroupv)
  *
  * [Since] Added in version 0.4.
  *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_vgs}[http://libguestfs.org/guestfs.3.html#guestfs_vgs].
  */
@@ -27420,6 +27757,8 @@ guestfs_int_ruby_vgs (VALUE gv)
  *
  *
  * [Since] Added in version 0.4.
+ *
+ * [Feature] This function depends on the feature +lvm2+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_vgs_full}[http://libguestfs.org/guestfs.3.html#guestfs_vgs_full].
@@ -27701,6 +28040,8 @@ guestfs_int_ruby_wc_w (VALUE gv, VALUE pathv)
  *
  * [Since] Added in version 1.17.6.
  *
+ * [Feature] This function depends on the feature +wipefs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_wipefs}[http://libguestfs.org/guestfs.3.html#guestfs_wipefs].
  */
@@ -27882,6 +28223,8 @@ guestfs_int_ruby_write_file (VALUE gv, VALUE pathv, VALUE contentv, VALUE sizev)
  *
  * [Since] Added in version 1.19.33.
  *
+ * [Feature] This function depends on the feature +xfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_xfs_admin}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_admin].
  */
@@ -27968,6 +28311,8 @@ guestfs_int_ruby_xfs_admin (int argc, VALUE *argv, VALUE gv)
  *
  *
  * [Since] Added in version 1.19.28.
+ *
+ * [Feature] This function depends on the feature +xfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_xfs_growfs}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_growfs].
@@ -28059,6 +28404,8 @@ guestfs_int_ruby_xfs_growfs (int argc, VALUE *argv, VALUE gv)
  *
  * [Since] Added in version 1.19.21.
  *
+ * [Feature] This function depends on the feature +xfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_xfs_info}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_info].
  */
@@ -28137,6 +28484,8 @@ guestfs_int_ruby_xfs_info (VALUE gv, VALUE pathordevicev)
  *
  *
  * [Since] Added in version 1.19.36.
+ *
+ * [Feature] This function depends on the feature +xfs+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_xfs_repair}[http://libguestfs.org/guestfs.3.html#guestfs_xfs_repair].
@@ -28464,6 +28813,8 @@ guestfs_int_ruby_zero_free_space (VALUE gv, VALUE directoryv)
  *
  *
  * [Since] Added in version 1.0.26.
+ *
+ * [Feature] This function depends on the feature +zerofree+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_zerofree}[http://libguestfs.org/guestfs.3.html#guestfs_zerofree].

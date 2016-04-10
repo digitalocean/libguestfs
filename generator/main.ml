@@ -99,6 +99,8 @@ Run it from the top source directory using the command
   output_to "src/structs-copy.c" generate_client_structs_copy;
   output_to "src/structs-free.c" generate_client_structs_free;
   output_to "src/structs-cleanup.c" generate_client_structs_cleanup;
+  output_to "src/structs-print.c" generate_client_structs_print_c;
+  output_to "src/structs-print.h" generate_client_structs_print_h;
   output_to "src/actions-variants.c" generate_client_actions_variants;
 
   for i = 0 to nr_actions_files-1 do
@@ -178,7 +180,7 @@ Run it from the top source directory using the command
         sprintf "gobject/include/guestfs-gobject/%s.h" short in
       output_to filename (generate_gobject_struct_header short typ cols);
       let filename = sprintf "gobject/src/%s.c" short in
-      output_to filename (generate_gobject_struct_source short typ cols)
+      output_to filename (generate_gobject_struct_source short typ)
   ) external_structs;
   delete_except_generated "gobject/include/guestfs-gobject/struct-*.h";
   delete_except_generated "gobject/src/struct-*.c";
@@ -190,7 +192,7 @@ Run it from the top source directory using the command
       let filename =
         sprintf "gobject/include/guestfs-gobject/%s.h" short in
       output_to filename
-        (generate_gobject_optargs_header short name optargs f);
+        (generate_gobject_optargs_header short name f);
       let filename = sprintf "gobject/src/%s.c" short in
       output_to filename
         (generate_gobject_optargs_source short name optargs f)

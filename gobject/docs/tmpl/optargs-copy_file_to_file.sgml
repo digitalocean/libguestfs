@@ -58,7 +58,6 @@ GuestfsCopyFileToFile
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_copy_file_to_file_new ##### -->
 <para>

@@ -38,7 +38,6 @@ GuestfsNtfsfix
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_ntfsfix_new ##### -->
 <para>

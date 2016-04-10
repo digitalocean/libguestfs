@@ -43,7 +43,6 @@ GuestfsMkswap
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_mkswap_new ##### -->
 <para>

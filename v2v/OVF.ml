@@ -177,15 +177,34 @@ and get_ostype = function
       i_arch = "x86_64" } ->
     "windows_2012x64"
 
+   (* Treat Windows 8.1 client like Windows 8.  See:
+    * https://bugzilla.redhat.com/show_bug.cgi?id=1309580#c4
+    *)
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 3;
+      i_arch = "i386"; i_product_variant = "Client" } ->
+    "windows_8"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 3;
+      i_arch = "x86_64"; i_product_variant = "Client" } ->
+    "windows_8x64"
+
   | { i_type = "windows"; i_major_version = 6; i_minor_version = 3;
       i_arch = "x86_64" } ->
     "windows_2012R2x64"
 
+  | { i_type = "windows"; i_major_version = 10; i_minor_version = 0;
+      i_arch = "i386" } ->
+    "windows_10"
+
+  | { i_type = "windows"; i_major_version = 10; i_minor_version = 0;
+      i_arch = "x86_64" } ->
+    "windows_10x64"
+
   | { i_type = typ; i_distro = distro;
-      i_major_version = major; i_minor_version = minor;
+      i_major_version = major; i_minor_version = minor; i_arch = arch;
       i_product_name = product } ->
-    warning (f_"unknown guest operating system: %s %s %d.%d (%s)")
-      typ distro major minor product;
+    warning (f_"unknown guest operating system: %s %s %d.%d %s (%s)")
+      typ distro major minor arch product;
     "Unassigned"
 
 (* Generate the .meta file associated with each volume. *)
@@ -226,7 +245,7 @@ let create_meta_files output_alloc sd_uuid image_uuids targets =
       bpf "SIZE=%Ld\n" size_in_sectors;
       bpf "FORMAT=%s\n" format_for_rhev;
       bpf "TYPE=%s\n" output_alloc_for_rhev;
-      bpf "DESCRIPTION=%s\n" generated_by;
+      bpf "DESCRIPTION=%s\n" (String.replace generated_by "=" "_");
       bpf "EOF\n";
       Buffer.contents buf
   ) (List.combine targets image_uuids)

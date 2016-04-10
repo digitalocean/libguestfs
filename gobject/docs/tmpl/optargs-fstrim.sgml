@@ -48,7 +48,6 @@ GuestfsFstrim
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_fstrim_new ##### -->
 <para>

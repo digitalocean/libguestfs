@@ -30,6 +30,8 @@ open Structs
 open C
 open Events
 
+let generate_header = generate_header ~inputs:["generator/ruby.ml"]
+
 (* Generate ruby bindings. *)
 let rec generate_ruby_c () =
   generate_header CStyle LGPLv2plus;
@@ -475,6 +477,11 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
           | { deprecated_by = None } -> doc
           | { deprecated_by = Some alt } ->
             doc ^ (sprintf "\n *\n * [Deprecated] In new code, use rdoc-ref:%s instead." alt) in
+        let doc =
+          match f.optional with
+          | None -> doc
+          | Some opt ->
+            doc ^ sprintf "\n *\n * [Feature] This function depends on the feature +%s+.  See also {#feature_available}[rdoc-ref:feature_available]." opt in
 
         (* Because Ruby documentation appears as C comments, we must
          * replace any instance of "/*".

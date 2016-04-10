@@ -38,7 +38,6 @@ GuestfsCpioOut
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_cpio_out_new ##### -->
 <para>

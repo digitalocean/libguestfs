@@ -30,6 +30,15 @@ open Structs
 open Events
 open C
 
+let generate_header = generate_header ~inputs:["generator/java.ml"]
+
+let drop_empty_trailing_lines l =
+  let rec loop = function
+    | "" :: tl -> loop tl
+    | x -> x
+  in
+  List.rev (loop (List.rev l))
+
 (* Generate Java bindings GuestFS.java file. *)
 let rec generate_java_java () =
   generate_header CStyle LGPLv2plus;
@@ -77,7 +86,7 @@ public class GuestFS {
   /**
    * Create a libguestfs handle, setting flags.
    *
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public GuestFS (Map<String, Object> optargs) throws LibGuestFSException
   {
@@ -101,7 +110,7 @@ public class GuestFS {
   /**
    * Create a libguestfs handle.
    *
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public GuestFS () throws LibGuestFSException
   {
@@ -121,7 +130,7 @@ public class GuestFS {
    * exception.
    * </p>
    *
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    */
   public void close () throws LibGuestFSException
   {
@@ -198,7 +207,7 @@ public class GuestFS {
    * the libguestfs handle is closed.
    * </p>
    *
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    * @see \"The section &quot;EVENTS&quot; in the guestfs(3) manual\"
    * @see #delete_event_callback
    * @return handle for the event
@@ -228,7 +237,7 @@ public class GuestFS {
    * libguestfs handle is closed.
    * </p>
    *
-   * @throws LibGuestFSException
+   * @throws LibGuestFSException If there is a libguestfs error.
    * @see #set_event_callback
    */
   public void delete_event_callback (int eh)
@@ -260,6 +269,7 @@ public class GuestFS {
             doc ^ "\n\n" ^ protocol_limit_warning
           else doc in
         let doc = pod2text ~width:60 f.name doc in
+        let doc = drop_empty_trailing_lines doc in
         let doc = List.map (		(* RHBZ#501883 *)
           function
           | "" -> "</p><p>"
@@ -272,6 +282,13 @@ public class GuestFS {
         pr "   * %s\n" f.shortdesc;
         pr "   * </p><p>\n";
         pr "   * %s\n" doc;
+        (match f.optional with
+        | None -> ()
+        | Some opt ->
+          pr "   * </p><p>\n";
+          pr "   * This function depends on the feature \"%s\".  See also {@link #feature_available}.\n"
+            opt;
+        );
         pr "   * </p>\n";
         (match version_added f with
         | None -> ()
@@ -282,7 +299,7 @@ public class GuestFS {
         | { deprecated_by = Some alt } ->
           pr "   * @deprecated In new code, use {@link #%s} instead\n" alt
         );
-        pr "   * @throws LibGuestFSException\n";
+        pr "   * @throws LibGuestFSException If there is a libguestfs error.\n";
         pr "   */\n";
       );
       pr "  ";

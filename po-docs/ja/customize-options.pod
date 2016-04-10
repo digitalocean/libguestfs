@@ -2,8 +2,9 @@
 =begin コメント
 
 libguestfs generated file
- WARNING: THIS FILE IS GENERATED FROM:
-   generator/ *.ml
+ WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+          generator/customize.ml
+          and from the code in the generator/ subdirectory.
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
  Copyright (C) 2009-2016 Red Hat Inc.
@@ -260,6 +261,10 @@ It cannot delete directories, only regular files.
 =item B<--selinux-relabel>
 
 Relabel files in the guest so that they have the correct SELinux label.
+
+This will attempt to relabel files immediately, but if the operation fails
+this will instead touch F</.autorelabel> on the image to schedule a relabel
+operation for the next time the image boots.
 
 You should only use this option for guests which support SELinux.
 

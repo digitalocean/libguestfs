@@ -120,7 +120,7 @@ on OpenStack (only KVM-based OpenStack is supported), you can do:
 
  virt-v2v -i disk disk.img -o glance
 
-To control the name of the image in Glance, use the I<-on> option.
+See L</OUTPUT TO GLANCE> below.
 
 =head2 Convert disk image to disk image
 
@@ -415,8 +415,7 @@ This is the same as I<-o local>.
 =item B<-o glance>
 
 Set the output method to OpenStack Glance.  In this mode the converted guest
-is uploaded to Glance.  You can control the image name by setting the I<-on>
-option.
+is uploaded to Glance.  See L</OUTPUT TO GLANCE> below.
 
 =item B<-o libvirt>
 
@@ -765,6 +764,24 @@ also L<https://bugzilla.redhat.com/show_bug.cgi?id=244636>
 
 =head1 WINDOWS
 
+=head2 Windows E<ge> 8 Fast Startup is incompatible with virt-v2v
+
+Guests which use the Windows E<ge> 8 "Fast Startup" feature (or guests which
+are hibernated) cannot be converted with virt-v2v.  You will see an error:
+
+ virt-v2v: error: unable to mount the disk image for writing. This has
+ probably happened because Windows Hibernation or Fast Restart is being
+ used in this guest. You have to disable this (in the guest) in order
+ to use virt-v2v.
+
+As the message says, you need to boot the guest and disable the "Fast
+Startup" feature (Control Panel → Power Options → Choose what the power
+buttons do → Change settings that are currently unavailable → Turn on fast
+startup), and shut down the guest, and then you will be able to convert it.
+
+For more information, see: L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8
+FAST STARTUP>.
+
 =head2 Boot failure: 0x0000007B
 
 This boot failure is caused by Windows being unable to find or load the
@@ -1080,7 +1097,7 @@ Enable (check) the following objects:
   - Browse datastore
   - Low level file operations
  
- Session:
+ Sessions:
   - Validate session
  
  Virtual Machine:
@@ -1407,6 +1424,65 @@ converted guest will be listed here.  Select the appropriate guest an click
 
 If you export several guests, then you can import them all at the same time
 through the UI.
+
+=head1 OUTPUT TO GLANCE
+
+To output to OpenStack Glance, use the I<-o glance> option.
+
+This runs the L<glance(1)> CLI program which must be installed on the
+virt-v2v conversion host.  For authentication to work, you will need to set
+C<OS_*> environment variables.  In most cases you can do this by sourcing a
+file called something like F<keystonerc_admin>.
+
+Virt-v2v adds metadata for the guest to Glance, describing such things as
+the guest operating system and what drivers it requires.  The command
+C<glance image-show> will display the metadata as "Property" fields such as
+C<os_type> and C<hw_disk_bus>.
+
+=head2 Glance and sparseness
+
+Glance image upload doesn't appear to correctly handle sparseness.  For this
+reason, using qcow2 will be faster and use less space on the Glance server.
+Use the virt-v2v S<I<-of qcow2>> option.
+
+=head2 Glance and multiple disks
+
+If the guest has a single disk, then the name of the disk in Glance will be
+the name of the guest.  You can control this using the I<-on> option.
+
+Glance doesn't have a concept of associating multiple disks with a single
+guest, and Nova doesn't allow you to boot a guest from multiple Glance disks
+either.  If the guest has multiple disks, then the first (assumed to be the
+system disk) will have the name of the guest, and the second and subsequent
+data disks will be called C<I<guestname>-disk2>, C<I<guestname>-disk3> etc.
+It may be best to leave the system disk in Glance, and import the data disks
+to Cinder (see next section).
+
+=head2 Importing disks into Cinder
+
+Since most virt-v2v guests are "pets", Glance is perhaps not the best place
+to store them.  There is no way for virt-v2v to upload directly to Cinder
+(L<https://bugzilla.redhat.com/1155229>).  There are two ways to upload to
+Cinder:
+
+=over 4
+
+=item 1.
+
+Import the image to Glance first (ie. I<-o glance>) and then copy it to
+Cinder:
+
+ cinder create --image-id <GLANCE-IMAGE-UUID> <SIZE>
+
+=item 2.
+
+Create (through some other means) a new volume / LUN in your Cinder backing
+store.  Migrate the guest to this volume (using I<-o local>).  Then ask
+Cinder to take over management of the volume using:
+
+ cinder manage <VOLUMEREF>
+
+=back
 
 =head1 RESOURCE REQUIREMENTS
 

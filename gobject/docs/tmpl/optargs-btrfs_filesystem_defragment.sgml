@@ -43,7 +43,6 @@ GuestfsBTRFSFilesystemDefragment
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_btrfs_filesystem_defragment_new ##### -->
 <para>

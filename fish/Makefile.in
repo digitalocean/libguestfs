@@ -156,7 +156,6 @@ bin_PROGRAMS = guestfish$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@	test-find0.sh \
 @ENABLE_APPLIANCE_TRUE@	test-inspect.sh \
 @ENABLE_APPLIANCE_TRUE@	test-glob.sh \
-@ENABLE_APPLIANCE_TRUE@	test-mount-local.sh \
 @ENABLE_APPLIANCE_TRUE@	test-prep.sh \
 @ENABLE_APPLIANCE_TRUE@	test-read-file.sh \
 @ENABLE_APPLIANCE_TRUE@	test-remote.sh \
@@ -165,6 +164,9 @@ bin_PROGRAMS = guestfish$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@	test-run.sh \
 @ENABLE_APPLIANCE_TRUE@	test-stringlist.sh \
 @ENABLE_APPLIANCE_TRUE@	test-upload-to-dir.sh
+
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@am__append_4 = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-mount-local.sh
 
 subdir = fish
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -374,7 +376,7 @@ am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
 guestfish_OBJECTS = $(am_guestfish_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfish_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libguestfs.la \
+	$(am__DEPENDENCIES_1) $(top_builddir)/src/libguestfs.la \
 	$(top_builddir)/src/libutils.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) libcmds.la librc_protocol.la \
 	../gnulib/lib/libgnu.la
@@ -731,6 +733,7 @@ EXTRA_PACKAGES = @EXTRA_PACKAGES@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
+FUSER = @FUSER@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
 GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
@@ -1386,6 +1389,7 @@ MSGCAT = @MSGCAT@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
+NCURSES_CONFIG = @NCURSES_CONFIG@
 NETINET_IN_H = @NETINET_IN_H@
 NEXT_ARPA_INET_H = @NEXT_ARPA_INET_H@
 NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H = @NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H@
@@ -1689,6 +1693,7 @@ SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
 TIME_H_DEFINES_STRUCT_TIMESPEC = @TIME_H_DEFINES_STRUCT_TIMESPEC@
+TOOL_TRUE = @TOOL_TRUE@
 UINT32_MAX_LT_UINTMAX_MAX = @UINT32_MAX_LT_UINTMAX_MAX@
 UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
@@ -1899,7 +1904,7 @@ guestfish_CFLAGS = \
 	$(LIBCONFIG_CFLAGS) \
 	$(LIBXML2_CFLAGS)
 
-guestfish_LDADD = $(LIBCONFIG_LIBS) $(LIBREADLINE) \
+guestfish_LDADD = $(LIBCONFIG_LIBS) $(LIBREADLINE) $(LIBTINFO_LIBS) \
 	$(top_builddir)/src/libguestfs.la \
 	$(top_builddir)/src/libutils.la $(LIBXML2_LIBS) $(LTLIBINTL) \
 	-lm libcmds.la librc_protocol.la ../gnulib/lib/libgnu.la
@@ -1937,7 +1942,7 @@ toolsconf_DATA = libguestfs-tools.conf
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 TESTS = test-a.sh test-add-domain.sh test-add-uri.sh test-d.sh \
 	test-escapes.sh test-events.sh test-invalid-params.sh \
-	test-tilde.sh $(am__append_3)
+	test-tilde.sh $(am__append_3) $(am__append_4)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -3100,13 +3105,6 @@ test-glob.sh.log: test-glob.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-mount-local.sh.log: test-mount-local.sh
-	@p='test-mount-local.sh'; \
-	b='test-mount-local.sh'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-prep.sh.log: test-prep.sh
 	@p='test-prep.sh'; \
 	b='test-prep.sh'; \
@@ -3159,6 +3157,13 @@ test-stringlist.sh.log: test-stringlist.sh
 test-upload-to-dir.sh.log: test-upload-to-dir.sh
 	@p='test-upload-to-dir.sh'; \
 	b='test-upload-to-dir.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mount-local.sh.log: test-mount-local.sh
+	@p='test-mount-local.sh'; \
+	b='test-mount-local.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

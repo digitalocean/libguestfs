@@ -1,7 +1,8 @@
 # coding: utf-8
 # libguestfs generated file
-# WARNING: THIS FILE IS GENERATED FROM:
-#   generator/ *.ml
+# WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+#          generator/python.ml
+#          and from the code in the generator/ subdirectory.
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
 # Copyright (C) 2009-2016 Red Hat Inc.
@@ -180,6 +181,9 @@ class GuestFS(object):
     def acl_delete_def_file (self, dir):
         """This function deletes the default POSIX Access Control
         List (ACL) attached to directory "dir".
+        
+        This function depends on the feature "acl". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.acl_delete_def_file (self._o, dir)
@@ -199,6 +203,9 @@ class GuestFS(object):
         "default"
         Return the default ACL. Normally this only makes
         sense if "path" is a directory.
+        
+        This function depends on the feature "acl". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.acl_get_file (self._o, path, acltype)
@@ -236,6 +243,9 @@ class GuestFS(object):
         and groupnames to the correct numeric ID in the context
         of the guest, use the Augeas functions (see
         "g.aug_init").
+        
+        This function depends on the feature "acl". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.acl_set_file (self._o, path, acltype, acl)
@@ -1012,6 +1022,9 @@ class GuestFS(object):
         but do nothing. You must also set the "discard"
         attribute on the underlying drive (see
         "g.add_drive_opts").
+        
+        This function depends on the feature "blkdiscard". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.blkdiscard (self._o, device)
@@ -1024,6 +1037,9 @@ class GuestFS(object):
         
         If it returns false, then it may be that discarded
         blocks are read as stale or random data.
+        
+        This function depends on the feature "blkdiscardzeroes".
+        See also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.blkdiscardzeroes (self._o, device)
@@ -1191,6 +1207,9 @@ class GuestFS(object):
 
     def btrfs_balance_cancel (self, path):
         """Cancel a running balance on a btrfs filesystem.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_balance_cancel (self._o, path)
@@ -1198,6 +1217,9 @@ class GuestFS(object):
 
     def btrfs_balance_pause (self, path):
         """Pause a running balance on a btrfs filesystem.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_balance_pause (self._o, path)
@@ -1205,6 +1227,9 @@ class GuestFS(object):
 
     def btrfs_balance_resume (self, path):
         """Resume a paused balance on a btrfs filesystem.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_balance_resume (self._o, path)
@@ -1217,6 +1242,9 @@ class GuestFS(object):
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_btrfsbalance
         structure.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_balance_status (self._o, path)
@@ -1226,6 +1254,9 @@ class GuestFS(object):
         """Add the list of device(s) in "devices" to the btrfs
         filesystem mounted at "fs". If "devices" is an empty
         list, this does nothing.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         devices = list (devices)
         self._check_not_closed ()
@@ -1236,6 +1267,9 @@ class GuestFS(object):
         """Remove the "devices" from the btrfs filesystem mounted
         at "fs". If "devices" is an empty list, this does
         nothing.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         devices = list (devices)
         self._check_not_closed ()
@@ -1245,6 +1279,9 @@ class GuestFS(object):
     def btrfs_filesystem_balance (self, fs):
         """Balance the chunks in the btrfs filesystem mounted at
         "fs" across the underlying devices.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_filesystem_balance (self._o, fs)
@@ -1253,6 +1290,9 @@ class GuestFS(object):
     def btrfs_filesystem_defragment (self, path, flush=None, compress=None):
         """Defragment a file or directory on a btrfs filesystem.
         compress is one of zlib or lzo.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_filesystem_defragment (self._o, path, flush, compress)
@@ -1273,6 +1313,9 @@ class GuestFS(object):
         size.
         
         See also btrfs(8).
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_filesystem_resize (self._o, mountpoint, size)
@@ -1280,6 +1323,9 @@ class GuestFS(object):
 
     def btrfs_filesystem_sync (self, fs):
         """Force sync on the btrfs filesystem mounted at "fs".
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_filesystem_sync (self._o, fs)
@@ -1288,6 +1334,9 @@ class GuestFS(object):
     def btrfs_fsck (self, device, superblock=None, repair=None):
         """Used to check a btrfs filesystem, "device" is the device
         file where the filesystem is stored.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_fsck (self._o, device, superblock, repair)
@@ -1297,6 +1346,9 @@ class GuestFS(object):
         """This is used to create an image of a btrfs filesystem.
         All data will be zeroed, but metadata and the like is
         preserved.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         source = list (source)
         self._check_not_closed ()
@@ -1307,6 +1359,9 @@ class GuestFS(object):
         """Add qgroup "src" to parent qgroup "dst". This command
         can group several qgroups into a parent qgroup to share
         common limit.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_qgroup_assign (self._o, src, dst, path)
@@ -1315,6 +1370,9 @@ class GuestFS(object):
     def btrfs_qgroup_create (self, qgroupid, subvolume):
         """Create a quota group (qgroup) for subvolume at
         "subvolume".
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_qgroup_create (self._o, qgroupid, subvolume)
@@ -1322,6 +1380,9 @@ class GuestFS(object):
 
     def btrfs_qgroup_destroy (self, qgroupid, subvolume):
         """Destroy a quota group.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_qgroup_destroy (self._o, qgroupid, subvolume)
@@ -1330,6 +1391,9 @@ class GuestFS(object):
     def btrfs_qgroup_limit (self, subvolume, size):
         """Limit the size of a subvolume which's path is
         "subvolume". "size" can have suffix of G, M, or K.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_qgroup_limit (self._o, subvolume, size)
@@ -1337,6 +1401,9 @@ class GuestFS(object):
 
     def btrfs_qgroup_remove (self, src, dst, path):
         """Remove qgroup "src" from the parent qgroup "dst".
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_qgroup_remove (self._o, src, dst, path)
@@ -1348,6 +1415,9 @@ class GuestFS(object):
         
         This function returns a list of btrfsqgroups. Each
         btrfsqgroup is represented as a dictionary.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_qgroup_show (self._o, path)
@@ -1356,6 +1426,9 @@ class GuestFS(object):
     def btrfs_quota_enable (self, fs, enable):
         """Enable or disable subvolume quota support for filesystem
         which contains "path".
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_quota_enable (self._o, fs, enable)
@@ -1364,6 +1437,9 @@ class GuestFS(object):
     def btrfs_quota_rescan (self, fs):
         """Trash all qgroup numbers and scan the metadata again
         with the current config.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_quota_rescan (self._o, fs)
@@ -1379,6 +1455,9 @@ class GuestFS(object):
         The "targetdev" needs to be same size or larger than the
         "srcdev". Devices which are currently mounted are never
         allowed to be used as the "targetdev".
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_replace (self._o, srcdev, targetdev, mntpoint)
@@ -1387,6 +1466,9 @@ class GuestFS(object):
     def btrfs_rescue_chunk_recover (self, device):
         """Recover the chunk tree of btrfs filesystem by scanning
         the devices one by one.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_rescue_chunk_recover (self._o, device)
@@ -1394,6 +1476,9 @@ class GuestFS(object):
 
     def btrfs_rescue_super_recover (self, device):
         """Recover bad superblocks from good copies.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_rescue_super_recover (self._o, device)
@@ -1401,6 +1486,9 @@ class GuestFS(object):
 
     def btrfs_scrub_cancel (self, path):
         """Cancel a running scrub on a btrfs filesystem.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_scrub_cancel (self._o, path)
@@ -1409,6 +1497,9 @@ class GuestFS(object):
     def btrfs_scrub_resume (self, path):
         """Resume a previously canceled or interrupted scrub on a
         btrfs filesystem.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_scrub_resume (self._o, path)
@@ -1418,6 +1509,9 @@ class GuestFS(object):
         """Reads all the data and metadata on the filesystem, and
         uses checksums and the duplicate copies from RAID
         storage to identify and repair any corrupt data.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_scrub_start (self._o, path)
@@ -1429,6 +1523,9 @@ class GuestFS(object):
         
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_btrfsscrub structure.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_scrub_status (self._o, path)
@@ -1437,6 +1534,9 @@ class GuestFS(object):
     def btrfs_set_seeding (self, device, seeding):
         """Enable or disable the seeding feature of a device that
         contains a btrfs filesystem.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_set_seeding (self._o, device, seeding)
@@ -1448,6 +1548,9 @@ class GuestFS(object):
         the form /path/to/dest/name. The optional parameter
         "qgroupid" represents the qgroup which the newly created
         subvolume will be added to.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_subvolume_create (self._o, dest, qgroupid)
@@ -1457,6 +1560,9 @@ class GuestFS(object):
 
     def btrfs_subvolume_delete (self, subvolume):
         """Delete the named btrfs subvolume or snapshot.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_subvolume_delete (self._o, subvolume)
@@ -1465,6 +1571,9 @@ class GuestFS(object):
     def btrfs_subvolume_get_default (self, fs):
         """Get the default subvolume or snapshot of a filesystem
         mounted at "mountpoint".
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_subvolume_get_default (self._o, fs)
@@ -1476,6 +1585,9 @@ class GuestFS(object):
         
         This function returns a list of btrfssubvolumes. Each
         btrfssubvolume is represented as a dictionary.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_subvolume_list (self._o, fs)
@@ -1485,6 +1597,9 @@ class GuestFS(object):
         """Set the subvolume of the btrfs filesystem "fs" which
         will be mounted by default. See "g.btrfs_subvolume_list"
         to get a list of subvolumes.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_subvolume_set_default (self._o, id, fs)
@@ -1498,6 +1613,9 @@ class GuestFS(object):
         then the return value is in fact a Python dict.
         Otherwise the return value is a list of pairs of
         strings, for compatibility with old code.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_subvolume_show (self._o, subvolume)
@@ -1513,6 +1631,9 @@ class GuestFS(object):
         readonly snapshot is created. The optional parameter
         "qgroupid" represents the qgroup which the newly created
         snapshot will be added to.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfs_subvolume_snapshot (self._o, source, dest, ro, qgroupid)
@@ -1522,6 +1643,9 @@ class GuestFS(object):
 
     def btrfstune_enable_extended_inode_refs (self, device):
         """This will Enable extended inode refs.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfstune_enable_extended_inode_refs (self._o, device)
@@ -1529,6 +1653,9 @@ class GuestFS(object):
 
     def btrfstune_enable_skinny_metadata_extent_refs (self, device):
         """This enable skinny metadata extent refs.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfstune_enable_skinny_metadata_extent_refs (self._o, device)
@@ -1538,6 +1665,9 @@ class GuestFS(object):
         """Enable seeding of a btrfs device, this will force a fs
         readonly so that you can use it to build other
         filesystems.
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.btrfstune_seeding (self._o, device, seeding)
@@ -1583,6 +1713,9 @@ class GuestFS(object):
         
         If no capabilities are attached to a file, an empty
         string is returned.
+        
+        This function depends on the feature "linuxcaps". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.cap_get_file (self._o, path)
@@ -1592,6 +1725,9 @@ class GuestFS(object):
         """This function sets the Linux capabilities attached to
         "path". The capabilities set "cap" should be passed in
         text form (see cap_from_text(3)).
+        
+        This function depends on the feature "linuxcaps". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.cap_set_file (self._o, path, cap)
@@ -2449,6 +2585,9 @@ class GuestFS(object):
         contents of this file, see extlinux(1).
         
         See also "g.syslinux".
+        
+        This function depends on the feature "extlinux". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.extlinux (self._o, directory)
@@ -2834,6 +2973,9 @@ class GuestFS(object):
         different operation that turns free space in the
         filesystem into zeroes. It is valid to call "g.fstrim"
         either instead of, or after calling "g.zero_free_space".
+        
+        This function depends on the feature "fstrim". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.fstrim (self._o, mountpoint, offset, length, minimumfreeextent)
@@ -3277,6 +3419,9 @@ class GuestFS(object):
         
         See the documentation about SELINUX in guestfs(3), and
         "g.setcon"
+        
+        This function depends on the feature "selinux". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.getcon (self._o)
@@ -3301,6 +3446,9 @@ class GuestFS(object):
         returns an error.
         
         See also: "g.getxattrs", "g.lgetxattr", attr(5).
+        
+        This function depends on the feature "linuxxattrs". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.getxattr (self._o, path, name)
@@ -3317,6 +3465,9 @@ class GuestFS(object):
         
         This function returns a list of xattrs. Each xattr is
         represented as a dictionary.
+        
+        This function depends on the feature "linuxxattrs". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.getxattrs (self._o, path)
@@ -3429,6 +3580,9 @@ class GuestFS(object):
         
         replacing /dev/vda with the name of the installation
         device.
+        
+        This function depends on the feature "grub". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.grub_install (self._o, root, device)
@@ -3486,6 +3640,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_close (self._o)
@@ -3502,6 +3659,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_commit (self._o, filename)
@@ -3512,6 +3672,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_node_add_child (self._o, parent, name)
@@ -3525,6 +3688,9 @@ class GuestFS(object):
         
         This function returns a list of hivex_nodes. Each
         hivex_node is represented as a dictionary.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_node_children (self._o, nodeh)
@@ -3535,6 +3701,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_node_delete_child (self._o, nodeh)
@@ -3547,6 +3716,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_node_get_child (self._o, nodeh, name)
@@ -3559,6 +3731,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_node_get_value (self._o, nodeh, key)
@@ -3569,6 +3744,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_node_name (self._o, nodeh)
@@ -3579,6 +3757,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_node_parent (self._o, nodeh)
@@ -3591,6 +3772,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_node_set_value (self._o, nodeh, key, t, val)
@@ -3605,6 +3789,9 @@ class GuestFS(object):
         
         This function returns a list of hivex_values. Each
         hivex_value is represented as a dictionary.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_node_values (self._o, nodeh)
@@ -3617,6 +3804,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_open (self._o, filename, verbose, debug, write)
@@ -3627,6 +3817,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_root (self._o)
@@ -3638,6 +3831,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_value_key (self._o, valueh)
@@ -3649,6 +3845,9 @@ class GuestFS(object):
         
         This is a wrapper around the hivex(3) call of the same
         name.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_value_type (self._o, valueh)
@@ -3665,6 +3864,9 @@ class GuestFS(object):
         registry. However it is not foolproof because the
         registry is not strongly-typed and fields can contain
         arbitrary or unexpected data.
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_value_utf8 (self._o, valueh)
@@ -3677,6 +3879,9 @@ class GuestFS(object):
         name.
         
         See also: "g.hivex_value_utf8".
+        
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.hivex_value_value (self._o, valueh)
@@ -3731,6 +3936,9 @@ class GuestFS(object):
         Note for non-C or non-Linux callers: the inotify events
         are defined by the Linux kernel ABI and are listed in
         /usr/include/sys/inotify.h.
+        
+        This function depends on the feature "inotify". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.inotify_add_watch (self._o, path, mask)
@@ -3740,6 +3948,9 @@ class GuestFS(object):
         """This closes the inotify handle which was previously
         opened by inotify_init. It removes all watches, throws
         away any pending events, and deallocates all resources.
+        
+        This function depends on the feature "inotify". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.inotify_close (self._o)
@@ -3752,6 +3963,9 @@ class GuestFS(object):
         sorted and deduplicated.
         
         This function returns a list of strings.
+        
+        This function depends on the feature "inotify". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.inotify_files (self._o)
@@ -3789,6 +4003,9 @@ class GuestFS(object):
         interface as exposed by the Linux kernel, which is
         roughly what we expose via libguestfs. Note that there
         is one global inotify handle per libguestfs instance.
+        
+        This function depends on the feature "inotify". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.inotify_init (self._o, maxevents)
@@ -3808,6 +4025,9 @@ class GuestFS(object):
         
         This function returns a list of inotify_events. Each
         inotify_event is represented as a dictionary.
+        
+        This function depends on the feature "inotify". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.inotify_read (self._o)
@@ -3816,6 +4036,9 @@ class GuestFS(object):
     def inotify_rm_watch (self, wd):
         """Remove a previously defined inotify watch. See
         "g.inotify_add_watch".
+        
+        This function depends on the feature "inotify". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.inotify_rm_watch (self._o, wd)
@@ -5014,6 +5237,9 @@ class GuestFS(object):
 
     def journal_close (self):
         """Close the journal handle.
+        
+        This function depends on the feature "journal". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.journal_close (self._o)
@@ -5038,6 +5264,9 @@ class GuestFS(object):
         
         This function returns a list of xattrs. Each xattr is
         represented as a dictionary.
+        
+        This function depends on the feature "journal". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.journal_get (self._o)
@@ -5051,6 +5280,9 @@ class GuestFS(object):
         returns 0, then the threshold is unlimited.
         
         See also "g.journal_set_data_threshold".
+        
+        This function depends on the feature "journal". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.journal_get_data_threshold (self._o)
@@ -5059,6 +5291,9 @@ class GuestFS(object):
     def journal_get_realtime_usec (self):
         """Get the realtime (wallclock) timestamp of the current
         journal entry.
+        
+        This function depends on the feature "journal". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.journal_get_realtime_usec (self._o)
@@ -5073,6 +5308,9 @@ class GuestFS(object):
         journal records to read. "true" means you can read the
         next record (eg. using "g.journal_get"), and "false"
         means you have reached the end of the journal.
+        
+        This function depends on the feature "journal". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.journal_next (self._o)
@@ -5087,6 +5325,9 @@ class GuestFS(object):
         
         After you have finished using the journal, you should
         close the handle by calling "g.journal_close".
+        
+        This function depends on the feature "journal". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.journal_open (self._o, directory)
@@ -5100,6 +5341,9 @@ class GuestFS(object):
         threshold is unlimited.
         
         See also "g.journal_get_data_threshold".
+        
+        This function depends on the feature "journal". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.journal_set_data_threshold (self._o, threshold)
@@ -5114,6 +5358,9 @@ class GuestFS(object):
         value of the skip parameter ("|skip|") you passed in
         then it means you have reached the end or the start of
         the journal.
+        
+        This function depends on the feature "journal". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.journal_skip (self._o, skip)
@@ -5176,6 +5423,9 @@ class GuestFS(object):
         time. However you might want to call this function if
         you have hotplugged disks or have just created a Windows
         dynamic disk.
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ldmtool_create_all (self._o)
@@ -5188,6 +5438,9 @@ class GuestFS(object):
         "g.ldmtool_scan".
         
         This function returns a list of strings.
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ldmtool_diskgroup_disks (self._o, diskgroup)
@@ -5198,6 +5451,9 @@ class GuestFS(object):
         "diskgroup" parameter should be the GUID of a disk
         group, one element from the list returned by
         "g.ldmtool_scan".
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ldmtool_diskgroup_name (self._o, diskgroup)
@@ -5210,6 +5466,9 @@ class GuestFS(object):
         "g.ldmtool_scan".
         
         This function returns a list of strings.
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ldmtool_diskgroup_volumes (self._o, diskgroup)
@@ -5219,6 +5478,9 @@ class GuestFS(object):
         """This is essentially the opposite of
         "g.ldmtool_create_all". It removes the device mapper
         mappings for all Windows dynamic disk volumes
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ldmtool_remove_all (self._o)
@@ -5234,6 +5496,9 @@ class GuestFS(object):
         of block devices, call "g.ldmtool_scan_devices" instead.
         
         This function returns a list of strings.
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ldmtool_scan (self._o)
@@ -5250,6 +5515,9 @@ class GuestFS(object):
         are scanned.
         
         This function returns a list of strings.
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         devices = list (devices)
         self._check_not_closed ()
@@ -5262,6 +5530,9 @@ class GuestFS(object):
         defined, in which case the empty string is returned. The
         hint field is often, though not always, the name of a
         Windows drive, eg. "E:".
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ldmtool_volume_hint (self._o, diskgroup, volume)
@@ -5272,6 +5543,9 @@ class GuestFS(object):
         "volume" in the disk group with GUID "diskgroup".
         
         This function returns a list of strings.
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ldmtool_volume_partitions (self._o, diskgroup, volume)
@@ -5284,6 +5558,9 @@ class GuestFS(object):
         Possible volume types that can be returned here include:
         "simple", "spanned", "striped", "mirrored", "raid5".
         Other types may also be returned.
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ldmtool_volume_type (self._o, diskgroup, volume)
@@ -5307,6 +5584,9 @@ class GuestFS(object):
         returns an error.
         
         See also: "g.lgetxattrs", "g.getxattr", attr(5).
+        
+        This function depends on the feature "linuxxattrs". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lgetxattr (self._o, path, name)
@@ -5319,6 +5599,9 @@ class GuestFS(object):
         
         This function returns a list of xattrs. Each xattr is
         represented as a dictionary.
+        
+        This function depends on the feature "linuxxattrs". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lgetxattrs (self._o, path)
@@ -5438,6 +5721,9 @@ class GuestFS(object):
         list of device names.
         
         This function returns a list of strings.
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.list_ldm_partitions (self._o)
@@ -5449,6 +5735,9 @@ class GuestFS(object):
         device names.
         
         This function returns a list of strings.
+        
+        This function depends on the feature "ldm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.list_ldm_volumes (self._o)
@@ -5540,6 +5829,9 @@ class GuestFS(object):
         """This is the same as "g.removexattr", but if "path" is a
         symbolic link, then it removes an extended attribute of
         the link itself.
+        
+        This function depends on the feature "linuxxattrs". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lremovexattr (self._o, xattr, path)
@@ -5575,6 +5867,9 @@ class GuestFS(object):
         """This is the same as "g.setxattr", but if "path" is a
         symbolic link, then it sets an extended attribute of the
         link itself.
+        
+        This function depends on the feature "linuxxattrs". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lsetxattr (self._o, xattr, val, vallen, path)
@@ -5685,6 +5980,9 @@ class GuestFS(object):
         Note that if "keyslot" already contains a key, then this
         command will fail. You have to use "g.luks_kill_slot"
         first to remove that key.
+        
+        This function depends on the feature "luks". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.luks_add_key (self._o, device, key, newkey, keyslot)
@@ -5696,6 +5994,9 @@ class GuestFS(object):
         parameter must be the name of the LUKS mapping device
         (ie. /dev/mapper/mapname) and *not* the name of the
         underlying block device.
+        
+        This function depends on the feature "luks". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.luks_close (self._o, device)
@@ -5706,6 +6007,9 @@ class GuestFS(object):
         formats the device as a LUKS encrypted device. "key" is
         the initial key, which is added to key slot "slot".
         (LUKS supports 8 key slots, numbered 0-7).
+        
+        This function depends on the feature "luks". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.luks_format (self._o, device, key, keyslot)
@@ -5714,6 +6018,9 @@ class GuestFS(object):
     def luks_format_cipher (self, device, key, keyslot, cipher):
         """This command is the same as "g.luks_format" but it also
         allows you to set the "cipher" used.
+        
+        This function depends on the feature "luks". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.luks_format_cipher (self._o, device, key, keyslot, cipher)
@@ -5723,6 +6030,9 @@ class GuestFS(object):
         """This command deletes the key in key slot "keyslot" from
         the encrypted LUKS device "device". "key" must be one of
         the *other* keys.
+        
+        This function depends on the feature "luks". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.luks_kill_slot (self._o, device, key, keyslot)
@@ -5749,6 +6059,9 @@ class GuestFS(object):
         
         Use "g.list_dm_devices" to list all device mapper
         devices.
+        
+        This function depends on the feature "luks". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.luks_open (self._o, device, key, mapname)
@@ -5757,6 +6070,9 @@ class GuestFS(object):
     def luks_open_ro (self, device, key, mapname):
         """This is the same as "g.luks_open" except that a
         read-only mapping is created.
+        
+        This function depends on the feature "luks". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.luks_open_ro (self._o, device, key, mapname)
@@ -5765,6 +6081,9 @@ class GuestFS(object):
     def lvcreate (self, logvol, volgroup, mbytes):
         """This creates an LVM logical volume called "logvol" on
         the volume group "volgroup", with "size" megabytes.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lvcreate (self._o, logvol, volgroup, mbytes)
@@ -5776,6 +6095,9 @@ class GuestFS(object):
         the free space remaining in the volume group. Most
         usefully, when "percent" is 100 this will create the
         largest possible LV.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lvcreate_free (self._o, logvol, volgroup, percent)
@@ -5809,6 +6131,9 @@ class GuestFS(object):
     def lvm_remove_all (self):
         """This command removes all LVM logical volumes, volume
         groups and physical volumes.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lvm_remove_all (self._o)
@@ -5838,6 +6163,9 @@ class GuestFS(object):
         You cannot use this if any VG is currently in use (eg.
         contains a mounted filesystem), even if you are not
         filtering out that VG.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         devices = list (devices)
         self._check_not_closed ()
@@ -5850,6 +6178,9 @@ class GuestFS(object):
         
         You can also remove all LVs in a volume group by
         specifying the VG name, /dev/VG.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lvremove (self._o, device)
@@ -5867,6 +6198,9 @@ class GuestFS(object):
         """This resizes (expands or shrinks) an existing LVM
         logical volume to "mbytes". When reducing, data in the
         reduced part is lost.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lvresize (self._o, device, mbytes)
@@ -5878,6 +6212,9 @@ class GuestFS(object):
         group. Commonly you would call this with pc = 100 which
         expands the logical volume as much as possible, using
         all remaining free space in the volume group.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lvresize_free (self._o, lv, percent)
@@ -5893,6 +6230,9 @@ class GuestFS(object):
         See also "g.lvs_full", "g.list_filesystems".
         
         This function returns a list of strings.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lvs (self._o)
@@ -5905,6 +6245,9 @@ class GuestFS(object):
         
         This function returns a list of lvm_lvs. Each lvm_lv is
         represented as a dictionary.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.lvs_full (self._o)
@@ -5941,6 +6284,9 @@ class GuestFS(object):
         
         This function returns a list of xattrs. Each xattr is
         represented as a dictionary.
+        
+        This function depends on the feature "linuxxattrs". See
+        also "g.feature-available".
         """
         names = list (names)
         self._check_not_closed ()
@@ -6010,6 +6356,9 @@ class GuestFS(object):
         may be added in future.
         
         If not set, this defaults to "raid1".
+        
+        This function depends on the feature "mdadm". See also
+        "g.feature-available".
         """
         devices = list (devices)
         self._check_not_closed ()
@@ -6041,6 +6390,9 @@ class GuestFS(object):
         then the return value is in fact a Python dict.
         Otherwise the return value is a list of pairs of
         strings, for compatibility with old code.
+        
+        This function depends on the feature "mdadm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.md_detail (self._o, md)
@@ -6078,6 +6430,9 @@ class GuestFS(object):
         
         This function returns a list of mdstats. Each mdstat is
         represented as a dictionary.
+        
+        This function depends on the feature "mdadm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.md_stat (self._o, md)
@@ -6086,6 +6441,9 @@ class GuestFS(object):
     def md_stop (self, md):
         """This command deactivates the MD array named "md". The
         device is stopped, but it is not destroyed or zeroed.
+        
+        This function depends on the feature "mdadm". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.md_stop (self._o, md)
@@ -6209,6 +6567,9 @@ class GuestFS(object):
         Deprecated functions will not be removed from the API,
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
+        
+        This function depends on the feature "linuxfsuuid". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.mke2fs_JU (self._o, fstype, blocksize, device, uuid)
@@ -6256,6 +6617,9 @@ class GuestFS(object):
         Deprecated functions will not be removed from the API,
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
+        
+        This function depends on the feature "linuxfsuuid". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.mke2journal_U (self._o, blocksize, uuid, device)
@@ -6270,6 +6634,9 @@ class GuestFS(object):
         permissions bits.
         
         The mode actually set is affected by the umask.
+        
+        This function depends on the feature "mknod". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.mkfifo (self._o, mode, path)
@@ -6347,6 +6714,9 @@ class GuestFS(object):
         takes a non-empty list of devices.
         
         To create general filesystems, use "g.mkfs".
+        
+        This function depends on the feature "btrfs". See also
+        "g.feature-available".
         """
         devices = list (devices)
         self._check_not_closed ()
@@ -6430,6 +6800,9 @@ class GuestFS(object):
         bitwise OR in the appropriate constant for you.
         
         The mode actually set is affected by the umask.
+        
+        This function depends on the feature "mknod". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.mknod (self._o, mode, devmajor, devminor, path)
@@ -6445,6 +6818,9 @@ class GuestFS(object):
         permissions bits.
         
         The mode actually set is affected by the umask.
+        
+        This function depends on the feature "mknod". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.mknod_b (self._o, mode, devmajor, devminor, path)
@@ -6460,6 +6836,9 @@ class GuestFS(object):
         permissions bits.
         
         The mode actually set is affected by the umask.
+        
+        This function depends on the feature "mknod". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.mknod_c (self._o, mode, devmajor, devminor, path)
@@ -6504,6 +6883,9 @@ class GuestFS(object):
         Deprecated functions will not be removed from the API,
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
+        
+        This function depends on the feature "linuxfsuuid". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.mkswap_U (self._o, uuid, device)
@@ -6550,6 +6932,9 @@ class GuestFS(object):
 
     def modprobe (self, modulename):
         """This loads a kernel module in the appliance.
+        
+        This function depends on the feature "linuxmodules". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.modprobe (self._o, modulename)
@@ -6755,6 +7140,9 @@ class GuestFS(object):
         The return value is an integer which 0 if the operation
         would succeed, or some non-zero value documented in the
         ntfs-3g.probe(8) manual page.
+        
+        This function depends on the feature "ntfs3g". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ntfs_3g_probe (self._o, rw, device)
@@ -6764,6 +7152,9 @@ class GuestFS(object):
         """Restore the "backupfile" (from a previous call to
         "g.ntfsclone_out") to "device", overwriting any existing
         contents of this device.
+        
+        This function depends on the feature "ntfs3g". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ntfsclone_in (self._o, backupfile, device)
@@ -6784,6 +7175,9 @@ class GuestFS(object):
         
         Use "g.ntfsclone_in" to restore the file back to a
         libguestfs device.
+        
+        This function depends on the feature "ntfs3g". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ntfsclone_out (self._o, device, backupfile, metadataonly, rescue, ignorefscheck, preservetimestamps, force)
@@ -6801,6 +7195,9 @@ class GuestFS(object):
         The optional "clearbadsectors" flag clears the list of
         bad sectors. This is useful after cloning a disk with
         bad sectors to a new disk.
+        
+        This function depends on the feature "ntfs3g". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ntfsfix (self._o, device, clearbadsectors)
@@ -6832,6 +7229,9 @@ class GuestFS(object):
         resize.
         
         See also ntfsresize(8).
+        
+        This function depends on the feature "ntfsprogs". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ntfsresize (self._o, device, size, force)
@@ -6850,6 +7250,9 @@ class GuestFS(object):
         Deprecated functions will not be removed from the API,
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
+        
+        This function depends on the feature "ntfsprogs". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.ntfsresize_size (self._o, device, size)
@@ -6946,6 +7349,9 @@ class GuestFS(object):
 
     def part_get_gpt_guid (self, device, partnum):
         """Return the GUID of numbered GPT partition "partnum".
+        
+        This function depends on the feature "gdisk". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.part_get_gpt_guid (self._o, device, partnum)
@@ -6956,6 +7362,9 @@ class GuestFS(object):
         "partnum". For MBR partitions, return an appropriate
         GUID corresponding to the MBR type. Behaviour is
         undefined for other partition types.
+        
+        This function depends on the feature "gdisk". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.part_get_gpt_type (self._o, device, partnum)
@@ -7105,6 +7514,9 @@ class GuestFS(object):
         """Set the GUID of numbered GPT partition "partnum" to
         "guid". Return an error if the partition table of
         "device" isn't GPT, or if "guid" is not a valid GUID.
+        
+        This function depends on the feature "gdisk". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.part_set_gpt_guid (self._o, device, partnum, guid)
@@ -7118,6 +7530,9 @@ class GuestFS(object):
         See
         <http://en.wikipedia.org/wiki/GUID_Partition_Table#Parti
         tion_type_GUIDs> for a useful list of type GUIDs.
+        
+        This function depends on the feature "gdisk". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.part_set_gpt_type (self._o, device, partnum, guid)
@@ -7227,6 +7642,9 @@ class GuestFS(object):
     def pvchange_uuid (self, device):
         """Generate a new random UUID for the physical volume
         "device".
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.pvchange_uuid (self._o, device)
@@ -7234,6 +7652,9 @@ class GuestFS(object):
 
     def pvchange_uuid_all (self):
         """Generate new random UUIDs for all physical volumes.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.pvchange_uuid_all (self._o)
@@ -7243,6 +7664,9 @@ class GuestFS(object):
         """This creates an LVM physical volume on the named
         "device", where "device" should usually be a partition
         name such as /dev/sda1.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.pvcreate (self._o, device)
@@ -7255,6 +7679,9 @@ class GuestFS(object):
         The implementation uses the "pvremove" command which
         refuses to wipe physical volumes that contain any volume
         groups, so you have to remove those first.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.pvremove (self._o, device)
@@ -7264,6 +7691,9 @@ class GuestFS(object):
         """This resizes (expands or shrinks) an existing LVM
         physical volume to match the new size of the underlying
         device.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.pvresize (self._o, device)
@@ -7273,6 +7703,9 @@ class GuestFS(object):
         """This command is the same as "g.pvresize" except that it
         allows you to specify the new size (in bytes)
         explicitly.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.pvresize_size (self._o, device, size)
@@ -7288,6 +7721,9 @@ class GuestFS(object):
         See also "g.pvs_full".
         
         This function returns a list of strings.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.pvs (self._o)
@@ -7300,6 +7736,9 @@ class GuestFS(object):
         
         This function returns a list of lvm_pvs. Each lvm_pv is
         represented as a dictionary.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.pvs_full (self._o)
@@ -7515,6 +7954,9 @@ class GuestFS(object):
         of the file "path".
         
         See also: "g.lremovexattr", attr(5).
+        
+        This function depends on the feature "linuxxattrs". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.removexattr (self._o, xattr, path)
@@ -7631,6 +8073,9 @@ class GuestFS(object):
         "deletedest"
         Delete files at the destination that do not exist at
         the source.
+        
+        This function depends on the feature "rsync". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.rsync (self._o, src, dest, archive, deletedest)
@@ -7658,6 +8103,9 @@ class GuestFS(object):
         
         The optional arguments are the same as those of
         "g.rsync".
+        
+        This function depends on the feature "rsync". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.rsync_in (self._o, remote, dest, archive, deletedest)
@@ -7692,6 +8140,9 @@ class GuestFS(object):
         guestfish(1)), for example:
         
         ><fs> glob rsync-out /* rsync://remote/
+        
+        This function depends on the feature "rsync". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.rsync_out (self._o, src, remote, archive, deletedest)
@@ -7703,6 +8154,9 @@ class GuestFS(object):
         
         It is an interface to the scrub(1) program. See that
         manual page for more details.
+        
+        This function depends on the feature "scrub". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.scrub_device (self._o, device)
@@ -7716,6 +8170,9 @@ class GuestFS(object):
         
         It is an interface to the scrub(1) program. See that
         manual page for more details.
+        
+        This function depends on the feature "scrub". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.scrub_file (self._o, file)
@@ -7730,6 +8187,9 @@ class GuestFS(object):
         
         It is an interface to the scrub(1) program. See that
         manual page for more details.
+        
+        This function depends on the feature "scrub". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.scrub_freespace (self._o, dir)
@@ -8301,6 +8761,9 @@ class GuestFS(object):
         the string "context".
         
         See the documentation about SELINUX in guestfs(3).
+        
+        This function depends on the feature "selinux". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.setcon (self._o, context)
@@ -8312,6 +8775,9 @@ class GuestFS(object):
         The value is arbitrary 8 bit data.
         
         See also: "g.lsetxattr", attr(5).
+        
+        This function depends on the feature "linuxxattrs". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.setxattr (self._o, xattr, val, vallen, path)
@@ -8635,6 +9101,9 @@ class GuestFS(object):
     def swapoff_uuid (self, uuid):
         """This command disables the libguestfs appliance swap
         partition with the given UUID.
+        
+        This function depends on the feature "linuxfsuuid". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.swapoff_uuid (self._o, uuid)
@@ -8677,6 +9146,9 @@ class GuestFS(object):
     def swapon_uuid (self, uuid):
         """This command enables swap to a swap partition with the
         given UUID. See "g.swapon_device" for other notes.
+        
+        This function depends on the feature "linuxfsuuid". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.swapon_uuid (self._o, uuid)
@@ -8720,6 +9192,9 @@ class GuestFS(object):
         syslinux(1).
         
         See also "g.extlinux".
+        
+        This function depends on the feature "syslinux". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.syslinux (self._o, device, directory)
@@ -8998,6 +9473,9 @@ class GuestFS(object):
         Deprecated functions will not be removed from the API,
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
+        
+        This function depends on the feature "xz". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.txz_in (self._o, tarball, directory)
@@ -9014,6 +9492,9 @@ class GuestFS(object):
         Deprecated functions will not be removed from the API,
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
+        
+        This function depends on the feature "xz". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.txz_out (self._o, directory, tarball)
@@ -9280,6 +9761,9 @@ class GuestFS(object):
         
         Note that if "volgroups" is an empty list then all
         volume groups are activated or deactivated.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         volgroups = list (volgroups)
         self._check_not_closed ()
@@ -9291,6 +9775,9 @@ class GuestFS(object):
         deactivates all logical volumes in all volume groups.
         
         This command is the same as running "vgchange -a y|n"
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.vg_activate_all (self._o, activate)
@@ -9298,6 +9785,9 @@ class GuestFS(object):
 
     def vgchange_uuid (self, vg):
         """Generate a new random UUID for the volume group "vg".
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.vgchange_uuid (self._o, vg)
@@ -9305,6 +9795,9 @@ class GuestFS(object):
 
     def vgchange_uuid_all (self):
         """Generate new random UUIDs for all volume groups.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.vgchange_uuid_all (self._o)
@@ -9313,6 +9806,9 @@ class GuestFS(object):
     def vgcreate (self, volgroup, physvols):
         """This creates an LVM volume group called "volgroup" from
         the non-empty list of physical volumes "physvols".
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         physvols = list (physvols)
         self._check_not_closed ()
@@ -9341,6 +9837,9 @@ class GuestFS(object):
         Note that the metadata is an internal structure used by
         LVM, subject to change at any time, and is provided for
         information only.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.vgmeta (self._o, vgname)
@@ -9367,6 +9866,9 @@ class GuestFS(object):
         
         This also forcibly removes all logical volumes in the
         volume group (if any).
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.vgremove (self._o, vgname)
@@ -9390,6 +9892,9 @@ class GuestFS(object):
         See also "g.vgs_full".
         
         This function returns a list of strings.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.vgs (self._o)
@@ -9402,6 +9907,9 @@ class GuestFS(object):
         
         This function returns a list of lvm_vgs. Each lvm_vg is
         represented as a dictionary.
+        
+        This function depends on the feature "lvm2". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.vgs_full (self._o)
@@ -9480,6 +9988,9 @@ class GuestFS(object):
         
         Compare with "g.zero" which zeroes the first few blocks
         of a device.
+        
+        This function depends on the feature "wipefs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.wipefs (self._o, device)
@@ -9544,6 +10055,9 @@ class GuestFS(object):
         Some of the parameters of a mounted filesystem can be
         examined and modified using the "g.xfs_info" and
         "g.xfs_growfs" calls.
+        
+        This function depends on the feature "xfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.xfs_admin (self._o, device, extunwritten, imgfile, v2log, projid32bit, lazycounter, label, uuid)
@@ -9555,6 +10069,9 @@ class GuestFS(object):
         The returned struct contains geometry information.
         Missing fields are returned as -1 (for numeric fields)
         or empty string.
+        
+        This function depends on the feature "xfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.xfs_growfs (self._o, path, datasec, logsec, rtsec, datasize, logsize, rtsize, rtextsize, maxpct)
@@ -9571,6 +10088,9 @@ class GuestFS(object):
         
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_xfsinfo structure.
+        
+        This function depends on the feature "xfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.xfs_info (self._o, pathordevice)
@@ -9593,6 +10113,9 @@ class GuestFS(object):
         The returned status indicates whether filesystem
         corruption was detected (returns 1) or was not detected
         (returns 0).
+        
+        This function depends on the feature "xfs". See also
+        "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.xfs_repair (self._o, device, forcelogzero, nomodify, noprefetch, forcegeometry, maxmem, ihashsize, bhashsize, agstride, logdev, rtdev)
@@ -9699,6 +10222,9 @@ class GuestFS(object):
         
         It is possible that using this program can damage the
         filesystem or data on the filesystem.
+        
+        This function depends on the feature "zerofree". See
+        also "g.feature-available".
         """
         self._check_not_closed ()
         r = libguestfsmod.zerofree (self._o, device)

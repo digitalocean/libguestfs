@@ -38,7 +38,6 @@ GuestfsSyslinux
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_syslinux_new ##### -->
 <para>

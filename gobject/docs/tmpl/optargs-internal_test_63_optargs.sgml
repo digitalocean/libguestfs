@@ -348,7 +348,6 @@ GuestfsInternalTest63Optargs
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_internal_test_63_optargs_new ##### -->
 <para>

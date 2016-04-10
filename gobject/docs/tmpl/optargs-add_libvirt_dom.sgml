@@ -68,7 +68,6 @@ GuestfsAddLibvirtDom
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_add_libvirt_dom_new ##### -->
 <para>

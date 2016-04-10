@@ -139,16 +139,16 @@ in F<actions.ml>.
 
 =over 4
 
-=item F</dev/sda> 500MB
+=item F</dev/sda> 2 GB
 
 テスト用の一般的なブロックデバイス。
 
-=item F</dev/sdb> 500MB
+=item F</dev/sdb> 2 GB
 
 F</dev/sdb1> is an ext2 filesystem used for testing filesystem write
 operations.
 
-=item F</dev/sdc> 10MB
+=item F</dev/sdc> 10 MB
 
 2 つのブロックデバイスが必要となるいくつかのテストにおいて使用されます。
 
@@ -234,6 +234,7 @@ This is the numbering scheme used by the tests:
    060  explicit close
    065  implicit close (in GC'd languages)
    070  optargs
+   080  version
  
  - 100  launch, create partitions and LVs and filesystems
  
@@ -304,8 +305,7 @@ automake documentation for details.
 
 valgrind にあるテスト群のサブセットを実行します。
 
-Any F<Makefile.am> in the tree that has a C<check-valgrind:> target will be
-run by this rule.
+See L</VALGRIND> below.
 
 =item C<make check-valgrind-local-guests>
 
@@ -411,6 +411,34 @@ Do:
  make installcheck
 
 =back
+
+=head2 VALGRIND
+
+When you do C<make check-valgrind>, it searches for any F<Makefile.am> in
+the tree that has a C<check-valgrind:> target and runs it.
+
+Writing the F<Makefile.am> and tests correctly to use valgrind and working
+with automake parallel tests is subtle.
+
+If your tests are run via a shell script wrapper, then in the wrapper use:
+
+ $VG virt-foo
+
+and in the F<Makefile.am> use:
+
+ check-valgrind:
+     make VG="$(top_builddir)/run @VG@" check
+
+However, if your binaries run directly from the C<TESTS> rule, you have to
+modify the F<Makefile.am> like this:
+
+ LOG_COMPILER = $(VG)
+ 
+ check-valgrind:
+     make VG="@VG@" check
+
+In either case, check that the right program is being tested by examining
+the F<tmp/valgrind*> log files carefully.
 
 =head2 DAEMON CUSTOM PRINTF FORMATTERS
 

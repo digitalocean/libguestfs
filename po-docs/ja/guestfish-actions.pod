@@ -2,8 +2,9 @@
 =begin コメント
 
 libguestfs generated file
- WARNING: THIS FILE IS GENERATED FROM:
-   generator/ *.ml
+ WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+          generator/fish.ml
+          and from the code in the generator/ subdirectory.
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
  Copyright (C) 2009-2016 Red Hat Inc.
@@ -31,6 +32,8 @@ libguestfs generated file
 この関数はディレクトリー C<dir> に設定されている標準の POSIX アクセス制御リスト (ACL: Access Control List)
 を削除します。
 
+This command depends on the feature C<acl>.  See also L</feature-available>.
+
 =head2 acl-get-file
 
  acl-get-file path acltype
@@ -53,6 +56,8 @@ Return the default ACL.  Normally this only makes sense if C<path> is a
 directory.
 
 =back
+
+This command depends on the feature C<acl>.  See also L</feature-available>.
 
 =head2 acl-set-file
 
@@ -91,6 +96,8 @@ C<g:I<ID>:...> field(s).  A full ACL string might therefore look like this:
 You should use numeric UIDs and GIDs.  To map usernames and groupnames to
 the correct numeric ID in the context of the guest, use the Augeas functions
 (see L</aug-init>).
+
+This command depends on the feature C<acl>.  See also L</feature-available>.
 
 =head2 add-cdrom
 
@@ -782,6 +789,9 @@ the host kernel.  If this support isn't present it may give an error or even
 appear to run but do nothing.  You must also set the C<discard> attribute on
 the underlying drive (see L</add-drive-opts>).
 
+This command depends on the feature C<blkdiscard>.  See also
+L</feature-available>.
+
 =head2 blkdiscardzeroes
 
  blkdiscardzeroes device
@@ -792,6 +802,9 @@ next time.
 
 If it returns false, then it may be that discarded blocks are read as stale
 or random data.
+
+This command depends on the feature C<blkdiscardzeroes>.  See also
+L</feature-available>.
 
 =head2 blkid
 
@@ -940,11 +953,17 @@ C<device> という名前のブロックデバイスを読み書きに設定し�
 
 Cancel a running balance on a btrfs filesystem.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-balance-pause
 
  btrfs-balance-pause path
 
 Pause a running balance on a btrfs filesystem.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-balance-resume
 
@@ -952,11 +971,17 @@ Pause a running balance on a btrfs filesystem.
 
 Resume a paused balance on a btrfs filesystem.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-balance-status
 
  btrfs-balance-status path
 
 Show the status of a running or paused balance on a btrfs filesystem.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-device-add
 
@@ -965,12 +990,18 @@ Show the status of a running or paused balance on a btrfs filesystem.
 C<devices> にあるデバイスの一覧を C<fs> にマウントされた btrfs ファイルシステムに追加します。もし C<devices>
 が空の一覧ならば、何もしません。
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-device-delete
 
  btrfs-device-delete 'devices ...' fs
 
 C<devices> にあるデバイスの一覧を C<fs> にマウントされた btrfs ファイルシステムから削除します。もし C<devices>
 が空の一覧ならば、何もしません。
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-filesystem-balance
 
@@ -981,6 +1012,9 @@ C<devices> にあるデバイスの一覧を C<fs> にマウントされた btrf
 Balance the chunks in the btrfs filesystem mounted at C<fs> across the
 underlying devices.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-filesystem-defragment
 
  btrfs-filesystem-defragment path [flush:true|false] [compress:..]
@@ -989,6 +1023,9 @@ Defragment a file or directory on a btrfs filesystem. compress is one of
 zlib or lzo.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-filesystem-resize
 
@@ -1014,11 +1051,17 @@ L<btrfs(8)> 参照。
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-filesystem-sync
 
  btrfs-filesystem-sync fs
 
 C<fs> にマウントされた btrfs ファイルシステムにおいて強制同期します。
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-fsck
 
@@ -1027,6 +1070,9 @@ C<fs> にマウントされた btrfs ファイルシステムにおいて強制�
 btrfs ファイルシステムをチェックするために使用されると、C<device> はファイルシステムが保存されているデバイスファイルです。
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-image
 
@@ -1037,6 +1083,9 @@ zeroed, but metadata and the like is preserved.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-qgroup-assign
 
  btrfs-qgroup-assign src dst path
@@ -1044,17 +1093,26 @@ zeroed, but metadata and the like is preserved.
 Add qgroup C<src> to parent qgroup C<dst>. This command can group several
 qgroups into a parent qgroup to share common limit.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-qgroup-create
 
  btrfs-qgroup-create qgroupid subvolume
 
 Create a quota group (qgroup) for subvolume at C<subvolume>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-qgroup-destroy
 
  btrfs-qgroup-destroy qgroupid subvolume
 
 Destroy a quota group.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-qgroup-limit
 
@@ -1063,11 +1121,17 @@ Destroy a quota group.
 Limit the size of a subvolume which's path is C<subvolume>. C<size> can have
 suffix of G, M, or K.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-qgroup-remove
 
  btrfs-qgroup-remove src dst path
 
 Remove qgroup C<src> from the parent qgroup C<dst>.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-qgroup-show
 
@@ -1076,6 +1140,9 @@ Remove qgroup C<src> from the parent qgroup C<dst>.
 Show all subvolume quota groups in a btrfs filesystem, including their
 usages.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-quota-enable
 
  btrfs-quota-enable fs true|false
@@ -1083,12 +1150,18 @@ usages.
 Enable or disable subvolume quota support for filesystem which contains
 C<path>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-quota-rescan
 
  btrfs-quota-rescan fs
 
 Trash all qgroup numbers and scan the metadata again with the current
 config.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-replace
 
@@ -1103,6 +1176,9 @@ The C<targetdev> needs to be same size or larger than the C<srcdev>. Devices
 which are currently mounted are never allowed to be used as the
 C<targetdev>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-rescue-chunk-recover
 
  btrfs-rescue-chunk-recover device
@@ -1110,11 +1186,17 @@ C<targetdev>.
 Recover the chunk tree of btrfs filesystem by scanning the devices one by
 one.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-rescue-super-recover
 
  btrfs-rescue-super-recover device
 
 Recover bad superblocks from good copies.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-scrub-cancel
 
@@ -1122,11 +1204,17 @@ Recover bad superblocks from good copies.
 
 Cancel a running scrub on a btrfs filesystem.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-scrub-resume
 
  btrfs-scrub-resume path
 
 Resume a previously canceled or interrupted scrub on a btrfs filesystem.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-scrub-start
 
@@ -1136,17 +1224,26 @@ Reads all the data and metadata on the filesystem, and uses checksums and
 the duplicate copies from RAID storage to identify and repair any corrupt
 data.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-scrub-status
 
  btrfs-scrub-status path
 
 Show status of running or finished scrub on a btrfs filesystem.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-set-seeding
 
  btrfs-set-seeding device true|false
 
 btrfs ファイルシステムを含むデバイスの seeding 機能を有効化または無効化します。
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-subvolume-create
 
@@ -1161,11 +1258,17 @@ subvolume will be added to.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-subvolume-delete
 
  btrfs-subvolume-delete subvolume
 
 Delete the named btrfs subvolume or snapshot.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-subvolume-get-default
 
@@ -1174,11 +1277,17 @@ Delete the named btrfs subvolume or snapshot.
 Get the default subvolume or snapshot of a filesystem mounted at
 C<mountpoint>.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-subvolume-list
 
  btrfs-subvolume-list fs
 
 C<fs> にマウントされている btrfs ファイルシステムの btrfs スナップショットとサブディレクトリーを一覧表示します。
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-subvolume-set-default
 
@@ -1187,11 +1296,17 @@ C<fs> にマウントされている btrfs ファイルシステムの btrfs ス
 Set the subvolume of the btrfs filesystem C<fs> which will be mounted by
 default.  See L</btrfs-subvolume-list> to get a list of subvolumes.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-subvolume-show
 
  btrfs-subvolume-show subvolume
 
 Return detailed information of the subvolume.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfs-subvolume-snapshot
 
@@ -1208,11 +1323,17 @@ newly created snapshot will be added to.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfstune-enable-extended-inode-refs
 
  btrfstune-enable-extended-inode-refs device
 
 This will Enable extended inode refs.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 btrfstune-enable-skinny-metadata-extent-refs
 
@@ -1220,12 +1341,18 @@ This will Enable extended inode refs.
 
 This enable skinny metadata extent refs.
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfstune-seeding
 
  btrfstune-seeding device true|false
 
 Enable seeding of a btrfs device, this will force a fs readonly so that you
 can use it to build other filesystems.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
 
 =head2 c-pointer
 
@@ -1272,6 +1399,9 @@ capabilities set is returned in text form (see L<cap_to_text(3)>).
 
 If no capabilities are attached to a file, an empty string is returned.
 
+This command depends on the feature C<linuxcaps>.  See also
+L</feature-available>.
+
 =head2 cap-set-file
 
  cap-set-file path cap
@@ -1279,6 +1409,9 @@ If no capabilities are attached to a file, an empty string is returned.
 This function sets the Linux capabilities attached to C<path>.  The
 capabilities set C<cap> should be passed in text form (see
 L<cap_from_text(3)>).
+
+This command depends on the feature C<linuxcaps>.  See also
+L</feature-available>.
 
 =head2 case-sensitive-path
 
@@ -2017,6 +2150,9 @@ information about the contents of this file, see L<extlinux(1)>.
 
 See also L</syslinux>.
 
+This command depends on the feature C<extlinux>.  See also
+L</feature-available>.
+
 =head2 fallocate
 
  fallocate path len
@@ -2399,6 +2535,9 @@ turns free space in the filesystem into zeroes.  It is valid to call
 L</fstrim> either instead of, or after calling L</zero-free-space>.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
+This command depends on the feature C<fstrim>.  See also
+L</feature-available>.
 
 =head2 get-append
 
@@ -2801,6 +2940,9 @@ set by calling L</umask>.
 
 L<guestfs(3)> の SELINUX および L</setcon> に関するドキュメントを参照してください
 
+This command depends on the feature C<selinux>.  See also
+L</feature-available>.
+
 =head2 getxattr
 
  getxattr path name
@@ -2820,6 +2962,9 @@ attribute named C<name>, this returns an error.
 
 関連項目: L</getxattrs>, L</lgetxattr>, L<attr(5)>
 
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
+
 =head2 getxattrs
 
  getxattrs path
@@ -2830,6 +2975,9 @@ At the system call level, this is a combination of the L<listxattr(2)> and
 L<getxattr(2)> calls.
 
 関連項目: L</lgetxattrs>, L<attr(5)>
+
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
 
 =head2 glob-expand
 
@@ -2936,6 +3084,9 @@ replacing F</dev/vda> with the name of the installation device.
 
 =back
 
+This command depends on the feature C<grub>.  See also
+L</feature-available>.
+
 =head2 head
 
  head path
@@ -2976,6 +3127,9 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-commit
 
  hivex-commit filename
@@ -2989,6 +3143,9 @@ untouched.
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-add-child
 
  hivex-node-add-child parent name
@@ -2996,6 +3153,9 @@ untouched.
 子ノードに C<name> という名前の C<parent> を追加します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-node-children
 
@@ -3005,6 +3165,9 @@ C<nodeh> のサブキーであるノードの一覧を返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-delete-child
 
  hivex-node-delete-child nodeh
@@ -3012,6 +3175,9 @@ C<nodeh> のサブキーであるノードの一覧を返します。
 C<nodeh> を削除します。必要に応じて、再帰的に削除します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-node-get-child
 
@@ -3022,6 +3188,9 @@ return C<0> meaning the name was not found.
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-get-value
 
  hivex-node-get-value nodeh key
@@ -3031,6 +3200,9 @@ exists.  This can return C<0> meaning the key was not found.
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-name
 
  hivex-node-name nodeh
@@ -3039,6 +3211,9 @@ C<nodeh> の名前を返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-parent
 
  hivex-node-parent nodeh
@@ -3046,6 +3221,9 @@ C<nodeh> の名前を返します。
 C<nodeh> の親ノードを返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-node-set-value
 
@@ -3056,6 +3234,9 @@ name, C<t> is the type, and C<val> is the data.
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-node-values
 
  hivex-node-values nodeh
@@ -3063,6 +3244,9 @@ name, C<t> is the type, and C<val> is the data.
 Return the array of (key, datatype, data) tuples attached to C<nodeh>.
 
 これは同じ名前の L<hivex(3)> のラッパーです。
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-open
 
@@ -3076,6 +3260,9 @@ closed.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-root
 
  hivex-root
@@ -3083,6 +3270,9 @@ closed.
 ハイブのルートノードを返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-value-key
 
@@ -3092,6 +3282,9 @@ closed.
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-value-type
 
  hivex-value-type valueh
@@ -3099,6 +3292,9 @@ closed.
 (key, datatype, data) 組の datatype 項目を返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 hivex-value-utf8
 
@@ -3113,6 +3309,9 @@ This is useful for reading strings out of the Windows registry.  However it
 is not foolproof because the registry is not strongly-typed and fields can
 contain arbitrary or unexpected data.
 
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
+
 =head2 hivex-value-value
 
  hivex-value-value valueh
@@ -3122,6 +3321,9 @@ contain arbitrary or unexpected data.
 これは同じ名前の L<hivex(3)> のラッパーです。
 
 関連項目: L</hivex-value-utf8>
+
+This command depends on the feature C<hivex>.  See also
+L</feature-available>.
 
 =head2 initrd-cat
 
@@ -3167,6 +3369,9 @@ watched, but this does I<not> happen recursively (in subdirectories).
 Note for non-C or non-Linux callers: the inotify events are defined by the
 Linux kernel ABI and are listed in F</usr/include/sys/inotify.h>.
 
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
+
 =head2 inotify-close
 
  inotify-close
@@ -3175,6 +3380,9 @@ This closes the inotify handle which was previously opened by inotify_init.
 It removes all watches, throws away any pending events, and deallocates all
 resources.
 
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
+
 =head2 inotify-files
 
  inotify-files
@@ -3182,6 +3390,9 @@ resources.
 This function is a helpful wrapper around L</inotify-read> which just
 returns a list of pathnames of objects that were touched.  The returned
 pathnames are sorted and deduplicated.
+
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
 
 =head2 inotify-init
 
@@ -3212,6 +3423,9 @@ See also L<inotify(7)> for an overview of the inotify interface as exposed
 by the Linux kernel, which is roughly what we expose via libguestfs.  Note
 that there is one global inotify handle per libguestfs instance.
 
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
+
 =head2 inotify-read
 
  inotify-read
@@ -3226,11 +3440,17 @@ this function repeatedly until it returns an empty list.  The reason is that
 the call will read events up to the maximum appliance-to-host message size
 and leave remaining events in the queue.
 
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
+
 =head2 inotify-rm-watch
 
  inotify-rm-watch wd
 
 前に定義された inotify ウォッチを削除します。 L</inotify-add-watch> 参照。
+
+This command depends on the feature C<inotify>.  See also
+L</feature-available>.
 
 =head2 inspect-get-arch
 
@@ -4184,6 +4404,9 @@ L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor> を参照して�
 
 Close the journal handle.
 
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
+
 =head2 journal-get
 
  journal-get
@@ -4202,6 +4425,9 @@ L</journal-set-data-threshold>, L</journal-get-data-threshold>).
 If you set the data threshold to unlimited (C<0>) then this call can read a
 journal entry of any size, ie. it is not limited by the libguestfs protocol.
 
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
+
 =head2 journal-get-data-threshold
 
  journal-get-data-threshold
@@ -4213,11 +4439,17 @@ the threshold is unlimited.
 
 See also L</journal-set-data-threshold>.
 
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
+
 =head2 journal-get-realtime-usec
 
  journal-get-realtime-usec
 
 Get the realtime (wallclock) timestamp of the current journal entry.
+
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
 
 =head2 journal-next
 
@@ -4230,6 +4462,9 @@ The returned boolean tells you if there are any more journal records to
 read.  C<true> means you can read the next record (eg. using
 L</journal-get>), and C<false> means you have reached the end of the
 journal.
+
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
 
 =head2 journal-open
 
@@ -4244,6 +4479,9 @@ L</journal-get>.
 After you have finished using the journal, you should close the handle by
 calling L</journal-close>.
 
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
+
 =head2 journal-set-data-threshold
 
  journal-set-data-threshold threshold
@@ -4254,6 +4492,9 @@ journal that it may truncate data fields to this size when reading them
 the threshold is unlimited.
 
 See also L</journal-get-data-threshold>.
+
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
 
 =head2 journal-skip
 
@@ -4266,6 +4507,9 @@ The number of entries actually skipped is returned (note S<C<rskip E<ge>
 0>>).  If this is not the same as the absolute value of the skip parameter
 (C<|skip|>) you passed in then it means you have reached the end or the
 start of the journal.
+
+This command depends on the feature C<journal>.  See also
+L</feature-available>.
 
 =head2 kill-subprocess
 
@@ -4321,6 +4565,8 @@ done automatically at L</launch> time.  However you might want to call this
 function if you have hotplugged disks or have just created a Windows dynamic
 disk.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-diskgroup-disks
 
  ldmtool-diskgroup-disks diskgroup
@@ -4328,6 +4574,8 @@ disk.
 Return the disks in a Windows dynamic disk group.  The C<diskgroup>
 parameter should be the GUID of a disk group, one element from the list
 returned by L</ldmtool-scan>.
+
+This command depends on the feature C<ldm>.  See also L</feature-available>.
 
 =head2 ldmtool-diskgroup-name
 
@@ -4337,6 +4585,8 @@ Return the name of a Windows dynamic disk group.  The C<diskgroup> parameter
 should be the GUID of a disk group, one element from the list returned by
 L</ldmtool-scan>.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-diskgroup-volumes
 
  ldmtool-diskgroup-volumes diskgroup
@@ -4345,12 +4595,16 @@ Return the volumes in a Windows dynamic disk group.  The C<diskgroup>
 parameter should be the GUID of a disk group, one element from the list
 returned by L</ldmtool-scan>.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-remove-all
 
  ldmtool-remove-all
 
 This is essentially the opposite of L</ldmtool-create-all>.  It removes the
 device mapper mappings for all Windows dynamic disk volumes
+
+This command depends on the feature C<ldm>.  See also L</feature-available>.
 
 =head2 ldmtool-scan
 
@@ -4363,6 +4617,8 @@ can be passed to other L</ldmtool-*> functions.
 This function scans all block devices.  To scan a subset of block devices,
 call L</ldmtool-scan-devices> instead.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-scan-devices
 
  ldmtool-scan-devices 'devices ...'
@@ -4374,6 +4630,8 @@ can be passed to other L</ldmtool-*> functions.
 The parameter C<devices> is a list of block devices which are scanned.  If
 this list is empty, all block devices are scanned.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-volume-hint
 
  ldmtool-volume-hint diskgroup volume
@@ -4383,12 +4641,16 @@ GUID C<diskgroup>.  This may not be defined, in which case the empty string
 is returned.  The hint field is often, though not always, the name of a
 Windows drive, eg. C<E:>.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 ldmtool-volume-partitions
 
  ldmtool-volume-partitions diskgroup volume
 
 Return the list of partitions in the volume named C<volume> in the disk
 group with GUID C<diskgroup>.
+
+This command depends on the feature C<ldm>.  See also L</feature-available>.
 
 =head2 ldmtool-volume-type
 
@@ -4400,6 +4662,8 @@ C<diskgroup>.
 Possible volume types that can be returned here include: C<simple>,
 C<spanned>, C<striped>, C<mirrored>, C<raid5>.  Other types may also be
 returned.
+
+This command depends on the feature C<ldm>.  See also L</feature-available>.
 
 =head2 lgetxattr
 
@@ -4419,12 +4683,18 @@ attribute named C<name>, this returns an error.
 
 関連項目: L</lgetxattrs>, L</getxattr>, L<attr(5)>
 
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
+
 =head2 lgetxattrs
 
  lgetxattrs path
 
 This is the same as L</getxattrs>, but if C<path> is a symbolic link, then
 it returns the extended attributes of the link itself.
+
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
 
 =head2 list-9p
 
@@ -4506,12 +4776,16 @@ single logical operating system (use L</inspect-os> to look for OSes).
 This function returns all Windows dynamic disk partitions that were found at
 launch time.  It returns a list of device names.
 
+This command depends on the feature C<ldm>.  See also L</feature-available>.
+
 =head2 list-ldm-volumes
 
  list-ldm-volumes
 
 This function returns all Windows dynamic disk volumes that were found at
 launch time.  It returns a list of device names.
+
+This command depends on the feature C<ldm>.  See also L</feature-available>.
 
 =head2 list-md-devices
 
@@ -4581,6 +4855,9 @@ option removes the link (C<linkname>) if it exists already.
 This is the same as L</removexattr>, but if C<path> is a symbolic link, then
 it removes an extended attribute of the link itself.
 
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
+
 =head2 ls
 
  ls directory
@@ -4609,6 +4886,9 @@ C<.> および C<..> は返されません。ファイル名は並べ替えら�
 
 This is the same as L</setxattr>, but if C<path> is a symbolic link, then it
 sets an extended attribute of the link itself.
+
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
 
 =head2 lstat
 
@@ -4692,6 +4972,9 @@ fail.  You have to use L</luks-kill-slot> first to remove that key.
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
+
 =head2 luks-close
 
  luks-close device
@@ -4700,6 +4983,9 @@ This closes a LUKS device that was created earlier by L</luks-open> or
 L</luks-open-ro>.  The C<device> parameter must be the name of the LUKS
 mapping device (ie. F</dev/mapper/mapname>) and I<not> the name of the
 underlying block device.
+
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
 
 =head2 luks-format
 
@@ -4712,6 +4998,9 @@ slot C<slot>.  (LUKS supports 8 key slots, numbered 0-7).
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
+
 =head2 luks-format-cipher
 
  luks-format-cipher device keyslot cipher
@@ -4722,6 +5011,9 @@ the C<cipher> used.
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
+
 =head2 luks-kill-slot
 
  luks-kill-slot device keyslot
@@ -4731,6 +5023,9 @@ device C<device>.  C<key> must be one of the I<other> keys.
 
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
+
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
 
 =head2 luks-open
 
@@ -4756,6 +5051,9 @@ Use L</list-dm-devices> to list all device mapper devices.
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
+
 =head2 luks-open-ro
 
  luks-open-ro device mapname
@@ -4766,12 +5064,18 @@ created.
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
+This command depends on the feature C<luks>.  See also
+L</feature-available>.
+
 =head2 lvcreate
 
  lvcreate logvol volgroup mbytes
 
 This creates an LVM logical volume called C<logvol> on the volume group
 C<volgroup>, with C<size> megabytes.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 lvcreate-free
 
@@ -4781,6 +5085,9 @@ Create an LVM logical volume called F</dev/volgroup/logvol>, using
 approximately C<percent> % of the free space remaining in the volume group.
 Most usefully, when C<percent> is C<100> this will create the largest
 possible LV.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 lvm-canonical-lv-name
 
@@ -4811,6 +5118,9 @@ This command also clears the LVM cache and performs a volume group scan.
 This command removes all LVM logical volumes, volume groups and physical
 volumes.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 lvm-set-filter
 
  lvm-set-filter 'devices ...'
@@ -4834,6 +5144,9 @@ You can filter whole block devices or individual partitions.
 You cannot use this if any VG is currently in use (eg.  contains a mounted
 filesystem), even if you are not filtering out that VG.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 lvremove
 
  lvremove device
@@ -4843,6 +5156,9 @@ LV, such as F</dev/VG/LV>.
 
 You can also remove all LVs in a volume group by specifying the VG name,
 F</dev/VG>.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 lvrename
 
@@ -4856,6 +5172,9 @@ Rename a logical volume C<logvol> with the new name C<newlogvol>.
 
 これは既存の LVM 論理ボリュームを C<mbytes> に容量変更（拡大または縮小）します。縮小するとき、縮小された部分にあるデータは失われます。
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 lvresize-free
 
  lvresize-free lv percent
@@ -4864,6 +5183,9 @@ This expands an existing logical volume C<lv> so that it fills C<pc>% of the
 remaining free space in the volume group.  Commonly you would call this with
 pc = 100 which expands the logical volume as much as possible, using all
 remaining free space in the volume group.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 lvs
 
@@ -4877,12 +5199,18 @@ This returns a list of the logical volume device names
 
 L</lvs-full>, L</list-filesystems> 参照。
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 lvs-full
 
  lvs-full
 
 List all the logical volumes detected.  This is the equivalent of the
 L<lvs(8)> command.  The "full" version includes all fields.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 lvuuid
 
@@ -4909,6 +5237,9 @@ for the first named file.  This repeats for the second and subsequent files.
 This call is intended for programs that want to efficiently list a directory
 contents without making many round-trips.  See also L</lstatlist> for a
 similarly efficient call for getting standard stats.
+
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
 
 =head2 max-disks
 
@@ -4980,6 +5311,9 @@ I<10>。これらのいくつかは同じものを意味しています。将来
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<mdadm>.  See also
+L</feature-available>.
+
 =head2 md-detail
 
  md-detail md
@@ -5011,6 +5345,9 @@ MD デバイスの UUID。
 MD デバイスの名前。
 
 =back
+
+This command depends on the feature C<mdadm>.  See also
+L</feature-available>.
 
 =head2 md-stat
 
@@ -5061,11 +5398,17 @@ RAIDスペアデバイス
 
 =back
 
+This command depends on the feature C<mdadm>.  See also
+L</feature-available>.
+
 =head2 md-stop
 
  md-stop md
 
 このコマンドは C<md> という名前の MD アレイを無効化します。デバイスが停止されますが、破壊またはゼロ書き込みされません。
+
+This command depends on the feature C<mdadm>.  See also
+L</feature-available>.
 
 =head2 mkdir
 
@@ -5168,6 +5511,9 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+This command depends on the feature C<linuxfsuuid>.  See also
+L</feature-available>.
+
 =head2 mke2journal
 
  mke2journal blocksize device
@@ -5206,6 +5552,9 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+This command depends on the feature C<linuxfsuuid>.  See also
+L</feature-available>.
+
 =head2 mkfifo
 
  mkfifo mode path
@@ -5216,6 +5565,9 @@ is just a convenient wrapper around L</mknod>.
 Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
 
 実際に設定されるモードは umask により影響されます。
+
+This command depends on the feature C<mknod>.  See also
+L</feature-available>.
 
 =head2 mkfs
 
@@ -5293,6 +5645,9 @@ To create general filesystems, use L</mkfs>.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 mklost-and-found
 
  mklost-and-found mountpoint
@@ -5361,6 +5716,9 @@ for you.
 
 実際に設定されるモードは umask により影響されます。
 
+This command depends on the feature C<mknod>.  See also
+L</feature-available>.
+
 =head2 mknod-b
 
  mknod-b mode devmajor devminor path
@@ -5373,6 +5731,9 @@ Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
 
 実際に設定されるモードは umask により影響されます。
 
+This command depends on the feature C<mknod>.  See also
+L</feature-available>.
+
 =head2 mknod-c
 
  mknod-c mode devmajor devminor path
@@ -5384,6 +5745,9 @@ wrapper around L</mknod>.
 Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
 
 実際に設定されるモードは umask により影響されます。
+
+This command depends on the feature C<mknod>.  See also
+L</feature-available>.
 
 =head2 mkswap
 
@@ -5426,6 +5790,9 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+This command depends on the feature C<linuxfsuuid>.  See also
+L</feature-available>.
+
 =head2 mkswap-file
 
  mkswap-file path
@@ -5464,6 +5831,9 @@ is appended to the temporary name.
  modprobe modulename
 
 アプライアンスにカーネルモジュールを読み込みます。
+
+This command depends on the feature C<linuxmodules>.  See also
+L</feature-available>.
 
 =head2 mount
 
@@ -5630,6 +6000,9 @@ volume can be mounted read-only.
 The return value is an integer which C<0> if the operation would succeed, or
 some non-zero value documented in the L<ntfs-3g.probe(8)> manual page.
 
+This command depends on the feature C<ntfs3g>.  See also
+L</feature-available>.
+
 =head2 ntfsclone-in
 
  ntfsclone-in (backupfile|-) device
@@ -5638,6 +6011,9 @@ C<backupfile> を(前に C</ntfsclone-out> を呼び出したところから)  C
 に復元します。このデバイスの既存の内容はすべて上書きされます。
 
 標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
+
+This command depends on the feature C<ntfs3g>.  See also
+L</feature-available>.
 
 =head2 ntfsclone-out
 
@@ -5660,6 +6036,9 @@ L<ntfsclone(8)> マニュアルページに詳細な意味が説明されてい�
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<ntfs3g>.  See also
+L</feature-available>.
+
 =head2 ntfsfix
 
  ntfsfix device [clearbadsectors:true|false]
@@ -5673,6 +6052,9 @@ L<ntfsclone(8)> マニュアルページに詳細な意味が説明されてい�
 フラグは不良セクターの一覧をクリアします。不良セクターを持つディスクを新しいディスクにクローンした後に有用です。
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
+This command depends on the feature C<ntfs3g>.  See also
+L</feature-available>.
 
 =head2 ntfsresize
 
@@ -5707,6 +6089,9 @@ L<ntfsresize(8)> 参照。
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<ntfsprogs>.  See also
+L</feature-available>.
+
 =head2 ntfsresize-size
 
  ntfsresize-size device size
@@ -5720,6 +6105,9 @@ instead.
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+This command depends on the feature C<ntfsprogs>.  See also
+L</feature-available>.
 
 =head2 parse-environment
 
@@ -5798,6 +6186,9 @@ L</part-set-bootable> 参照。
 
 Return the GUID of numbered GPT partition C<partnum>.
 
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
+
 =head2 part-get-gpt-type
 
  part-get-gpt-type device partnum
@@ -5805,6 +6196,9 @@ Return the GUID of numbered GPT partition C<partnum>.
 Return the type GUID of numbered GPT partition C<partnum>. For MBR
 partitions, return an appropriate GUID corresponding to the MBR
 type. Behaviour is undefined for other partition types.
+
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
 
 =head2 part-get-mbr-id
 
@@ -5971,6 +6365,9 @@ Set the GUID of numbered GPT partition C<partnum> to C<guid>.  Return an
 error if the partition table of C<device> isn't GPT, or if C<guid> is not a
 valid GUID.
 
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
+
 =head2 part-set-gpt-type
 
  part-set-gpt-type device partnum guid
@@ -5982,6 +6379,9 @@ valid GUID.
 See
 L<http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>
 for a useful list of type GUIDs.
+
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
 
 =head2 part-set-mbr-id
 
@@ -6075,11 +6475,17 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 物理ボリューム C<device> に対する新しいランダムな UUID を生成します。
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 pvchange-uuid-all
 
  pvchange-uuid-all
 
 すべての物理ボリュームに対する新しいランダムな UUID を生成します。
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 pvcreate
 
@@ -6087,6 +6493,9 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 This creates an LVM physical volume on the named C<device>, where C<device>
 should usually be a partition name such as F</dev/sda1>.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 pvremove
 
@@ -6099,6 +6508,9 @@ The implementation uses the C<pvremove> command which refuses to wipe
 physical volumes that contain any volume groups, so you have to remove those
 first.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 pvresize
 
  pvresize device
@@ -6106,12 +6518,18 @@ first.
 This resizes (expands or shrinks) an existing LVM physical volume to match
 the new size of the underlying device.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 pvresize-size
 
  pvresize-size device size
 
 This command is the same as L</pvresize> except that it allows you to
 specify the new size (in bytes) explicitly.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 pvs
 
@@ -6125,12 +6543,18 @@ This returns a list of just the device names that contain PVs
 
 L</pvs-full> 参照。
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 pvs-full
 
  pvs-full
 
 List all the physical volumes detected.  This is the equivalent of the
 L<pvs(8)> command.  The "full" version includes all fields.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 pvuuid
 
@@ -6326,6 +6750,9 @@ This call removes the extended attribute named C<xattr> of the file C<path>.
 
 関連項目: L</lremovexattr>, L<attr(5)>
 
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
+
 =head2 rename
 
  rename oldpath newpath
@@ -6432,6 +6859,9 @@ Delete files at the destination that do not exist at the source.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<rsync>.  See also
+L</feature-available>.
+
 =head2 rsync-in
 
  rsync-in remote dest [archive:true|false] [deletedest:true|false]
@@ -6454,6 +6884,9 @@ up not to require one.
 The optional arguments are the same as those of L</rsync>.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
+This command depends on the feature C<rsync>.  See also
+L</feature-available>.
 
 =head2 rsync-out
 
@@ -6485,6 +6918,9 @@ example:
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<rsync>.  See also
+L</feature-available>.
+
 =head2 scrub-device
 
  scrub-device device
@@ -6494,6 +6930,9 @@ difficult.
 
 It is an interface to the L<scrub(1)> program.  See that manual page for
 more details.
+
+This command depends on the feature C<scrub>.  See also
+L</feature-available>.
 
 =head2 scrub-file
 
@@ -6507,6 +6946,9 @@ The file is I<removed> after scrubbing.
 It is an interface to the L<scrub(1)> program.  See that manual page for
 more details.
 
+This command depends on the feature C<scrub>.  See also
+L</feature-available>.
+
 =head2 scrub-freespace
 
  scrub-freespace dir
@@ -6518,6 +6960,9 @@ containing C<dir>.
 
 It is an interface to the L<scrub(1)> program.  See that manual page for
 more details.
+
+This command depends on the feature C<scrub>.  See also
+L</feature-available>.
 
 =head2 set-append
 
@@ -7057,6 +7502,9 @@ C<context>.
 
 L<guestfs(3)> における SELinux に関するドキュメントを参照してください。
 
+This command depends on the feature C<selinux>.  See also
+L</feature-available>.
+
 =head2 setxattr
 
  setxattr xattr val vallen path
@@ -7065,6 +7513,9 @@ This call sets the extended attribute named C<xattr> of the file C<path> to
 the value C<val> (of length C<vallen>).  The value is arbitrary 8 bit data.
 
 関連項目: L</lsetxattr>, L<attr(5)>
+
+This command depends on the feature C<linuxxattrs>.  See also
+L</feature-available>.
 
 =head2 sfdisk
 
@@ -7338,6 +7789,9 @@ named C<device>.  See L</swapon-device>.
 
 このコマンドは libguestfs アプライアンスの指定された UUID を持つ swap パーティションを無効にします。
 
+This command depends on the feature C<linuxfsuuid>.  See also
+L</feature-available>.
+
 =head2 swapon-device
 
  swapon-device device
@@ -7371,6 +7825,9 @@ L</swapon-device> for other notes.
 
 This command enables swap to a swap partition with the given UUID.  See
 L</swapon-device> for other notes.
+
+This command depends on the feature C<linuxfsuuid>.  See also
+L</feature-available>.
 
 =head2 sync
 
@@ -7415,6 +7872,9 @@ information about the contents of this file, see L<syslinux(1)>.
 See also L</extlinux>.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
+This command depends on the feature C<syslinux>.  See also
+L</feature-available>.
 
 =head2 tail
 
@@ -7685,6 +8145,8 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+This command depends on the feature C<xz>.  See also L</feature-available>.
+
 =head2 txz-out
 
  txz-out directory (tarball|-)
@@ -7700,6 +8162,8 @@ instead.
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+This command depends on the feature C<xz>.  See also L</feature-available>.
 
 =head2 umask
 
@@ -7929,6 +8393,9 @@ volumes in the listed volume groups C<volgroups>.
 Note that if C<volgroups> is an empty list then B<all> volume groups are
 activated or deactivated.
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vg-activate-all
 
  vg-activate-all true|false
@@ -7938,11 +8405,17 @@ volumes in all volume groups.
 
 This command is the same as running C<vgchange -a y|n>
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vgchange-uuid
 
  vgchange-uuid vg
 
 ランダムな新しい UUID をボリュームグループ C<vg> に対して生成します。
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 vgchange-uuid-all
 
@@ -7950,11 +8423,17 @@ This command is the same as running C<vgchange -a y|n>
 
 すべての物理ボリュームに対する新しいランダムな UUID を生成します。
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vgcreate
 
  vgcreate volgroup 'physvols ...'
 
 これは、物理ボリューム C<physvols> の空ではない一覧から、C<volgroup> という名前の LVM ボリュームグループを作成します。
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 vglvuuids
 
@@ -7974,6 +8453,9 @@ L</vgpvuuids> 参照。
 C<vgname> は LVM ボリュームグループです。このコマンドは、ボリュームグループを検査して、そのメタ情報を返します。
 
 メタ情報は、LVM により使用される内部構造で、いつでも変更を強制され、情報に対してのみ提供されることに注意してください。
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 vgpvuuids
 
@@ -7995,6 +8477,9 @@ LVM ボリュームグループ C<vgname> を削除します（例: C<VG>）。
 
 This also forcibly removes all logical volumes in the volume group (if any).
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vgrename
 
  vgrename volgroup newvolgroup
@@ -8013,12 +8498,18 @@ This returns a list of just the volume group names that were detected
 
 L</vgs-full> 参照。
 
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
+
 =head2 vgs-full
 
  vgs-full
 
 List all the volumes groups detected.  This is the equivalent of the
 L<vgs(8)> command.  The "full" version includes all fields.
+
+This command depends on the feature C<lvm2>.  See also
+L</feature-available>.
 
 =head2 vgscan
 
@@ -8061,6 +8552,9 @@ C<device> to make the filesystem invisible to libblkid.
 これは、ファイルシステム自身を削除しません、また C<device> から他のどんなデータも削除しません。
 
 デバイスの最初の数ブロックをゼロにする L</zero> と比較します。
+
+This command depends on the feature C<wipefs>.  See also
+L</feature-available>.
 
 =head2 write
 
@@ -8115,6 +8609,8 @@ using the L</xfs-info> and L</xfs-growfs> calls.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<xfs>.  See also L</feature-available>.
+
 =head2 xfs-growfs
 
  xfs-growfs path [datasec:true|false] [logsec:true|false] [rtsec:true|false] [datasize:N] [logsize:N] [rtsize:N] [rtextsize:N] [maxpct:N]
@@ -8126,6 +8622,8 @@ returned as C<-1> (for numeric fields) or empty string.
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
+This command depends on the feature C<xfs>.  See also L</feature-available>.
+
 =head2 xfs-info
 
  xfs-info pathordevice
@@ -8135,6 +8633,8 @@ C<pathordevice> は、マウントされた XFS ファイルシステム、ま�
 
 The returned struct contains geometry information.  Missing fields are
 returned as C<-1> (for numeric fields) or empty string.
+
+This command depends on the feature C<xfs>.  See also L</feature-available>.
 
 =head2 xfs-repair
 
@@ -8155,6 +8655,8 @@ The returned status indicates whether filesystem corruption was detected
 (returns C<1>) or was not detected (returns C<0>).
 
 このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
+This command depends on the feature C<xfs>.  See also L</feature-available>.
 
 =head2 zegrep
 
@@ -8235,6 +8737,9 @@ You should B<not> run this program if the filesystem is mounted.
 
 It is possible that using this program can damage the filesystem or data on
 the filesystem.
+
+This command depends on the feature C<zerofree>.  See also
+L</feature-available>.
 
 =head2 zfgrep
 

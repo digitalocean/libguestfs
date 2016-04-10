@@ -38,7 +38,6 @@ GuestfsCompressDeviceOut
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_compress_device_out_new ##### -->
 <para>

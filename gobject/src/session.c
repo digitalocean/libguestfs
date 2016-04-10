@@ -1,6 +1,7 @@
 /* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/gobject.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -426,6 +427,9 @@ guestfs_session_close (GuestfsSession *session, GError **err)
  * This function deletes the default POSIX Access Control List (ACL)
  * attached to directory @dir.
  * 
+ * This function depends on the feature "acl".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.63
  */
@@ -471,6 +475,9 @@ guestfs_session_acl_delete_def_file (GuestfsSession *session, const gchar *dir, 
  * Return the default ACL. Normally this only makes sense if @path is a
  * directory.
  * 
+ * This function depends on the feature "acl".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.19.63
  */
@@ -534,6 +541,9 @@ guestfs_session_acl_get_file (GuestfsSession *session, const gchar *path, const 
  * the correct numeric ID in the context of the guest, use the Augeas
  * functions (see guestfs_session_aug_init()).
  * 
+ * This function depends on the feature "acl".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.63
  */
@@ -2285,6 +2295,9 @@ guestfs_session_base64_out (GuestfsSession *session, const gchar *filename, cons
  * attribute on the underlying drive (see
  * guestfs_session_add_drive_opts()).
  * 
+ * This function depends on the feature "blkdiscard".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.25.44
  */
@@ -2323,6 +2336,9 @@ guestfs_session_blkdiscard (GuestfsSession *session, const gchar *device, GError
  * If it returns false, then it may be that discarded blocks are read as
  * stale or random data.
  * 
+ * This function depends on the feature "blkdiscardzeroes".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.25.44
  */
@@ -2821,6 +2837,9 @@ guestfs_session_blockdev_setrw (GuestfsSession *session, const gchar *device, GE
  *
  * Cancel a running balance on a btrfs filesystem.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.22
  */
@@ -2854,6 +2873,9 @@ guestfs_session_btrfs_balance_cancel (GuestfsSession *session, const gchar *path
  *
  * Pause a running balance on a btrfs filesystem.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.22
  */
@@ -2887,6 +2909,9 @@ guestfs_session_btrfs_balance_pause (GuestfsSession *session, const gchar *path,
  *
  * Resume a paused balance on a btrfs filesystem.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.22
  */
@@ -2920,6 +2945,9 @@ guestfs_session_btrfs_balance_resume (GuestfsSession *session, const gchar *path
  *
  * Show the status of a running or paused balance on a btrfs filesystem.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): a BTRFSBalance object, or NULL on error
  * Since: 1.29.26
  */
@@ -2962,6 +2990,9 @@ guestfs_session_btrfs_balance_status (GuestfsSession *session, const gchar *path
  * Add the list of device(s) in @devices to the btrfs filesystem mounted at
  * @fs. If @devices is an empty list, this does nothing.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.35
  */
@@ -2997,6 +3028,9 @@ guestfs_session_btrfs_device_add (GuestfsSession *session, gchar *const *devices
  * Remove the @devices from the btrfs filesystem mounted at @fs. If
  * @devices is an empty list, this does nothing.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.35
  */
@@ -3031,6 +3065,9 @@ guestfs_session_btrfs_device_delete (GuestfsSession *session, gchar *const *devi
  * Balance the chunks in the btrfs filesystem mounted at @fs across the
  * underlying devices.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.35
  */
@@ -3066,6 +3103,9 @@ guestfs_session_btrfs_filesystem_balance (GuestfsSession *session, const gchar *
  * Defragment a file or directory on a btrfs filesystem. compress is one of
  * zlib or lzo.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.22
  */
@@ -3136,6 +3176,9 @@ guestfs_session_btrfs_filesystem_defragment (GuestfsSession *session, const gcha
  * 
  * See also btrfs(8).
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.11.17
  */
@@ -3185,6 +3228,9 @@ guestfs_session_btrfs_filesystem_resize (GuestfsSession *session, const gchar *m
  *
  * Force sync on the btrfs filesystem mounted at @fs.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.35
  */
@@ -3220,6 +3266,9 @@ guestfs_session_btrfs_filesystem_sync (GuestfsSession *session, const gchar *fs,
  * Used to check a btrfs filesystem, @device is the device file where the
  * filesystem is stored.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.43
  */
@@ -3280,6 +3329,9 @@ guestfs_session_btrfs_fsck (GuestfsSession *session, const gchar *device, Guestf
  * This is used to create an image of a btrfs filesystem. All data will be
  * zeroed, but metadata and the like is preserved.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.32
  */
@@ -3332,6 +3384,9 @@ guestfs_session_btrfs_image (GuestfsSession *session, gchar *const *source, cons
  * Add qgroup @src to parent qgroup @dst. This command can group several
  * qgroups into a parent qgroup to share common limit.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.17
  */
@@ -3366,6 +3421,9 @@ guestfs_session_btrfs_qgroup_assign (GuestfsSession *session, const gchar *src, 
  *
  * Create a quota group (qgroup) for subvolume at @subvolume.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.17
  */
@@ -3400,6 +3458,9 @@ guestfs_session_btrfs_qgroup_create (GuestfsSession *session, const gchar *qgrou
  *
  * Destroy a quota group.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.17
  */
@@ -3435,6 +3496,9 @@ guestfs_session_btrfs_qgroup_destroy (GuestfsSession *session, const gchar *qgro
  * Limit the size of a subvolume which's path is @subvolume. @size can have
  * suffix of G, M, or K.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.17
  */
@@ -3470,6 +3534,9 @@ guestfs_session_btrfs_qgroup_limit (GuestfsSession *session, const gchar *subvol
  *
  * Remove qgroup @src from the parent qgroup @dst.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.17
  */
@@ -3504,6 +3571,9 @@ guestfs_session_btrfs_qgroup_remove (GuestfsSession *session, const gchar *src, 
  * Show all subvolume quota groups in a btrfs filesystem, including their
  * usages.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsBTRFSQgroup): an array of BTRFSQgroup objects, or NULL on error
  * Since: 1.29.17
  */
@@ -3549,6 +3619,9 @@ guestfs_session_btrfs_qgroup_show (GuestfsSession *session, const gchar *path, G
  * Enable or disable subvolume quota support for filesystem which contains
  * @path.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.17
  */
@@ -3583,6 +3656,9 @@ guestfs_session_btrfs_quota_enable (GuestfsSession *session, const gchar *fs, gb
  * Trash all qgroup numbers and scan the metadata again with the current
  * config.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.17
  */
@@ -3625,6 +3701,9 @@ guestfs_session_btrfs_quota_rescan (GuestfsSession *session, const gchar *fs, GE
  * which are currently mounted are never allowed to be used as the
  * @targetdev.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.48
  */
@@ -3659,6 +3738,9 @@ guestfs_session_btrfs_replace (GuestfsSession *session, const gchar *srcdev, con
  * Recover the chunk tree of btrfs filesystem by scanning the devices one
  * by one.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.22
  */
@@ -3692,6 +3774,9 @@ guestfs_session_btrfs_rescue_chunk_recover (GuestfsSession *session, const gchar
  *
  * Recover bad superblocks from good copies.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.22
  */
@@ -3725,6 +3810,9 @@ guestfs_session_btrfs_rescue_super_recover (GuestfsSession *session, const gchar
  *
  * Cancel a running scrub on a btrfs filesystem.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.22
  */
@@ -3758,6 +3846,9 @@ guestfs_session_btrfs_scrub_cancel (GuestfsSession *session, const gchar *path, 
  *
  * Resume a previously canceled or interrupted scrub on a btrfs filesystem.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.22
  */
@@ -3793,6 +3884,9 @@ guestfs_session_btrfs_scrub_resume (GuestfsSession *session, const gchar *path, 
  * and the duplicate copies from RAID storage to identify and repair any
  * corrupt data.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.22
  */
@@ -3826,6 +3920,9 @@ guestfs_session_btrfs_scrub_start (GuestfsSession *session, const gchar *path, G
  *
  * Show status of running or finished scrub on a btrfs filesystem.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): a BTRFSScrub object, or NULL on error
  * Since: 1.29.26
  */
@@ -3878,6 +3975,9 @@ guestfs_session_btrfs_scrub_status (GuestfsSession *session, const gchar *path, 
  * Enable or disable the seeding feature of a device that contains a btrfs
  * filesystem.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.43
  */
@@ -3915,6 +4015,9 @@ guestfs_session_btrfs_set_seeding (GuestfsSession *session, const gchar *device,
  * The optional parameter @qgroupid represents the qgroup which the newly
  * created subvolume will be added to.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.35
  */
@@ -3964,6 +4067,9 @@ guestfs_session_btrfs_subvolume_create (GuestfsSession *session, const gchar *de
  *
  * Delete the named btrfs subvolume or snapshot.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.35
  */
@@ -3998,6 +4104,9 @@ guestfs_session_btrfs_subvolume_delete (GuestfsSession *session, const gchar *su
  * Get the default subvolume or snapshot of a filesystem mounted at
  * @mountpoint.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.29.17
  */
@@ -4032,6 +4141,9 @@ guestfs_session_btrfs_subvolume_get_default (GuestfsSession *session, const gcha
  * List the btrfs snapshots and subvolumes of the btrfs filesystem which is
  * mounted at @fs.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsBTRFSSubvolume): an array of BTRFSSubvolume objects, or NULL on error
  * Since: 1.17.35
  */
@@ -4078,6 +4190,9 @@ guestfs_session_btrfs_subvolume_list (GuestfsSession *session, const gchar *fs, 
  * default. See guestfs_session_btrfs_subvolume_list() to get a list of
  * subvolumes.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.35
  */
@@ -4111,6 +4226,9 @@ guestfs_session_btrfs_subvolume_set_default (GuestfsSession *session, gint64 id,
  *
  * Return detailed information of the subvolume.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
  * Since: 1.29.17
  */
@@ -4159,6 +4277,9 @@ guestfs_session_btrfs_subvolume_show (GuestfsSession *session, const gchar *subv
  * is created. The optional parameter @qgroupid represents the qgroup which
  * the newly created snapshot will be added to.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.35
  */
@@ -4216,6 +4337,9 @@ guestfs_session_btrfs_subvolume_snapshot (GuestfsSession *session, const gchar *
  *
  * This will Enable extended inode refs.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.29
  */
@@ -4249,6 +4373,9 @@ guestfs_session_btrfstune_enable_extended_inode_refs (GuestfsSession *session, c
  *
  * This enable skinny metadata extent refs.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.29
  */
@@ -4284,6 +4411,9 @@ guestfs_session_btrfstune_enable_skinny_metadata_extent_refs (GuestfsSession *se
  * Enable seeding of a btrfs device, this will force a fs readonly so that
  * you can use it to build other filesystems.
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.29
  */
@@ -4402,6 +4532,9 @@ guestfs_session_canonical_device_name (GuestfsSession *session, const gchar *dev
  * 
  * If no capabilities are attached to a file, an empty string is returned.
  * 
+ * This function depends on the feature "linuxcaps".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.19.63
  */
@@ -4438,6 +4571,9 @@ guestfs_session_cap_get_file (GuestfsSession *session, const gchar *path, GError
  * capabilities set @cap should be passed in text form (see
  * cap_from_text(3)).
  * 
+ * This function depends on the feature "linuxcaps".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.63
  */
@@ -6956,6 +7092,9 @@ guestfs_session_exists (GuestfsSession *session, const gchar *path, GError **err
  * 
  * See also guestfs_session_syslinux().
  * 
+ * This function depends on the feature "extlinux".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.21.27
  */
@@ -7784,6 +7923,9 @@ guestfs_session_fsck (GuestfsSession *session, const gchar *fstype, const gchar 
  * valid to call guestfs_session_fstrim() either instead of, or after
  * calling guestfs_session_zero_free_space().
  * 
+ * This function depends on the feature "fstrim".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.6
  */
@@ -9056,6 +9198,9 @@ guestfs_session_get_verbose (GuestfsSession *session, GError **err)
  * See the documentation about SELINUX in guestfs(3), and
  * guestfs_session_setcon()
  * 
+ * This function depends on the feature "selinux".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.0.67
  */
@@ -9106,6 +9251,9 @@ guestfs_session_getcon (GuestfsSession *session, GError **err)
  * See also: guestfs_session_getxattrs(), guestfs_session_lgetxattr(),
  * attr(5).
  * 
+ * This function depends on the feature "linuxxattrs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
  * Since: 1.7.24
  */
@@ -9144,6 +9292,9 @@ guestfs_session_getxattr (GuestfsSession *session, const gchar *path, const gcha
  * 
  * See also: guestfs_session_lgetxattrs(), attr(5).
  * 
+ * This function depends on the feature "linuxxattrs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
  * Since: 1.0.59
  */
@@ -9383,6 +9534,9 @@ guestfs_session_grepi (GuestfsSession *session, const gchar *regex, const gchar 
  * 
  * replacing /dev/vda with the name of the installation device.
  * 
+ * This function depends on the feature "grub".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.17
  */
@@ -9525,6 +9679,9 @@ guestfs_session_hexdump (GuestfsSession *session, const gchar *path, GError **er
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.35
  */
@@ -9565,6 +9722,9 @@ guestfs_session_hivex_close (GuestfsSession *session, GError **err)
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.35
  */
@@ -9601,6 +9761,9 @@ guestfs_session_hivex_commit (GuestfsSession *session, const gchar *filename, GE
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.19.35
  */
@@ -9636,6 +9799,9 @@ guestfs_session_hivex_node_add_child (GuestfsSession *session, gint64 parent, co
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsHivexNode): an array of HivexNode objects, or NULL on error
  * Since: 1.19.35
  */
@@ -9679,6 +9845,9 @@ guestfs_session_hivex_node_children (GuestfsSession *session, gint64 nodeh, GErr
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.35
  */
@@ -9716,6 +9885,9 @@ guestfs_session_hivex_node_delete_child (GuestfsSession *session, gint64 nodeh, 
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.19.35
  */
@@ -9753,6 +9925,9 @@ guestfs_session_hivex_node_get_child (GuestfsSession *session, gint64 nodeh, con
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.19.35
  */
@@ -9788,6 +9963,9 @@ guestfs_session_hivex_node_get_value (GuestfsSession *session, gint64 nodeh, con
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.19.35
  */
@@ -9823,6 +10001,9 @@ guestfs_session_hivex_node_name (GuestfsSession *session, gint64 nodeh, GError *
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.19.35
  */
@@ -9863,6 +10044,9 @@ guestfs_session_hivex_node_parent (GuestfsSession *session, gint64 nodeh, GError
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.35
  */
@@ -9898,6 +10082,9 @@ guestfs_session_hivex_node_set_value (GuestfsSession *session, gint64 nodeh, con
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsHivexValue): an array of HivexValue objects, or NULL on error
  * Since: 1.19.35
  */
@@ -9944,6 +10131,9 @@ guestfs_session_hivex_node_values (GuestfsSession *session, gint64 nodeh, GError
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.35
  */
@@ -10010,6 +10200,9 @@ guestfs_session_hivex_open (GuestfsSession *session, const gchar *filename, Gues
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.19.35
  */
@@ -10045,6 +10238,9 @@ guestfs_session_hivex_root (GuestfsSession *session, GError **err)
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.19.35
  */
@@ -10080,6 +10276,9 @@ guestfs_session_hivex_value_key (GuestfsSession *session, gint64 valueh, GError 
  * 
  * This is a wrapper around the hivex(3) call of the same name.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.19.35
  */
@@ -10120,6 +10319,9 @@ guestfs_session_hivex_value_type (GuestfsSession *session, gint64 valueh, GError
  * it is not foolproof because the registry is not strongly-typed and
  * fields can contain arbitrary or unexpected data.
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.19.35
  */
@@ -10158,6 +10360,9 @@ guestfs_session_hivex_value_utf8 (GuestfsSession *session, gint64 valueh, GError
  * 
  * See also: guestfs_session_hivex_value_utf8().
  * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
  * Since: 1.19.35
  */
@@ -10284,6 +10489,9 @@ guestfs_session_initrd_list (GuestfsSession *session, const gchar *path, GError 
  * Note for non-C or non-Linux callers: the inotify events are defined by
  * the Linux kernel ABI and are listed in /usr/include/sys/inotify.h.
  * 
+ * This function depends on the feature "inotify".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.0.66
  */
@@ -10318,6 +10526,9 @@ guestfs_session_inotify_add_watch (GuestfsSession *session, const gchar *path, g
  * inotify_init. It removes all watches, throws away any pending events,
  * and deallocates all resources.
  * 
+ * This function depends on the feature "inotify".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.66
  */
@@ -10352,6 +10563,9 @@ guestfs_session_inotify_close (GuestfsSession *session, GError **err)
  * which just returns a list of pathnames of objects that were touched. The
  * returned pathnames are sorted and deduplicated.
  * 
+ * This function depends on the feature "inotify".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 1.0.66
  */
@@ -10413,6 +10627,9 @@ guestfs_session_inotify_files (GuestfsSession *session, GError **err)
  * by the Linux kernel, which is roughly what we expose via libguestfs.
  * Note that there is one global inotify handle per libguestfs instance.
  * 
+ * This function depends on the feature "inotify".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.66
  */
@@ -10453,6 +10670,9 @@ guestfs_session_inotify_init (GuestfsSession *session, gint32 maxevents, GError 
  * is that the call will read events up to the maximum appliance-to-host
  * message size and leave remaining events in the queue.
  * 
+ * This function depends on the feature "inotify".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsINotifyEvent): an array of INotifyEvent objects, or NULL on error
  * Since: 1.0.66
  */
@@ -10498,6 +10718,9 @@ guestfs_session_inotify_read (GuestfsSession *session, GError **err)
  * Remove a previously defined inotify watch. See
  * guestfs_session_inotify_add_watch().
  * 
+ * This function depends on the feature "inotify".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.66
  */
@@ -14495,6 +14718,9 @@ guestfs_session_isoinfo_device (GuestfsSession *session, const gchar *device, GE
  *
  * Close the journal handle.
  * 
+ * This function depends on the feature "journal".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.23.11
  */
@@ -14541,6 +14767,9 @@ guestfs_session_journal_close (GuestfsSession *session, GError **err)
  * a journal entry of any size, ie. it is not limited by the libguestfs
  * protocol.
  * 
+ * This function depends on the feature "journal".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
  * Since: 1.23.11
  */
@@ -14590,6 +14819,9 @@ guestfs_session_journal_get (GuestfsSession *session, GError **err)
  * 
  * See also guestfs_session_journal_set_data_threshold().
  * 
+ * This function depends on the feature "journal".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.23.11
  */
@@ -14622,6 +14854,9 @@ guestfs_session_journal_get_data_threshold (GuestfsSession *session, GError **er
  *
  * Get the realtime (wallclock) timestamp of the current journal entry.
  * 
+ * This function depends on the feature "journal".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.27.18
  */
@@ -14660,6 +14895,9 @@ guestfs_session_journal_get_realtime_usec (GuestfsSession *session, GError **err
  * guestfs_session_journal_get()), and @false means you have reached the
  * end of the journal.
  * 
+ * This function depends on the feature "journal".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.23.11
  */
@@ -14700,6 +14938,9 @@ guestfs_session_journal_next (GuestfsSession *session, GError **err)
  * After you have finished using the journal, you should close the handle
  * by calling guestfs_session_journal_close().
  * 
+ * This function depends on the feature "journal".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.23.11
  */
@@ -14738,6 +14979,9 @@ guestfs_session_journal_open (GuestfsSession *session, const gchar *directory, G
  * 
  * See also guestfs_session_journal_get_data_threshold().
  * 
+ * This function depends on the feature "journal".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.23.11
  */
@@ -14777,6 +15021,9 @@ guestfs_session_journal_set_data_threshold (GuestfsSession *session, gint64 thre
  * ("|skip|") you passed in then it means you have reached the end or the
  * start of the journal.
  * 
+ * This function depends on the feature "journal".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.23.11
  */
@@ -14932,6 +15179,9 @@ guestfs_session_lchown (GuestfsSession *session, gint32 owner, gint32 group, con
  * want to call this function if you have hotplugged disks or have just
  * created a Windows dynamic disk.
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.20.0
  */
@@ -14967,6 +15217,9 @@ guestfs_session_ldmtool_create_all (GuestfsSession *session, GError **err)
  * parameter should be the GUID of a disk group, one element from the list
  * returned by guestfs_session_ldmtool_scan().
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 1.20.0
  */
@@ -15002,6 +15255,9 @@ guestfs_session_ldmtool_diskgroup_disks (GuestfsSession *session, const gchar *d
  * parameter should be the GUID of a disk group, one element from the list
  * returned by guestfs_session_ldmtool_scan().
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.20.0
  */
@@ -15037,6 +15293,9 @@ guestfs_session_ldmtool_diskgroup_name (GuestfsSession *session, const gchar *di
  * parameter should be the GUID of a disk group, one element from the list
  * returned by guestfs_session_ldmtool_scan().
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 1.20.0
  */
@@ -15071,6 +15330,9 @@ guestfs_session_ldmtool_diskgroup_volumes (GuestfsSession *session, const gchar 
  * guestfs_session_ldmtool_create_all(). It removes the device mapper
  * mappings for all Windows dynamic disk volumes
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.20.0
  */
@@ -15108,6 +15370,9 @@ guestfs_session_ldmtool_remove_all (GuestfsSession *session, GError **err)
  * This function scans all block devices. To scan a subset of block
  * devices, call guestfs_session_ldmtool_scan_devices() instead.
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 1.20.0
  */
@@ -15146,6 +15411,9 @@ guestfs_session_ldmtool_scan (GuestfsSession *session, GError **err)
  * The parameter @devices is a list of block devices which are scanned. If
  * this list is empty, all block devices are scanned.
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 1.20.0
  */
@@ -15183,6 +15451,9 @@ guestfs_session_ldmtool_scan_devices (GuestfsSession *session, gchar *const *dev
  * is returned. The hint field is often, though not always, the name of a
  * Windows drive, eg. "E:".
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.20.0
  */
@@ -15218,6 +15489,9 @@ guestfs_session_ldmtool_volume_hint (GuestfsSession *session, const gchar *diskg
  * Return the list of partitions in the volume named @volume in the disk
  * group with GUID @diskgroup.
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 1.20.0
  */
@@ -15256,6 +15530,9 @@ guestfs_session_ldmtool_volume_partitions (GuestfsSession *session, const gchar 
  * Possible volume types that can be returned here include: @simple,
  * @spanned, @striped, @mirrored, @raid5. Other types may also be returned.
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.20.0
  */
@@ -15306,6 +15583,9 @@ guestfs_session_ldmtool_volume_type (GuestfsSession *session, const gchar *diskg
  * See also: guestfs_session_lgetxattrs(), guestfs_session_getxattr(),
  * attr(5).
  * 
+ * This function depends on the feature "linuxxattrs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
  * Since: 1.7.24
  */
@@ -15341,6 +15621,9 @@ guestfs_session_lgetxattr (GuestfsSession *session, const gchar *path, const gch
  * symbolic link, then it returns the extended attributes of the link
  * itself.
  * 
+ * This function depends on the feature "linuxxattrs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
  * Since: 1.0.59
  */
@@ -15612,6 +15895,9 @@ guestfs_session_list_filesystems (GuestfsSession *session, GError **err)
  * This function returns all Windows dynamic disk partitions that were
  * found at launch time. It returns a list of device names.
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 1.20.0
  */
@@ -15645,6 +15931,9 @@ guestfs_session_list_ldm_partitions (GuestfsSession *session, GError **err)
  * This function returns all Windows dynamic disk volumes that were found
  * at launch time. It returns a list of device names.
  * 
+ * This function depends on the feature "ldm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 1.20.0
  */
@@ -15962,6 +16251,9 @@ guestfs_session_ln_sf (GuestfsSession *session, const gchar *target, const gchar
  * This is the same as guestfs_session_removexattr(), but if @path is a
  * symbolic link, then it removes an extended attribute of the link itself.
  * 
+ * This function depends on the feature "linuxxattrs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.59
  */
@@ -16074,6 +16366,9 @@ guestfs_session_ls0 (GuestfsSession *session, const gchar *dir, const gchar *fil
  * This is the same as guestfs_session_setxattr(), but if @path is a
  * symbolic link, then it sets an extended attribute of the link itself.
  * 
+ * This function depends on the feature "linuxxattrs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.59
  */
@@ -16372,6 +16667,9 @@ guestfs_session_lstatnslist (GuestfsSession *session, const gchar *path, gchar *
  * fail. You have to use guestfs_session_luks_kill_slot() first to remove
  * that key.
  * 
+ * This function depends on the feature "luks".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.5.2
  */
@@ -16408,6 +16706,9 @@ guestfs_session_luks_add_key (GuestfsSession *session, const gchar *device, cons
  * @device parameter must be the name of the LUKS mapping device (ie.
  * /dev/mapper/mapname) and *not* the name of the underlying block device.
  * 
+ * This function depends on the feature "luks".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.5.1
  */
@@ -16445,6 +16746,9 @@ guestfs_session_luks_close (GuestfsSession *session, const gchar *device, GError
  * LUKS encrypted device. @key is the initial key, which is added to key
  * slot @slot. (LUKS supports 8 key slots, numbered 0-7).
  * 
+ * This function depends on the feature "luks".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.5.2
  */
@@ -16482,6 +16786,9 @@ guestfs_session_luks_format (GuestfsSession *session, const gchar *device, const
  * This command is the same as guestfs_session_luks_format() but it also
  * allows you to set the @cipher used.
  * 
+ * This function depends on the feature "luks".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.5.2
  */
@@ -16518,6 +16825,9 @@ guestfs_session_luks_format_cipher (GuestfsSession *session, const gchar *device
  * This command deletes the key in key slot @keyslot from the encrypted
  * LUKS device @device. @key must be one of the *other* keys.
  * 
+ * This function depends on the feature "luks".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.5.2
  */
@@ -16569,6 +16879,9 @@ guestfs_session_luks_kill_slot (GuestfsSession *session, const gchar *device, co
  * 
  * Use guestfs_session_list_dm_devices() to list all device mapper devices.
  * 
+ * This function depends on the feature "luks".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.5.1
  */
@@ -16605,6 +16918,9 @@ guestfs_session_luks_open (GuestfsSession *session, const gchar *device, const g
  * This is the same as guestfs_session_luks_open() except that a read-only
  * mapping is created.
  * 
+ * This function depends on the feature "luks".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.5.1
  */
@@ -16641,6 +16957,9 @@ guestfs_session_luks_open_ro (GuestfsSession *session, const gchar *device, cons
  * This creates an LVM logical volume called @logvol on the volume group
  * @volgroup, with @size megabytes.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 0.8
  */
@@ -16679,6 +16998,9 @@ guestfs_session_lvcreate (GuestfsSession *session, const gchar *logvol, const gc
  * group. Most usefully, when @percent is @100 this will create the largest
  * possible LV.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.18
  */
@@ -16788,6 +17110,9 @@ guestfs_session_lvm_clear_filter (GuestfsSession *session, GError **err)
  * This command removes all LVM logical volumes, volume groups and physical
  * volumes.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 0.8
  */
@@ -16838,6 +17163,9 @@ guestfs_session_lvm_remove_all (GuestfsSession *session, GError **err)
  * You cannot use this if any VG is currently in use (eg. contains a
  * mounted filesystem), even if you are not filtering out that VG.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.5.1
  */
@@ -16875,6 +17203,9 @@ guestfs_session_lvm_set_filter (GuestfsSession *session, gchar *const *devices, 
  * You can also remove all LVs in a volume group by specifying the VG name,
  * /dev/VG.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.13
  */
@@ -16944,6 +17275,9 @@ guestfs_session_lvrename (GuestfsSession *session, const gchar *logvol, const gc
  * This resizes (expands or shrinks) an existing LVM logical volume to
  * @mbytes. When reducing, data in the reduced part is lost.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.27
  */
@@ -16981,6 +17315,9 @@ guestfs_session_lvresize (GuestfsSession *session, const gchar *device, gint32 m
  * with pc = 100 which expands the logical volume as much as possible,
  * using all remaining free space in the volume group.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.3.3
  */
@@ -17019,6 +17356,9 @@ guestfs_session_lvresize_free (GuestfsSession *session, const gchar *lv, gint32 
  * 
  * See also guestfs_session_lvs_full(), guestfs_session_list_filesystems().
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 0.4
  */
@@ -17052,6 +17392,9 @@ guestfs_session_lvs (GuestfsSession *session, GError **err)
  * List all the logical volumes detected. This is the equivalent of the
  * lvs(8) command. The "full" version includes all fields.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsLV): an array of LV objects, or NULL on error
  * Since: 0.4
  */
@@ -17158,6 +17501,9 @@ guestfs_session_lvuuid (GuestfsSession *session, const gchar *device, GError **e
  * guestfs_session_lstatlist() for a similarly efficient call for getting
  * standard stats.
  * 
+ * This function depends on the feature "linuxxattrs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
  * Since: 1.0.77
  */
@@ -17287,6 +17633,9 @@ guestfs_session_max_disks (GuestfsSession *session, GError **err)
  * 
  * If not set, this defaults to @raid1.
  * 
+ * This function depends on the feature "mdadm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.15.6
  */
@@ -17385,6 +17734,9 @@ guestfs_session_md_create (GuestfsSession *session, const gchar *name, gchar *co
  * @name
  * The name of the MD device.
  * 
+ * This function depends on the feature "mdadm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
  * Since: 1.15.6
  */
@@ -17451,6 +17803,9 @@ guestfs_session_md_detail (GuestfsSession *session, const gchar *md, GError **er
  * 
  * @R  replacement
  * 
+ * This function depends on the feature "mdadm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsMDStat): an array of MDStat objects, or NULL on error
  * Since: 1.17.21
  */
@@ -17495,6 +17850,9 @@ guestfs_session_md_stat (GuestfsSession *session, const gchar *md, GError **err)
  * This command deactivates the MD array named @md. The device is stopped,
  * but it is not destroyed or zeroed.
  * 
+ * This function depends on the feature "mdadm".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.15.6
  */
@@ -18122,6 +18480,9 @@ guestfs_session_mke2fs_JL (GuestfsSession *session, const gchar *fstype, gint32 
  * 
  * See also guestfs_session_mke2journal_U().
  * 
+ * This function depends on the feature "linuxfsuuid".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mke2fs() instead
  * Since: 1.0.68
@@ -18232,6 +18593,9 @@ guestfs_session_mke2journal_L (GuestfsSession *session, gint32 blocksize, const 
  *
  * This creates an ext2 external journal on @device with UUID @uuid.
  * 
+ * This function depends on the feature "linuxfsuuid".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mke2fs() instead
  * Since: 1.0.68
@@ -18273,6 +18637,9 @@ guestfs_session_mke2journal_U (GuestfsSession *session, gint32 blocksize, const 
  * 
  * The mode actually set is affected by the umask.
  * 
+ * This function depends on the feature "mknod".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.55
  */
@@ -18469,6 +18836,9 @@ guestfs_session_mkfs_b (GuestfsSession *session, const gchar *fstype, gint32 blo
  * 
  * To create general filesystems, use guestfs_session_mkfs().
  * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.25
  */
@@ -18706,6 +19076,9 @@ guestfs_session_mkmountpoint (GuestfsSession *session, const gchar *exemptpath, 
  * 
  * The mode actually set is affected by the umask.
  * 
+ * This function depends on the feature "mknod".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.55
  */
@@ -18749,6 +19122,9 @@ guestfs_session_mknod (GuestfsSession *session, gint32 mode, gint32 devmajor, gi
  * 
  * The mode actually set is affected by the umask.
  * 
+ * This function depends on the feature "mknod".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.55
  */
@@ -18792,6 +19168,9 @@ guestfs_session_mknod_b (GuestfsSession *session, gint32 mode, gint32 devmajor, 
  * 
  * The mode actually set is affected by the umask.
  * 
+ * This function depends on the feature "mknod".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.55
  */
@@ -18926,6 +19305,9 @@ guestfs_session_mkswap_L (GuestfsSession *session, const gchar *label, const gch
  *
  * Create a swap partition on @device with UUID @uuid.
  * 
+ * This function depends on the feature "linuxfsuuid".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_mkswap() instead
  * Since: 1.0.55
@@ -19062,6 +19444,9 @@ guestfs_session_mktemp (GuestfsSession *session, const gchar *tmpl, GuestfsMktem
  *
  * This loads a kernel module in the appliance.
  * 
+ * This function depends on the feature "linuxmodules".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.68
  */
@@ -19670,6 +20055,9 @@ guestfs_session_nr_devices (GuestfsSession *session, GError **err)
  * The return value is an integer which @0 if the operation would succeed,
  * or some non-zero value documented in the ntfs-3g.probe(8) manual page.
  * 
+ * This function depends on the feature "ntfs3g".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.0.43
  */
@@ -19707,6 +20095,9 @@ guestfs_session_ntfs_3g_probe (GuestfsSession *session, gboolean rw, const gchar
  * guestfs_session_ntfsclone_out()) to @device, overwriting any existing
  * contents of this device.
  * 
+ * This function depends on the feature "ntfs3g".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.9
  */
@@ -19767,6 +20158,9 @@ guestfs_session_ntfsclone_in (GuestfsSession *session, const gchar *backupfile, 
  * Use guestfs_session_ntfsclone_in() to restore the file back to a
  * libguestfs device.
  * 
+ * This function depends on the feature "ntfs3g".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.9
  */
@@ -19869,6 +20263,9 @@ guestfs_session_ntfsclone_out (GuestfsSession *session, const gchar *device, con
  * The optional @clearbadsectors flag clears the list of bad sectors. This
  * is useful after cloning a disk with bad sectors to a new disk.
  * 
+ * This function depends on the feature "ntfs3g".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.9
  */
@@ -19939,6 +20336,9 @@ guestfs_session_ntfsfix (GuestfsSession *session, const gchar *device, GuestfsNt
  * 
  * See also ntfsresize(8).
  * 
+ * This function depends on the feature "ntfsprogs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.3.2
  */
@@ -19998,6 +20398,9 @@ guestfs_session_ntfsresize (GuestfsSession *session, const gchar *device, Guestf
  * This command is the same as guestfs_session_ntfsresize() except that it
  * allows you to specify the new size (in bytes) explicitly.
  * 
+ * This function depends on the feature "ntfsprogs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_ntfsresize() instead
  * Since: 1.3.14
@@ -20274,6 +20677,9 @@ guestfs_session_part_get_bootable (GuestfsSession *session, const gchar *device,
  *
  * Return the GUID of numbered GPT partition @partnum.
  * 
+ * This function depends on the feature "gdisk".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.29.25
  */
@@ -20310,6 +20716,9 @@ guestfs_session_part_get_gpt_guid (GuestfsSession *session, const gchar *device,
  * partitions, return an appropriate GUID corresponding to the MBR type.
  * Behaviour is undefined for other partition types.
  * 
+ * This function depends on the feature "gdisk".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): the returned string, or NULL on error
  * Since: 1.21.1
  */
@@ -20675,6 +21084,9 @@ guestfs_session_part_set_bootable (GuestfsSession *session, const gchar *device,
  * error if the partition table of @device isn't GPT, or if @guid is not a
  * valid GUID.
  * 
+ * This function depends on the feature "gdisk".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.29.25
  */
@@ -20718,6 +21130,9 @@ guestfs_session_part_set_gpt_guid (GuestfsSession *session, const gchar *device,
  * http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs
  * </ulink> for a useful list of type GUIDs.
  * 
+ * This function depends on the feature "gdisk".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.21.1
  */
@@ -21030,6 +21445,9 @@ guestfs_session_pread_device (GuestfsSession *session, const gchar *device, gint
  *
  * Generate a new random UUID for the physical volume @device.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.26
  */
@@ -21062,6 +21480,9 @@ guestfs_session_pvchange_uuid (GuestfsSession *session, const gchar *device, GEr
  *
  * Generate new random UUIDs for all physical volumes.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.26
  */
@@ -21096,6 +21517,9 @@ guestfs_session_pvchange_uuid_all (GuestfsSession *session, GError **err)
  * This creates an LVM physical volume on the named @device, where @device
  * should usually be a partition name such as /dev/sda1.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 0.8
  */
@@ -21134,6 +21558,9 @@ guestfs_session_pvcreate (GuestfsSession *session, const gchar *device, GError *
  * physical volumes that contain any volume groups, so you have to remove
  * those first.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.13
  */
@@ -21168,6 +21595,9 @@ guestfs_session_pvremove (GuestfsSession *session, const gchar *device, GError *
  * This resizes (expands or shrinks) an existing LVM physical volume to
  * match the new size of the underlying device.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.26
  */
@@ -21203,6 +21633,9 @@ guestfs_session_pvresize (GuestfsSession *session, const gchar *device, GError *
  * This command is the same as guestfs_session_pvresize() except that it
  * allows you to specify the new size (in bytes) explicitly.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.3.14
  */
@@ -21241,6 +21674,9 @@ guestfs_session_pvresize_size (GuestfsSession *session, const gchar *device, gin
  * 
  * See also guestfs_session_pvs_full().
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 0.4
  */
@@ -21274,6 +21710,9 @@ guestfs_session_pvs (GuestfsSession *session, GError **err)
  * List all the physical volumes detected. This is the equivalent of the
  * pvs(8) command. The "full" version includes all fields.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsPV): an array of PV objects, or NULL on error
  * Since: 0.4
  */
@@ -21819,6 +22258,9 @@ guestfs_session_remove_drive (GuestfsSession *session, const gchar *label, GErro
  * 
  * See also: guestfs_session_lremovexattr(), attr(5).
  * 
+ * This function depends on the feature "linuxxattrs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.59
  */
@@ -22194,6 +22636,9 @@ guestfs_session_rmmountpoint (GuestfsSession *session, const gchar *exemptpath, 
  * @deletedest
  * Delete files at the destination that do not exist at the source.
  * 
+ * This function depends on the feature "rsync".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.29
  */
@@ -22269,6 +22714,9 @@ guestfs_session_rsync (GuestfsSession *session, const gchar *src, const gchar *d
  * 
  * The optional arguments are the same as those of guestfs_session_rsync().
  * 
+ * This function depends on the feature "rsync".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.29
  */
@@ -22351,6 +22799,9 @@ guestfs_session_rsync_in (GuestfsSession *session, const gchar *remote, const gc
  * 
  * <![CDATA[><fs> glob rsync-out /* rsync://remote/]]>
  * 
+ * This function depends on the feature "rsync".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.29
  */
@@ -22412,6 +22863,9 @@ guestfs_session_rsync_out (GuestfsSession *session, const gchar *src, const gcha
  * It is an interface to the scrub(1) program. See that manual page for
  * more details.
  * 
+ * This function depends on the feature "scrub".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.52
  */
@@ -22451,6 +22905,9 @@ guestfs_session_scrub_device (GuestfsSession *session, const gchar *device, GErr
  * It is an interface to the scrub(1) program. See that manual page for
  * more details.
  * 
+ * This function depends on the feature "scrub".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.52
  */
@@ -22490,6 +22947,9 @@ guestfs_session_scrub_file (GuestfsSession *session, const gchar *file, GError *
  * It is an interface to the scrub(1) program. See that manual page for
  * more details.
  * 
+ * This function depends on the feature "scrub".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.52
  */
@@ -23853,6 +24313,9 @@ guestfs_session_set_verbose (GuestfsSession *session, gboolean verbose, GError *
  * 
  * See the documentation about SELINUX in guestfs(3).
  * 
+ * This function depends on the feature "selinux".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.67
  */
@@ -23892,6 +24355,9 @@ guestfs_session_setcon (GuestfsSession *session, const gchar *context, GError **
  * 
  * See also: guestfs_session_lsetxattr(), attr(5).
  * 
+ * This function depends on the feature "linuxxattrs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.59
  */
@@ -24698,6 +25164,9 @@ guestfs_session_swapoff_label (GuestfsSession *session, const gchar *label, GErr
  * This command disables the libguestfs appliance swap partition with the
  * given UUID.
  * 
+ * This function depends on the feature "linuxfsuuid".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.66
  */
@@ -24842,6 +25311,9 @@ guestfs_session_swapon_label (GuestfsSession *session, const gchar *label, GErro
  * This command enables swap to a swap partition with the given UUID. See
  * guestfs_session_swapon_device() for other notes.
  * 
+ * This function depends on the feature "linuxfsuuid".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.66
  */
@@ -24934,6 +25406,9 @@ guestfs_session_sync (GuestfsSession *session, GError **err)
  * 
  * See also guestfs_session_extlinux().
  * 
+ * This function depends on the feature "syslinux".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.21.27
  */
@@ -25721,6 +26196,9 @@ guestfs_session_tune2fs_l (GuestfsSession *session, const gchar *device, GError 
  * This command uploads and unpacks local file @tarball (an *xz compressed*
  * tar file) into directory.
  * 
+ * This function depends on the feature "xz".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_tar_in() instead
  * Since: 1.3.2
@@ -25770,6 +26248,9 @@ guestfs_session_txz_in (GuestfsSession *session, const gchar *tarball, const gch
  * This command packs the contents of directory and downloads it to local
  * file @tarball (as an xz compressed tar archive).
  * 
+ * This function depends on the feature "xz".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Deprecated: In new code, use guestfs_session_tar_out() instead
  * Since: 1.3.2
@@ -26490,6 +26971,9 @@ guestfs_session_vfs_uuid (GuestfsSession *session, const gchar *mountable, GErro
  * Note that if @volgroups is an empty list then all volume groups are
  * activated or deactivated.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.26
  */
@@ -26526,6 +27010,9 @@ guestfs_session_vg_activate (GuestfsSession *session, gboolean activate, gchar *
  * 
  * This command is the same as running "vgchange -a y|n"
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.26
  */
@@ -26559,6 +27046,9 @@ guestfs_session_vg_activate_all (GuestfsSession *session, gboolean activate, GEr
  *
  * Generate a new random UUID for the volume group @vg.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.26
  */
@@ -26591,6 +27081,9 @@ guestfs_session_vgchange_uuid (GuestfsSession *session, const gchar *vg, GError 
  *
  * Generate new random UUIDs for all volume groups.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.26
  */
@@ -26626,6 +27119,9 @@ guestfs_session_vgchange_uuid_all (GuestfsSession *session, GError **err)
  * This creates an LVM volume group called @volgroup from the non-empty
  * list of physical volumes @physvols.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 0.8
  */
@@ -26704,6 +27200,9 @@ guestfs_session_vglvuuids (GuestfsSession *session, const gchar *vgname, GError 
  * Note that the metadata is an internal structure used by LVM, subject to
  * change at any time, and is provided for information only.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
  * Since: 1.17.20
  */
@@ -26780,6 +27279,9 @@ guestfs_session_vgpvuuids (GuestfsSession *session, const gchar *vgname, GError 
  * This also forcibly removes all logical volumes in the volume group (if
  * any).
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.13
  */
@@ -26852,6 +27354,9 @@ guestfs_session_vgrename (GuestfsSession *session, const gchar *volgroup, const 
  * 
  * See also guestfs_session_vgs_full().
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  * Since: 0.4
  */
@@ -26885,6 +27390,9 @@ guestfs_session_vgs (GuestfsSession *session, GError **err)
  * List all the volumes groups detected. This is the equivalent of the
  * vgs(8) command. The "full" version includes all fields.
  * 
+ * This function depends on the feature "lvm2".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsVG): an array of VG objects, or NULL on error
  * Since: 0.4
  */
@@ -27161,6 +27669,9 @@ guestfs_session_wc_w (GuestfsSession *session, const gchar *path, GError **err)
  * Compare with guestfs_session_zero() which zeroes the first few blocks of
  * a device.
  * 
+ * This function depends on the feature "wipefs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.17.6
  */
@@ -27322,6 +27833,9 @@ guestfs_session_write_file (GuestfsSession *session, const gchar *path, const gc
  * modified using the guestfs_session_xfs_info() and
  * guestfs_session_xfs_growfs() calls.
  * 
+ * This function depends on the feature "xfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.33
  */
@@ -27423,6 +27937,9 @@ guestfs_session_xfs_admin (GuestfsSession *session, const gchar *device, Guestfs
  * The returned struct contains geometry information. Missing fields are
  * returned as @-1 (for numeric fields) or empty string.
  * 
+ * This function depends on the feature "xfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.19.28
  */
@@ -27532,6 +28049,9 @@ guestfs_session_xfs_growfs (GuestfsSession *session, const gchar *path, GuestfsX
  * The returned struct contains geometry information. Missing fields are
  * returned as @-1 (for numeric fields) or empty string.
  * 
+ * This function depends on the feature "xfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: (transfer full): a XFSInfo object, or NULL on error
  * Since: 1.19.21
  */
@@ -27605,6 +28125,9 @@ guestfs_session_xfs_info (GuestfsSession *session, const gchar *pathordevice, GE
  * The returned status indicates whether filesystem corruption was detected
  * (returns @1) or was not detected (returns @0).
  * 
+ * This function depends on the feature "xfs".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: the returned value, or -1 on error
  * Since: 1.19.36
  */
@@ -27928,6 +28451,9 @@ guestfs_session_zero_free_space (GuestfsSession *session, const gchar *directory
  * It is possible that using this program can damage the filesystem or data
  * on the filesystem.
  * 
+ * This function depends on the feature "zerofree".
+ * See also guestfs_session_feature_available().
+ *
  * Returns: true on success, false on error
  * Since: 1.0.26
  */

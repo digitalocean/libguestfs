@@ -1,6 +1,7 @@
 (* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/ocaml.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -435,17 +436,23 @@ type xfsinfo = {
 val acl_delete_def_file : t -> string -> unit
 (** delete the default POSIX ACL of a directory
 
+    This function depends on the feature "acl".  See also {!feature_available}.
+
     @since 1.19.63
  *)
 
 val acl_get_file : t -> string -> string -> string
 (** get the POSIX ACL attached to a file
 
+    This function depends on the feature "acl".  See also {!feature_available}.
+
     @since 1.19.63
  *)
 
 val acl_set_file : t -> string -> string -> string -> unit
 (** set the POSIX ACL attached to a file
+
+    This function depends on the feature "acl".  See also {!feature_available}.
 
     @since 1.19.63
  *)
@@ -633,11 +640,15 @@ val base64_out : t -> string -> string -> unit
 val blkdiscard : t -> string -> unit
 (** discard all blocks on a device
 
+    This function depends on the feature "blkdiscard".  See also {!feature_available}.
+
     @since 1.25.44
  *)
 
 val blkdiscardzeroes : t -> string -> bool
 (** return true if discarded blocks are read as zeroes
+
+    This function depends on the feature "blkdiscardzeroes".  See also {!feature_available}.
 
     @since 1.25.44
  *)
@@ -719,11 +730,15 @@ val blockdev_setrw : t -> string -> unit
 val btrfs_balance_cancel : t -> string -> unit
 (** cancel a running or paused balance
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.22
  *)
 
 val btrfs_balance_pause : t -> string -> unit
 (** pause a running balance
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.22
  *)
@@ -731,11 +746,15 @@ val btrfs_balance_pause : t -> string -> unit
 val btrfs_balance_resume : t -> string -> unit
 (** resume a paused balance
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.22
  *)
 
 val btrfs_balance_status : t -> string -> btrfsbalance
 (** show the status of a running or paused balance
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.26
  *)
@@ -743,11 +762,15 @@ val btrfs_balance_status : t -> string -> btrfsbalance
 val btrfs_device_add : t -> string array -> string -> unit
 (** add devices to a btrfs filesystem
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
  *)
 
 val btrfs_device_delete : t -> string array -> string -> unit
 (** remove devices from a btrfs filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.35
  *)
@@ -755,11 +778,15 @@ val btrfs_device_delete : t -> string array -> string -> unit
 val btrfs_filesystem_balance : t -> string -> unit
 (** balance a btrfs filesystem
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
  *)
 
 val btrfs_filesystem_defragment : t -> ?flush:bool -> ?compress:string -> string -> unit
 (** defragment a file or directory
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.22
  *)
@@ -767,11 +794,15 @@ val btrfs_filesystem_defragment : t -> ?flush:bool -> ?compress:string -> string
 val btrfs_filesystem_resize : t -> ?size:int64 -> string -> unit
 (** resize a btrfs filesystem
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.11.17
  *)
 
 val btrfs_filesystem_sync : t -> string -> unit
 (** sync a btrfs filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.35
  *)
@@ -779,11 +810,15 @@ val btrfs_filesystem_sync : t -> string -> unit
 val btrfs_fsck : t -> ?superblock:int64 -> ?repair:bool -> string -> unit
 (** check a btrfs filesystem
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.43
  *)
 
 val btrfs_image : t -> ?compresslevel:int -> string array -> string -> unit
 (** create an image of a btrfs filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.32
  *)
@@ -791,11 +826,15 @@ val btrfs_image : t -> ?compresslevel:int -> string array -> string -> unit
 val btrfs_qgroup_assign : t -> string -> string -> string -> unit
 (** add a qgroup to a parent qgroup
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.17
  *)
 
 val btrfs_qgroup_create : t -> string -> string -> unit
 (** create a subvolume quota group
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.17
  *)
@@ -803,11 +842,15 @@ val btrfs_qgroup_create : t -> string -> string -> unit
 val btrfs_qgroup_destroy : t -> string -> string -> unit
 (** destroy a subvolume quota group
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.17
  *)
 
 val btrfs_qgroup_limit : t -> string -> int64 -> unit
 (** limit the size of a subvolume
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.17
  *)
@@ -815,11 +858,15 @@ val btrfs_qgroup_limit : t -> string -> int64 -> unit
 val btrfs_qgroup_remove : t -> string -> string -> string -> unit
 (** remove a qgroup from its parent qgroup
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.17
  *)
 
 val btrfs_qgroup_show : t -> string -> btrfsqgroup array
 (** show subvolume quota groups
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.17
  *)
@@ -827,11 +874,15 @@ val btrfs_qgroup_show : t -> string -> btrfsqgroup array
 val btrfs_quota_enable : t -> string -> bool -> unit
 (** enable or disable subvolume quota support
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.17
  *)
 
 val btrfs_quota_rescan : t -> string -> unit
 (** trash all qgroup numbers and scan the metadata again with the current config
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.17
  *)
@@ -839,11 +890,15 @@ val btrfs_quota_rescan : t -> string -> unit
 val btrfs_replace : t -> string -> string -> string -> unit
 (** replace a btrfs managed device with another device
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.48
  *)
 
 val btrfs_rescue_chunk_recover : t -> string -> unit
 (** recover the chunk tree of btrfs filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.22
  *)
@@ -851,11 +906,15 @@ val btrfs_rescue_chunk_recover : t -> string -> unit
 val btrfs_rescue_super_recover : t -> string -> unit
 (** recover bad superblocks from good copies
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.22
  *)
 
 val btrfs_scrub_cancel : t -> string -> unit
 (** cancel a running scrub
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.22
  *)
@@ -863,11 +922,15 @@ val btrfs_scrub_cancel : t -> string -> unit
 val btrfs_scrub_resume : t -> string -> unit
 (** resume a previously canceled or interrupted scrub
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.22
  *)
 
 val btrfs_scrub_start : t -> string -> unit
 (** read all data from all disks and verify checksums
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.22
  *)
@@ -875,11 +938,15 @@ val btrfs_scrub_start : t -> string -> unit
 val btrfs_scrub_status : t -> string -> btrfsscrub
 (** show status of running or finished scrub
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.26
  *)
 
 val btrfs_set_seeding : t -> string -> bool -> unit
 (** enable or disable the seeding feature of device
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.43
  *)
@@ -887,11 +954,15 @@ val btrfs_set_seeding : t -> string -> bool -> unit
 val btrfs_subvolume_create : t -> ?qgroupid:string -> string -> unit
 (** create a btrfs subvolume
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
  *)
 
 val btrfs_subvolume_create_opts : t -> ?qgroupid:string -> string -> unit
 (** alias for {!btrfs_subvolume_create}
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.35
  *)
@@ -899,11 +970,15 @@ val btrfs_subvolume_create_opts : t -> ?qgroupid:string -> string -> unit
 val btrfs_subvolume_delete : t -> string -> unit
 (** delete a btrfs subvolume or snapshot
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
  *)
 
 val btrfs_subvolume_get_default : t -> string -> int64
 (** get the default subvolume or snapshot of a filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.17
  *)
@@ -911,11 +986,15 @@ val btrfs_subvolume_get_default : t -> string -> int64
 val btrfs_subvolume_list : t -> string -> btrfssubvolume array
 (** list btrfs snapshots and subvolumes
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
  *)
 
 val btrfs_subvolume_set_default : t -> int64 -> string -> unit
 (** set default btrfs subvolume
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.35
  *)
@@ -923,11 +1002,15 @@ val btrfs_subvolume_set_default : t -> int64 -> string -> unit
 val btrfs_subvolume_show : t -> string -> (string * string) list
 (** return detailed information of the subvolume
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.17
  *)
 
 val btrfs_subvolume_snapshot : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
 (** create a btrfs snapshot
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.35
  *)
@@ -935,11 +1018,15 @@ val btrfs_subvolume_snapshot : t -> ?ro:bool -> ?qgroupid:string -> string -> st
 val btrfs_subvolume_snapshot_opts : t -> ?ro:bool -> ?qgroupid:string -> string -> string -> unit
 (** alias for {!btrfs_subvolume_snapshot}
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
  *)
 
 val btrfstune_enable_extended_inode_refs : t -> string -> unit
 (** enable extended inode refs
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.29
  *)
@@ -947,11 +1034,15 @@ val btrfstune_enable_extended_inode_refs : t -> string -> unit
 val btrfstune_enable_skinny_metadata_extent_refs : t -> string -> unit
 (** enable skinny metadata extent refs
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.29
  *)
 
 val btrfstune_seeding : t -> string -> bool -> unit
 (** enable or disable seeding of a btrfs device
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.29
  *)
@@ -971,11 +1062,15 @@ val canonical_device_name : t -> string -> string
 val cap_get_file : t -> string -> string
 (** get the Linux capabilities attached to a file
 
+    This function depends on the feature "linuxcaps".  See also {!feature_available}.
+
     @since 1.19.63
  *)
 
 val cap_set_file : t -> string -> string -> unit
 (** set the Linux capabilities attached to a file
+
+    This function depends on the feature "linuxcaps".  See also {!feature_available}.
 
     @since 1.19.63
  *)
@@ -1275,6 +1370,8 @@ val exists : t -> string -> bool
 val extlinux : t -> string -> unit
 (** install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
 
+    This function depends on the feature "extlinux".  See also {!feature_available}.
+
     @since 1.21.27
  *)
 
@@ -1388,6 +1485,8 @@ val fsck : t -> string -> string -> int
 
 val fstrim : t -> ?offset:int64 -> ?length:int64 -> ?minimumfreeextent:int64 -> string -> unit
 (** trim free space in a filesystem
+
+    This function depends on the feature "fstrim".  See also {!feature_available}.
 
     @since 1.19.6
  *)
@@ -1601,17 +1700,23 @@ val get_verbose : t -> bool
 val getcon : t -> string
 (** get SELinux security context
 
+    This function depends on the feature "selinux".  See also {!feature_available}.
+
     @since 1.0.67
  *)
 
 val getxattr : t -> string -> string -> string
 (** get a single extended attribute
 
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
+
     @since 1.7.24
  *)
 
 val getxattrs : t -> string -> xattr array
 (** list extended attributes of a file or directory
+
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
 
     @since 1.0.59
  *)
@@ -1645,6 +1750,8 @@ val grepi : t -> string -> string -> string array
 val grub_install : t -> string -> string -> unit
 (** install GRUB 1
 
+    This function depends on the feature "grub".  See also {!feature_available}.
+
     @since 1.0.17
  *)
 
@@ -1669,11 +1776,15 @@ val hexdump : t -> string -> string
 val hivex_close : t -> unit
 (** close the current hivex handle
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
  *)
 
 val hivex_commit : t -> string option -> unit
 (** commit (write) changes back to the hive
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
  *)
@@ -1681,11 +1792,15 @@ val hivex_commit : t -> string option -> unit
 val hivex_node_add_child : t -> int64 -> string -> int64
 (** add a child node
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
  *)
 
 val hivex_node_children : t -> int64 -> hivex_node array
 (** return list of nodes which are subkeys of node
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
  *)
@@ -1693,11 +1808,15 @@ val hivex_node_children : t -> int64 -> hivex_node array
 val hivex_node_delete_child : t -> int64 -> unit
 (** delete a node (recursively)
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
  *)
 
 val hivex_node_get_child : t -> int64 -> string -> int64
 (** return the named child of node
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
  *)
@@ -1705,11 +1824,15 @@ val hivex_node_get_child : t -> int64 -> string -> int64
 val hivex_node_get_value : t -> int64 -> string -> int64
 (** return the named value
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
  *)
 
 val hivex_node_name : t -> int64 -> string
 (** return the name of the node
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
  *)
@@ -1717,11 +1840,15 @@ val hivex_node_name : t -> int64 -> string
 val hivex_node_parent : t -> int64 -> int64
 (** return the parent of node
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
  *)
 
 val hivex_node_set_value : t -> int64 -> string -> int64 -> string -> unit
 (** set or replace a single value in a node
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
  *)
@@ -1729,11 +1856,15 @@ val hivex_node_set_value : t -> int64 -> string -> int64 -> string -> unit
 val hivex_node_values : t -> int64 -> hivex_value array
 (** return list of values attached to node
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
  *)
 
 val hivex_open : t -> ?verbose:bool -> ?debug:bool -> ?write:bool -> string -> unit
 (** open a Windows Registry hive file
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
  *)
@@ -1741,11 +1872,15 @@ val hivex_open : t -> ?verbose:bool -> ?debug:bool -> ?write:bool -> string -> u
 val hivex_root : t -> int64
 (** return the root node of the hive
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
  *)
 
 val hivex_value_key : t -> int64 -> string
 (** return the key field from the (key, datatype, data) tuple
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
  *)
@@ -1753,17 +1888,23 @@ val hivex_value_key : t -> int64 -> string
 val hivex_value_type : t -> int64 -> int64
 (** return the data type from the (key, datatype, data) tuple
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
  *)
 
 val hivex_value_utf8 : t -> int64 -> string
 (** return the data field from the (key, datatype, data) tuple
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
  *)
 
 val hivex_value_value : t -> int64 -> string
 (** return the data field from the (key, datatype, data) tuple
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
  *)
@@ -1783,11 +1924,15 @@ val initrd_list : t -> string -> string array
 val inotify_add_watch : t -> string -> int -> int64
 (** add an inotify watch
 
+    This function depends on the feature "inotify".  See also {!feature_available}.
+
     @since 1.0.66
  *)
 
 val inotify_close : t -> unit
 (** close the inotify handle
+
+    This function depends on the feature "inotify".  See also {!feature_available}.
 
     @since 1.0.66
  *)
@@ -1795,11 +1940,15 @@ val inotify_close : t -> unit
 val inotify_files : t -> string array
 (** return list of watched files that had events
 
+    This function depends on the feature "inotify".  See also {!feature_available}.
+
     @since 1.0.66
  *)
 
 val inotify_init : t -> int -> unit
 (** create an inotify handle
+
+    This function depends on the feature "inotify".  See also {!feature_available}.
 
     @since 1.0.66
  *)
@@ -1807,11 +1956,15 @@ val inotify_init : t -> int -> unit
 val inotify_read : t -> inotify_event array
 (** return list of inotify events
 
+    This function depends on the feature "inotify".  See also {!feature_available}.
+
     @since 1.0.66
  *)
 
 val inotify_rm_watch : t -> int -> unit
 (** remove an inotify watch
+
+    This function depends on the feature "inotify".  See also {!feature_available}.
 
     @since 1.0.66
  *)
@@ -2215,11 +2368,15 @@ val isoinfo_device : t -> string -> isoinfo
 val journal_close : t -> unit
 (** close the systemd journal
 
+    This function depends on the feature "journal".  See also {!feature_available}.
+
     @since 1.23.11
  *)
 
 val journal_get : t -> xattr array
 (** read the current journal entry
+
+    This function depends on the feature "journal".  See also {!feature_available}.
 
     @since 1.23.11
  *)
@@ -2227,11 +2384,15 @@ val journal_get : t -> xattr array
 val journal_get_data_threshold : t -> int64
 (** get the data threshold for reading journal entries
 
+    This function depends on the feature "journal".  See also {!feature_available}.
+
     @since 1.23.11
  *)
 
 val journal_get_realtime_usec : t -> int64
 (** get the timestamp of the current journal entry
+
+    This function depends on the feature "journal".  See also {!feature_available}.
 
     @since 1.27.18
  *)
@@ -2239,11 +2400,15 @@ val journal_get_realtime_usec : t -> int64
 val journal_next : t -> bool
 (** move to the next journal entry
 
+    This function depends on the feature "journal".  See also {!feature_available}.
+
     @since 1.23.11
  *)
 
 val journal_open : t -> string -> unit
 (** open the systemd journal
+
+    This function depends on the feature "journal".  See also {!feature_available}.
 
     @since 1.23.11
  *)
@@ -2251,11 +2416,15 @@ val journal_open : t -> string -> unit
 val journal_set_data_threshold : t -> int64 -> unit
 (** set the data threshold for reading journal entries
 
+    This function depends on the feature "journal".  See also {!feature_available}.
+
     @since 1.23.11
  *)
 
 val journal_skip : t -> int64 -> int64
 (** skip forwards or backwards in the journal
+
+    This function depends on the feature "journal".  See also {!feature_available}.
 
     @since 1.23.11
  *)
@@ -2283,11 +2452,15 @@ val lchown : t -> int -> int -> string -> unit
 val ldmtool_create_all : t -> unit
 (** scan and create Windows dynamic disk volumes
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
  *)
 
 val ldmtool_diskgroup_disks : t -> string -> string array
 (** return the disks in a Windows dynamic disk group
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
  *)
@@ -2295,11 +2468,15 @@ val ldmtool_diskgroup_disks : t -> string -> string array
 val ldmtool_diskgroup_name : t -> string -> string
 (** return the name of a Windows dynamic disk group
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
  *)
 
 val ldmtool_diskgroup_volumes : t -> string -> string array
 (** return the volumes in a Windows dynamic disk group
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
  *)
@@ -2307,11 +2484,15 @@ val ldmtool_diskgroup_volumes : t -> string -> string array
 val ldmtool_remove_all : t -> unit
 (** remove all Windows dynamic disk volumes
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
  *)
 
 val ldmtool_scan : t -> string array
 (** scan for Windows dynamic disks
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
  *)
@@ -2319,11 +2500,15 @@ val ldmtool_scan : t -> string array
 val ldmtool_scan_devices : t -> string array -> string array
 (** scan for Windows dynamic disks
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
  *)
 
 val ldmtool_volume_hint : t -> string -> string -> string
 (** return the hint field of a Windows dynamic disk volume
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
  *)
@@ -2331,11 +2516,15 @@ val ldmtool_volume_hint : t -> string -> string -> string
 val ldmtool_volume_partitions : t -> string -> string -> string array
 (** return the partitions in a Windows dynamic disk volume
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
  *)
 
 val ldmtool_volume_type : t -> string -> string -> string
 (** return the type of a Windows dynamic disk volume
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
  *)
@@ -2343,11 +2532,15 @@ val ldmtool_volume_type : t -> string -> string -> string
 val lgetxattr : t -> string -> string -> string
 (** get a single extended attribute
 
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
+
     @since 1.7.24
  *)
 
 val lgetxattrs : t -> string -> xattr array
 (** list extended attributes of a file or directory
+
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
 
     @since 1.0.59
  *)
@@ -2385,11 +2578,15 @@ val list_filesystems : t -> (string * string) list
 val list_ldm_partitions : t -> string array
 (** list all Windows dynamic disk partitions
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
  *)
 
 val list_ldm_volumes : t -> string array
 (** list all Windows dynamic disk volumes
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
  *)
@@ -2445,6 +2642,8 @@ val ln_sf : t -> string -> string -> unit
 val lremovexattr : t -> string -> string -> unit
 (** remove extended attribute of a file or directory
 
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
+
     @since 1.0.59
  *)
 
@@ -2462,6 +2661,8 @@ val ls0 : t -> string -> string -> unit
 
 val lsetxattr : t -> string -> string -> int -> string -> unit
 (** set extended attribute of a file or directory
+
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
 
     @since 1.0.59
  *)
@@ -2497,11 +2698,15 @@ val lstatnslist : t -> string -> string array -> statns array
 val luks_add_key : t -> string -> string -> string -> int -> unit
 (** add a key on a LUKS encrypted device
 
+    This function depends on the feature "luks".  See also {!feature_available}.
+
     @since 1.5.2
  *)
 
 val luks_close : t -> string -> unit
 (** close a LUKS device
+
+    This function depends on the feature "luks".  See also {!feature_available}.
 
     @since 1.5.1
  *)
@@ -2509,11 +2714,15 @@ val luks_close : t -> string -> unit
 val luks_format : t -> string -> string -> int -> unit
 (** format a block device as a LUKS encrypted device
 
+    This function depends on the feature "luks".  See also {!feature_available}.
+
     @since 1.5.2
  *)
 
 val luks_format_cipher : t -> string -> string -> int -> string -> unit
 (** format a block device as a LUKS encrypted device
+
+    This function depends on the feature "luks".  See also {!feature_available}.
 
     @since 1.5.2
  *)
@@ -2521,11 +2730,15 @@ val luks_format_cipher : t -> string -> string -> int -> string -> unit
 val luks_kill_slot : t -> string -> string -> int -> unit
 (** remove a key from a LUKS encrypted device
 
+    This function depends on the feature "luks".  See also {!feature_available}.
+
     @since 1.5.2
  *)
 
 val luks_open : t -> string -> string -> string -> unit
 (** open a LUKS-encrypted block device
+
+    This function depends on the feature "luks".  See also {!feature_available}.
 
     @since 1.5.1
  *)
@@ -2533,17 +2746,23 @@ val luks_open : t -> string -> string -> string -> unit
 val luks_open_ro : t -> string -> string -> string -> unit
 (** open a LUKS-encrypted block device read-only
 
+    This function depends on the feature "luks".  See also {!feature_available}.
+
     @since 1.5.1
  *)
 
 val lvcreate : t -> string -> string -> int -> unit
 (** create an LVM logical volume
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.8
  *)
 
 val lvcreate_free : t -> string -> string -> int -> unit
 (** create an LVM logical volume in % remaining free space
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.17.18
  *)
@@ -2563,17 +2782,23 @@ val lvm_clear_filter : t -> unit
 val lvm_remove_all : t -> unit
 (** remove all LVM LVs, VGs and PVs
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.8
  *)
 
 val lvm_set_filter : t -> string array -> unit
 (** set LVM device filter
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.5.1
  *)
 
 val lvremove : t -> string -> unit
 (** remove an LVM logical volume
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.0.13
  *)
@@ -2587,11 +2812,15 @@ val lvrename : t -> string -> string -> unit
 val lvresize : t -> string -> int -> unit
 (** resize an LVM logical volume
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.0.27
  *)
 
 val lvresize_free : t -> string -> int -> unit
 (** expand an LV to fill free space
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.3.3
  *)
@@ -2599,11 +2828,15 @@ val lvresize_free : t -> string -> int -> unit
 val lvs : t -> string array
 (** list the LVM logical volumes (LVs)
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.4
  *)
 
 val lvs_full : t -> lvm_lv array
 (** list the LVM logical volumes (LVs)
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 0.4
  *)
@@ -2617,6 +2850,8 @@ val lvuuid : t -> string -> string
 val lxattrlist : t -> string -> string array -> xattr array
 (** lgetxattr on multiple files
 
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
+
     @since 1.0.77
  *)
 
@@ -2629,11 +2864,15 @@ val max_disks : t -> int
 val md_create : t -> ?missingbitmap:int64 -> ?nrdevices:int -> ?spare:int -> ?chunk:int64 -> ?level:string -> string -> string array -> unit
 (** create a Linux md (RAID) device
 
+    This function depends on the feature "mdadm".  See also {!feature_available}.
+
     @since 1.15.6
  *)
 
 val md_detail : t -> string -> (string * string) list
 (** obtain metadata for an MD device
+
+    This function depends on the feature "mdadm".  See also {!feature_available}.
 
     @since 1.15.6
  *)
@@ -2641,11 +2880,15 @@ val md_detail : t -> string -> (string * string) list
 val md_stat : t -> string -> mdstat array
 (** get underlying devices from an MD device
 
+    This function depends on the feature "mdadm".  See also {!feature_available}.
+
     @since 1.17.21
  *)
 
 val md_stop : t -> string -> unit
 (** stop a Linux md (RAID) device
+
+    This function depends on the feature "mdadm".  See also {!feature_available}.
 
     @since 1.15.6
  *)
@@ -2699,6 +2942,8 @@ val mke2fs_JL : t -> string -> int -> string -> string -> unit
 val mke2fs_JU : t -> string -> int -> string -> string -> unit
 (** make ext2/3/4 filesystem with external journal
 
+    This function depends on the feature "linuxfsuuid".  See also {!feature_available}.
+
     @deprecated Use {!mke2fs} instead
 
     @since 1.0.68
@@ -2723,6 +2968,8 @@ val mke2journal_L : t -> int -> string -> string -> unit
 val mke2journal_U : t -> int -> string -> string -> unit
 (** make ext2/3/4 external journal with UUID
 
+    This function depends on the feature "linuxfsuuid".  See also {!feature_available}.
+
     @deprecated Use {!mke2fs} instead
 
     @since 1.0.68
@@ -2730,6 +2977,8 @@ val mke2journal_U : t -> int -> string -> string -> unit
 
 val mkfifo : t -> int -> string -> unit
 (** make FIFO (named pipe)
+
+    This function depends on the feature "mknod".  See also {!feature_available}.
 
     @since 1.0.55
  *)
@@ -2757,6 +3006,8 @@ val mkfs_b : t -> string -> int -> string -> unit
 val mkfs_btrfs : t -> ?allocstart:int64 -> ?bytecount:int64 -> ?datatype:string -> ?leafsize:int -> ?label:string -> ?metadata:string -> ?nodesize:int -> ?sectorsize:int -> string array -> unit
 (** create a btrfs filesystem
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.25
  *)
 
@@ -2775,17 +3026,23 @@ val mkmountpoint : t -> string -> unit
 val mknod : t -> int -> int -> int -> string -> unit
 (** make block, character or FIFO devices
 
+    This function depends on the feature "mknod".  See also {!feature_available}.
+
     @since 1.0.55
  *)
 
 val mknod_b : t -> int -> int -> int -> string -> unit
 (** make block device node
 
+    This function depends on the feature "mknod".  See also {!feature_available}.
+
     @since 1.0.55
  *)
 
 val mknod_c : t -> int -> int -> int -> string -> unit
 (** make char device node
+
+    This function depends on the feature "mknod".  See also {!feature_available}.
 
     @since 1.0.55
  *)
@@ -2813,6 +3070,8 @@ val mkswap_L : t -> string -> string -> unit
 val mkswap_U : t -> string -> string -> unit
 (** create a swap partition with an explicit UUID
 
+    This function depends on the feature "linuxfsuuid".  See also {!feature_available}.
+
     @deprecated Use {!mkswap} instead
 
     @since 1.0.55
@@ -2832,6 +3091,8 @@ val mktemp : t -> ?suffix:string -> string -> string
 
 val modprobe : t -> string -> unit
 (** load a kernel module
+
+    This function depends on the feature "linuxmodules".  See also {!feature_available}.
 
     @since 1.0.68
  *)
@@ -2911,11 +3172,15 @@ val nr_devices : t -> int
 val ntfs_3g_probe : t -> bool -> string -> int
 (** probe NTFS volume
 
+    This function depends on the feature "ntfs3g".  See also {!feature_available}.
+
     @since 1.0.43
  *)
 
 val ntfsclone_in : t -> string -> string -> unit
 (** restore NTFS from backup file
+
+    This function depends on the feature "ntfs3g".  See also {!feature_available}.
 
     @since 1.17.9
  *)
@@ -2923,11 +3188,15 @@ val ntfsclone_in : t -> string -> string -> unit
 val ntfsclone_out : t -> ?metadataonly:bool -> ?rescue:bool -> ?ignorefscheck:bool -> ?preservetimestamps:bool -> ?force:bool -> string -> string -> unit
 (** save NTFS to backup file
 
+    This function depends on the feature "ntfs3g".  See also {!feature_available}.
+
     @since 1.17.9
  *)
 
 val ntfsfix : t -> ?clearbadsectors:bool -> string -> unit
 (** fix common errors and force Windows to check NTFS
+
+    This function depends on the feature "ntfs3g".  See also {!feature_available}.
 
     @since 1.17.9
  *)
@@ -2935,17 +3204,23 @@ val ntfsfix : t -> ?clearbadsectors:bool -> string -> unit
 val ntfsresize : t -> ?size:int64 -> ?force:bool -> string -> unit
 (** resize an NTFS filesystem
 
+    This function depends on the feature "ntfsprogs".  See also {!feature_available}.
+
     @since 1.3.2
  *)
 
 val ntfsresize_opts : t -> ?size:int64 -> ?force:bool -> string -> unit
 (** alias for {!ntfsresize}
 
+    This function depends on the feature "ntfsprogs".  See also {!feature_available}.
+
     @since 1.3.2
  *)
 
 val ntfsresize_size : t -> string -> int64 -> unit
 (** resize an NTFS filesystem (with size)
+
+    This function depends on the feature "ntfsprogs".  See also {!feature_available}.
 
     @deprecated Use {!ntfsresize} instead
 
@@ -2991,11 +3266,15 @@ val part_get_bootable : t -> string -> int -> bool
 val part_get_gpt_guid : t -> string -> int -> string
 (** get the GUID of a GPT partition
 
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
     @since 1.29.25
  *)
 
 val part_get_gpt_type : t -> string -> int -> string
 (** get the type GUID of a GPT partition
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
 
     @since 1.21.1
  *)
@@ -3045,11 +3324,15 @@ val part_set_bootable : t -> string -> int -> bool -> unit
 val part_set_gpt_guid : t -> string -> int -> string -> unit
 (** set the GUID of a GPT partition
 
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
     @since 1.29.25
  *)
 
 val part_set_gpt_type : t -> string -> int -> string -> unit
 (** set the type GUID of a GPT partition
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
 
     @since 1.21.1
  *)
@@ -3099,11 +3382,15 @@ val pread_device : t -> string -> int -> int64 -> string
 val pvchange_uuid : t -> string -> unit
 (** generate a new random UUID for a physical volume
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.19.26
  *)
 
 val pvchange_uuid_all : t -> unit
 (** generate new random UUIDs for all physical volumes
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.19.26
  *)
@@ -3111,11 +3398,15 @@ val pvchange_uuid_all : t -> unit
 val pvcreate : t -> string -> unit
 (** create an LVM physical volume
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.8
  *)
 
 val pvremove : t -> string -> unit
 (** remove an LVM physical volume
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.0.13
  *)
@@ -3123,11 +3414,15 @@ val pvremove : t -> string -> unit
 val pvresize : t -> string -> unit
 (** resize an LVM physical volume
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.0.26
  *)
 
 val pvresize_size : t -> string -> int64 -> unit
 (** resize an LVM physical volume (with size)
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.3.14
  *)
@@ -3135,11 +3430,15 @@ val pvresize_size : t -> string -> int64 -> unit
 val pvs : t -> string array
 (** list the LVM physical volumes (PVs)
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.4
  *)
 
 val pvs_full : t -> lvm_pv array
 (** list the LVM physical volumes (PVs)
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 0.4
  *)
@@ -3213,6 +3512,8 @@ val remove_drive : t -> string -> unit
 val removexattr : t -> string -> string -> unit
 (** remove extended attribute of a file or directory
 
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
+
     @since 1.0.59
  *)
 
@@ -3273,11 +3574,15 @@ val rmmountpoint : t -> string -> unit
 val rsync : t -> ?archive:bool -> ?deletedest:bool -> string -> string -> unit
 (** synchronize the contents of two directories
 
+    This function depends on the feature "rsync".  See also {!feature_available}.
+
     @since 1.19.29
  *)
 
 val rsync_in : t -> ?archive:bool -> ?deletedest:bool -> string -> string -> unit
 (** synchronize host or remote filesystem with filesystem
+
+    This function depends on the feature "rsync".  See also {!feature_available}.
 
     @since 1.19.29
  *)
@@ -3285,11 +3590,15 @@ val rsync_in : t -> ?archive:bool -> ?deletedest:bool -> string -> string -> uni
 val rsync_out : t -> ?archive:bool -> ?deletedest:bool -> string -> string -> unit
 (** synchronize filesystem with host or remote filesystem
 
+    This function depends on the feature "rsync".  See also {!feature_available}.
+
     @since 1.19.29
  *)
 
 val scrub_device : t -> string -> unit
 (** scrub (securely wipe) a device
+
+    This function depends on the feature "scrub".  See also {!feature_available}.
 
     @since 1.0.52
  *)
@@ -3297,11 +3606,15 @@ val scrub_device : t -> string -> unit
 val scrub_file : t -> string -> unit
 (** scrub (securely wipe) a file
 
+    This function depends on the feature "scrub".  See also {!feature_available}.
+
     @since 1.0.52
  *)
 
 val scrub_freespace : t -> string -> unit
 (** scrub (securely wipe) free space
+
+    This function depends on the feature "scrub".  See also {!feature_available}.
 
     @since 1.0.52
  *)
@@ -3503,11 +3816,15 @@ val set_verbose : t -> bool -> unit
 val setcon : t -> string -> unit
 (** set SELinux security context
 
+    This function depends on the feature "selinux".  See also {!feature_available}.
+
     @since 1.0.67
  *)
 
 val setxattr : t -> string -> string -> int -> string -> unit
 (** set extended attribute of a file or directory
+
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
 
     @since 1.0.59
  *)
@@ -3633,6 +3950,8 @@ val swapoff_label : t -> string -> unit
 val swapoff_uuid : t -> string -> unit
 (** disable swap on swap partition by UUID
 
+    This function depends on the feature "linuxfsuuid".  See also {!feature_available}.
+
     @since 1.0.66
  *)
 
@@ -3657,6 +3976,8 @@ val swapon_label : t -> string -> unit
 val swapon_uuid : t -> string -> unit
 (** enable swap on swap partition by UUID
 
+    This function depends on the feature "linuxfsuuid".  See also {!feature_available}.
+
     @since 1.0.66
  *)
 
@@ -3668,6 +3989,8 @@ val sync : t -> unit
 
 val syslinux : t -> ?directory:string -> string -> unit
 (** install the SYSLINUX bootloader
+
+    This function depends on the feature "syslinux".  See also {!feature_available}.
 
     @since 1.21.27
  *)
@@ -3757,6 +4080,8 @@ val tune2fs_l : t -> string -> (string * string) list
 val txz_in : t -> string -> string -> unit
 (** unpack compressed tarball to directory
 
+    This function depends on the feature "xz".  See also {!feature_available}.
+
     @deprecated Use {!tar_in} instead
 
     @since 1.3.2
@@ -3764,6 +4089,8 @@ val txz_in : t -> string -> string -> unit
 
 val txz_out : t -> string -> string -> unit
 (** pack directory into compressed tarball
+
+    This function depends on the feature "xz".  See also {!feature_available}.
 
     @deprecated Use {!tar_out} instead
 
@@ -3863,11 +4190,15 @@ val vfs_uuid : t -> string -> string
 val vg_activate : t -> bool -> string array -> unit
 (** activate or deactivate some volume groups
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.0.26
  *)
 
 val vg_activate_all : t -> bool -> unit
 (** activate or deactivate all volume groups
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.0.26
  *)
@@ -3875,17 +4206,23 @@ val vg_activate_all : t -> bool -> unit
 val vgchange_uuid : t -> string -> unit
 (** generate a new random UUID for a volume group
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.19.26
  *)
 
 val vgchange_uuid_all : t -> unit
 (** generate new random UUIDs for all volume groups
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.19.26
  *)
 
 val vgcreate : t -> string -> string array -> unit
 (** create an LVM volume group
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 0.8
  *)
@@ -3899,6 +4236,8 @@ val vglvuuids : t -> string -> string array
 val vgmeta : t -> string -> string
 (** get volume group metadata
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.17.20
  *)
 
@@ -3910,6 +4249,8 @@ val vgpvuuids : t -> string -> string array
 
 val vgremove : t -> string -> unit
 (** remove an LVM volume group
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.0.13
  *)
@@ -3923,11 +4264,15 @@ val vgrename : t -> string -> string -> unit
 val vgs : t -> string array
 (** list the LVM volume groups (VGs)
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.4
  *)
 
 val vgs_full : t -> lvm_vg array
 (** list the LVM volume groups (VGs)
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 0.4
  *)
@@ -3973,6 +4318,8 @@ val wc_w : t -> string -> int
 val wipefs : t -> string -> unit
 (** wipe a filesystem signature from a device
 
+    This function depends on the feature "wipefs".  See also {!feature_available}.
+
     @since 1.17.6
  *)
 
@@ -3999,11 +4346,15 @@ val write_file : t -> string -> string -> int -> unit
 val xfs_admin : t -> ?extunwritten:bool -> ?imgfile:bool -> ?v2log:bool -> ?projid32bit:bool -> ?lazycounter:bool -> ?label:string -> ?uuid:string -> string -> unit
 (** change parameters of an XFS filesystem
 
+    This function depends on the feature "xfs".  See also {!feature_available}.
+
     @since 1.19.33
  *)
 
 val xfs_growfs : t -> ?datasec:bool -> ?logsec:bool -> ?rtsec:bool -> ?datasize:int64 -> ?logsize:int64 -> ?rtsize:int64 -> ?rtextsize:int64 -> ?maxpct:int -> string -> unit
 (** expand an existing XFS filesystem
+
+    This function depends on the feature "xfs".  See also {!feature_available}.
 
     @since 1.19.28
  *)
@@ -4011,11 +4362,15 @@ val xfs_growfs : t -> ?datasec:bool -> ?logsec:bool -> ?rtsec:bool -> ?datasize:
 val xfs_info : t -> string -> xfsinfo
 (** get geometry of XFS filesystem
 
+    This function depends on the feature "xfs".  See also {!feature_available}.
+
     @since 1.19.21
  *)
 
 val xfs_repair : t -> ?forcelogzero:bool -> ?nomodify:bool -> ?noprefetch:bool -> ?forcegeometry:bool -> ?maxmem:int64 -> ?ihashsize:int64 -> ?bhashsize:int64 -> ?agstride:int64 -> ?logdev:string -> ?rtdev:string -> string -> int
 (** repair an XFS filesystem
+
+    This function depends on the feature "xfs".  See also {!feature_available}.
 
     @since 1.19.36
  *)
@@ -4056,6 +4411,8 @@ val zero_free_space : t -> string -> unit
 
 val zerofree : t -> string -> unit
 (** zero unused inodes and disk blocks on ext2/3 filesystem
+
+    This function depends on the feature "zerofree".  See also {!feature_available}.
 
     @since 1.0.26
  *)
@@ -4136,15 +4493,21 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method acl_delete_def_file : string -> unit
   (** delete the default POSIX ACL of a directory
 
+    This function depends on the feature "acl".  See also {!feature_available}.
+
     @since 1.19.63
    *)
   method acl_get_file : string -> string -> string
   (** get the POSIX ACL attached to a file
 
+    This function depends on the feature "acl".  See also {!feature_available}.
+
     @since 1.19.63
    *)
   method acl_set_file : string -> string -> string -> unit
   (** set the POSIX ACL attached to a file
+
+    This function depends on the feature "acl".  See also {!feature_available}.
 
     @since 1.19.63
    *)
@@ -4302,10 +4665,14 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method blkdiscard : string -> unit
   (** discard all blocks on a device
 
+    This function depends on the feature "blkdiscard".  See also {!feature_available}.
+
     @since 1.25.44
    *)
   method blkdiscardzeroes : string -> bool
   (** return true if discarded blocks are read as zeroes
+
+    This function depends on the feature "blkdiscardzeroes".  See also {!feature_available}.
 
     @since 1.25.44
    *)
@@ -4374,200 +4741,280 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method btrfs_balance_cancel : string -> unit
   (** cancel a running or paused balance
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.22
    *)
   method btrfs_balance_pause : string -> unit
   (** pause a running balance
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.22
    *)
   method btrfs_balance_resume : string -> unit
   (** resume a paused balance
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.22
    *)
   method btrfs_balance_status : string -> btrfsbalance
   (** show the status of a running or paused balance
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.26
    *)
   method btrfs_device_add : string array -> string -> unit
   (** add devices to a btrfs filesystem
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
    *)
   method btrfs_device_delete : string array -> string -> unit
   (** remove devices from a btrfs filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.35
    *)
   method btrfs_filesystem_balance : string -> unit
   (** balance a btrfs filesystem
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
    *)
   method btrfs_filesystem_defragment : ?flush:bool -> ?compress:string -> string -> unit
   (** defragment a file or directory
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.22
    *)
   method btrfs_filesystem_resize : ?size:int64 -> string -> unit
   (** resize a btrfs filesystem
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.11.17
    *)
   method btrfs_filesystem_sync : string -> unit
   (** sync a btrfs filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.35
    *)
   method btrfs_fsck : ?superblock:int64 -> ?repair:bool -> string -> unit
   (** check a btrfs filesystem
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.43
    *)
   method btrfs_image : ?compresslevel:int -> string array -> string -> unit
   (** create an image of a btrfs filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.32
    *)
   method btrfs_qgroup_assign : string -> string -> string -> unit
   (** add a qgroup to a parent qgroup
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.17
    *)
   method btrfs_qgroup_create : string -> string -> unit
   (** create a subvolume quota group
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.17
    *)
   method btrfs_qgroup_destroy : string -> string -> unit
   (** destroy a subvolume quota group
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.17
    *)
   method btrfs_qgroup_limit : string -> int64 -> unit
   (** limit the size of a subvolume
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.17
    *)
   method btrfs_qgroup_remove : string -> string -> string -> unit
   (** remove a qgroup from its parent qgroup
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.17
    *)
   method btrfs_qgroup_show : string -> btrfsqgroup array
   (** show subvolume quota groups
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.17
    *)
   method btrfs_quota_enable : string -> bool -> unit
   (** enable or disable subvolume quota support
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.17
    *)
   method btrfs_quota_rescan : string -> unit
   (** trash all qgroup numbers and scan the metadata again with the current config
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.17
    *)
   method btrfs_replace : string -> string -> string -> unit
   (** replace a btrfs managed device with another device
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.48
    *)
   method btrfs_rescue_chunk_recover : string -> unit
   (** recover the chunk tree of btrfs filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.22
    *)
   method btrfs_rescue_super_recover : string -> unit
   (** recover bad superblocks from good copies
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.22
    *)
   method btrfs_scrub_cancel : string -> unit
   (** cancel a running scrub
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.22
    *)
   method btrfs_scrub_resume : string -> unit
   (** resume a previously canceled or interrupted scrub
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.22
    *)
   method btrfs_scrub_start : string -> unit
   (** read all data from all disks and verify checksums
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.22
    *)
   method btrfs_scrub_status : string -> btrfsscrub
   (** show status of running or finished scrub
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.26
    *)
   method btrfs_set_seeding : string -> bool -> unit
   (** enable or disable the seeding feature of device
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.43
    *)
   method btrfs_subvolume_create : ?qgroupid:string -> string -> unit
   (** create a btrfs subvolume
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
    *)
   method btrfs_subvolume_create_opts : ?qgroupid:string -> string -> unit
   (** alias for {!btrfs_subvolume_create}
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.35
    *)
   method btrfs_subvolume_delete : string -> unit
   (** delete a btrfs subvolume or snapshot
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
    *)
   method btrfs_subvolume_get_default : string -> int64
   (** get the default subvolume or snapshot of a filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.17
    *)
   method btrfs_subvolume_list : string -> btrfssubvolume array
   (** list btrfs snapshots and subvolumes
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
    *)
   method btrfs_subvolume_set_default : int64 -> string -> unit
   (** set default btrfs subvolume
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.35
    *)
   method btrfs_subvolume_show : string -> (string * string) list
   (** return detailed information of the subvolume
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.17
    *)
   method btrfs_subvolume_snapshot : ?ro:bool -> ?qgroupid:string -> string -> string -> unit
   (** create a btrfs snapshot
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.17.35
    *)
   method btrfs_subvolume_snapshot_opts : ?ro:bool -> ?qgroupid:string -> string -> string -> unit
   (** alias for {!btrfs_subvolume_snapshot}
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.35
    *)
   method btrfstune_enable_extended_inode_refs : string -> unit
   (** enable extended inode refs
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.29
    *)
   method btrfstune_enable_skinny_metadata_extent_refs : string -> unit
   (** enable skinny metadata extent refs
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.29.29
    *)
   method btrfstune_seeding : string -> bool -> unit
   (** enable or disable seeding of a btrfs device
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.29.29
    *)
@@ -4584,10 +5031,14 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method cap_get_file : string -> string
   (** get the Linux capabilities attached to a file
 
+    This function depends on the feature "linuxcaps".  See also {!feature_available}.
+
     @since 1.19.63
    *)
   method cap_set_file : string -> string -> unit
   (** set the Linux capabilities attached to a file
+
+    This function depends on the feature "linuxcaps".  See also {!feature_available}.
 
     @since 1.19.63
    *)
@@ -4838,6 +5289,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method extlinux : string -> unit
   (** install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
 
+    This function depends on the feature "extlinux".  See also {!feature_available}.
+
     @since 1.21.27
    *)
   method fallocate : string -> int -> unit
@@ -4933,6 +5386,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
    *)
   method fstrim : ?offset:int64 -> ?length:int64 -> ?minimumfreeextent:int64 -> string -> unit
   (** trim free space in a filesystem
+
+    This function depends on the feature "fstrim".  See also {!feature_available}.
 
     @since 1.19.6
    *)
@@ -5112,15 +5567,21 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method getcon : unit -> string
   (** get SELinux security context
 
+    This function depends on the feature "selinux".  See also {!feature_available}.
+
     @since 1.0.67
    *)
   method getxattr : string -> string -> string
   (** get a single extended attribute
 
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
+
     @since 1.7.24
    *)
   method getxattrs : string -> xattr array
   (** list extended attributes of a file or directory
+
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
 
     @since 1.0.59
    *)
@@ -5149,6 +5610,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method grub_install : string -> string -> unit
   (** install GRUB 1
 
+    This function depends on the feature "grub".  See also {!feature_available}.
+
     @since 1.0.17
    *)
   method head : string -> string array
@@ -5169,85 +5632,119 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method hivex_close : unit -> unit
   (** close the current hivex handle
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
    *)
   method hivex_commit : string option -> unit
   (** commit (write) changes back to the hive
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
    *)
   method hivex_node_add_child : int64 -> string -> int64
   (** add a child node
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
    *)
   method hivex_node_children : int64 -> hivex_node array
   (** return list of nodes which are subkeys of node
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
    *)
   method hivex_node_delete_child : int64 -> unit
   (** delete a node (recursively)
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
    *)
   method hivex_node_get_child : int64 -> string -> int64
   (** return the named child of node
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
    *)
   method hivex_node_get_value : int64 -> string -> int64
   (** return the named value
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
    *)
   method hivex_node_name : int64 -> string
   (** return the name of the node
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
    *)
   method hivex_node_parent : int64 -> int64
   (** return the parent of node
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
    *)
   method hivex_node_set_value : int64 -> string -> int64 -> string -> unit
   (** set or replace a single value in a node
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
    *)
   method hivex_node_values : int64 -> hivex_value array
   (** return list of values attached to node
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
    *)
   method hivex_open : ?verbose:bool -> ?debug:bool -> ?write:bool -> string -> unit
   (** open a Windows Registry hive file
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
    *)
   method hivex_root : unit -> int64
   (** return the root node of the hive
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
    *)
   method hivex_value_key : int64 -> string
   (** return the key field from the (key, datatype, data) tuple
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
    *)
   method hivex_value_type : int64 -> int64
   (** return the data type from the (key, datatype, data) tuple
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
    *)
   method hivex_value_utf8 : int64 -> string
   (** return the data field from the (key, datatype, data) tuple
 
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
     @since 1.19.35
    *)
   method hivex_value_value : int64 -> string
   (** return the data field from the (key, datatype, data) tuple
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
 
     @since 1.19.35
    *)
@@ -5264,30 +5761,42 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method inotify_add_watch : string -> int -> int64
   (** add an inotify watch
 
+    This function depends on the feature "inotify".  See also {!feature_available}.
+
     @since 1.0.66
    *)
   method inotify_close : unit -> unit
   (** close the inotify handle
+
+    This function depends on the feature "inotify".  See also {!feature_available}.
 
     @since 1.0.66
    *)
   method inotify_files : unit -> string array
   (** return list of watched files that had events
 
+    This function depends on the feature "inotify".  See also {!feature_available}.
+
     @since 1.0.66
    *)
   method inotify_init : int -> unit
   (** create an inotify handle
+
+    This function depends on the feature "inotify".  See also {!feature_available}.
 
     @since 1.0.66
    *)
   method inotify_read : unit -> inotify_event array
   (** return list of inotify events
 
+    This function depends on the feature "inotify".  See also {!feature_available}.
+
     @since 1.0.66
    *)
   method inotify_rm_watch : int -> unit
   (** remove an inotify watch
+
+    This function depends on the feature "inotify".  See also {!feature_available}.
 
     @since 1.0.66
    *)
@@ -5615,40 +6124,56 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method journal_close : unit -> unit
   (** close the systemd journal
 
+    This function depends on the feature "journal".  See also {!feature_available}.
+
     @since 1.23.11
    *)
   method journal_get : unit -> xattr array
   (** read the current journal entry
+
+    This function depends on the feature "journal".  See also {!feature_available}.
 
     @since 1.23.11
    *)
   method journal_get_data_threshold : unit -> int64
   (** get the data threshold for reading journal entries
 
+    This function depends on the feature "journal".  See also {!feature_available}.
+
     @since 1.23.11
    *)
   method journal_get_realtime_usec : unit -> int64
   (** get the timestamp of the current journal entry
+
+    This function depends on the feature "journal".  See also {!feature_available}.
 
     @since 1.27.18
    *)
   method journal_next : unit -> bool
   (** move to the next journal entry
 
+    This function depends on the feature "journal".  See also {!feature_available}.
+
     @since 1.23.11
    *)
   method journal_open : string -> unit
   (** open the systemd journal
+
+    This function depends on the feature "journal".  See also {!feature_available}.
 
     @since 1.23.11
    *)
   method journal_set_data_threshold : int64 -> unit
   (** set the data threshold for reading journal entries
 
+    This function depends on the feature "journal".  See also {!feature_available}.
+
     @since 1.23.11
    *)
   method journal_skip : int64 -> int64
   (** skip forwards or backwards in the journal
+
+    This function depends on the feature "journal".  See also {!feature_available}.
 
     @since 1.23.11
    *)
@@ -5672,60 +6197,84 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method ldmtool_create_all : unit -> unit
   (** scan and create Windows dynamic disk volumes
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
    *)
   method ldmtool_diskgroup_disks : string -> string array
   (** return the disks in a Windows dynamic disk group
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
    *)
   method ldmtool_diskgroup_name : string -> string
   (** return the name of a Windows dynamic disk group
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
    *)
   method ldmtool_diskgroup_volumes : string -> string array
   (** return the volumes in a Windows dynamic disk group
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
    *)
   method ldmtool_remove_all : unit -> unit
   (** remove all Windows dynamic disk volumes
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
    *)
   method ldmtool_scan : unit -> string array
   (** scan for Windows dynamic disks
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
    *)
   method ldmtool_scan_devices : string array -> string array
   (** scan for Windows dynamic disks
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
    *)
   method ldmtool_volume_hint : string -> string -> string
   (** return the hint field of a Windows dynamic disk volume
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
    *)
   method ldmtool_volume_partitions : string -> string -> string array
   (** return the partitions in a Windows dynamic disk volume
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
    *)
   method ldmtool_volume_type : string -> string -> string
   (** return the type of a Windows dynamic disk volume
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
    *)
   method lgetxattr : string -> string -> string
   (** get a single extended attribute
 
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
+
     @since 1.7.24
    *)
   method lgetxattrs : string -> xattr array
   (** list extended attributes of a file or directory
+
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
 
     @since 1.0.59
    *)
@@ -5757,10 +6306,14 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method list_ldm_partitions : unit -> string array
   (** list all Windows dynamic disk partitions
 
+    This function depends on the feature "ldm".  See also {!feature_available}.
+
     @since 1.20.0
    *)
   method list_ldm_volumes : unit -> string array
   (** list all Windows dynamic disk volumes
+
+    This function depends on the feature "ldm".  See also {!feature_available}.
 
     @since 1.20.0
    *)
@@ -5807,6 +6360,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method lremovexattr : string -> string -> unit
   (** remove extended attribute of a file or directory
 
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
+
     @since 1.0.59
    *)
   method ls : string -> string array
@@ -5821,6 +6376,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
    *)
   method lsetxattr : string -> string -> int -> string -> unit
   (** set extended attribute of a file or directory
+
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
 
     @since 1.0.59
    *)
@@ -5851,45 +6408,63 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method luks_add_key : string -> string -> string -> int -> unit
   (** add a key on a LUKS encrypted device
 
+    This function depends on the feature "luks".  See also {!feature_available}.
+
     @since 1.5.2
    *)
   method luks_close : string -> unit
   (** close a LUKS device
+
+    This function depends on the feature "luks".  See also {!feature_available}.
 
     @since 1.5.1
    *)
   method luks_format : string -> string -> int -> unit
   (** format a block device as a LUKS encrypted device
 
+    This function depends on the feature "luks".  See also {!feature_available}.
+
     @since 1.5.2
    *)
   method luks_format_cipher : string -> string -> int -> string -> unit
   (** format a block device as a LUKS encrypted device
+
+    This function depends on the feature "luks".  See also {!feature_available}.
 
     @since 1.5.2
    *)
   method luks_kill_slot : string -> string -> int -> unit
   (** remove a key from a LUKS encrypted device
 
+    This function depends on the feature "luks".  See also {!feature_available}.
+
     @since 1.5.2
    *)
   method luks_open : string -> string -> string -> unit
   (** open a LUKS-encrypted block device
+
+    This function depends on the feature "luks".  See also {!feature_available}.
 
     @since 1.5.1
    *)
   method luks_open_ro : string -> string -> string -> unit
   (** open a LUKS-encrypted block device read-only
 
+    This function depends on the feature "luks".  See also {!feature_available}.
+
     @since 1.5.1
    *)
   method lvcreate : string -> string -> int -> unit
   (** create an LVM logical volume
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.8
    *)
   method lvcreate_free : string -> string -> int -> unit
   (** create an LVM logical volume in % remaining free space
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.17.18
    *)
@@ -5906,15 +6481,21 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method lvm_remove_all : unit -> unit
   (** remove all LVM LVs, VGs and PVs
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.8
    *)
   method lvm_set_filter : string array -> unit
   (** set LVM device filter
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.5.1
    *)
   method lvremove : string -> unit
   (** remove an LVM logical volume
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.0.13
    *)
@@ -5926,20 +6507,28 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method lvresize : string -> int -> unit
   (** resize an LVM logical volume
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.0.27
    *)
   method lvresize_free : string -> int -> unit
   (** expand an LV to fill free space
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.3.3
    *)
   method lvs : unit -> string array
   (** list the LVM logical volumes (LVs)
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.4
    *)
   method lvs_full : unit -> lvm_lv array
   (** list the LVM logical volumes (LVs)
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 0.4
    *)
@@ -5951,6 +6540,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method lxattrlist : string -> string array -> xattr array
   (** lgetxattr on multiple files
 
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
+
     @since 1.0.77
    *)
   method max_disks : unit -> int
@@ -5961,20 +6552,28 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method md_create : ?missingbitmap:int64 -> ?nrdevices:int -> ?spare:int -> ?chunk:int64 -> ?level:string -> string -> string array -> unit
   (** create a Linux md (RAID) device
 
+    This function depends on the feature "mdadm".  See also {!feature_available}.
+
     @since 1.15.6
    *)
   method md_detail : string -> (string * string) list
   (** obtain metadata for an MD device
+
+    This function depends on the feature "mdadm".  See also {!feature_available}.
 
     @since 1.15.6
    *)
   method md_stat : string -> mdstat array
   (** get underlying devices from an MD device
 
+    This function depends on the feature "mdadm".  See also {!feature_available}.
+
     @since 1.17.21
    *)
   method md_stop : string -> unit
   (** stop a Linux md (RAID) device
+
+    This function depends on the feature "mdadm".  See also {!feature_available}.
 
     @since 1.15.6
    *)
@@ -6020,6 +6619,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method mke2fs_JU : string -> int -> string -> string -> unit
   (** make ext2/3/4 filesystem with external journal
 
+    This function depends on the feature "linuxfsuuid".  See also {!feature_available}.
+
     @deprecated Use {!mke2fs} instead
 
     @since 1.0.68
@@ -6041,12 +6642,16 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method mke2journal_U : int -> string -> string -> unit
   (** make ext2/3/4 external journal with UUID
 
+    This function depends on the feature "linuxfsuuid".  See also {!feature_available}.
+
     @deprecated Use {!mke2fs} instead
 
     @since 1.0.68
    *)
   method mkfifo : int -> string -> unit
   (** make FIFO (named pipe)
+
+    This function depends on the feature "mknod".  See also {!feature_available}.
 
     @since 1.0.55
    *)
@@ -6070,6 +6675,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method mkfs_btrfs : ?allocstart:int64 -> ?bytecount:int64 -> ?datatype:string -> ?leafsize:int -> ?label:string -> ?metadata:string -> ?nodesize:int -> ?sectorsize:int -> string array -> unit
   (** create a btrfs filesystem
 
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
     @since 1.17.25
    *)
   method mklost_and_found : string -> unit
@@ -6085,15 +6692,21 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method mknod : int -> int -> int -> string -> unit
   (** make block, character or FIFO devices
 
+    This function depends on the feature "mknod".  See also {!feature_available}.
+
     @since 1.0.55
    *)
   method mknod_b : int -> int -> int -> string -> unit
   (** make block device node
 
+    This function depends on the feature "mknod".  See also {!feature_available}.
+
     @since 1.0.55
    *)
   method mknod_c : int -> int -> int -> string -> unit
   (** make char device node
+
+    This function depends on the feature "mknod".  See also {!feature_available}.
 
     @since 1.0.55
    *)
@@ -6117,6 +6730,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method mkswap_U : string -> string -> unit
   (** create a swap partition with an explicit UUID
 
+    This function depends on the feature "linuxfsuuid".  See also {!feature_available}.
+
     @deprecated Use {!mkswap} instead
 
     @since 1.0.55
@@ -6133,6 +6748,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
    *)
   method modprobe : string -> unit
   (** load a kernel module
+
+    This function depends on the feature "linuxmodules".  See also {!feature_available}.
 
     @since 1.0.68
    *)
@@ -6199,35 +6816,49 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method ntfs_3g_probe : bool -> string -> int
   (** probe NTFS volume
 
+    This function depends on the feature "ntfs3g".  See also {!feature_available}.
+
     @since 1.0.43
    *)
   method ntfsclone_in : string -> string -> unit
   (** restore NTFS from backup file
+
+    This function depends on the feature "ntfs3g".  See also {!feature_available}.
 
     @since 1.17.9
    *)
   method ntfsclone_out : ?metadataonly:bool -> ?rescue:bool -> ?ignorefscheck:bool -> ?preservetimestamps:bool -> ?force:bool -> string -> string -> unit
   (** save NTFS to backup file
 
+    This function depends on the feature "ntfs3g".  See also {!feature_available}.
+
     @since 1.17.9
    *)
   method ntfsfix : ?clearbadsectors:bool -> string -> unit
   (** fix common errors and force Windows to check NTFS
+
+    This function depends on the feature "ntfs3g".  See also {!feature_available}.
 
     @since 1.17.9
    *)
   method ntfsresize : ?size:int64 -> ?force:bool -> string -> unit
   (** resize an NTFS filesystem
 
+    This function depends on the feature "ntfsprogs".  See also {!feature_available}.
+
     @since 1.3.2
    *)
   method ntfsresize_opts : ?size:int64 -> ?force:bool -> string -> unit
   (** alias for {!ntfsresize}
 
+    This function depends on the feature "ntfsprogs".  See also {!feature_available}.
+
     @since 1.3.2
    *)
   method ntfsresize_size : string -> int64 -> unit
   (** resize an NTFS filesystem (with size)
+
+    This function depends on the feature "ntfsprogs".  See also {!feature_available}.
 
     @deprecated Use {!ntfsresize} instead
 
@@ -6266,10 +6897,14 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method part_get_gpt_guid : string -> int -> string
   (** get the GUID of a GPT partition
 
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
     @since 1.29.25
    *)
   method part_get_gpt_type : string -> int -> string
   (** get the type GUID of a GPT partition
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
 
     @since 1.21.1
    *)
@@ -6311,10 +6946,14 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method part_set_gpt_guid : string -> int -> string -> unit
   (** set the GUID of a GPT partition
 
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
     @since 1.29.25
    *)
   method part_set_gpt_type : string -> int -> string -> unit
   (** set the type GUID of a GPT partition
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
 
     @since 1.21.1
    *)
@@ -6356,40 +6995,56 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method pvchange_uuid : string -> unit
   (** generate a new random UUID for a physical volume
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.19.26
    *)
   method pvchange_uuid_all : unit -> unit
   (** generate new random UUIDs for all physical volumes
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.19.26
    *)
   method pvcreate : string -> unit
   (** create an LVM physical volume
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.8
    *)
   method pvremove : string -> unit
   (** remove an LVM physical volume
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.0.13
    *)
   method pvresize : string -> unit
   (** resize an LVM physical volume
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.0.26
    *)
   method pvresize_size : string -> int64 -> unit
   (** resize an LVM physical volume (with size)
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.3.14
    *)
   method pvs : unit -> string array
   (** list the LVM physical volumes (PVs)
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.4
    *)
   method pvs_full : unit -> lvm_pv array
   (** list the LVM physical volumes (PVs)
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 0.4
    *)
@@ -6451,6 +7106,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method removexattr : string -> string -> unit
   (** remove extended attribute of a file or directory
 
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
+
     @since 1.0.59
    *)
   method rename : string -> string -> unit
@@ -6501,30 +7158,42 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method rsync : ?archive:bool -> ?deletedest:bool -> string -> string -> unit
   (** synchronize the contents of two directories
 
+    This function depends on the feature "rsync".  See also {!feature_available}.
+
     @since 1.19.29
    *)
   method rsync_in : ?archive:bool -> ?deletedest:bool -> string -> string -> unit
   (** synchronize host or remote filesystem with filesystem
+
+    This function depends on the feature "rsync".  See also {!feature_available}.
 
     @since 1.19.29
    *)
   method rsync_out : ?archive:bool -> ?deletedest:bool -> string -> string -> unit
   (** synchronize filesystem with host or remote filesystem
 
+    This function depends on the feature "rsync".  See also {!feature_available}.
+
     @since 1.19.29
    *)
   method scrub_device : string -> unit
   (** scrub (securely wipe) a device
+
+    This function depends on the feature "scrub".  See also {!feature_available}.
 
     @since 1.0.52
    *)
   method scrub_file : string -> unit
   (** scrub (securely wipe) a file
 
+    This function depends on the feature "scrub".  See also {!feature_available}.
+
     @since 1.0.52
    *)
   method scrub_freespace : string -> unit
   (** scrub (securely wipe) free space
+
+    This function depends on the feature "scrub".  See also {!feature_available}.
 
     @since 1.0.52
    *)
@@ -6694,10 +7363,14 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method setcon : string -> unit
   (** set SELinux security context
 
+    This function depends on the feature "selinux".  See also {!feature_available}.
+
     @since 1.0.67
    *)
   method setxattr : string -> string -> int -> string -> unit
   (** set extended attribute of a file or directory
+
+    This function depends on the feature "linuxxattrs".  See also {!feature_available}.
 
     @since 1.0.59
    *)
@@ -6804,6 +7477,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method swapoff_uuid : string -> unit
   (** disable swap on swap partition by UUID
 
+    This function depends on the feature "linuxfsuuid".  See also {!feature_available}.
+
     @since 1.0.66
    *)
   method swapon_device : string -> unit
@@ -6824,6 +7499,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method swapon_uuid : string -> unit
   (** enable swap on swap partition by UUID
 
+    This function depends on the feature "linuxfsuuid".  See also {!feature_available}.
+
     @since 1.0.66
    *)
   method sync : unit -> unit
@@ -6833,6 +7510,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
    *)
   method syslinux : ?directory:string -> string -> unit
   (** install the SYSLINUX bootloader
+
+    This function depends on the feature "syslinux".  See also {!feature_available}.
 
     @since 1.21.27
    *)
@@ -6908,12 +7587,16 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method txz_in : string -> string -> unit
   (** unpack compressed tarball to directory
 
+    This function depends on the feature "xz".  See also {!feature_available}.
+
     @deprecated Use {!tar_in} instead
 
     @since 1.3.2
    *)
   method txz_out : string -> string -> unit
   (** pack directory into compressed tarball
+
+    This function depends on the feature "xz".  See also {!feature_available}.
 
     @deprecated Use {!tar_out} instead
 
@@ -6997,25 +7680,35 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method vg_activate : bool -> string array -> unit
   (** activate or deactivate some volume groups
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.0.26
    *)
   method vg_activate_all : bool -> unit
   (** activate or deactivate all volume groups
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.0.26
    *)
   method vgchange_uuid : string -> unit
   (** generate a new random UUID for a volume group
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.19.26
    *)
   method vgchange_uuid_all : unit -> unit
   (** generate new random UUIDs for all volume groups
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.19.26
    *)
   method vgcreate : string -> string array -> unit
   (** create an LVM volume group
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 0.8
    *)
@@ -7027,6 +7720,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method vgmeta : string -> string
   (** get volume group metadata
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 1.17.20
    *)
   method vgpvuuids : string -> string array
@@ -7036,6 +7731,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
    *)
   method vgremove : string -> unit
   (** remove an LVM volume group
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 1.0.13
    *)
@@ -7047,10 +7744,14 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method vgs : unit -> string array
   (** list the LVM volume groups (VGs)
 
+    This function depends on the feature "lvm2".  See also {!feature_available}.
+
     @since 0.4
    *)
   method vgs_full : unit -> lvm_vg array
   (** list the LVM volume groups (VGs)
+
+    This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 0.4
    *)
@@ -7089,6 +7790,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method wipefs : string -> unit
   (** wipe a filesystem signature from a device
 
+    This function depends on the feature "wipefs".  See also {!feature_available}.
+
     @since 1.17.6
    *)
   method write : string -> string -> unit
@@ -7111,20 +7814,28 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method xfs_admin : ?extunwritten:bool -> ?imgfile:bool -> ?v2log:bool -> ?projid32bit:bool -> ?lazycounter:bool -> ?label:string -> ?uuid:string -> string -> unit
   (** change parameters of an XFS filesystem
 
+    This function depends on the feature "xfs".  See also {!feature_available}.
+
     @since 1.19.33
    *)
   method xfs_growfs : ?datasec:bool -> ?logsec:bool -> ?rtsec:bool -> ?datasize:int64 -> ?logsize:int64 -> ?rtsize:int64 -> ?rtextsize:int64 -> ?maxpct:int -> string -> unit
   (** expand an existing XFS filesystem
+
+    This function depends on the feature "xfs".  See also {!feature_available}.
 
     @since 1.19.28
    *)
   method xfs_info : string -> xfsinfo
   (** get geometry of XFS filesystem
 
+    This function depends on the feature "xfs".  See also {!feature_available}.
+
     @since 1.19.21
    *)
   method xfs_repair : ?forcelogzero:bool -> ?nomodify:bool -> ?noprefetch:bool -> ?forcegeometry:bool -> ?maxmem:int64 -> ?ihashsize:int64 -> ?bhashsize:int64 -> ?agstride:int64 -> ?logdev:string -> ?rtdev:string -> string -> int
   (** repair an XFS filesystem
+
+    This function depends on the feature "xfs".  See also {!feature_available}.
 
     @since 1.19.36
    *)
@@ -7159,6 +7870,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
    *)
   method zerofree : string -> unit
   (** zero unused inodes and disk blocks on ext2/3 filesystem
+
+    This function depends on the feature "zerofree".  See also {!feature_available}.
 
     @since 1.0.26
    *)

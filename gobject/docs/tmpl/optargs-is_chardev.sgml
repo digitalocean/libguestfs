@@ -38,7 +38,6 @@ GuestfsIsChardev
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_is_chardev_new ##### -->
 <para>

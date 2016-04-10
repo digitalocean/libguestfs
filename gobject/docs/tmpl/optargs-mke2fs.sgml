@@ -223,7 +223,6 @@ GuestfsMke2fs
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_mke2fs_new ##### -->
 <para>

@@ -30,6 +30,8 @@ open Structs
 open C
 open Events
 
+let generate_header = generate_header ~inputs:["generator/perl.ml"]
+
 (* Generate Perl xs code, a sort of crazy variation of C with macros. *)
 let rec generate_perl_xs () =
   generate_header CStyle LGPLv2plus;
@@ -890,6 +892,12 @@ errnos:
       pr "%s\n\n" longdesc;
       if f.protocol_limit_warning then
         pr "%s\n\n" protocol_limit_warning;
+      (match f.optional with
+      | None -> ()
+      | Some opt ->
+        pr "This function depends on the feature C<%s>.  See also
+C<$g-E<gt>feature-available>.\n\n" opt
+      );
       (match deprecation_notice f with
       | None -> ()
       | Some txt -> pr "%s\n\n" txt

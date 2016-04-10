@@ -30,6 +30,8 @@ open Structs
 open C
 open Events
 
+let generate_header = generate_header ~inputs:["generator/ocaml.ml"]
+
 (* List of errnos to expose on Guestfs.Errno. *)
 let ocaml_errnos = [
   "EINVAL";
@@ -175,6 +177,13 @@ end
       else
         pr "%s(** alias for {!%s}" indent f.name;
 
+      (match f.optional with
+      | None -> ()
+      | Some opt ->
+          has_tags := true;
+          pr "\n\n    This function depends on the feature \"%s\".  See also {!feature_available}."
+            opt
+      );
       (match f.deprecated_by with
        | None -> ()
        | Some replacement ->

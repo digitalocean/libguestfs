@@ -688,6 +688,7 @@ EXTRA_PACKAGES = @EXTRA_PACKAGES@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
+FUSER = @FUSER@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
 GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
@@ -1343,6 +1344,7 @@ MSGCAT = @MSGCAT@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
+NCURSES_CONFIG = @NCURSES_CONFIG@
 NETINET_IN_H = @NETINET_IN_H@
 NEXT_ARPA_INET_H = @NEXT_ARPA_INET_H@
 NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H = @NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H@
@@ -1646,6 +1648,7 @@ SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
 TIME_H_DEFINES_STRUCT_TIMESPEC = @TIME_H_DEFINES_STRUCT_TIMESPEC@
+TOOL_TRUE = @TOOL_TRUE@
 UINT32_MAX_LT_UINTMAX_MAX = @UINT32_MAX_LT_UINTMAX_MAX@
 UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
@@ -1784,7 +1787,8 @@ CLEANFILES = *.annot *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so \
 @HAVE_OCAML_TRUE@	guestfs-c-errnos.c \
 @HAVE_OCAML_TRUE@	../src/utils.c
 
-@HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
+@HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
+@HAVE_OCAML_TRUE@LOG_COMPILER = $(VG)
 @HAVE_OCAML_TRUE@test_progs_bc = t/guestfs_010_load.bc \
 @HAVE_OCAML_TRUE@	t/guestfs_020_create.bc \
 @HAVE_OCAML_TRUE@	t/guestfs_030_create_flags.bc \
@@ -1793,6 +1797,7 @@ CLEANFILES = *.annot *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so \
 @HAVE_OCAML_TRUE@	t/guestfs_060_explicit_close.bc \
 @HAVE_OCAML_TRUE@	t/guestfs_065_implicit_close.bc \
 @HAVE_OCAML_TRUE@	t/guestfs_070_optargs.bc \
+@HAVE_OCAML_TRUE@	t/guestfs_080_version.bc \
 @HAVE_OCAML_TRUE@	t/guestfs_410_close_event.bc \
 @HAVE_OCAML_TRUE@	t/guestfs_420_log_messages.bc $(am__append_5)
 @HAVE_OCAML_TRUE@test_progs_opt = t/guestfs_010_load.opt \
@@ -1803,6 +1808,7 @@ CLEANFILES = *.annot *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so \
 @HAVE_OCAML_TRUE@	t/guestfs_060_explicit_close.opt \
 @HAVE_OCAML_TRUE@	t/guestfs_065_implicit_close.opt \
 @HAVE_OCAML_TRUE@	t/guestfs_070_optargs.opt \
+@HAVE_OCAML_TRUE@	t/guestfs_080_version.opt \
 @HAVE_OCAML_TRUE@	t/guestfs_410_close_event.opt \
 @HAVE_OCAML_TRUE@	t/guestfs_420_log_messages.opt \
 @HAVE_OCAML_TRUE@	$(am__append_6)
@@ -2224,6 +2230,13 @@ t/guestfs_070_optargs.bc.log: t/guestfs_070_optargs.bc
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+t/guestfs_080_version.bc.log: t/guestfs_080_version.bc
+	@p='t/guestfs_080_version.bc'; \
+	b='t/guestfs_080_version.bc'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 t/guestfs_410_close_event.bc.log: t/guestfs_410_close_event.bc
 	@p='t/guestfs_410_close_event.bc'; \
 	b='t/guestfs_410_close_event.bc'; \
@@ -2304,6 +2317,13 @@ t/guestfs_065_implicit_close.opt.log: t/guestfs_065_implicit_close.opt
 t/guestfs_070_optargs.opt.log: t/guestfs_070_optargs.opt
 	@p='t/guestfs_070_optargs.opt'; \
 	b='t/guestfs_070_optargs.opt'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+t/guestfs_080_version.opt.log: t/guestfs_080_version.opt
+	@p='t/guestfs_080_version.opt'; \
+	b='t/guestfs_080_version.opt'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2569,7 +2589,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
-@HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" TESTS="$(test_progs_all)" check
+@HAVE_OCAML_TRUE@	$(MAKE) VG="@VG@" TESTS="$(test_progs_all)" check
 
 # Dependencies.
 @HAVE_OCAML_TRUE@%.cmi: %.mli

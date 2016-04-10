@@ -38,7 +38,6 @@ GuestfsRemount
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_remount_new ##### -->
 <para>

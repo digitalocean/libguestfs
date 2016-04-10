@@ -1,6 +1,7 @@
 /* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/daemon.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -31,12 +32,9 @@ dummy_available (void)
   return 1;
 }
 
-#define optgroup_augeas_available dummy_available
-#define optgroup_realpath_available dummy_available
-
 struct optgroup optgroups[] = {
   { "acl", optgroup_acl_available },
-  { "augeas", optgroup_augeas_available },
+  { "augeas", dummy_available },
   { "blkdiscard", optgroup_blkdiscard_available },
   { "blkdiscardzeroes", optgroup_blkdiscardzeroes_available },
   { "btrfs", optgroup_btrfs_available },
@@ -58,7 +56,7 @@ struct optgroup optgroups[] = {
   { "mknod", optgroup_mknod_available },
   { "ntfs3g", optgroup_ntfs3g_available },
   { "ntfsprogs", optgroup_ntfsprogs_available },
-  { "realpath", optgroup_realpath_available },
+  { "realpath", dummy_available },
   { "rsync", optgroup_rsync_available },
   { "scrub", optgroup_scrub_available },
   { "selinux", optgroup_selinux_available },

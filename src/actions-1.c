@@ -1,6 +1,7 @@
 /* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/c.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -35,6 +36,7 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 #include "errnostring.h"
+#include "structs-print.h"
 
 GUESTFS_DLL_PUBLIC int64_t
 guestfs_internal_test_rint64 (guestfs_h *g,
@@ -175,9 +177,21 @@ guestfs_internal_test_rstructlist (guestfs_h *g,
 
   if (r != NULL) {
     if (trace_flag) {
+      size_t i;
+
       guestfs_int_trace_open (&trace_buffer);
       fprintf (trace_buffer.fp, "%s = ", "internal_test_rstructlist");
-      fprintf (trace_buffer.fp, "<struct guestfs_lvm_pv_list *>");
+      fprintf (trace_buffer.fp, "<struct guestfs_lvm_pv_list(%u)", r->len);
+      if (r->len > 0)
+        fprintf (trace_buffer.fp, " = ");
+      for (i = 0; i < r->len; ++i) {
+        if (i != 0)
+          fprintf (trace_buffer.fp, " ");
+        fprintf (trace_buffer.fp, "[%zu]{", i);
+        guestfs_int_print_lvm_pv_indent (&r->val[i], trace_buffer.fp, ", ", "");
+        fprintf (trace_buffer.fp, "}");
+      }
+      fprintf (trace_buffer.fp, ">");
       guestfs_int_trace_send_line (g, &trace_buffer);
     }
 
@@ -209,9 +223,21 @@ guestfs_internal_test_rstructlisterr (guestfs_h *g)
 
   if (r != NULL) {
     if (trace_flag) {
+      size_t i;
+
       guestfs_int_trace_open (&trace_buffer);
       fprintf (trace_buffer.fp, "%s = ", "internal_test_rstructlisterr");
-      fprintf (trace_buffer.fp, "<struct guestfs_lvm_pv_list *>");
+      fprintf (trace_buffer.fp, "<struct guestfs_lvm_pv_list(%u)", r->len);
+      if (r->len > 0)
+        fprintf (trace_buffer.fp, " = ");
+      for (i = 0; i < r->len; ++i) {
+        if (i != 0)
+          fprintf (trace_buffer.fp, " ");
+        fprintf (trace_buffer.fp, "[%zu]{", i);
+        guestfs_int_print_lvm_pv_indent (&r->val[i], trace_buffer.fp, ", ", "");
+        fprintf (trace_buffer.fp, "}");
+      }
+      fprintf (trace_buffer.fp, ">");
       guestfs_int_trace_send_line (g, &trace_buffer);
     }
 
@@ -589,9 +615,21 @@ guestfs_inspect_list_applications2 (guestfs_h *g,
 
   if (r != NULL) {
     if (trace_flag) {
+      size_t i;
+
       guestfs_int_trace_open (&trace_buffer);
       fprintf (trace_buffer.fp, "%s = ", "inspect_list_applications2");
-      fprintf (trace_buffer.fp, "<struct guestfs_application2_list *>");
+      fprintf (trace_buffer.fp, "<struct guestfs_application2_list(%u)", r->len);
+      if (r->len > 0)
+        fprintf (trace_buffer.fp, " = ");
+      for (i = 0; i < r->len; ++i) {
+        if (i != 0)
+          fprintf (trace_buffer.fp, " ");
+        fprintf (trace_buffer.fp, "[%zu]{", i);
+        guestfs_int_print_application2_indent (&r->val[i], trace_buffer.fp, ", ", "");
+        fprintf (trace_buffer.fp, "}");
+      }
+      fprintf (trace_buffer.fp, ">");
       guestfs_int_trace_send_line (g, &trace_buffer);
     }
 
@@ -837,9 +875,21 @@ guestfs_lstatlist (guestfs_h *g,
 
   if (r != NULL) {
     if (trace_flag) {
+      size_t i;
+
       guestfs_int_trace_open (&trace_buffer);
       fprintf (trace_buffer.fp, "%s = ", "lstatlist");
-      fprintf (trace_buffer.fp, "<struct guestfs_stat_list *>");
+      fprintf (trace_buffer.fp, "<struct guestfs_stat_list(%u)", r->len);
+      if (r->len > 0)
+        fprintf (trace_buffer.fp, " = ");
+      for (i = 0; i < r->len; ++i) {
+        if (i != 0)
+          fprintf (trace_buffer.fp, " ");
+        fprintf (trace_buffer.fp, "[%zu]{", i);
+        guestfs_int_print_stat_indent (&r->val[i], trace_buffer.fp, ", ", "");
+        fprintf (trace_buffer.fp, "}");
+      }
+      fprintf (trace_buffer.fp, ">");
       guestfs_int_trace_send_line (g, &trace_buffer);
     }
 
@@ -1018,7 +1068,9 @@ guestfs_lstat (guestfs_h *g,
     if (trace_flag) {
       guestfs_int_trace_open (&trace_buffer);
       fprintf (trace_buffer.fp, "%s = ", "lstat");
-      fprintf (trace_buffer.fp, "<struct guestfs_stat *>");
+      fprintf (trace_buffer.fp, "<struct guestfs_stat = ");
+      guestfs_int_print_stat_indent (r, trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, ">");
       guestfs_int_trace_send_line (g, &trace_buffer);
     }
 
@@ -1483,9 +1535,21 @@ guestfs_vgs_full (guestfs_h *g)
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.volgroups, sizeof (ret.volgroups));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "vgs_full");
-    fprintf (trace_buffer.fp, "<struct guestfs_lvm_vg_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_lvm_vg_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_lvm_vg_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -3038,9 +3102,21 @@ guestfs_getxattrs (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.xattrs, sizeof (ret.xattrs));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "getxattrs");
-    fprintf (trace_buffer.fp, "<struct guestfs_xattr_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_xattr_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_xattr_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -7278,9 +7354,21 @@ guestfs_btrfs_qgroup_show (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.qgroups, sizeof (ret.qgroups));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "btrfs_qgroup_show");
-    fprintf (trace_buffer.fp, "<struct guestfs_btrfsqgroup_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_btrfsqgroup_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_btrfsqgroup_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 

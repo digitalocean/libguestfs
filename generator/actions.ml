@@ -4763,7 +4763,8 @@ C<blocksize> option of C<guestfs_mkfs>." };
     proc_nr = Some 62;
     tests = [
       InitEmpty, Always, TestResult (
-        [["blockdev_getsz"; "/dev/sda"]], "ret == 1024000"), []
+        [["blockdev_getsz"; "/dev/sda"]],
+          "ret == INT64_C(2)*1024*1024*1024/512"), []
     ];
     shortdesc = "get total size of device in 512-byte sectors";
     longdesc = "\
@@ -4782,7 +4783,8 @@ This uses the L<blockdev(8)> command." };
     proc_nr = Some 63;
     tests = [
       InitEmpty, Always, TestResult (
-        [["blockdev_getsize64"; "/dev/sda"]], "ret == UINT64_C (524288000)"), []
+        [["blockdev_getsize64"; "/dev/sda"]],
+          "ret == INT64_C(2)*1024*1024*1024"), []
     ];
     shortdesc = "get total size of device in bytes";
     longdesc = "\
@@ -7379,13 +7381,16 @@ and C<guestfs_setcon>" };
          ["write"; "/new"; "new file contents"];
          ["cat"; "/new"]], "new file contents"), [];
       InitEmpty, Always, TestRun (
-        [["part_disk"; "/dev/sda"; "mbr"];
+        [["part_init"; "/dev/sda"; "mbr"];
+         ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["mkfs_b"; "vfat"; "32768"; "/dev/sda1"]]), [];
       InitEmpty, Always, TestLastFail (
-        [["part_disk"; "/dev/sda"; "mbr"];
+        [["part_init"; "/dev/sda"; "mbr"];
+         ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["mkfs_b"; "vfat"; "32769"; "/dev/sda1"]]), [];
       InitEmpty, Always, TestLastFail (
-        [["part_disk"; "/dev/sda"; "mbr"];
+        [["part_init"; "/dev/sda"; "mbr"];
+         ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["mkfs_b"; "vfat"; "33280"; "/dev/sda1"]]), [];
       InitEmpty, IfAvailable "ntfsprogs", TestRun (
         [["part_disk"; "/dev/sda"; "mbr"];
@@ -9852,7 +9857,7 @@ device is stopped, but it is not destroyed or zeroed." };
           "check_hash (ret, \"PART_ENTRY_NUMBER\", \"1\") == 0 && "^
           "check_hash (ret, \"PART_ENTRY_TYPE\", \"0x83\") == 0 && "^
           "check_hash (ret, \"PART_ENTRY_OFFSET\", \"128\") == 0 && "^
-          "check_hash (ret, \"PART_ENTRY_SIZE\", \"1023745\") == 0"), [];
+          "check_hash (ret, \"PART_ENTRY_SIZE\", \"4194049\") == 0"), [];
     ];
     shortdesc = "print block device attributes";
     longdesc = "\
@@ -10214,7 +10219,7 @@ replacement
     tests = [
       InitEmpty, Always, TestRun (
         [["part_disk"; "/dev/sda"; "mbr"];
-         ["mkfs_btrfs"; "/dev/sda1"; "0"; "268435456"; "single"; "4096"; "test"; "single"; "4096"; "512"]]), []
+         ["mkfs_btrfs"; "/dev/sda1"; "0"; "268435456"; "single"; ""; "test"; "single"; "65536"; "512"]]), []
     ];
     shortdesc = "create a btrfs filesystem";
     longdesc = "\
@@ -11304,6 +11309,18 @@ silently create an ext2 filesystem instead." };
     name = "list_disk_labels"; added = (1, 19, 49);
     style = RHashtable "labels", [], [];
     proc_nr = Some 369;
+    tests = [
+      (* The test disks have no labels, so we can be sure there are
+       * no labels.  See in tests/disk-labels/ for tests checking
+       * for actual disk labels.
+       *
+       * Also, we make use of the assumption that RHashtable is a
+       * char*[] in C, so an empty hash has just a NULL element.
+       *)
+      InitScratchFS, Always, TestResult (
+        [["list_disk_labels"]],
+        "is_string_list (ret, 0)"), [];
+    ];
     shortdesc = "mapping of disk labels to devices";
     longdesc = "\
 If you add drives using the optional C<label> parameter
@@ -12680,8 +12697,8 @@ This enable skinny metadata extent refs." };
     tests = [
       InitEmpty, Always, TestRun (
         [["part_init"; "/dev/sda"; "mbr"];
-         ["part_add"; "/dev/sda"; "p"; "64"; "409599"];
-         ["part_add"; "/dev/sda"; "p"; "409600"; "819199"];
+         ["part_add"; "/dev/sda"; "p"; "64"; "2047999"];
+         ["part_add"; "/dev/sda"; "p"; "2048000"; "4095999"];
          ["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
          ["mkfs_btrfs"; "/dev/sda2"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];

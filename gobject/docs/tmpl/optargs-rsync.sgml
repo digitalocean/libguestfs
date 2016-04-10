@@ -43,7 +43,6 @@ GuestfsRsync
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_rsync_new ##### -->
 <para>

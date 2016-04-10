@@ -1,6 +1,7 @@
 /* libguestfs generated file
- * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/ *.ml
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/c.ml
+ *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2016 Red Hat Inc.
@@ -35,6 +36,7 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 #include "errnostring.h"
+#include "structs-print.h"
 
 GUESTFS_DLL_PUBLIC int
 guestfs_internal_test_rinterr (guestfs_h *g)
@@ -1108,9 +1110,21 @@ guestfs_pvs_full (guestfs_h *g)
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.physvols, sizeof (ret.physvols));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "pvs_full");
-    fprintf (trace_buffer.fp, "<struct guestfs_lvm_pv_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_lvm_pv_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_lvm_pv_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -2883,9 +2897,21 @@ guestfs_readdir (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.entries, sizeof (ret.entries));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "readdir");
-    fprintf (trace_buffer.fp, "<struct guestfs_dirent_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_dirent_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_dirent_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -3721,9 +3747,21 @@ guestfs_part_list (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.partitions, sizeof (ret.partitions));
   if (trace_flag) {
+    size_t i;
+
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "part_list");
-    fprintf (trace_buffer.fp, "<struct guestfs_partition_list *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_partition_list(%u)", ret_v->len);
+    if (ret_v->len > 0)
+      fprintf (trace_buffer.fp, " = ");
+    for (i = 0; i < ret_v->len; ++i) {
+      if (i != 0)
+        fprintf (trace_buffer.fp, " ");
+      fprintf (trace_buffer.fp, "[%zu]{", i);
+      guestfs_int_print_partition_indent (&ret_v->val[i], trace_buffer.fp, ", ", "");
+      fprintf (trace_buffer.fp, "}");
+    }
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -5256,7 +5294,9 @@ guestfs_utsname (guestfs_h *g)
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "utsname");
-    fprintf (trace_buffer.fp, "<struct guestfs_utsname *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_utsname = ");
+    guestfs_int_print_utsname_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -6198,7 +6238,9 @@ guestfs_statns (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "statns");
-    fprintf (trace_buffer.fp, "<struct guestfs_statns *>");
+    fprintf (trace_buffer.fp, "<struct guestfs_statns = ");
+    guestfs_int_print_statns_indent (ret_v, trace_buffer.fp, ", ", "");
+    fprintf (trace_buffer.fp, ">");
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 

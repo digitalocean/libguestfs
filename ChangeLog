@@ -1,3 +1,1118 @@
+commit 5e37cee94ad642b6e17f26fa9f1b41e0f174c5c7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 5 14:36:38 2016 +0100
+
+    Version 1.32.4.
+
+commit e92823b226e003ad55a7c4a58f9c4d6395b2d560
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 5 12:07:13 2016 +0100
+
+    builder: Add ubuntu-ppc64le.sh to EXTRA_DIST.
+    
+    Fixes commit f756002b54792b34b287d44af2908f60e21e0374.
+    
+    (cherry picked from commit 91c72738997646dcf291c94d027f6ff46574fce7)
+
+commit a38c156ad0df01291c95726e0a9799dee03c9e10
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 5 11:58:35 2016 +0100
+
+    Remove .x-sc (syntax check) files from EXTRA_DIST.
+    
+    Fixes commit 821db657d1484f7cc23d66321122b39259df0370.
+    Updates commit 017f1c67296ee6fa9a566f853ea896e39d2e9bf0.
+    
+    (cherry picked from commit a04b04c5c1d9182b59ba18b6fd627d7e10be230a)
+
+commit 860a642e71af68a71cf04a6ffeb89257467b7f88
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 4 16:57:10 2016 +0100
+
+    align/scan: Remove stray comment that confuses clang-format.
+    
+    (cherry picked from commit c48e04d9d2b285268826dcd40254c79dc3109065)
+
+commit 3541b4d0d077b05433c774177431012a27fb9b80
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 4 14:04:58 2016 +0100
+
+    Further remove mention of 'make syntax-check'.
+    
+    Updates commit 017f1c67296ee6fa9a566f853ea896e39d2e9bf0.
+    
+    (cherry picked from commit 821db657d1484f7cc23d66321122b39259df0370)
+
+commit 02e0245a325594ee012eac7e8ecd32c616f05a73
+Author: Matteo Cafasso <noxdafox@gmail.com>
+Date:   Fri Apr 1 18:59:39 2016 +0300
+
+    python: Fix bug in code generator
+    
+    When a struct containing FChar fields is defined
+    in generator/structs.ml, the Python code generator will generate
+    code referencing a dirent struct instead of the correct one
+    thus breaking at compile time.
+    
+    This bug was left unnoticed because the dirent struct is the only
+    one using FChar fields. Yet it prevents any other struct
+    from using such fields.
+    
+    Signed-off-by: Matteo Cafasso <noxdafox@gmail.com>
+    (cherry picked from commit 7ecec1ee55bff30b2d67a61179807befd2a38d23)
+
+commit ffb465b6fa0b3be2336c6646131df8e4b1cfcbec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 31 14:03:56 2016 +0100
+
+    v2v: Document how to use 'cinder manage' for importing directly to Cinder.
+    
+    Thanks: Tom Barron.
+    (cherry picked from commit 68fc25e1d54bfeff8d7a7d40ae9b061f800406d7)
+
+commit 74d2a21e1081b8e48b3c2b10051047f38f96f87d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 30 11:24:50 2016 +0100
+
+    builder: Update Fedora 23 (i686) image.
+    
+    Contains a fix for RHBZ#1317843 and another dnf bug.
+    
+    (cherry picked from commit b2f42a8dce46fc08e361aeae9593532a42e4c0c2)
+
+commit 96c27809abcd23d2ee19e1f06a81af56680212a9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 30 11:24:50 2016 +0100
+
+    builder: Update Fedora 23 image.
+    
+    Contains a fix for RHBZ#1317843 and another dnf bug.
+    
+    (cherry picked from commit c67bab9c5d3e5bfd13c95930aad08be5924730b1)
+
+commit 62af26a533e551950e487ba3b42e75f161f56aa7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 24 18:41:20 2016 +0000
+
+    builder: Add ubuntu ppc64le script.
+    
+    Thanks: Gustavo Romero
+    (cherry picked from commit f756002b54792b34b287d44af2908f60e21e0374)
+
+commit c8b1559906e93aa2cd30137e4448cd9c32156212
+Author: Lars Kellogg-Stedman <lars@redhat.com>
+Date:   Thu Mar 24 15:21:45 2016 -0400
+
+    document behavior of --selinux-relabel
+    
+    the description of the --selinux-relabel option suggests that it
+    perform an immediate relabel, when in fact it may (and probably will)
+    instead simply touch /.autorelabel on the image, which schedules a
+    relabel operation for the next time the image boots.  This can be
+    surprising because it results both in an extended initial boot time
+    *and* results in an automatic reboot (on some distributions).
+    
+    (cherry picked from commit c6512ead4584cf5423f1674d2b9d36686c69d573)
+
+commit 9b71d5cbf990364cc4971fab0d10114d3190d030
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 19 21:19:21 2016 +0000
+
+    launch: direct: Remove dead code promising we were going to use virtio-console.
+    
+    We're never going to use virtio-console since, although it is faster,
+    it's not available during early boot, and that is more important for
+    debugging.
+    
+    (cherry picked from commit b652cc419d5f2857a48acf6ce91878e5aad4f888)
+
+commit fbfb247dbf47dc1a08b6c098d6b55dec1d131a21
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Mar 22 13:41:56 2016 +0100
+
+    Reduce GUESTFS_PRIVATE usage
+    
+    Remove the GUESTFS_PRIVATE=1 define for some tools and tests which don't
+    really use any private API.
+    
+    (cherry picked from commit e2457d0773e39e54936db0727bbaef1c4d450327)
+
+commit 6b8ea32ee8994d8dfca43ebdc561461fec293367
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 18 16:06:45 2016 +0100
+
+    build: improve GUESTFS_FIND_DB_TOOL macro
+    
+    - find the unversioned name just once
+    - add 5.3 and 5.2 as versions
+    - add db_$TOOL-X and db_$TOOL-X.Y as patterns (found on FreeBSD)
+    
+    (cherry picked from commit 40017ba7f3d72d8efd4df1ad8103eaf9558d72c4)
+
+commit d2af092e626d017fb4d55dafa0c00d38f851dde5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 18 15:37:10 2016 +0100
+
+    build: check the path of true, and use it in tests
+    
+    Check for the full path of true, and use it instead of hardcoding
+    /bin/true (which is still left as fallback).
+    
+    (cherry picked from commit 5f24d45ab541d2d99303051244438a0ade1071a8)
+
+commit f691a4836e853cf2eb7111bd2c0a9fe26c04d10e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 18 15:35:51 2016 +0100
+
+    php: pass $(MAKE) to run-php-tests.sh
+    
+    Instead of hardcoding "make" in run-php-tests.sh, pass the actual name
+    of make from the Makefile; the default is still "make", mostly to use
+    the script without having to set $MAKE.
+    
+    (cherry picked from commit 76a01fe41d9b30b82dac3584c768271204ac4dea)
+
+commit a8fcd6d75a3a0b76c0f56e2c83d14a79bb42dfd6
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 18 11:37:32 2016 +0100
+
+    build: check the path of fuser, and use it in FUSE code
+    
+    Check for the full path of fuser, and use it instead of hardcoding
+    /sbin/fuser (which is still left as fallback).
+    
+    (cherry picked from commit 7e970fcdb34815f20c610defcc4cf7c9ffe058e9)
+
+commit 1fc68ccc98584c218015a3b9f912e6731269ee95
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 17 10:04:25 2016 +0000
+
+    appliance: Make it clear that the init script is a bash script.
+    
+    We have used /bin/sh here since 2009.  However this is a bash
+    script and probably won't work well with other shells.
+    
+    (cherry picked from commit 23028cb30d77fe0912e465042222740db0b82899)
+
+commit 7f79bbecbe68a1ff24bbb7d493ce9af7ea1d0da8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 17 11:52:34 2016 +0100
+
+    inspect: improve UsrMove detection (RHBZ#1186935)
+    
+    In case /usr is a symlink to /usr/bin, then we cannot rely on /usr/bin
+    to exist, since /usr might be in a different partition.  Thus, in case
+    /bin is a symlink, check it points to "usr/bin".
+    
+    (cherry picked from commit 1df34fd8d131dc577344550350077431f56e8bdc)
+
+commit 497a1ac193e9331095266e575c2c6c67f1122cf3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 17 15:25:00 2016 +0100
+
+    inspector: define more multichoice tags in the RELAX NG schema
+    
+    Provide new <define> for the following elements: "distro",
+    "package_format", "package_management", and "format", adding all the
+    values so far possible for each.
+    
+    (cherry picked from commit b0be4c113045c4259067e76983e725cbedc33877)
+
+commit 9e7484a287dce6338c1d8a95e94d45509ba3be31
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 17 10:39:11 2016 +0100
+
+    builder: fedora: ensure images are up-to-date
+    
+    Update the system at the end of the installation, so the generated image
+    is up-to-date.  This also removes the need to manually update dnf on
+    i686 and x86_64.
+    
+    (cherry picked from commit 9775777a55278549f8c6543c5685bf402a728abe)
+
+commit 7bdf67d1b346e5eb7d4d58676d9c7ec342810b95
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 16 15:16:39 2016 +0000
+
+    fish: Link with LIBTINFO_LIBS.
+    
+    Required on Gentoo.
+    
+    Thanks: Mark Pictor
+    (cherry picked from commit 180b853658a42c149b78c4aca8d9e3db0be97b5f)
+
+commit 6e29d7008eb0fd6b0498936f2b1dbf5da2bbd01b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 15 18:57:18 2016 +0000
+
+    docs: Fix cross-reference to fixed appliance section.
+    
+    The fixed appliance documentation moved from guestfs(3) to
+    guestfs-internals(1).
+    
+    Thanks: Mark Pictor (mark999 on IRC)
+    (cherry picked from commit 1129cbba3d961631183dadb68d4b9436096220d1)
+
+commit c8e3d237b480b4be15f6f7c91dff7ef9a15b0535
+Author: Cédric Bosdonnat <cbosdonnat@suse.com>
+Date:   Tue Mar 8 16:04:20 2016 +0100
+
+    configure: handle older version of ncurses
+    
+    ncurses didn't have pkg-config files in not-that-old versions. If those
+    couldn't be found, then try the ncurses6-config and ncurses5-config tools.
+    
+    (cherry picked from commit f0d71e148ca61eed6318c3f1dfe828c39ade7205)
+
+commit 5804fb84549124df3d535e756516f02915744f19
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 7 19:33:34 2016 +0100
+
+    inspector: extend the OS "name" in the RELAX NG schema
+    
+    Put the definition of "name" in an own <define>, and add the missing
+    operating systems so far known to libguestfs.
+    
+    (cherry picked from commit d3b68d90c8d115b3545f668b55ca0e2d47541e58)
+
+commit 19daa9d35eae2a34905197abea5674f1bd2c8180
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 7 16:17:32 2016 +0100
+
+    build: fix reading of the java version
+    
+    Update the check for the first line (the one containing the version) to
+    match also the message with OpenJDK; switch to awk so it is easier to
+    extract the version inside the double quotes.
+    
+    (cherry picked from commit b07f8793d072f25163f6a7dd6fb626a084d90dab)
+
+commit f7464b5356d5f62ca2c67633310ef8cbc0d01652
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 6 18:58:52 2016 +0000
+
+    inspect: windows: Make is_systemroot check code more robust.
+    
+    We rely on this function for security to ensure the caller cannot set
+    windows_systemroot to a very long or bogus value.
+    
+    (cherry picked from commit a51b136584aa0635c5d6ed2cbbfa3424a43bccf4)
+
+commit 908a7132081b93db8f4051cf9b0299f40bea2091
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 6 18:23:26 2016 +0000
+
+    lib: Minor whitespace rearrangement.
+    
+    (cherry picked from commit 7b17447ac4e8880f5164eb50e6292b81e222f92a)
+
+commit e3b878b37192a686c019619edc5dbfdc858aaf3c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 6 18:22:30 2016 +0000
+
+    lib: Fix incorrect comment in utils.
+    
+    The string is not freed by the caller.  A fixed buffer is provided
+    by the caller.
+    
+    (cherry picked from commit e7666da22401800be2e64c6235ab1a1406ad506b)
+
+commit 3e4f9a83573e49c1e850b0fb9cbab69548881cf7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 6 15:50:47 2016 +0000
+
+    v2v: linux: Fix small typo in comment.
+    
+    (cherry picked from commit c30363d4af880c36e1dc2fe7b1fb93363ca25c5b)
+
+commit b72fc4394ad6cad9ffdf810664745dd6ba875670
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 4 10:20:06 2016 +0000
+
+    v2v: Fix incorrect calculation of lc_basename.
+    
+    We should be using the lowercase path.  Prior to this patch
+    lc_basename was not actually lowercase.
+    
+    Fixes commit f7249a0bccc43d5b5e11703ff432b0361b03292b.
+    
+    (cherry picked from commit d5b3aa0ccae87bff311e0eb0b19e02e186353383)
+
+commit 649df0a41194de63a1119819af536190dd8a4135
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 3 15:41:14 2016 +0000
+
+    v2v: Describe workaround for Windows >= 8 Fast Startup.
+    
+    Thanks: Nisim Simsolo
+    (cherry picked from commit f33e127d874aad113acd12b9d4bcb3c84afea3b3)
+
+commit ff244e1217fddd0362dd967c8fa8873a6b02da22
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 2 14:42:02 2016 +0100
+
+    daemon: do not fail list-disk-labels w/o labels set
+    
+    If there are no labels set for the disks, the directory with the
+    symlinks will not even exists, causing list-disk-labels to fail with
+    ENOENT.  In this situation, act as if the directory was there, but
+    empty.
+    
+    (cherry picked from commit e8408fe3c32f65e31e5eaf020478265543e5e981)
+
+commit 1ce9580d958f7497da0fd5db89ff58109ba4b9d8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 2 11:14:19 2016 +0100
+
+    daemon: ntfs: switch away from asprintf_nowarn in ntfsclone-in
+    
+    No custom formats (eg %Q, %R) are used.
+    
+    (cherry picked from commit 4d4f16067e56175188d369d76687052950308a3a)
+
+commit 51737765ad20c63aa672551ed52e5e03df9ecc2a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 2 11:02:08 2016 +0100
+
+    make-fs: print error message on mkfs failure
+    
+    This makes a bit easier to diagnose failures on mkfs, without the need
+    to restart the filesystem creation with verbose output (which will
+    produce a lot more output).
+    
+    (cherry picked from commit acbc5dee4f4268db23fde56e7973e6537c53f980)
+
+commit 3550d63715acacdfcf92c215676655530480147e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 27 14:57:52 2016 +0000
+
+    builder: Add Fedora 23 (armv7l) image.
+    
+    (cherry picked from commit ac76081f5acf80e0a43ec8ede12ba86f313a2aaa)
+
+commit ad737d64a04f927a1f00b90ce2cc1fb2e601e8d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 27 13:42:57 2016 +0000
+
+    builder: armv7l: Specify virt-install --arch explicitly.
+    
+    Allow us to run this script on x86_64 by specifying the --arch option
+    to virt-install, and removing the --cpu option.
+    
+    (cherry picked from commit 9ff2c3ef180cca036661b811745c4243d1ef4aad)
+
+commit ac3ff54aa83784ec8e9c9622f2f1a91edf82f3dd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 27 13:42:02 2016 +0000
+
+    builder: armv7l: Use latest available os-variant.
+    
+    (cherry picked from commit 6b501cb6f20ae46fecbc632cb5ce33fb6f6f3e9a)
+
+commit dd00a07510c3b172c5c12d4672f6c87facaab5e4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Feb 27 13:41:03 2016 +0000
+
+    builder: armv7l: Use --vcpus=1 because TCG is not yet multithreaded.
+    
+    (cherry picked from commit fdc201a30c913adf35ffcacadeff37b00ad444e9)
+
+commit e9aec12b4d70ee292146c79061fccaf0db886203
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Feb 26 17:59:59 2016 +0100
+
+    java: drop empty lines at end of pod-generated text
+    
+    They are converted as additional empty paragraphs but adding nothing to
+    the generated API documentation.  Also avoids warnings about them by
+    javadoc.
+    
+    (cherry picked from commit 1225bb194e5313dc4da17bd3802fa6595b5ec12d)
+
+commit 0f92bac50a610ea17498150bc14ba62f9f3728c1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Feb 26 17:41:49 2016 +0100
+
+    doc: add info on per-function needed feature
+    
+    Document which feature, if any, is needed for a function; this should
+    help users in properly checking feature availability when using certain
+    functions.
+    
+    (cherry picked from commit 3b427b90ac9d2f6412dc6fd739df06b7cc8c234e)
+
+commit aa7362d16c10335fff0ba7b4423b3c9c7ddbf2d5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 26 10:05:21 2016 +0000
+
+    v2v: -o libvirt: Preserve source <graphics> type (RHBZ#1312254).
+    
+    Old virt-v2v changed the <graphics> to VNC if the guest was using the
+    Cirrus hardware and Spice if the guest used QXL.
+    
+    In commit 3d1cb74b3eee51c5d015032ad964892be914ea9c I got the logic
+    backwards, using Spice if the guest used Cirrus and VNC if the guest
+    used QXL, which obviously makes no sense.
+    
+    In this commit, I preserve the original <graphics> type from the
+    source guest.  This has the advantage that the user can use the same
+    method to access the guest after conversion.  If the source guest had
+    no <graphics> element, then we force VNC (a safe choice), and if the
+    source guest is a local disk that we use SDL, but this should only be
+    used for testing.
+    
+    Thanks: Xiaodai Wang for the original bug report here:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1225789#c10
+    (cherry picked from commit 660246dcbc4cf4d333853fbd0b39f4f857029f45)
+
+commit ed1326e66385b605c9751efe58fe23a629b8fcf4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 26 09:53:53 2016 +0000
+
+    v2v: -o libvirt: Refactor video and graphics elements.
+    
+    This is just a refactoring and doesn't change the meaning of the code.
+    
+    (cherry picked from commit 534dfcf84ebd89d4c008e4f296a92b4b278087fe)
+
+commit 40389ada8eb5b34ef82c27e61be75ef450a113a1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 25 11:37:16 2016 +0000
+
+    fish: Set program name correctly for virt-{copy,tar}-{in,out} programs.
+    
+    Set the (libguestfs handle) program name correctly when running
+    programs like virt-copy-in, so the program name is not "guestfish" but
+    "virt-copy-in".
+    
+    Note this feature cannot be tested using the ./run script, since
+    libtool (buggily) resets the program name to "lt-guestfish".  However
+    I tested it on the installed copy and it worked there.
+    
+    (cherry picked from commit fadce8d3e7cffd4eadc982e330285a93a3486368)
+
+commit 0bdf5a3795c4a622e51a0e1365e06e3c079a0b4c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 25 17:42:57 2016 +0100
+
+    listfs: ignore the default btrfs subvolume
+    
+    When listing the subvolumes of a btrfs filesystem, ignore the default
+    subvolume: we get the content of it when mounting the whole device
+    (without specifying any particular subvolume), so avoid listing it
+    twice.
+    
+    (cherry picked from commit d9169fc37101f3eea378b2c938ab213a10b1a037)
+
+commit fae3312ee2dfe180a1a6a57dd62517a89ad48bb0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 26 15:20:17 2016 +0000
+
+    Version 1.32.3.
+
+commit d7f4df07d41af971edc98527be529bb6215b79af
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 24 13:33:16 2016 +0100
+
+    src: print contents of structs and struct lists on tracing
+    
+    It eases the debugging, instead of getting just the name of the struct
+    returned.
+    
+    (cherry picked from commit 20efe3658233810cf343ab1f9dc1349e97e96231)
+
+commit 5d6469b06ee09d3b41dce780d09c9c4894f0b3eb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 24 12:40:23 2016 +0100
+
+    fish: use the new structs-print.c to print structs
+    
+    Use of the new code to print structs, making sure the layout is the same
+    as before.
+    
+    (cherry picked from commit e58e603a71badf251374ba0f7dc1b33c9edb6873)
+
+commit 40d1aa52b5018b3cf4f4bf0bf3af3b9bc53565aa
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 24 12:29:27 2016 +0100
+
+    src: generate code for printing contents of structs
+    
+    Extend the generator to generate a source (and the header for it) with
+    functions that print the content of a guestfs struct.  The code is
+    modelled after the code for it in fish.ml, although made a bit more
+    generic (destination FILE*, line separator) so it can be used also in
+    the library, when tracing.
+    
+    This just introduces the new code and builds it as part of the helper
+    libutils.la.
+    
+    (cherry picked from commit 2c0d16e82e2b2a514b54458488e910f86583199a)
+
+commit 33f79d2eb4c9e792bb5e11275c47eb1e51b05437
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 23 09:15:14 2016 +0000
+
+    daemon: btrfs: Use COMPILE_REGEXP macro to compile regular expressions.
+    
+    (cherry picked from commit c0c91f96d7b125c15c768fc2ff963fddaf1db851)
+
+commit 50e940ab74fe6558dd1a262c13eadb42a0a48a85
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 23 09:13:58 2016 +0000
+
+    lib: Allow the COMPILE_REGEXP macro to be used everywhere.
+    
+    Since the daemon links to pcre and use regular expressions, and since
+    the COMPILE_REGEXP macro doesn't depend on any aspects of the
+    library-side code (eg. the guestfs_h handle etc), we can allow the
+    daemon to use the COMPILE_REGEXP macro.  Move the macro to
+    "guestfs-internal-all.h" to permit this.
+    
+    (cherry picked from commit 4752c42c2126c9ed8e7b8e03104e50606ef75afe)
+
+commit d4e39adafaceb7fe950e6684c18c9c60e1dd2142
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 22 22:07:11 2016 +0000
+
+    generator: Declare which input file(s) generate each output file.
+    
+    (cherry picked from commit ae3c051567e5cbc36e76a1800efb0c5f527a0f47)
+
+commit 522e8225e0236f4e74f0de93d6f0e535a619bf84
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 22 21:53:43 2016 +0000
+
+    generator: Make the 'this file is generated' warning clearer.
+    
+    Also rename the ~extra_inputs parameter as plain ~inputs.  We will use
+    ~inputs more widely in following commit.
+    
+    (cherry picked from commit 52b5ddf23e14a2ff71bc5859a392f9fc237a88cf)
+
+commit 1e385a5fdcab8a7fc8e08b6bfd14648312b4db0c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 22 22:45:28 2016 +0000
+
+    generator: gobject: Remove parameters which are not used.
+    
+    Revealed by adding typed interfaces in the previous commit.
+    
+    (cherry picked from commit 9eb26a174868359fa37f59ea75b9663516b6b72c)
+
+commit a366aa4b26bf93301111562d2038f7071a223c6d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 22 22:06:29 2016 +0000
+
+    generator: Add interfaces to all modules.
+    
+    Be explicit about what is exported from each module in the generator.
+    
+    (cherry picked from commit 30d2a308c0ca8e1c1daf745ef0ad4b64d488c6b6)
+
+commit fbe13f2f4ed7779a5287e133413feda223c10388
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 22 12:52:55 2016 +0000
+
+    tests: Use LOG_COMPILER to run valgrind.
+    
+    (cherry picked from commit b9a97718f7508f145bc6f02bdad1934f56d64ad3)
+
+commit 09c9689486b28aa7408791766f65ba6900e82840
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 22 12:34:28 2016 +0000
+
+    tests: Remove bogus use of $(VG).
+    
+    (cherry picked from commit dd7be596f539f4a38e53c61374bbe8aa1137d8d1)
+
+commit 1bade44b25edebbadeca787fb9c60fd8833908dd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 22 12:30:37 2016 +0000
+
+    build: Describe how to set up check-valgrind rules correctly.
+    
+    Since we enabled parallel tests, you can no longer run tests
+    under valgrind merely by doing:
+    
+      TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
+      check-valgrind:
+          $(MAKE) check VG="@VG@"
+    
+    The reason is that the parallel tests framework doesn't run
+    ``$(TESTS_ENVIRONMENT) <test>''.  It inserts some other processes in
+    between the environment and the test, so you end up valgrinding some
+    unrelated process (currently the 'env' program).
+    
+    In run.in, remove out of date documentation for using $(VG).
+    In guestfs-hacking(1), document how to do it properly.
+    
+    (cherry picked from commit 085815ce102e45bceefe8ea290dcf2efcd2dc74b)
+
+commit 4ae66dd9871d0475d43c6e7962eb91d20e7d2333
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 22 10:17:41 2016 +0000
+
+    FAQ: Link to posting about compiling libguestfs from source.
+    
+    (cherry picked from commit 961721b64b962c1a1797e45768d4007f84988c59)
+
+commit acc7d7a60633d69f38d4a991c09712485575daeb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 22 09:54:10 2016 +0000
+
+    FAQ: cache=none, not cache=unsafe, prevents qemu from caching.
+    
+    Thanks: kaze on IRC.
+    (cherry picked from commit 34e7b6961281ba8bd8a36fa798b735c670ad31a9)
+
+commit 3d8baa853d417c8c1d4d1693ae91469eec33fdc1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 19 12:46:22 2016 +0000
+
+    build: installcheck: Ensure libguestfs.so is copied.
+    
+    If you ran 'make installcheck' when libguestfs-devel was not
+    installed, then the installcheck would fail in many places with:
+    
+      gcc: error: ../../src/.libs/libguestfs.so: No such file or directory
+    
+    We should stop the installcheck script immediately if the .so file was
+    not found.
+    
+    Also this commit ensures that src/.libs/libguestfs.so* not existing
+    before installcheck is not fatal.
+    
+    (cherry picked from commit 3fa03a30b3ee766d0c09a79802f326b09f6b66a7)
+
+commit 050dba1109fbe44273471f59ed1b84fcbfa93e09
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 19 08:57:15 2016 +0000
+
+    v2v: windows: Change wording of warning about basic VGA display driver (RHBZ#1309619).
+    
+    (cherry picked from commit 2e87face9e0a1b2d9e426bb3a6dfbb07228be7d5)
+
+commit 7f5a2eec85cf3dc77c4bb4c72f2e5eefa048a9a6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 18 14:41:43 2016 +0000
+
+    v2v: RHEV: Treat Windows 8.1 x86 client as Windows 8 (RHBZ#1213324).
+    
+    (cherry picked from commit cbf0714e0745af18a27d8ac2dc72689a8cb296e4)
+
+commit 8d98ce37036480aad0628c560c30df403b4a63b4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 18 14:41:43 2016 +0000
+
+    v2v: RHEV: Treat Windows 8.1 client as Windows 8 (RHBZ#1309580).
+    
+    (cherry picked from commit 7bf820b0d9cc94c6291525c45b359177a11170d7)
+
+commit 503684591dd9f4f97ee5947bfe1a0865b4eaf317
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 18 14:00:09 2016 +0000
+
+    v2v: Make the error message actionable when cannot find libvirt pool.
+    
+    Make this error message useful and actionable by suggesting commands
+    that the end user can run to find available pools, etc.
+    
+    I also had to extend the fixed size buffer we use for messages since
+    the message got truncated.
+    
+    (cherry picked from commit 5431eda3a61849ab8f0e3e2d3f78643b593d4d27)
+
+commit 42045333abc188f007a6101da80e23f90ef9658c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 18 10:06:27 2016 +0000
+
+    v2v: OVF: In warning, display inspect.i_arch field.
+    
+    See: https://bugzilla.redhat.com/show_bug.cgi?id=1213324#c11
+    (cherry picked from commit ba839f553b3d3a582f8d463abd9dec8ce6631d4e)
+
+commit fec6bda3597446ac09663b13c2e16841bbf31baf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 18 10:00:45 2016 +0000
+
+    v2v: Add Windows 10 to OVF.
+    
+    See https://github.com/oVirt/ovirt-engine/blob/master/packaging/conf/osinfo-defaults.properties
+    
+    (cherry picked from commit d87c6fd6f206d4749f32ebcb821bbe3e423895ff)
+
+commit 5bd7f0f7c5a7a2e999fc6e99a0047e3bc4fe9851
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 16 12:30:00 2016 +0000
+
+    v2v: glance: Allow Glance backend to import multiple disks (RHBZ#1308769).
+    
+    (cherry picked from commit 6200ae7204f4db3b93707acf7356083e121f854f)
+
+commit fe65eb3f8f5bc8438a50ca1e34cc56f97770924e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 16 12:29:41 2016 +0000
+
+    v2v: glance: Add "OUTPUT TO GLANCE" section to the documentation.
+    
+    (cherry picked from commit bae3d92e88b7e74af11a5d0905710cf00f2504e3)
+
+commit 30838b35856c7c20f987fd67d4819f963e427f12
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 16 14:42:44 2016 +0100
+
+    v2v: update URL with glance metadata
+    
+    (cherry picked from commit 967e887e43cea3ffb6572b24cc995a0bb893e80f)
+
+commit 2eaab024a6b30c65dda6d28d82831955c0a4b7b6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 15 10:40:11 2016 +0000
+
+    v2v: Fix CompatibleIDs for Windows > 7 conversions.
+    
+    Thanks Joshua Pincus for finding the bug.
+    
+    I checked back with the original W2K8R2 guest which I had used for
+    getting these registry entries, and there was a transcription error
+    with two of the CompatibleIDs.
+    
+    (cherry picked from commit 938f48f08a37791e8ebd6245d19b53f9660b30d2)
+
+commit be2e67ccf8c2bb9ab6a5855709e793a8e22ae455
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 12 14:10:07 2016 +0000
+
+    tests: Make '080' be an official test of the guestfs_version API.
+    
+    Useful because it tests returning a single structure.
+    
+    (cherry picked from commit 85b1815e7be07d27b21692b6677b66817b3ea88b)
+
+commit 38a311e53509e0b5d91de719c39b795f23df97be
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 12 13:41:26 2016 +0000
+
+    daemon: lvm: Ignore LVs with the activationskip flag set (RHBZ#1306666).
+    
+    When listing logical volumes, ignore the ones which don't get
+    activated automatically.  No /dev/VG/LV device node is created for
+    these ones which confuses APIs that attempt to do 'guestfs_lvs'
+    followed by opening the device node.  Note that 'guestfs_lvs_full' is
+    unaffected by this change.
+    
+    (cherry picked from commit 2e16e3e99324112845446c82b6a6e8b3e652e10d)
+
+commit c4fe23578272c7748ed951e37adc8bad6a9e6259
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 11 18:40:04 2016 +0100
+
+    fish, sysprep: run FUSE-related tests only when FUSE is available
+    
+    They will fail anyway in that case, so run them only when the FUSE
+    support is built in.
+    
+    (cherry picked from commit 97539868191a76c77d655e96c85ccd3a3060b453)
+
+commit bccc49e393f9f6181aa35f9b02c6c348b36d6cb6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 10 14:44:35 2016 +0000
+
+    v2v: Small documentation fix in permissions section.
+    
+    In vCenter 5.5 at least, it's 'Sessions', not 'Session'.
+    
+    (cherry picked from commit 18fa1912508fa069a5bb068bbffda12e58615df9)
+
+commit 64efc1e645681e1950ed3d3126d3d9eab1031093
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 10 14:15:05 2016 +0100
+
+    Update zanata.xml
+    
+    Update the Zanata configuration based on what Zanata itself proposes as
+    project configuration.
+    
+    (cherry picked from commit 2f461b7cb8fa01eb8edd66bbb11bcc6b00f00295)
+
+commit fcde0cd8a2f5de70944ef5a9ecf15ea912fa72e6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 10 11:03:53 2016 +0000
+
+    docs: Add recipe for FUSE-mounting a Windows guest with drive letters.
+    
+    Thanks: Pino Toscano, Hilko Bengen.
+    (cherry picked from commit f9686217b57b061d41f96ef2f75e378e6dd20e5e)
+
+commit bbca2848a21cfe13e650d067845f76e3b763c934
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 10 10:43:09 2016 +0000
+
+    docs: Alphabetize headings in guestfs-recipes(1).
+    
+    No change, just reorder a section so they are in alphabetical order.
+    
+    (cherry picked from commit 3a9643834c540c7a762743fc34d9878933a597b2)
+
+commit 4c9895ea731f5e62cb80cb4d5d798a7a17940339
+Author: Roman Kagan <rkagan@virtuozzo.com>
+Date:   Tue Feb 9 17:42:00 2016 +0300
+
+    v2v: move virtio_win to windows_virtio
+    
+    Now that all the stuff related to Windows virtio drivers has been moved
+    into a dedicated module, it makes sense to move the definition of
+    virtio_win there, too, and stop passing it around as a parameter.
+    
+    Signed-off-by: Roman Kagan <rkagan@virtuozzo.com>
+    (cherry picked from commit 92ea4ed5f78fa4233f494144fcd4e1f69a243a0a)
+
+commit 32516cb5ad5b42d63ea20e2560b4370c482d46e8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 8 16:55:19 2016 +0100
+
+    tests: reduce sizes of scratch disks to 2 GB
+    
+    1 GB should be enough to create a btrfs filesystem, even with 64K page
+    size; hence, make the /dev/sda and /dev/sdb test devices smaller so
+    there is less space taken during the test run.
+    
+    Followup of commit 8ffad75e5b610274a664a00f1f1186070b602e18 and
+    commit 9e9b648770f9b8dbe8f280e4b5d1f80c4d689130.
+    
+    (cherry picked from commit fcf1884932536d87c927c3b58a3f1b4512500bf0)
+
+commit 4d90d40a8e396f22fbd9d76a2681a9aa53253985
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 5 13:04:57 2016 +0000
+
+    java: Fix documentation of @throws.
+    
+    The javadoc @throws directive requires a string documenting
+    when the exception is thrown.
+    
+    (cherry picked from commit 0b1046577258f6f1697c9e956989a1d368084357)
+
+commit 9e55614440e718aa9749e1d9e0d4fe548b88dc8c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 5 09:16:52 2016 +0000
+
+    v2v: Move the other OVMF paths into the core library.
+    
+    Refactoring change, continuing the theme from the previous commit.
+    
+    (cherry picked from commit 7ac9127bf4b4dd7d6f6b9ac9769003a0616dc97d)
+
+commit b0b66de0d9435634cc3db5a9575a49f22e2b4584
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 4 18:22:10 2016 +0000
+
+    aarch64: Use a common table of AAVMF paths.
+    
+    Previously the code had two places where an identical set of AAVMF
+    paths were stored.  Put this information into one place.
+    
+    This is just refactoring.
+    
+    (cherry picked from commit 4ac6ff6b47a4106091e4cf33b2ab6ca2f231bf9f)
+
+commit b8fc803da7a851070b7aed1cacaa6c2f061d06fc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 3 18:09:56 2016 +0100
+
+    sysprep, get-kernel: explicit the Guestfs parameter
+    
+    Help the OCaml compiler by expliciting Guestfs.guestfs as type for 'g'
+    in some functions.
+    
+    (cherry picked from commit 14b8e67f0b3d898f19fc0764a20e7b60568a1e4f)
+
+commit 5e0c3930876a650958992ddff775321e9b7fe1ed
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 3 21:35:48 2016 +0000
+
+    v2v: Replace "=" by "_" in OVF .meta DESCRIPTION field.
+    
+    The current VDSM .meta file parser is incorrect:
+    
+      https://code.engineering.redhat.com/gerrit/gitweb?p=vdsm.git;a=blob;f=vdsm/storage/fileVolume.py;h=20573bd2a3fe6909a8474bd7c53c8d0fea79091c;hb=c1289fd70edcde0a0b3bc8e37ecad1e2a5babe1a#l285
+    
+    When parsing the key=value fields in the .meta file, it uses the
+    Python expression:
+    
+      key, value = l.split("=")
+    
+    which throws an exception "ValueError: too many values to unpack" if
+    the value part also contains an "=" character (because split returns
+    an n-tuple with n > 2).  The correct way to split the string in this
+    situation is to use l.split("=", 1).
+    
+    In commit 399e031c25a5385a3f918d0a604e2751bd34242f I changed the
+    DESCRIPTION field in .meta so that in RHEL it would look like this:
+    
+      DESCRIPTION=generated by libguestfs 1.32.2rhel=7,release=1.el7,libvirt
+    
+    thus containing an "=" character in the value and throwing an
+    exception in VDSM.
+    
+    Although this is a bug in VDSM which needs to be fixed separately,
+    change any occurrence of "=" in the value to "_" to avoid this
+    problem.
+    
+    Thanks: Derrick Ornelas for helping to diagnose this bug and finding
+    the offending code in VDSM.
+    
+    (cherry picked from commit fe7fceba6e82cb436acd1ba3b6080f53190983e7)
+
+commit be24052bd41ed6fce0934b53ab8c278e4cc860c9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 3 17:10:15 2016 +0000
+
+    tests: btrfs: Use a 2000 MB partition for btrfs test (instead of 200 MB).
+    
+    One of the mkfs-btrfs tests used two 200 MB partitions.  That isn't
+    enough to create a btrfs filesystem on aarch64 (with 64K page size).
+    Since we now have a 10 GB disk, we can make the test partition 10
+    times larger.
+    
+    (cherry picked from commit 9e9b648770f9b8dbe8f280e4b5d1f80c4d689130)
+
+commit bcc7ec6d315dd775c8f18ace10f07cc564e1d705
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 3 17:08:09 2016 +0000
+
+    tests: btrfs: Don't test --leafsize, and use --nodesize 64K.
+    
+    In btrfs-progs 4.4, the --leafsize parameter is deprecated.  It's now
+    just an alias for --nodesize.
+    
+    On aarch64, --nodesize 4096 does not work because it's smaller than
+    the page size (64K).  Luckily we can test a 64K nodesize on any
+    platform, so use that instead.
+    
+    (cherry picked from commit 5238c4ee0a07d3b97bfe5fcc23c1f70a6d008066)
+
+commit 00069ae81298656dcf698f005b2769f75d234b31
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 3 16:53:17 2016 +0000
+
+    tests: Increase the size of the /dev/sda and /dev/sdb test devices.
+    
+    Previously these were rather small - just 500 MB.  This is too small
+    to create a btrfs device on aarch64 (where page size may be 64K), and
+    barely enough even on x86-64.  This change makes both these devices
+    10 GB, and adjusts a few tests so they continue to pass.
+    
+    (cherry picked from commit 8ffad75e5b610274a664a00f1f1186070b602e18)
+
+commit 9a2d39e30cf7d74d63c7c5c2b0d5f74eb6cd46fe
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 2 12:08:35 2016 +0000
+
+    resize: Use sparse copy for extended partitions unless --no-sparse.
+    
+    Thanks: Maxim Perevedentsev
+    (cherry picked from commit f88e9318667981d8ea7e0f699fde305ca064cbb5)
+
+commit 246e7a4689975440735cf226076aac2c22a13095
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 3 13:24:37 2016 +0100
+
+    generator: simplify generated code for always-available features
+    
+    Just refer to the dummy function directly, instead of using #define's.
+    
+    (cherry picked from commit d3502bdc32629c63e6d8b9e313a0c968d7b1e5b7)
+
+commit 3cf182811a9d18626f653444face17a065b63678
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 29 16:01:21 2016 +0100
+
+    launch: unix: check for length of sockets
+    
+    Error out early if the path to the socket will not fit into
+    sockaddr_un::sun_path, as we will not be able to connect to it.
+    
+    (cherry picked from commit 79b2f19fe7ba1843146e89e2267f066ed6eeeb5b)
+
+commit 06a60a3754195db7f3e6bb8d40856ef26e174da6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 31 16:00:00 2016 +0000
+
+    FAQ: Add answer about unsupported use of NTFS in RHEL 7.2.
+    
+    (cherry picked from commit e8ce35b007d52c8c3aac0da085b24c1fb4e750f4)
+
+commit 9d035100abc189c282c59f76bbfe1822646579d4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 31 14:22:14 2016 +0000
+
+    v2v: Split with_hive into with_hive_readonly, with_hive_write.
+    
+    I find the code slightly easier to read if we get rid of the ~write
+    flag, and instead split the with_hive function into two functions, one
+    for readonly access, and one for write access.
+    
+    This is just code refactoring.
+    
+    (cherry picked from commit 19f3689e5dcd06a0967ba88b5516a7ce70203576)
+
+commit 1ac940f9eb1a05b3fbdc107a8fd4e36bc94d5ed3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 31 14:14:37 2016 +0000
+
+    mllib: Add 'protect' function (like try/finally).
+    
+    Use the function in the virt-v2v [Windows] module.
+    
+    This is just refactoring.  There is no visible change in
+    functionality.
+    
+    (cherry picked from commit 53cc0370b26e1d260e31f471409c7d903a1e9c22)
+
+commit 1a108e8f5fcab51234fe81834ae89dc3504253bc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 31 13:58:57 2016 +0000
+
+    mllib: Move the maybe type (like Haskell Either) to common library.
+    
+    Just code motion.
+    
+    (cherry picked from commit db3e2023ebf83d291725a6c086359d8025153079)
+
+commit ae05640c7d303b0c651e3e22f3e5113d57f9e466
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 29 20:57:49 2016 +0000
+
+    arm: Disable -Wcast-align warning.
+    
+    Any modern system can handle unaligned memory access.  On armv7 it's
+    slightly slower, that's all.
+    
+    (cherry picked from commit 14d80452dc50e873f76d181758b64582353dc6c9)
+
+commit 106c44a84974bb36c6351c79a5ef3e31e23a6e11
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 29 12:50:12 2016 +0000
+
+    v2v: windows: Remove unused code left over by previous commit.
+    
+    As this code wasn't exported in the module interface, it cannot have
+    been used anywhere.
+    
+    Fixes commit b76f27142560d47648cc3cba1a19f753a78bafcb.
+    
+    (cherry picked from commit 8a910136e4e33fe5398069c198b105527b011d21)
+
+commit 04ac6d9889dc097b7ae3b6f02e3d14325fb49ccc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 29 12:39:05 2016 +0000
+
+    v2v: Remove items from TODO which have been implemented already.
+    
+    (cherry picked from commit b6a7aaf0d0bc34946f4885c87c09952342c3e17d)
+
 commit 760daf3081e69da53c3d01f7f79894e9177735e2
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Jan 29 11:08:05 2016 +0000

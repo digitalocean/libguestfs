@@ -38,7 +38,6 @@ GuestfsMount9P
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_mount_9p_new ##### -->
 <para>

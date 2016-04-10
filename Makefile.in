@@ -564,6 +564,7 @@ EXTRA_PACKAGES = @EXTRA_PACKAGES@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
+FUSER = @FUSER@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
 GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
@@ -1219,6 +1220,7 @@ MSGCAT = @MSGCAT@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
+NCURSES_CONFIG = @NCURSES_CONFIG@
 NETINET_IN_H = @NETINET_IN_H@
 NEXT_ARPA_INET_H = @NEXT_ARPA_INET_H@
 NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H = @NEXT_AS_FIRST_DIRECTIVE_ARPA_INET_H@
@@ -1522,6 +1524,7 @@ SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
 TIME_H_DEFINES_STRUCT_TIMESPEC = @TIME_H_DEFINES_STRUCT_TIMESPEC@
+TOOL_TRUE = @TOOL_TRUE@
 UINT32_MAX_LT_UINTMAX_MAX = @UINT32_MAX_LT_UINTMAX_MAX@
 UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
@@ -1703,14 +1706,7 @@ EXTRA_DIST = \
 	website/pod.css \
 	website/standard.css \
 	zanata.xml \
-	zanata-pull.sh \
-	.x-sc_avoid_ctype_macros \
-	.x-sc_prohibit_have_config_h \
-	.x-sc_prohibit_magic_number_exit \
-	.x-sc_prohibit_strcmp \
-	.x-sc_prohibit_strcmp_and_strncmp \
-	.x-sc_TAB_in_indentation \
-	.x-sc_trailing_blank
+	zanata-pull.sh
 
 
 # XXX Eventually move builder/website under website/ top level directory.
@@ -2512,7 +2508,6 @@ help:
 	@echo
 	@echo "make installcheck                 Test installed libguestfs packages."
 	@echo
-	@echo "make syntax-check -j1 -k          Check syntax and style problems in the code."
 	@echo "make print-subdirs                Print subdirectories."
 	@echo
 	@echo "make install                      Install everything."

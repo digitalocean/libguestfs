@@ -58,7 +58,6 @@ GuestfsNtfscloneOut
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_ntfsclone_out_new ##### -->
 <para>

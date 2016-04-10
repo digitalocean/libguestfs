@@ -43,7 +43,6 @@ GuestfsE2fsck
 
 </para>
 
-@parent_class: 
 
 <!-- ##### FUNCTION guestfs_e2fsck_new ##### -->
 <para>
