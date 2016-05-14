@@ -1,3 +1,12 @@
+libguestfs (1:1.32.4-2) unstable; urgency=medium
+
+  * Depend on systemtap on all architectures
+  * Correct, improve comments about build in debian/rules
+  * Run generator for source dir before building
+  * Add php-guestfs package (Closes: #823919)
+
+ -- Hilko Bengen <bengen@debian.org>  Sat, 14 May 2016 18:32:35 +0200
+
 libguestfs (1:1.32.4-1) unstable; urgency=medium
 
   * Attempt building on ppc64 (without -el)
