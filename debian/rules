@@ -59,6 +59,10 @@ override_dh_auto_configure:
 		LUA=$(LUA_DEFAULT) \
 		JNI_INSTALL_DIR='$${libdir}/jni'
 
+	# (Re)generate files in srcdir.
+	$(MAKE) -C debian/build-default/generator/ generator
+	debian/build-default/generator/generator
+
 	set -e; for r in $(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
 	; do \
 		dh_auto_configure --builddir=$(CURDIR)/debian/build-ruby$$v \
