@@ -41,6 +41,7 @@ Build-Depends: debhelper (>= 9),
   curl,
   flex, bison,
   golang-go [i386 amd64 armel armhf arm64 ppc64el],
+  dh-php, php-all-dev | php5-dev,
 # for appliance
   linux-image-versatile [armel],
   linux-image-armmp [armhf],
@@ -507,3 +508,13 @@ Description: guest disk image management system - Golang bindings
  images.
  .
  This package contains source for the Golang bindings.
+
+Package: php-guestfs
+Section: php
+Architecture: amd64 arm64 armel armhf i386 mipsel powerpc ppc64el s390x ppc64
+Depends: ${shlibs:Depends}, ${php:Depends}, ${misc:Depends},
+Description: guest disk image management system - PHP bindings
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains the PHP bindings.

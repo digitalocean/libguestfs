@@ -7,7 +7,7 @@ Subject: Generate tarballs for supermin appliance using reproducible timestamp
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/appliance/Makefile.am b/appliance/Makefile.am
-index f219f9b..61fa969 100644
+index d8fb15b..a444712 100644
 --- a/appliance/Makefile.am
 +++ b/appliance/Makefile.am
 @@ -79,7 +79,7 @@ supermin.d/daemon.tar.gz: ../daemon/guestfsd guestfs_lvm_conf.aug guestfs_shadow

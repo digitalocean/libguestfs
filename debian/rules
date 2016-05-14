@@ -9,6 +9,8 @@ RUBIES         := $(shell find /usr/bin/ -name 'ruby[12]*' | xargs -n1 readlink 
 RUBY_DEFAULT   := $(shell which ruby | xargs readlink -f | xargs basename)
 LUAS           := $(shell find /usr/bin/ -name 'lua5.?' | xargs -n1 readlink -f | xargs -n1 basename)
 LUA_DEFAULT    := $(shell which lua | xargs readlink -f | xargs basename)
+PHPS           := $(subst -config,,$(shell find /usr/bin -name 'php-config?*' | xargs -n1 basename))
+PHP_DEFAULT    := $(lastword $(sort $(PHPS)))
 
 BUILDS         := $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 		  $(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
@@ -26,7 +28,6 @@ DEFAULT_CONFIG_FLAGS = \
 	--disable-gnulib-tests     \
 	--with-readline	           \
 	--disable-haskell          \
-	--disable-php	           \
 	--enable-gtk-doc           \
 	--with-qemu=qemu-system-$(QEMU_CPU) \
 	--with-supermin-extra-options='--use-installed'
@@ -35,7 +36,7 @@ DEFAULT_CONFIG_FLAGS = \
 # debian/python-*, debian/lua-*)
 BARE_CONFIG_FLAGS = \
 	$(DEFAULT_CONFIG_FLAGS) \
-	--disable-fuse \
+	--disable-fuse --disable-php \
 	--disable-ocaml --disable-perl \
 	--disable-erlang --with-java=no \
 	--disable-gobject --without-java
@@ -57,6 +58,8 @@ override_dh_auto_configure:
 		RAKE="$(RUBY_DEFAULT) -S rake" \
 		PYTHON=$(PYTHON_DEFAULT) \
 		LUA=$(LUA_DEFAULT) \
+		PHP=$(PHP_DEFAULT) \
+		PHPIZE=$(subst php,phpize,$(PHP_DEFAULT)) \
 		JNI_INSTALL_DIR='$${libdir}/jni'
 
 	# (Re)generate files in srcdir.
@@ -69,6 +72,7 @@ override_dh_auto_configure:
 			-- \
 			$(BARE_CONFIG_FLAGS) \
 			--disable-lua \
+			--disable-php \
 			--disable-python \
 			RUBY=$$r RAKE="$$r -S rake" ; \
 	done
@@ -79,6 +83,7 @@ override_dh_auto_configure:
 			-- \
 			$(BARE_CONFIG_FLAGS) \
 			--disable-lua \
+			--disable-php \
 			--disable-ruby \
 			PYTHON=$$p ; \
 	done
@@ -88,6 +93,7 @@ override_dh_auto_configure:
 		dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
 			-- \
 			$(BARE_CONFIG_FLAGS) \
+			--disable-php \
 			--disable-python \
 			--disable-ruby \
 			LUA=$$p ; \
@@ -124,13 +130,15 @@ override_dh_install:
 
 	erlang-depends -perlang-guestfs
 
-	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -Xpackages.orig \
+	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -Xpackages.orig -Xetc/php.d \
 	    --fail-missing
 
 # Add packages (except essential packages) from appliance packagelist
 # to libguestfs* dependencies
 	debian/gen-appliance-depends.sh
 
+override_dh_php:
+	dh_php -p php-guestfs
 override_dh_python3:
 	dh_python3 -p python3-guestfs
 override_dh_python2:
@@ -149,4 +157,4 @@ override_dh_makeshlibs:
 	dh $@ \
 	   --parallel \
 	   --without=python-support \
-	   --with=autoreconf,ocaml,python2,python3,bash-completion,ruby,gir,lua
+	   --with=autoreconf,ocaml,python2,python3,bash-completion,ruby,gir,lua,php

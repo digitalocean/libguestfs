@@ -1,0 +1,51 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sat, 14 May 2016 13:34:07 +0200
+Subject: Make php buildable with builddir != srcdir
+
+---
+ php/Makefile.am | 19 +++++--------------
+ 1 file changed, 5 insertions(+), 14 deletions(-)
+
+diff --git a/php/Makefile.am b/php/Makefile.am
+index fc91545..e38331b 100644
+--- a/php/Makefile.am
++++ b/php/Makefile.am
+@@ -36,26 +36,16 @@ php_DATA = guestfs_php.ini
+ 
+ # In theory: EXTRA_LIBS="-lguestfs"  In fact this doesn't work
+ # and we need to add the library to EXTRA_LDFLAGS.
+-all: check-builddir-equals-srcdir extension/config.h
++all: extension/config.h
+ 	$(MAKE) -C extension \
+ 	  EXTRA_INCLUDES="-I$(abs_srcdir)/../src" \
+-	  EXTRA_LDFLAGS="-L$(abs_srcdir)/../src/.libs -lguestfs" \
++	  EXTRA_LDFLAGS="-L$(abs_builddir)/../src/.libs -lguestfs" \
+ 	  EXTRA_CFLAGS="-DGUESTFS_PRIVATE=1" \
+ 	  all
+ 
+-# It looks like this is going to be very hard to make work, so
+-# disallow it for now.
+-check-builddir-equals-srcdir:
+-	@if [ $(builddir) != $(srcdir) ]; then \
+-	  echo "***"; \
+-	  echo "PHP cannot be built with builddir != srcdir"; \
+-	  echo "Use ./configure --disable-php"; \
+-	  echo "***"; \
+-	  exit 1; \
+-	fi
+-
+ extension/config.h: extension/config.m4 ../config.status
+-	cd extension && phpize
++	test $(srcdir) != $(builddir) && cp -rsft $(builddir)/extension $(abs_srcdir)/extension/.
++	cd extension && $(PHPIZE)
+ 	cd extension && ./configure --prefix=$(prefix) --libdir=$(libdir)
+ 	test -f "$@" && touch -- $@
+ 
+@@ -70,6 +60,7 @@ TESTS = run-php-tests.sh
+ # rule.  Therefore, don't die if this fails.
+ clean-local:
+ 	-$(MAKE) -C extension clean
++	test $(srcdir) != $(builddir) && cp rm -rf extension
+ 	rm -f extension/tests/*.exp
+ 	rm -f extension/tests/*.log
+ 	rm -f extension/tests/*.out
