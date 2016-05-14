@@ -18,9 +18,10 @@ BUILDS         := $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
 		    | sed -r -e 's,i[456]86,i386,;s,sparc,sparc64,;s,powerpc(64.*)?,ppc64,;s,arm.*,arm,')
 
-# Do not run "make quickcheck on these architectures
+# Run "make quickcheck only on these architectures
 QUICKCHECK_ARCHITECTURES := i386 amd64
 
+# Flags for the default build (debian/build-default)
 DEFAULT_CONFIG_FLAGS = \
 	--disable-gnulib-tests     \
 	--with-readline	           \
@@ -30,6 +31,8 @@ DEFAULT_CONFIG_FLAGS = \
 	--with-qemu=qemu-system-$(QEMU_CPU) \
 	--with-supermin-extra-options='--use-installed'
 
+# Flags for secondary builds for different language bindings (e.g.
+# debian/python-*, debian/lua-*)
 BARE_CONFIG_FLAGS = \
 	$(DEFAULT_CONFIG_FLAGS) \
 	--disable-fuse \
