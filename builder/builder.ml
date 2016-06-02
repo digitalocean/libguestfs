@@ -94,19 +94,17 @@ let main () =
   let mode =
     match cmdline.mode with
     | `Get_kernel -> (* --get-kernel is really a different program ... *)
-      let cmd =
-        sprintf "virt-get-kernel%s%s%s%s --add %s"
-          (if verbose () then " --verbose" else "")
-          (if trace () then " -x" else "")
-          (match cmdline.format with
-          | None -> ""
-          | Some format -> sprintf " --format %s" (quote format))
-          (match cmdline.output with
-          | None -> ""
-          | Some output -> sprintf " --output %s" (quote output))
-          (quote cmdline.arg) in
-      if verbose () then printf "%s\n%!" cmd;
-      exit (Sys.command cmd)
+      let cmd = [ "virt-get-kernel" ] @
+        (if verbose () then [ "--verbose" ] else []) @
+        (if trace () then [ "-x" ] else []) @
+        (match cmdline.format with
+        | None -> []
+        | Some format -> [ "--format"; format ]) @
+        (match cmdline.output with
+        | None -> []
+        | Some output -> [ "--output"; output ]) @
+        [ "--add"; cmdline.arg ] in
+      exit (run_command cmd)
 
     | `Delete_cache ->                  (* --delete-cache *)
       (match cmdline.cache with
@@ -126,7 +124,7 @@ let main () =
    * disables all signature checks.
    *)
   let cmd = sprintf "%s --help >/dev/null 2>&1" cmdline.gpg in
-  if Sys.command cmd <> 0 then (
+  if shell_command cmd <> 0 then (
     if cmdline.check_signature then
       error (f_"gpg is not installed (or does not work)\nYou should install gpg, or use --gpg option, or use --no-check-signature.")
     else if verbose () then
@@ -135,12 +133,12 @@ let main () =
 
   (* Check that curl works. *)
   let cmd = sprintf "%s --help >/dev/null 2>&1" cmdline.curl in
-  if Sys.command cmd <> 0 then
+  if shell_command cmd <> 0 then
     error (f_"curl is not installed (or does not work)");
 
   (* Check that virt-resize works. *)
   let cmd = "virt-resize --help >/dev/null 2>&1" in
-  if Sys.command cmd <> 0 then
+  if shell_command cmd <> 0 then
     error (f_"virt-resize is not installed (or does not work)");
 
   (* Create the cache. *)
@@ -539,16 +537,14 @@ let main () =
       let ifile = List.assoc `Filename itags in
       let ofile = List.assoc `Filename otags in
       message (f_"Copying");
-      let cmd = sprintf "cp %s %s" (quote ifile) (quote ofile) in
-      if verbose () then printf "%s\n%!" cmd;
-      if Sys.command cmd <> 0 then exit 1
+      let cmd = [ "cp"; ifile; ofile ] in
+      if run_command cmd <> 0 then exit 1
 
     | itags, `Rename, otags ->
       let ifile = List.assoc `Filename itags in
       let ofile = List.assoc `Filename otags in
-      let cmd = sprintf "mv %s %s" (quote ifile) (quote ofile) in
-      if verbose () then printf "%s\n%!" cmd;
-      if Sys.command cmd <> 0 then exit 1
+      let cmd = [ "mv"; ifile; ofile ] in
+      if run_command cmd <> 0 then exit 1
 
     | itags, `Pxzcat, otags ->
       let ifile = List.assoc `Filename itags in
@@ -571,23 +567,21 @@ let main () =
       let () =
         let g = open_guestfs () in
         g#disk_create ?preallocation ofile oformat osize in
-      let cmd =
-        sprintf "virt-resize%s%s%s --output-format %s%s%s --unknown-filesystems error %s %s"
-          (if verbose () then " --verbose" else " --quiet")
-          (if is_block_device ofile then " --no-sparse" else "")
-          (match iformat with
-          | None -> ""
-          | Some iformat -> sprintf " --format %s" (quote iformat))
-          (quote oformat)
-          (match expand with
-          | None -> ""
-          | Some expand -> sprintf " --expand %s" (quote expand))
-          (match lvexpand with
-          | None -> ""
-          | Some lvexpand -> sprintf " --lv-expand %s" (quote lvexpand))
-          (quote ifile) (quote ofile) in
-      if verbose () then printf "%s\n%!" cmd;
-      if Sys.command cmd <> 0 then exit 1
+      let cmd = [ "virt-resize" ] @
+        (if verbose () then [ "--verbose" ] else [ "--quiet" ]) @
+        (if is_block_device ofile then [ "--no-sparse" ] else []) @
+        (match iformat with
+        | None -> []
+        | Some iformat -> [ "--format"; iformat ]) @
+        [ "--output-format"; oformat ] @
+        (match expand with
+        | None -> []
+        | Some expand -> [ "--expand"; expand ]) @
+        (match lvexpand with
+        | None -> []
+        | Some lvexpand -> [ "--lv-expand"; lvexpand ]) @
+        [ "--unknown-filesystems"; "error"; ifile; ofile ] in
+      if run_command cmd <> 0 then exit 1
 
     | itags, `Disk_resize, otags ->
       let ofile = List.assoc `Filename otags in
@@ -597,8 +591,7 @@ let main () =
         (human_size osize);
       let cmd = sprintf "qemu-img resize %s %Ld%s"
         (quote ofile) osize (if verbose () then "" else " >/dev/null") in
-      if verbose () then printf "%s\n%!" cmd;
-      if Sys.command cmd <> 0 then exit 1
+      if shell_command cmd <> 0 then exit 1
 
     | itags, `Convert, otags ->
       let ifile = List.assoc `Filename itags in
@@ -616,8 +609,7 @@ let main () =
         | Some iformat -> sprintf " -f %s" (quote iformat))
         (quote ifile) (quote oformat) (quote (qemu_input_filename ofile))
         (if verbose () then "" else " >/dev/null 2>&1") in
-      if verbose () then printf "%s\n%!" cmd;
-      if Sys.command cmd <> 0 then exit 1
+      if shell_command cmd <> 0 then exit 1
   ) plan;
 
   (* Now mount the output disk so we can make changes. *)

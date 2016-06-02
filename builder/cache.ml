@@ -25,8 +25,8 @@ open Unix
 open Printf
 
 let clean_cachedir dir =
-  let cmd = sprintf "rm -rf %s" (quote dir) in
-  ignore (Sys.command cmd);
+  let cmd = [ "rm"; "-rf"; dir ] in
+  ignore (run_command cmd);
 
 type t = {
   directory : string;

@@ -1,6 +1,11 @@
 #!/bin/bash -
-# libguestfs
-# Copyright (C) 2012 Red Hat Inc.
+# libguestfs generated file
+# WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+#          generator/fish.ml
+#          and from the code in the generator/ subdirectory.
+# ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
+#
+# Copyright (C) 2009-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,16 +17,14 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 set -e
 
-rm -f prep*.img
+rm -f prep{1..7}.img
 
-# It would be nice if we could keep this automatically in sync
-# with the prepared disk types.  XXX
 $VG guestfish \
     -N prep1.img=disk \
     -N prep2.img=part \
@@ -32,4 +35,4 @@ $VG guestfish \
     -N prep7.img=bootrootlv:/dev/VG3/LV \
     exit
 
-rm prep*.img
+rm prep{1..7}.img

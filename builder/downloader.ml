@@ -85,10 +85,10 @@ and download_to t ?(progress_bar = false) ~proxy uri filename =
   (match parseduri.URI.protocol with
   | "file" ->
     let path = parseduri.URI.path in
-    let cmd = sprintf "cp%s %s %s"
-      (if verbose () then " -v" else "")
-      (quote path) (quote filename_new) in
-    let r = Sys.command cmd in
+    let cmd = [ "cp" ] @
+      (if verbose () then [ "-v" ] else []) @
+      [ path; filename_new ] in
+    let r = run_command cmd in
     if r <> 0 then
       error (f_"cp (download) command failed copying '%s'") path;
   | _ as protocol -> (* Any other protocol. *)
@@ -99,7 +99,6 @@ and download_to t ?(progress_bar = false) ~proxy uri filename =
       t.curl
       (if verbose () then "" else " -s -S")
       (quote uri) in
-    if verbose () then printf "%s\n%!" cmd;
     let lines = external_command cmd in
     if List.length lines < 1 then
       error (f_"unexpected output from curl command, enable debug and look at previous messages");
@@ -119,8 +118,7 @@ and download_to t ?(progress_bar = false) ~proxy uri filename =
       t.curl
       (if verbose () then "" else if progress_bar then " -#" else " -s -S")
       (quote filename_new) (quote uri) in
-    if verbose () then printf "%s\n%!" cmd;
-    let r = Sys.command cmd in
+    let r = shell_command cmd in
     if r <> 0 then
       error (f_"curl (download) command failed downloading '%s'") uri;
   );

@@ -1474,6 +1474,7 @@ EXTRA_DIST = \
 
 @HAVE_GNU_GETTEXT_TRUE@XGETTEXT_ARGS = \
 @HAVE_GNU_GETTEXT_TRUE@	--default-domain=$(DOMAIN) \
+@HAVE_GNU_GETTEXT_TRUE@	--from-code=utf-8 \
 @HAVE_GNU_GETTEXT_TRUE@	--add-comments=TRANSLATORS: \
 @HAVE_GNU_GETTEXT_TRUE@	--keyword=_ --keyword=N_ --keyword=__ --keyword=__x \
 @HAVE_GNU_GETTEXT_TRUE@	--flag=error:3:c-format \

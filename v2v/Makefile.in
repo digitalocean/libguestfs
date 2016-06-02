@@ -154,8 +154,9 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@TESTS = test-v2v-i-ova-formats.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-gz.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh \
-@HAVE_OCAML_TRUE@	test-v2v-copy-to-local.sh $(am__EXEEXT_1) \
-@HAVE_OCAML_TRUE@	$(am__append_4)
+@HAVE_OCAML_TRUE@	test-v2v-copy-to-local.sh \
+@HAVE_OCAML_TRUE@	test-v2v-bad-networks-and-bridges.sh \
+@HAVE_OCAML_TRUE@	$(am__EXEEXT_1) $(am__append_4)
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = v2v_unit_tests
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_4 = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-cdrom.sh \
@@ -177,7 +178,8 @@ host_triplet = @host@
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-print-source.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-sound.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-virtio-win-iso.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-windows-conversion.sh
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-windows-conversion.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	$(SLOW_TESTS)
 
 @HAVE_OCAML_TRUE@check_PROGRAMS = $(am__EXEEXT_1)
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_5 = v2v_unit_tests
@@ -1785,7 +1787,7 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	copy_to_local.ml \
 	v2v_unit_tests.ml \
-	$(TESTS) $(SLOW_TESTS) \
+	$(TESTS) \
 	HACKING \
 	test-v2v-cdrom.expected \
 	test-v2v-cdrom.xml \
@@ -1806,6 +1808,7 @@ EXTRA_DIST = \
 CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-v2v \
 	$(am__append_2)
 SOURCES_MLI = \
+	changeuid.mli \
 	cmdline.mli \
 	convert_linux.mli \
 	convert_windows.mli \
@@ -1819,7 +1822,7 @@ SOURCES_MLI = \
 	input_libvirt_xen_ssh.mli \
 	input_libvirtxml.mli \
 	input_ova.mli \
-	changeuid.mli \
+	inspect_source.mli \
 	linux.mli \
 	modules_list.mli \
 	output_glance.mli \
@@ -1869,6 +1872,7 @@ SOURCES_ML = \
 	output_qemu.ml \
 	output_rhev.ml \
 	output_vdsm.ml \
+	inspect_source.ml \
 	cmdline.ml \
 	v2v.ml
 
@@ -2658,6 +2662,13 @@ test-v2v-copy-to-local.sh.log: test-v2v-copy-to-local.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-bad-networks-and-bridges.sh.log: test-v2v-bad-networks-and-bridges.sh
+	@p='test-v2v-bad-networks-and-bridges.sh'; \
+	b='test-v2v-bad-networks-and-bridges.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 v2v_unit_tests.log: v2v_unit_tests$(EXEEXT)
 	@p='v2v_unit_tests$(EXEEXT)'; \
 	b='v2v_unit_tests'; \
@@ -2801,6 +2812,13 @@ test-v2v-virtio-win-iso.sh.log: test-v2v-virtio-win-iso.sh
 test-v2v-windows-conversion.sh.log: test-v2v-windows-conversion.sh
 	@p='test-v2v-windows-conversion.sh'; \
 	b='test-v2v-windows-conversion.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-real-conversions.sh.log: test-v2v-real-conversions.sh
+	@p='test-v2v-real-conversions.sh'; \
+	b='test-v2v-real-conversions.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -3047,7 +3065,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="$(abs_top_builddir)/run @VG@" check
 
 @HAVE_OCAML_TRUE@check-slow: $(real_guests:%=%.img)
-@HAVE_OCAML_TRUE@	$(MAKE) check TESTS="$(SLOW_TESTS)"
+@HAVE_OCAML_TRUE@	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
 @HAVE_OCAML_TRUE@$(real_guests:%=%.img):
 @HAVE_OCAML_TRUE@	rm -f $@

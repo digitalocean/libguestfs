@@ -242,10 +242,10 @@ let create_libvirt_xml ?pool source target_buses guestcaps
 
   (match source.s_display with
    | Some { s_keymap = Some km } -> append_attr ("keymap", km) graphics
-   | _ -> ());
+   | Some { s_keymap = None } | None -> ());
   (match source.s_display with
    | Some { s_password = Some pw } -> append_attr ("passwd", pw) graphics
-   | _ -> ());
+   | Some { s_password = None } | None -> ());
   (match source.s_display with
    | Some { s_listen = listen } ->
       (match listen with
@@ -256,12 +256,12 @@ let create_libvirt_xml ?pool source target_buses guestcaps
           let sub = e "listen" [ "type", "network"; "network", n ] [] in
           append_child sub graphics
        | LNone -> ())
-   | _ -> ());
+   | None -> ());
   (match source.s_display with
    | Some { s_port = Some p } ->
       append_attr ("autoport", "no") graphics;
       append_attr ("port", string_of_int p) graphics
-   | _ ->
+   | Some { s_port = None } | None ->
       append_attr ("autoport", "yes") graphics;
       append_attr ("port", "-1") graphics);
 
@@ -317,7 +317,7 @@ class output_libvirt oc output_pool = object
   method prepare_targets source targets =
     (* Get the capabilities from libvirt. *)
     let xml = Domainxml.capabilities ?conn:oc () in
-    if verbose () then printf "libvirt capabilities XML:\n%s\n%!" xml;
+    debug "libvirt capabilities XML:\n%s" xml;
 
     (* This just checks that the capabilities XML is well-formed,
      * early so that we catch parsing errors before conversion.
@@ -385,12 +385,9 @@ class output_libvirt oc output_pool = object
      *)
     let cmd =
       match oc with
-      | None -> sprintf "virsh pool-refresh %s" (quote output_pool)
-      | Some uri ->
-        sprintf "virsh -c %s pool-refresh %s"
-          (quote uri) (quote output_pool) in
-    if verbose () then printf "%s\n%!" cmd;
-    if Sys.command cmd <> 0 then
+      | None -> [ "virsh"; "pool-refresh"; output_pool ]
+      | Some uri -> [ "virsh"; "-c"; uri; "pool-refresh"; output_pool ] in
+    if run_command cmd <> 0 then
       warning (f_"could not refresh libvirt pool %s") output_pool;
 
     (* Parse the capabilities XML in order to get the supported features. *)
@@ -411,18 +408,17 @@ class output_libvirt oc output_pool = object
     close_out chan;
 
     if verbose () then (
-      printf "resulting XML for libvirt:\n%!";
-      DOM.doc_to_chan stdout doc;
-      printf "\n%!";
+      eprintf "resulting XML for libvirt:\n%!";
+      DOM.doc_to_chan stderr doc;
+      eprintf "\n%!";
     );
 
     (* Define the domain in libvirt. *)
     let cmd =
       match oc with
-      | None -> sprintf "virsh define %s" (quote tmpfile)
-      | Some uri ->
-        sprintf "virsh -c %s define %s" (quote uri) (quote tmpfile) in
-    if Sys.command cmd = 0 then (
+      | None -> [ "virsh"; "define"; tmpfile ]
+      | Some uri -> [ "virsh"; "-c"; uri; "define"; tmpfile ] in
+    if run_command cmd = 0 then (
       try Unix.unlink tmpfile with _ -> ()
     ) else (
       warning (f_"could not define libvirt domain.  The libvirt XML is still available in '%s'.  Try running 'virsh define %s' yourself instead.")

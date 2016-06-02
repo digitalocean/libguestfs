@@ -155,8 +155,9 @@ bin_PROGRAMS = $(am__EXEEXT_1) virt-index-validate$(EXEEXT)
 @HAVE_OCAML_TRUE@am__append_6 = stamp-virt-builder.pod virt-builder.1 \
 @HAVE_OCAML_TRUE@	*.qcow2 *.xz
 @HAVE_OCAML_TRUE@TESTS = test-virt-builder-list.sh \
-@HAVE_OCAML_TRUE@	test-virt-index-validate.sh $(am__append_7) \
-@HAVE_OCAML_TRUE@	$(am__append_8) $(am__EXEEXT_2)
+@HAVE_OCAML_TRUE@	test-virt-index-validate.sh $(SLOW_TESTS) \
+@HAVE_OCAML_TRUE@	$(am__append_7) $(am__append_8) \
+@HAVE_OCAML_TRUE@	$(am__EXEEXT_2)
 @HAVE_OCAML_TRUE@check_PROGRAMS = $(am__EXEEXT_2)
 @HAVE_OCAML_TRUE@@HAVE_YAJL_TRUE@am__append_7 = test-virt-builder-list-simplestreams.sh
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_8 = test-virt-builder.sh
@@ -1902,7 +1903,7 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/planner.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/JSON.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/URI.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_utils.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/urandom.cmo \
@@ -1980,6 +1981,7 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) $(OCAMLLINKFLAGS) \
 @HAVE_OCAML_TRUE@	  $(yajl_tests_THEOBJECTS) -o $@
 
+@HAVE_OCAML_TRUE@SLOW_TESTS = test-virt-builder-planner.sh
 DISTCLEANFILES = .depend
 
 # virt-builder's default repository
@@ -2757,6 +2759,13 @@ test-virt-index-validate.sh.log: test-virt-index-validate.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-virt-builder-planner.sh.log: test-virt-builder-planner.sh
+	@p='test-virt-builder-planner.sh'; \
+	b='test-virt-builder-planner.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-virt-builder-list-simplestreams.sh.log: test-virt-builder-list-simplestreams.sh
 	@p='test-virt-builder-list-simplestreams.sh'; \
 	b='test-virt-builder-list-simplestreams.sh'; \
@@ -3042,7 +3051,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check
 
 @HAVE_OCAML_TRUE@check-slow:
-@HAVE_OCAML_TRUE@	$(MAKE) TESTS="test-virt-builder-planner.sh" check
+@HAVE_OCAML_TRUE@	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
 # Dependencies.
 @HAVE_OCAML_TRUE@depend: .depend

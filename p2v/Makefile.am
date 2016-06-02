@@ -19,21 +19,32 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
 	HACKING \
+	$(TESTS) $(SLOW_TESTS) \
 	dependencies.m4 \
 	issue \
 	launch-virt-p2v.in \
 	p2v.ks.in \
 	p2v.service \
+	test-virt-p2v-pxe.sshd_config.in \
+	test-virt-p2v-ssh.sh \
 	virt-p2v.pod \
 	virt-p2v-make-disk.in \
 	virt-p2v-make-disk.pod \
 	virt-p2v-make-kickstart.in \
 	virt-p2v-make-kickstart.pod
 
+# Don't clean ssh_host_rsa_key{,.pub} or id_rsa{,.pub} since those
+# consume system entropy to regenerate.
 CLEANFILES = \
+	$(dependencies_files) \
+	stamp-test-virt-p2v-pxe-kernel \
 	stamp-virt-p2v.pod \
 	stamp-virt-p2v-make-disk.pod \
 	stamp-virt-p2v-make-kickstart.pod \
+	test-virt-p2v-pxe.img \
+	test-virt-p2v-pxe.vmlinuz \
+	test-virt-p2v-pxe.initramfs \
+	test-virt-p2v-pxe.sshd_config \
 	virt-p2v.1 \
 	virt-p2v-make-disk.1 \
 	virt-p2v-make-kickstart.1
@@ -90,7 +101,6 @@ dependencies_files = \
 	dependencies.debian \
 	dependencies.redhat \
 	dependencies.suse
-CLEANFILES += $(dependencies_files)
 
 $(dependencies_files): dependencies.m4
 	define=`echo $@ | $(SED) 's/dependencies.//;y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`; \
@@ -167,7 +177,8 @@ TESTS = \
 
 if ENABLE_APPLIANCE
 TESTS += \
-	test-virt-p2v.sh
+	test-virt-p2v.sh \
+	$(SLOW_TESTS)
 endif ENABLE_APPLIANCE
 
 SLOW_TESTS = \
@@ -179,7 +190,7 @@ check-slow: test-virt-p2v-pxe.img \
 	    test-virt-p2v-pxe.ssh_host_rsa_key \
 	    test-virt-p2v-pxe.ssh_host_rsa_key.pub \
 	    test-virt-p2v-pxe.id_rsa test-virt-p2v-pxe.id_rsa.pub
-	$(MAKE) check TESTS="$(SLOW_TESTS)"
+	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
 test-virt-p2v-pxe.img: virt-p2v-make-disk \
 	               virt-p2v \
@@ -226,17 +237,3 @@ stamp-test-virt-p2v-pxe-userkey:
 	rm -f test-virt-p2v-pxe.id_rsa.pub
 	ssh-keygen -t rsa -f test-virt-p2v-pxe.id_rsa -N ''
 	touch $@
-
-# Don't clean ssh_host_rsa_key{,.pub} or id_rsa{,.pub} since those
-# consume system entropy to regenerate.
-CLEANFILES += \
-	stamp-test-virt-p2v-pxe-kernel \
-	test-virt-p2v-pxe.img \
-	test-virt-p2v-pxe.vmlinuz \
-	test-virt-p2v-pxe.initramfs \
-	test-virt-p2v-pxe.sshd_config
-
-EXTRA_DIST += \
-	$(TESTS) $(SLOW_TESTS) \
-	test-virt-p2v-pxe.sshd_config.in \
-	test-virt-p2v-ssh.sh

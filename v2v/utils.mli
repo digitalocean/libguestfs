@@ -53,3 +53,19 @@ val compare_app2_versions : Guestfs.application2 -> Guestfs.application2 -> int
 
 val remove_duplicates : 'a list -> 'a list
 (** Remove duplicates from a list. *)
+
+val du : string -> int64
+(** Return the true size of a file in bytes, including any wasted
+    space caused by internal fragmentation (the overhead of using
+    blocks).
+
+    This can raise either [Failure] or [Invalid_argument] in case
+    of errors. *)
+
+val shell_unquote : string -> string
+(** If the string looks like a shell quoted string, then attempt to
+    unquote it.
+
+    This is just intended to deal with quoting in configuration files
+    (like ones under /etc/sysconfig), and it doesn't deal with some
+    situations such as $variable interpolation. *)

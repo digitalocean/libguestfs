@@ -166,6 +166,9 @@ pxzcat (value filenamev, value outputfilev, unsigned nr_threads)
   if (fd == -1)
     unix_error (errno, (char *) "open", filenamev);
 
+  guestfs_int_fadvise_noreuse (fd);
+  guestfs_int_fadvise_random (fd);
+
   /* Check file magic. */
   if (!check_header_magic (fd)) {
     close (fd);
@@ -189,6 +192,8 @@ pxzcat (value filenamev, value outputfilev, unsigned nr_threads)
     close (fd);
     unix_error (err, (char *) "open", outputfilev);
   }
+
+  guestfs_int_fadvise_random (ofd);
 
   if (ftruncate (ofd, 1) == -1) {
     int err = errno;
@@ -214,11 +219,6 @@ pxzcat (value filenamev, value outputfilev, unsigned nr_threads)
     unix_error (err, (char *) "ftruncate", outputfilev);
   }
 
-#if defined HAVE_POSIX_FADVISE
-  /* Tell the kernel we won't read the output file. */
-  ignore_value (posix_fadvise (fd, 0, 0, POSIX_FADV_RANDOM|POSIX_FADV_DONTNEED));
-#endif
-
   /* Iterate over blocks. */
   iter_blocks (idx, nr_threads, filenamev, fd, outputfilev, ofd);
 
@@ -226,6 +226,9 @@ pxzcat (value filenamev, value outputfilev, unsigned nr_threads)
 
   if (close (fd) == -1)
     unix_error (errno, (char *) "close", filenamev);
+
+  if (close (ofd) == -1)
+    unix_error (errno, (char *) "close", outputfilev);
 }
 
 static int

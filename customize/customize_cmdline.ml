@@ -378,7 +378,7 @@ let rec argspec () =
     (
       "--update",
       Arg.Unit (fun () -> ops := `Update :: !ops),
-      " " ^ s_"Update core packages"
+      " " ^ s_"Update packages"
     ),
     None, "Do the equivalent of C<yum update>, C<apt-get upgrade>, or whatever\ncommand is required to update the packages already installed in the\ntemplate to their latest versions.\n\nSee also I<--install>.";
     (

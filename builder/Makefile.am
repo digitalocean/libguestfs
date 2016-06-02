@@ -139,7 +139,7 @@ BOBJECTS = \
 	$(top_builddir)/mllib/planner.cmo \
 	$(top_builddir)/mllib/regedit.cmo \
 	$(top_builddir)/mllib/JSON.cmo \
-	$(top_builddir)/mllib/uRI.cmo \
+	$(top_builddir)/mllib/URI.cmo \
 	$(top_builddir)/mllib/mkdtemp.cmo \
 	$(top_builddir)/customize/customize_utils.cmo \
 	$(top_builddir)/customize/urandom.cmo \
@@ -284,7 +284,8 @@ yajl_tests_LINK = \
 
 TESTS = \
 	test-virt-builder-list.sh \
-	test-virt-index-validate.sh
+	test-virt-index-validate.sh \
+	$(SLOW_TESTS)
 check_PROGRAMS =
 
 if HAVE_YAJL
@@ -302,8 +303,10 @@ endif
 check-valgrind:
 	$(MAKE) VG="$(top_builddir)/run @VG@" check
 
+SLOW_TESTS = test-virt-builder-planner.sh
+
 check-slow:
-	$(MAKE) TESTS="test-virt-builder-planner.sh" check
+	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
 # Dependencies.
 depend: .depend

@@ -147,7 +147,8 @@ build_triplet = @build@
 host_triplet = @host@
 libexec_PROGRAMS = virt-p2v$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@am__append_1 = \
-@ENABLE_APPLIANCE_TRUE@	test-virt-p2v.sh
+@ENABLE_APPLIANCE_TRUE@	test-virt-p2v.sh \
+@ENABLE_APPLIANCE_TRUE@	$(SLOW_TESTS)
 
 subdir = p2v
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -1735,20 +1736,39 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
-EXTRA_DIST = HACKING dependencies.m4 issue launch-virt-p2v.in \
-	p2v.ks.in p2v.service virt-p2v.pod virt-p2v-make-disk.in \
-	virt-p2v-make-disk.pod virt-p2v-make-kickstart.in \
-	virt-p2v-make-kickstart.pod $(TESTS) $(SLOW_TESTS) \
-	test-virt-p2v-pxe.sshd_config.in test-virt-p2v-ssh.sh
+EXTRA_DIST = \
+	HACKING \
+	$(TESTS) $(SLOW_TESTS) \
+	dependencies.m4 \
+	issue \
+	launch-virt-p2v.in \
+	p2v.ks.in \
+	p2v.service \
+	test-virt-p2v-pxe.sshd_config.in \
+	test-virt-p2v-ssh.sh \
+	virt-p2v.pod \
+	virt-p2v-make-disk.in \
+	virt-p2v-make-disk.pod \
+	virt-p2v-make-kickstart.in \
+	virt-p2v-make-kickstart.pod
+
 
 # Don't clean ssh_host_rsa_key{,.pub} or id_rsa{,.pub} since those
 # consume system entropy to regenerate.
-CLEANFILES = stamp-virt-p2v.pod stamp-virt-p2v-make-disk.pod \
-	stamp-virt-p2v-make-kickstart.pod virt-p2v.1 \
-	virt-p2v-make-disk.1 virt-p2v-make-kickstart.1 \
-	$(dependencies_files) stamp-test-virt-p2v-pxe-kernel \
-	test-virt-p2v-pxe.img test-virt-p2v-pxe.vmlinuz \
-	test-virt-p2v-pxe.initramfs test-virt-p2v-pxe.sshd_config
+CLEANFILES = \
+	$(dependencies_files) \
+	stamp-test-virt-p2v-pxe-kernel \
+	stamp-virt-p2v.pod \
+	stamp-virt-p2v-make-disk.pod \
+	stamp-virt-p2v-make-kickstart.pod \
+	test-virt-p2v-pxe.img \
+	test-virt-p2v-pxe.vmlinuz \
+	test-virt-p2v-pxe.initramfs \
+	test-virt-p2v-pxe.sshd_config \
+	virt-p2v.1 \
+	virt-p2v-make-disk.1 \
+	virt-p2v-make-kickstart.1
+
 
 # Note that miniexpect comes from here:
 # http://git.annexia.org/?p=miniexpect.git;a=summary
@@ -2440,6 +2460,13 @@ test-virt-p2v.sh.log: test-virt-p2v.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-virt-p2v-pxe.sh.log: test-virt-p2v-pxe.sh
+	@p='test-virt-p2v-pxe.sh'; \
+	b='test-virt-p2v-pxe.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -2699,7 +2726,7 @@ check-slow: test-virt-p2v-pxe.img \
 	    test-virt-p2v-pxe.ssh_host_rsa_key \
 	    test-virt-p2v-pxe.ssh_host_rsa_key.pub \
 	    test-virt-p2v-pxe.id_rsa test-virt-p2v-pxe.id_rsa.pub
-	$(MAKE) check TESTS="$(SLOW_TESTS)"
+	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
 test-virt-p2v-pxe.img: virt-p2v-make-disk \
 	               virt-p2v \

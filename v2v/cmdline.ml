@@ -26,18 +26,24 @@ open Common_utils
 open Types
 open Utils
 
+module NetTypeAndName = struct
+  type t = Types.vnet_type * string option
+  let compare = Pervasives.compare
+end
+module NetworkMap = Map.Make (NetTypeAndName)
+
 type cmdline = {
   compressed : bool;
   debug_overlays : bool;
   do_copy : bool;
   in_place : bool;
-  network_map : ((vnet_type * string) * string) list;
+  network_map : string NetworkMap.t;
   no_trim : string list;
   output_alloc : output_allocation;
   output_format : string option;
   output_name : string option;
   print_source : bool;
-  root_choice : [`Ask|`Single|`First|`Dev of string];
+  root_choice : root_choice;
 }
 
 let parse_cmdline () =
@@ -81,16 +87,25 @@ let parse_cmdline () =
       error (f_"unknown -i option: %s") s
   in
 
-  let network_map = ref [] in
+  let network_map = ref NetworkMap.empty in
   let add_network, add_bridge =
-    let add t str =
+    let add flag name t str =
       match String.split ":" str with
-      | "", "" -> error (f_"invalid --bridge or --network parameter")
-      | out, "" | "", out -> network_map := ((t, ""), out) :: !network_map
-      | in_, out -> network_map := ((t, in_), out) :: !network_map
+      | "", "" ->
+         error (f_"invalid %s parameter") flag
+      | out, "" | "", out ->
+         let key = t, None in
+         if NetworkMap.mem key !network_map then
+           error (f_"duplicate %s parameter.  Only one default mapping is allowed.") flag;
+         network_map := NetworkMap.add key out !network_map
+      | in_, out ->
+         let key = t, Some in_ in
+         if NetworkMap.mem key !network_map then
+           error (f_"duplicate %s parameter.  Duplicate mappings specified for %s '%s'.") flag name in_;
+         network_map := NetworkMap.add key out !network_map
     in
-    let add_network str = add Network str
-    and add_bridge str = add Bridge str in
+    let add_network str = add "-n/--network" (s_"network") Network str
+    and add_bridge str = add "-b/--bridge" (s_"bridge") Bridge str in
     add_network, add_bridge
   in
 
@@ -129,20 +144,23 @@ let parse_cmdline () =
       error (f_"unknown -o option: %s") s
   in
 
-  let output_alloc = ref Sparse in
-  let set_output_alloc = function
-    | "sparse" -> output_alloc := Sparse
-    | "preallocated" -> output_alloc := Preallocated
+  let output_alloc = ref `Not_set in
+  let set_output_alloc mode =
+    if !output_alloc <> `Not_set then
+      error (f_"%s option used more than once on the command line") "-oa";
+    match mode with
+    | "sparse" -> output_alloc := `Sparse
+    | "preallocated" -> output_alloc := `Preallocated
     | s ->
       error (f_"unknown -oa option: %s") s
   in
 
-  let root_choice = ref `Ask in
+  let root_choice = ref AskRoot in
   let set_root_choice = function
-    | "ask" -> root_choice := `Ask
-    | "single" -> root_choice := `Single
-    | "first" -> root_choice := `First
-    | dev when String.is_prefix dev "/dev/" -> root_choice := `Dev dev
+    | "ask" -> root_choice := AskRoot
+    | "single" -> root_choice := SingleRoot
+    | "first" -> root_choice := FirstRoot
+    | dev when String.is_prefix dev "/dev/" -> root_choice := RootDev dev
     | s ->
       error (f_"unknown --root option: %s") s
   in
@@ -247,7 +265,10 @@ read the man page virt-v2v(1).
   let machine_readable = !machine_readable in
   let network_map = !network_map in
   let no_trim = !no_trim in
-  let output_alloc = !output_alloc in
+  let output_alloc =
+    match !output_alloc with
+    | `Not_set | `Sparse -> Sparse
+    | `Preallocated -> Preallocated in
   let output_conn = !output_conn in
   let output_format = !output_format in
   let output_mode = !output_mode in
