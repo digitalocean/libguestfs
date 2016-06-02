@@ -157,8 +157,8 @@ noinst_PROGRAMS = $(am__EXEEXT_1)
 # Small utility to check for a needed libvirt version;
 # to be used in shell/script-based tests.
 @HAVE_LIBVIRT_TRUE@am__append_5 = libvirt-is-version
-TESTS = test-utils$(EXEEXT)
-check_PROGRAMS = test-utils$(EXEEXT)
+TESTS = unit-tests$(EXEEXT)
+check_PROGRAMS = unit-tests$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -405,6 +405,7 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-proto.lo libguestfs_la-stringsbuf.lo \
 	libguestfs_la-structs-compare.lo libguestfs_la-structs-copy.lo \
 	libguestfs_la-structs-free.lo libguestfs_la-tmpdirs.lo \
+	libguestfs_la-umask.lo libguestfs_la-wait.lo \
 	libguestfs_la-whole-file.lo
 libguestfs_la_OBJECTS = $(am_libguestfs_la_OBJECTS)
 libguestfs_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -436,12 +437,22 @@ libvirt_is_version_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libvirt_is_version_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-am_test_utils_OBJECTS = test_utils-test-utils.$(OBJEXT)
-test_utils_OBJECTS = $(am_test_utils_OBJECTS)
-test_utils_DEPENDENCIES = libguestfs_la-guid.lo libutils.la \
-	$(am__DEPENDENCIES_1) $(top_builddir)/gnulib/lib/libgnu.la
-test_utils_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(test_utils_CFLAGS) \
+am_unit_tests_OBJECTS = unit_tests-unit-tests.$(OBJEXT)
+unit_tests_OBJECTS = $(am_unit_tests_OBJECTS)
+am__DEPENDENCIES_3 = liberrnostring.la libprotocol.la libutils.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	../gnulib/lib/libgnu.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_2)
+unit_tests_DEPENDENCIES = $(libguestfs_la_OBJECTS) \
+	$(am__DEPENDENCIES_3)
+unit_tests_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(unit_tests_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -479,10 +490,10 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(liberrnostring_la_SOURCES) $(libguestfs_la_SOURCES) \
 	$(libprotocol_la_SOURCES) $(libutils_la_SOURCES) \
-	$(libvirt_is_version_SOURCES) $(test_utils_SOURCES)
+	$(libvirt_is_version_SOURCES) $(unit_tests_SOURCES)
 DIST_SOURCES = $(liberrnostring_la_SOURCES) $(libguestfs_la_SOURCES) \
 	$(libprotocol_la_SOURCES) $(libutils_la_SOURCES) \
-	$(am__libvirt_is_version_SOURCES_DIST) $(test_utils_SOURCES)
+	$(am__libvirt_is_version_SOURCES_DIST) $(unit_tests_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1928,6 +1939,8 @@ libguestfs_la_SOURCES = \
 	structs-copy.c \
 	structs-free.c \
 	tmpdirs.c \
+	umask.c \
+	wait.c \
 	whole-file.c \
 	libguestfs.syms
 
@@ -2000,23 +2013,23 @@ libutils_la_CFLAGS = $(libguestfs_la_CFLAGS)
 
 
 # Tests: main tests are in tests/c-api.  Here we just have some
-# internal tests of utility functions.  Note we don't just test what's
-# in utils.c, we can test other functions as well here.
+# internal tests of utility functions.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 LOG_COMPILER = $(VG)
-test_utils_SOURCES = test-utils.c
-test_utils_CPPFLAGS = \
+unit_tests_SOURCES = unit-tests.c
+unit_tests_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 	-I$(top_srcdir)/src -I.
 
-test_utils_CFLAGS = \
+unit_tests_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
-test_utils_LDADD = \
-	libguestfs_la-guid.lo \
-	libutils.la \
-	$(LTLIBINTL) \
-	$(top_builddir)/gnulib/lib/libgnu.la
+# We have to link this to libguestfs, but because we want to test
+# non-exported functions we have to link with the objects not the
+# library.
+unit_tests_LDADD = \
+	$(libguestfs_la_OBJECTS) \
+	$(libguestfs_la_LIBADD)
 
 
 # Pkgconfig.
@@ -2144,9 +2157,9 @@ libvirt-is-version$(EXEEXT): $(libvirt_is_version_OBJECTS) $(libvirt_is_version_
 	@rm -f libvirt-is-version$(EXEEXT)
 	$(AM_V_CCLD)$(libvirt_is_version_LINK) $(libvirt_is_version_OBJECTS) $(libvirt_is_version_LDADD) $(LIBS)
 
-test-utils$(EXEEXT): $(test_utils_OBJECTS) $(test_utils_DEPENDENCIES) $(EXTRA_test_utils_DEPENDENCIES) 
-	@rm -f test-utils$(EXEEXT)
-	$(AM_V_CCLD)$(test_utils_LINK) $(test_utils_OBJECTS) $(test_utils_LDADD) $(LIBS)
+unit-tests$(EXEEXT): $(unit_tests_OBJECTS) $(unit_tests_DEPENDENCIES) $(EXTRA_unit_tests_DEPENDENCIES) 
+	@rm -f unit-tests$(EXEEXT)
+	$(AM_V_CCLD)$(unit_tests_LINK) $(unit_tests_OBJECTS) $(unit_tests_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -2211,6 +2224,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-structs-copy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-structs-free.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-tmpdirs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-umask.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-wait.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-whole-file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libprotocol_la-guestfs_protocol.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-cleanup.Plo@am__quote@
@@ -2218,7 +2233,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-structs-print.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libvirt_is_version-libvirt-is-version.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_utils-test-utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unit_tests-unit-tests.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -2643,6 +2658,20 @@ libguestfs_la-tmpdirs.lo: tmpdirs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-tmpdirs.lo `test -f 'tmpdirs.c' || echo '$(srcdir)/'`tmpdirs.c
 
+libguestfs_la-umask.lo: umask.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-umask.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-umask.Tpo -c -o libguestfs_la-umask.lo `test -f 'umask.c' || echo '$(srcdir)/'`umask.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-umask.Tpo $(DEPDIR)/libguestfs_la-umask.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='umask.c' object='libguestfs_la-umask.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-umask.lo `test -f 'umask.c' || echo '$(srcdir)/'`umask.c
+
+libguestfs_la-wait.lo: wait.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-wait.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-wait.Tpo -c -o libguestfs_la-wait.lo `test -f 'wait.c' || echo '$(srcdir)/'`wait.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-wait.Tpo $(DEPDIR)/libguestfs_la-wait.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='wait.c' object='libguestfs_la-wait.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-wait.lo `test -f 'wait.c' || echo '$(srcdir)/'`wait.c
+
 libguestfs_la-whole-file.lo: whole-file.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-whole-file.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-whole-file.Tpo -c -o libguestfs_la-whole-file.lo `test -f 'whole-file.c' || echo '$(srcdir)/'`whole-file.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-whole-file.Tpo $(DEPDIR)/libguestfs_la-whole-file.Plo
@@ -2699,19 +2728,19 @@ libvirt_is_version-libvirt-is-version.obj: libvirt-is-version.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvirt_is_version_CPPFLAGS) $(CPPFLAGS) $(libvirt_is_version_CFLAGS) $(CFLAGS) -c -o libvirt_is_version-libvirt-is-version.obj `if test -f 'libvirt-is-version.c'; then $(CYGPATH_W) 'libvirt-is-version.c'; else $(CYGPATH_W) '$(srcdir)/libvirt-is-version.c'; fi`
 
-test_utils-test-utils.o: test-utils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_utils_CPPFLAGS) $(CPPFLAGS) $(test_utils_CFLAGS) $(CFLAGS) -MT test_utils-test-utils.o -MD -MP -MF $(DEPDIR)/test_utils-test-utils.Tpo -c -o test_utils-test-utils.o `test -f 'test-utils.c' || echo '$(srcdir)/'`test-utils.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_utils-test-utils.Tpo $(DEPDIR)/test_utils-test-utils.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-utils.c' object='test_utils-test-utils.o' libtool=no @AMDEPBACKSLASH@
+unit_tests-unit-tests.o: unit-tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_tests_CPPFLAGS) $(CPPFLAGS) $(unit_tests_CFLAGS) $(CFLAGS) -MT unit_tests-unit-tests.o -MD -MP -MF $(DEPDIR)/unit_tests-unit-tests.Tpo -c -o unit_tests-unit-tests.o `test -f 'unit-tests.c' || echo '$(srcdir)/'`unit-tests.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unit_tests-unit-tests.Tpo $(DEPDIR)/unit_tests-unit-tests.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='unit-tests.c' object='unit_tests-unit-tests.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_utils_CPPFLAGS) $(CPPFLAGS) $(test_utils_CFLAGS) $(CFLAGS) -c -o test_utils-test-utils.o `test -f 'test-utils.c' || echo '$(srcdir)/'`test-utils.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_tests_CPPFLAGS) $(CPPFLAGS) $(unit_tests_CFLAGS) $(CFLAGS) -c -o unit_tests-unit-tests.o `test -f 'unit-tests.c' || echo '$(srcdir)/'`unit-tests.c
 
-test_utils-test-utils.obj: test-utils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_utils_CPPFLAGS) $(CPPFLAGS) $(test_utils_CFLAGS) $(CFLAGS) -MT test_utils-test-utils.obj -MD -MP -MF $(DEPDIR)/test_utils-test-utils.Tpo -c -o test_utils-test-utils.obj `if test -f 'test-utils.c'; then $(CYGPATH_W) 'test-utils.c'; else $(CYGPATH_W) '$(srcdir)/test-utils.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_utils-test-utils.Tpo $(DEPDIR)/test_utils-test-utils.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-utils.c' object='test_utils-test-utils.obj' libtool=no @AMDEPBACKSLASH@
+unit_tests-unit-tests.obj: unit-tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_tests_CPPFLAGS) $(CPPFLAGS) $(unit_tests_CFLAGS) $(CFLAGS) -MT unit_tests-unit-tests.obj -MD -MP -MF $(DEPDIR)/unit_tests-unit-tests.Tpo -c -o unit_tests-unit-tests.obj `if test -f 'unit-tests.c'; then $(CYGPATH_W) 'unit-tests.c'; else $(CYGPATH_W) '$(srcdir)/unit-tests.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unit_tests-unit-tests.Tpo $(DEPDIR)/unit_tests-unit-tests.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='unit-tests.c' object='unit_tests-unit-tests.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_utils_CPPFLAGS) $(CPPFLAGS) $(test_utils_CFLAGS) $(CFLAGS) -c -o test_utils-test-utils.obj `if test -f 'test-utils.c'; then $(CYGPATH_W) 'test-utils.c'; else $(CYGPATH_W) '$(srcdir)/test-utils.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_tests_CPPFLAGS) $(CPPFLAGS) $(unit_tests_CFLAGS) $(CFLAGS) -c -o unit_tests-unit-tests.obj `if test -f 'unit-tests.c'; then $(CYGPATH_W) 'unit-tests.c'; else $(CYGPATH_W) '$(srcdir)/unit-tests.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2997,9 +3026,9 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-test-utils.log: test-utils$(EXEEXT)
-	@p='test-utils$(EXEEXT)'; \
-	b='test-utils'; \
+unit-tests.log: unit-tests$(EXEEXT)
+	@p='unit-tests$(EXEEXT)'; \
+	b='unit-tests'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

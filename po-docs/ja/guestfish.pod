@@ -271,7 +271,7 @@ passphrases from the user by opening F</dev/tty>.
 
 =item B<--listen>
 
-バックグラウンドにフォークし、リモートコマンドをリッスンします。 以下の L</guestfish のソケット経由のリモート制御 > 参照。
+バックグラウンドにフォークし、リモートコマンドをリッスンします。 以下の L</guestfish> のソケット経由のリモート制御 > 参照。
 
 =item B<--live>
 
@@ -353,7 +353,7 @@ guestfish を対話式シェルで使用するとき、 進行状況バーが標
 
 =item B<--remote[=pid]>
 
-リモートコマンドを C<$GUESTFISH_PID> または C<pid> に送信します。 以下の L</guestfish
+リモートコマンドを C<$GUESTFISH_PID> または C<pid> に送信します。 以下の L</guestfish>
 のソケット経由のリモート制御 > 参照。
 
 =item B<-r>

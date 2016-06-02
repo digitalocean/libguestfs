@@ -1800,7 +1800,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/URI.cmo \
 @HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo)
 
 @HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)

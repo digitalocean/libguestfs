@@ -1716,14 +1716,11 @@ BUILDERFILES = \
 	builder/website/index.asc
 
 WEBSITEDIR = $(HOME)/d/websites/libguestfs
-noinst_DATA = \
-	website/index.html \
-	website/README.txt \
-	website/TODO.txt
-
 
 # NB. podwrapper is an internal tool, so the man page mustn't be installed.
-noinst_MANS = podwrapper.1
+# It should be noinst_MANS but that doesn't work.
+noinst_DATA = website/index.html website/README.txt website/TODO.txt \
+	podwrapper.1
 
 # Make clean.
 CLEANFILES = \
@@ -2328,6 +2325,7 @@ podwrapper.1: podwrapper.pl
 	  --section 1 \
 	  --man $@-t \
 	  --license GPLv2+ \
+	  --warning safe \
 	  $<
 	mv $@-t $@
 

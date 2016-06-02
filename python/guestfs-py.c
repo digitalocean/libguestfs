@@ -28384,6 +28384,9 @@ moduleinit (void)
   m = Py_InitModule ((char *) "libguestfsmod", methods);
 #endif
 
+  if (m != NULL)
+    guestfs_int_py_extend_module (m);
+
   return m; /* m might be NULL if module init failed */
 }
 

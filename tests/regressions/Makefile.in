@@ -150,7 +150,7 @@ TESTS = rhbz501893$(EXEEXT) rhbz503169c13.sh rhbz557655.sh \
 	rhbz1054761.sh rhbz1055452$(EXEEXT) rhbz1091803.sh \
 	rhbz1011907-1165785.sh rhbz1174551.sh rhbz1175196.sh \
 	rhbz1232192.sh rhbz1285847.sh test-big-heap$(EXEEXT) \
-	test-noexec-stack.pl $(am__append_1)
+	test-noexec-stack.pl $(SLOW_TESTS) $(am__append_1)
 @HAVE_LIBVIRT_TRUE@am__append_1 = rhbz1044014.sh
 check_PROGRAMS = rhbz501893$(EXEEXT) rhbz790721$(EXEEXT) \
 	rhbz914931$(EXEEXT) rhbz1055452$(EXEEXT) \
@@ -1786,8 +1786,7 @@ EXTRA_DIST = \
 	test-noexec-stack.pl
 
 tests_not_run = \
-	rhbz727178.sh \
-	rhbz909624.sh
+	rhbz727178.sh
 
 TESTS_ENVIRONMENT = \
 	NOEXEC_CHECK="$(top_builddir)/src/.libs/libguestfs.so $(top_builddir)/daemon/guestfsd" \
@@ -1848,6 +1847,9 @@ test_big_heap_CFLAGS = \
 
 test_big_heap_LDADD = \
 	$(top_builddir)/src/libguestfs.la
+
+SLOW_TESTS = \
+	rhbz909624.sh
 
 all: all-am
 
@@ -2414,6 +2416,13 @@ test-noexec-stack.pl.log: test-noexec-stack.pl
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+rhbz909624.sh.log: rhbz909624.sh
+	@p='rhbz909624.sh'; \
+	b='rhbz909624.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 rhbz1044014.sh.log: rhbz1044014.sh
 	@p='rhbz1044014.sh'; \
 	b='rhbz1044014.sh'; \
@@ -2620,7 +2629,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 check-slow:
-	$(MAKE) TESTS="rhbz909624.sh" check
+	$(MAKE) check TESTS="$(CHECK_SLOW)" SLOW=1
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

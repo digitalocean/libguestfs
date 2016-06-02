@@ -201,18 +201,7 @@ and add_viostor_to_driver_database g root arch current_cs =
    *)
   let controller_path =
     [ current_cs; "Control"; "Class"; scsi_adapter_guid ] in
-  let controller_offset =
-    match Windows.get_node g root controller_path with
-    | None ->
-       error (f_"cannot find HKLM\\SYSTEM\\%s in the guest registry")
-             (String.concat "\\" controller_path)
-    | Some node ->
-       let rec loop node i =
-         let controller_offset = sprintf "%04d" i in
-         let child = g#hivex_node_get_child node controller_offset in
-         if child = 0_L then controller_offset else loop node (i+1)
-       in
-       loop node 0 in
+  let controller_offset = get_controller_offset g root controller_path in
 
   let regedits = [
       controller_path @ [ controller_offset ],
@@ -353,6 +342,19 @@ and add_viostor_to_driver_database g root arch current_cs =
        @=hex(ffff0012):6f,00,65,00,6d,00,31,00,2e,00,69,00,6e,00,66,00,00,00
 *)
 
+and get_controller_offset g root controller_path =
+  match Windows.get_node g root controller_path with
+  | None ->
+     error (f_"cannot find HKLM\\SYSTEM\\%s in the guest registry")
+           (String.concat "\\" controller_path)
+  | Some node ->
+     let rec loop node i =
+       let controller_offset = sprintf "%04d" i in
+       let child = g#hivex_node_get_child node controller_offset in
+       if child = 0_L then controller_offset else loop node (i+1)
+     in
+     loop node 0
+
 (* Copy the matching drivers to the driverdir; return true if any have
  * been copied.
  *)
@@ -367,9 +369,8 @@ and copy_drivers g inspect driverdir =
           let source = virtio_win // path in
           let target = driverdir //
                          String.lowercase_ascii (Filename.basename path) in
-          if verbose () then
-            printf "Copying virtio driver bits: 'host:%s' -> '%s'\n"
-                   source target;
+          debug "copying virtio driver bits: 'host:%s' -> '%s'"
+                source target;
 
           g#write target (read_whole_file source);
           ret := true
@@ -391,9 +392,8 @@ and copy_drivers g inspect driverdir =
                virtio_iso_path_matches_guest_os path inspect then (
             let target = driverdir //
                            String.lowercase_ascii (Filename.basename path) in
-            if verbose () then
-              printf "Copying virtio driver bits: '%s:%s' -> '%s'\n"
-                     virtio_win path target;
+            debug "copying virtio driver bits: '%s:%s' -> '%s'"
+                  virtio_win path target;
 
             g#write target (g2#read_file source);
             ret := true

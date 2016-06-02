@@ -21,7 +21,7 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	copy_to_local.ml \
 	v2v_unit_tests.ml \
-	$(TESTS) $(SLOW_TESTS) \
+	$(TESTS) \
 	HACKING \
 	test-v2v-cdrom.expected \
 	test-v2v-cdrom.xml \
@@ -42,6 +42,7 @@ EXTRA_DIST = \
 CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-v2v
 
 SOURCES_MLI = \
+	changeuid.mli \
 	cmdline.mli \
 	convert_linux.mli \
 	convert_windows.mli \
@@ -55,7 +56,7 @@ SOURCES_MLI = \
 	input_libvirt_xen_ssh.mli \
 	input_libvirtxml.mli \
 	input_ova.mli \
-	changeuid.mli \
+	inspect_source.mli \
 	linux.mli \
 	modules_list.mli \
 	output_glance.mli \
@@ -105,6 +106,7 @@ SOURCES_ML = \
 	output_qemu.ml \
 	output_rhev.ml \
 	output_vdsm.ml \
+	inspect_source.ml \
 	cmdline.ml \
 	v2v.ml
 
@@ -292,7 +294,8 @@ TESTS = \
 	test-v2v-i-ova-formats.sh \
 	test-v2v-i-ova-gz.sh \
 	test-v2v-i-ova-two-disks.sh \
-	test-v2v-copy-to-local.sh
+	test-v2v-copy-to-local.sh \
+	test-v2v-bad-networks-and-bridges.sh
 
 if HAVE_OCAML_PKG_OUNIT
 TESTS += v2v_unit_tests
@@ -319,7 +322,8 @@ TESTS += \
 	test-v2v-print-source.sh \
 	test-v2v-sound.sh \
 	test-v2v-virtio-win-iso.sh \
-	test-v2v-windows-conversion.sh
+	test-v2v-windows-conversion.sh \
+	$(SLOW_TESTS)
 endif ENABLE_APPLIANCE
 
 check-valgrind:
@@ -329,7 +333,7 @@ SLOW_TESTS = \
 	test-v2v-real-conversions.sh
 
 check-slow: $(real_guests:%=%.img)
-	$(MAKE) check TESTS="$(SLOW_TESTS)"
+	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
 # A selection of real guests that test-v2v-real-conversions.sh will
 # try to convert.  This is only used by 'make check-slow'.

@@ -53,16 +53,6 @@ let read_dib_envvars () =
   let vars = List.map (fun x -> x ^ "\n") vars in
   String.concat "" vars
 
-let make_dib_args args =
-  let args = Array.to_list args in
-  let rec quote_args = function
-    | [] -> ""
-    | x :: xs -> " " ^ (quote x) ^ quote_args xs
-  in
-  match args with
-  | [] -> ""
-  | app :: xs -> app ^ quote_args xs
-
 let write_script fn text =
   let oc = open_out fn in
   output_string oc text;
@@ -70,8 +60,15 @@ let write_script fn text =
   close_out oc;
   Unix.chmod fn 0o755
 
-let prepare_external ~dib_args ~dib_vars ~out_name ~root_label ~rootfs_uuid
-  ~image_cache ~arch ~network ~debug
+let envvars_string l =
+  let l = List.map (
+    fun (var, value) ->
+      sprintf "export %s=%s" var (quote value)
+  ) l in
+  String.concat "\n" l
+
+let prepare_external ~envvars ~dib_args ~dib_vars ~out_name ~root_label
+  ~rootfs_uuid ~image_cache ~arch ~network ~debug
   destdir libdir hooksdir tmpdir fakebindir all_elements element_paths =
   let network_string = if network then "" else "1" in
 
@@ -83,6 +80,9 @@ target_dir=$1
 shift
 script=$1
 shift
+
+# user variables
+%s
 
 export PATH=%s:$PATH
 
@@ -118,6 +118,7 @@ fi
 $target_dir/$script
 "
     (if debug >= 1 then "set -x\n" else "")
+    (envvars_string envvars)
     fakebindir
     (quote tmpdir)
     network_string
@@ -141,10 +142,6 @@ $target_dir/$script
 let prepare_aux ~envvars ~dib_args ~dib_vars ~log_file ~out_name ~rootfs_uuid
   ~arch ~network ~root_label ~install_type ~debug ~extra_packages
   destdir all_elements =
-  let envvars_string = List.map (
-    fun (var, value) ->
-      sprintf "export %s=%s" var (quote value)
-  ) envvars in
   let network_string = if network then "" else "1" in
 
   let script_run_part = sprintf "\
@@ -221,7 +218,7 @@ fi
 $target_dir/$script
 "
     (if debug >= 1 then "set -x\n" else "")
-    (String.concat "\n" envvars_string)
+    (envvars_string envvars)
     network_string
     out_name
     rootfs_uuid
@@ -365,7 +362,7 @@ let run_parts ~debug ~sysroot ~blockdev ~log_file ?(new_wd = "")
   let new_wd =
     match sysroot, new_wd with
     | (Out|Subroot), "" -> "''"
-    | _, dir -> dir in
+    | (In|Out|Subroot), dir -> dir in
   List.iter (
     fun x ->
       message (f_"Running: %s/%s") hook_name x;
@@ -402,7 +399,7 @@ let run_parts_host ~debug hooks_dir hook_name scripts run_script =
   List.iter (
     fun x ->
       message (f_"Running: %s/%s") hook_name x;
-      let cmd = sprintf "%s %s %s" (quote run_script) (quote hook_dir) (quote x) in
+      let cmd = [ run_script; hook_dir; x ] in
       let run () =
         run_command cmd in
       let delta_t = timed_run run in
@@ -507,7 +504,7 @@ let main () =
       printf "  (none)\n";
     printf "\n";
   );
-  let dib_args = make_dib_args Sys.argv in
+  let dib_args = stringify_args (Array.to_list Sys.argv) in
   let dib_vars = read_dib_envvars () in
   if debug >= 1 then (
     printf "DIB args:\n%s\n" dib_args;
@@ -575,9 +572,9 @@ let main () =
   in
   at_exit delete_file;
 
-  prepare_external ~dib_args ~dib_vars ~out_name:image_basename ~root_label
-                   ~rootfs_uuid ~image_cache ~arch ~network:cmdline.network
-                   ~debug
+  prepare_external ~envvars ~dib_args ~dib_vars ~out_name:image_basename
+                   ~root_label ~rootfs_uuid ~image_cache ~arch
+                   ~network:cmdline.network ~debug
                    tmpdir cmdline.basepath hookstmpdir extradatatmpdir
                    (auxtmpdir // "fake-bin")
                    all_elements cmdline.element_paths;
@@ -604,9 +601,9 @@ let main () =
 
   let copy_in (g : Guestfs.guestfs) srcdir destdir =
     let desttar = Filename.temp_file ~temp_dir:tmpdir "virt-dib." ".tar.gz" in
-    let cmd = sprintf "tar czf %s -C %s --owner=root --group=root ."
-      (quote desttar) (quote srcdir) in
-    run_command cmd;
+    let cmd = [ "tar"; "czf"; desttar; "-C"; srcdir; "--owner=root";
+                "--group=root"; "." ] in
+    if run_command cmd <> 0 then exit 1;
     g#mkdir_p destdir;
     g#tar_in ~compress:"gzip" desttar destdir;
     Sys.remove desttar in
@@ -614,9 +611,9 @@ let main () =
   let copy_preserve_in (g : Guestfs.guestfs) srcdir destdir =
     let desttar = Filename.temp_file ~temp_dir:tmpdir "virt-dib." ".tar.gz" in
     let remotetar = "/tmp/aux/" ^ (Filename.basename desttar) in
-    let cmd = sprintf "tar czf %s -C %s --owner=root --group=root ."
-      (quote desttar) (quote srcdir) in
-    run_command cmd;
+    let cmd = [ "tar"; "czf"; desttar; "-C"; srcdir; "--owner=root";
+                "--group=root"; "." ] in
+    if run_command cmd <> 0 then exit 1;
     g#upload desttar remotetar;
     let verbose_flag = if debug > 0 then "v" else "" in
     ignore (g#debug "sh" [| "tar"; "-C"; "/sysroot" ^ destdir; "--no-overwrite-dir"; "-x" ^ verbose_flag ^ "zf"; "/sysroot" ^ remotetar |]);
@@ -624,7 +621,7 @@ let main () =
     g#rm remotetar in
 
   if debug >= 1 then
-    ignore (Sys.command (sprintf "tree -ps %s" (quote tmpdir)));
+    ignore (run_command [ "tree"; "-ps"; tmpdir ]);
 
   message (f_"Opening the disks");
 
@@ -781,9 +778,8 @@ let main () =
     ) @ mkfs_options @ [ "-t"; cmdline.fs_type; blockdev ] in
   ignore (g#debug "sh" (Array.of_list ([ "mkfs" ] @ mkfs_options)));
   g#set_label blockdev root_label;
-  (match cmdline.fs_type with
-  | x when String.is_prefix x "ext" -> g#set_uuid blockdev rootfs_uuid
-  | _ -> ());
+  if String.is_prefix cmdline.fs_type "ext" then
+    g#set_uuid blockdev rootfs_uuid;
   g#mount blockdev "/";
   g#mkmountpoint "/tmp";
   mount_aux ();
@@ -888,35 +884,22 @@ let main () =
         message (f_"Converting to %s") fmt;
         match fmt with
         | "qcow2" ->
-          let cmd =
-            sprintf "qemu-img convert%s -f %s %s -O %s%s %s"
-              (if cmdline.compressed then " -c" else "")
-              tmpdiskfmt
-              (quote tmpdisk)
-              fmt
-              (match cmdline.qemu_img_options with
-              | None -> ""
-              | Some opt -> " -o " ^ quote opt)
-              (quote (qemu_input_filename fn)) in
-          if debug >= 1 then
-            printf "%s\n%!" cmd;
-          run_command cmd
+          let cmd = [ "qemu-img"; "convert" ] @
+            (if cmdline.compressed then [ "-c" ] else []) @
+            [ "-f"; tmpdiskfmt; tmpdisk; "-O"; fmt ] @
+            (match cmdline.qemu_img_options with
+            | None -> []
+            | Some opt -> [ "-o"; opt ]) @
+            [ qemu_input_filename fn ] in
+          if run_command cmd <> 0 then exit 1;
         | "vhd" ->
           let fn_intermediate = Filename.temp_file ~temp_dir:tmpdir "vhd-intermediate." "" in
-          let cmd =
-            sprintf "vhd-util convert -s 0 -t 1 -i %s -o %s"
-              (quote tmpdisk)
-              (quote fn_intermediate) in
-          if debug >= 1 then
-            printf "%s\n%!" cmd;
-          run_command cmd;
-          let cmd =
-            sprintf "vhd-util convert -s 1 -t 2 -i %s -o %s"
-              (quote fn_intermediate)
-              (quote fn) in
-          if debug >= 1 then
-            printf "%s\n%!" cmd;
-          run_command cmd;
+          let cmd = [ "vhd-util"; "convert"; "-s"; "0"; "-t"; "1";
+                      "-i"; tmpdisk; "-o"; fn_intermediate ] in
+          if run_command cmd <> 0 then exit 1;
+          let cmd = [ "vhd-util"; "convert"; "-s"; "1"; "-t"; "2";
+                      "-i"; fn_intermediate; "-o"; fn ] in
+          if run_command cmd <> 0 then exit 1;
           if not (Sys.file_exists fn) then
             error (f_"VHD output not produced, most probably vhd-util is old or not patched for 'convert'")
         | _ as fmt -> error "unhandled format: %s" fmt

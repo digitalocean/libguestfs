@@ -1817,7 +1817,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/guestfs_config.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/uRI.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/URI.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_utils.cmo \
@@ -2623,12 +2623,12 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@sysprep-extra-options.pod: virt-sysprep
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(top_builddir)/run ./$< --dump-pod-options > $@-t
+@HAVE_OCAML_TRUE@	$(top_builddir)/run $< --dump-pod-options > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
 @HAVE_OCAML_TRUE@sysprep-operations.pod: virt-sysprep
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(top_builddir)/run ./$< --dump-pod > $@-t
+@HAVE_OCAML_TRUE@	$(top_builddir)/run $< --dump-pod > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
@@ -2636,7 +2636,7 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@check-valgrind-local-guests:
 @HAVE_OCAML_TRUE@	for g in $(GUESTS); do \
-@HAVE_OCAML_TRUE@	  $(top_builddir)/run --test @VG@ ./virt-sysprep -n -c "$(libvirt_ro_uri)" -d "$$g" || exit $$?; \
+@HAVE_OCAML_TRUE@	  $(top_builddir)/run --test @VG@ virt-sysprep -n -c "$(libvirt_ro_uri)" -d "$$g" || exit $$?; \
 @HAVE_OCAML_TRUE@	done
 
 # Dependencies.

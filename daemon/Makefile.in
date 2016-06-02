@@ -1810,8 +1810,11 @@ guestfsd_CFLAGS = \
 
 # Manual pages and HTML files for the website.
 @INSTALL_DAEMON_TRUE@man_MANS = guestfsd.8
-@INSTALL_DAEMON_FALSE@noinst_MANS = guestfsd.8
-noinst_DATA = $(top_builddir)/website/guestfsd.8.html
+# It should be noinst_MANS but that doesn't work.
+@INSTALL_DAEMON_FALSE@noinst_DATA = guestfsd.8 \
+@INSTALL_DAEMON_FALSE@	$(top_builddir)/website/guestfsd.8.html
+@INSTALL_DAEMON_TRUE@noinst_DATA =  \
+@INSTALL_DAEMON_TRUE@	$(top_builddir)/website/guestfsd.8.html
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 

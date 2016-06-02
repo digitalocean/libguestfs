@@ -740,6 +740,7 @@ extern void guestfs_int_call_callbacks_array (guestfs_h *g, uint64_t event, cons
 /* tmpdirs.c */
 extern int guestfs_int_set_env_tmpdir (guestfs_h *g, const char *tmpdir);
 extern int guestfs_int_lazy_make_tmpdir (guestfs_h *g);
+extern char *guestfs_int_lazy_make_supermin_appliance_dir (guestfs_h *g);
 extern void guestfs_int_remove_tmpdir (guestfs_h *g);
 extern void guestfs_int_recursive_remove_dir (guestfs_h *g, const char *dir);
 
@@ -884,6 +885,7 @@ extern void guestfs_int_cleanup_cmd_close (struct command **);
 /* launch-direct.c */
 extern char *guestfs_int_drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
 extern bool guestfs_int_discard_possible (guestfs_h *g, struct drive *drv, unsigned long qemu_version);
+extern char *guestfs_int_qemu_escape_param (guestfs_h *g, const char *param);
 
 /* launch-*.c constructors */
 void guestfs_int_init_direct_backend (void) __attribute__((constructor));
@@ -895,5 +897,14 @@ void guestfs_int_init_unix_backend (void) __attribute__((constructor));
 
 /* guid.c */
 extern int guestfs_int_validate_guid (const char *);
+
+/* umask.c */
+extern int guestfs_int_getumask (guestfs_h *g);
+
+/* wait.c */
+extern int guestfs_int_waitpid (guestfs_h *g, pid_t pid, int *status, const char *errmsg);
+extern void guestfs_int_waitpid_noerror (pid_t pid);
+struct rusage;
+extern int guestfs_int_wait4 (guestfs_h *g, pid_t pid, int *status, struct rusage *rusage, const char *errmsg);
 
 #endif /* GUESTFS_INTERNAL_H_ */

@@ -85,7 +85,7 @@ exec >>%s 2>&1
 %s
 " (quote logfile) env_vars cmd in
 
-    if verbose () then printf "running command:\n%s\n%!" cmd;
+    debug "running command:\n%s" cmd;
     try ignore (g#sh cmd)
     with
       Guestfs.Error msg ->
@@ -94,7 +94,7 @@ exec >>%s 2>&1
   in
 
   (* http://distrowatch.com/dwres.php?resource=package-management *)
-  let guest_install_command packages =
+  let rec guest_install_command packages =
     let quoted_args = String.concat " " (List.map quote packages) in
     match g#inspect_get_package_management root with
     | "apt" ->
@@ -118,9 +118,9 @@ exec >>%s 2>&1
     | "zypper" ->
       sprintf "zypper -n in -l %s" quoted_args
     | "unknown" ->
-      error (f_"--install is not supported for this guest operating system")
+      error_unknown_package_manager (s_"--install")
     | pm ->
-      error (f_"sorry, don't know how to use --install with the '%s' package manager") pm
+      error_unimplemented_package_manager (s_"--install") pm
 
   and guest_update_command () =
     match g#inspect_get_package_management root with
@@ -145,9 +145,16 @@ exec >>%s 2>&1
     | "zypper" ->
       sprintf "zypper -n update -l"
     | "unknown" ->
-      error (f_"--update is not supported for this guest operating system")
+      error_unknown_package_manager (s_"--update")
     | pm ->
-      error (f_"sorry, don't know how to use --update with the '%s' package manager") pm
+      error_unimplemented_package_manager (s_"--update") pm
+
+  (* Windows has package_management == "unknown". *)
+  and error_unknown_package_manager flag =
+    error (f_"cannot use '%s' because no package manager has been detected for this guest OS.\n\nIf this guest OS is a common one with ordinary package management then this may have been caused by a failure of libguestfs inspection.\n\nFor OSes such as Windows that lack package management, this is not possible.  Try using one of the '--firstboot*' flags instead (described in the manual).") flag
+
+  and error_unimplemented_package_manager flag pm =
+      error (f_"sorry, '%s' with the '%s' package manager has not been implemented yet.\n\nYou can work around this by using one of the '--run*' or '--firstboot*' options instead (described in the manual).") flag pm
   in
 
   (* Set the random seed. *)
@@ -322,7 +329,7 @@ exec >>%s 2>&1
       g#touch path
 
     | `Update ->
-      message (f_"Updating core packages");
+      message (f_"Updating packages");
       let cmd = guest_update_command () in
       do_run ~display:cmd cmd
 
@@ -408,6 +415,6 @@ exec >>%s 2>&1
   (try ignore (g#debug "sh" [| "fuser"; "-k"; "/sysroot" |])
    with exn ->
      if verbose () then
-       printf (f_"%s: %s (ignored)\n") prog (Printexc.to_string exn)
+       warning (f_"%s (ignored)") (Printexc.to_string exn)
   );
   g#ping_daemon () (* tiny delay after kill *)

@@ -24,10 +24,6 @@ val augeas_reload : Guestfs.guestfs -> unit
     provide additional debugging information about parsing problems
     that augeas found. *)
 
-val install : Guestfs.guestfs -> Types.inspect -> string list -> unit
-(** Install package(s) from the list in the guest (or ensure they are
-    installed). *)
-
 val remove : Guestfs.guestfs -> Types.inspect -> string list -> unit
 (** Uninstall package(s). *)
 
@@ -39,11 +35,3 @@ val file_owner : Guestfs.guestfs -> Types.inspect -> string -> string
 
 val is_file_owned : Guestfs.guestfs -> Types.inspect -> string -> bool
 (** Returns true if the file is owned by an installed package. *)
-
-val shell_unquote : string -> string
-(** If the string looks like a shell quoted string, then attempt to
-    unquote it.
-
-    This is just intended to deal with quoting in configuration files
-    (like ones under /etc/sysconfig), and it doesn't deal with some
-    situations such as $variable interpolation. *)

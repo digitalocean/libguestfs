@@ -107,7 +107,7 @@ BOBJECTS = \
 	$(top_builddir)/mllib/guestfs_config.cmo \
 	$(top_builddir)/mllib/common_gettext.cmo \
 	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/uRI.cmo \
+	$(top_builddir)/mllib/URI.cmo \
 	$(top_builddir)/mllib/mkdtemp.cmo \
 	$(top_builddir)/mllib/regedit.cmo \
 	$(top_builddir)/customize/customize_utils.cmo \
@@ -194,12 +194,12 @@ stamp-virt-sysprep.pod: virt-sysprep.pod sysprep-extra-options.pod sysprep-opera
 
 sysprep-extra-options.pod: virt-sysprep
 	rm -f $@ $@-t
-	$(top_builddir)/run ./$< --dump-pod-options > $@-t
+	$(top_builddir)/run $< --dump-pod-options > $@-t
 	mv $@-t $@
 
 sysprep-operations.pod: virt-sysprep
 	rm -f $@ $@-t
-	$(top_builddir)/run ./$< --dump-pod > $@-t
+	$(top_builddir)/run $< --dump-pod > $@-t
 	mv $@-t $@
 
 # Tests.
@@ -226,7 +226,7 @@ check-valgrind:
 
 check-valgrind-local-guests:
 	for g in $(GUESTS); do \
-	  $(top_builddir)/run --test @VG@ ./virt-sysprep -n -c "$(libvirt_ro_uri)" -d "$$g" || exit $$?; \
+	  $(top_builddir)/run --test @VG@ virt-sysprep -n -c "$(libvirt_ro_uri)" -d "$$g" || exit $$?; \
 	done
 
 # Dependencies.

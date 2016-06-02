@@ -202,6 +202,7 @@ Makefile.in
 /fish/stamp-virt-copy-out.pod
 /fish/stamp-virt-tar-in.pod
 /fish/stamp-virt-tar-out.pod
+/fish/test-prep.sh
 /fish/virt-copy-in.1
 /fish/virt-copy-out.1
 /fish/virt-tar-in.1
@@ -466,7 +467,7 @@ Makefile.in
 /src/structs-free.c
 /src/structs-print.c
 /src/structs-print.h
-/src/test-utils
+/src/unit-tests
 /stamp-h1
 /sysprep/.depend
 /sysprep/stamp-script1.sh

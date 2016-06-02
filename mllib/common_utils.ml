@@ -150,7 +150,6 @@ let ( /^ ) = Int64.div
 let ( &^ ) = Int64.logand
 let ( ~^ ) = Int64.lognot
 
-(* Return 'i' rounded up to the next multiple of 'a'. *)
 let roundup64 i a = let a = a -^ 1L in (i +^ a) &^ (~^ a)
 let div_roundup64 i a = (i +^ a -^ 1L) /^ a
 
@@ -369,6 +368,11 @@ let info fs =
   in
   ksprintf display fs
 
+(* Print a debug message. *)
+let debug fs =
+  let display str = if verbose () then prerr_endline str in
+  ksprintf display fs
+
 (* Common function to create a new Guestfs handle, with common options
  * (e.g. debug, tracing) already set.
  *)
@@ -560,8 +564,8 @@ let set_standard_options argspec =
   let set_debug_gc () =
     at_exit (fun () -> Gc.compact()) in
   let argspec = [
-    "--short-options", Arg.Unit display_short_options, " " ^ s_"List short options";
-    "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
+    "--short-options", Arg.Unit display_short_options, " " ^ s_"List short options (internal)";
+    "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options (internal)";
     "-V",           Arg.Unit print_version_and_exit,
                                                " " ^ s_"Display version and exit";
     "--version",    Arg.Unit print_version_and_exit,
@@ -628,8 +632,19 @@ let compare_lvm2_uuids uuid1 uuid2 =
   in
   loop 0 0
 
+let stringify_args args =
+  let rec quote_args = function
+    | [] -> ""
+    | x :: xs -> " " ^ Filename.quote x ^ quote_args xs
+  in
+  match args with
+  | [] -> ""
+  | app :: xs -> app ^ quote_args xs
+
 (* Run an external command, slurp up the output as a list of lines. *)
-let external_command cmd =
+let external_command ?(echo_cmd = true) cmd =
+  if echo_cmd then
+    debug "%s" cmd;
   let chan = Unix.open_process_in cmd in
   let lines = ref [] in
   (try while true do lines := input_line chan :: !lines done
@@ -646,6 +661,27 @@ let external_command cmd =
     error (f_"external command '%s' stopped by signal %d") cmd i
   );
   lines
+
+let run_command ?(echo_cmd = true) args =
+  if echo_cmd then
+    debug "%s" (stringify_args args);
+  let pid =
+    Unix.create_process (List.hd args) (Array.of_list args) Unix.stdin
+      Unix.stdout Unix.stderr in
+  let _, stat = Unix.waitpid [] pid in
+  match stat with
+  | Unix.WEXITED i -> i
+  | Unix.WSIGNALED i ->
+    error (f_"external command '%s' killed by signal %d")
+      (stringify_args args) i
+  | Unix.WSTOPPED i ->
+    error (f_"external command '%s' stopped by signal %d")
+      (stringify_args args) i
+
+let shell_command ?(echo_cmd = true) cmd =
+  if echo_cmd then
+    debug "%s" cmd;
+  Sys.command cmd
 
 (* Run uuidgen to return a random UUID. *)
 let uuidgen () =
@@ -691,7 +727,7 @@ let rmdir_on_exit =
     List.iter (
       fun dir ->
         let cmd = sprintf "rm -rf %s" (Filename.quote dir) in
-        ignore (Sys.command cmd)
+        ignore (shell_command cmd)
     ) !dirs
   and register_handlers () =
     (* Remove on exit. *)
@@ -776,14 +812,12 @@ let absolute_path path =
   if not (Filename.is_relative path) then path
   else Sys.getcwd () // path
 
-(* Sanitizes a filename for passing it safely to qemu/qemu-img.
- *
- * If the filename is something like "file:foo" then qemu-img will
- * try to interpret that as "foo" in the file:/// protocol.  To
- * avoid that, if the path is relative prefix it with "./" since
- * qemu-img won't try to interpret such a path.
- *)
 let qemu_input_filename filename =
+  (* If the filename is something like "file:foo" then qemu-img will
+   * try to interpret that as "foo" in the file:/// protocol.  To
+   * avoid that, if the path is relative prefix it with "./" since
+   * qemu-img won't try to interpret such a path.
+   *)
   if String.length filename > 0 && filename.[0] <> '/' then
     "./" ^ filename
   else

@@ -48,7 +48,7 @@ object
      * 'glance' commands work as the current user.  If not then the
      * program exits early.
      *)
-    if Sys.command "glance image-list > /dev/null" <> 0 then
+    if shell_command "glance image-list > /dev/null" <> 0 then
       error (f_"glance: glance client is not installed or set up correctly.  You may need to set environment variables or source a script to enable authentication.  See preceding messages for details.");
 
     (* Write targets to a temporary local file - see above for reason. *)
@@ -73,11 +73,10 @@ object
           if i == 0 then source.s_name
           else sprintf "%s-disk%d" source.s_name (i+1) in
 
-        let cmd =
-          sprintf "glance image-create --name %s --disk-format=%s --container-format=bare --file %s"
-                  (quote name) (quote target_format) target_file in
-        if verbose () then printf "%s\n%!" cmd;
-        if Sys.command cmd <> 0 then
+        let cmd = [ "glance"; "image-create"; "--name"; name;
+                    "--disk-format=" ^ target_format;
+                    "--container-format=bare"; "--file"; target_file ] in
+        if run_command cmd <> 0 then
           error (f_"glance: image upload to glance failed, see earlier errors");
 
         (* Set the properties (ie. metadata). *)
@@ -111,18 +110,16 @@ object
           | x, y -> ("os_version", sprintf "%d.%d" x y) :: properties in
 
         (* Glance doesn't appear to check the properties. *)
-        let cmd =
-          sprintf "glance image-update --min-ram %Ld %s %s"
-                  min_ram
-                  (String.concat " "
+        let cmd = [ "glance"; "image-update"; "--min-ram";
+                    Int64.to_string min_ram ] @
+                  (List.flatten
                     (List.map (
                        fun (k, v) ->
-                         sprintf "--property %s=%s" (quote k) (quote v)
+                         [ "--property"; sprintf "%s=%s" k v ]
                     ) properties
-                  ))
-                  (quote name) in
-        if verbose () then printf "%s\n%!" cmd;
-        if Sys.command cmd <> 0 then (
+                  )) @
+                  [ name ] in
+        if run_command cmd <> 0 then (
           warning (f_"glance: failed to set image properties (ignored)");
           (* Dump out the image properties so the user can set them. *)
           printf "Image properties:\n";

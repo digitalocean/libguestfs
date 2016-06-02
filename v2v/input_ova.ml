@@ -60,9 +60,8 @@ object
           tmpfile in
 
         let untar ?(format = "") file outdir =
-          let cmd = sprintf "tar -x%sf %s -C %s" format (quote file) (quote outdir) in
-          if verbose () then printf "%s\n%!" cmd;
-          if Sys.command cmd <> 0 then
+          let cmd = [ "tar"; sprintf "-x%sf" format; file; "-C"; outdir ] in
+          if run_command cmd <> 0 then
             error (f_"error unpacking %s, see earlier error messages") ova in
 
         match detect_file_type ova with
@@ -74,19 +73,17 @@ object
           (* However, although not permitted by the spec, people ship
            * zip files as ova too.
            *)
-          let cmd = sprintf "unzip%s -j -d %s %s"
-            (if verbose () then "" else " -q")
-            (quote tmpdir) (quote ova) in
-          if verbose () then printf "%s\n%!" cmd;
-          if Sys.command cmd <> 0 then
+          let cmd = [ "unzip" ] @
+            (if verbose () then [] else [ "-q" ]) @
+            [ "-j"; "-d"; tmpdir; ova ] in
+          if run_command cmd <> 0 then
             error (f_"error unpacking %s, see earlier error messages") ova;
           tmpdir
         | (`GZip|`XZ) as format ->
           let zcat, tar_fmt =
             match format with
             | `GZip -> "zcat", "z"
-            | `XZ -> "xzcat", "J"
-            | _ -> assert false in
+            | `XZ -> "xzcat", "J" in
           let tmpfile = uncompress_head zcat ova in
           let tmpfiletype = detect_file_type tmpfile in
           (* Remove tmpfile from tmpdir, to leave it empty. *)
@@ -155,9 +152,7 @@ object
               if actual <> expected then
                 error (f_"checksum of disk %s does not match manifest %s (actual sha1(%s) = %s, expected sha1 (%s) = %s)")
                   disk mf disk actual disk expected;
-              if verbose () then
-                printf "sha1 of %s matches expected checksum %s\n%!"
-                  disk expected
+              debug "sha1 of %s matches expected checksum %s" disk expected
             | _::_ -> error (f_"cannot parse output of sha1sum command")
           )
         in
@@ -277,8 +272,7 @@ object
               let new_filename = tmpdir // String.random8 () ^ ".vmdk" in
               let cmd =
                 sprintf "zcat %s > %s" (quote filename) (quote new_filename) in
-              if verbose () then printf "%s\n%!" cmd;
-              if Sys.command cmd <> 0 then
+              if shell_command cmd <> 0 then
                 error (f_"error uncompressing %s, see earlier error messages")
                   filename;
               new_filename

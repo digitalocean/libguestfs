@@ -142,7 +142,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS =
+TESTS = $(am__EXEEXT_1)
 check_PROGRAMS = test-parallel$(EXEEXT)
 subdir = tests/parallel
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -562,14 +562,10 @@ am__set_TESTS_bases = \
   bases=`echo $$bases`
 RECHECK_LOGS = $(TEST_LOGS)
 AM_RECURSIVE_TARGETS = check recheck
+am__EXEEXT_1 = test-parallel$(EXEEXT)
 TEST_SUITE_LOG = test-suite.log
 TEST_EXTENSIONS = @EXEEXT@ .test
-am__test_logs1 = $(TESTS:=.log)
-am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
-TEST_LOGS = $(am__test_logs2:.test.log=.log)
-TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/build-aux/test-driver
-TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
-	$(TEST_LOG_FLAGS)
+LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
 am__set_b = \
   case '$@' in \
     */*) \
@@ -580,6 +576,12 @@ am__set_b = \
     *) \
       b='$*';; \
   esac
+am__test_logs1 = $(TESTS:=.log)
+am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
+TEST_LOGS = $(am__test_logs2:.test.log=.log)
+TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/build-aux/test-driver
+TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
+	$(TEST_LOG_FLAGS)
 am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/build-aux/depcomp \
 	$(top_srcdir)/build-aux/test-driver \
@@ -1714,6 +1716,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
+SLOW_TESTS = test-parallel
 test_parallel_SOURCES = test-parallel.c
 test_parallel_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
@@ -2023,6 +2026,13 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+test-parallel.log: test-parallel$(EXEEXT)
+	@p='test-parallel$(EXEEXT)'; \
+	b='test-parallel'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -2225,7 +2235,7 @@ $(top_builddir)/generator/generator:
 #	$(MAKE) VG="$(top_builddir)/run @VG@" TESTS="test-parallel" check
 
 check-slow:
-	$(MAKE) TESTS="test-parallel" check
+	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

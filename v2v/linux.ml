@@ -97,9 +97,6 @@ and augeas_debug_errors g =
   with
     Guestfs.Error msg -> eprintf "%s: augeas: %s (ignored)\n" prog msg
 
-let install g inspect packages =
-  assert false
-
 let remove g inspect packages =
   if packages <> [] then (
     let package_format = inspect.i_package_format in
@@ -147,7 +144,7 @@ let file_list_of_package (g : Guestfs.guestfs) inspect app =
       ) else
         pkg_name in
     let cmd = [| "rpm"; "-ql"; pkg_name |] in
-    if verbose () then eprintf "%s\n%!" (String.concat " " (Array.to_list cmd));
+    debug "%s" (String.concat " " (Array.to_list cmd));
     let files = g#command_lines cmd in
     let files = Array.to_list files in
     List.sort compare files
@@ -163,7 +160,7 @@ let rec file_owner g inspect path =
        * a file, this deliberately only returns one package.
        *)
       let cmd = [| "rpm"; "-qf"; "--qf"; "%{NAME}"; path |] in
-      if verbose () then eprintf "%s\n%!" (String.concat " " (Array.to_list cmd));
+      debug "%s" (String.concat " " (Array.to_list cmd));
       (try g#command cmd
        with Guestfs.Error msg as exn ->
          if String.find msg "is not owned" >= 0 then
@@ -178,47 +175,3 @@ let rec file_owner g inspect path =
 and is_file_owned g inspect path =
   try file_owner g inspect path; true
   with Not_found -> false
-
-let rec shell_unquote str =
-  let len = String.length str in
-  if len >= 2 then (
-    if String.is_prefix str "'" && String.is_suffix str "'" then
-      String.sub str 1 (len-2)
-    else if String.is_prefix str "\"" && String.is_suffix str "\"" then
-      shell_unquote_double str len
-    else
-      str
-  )
-  else str
-
-(* https://www.gnu.org/software/bash/manual/html_node/Double-Quotes.html
- * but note we don't do any variable expansion etc so really we just
- * handle backslash here.
- *)
-and shell_unquote_double str len =
-  let i = ref 1 and j = ref 0 in
-  while !i < len-1 (* ignore final quote *) do
-    if is_backslash_sequence str !i len then
-      incr i;
-    incr i;
-    incr j
-  done;
-
-  let outlen = !j in
-  let outstr = String.create outlen in
-  let i = ref 1 and j = ref 0 in
-  while !i < len-1 do
-    if is_backslash_sequence str !i len then
-      incr i;
-    outstr.[!j] <- str.[!i];
-    incr i;
-    incr j
-  done;
-
-  outstr
-
-and is_backslash_sequence str i len =
-  i < len-2 (* ignore final character before the final quote *) &&
-  str.[i] = '\\' &&
-    (str.[i+1] = '$' || str.[i+1] = '`' || str.[i+1] = '"'
-     || str.[i+1] = '\\' || str.[i+1] = '\n')
