@@ -130,7 +130,7 @@ override_dh_install:
 
 	erlang-depends -perlang-guestfs
 
-	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -Xpackages.orig -Xetc/php.d \
+	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -X/usr/lib/go- -Xpackages.orig -Xetc/php.d \
 	    --fail-missing
 
 # Add packages (except essential packages) from appliance packagelist
