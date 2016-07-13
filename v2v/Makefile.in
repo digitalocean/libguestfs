@@ -1812,7 +1812,6 @@ SOURCES_MLI = \
 	cmdline.mli \
 	convert_linux.mli \
 	convert_windows.mli \
-	curl.mli \
 	DOM.mli \
 	domainxml.mli \
 	input_disk.mli \
@@ -1846,7 +1845,6 @@ SOURCES_ML = \
 	types.ml \
 	xml.ml \
 	utils.ml \
-	curl.ml \
 	vCenter.ml \
 	domainxml.ml \
 	DOM.ml \
@@ -1902,6 +1900,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/JSON.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/curl.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_utils.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/firstboot.cmo \
 @HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo)
@@ -1958,9 +1957,9 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/JSON.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/curl.cmo \
 @HAVE_OCAML_TRUE@	xml.cmo \
 @HAVE_OCAML_TRUE@	utils.cmo \
-@HAVE_OCAML_TRUE@	curl.cmo \
 @HAVE_OCAML_TRUE@	vCenter.cmo \
 @HAVE_OCAML_TRUE@	domainxml.cmo \
 @HAVE_OCAML_TRUE@	copy_to_local.cmo
@@ -3032,12 +3031,16 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-@HAVE_OCAML_TRUE@.mli.cmi:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAML_TRUE@.ml.cmo:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+# Rules for building OCaml objects.
+# See also:
+# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
+
+.mli.cmi:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+.ml.cmo:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 @HAVE_OCAML_TRUE@virt-v2v.1 $(top_builddir)/website/virt-v2v.1.html: stamp-virt-v2v.pod
 

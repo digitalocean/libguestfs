@@ -207,6 +207,25 @@ and get_ostype = function
       typ distro major minor arch product;
     "Unassigned"
 
+(* Set the <Origin/> element based on the source hypervisor.
+ * https://bugzilla.redhat.com/show_bug.cgi?id=1342398#c6
+ * https://gerrit.ovirt.org/#/c/59147/
+ * ovirt-engine.git: backend/manager/modules/common/src/main/java/org/ovirt/engine/core/common/businessentities/OriginType.java
+ *)
+let origin_of_source_hypervisor = function
+  | VMware -> Some 1
+  | Xen -> Some 2
+  | QEmu | KVM -> Some 7
+  | Physical -> Some 8
+  | HyperV -> Some 9
+
+  (* Anything else is mapped to None, which causes the <Origin/>
+   * element to be omitted from the OVF output, which causes oVirt
+   * to select 0 as the source (which happens to display as "RHEV"
+   * in the UI).
+   *)
+  | _ -> None
+
 (* Generate the .meta file associated with each volume. *)
 let create_meta_files output_alloc sd_uuid image_uuids targets =
   (* Note: Upper case in the .meta, mixed case in the OVF. *)
@@ -264,12 +283,6 @@ let rec create_ovf source targets guestcaps inspect
   let vmtype = match vmtype with Desktop -> "0" | Server -> "1" in
   let ostype = get_ostype inspect in
 
-  let origin =
-    match source.s_hypervisor with
-    | VMware -> 1
-    | Xen -> 2
-    | _ -> 0 in
-
   let ovf : doc =
     doc "ovf:Envelope" [
       "xmlns:rasd", "http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData";
@@ -286,7 +299,8 @@ let rec create_ovf source targets guestcaps inspect
       e "Section" ["xsi:type", "ovf:DiskSection_Type"] [
         e "Info" [] [PCData "List of Virtual Disks"]
       ];
-      e "Content" ["ovf:id", "out"; "xsi:type", "ovf:VirtualSystem_Type"] [
+
+      let content_subnodes = ref [
         e "Name" [] [PCData source.s_name];
         e "TemplateId" [] [PCData "00000000-0000-0000-0000-000000000000"];
         e "TemplateName" [] [PCData "Blank"];
@@ -297,11 +311,20 @@ let rec create_ovf source targets guestcaps inspect
         e "IsAutoSuspend" [] [PCData "False"];
         e "TimeZone" [] [];
         e "IsStateless" [] [PCData "False"];
-        e "Origin" [] [PCData (string_of_int origin)];
         e "VmType" [] [PCData vmtype];
         (* See https://bugzilla.redhat.com/show_bug.cgi?id=1260590#c17 *)
         e "DefaultDisplayType" [] [PCData "1"];
+      ] in
 
+      (* Add the <Origin/> element if we can. *)
+      (match origin_of_source_hypervisor source.s_hypervisor with
+       | None -> ()
+       | Some origin ->
+          push_back content_subnodes
+                    (e "Origin" [] [PCData (string_of_int origin)])
+      );
+
+      append content_subnodes [
         e "Section" ["ovf:id", vm_uuid; "ovf:required", "false";
                      "xsi:type", "ovf:OperatingSystemSection_Type"] [
           e "Info" [] [PCData inspect.i_product_name];
@@ -345,7 +368,10 @@ let rec create_ovf source targets guestcaps inspect
             e "rasd:Device" [] [PCData "qxl"];
           ]
         ]
-      ]
+      ];
+
+      e "Content" ["ovf:id", "out"; "xsi:type", "ovf:VirtualSystem_Type"]
+        !content_subnodes
     ] in
 
   (* Add disks to the OVF XML. *)
@@ -443,7 +469,7 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
 
       (* Add disk to DiskSection. *)
       let disk =
-        let attrs = [
+        let attrs = ref [
           "ovf:diskId", vol_uuid;
           "ovf:size", Int64.to_string size_gb;
           "ovf:fileRef", fileref;
@@ -458,12 +484,12 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
           "ovf:disk-type", "System"; (* RHBZ#744538 *)
           "ovf:boot", if is_boot_drive then "True" else "False";
         ] in
-        let attrs =
-          match actual_size_gb with
-          | None -> attrs
-          | Some actual_size_gb ->
-            ("ovf:actual_size", Int64.to_string actual_size_gb) :: attrs in
-        e "Disk" attrs [] in
+        (match actual_size_gb with
+         | None -> ()
+         | Some actual_size_gb ->
+            push_back attrs ("ovf:actual_size", Int64.to_string actual_size_gb)
+        );
+        e "Disk" !attrs [] in
       if is_estimate then (
         let comment = Comment "note: actual_size field is estimated" in
         append_child comment disk_section
@@ -476,7 +502,7 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
          * will not parse.
          *)
         let caption = sprintf "Drive %d" (i+1) in
-        e "Item" [] [
+        let item_subnodes = ref [
           e "rasd:Caption" [] [PCData caption];
           e "rasd:InstanceId" [] [PCData vol_uuid];
           e "rasd:ResourceType" [] [PCData "17"];
@@ -491,6 +517,8 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
           e "rasd:LastModified" [] [PCData iso_time];
           e "rasd:last_modified_date" [] [PCData iso_time];
         ] in
+
+        e "Item" [] !item_subnodes in
       append_child item virtualhardware_section;
   ) (combine3 targets image_uuids vol_uuids)
 
@@ -531,7 +559,7 @@ and add_networks nics guestcaps ovf =
       append_child network network_section;
 
       let item =
-        let children = [
+        let item_subnodes = ref [
           e "rasd:InstanceId" [] [PCData (uuidgen ())];
           e "rasd:Caption" [] [PCData (sprintf "Ethernet adapter on %s" vnet)];
           e "rasd:ResourceType" [] [PCData "10"];
@@ -540,11 +568,13 @@ and add_networks nics guestcaps ovf =
           e "rasd:Connection" [] [PCData vnet];
           e "rasd:Name" [] [PCData dev];
         ] in
-        let children =
-          match mac with
-          | None -> children
-          | Some mac -> children @ [e "rasd:MACAddress" [] [PCData mac]] in
-        e "Item" [] children in
+        (match mac with
+         | None -> ()
+         | Some mac ->
+            push_back item_subnodes
+                      (e "rasd:MACAddress" [] [PCData mac])
+        );
+        e "Item" [] !item_subnodes in
       append_child item virtualhardware_section;
   ) nics
 

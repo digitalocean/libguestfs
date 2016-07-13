@@ -35,18 +35,29 @@ ifelse(REDHAT,1,
   dnl network vendor information (RHBZ#855059).
   hwdata
 
+  dnl Useful disk and diagnostic utilities.
+  pciutils
+  hdparm
+  smartmontools
+  util-linux
+
   dnl X11 environment
   /usr/bin/xinit
   /usr/bin/Xorg
   xorg-x11-drivers
   xorg-x11-fonts-Type1
+  dejavu-sans-fonts
+  dejavu-sans-mono-fonts
   mesa-dri-drivers
   metacity
 
   NetworkManager
   nm-connection-editor
   network-manager-applet
-  dbus-x11        dnl required by nm-applet, but not a dependency in Fedora
+  dnl dbus is required by nm-applet, but not a dependency in Fedora
+  dbus-x11
+  dnl sysadmins prefer ifconfig
+  net-tools
 
   dnl RHBZ#1157679
   @hardware-support
@@ -61,13 +72,19 @@ ifelse(DEBIAN,1,
   curl
   ethtool
   hwdata
+  pciutils
+  hdparm
+  smartmontools
+  util-linux
   xorg
   xserver-xorg-video-all
+  fonts-dejavu
   metacity
   network-manager
   network-manager-gnome
   network-manager-applet
   dbus-x11
+  net-tools
 )
 
 ifelse(ARCHLINUX,1,
@@ -79,31 +96,44 @@ ifelse(ARCHLINUX,1,
   curl
   ethtool
   hwdata
+  pciutils
+  hdparm
+  smartmontools
+  util-linux
   xorg-xinit
   xorg-server
   xf86-video-*
+  ttf-dejavu
   metacity
   NetworkManager
   nm-connection-editor
   network-manager-applet
   dbus-x11
+  net-tools
 )
 
 ifelse(SUSE,1,
   pcre
   libxml2
   gtk2
-  /usr/bin/ssh
-  /usr/bin/qemu-nbd
+  qemu-tools
+  openssh
   curl
   ethtool
   hwdata
-  /usr/bin/xinit
-  /usr/bin/Xorg
+  pciutils
+  hdparm
+  smartmontools
+  util-linux
+  xinit
+  xorg-x11-server
   xf86-video-*
-  metacity
+  dejavu-fonts
   NetworkManager
-  nm-connection-editor
-  network-manager-applet
-  dbus-x11
+  xf86-input-*
+  icewm-lite
+  dbus-1-x11
+  yast2-network
+  libyui-qt
+  SuSEfirewall2
 )

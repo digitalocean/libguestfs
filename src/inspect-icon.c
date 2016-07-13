@@ -139,7 +139,8 @@ guestfs_impl_inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
       break;
 
     case OS_DISTRO_UBUNTU:
-      r = icon_ubuntu (g, fs, &size);
+      if (!highquality)
+        r = icon_ubuntu (g, fs, &size);
       break;
 
     case OS_DISTRO_MAGEIA:
@@ -340,12 +341,29 @@ icon_debian (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
   return get_png (g, fs, DEBIAN_ICON, size_r, 2048);
 }
 
-#define UBUNTU_ICON "/usr/share/icons/gnome/24x24/places/ubuntu-logo.png"
-
 static char *
 icon_ubuntu (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 {
-  return get_png (g, fs, UBUNTU_ICON, size_r, 2048);
+  const char *icons[] = {
+    "/usr/share/icons/gnome/24x24/places/ubuntu-logo.png",
+
+    /* Very low quality and only present when ubuntu-desktop packages
+     * have been installed.
+     */
+    "/usr/share/help/C/ubuntu-help/figures/ubuntu-logo.png",
+    NULL
+  };
+  size_t i;
+  char *ret;
+
+  for (i = 0; icons[i] != NULL; ++i) {
+    ret = get_png (g, fs, icons[i], size_r, 2048);
+    if (ret == NULL)
+      return NULL;
+    if (ret != NOT_FOUND)
+      return ret;
+  }
+  return NOT_FOUND;
 }
 
 #define MAGEIA_ICON "/usr/share/icons/mageia.png"
@@ -487,10 +505,22 @@ icon_windows_xp (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
   return ret;
 }
 
+/* For Windows 7 we get the icon from explorer.exe.  Prefer
+ * %systemroot%\SysWOW64\explorer.exe, a PE32 binary that usually
+ * contains the icons on 64 bit guests.  Note the whole SysWOW64
+ * directory doesn't exist on 32 bit guests, so we have to be prepared
+ * for that.
+ */
+static const char *win7_explorer[] = {
+  "SysWOW64/explorer.exe",
+  "explorer.exe",
+  NULL
+};
+
 static char *
 icon_windows_7 (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 {
-  CLEANUP_FREE char *filename = NULL;
+  size_t i;
   CLEANUP_FREE char *filename_case = NULL;
   CLEANUP_FREE char *filename_downloaded = NULL;
   CLEANUP_FREE char *pngfile = NULL;
@@ -498,18 +528,26 @@ icon_windows_7 (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
   int r;
   char *ret;
 
-  /* Download %systemroot%\explorer.exe */
-  filename = safe_asprintf (g, "%s/explorer.exe", fs->windows_systemroot);
-  filename_case = guestfs_case_sensitive_path (g, filename);
-  if (filename_case == NULL)
-    return NULL;
+  for (i = 0; win7_explorer[i] != NULL; ++i) {
+    CLEANUP_FREE char *filename = NULL;
 
-  guestfs_push_error_handler (g, NULL, NULL);
-  r = guestfs_is_file (g, filename_case);
-  guestfs_pop_error_handler (g);
-  if (r == -1)
-    return NULL;
-  if (r == 0)
+    filename = safe_asprintf (g, "%s/%s",
+                              fs->windows_systemroot, win7_explorer[i]);
+
+    free (filename_case);
+    filename_case = guestfs_int_case_sensitive_path_silently (g, filename);
+    if (filename_case == NULL)
+      continue;
+
+    guestfs_push_error_handler (g, NULL, NULL);
+    r = guestfs_is_file (g, filename_case);
+    guestfs_pop_error_handler (g);
+    if (r == -1)
+      return NULL;
+    if (r)
+      break;
+  }
+  if (win7_explorer[i] == NULL)
     return NOT_FOUND;
 
   filename_downloaded = guestfs_int_download_to_tmp (g, fs, filename_case,
@@ -520,7 +558,8 @@ icon_windows_7 (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 
   pngfile = safe_asprintf (g, "%s/windows-7-icon.png", g->tmpdir);
 
-  guestfs_int_cmd_add_string_unquoted (cmd, WRESTOOL " -x --type=2 --name=6801 ");
+  guestfs_int_cmd_add_string_unquoted (cmd,
+                                       WRESTOOL " -x --type=2 --name=6801 ");
   guestfs_int_cmd_add_string_quoted   (cmd, filename_downloaded);
   guestfs_int_cmd_add_string_unquoted (cmd,
 				       " | " BMPTOPNM " | "

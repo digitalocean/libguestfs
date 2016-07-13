@@ -2017,20 +2017,22 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
+# Rules for building OCaml objects.
+# See also:
+# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
+
+.mli.cmi:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+.ml.cmo:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@v2v_test_harness.cma: $(BOBJECTS)
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) $^ -o v2v_test_harness $(LIBXML2_LIBS)
 
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@v2v_test_harness.cmxa: $(XOBJECTS)
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) $^ -o v2v_test_harness $(LIBXML2_LIBS)
-
-# Dependencies.
-
-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@.mli.cmi:
-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@.ml.cmo:
-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@v2v_test_harness.cmi: $(top_builddir)/ocaml/guestfs.cmi
 

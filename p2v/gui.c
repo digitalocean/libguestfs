@@ -270,6 +270,7 @@ test_connection_clicked (GtkWidget *w, gpointer data)
 
   gtk_label_set_text (GTK_LABEL (spinner_message), "");
   gtk_widget_show_all (spinner_hbox);
+  gtk_widget_hide (spinner);
 
   /* Get the fields from the various widgets. */
   free (config->server);
@@ -342,6 +343,7 @@ test_connection_thread (void *data)
   gdk_threads_enter ();
   gtk_label_set_text (GTK_LABEL (spinner_message),
                       _("Testing the connection to the conversion server ..."));
+  gtk_widget_show (spinner);
   gtk_spinner_start (GTK_SPINNER (spinner));
   gdk_threads_leave ();
 
@@ -1339,7 +1341,8 @@ show_running_dialog (void)
   /* Show the running dialog. */
   gtk_widget_show_all (run_dlg);
   gtk_widget_set_sensitive (cancel_button, TRUE);
-  gtk_widget_set_sensitive (reboot_button, FALSE);
+  if (is_iso_environment)
+    gtk_widget_set_sensitive (reboot_button, FALSE);
 }
 
 static void
@@ -1564,7 +1567,8 @@ start_conversion_thread (void *data)
   gtk_widget_set_sensitive (cancel_button, FALSE);
 
   /* Enable the reboot button. */
-  gtk_widget_set_sensitive (reboot_button, TRUE);
+  if (is_iso_environment)
+    gtk_widget_set_sensitive (reboot_button, TRUE);
 
   gdk_threads_leave ();
 
@@ -1624,6 +1628,9 @@ cancel_conversion_clicked (GtkWidget *w, gpointer data)
 static void
 reboot_clicked (GtkWidget *w, gpointer data)
 {
+  if (!is_iso_environment)
+    return;
+
   sync ();
   sleep (2);
   ignore_value (system ("/sbin/reboot"));

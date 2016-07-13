@@ -320,12 +320,12 @@ This command performs a L<touch(1)>-like operation on C<FILE>.
 
 =item B<--truncate> ФАЙЛ
 
-This command truncates "path" to a zero-length file. The file must exist
+This command truncates C<FILE> to a zero-length file. The file must exist
 already.
 
 =item B<--truncate-recursive> ШЛЯХ
 
-This command recursively truncates all files under "path" to zero-length.
+This command recursively truncates all files under C<PATH> to zero-length.
 
 =item B<--update>
 

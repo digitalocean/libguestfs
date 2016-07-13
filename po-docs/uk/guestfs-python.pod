@@ -41,6 +41,17 @@ single string argument which is the error message.
  >>> import guestfs
  >>> help (guestfs)
 
+=head2 USING PYTHON BINDINGS IN A VIRTUALENV
+
+These bindings are I<not> available in pypi owing to a licensing problem.
+See L<https://bugzilla.redhat.com/1075594> for current status.
+
+However we do publish a Python distribution for selected stable versions of
+libguestfs in L<http://libguestfs.org/download/python>.  You can use it like
+this:
+
+ pip install http://libguestfs.org/download/python/guestfs-1.XX.YY.tar.gz
+
 =head1 ПРИКЛАД 1. СТВОРЕННЯ ОБРАЗУ ДИСКА
 
 @EXAMPLE1@

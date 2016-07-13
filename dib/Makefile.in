@@ -2052,12 +2052,16 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-@HAVE_OCAML_TRUE@.mli.cmi:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAML_TRUE@.ml.cmo:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+# Rules for building OCaml objects.
+# See also:
+# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
+
+.mli.cmi:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+.ml.cmo:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 @HAVE_OCAML_TRUE@virt-dib.1 $(top_builddir)/website/virt-dib.1.html: stamp-virt-dib.pod
 

@@ -48,7 +48,7 @@ let rec main () =
   ] in
   let argspec = set_standard_options argspec in
   let args = ref [] in
-  let anon_fun s = args := s :: !args in
+  let anon_fun s = push_front s args in
   let usage_msg =
     sprintf (f_"\
 %s: copy a remote guest to the local machine
@@ -198,24 +198,21 @@ read the man page virt-v2v-copy-to-local(1).
          error (f_"ssh copy command failed, see earlier errors");
 
     | ESXi _ ->
-       let curl_args = [
+       let curl_args = ref [
          "url", Some remote_disk;
          "output", Some local_disk;
        ] in
-       let curl_args =
-         if sslverify then curl_args
-         else ("insecure", None) :: curl_args in
-       let curl_args =
-         match cookie with
-         | None -> curl_args
-         | Some cookie -> ("cookie", Some cookie) :: curl_args in
-       let curl_args =
-         if quiet () then ("silent", None) :: curl_args
-         else curl_args in
+       if not sslverify then push_back curl_args ("insecure", None);
+       (match cookie with
+        | None -> ()
+        | Some cookie -> push_back curl_args ("cookie", Some cookie)
+       );
+       if quiet () then push_back curl_args ("silent", None);
 
+       let curl_h = Curl.create !curl_args in
        if verbose () then
-         Curl.print_curl_command stderr curl_args;
-       ignore (Curl.run curl_args)
+         Curl.print stderr curl_h;
+       ignore (Curl.run curl_h)
 
     | Test ->
        let cmd = [ "cp"; remote_disk; local_disk ] in
@@ -261,7 +258,7 @@ and parse_libvirt_xml guest_name xml =
       incr i;
       let local_disk = sprintf "%s-disk%d" guest_name !i in
 
-      disks := (remote_disk, local_disk) :: !disks;
+      push_front (remote_disk, local_disk) disks;
       local_disk
     in
     get_disks, add_disk

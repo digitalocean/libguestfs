@@ -1520,6 +1520,9 @@ top_srcdir = @top_srcdir@
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 SUBDIRS = binaries blank-disks $(am__append_1) fake-virtio-win \
 	fake-virt-tools files .
+EXTRA_DIST = \
+        guestfs-hashsums.sh
+
 
 # Build an ISO containing various files from the subdirectories, which
 # is used by tests/c-api and a few guestfish tests and regression
@@ -1583,6 +1586,7 @@ CLEANFILES = test.iso
 all: all-recursive
 
 .SUFFIXES:
+.SUFFIXES: .cmi .cmo .cmx .ml .mli
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -1917,6 +1921,17 @@ $(top_builddir)/generator/generator:
 	else \
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
+
+# Rules for building OCaml objects.
+# See also:
+# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
+
+.mli.cmi:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+.ml.cmo:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 test.iso: $(images_files)
 	rm -rf d

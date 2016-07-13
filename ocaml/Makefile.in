@@ -2562,6 +2562,17 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
+# Rules for building OCaml objects.
+# See also:
+# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
+
+.mli.cmi:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+.ml.cmo:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
 @HAVE_OCAML_TRUE@mlguestfs.cma mlguestfs.cmxa: stamp-mlguestfs
 
 @HAVE_OCAML_TRUE@stamp-mlguestfs: libguestfsocaml.a $(guestfs_cmm)

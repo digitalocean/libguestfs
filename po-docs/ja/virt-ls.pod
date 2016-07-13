@@ -460,8 +460,8 @@ should be easy to parse, but it is definitely not easy to parse.
  "foo
  bar",baz
 
-For shell scripts, use C<csvtool> (L<http://merjis.com/developers/csv> also
-packaged in major Linux distributions).
+For shell scripts, use C<csvtool> (L<https://github.com/Chris00/ocaml-csv>
+also packaged in major Linux distributions).
 
 For other languages, use a CSV processing library (eg. C<Text::CSV> for Perl
 or Python's built-in csv library).

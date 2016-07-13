@@ -266,6 +266,26 @@ let rec assoc ?(cmp = compare) ~default x = function
   | (y, y') :: _ when cmp x y = 0 -> y'
   | _ :: ys -> assoc ~cmp ~default x ys
 
+let push_back xsp x = xsp := !xsp @ [x]
+let push_front x xsp = xsp := x :: !xsp
+let pop_back xsp =
+  let x, xs =
+    match List.rev !xsp with
+    | x :: xs -> x, xs
+    | [] -> failwith "pop" in
+  xsp := List.rev xs;
+  x
+let pop_front xsp =
+  let x, xs =
+    match !xsp with
+    | x :: xs -> x, xs
+    | [] -> failwith "shift" in
+  xsp := xs;
+  x
+
+let append xsp xs = xsp := !xsp @ xs
+let prepend xs xsp = xsp := xs @ !xsp
+
 let may f = function
   | None -> ()
   | Some x -> f x
@@ -350,11 +370,11 @@ let error ?(exit_code = 1) fs =
 
 let warning fs =
   let display str =
-    let chan = stderr in
+    let chan = stdout in
     ansi_blue ~chan ();
     wrap ~chan (sprintf (f_"%s: warning: %s") prog str);
     ansi_restore ~chan ();
-    prerr_newline ();
+    print_newline ();
   in
   ksprintf display fs
 
@@ -763,12 +783,10 @@ let rm_rf_only_files (g : Guestfs.guestfs) ?filter dir =
   )
 
 let truncate_recursive (g : Guestfs.guestfs) dir =
-  if g#is_dir dir then (
-    let files = Array.map (Filename.concat dir) (g#find dir) in
-    let files = Array.to_list files in
-    let files = List.filter g#is_file files in
-    List.iter g#truncate files
-  )
+  let files = Array.map (Filename.concat dir) (g#find dir) in
+  let files = Array.to_list files in
+  let files = List.filter g#is_file files in
+  List.iter g#truncate files
 
 (* Detect type of a file. *)
 let detect_file_type filename =
@@ -835,9 +853,11 @@ let rec mkdir_p path permissions =
     Unix.mkdir path permissions
 
 let normalize_arch = function
-  | "i386" | "i486" | "i586" | "i686" -> "i386"
-  | "amd64" | "x86_64" -> "x86_64"
-  | "powerpc" | "ppc" -> "ppc"
+  | "i486" | "i586" | "i686" -> "i386"
+  | "amd64" -> "x86_64"
+  | "powerpc" -> "ppc"
+  | "powerpc64" -> "ppc64"
+  | "powerpc64le" -> "ppc64le"
   | arch -> arch
 
 (* Are guest arch and host_cpu compatible, in terms of being able

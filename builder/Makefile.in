@@ -1905,6 +1905,7 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/JSON.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/URI.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmo \
+@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/curl.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_utils.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/urandom.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/random_seed.cmo \
@@ -3010,12 +3011,16 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-@HAVE_OCAML_TRUE@.mli.cmi:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAML_TRUE@.ml.cmo:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+# Rules for building OCaml objects.
+# See also:
+# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
+
+.mli.cmi:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+.ml.cmo:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 @HAVE_OCAML_TRUE@virt-builder.1 $(top_builddir)/website/virt-builder.1.html: stamp-virt-builder.pod
 

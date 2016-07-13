@@ -34,7 +34,7 @@ may change at any time in the future.
                                          └─────────────┘
 
 The library, linked to the main program, creates the child process and hence
-the appliance in the L</guestfs_launch> function.
+the appliance in the L<guestfs(3)/guestfs_launch> function.
 
 Inside the appliance is a Linux kernel and a complete stack of userspace
 tools (such as LVM and ext2 programs) and a small controlling daemon called
@@ -81,22 +81,23 @@ is no child process), (2) LAUNCHING (when the child process is booting up),
 (3) READY meaning the appliance is up, actions can be issued to, and carried
 out by, the child process.
 
-仮想マシンは L</guestfs_kill_subprocess>
-により強制停止されるかもしれません。または、いつでも非同期的に停止するかもしれません（例: いくつかの内部エラーのため）、状態を設定 (CONFIG)
-に切り戻します。
+The guest may be killed by L<guestfs(3)/guestfs_kill_subprocess>, or may die
+asynchronously at any time (eg. due to some internal error), and that causes
+the state to transition back to CONFIG.
 
-Configuration commands for qemu such as L</guestfs_set_path> can only be
-issued when in the CONFIG state.
+Configuration commands for qemu such as L<guestfs(3)/guestfs_set_path> can
+only be issued when in the CONFIG state.
 
 The API offers one call that goes from CONFIG through LAUNCHING to READY.
-L</guestfs_launch> blocks until the child process is READY to accept
-commands (or until some failure or timeout).  L</guestfs_launch> internally
-moves the state from CONFIG to LAUNCHING while it is running.
+L<guestfs(3)/guestfs_launch> blocks until the child process is READY to
+accept commands (or until some failure or timeout).
+L<guestfs(3)/guestfs_launch> internally moves the state from CONFIG to
+LAUNCHING while it is running.
 
-API actions such as L</guestfs_mount> can only be issued when in the READY
-state.  These API calls block waiting for the command to be carried out.
-There are no non-blocking versions, and no way to issue more than one
-command per handle at the same time.
+API actions such as L<guestfs(3)/guestfs_mount> can only be issued when in
+the READY state.  These API calls block waiting for the command to be
+carried out.  There are no non-blocking versions, and no way to issue more
+than one command per handle at the same time.
 
 Finally, the child process sends asynchronous messages back to the main
 program, such as kernel log messages.  You can register a callback to
@@ -329,7 +330,7 @@ parameters, but with the roles of daemon and library reversed.
 
 When the daemon launches it sends an initial word (C<GUESTFS_LAUNCH_FLAG>)
 which indicates that the guest and daemon is alive.  This is what
-L</guestfs_launch> waits for.
+L<guestfs(3)/guestfs_launch> waits for.
 
 =head3 PROGRESS NOTIFICATION MESSAGES
 
@@ -338,8 +339,8 @@ distinguished by the normal length word being replaced by
 C<GUESTFS_PROGRESS_FLAG>, followed by a fixed size progress message.
 
 The library turns them into progress callbacks (see
-L</GUESTFS_EVENT_PROGRESS>) if there is a callback registered, or discards
-them if not.
+L<guestfs(3)/GUESTFS_EVENT_PROGRESS>) if there is a callback registered, or
+discards them if not.
 
 The daemon self-limits the frequency of progress messages it sends (see
 C<daemon/proto.c:notify_progress>).  Not all calls generate progress
@@ -373,7 +374,8 @@ files:
 
 If the fixed appliance is found, libguestfs skips supermin entirely and just
 runs the virtual machine (using qemu or the current backend, see
-L</BACKEND>) with the kernel, initrd and root disk from the fixed appliance.
+L<guestfs(3)/BACKEND>) with the kernel, initrd and root disk from the fixed
+appliance.
 
 Thus the fixed appliance can be used when a platform or a Linux distribution
 does not support supermin.  You build the fixed appliance on a platform that

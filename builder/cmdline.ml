@@ -70,7 +70,7 @@ let parse_cmdline () =
     | "auto" -> attach_format := None
     | s -> attach_format := Some s
   in
-  let attach_disk s = attach := (!attach_format, s) :: !attach in
+  let attach_disk s = push_front (!attach_format, s) attach in
 
   let cache = ref Paths.xdg_cache_home in
   let set_cache arg = cache := Some arg in
@@ -82,7 +82,7 @@ let parse_cmdline () =
   let delete_on_failure = ref true in
 
   let fingerprints = ref [] in
-  let add_fingerprint arg = fingerprints := arg :: !fingerprints in
+  let add_fingerprint arg = push_front arg fingerprints in
 
   let format = ref "" in
   let gpg = ref "gpg" in
@@ -112,7 +112,7 @@ let parse_cmdline () =
   let set_smp arg = smp := Some arg in
 
   let sources = ref [] in
-  let add_source arg = sources := arg :: !sources in
+  let add_source arg = push_front arg sources in
 
   let sync = ref true in
 
@@ -146,7 +146,7 @@ let parse_cmdline () =
     "--gpg",    Arg.Set_string gpg,         "gpg" ^ " " ^ s_"Set GPG binary/command";
     "-l",        Arg.Unit list_mode,        " " ^ s_"List available templates";
     "--list",    Arg.Unit list_mode,        " " ^ s_"List available templates";
-    "--long",    Arg.Unit list_set_long,    " " ^ s_"Shortcut for --list-format short";
+    "--long",    Arg.Unit list_set_long,    " " ^ s_"Shortcut for --list-format long";
     "--list-format", Arg.String list_set_format,
                                             "short|long|json" ^ " " ^ s_"Set the format for --list (default: short)";
     "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
@@ -171,7 +171,7 @@ let parse_cmdline () =
   let argspec = set_standard_options argspec in
 
   let args = ref [] in
-  let anon_fun s = args := s :: !args in
+  let anon_fun s = push_front s args in
   let usage_msg =
     sprintf (f_"\
 %s: build virtual machine images quickly

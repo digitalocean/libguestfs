@@ -1761,6 +1761,7 @@ CLEANFILES = \
 	stamp-virt-p2v.pod \
 	stamp-virt-p2v-make-disk.pod \
 	stamp-virt-p2v-make-kickstart.pod \
+	test-virt-p2v-pxe.authorized_keys \
 	test-virt-p2v-pxe.img \
 	test-virt-p2v-pxe.vmlinuz \
 	test-virt-p2v-pxe.initramfs \
@@ -1848,7 +1849,7 @@ SLOW_TESTS = \
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .log .o .obj .test .test$(EXEEXT) .trs
+.SUFFIXES: .c .cmi .cmo .cmx .lo .log .ml .mli .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -2675,6 +2676,17 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
+# Rules for building OCaml objects.
+# See also:
+# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
+
+.mli.cmi:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+.ml.cmo:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
 $(dependencies_files): dependencies.m4
 	define=`echo $@ | $(SED) 's/dependencies.//;y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`; \
 	m4 -D$$define=1 $< > $@-t
@@ -2721,6 +2733,7 @@ stamp-virt-p2v-make-kickstart.pod: virt-p2v-make-kickstart.pod
 	touch $@
 
 check-slow: test-virt-p2v-pxe.img \
+	    test-virt-p2v-pxe.authorized_keys \
 	    test-virt-p2v-pxe.vmlinuz test-virt-p2v-pxe.initramfs \
 	    test-virt-p2v-pxe.sshd_config \
 	    test-virt-p2v-pxe.ssh_host_rsa_key \
@@ -2728,9 +2741,14 @@ check-slow: test-virt-p2v-pxe.img \
 	    test-virt-p2v-pxe.id_rsa test-virt-p2v-pxe.id_rsa.pub
 	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
-test-virt-p2v-pxe.img: virt-p2v-make-disk \
-	               virt-p2v \
-	               test-virt-p2v-pxe.id_rsa
+test-virt-p2v-pxe.img: \
+	    dependencies.m4 \
+	    issue \
+	    launch-virt-p2v \
+	    p2v.service \
+	    test-virt-p2v-pxe.id_rsa \
+	    virt-p2v \
+	    virt-p2v-make-disk
 	$(top_builddir)/run virt-p2v-make-disk \
 	    --inject-ssh-identity=test-virt-p2v-pxe.id_rsa \
 	    -o $@-t \
@@ -2756,6 +2774,12 @@ test-virt-p2v-pxe.sshd_config: test-virt-p2v-pxe.sshd_config.in
 	    print; \
 	  }' < $< > $@-t
 	chmod 0444 $@-t
+	mv $@-t $@
+
+test-virt-p2v-pxe.authorized_keys: test-virt-p2v-pxe.id_rsa.pub $(top_builddir)/run
+	rm -f $@ $@-t
+	$(top_builddir)/run sh -c 'echo -n environment=\"PATH=$$PATH\",environment=\"LD_LIBRARY_PATH=$(abs_top_builddir)/src/.libs\"\ ' > $@-t
+	cat $< >> $@-t
 	mv $@-t $@
 
 test-virt-p2v-pxe.ssh_host_rsa_key test-virt-p2v-pxe.ssh_host_rsa_key.pub: stamp-test-virt-p2v-pxe-hostkey

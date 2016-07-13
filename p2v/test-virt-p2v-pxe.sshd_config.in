@@ -1,5 +1,4 @@
 # libguestfs virt-p2v test script
-# @configure_input@
 # Copyright (C) 2014-2016 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -18,6 +17,8 @@
 
 # Minimal sshd_config used by test-virt-p2v-pxe.ssh when it runs
 # a captive sshd.
+#
+# This file is processed by awk.  See p2v/Makefile.am.
 
 # Choose a random high port number.
 Port __RANDOM_PORT__
@@ -33,7 +34,10 @@ UsePrivilegeSeparation no
 PidFile __abs_builddir__/test-virt-p2v-pxe.sshd.pid
 HostKey __abs_builddir__/test-virt-p2v-pxe.ssh_host_rsa_key
 
-AuthorizedKeysFile __abs_builddir__/test-virt-p2v-pxe.id_rsa.pub
+AuthorizedKeysFile __abs_builddir__/test-virt-p2v-pxe.authorized_keys
 
 # Don't check file permissions.
 StrictModes no
+
+# Allow the environment to be set in the authorized_keys file above.
+PermitUserEnvironment yes
