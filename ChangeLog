@@ -1,3 +1,965 @@
+commit 8da54aa25b976e678c300e44f92d365b3059f9ec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 12 15:32:42 2016 +0100
+
+    Version 1.32.6.
+
+commit 633c610a30843696bfad75b1901042ff28b1a478
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 12 14:22:54 2016 +0100
+
+    p2v: Set LD_LIBRARY_PATH for "remote" virt-v2v process.
+    
+    In previous commit c5f12e47e4e0dc7846897cad3184ac0892f51ef8 we changed
+    the PATH environment variable to run the locally built virt-v2v, not
+    the system-installed virt-v2v.
+    
+    However this meant that we were running the locally built virt-v2v
+    against the system-installed libguestfs.so.0.  We also need to set
+    LD_LIBRARY_PATH.
+    
+    Fixes commit c5f12e47e4e0dc7846897cad3184ac0892f51ef8.
+    
+    (cherry picked from commit a468e8b92f495b8f97105edf40ff7675b02462ab)
+
+commit 58bd8b8a623869ac946a80a5ebb1d0eb140d8964
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 11 19:11:01 2016 +0100
+
+    utils: Clarify why some uses of gnulib are OK and others not OK.
+    
+    (cherry picked from commit 2c7f8e9c5f02c3d65fe6fc346d3043ce93d65b99)
+
+commit e8d19d0d8f8ce4c8fd2b11dfc7a8f6711cde901f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 11 19:08:41 2016 +0100
+
+    Revert "utils: Allow use of gnulib in this file."
+    
+    This reverts commit 975eafe4baf19442ab972d92d5b2a4f0c20f0295.
+    
+    (cherry picked from commit 56eb5f36f425ddb3c5c5cd5598ab29709cca6ef4)
+
+commit 4bf64e251e534365ba5c775b2558f76b3a28623c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 11 18:28:23 2016 +0100
+
+    python: Don't generate calls with non-existent C optargs structures.
+    
+    In the case where we are building a Python dist (which can be
+    distributed separately), we generated calls to non-existent optargs
+    structures if an API was once no-optargs but had optargs added.  A
+    typical error was this (library: 1.32.5, Python sdist: 1.33.42):
+    
+        guestfs-py.c: In function ‘guestfs_int_py_glob_expand’:
+        guestfs-py.c:9648:40: error: storage size of ‘optargs_s’ isn’t known
+           struct guestfs_glob_expand_opts_argv optargs_s;
+    
+    This is a simple solution to this, although it has the possible
+    disadvantage that such functions will not be bound at all.
+    
+    (cherry picked from commit d272cee8389c33baa2cbb4f9ea62b427fa027610)
+
+commit 931327b3c372366b756549eeb11eb568c1959cf5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 11 15:47:51 2016 +0100
+
+    python: Add documentation to guestfs-python about using pip & virtualenvs.
+    
+    (cherry picked from commit 1f650932e34ca03bde41f19b2e477717521d2f12)
+
+commit 2196306f022dfc1ccfbbbc0283c060c775ff70e9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 11 15:46:23 2016 +0100
+
+    python: Fix python sdist.
+    
+    Since commit 83e92b4a972a4dafdcc42388f4a5394e804dd7bf, utils.c
+    includes "ignore-value.h".  We copy utils.c into the python sdist
+    tarball, but it didn't not compile because of the missing header file.
+    Therefore we need to copy the header in too.
+    
+    Fixes commit 83e92b4a972a4dafdcc42388f4a5394e804dd7bf.
+    
+    (cherry picked from commit c56c6e901090bdd49f9de88cb263ab70697b88f2)
+
+commit d49c59ecef29ecb2abb34b70d9535038af92924b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 11 13:22:22 2016 +0100
+
+    v2v: Document ports, firewall and proxy settings used by vCenter.
+    
+    (cherry picked from commit 41407664603d8fc58b2e74065cbb0ca2ba9e9aa6)
+
+commit 9b9e3e641340972f70b2d46317ea5a9aac9b6015
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 8 09:17:21 2016 +0100
+
+    mllib: Rename unshift -> push_front, push -> push_back etc.
+    
+    The C++ function names are more regular.
+    
+    Updates commit 1c57c71d46dae2c61c393c32ec85a7022c95f818.
+    
+    (cherry picked from commit 123dc018b8b30cfe0b17731981ecfb1b6a1cfe33)
+
+commit f85f00e9bd7779e7f939082146ffa77d81d1dda8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 20:36:12 2016 +0100
+
+    builder: Add Fedora 24 (aarch64) image.
+    
+    (cherry picked from commit 1a3e986b614276d765247ace48a64db21ea8b7e8)
+
+commit 449109ee4c0b250d8939c735466c9d8ee98d0df1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 18:22:09 2016 +0100
+
+    builder: downloader: More tweaks to curl code.
+    
+    No functional change.
+    
+    (cherry picked from commit 7d99c2eb84b18da0a1fbe3ba4dbd0920f8cc1ea3)
+
+commit 454ae7c551679c0e0bded7913476ad837bcce2f9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 16:13:48 2016 +0100
+
+    v2v: Use imperative list functions to simplify DOM building code.
+    
+    (cherry picked from commit 560156d899ac8210fae2bef7a421da10c743ab25)
+
+commit 21d9b655670611be4b586a9129b7a7efddd87501
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 16:12:18 2016 +0100
+
+    v2v: Don't open DOM module in output_rhev and output_vdsm.
+    
+    I think this is left over from before we moved the OVF code
+    out to its own module.
+    
+    (cherry picked from commit 6a3416361bb8ecf29e70813b048e6f301854bf54)
+
+commit 6feb507a01f5fbadd9f196021fa451d8a11189ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 15:02:05 2016 +0100
+
+    Replace 'xs := x :: !xs' with 'unshift x xs'.
+    
+    In one case, I used prepend instead.
+    
+    (cherry picked from commit 442092a305b962fe795e6b366446c28caddeac5f)
+
+commit 0b16420880df54ef4c3d965030bfac2d50afafd2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 14:58:05 2016 +0100
+
+    builder, v2v: Use imperative list functions to simplify curl arg code.
+    
+    No functional change in this commit.
+    
+    (cherry picked from commit e84382e9f823070d4dcf88456015e7b228a74cd4)
+
+commit c4c1c3eeec0156cc046e98a08dddcb75524f28f6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 14:52:18 2016 +0100
+
+    mllib: Add some imperative list manipulation functions.
+    
+    This adds imperative list manipulation functions inspired by Perl.
+    The functions are passed list refs which get updated in place.
+    
+    This allows us to replace some awkward pure functional code like:
+    
+      let xs = ys in
+      let xs = if foo then xs @ zs else xs in
+    
+    with:
+    
+      let xs = ref ys in
+      if foo then append xs zs;
+    
+    (cherry picked from commit 1c57c71d46dae2c61c393c32ec85a7022c95f818)
+
+commit 19c31f6c32f729249477f384cef65b1b495528cd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 13:43:11 2016 +0100
+
+    builder: Use the new Curl module for passing parameters to curl.
+    
+    These are now passed using a curl configuration file, which is a
+    little bit safer than using command lines.  virt-builder doesn't need
+    to pass usernames and passwords to curl, but if it ever does in future
+    this will be a lot safer.
+    
+    (cherry picked from commit 906c05c70f5ca3e2046e0340dcef0e52a3cafb96)
+
+commit 2ef785412e77ff1029ed4f2eeb127dafa9387a67
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 13:10:00 2016 +0100
+
+    curl: Change the API to use an abstract data type.
+    
+    Change the Curl module to use an ADT to store the name of the curl
+    binary and the arguments.
+    
+    The callers in virt-v2v are changed accordingly.
+    
+    This also adds a (currently unused) ?proxy argument to allow callers
+    to override the proxy.  It also adds some safety arguments implicitly.
+    
+    (cherry picked from commit 20509df94eea1d8973310904ee53d4ef90086891)
+
+commit ef9992d2fb9446cfee55b8e8f492a22cc35e5a06
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 12:23:03 2016 +0100
+
+    v2v: Move Curl wrapper to mllib.
+    
+    Just code motion, no change.
+    
+    (cherry picked from commit 10e096c0639c67c66d176733ad28f817fe45323a)
+
+commit 6826826868c017d0bc5845e3cc1728b638b66665
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 7 10:07:15 2016 +0100
+
+    v2v: changeuid: Improve error messages.
+    
+    (cherry picked from commit b35819d990d6935de5650af3fb7580c096b4385e)
+
+commit 9a267436f5e6a484295663f381c2803bea384f60
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 7 16:20:13 2016 +0200
+
+    daemon: fix cleanup of stringsbuf usages
+    
+    Declare most of the stringsbuf as CLEANUP_FREE_STRINGSBUF, so they are
+    freed completely on stack unwind: use take_stringsbuf() in return
+    places to take away from the stringsbuf its content, and remove all the
+    manual calls to free_stringslen (no more needed now).
+    This requires to not use free_stringslen anymore on failure in the
+    helper functions of stringsbuf, which now leave the content as-is (might
+    be still useful even on error).
+    
+    This allows us to simplify the memory management of stringsbuf's, which
+    are not properly fully freed, fixing memory leaks in some error paths
+    (which were not calling free_stringslen).
+    
+    (cherry picked from commit 9fa8e0746566e03387518f6c03b768de6ce95a71)
+
+commit 420fa2ff047de9d21e96c006b4d730d8074e8ee5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 7 15:10:37 2016 +0200
+
+    daemon: free the string on stringsbuf add failure
+    
+    If add_string_nodup fails free the passed string instead of leaking it,
+    as that string would have been owned by the stringbuf.
+    
+    Adapt few places to this behaviour.
+    
+    (cherry picked from commit 6a06b8755950b5bb02ced3f826cf2d0cd6e0f15c)
+
+commit 7f191f7060705c4b3bff577ae54c4b9375d2480b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 5 13:52:15 2016 +0100
+
+    inspection: Find icon in Windows 7 64 bit guests (RHBZ#1352761).
+    
+    We have to download the old 32 bit explorer.exe in order to find the
+    icons as the 64 bit version doesn't contain any icons (where are they?).
+    Thus prefer the 32 bit (WoW64 subsystem) directory if found.
+    
+    Fixes commit 7f16c346bbeba2f2fe3c31ccb85158178a284d84.
+    
+    Thanks: Xiaoyun Hu
+    (cherry picked from commit 9cf220e73ec58bb6179f9074910ee8b1283f6b3a)
+
+commit 76812c3b83ed8fac9e6d35af0be8348209cafd58
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 5 12:40:22 2016 +0100
+
+    inspection: Find Ubuntu logo from an alternate location (RHBZ#1352761).
+    
+    The current location doesn't exist unless you've installed GNOME,
+    which is not so common on Ubuntu.  Unfortunately I couldn't find any
+    other location containing a clean, high quality logo.
+    
+    This adds another low quality icon source, and also prevents any icon
+    being returned if the highquality flag was set (note this prevents
+    virt-manager from displaying an icon, but there's nothing we can do
+    about that, and it's no worse than the current situation).
+    
+    Updates commit 1d0683964f996b24b8fcf5bce7611a98443344f3.
+    
+    Thanks: Xiaoyun Hu
+    (cherry picked from commit 4e806c4bd2aa9267c736384870dd216d2d95d8ae)
+
+commit ac6d9db8269cbf0547c34ce2c6d0a0587201e0fa
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 1 17:38:34 2016 +0200
+
+    v2v: fix and implify the internal Convert_linux:discover_modpath
+    
+    First check for the existence of the directory /etc/modprobe.d, in case
+    using a file under it; this also skips all the other checks, since they
+    are not needed at all.  Also /etc/modprobe.d exists on recent Linux
+    versions, so let's give priority to the more common methods.
+    When /etc/modprobe.d does not exist, check for the file to edit using a
+    single list of possible files, now in order of priority, where the first
+    find is used without checking further for the rest.
+    
+    Also, make sure all the returned paths are absolute: they are used in
+    Augeas paths later on, so relative paths will not do anything useful.
+    
+    (cherry picked from commit d4dfa47158d045c512e7a0b7537e033fa22859a5)
+
+commit b6f6800b09e12a95a16103e33173cb4108e1618c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 1 15:48:04 2016 +0200
+
+    docs: fix link to csvtool
+    
+    Refer to the new home of the OCaml csv module.
+    
+    Thanks to: Yehuda Zimmerman.
+    
+    (cherry picked from commit 026992d58d9319b517fa48c9e222ac3e54bd4005)
+
+commit e2b89d2a347676f0f04daa3929369e47ef6a6721
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 30 13:51:56 2016 +0100
+
+    p2v: Set an SSH error message if mexp_spawnv fails.
+    
+    (cherry picked from commit c2fab43dd657af5df270cc86635aa38f36d91c36)
+
+commit e9439a116377909a097590caf97f6d0cdef64ae5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 29 21:21:40 2016 +0100
+
+    p2v: miniexpect: Add mexp_send_interrupt, mexp_spawnvf, mexp_spawnlf and various flags.
+    
+    (cherry picked from commit 9445a4da17010a850b0a09c8d252aeb083812280)
+
+commit 27865c9f03bbd77568d681e2507a456c99dbe448
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 29 15:22:29 2016 +0100
+
+    miniexpect: Set signals to defaults and close other file descriptors after forking.
+    
+    (cherry picked from commit 3390df44d30a0805e9d64d24ec7929e59f23b19d)
+
+commit c19fc55c92ac240d05928d3c463a55fc4145570f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 29 10:09:27 2016 +0100
+
+    mllib: Add powerpc64 and powerpc64le to normalize_arch (RHBZ#1264835).
+    
+    Add powerpc64 (ppc64) and powerpc64le (ppc64le) cases to the
+    normalize_arch function.  Also remove a few duplicate cases which are
+    already caught in the catch-all case at the end of the match.
+    
+    (cherry picked from commit 3ac0aa82327a23e3a2538f46938481beae72d2ec)
+
+commit 6fd4f68f9ac6338252ea81ac9239f4aee586e960
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 28 12:29:29 2016 +0100
+
+    p2v: Ensure messages are flushed through to the journal immediately (RHBZ#1229386).
+    
+    In kernel conversion mode, we must ensure messages are flushed to the
+    journal as soon as they are received from virt-v2v, otherwise (now
+    that debugging is not the default) we won't see any messages at all
+    until the last moment.
+    
+    Thanks: Ming Xie
+    (cherry picked from commit cc38d62fdfff9dd72ecb379038e99727077f639d)
+
+commit 2d154250aceb644fc944a2d6705e3a1c3a58f307
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 22 15:52:00 2016 +0100
+
+    builder: Add Fedora 24 images for x86-64, i686, armv7l.
+    
+    aarch64 image isn't buildable at the moment because of
+    Anaconda bug RHBZ#1348980.
+    
+    ppc64 & ppc64le images are not buildable because of delays updating
+    the Fedora mirrors.
+    
+    (cherry picked from commit 044de389e750487f6a515fcf4ec9b0cfca89ce9b)
+
+commit 3ac390abfc8c184b4242bb9ab7c74fb69933e7ef
+Author: Maxim Perevedentsev <mperevedentsev@virtuozzo.com>
+Date:   Wed Jun 22 16:43:13 2016 +0300
+
+    ext: change e2fsck retcode processing during resize
+    
+    e2fsck returns 1 in case of "file system errors corrected".
+    We treat it as success in normal e2fsck, but fail if e2fsck
+    is run by resize2fs.
+    
+    Change 'manual' execution of e2fsck to dedicated function call.
+    
+    (cherry picked from commit 6521be3aa7667aea1e46b44b0c9c5428a7124cc2)
+
+commit aed41219c0e4860535a7b3ef8a7482b1d6e7500b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 22 12:45:18 2016 +0100
+
+    builder: Use newly open sourced edk2 from Fedora, replacing kraxel's builds.
+    
+    (cherry picked from commit e4e197bb8699247fac1ac4d7fe2dd331dd9fc249)
+
+commit 2c96c71c90f7418b7d4b86db58c0a56071befc68
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 22 12:41:57 2016 +0100
+
+    builder: Use a different mirror when building armv7l image.
+    
+    (cherry picked from commit 27b3b2cf7d677008d93fb7d1198a0871e08e2599)
+
+commit 1440e4baf851389f3be0bbabf37b11abdd1928db
+Author: Cédric Bosdonnat <cbosdonnat@suse.com>
+Date:   Wed Jun 22 11:45:33 2016 +0200
+
+    p2v: fix dependencies for SLES / openSUSE
+    
+    Use the common denominator for SLES and openSUSE in the dependencies.
+    For example most of NetworkManager pieces and metacity aren't provided
+    on SLES.
+    
+    ifconfig is in the net-tools-deprecated package in openSUSE Factory,
+    which means after openSUSE Leap 42.2. Older versions have it in the
+    net-tools package. Adding this complexity only to add ifconfig because
+    sysadmins prefer it isn't too good:  iproute2 is doing the job.
+    
+    (cherry picked from commit 9507c79945c1b300fc12a10ba9331506da3d3c96)
+
+commit a045d1bf2bb10ab588a1aa4c6db462c7c9c90bb6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 22 10:17:22 2016 +0100
+
+    p2v: Use a more specific password prompt regexp.
+    
+    The password prompt is actually generated by the openssh client which
+    is under our control, so we can regexp match on the specific prompt
+    printed by openssh.  This also avoids mistaking any server-side
+    issue.net message for a password prompt (eg. if the server prints a
+    message like "all users must change their passwords today!")  which
+    would have prevented virt-p2v from logging in.
+    
+    (cherry picked from commit 10cbf35cbd7d4feb315fd484901ae53530cd34e2)
+
+commit f3a1692dfd8d1313a526faa9716c1834fd253874
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 22 10:10:03 2016 +0100
+
+    p2v: Improve the error message when login fails (RHBZ#1348900).
+    
+    This can fail because the username is wrong.  Also don't unnecessarily
+    reveal irrelevant implementation details in the error message, just
+    say the login failed.
+    
+    Thanks: Juquin Zhou
+    (cherry picked from commit c44ff0b789b782d9cee385f1f0193f804287a945)
+
+commit c577fa373e3589c79fed25667de3f9dd8143e7dc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 21 14:18:04 2016 +0100
+
+    Revert "aarch64: launch: libvirt: As a workaround, pass -cpu parameter to qemu."
+    
+    Since libvirt bug https://bugzilla.redhat.com/1184411 is now fixed, we
+    don't need this workaround any longer.
+    
+    This reverts commit 7e4b7a346a4558a02aeb58f82d518509ce6e5d03.
+    
+    (cherry picked from commit 572b416468483d7345ec7ce7574c7ba83eca980a)
+
+commit b5e9f66dd0ca3b7d6c0616108da754241acb9939
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 20 10:48:11 2016 +0100
+
+    docs: internals: Fix cross-references to guestfs(3) man page.
+    
+    (cherry picked from commit b5725ef856f850867d1d9ea875c03d3cf3417c4b)
+
+commit 197d74bd0bc17ec68c0eea113c4085b08bc2a16e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 18 21:47:21 2016 +0100
+
+    p2v: Use absolute path in test.
+    
+    Fixed because of change in commit 7447fe2478e49f5121a40db973f8a1fb1daaec53.
+    
+    (cherry picked from commit 257f2cc6b4d61b7c5ce77830cdf0a1408bc15231)
+
+commit 22d4a2f612df589a09f5cc877bf48651b6ed92de
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 18 15:52:09 2016 +0100
+
+    p2v: Add DejaVu Sans and Monospace fonts to the ISO.
+    
+    Improves the general look of virt-p2v.
+    
+    (cherry picked from commit 7301c51da34a9c35c314bc01767c83cd2ea7339b)
+
+commit 940ffbf35064f77a4e32ef5c49e63f31783b50df
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 18 15:25:14 2016 +0100
+
+    virt tools: Warnings are not errors, send them to stdout.
+    
+    (cherry picked from commit 5b131356e261ab949083c0347a0fca9ec0743732)
+
+commit f510584b76efd7396475ece0877c036ae8619744
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 18 14:05:26 2016 +0100
+
+    v2v: Be careful to send all debug messages to stderr.
+    
+    The debug() function is already sending these to stderr, but in a few
+    places we were using printf.  Change those to eprintf, except for one
+    informational message which should have been using info().
+    
+    (cherry picked from commit fc292631da48ebfe1bfa965a4fbdb982e276f1f6)
+
+commit bdc91ff1ecc5cc1a9229865b5e6a47864c7a456a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 18 11:28:16 2016 +0100
+
+    p2v: Fix slow test so it runs our locally built virt-v2v.
+    
+    The virt-p2v slow test tested the local virt-p2v.  However it ran
+    against the installed virt-v2v (and in fact would have failed if
+    virt-v2v was not installed).
+    
+    This commit sets the environment up to run the locally built virt-v2v.
+    
+    This is unfortunately quite a lot more complex than it should be.
+    There is no simple "set this environment variable" option in
+    sshd_config.
+    
+    (cherry picked from commit c5f12e47e4e0dc7846897cad3184ac0892f51ef8)
+
+commit dc0af00ea3b8c407b7e2d7a9d6bba3c8eeb1b9d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 18 11:13:30 2016 +0100
+
+    p2v: test-virt-p2v-pxe.sshd_config is generated by awk, not configure.
+    
+    (cherry picked from commit 87addfb44085f8c059d3348fc093d47f2f0deded)
+
+commit 27c97b21cec4c8b55d82412bb951894678661411
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 17 21:15:47 2016 +0100
+
+    p2v: Hide the spinner in more cases when it is not running (RHBZ#1341564).
+    
+    In particular if you hit the 'Test Connection' button when the server
+    name field was empty, you would still see a stopped spinner.
+    
+    This updates commit 036a11f37927934132aab4fe01ed6f37c03fd805.
+    
+    (cherry picked from commit e6a173d5d4f2fc59dee96d022fe3fc59339a046c)
+
+commit 6e67f5b71fe27146987f64e51efa140600381b6a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 17 14:25:25 2016 +0100
+
+    p2v: Add various disk utilities to the virt-p2v ISO (RHBZ#855058).
+    
+    (cherry picked from commit 02f648f656567f3c5d56d8d12b565501fbfb2109)
+
+commit 3db2d7313490066412726e000fb7b826345de048
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 17 12:47:13 2016 +0100
+
+    p2v: In non-GUI mode, make sure the progress of virt-p2v is visible (RHBZ#1229386).
+    
+    By changing the logging mode of the p2v.service unit, we can make sure
+    that the progress of virt-p2v is visible in non-GUI mode at the
+    console.
+    
+    Since the output is now always shown on the console, there's no need
+    to print the journalctl command for following that output when the
+    user logs in.
+    
+    (cherry picked from commit 762f24c1f3ffabe7412a08f4ca302c5f614aaa9c)
+
+commit 2c9b47b8dbfe30dfc954ba408f3006cef65c4868
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 17 12:26:48 2016 +0100
+
+    p2v: Don't run X in non-GUI mode.
+    
+    Even in non-GUI mode we were starting up the X server in the virt-p2v
+    ISO.  This is a waste of time and resources, so don't do it.
+    
+    (cherry picked from commit 3c7c63e1dcd1fb45caa22515e04b662cd14944bb)
+
+commit cc2ec99739ae2e195b4b71b33a92b84a74c72d59
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 17 12:25:51 2016 +0100
+
+    p2v: test-virt-p2v-pxe: Fix dependencies for rebuilding the image.
+    
+    Not all dependencies were included, so some file changes (eg. to
+    launch-virt-p2v) would not rebuild the test image.
+    
+    (cherry picked from commit e5fcda8a5a8a75789a89676d3b5b4c7d3f0d0929)
+
+commit df5c8cf81b0043b8d68dc225c82a1682c82844e3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 16 21:18:54 2016 +0100
+
+    p2v: ssh: Don't send wrong password more than once (RHBZ#1227599).
+    
+    For some reason I don't quite understand, in
+    commit fd82bb12fd5fc8233955b8ffd4a42c3d6f8d748b if it got the password
+    prompt unexpectedly a second time then it would send the password
+    again, continually until ssh closed the connection because of too many
+    retries.
+    
+    This obviously makes no sense.  If we get the password prompt back,
+    then we must have sent an incorrect password so abort the connection
+    and report the error at once.
+    
+    (cherry picked from commit 3dd3bba77837f011d6fd81cd6c3407341e4a30c7)
+
+commit 23b3fb68815755fd6c77158914f4c6713174f889
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 15 12:19:01 2016 +0100
+
+    generator: Use common OCaml rules for building the generator too.
+    
+    Updates commit a3cb12ab2c1eb323647cc598ab166181aa98545c.
+    
+    (cherry picked from commit 66856b6ba09a96552dae5309f51b4ec7630a76aa)
+
+commit 717ba2f36a9b6565b33ab437b3c546877fde9f21
+Author: Andrea Bolognani <abologna@redhat.com>
+Date:   Thu Jun 16 16:14:58 2016 +0200
+
+    builder: Fix description for --long option
+    
+    (cherry picked from commit a2d0511904aad636f3a217d56b5d3c7f7f64cfda)
+
+commit c55650f039505b3f4f2eaa5d67f2043982b5c634
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 14 17:00:26 2016 +0100
+
+    generator: Remove unnecessary 'chars' function.
+    
+    String.make can be used instead, and that function has been around
+    since at least RHEL 6 era OCaml.
+    
+    (cherry picked from commit bbb83aeccc995341881eb90eaf15f69069c82bc1)
+
+commit aaf7842c41ceac0edbde2e430cce56e28d1aa156
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 14 13:13:49 2016 +0100
+
+    v2v: OVF: Add new <Origin/> values for virt-p2v and HyperV.
+    
+    See proposed change to oVirt: https://gerrit.ovirt.org/#/c/59147/
+    and RHBZ#1342398.
+    
+    This enhances commit 9467777fdf08ef7158b63354b9b46b003845daee.
+    
+    Thanks: Shahar Havivi
+    (cherry picked from commit a88418621d79805a54c3b0ce9771095848247f8f)
+
+commit 1b79989b690b5d60b177d8c970d950fa172b6d19
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 14 13:13:23 2016 +0100
+
+    v2v: OVF: Add a comment about what happens for unknown <Origin/>.
+    
+    (cherry picked from commit c9bfe1ee9b071413ff2afdde0a4fac3f3f2aba85)
+
+commit 1b8d49830d50f9c1c73bf7594eb3fbf95f4766ae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 13 10:53:00 2016 +0100
+
+    sysprep: Add --network to enable the network (RHBZ#1345813).
+    
+    In commit ae6f726ecc3bc1b67fd76e51a7b1e1a33d4dcfc0 we started to use
+    the virt-customize code to replace various virt-sysprep operations.
+    This had the effect of adding many more possible operations to
+    virt-sysprep, but some of them (specifically --install) did not work
+    unless the appliance network is enabled.  It was not enabled in
+    virt-sysprep, so these operations never worked.
+    
+    This change does NOT enable the network by default.  However it adds a
+    --network flag which may be used in conjunction with --install etc to
+    make those commands work.
+    
+    In addition we now emit a warning for certain customize operations if
+    they fail and if the network is not enabled.  It will print:
+    
+      [   4.5] Installing packages: tcpdump
+      Error: Cannot retrieve repository metadata (repomd.xml) for repository: base. Please verify its path and try again
+      Could not retrieve mirrorlist http://mirrorlist.centos.org/?release=6&arch=x86_64&repo=os&infra=stock error was
+    
+      virt-sysprep: warning: the command may have failed because the network is
+      disabled.  Try either removing '--no-network' or adding '--network' on the
+      command line.
+    
+      virt-sysprep: error: yum -y install 'tcpdump': command exited with an error
+    
+    (If the network is already enabled, or if the command is successful,
+    then the warning is not printed.)
+    
+    Thanks: Xianghua Chen
+    (cherry picked from commit 669e25049e5e2ba8c252363a93a01a6eebfe5509)
+
+commit 5b59bcb6acaf26245c4fab590469f6b22755a3da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 13 11:31:10 2016 +0100
+
+    customize: Give an error if --truncate-recursive path does not exist (RHBZ#1345809).
+    
+    You will now see an error such as:
+    
+    $ virt-customize -a centos-6.img --truncate-recursive /home/foo
+    [   0.0] Examining the guest ...
+    [  16.5] Setting a random seed
+    [  16.5] Recursively truncating: /home/foo
+    virt-customize: error: libguestfs error: find0: /home/foo: No such file or
+    directory
+    
+    Thanks: Xianghua Chen
+    (cherry picked from commit 0b5c6174b8b1222abb2b28a29d9ad9f3dce8c8e6)
+
+commit 51692b108fa6339e795d05be7f03907406222428
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 13 11:27:30 2016 +0100
+
+    customize: Use C<> around parameter name in documentation.
+    
+    Fixes commit a084758e83eddb0c5b57ce904856218240011419
+    and commit 7e8ed7cb218c4104753fa5aae9d945d5a84054e9.
+    
+    (cherry picked from commit 07c34fa65fc008dc9806e8218c2975d1da1cc02b)
+
+commit 316a864aa000ef6ffdd8cffc9bfb10da3acdc42c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jun 12 12:58:57 2016 +0100
+
+    v2v: Allocate extra RAM to the appliance during conversion.
+    
+    The 'semodule' command, called by the guest tools uninstaller, will
+    run out of memory with the default of 500MB
+    (https://bugzilla.redhat.com/426775).
+    
+    Allocate a large amount of RAM, that will be at least 800MB, but scale
+    correspondingly on other architectures like ppc64 that have larger
+    memory requirements.
+    
+    Thanks: Pavel Butsykin
+    (cherry picked from commit 08f82f2e3d6975b72340dd59f438862e152a15ef)
+
+commit 8c564320ceba4eabe0b0d85141a9fc1295fc2f6f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 13 08:54:48 2016 +0100
+
+    mllib: Document open_guestfs identifier parameter.
+    
+    Just a documentation fix.
+    
+    (cherry picked from commit 736cc8f8a9bdf0b4de0e7fa0732e807da2f16426)
+
+commit 154daa32fb237d114ec9931b348569f0481f3f2e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jun 12 22:40:01 2016 +0100
+
+    ocaml: Move identical rules for building OCaml objects to common file.
+    
+    (cherry picked from commit a3cb12ab2c1eb323647cc598ab166181aa98545c)
+
+commit 224749c8acabc154a9033cc2060adf722086bea2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jun 12 21:56:00 2016 +0100
+
+    v2v: XML: Fold some over-long lines of code.
+    
+    Just whitespace, no functional changes.
+    
+    (cherry picked from commit 0321797c7a866828faed74665b007dcd16c03874)
+
+commit 02dba057de8e2e1f7bf05e79cf8e710343d48c2c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jun 12 21:02:28 2016 +0100
+
+    v2v: XML: Rename internal types.
+    
+    This is a mostly mechanical renaming of the internal pointer types
+    used in the libxml2 bindings.  Also I have added a longer comment to
+    make the system clearer.
+    
+    (cherry picked from commit ec63594b67f4a766a27048faf1e6ec8117a9b971)
+
+commit cdffa4f4d81c530aca3b0bfe2ecc781ff97cabbc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jun 12 17:35:14 2016 +0100
+
+    v2v: DOM: Make 'doc' and 'element' types distinct.
+    
+    No functional change, just enforces the distinct type for callers.
+    
+    (cherry picked from commit b8f1ea3fff3d7fc22d0b9a609edb345f191cb691)
+
+commit f7f2cd283cb3287801015e0140a341eafecd3f22
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 10 22:24:38 2016 +0100
+
+    v2v: Whitespace change in DOM.
+    
+    (cherry picked from commit 4df28a433a9e19c21b0b02796b37ee161391ec11)
+
+commit 78b4adcde764d7d01e71a02a08d3966d090adf64
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 9 15:03:52 2016 +0100
+
+    v2v: OVF: Set <Origin/> field correctly based on source hypervisor.
+    
+    https://bugzilla.redhat.com/show_bug.cgi?id=1342398#c6
+    (cherry picked from commit 9467777fdf08ef7158b63354b9b46b003845daee)
+
+commit 725a67260f77d1b2bca49f4a98155ae759a39182
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 7 22:10:28 2016 +0100
+
+    ruby: tests: Give each test class and method a unique name.
+    
+    'tc_410_close_event.rb' was not being run.  You could prove this by
+    simply inserting "exit 1" into that test.
+    
+    The reason is unclear, but by renaming every class and method in the
+    tests to be unique, this ensures the tests are run.
+    
+    (cherry picked from commit 4ed70d558ab04dd668c6f42412f7dac8ad56c14f)
+
+commit bbc0345081bc992af0ffd6465886f3f35ecea110
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 7 20:52:04 2016 +0100
+
+    ruby: Print exceptions thrown by event callbacks.
+    
+    (cherry picked from commit 4d6899ee91ddaa7b5758de50fd2cc09b46e6a7f3)
+
+commit 11b6951ee650d01c90804e9eb74c719e63300cf8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jun 8 16:12:49 2016 +0200
+
+    get-kernel: use "auto" as real autodetection marker (RHBZ#1341984)
+    
+    (cherry picked from commit 35fa14152245bcae2c0842abf120cd4ec7bd098c)
+
+commit cd751c02d7fc5f5023c5ba4b628da3a088525c26
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 7 14:32:26 2016 +0100
+
+    p2v: Add note about 403 Forbidden errors when serving id_rsa file (RHBZ#1343414).
+    
+    (cherry picked from commit 3064c853726d2904f73b45b5d35140b5a54a5859)
+
+commit e1eef74cb83e30d07d5277e93a52e1bd30a6a8c8
+Author: Roman Kagan <rkagan@virtuozzo.com>
+Date:   Fri Jun 3 18:14:17 2016 +0300
+
+    v2v: copy all driver files into guest
+    
+    Some virtio-win drivers contain more files than just *.{cat,inf,sys}.
+    They are filtered out currently, which prevents the drivers from being
+    installed by PnP.
+    
+    Stop filtering driver files by extension, and copy all of them instead.
+    
+    Signed-off-by: Roman Kagan <rkagan@virtuozzo.com>
+    Reviewed-by: Richard W.M. Jones <rjones@redhat.com>
+    (cherry picked from commit 4c24531d907d888d20498bbac8bd4a4aef424e49)
+
+commit f8a9a71bd58cd90e65ce9694b25fd631ca142590
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 4 14:27:07 2016 +0100
+
+    docs: hacking: It's the 'docs' subdirectory, not 'doc'.
+    
+    (cherry picked from commit 2e5542a65e5534d4ed9e29db4fe8ad1d84460323)
+
+commit 9500f237c5d82be0dccaf07fde27186d07d7bc07
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 4 13:53:12 2016 +0100
+
+    docs: Remove imaginary '--enable-gcc-warnings' flag.
+    
+    It doesn't actually exist.  Not sure if it did in some earlier
+    version, but it doesn't exist now.
+    
+    (cherry picked from commit 2eb1d849f25196820beedfb6ec0b7c6c19a4bd67)
+
+commit e66c6f48dccba77cf0edfaafca7a0e6268a93e8e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 3 10:25:59 2016 +0100
+
+    p2v: Add ifconfig to the ISO (RHBZ#1342447).
+    
+    Suggested by Ming Xie.
+    
+    (cherry picked from commit 60d4b7f544e9143e70ecf04ee8a031a5bc285304)
+
+commit 81b2ff3f53289f5d301edfc4bb739885317efe4f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 2 23:12:02 2016 +0100
+
+    p2v: Pass special --iso flag when running in the ISO environment.
+    
+    If this flag is not set (ie. we are doing local testing) then we
+    disable some dangerous features.  Currently this is just the "Reboot"
+    button, but may include other features in future.
+    
+    (cherry picked from commit 523a65b65f20c62e04e0f97e4d2c0ee598a703dd)
+
+commit 09c68edf925623f609a5ba177223cc9f6ec35817
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 18 15:09:23 2016 +0100
+
+    v2v: tests: use guestfs-hashsums.sh for MD5
+    
+    Use the common helper for MD5 checksum, instead of assuming md5sum(1).
+    
+    (cherry picked from commit 39772344ad0a2eaaa9905d9440b10a26692b1a56)
+
+commit de8f9280e176a1f922c8941a631a3ae96fcf6c6e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 18 15:03:22 2016 +0100
+
+    v2v: tests: isolate SHA1 calculation in an own shared function
+    
+    sha1sum(1) does not exist everywhere, so wrap it in an own function so
+    the right implementation can be chosen on each OS.  Also, wrapping it
+    avoid using awk everytime.
+    
+    (cherry picked from commit 8aee5726d3576b10daa59483a24ca7d7cf59a4cf)
+
+commit e475f70edcbd98c13315e50e7ce66da3a8e0722e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 18 14:45:54 2016 +0100
+
+    tests: move guestfs-md5.sh to test-data
+    
+    Move it to the test-data directory, giving it a more generic name so it
+    can be used also for more than just md5; adjust qemu tests accordingly.
+    
+    This is just code motion, no behaviour change.
+    
+    (cherry picked from commit 41795a1c987082d14026d5f493278572a9f4fe43)
+
 commit 57dfd50619f34fc8abba72fd5e9c18c8baf509d8
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Jun 1 10:56:34 2016 +0100
@@ -29771,8 +30733,8 @@ Date:   Wed Oct 9 20:42:47 2013 +0100
     
     The only difference in the generated output is:
     
-    --- daemon/optgroups.h.orig	     2013-10-09 20:42:02.479681861 +0100
-    +++ daemon/optgroups.h		     2013-10-09 20:42:10.563681858 +0100
+    --- daemon/optgroups.h.orig          2013-10-09 20:42:02.479681861 +0100
+    +++ daemon/optgroups.h               2013-10-09 20:42:10.563681858 +0100
     @@ -149,7 +149,7 @@
        int optgroup_inotify_available (void) { return 0; }
     
@@ -35961,8 +36923,8 @@ Date:   Thu Mar 14 12:15:23 2013 +0000
     The difference in file layout between 'make install' and
     'make INSTALLDIRS=vendor install' is shown below (for Fedora 18).
     
-    --- /tmp/site	2013-03-14 12:14:35.740015694 +0000
-    +++ /tmp/vendor	2013-03-14 12:14:13.668093944 +0000
+    --- /tmp/site   2013-03-14 12:14:35.740015694 +0000
+    +++ /tmp/vendor 2013-03-14 12:14:13.668093944 +0000
     @@ -119,21 +119,20 @@
      ./usr/lib64/ocaml/guestfs/mlguestfs.cmxa
      ./usr/lib64/ocaml/stublibs/dllmlguestfs.so
@@ -62409,7 +63371,7 @@ Date:   Wed Oct 20 11:34:57 2010 +0100
     
       guestfs_add_drive_opts (g, filename,
                               GUESTFS_ADD_DRIVE_OPTS_READONLY, 1,
-    			  GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                              GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
                               -1);
     
     (the argument(s) between 'filename' and '-1' are the optional ones).
@@ -69198,9 +70160,9 @@ Date:   Fri Dec 4 14:35:55 2009 +0000
     are only enabled in multithreaded applications.
     
     $ ldd src/.libs/libguestfs.so.0.217.0
-    	linux-vdso.so.1 =>  (0x00007fffcb7ff000)
-    	libc.so.6 => /lib64/libc.so.6 (0x00007f96a4e6c000)
-    	/lib64/ld-linux-x86-64.so.2 (0x00007f96a544d000)
+            linux-vdso.so.1 =>  (0x00007fffcb7ff000)
+            libc.so.6 => /lib64/libc.so.6 (0x00007f96a4e6c000)
+            /lib64/ld-linux-x86-64.so.2 (0x00007f96a544d000)
     
     Please enter the commit message for your changes. Lines starting
 
@@ -72098,7 +73060,7 @@ Date:   Wed Sep 9 12:34:13 2009 +0100
     
     /* Generated */
     int guestfs_set_verbose (guestfs_h *g,
-    		int verbose)
+                    int verbose)
     {
       return guestfs__set_verbose (g, verbose);
     }

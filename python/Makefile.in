@@ -1771,13 +1771,14 @@ CLEANFILES = \
 	guestfs-internal-all.h \
 	guestfs-internal-frontend-cleanups.h \
 	guestfs-internal-frontend.h \
+	ignore-value.h \
 	stamp-extra-files \
 	utils.c
 
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .log .o .obj .test .test$(EXEEXT) .trs
+.SUFFIXES: .c .cmi .cmo .cmx .lo .log .ml .mli .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -2333,6 +2334,17 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
+# Rules for building OCaml objects.
+# See also:
+# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
+
+.mli.cmi:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+.ml.cmo:
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
 # Currently we don't use setup.py to build the Python library for
 # distribution with libguestfs (although maybe we should in future).
 # For now, these are some rules which use setup.py to make a source
@@ -2354,11 +2366,15 @@ $(top_builddir)/generator/generator:
 @HAVE_PYTHON_TRUE@	  guestfs-internal-all.h \
 @HAVE_PYTHON_TRUE@	  guestfs-internal-frontend-cleanups.h \
 @HAVE_PYTHON_TRUE@	  guestfs-internal-frontend.h \
+@HAVE_PYTHON_TRUE@	  ignore-value.h \
 @HAVE_PYTHON_TRUE@	  utils.c
 @HAVE_PYTHON_TRUE@	touch $@
 
 @HAVE_PYTHON_TRUE@config.h:
 @HAVE_PYTHON_TRUE@	ln ../config.h $@
+
+@HAVE_PYTHON_TRUE@ignore-value.h:
+@HAVE_PYTHON_TRUE@	ln $(top_srcdir)/gnulib/lib/ignore-value.h $@
 
 @HAVE_PYTHON_TRUE@guestfs-internal-all.h:
 @HAVE_PYTHON_TRUE@	ln $(top_srcdir)/src/guestfs-internal-all.h $@

@@ -41,6 +41,7 @@ CLEANFILES = \
 	stamp-virt-p2v.pod \
 	stamp-virt-p2v-make-disk.pod \
 	stamp-virt-p2v-make-kickstart.pod \
+	test-virt-p2v-pxe.authorized_keys \
 	test-virt-p2v-pxe.img \
 	test-virt-p2v-pxe.vmlinuz \
 	test-virt-p2v-pxe.initramfs \
@@ -185,6 +186,7 @@ SLOW_TESTS = \
 	test-virt-p2v-pxe.sh
 
 check-slow: test-virt-p2v-pxe.img \
+	    test-virt-p2v-pxe.authorized_keys \
 	    test-virt-p2v-pxe.vmlinuz test-virt-p2v-pxe.initramfs \
 	    test-virt-p2v-pxe.sshd_config \
 	    test-virt-p2v-pxe.ssh_host_rsa_key \
@@ -192,9 +194,14 @@ check-slow: test-virt-p2v-pxe.img \
 	    test-virt-p2v-pxe.id_rsa test-virt-p2v-pxe.id_rsa.pub
 	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
-test-virt-p2v-pxe.img: virt-p2v-make-disk \
-	               virt-p2v \
-	               test-virt-p2v-pxe.id_rsa
+test-virt-p2v-pxe.img: \
+	    dependencies.m4 \
+	    issue \
+	    launch-virt-p2v \
+	    p2v.service \
+	    test-virt-p2v-pxe.id_rsa \
+	    virt-p2v \
+	    virt-p2v-make-disk
 	$(top_builddir)/run virt-p2v-make-disk \
 	    --inject-ssh-identity=test-virt-p2v-pxe.id_rsa \
 	    -o $@-t \
@@ -220,6 +227,12 @@ test-virt-p2v-pxe.sshd_config: test-virt-p2v-pxe.sshd_config.in
 	    print; \
 	  }' < $< > $@-t
 	chmod 0444 $@-t
+	mv $@-t $@
+
+test-virt-p2v-pxe.authorized_keys: test-virt-p2v-pxe.id_rsa.pub $(top_builddir)/run
+	rm -f $@ $@-t
+	$(top_builddir)/run sh -c 'echo -n environment=\"PATH=$$PATH\",environment=\"LD_LIBRARY_PATH=$(abs_top_builddir)/src/.libs\"\ ' > $@-t
+	cat $< >> $@-t
 	mv $@-t $@
 
 test-virt-p2v-pxe.ssh_host_rsa_key test-virt-p2v-pxe.ssh_host_rsa_key.pub: stamp-test-virt-p2v-pxe-hostkey

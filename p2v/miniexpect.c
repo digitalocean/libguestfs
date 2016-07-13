@@ -24,6 +24,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <signal.h>
 #include <poll.h>
 #include <errno.h>
 #include <termios.h>
@@ -96,7 +97,7 @@ mexp_close (mexp_h *h)
 }
 
 mexp_h *
-mexp_spawnl (const char *file, const char *arg, ...)
+mexp_spawnlf (unsigned flags, const char *file, const char *arg, ...)
 {
   char **argv, **new_argv;
   size_t i;
@@ -121,14 +122,14 @@ mexp_spawnl (const char *file, const char *arg, ...)
     argv[i] = (char *) arg;
   }
 
-  h = mexp_spawnv (file, argv);
+  h = mexp_spawnvf (flags, file, argv);
   free (argv);
   va_end (args);
   return h;
 }
 
 mexp_h *
-mexp_spawnv (const char *file, char **argv)
+mexp_spawnvf (unsigned flags, const char *file, char **argv)
 {
   mexp_h *h = NULL;
   int fd = -1;
@@ -160,8 +161,24 @@ mexp_spawnv (const char *file, char **argv)
     goto error;
 
   if (pid == 0) {               /* Child. */
-    struct termios terminal_settings;
     int slave_fd;
+
+    if (!(flags & MEXP_SPAWN_KEEP_SIGNALS)) {
+      struct sigaction sa;
+      int i;
+
+      /* Remove all signal handlers.  See the justification here:
+       * https://www.redhat.com/archives/libvir-list/2008-August/msg00303.html
+       * We don't mask signal handlers yet, so this isn't completely
+       * race-free, but better than not doing it at all.
+       */
+      memset (&sa, 0, sizeof sa);
+      sa.sa_handler = SIG_DFL;
+      sa.sa_flags = 0;
+      sigemptyset (&sa.sa_mask);
+      for (i = 1; i < NSIG; ++i)
+        sigaction (i, &sa, NULL);
+    }
 
     setsid ();
 
@@ -172,10 +189,14 @@ mexp_spawnv (const char *file, char **argv)
     if (slave_fd == -1)
       goto error;
 
-    /* Set raw mode. */
-    tcgetattr (slave_fd, &terminal_settings);
-    cfmakeraw (&terminal_settings);
-    tcsetattr (slave_fd, TCSANOW, &terminal_settings);
+    if (!(flags & MEXP_SPAWN_COOKED_MODE)) {
+      struct termios termios;
+
+      /* Set raw mode. */
+      tcgetattr (slave_fd, &termios);
+      cfmakeraw (&termios);
+      tcsetattr (slave_fd, TCSANOW, &termios);
+    }
 
     /* Set up stdin, stdout, stderr to point to the pty. */
     dup2 (slave_fd, 0);
@@ -187,6 +208,21 @@ mexp_spawnv (const char *file, char **argv)
      * kernel bug, see sshpass source code.
      */
     close (fd);
+
+    if (!(flags & MEXP_SPAWN_KEEP_FDS)) {
+      int i, max_fd;
+
+      /* Close all other file descriptors.  This ensures that we don't
+       * hold open (eg) pipes from the parent process.
+       */
+      max_fd = sysconf (_SC_OPEN_MAX);
+      if (max_fd == -1)
+        max_fd = 1024;
+      if (max_fd > 65536)
+        max_fd = 65536;      /* bound the amount of work we do here */
+      for (i = 3; i < max_fd; ++i)
+        close (i);
+    }
 
     /* Run the subprocess. */
     execvp (file, argv);
@@ -387,4 +423,10 @@ mexp_printf (mexp_h *h, const char *fs, ...)
 
   free (msg);
   return len;
+}
+
+int
+mexp_send_interrupt (mexp_h *h)
+{
+  return write (h->fd, "\003", 1);
 }

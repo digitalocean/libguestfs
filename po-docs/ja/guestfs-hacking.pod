@@ -286,9 +286,9 @@ If you use Emacs, add the following to one of one of your start-up files
 
 =head2 変更のテスト方法
 
-コンパイル時に警告を有効にします（そして、これは見つけた問題をすべて修正します）:
+Turn warnings into errors when developing to make warnings hard to ignore:
 
- ./configure --enable-gcc-warnings
+ ./configure --enable-werror
 
 有用なターゲットは次のとおりです:
 
@@ -563,7 +563,7 @@ L<virt-dib(1)> command and documentation.
 
 L<virt-diff(1)> command and documentation.
 
-=item F<doc>
+=item F<docs>
 
 Miscellaneous manual pages.
 

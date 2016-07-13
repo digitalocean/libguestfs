@@ -142,6 +142,44 @@ val assoc : ?cmp:('a -> 'a -> int) -> default:'b -> 'a -> ('a * 'b) list -> 'b
 (** Like {!List.assoc} but with a user-defined comparison function, and
     instead of raising [Not_found], it returns the [~default] value. *)
 
+val push_back : 'a list ref -> 'a -> unit
+val push_front : 'a -> 'a list ref -> unit
+val pop_back : 'a list ref -> 'a
+val pop_front : 'a list ref -> 'a
+(** Imperative list manipulation functions, similar to C++ STL
+    functions with the same names.  (Although the names are similar,
+    the computational complexity of the functions is quite different.)
+
+    These operate on list references, and each function modifies the
+    list reference that is passed to it.
+
+    [push_back xsp x] appends the element [x] to the end of the list
+    [xsp].  This function is not tail-recursive.
+
+    [push_front x xsp] prepends the element [x] to the head of the
+    list [xsp].  (The arguments are reversed compared to the same Perl
+    function, but OCaml is type safe so that's OK.)
+
+    [pop_back xsp] removes the last element of the list [xsp] and
+    returns it.  The list is modified to become the list minus the
+    final element.  If a zero-length list is passed in, this raises
+    [Failure "pop_back"].  This function is not tail-recursive.
+
+    [pop_front xsp] removes the head element of the list [xsp] and
+    returns it.  The list is modified to become the tail of the list.
+    If a zero-length list is passed in, this raises [Failure
+    "pop_front"]. *)
+
+val append : 'a list ref -> 'a list -> unit
+val prepend : 'a list -> 'a list ref -> unit
+(** More imperative list manipulation functions.
+
+    [append] is like {!push_back} above, except it appends a list to
+    the list reference.  This function is not tail-recursive.
+
+    [prepend] is like {!push_front} above, except it prepends a list
+    to the list reference. *)
+
 val may : ('a -> unit) -> 'a option -> unit
 (** [may f (Some x)] runs [f x].  [may f None] does nothing. *)
 
@@ -194,7 +232,9 @@ val debug : ('a, unit, string, unit) format4 -> 'a
 
 val open_guestfs : ?identifier:string -> unit -> Guestfs.guestfs
 (** Common function to create a new Guestfs handle, with common options
-    (e.g. debug, tracing) already set. *)
+    (e.g. debug, tracing) already set.
+
+    The optional [?identifier] parameter sets the handle identifier. *)
 
 val run_main_and_handle_errors : (unit -> unit) -> unit
 (** Common function for handling pretty-printing exceptions. *)

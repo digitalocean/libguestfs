@@ -1646,7 +1646,7 @@ guestfs_int_py_add_domain (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_ADD_DRIVE
+#ifdef GUESTFS_HAVE_ADD_DRIVE_OPTS
 static PyObject *
 guestfs_int_py_add_drive (PyObject *self, PyObject *args)
 {
@@ -4574,7 +4574,7 @@ guestfs_int_py_btrfs_set_seeding (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE_OPTS
 static PyObject *
 guestfs_int_py_btrfs_subvolume_create (PyObject *self, PyObject *args)
 {
@@ -4820,7 +4820,7 @@ guestfs_int_py_btrfs_subvolume_show (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT_OPTS
 static PyObject *
 guestfs_int_py_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
 {
@@ -9454,7 +9454,7 @@ guestfs_int_py_glob_expand (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_GREP
+#ifdef GUESTFS_HAVE_GREP_OPTS
 static PyObject *
 guestfs_int_py_grep (PyObject *self, PyObject *args)
 {
@@ -13201,7 +13201,7 @@ guestfs_int_py_internal_test_set_output (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_IS_BLOCKDEV
+#ifdef GUESTFS_HAVE_IS_BLOCKDEV_OPTS
 static PyObject *
 guestfs_int_py_is_blockdev (PyObject *self, PyObject *args)
 {
@@ -13280,7 +13280,7 @@ guestfs_int_py_is_busy (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_IS_CHARDEV
+#ifdef GUESTFS_HAVE_IS_CHARDEV_OPTS
 static PyObject *
 guestfs_int_py_is_chardev (PyObject *self, PyObject *args)
 {
@@ -13359,7 +13359,7 @@ guestfs_int_py_is_config (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_IS_DIR
+#ifdef GUESTFS_HAVE_IS_DIR_OPTS
 static PyObject *
 guestfs_int_py_is_dir (PyObject *self, PyObject *args)
 {
@@ -13409,7 +13409,7 @@ guestfs_int_py_is_dir (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_IS_FIFO
+#ifdef GUESTFS_HAVE_IS_FIFO_OPTS
 static PyObject *
 guestfs_int_py_is_fifo (PyObject *self, PyObject *args)
 {
@@ -13459,7 +13459,7 @@ guestfs_int_py_is_fifo (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_IS_FILE
+#ifdef GUESTFS_HAVE_IS_FILE_OPTS
 static PyObject *
 guestfs_int_py_is_file (PyObject *self, PyObject *args)
 {
@@ -13604,7 +13604,7 @@ guestfs_int_py_is_ready (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_IS_SOCKET
+#ifdef GUESTFS_HAVE_IS_SOCKET_OPTS
 static PyObject *
 guestfs_int_py_is_socket (PyObject *self, PyObject *args)
 {
@@ -17554,7 +17554,7 @@ guestfs_int_py_mkfifo (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_MKFS
+#ifdef GUESTFS_HAVE_MKFS_OPTS
 static PyObject *
 guestfs_int_py_mkfs (PyObject *self, PyObject *args)
 {
@@ -18013,7 +18013,7 @@ guestfs_int_py_mknod_c (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_MKSWAP
+#ifdef GUESTFS_HAVE_MKSWAP_OPTS
 static PyObject *
 guestfs_int_py_mkswap (PyObject *self, PyObject *args)
 {
@@ -19030,7 +19030,7 @@ guestfs_int_py_ntfsfix (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_NTFSRESIZE
+#ifdef GUESTFS_HAVE_NTFSRESIZE_OPTS
 static PyObject *
 guestfs_int_py_ntfsresize (PyObject *self, PyObject *args)
 {
@@ -23727,7 +23727,7 @@ guestfs_int_py_tail_n (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_TAR_IN
+#ifdef GUESTFS_HAVE_TAR_IN_OPTS
 static PyObject *
 guestfs_int_py_tar_in (PyObject *self, PyObject *args)
 {
@@ -23808,7 +23808,7 @@ guestfs_int_py_tar_in (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_TAR_OUT
+#ifdef GUESTFS_HAVE_TAR_OUT_OPTS
 static PyObject *
 guestfs_int_py_tar_out (PyObject *self, PyObject *args)
 {
@@ -24388,7 +24388,7 @@ guestfs_int_py_umask (PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef GUESTFS_HAVE_UMOUNT
+#ifdef GUESTFS_HAVE_UMOUNT_OPTS
 static PyObject *
 guestfs_int_py_umount (PyObject *self, PyObject *args)
 {
@@ -26607,7 +26607,7 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_ADD_DOMAIN
   { (char *) "add_domain", guestfs_int_py_add_domain, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_ADD_DRIVE
+#ifdef GUESTFS_HAVE_ADD_DRIVE_OPTS
   { (char *) "add_drive", guestfs_int_py_add_drive, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ADD_DRIVE_RO
@@ -26811,7 +26811,7 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_BTRFS_SET_SEEDING
   { (char *) "btrfs_set_seeding", guestfs_int_py_btrfs_set_seeding, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_CREATE_OPTS
   { (char *) "btrfs_subvolume_create", guestfs_int_py_btrfs_subvolume_create, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_DELETE
@@ -26829,7 +26829,7 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SHOW
   { (char *) "btrfs_subvolume_show", guestfs_int_py_btrfs_subvolume_show, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT
+#ifdef GUESTFS_HAVE_BTRFS_SUBVOLUME_SNAPSHOT_OPTS
   { (char *) "btrfs_subvolume_snapshot", guestfs_int_py_btrfs_subvolume_snapshot, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_BTRFSTUNE_ENABLE_EXTENDED_INODE_REFS
@@ -27165,7 +27165,7 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_GLOB_EXPAND
   { (char *) "glob_expand", guestfs_int_py_glob_expand, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_GREP
+#ifdef GUESTFS_HAVE_GREP_OPTS
   { (char *) "grep", guestfs_int_py_grep, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_GREPI
@@ -27414,25 +27414,25 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_INTERNAL_TEST_SET_OUTPUT
   { (char *) "internal_test_set_output", guestfs_int_py_internal_test_set_output, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_IS_BLOCKDEV
+#ifdef GUESTFS_HAVE_IS_BLOCKDEV_OPTS
   { (char *) "is_blockdev", guestfs_int_py_is_blockdev, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_BUSY
   { (char *) "is_busy", guestfs_int_py_is_busy, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_IS_CHARDEV
+#ifdef GUESTFS_HAVE_IS_CHARDEV_OPTS
   { (char *) "is_chardev", guestfs_int_py_is_chardev, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_CONFIG
   { (char *) "is_config", guestfs_int_py_is_config, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_IS_DIR
+#ifdef GUESTFS_HAVE_IS_DIR_OPTS
   { (char *) "is_dir", guestfs_int_py_is_dir, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_IS_FIFO
+#ifdef GUESTFS_HAVE_IS_FIFO_OPTS
   { (char *) "is_fifo", guestfs_int_py_is_fifo, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_IS_FILE
+#ifdef GUESTFS_HAVE_IS_FILE_OPTS
   { (char *) "is_file", guestfs_int_py_is_file, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_LAUNCHING
@@ -27444,7 +27444,7 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_IS_READY
   { (char *) "is_ready", guestfs_int_py_is_ready, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_IS_SOCKET
+#ifdef GUESTFS_HAVE_IS_SOCKET_OPTS
   { (char *) "is_socket", guestfs_int_py_is_socket, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_IS_SYMLINK
@@ -27717,7 +27717,7 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_MKFIFO
   { (char *) "mkfifo", guestfs_int_py_mkfifo, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_MKFS
+#ifdef GUESTFS_HAVE_MKFS_OPTS
   { (char *) "mkfs", guestfs_int_py_mkfs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKFS_B
@@ -27741,7 +27741,7 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_MKNOD_C
   { (char *) "mknod_c", guestfs_int_py_mknod_c, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_MKSWAP
+#ifdef GUESTFS_HAVE_MKSWAP_OPTS
   { (char *) "mkswap", guestfs_int_py_mkswap, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKSWAP_L
@@ -27807,7 +27807,7 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_NTFSFIX
   { (char *) "ntfsfix", guestfs_int_py_ntfsfix, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_NTFSRESIZE
+#ifdef GUESTFS_HAVE_NTFSRESIZE_OPTS
   { (char *) "ntfsresize", guestfs_int_py_ntfsresize, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_NTFSRESIZE_SIZE
@@ -28170,10 +28170,10 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_TAIL_N
   { (char *) "tail_n", guestfs_int_py_tail_n, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_TAR_IN
+#ifdef GUESTFS_HAVE_TAR_IN_OPTS
   { (char *) "tar_in", guestfs_int_py_tar_in, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_TAR_OUT
+#ifdef GUESTFS_HAVE_TAR_OUT_OPTS
   { (char *) "tar_out", guestfs_int_py_tar_out, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_TGZ_IN
@@ -28206,7 +28206,7 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_UMASK
   { (char *) "umask", guestfs_int_py_umask, METH_VARARGS, NULL },
 #endif
-#ifdef GUESTFS_HAVE_UMOUNT
+#ifdef GUESTFS_HAVE_UMOUNT_OPTS
   { (char *) "umount", guestfs_int_py_umount, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_UMOUNT_ALL

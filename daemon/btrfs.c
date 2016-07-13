@@ -998,7 +998,7 @@ do_btrfs_subvolume_show (const char *subvolume)
   CLEANUP_FREE char *err = NULL;
   CLEANUP_FREE char *out = NULL;
   char *p, *key = NULL, *value = NULL;
-  DECLARE_STRINGSBUF (ret);
+  CLEANUP_FREE_STRINGSBUF DECLARE_STRINGSBUF (ret);
   int r;
 
   subvolume_buf = sysroot_path (subvolume);
@@ -1105,10 +1105,8 @@ do_btrfs_subvolume_show (const char *subvolume)
       }
 
       if (ss) {
-        if (add_string_nodup (&ret, ss) == -1) {
-          free (ss);
+        if (add_string_nodup (&ret, ss) == -1)
           return NULL;
-        }
       } else {
         if (add_string (&ret, "") == -1)
           return NULL;
@@ -1131,7 +1129,7 @@ do_btrfs_subvolume_show (const char *subvolume)
   if (end_stringsbuf (&ret) == -1)
     return NULL;
 
-  return ret.argv;
+  return take_stringsbuf (&ret);
 }
 
 int

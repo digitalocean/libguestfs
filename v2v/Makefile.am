@@ -46,7 +46,6 @@ SOURCES_MLI = \
 	cmdline.mli \
 	convert_linux.mli \
 	convert_windows.mli \
-	curl.mli \
 	DOM.mli \
 	domainxml.mli \
 	input_disk.mli \
@@ -80,7 +79,6 @@ SOURCES_ML = \
 	types.ml \
 	xml.ml \
 	utils.ml \
-	curl.ml \
 	vCenter.ml \
 	domainxml.ml \
 	DOM.ml \
@@ -139,6 +137,7 @@ BOBJECTS = \
 	$(top_builddir)/mllib/regedit.cmo \
 	$(top_builddir)/mllib/mkdtemp.cmo \
 	$(top_builddir)/mllib/JSON.cmo \
+	$(top_builddir)/mllib/curl.cmo \
 	$(top_builddir)/customize/customize_utils.cmo \
 	$(top_builddir)/customize/firstboot.cmo \
 	$(SOURCES_ML:.ml=.cmo)
@@ -202,9 +201,9 @@ COPY_TO_LOCAL_BOBJECTS = \
 	$(top_builddir)/mllib/common_gettext.cmo \
 	$(top_builddir)/mllib/common_utils.cmo \
 	$(top_builddir)/mllib/JSON.cmo \
+	$(top_builddir)/mllib/curl.cmo \
 	xml.cmo \
 	utils.cmo \
-	curl.cmo \
 	vCenter.cmo \
 	domainxml.cmo \
 	copy_to_local.cmo
@@ -222,15 +221,6 @@ virt_v2v_copy_to_local_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
 	  $(COPY_TO_LOCAL_OBJECTS) -o $@
-
-.mli.cmi:
-	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-.ml.cmo:
-	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-if HAVE_OCAMLOPT
-.ml.cmx:
-	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-endif
 
 # Data directory.
 

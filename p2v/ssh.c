@@ -136,7 +136,7 @@ compile_regexps (void)
     CHECK_PARTIAL_OK ((pattern), re);					\
   } while (0)
 
-  COMPILE (password_re, "assword", 0);
+  COMPILE (password_re, "password:", 0);
   /* The magic synchronization strings all match this expression.  See
    * start_ssh function below.
    */
@@ -332,8 +332,10 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
   assert (j == nr_args);
 
   h = mexp_spawnv ("ssh", (char **) args);
-  if (h == NULL)
+  if (h == NULL) {
+    set_ssh_error ("internal error: ssh: mexp_spawnv: %m");
     return NULL;
+  }
 
   if (using_password_auth &&
       config->password && strlen (config->password) > 0) {
@@ -415,12 +417,9 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
                            { 0 }
                          }, ovector, ovecsize)) {
     case 100:                    /* Got password prompt unexpectedly. */
-      if (mexp_printf (h, "%s\n", config->password) == -1) {
-        mexp_close (h);
-        set_ssh_error ("unexpected password prompt: probably the password supplied is wrong");
-        return NULL;
-      }
-      break;
+      mexp_close (h);
+      set_ssh_error ("login failed - probably the username and/or password is wrong");
+      return NULL;
 
     case 101:
       /* Got a prompt.  However it might be an earlier prompt.  If it
