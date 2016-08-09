@@ -96,11 +96,18 @@ libguestfs を使用しているすべてのプログラムの一般的な構造
  /* ハンドル 'g' を閉じて開放します。 */
  guestfs_close (g);
 
-上のコードは何もエラーチェックを含めていません。実際のコードにおいては、エラーに対して返り値を注意深く確認すべきです。一般的に、整数を返すすべての関数はエラーのときに
-C<-1> を返します。ポインターを返すすべての関数はエラーのときに C<NULL> を返します。エラーを処理する方法については以下のセクション
-L</エラー処理方法>
-を参照してください。各関数がどのようにエラー表示を返すのかを詳しく確認するには、以下にある各関数のドキュメントを参照してください。全体的に動作する例は
-L<guestfs-examples(3)> を参照してください。
+The code above doesn't include any error checking.  In real code you should
+check return values carefully for errors.  In general all functions that
+return integers return C<-1> on error, and all functions that return
+pointers return C<NULL> on error.  See section L</ERROR HANDLING> below for
+how to handle errors, and consult the documentation for each function call
+below to see precisely how they return error indications.
+
+The code above does not L<free(3)> the strings and arrays returned from
+functions.  Consult the documentation for each function to find out how to
+free the return value.
+
+See L<guestfs-examples(3)> for fully worked examples.
 
 =head2 ディスクイメージ
 

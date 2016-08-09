@@ -32,6 +32,9 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#if defined(__GNUC__) && __GNUC__ >= 6 /* gcc >= 6 */
+#pragma GCC diagnostic ignored "-Wshift-overflow"
+#endif
 #include <ruby.h>
 #pragma GCC diagnostic pop
 
@@ -277,7 +280,7 @@ delete_event_callback (VALUE gv, VALUE event_handlev)
 {
   guestfs_h *g;
   char key[64];
-  int eh = NUM2INT (event_handlev);
+  const int eh = NUM2INT (event_handlev);
   VALUE *root;
 
   Data_Get_Struct (gv, guestfs_h, g);

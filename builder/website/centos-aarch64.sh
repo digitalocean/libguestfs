@@ -21,52 +21,43 @@ export LANG=C
 set -e
 set -x
 
-# Hack for RWMJ
-unset http_proxy
-
 if [ $# -ne 1 ]; then
     echo "$0 VERSION"
     exit 1
 fi
 
 version=$1
-output=rhel-$version-ppc64le
+output=centos-$version-aarch64
 tmpname=tmp-$(tr -cd 'a-f0-9' < /dev/urandom | head -c 8)
-guestroot=/dev/rhel/root
 
 case $version in
     7.*)
         major=7
-        topurl=http://download.devel.redhat.com/released/RHEL-$major/$version
-        tree=$topurl/Server/ppc64le/os
-        baseurl=$tree
-        srpms=$topurl/Server/source/tree
-        optional=$topurl/Server-optional/ppc64le/os
-        optionalsrpms=$topurl/Server-optional/source/tree
+        # XXX This always points to the latest CentOS 7, so
+        # effectively the minor number is always ignored.
+        tree=http://mirror.centos.org/altarch/$major/os/aarch64/
         ;;
-    *)
-        echo "$0: version $version not supported by this script yet"
-        exit 1
 esac
 
 rm -f $output $output.old $output.xz
 
 # Generate the kickstart to a temporary file.
 ks=$(mktemp)
-cat > $ks <<EOF
+cat > $ks <<'EOF'
 install
 text
+reboot
 lang en_US.UTF-8
 keyboard us
 network --bootproto dhcp
 rootpw builder
 firewall --enabled --ssh
-timezone --utc America/New_York
 selinux --enforcing
-bootloader --location=mbr --append="console=tty0 console=ttyS0,115200 rd_NO_PLYMOUTH"
+timezone --utc America/New_York
+bootloader --location=mbr --append="console=ttyAMA0 earlyprintk=pl011,0x9000000 ignore_loglevel no_timer_check printk.time=1 rd_NO_PLYMOUTH"
 zerombr
 clearpart --all --initlabel
-autopart --type=lvm
+autopart --type=plain
 
 # Halt the system once configuration has finished.
 poweroff
@@ -76,69 +67,26 @@ poweroff
 %end
 EOF
 
-# Yum configuration.
-yum=$(mktemp)
-cat > $yum <<EOF
-[rhel$major]
-name=RHEL $major Server
-baseurl=$baseurl
-enabled=1
-gpgcheck=0
-keepcache=0
-
-[rhel$major-source]
-name=RHEL $major Server Source
-baseurl=$srpms
-enabled=0
-gpgcheck=0
-keepcache=0
-EOF
-
-if [ -n "$optional" ]; then
-cat >> $yum <<EOF
-[rhel$major-optional]
-name=RHEL $major Server Optional
-baseurl=$optional
-enabled=1
-gpgcheck=0
-keepcache=0
-
-[rhel$major-optional-source]
-name=RHEL $major Server Optional
-baseurl=$optionalsrpms
-enabled=0
-gpgcheck=0
-keepcache=0
-EOF
-fi
-
 # Clean up function.
 cleanup ()
 {
     rm -f $ks
-    rm -f $yum
     virsh undefine $tmpname ||:
 }
 trap cleanup INT QUIT TERM EXIT ERR
 
 virt-install \
     --name=$tmpname \
-    --ram=4096 \
-    --vcpus=1 \
-    --os-type=linux --os-variant=rhel$major \
-    --arch ppc64le --machine pseries \
+    --ram=2048 \
+    --cpu=cortex-a57 --vcpus=2 \
+    --os-type=linux --os-variant=centos$major.0 \
     --initrd-inject=$ks \
-    --extra-args="ks=file:/`basename $ks` console=tty0 console=ttyS0,115200" \
+    --extra-args="ks=file:/`basename $ks` earlyprintk=pl011,0x9000000 ignore_loglevel console=ttyAMA0 no_timer_check printk.time=1 proxy=$http_proxy" \
     --disk $(pwd)/$output,size=6,format=raw \
     --serial pty \
     --location=$tree \
     --nographics \
     --noreboot
-
-# We have to replace yum config so it doesn't try to use RHN (it
-# won't be registered).
-guestfish --rw -a $output -m $guestroot \
-  upload $yum /etc/yum.repos.d/download.devel.redhat.com.repo
 
 DO_RELABEL=1
 

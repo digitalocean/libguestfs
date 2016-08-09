@@ -55,6 +55,7 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <libintl.h>
+#include <sys/stat.h>
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -73,6 +74,8 @@ static struct osinfo *osinfo_db = NULL;
 
 static int read_osinfo_db (guestfs_h *g);
 static void free_osinfo_db_entry (struct osinfo *);
+
+#define XMLSTREQ(a,b) (xmlStrEqual((a),(b)) == 1)
 
 /* Given one or more fields from the header of a CD/DVD/ISO, look up
  * the media in the libosinfo database and return our best guess for
@@ -150,61 +153,64 @@ guestfs_int_osinfo_map (guestfs_h *g, const struct guestfs_isoinfo *isoinfo,
  * Note that failure to find or parse the XML files is *not* a fatal
  * error, since we should fall back silently if these are not
  * available.  Although we'll emit some debug if this happens.
+ *
+ * Try to use the shared osinfo database layout (and location) first:
+ * https://gitlab.com/libosinfo/libosinfo/blob/master/docs/database-layout.txt
  */
-#define LIBOSINFO_DB_OS_PATH LIBOSINFO_DB_PATH "/oses"
-
 static int read_osinfo_db_xml (guestfs_h *g, const char *filename);
+
+static int read_osinfo_db_flat (guestfs_h *g, const char *directory);
+static int read_osinfo_db_three_levels (guestfs_h *g, const char *directory);
+static int read_osinfo_db_directory (guestfs_h *g, const char *directory);
 
 static int
 read_osinfo_db (guestfs_h *g)
 {
-  DIR *dir = NULL;
-  struct dirent *d;
   int r;
   size_t i;
 
   assert (osinfo_db_size == 0);
 
-  dir = opendir (LIBOSINFO_DB_OS_PATH);
-  if (!dir) {
-    debug (g, "osinfo: %s: %s", LIBOSINFO_DB_OS_PATH, strerror (errno));
-    return 0; /* This is not an error: RHBZ#948324. */
+  /* (1) Try the shared osinfo directory, using either the
+   * $OSINFO_SYSTEM_DIR envvar or its default value.
+   */
+  {
+    const char *path;
+    CLEANUP_FREE char *os_path = NULL;
+
+    path = getenv ("OSINFO_SYSTEM_DIR");
+    if (path == NULL)
+      path = "/usr/share/osinfo";
+    os_path = safe_asprintf (g, "%s/os", path);
+    r = read_osinfo_db_three_levels (g, os_path);
   }
-
-  debug (g, "osinfo: loading database from %s", LIBOSINFO_DB_OS_PATH);
-
-  for (;;) {
-    errno = 0;
-    d = readdir (dir);
-    if (!d) break;
-
-    if (STRSUFFIX (d->d_name, ".xml")) {
-      r = read_osinfo_db_xml (g, d->d_name);
-      if (r == -1)
-        goto error;
-    }
-  }
-
-  /* Check for failure in readdir. */
-  if (errno != 0) {
-    perrorf (g, "readdir: %s", LIBOSINFO_DB_OS_PATH);
+  if (r == -1)
     goto error;
-  }
+  else if (r == 1)
+    return 0;
 
-  /* Close the directory handle. */
-  r = closedir (dir);
-  dir = NULL;
-  if (r == -1) {
-    perrorf (g, "closedir: %s", LIBOSINFO_DB_OS_PATH);
+  /* (2) Try the libosinfo directory, using the newer three-directory
+   * layout ($LIBOSINFO_DB_PATH / "os" / $group-ID / [file.xml]).
+   */
+  r = read_osinfo_db_three_levels (g, LIBOSINFO_DB_PATH "/os");
+  if (r == -1)
     goto error;
-  }
+  else if (r == 1)
+    return 0;
 
+  /* (3) Try the libosinfo directory, using the old flat directory
+   * layout ($LIBOSINFO_DB_PATH / "oses" / [file.xml]).
+   */
+  r = read_osinfo_db_flat (g, LIBOSINFO_DB_PATH "/oses");
+  if (r == -1)
+    goto error;
+  else if (r == 1)
+    return 0;
+
+  /* Nothing found. */
   return 0;
 
  error:
-  if (dir)
-    closedir (dir);
-
   /* Fatal error: free any database entries which have been read, and
    * mark the database as having a permanent error.
    */
@@ -219,19 +225,132 @@ read_osinfo_db (guestfs_h *g)
   return -1;
 }
 
+static int
+read_osinfo_db_flat (guestfs_h *g, const char *directory)
+{
+  debug (g, "osinfo: loading flat database from %s", directory);
+
+  return read_osinfo_db_directory (g, directory);
+}
+
+static int
+read_osinfo_db_three_levels (guestfs_h *g, const char *directory)
+{
+  DIR *dir;
+  int r;
+
+  dir = opendir (directory);
+  if (!dir) {
+    debug (g, "osinfo: %s: %s", directory, strerror (errno));
+    return 0; /* This is not an error: RHBZ#948324. */
+  }
+
+  debug (g, "osinfo: loading 3-level-directories database from %s", directory);
+
+  for (;;) {
+    struct dirent *d;
+    CLEANUP_FREE char *pathname = NULL;
+    struct stat sb;
+
+    errno = 0;
+    d = readdir (dir);
+    if (!d) break;
+
+    pathname = safe_asprintf (g, "%s/%s", directory, d->d_name);
+
+    /* Iterate only on directories. */
+    if (stat (pathname, &sb) == 0 && S_ISDIR (sb.st_mode)) {
+      r = read_osinfo_db_directory (g, pathname);
+      if (r == -1)
+        goto error;
+    }
+  }
+
+  /* Check for failure in readdir. */
+  if (errno != 0) {
+    perrorf (g, "readdir: %s", directory);
+    goto error;
+  }
+
+  /* Close the directory handle. */
+  r = closedir (dir);
+  dir = NULL;
+  if (r == -1) {
+    perrorf (g, "closedir: %s", directory);
+    goto error;
+  }
+
+  return 1;
+
+ error:
+  if (dir)
+    closedir (dir);
+
+  return -1;
+}
+
+static int
+read_osinfo_db_directory (guestfs_h *g, const char *directory)
+{
+  DIR *dir;
+  int r;
+
+  dir = opendir (directory);
+  if (!dir) {
+    debug (g, "osinfo: %s: %s", directory, strerror (errno));
+    return 0; /* This is not an error: RHBZ#948324. */
+  }
+
+  for (;;) {
+    struct dirent *d;
+
+    errno = 0;
+    d = readdir (dir);
+    if (!d) break;
+
+    if (STRSUFFIX (d->d_name, ".xml")) {
+      CLEANUP_FREE char *pathname = NULL;
+
+      pathname = safe_asprintf (g, "%s/%s", directory, d->d_name);
+      r = read_osinfo_db_xml (g, pathname);
+      if (r == -1)
+        goto error;
+    }
+  }
+
+  /* Check for failure in readdir. */
+  if (errno != 0) {
+    perrorf (g, "readdir: %s", directory);
+    goto error;
+  }
+
+  /* Close the directory handle. */
+  r = closedir (dir);
+  dir = NULL;
+  if (r == -1) {
+    perrorf (g, "closedir: %s", directory);
+    goto error;
+  }
+
+  return 1;
+
+ error:
+  if (dir)
+    closedir (dir);
+
+  return -1;
+}
+
 static int read_iso_node (guestfs_h *g, xmlNodePtr iso_node, struct osinfo *osinfo);
 static int read_media_node (guestfs_h *g, xmlXPathContextPtr xpathCtx, xmlNodePtr media_node, struct osinfo *osinfo);
 static int read_os_node (guestfs_h *g, xmlXPathContextPtr xpathCtx, xmlNodePtr os_node, struct osinfo *osinfo);
 
-/* Read a single XML file from LIBOSINFO_DB_OS_PATH/filename.  Only
- * memory allocation failures are fatal errors here.
+/* Read a single XML file from pathname (which is a full path).
+ * Only memory allocation failures are fatal errors here.
  */
 static int
-read_osinfo_db_xml (guestfs_h *g, const char *filename)
+read_osinfo_db_xml (guestfs_h *g, const char *pathname)
 {
-  const size_t pathname_len =
-    strlen (LIBOSINFO_DB_OS_PATH) + strlen (filename) + 2;
-  char pathname[pathname_len];
   CLEANUP_XMLFREEDOC xmlDocPtr doc = NULL;
   CLEANUP_XMLXPATHFREECONTEXT xmlXPathContextPtr xpathCtx = NULL;
   CLEANUP_XMLXPATHFREEOBJECT xmlXPathObjectPtr xpathObj = NULL;
@@ -239,8 +358,6 @@ read_osinfo_db_xml (guestfs_h *g, const char *filename)
   xmlNodePtr iso_node, media_node, os_node;
   struct osinfo *osinfo;
   size_t i;
-
-  snprintf (pathname, pathname_len, "%s/%s", LIBOSINFO_DB_OS_PATH, filename);
 
   doc = xmlReadFile (pathname, NULL, XML_PARSE_NONET);
   if (doc == NULL) {
@@ -301,14 +418,15 @@ read_osinfo_db_xml (guestfs_h *g, const char *filename)
       }
 
 #if 0
-      debug (g, "osinfo: %s: %s%s%s%s=> arch %s live %s product %s type %d distro %d version %d.%d",
-             filename,
+      debug (g, "osinfo: %s: %s%s%s%s=> arch %s live %s installer %s product %s type %d distro %d version %d.%d",
+             pathname,
              osinfo->re_system_id ? "<system-id/> " : "",
              osinfo->re_volume_id ? "<volume-id/> " : "",
              osinfo->re_publisher_id ? "<publisher-id/> " : "",
              osinfo->re_application_id ? "<application-id/> " : "",
              osinfo->arch ? osinfo->arch : "(none)",
              osinfo->is_live_disk ? "true" : "false",
+             osinfo->is_installer ? "true" : "false",
              osinfo->product_name ? osinfo->product_name : "(none)",
              (int) osinfo->type, (int) osinfo->distro,
              osinfo->major_version, osinfo->minor_version);
@@ -374,30 +492,22 @@ static int
 read_media_node (guestfs_h *g, xmlXPathContextPtr xpathCtx,
                  xmlNodePtr media_node, struct osinfo *osinfo)
 {
-  CLEANUP_XMLXPATHFREEOBJECT xmlXPathObjectPtr xp = NULL, xp2 = NULL;
-  xmlNodePtr attr;
-
-  xpathCtx->node = media_node;
-  xp = xmlXPathEvalExpression (BAD_CAST "./@arch", xpathCtx);
-  if (xp && xp->nodesetval && xp->nodesetval->nodeNr > 0) {
-    attr = xp->nodesetval->nodeTab[0];
-    assert (attr);
-    assert (attr->type == XML_ATTRIBUTE_NODE);
-    osinfo->arch = (char *) xmlNodeGetContent (attr);
-  }
+  osinfo->arch = (char *) xmlGetProp (media_node, BAD_CAST "arch");
 
   osinfo->is_live_disk = 0; /* If no 'live' attr, defaults to false. */
+  {
+    CLEANUP_XMLFREE xmlChar *content = NULL;
+    content = xmlGetProp (media_node, BAD_CAST "live");
+    if (content)
+      osinfo->is_live_disk = XMLSTREQ (content, BAD_CAST "true");
+  }
 
-  xpathCtx->node = media_node;
-  xp2 = xmlXPathEvalExpression (BAD_CAST "./@live", xpathCtx);
-  if (xp2 && xp2->nodesetval && xp2->nodesetval->nodeNr > 0) {
-    CLEANUP_FREE char *content = NULL;
-
-    attr = xp2->nodesetval->nodeTab[0];
-    assert (attr);
-    assert (attr->type == XML_ATTRIBUTE_NODE);
-    content = (char *) xmlNodeGetContent (attr);
-    osinfo->is_live_disk = STREQ (content, "true");
+  osinfo->is_installer = true; /* If no 'installer' attr, defaults to true. */
+  {
+    CLEANUP_XMLFREE xmlChar *content = NULL;
+    content = xmlGetProp (media_node, BAD_CAST "installer");
+    if (content)
+      osinfo->is_installer = XMLSTREQ (content, BAD_CAST "true");
   }
 
   return 0;
@@ -514,7 +624,7 @@ parse_distro (guestfs_h *g, xmlNodePtr node, struct osinfo *osinfo)
       osinfo->distro = OS_DISTRO_OPENSUSE;
     else if (STREQ (content, "rhel"))
       osinfo->distro = OS_DISTRO_RHEL;
-    else if (STREQ (content, "sles"))
+    else if (STREQ (content, "sled") || STREQ (content, "sles"))
       osinfo->distro = OS_DISTRO_SLES;
     else if (STREQ (content, "ubuntu"))
       osinfo->distro = OS_DISTRO_UBUNTU;

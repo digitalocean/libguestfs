@@ -86,6 +86,7 @@ usage (int status)
               "  --help               Display brief help\n"
               "  -P nr_threads        Use at most nr_threads\n"
               "  -q|--quiet           No output, just exit code\n"
+              "  --uuid               Print UUIDs instead of names\n"
               "  -v|--verbose         Verbose messages\n"
               "  -V|--version         Display version and exit\n"
               "  -x                   Trace libguestfs API calls\n"
@@ -105,7 +106,7 @@ main (int argc, char *argv[])
 
   enum { HELP_OPTION = CHAR_MAX + 1 };
 
-  static const char *options = "a:c:d:P:qvVx";
+  static const char options[] = "a:c:d:P:qvVx";
   static const struct option long_options[] = {
     { "add", 1, 0, 'a' },
     { "connect", 1, 0, 'c' },

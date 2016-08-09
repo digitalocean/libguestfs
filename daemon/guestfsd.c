@@ -134,7 +134,7 @@ usage (void)
 int
 main (int argc, char *argv[])
 {
-  static const char *options = "c:lnrtv?";
+  static const char options[] = "c:lnrtv?";
   static const struct option long_options[] = {
     { "help", 0, 0, '?' },
     { "channel", 1, 0, 'c' },
@@ -418,7 +418,7 @@ char *
 sysroot_path (const char *path)
 {
   char *r;
-  size_t len = strlen (path) + sysroot_len + 1;
+  const size_t len = strlen (path) + sysroot_len + 1;
 
   r = malloc (len);
   if (r == NULL)

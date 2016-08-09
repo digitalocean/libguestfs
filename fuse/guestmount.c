@@ -52,7 +52,7 @@ static int write_pid_file (const char *pid_file, pid_t pid);
 static void
 fuse_opt_add_opt_escaped (char **opts, const char *opt)
 {
-  unsigned oldlen = *opts ? strlen(*opts) : 0;
+  const unsigned oldlen = *opts ? strlen(*opts) : 0;
   char *d = realloc (*opts, oldlen + 1 + strlen(opt) * 2 + 1);
 
   if (!d) {
@@ -150,7 +150,7 @@ main (int argc, char *argv[])
   /* The command line arguments are broadly compatible with (a subset
    * of) guestfish.  Thus we have to deal mainly with -a, -m and --ro.
    */
-  static const char *options = "a:c:d:im:no:rv?Vwx";
+  static const char options[] = "a:c:d:im:no:rvVwx";
   static const struct option long_options[] = {
     { "add", 1, 0, 'a' },
     { "connect", 1, 0, 'c' },
