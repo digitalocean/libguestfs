@@ -143,7 +143,7 @@ main (int argc, char *argv[])
 
   enum { HELP_OPTION = CHAR_MAX + 1 };
 
-  static const char *options = "a:A:c:d:D:hvVx";
+  static const char options[] = "a:A:c:d:D:hvVx";
   static const struct option long_options[] = {
     { "add", 1, 0, 'a' },
     { "all", 0, 0, 0 },
@@ -165,6 +165,7 @@ main (int argc, char *argv[])
     { "format", 2, 0, 0 },
     { "help", 0, 0, HELP_OPTION },
     { "human-readable", 0, 0, 'h' },
+    { "long-options", 0, 0, 0 },
     { "keys-from-stdin", 0, 0, 0 },
     { "short-options", 0, 0, 0 },
     { "time", 0, 0, 0 },
@@ -515,7 +516,7 @@ visit_entry (const char *dir, const char *name,
   i = t->nr_files++;
   if (i >= t->allocated) {
     struct file *old_files = t->files;
-    size_t old_allocated = t->allocated;
+    const size_t old_allocated = t->allocated;
 
     /* Number of entries in an F15 guest was 111524, and in a
      * Windows guest was 10709.
@@ -566,7 +567,7 @@ diff_guests (struct tree *t1, struct tree *t2)
 
   while (i1 < end1 || i2 < end2) {
     if (i1 < end1 && i2 < end2) {
-      int comp = strcmp (i1->path, i2->path);
+      const int comp = strcmp (i1->path, i2->path);
 
       /* i1->path < i2->path.  i1 catches up with i2 (files deleted) */
       if (comp < 0) {
@@ -580,11 +581,11 @@ diff_guests (struct tree *t1, struct tree *t2)
       }
       /* Otherwise i1->path == i2->path, compare in detail. */
       else {
-        int st = compare_stats (i1, i2);
+        const int st = compare_stats (i1, i2);
         if (st != 0)
           changed (t1->g, i1, t2->g, i2, st, 0);
         else if (i1->csum && i2->csum) {
-          int cst = strcmp (i1->csum, i2->csum);
+          const int cst = strcmp (i1->csum, i2->csum);
           changed (t1->g, i1, t2->g, i2, 0, cst);
         }
         i1++;
@@ -837,7 +838,7 @@ static int field;
 static void
 next_field (void)
 {
-  int c = csv ? ',' : ' ';
+  const int c = csv ? ',' : ' ';
 
   field++;
   if (field == 1) return;
@@ -1027,7 +1028,8 @@ static void
 output_int64_size (int64_t size)
 {
   char buf[LONGEST_HUMAN_READABLE];
-  int hopts = human_round_to_nearest|human_autoscale|human_base_1024|human_SI;
+  const int hopts =
+    human_round_to_nearest|human_autoscale|human_base_1024|human_SI;
   int r;
 
   next_field ();

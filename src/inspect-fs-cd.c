@@ -349,7 +349,7 @@ check_isolinux_installer_root (guestfs_h *g, struct inspect_fs *fs)
 static void
 trim_cr (char *str)
 {
-  size_t n = strlen (str);
+  const size_t n = strlen (str);
   if (n > 0 && str[n-1] == '\r')
     str[n-1] = '\0';
 }
@@ -357,7 +357,7 @@ trim_cr (char *str)
 static void
 trim_quot (char *str)
 {
-  size_t n = strlen (str);
+  const size_t n = strlen (str);
   if (n > 0 && str[n-1] == '"')
     str[n-1] = '\0';
 }
@@ -526,7 +526,8 @@ guestfs_int_check_installer_iso (guestfs_h *g, struct inspect_fs *fs,
   /* Otherwise we matched an ISO, so fill in the fs fields. */
   fs->mountable = safe_strdup (g, device);
   fs->is_root = 1;
-  fs->format = OS_FORMAT_INSTALLER;
+  if (osinfo->is_installer)
+    fs->format = OS_FORMAT_INSTALLER;
   fs->type = osinfo->type;
   fs->distro = osinfo->distro;
   fs->product_name =

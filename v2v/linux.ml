@@ -152,26 +152,30 @@ let file_list_of_package (g : Guestfs.guestfs) inspect app =
     error (f_"don't know how to get list of files from package using %s")
       format
 
-let rec file_owner g inspect path =
+let rec file_owner (g : G.guestfs) inspect path =
   let package_format = inspect.i_package_format in
   match package_format with
   | "rpm" ->
       (* Although it is possible in RPM for multiple packages to own
        * a file, this deliberately only returns one package.
        *)
-      let cmd = [| "rpm"; "-qf"; "--qf"; "%{NAME}"; path |] in
+      let cmd = [| "rpm"; "-qf"; "--qf"; "%{NAME}\\n"; path |] in
       debug "%s" (String.concat " " (Array.to_list cmd));
-      (try g#command cmd
+      (try
+         let pkgs = g#command_lines cmd in
+         pkgs.(0)
        with Guestfs.Error msg as exn ->
          if String.find msg "is not owned" >= 0 then
            raise Not_found
          else
            raise exn
+       | Invalid_argument "index out of bounds" ->
+         error (f_"internal error: file_owner: rpm command returned no output")
       )
 
   | format ->
     error (f_"don't know how to find file owner using %s") format
 
 and is_file_owned g inspect path =
-  try file_owner g inspect path; true
+  try ignore (file_owner g inspect path); true
   with Not_found -> false

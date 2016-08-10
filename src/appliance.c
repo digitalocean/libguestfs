@@ -34,8 +34,8 @@
 #include "guestfs-internal.h"
 
 /* Old-style appliance is going to be obsoleted. */
-static const char *kernel_name = "vmlinuz." host_cpu;
-static const char *initrd_name = "initramfs." host_cpu ".img";
+static const char kernel_name[] = "vmlinuz." host_cpu;
+static const char initrd_name[] = "initramfs." host_cpu ".img";
 
 static int build_appliance (guestfs_h *g, char **kernel, char **dtb, char **initrd, char **appliance);
 static int find_path (guestfs_h *g, int (*pred) (guestfs_h *g, const char *pelem, void *data), void *data, char **pelem);
@@ -140,7 +140,7 @@ build_appliance (guestfs_h *g,
     return -1;
 
   if (r == 1) {
-    size_t len = strlen (path);
+    const size_t len = strlen (path);
     *kernel = safe_malloc (g, len + 6 /* "kernel" */ + 2);
     *initrd = safe_malloc (g, len + 6 /* "initrd" */ + 2);
     *appliance = safe_malloc (g, len + 4 /* "root" */ + 2);
@@ -164,7 +164,7 @@ build_appliance (guestfs_h *g,
     return -1;
 
   if (r == 1) {
-    size_t len = strlen (path);
+    const size_t len = strlen (path);
     *kernel = safe_malloc (g, len + strlen (kernel_name) + 2);
     *dtb = NULL;
     *initrd = safe_malloc (g, len + strlen (initrd_name) + 2);
@@ -280,11 +280,11 @@ run_supermin_build (guestfs_h *g,
   CLEANUP_CMD_CLOSE struct command *cmd = guestfs_int_new_command (g);
   int r;
 #if 0                           /* not supported in supermin 5 yet XXX */
-  uid_t uid = getuid ();
-  uid_t euid = geteuid ();
-  gid_t gid = getgid ();
-  gid_t egid = getegid ();
-  int pass_u_g_args = uid != euid || gid != egid;
+  const uid_t uid = getuid ();
+  const uid_t euid = geteuid ();
+  const gid_t gid = getgid ();
+  const gid_t egid = getegid ();
+  const int pass_u_g_args = uid != euid || gid != egid;
 #endif
 
   guestfs_int_cmd_add_arg (cmd, SUPERMIN);

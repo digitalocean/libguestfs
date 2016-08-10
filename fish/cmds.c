@@ -47,7 +47,7 @@
 #include "cmds-gperf.h"
 
 /* Valid suffixes allowed for numbers.  See Gnulib xstrtol function. */
-static const char *xstrtol_suffixes = "0kKMGTPEZY";
+static const char xstrtol_suffixes[] = "0kKMGTPEZY";
 
 /* Return these errors from run_* functions. */
 #define RUN_ERROR -1

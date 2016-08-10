@@ -77,12 +77,12 @@ usage (int status)
               "  --csv                Output as Comma-Separated Values\n"
               "  -d|--domain guest    Add disks from libvirt guest\n"
               "  --format[=raw|..]    Force disk format for -a option\n"
-              "  -h|--human-readable  Human-readable sizes in --long output\n"
+              "  -h|--human-readable  Print sizes in human-readable format\n"
               "  --help               Display brief help\n"
               "  -i|--inodes          Display inodes\n"
               "  --one-per-guest      Separate appliance per guest\n"
               "  -P nr_threads        Use at most nr_threads\n"
-              "  --uuid               Add UUIDs to --long output\n"
+              "  --uuid               Print UUIDs instead of names\n"
               "  -v|--verbose         Verbose messages\n"
               "  -V|--version         Display version and exit\n"
               "  -x                   Trace libguestfs API calls\n"
@@ -102,7 +102,7 @@ main (int argc, char *argv[])
 
   enum { HELP_OPTION = CHAR_MAX + 1 };
 
-  static const char *options = "a:c:d:hiP:vVx";
+  static const char options[] = "a:c:d:hiP:vVx";
   static const struct option long_options[] = {
     { "add", 1, 0, 'a' },
     { "connect", 1, 0, 'c' },
@@ -127,7 +127,7 @@ main (int argc, char *argv[])
   int c;
   int option_index;
   size_t max_threads = 0;
-  int err;
+  int err = 0;
 
   g = guestfs_create ();
   if (g == NULL) {

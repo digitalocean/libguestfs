@@ -91,7 +91,7 @@ int
 main (int argc, char *argv[])
 {
   enum { HELP_OPTION = CHAR_MAX + 1 };
-  static const char *options = "t:";
+  static const char options[] = "t:";
   static const struct option long_options[] = {
     { "help", 0, 0, HELP_OPTION },
     { "time", 1, 0, 't' },
@@ -385,7 +385,8 @@ test_block_device (void)
   CLEANUP_FREE char **devices = NULL;
   char *r;
   const char *argv[4];
-  int t = max_time_override > 0 ? max_time_override : TEST_BLOCK_DEVICE_TIME;
+  const int t =
+    max_time_override > 0 ? max_time_override : TEST_BLOCK_DEVICE_TIME;
   char tbuf[64];
   int64_t bytes_written, bytes_read;
 

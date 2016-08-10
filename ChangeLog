@@ -1,3 +1,467 @@
+commit 570d66168dbf539ba429c9bd1d329c39336e6f18
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 8 21:55:50 2016 +0100
+
+    Version 1.32.7.
+
+commit 4892912e4216ee4b294ffe8f22d91e45b9dadf4c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 8 17:25:40 2016 +0200
+
+    sparsify, v2v: use Common_utils.absolute_path
+    
+    Use the common function for ensuring a path is absolute; it should not
+    change the behaviour at all.
+    
+    (cherry picked from commit 8a9c747ff655fa51eb6e5dbff3271d5bd05ebfbd)
+
+commit 8d30aeb22672f9c7cad831d04fe80b3dae6f7f47
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 8 17:21:03 2016 +0200
+
+    v2v: disk: strip only common extension (RHBZ#1365005)
+    
+    In disk input mode, to determine the guest name strip the extension from
+    the filename only if it's a very well extension for disk images.
+    
+    (cherry picked from commit 98dea4978d96c373b01bf61b16eaca3146da5306)
+
+commit 3fab5ba4e01f83e7eeff395cff4ddfe0029c4117
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 8 15:06:12 2016 +0100
+
+    appliance: Disable lvmetad.
+    
+    lvmetad only works if the /run/lvm directory is created.  It is
+    normally created by systemd-tmpfiles, but prior to libguestfs 1.34 we
+    didn't invoke systemd-tmpfiles to create directories under /run (fixed
+    in upstream commit a6330e9d3af0f5286f1d53d909fd868387b67f69).
+    
+    If for some reason lvmetad does start, then LVM filtering will be
+    broken (fixed in upstream commit 5ce19cec4cd6d819a9405d1a470dc128fdc0e4d7).
+    
+    This means that our appliance is fragile.  lvmetad normally won't
+    start up even though the command is included in the init script.  If
+    it does start up for some reason, then it will break other things.
+    
+    It is therefore better to disable lvmetad entirely.
+    
+    Note this patch is only for libguestfs <= 1.32.  This is fixed
+    properly in libguestfs >= 1.34.
+
+commit 56e573cfcdf6b687b2c03356c963b33f0c549f17
+Author: Tomáš Golembiovský <tgolembi@redhat.com>
+Date:   Sat Aug 6 20:04:53 2016 +0200
+
+    v2v: fix regex replacement in grub2_update_console
+    
+    The replacement string was wrong. There are only two match groups in the
+    regular expression, not three.
+    
+    Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
+    (cherry picked from commit 4ddc0add85fd2d08fcc45606c73ff6efb833ef4a)
+
+commit 1d5c844702b4df1d35e1020c73d58dcc0637fea3
+Author: Tomáš Golembiovský <tgolembi@redhat.com>
+Date:   Fri Aug 5 11:32:27 2016 +0200
+
+    v2v: do not hide the error, rather report it
+    
+    The Invalid_argument exception is there to catch unexpected situation
+    when rpm returns no output. Such situation should be reported rather
+    then hidden.
+    
+    Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
+    (cherry picked from commit 56e5cf14e9f29cb7979786d52f5af1d478fbb35a)
+
+commit f13923ad2d9ceefe53825bd9d20fe4db542936ee
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 5 18:04:25 2016 +0200
+
+    ruby: ignore -Wshift-overflow warnings
+    
+    There seems to be a -Wshift-overflow bug in a Ruby 2.3 header, so
+    add a GCC diagnostic override to avoid build failures with
+    --enable-werror.
+    
+    (cherry picked from commit 34c7215a2f087c4de03c25d5c13e78874ffb9f9f)
+
+commit 022dae935392fc5648ee7be88362da7738c40cfd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 2 14:44:50 2016 +0100
+
+    launch: libvirt: Autodetect backing format for readonly drive overlays (RHBZ#1354335).
+    
+    If the user doesn't specify a format (ie. they want autodetection),
+    and the drive is set to read-only, previously we created a qcow2
+    overlay to protect the drive but didn't set the backing_fmt field.
+    However libvirt disabled this so now libvirt doesn't work at all on
+    qcow2 files that have no backing_fmt field set.
+    
+    We must therefore do autodetection in libguestfs and use that to set
+    the backing_fmt field.
+    
+    We were already doing autodetection in the non-readonly case, so this
+    commit refactors that code into a new function
+    ("get_source_format_or_autodetect") and uses it on the readonly path
+    too.
+    
+    (cherry picked from commit c8c181e8d9729ea09e56431b568dceba3873af7b)
+
+commit f4a65f571a575e29b20b319062efd147e2792c36
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 2 12:10:06 2016 +0100
+
+    v2v: linux: Ignore unused string return value of 'file_owner'.
+    
+    Because we didn't give the type of 'g' there wasn't sufficient
+    information for the type checker to pick up this problem.  By
+    specifying the real type of 'g' in a type annotation, that reveals the
+    problem.
+    
+    Thanks: Pino Toscano, Nyoxi on IRC.
+    (cherry picked from commit 3b9cc56a4566a6bd53dd74c0cbe0e6b70ea154c6)
+
+commit e1a7e44bcd9772f87f2ee85b7de0da4b38754c6b
+Author: Tomáš Golembiovský <tgolembi@redhat.com>
+Date:   Mon Aug 1 14:46:14 2016 +0200
+
+    v2v: fixed file_owner function
+    
+    What was happening in file_owner function did not match the description
+    in the comment. When a path is owned by multiple packages the returned
+    string was in fact a concatenation of the names of all packages that own
+    it. E.g. for `Linux.is_file_owned g inspect "/etc"` the returned value
+    was "filesystemyum" (i.e. "filesystem" + "yum").
+    
+    Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
+    (cherry picked from commit 75d3c5d3c917f7779b01fb27919ea010702950f3)
+
+commit 95d6c134ec2ea146a8faf301569ab3df8ca93e9d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jul 31 17:20:08 2016 +0100
+
+    v2v: xml: Rename internal xpath_new_context function.
+    
+    This change is not necessary, but is consistent with the naming scheme
+    of the rest of the code in this file.
+    
+    (cherry picked from commit 1d3f075502e3e9871a7c68260e2bf01940fb2a35)
+
+commit c6b28a65357abdeb1d52f338d2a3093771b3f9cc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jul 31 17:02:10 2016 +0100
+
+    v2v: xml: Link to libxml2 website.
+    
+    No change, just finessing the documentation.
+    
+    (cherry picked from commit 9e0022cea8ab02dd5b1ca5fbd5b94e20a39e5b7f)
+
+commit 2f329e3e3381282019e956190e69fcc406172f1b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 29 11:36:37 2016 +0200
+
+    osinfo: fix reading of shared osinfo DB
+    
+    $OSINFO_SYSTEM_DIR (or its /usr/share/osinfo fallback) represents the
+    top-level directory of the osinfo data, while we need to read the "os"
+    subdirectory of it.
+    
+    Fixes commit c2ae46a9ebcf9e6bd0037a5cc895095a255c1a24.
+    
+    (cherry picked from commit 12c05d5c364c222854217c18a26d056ac2214b11)
+
+commit 90d1a3d0d55431f782d38fb2e0d4b6d574fcdd26
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 29 09:07:57 2016 +0100
+
+    docs: In API overview, add note that you should free returned values.
+    
+    (cherry picked from commit fa2949b7a5f5118796b160f95fe55cb0188c58fa)
+
+commit 14f2fb5ca260509de034ef7cd1b0726b5d8b27c9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 28 15:53:26 2016 +0200
+
+    osinfo: do not assume every media is an installer
+    
+    The osinfo has an "installer" attribute in <media>, which defaults to
+    true, and there are few entries which are marked as not.
+    
+    (cherry picked from commit 11a359c76c973f815aeb029e0ca6fa82b7ed7e62)
+
+commit 99a950185c23b2b6d675669d30d778843379b698
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 28 15:32:31 2016 +0200
+
+    osinfo: simplify reading of attributes from <media>
+    
+    Directly query the attributes in the media node, instead of using an
+    XPath expression to read it.
+    
+    Saves ~10ms when parsing the libosinfo DB on a Fedora 24 installation
+    (other than making the code easier).
+    
+    (cherry picked from commit bfedfb6e3c599dfac2d2debc979ceb31404c3552)
+
+commit 45a264613948e9de3585462a829ad15d5d842810
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 28 15:30:49 2016 +0200
+
+    utils: add new CLEANUP_XMLFREE cleanup, to call xmlFree()
+    
+    Small cleanup helper to dispose xmlChar* buffers.
+    
+    (cherry picked from commit 38ef48cde552984be87563e0fde443944056b12b)
+
+commit 4d70306a1470efcbfc1a3878534400d4b7006a6c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jul 27 14:41:31 2016 +0200
+
+    builder: fix EOF check with flex >= 2.6.1
+    
+    It looks like flex 2.6.1 changed [1] the return code for EOF in
+    yyinput.  Therefore, use the right value depending on the version of
+    flex which generates the lexer.
+    
+    [1] https://github.com/westes/flex/commit/f863c9490e6912ffcaeb12965fb3a567a10745ff
+    
+    (cherry picked from commit 0a808d986afbf242b5a9a47a948ef4f5150affb6)
+
+commit 2cdc90cf86efc10dc7159cee20f07766e9a70fc5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jul 26 14:46:49 2016 +0200
+
+    daemon: lvm: change the separator character to '\r'
+    
+    Commit b91b39e06ab7eb9b9b06c8b4dfef2ef9f381ab19 changed the separator to
+    ':', although this creates parsing issues when there are fields with
+    colons (for example lv_tags=imgbased:pool).
+    
+    Change once more the separator, but this time using a non-printable
+    character such as '\r': while it will produce uglier debug logs, this
+    should greatly reduce the possibilities of conflicts with texts of
+    metadata.
+    
+    (cherry picked from commit ca1f8efd29b7de8507c713b1ba48dcf4121be972)
+
+commit 45ec5620ee7a8a78b44f9c1aa68b606b83cc36d9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jul 26 10:43:10 2016 +0200
+
+    osinfo: map "sled" as "sles"
+    
+    The "sles" distribution string in libguestfs represents both SLES and
+    SLED, so map the osinfo descriptions of "sled" distributions as "sles".
+    
+    (cherry picked from commit 1b8e6c78806fa25f14eaef24dab254d0494a3ecf)
+
+commit df46c90bd1e985f048c446367726c110830f4d7e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jul 25 17:35:06 2016 +0200
+
+    osinfo: revamp db reading (RHBZ#1359652)
+    
+    More recent versions of libosinfo switched the internal directory with
+    the XML files of OSes to a different layout (still with the same XML
+    format), causing libguestfs to not read them anymore.  Furthermore, the
+    internal directory is going to disappear soon, replaced by a public
+    osinfo database [1].
+    
+    Revamp the way libguestfs reads the data: first try the upcoming osinfo
+    layout, falling back to the current libosinfo layout (which is the same
+    as osinfo), and then to the old flat layout.
+    
+    [1] https://gitlab.com/libosinfo/libosinfo/blob/master/docs/database-layout.txt
+    
+    (cherry picked from commit c2ae46a9ebcf9e6bd0037a5cc895095a255c1a24)
+
+commit 4978a80076d7cc6a1054c510183ed9d7e198eef7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 26 10:19:22 2016 +0100
+
+    Use 'const' for stack integers where possible.
+    
+    May improve optimization possibilities in a few cases.
+    
+    (cherry picked from commit d5a8f82887fe0a0240fc361712f962dac9a8f284)
+
+commit 594e7f46c3677cb47dd46672e2de9f0e47146bd3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jul 23 23:08:42 2016 +0100
+
+    df: Fix uninitialized variable when compiled without libvirt.
+    
+    (cherry picked from commit 5fe8149e000fbe1979217b8756bccfe195a1cfad)
+
+commit 129545c03ebafae9da378693a8961ea301cf55ef
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 22 13:16:02 2016 +0200
+
+    static const char *str -> static const char str[]
+    
+    Make all the static constant strings as char arrays, so they can be
+    fully stored in read-only memory.
+    
+    (cherry picked from commit 8e57268dd4b343751e58df7feaa6242836f5a3e1)
+
+commit 555fa379920b7fc482d9343ebfd6b6872a420510
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 21 22:33:02 2016 +0100
+
+    p2v: Remove dead code from virt-p2v kickstart.
+    
+    Including some code which looks like it is disabling SELinux, but is
+    in fact commented out -- see previous commit.
+    
+    (cherry picked from commit 8689bfa4375c9de920b0b8587465be24d425bb4f)
+
+commit 5eee052e8992001c7eeff6a1bfe8f5dc999c22a4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 21 11:25:18 2016 +0200
+
+    customize: use --noconfirm when installing Arch Linux packages
+    
+    Otherwise the installation will fail right away, since pacman by default
+    asks for confirmation of the operation.
+    
+    (cherry picked from commit bb842b415e8de7785e3abad45a6306af468c1f64)
+
+commit 4023d6d3f82a3505dc80f313994f2333c5acd717
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 21 11:20:51 2016 +0200
+
+    customize: password: use SHA-512 on Void Linux and Arch Linux
+    
+    They are rolling distributions, so we can assume they have a glibc
+    version greater than 2.7 (cca Oct 2007).
+    
+    (cherry picked from commit a5176e60142a9e018d15c1dae655a73b0ba52fbc)
+
+commit ae78378c386853e6c98fb5a73cfd19ec85f595dc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 19 12:31:23 2016 +0100
+
+    podcheck: Check tool --help output.
+    
+    For OCaml tools this does essentially nothing useful because the
+    --help output is automatically generated from the options, and so
+    cannot be wrong.  However for C tools this is a useful check.
+    
+    It would be nice to generate C tools --help output, but there isn't
+    enough information in the getopt data to do that.
+    
+    This commit also includes fixes to the --help output for a few tools.
+    
+    (cherry picked from commit 5e65da07fa3b80413465def0a30a5961d98234a8)
+
+commit 9ac36843e1fe02de94022991622137c42c790b38
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jul 20 11:22:20 2016 +0200
+
+    v2v: make virsh command quiet if v2v is quiet (RHBZ#1358142)
+    
+    Pass -q to virsh if virt-v2v was run with -q, to reduce its output in
+    quiet mode.
+    
+    Unfortunately this does not currently work in virsh as it should, see
+    RHBZ#1358179, so only after that bug is fixed this change can actually
+    take effect.
+    
+    (cherry picked from commit 5996080f7c77e7469b020ac14806ef0138cb8d67)
+
+commit c74557e6270c33c6c41d814050b04317c7930c01
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 19 12:44:35 2016 +0100
+
+    builder: Fix rhel-ppc64le guestroot to match reality.
+    
+    (cherry picked from commit 1fa3bf14e5dcf548fd3922b23d4e0cd9244d561a)
+
+commit 59ac5ef9e6ff50aee3b3e819f87278f103680c42
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 18 17:26:41 2016 +0100
+
+    fish, format, fuse: Remove bogus short options.
+    
+    For guestfish, guestmount, remove '?' from short options.  Currently
+    those tools don't process -?, so I believe these are erroneous:
+    
+      $ guestfish -\?
+      Try `guestfish --help' for more information.
+    
+    For virt-format, the -c, -d and -q options are removed.  These options
+    just give errors because they appear in the short options list but not
+    in the case statement.
+    
+    (cherry picked from commit 8886f2951de5c90b4f308cdd4ae460271e6b04d7)
+
+commit 852baed60907c9db75f0562509c021796e5f479e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 19 10:51:52 2016 +0100
+
+    builder: Fix URL for RHEL 7.2 ppc64le images.
+    
+    (cherry picked from commit d03e8f461ece3b32103fc546c9dc0cf17ff0b088)
+
+commit 18e9e608c941c3aaa8cbffb1d30ded472281a2b1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 18 16:49:42 2016 +0100
+
+    rescue: Implement virt-rescue -w option.
+    
+    Documented, but never implemented.
+    
+    (cherry picked from commit bef2d2f30ec5663d3119c547fca8c0eddf114c5c)
+
+commit 0c6b4b1af977847865b49e16327dad90207716ab
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 18 15:58:09 2016 +0100
+
+    diff: Implement virt-diff --long-options.
+    
+    The code was only partially implemented so the option did
+    not function.
+    
+    (cherry picked from commit 7352071dbf9d581f9a72ffda314b21917751b384)
+
+commit c706c0eb53707785cf7489066fc1ac04c78e7f64
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 14 15:39:19 2016 +0100
+
+    builder: Add new centos-aarch64.sh script to EXTRA_DIST.
+    
+    Fixes commit c168638ae7212cb27eb9434ce55957a58ae5336c.
+    
+    (cherry picked from commit 3bf9420f94d41ae8eb9228ada4a0ef66f5bd8a35)
+
+commit 732a5be7ec73309ef0128cdcc09f89ae6117593f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jul 14 14:09:18 2016 +0200
+
+    appliance: touch /etc/fstab when enabling the network (RHBZ#1224795)
+    
+    Sadly, the dhclient-script shipped as part of isc-dhcp-client in Ubuntu
+    unconditionally reads from /etc/fstab without checking for its
+    existence.  Since no package holds /etc/fstab, this file will not exist
+    in the appliance, cause dhclient to fail (actually keep looping calling
+    the failing dhclient-script) when the network is requested.
+    
+    As a workaround, touch /etc/fstab just before enabling the network: if
+    that file exists nothing changes, while an empty file will be available
+    in the other case, making at least dhclient-script in Ubuntu working.
+    
+    (cherry picked from commit fd60be95091a1923e108f72caf251f5549eeccd0)
+
+commit 6e548af63a29d0a1a6b6676d74579d101daf7123
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 13 11:49:11 2016 +0100
+
+    builder: Add CentOS aarch64 image.
+    
+    (cherry picked from commit c168638ae7212cb27eb9434ce55957a58ae5336c)
+
 commit 8da54aa25b976e678c300e44f92d365b3059f9ec
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Jul 12 15:32:42 2016 +0100
