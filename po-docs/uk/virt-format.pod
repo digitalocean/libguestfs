@@ -35,11 +35,11 @@ filesystems, etc.  The most commonly used options are:
 
 =over 4
 
-=item I<--filesystem=[ext3|ntfs|vfat|...]>
+=item B<--filesystem=[ext3|ntfs|vfat|...]>
 
 Create an empty filesystem (C<ext3>, C<ntfs> etc) inside the partition.
 
-=item I<--lvm[=/dev/VG/LV]>
+=item B<--lvm[=/dev/VG/LV]>
 
 Create a Linux LVM2 logical volume on the disk.  When used with
 I<--filesystem>, the filesystem is created inside the LV.
@@ -73,9 +73,9 @@ I<--format=..>.
 
 B<Всі поточні дані на диску буде витерто.>
 
-=item B<-a адреса>
+=item B<-a> адреса
 
-=item B<--add адреса>
+=item B<--add> адреса
 
 Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
@@ -115,7 +115,7 @@ Create no filesystem.  This is the default.
 диска. Таким чином можна уникнути можливих проблем з захистом для
 сформованих зловмисниками гостьових систем (CVE-2010-3851).
 
-=item B<--label=МІТКА>
+=item B<--label=>LABEL
 
 Set the filesystem label.
 

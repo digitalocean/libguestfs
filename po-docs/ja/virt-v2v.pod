@@ -163,6 +163,8 @@ OVAs from other hypervisors will not work.
 
 =item RHEL 5 Xen
 
+=item SUSE Xen
+
 =item Citrix Xen
 
 Citrix Xen has not been recently tested.
@@ -250,6 +252,14 @@ BIOS or UEFI for all guest types (but see L</UEFI> below).
 
 See I<--network> below.
 
+=item B<--colors>
+
+=item B<--colours>
+
+Use ANSI colour sequences to colourize messages.  This is the default when
+the output is a tty.  If the output of the program is redirected to a file,
+ANSI colour sequences are disabled unless you use this option.
+
 =item B<--compressed>
 
 Write a compressed output file.  This is only allowed if the output format
@@ -268,17 +278,12 @@ your vCenter web folder interface, eg.
 C<https://vcenter.example.com/folder> (I<without> a trailing slash), and
 examine the C<dcPath=> parameter in the URLs that appear on this page.
 
-=item B<--debug-gc>
-
-Debug garbage collection and memory allocation.  This is only useful when
-debugging memory problems in virt-v2v or the OCaml libguestfs bindings.
-
 =item B<--debug-overlays>
 
 Save the overlay file(s) created during conversion.  This option is only
 used for debugging virt-v2v and may be removed in a future version.
 
-=item B<-i disk>
+=item B<-i> B<disk>
 
 Set the input method to I<disk>.
 
@@ -288,14 +293,14 @@ but you can get finer control (eg. of memory and vCPUs) by using I<-i
 libvirtxml> instead.  Only guests that use a single disk can be imported
 this way.
 
-=item B<-i libvirt>
+=item B<-i> B<libvirt>
 
 Set the input method to I<libvirt>.  This is the default.
 
 In this mode you have to specify a libvirt guest name or UUID on the command
 line.  You may also specify a libvirt connection URI (see I<-ic>).
 
-=item B<-i libvirtxml>
+=item B<-i> B<libvirtxml>
 
 Set the input method to I<libvirtxml>.
 
@@ -304,11 +309,11 @@ file is read in order to get metadata about the source guest (such as its
 name, amount of memory), and also to locate the input disks.  See L</MINIMAL
 XML FOR -i libvirtxml OPTION> below.
 
-=item B<-i local>
+=item B<-i> B<local>
 
 This is the same as I<-i disk>.
 
-=item B<-i ova>
+=item B<-i> B<ova>
 
 Set the input method to I<ova>.
 
@@ -326,8 +331,7 @@ Only local libvirt connections, VMware vCenter connections, or RHEL 5 Xen
 remote connections can be used.  Other remote libvirt connections will not
 work in general.
 
-See also L</INPUT FROM VMWARE VCENTER SERVER>, L</INPUT FROM RHEL 5 XEN>
-below.
+See also L</INPUT FROM VMWARE VCENTER SERVER>, L</INPUT FROM XEN> below.
 
 =item B<-if> format
 
@@ -342,6 +346,8 @@ adjust the guest OS in the source VM to run in the input hypervisor.
 This mode is meant for integration with other toolsets, which take the
 responsibility of converting the VM configuration, providing for rollback in
 case of errors, transforming the storage, etc.
+
+See L</IN PLACE CONVERSION> below.
 
 Conflicts with all I<-o *> options.
 
@@ -386,38 +392,16 @@ faulty guest (one with no disks).
 
 This option is not compatible with I<-o glance> for technical reasons.
 
-=item B<--no-trim all>
-
-=item B<--no-trim> mp[,mp...]
-
-By default virt-v2v runs L<fstrim(8)> to reduce the amount of data that
-needs to be copied.  This is known to break some buggy bootloaders causing
-boot failures after conversion (see for example
-L<https://bugzilla.redhat.com/show_bug.cgi?id=1141145#c27>).
-
-You can use I<--no-trim all> to disable all trimming.  Note this will
-greatly increase the amount of data that has to be copied and can make
-virt-v2v run much more slowly.
-
-You can also disable trimming on selected filesystems only (specified by a
-comma-separated list of their mount point(s) in the guest).  Typically you
-would use I<--no-trim /boot> to work around the grub bug mentioned above.
-
-You can also disable trimming on partitions using the libguestfs naming
-scheme for devices, eg: I<--no-trim /dev/sdb2> means do not trim the second
-partition on the second block device.  Use L<virt-filesystems(1)> to list
-filesystem names in a guest.
-
-=item B<-o disk>
+=item B<-o> B<disk>
 
 This is the same as I<-o local>.
 
-=item B<-o glance>
+=item B<-o> B<glance>
 
 Set the output method to OpenStack Glance.  In this mode the converted guest
 is uploaded to Glance.  See L</OUTPUT TO GLANCE> below.
 
-=item B<-o libvirt>
+=item B<-o> B<libvirt>
 
 Set the output method to I<libvirt>.  This is the default.
 
@@ -426,7 +410,7 @@ also specify a libvirt connection URI (see I<-oc>).
 
 See L</OUTPUT TO LIBVIRT> below.
 
-=item B<-o local>
+=item B<-o> B<local>
 
 Set the output method to I<local>.
 
@@ -444,18 +428,18 @@ and a libvirt XML file is created containing guest metadata:
 
 where C<name> is the guest name.
 
-=item B<-o null>
+=item B<-o> B<null>
 
 Set the output method to I<null>.
 
 The guest is converted and copied (unless you also specify I<--no-copy>),
 but the results are thrown away and no metadata is written.
 
-=item B<-o ovirt>
+=item B<-o> B<ovirt>
 
 This is the same as I<-o rhev>.
 
-=item B<-o qemu>
+=item B<-o> B<qemu>
 
 Set the output method to I<qemu>.
 
@@ -466,7 +450,7 @@ are written to the directory specified by I<-os>.
 When using this output mode, you can also specify the I<--qemu-boot> option
 which boots the guest under qemu immediately.
 
-=item B<-o rhev>
+=item B<-o> B<rhev>
 
 Set the output method to I<rhev>.
 
@@ -477,7 +461,7 @@ to do that manually later using the UI.
 
 See L</OUTPUT TO RHEV> below.
 
-=item B<-o vdsm>
+=item B<-o> B<vdsm>
 
 Set the output method to I<vdsm>.
 
@@ -486,9 +470,9 @@ must be given:
 F</rhev/data-center/E<lt>data-center-uuidE<gt>/E<lt>data-domain-uuidE<gt>>.
 This mode is only used when virt-v2v runs under VDSM control.
 
-=item B<-oa sparse>
+=item B<-oa> B<sparse>
 
-=item B<-oa preallocated>
+=item B<-oa> B<preallocated>
 
 Set the output file allocation mode.  The default is C<sparse>.
 
@@ -653,15 +637,6 @@ These options can only be used with I<-o vdsm>.
 =item B<--version>
 
 バージョン番号を表示して、終了します。
-
-=item B<--vmtype desktop>
-
-=item B<--vmtype server>
-
-For the I<-o rhev> or I<-o vdsm> targets only, specify the type of guest.
-You can set this to C<desktop> or C<server>.  If the option is not given,
-then a suitable default is chosen based on the detected guest operating
-system.
 
 =item B<-x>
 
@@ -1271,9 +1246,10 @@ Perform the conversion of the guest using virt-v2v:
 
 Remove the F<guest.xml> and F<guest-disk*> files.
 
-=head1 INPUT FROM RHEL 5 XEN
+=head1 INPUT FROM XEN
 
-Virt-v2v is able to import Xen guests from RHEL 5 Xen hosts.
+Virt-v2v is able to import Xen guests from RHEL 5 Xen or SLES and openSUSE
+Xen hosts.
 
 Virt-v2v uses libvirt for access to the remote Xen host, and therefore the
 input mode should be I<-i libvirt>.  As this is the default, you don't need
@@ -1577,6 +1553,8 @@ This temporarily places a full copy of the output disks in C<$TMPDIR>.
 
 =back
 
+See also L</Minimum free space check in the host> below.
+
 =head2 VMware vCenter resources
 
 Copying from VMware vCenter is currently quite slow, but we believe this to
@@ -1627,6 +1605,8 @@ guest from subsequently booting correctly.
 
 =head1 FREE SPACE FOR CONVERSION
 
+=head2 Free space in the guest
+
 Virt-v2v checks there is sufficient free space in the guest filesystem to
 perform the conversion.  Currently it checks:
 
@@ -1648,6 +1628,21 @@ conversions.
 Minimum free space: 10 MB
 
 =back
+
+=head2 Minimum free space check in the host
+
+You must have sufficient free space in the host directory used to store
+temporary overlays (except in I<--in-place> mode).  To find out which
+directory this is, use:
+
+ $ df -h "`guestfish get-cachedir`"
+ Filesystem        Size  Used Avail Use% Mounted on
+ /dev/mapper/root   50G   40G  6.8G  86% /
+
+and look under the C<Avail> column.  Virt-v2v will refuse to do the
+conversion at all unless at least 1GB is available there.
+
+See also L</RESOURCE REQUIREMENTS> above.
 
 =head1 RUNNING VIRT-V2V AS ROOT OR NON-ROOT
 
@@ -1748,6 +1743,31 @@ instead.
      </interface>
    </devices>
  </domain>
+
+=head1 IN PLACE CONVERSION
+
+It is also possible to use virt-v2v in scenarios where a foreign VM has
+already been imported into a KVM-based hypervisor, but still needs
+adjustments in the guest to make it run in the new virtual hardware.
+
+In that case it is assumed that a third-party tool has created the target VM
+in the supported KVM-based hypervisor based on the source VM configuration
+and contents, but using virtual devices more appropriate for KVM
+(e.g. virtio storage and network, etc.).
+
+Then, to make the guest OS boot and run in the changed environment, one can
+use:
+
+ virt-v2v -ic qemu:///system converted_vm --in-place
+
+Virt-v2v will analyze the configuration of C<converted_vm> in the
+C<qemu:///system> libvirt instance, and apply various fixups to the guest OS
+configuration to make it match the VM configuration.  This may include
+installing virtio drivers, configuring the bootloader, the mountpoints, the
+network interfaces, and so on.
+
+Should an error occur during the operation, virt-v2v exits with an error
+code leaving the VM in an undefined state.
 
 =head1 マシン可読な出力
 
@@ -1853,6 +1873,12 @@ the guest during conversion of Windows guests.
 
 See also: C<https://github.com/rwmjones/rhsrvany>
 
+=item F<pvvxsvc.exe>
+
+This is a Windows binary shipped with SUSE VMDP, used to install a
+"firstboot" script in Windows guests.  It is required if you intend to use
+the I<--firstboot> or I<--firstboot-command> options with Windows guests.
+
 =item F<rhev-apt.exe>
 
 (Optional)
@@ -1912,8 +1938,8 @@ L<https://rwmj.wordpress.com/2015/09/18/importing-kvm-guests-to-ovirt-or-rhev/#c
 
 L<virt-p2v(1)>, L<virt-customize(1)>, L<virt-df(1)>, L<virt-filesystems(1)>,
 L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<guestfs(3)>, L<guestfish(1)>,
-L<qemu-img(1)>, L<fstrim(8)>, L<virt-v2v-copy-to-local(1)>,
-L<virt-v2v-test-harness(1)>, L<engine-image-uploader(8)>,
+L<qemu-img(1)>, L<virt-v2v-copy-to-local(1)>, L<virt-v2v-test-harness(1)>,
+L<engine-image-uploader(8)>,
 L<import-to-ovirt.pl|http://git.annexia.org/?p=import-to-ovirt.git>,
 L<http://libguestfs.org/>.
 

@@ -79,11 +79,12 @@ package Sys::Guestfs;
 use strict;
 use warnings;
 
-# This version number changes whenever a new function
-# is added to the libguestfs API.  It is not directly
-# related to the libguestfs version number.
+# This is always 1.0, never changes, and is unrelated to the
+# real libguestfs version.  If you want to find the libguestfs
+# library version, use $g->version.  If you want to test if
+# APIs/parameters are present, use %guestfs_introspection.
 use vars qw($VERSION);
-$VERSION = '0.458';
+$VERSION = '1.0';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1297,6 +1298,16 @@ See also L<btrfs(8)>.
 This function depends on the feature C<btrfs>.  See also
 C<$g-E<gt>feature-available>.
 
+=item @devices = $g->btrfs_filesystem_show ($device);
+
+Show all the devices where the filesystems in C<device> is spanned over.
+
+If not all the devices for the filesystems are present, then this function
+fails and the C<errno> is set to C<ENODEV>.
+
+This function depends on the feature C<btrfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->btrfs_filesystem_sync ($fs);
 
 Force sync on the btrfs filesystem mounted at C<fs>.
@@ -2146,6 +2157,39 @@ F<filename> can also be a named pipe.
 
 See also C<$g-E<gt>upload>, C<$g-E<gt>cat>.
 
+=item $g->download_blocks ($device, $start, $stop, $filename [, unallocated => $unallocated]);
+
+Download the data units from F<start> address
+to F<stop> from the disk partition (eg. F</dev/sda1>)
+and save them as F<filename> on the local machine.
+
+The use of this API on sparse disk image formats such as QCOW,
+may result in large zero-filled files downloaded on the host.
+
+The size of a data unit varies across filesystem implementations.
+On NTFS filesystems data units are referred as clusters
+while on ExtX ones they are referred as fragments.
+
+If the optional C<unallocated> flag is true (default is false),
+only the unallocated blocks will be extracted.
+This is useful to detect hidden data or to retrieve deleted files
+which data units have not been overwritten yet.
+
+This function depends on the feature C<sleuthkit>.  See also
+C<$g-E<gt>feature-available>.
+
+=item $g->download_inode ($device, $inode, $filename);
+
+Download a file given its inode from the disk partition
+(eg. F</dev/sda1>) and save it as F<filename> on the local machine.
+
+It is not required to mount the disk to run this command.
+
+The command is capable of downloading deleted or inaccessible files.
+
+This function depends on the feature C<sleuthkit>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->download_offset ($remotefilename, $filename, $offset, $size);
 
 Download file F<remotefilename> and save it as F<filename>
@@ -2529,6 +2573,153 @@ mkfs.E<lt>I<fs>E<gt> tool.
 See also C<$g-E<gt>available>, C<$g-E<gt>feature_available>,
 L<guestfs(3)/AVAILABILITY>.
 
+=item @dirents = $g->filesystem_walk ($device);
+
+Walk through the internal structures of a disk partition
+(eg. F</dev/sda1>) in order to return a list of all the files
+and directories stored within.
+
+It is not necessary to mount the disk partition to run this command.
+
+All entries in the filesystem are returned, excluding C<.> and
+C<..>. This function can list deleted or unaccessible files.
+The entries are I<not> sorted.
+
+The C<tsk_dirent> structure contains the following fields.
+
+=over 4
+
+=item 'tsk_inode'
+
+Filesystem reference number of the node. It migh be C<0>
+if the node has been deleted.
+
+=item 'tsk_type'
+
+Basic file type information.
+See below for a detailed list of values.
+
+=item 'tsk_size'
+
+File size in bytes. It migh be C<-1>
+if the node has been deleted.
+
+=item 'tsk_name'
+
+The file path relative to its directory.
+
+=item 'tsk_flags'
+
+Bitfield containing extra information regarding the entry.
+It contains the logical OR of the following values:
+
+=over 4
+
+=item 0x0001
+
+If set to C<1>, the file is allocated and visible within the filesystem.
+Otherwise, the file has been deleted.
+Under certain circumstances, the function C<download_inode>
+can be used to recover deleted files.
+
+=item 0x0002
+
+Filesystem such as NTFS and Ext2 or greater, separate the file name
+from the metadata structure.
+The bit is set to C<1> when the file name is in an unallocated state
+and the metadata structure is in an allocated one.
+This generally implies the metadata has been reallocated to a new file.
+Therefore, information such as file type, file size, timestamps,
+number of links and symlink target might not correspond
+with the ones of the original deleted entry.
+
+=item 0x0004
+
+The bit is set to C<1> when the file is compressed using filesystem
+native compression support (NTFS). The API is not able to detect
+application level compression.
+
+=back
+
+=item 'tsk_atime_sec'
+
+=item 'tsk_atime_nsec'
+
+=item 'tsk_mtime_sec'
+
+=item 'tsk_mtime_nsec'
+
+=item 'tsk_ctime_sec'
+
+=item 'tsk_ctime_nsec'
+
+=item 'tsk_crtime_sec'
+
+=item 'tsk_crtime_nsec'
+
+Respectively, access, modification, last status change and creation
+time in Unix format in seconds and nanoseconds.
+
+=item 'tsk_nlink'
+
+Number of file names pointing to this entry.
+
+=item 'tsk_link'
+
+If the entry is a symbolic link, this field will contain the path
+to the target file.
+
+=back
+
+The C<tsk_type> field will contain one of the following characters:
+
+=over 4
+
+=item 'b'
+
+Block special
+
+=item 'c'
+
+Char special
+
+=item 'd'
+
+Directory
+
+=item 'f'
+
+FIFO (named pipe)
+
+=item 'l'
+
+Symbolic link
+
+=item 'r'
+
+Regular file
+
+=item 's'
+
+Socket
+
+=item 'h'
+
+Shadow inode (Solaris)
+
+=item 'w'
+
+Whiteout inode (BSD)
+
+=item 'u'
+
+Unknown file type
+
+=back
+
+This function depends on the feature C<libtsk>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->fill ($c, $len, $path);
 
 This command creates a new file called C<path>.  The initial
@@ -2667,6 +2858,10 @@ This operation requires support in libguestfs, the mounted
 filesystem, the host filesystem, qemu and the host kernel.
 If this support isn't present it may give an error or even
 appear to run but do nothing.
+
+In the case where the kernel vfs driver does not support
+trimming, this call will fail with errno set to C<ENOTSUP>.
+Currently this happens when trying to trim FAT filesystems.
 
 See also C<$g-E<gt>zero_free_space>.  That is a slightly
 different operation that turns free space in the filesystem
@@ -2994,9 +3189,28 @@ is passed to the appliance at boot time.  See C<$g-E<gt>set_selinux>.
 For more information on the architecture of libguestfs,
 see L<guestfs(3)>.
 
+I<This function is deprecated.>
+In new code, use the L</selinux_relabel> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item $smp = $g->get_smp ();
 
 This returns the number of virtual CPUs assigned to the appliance.
+
+=item $sockdir = $g->get_sockdir ();
+
+Get the directory used by the handle to store temporary socket files.
+
+This is different from C<$g-E<gt>tmpdir>, as we need shorter paths for
+sockets (due to the limited buffers of filenames for UNIX sockets),
+and C<$g-E<gt>tmpdir> may be too long for them.
+
+The environment variable C<XDG_RUNTIME_DIR> controls the default
+value: If C<XDG_RUNTIME_DIR> is set, then that is the default.
+Else F</tmp> is the default.
 
 =item $state = $g->get_state ();
 
@@ -3032,6 +3246,13 @@ and C<$g-E<gt>setcon>
 This function depends on the feature C<selinux>.  See also
 C<$g-E<gt>feature-available>.
 
+I<This function is deprecated.>
+In new code, use the L</selinux_relabel> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item $xattr = $g->getxattr ($path, $name);
 
 Get a single extended attribute from file C<path> named C<name>.
@@ -3066,7 +3287,7 @@ See also: C<$g-E<gt>lgetxattrs>, L<attr(5)>.
 This function depends on the feature C<linuxxattrs>.  See also
 C<$g-E<gt>feature-available>.
 
-=item @paths = $g->glob_expand ($pattern);
+=item @paths = $g->glob_expand ($pattern [, directoryslash => $directoryslash]);
 
 This command searches for all the pathnames matching
 C<pattern> according to the wildcard expansion rules
@@ -3079,9 +3300,25 @@ It is just a wrapper around the C L<glob(3)> function
 with flags C<GLOB_MARK|GLOB_BRACE>.
 See that manual page for more details.
 
+C<directoryslash> controls whether use the C<GLOB_MARK> flag for
+L<glob(3)>, and it defaults to true.  It can be explicitly set as
+off to return no trailing slashes in filenames of directories.
+
 Notice that there is no equivalent command for expanding a device
 name (eg. F</dev/sd*>).  Use C<$g-E<gt>list_devices>,
 C<$g-E<gt>list_partitions> etc functions instead.
+
+=item @paths = $g->glob_expand_opts ($pattern [, directoryslash => $directoryslash]);
+
+This is an alias of L</glob_expand>.
+
+=cut
+
+sub glob_expand_opts {
+  &glob_expand (@_)
+}
+
+=pod
 
 =item @lines = $g->grep ($regex, $path [, extended => $extended] [, fixed => $fixed] [, insensitive => $insensitive] [, compressed => $compressed]);
 
@@ -3658,6 +3895,10 @@ Ubuntu.
 
 The distro could not be determined.
 
+=item "voidlinux"
+
+Void Linux.
+
 =item "windows"
 
 Windows does not have distributions.  This string is
@@ -3882,7 +4123,8 @@ package format I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
 Possible strings include:
-C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>, C<apk>.
+C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>, C<apk>,
+C<xbps>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
@@ -3901,7 +4143,7 @@ a real packaging system (eg. Windows).
 
 Possible strings include: C<yum>, C<dnf>, C<up2date>,
 C<apt> (for all Debian derivatives),
-C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>.
+C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>, C<xbps>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
@@ -4429,9 +4671,9 @@ This returns true iff this handle is launching the subprocess
 
 For more information on states, see L<guestfs(3)>.
 
-=item $lvflag = $g->is_lv ($device);
+=item $lvflag = $g->is_lv ($mountable);
 
-This command tests whether C<device> is a logical volume, and
+This command tests whether C<mountable> is a logical volume, and
 returns true iff this is the case.
 
 =item $ready = $g->is_ready ();
@@ -4895,6 +5137,13 @@ List the files in F<directory> in the format of 'ls -laZ'.
 
 This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.
+
+I<This function is deprecated.>
+In new code, use the L</lgetxattrs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->ln ($target, $linkname);
 
@@ -5942,6 +6191,26 @@ This is the same as the C<$g-E<gt>mount> command, but it
 allows you to set both the mount options and the vfstype
 as for the L<mount(8)> I<-o> and I<-t> flags.
 
+=item $device = $g->mountable_device ($mountable);
+
+Returns the device name of a mountable. In quite a lot of
+cases, the mountable is the device name.
+
+However this doesn't apply for btrfs subvolumes, where the
+mountable is a combination of both the device name and the
+subvolume path (see also C<$g-E<gt>mountable_subvolume> to
+extract the subvolume path of the mountable if any).
+
+=item $subvolume = $g->mountable_subvolume ($mountable);
+
+Returns the subvolume path of a mountable. Btrfs subvolumes
+mountables are a combination of both the device name and the
+subvolume path (see also C<$g-E<gt>mountable_device> to extract
+the device of the mountable).
+
+If the mountable does not represent a btrfs subvolume, then
+this function fails and the C<errno> is set to C<EINVAL>.
+
 =item %mps = $g->mountpoints ();
 
 This call is similar to C<$g-E<gt>mounts>.  That call returns
@@ -5989,6 +6258,17 @@ L<ntfs-3g.probe(8)> manual page.
 
 This function depends on the feature C<ntfs3g>.  See also
 C<$g-E<gt>feature-available>.
+
+=item $g->ntfscat_i ($device, $inode, $filename);
+
+Download a file given its inode from a NTFS filesystem and save it as
+F<filename> on the local machine.
+
+This allows to download some otherwise inaccessible files such as the ones
+within the C<$Extend> folder.
+
+The filesystem from which to extract the file must be unmounted,
+otherwise the call will fail.
 
 =item $g->ntfsclone_in ($backupfile, $device);
 
@@ -6153,12 +6433,32 @@ covering the whole disk.
 C<parttype> is the partition table type, usually C<mbr> or C<gpt>,
 but other possible values are described in C<$g-E<gt>part_init>.
 
+=item $g->part_expand_gpt ($device);
+
+Move backup GPT data structures to the end of the disk.
+This is useful in case of in-place image expand
+since disk space after backup GPT header is not usable.
+This is equivalent to C<sgdisk -e>.
+
+See also L<sgdisk(8)>.
+
+This function depends on the feature C<gdisk>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $bootable = $g->part_get_bootable ($device, $partnum);
 
 This command returns true if the partition C<partnum> on
 C<device> has the bootable flag set.
 
 See also C<$g-E<gt>part_set_bootable>.
+
+=item $guid = $g->part_get_disk_guid ($device);
+
+Return the disk identifier (GUID) of a GPT-partitioned C<device>.
+Behaviour is undefined for other partition types.
+
+This function depends on the feature C<gdisk>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $guid = $g->part_get_gpt_guid ($device, $partnum);
 
@@ -6321,6 +6621,24 @@ device C<device>.  Note that partitions are numbered from 1.
 The bootable flag is used by some operating systems (notably
 Windows) to determine which partition to boot from.  It is by
 no means universally recognized.
+
+=item $g->part_set_disk_guid ($device, $guid);
+
+Set the disk identifier (GUID) of a GPT-partitioned C<device> to C<guid>.
+Return an error if the partition table of C<device> isn't GPT,
+or if C<guid> is not a valid GUID.
+
+This function depends on the feature C<gdisk>.  See also
+C<$g-E<gt>feature-available>.
+
+=item $g->part_set_disk_guid_random ($device);
+
+Set the disk identifier (GUID) of a GPT-partitioned C<device> to
+a randomly generated value.
+Return an error if the partition table of C<device> isn't GPT.
+
+This function depends on the feature C<gdisk>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $g->part_set_gpt_guid ($device, $partnum, $guid);
 
@@ -6849,6 +7167,26 @@ manual page for more details.
 This function depends on the feature C<scrub>.  See also
 C<$g-E<gt>feature-available>.
 
+=item $g->selinux_relabel ($specfile, $path [, force => $force]);
+
+SELinux relabel parts of the filesystem.
+
+The C<specfile> parameter controls the policy spec file used.
+You have to parse C</etc/selinux/config> to find the correct
+SELinux policy and then pass the spec file, usually:
+C</etc/selinux/> + I<selinuxtype> + C</contexts/files/file_contexts>.
+
+The required C<path> parameter is the top level directory where
+relabelling starts.  Normally you should pass C<path> as C</>
+to relabel the whole guest filesystem.
+
+The optional C<force> boolean controls whether the context
+is reset for customizable files, and also whether the
+user, role and range parts of the file context is changed.
+
+This function depends on the feature C<selinuxrelabel>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->set_append ($append);
 
 This function is used to add additional options to the
@@ -7247,6 +7585,13 @@ Permissive mode (C<enforcing=0>).
 For more information on the architecture of libguestfs,
 see L<guestfs(3)>.
 
+I<This function is deprecated.>
+In new code, use the L</selinux_relabel> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item $g->set_smp ($smp);
 
 Change the number of virtual CPUs assigned to the appliance.  The
@@ -7322,6 +7667,13 @@ See the documentation about SELINUX in L<guestfs(3)>.
 
 This function depends on the feature C<selinux>.  See also
 C<$g-E<gt>feature-available>.
+
+I<This function is deprecated.>
+In new code, use the L</selinux_relabel> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->setxattr ($xattr, $val, $vallen, $path);
 
@@ -9062,6 +9414,14 @@ use vars qw(%guestfs_introspection);
     name => "btrfs_filesystem_resize",
     description => "resize a btrfs filesystem",
   },
+  "btrfs_filesystem_show" => {
+    ret => 'string list',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "btrfs_filesystem_show",
+    description => "list devices for btrfs filesystem",
+  },
   "btrfs_filesystem_sync" => {
     ret => 'void',
     args => [
@@ -9737,6 +10097,30 @@ use vars qw(%guestfs_introspection);
     name => "download",
     description => "download a file to the local machine",
   },
+  "download_blocks" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(mountable)', 0 ],
+      [ 'start', 'int64', 1 ],
+      [ 'stop', 'int64', 2 ],
+      [ 'filename', 'string(filename)', 3 ],
+    ],
+    optargs => {
+      unallocated => [ 'unallocated', 'bool', 0 ],
+    },
+    name => "download_blocks",
+    description => "download the given data units from the disk",
+  },
+  "download_inode" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(mountable)', 0 ],
+      [ 'inode', 'int64', 1 ],
+      [ 'filename', 'string(filename)', 2 ],
+    ],
+    name => "download_inode",
+    description => "download a file to the local machine given its inode",
+  },
   "download_offset" => {
     ret => 'void',
     args => [
@@ -9910,6 +10294,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "filesystem_available",
     description => "check if filesystem is available",
+  },
+  "filesystem_walk" => {
+    ret => 'struct tsk_dirent list',
+    args => [
+      [ 'device', 'string(mountable)', 0 ],
+    ],
+    name => "filesystem_walk",
+    description => "walk through the filesystem content",
   },
   "fill" => {
     ret => 'void',
@@ -10199,6 +10591,13 @@ use vars qw(%guestfs_introspection);
     name => "get_smp",
     description => "get number of virtual CPUs in appliance",
   },
+  "get_sockdir" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "get_sockdir",
+    description => "get the temporary directory for sockets",
+  },
   "get_state" => {
     ret => 'int',
     args => [
@@ -10263,6 +10662,9 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'pattern', 'string(path)', 0 ],
     ],
+    optargs => {
+      directoryslash => [ 'directoryslash', 'bool', 0 ],
+    },
     name => "glob_expand",
     description => "expand a wildcard path",
   },
@@ -11097,10 +11499,10 @@ use vars qw(%guestfs_introspection);
   "is_lv" => {
     ret => 'bool',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
     ],
     name => "is_lv",
-    description => "test if device is a logical volume",
+    description => "test if mountable is a logical volume",
   },
   "is_ready" => {
     ret => 'bool',
@@ -12150,6 +12552,22 @@ use vars qw(%guestfs_introspection);
     name => "mount_vfs",
     description => "mount a guest disk with mount options and vfstype",
   },
+  "mountable_device" => {
+    ret => 'string',
+    args => [
+      [ 'mountable', 'string(mountable)', 0 ],
+    ],
+    name => "mountable_device",
+    description => "extract the device part of a mountable",
+  },
+  "mountable_subvolume" => {
+    ret => 'string',
+    args => [
+      [ 'mountable', 'string(mountable)', 0 ],
+    ],
+    name => "mountable_subvolume",
+    description => "extract the subvolume part of a mountable",
+  },
   "mountpoints" => {
     ret => 'hash',
     args => [
@@ -12188,6 +12606,16 @@ use vars qw(%guestfs_introspection);
     ],
     name => "ntfs_3g_probe",
     description => "probe NTFS volume",
+  },
+  "ntfscat_i" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(mountable)', 0 ],
+      [ 'inode', 'int64', 1 ],
+      [ 'filename', 'string(filename)', 2 ],
+    ],
+    name => "ntfscat_i",
+    description => "download a file to the local machine given its inode",
   },
   "ntfsclone_in" => {
     ret => 'void',
@@ -12290,6 +12718,14 @@ use vars qw(%guestfs_introspection);
     name => "part_disk",
     description => "partition whole disk with a single primary partition",
   },
+  "part_expand_gpt" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "part_expand_gpt",
+    description => "move backup GPT header to the end of the disk",
+  },
   "part_get_bootable" => {
     ret => 'bool',
     args => [
@@ -12298,6 +12734,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "part_get_bootable",
     description => "return true if a partition is bootable",
+  },
+  "part_get_disk_guid" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "part_get_disk_guid",
+    description => "get the GUID of a GPT-partitioned disk",
   },
   "part_get_gpt_guid" => {
     ret => 'string',
@@ -12378,6 +12822,23 @@ use vars qw(%guestfs_introspection);
     ],
     name => "part_set_bootable",
     description => "make a partition bootable",
+  },
+  "part_set_disk_guid" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'guid', 'string', 1 ],
+    ],
+    name => "part_set_disk_guid",
+    description => "set the GUID of a GPT-partitioned disk",
+  },
+  "part_set_disk_guid_random" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "part_set_disk_guid_random",
+    description => "set the GUID of a GPT-partitioned disk to random value",
   },
   "part_set_gpt_guid" => {
     ret => 'void',
@@ -12765,6 +13226,18 @@ use vars qw(%guestfs_introspection);
     ],
     name => "scrub_freespace",
     description => "scrub (securely wipe) free space",
+  },
+  "selinux_relabel" => {
+    ret => 'void',
+    args => [
+      [ 'specfile', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    optargs => {
+      force => [ 'force', 'bool', 0 ],
+    },
+    name => "selinux_relabel",
+    description => "relabel parts of the filesystem",
   },
   "set_append" => {
     ret => 'void',
@@ -13860,32 +14333,34 @@ my %ielem1 = %{$guestfs_introspection{btrfs_subvolume_create}};
 $guestfs_introspection{btrfs_subvolume_create_opts} = \%ielem1;
 my %ielem2 = %{$guestfs_introspection{btrfs_subvolume_snapshot}};
 $guestfs_introspection{btrfs_subvolume_snapshot_opts} = \%ielem2;
-my %ielem3 = %{$guestfs_introspection{grep}};
-$guestfs_introspection{grep_opts} = \%ielem3;
-my %ielem4 = %{$guestfs_introspection{is_blockdev}};
-$guestfs_introspection{is_blockdev_opts} = \%ielem4;
-my %ielem5 = %{$guestfs_introspection{is_chardev}};
-$guestfs_introspection{is_chardev_opts} = \%ielem5;
-my %ielem6 = %{$guestfs_introspection{is_dir}};
-$guestfs_introspection{is_dir_opts} = \%ielem6;
-my %ielem7 = %{$guestfs_introspection{is_fifo}};
-$guestfs_introspection{is_fifo_opts} = \%ielem7;
-my %ielem8 = %{$guestfs_introspection{is_file}};
-$guestfs_introspection{is_file_opts} = \%ielem8;
-my %ielem9 = %{$guestfs_introspection{is_socket}};
-$guestfs_introspection{is_socket_opts} = \%ielem9;
-my %ielem10 = %{$guestfs_introspection{mkfs}};
-$guestfs_introspection{mkfs_opts} = \%ielem10;
-my %ielem11 = %{$guestfs_introspection{mkswap}};
-$guestfs_introspection{mkswap_opts} = \%ielem11;
-my %ielem12 = %{$guestfs_introspection{ntfsresize}};
-$guestfs_introspection{ntfsresize_opts} = \%ielem12;
-my %ielem13 = %{$guestfs_introspection{tar_in}};
-$guestfs_introspection{tar_in_opts} = \%ielem13;
-my %ielem14 = %{$guestfs_introspection{tar_out}};
-$guestfs_introspection{tar_out_opts} = \%ielem14;
-my %ielem15 = %{$guestfs_introspection{umount}};
-$guestfs_introspection{umount_opts} = \%ielem15;
+my %ielem3 = %{$guestfs_introspection{glob_expand}};
+$guestfs_introspection{glob_expand_opts} = \%ielem3;
+my %ielem4 = %{$guestfs_introspection{grep}};
+$guestfs_introspection{grep_opts} = \%ielem4;
+my %ielem5 = %{$guestfs_introspection{is_blockdev}};
+$guestfs_introspection{is_blockdev_opts} = \%ielem5;
+my %ielem6 = %{$guestfs_introspection{is_chardev}};
+$guestfs_introspection{is_chardev_opts} = \%ielem6;
+my %ielem7 = %{$guestfs_introspection{is_dir}};
+$guestfs_introspection{is_dir_opts} = \%ielem7;
+my %ielem8 = %{$guestfs_introspection{is_fifo}};
+$guestfs_introspection{is_fifo_opts} = \%ielem8;
+my %ielem9 = %{$guestfs_introspection{is_file}};
+$guestfs_introspection{is_file_opts} = \%ielem9;
+my %ielem10 = %{$guestfs_introspection{is_socket}};
+$guestfs_introspection{is_socket_opts} = \%ielem10;
+my %ielem11 = %{$guestfs_introspection{mkfs}};
+$guestfs_introspection{mkfs_opts} = \%ielem11;
+my %ielem12 = %{$guestfs_introspection{mkswap}};
+$guestfs_introspection{mkswap_opts} = \%ielem12;
+my %ielem13 = %{$guestfs_introspection{ntfsresize}};
+$guestfs_introspection{ntfsresize_opts} = \%ielem13;
+my %ielem14 = %{$guestfs_introspection{tar_in}};
+$guestfs_introspection{tar_in_opts} = \%ielem14;
+my %ielem15 = %{$guestfs_introspection{tar_out}};
+$guestfs_introspection{tar_out_opts} = \%ielem15;
+my %ielem16 = %{$guestfs_introspection{umount}};
+$guestfs_introspection{umount_opts} = \%ielem16;
 
 1;
 

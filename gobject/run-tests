@@ -31,6 +31,4 @@ rm -f bindtests.tmp
 $GJS $srcdir/bindtests.js > bindtests.tmp
 diff -u ${srcdir}/../bindtests bindtests.tmp
 
-$GJS $srcdir/bindtests-manual.js 2>/dev/null
-
 rm bindtests.tmp

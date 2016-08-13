@@ -3219,6 +3219,45 @@ guestfs_session_btrfs_filesystem_resize (GuestfsSession *session, const gchar *m
 }
 
 /**
+ * guestfs_session_btrfs_filesystem_show:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * list devices for btrfs filesystem
+ *
+ * Show all the devices where the filesystems in @device is spanned over.
+ * 
+ * If not all the devices for the filesystems are present, then this
+ * function fails and the @errno is set to @ENODEV.
+ * 
+ * This function depends on the feature "btrfs".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ * Since: 1.33.29
+ */
+gchar **
+guestfs_session_btrfs_filesystem_show (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_filesystem_show");
+    return NULL;
+  }
+
+  char **ret = guestfs_btrfs_filesystem_show (g, device);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_btrfs_filesystem_sync:
  * @session: (transfer none): A GuestfsSession object
  * @fs: (transfer none) (type filename):
@@ -6631,6 +6670,145 @@ guestfs_session_download (GuestfsSession *session, const gchar *remotefilename, 
 }
 
 /**
+ * guestfs_session_download_blocks:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @start: (type gint64):
+ * @stop: (type gint64):
+ * @filename: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsDownloadBlocks containing optional arguments
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * download the given data units from the disk
+ *
+ * Download the data units from start address to stop from the disk
+ * partition (eg. /dev/sda1) and save them as filename on the local
+ * machine.
+ * 
+ * The use of this API on sparse disk image formats such as QCOW, may
+ * result in large zero-filled files downloaded on the host.
+ * 
+ * The size of a data unit varies across filesystem implementations. On
+ * NTFS filesystems data units are referred as clusters while on ExtX ones
+ * they are referred as fragments.
+ * 
+ * If the optional @unallocated flag is true (default is false), only the
+ * unallocated blocks will be extracted. This is useful to detect hidden
+ * data or to retrieve deleted files which data units have not been
+ * overwritten yet.
+ * 
+ * This function depends on the feature "sleuthkit".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.33.45
+ */
+gboolean
+guestfs_session_download_blocks (GuestfsSession *session, const gchar *device, gint64 start, gint64 stop, const gchar *filename, GuestfsDownloadBlocks *optargs, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return FALSE;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "download_blocks");
+    return FALSE;
+  }
+
+  struct guestfs_download_blocks_argv argv;
+  struct guestfs_download_blocks_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue unallocated_v = {0, };
+    g_value_init (&unallocated_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "unallocated", &unallocated_v);
+    GuestfsTristate unallocated = g_value_get_enum (&unallocated_v);
+    if (unallocated != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK;
+      argv.unallocated = unallocated;
+    }
+    argvp = &argv;
+  }
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect (cancellable,
+                               G_CALLBACK (cancelled_handler),
+                               g, NULL);
+  }
+
+  int ret = guestfs_download_blocks_argv (g, device, start, stop, filename, argvp);
+  g_cancellable_disconnect (cancellable, id);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_download_inode:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @inode: (type gint64):
+ * @filename: (transfer none) (type filename):
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * download a file to the local machine given its inode
+ *
+ * Download a file given its inode from the disk partition (eg. /dev/sda1)
+ * and save it as filename on the local machine.
+ * 
+ * It is not required to mount the disk to run this command.
+ * 
+ * The command is capable of downloading deleted or inaccessible files.
+ * 
+ * This function depends on the feature "sleuthkit".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.33.14
+ */
+gboolean
+guestfs_session_download_inode (GuestfsSession *session, const gchar *device, gint64 inode, const gchar *filename, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return FALSE;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "download_inode");
+    return FALSE;
+  }
+
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect (cancellable,
+                               G_CALLBACK (cancelled_handler),
+                               g, NULL);
+  }
+
+  int ret = guestfs_download_inode (g, device, inode, filename);
+  g_cancellable_disconnect (cancellable, id);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_download_offset:
  * @session: (transfer none): A GuestfsSession object
  * @remotefilename: (transfer none) (type filename):
@@ -7542,6 +7720,167 @@ guestfs_session_filesystem_available (GuestfsSession *session, const gchar *file
 }
 
 /**
+ * guestfs_session_filesystem_walk:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * walk through the filesystem content
+ *
+ * Walk through the internal structures of a disk partition (eg. /dev/sda1)
+ * in order to return a list of all the files and directories stored
+ * within.
+ * 
+ * It is not necessary to mount the disk partition to run this command.
+ * 
+ * All entries in the filesystem are returned, excluding "." and "..". This
+ * function can list deleted or unaccessible files. The entries are *not*
+ * sorted.
+ * 
+ * The @tsk_dirent structure contains the following fields.
+ * 
+ * 'tsk_inode'
+ * Filesystem reference number of the node. It migh be @0 if the node
+ * has been deleted.
+ * 
+ * 'tsk_type'
+ * Basic file type information. See below for a detailed list of
+ * values.
+ * 
+ * 'tsk_size'
+ * File size in bytes. It migh be @-1 if the node has been deleted.
+ * 
+ * 'tsk_name'
+ * The file path relative to its directory.
+ * 
+ * 'tsk_flags'
+ * Bitfield containing extra information regarding the entry. It
+ * contains the logical OR of the following values:
+ * 
+ * 0x0001
+ * If set to @1, the file is allocated and visible within the
+ * filesystem. Otherwise, the file has been deleted. Under certain
+ * circumstances, the function @download_inode can be used to
+ * recover deleted files.
+ * 
+ * 0x0002
+ * Filesystem such as NTFS and Ext2 or greater, separate the file
+ * name from the metadata structure. The bit is set to @1 when the
+ * file name is in an unallocated state and the metadata structure
+ * is in an allocated one. This generally implies the metadata has
+ * been reallocated to a new file. Therefore, information such as
+ * file type, file size, timestamps, number of links and symlink
+ * target might not correspond with the ones of the original
+ * deleted entry.
+ * 
+ * 0x0004
+ * The bit is set to @1 when the file is compressed using
+ * filesystem native compression support (NTFS). The API is not
+ * able to detect application level compression.
+ * 
+ * 'tsk_atime_sec'
+ * 'tsk_atime_nsec'
+ * 'tsk_mtime_sec'
+ * 'tsk_mtime_nsec'
+ * 'tsk_ctime_sec'
+ * 'tsk_ctime_nsec'
+ * 'tsk_crtime_sec'
+ * 'tsk_crtime_nsec'
+ * Respectively, access, modification, last status change and creation
+ * time in Unix format in seconds and nanoseconds.
+ * 
+ * 'tsk_nlink'
+ * Number of file names pointing to this entry.
+ * 
+ * 'tsk_link'
+ * If the entry is a symbolic link, this field will contain the path to
+ * the target file.
+ * 
+ * The @tsk_type field will contain one of the following characters:
+ * 
+ * 'b' Block special
+ * 
+ * 'c' Char special
+ * 
+ * 'd' Directory
+ * 
+ * 'f' FIFO (named pipe)
+ * 
+ * 'l' Symbolic link
+ * 
+ * 'r' Regular file
+ * 
+ * 's' Socket
+ * 
+ * 'h' Shadow inode (Solaris)
+ * 
+ * 'w' Whiteout inode (BSD)
+ * 
+ * 'u' Unknown file type
+ * 
+ * This function depends on the feature "libtsk".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsTSKDirent): an array of TSKDirent objects, or NULL on error
+ * Since: 1.33.39
+ */
+GuestfsTSKDirent **
+guestfs_session_filesystem_walk (GuestfsSession *session, const gchar *device, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return NULL;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "filesystem_walk");
+    return NULL;
+  }
+
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect (cancellable,
+                               G_CALLBACK (cancelled_handler),
+                               g, NULL);
+  }
+
+  struct guestfs_tsk_dirent_list *ret = guestfs_filesystem_walk (g, device);
+  g_cancellable_disconnect (cancellable, id);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  GuestfsTSKDirent **l = g_malloc (sizeof (GuestfsTSKDirent*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0 (GuestfsTSKDirent);
+    l[i]->tsk_inode = ret->val[i].tsk_inode;
+    l[i]->tsk_type = ret->val[i].tsk_type;
+    l[i]->tsk_size = ret->val[i].tsk_size;
+    if (ret->val[i].tsk_name) l[i]->tsk_name = g_strdup (ret->val[i].tsk_name);
+    l[i]->tsk_flags = ret->val[i].tsk_flags;
+    l[i]->tsk_atime_sec = ret->val[i].tsk_atime_sec;
+    l[i]->tsk_atime_nsec = ret->val[i].tsk_atime_nsec;
+    l[i]->tsk_mtime_sec = ret->val[i].tsk_mtime_sec;
+    l[i]->tsk_mtime_nsec = ret->val[i].tsk_mtime_nsec;
+    l[i]->tsk_ctime_sec = ret->val[i].tsk_ctime_sec;
+    l[i]->tsk_ctime_nsec = ret->val[i].tsk_ctime_nsec;
+    l[i]->tsk_crtime_sec = ret->val[i].tsk_crtime_sec;
+    l[i]->tsk_crtime_nsec = ret->val[i].tsk_crtime_nsec;
+    l[i]->tsk_nlink = ret->val[i].tsk_nlink;
+    if (ret->val[i].tsk_link) l[i]->tsk_link = g_strdup (ret->val[i].tsk_link);
+    l[i]->tsk_spare1 = ret->val[i].tsk_spare1;
+  }
+  guestfs_free_tsk_dirent_list (ret);
+  l[i] = NULL;
+  return l;
+}
+
+/**
  * guestfs_session_fill:
  * @session: (transfer none): A GuestfsSession object
  * @c: (type gint32):
@@ -7917,6 +8256,10 @@ guestfs_session_fsck (GuestfsSession *session, const gchar *fstype, const gchar 
  * This operation requires support in libguestfs, the mounted filesystem,
  * the host filesystem, qemu and the host kernel. If this support isn't
  * present it may give an error or even appear to run but do nothing.
+ * 
+ * In the case where the kernel vfs driver does not support trimming, this
+ * call will fail with errno set to @ENOTSUP. Currently this happens when
+ * trying to trim FAT filesystems.
  * 
  * See also guestfs_session_zero_free_space(). That is a slightly different
  * operation that turns free space in the filesystem into zeroes. It is
@@ -8968,6 +9311,7 @@ guestfs_session_get_recovery_proc (GuestfsSession *session, GError **err)
  * For more information on the architecture of libguestfs, see guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
+ * Deprecated: In new code, use guestfs_session_selinux_relabel() instead
  * Since: 1.0.67
  */
 gint8
@@ -9017,6 +9361,46 @@ guestfs_session_get_smp (GuestfsSession *session, GError **err)
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_get_sockdir:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the temporary directory for sockets
+ *
+ * Get the directory used by the handle to store temporary socket files.
+ * 
+ * This is different from guestfs_session_tmpdir(), as we need shorter
+ * paths for sockets (due to the limited buffers of filenames for UNIX
+ * sockets), and guestfs_session_tmpdir() may be too long for them.
+ * 
+ * The environment variable @XDG_RUNTIME_DIR controls the default value: If
+ * @XDG_RUNTIME_DIR is set, then that is the default. Else /tmp is the
+ * default.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.33.8
+ */
+gchar *
+guestfs_session_get_sockdir (GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_sockdir");
+    return NULL;
+  }
+
+  char *ret = guestfs_get_sockdir (g);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
   }
 
   return ret;
@@ -9202,6 +9586,7 @@ guestfs_session_get_verbose (GuestfsSession *session, GError **err)
  * See also guestfs_session_feature_available().
  *
  * Returns: (transfer full): the returned string, or NULL on error
+ * Deprecated: In new code, use guestfs_session_selinux_relabel() instead
  * Since: 1.0.67
  */
 gchar *
@@ -9334,6 +9719,7 @@ guestfs_session_getxattrs (GuestfsSession *session, const gchar *path, GError **
  * guestfs_session_glob_expand:
  * @session: (transfer none): A GuestfsSession object
  * @pattern: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsGlobExpand containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * expand a wildcard path
@@ -9346,6 +9732,10 @@ guestfs_session_getxattrs (GuestfsSession *session, const gchar *path, GError **
  * It is just a wrapper around the C glob(3) function with flags
  * "GLOB_MARK|GLOB_BRACE". See that manual page for more details.
  * 
+ * @directoryslash controls whether use the @GLOB_MARK flag for glob(3),
+ * and it defaults to true. It can be explicitly set as off to return no
+ * trailing slashes in filenames of directories.
+ * 
  * Notice that there is no equivalent command for expanding a device name
  * (eg. /dev/sd*). Use guestfs_session_list_devices(),
  * guestfs_session_list_partitions() etc functions instead.
@@ -9354,7 +9744,7 @@ guestfs_session_getxattrs (GuestfsSession *session, const gchar *path, GError **
  * Since: 1.0.50
  */
 gchar **
-guestfs_session_glob_expand (GuestfsSession *session, const gchar *pattern, GError **err)
+guestfs_session_glob_expand (GuestfsSession *session, const gchar *pattern, GuestfsGlobExpand *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -9364,7 +9754,23 @@ guestfs_session_glob_expand (GuestfsSession *session, const gchar *pattern, GErr
     return NULL;
   }
 
-  char **ret = guestfs_glob_expand (g, pattern);
+  struct guestfs_glob_expand_opts_argv argv;
+  struct guestfs_glob_expand_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue directoryslash_v = {0, };
+    g_value_init (&directoryslash_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "directoryslash", &directoryslash_v);
+    GuestfsTristate directoryslash = g_value_get_enum (&directoryslash_v);
+    if (directoryslash != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH_BITMASK;
+      argv.directoryslash = directoryslash;
+    }
+    argvp = &argv;
+  }
+  char **ret = guestfs_glob_expand_opts_argv (g, pattern, argvp);
   if (ret == NULL) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return NULL;
@@ -10893,6 +11299,9 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * "unknown"
  * The distro could not be determined.
  * 
+ * "voidlinux"
+ * Void Linux.
+ * 
  * "windows"
  * Windows does not have distributions. This string is returned if the
  * OS type is Windows.
@@ -11386,7 +11795,7 @@ guestfs_session_inspect_get_mountpoints (GuestfsSession *session, const gchar *r
  * system (eg. Windows).
  * 
  * Possible strings include: @rpm, @deb, @ebuild, @pisi, @pacman, @pkgsrc,
- * @apk. Future versions of libguestfs may return other strings.
+ * @apk, @xbps. Future versions of libguestfs may return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
@@ -11431,8 +11840,8 @@ guestfs_session_inspect_get_package_format (GuestfsSession *session, const gchar
  * packaging system (eg. Windows).
  * 
  * Possible strings include: @yum, @dnf, @up2date, @apt (for all Debian
- * derivatives), @portage, @pisi, @pacman, @urpmi, @zypper, @apk. Future
- * versions of libguestfs may return other strings.
+ * derivatives), @portage, @pisi, @pacman, @urpmi, @zypper, @apk, @xbps.
+ * Future versions of libguestfs may return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
@@ -14329,19 +14738,19 @@ guestfs_session_is_launching (GuestfsSession *session, GError **err)
 /**
  * guestfs_session_is_lv:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @err: A GError object to receive any generated errors
  *
- * test if device is a logical volume
+ * test if mountable is a logical volume
  *
- * This command tests whether @device is a logical volume, and returns true
- * iff this is the case.
+ * This command tests whether @mountable is a logical volume, and returns
+ * true iff this is the case.
  * 
  * Returns: the returned value, or -1 on error
  * Since: 1.5.3
  */
 gint8
-guestfs_session_is_lv (GuestfsSession *session, const gchar *device, GError **err)
+guestfs_session_is_lv (GuestfsSession *session, const gchar *mountable, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -14351,7 +14760,7 @@ guestfs_session_is_lv (GuestfsSession *session, const gchar *device, GError **er
     return -1;
   }
 
-  int ret = guestfs_is_lv (g, device);
+  int ret = guestfs_is_lv (g, mountable);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return -1;
@@ -16079,6 +16488,7 @@ guestfs_session_ll (GuestfsSession *session, const gchar *directory, GError **er
  * intended that you try to parse the output string.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Deprecated: In new code, use guestfs_session_lgetxattrs() instead
  * Since: 1.17.6
  */
 gchar *
@@ -19883,6 +20293,84 @@ guestfs_session_mount_vfs (GuestfsSession *session, const gchar *options, const 
 }
 
 /**
+ * guestfs_session_mountable_device:
+ * @session: (transfer none): A GuestfsSession object
+ * @mountable: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * extract the device part of a mountable
+ *
+ * Returns the device name of a mountable. In quite a lot of cases, the
+ * mountable is the device name.
+ * 
+ * However this doesn't apply for btrfs subvolumes, where the mountable is
+ * a combination of both the device name and the subvolume path (see also
+ * guestfs_session_mountable_subvolume() to extract the subvolume path of
+ * the mountable if any).
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.33.15
+ */
+gchar *
+guestfs_session_mountable_device (GuestfsSession *session, const gchar *mountable, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mountable_device");
+    return NULL;
+  }
+
+  char *ret = guestfs_mountable_device (g, mountable);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_mountable_subvolume:
+ * @session: (transfer none): A GuestfsSession object
+ * @mountable: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * extract the subvolume part of a mountable
+ *
+ * Returns the subvolume path of a mountable. Btrfs subvolumes mountables
+ * are a combination of both the device name and the subvolume path (see
+ * also guestfs_session_mountable_device() to extract the device of the
+ * mountable).
+ * 
+ * If the mountable does not represent a btrfs subvolume, then this
+ * function fails and the @errno is set to @EINVAL.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.33.15
+ */
+gchar *
+guestfs_session_mountable_subvolume (GuestfsSession *session, const gchar *mountable, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mountable_subvolume");
+    return NULL;
+  }
+
+  char *ret = guestfs_mountable_subvolume (g, mountable);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_mountpoints:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
@@ -20079,6 +20567,61 @@ guestfs_session_ntfs_3g_probe (GuestfsSession *session, gboolean rw, const gchar
   }
 
   return ret;
+}
+
+/**
+ * guestfs_session_ntfscat_i:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @inode: (type gint64):
+ * @filename: (transfer none) (type filename):
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * download a file to the local machine given its inode
+ *
+ * Download a file given its inode from a NTFS filesystem and save it as
+ * filename on the local machine.
+ * 
+ * This allows to download some otherwise inaccessible files such as the
+ * ones within the $Extend folder.
+ * 
+ * The filesystem from which to extract the file must be unmounted,
+ * otherwise the call will fail.
+ * 
+ * Returns: true on success, false on error
+ * Since: 1.33.14
+ */
+gboolean
+guestfs_session_ntfscat_i (GuestfsSession *session, const gchar *device, gint64 inode, const gchar *filename, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return FALSE;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ntfscat_i");
+    return FALSE;
+  }
+
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect (cancellable,
+                               G_CALLBACK (cancelled_handler),
+                               g, NULL);
+  }
+
+  int ret = guestfs_ntfscat_i (g, device, inode, filename);
+  g_cancellable_disconnect (cancellable, id);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
 }
 
 /**
@@ -20630,6 +21173,46 @@ guestfs_session_part_disk (GuestfsSession *session, const gchar *device, const g
 }
 
 /**
+ * guestfs_session_part_expand_gpt:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * move backup GPT header to the end of the disk
+ *
+ * Move backup GPT data structures to the end of the disk. This is useful
+ * in case of in-place image expand since disk space after backup GPT
+ * header is not usable. This is equivalent to "sgdisk -e".
+ * 
+ * See also sgdisk(8).
+ * 
+ * This function depends on the feature "gdisk".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.33.2
+ */
+gboolean
+guestfs_session_part_expand_gpt (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_expand_gpt");
+    return FALSE;
+  }
+
+  int ret = guestfs_part_expand_gpt (g, device);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_part_get_bootable:
  * @session: (transfer none): A GuestfsSession object
  * @device: (transfer none) (type filename):
@@ -20661,6 +21244,43 @@ guestfs_session_part_get_bootable (GuestfsSession *session, const gchar *device,
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_part_get_disk_guid:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the GUID of a GPT-partitioned disk
+ *
+ * Return the disk identifier (GUID) of a GPT-partitioned @device.
+ * Behaviour is undefined for other partition types.
+ * 
+ * This function depends on the feature "gdisk".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.33.2
+ */
+gchar *
+guestfs_session_part_get_disk_guid (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_get_disk_guid");
+    return NULL;
+  }
+
+  char *ret = guestfs_part_get_disk_guid (g, device);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
   }
 
   return ret;
@@ -21062,6 +21682,83 @@ guestfs_session_part_set_bootable (GuestfsSession *session, const gchar *device,
   }
 
   int ret = guestfs_part_set_bootable (g, device, partnum, bootable);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_part_set_disk_guid:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @guid: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the GUID of a GPT-partitioned disk
+ *
+ * Set the disk identifier (GUID) of a GPT-partitioned @device to @guid.
+ * Return an error if the partition table of @device isn't GPT, or if @guid
+ * is not a valid GUID.
+ * 
+ * This function depends on the feature "gdisk".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.33.2
+ */
+gboolean
+guestfs_session_part_set_disk_guid (GuestfsSession *session, const gchar *device, const gchar *guid, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_set_disk_guid");
+    return FALSE;
+  }
+
+  int ret = guestfs_part_set_disk_guid (g, device, guid);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_part_set_disk_guid_random:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the GUID of a GPT-partitioned disk to random value
+ *
+ * Set the disk identifier (GUID) of a GPT-partitioned @device to a
+ * randomly generated value. Return an error if the partition table of
+ * @device isn't GPT.
+ * 
+ * This function depends on the feature "gdisk".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.33.2
+ */
+gboolean
+guestfs_session_part_set_disk_guid_random (GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_set_disk_guid_random");
+    return FALSE;
+  }
+
+  int ret = guestfs_part_set_disk_guid_random (g, device);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return FALSE;
@@ -22974,6 +23671,73 @@ guestfs_session_scrub_freespace (GuestfsSession *session, const gchar *dir, GErr
 }
 
 /**
+ * guestfs_session_selinux_relabel:
+ * @session: (transfer none): A GuestfsSession object
+ * @specfile: (transfer none) (type utf8):
+ * @path: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsSelinuxRelabel containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * relabel parts of the filesystem
+ *
+ * SELinux relabel parts of the filesystem.
+ * 
+ * The @specfile parameter controls the policy spec file used. You have to
+ * parse "/etc/selinux/config" to find the correct SELinux policy and then
+ * pass the spec file, usually: "/etc/selinux/" + *selinuxtype* +
+ * "/contexts/files/file_contexts".
+ * 
+ * The required @path parameter is the top level directory where
+ * relabelling starts. Normally you should pass @path as "/" to relabel the
+ * whole guest filesystem.
+ * 
+ * The optional @force boolean controls whether the context is reset for
+ * customizable files, and also whether the user, role and range parts of
+ * the file context is changed.
+ * 
+ * This function depends on the feature "selinuxrelabel".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.33.43
+ */
+gboolean
+guestfs_session_selinux_relabel (GuestfsSession *session, const gchar *specfile, const gchar *path, GuestfsSelinuxRelabel *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "selinux_relabel");
+    return FALSE;
+  }
+
+  struct guestfs_selinux_relabel_argv argv;
+  struct guestfs_selinux_relabel_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue force_v = {0, };
+    g_value_init (&force_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "force", &force_v);
+    GuestfsTristate force = g_value_get_enum (&force_v);
+    if (force != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_SELINUX_RELABEL_FORCE_BITMASK;
+      argv.force = force;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_selinux_relabel_argv (g, specfile, path, argvp);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_set_append:
  * @session: (transfer none): A GuestfsSession object
  * @append: (transfer none) (type utf8) (allow-none):
@@ -24040,6 +24804,7 @@ guestfs_session_set_recovery_proc (GuestfsSession *session, gboolean recoverypro
  * For more information on the architecture of libguestfs, see guestfs(3).
  * 
  * Returns: true on success, false on error
+ * Deprecated: In new code, use guestfs_session_selinux_relabel() instead
  * Since: 1.0.67
  */
 gboolean
@@ -24317,6 +25082,7 @@ guestfs_session_set_verbose (GuestfsSession *session, gboolean verbose, GError *
  * See also guestfs_session_feature_available().
  *
  * Returns: true on success, false on error
+ * Deprecated: In new code, use guestfs_session_selinux_relabel() instead
  * Since: 1.0.67
  */
 gboolean

@@ -146,7 +146,7 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-localename$(EXEEXT) test-lock$(EXEEXT) test-lseek.sh \
 	test-lstat$(EXEEXT) test-malloca$(EXEEXT) test-mbrtowc1.sh \
 	test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh \
-	test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
+	test-mbrtowc5.sh test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
 	test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh \
 	test-mbrtowc-w32-5.sh test-mbsinit.sh test-mbsrtowcs1.sh \
 	test-mbsrtowcs2.sh test-mbsrtowcs3.sh test-mbsrtowcs4.sh \
@@ -315,64 +315,63 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gettime.m4 \
-	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
-	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
-	$(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
+	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
+	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
-	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
-	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/include_next.m4 $(top_srcdir)/m4/inet_ntop.m4 \
-	$(top_srcdir)/m4/inet_pton.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
-	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
-	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
-	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/isatty.m4 \
-	$(top_srcdir)/m4/langinfo_h.m4 $(top_srcdir)/m4/largefile.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
-	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
-	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localeconv.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mkstemps.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/hard-locale.m4 $(top_srcdir)/m4/hostent.m4 \
+	$(top_srcdir)/m4/human.m4 $(top_srcdir)/m4/i-ring.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
+	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
+	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
+	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
+	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
+	$(top_srcdir)/m4/isatty.m4 $(top_srcdir)/m4/langinfo_h.m4 \
+	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
+	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-tr.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localeconv.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/memmem.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mkstemps.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
-	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
-	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
-	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
-	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
+	$(top_srcdir)/m4/ocaml.m4 $(top_srcdir)/m4/off_t.m4 \
+	$(top_srcdir)/m4/onceonly.m4 $(top_srcdir)/m4/open.m4 \
+	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
+	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
+	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
 	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
-	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
-	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
-	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
-	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
-	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
-	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
-	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
-	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
-	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
-	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/ptsname_r.m4 \
+	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
+	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
+	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
+	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
+	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/readlinkat.m4 \
+	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/rewinddir.m4 \
+	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
+	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
+	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
+	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
+	$(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -431,7 +430,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/guestfs_golang.m4 \
 	$(top_srcdir)/m4/guestfs_gobject.m4 \
 	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/guestfs_misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(noinst_HEADERS) \
@@ -2046,13 +2045,14 @@ GOOS = @GOOS@
 GOROOT = @GOROOT@
 GPERF = @GPERF@
 GREP = @GREP@
-GTK2_CFLAGS = @GTK2_CFLAGS@
-GTK2_LIBS = @GTK2_LIBS@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
 GTKDOC_DEPS_LIBS = @GTKDOC_DEPS_LIBS@
 GTKDOC_MKPDF = @GTKDOC_MKPDF@
 GTKDOC_REBASE = @GTKDOC_REBASE@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
+GTK_VERSION = @GTK_VERSION@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -2475,7 +2475,10 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
+OCAML_BYTES_COMPAT_CMO = @OCAML_BYTES_COMPAT_CMO@
+OCAML_BYTES_COMPAT_ML = @OCAML_BYTES_COMPAT_ML@
 OCAML_FLAGS = @OCAML_FLAGS@
+OCAML_GENERATOR_BYTES_COMPAT_CMO = @OCAML_GENERATOR_BYTES_COMPAT_CMO@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
@@ -2699,6 +2702,7 @@ SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_U
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
 TIME_H_DEFINES_STRUCT_TIMESPEC = @TIME_H_DEFINES_STRUCT_TIMESPEC@
 TOOL_TRUE = @TOOL_TRUE@
+TSK_LIBS = @TSK_LIBS@
 UINT32_MAX_LT_UINTMAX_MAX = @UINT32_MAX_LT_UINTMAX_MAX@
 UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
@@ -2809,17 +2813,6 @@ TESTS_ENVIRONMENT = EXEEXT='@EXEEXT@' srcdir='$(srcdir)' \
 noinst_HEADERS = 
 noinst_LIBRARIES = 
 check_LIBRARIES = libtests.a
-
-# If your project uses "gettextize --intl" to put a source-code
-# copy of libintl into the package, every Makefile.am needs
-# -I$(top_builddir)/intl, so that <libintl.h> can be found in this directory.
-# Here's one way to do this:
-#AM_CPPFLAGS += -I$(top_builddir)/intl
-# This option has no effect when the user disables NLS (because then
-# the intl directory contains no libintl.h file).  This option is not
-# enabled by default because the intl directory might not exist if
-# your project does not use "gettext --intl", and some compilers
-# complain about -I options applied to nonexistent directories.
 EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	signature.h macros.h test-alloca-opt.c test-areadlink.h \
 	test-areadlink.c macros.h test-areadlink.h test-areadlinkat.c \
@@ -2857,22 +2850,22 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	signature.h macros.h test-getdtablesize.c signature.h macros.h \
 	test-getline.c signature.h macros.h macros.h signature.h \
 	test-getopt.c test-getopt.h test-getopt_long.h getpagesize.c \
-	$(top_srcdir)/build-aux/config.rpath signature.h \
-	test-gettimeofday.c test-glob.c signature.h macros.h \
-	test-hash.c macros.h test-i-ring.c macros.h test-iconv.c \
-	signature.h macros.h test-ignore-value.c test-inet_ntop.c \
-	signature.h macros.h inet_pton.c test-inet_pton.c signature.h \
-	macros.h test-intprops.c macros.h anytostr.c inttostr.h \
-	macros.h test-inttostr.c test-inttypes.c ioctl.c w32sock.h \
-	test-ioctl.c signature.h macros.h test-isatty.c signature.h \
-	macros.h langinfo.in.h test-langinfo.c listen.c w32sock.h \
-	test-listen.c signature.h macros.h test-locale.c \
-	test-localeconv.c signature.h macros.h localename.h \
-	test-localename.c macros.h test-lock.c test-lseek.c \
-	test-lseek.sh signature.h macros.h test-lstat.h test-lstat.c \
-	signature.h macros.h test-malloca.c test-mbrtowc1.sh \
-	test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh \
-	test-mbrtowc.c test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
+	signature.h test-gettimeofday.c test-glob.c signature.h \
+	macros.h test-hash.c macros.h test-i-ring.c macros.h \
+	test-iconv.c signature.h macros.h test-ignore-value.c \
+	test-inet_ntop.c signature.h macros.h inet_pton.c \
+	test-inet_pton.c signature.h macros.h test-intprops.c macros.h \
+	anytostr.c inttostr.h macros.h test-inttostr.c test-inttypes.c \
+	ioctl.c w32sock.h test-ioctl.c signature.h macros.h \
+	test-isatty.c signature.h macros.h langinfo.in.h \
+	test-langinfo.c listen.c w32sock.h test-listen.c signature.h \
+	macros.h test-locale.c test-localeconv.c signature.h macros.h \
+	localename.h test-localename.c macros.h test-lock.c \
+	test-lseek.c test-lseek.sh signature.h macros.h test-lstat.h \
+	test-lstat.c signature.h macros.h test-malloca.c \
+	test-mbrtowc1.sh test-mbrtowc2.sh test-mbrtowc3.sh \
+	test-mbrtowc4.sh test-mbrtowc5.sh test-mbrtowc.c \
+	test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
 	test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh \
 	test-mbrtowc-w32-5.sh test-mbrtowc-w32.c signature.h macros.h \
 	test-mbsinit.sh test-mbsinit.c signature.h macros.h \
@@ -2957,11 +2950,15 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 BUILT_SOURCES = ctype.h langinfo.h arg-nonnull.h c++defs.h \
 	warn-on-use.h sys/ioctl.h
 SUFFIXES = 
+
+# This test expects compilation of test-verify.c to fail, and
+# each time it fails, the makefile rule does not perform the usual
+#  "mv -f $name.Tpo $name.po, so tell make clean to remove that file.
 MOSTLYCLEANFILES = core *.stackdump ctype.h ctype.h-t test-fpending.t \
 	t-ftell3.tmp t-ftello3.tmp test-getdelim.txt test-getline.txt \
 	langinfo.h langinfo.h-t arg-nonnull.h arg-nonnull.h-t \
 	c++defs.h c++defs.h-t warn-on-use.h warn-on-use.h-t \
-	sys/ioctl.h sys/ioctl.h-t
+	sys/ioctl.h sys/ioctl.h-t .deps/test-verify.Tpo
 MOSTLYCLEANDIRS = sys
 CLEANFILES = 
 DISTCLEANFILES = 
@@ -4909,6 +4906,13 @@ test-mbrtowc3.sh.log: test-mbrtowc3.sh
 test-mbrtowc4.sh.log: test-mbrtowc4.sh
 	@p='test-mbrtowc4.sh'; \
 	b='test-mbrtowc4.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mbrtowc5.sh.log: test-mbrtowc5.sh
+	@p='test-mbrtowc5.sh'; \
+	b='test-mbrtowc5.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

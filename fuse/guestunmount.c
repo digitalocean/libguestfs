@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <errno.h>
+#include <error.h>
 #include <locale.h>
 #include <libintl.h>
 #include <poll.h>
@@ -92,7 +93,7 @@ main (int argc, char *argv[])
   const char *mountpoint;
   struct sigaction sa;
   struct pollfd pollfd;
-  char *error = NULL;
+  char *error_str = NULL;
   size_t i;
 
   setlocale (LC_ALL, "");
@@ -106,24 +107,19 @@ main (int argc, char *argv[])
     switch (c) {
     case 0:			/* options which are long only */
       if (STREQ (long_options[option_index].name, "fd")) {
-        if (sscanf (optarg, "%d", &fd) != 1 || fd < 0) {
-          fprintf (stderr, _("%s: cannot parse fd option '%s'\n"),
-                   guestfs_int_program_name, optarg);
-          exit (EXIT_FAILURE);
-        }
+        if (sscanf (optarg, "%d", &fd) != 1 || fd < 0)
+          error (EXIT_FAILURE, 0, _("cannot parse fd option '%s'"), optarg);
       } else if (STREQ (long_options[option_index].name, "no-retry")) {
         retries = 0;
       } else if (STREQ (long_options[option_index].name, "retry")) {
-        if (sscanf (optarg, "%zu", &retries) != 1 || retries >= 64) {
-          fprintf (stderr, _("%s: cannot parse retries option or value is too large '%s'\n"),
-                   guestfs_int_program_name, optarg);
-          exit (EXIT_FAILURE);
-        }
-      } else {
-        fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name, long_options[option_index].name, option_index);
-        exit (EXIT_FAILURE);
-      }
+        if (sscanf (optarg, "%zu", &retries) != 1 || retries >= 64)
+          error (EXIT_FAILURE, 0,
+                 _("cannot parse retries option or value is too large '%s'"),
+                 optarg);
+      } else
+        error (EXIT_FAILURE, 0,
+               _("unknown long option: %s (%d)"),
+               long_options[option_index].name, option_index);
       break;
 
     case 'q':
@@ -147,12 +143,9 @@ main (int argc, char *argv[])
   }
 
   /* We'd better have a mountpoint. */
-  if (optind+1 != argc) {
-    fprintf (stderr,
-             _("%s: you must specify a mountpoint in the host filesystem\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (optind+1 != argc)
+    error (EXIT_FAILURE, 0,
+           _("you must specify a mountpoint in the host filesystem\n"));
 
   mountpoint = argv[optind];
 
@@ -172,10 +165,8 @@ main (int argc, char *argv[])
       pollfd.events = POLLIN;
       pollfd.revents = 0;
       if (poll (&pollfd, 1, -1) == -1) {
-        if (errno != EAGAIN && errno != EINTR) {
-          perror ("poll");
-          exit (EXIT_FAILURE);
-        }
+        if (errno != EAGAIN && errno != EINTR)
+          error (EXIT_FAILURE, errno, "poll");
       }
       else {
         if ((pollfd.revents & POLLHUP) != 0)
@@ -189,15 +180,15 @@ main (int argc, char *argv[])
     if (i > 0)
       sleep (1 << (i-1));
 
-    free (error);
-    error = NULL;
+    free (error_str);
+    error_str = NULL;
 
-    if (do_fusermount (mountpoint, &error) == 0)
+    if (do_fusermount (mountpoint, &error_str) == 0)
       goto done;
 
     /* Did fusermount fail because the mountpoint is not mounted? */
-    if (error &&
-        strstr (error, "fusermount: entry for") != NULL) {
+    if (error_str &&
+        strstr (error_str, "fusermount: entry for") != NULL) {
       goto not_mounted;
     }
   }
@@ -205,10 +196,10 @@ main (int argc, char *argv[])
   /* fusermount failed after N retries */
   if (!quiet) {
     fprintf (stderr, _("%s: failed to unmount %s: %s\n"),
-             guestfs_int_program_name, mountpoint, error);
+             guestfs_int_program_name, mountpoint, error_str);
     do_fuser (mountpoint);
   }
-  free (error);
+  free (error_str);
 
   exit (2);
 
@@ -216,9 +207,9 @@ main (int argc, char *argv[])
  not_mounted:
   if (!quiet)
     fprintf (stderr, _("%s: %s is not mounted: %s\n"),
-             guestfs_int_program_name, mountpoint, error);
+             guestfs_int_program_name, mountpoint, error_str);
 
-  free (error);
+  free (error_str);
 
   exit (3);
 
@@ -236,20 +227,16 @@ do_fusermount (const char *mountpoint, char **error_rtn)
   char *buf = NULL;
   size_t allocsize = 0, len = 0;
 
-  if (pipe (fd) == -1) {
-    perror ("pipe");
-    exit (EXIT_FAILURE);
-  }
+  if (pipe (fd) == -1)
+    error (EXIT_FAILURE, errno, "pipe");
 
   if (verbose)
     fprintf (stderr, "%s: running: fusermount -u %s\n",
              guestfs_int_program_name, mountpoint);
 
   pid = fork ();
-  if (pid == -1) {
-    perror ("fork");
-    exit (EXIT_FAILURE);
-  }
+  if (pid == -1)
+    error (EXIT_FAILURE, errno, "fork");
 
   if (pid == 0) {               /* Child - run fusermount. */
     close (fd[0]);
@@ -277,18 +264,14 @@ do_fusermount (const char *mountpoint, char **error_rtn)
     if (len >= allocsize) {
       allocsize += 256;
       buf = realloc (buf, allocsize);
-      if (buf == NULL) {
-        perror ("realloc");
-        exit (EXIT_FAILURE);
-      }
+      if (buf == NULL)
+        error (EXIT_FAILURE, errno, "realloc");
     }
 
     /* Leave space in the buffer for a terminating \0 character. */
     r = read (fd[0], &buf[len], allocsize - len - 1);
-    if (r == -1) {
-      perror ("read");
-      exit (EXIT_FAILURE);
-    }
+    if (r == -1)
+      error (EXIT_FAILURE, errno, "read");
 
     if (r == 0)
       break;
@@ -296,10 +279,8 @@ do_fusermount (const char *mountpoint, char **error_rtn)
     len += r;
   }
 
-  if (close (fd[0]) == -1) {
-    perror ("close");
-    exit (EXIT_FAILURE);
-  }
+  if (close (fd[0]) == -1)
+    error (EXIT_FAILURE, errno, "close");
 
   if (buf) {
     /* Remove any trailing \n from the error message. */
@@ -313,10 +294,8 @@ do_fusermount (const char *mountpoint, char **error_rtn)
       buf[len] = '\0';
   }
 
-  if (waitpid (pid, &r, 0) == -1) {
-    perror ("waitpid");
-    exit (EXIT_FAILURE);
-  }
+  if (waitpid (pid, &r, 0) == -1)
+    error (EXIT_FAILURE, errno, "waitpid");
 
   if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
     if (verbose)
@@ -343,10 +322,8 @@ do_fuser (const char *mountpoint)
   pid_t pid;
 
   pid = fork ();
-  if (pid == -1) {
-    perror ("fork");
-    exit (EXIT_FAILURE);
-  }
+  if (pid == -1)
+    error (EXIT_FAILURE, errno, "fork");
 
   if (pid == 0) {               /* Child - run fuser. */
 #ifdef __linux__

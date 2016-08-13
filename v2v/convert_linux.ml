@@ -59,7 +59,7 @@ let string_of_kernel_info ki =
     ki.ki_supports_virtio ki.ki_is_xen_kernel ki.ki_is_debug
 
 (* The conversion function. *)
-let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
+let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
   (*----------------------------------------------------------------------*)
   (* Inspect the guest first.  We already did some basic inspection in
    * the common v2v.ml code, but that has to deal with generic guests
@@ -97,10 +97,9 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
       "/boot/grub/grub.conf", `Grub1;
     ] in
     let locations =
-      if inspect.i_uefi then
-        ("/boot/efi/EFI/redhat/grub.cfg", `Grub2) :: locations
-      else
-        locations in
+      match inspect.i_firmware with
+      | I_UEFI _ -> ("/boot/efi/EFI/redhat/grub.cfg", `Grub2) :: locations
+      | I_BIOS -> locations in
     try
       List.find (
         fun (grub_config, _) -> g#is_file ~followsymlinks:true grub_config
@@ -125,7 +124,7 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
   let installed_kernels : kernel_info list =
     let rex_ko = Str.regexp ".*\\.k?o\\(\\.xz\\)?$" in
     let rex_ko_extract = Str.regexp ".*/\\([^/]+\\)\\.k?o\\(\\.xz\\)?$" in
-    let rex_initrd = Str.regexp "^initr\\(d\\|amfs\\)-.*\\.img$" in
+    let rex_initrd = Str.regexp "^initr\\(d\\|amfs\\)-.*\\(\\.img\\)?$" in
     filter_map (
       function
       | { G.app2_name = name } as app
@@ -158,7 +157,8 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
 
              (* Get/construct the version.  XXX Read this from kernel file. *)
              let version =
-               sprintf "%s-%s" app.G.app2_version app.G.app2_release in
+               let prefix_len = String.length "/lib/modules/" in
+               String.sub modpath prefix_len (String.length modpath - prefix_len) in
 
              (* Find the initramfs which corresponds to the kernel.
               * Since the initramfs is built at runtime, and doesn't have
@@ -173,12 +173,11 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
                let files =
                  List.filter (
                    fun n ->
-                     String.find n app.G.app2_version >= 0 &&
-                       String.find n app.G.app2_release >= 0
+                     String.find n version >= 0
                  ) files in
                (* Don't consider kdump initramfs images (RHBZ#1138184). *)
                let files =
-                 List.filter (fun n -> String.find n "kdump.img" == -1) files in
+                 List.filter (fun n -> String.find n "kdump" == -1) files in
                (* If several files match, take the shortest match.  This
                 * handles the case where we have a mix of same-version non-Xen
                 * and Xen kernels:
@@ -405,13 +404,6 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
       )
 
     | `Grub2 -> () (* Not necessary for grub2. *)
-
-  and autorelabel () =
-    (* Only do autorelabel if load_policy binary exists.  Actually
-     * loading the policy is problematic.
-     *)
-    if g#is_file ~followsymlinks:true "/usr/sbin/load_policy" then
-      g#touch "/.autorelabel";
 
   and unconfigure_xen () =
     (* Remove kmod-xenpv-* (RHEL 3). *)
@@ -695,6 +687,20 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
         ignore (g#command [| "/sbin/chkconfig"; "kudzu"; "off" |])
       )
 
+  and unconfigure_prltools () =
+    let prltools_path = "/usr/lib/parallels-tools/install" in
+    if g#is_file ~followsymlinks:true prltools_path then (
+      try
+        ignore (g#command [| prltools_path; "-r" |]);
+
+        (* Reload Augeas to detect changes made by prltools uninst. *)
+        Linux.augeas_reload g
+      with
+        G.Error msg ->
+          warning (f_"Parallels tools was detected, but uninstallation failed. The error message was: %s (ignored)")
+            msg
+    )
+
   and configure_kernel () =
     (* Previously this function would try to install kernels, but we
      * don't do that any longer.
@@ -803,8 +809,9 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
            * major number of vdX block devices. If we change it, RHEL 3
            * KVM guests won't boot.
            *)
-          [ "virtio"; "virtio_ring"; "virtio_blk"; "virtio_net";
-            "virtio_pci" ]
+          List.filter (fun m -> List.mem m kernel.ki_modules)
+                      [ "virtio"; "virtio_ring"; "virtio_blk";
+                        "virtio_scsi"; "virtio_net"; "virtio_pci" ]
         else
           [ "sym53c8xx" (* XXX why not "ide"? *) ] in
 
@@ -1115,19 +1122,32 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
       warning (f_"The display driver was updated to '%s', but X11 does not seem to be installed in the guest.  X may not function correctly.")
         video_driver
 
-  and configure_kernel_modules virtio =
+  and configure_kernel_modules block_type net_type =
     (* This function modifies modules.conf (and its various aliases). *)
 
     (* Update 'alias eth0 ...'. *)
     let paths = augeas_modprobe ". =~ regexp('eth[0-9]+')" in
-    let net_device = if virtio then "virtio_net" else "e1000" in
+    let net_device =
+      match net_type with
+      | Virtio_net -> "virtio_net"
+      | E1000 -> "e1000"
+      | RTL8139 -> "rtl8139cp"
+    in
+
     List.iter (
       fun path -> g#aug_set (path ^ "/modulename") net_device
     ) paths;
 
     (* Update 'alias scsi_hostadapter ...' *)
     let paths = augeas_modprobe ". =~ regexp('scsi_hostadapter.*')" in
-    if virtio then (
+    (match block_type with
+    | Virtio_blk | Virtio_SCSI ->
+      let block_module =
+        match block_type with
+        | Virtio_blk -> "virtio_blk"
+        | Virtio_SCSI -> "virtio_scsi"
+        | IDE -> assert false in
+
       if paths <> [] then (
         (* There's only 1 scsi controller in the converted guest.
          * Convert only the first scsi_hostadapter entry to virtio
@@ -1141,16 +1161,16 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
         List.iter (fun path -> ignore (g#aug_rm path))
           (List.rev paths_to_delete);
 
-        g#aug_set (path ^ "/modulename") "virtio_blk"
+        g#aug_set (path ^ "/modulename") block_module
       ) else (
         (* We have to add a scsi_hostadapter. *)
         let modpath = discover_modpath () in
         g#aug_set (sprintf "/files%s/alias[last()+1]" modpath)
           "scsi_hostadapter";
         g#aug_set (sprintf "/files%s/alias[last()]/modulename" modpath)
-          "virtio_blk"
+          block_module
       )
-    ) else (* not virtio *) (
+    | IDE ->
       (* There is no scsi controller in an IDE guest. *)
       List.iter (fun path -> ignore (g#aug_rm path)) (List.rev paths)
     );
@@ -1205,7 +1225,7 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
         error (f_"unable to find any valid modprobe configuration file such as /etc/modprobe.conf");
     )
 
-  and remap_block_devices virtio =
+  and remap_block_devices block_type =
     (* This function's job is to iterate over boot configuration
      * files, replacing "hda" with "vda" or whatever is appropriate.
      * This is mostly applicable to old guests, since newer OSes use
@@ -1228,7 +1248,10 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
         (* All modern distros use libata: *) "sd" in
 
     let block_prefix_after_conversion =
-      if virtio then "vd" else ide_block_prefix in
+      match block_type with
+      | Virtio_blk -> "vd"
+      | Virtio_SCSI -> "sd"
+      | IDE -> ide_block_prefix in
 
     let map =
       mapi (
@@ -1236,7 +1259,7 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
           let block_prefix_before_conversion =
             match disk.s_controller with
             | Some Source_IDE -> ide_block_prefix
-            | Some Source_SCSI -> "sd"
+            | Some Source_virtio_SCSI | Some Source_SCSI -> "sd"
             | Some Source_virtio_blk -> "vd"
             | None ->
               (* This is basically a guess.  It assumes the source used IDE. *)
@@ -1381,13 +1404,13 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
   in
 
   augeas_grub_configuration ();
-  autorelabel ();
 
   unconfigure_xen ();
   unconfigure_vbox ();
   unconfigure_vmware ();
   unconfigure_citrix ();
   unconfigure_kudzu ();
+  unconfigure_prltools ();
 
   let kernel, virtio = configure_kernel () in
 
@@ -1401,15 +1424,31 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source =
 
   let acpi = supports_acpi () in
 
-  let video = get_display_driver () in
+  let video =
+    match rcaps.rcaps_video with
+    | None -> get_display_driver ()
+    | Some video -> video in
+
+  let block_type =
+    match rcaps.rcaps_block_bus with
+    | None -> if virtio then Virtio_blk else IDE
+    | Some block_type -> block_type in
+
+  let net_type =
+    match rcaps.rcaps_net_bus with
+    | None -> if virtio then Virtio_net else E1000
+    | Some net_type -> net_type in
+
   configure_display_driver video;
-  remap_block_devices virtio;
-  configure_kernel_modules virtio;
+  remap_block_devices block_type;
+  configure_kernel_modules block_type net_type;
   rebuild_initrd kernel;
 
+  SELinux_relabel.relabel g;
+
   let guestcaps = {
-    gcaps_block_bus = if virtio then Virtio_blk else IDE;
-    gcaps_net_bus = if virtio then Virtio_net else E1000;
+    gcaps_block_bus = block_type;
+    gcaps_net_bus = net_type;
     gcaps_video = video;
     gcaps_arch = Utils.kvm_arch inspect.i_arch;
     gcaps_acpi = acpi;

@@ -28,6 +28,7 @@
   <xi:include href="xml/struct-stat.xml"/>
   <xi:include href="xml/struct-statns.xml"/>
   <xi:include href="xml/struct-statvfs.xml"/>
+  <xi:include href="xml/struct-tsk_dirent.xml"/>
   <xi:include href="xml/struct-utsname.xml"/>
   <xi:include href="xml/struct-version.xml"/>
   <xi:include href="xml/struct-xattr.xml"/>
@@ -51,8 +52,10 @@
   <xi:include href="xml/optargs-copy_file_to_file.xml"/>
   <xi:include href="xml/optargs-cpio_out.xml"/>
   <xi:include href="xml/optargs-disk_create.xml"/>
+  <xi:include href="xml/optargs-download_blocks.xml"/>
   <xi:include href="xml/optargs-e2fsck.xml"/>
   <xi:include href="xml/optargs-fstrim.xml"/>
+  <xi:include href="xml/optargs-glob_expand.xml"/>
   <xi:include href="xml/optargs-grep.xml"/>
   <xi:include href="xml/optargs-hivex_open.xml"/>
   <xi:include href="xml/optargs-inspect_get_icon.xml"/>
@@ -80,6 +83,7 @@
   <xi:include href="xml/optargs-rsync.xml"/>
   <xi:include href="xml/optargs-rsync_in.xml"/>
   <xi:include href="xml/optargs-rsync_out.xml"/>
+  <xi:include href="xml/optargs-selinux_relabel.xml"/>
   <xi:include href="xml/optargs-set_e2attrs.xml"/>
   <xi:include href="xml/optargs-syslinux.xml"/>
   <xi:include href="xml/optargs-tar_in.xml"/>

@@ -38,8 +38,6 @@ class Test810RHBZ664558C6 < MiniTest::Unit::TestCase
     # This should call the close callback.
     g.close()
 
-    if close_invoked != 1
-      raise "close_invoked should be 1"
-    end
+    assert_equal 1, close_invoked
   end
 end

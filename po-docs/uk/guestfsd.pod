@@ -50,11 +50,11 @@ such as TCP/IP then this limitation could be removed.
 
 Показати коротку довідку.
 
-=item B<-c> CHANNEL
+=item B<-c> КАНАЛ
 
-=item B<--channel> CHANNEL
+=item B<--channel> КАНАЛ
 
-=item B<--channel> fd:N
+=item B<--channel> дф:N
 
 Pass the name of the virtio-serial channel, serial port, etc.  over which
 guestfsd will communicate with the library.  If this parameter is not given,
@@ -147,5 +147,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

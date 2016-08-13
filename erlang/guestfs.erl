@@ -79,6 +79,7 @@
 -export([btrfs_filesystem_balance/2]).
 -export([btrfs_filesystem_defragment/2, btrfs_filesystem_defragment/3]).
 -export([btrfs_filesystem_resize/2, btrfs_filesystem_resize/3]).
+-export([btrfs_filesystem_show/2]).
 -export([btrfs_filesystem_sync/2]).
 -export([btrfs_fsck/2, btrfs_fsck/3]).
 -export([btrfs_image/3, btrfs_image/4]).
@@ -152,6 +153,8 @@
 -export([disk_virtual_size/2]).
 -export([dmesg/1]).
 -export([download/3]).
+-export([download_blocks/5, download_blocks/6]).
+-export([download_inode/4]).
 -export([download_offset/5]).
 -export([drop_caches/2]).
 -export([du/2]).
@@ -172,6 +175,7 @@
 -export([file_architecture/2]).
 -export([filesize/2]).
 -export([filesystem_available/2]).
+-export([filesystem_walk/2]).
 -export([fill/4]).
 -export([fill_dir/3]).
 -export([fill_pattern/4]).
@@ -209,6 +213,7 @@
 -export([get_recovery_proc/1]).
 -export([get_selinux/1]).
 -export([get_smp/1]).
+-export([get_sockdir/1]).
 -export([get_state/1]).
 -export([get_tmpdir/1]).
 -export([get_trace/1]).
@@ -217,7 +222,8 @@
 -export([getcon/1]).
 -export([getxattr/3]).
 -export([getxattrs/2]).
--export([glob_expand/2]).
+-export([glob_expand/2, glob_expand/3]).
+-export([glob_expand_opts/2, glob_expand_opts/3]).
 -export([grep/3, grep/4]).
 -export([grep_opts/3, grep_opts/4]).
 -export([grepi/3]).
@@ -433,11 +439,14 @@
 -export([mount_options/4]).
 -export([mount_ro/3]).
 -export([mount_vfs/5]).
+-export([mountable_device/2]).
+-export([mountable_subvolume/2]).
 -export([mountpoints/1]).
 -export([mounts/1]).
 -export([mv/3]).
 -export([nr_devices/1]).
 -export([ntfs_3g_probe/3]).
+-export([ntfscat_i/4]).
 -export([ntfsclone_in/3]).
 -export([ntfsclone_out/3, ntfsclone_out/4]).
 -export([ntfsfix/2, ntfsfix/3]).
@@ -449,7 +458,9 @@
 -export([part_add/5]).
 -export([part_del/3]).
 -export([part_disk/3]).
+-export([part_expand_gpt/2]).
 -export([part_get_bootable/3]).
+-export([part_get_disk_guid/2]).
 -export([part_get_gpt_guid/3]).
 -export([part_get_gpt_type/3]).
 -export([part_get_mbr_id/3]).
@@ -459,6 +470,8 @@
 -export([part_init/3]).
 -export([part_list/2]).
 -export([part_set_bootable/4]).
+-export([part_set_disk_guid/3]).
+-export([part_set_disk_guid_random/2]).
 -export([part_set_gpt_guid/4]).
 -export([part_set_gpt_type/4]).
 -export([part_set_mbr_id/4]).
@@ -503,6 +516,7 @@
 -export([scrub_device/2]).
 -export([scrub_file/2]).
 -export([scrub_freespace/2]).
+-export([selinux_relabel/3, selinux_relabel/4]).
 -export([set_append/2]).
 -export([set_attach_method/2]).
 -export([set_autosync/2]).
@@ -845,6 +859,9 @@ btrfs_filesystem_resize(G, Mountpoint, Optargs) ->
 btrfs_filesystem_resize(G, Mountpoint) ->
   btrfs_filesystem_resize(G, Mountpoint, []).
 
+btrfs_filesystem_show(G, Device) ->
+  call_port(G, {btrfs_filesystem_show, Device}).
+
 btrfs_filesystem_sync(G, Fs) ->
   call_port(G, {btrfs_filesystem_sync, Fs}).
 
@@ -1092,6 +1109,14 @@ dmesg(G) ->
 download(G, Remotefilename, Filename) ->
   call_port(G, {download, Remotefilename, Filename}).
 
+download_blocks(G, Device, Start, Stop, Filename, Optargs) ->
+  call_port(G, {download_blocks, Device, Start, Stop, Filename, Optargs}).
+download_blocks(G, Device, Start, Stop, Filename) ->
+  download_blocks(G, Device, Start, Stop, Filename, []).
+
+download_inode(G, Device, Inode, Filename) ->
+  call_port(G, {download_inode, Device, Inode, Filename}).
+
 download_offset(G, Remotefilename, Filename, Offset, Size) ->
   call_port(G, {download_offset, Remotefilename, Filename, Offset, Size}).
 
@@ -1153,6 +1178,9 @@ filesize(G, File) ->
 
 filesystem_available(G, Filesystem) ->
   call_port(G, {filesystem_available, Filesystem}).
+
+filesystem_walk(G, Device) ->
+  call_port(G, {filesystem_walk, Device}).
 
 fill(G, C, Len, Path) ->
   call_port(G, {fill, C, Len, Path}).
@@ -1267,6 +1295,9 @@ get_selinux(G) ->
 get_smp(G) ->
   call_port(G, {get_smp}).
 
+get_sockdir(G) ->
+  call_port(G, {get_sockdir}).
+
 get_state(G) ->
   call_port(G, {get_state}).
 
@@ -1291,8 +1322,14 @@ getxattr(G, Path, Name) ->
 getxattrs(G, Path) ->
   call_port(G, {getxattrs, Path}).
 
+glob_expand(G, Pattern, Optargs) ->
+  call_port(G, {glob_expand, Pattern, Optargs}).
 glob_expand(G, Pattern) ->
-  call_port(G, {glob_expand, Pattern}).
+  glob_expand(G, Pattern, []).
+glob_expand_opts(G, Pattern, Optargs) ->
+  glob_expand(G, Pattern, Optargs).
+glob_expand_opts(G, Pattern) ->
+  glob_expand(G, Pattern).
 
 grep(G, Regex, Path, Optargs) ->
   call_port(G, {grep, Regex, Path, Optargs}).
@@ -1613,8 +1650,8 @@ is_file_opts(G, Path) ->
 is_launching(G) ->
   call_port(G, {is_launching}).
 
-is_lv(G, Device) ->
-  call_port(G, {is_lv, Device}).
+is_lv(G, Mountable) ->
+  call_port(G, {is_lv, Mountable}).
 
 is_ready(G) ->
   call_port(G, {is_ready}).
@@ -1988,6 +2025,12 @@ mount_ro(G, Mountable, Mountpoint) ->
 mount_vfs(G, Options, Vfstype, Mountable, Mountpoint) ->
   call_port(G, {mount_vfs, Options, Vfstype, Mountable, Mountpoint}).
 
+mountable_device(G, Mountable) ->
+  call_port(G, {mountable_device, Mountable}).
+
+mountable_subvolume(G, Mountable) ->
+  call_port(G, {mountable_subvolume, Mountable}).
+
 mountpoints(G) ->
   call_port(G, {mountpoints}).
 
@@ -2002,6 +2045,9 @@ nr_devices(G) ->
 
 ntfs_3g_probe(G, Rw, Device) ->
   call_port(G, {ntfs_3g_probe, Rw, Device}).
+
+ntfscat_i(G, Device, Inode, Filename) ->
+  call_port(G, {ntfscat_i, Device, Inode, Filename}).
 
 ntfsclone_in(G, Backupfile, Device) ->
   call_port(G, {ntfsclone_in, Backupfile, Device}).
@@ -2043,8 +2089,14 @@ part_del(G, Device, Partnum) ->
 part_disk(G, Device, Parttype) ->
   call_port(G, {part_disk, Device, Parttype}).
 
+part_expand_gpt(G, Device) ->
+  call_port(G, {part_expand_gpt, Device}).
+
 part_get_bootable(G, Device, Partnum) ->
   call_port(G, {part_get_bootable, Device, Partnum}).
+
+part_get_disk_guid(G, Device) ->
+  call_port(G, {part_get_disk_guid, Device}).
 
 part_get_gpt_guid(G, Device, Partnum) ->
   call_port(G, {part_get_gpt_guid, Device, Partnum}).
@@ -2072,6 +2124,12 @@ part_list(G, Device) ->
 
 part_set_bootable(G, Device, Partnum, Bootable) ->
   call_port(G, {part_set_bootable, Device, Partnum, Bootable}).
+
+part_set_disk_guid(G, Device, Guid) ->
+  call_port(G, {part_set_disk_guid, Device, Guid}).
+
+part_set_disk_guid_random(G, Device) ->
+  call_port(G, {part_set_disk_guid_random, Device}).
 
 part_set_gpt_guid(G, Device, Partnum, Guid) ->
   call_port(G, {part_set_gpt_guid, Device, Partnum, Guid}).
@@ -2212,6 +2270,11 @@ scrub_file(G, File) ->
 
 scrub_freespace(G, Dir) ->
   call_port(G, {scrub_freespace, Dir}).
+
+selinux_relabel(G, Specfile, Path, Optargs) ->
+  call_port(G, {selinux_relabel, Specfile, Path, Optargs}).
+selinux_relabel(G, Specfile, Path) ->
+  selinux_relabel(G, Specfile, Path, []).
 
 set_append(G, Append) ->
   call_port(G, {set_append, Append}).

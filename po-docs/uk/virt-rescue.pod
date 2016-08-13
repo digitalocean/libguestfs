@@ -107,11 +107,11 @@ make scripted changes to guests, use L<guestfish(1)>.
 
 Показати коротку довідку.
 
-=item B<-a> файл
+=item B<-a> FILE
 
-=item B<--add> файл
+=item B<--add> FILE
 
-Add I<file> which should be a disk image from a virtual machine.  If the
+Add C<FILE> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
@@ -119,13 +119,13 @@ separate I<-a> options.
 примусово використати певний формат, скористайтеся параметром
 I<--format=..>.
 
-=item B<-a адреса>
+=item B<-a> адреса
 
-=item B<--add адреса>
+=item B<--add> адреса
 
 Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
-=item B<--append параметри_ядра>
+=item B<--append> KERNELOPTS
 
 Pass additional options to the rescue kernel.
 
@@ -173,9 +173,9 @@ libvirt не буде використовуватися взагалі.
 диска. Таким чином можна уникнути можливих проблем з захистом для
 сформованих зловмисниками гостьових систем (CVE-2010-3851).
 
-=item B<-m МБ>
+=item B<-m> МБ
 
-=item B<--memsize МБ>
+=item B<--memsize> МБ
 
 Change the amount of memory allocated to the rescue system.  The default is
 set by libguestfs and is small but adequate for running system tools.  The
@@ -211,8 +211,7 @@ are added to the appliance in the order they appear on the command line.
 
 =item B<--selinux>
 
-Enable SELinux in the rescue appliance.  You should read
-L<guestfs(3)/SELINUX> before using this option.
+This option is provided for backwards compatibility and does nothing.
 
 =item B<--smp> N
 
@@ -412,5 +411,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

@@ -376,15 +376,16 @@ document above contains an example.
 
 2
 
-successful exit, some partitions have alignment E<lt> 64K which can result
-in poor performance on high end network storage
+успішне завершення роботи, деякі розділи може бути вирівняно на E<lt> 64 кБ,
+що може призвести до погіршення швидкодії на високошвидкісних мережевих
+сховищах
 
 =item *
 
 3
 
-successful exit, some partitions have alignment E<lt> 4K which can result in
-poor performance on most hypervisors
+успішне завершення роботи, деякі розділи може бути вирівняно на E<lt> 4 кБ,
+що може призвести до погіршення швидкодії у більшості гіпервізорів
 
 =back
 

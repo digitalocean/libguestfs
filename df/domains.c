@@ -16,12 +16,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * This file is used by C<virt-df> and some of the other tools
+ * when they are implicitly asked to operate over all libvirt
+ * domains (VMs), for example when C<virt-df> is called without
+ * specifying any particular disk image.
+ *
+ * It hides the complexity of querying the list of domains from
+ * libvirt.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <error.h>
 #include <libintl.h>
 
 #ifdef HAVE_LIBVIRT
@@ -48,6 +59,9 @@ compare_domain_names (const void *p1, const void *p2)
   return strcmp (d1->name, d2->name);
 }
 
+/**
+ * Frees up everything allocated by C<get_all_libvirt_domains>.
+ */
 void
 free_domains (void)
 {
@@ -69,41 +83,47 @@ static void add_domains_by_id (virConnectPtr conn, int *ids, size_t n);
 static void add_domains_by_name (virConnectPtr conn, char **names, size_t n);
 static void add_domain (virDomainPtr dom);
 
+/**
+ * Read all libguest guests into the global variables C<domains> and
+ * C<nr_domains>.  The guests are ordered by name.  This exits on any
+ * error.
+ */
 void
 get_all_libvirt_domains (const char *libvirt_uri)
 {
   virErrorPtr err;
   int n;
   size_t i;
+  CLEANUP_FREE int *ids = NULL;
+  CLEANUP_FREE char **names = NULL;
 
   /* Get the list of all domains. */
   conn = virConnectOpenAuth (libvirt_uri, virConnectAuthPtrDefault,
                              VIR_CONNECT_RO);
   if (!conn) {
     err = virGetLastError ();
-    fprintf (stderr,
-             _("%s: could not connect to libvirt (code %d, domain %d): %s\n"),
-             guestfs_int_program_name, err->code, err->domain, err->message);
-    exit (EXIT_FAILURE);
+    error (EXIT_FAILURE, 0,
+           _("could not connect to libvirt (code %d, domain %d): %s"),
+           err->code, err->domain, err->message);
   }
 
   n = virConnectNumOfDomains (conn);
   if (n == -1) {
     err = virGetLastError ();
-    fprintf (stderr,
-             _("%s: could not get number of running domains (code %d, domain %d): %s\n"),
-             guestfs_int_program_name, err->code, err->domain, err->message);
-    exit (EXIT_FAILURE);
+    error (EXIT_FAILURE, 0,
+           _("could not get number of running domains (code %d, domain %d): %s"),
+           err->code, err->domain, err->message);
   }
 
-  int ids[n];
+  ids = malloc (sizeof (int) * n);
+  if (ids == NULL)
+    error (EXIT_FAILURE, errno, "malloc");
   n = virConnectListDomains (conn, ids, n);
   if (n == -1) {
     err = virGetLastError ();
-    fprintf (stderr,
-             _("%s: could not list running domains (code %d, domain %d): %s\n"),
-             guestfs_int_program_name, err->code, err->domain, err->message);
-    exit (EXIT_FAILURE);
+    error (EXIT_FAILURE, 0,
+           _("could not list running domains (code %d, domain %d): %s"),
+           err->code, err->domain, err->message);
   }
 
   add_domains_by_id (conn, ids, n);
@@ -111,20 +131,20 @@ get_all_libvirt_domains (const char *libvirt_uri)
   n = virConnectNumOfDefinedDomains (conn);
   if (n == -1) {
     err = virGetLastError ();
-    fprintf (stderr,
-             _("%s: could not get number of inactive domains (code %d, domain %d): %s\n"),
-             guestfs_int_program_name, err->code, err->domain, err->message);
-    exit (EXIT_FAILURE);
+    error (EXIT_FAILURE, 0,
+           _("could not get number of inactive domains (code %d, domain %d): %s"),
+           err->code, err->domain, err->message);
   }
 
-  char *names[n];
+  names = malloc (sizeof (char *) * n);
+  if (names == NULL)
+    error (EXIT_FAILURE, errno, "malloc");
   n = virConnectListDefinedDomains (conn, names, n);
   if (n == -1) {
     err = virGetLastError ();
-    fprintf (stderr,
-             _("%s: could not list inactive domains (code %d, domain %d): %s\n"),
-             guestfs_int_program_name, err->code, err->domain, err->message);
-    exit (EXIT_FAILURE);
+    error (EXIT_FAILURE, 0,
+           _("could not list inactive domains (code %d, domain %d): %s"),
+           err->code, err->domain, err->message);
   }
 
   add_domains_by_name (conn, names, n);
@@ -177,10 +197,8 @@ add_domain (virDomainPtr dom)
   struct domain *domain;
 
   domains = realloc (domains, (nr_domains + 1) * sizeof (struct domain));
-  if (domains == NULL) {
-    perror ("realloc");
-    exit (EXIT_FAILURE);
-  }
+  if (domains == NULL)
+    error (EXIT_FAILURE, errno, "realloc");
 
   domain = &domains[nr_domains];
   nr_domains++;
@@ -188,18 +206,14 @@ add_domain (virDomainPtr dom)
   domain->dom = dom;
 
   domain->name = strdup (virDomainGetName (dom));
-  if (domain->name == NULL) {
-    perror ("strdup");
-    exit (EXIT_FAILURE);
-  }
+  if (domain->name == NULL)
+    error (EXIT_FAILURE, errno, "strdup");
 
   char uuid[VIR_UUID_STRING_BUFLEN];
   if (virDomainGetUUIDString (dom, uuid) == 0) {
     domain->uuid = strdup (uuid);
-    if (domain->uuid == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (domain->uuid == NULL)
+      error (EXIT_FAILURE, errno, "strdup");
   }
   else
     domain->uuid = NULL;

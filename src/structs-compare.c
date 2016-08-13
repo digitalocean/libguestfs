@@ -1091,3 +1091,60 @@ guestfs_compare_internal_mountable_list (const struct guestfs_internal_mountable
     return 0;
   }
 }
+
+GUESTFS_DLL_PUBLIC int
+guestfs_compare_tsk_dirent (const struct guestfs_tsk_dirent *s1, const struct guestfs_tsk_dirent *s2)
+{
+  int r;
+
+  if (s1->tsk_inode < s2->tsk_inode) return -1;
+  else if (s1->tsk_inode > s2->tsk_inode) return 1;
+  if (s1->tsk_type < s2->tsk_type) return -1;
+  else if (s1->tsk_type > s2->tsk_type) return 1;
+  if (s1->tsk_size < s2->tsk_size) return -1;
+  else if (s1->tsk_size > s2->tsk_size) return 1;
+  r = strcmp (s1->tsk_name, s2->tsk_name);
+  if (r != 0) return r;
+  if (s1->tsk_flags < s2->tsk_flags) return -1;
+  else if (s1->tsk_flags > s2->tsk_flags) return 1;
+  if (s1->tsk_atime_sec < s2->tsk_atime_sec) return -1;
+  else if (s1->tsk_atime_sec > s2->tsk_atime_sec) return 1;
+  if (s1->tsk_atime_nsec < s2->tsk_atime_nsec) return -1;
+  else if (s1->tsk_atime_nsec > s2->tsk_atime_nsec) return 1;
+  if (s1->tsk_mtime_sec < s2->tsk_mtime_sec) return -1;
+  else if (s1->tsk_mtime_sec > s2->tsk_mtime_sec) return 1;
+  if (s1->tsk_mtime_nsec < s2->tsk_mtime_nsec) return -1;
+  else if (s1->tsk_mtime_nsec > s2->tsk_mtime_nsec) return 1;
+  if (s1->tsk_ctime_sec < s2->tsk_ctime_sec) return -1;
+  else if (s1->tsk_ctime_sec > s2->tsk_ctime_sec) return 1;
+  if (s1->tsk_ctime_nsec < s2->tsk_ctime_nsec) return -1;
+  else if (s1->tsk_ctime_nsec > s2->tsk_ctime_nsec) return 1;
+  if (s1->tsk_crtime_sec < s2->tsk_crtime_sec) return -1;
+  else if (s1->tsk_crtime_sec > s2->tsk_crtime_sec) return 1;
+  if (s1->tsk_crtime_nsec < s2->tsk_crtime_nsec) return -1;
+  else if (s1->tsk_crtime_nsec > s2->tsk_crtime_nsec) return 1;
+  if (s1->tsk_nlink < s2->tsk_nlink) return -1;
+  else if (s1->tsk_nlink > s2->tsk_nlink) return 1;
+  r = strcmp (s1->tsk_link, s2->tsk_link);
+  if (r != 0) return r;
+  if (s1->tsk_spare1 < s2->tsk_spare1) return -1;
+  else if (s1->tsk_spare1 > s2->tsk_spare1) return 1;
+  return 0;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_compare_tsk_dirent_list (const struct guestfs_tsk_dirent_list *s1, const struct guestfs_tsk_dirent_list *s2)
+{
+  if (s1->len < s2->len) return -1;
+  else if (s1->len > s2->len) return 1;
+  else {
+    size_t i;
+    int r;
+
+    for (i = 0; i < s1->len; ++i) {
+      r = guestfs_compare_tsk_dirent (&s1->val[i], &s2->val[i]);
+      if (r != 0) return r;
+    }
+    return 0;
+  }
+}

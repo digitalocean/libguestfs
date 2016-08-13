@@ -75,9 +75,9 @@ I<--format=..>.
 
 Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
-=item B<-c адреса>
+=item B<-c> адреса
 
-=item B<--connect адреса>
+=item B<--connect> адреса
 
 Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
 пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
@@ -118,6 +118,20 @@ the format is always specified.
 
 Read key or passphrase parameters from stdin.  The default is to try to read
 passphrases from the user by opening F</dev/tty>.
+
+=item B<--no-applications>
+
+By default the output of virt-inspector includes the list of all the
+applications installed in the guest, if available.
+
+Specify this option to disable this part of the resulting XML.
+
+=item B<--no-icon>
+
+By default the output of virt-inspector includes the icon of the guest, if
+available (see L</icon>).
+
+Specify this option to disable this part of the resulting XML.
 
 =item B<-v>
 

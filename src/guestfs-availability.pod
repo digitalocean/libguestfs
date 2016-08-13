@@ -55,6 +55,7 @@ L</guestfs_btrfs_device_delete>
 L</guestfs_btrfs_filesystem_balance>
 L</guestfs_btrfs_filesystem_defragment>
 L</guestfs_btrfs_filesystem_resize>
+L</guestfs_btrfs_filesystem_show>
 L</guestfs_btrfs_filesystem_sync>
 L</guestfs_btrfs_fsck>
 L</guestfs_btrfs_image>
@@ -99,8 +100,12 @@ L</guestfs_fstrim>
 =item B<gdisk>
 
 The following functions:
+L</guestfs_part_expand_gpt>
+L</guestfs_part_get_disk_guid>
 L</guestfs_part_get_gpt_guid>
 L</guestfs_part_get_gpt_type>
+L</guestfs_part_set_disk_guid>
+L</guestfs_part_set_disk_guid_random>
 L</guestfs_part_set_gpt_guid>
 L</guestfs_part_set_gpt_type>
 
@@ -166,6 +171,11 @@ L</guestfs_ldmtool_volume_partitions>
 L</guestfs_ldmtool_volume_type>
 L</guestfs_list_ldm_partitions>
 L</guestfs_list_ldm_volumes>
+
+=item B<libtsk>
+
+The following functions:
+L</guestfs_internal_filesystem_walk>
 
 =item B<linuxcaps>
 
@@ -290,6 +300,17 @@ L</guestfs_scrub_freespace>
 The following functions:
 L</guestfs_getcon>
 L</guestfs_setcon>
+
+=item B<selinuxrelabel>
+
+The following functions:
+L</guestfs_selinux_relabel>
+
+=item B<sleuthkit>
+
+The following functions:
+L</guestfs_download_blocks>
+L</guestfs_download_inode>
 
 =item B<syslinux>
 

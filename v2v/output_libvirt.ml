@@ -118,7 +118,8 @@ let create_libvirt_xml ?pool source target_buses guestcaps
           * (https://bugzilla.redhat.com/show_bug.cgi?id=1217444#c6) but
           * until that day we have to use a bunch of heuristics. XXX
           *)
-         let code, vars_template = find_uefi_firmware guestcaps.gcaps_arch in
+         let { code = code; vars = vars_template } =
+           find_uefi_firmware guestcaps.gcaps_arch in
          [ e "loader" ["readonly", "yes"; "type", "pflash"] [ PCData code ];
            e "nvram" ["template", vars_template] [] ] in
 
@@ -173,7 +174,6 @@ let create_libvirt_xml ?pool source target_buses guestcaps
           e "driver" [ "name", "qemu"; "type", "raw" ] [];
           e "target" [
             "dev", drive_prefix ^ drive_name i;
-            "bus", bus_name
           ] []
         ]
     in
@@ -187,7 +187,10 @@ let create_libvirt_xml ?pool source target_buses guestcaps
                     target_buses.target_ide_bus);
       Array.to_list
         (Array.mapi (make_disk "scsi" "sd")
-                    target_buses.target_scsi_bus)
+                    target_buses.target_scsi_bus);
+      Array.to_list
+        (Array.mapi (make_disk "floppy" "fd")
+                    target_buses.target_floppy_bus)
     ] in
   append devices disks;
 

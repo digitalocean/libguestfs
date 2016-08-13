@@ -207,64 +207,63 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gettime.m4 \
-	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
-	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
-	$(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
+	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
+	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
-	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
-	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/include_next.m4 $(top_srcdir)/m4/inet_ntop.m4 \
-	$(top_srcdir)/m4/inet_pton.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
-	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
-	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
-	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/isatty.m4 \
-	$(top_srcdir)/m4/langinfo_h.m4 $(top_srcdir)/m4/largefile.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
-	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
-	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localeconv.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mkstemps.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/hard-locale.m4 $(top_srcdir)/m4/hostent.m4 \
+	$(top_srcdir)/m4/human.m4 $(top_srcdir)/m4/i-ring.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
+	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
+	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
+	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
+	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
+	$(top_srcdir)/m4/isatty.m4 $(top_srcdir)/m4/langinfo_h.m4 \
+	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
+	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-tr.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localeconv.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/memmem.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mkstemps.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
-	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
-	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
-	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
-	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
+	$(top_srcdir)/m4/ocaml.m4 $(top_srcdir)/m4/off_t.m4 \
+	$(top_srcdir)/m4/onceonly.m4 $(top_srcdir)/m4/open.m4 \
+	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
+	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
+	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
 	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
-	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
-	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
-	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
-	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
-	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
-	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
-	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
-	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
-	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
-	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/ptsname_r.m4 \
+	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
+	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
+	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
+	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
+	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/readlinkat.m4 \
+	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/rewinddir.m4 \
+	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
+	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
+	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
+	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
+	$(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -323,7 +322,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/guestfs_golang.m4 \
 	$(top_srcdir)/m4/guestfs_gobject.m4 \
 	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/guestfs_misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am \
@@ -390,6 +389,7 @@ am__objects_1 = src/libguestfs_gobject_1_0_la-session.lo \
 	src/libguestfs_gobject_1_0_la-struct-stat.lo \
 	src/libguestfs_gobject_1_0_la-struct-statns.lo \
 	src/libguestfs_gobject_1_0_la-struct-statvfs.lo \
+	src/libguestfs_gobject_1_0_la-struct-tsk_dirent.lo \
 	src/libguestfs_gobject_1_0_la-struct-utsname.lo \
 	src/libguestfs_gobject_1_0_la-struct-version.lo \
 	src/libguestfs_gobject_1_0_la-struct-xattr.lo \
@@ -413,8 +413,10 @@ am__objects_1 = src/libguestfs_gobject_1_0_la-session.lo \
 	src/libguestfs_gobject_1_0_la-optargs-copy_file_to_file.lo \
 	src/libguestfs_gobject_1_0_la-optargs-cpio_out.lo \
 	src/libguestfs_gobject_1_0_la-optargs-disk_create.lo \
+	src/libguestfs_gobject_1_0_la-optargs-download_blocks.lo \
 	src/libguestfs_gobject_1_0_la-optargs-e2fsck.lo \
 	src/libguestfs_gobject_1_0_la-optargs-fstrim.lo \
+	src/libguestfs_gobject_1_0_la-optargs-glob_expand.lo \
 	src/libguestfs_gobject_1_0_la-optargs-grep.lo \
 	src/libguestfs_gobject_1_0_la-optargs-hivex_open.lo \
 	src/libguestfs_gobject_1_0_la-optargs-inspect_get_icon.lo \
@@ -442,6 +444,7 @@ am__objects_1 = src/libguestfs_gobject_1_0_la-session.lo \
 	src/libguestfs_gobject_1_0_la-optargs-rsync.lo \
 	src/libguestfs_gobject_1_0_la-optargs-rsync_in.lo \
 	src/libguestfs_gobject_1_0_la-optargs-rsync_out.lo \
+	src/libguestfs_gobject_1_0_la-optargs-selinux_relabel.lo \
 	src/libguestfs_gobject_1_0_la-optargs-set_e2attrs.lo \
 	src/libguestfs_gobject_1_0_la-optargs-syslinux.lo \
 	src/libguestfs_gobject_1_0_la-optargs-tar_in.lo \
@@ -1130,13 +1133,14 @@ GOOS = @GOOS@
 GOROOT = @GOROOT@
 GPERF = @GPERF@
 GREP = @GREP@
-GTK2_CFLAGS = @GTK2_CFLAGS@
-GTK2_LIBS = @GTK2_LIBS@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
 GTKDOC_DEPS_LIBS = @GTKDOC_DEPS_LIBS@
 GTKDOC_MKPDF = @GTKDOC_MKPDF@
 GTKDOC_REBASE = @GTKDOC_REBASE@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
+GTK_VERSION = @GTK_VERSION@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -1559,7 +1563,10 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
+OCAML_BYTES_COMPAT_CMO = @OCAML_BYTES_COMPAT_CMO@
+OCAML_BYTES_COMPAT_ML = @OCAML_BYTES_COMPAT_ML@
 OCAML_FLAGS = @OCAML_FLAGS@
+OCAML_GENERATOR_BYTES_COMPAT_CMO = @OCAML_GENERATOR_BYTES_COMPAT_CMO@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
@@ -1783,6 +1790,7 @@ SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_U
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
 TIME_H_DEFINES_STRUCT_TIMESPEC = @TIME_H_DEFINES_STRUCT_TIMESPEC@
 TOOL_TRUE = @TOOL_TRUE@
+TSK_LIBS = @TSK_LIBS@
 UINT32_MAX_LT_UINTMAX_MAX = @UINT32_MAX_LT_UINTMAX_MAX@
 UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
@@ -1877,6 +1885,32 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = . docs
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
+
+# Rules for building OCaml objects.
+# See also:
+# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
+@HAVE_OCAMLOPT_FALSE@MLARCHIVE = cma
+@HAVE_OCAMLOPT_TRUE@MLARCHIVE = cmxa
+@HAVE_OCAMLOPT_FALSE@LINK_CUSTOM_OCAMLC_ONLY = -custom
+@HAVE_OCAMLOPT_FALSE@BEST = c
+@HAVE_OCAMLOPT_TRUE@BEST = opt
+
+# custom silent rules
+guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
+guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
+guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
+guestfs_am_v_javac = $(guestfs_am_v_javac_@AM_V@)
+guestfs_am_v_javac_ = $(guestfs_am_v_javac_@AM_DEFAULT_V@)
+guestfs_am_v_javac_0 = @echo "  JAVAC   " $@;
+guestfs_am_v_erlc = $(guestfs_am_v_erlc_@AM_V@)
+guestfs_am_v_erlc_ = $(guestfs_am_v_erlc_@AM_DEFAULT_V@)
+guestfs_am_v_erlc_0 = @echo "  ERLC    " $@;
+guestfs_am_v_podwrapper = $(guestfs_am_v_podwrapper_@AM_V@)
+guestfs_am_v_podwrapper_ = $(guestfs_am_v_podwrapper_@AM_DEFAULT_V@)
+guestfs_am_v_podwrapper_0 = @echo "  POD     " $@;
 guestfs_gobject_headers = \
   include/guestfs-gobject.h \
   include/guestfs-gobject/session.h \
@@ -1901,6 +1935,7 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/struct-stat.h \
   include/guestfs-gobject/struct-statns.h \
   include/guestfs-gobject/struct-statvfs.h \
+  include/guestfs-gobject/struct-tsk_dirent.h \
   include/guestfs-gobject/struct-utsname.h \
   include/guestfs-gobject/struct-version.h \
   include/guestfs-gobject/struct-xattr.h \
@@ -1924,8 +1959,10 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-copy_file_to_file.h \
   include/guestfs-gobject/optargs-cpio_out.h \
   include/guestfs-gobject/optargs-disk_create.h \
+  include/guestfs-gobject/optargs-download_blocks.h \
   include/guestfs-gobject/optargs-e2fsck.h \
   include/guestfs-gobject/optargs-fstrim.h \
+  include/guestfs-gobject/optargs-glob_expand.h \
   include/guestfs-gobject/optargs-grep.h \
   include/guestfs-gobject/optargs-hivex_open.h \
   include/guestfs-gobject/optargs-inspect_get_icon.h \
@@ -1953,6 +1990,7 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-rsync.h \
   include/guestfs-gobject/optargs-rsync_in.h \
   include/guestfs-gobject/optargs-rsync_out.h \
+  include/guestfs-gobject/optargs-selinux_relabel.h \
   include/guestfs-gobject/optargs-set_e2attrs.h \
   include/guestfs-gobject/optargs-syslinux.h \
   include/guestfs-gobject/optargs-tar_in.h \
@@ -1987,6 +2025,7 @@ guestfs_gobject_sources = \
   src/struct-stat.c \
   src/struct-statns.c \
   src/struct-statvfs.c \
+  src/struct-tsk_dirent.c \
   src/struct-utsname.c \
   src/struct-version.c \
   src/struct-xattr.c \
@@ -2010,8 +2049,10 @@ guestfs_gobject_sources = \
   src/optargs-copy_file_to_file.c \
   src/optargs-cpio_out.c \
   src/optargs-disk_create.c \
+  src/optargs-download_blocks.c \
   src/optargs-e2fsck.c \
   src/optargs-fstrim.c \
+  src/optargs-glob_expand.c \
   src/optargs-grep.c \
   src/optargs-hivex_open.c \
   src/optargs-inspect_get_icon.c \
@@ -2039,6 +2080,7 @@ guestfs_gobject_sources = \
   src/optargs-rsync.c \
   src/optargs-rsync_in.c \
   src/optargs-rsync_out.c \
+  src/optargs-selinux_relabel.c \
   src/optargs-set_e2attrs.c \
   src/optargs-syslinux.c \
   src/optargs-tar_in.c \
@@ -2060,10 +2102,11 @@ EXTRA_DIST = \
 	$(generator_built) \
 	TODO.txt \
 	.gitignore \
-	bindtests-manual.js \
+	bindtests-retvalues.js \
 	docs/.gitignore \
 	tests-misc.js \
 	run-tests \
+	run-tests-retvalues \
 	run-live-tests
 
 
@@ -2098,7 +2141,8 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 @HAVE_INTROSPECTION_TRUE@gir_DATA = $(INTROSPECTION_GIRS)
 @HAVE_INTROSPECTION_TRUE@typelibdir = $(libdir)/girepository-1.0
 @HAVE_INTROSPECTION_TRUE@typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
-@HAVE_INTROSPECTION_TRUE@TESTS = run-tests $(am__append_2)
+@HAVE_INTROSPECTION_TRUE@TESTS = run-tests run-tests-retvalues \
+@HAVE_INTROSPECTION_TRUE@	$(am__append_2)
 @HAVE_INTROSPECTION_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -2222,6 +2266,8 @@ src/libguestfs_gobject_1_0_la-struct-statns.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-struct-statvfs.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/libguestfs_gobject_1_0_la-struct-tsk_dirent.lo:  \
+	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-struct-utsname.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-struct-version.lo: src/$(am__dirstamp) \
@@ -2268,10 +2314,14 @@ src/libguestfs_gobject_1_0_la-optargs-cpio_out.lo:  \
 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-disk_create.lo:  \
 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/libguestfs_gobject_1_0_la-optargs-download_blocks.lo:  \
+	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-e2fsck.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-fstrim.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/libguestfs_gobject_1_0_la-optargs-glob_expand.lo:  \
+	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-grep.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-hivex_open.lo:  \
@@ -2326,6 +2376,8 @@ src/libguestfs_gobject_1_0_la-optargs-rsync_in.lo:  \
 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-rsync_out.lo:  \
 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/libguestfs_gobject_1_0_la-optargs-selinux_relabel.lo:  \
+	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-set_e2attrs.lo:  \
 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-syslinux.lo:  \
@@ -2377,8 +2429,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_file_to_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-cpio_out.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-disk_create.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-download_blocks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-e2fsck.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-fstrim.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-glob_expand.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-grep.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-hivex_open.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-inspect_get_icon.Plo@am__quote@
@@ -2406,6 +2460,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_in.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_out.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-selinux_relabel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-set_e2attrs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-syslinux.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_in.Plo@am__quote@
@@ -2437,6 +2492,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-stat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-statns.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-statvfs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-tsk_dirent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-version.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-xattr.Plo@am__quote@
@@ -2621,6 +2677,13 @@ src/libguestfs_gobject_1_0_la-struct-statvfs.lo: src/struct-statvfs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-struct-statvfs.lo `test -f 'src/struct-statvfs.c' || echo '$(srcdir)/'`src/struct-statvfs.c
 
+src/libguestfs_gobject_1_0_la-struct-tsk_dirent.lo: src/struct-tsk_dirent.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-struct-tsk_dirent.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-tsk_dirent.Tpo -c -o src/libguestfs_gobject_1_0_la-struct-tsk_dirent.lo `test -f 'src/struct-tsk_dirent.c' || echo '$(srcdir)/'`src/struct-tsk_dirent.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-tsk_dirent.Tpo src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-tsk_dirent.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-tsk_dirent.c' object='src/libguestfs_gobject_1_0_la-struct-tsk_dirent.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-struct-tsk_dirent.lo `test -f 'src/struct-tsk_dirent.c' || echo '$(srcdir)/'`src/struct-tsk_dirent.c
+
 src/libguestfs_gobject_1_0_la-struct-utsname.lo: src/struct-utsname.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-struct-utsname.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Tpo -c -o src/libguestfs_gobject_1_0_la-struct-utsname.lo `test -f 'src/struct-utsname.c' || echo '$(srcdir)/'`src/struct-utsname.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Tpo src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Plo
@@ -2782,6 +2845,13 @@ src/libguestfs_gobject_1_0_la-optargs-disk_create.lo: src/optargs-disk_create.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-optargs-disk_create.lo `test -f 'src/optargs-disk_create.c' || echo '$(srcdir)/'`src/optargs-disk_create.c
 
+src/libguestfs_gobject_1_0_la-optargs-download_blocks.lo: src/optargs-download_blocks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-download_blocks.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-download_blocks.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-download_blocks.lo `test -f 'src/optargs-download_blocks.c' || echo '$(srcdir)/'`src/optargs-download_blocks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-download_blocks.Tpo src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-download_blocks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-download_blocks.c' object='src/libguestfs_gobject_1_0_la-optargs-download_blocks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-optargs-download_blocks.lo `test -f 'src/optargs-download_blocks.c' || echo '$(srcdir)/'`src/optargs-download_blocks.c
+
 src/libguestfs_gobject_1_0_la-optargs-e2fsck.lo: src/optargs-e2fsck.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-e2fsck.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-e2fsck.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-e2fsck.lo `test -f 'src/optargs-e2fsck.c' || echo '$(srcdir)/'`src/optargs-e2fsck.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-e2fsck.Tpo src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-e2fsck.Plo
@@ -2795,6 +2865,13 @@ src/libguestfs_gobject_1_0_la-optargs-fstrim.lo: src/optargs-fstrim.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-fstrim.c' object='src/libguestfs_gobject_1_0_la-optargs-fstrim.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-optargs-fstrim.lo `test -f 'src/optargs-fstrim.c' || echo '$(srcdir)/'`src/optargs-fstrim.c
+
+src/libguestfs_gobject_1_0_la-optargs-glob_expand.lo: src/optargs-glob_expand.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-glob_expand.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-glob_expand.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-glob_expand.lo `test -f 'src/optargs-glob_expand.c' || echo '$(srcdir)/'`src/optargs-glob_expand.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-glob_expand.Tpo src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-glob_expand.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-glob_expand.c' object='src/libguestfs_gobject_1_0_la-optargs-glob_expand.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-optargs-glob_expand.lo `test -f 'src/optargs-glob_expand.c' || echo '$(srcdir)/'`src/optargs-glob_expand.c
 
 src/libguestfs_gobject_1_0_la-optargs-grep.lo: src/optargs-grep.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-grep.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-grep.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-grep.lo `test -f 'src/optargs-grep.c' || echo '$(srcdir)/'`src/optargs-grep.c
@@ -2984,6 +3061,13 @@ src/libguestfs_gobject_1_0_la-optargs-rsync_out.lo: src/optargs-rsync_out.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-rsync_out.c' object='src/libguestfs_gobject_1_0_la-optargs-rsync_out.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-optargs-rsync_out.lo `test -f 'src/optargs-rsync_out.c' || echo '$(srcdir)/'`src/optargs-rsync_out.c
+
+src/libguestfs_gobject_1_0_la-optargs-selinux_relabel.lo: src/optargs-selinux_relabel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-selinux_relabel.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-selinux_relabel.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-selinux_relabel.lo `test -f 'src/optargs-selinux_relabel.c' || echo '$(srcdir)/'`src/optargs-selinux_relabel.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-selinux_relabel.Tpo src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-selinux_relabel.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-selinux_relabel.c' object='src/libguestfs_gobject_1_0_la-optargs-selinux_relabel.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-optargs-selinux_relabel.lo `test -f 'src/optargs-selinux_relabel.c' || echo '$(srcdir)/'`src/optargs-selinux_relabel.c
 
 src/libguestfs_gobject_1_0_la-optargs-set_e2attrs.lo: src/optargs-set_e2attrs.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-set_e2attrs.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-set_e2attrs.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-set_e2attrs.lo `test -f 'src/optargs-set_e2attrs.c' || echo '$(srcdir)/'`src/optargs-set_e2attrs.c
@@ -3393,6 +3477,13 @@ run-tests.log: run-tests
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run-tests-retvalues.log: run-tests-retvalues
+	@p='run-tests-retvalues'; \
+	b='run-tests-retvalues'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 run-live-tests.log: run-live-tests
 	@p='run-live-tests'; \
 	b='run-live-tests'; \
@@ -3644,16 +3735,12 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-# Rules for building OCaml objects.
-# See also:
-# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
-
 .mli.cmi:
-	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
-	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
-@HAVE_OCAMLOPT_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 # All the headers except <guestfs-gobject.h> should be installed
 # in the subdirectory.

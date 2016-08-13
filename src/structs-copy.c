@@ -2064,3 +2064,99 @@ error: ;
   errno = err;
   return NULL;
 }
+
+static void
+free_tsk_dirent (struct guestfs_tsk_dirent *s)
+{
+  free (s->tsk_name);
+  free (s->tsk_link);
+}
+
+static int
+copy_tsk_dirent (const struct guestfs_tsk_dirent *inp, struct guestfs_tsk_dirent *out)
+{
+  int err;
+
+  out->tsk_name = NULL;
+  out->tsk_link = NULL;
+  out->tsk_inode = inp->tsk_inode;
+  out->tsk_type = inp->tsk_type;
+  out->tsk_size = inp->tsk_size;
+  out->tsk_name = strdup (inp->tsk_name);
+  if (out->tsk_name == NULL) goto error;
+  out->tsk_flags = inp->tsk_flags;
+  out->tsk_atime_sec = inp->tsk_atime_sec;
+  out->tsk_atime_nsec = inp->tsk_atime_nsec;
+  out->tsk_mtime_sec = inp->tsk_mtime_sec;
+  out->tsk_mtime_nsec = inp->tsk_mtime_nsec;
+  out->tsk_ctime_sec = inp->tsk_ctime_sec;
+  out->tsk_ctime_nsec = inp->tsk_ctime_nsec;
+  out->tsk_crtime_sec = inp->tsk_crtime_sec;
+  out->tsk_crtime_nsec = inp->tsk_crtime_nsec;
+  out->tsk_nlink = inp->tsk_nlink;
+  out->tsk_link = strdup (inp->tsk_link);
+  if (out->tsk_link == NULL) goto error;
+  out->tsk_spare1 = inp->tsk_spare1;
+  return 0;
+
+error: ;
+  err = errno;
+  free_tsk_dirent (out);
+  errno = err;
+  return -1;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_tsk_dirent *
+guestfs_copy_tsk_dirent (const struct guestfs_tsk_dirent *inp)
+{
+  struct guestfs_tsk_dirent *ret;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  if (copy_tsk_dirent (inp, ret) == -1) {
+    int err;
+
+    err = errno;
+    free (ret);
+    errno = err;
+    return NULL;
+  }
+
+  return ret;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_tsk_dirent_list *
+guestfs_copy_tsk_dirent_list (const struct guestfs_tsk_dirent_list *inp)
+{
+  int err;
+  struct guestfs_tsk_dirent_list *ret;
+  size_t i = 0;
+  size_t j;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  ret->len = inp->len;
+  ret->val = malloc (sizeof (struct guestfs_tsk_dirent) * ret->len);
+  if (ret->val == NULL)
+    goto error;
+
+  for (i = 0; i < ret->len; ++i) {
+    if (copy_tsk_dirent (&inp->val[i], &ret->val[i]) == -1)
+      goto error;
+  }
+
+  return ret;
+
+error: ;
+  err = errno;
+  for (j = 0; j < i; ++j)
+    free_tsk_dirent (&ret->val[j]);
+  free (ret->val);
+  free (ret);
+  errno = err;
+  return NULL;
+}

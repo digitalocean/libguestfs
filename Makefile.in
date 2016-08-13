@@ -139,13 +139,14 @@ host_triplet = @host@
 @ENABLE_APPLIANCE_TRUE@	tests/create tests/disks tests/discard \
 @ENABLE_APPLIANCE_TRUE@	tests/mountable tests/network tests/lvm \
 @ENABLE_APPLIANCE_TRUE@	tests/luks tests/md tests/selinux \
-@ENABLE_APPLIANCE_TRUE@	tests/ntfsclone tests/btrfs tests/xfs \
-@ENABLE_APPLIANCE_TRUE@	tests/charsets tests/xml \
+@ENABLE_APPLIANCE_TRUE@	tests/relabel tests/ntfs tests/btrfs \
+@ENABLE_APPLIANCE_TRUE@	tests/xfs tests/charsets tests/xml \
 @ENABLE_APPLIANCE_TRUE@	tests/mount-local tests/9p tests/rsync \
 @ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
 @ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd tests/http \
 @ENABLE_APPLIANCE_TRUE@	tests/syslinux tests/journal \
-@ENABLE_APPLIANCE_TRUE@	tests/relative-paths tests/regressions
+@ENABLE_APPLIANCE_TRUE@	tests/relative-paths tests/gdisk \
+@ENABLE_APPLIANCE_TRUE@	tests/regressions tests/tsk
 @HAVE_P2V_TRUE@am__append_5 = p2v
 
 # Language bindings.
@@ -167,7 +168,6 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	mllib \
 @HAVE_OCAML_TRUE@	customize \
 @HAVE_OCAML_TRUE@	builder builder/website \
-@HAVE_OCAML_TRUE@	dib \
 @HAVE_OCAML_TRUE@	get-kernel \
 @HAVE_OCAML_TRUE@	resize \
 @HAVE_OCAML_TRUE@	sparsify \
@@ -175,15 +175,19 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	v2v
 
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@am__append_18 = v2v/test-harness
+@HAVE_FUSE_TRUE@@HAVE_OCAML_TRUE@am__append_19 = dib
 
 # Perl tools.
-@HAVE_TOOLS_TRUE@am__append_19 = tools
+@HAVE_TOOLS_TRUE@am__append_20 = tools
 
 # guestmount
-@HAVE_FUSE_TRUE@am__append_20 = fuse
+@HAVE_FUSE_TRUE@am__append_21 = fuse
+
+# Miscellaneous utilities.
+@HAVE_BOOT_ANALYSIS_TRUE@am__append_22 = utils/boot-analysis
 
 # po-docs must come after tools, inspector.
-@HAVE_PO4A_TRUE@am__append_21 = po-docs
+@HAVE_PO4A_TRUE@am__append_23 = po-docs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -221,64 +225,63 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gettime.m4 \
-	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
-	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
-	$(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
+	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
+	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
-	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
-	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/include_next.m4 $(top_srcdir)/m4/inet_ntop.m4 \
-	$(top_srcdir)/m4/inet_pton.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
-	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
-	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
-	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/isatty.m4 \
-	$(top_srcdir)/m4/langinfo_h.m4 $(top_srcdir)/m4/largefile.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
-	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
-	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localeconv.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mkstemps.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/hard-locale.m4 $(top_srcdir)/m4/hostent.m4 \
+	$(top_srcdir)/m4/human.m4 $(top_srcdir)/m4/i-ring.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
+	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
+	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
+	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
+	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
+	$(top_srcdir)/m4/isatty.m4 $(top_srcdir)/m4/langinfo_h.m4 \
+	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
+	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-tr.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localeconv.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/memmem.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mkstemps.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
-	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
-	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
-	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
-	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
+	$(top_srcdir)/m4/ocaml.m4 $(top_srcdir)/m4/off_t.m4 \
+	$(top_srcdir)/m4/onceonly.m4 $(top_srcdir)/m4/open.m4 \
+	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
+	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
+	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
 	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
-	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
-	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
-	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
-	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
-	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
-	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
-	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
-	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
-	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
-	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/ptsname_r.m4 \
+	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
+	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
+	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
+	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
+	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/readlinkat.m4 \
+	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/rewinddir.m4 \
+	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
+	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
+	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
+	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
+	$(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -337,7 +340,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/guestfs_golang.m4 \
 	$(top_srcdir)/m4/guestfs_gobject.m4 \
 	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/guestfs_misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -415,17 +418,19 @@ DIST_SUBDIRS = generator tests/qemu test-data gnulib/lib gnulib/tests \
 	tests/tmpdirs tests/protocol tests/events tests/parallel \
 	tests/create tests/disks tests/discard tests/mountable \
 	tests/network tests/lvm tests/luks tests/md tests/selinux \
-	tests/ntfsclone tests/btrfs tests/xfs tests/charsets tests/xml \
-	tests/mount-local tests/9p tests/rsync tests/bigdirs \
+	tests/relabel tests/ntfs tests/btrfs tests/xfs tests/charsets \
+	tests/xml tests/mount-local tests/9p tests/rsync tests/bigdirs \
 	tests/disk-labels tests/hotplug tests/nbd tests/http \
-	tests/syslinux tests/journal tests/relative-paths \
-	tests/regressions test-tool fish align cat diff df edit format \
-	inspector make-fs rescue p2v bash perl perl/examples ocaml \
-	ocaml/examples python python/examples ruby ruby/examples java \
-	java/examples haskell php erlang erlang/examples lua \
-	lua/examples gobject golang golang/examples csharp mllib \
-	customize builder builder/website dib get-kernel resize \
-	sparsify sysprep v2v v2v/test-harness tools fuse po-docs
+	tests/syslinux tests/journal tests/relative-paths tests/gdisk \
+	tests/regressions tests/tsk test-tool fish align cat diff df \
+	edit format inspector make-fs rescue p2v bash perl \
+	perl/examples ocaml ocaml/examples python python/examples ruby \
+	ruby/examples java java/examples haskell php erlang \
+	erlang/examples lua lua/examples gobject golang \
+	golang/examples csharp mllib customize builder builder/website \
+	get-kernel resize sparsify sysprep v2v v2v/test-harness dib \
+	tools fuse utils/boot-analysis utils/boot-benchmark \
+	utils/qemu-boot utils/qemu-speed-test po-docs
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/installcheck.sh.in $(srcdir)/pick-guests.pl.in \
 	$(srcdir)/podwrapper.pl.in $(srcdir)/run.in \
@@ -444,10 +449,10 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/php/extension/php-for-tests.sh.in \
 	$(top_srcdir)/ruby/ext/guestfs/extconf.rb.in \
 	$(top_srcdir)/website/index.html.in AUTHORS COPYING \
-	COPYING.LIB README TODO build-aux/ar-lib build-aux/compile \
-	build-aux/config.guess build-aux/config.rpath \
-	build-aux/config.sub build-aux/install-sh build-aux/ltmain.sh \
-	build-aux/missing
+	COPYING.LIB ChangeLog README TODO build-aux/ar-lib \
+	build-aux/compile build-aux/config.guess \
+	build-aux/config.rpath build-aux/config.sub \
+	build-aux/install-sh build-aux/ltmain.sh build-aux/missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -872,13 +877,14 @@ GOOS = @GOOS@
 GOROOT = @GOROOT@
 GPERF = @GPERF@
 GREP = @GREP@
-GTK2_CFLAGS = @GTK2_CFLAGS@
-GTK2_LIBS = @GTK2_LIBS@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
 GTKDOC_DEPS_LIBS = @GTKDOC_DEPS_LIBS@
 GTKDOC_MKPDF = @GTKDOC_MKPDF@
 GTKDOC_REBASE = @GTKDOC_REBASE@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
+GTK_VERSION = @GTK_VERSION@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -1301,7 +1307,10 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
+OCAML_BYTES_COMPAT_CMO = @OCAML_BYTES_COMPAT_CMO@
+OCAML_BYTES_COMPAT_ML = @OCAML_BYTES_COMPAT_ML@
 OCAML_FLAGS = @OCAML_FLAGS@
+OCAML_GENERATOR_BYTES_COMPAT_CMO = @OCAML_GENERATOR_BYTES_COMPAT_CMO@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
@@ -1525,6 +1534,7 @@ SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_U
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
 TIME_H_DEFINES_STRUCT_TIMESPEC = @TIME_H_DEFINES_STRUCT_TIMESPEC@
 TOOL_TRUE = @TOOL_TRUE@
+TSK_LIBS = @TSK_LIBS@
 UINT32_MAX_LT_UINTMAX_MAX = @UINT32_MAX_LT_UINTMAX_MAX@
 UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
@@ -1645,7 +1655,9 @@ SUBDIRS = generator $(am__append_1) test-data gnulib/lib \
 	$(am__append_10) $(am__append_11) $(am__append_12) \
 	$(am__append_13) $(am__append_14) $(am__append_15) \
 	$(am__append_16) csharp $(am__append_17) $(am__append_18) \
-	$(am__append_19) $(am__append_20) $(am__append_21)
+	$(am__append_19) $(am__append_20) $(am__append_21) \
+	$(am__append_22) utils/boot-benchmark utils/qemu-boot \
+	utils/qemu-speed-test $(am__append_23)
 EXTRA_DIST = \
 	BUGS HACKING TODO \
 	.gitignore \
@@ -1686,9 +1698,11 @@ EXTRA_DIST = \
 	logo/virt-builder.svg \
 	m4/.gitignore \
 	ocaml-link.sh \
+	podcheck.pl \
 	tests/automake2junit.ml \
 	tmp/.gitignore \
 	update-bugs.sh \
+	utils/README \
 	valgrind-suppressions \
 	website/bugs.png \
 	website/communicate.png \
@@ -2132,7 +2146,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(DATA) config.h all-local
+all-am: Makefile $(DATA) config.h
 installdirs: installdirs-recursive
 installdirs-am:
 install-exec: install-exec-recursive
@@ -2237,7 +2251,7 @@ uninstall-am:
 
 .MAKE: $(am__recursive_targets) all install-am install-strip
 
-.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am all-local \
+.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
 	am--refresh check check-am clean clean-cscope clean-generic \
 	clean-libtool clean-local cscope cscopelist-am ctags ctags-am \
 	dist dist-all dist-bzip2 dist-gzip dist-hook dist-lzip \
@@ -2270,37 +2284,66 @@ maintainer-upload-website:
 	cp $(BUILDERFILES) $(WEBSITEDIR)/download/builder/
 
 # When doing 'make dist' update a few files automatically.
-dist-hook:
-	git log --decorate=false > ChangeLog
-	cp ChangeLog $(distdir)/ChangeLog
-	$(top_srcdir)/update-bugs.sh > BUGS-t
-	mv BUGS-t BUGS
-	cp BUGS $(distdir)/BUGS
-	git shortlog -s | $(AWK) -F'\t' '{print $$2}' | sort -f > AUTHORS-t
-	mv AUTHORS-t AUTHORS
-	cp AUTHORS $(distdir)/AUTHORS
-
-# Update the list of translatable files.  These are separated into:
 #
-#  po/POTFILES - files with ordinary extensions, but not OCaml files
+#  AUTHORS        - list of authors (created from git)
+#  BUGS           - list of bugs (created from Bugzilla)
+#  ChangeLog      - changelog (created from git)
+#  docs/C_SOURCE_FILES
+#                 - source files scanned for internal documentation
+#  po/POTFILES    - files with ordinary extensions, but not OCaml files
 #  po/POTFILES-pl - Perl files that don't end in *.pl, which need a
 #                   special xgettext option [not generated here]
 #  po/POTFILES-ml - OCaml files, which need a special tool to translate
-#
-# See po/Makefile.am.
-#
+
+dist-hook: AUTHORS BUGS ChangeLog docs/C_SOURCE_FILES po/POTFILES po/POTFILES-ml
+	cp AUTHORS $(distdir)/AUTHORS
+	cp BUGS $(distdir)/BUGS
+	cp ChangeLog $(distdir)/ChangeLog
+
+AUTHORS: configure.ac
+	rm -f $@ $@-t
+	git shortlog -s | $(AWK) -F'\t' '{print $$2}' | sort -f > $@-t
+	mv $@-t $@
+
+BUGS: configure.ac
+	rm -f $@ $@-t
+	$(top_srcdir)/update-bugs.sh > $@-t
+	mv $@-t $@
+
+ChangeLog: configure.ac
+	rm -f $@ $@-t
+	git log --decorate=false > $@-t
+	mv $@-t $@
+
 # This has to be in the top-level Makefile.am so that we have access
 # to DIST_SUBDIRS.
-all-local:
+docs/C_SOURCE_FILES: configure.ac
+	rm -f $@ $@-t
+	find $(DIST_SUBDIRS) -name '*.c' | \
+	grep -v -E '^(builder/index-parse.c|builder/index-scan.c|examples/|gnulib/|gobject/|perl/|tests/|test-data/)' | \
+	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
+	grep -v -E '.*/errnostring\.c$$' | \
+	grep -v -E '.*-gperf\.c$$' | \
+	LC_ALL=C sort > $@-t
+	mv $@-t $@
+
+# For more information about translations, see po/Makefile.am.
+po/POTFILES: configure.ac
+	rm -f $@ $@-t
 	cd $(srcdir); \
 	find $(DIST_SUBDIRS) -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
 	grep -v -E '^(examples|gnulib|gobject/docs|perl/(blib|examples)|po-docs|tests|test-data)/' | \
 	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
 	grep -v -E '^python/utils\.c$$' | \
-	LC_ALL=C sort > po/POTFILES
+	LC_ALL=C sort > $@-t
+	mv $@-t $@
+
+po/POTFILES-ml: configure.ac
+	rm -f $@ $@-t
 	cd $(srcdir); \
 	find builder customize dib get-kernel mllib resize sparsify sysprep v2v -name '*.ml' | \
-	LC_ALL=C sort > po/POTFILES-ml
+	LC_ALL=C sort > $@-t
+	mv $@-t $@
 
 # Try to stop people using 'make install' without 'DESTDIR'.
 install:
@@ -2310,7 +2353,7 @@ install:
 	else \
 	    echo "***"; \
 	    echo "*** Using 'make install' is usually a very bad idea."; \
-	    echo "*** Use the './run' script instead - see the README."; \
+	    echo "*** Use the './run' script instead - see the guestfs-building(1) man page."; \
 	    echo "***"; \
 	    echo "*** You can override this by setting REALLY_INSTALL=yes, but don't do that."; \
 	    echo "***"; \
@@ -2464,7 +2507,7 @@ maintainer-commit:
 # Tag HEAD with current version (only for maintainer).
 
 maintainer-tag:
-	git tag -a $(VERSION) -m "Version $(VERSION) ($(BRANCH_TYPE))" -f
+	git tag -a "v$(VERSION)" -m "Version $(VERSION) ($(BRANCH_TYPE))" -f
 
 # Maintainer only: check EXTRA_DIST rule is complete.
 # (Note you must have done 'make dist')

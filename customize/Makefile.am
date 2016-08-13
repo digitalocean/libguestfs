@@ -20,11 +20,13 @@ include $(top_srcdir)/subdir-rules.mk
 EXTRA_DIST = \
 	$(generator_built) \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
+	customize_main.ml \
 	test-virt-customize.sh \
+	test-virt-customize-docs.sh \
 	virt-customize.pod
 
 CLEANFILES = \
-	*~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o \
+	*~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o dll*.so \
 	stamp-virt-customize.pod \
 	virt-customize virt-customize.1
 
@@ -43,6 +45,7 @@ SOURCES_MLI = \
 	password.mli \
 	perl_edit.mli \
 	random_seed.mli \
+	SELinux_relabel.mli \
 	ssh_key.mli \
 	subscription_manager.mli \
 	timezone.mli \
@@ -58,46 +61,58 @@ SOURCES_ML = \
 	password.ml \
 	perl_edit.ml \
 	random_seed.ml \
+	SELinux_relabel.ml \
 	ssh_key.ml \
 	subscription_manager.ml \
 	timezone.ml \
 	customize_cmdline.ml \
-	customize_run.ml \
-	customize_main.ml
+	customize_run.ml
 
 SOURCES_C = \
-	../fish/uri.c \
 	../fish/file-edit.c \
 	../fish/file-edit.h \
-	../mllib/uri-c.c \
 	crypt-c.c \
 	perl_edit-c.c
 
 if HAVE_OCAML
 
-bin_PROGRAMS = virt-customize
+# Build the virt-customize objects into a library, since these are
+# reused by virt-builder and virt-sysprep.  We pretend we are building
+# a C library.  automake handles the compilation of C sources for us.
+# At the end we take the C objects and OCaml objects and link them
+# into the OCaml library.  This C library is never used.
+noinst_LIBRARIES = libcustomize.a
 
-virt_customize_SOURCES = $(SOURCES_C)
-virt_customize_CPPFLAGS = \
+if !HAVE_OCAMLOPT
+CUSTOMIZE_CMA = customize.cma
+else
+CUSTOMIZE_CMA = customize.cmxa
+endif
+
+noinst_DATA = $(CUSTOMIZE_CMA)
+
+libcustomize_a_SOURCES = $(SOURCES_C)
+libcustomize_a_CPPFLAGS = \
 	-I. \
 	-I$(top_builddir) \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 	-I$(shell $(OCAMLC) -where) \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/fish
-virt_customize_CFLAGS = \
+libcustomize_a_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(LIBVIRT_CFLAGS) \
-	$(LIBXML2_CFLAGS)
+	$(LIBXML2_CFLAGS) \
+	-fPIC
 
-BOBJECTS = \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/regedit.cmo \
-	$(top_builddir)/mllib/URI.cmo \
-	$(SOURCES_ML:.ml=.cmo)
+BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
+
+if !HAVE_OCAMLOPT
+OBJECTS = $(BOBJECTS)
+else
+OBJECTS = $(XOBJECTS)
+endif
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
@@ -107,10 +122,33 @@ OCAMLPACKAGES = \
 	-I $(top_builddir)/src/.libs \
 	-I $(top_builddir)/gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
-	-I $(top_builddir)/mllib
+	-I $(top_builddir)/mllib \
+	-I $(builddir)
 if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
+
+libcustomize_a_DEPENDENCIES = $(OBJECTS)
+
+$(CUSTOMIZE_CMA): $(OBJECTS) libcustomize.a
+	$(OCAMLFIND) mklib $(OCAMLPACKAGES) \
+	    $(OBJECTS) $(libcustomize_a_OBJECTS) -o customize
+
+# Build the virt-customize program.
+bin_PROGRAMS = virt-customize
+
+virt_customize_SOURCES = dummy.c
+
+CUSTOMIZE_BOBJECTS = customize_main.cmo
+CUSTOMIZE_XOBJECTS = $(CUSTOMIZE_BOBJECTS:.cmo=.cmx)
+
+if !HAVE_OCAMLOPT
+CUSTOMIZE_THEOBJECTS = $(CUSTOMIZE_BOBJECTS)
+else
+CUSTOMIZE_THEOBJECTS = $(CUSTOMIZE_XOBJECTS)
+endif
+
+OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) customize.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
 
 OCAMLCLIBS = \
 	-lutils \
@@ -123,25 +161,19 @@ OCAMLCLIBS = \
 
 OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
-if !HAVE_OCAMLOPT
-OBJECTS = $(BOBJECTS)
-BEST    = c
-OCAMLLINKFLAGS = mlguestfs.cma -custom
-else
-OBJECTS = $(XOBJECTS)
-BEST    = opt
-OCAMLLINKFLAGS = mlguestfs.cmxa
-endif
-
-virt_customize_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
+virt_customize_DEPENDENCIES = \
+	$(top_srcdir)/ocaml-link.sh \
+	$(CUSTOMIZE_THEOBJECTS) \
+	$(CUSTOMIZE_CMA) \
+	../mllib/mllib.$(MLARCHIVE)
 virt_customize_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
-	  $(OBJECTS) -o $@
+	  $(CUSTOMIZE_THEOBJECTS) -o $@
 
 # Manual pages and HTML files for the website.
 man_MANS = virt-customize.1
-noinst_DATA = $(top_builddir)/website/virt-customize.1.html
+noinst_DATA += $(top_builddir)/website/virt-customize.1.html
 
 virt-customize.1 $(top_builddir)/website/virt-customize.1.html: stamp-virt-customize.pod
 
@@ -160,8 +192,12 @@ stamp-virt-customize.pod: virt-customize.pod $(top_srcdir)/customize/customize-s
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
+TESTS = \
+	test-virt-customize-docs.sh
+
 if ENABLE_APPLIANCE
-TESTS = test-virt-customize.sh
+TESTS += \
+	test-virt-customize.sh
 endif
 
 check-valgrind:

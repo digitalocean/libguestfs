@@ -49,6 +49,7 @@ let rec main () =
 
   let conversion_mode =
     if not cmdline.in_place then (
+      check_host_free_space ();
       let overlays = create_overlays source.s_disks in
       let targets = init_targets cmdline output source overlays in
       Copying (overlays, targets)
@@ -78,7 +79,7 @@ let rec main () =
   let inspect = Inspect_source.inspect_source cmdline.root_choice g in
 
   let mpstats = get_mpstats g in
-  check_free_space mpstats;
+  check_guest_free_space mpstats;
   (match conversion_mode with
    | Copying (_, targets) ->
        check_target_free_space mpstats source targets output
@@ -88,18 +89,24 @@ let rec main () =
   (* Conversion. *)
   let guestcaps =
     let keep_serial_console = output#keep_serial_console in
-    do_convert g inspect source keep_serial_console in
+    let rcaps =
+      match conversion_mode with
+      | Copying _ ->
+         { rcaps_block_bus = None; rcaps_net_bus = None; rcaps_video = None }
+      | In_place ->
+         rcaps_from_source source in
+
+    do_convert g inspect source keep_serial_console rcaps in
 
   g#umount_all ();
 
-  if cmdline.no_trim <> ["*"] &&
-       (cmdline.do_copy || cmdline.debug_overlays) then (
+  if cmdline.do_copy || cmdline.debug_overlays then (
     (* Doing fstrim on all the filesystems reduces the transfer size
      * because unused blocks are marked in the overlay and thus do
      * not have to be copied.
      *)
     message (f_"Mapping filesystem data to avoid copying unused and blank areas");
-    do_fstrim g cmdline.no_trim inspect;
+    do_fstrim g inspect;
   );
 
   (match conversion_mode with
@@ -118,7 +125,9 @@ let rec main () =
          get_target_firmware inspect guestcaps source output in
 
        message (f_"Assigning disks to buses");
-       let target_buses = target_bus_assignment source targets guestcaps in
+       let target_buses =
+         Target_bus_assignment.target_bus_assignment source targets
+                                                     guestcaps in
        debug "%s" (string_of_target_buses target_buses);
 
        let targets =
@@ -199,10 +208,25 @@ and amend_source cmdline source =
 
   { source with s_nics = nics }
 
+and overlay_dir = (open_guestfs ())#get_cachedir ()
+
+(* Conversion can fail or hang if there is insufficient free space in
+ * the temporary directory used to store overlays on the host
+ * (RHBZ#1316479).  Although only a few hundred MB is actually
+ * required, make the minimum be 1 GB to allow for the possible 500 MB
+ * guestfs appliance which is also stored here.
+ *)
+and check_host_free_space () =
+  let free_space = StatVFS.free_space overlay_dir in
+  debug "check_host_free_space: overlay_dir=%s free_space=%Ld"
+        overlay_dir free_space;
+  if free_space < 1_073_741_824L then
+    error (f_"insufficient free space in the conversion server temporary directory %s (%s).\n\nEither free up space in that directory, or set the LIBGUESTFS_CACHEDIR environment variable to point to another directory with more than 1GB of free space.\n\nSee also the virt-v2v(1) manual, section \"Minimum free space check in the host\".")
+          overlay_dir (human_size free_space)
+
 (* Create a qcow2 v3 overlay to protect the source image(s). *)
 and create_overlays src_disks =
   message (f_"Creating an overlay to protect the source from being modified");
-  let overlay_dir = (open_guestfs ())#get_cachedir () in
   List.mapi (
     fun i ({ s_qemu_uri = qemu_uri; s_format = format } as source) ->
       let overlay_file =
@@ -324,7 +348,7 @@ and get_mpstats g =
  * (RHBZ#1139543).  To avoid this situation, check there is some
  * headroom.  Mainly we care about the root filesystem.
  *)
-and check_free_space mpstats =
+and check_guest_free_space mpstats =
   message (f_"Checking for sufficient free disk space in the guest");
   List.iter (
     fun { mp_path = mp;
@@ -356,10 +380,8 @@ and check_free_space mpstats =
       )
   ) mpstats
 
-(* Perform the fstrim.  The trimming bit is easy.  Dealing with the
- * [--no-trim] parameter .. not so much.
- *)
-and do_fstrim g no_trim inspect =
+(* Perform the fstrim. *)
+and do_fstrim g inspect =
   (* Get all filesystems. *)
   let fses = g#list_filesystems () in
 
@@ -367,39 +389,7 @@ and do_fstrim g no_trim inspect =
     function (_, ("unknown"|"swap")) -> None | (dev, _) -> Some dev
   ) fses in
 
-  let fses =
-    if no_trim = [] then fses
-    else (
-      if verbose () then (
-        printf "no_trim: %s\n" (String.concat " " no_trim);
-        printf "filesystems before considering no_trim: %s\n"
-          (String.concat " " fses)
-      );
-
-      (* Drop any filesystems that match a device name in the no_trim list. *)
-      let fses = List.filter (
-        fun dev ->
-          not (List.mem (g#canonical_device_name dev) no_trim)
-      ) fses in
-
-      (* Drop any mountpoints matching the no_trim list. *)
-      let dev_to_mp =
-        List.map (fun (mp, dev) -> g#canonical_device_name dev, mp)
-          inspect.i_mountpoints in
-      let fses = List.filter (
-        fun dev ->
-          try not (List.mem (List.assoc dev dev_to_mp) no_trim)
-          with Not_found -> true
-      ) fses in
-
-      if verbose () then
-        printf "filesystems after considering no_trim: %s\n%!"
-          (String.concat " " fses);
-
-      fses
-    ) in
-
-  (* Trim the remaining filesystems. *)
+  (* Trim the filesystems. *)
   List.iter (
     fun dev ->
       g#umount_all ();
@@ -545,7 +535,7 @@ and check_target_free_space mpstats source targets output =
   output#check_target_free_space source targets
 
 (* Conversion. *)
-and do_convert g inspect source keep_serial_console =
+and do_convert g inspect source keep_serial_console rcaps =
   (match inspect.i_product_name with
   | "unknown" ->
     message (f_"Converting the guest to run on KVM")
@@ -559,15 +549,17 @@ and do_convert g inspect source keep_serial_console =
       error (f_"virt-v2v is unable to convert this guest type (%s/%s)")
         inspect.i_type inspect.i_distro in
   debug "picked conversion module %s" conversion_name;
-  let guestcaps = convert ~keep_serial_console g inspect source in
+  debug "requested caps: %s" (string_of_requested_guestcaps rcaps);
+  let guestcaps = convert ~keep_serial_console g inspect source rcaps in
   debug "%s" (string_of_guestcaps guestcaps);
 
   (* Did we manage to install virtio drivers? *)
   if not (quiet ()) then (
-    if guestcaps.gcaps_block_bus = Virtio_blk then
-      info (f_"This guest has virtio drivers installed.")
-    else
-      info (f_"This guest does not have virtio drivers installed.");
+    match guestcaps.gcaps_block_bus with
+    | Virtio_blk | Virtio_SCSI ->
+        info (f_"This guest has virtio drivers installed.")
+    | IDE ->
+        info (f_"This guest does not have virtio drivers installed.")
   );
 
   guestcaps
@@ -580,7 +572,10 @@ and get_target_firmware inspect guestcaps source output =
     | BIOS -> TargetBIOS
     | UEFI -> TargetUEFI
     | UnknownFirmware ->
-       if inspect.i_uefi then TargetUEFI else TargetBIOS in
+       match inspect.i_firmware with
+       | I_BIOS -> TargetBIOS
+       | I_UEFI _ -> TargetUEFI
+  in
   let supported_firmware = output#supported_firmware in
   if not (List.mem target_firmware supported_firmware) then
     error (f_"this guest cannot run on the target, because the target does not support %s firmware (supported firmware on target: %s)")
@@ -716,84 +711,8 @@ and actual_target_size target =
     with Failure _ | Invalid_argument _ -> None in
   { target with target_actual_size = size }
 
-(* Assign fixed and removable disks to target buses, as best we can.
- * This is not solvable for all guests, but at least avoid overlapping
- * disks (RHBZ#1238053).
- *
- * XXX This doesn't do the right thing for PC legacy floppy devices.
- * XXX This could handle slot assignment better when we have a mix of
- * devices desiring their own slot, and others that don't care.  Allocate
- * the first group in the first pass, then the second group afterwards.
- *)
-and target_bus_assignment source targets guestcaps =
-  let virtio_blk_bus = ref [| |]
-  and ide_bus = ref [| |]
-  and scsi_bus = ref [| |] in
-
-  (* Insert a slot into the bus array, making the array bigger if necessary. *)
-  let insert bus i slot =
-    let oldbus = !bus in
-    let oldlen = Array.length oldbus in
-    if i >= oldlen then (
-      bus := Array.make (i+1) BusSlotEmpty;
-      Array.blit oldbus 0 !bus 0 oldlen
-    );
-    Array.set !bus i slot
-  in
-
-  (* Insert a slot into the bus, but if the desired slot is not empty, then
-   * increment the slot number until we find an empty one.  Returns
-   * true if we got the desired slot.
-   *)
-  let rec insert_after bus i slot =
-    let len = Array.length !bus in
-    if i >= len || Array.get !bus i = BusSlotEmpty then (
-      insert bus i slot; true
-    ) else (
-      ignore (insert_after bus (i+1) slot); false
-    )
-  in
-
-  (* Add the fixed disks (targets) to either the virtio-blk or IDE bus,
-   * depending on whether the guest has virtio drivers or not.
-   *)
-  iteri (
-    fun i t ->
-      let t = BusSlotTarget t in
-      match guestcaps.gcaps_block_bus with
-      | Virtio_blk -> insert virtio_blk_bus i t
-      | IDE -> insert ide_bus i t
-  ) targets;
-
-  (* Now try to add the removable disks to the bus at the same slot
-   * they originally occupied, but if the slot is occupied, emit a
-   * a warning and insert the disk in the next empty slot in that bus.
-   *)
-  List.iter (
-    fun r ->
-      let bus = match r.s_removable_controller with
-        | None -> ide_bus (* Wild guess, but should be safe. *)
-        | Some Source_virtio_blk -> virtio_blk_bus
-        | Some Source_IDE -> ide_bus
-        | Some Source_SCSI -> scsi_bus in
-      match r.s_removable_slot with
-      | None -> ignore (insert_after bus 0 (BusSlotRemovable r))
-      | Some desired_slot_nr ->
-         if not (insert_after bus desired_slot_nr (BusSlotRemovable r)) then
-           warning (f_"removable %s device in slot %d clashes with another disk, so it has been moved to a higher numbered slot on the same bus.  This may mean that this removable device has a different name inside the guest (for example a CD-ROM originally called /dev/hdc might move to /dev/hdd, or from D: to E: on a Windows guest).")
-                   (match r.s_removable_type with
-                    | CDROM -> s_"CD-ROM"
-                    | Floppy -> s_"floppy disk")
-                   desired_slot_nr
-  ) source.s_removables;
-
-  { target_virtio_blk_bus = !virtio_blk_bus;
-    target_ide_bus = !ide_bus;
-    target_scsi_bus = !scsi_bus }
-
 (* Save overlays if --debug-overlays option was used. *)
 and preserve_overlays overlays src_name =
-  let overlay_dir = (open_guestfs ())#get_cachedir () in
   List.iter (
     fun ov ->
       let saved_filename =
@@ -801,5 +720,53 @@ and preserve_overlays overlays src_name =
       rename ov.ov_overlay_file saved_filename;
       info (f_"Overlay saved as %s [--debug-overlays]") saved_filename
   ) overlays
+
+(* Request guest caps based on source configuration. *)
+and rcaps_from_source source =
+  let source_block_types =
+    List.map (fun sd -> sd.s_controller) source.s_disks in
+  let source_block_type =
+    match sort_uniq source_block_types with
+    | [] -> error (f_"source has no hard disks!")
+    | [t] -> t
+    | _ -> error (f_"source has multiple hard disk types!") in
+  let block_type =
+    match source_block_type with
+    | Some Source_virtio_blk -> Some Virtio_blk
+    | Some Source_virtio_SCSI -> Some Virtio_SCSI
+    | Some Source_IDE -> Some IDE
+    | Some t -> error (f_"source has unsupported hard disk type '%s'")
+                      (string_of_controller t)
+    | None -> error (f_"source has unrecognized hard disk type") in
+
+  let source_net_types =
+      List.map (fun nic -> nic.s_nic_model) source.s_nics in
+  let source_net_type =
+    match sort_uniq source_net_types with
+    | [] -> None
+    | [t] -> t
+    | _ -> error (f_"source has multiple network adapter model!") in
+  let net_type =
+    match source_net_type with
+    | Some Source_virtio_net -> Some Virtio_net
+    | Some Source_e1000 -> Some E1000
+    | Some Source_rtl8139 -> Some RTL8139
+    | Some t -> error (f_"source has unsupported network adapter model '%s'")
+                      (string_of_nic_model t)
+    | None -> None in
+
+  let video =
+    match source.s_video with
+    | Some Source_QXL -> Some QXL
+    | Some Source_Cirrus -> Some Cirrus
+    | Some t -> error (f_"source has unsupported video adapter model '%s'")
+                      (string_of_source_video t)
+    | None -> None in
+
+  {
+    rcaps_block_bus = block_type;
+    rcaps_net_bus = net_type;
+    rcaps_video = video;
+  }
 
 let () = run_main_and_handle_errors main

@@ -118,12 +118,14 @@ struct backend_libvirt_data {
   char *network_bridge;
   char name[DOMAIN_NAME_LEN];   /* random name */
   bool is_kvm;                  /* false = qemu, true = kvm (from capabilities)*/
-  unsigned long libvirt_version; /* libvirt version */
-  unsigned long qemu_version;   /* qemu version (from libvirt) */
+  struct version libvirt_version; /* libvirt version */
+  struct version qemu_version;  /* qemu version (from libvirt) */
   struct secret *secrets;       /* list of secrets */
   size_t nr_secrets;
   char *uefi_code;		/* UEFI (firmware) code and variables. */
   char *uefi_vars;
+  char guestfsd_path[UNIX_PATH_MAX]; /* paths to sockets */
+  char console_path[UNIX_PATH_MAX];
 };
 
 /* Parameters passed to construct_libvirt_xml and subfunctions.  We
@@ -131,14 +133,11 @@ struct backend_libvirt_data {
  */
 struct libvirt_xml_params {
   struct backend_libvirt_data *data;
-  char *kernel;                 /* paths to kernel, dtb and initrd */
-  char *dtb;
+  char *kernel;                 /* paths to kernel and initrd */
   char *initrd;
   char *appliance_overlay;      /* path to qcow2 overlay backed by appliance */
   char appliance_dev[64];       /* appliance device name */
   size_t appliance_index;       /* index of appliance */
-  char guestfsd_path[UNIX_PATH_MAX]; /* paths to sockets */
-  char console_path[UNIX_PATH_MAX];
   bool enable_svirt;            /* false if we decided to disable sVirt */
   bool current_proc_is_root;    /* true = euid is root */
 };
@@ -302,7 +301,6 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   struct libvirt_xml_params params = {
     .data = data,
     .kernel = NULL,
-    .dtb = NULL,
     .initrd = NULL,
     .appliance_overlay = NULL,
   };
@@ -314,6 +312,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   int r;
   uint32_t size;
   CLEANUP_FREE void *buf = NULL;
+  unsigned long version_number;
 
   params.current_proc_is_root = geteuid () == 0;
 
@@ -323,13 +322,16 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
     return -1;
   }
 
-  virGetVersion (&data->libvirt_version, NULL, NULL);
-  debug (g, "libvirt version = %lu (%lu.%lu.%lu)",
-         data->libvirt_version,
-         data->libvirt_version / 1000000UL,
-         data->libvirt_version / 1000UL % 1000UL,
-         data->libvirt_version % 1000UL);
-  if (data->libvirt_version < MIN_LIBVIRT_VERSION) {
+  virGetVersion (&version_number, NULL, NULL);
+  guestfs_int_version_from_libvirt (&data->libvirt_version, version_number);
+  debug (g, "libvirt version = %lu (%d.%d.%d)",
+         version_number,
+         data->libvirt_version.v_major,
+         data->libvirt_version.v_minor,
+         data->libvirt_version.v_micro);
+  if (!guestfs_int_version_ge (&data->libvirt_version,
+                               MIN_LIBVIRT_MAJOR, MIN_LIBVIRT_MINOR,
+                               MIN_LIBVIRT_MICRO)) {
     error (g, _("you must have libvirt >= %d.%d.%d "
                 "to use the 'libvirt' backend"),
            MIN_LIBVIRT_MAJOR, MIN_LIBVIRT_MINOR, MIN_LIBVIRT_MICRO);
@@ -349,8 +351,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   }
   debug (g, "guest random name = %s", data->name);
 
-  if (g->verbose)
-    guestfs_int_print_timestamped_message (g, "connect to libvirt");
+  debug (g, "connect to libvirt");
 
   /* Decode the URI string. */
   if (!libvirt_uri) {           /* "libvirt" */
@@ -377,20 +378,20 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   virConnSetErrorFunc (conn, NULL, ignore_errors);
 
   /* Get hypervisor (hopefully qemu) version. */
-  if (virConnectGetVersion (conn, &data->qemu_version) == 0) {
-    debug (g, "qemu version (reported by libvirt) = %lu (%lu.%lu.%lu)",
-           data->qemu_version,
-           data->qemu_version / 1000000UL,
-           data->qemu_version / 1000UL % 1000UL,
-           data->qemu_version % 1000UL);
+  if (virConnectGetVersion (conn, &version_number) == 0) {
+    guestfs_int_version_from_libvirt (&data->qemu_version, version_number);
+    debug (g, "qemu version (reported by libvirt) = %lu (%d.%d.%d)",
+           version_number,
+           data->qemu_version.v_major,
+           data->qemu_version.v_minor,
+           data->qemu_version.v_micro);
   }
   else {
     libvirt_debug (g, "unable to read qemu version from libvirt");
-    data->qemu_version = 0;
+    version_init_null (&data->qemu_version);
   }
 
-  if (g->verbose)
-    guestfs_int_print_timestamped_message (g, "get libvirt capabilities");
+  debug (g, "get libvirt capabilities");
 
   capabilities_xml = virConnectGetCapabilities (conn);
   if (!capabilities_xml) {
@@ -402,8 +403,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
    * struct, and can also fail if we detect that the hypervisor cannot
    * run qemu guests (RHBZ#886915).
    */
-  if (g->verbose)
-    guestfs_int_print_timestamped_message (g, "parsing capabilities XML");
+  debug (g, "parsing capabilities XML");
 
   if (parse_capabilities (g, capabilities_xml, data) == -1)
     goto cleanup;
@@ -436,11 +436,10 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   /* Locate and/or build the appliance. */
   TRACE0 (launch_build_libvirt_appliance_start);
 
-  if (g->verbose)
-    guestfs_int_print_timestamped_message (g, "build appliance");
+  debug (g, "build appliance");
 
-  if (guestfs_int_build_appliance (g, &params.kernel, &params.dtb,
-				   &params.initrd, &appliance) == -1)
+  if (guestfs_int_build_appliance (g, &params.kernel, &params.initrd,
+                                   &appliance) == -1)
     goto cleanup;
 
   guestfs_int_launch_send_progress (g, 3);
@@ -458,9 +457,9 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   /* Using virtio-serial, we need to create a local Unix domain socket
    * for qemu to connect to.
    */
-  snprintf (params.guestfsd_path, sizeof params.guestfsd_path,
-            "%s/guestfsd.sock", g->tmpdir);
-  unlink (params.guestfsd_path);
+  if (guestfs_int_create_socketname (g, "guestfsd.sock",
+                                     &data->guestfsd_path) == -1)
+    goto cleanup;
 
   set_socket_create_context (g);
 
@@ -471,7 +470,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   }
 
   addr.sun_family = AF_UNIX;
-  memcpy (addr.sun_path, params.guestfsd_path, UNIX_PATH_MAX);
+  memcpy (addr.sun_path, data->guestfsd_path, UNIX_PATH_MAX);
 
   if (bind (daemon_accept_sock, (struct sockaddr *) &addr,
             sizeof addr) == -1) {
@@ -485,9 +484,9 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   }
 
   /* For the serial console. */
-  snprintf (params.console_path, sizeof params.console_path,
-            "%s/console.sock", g->tmpdir);
-  unlink (params.console_path);
+  if (guestfs_int_create_socketname (g, "console.sock",
+                                     &data->console_path) == -1)
+    goto cleanup;
 
   console_sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
   if (console_sock == -1) {
@@ -496,7 +495,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   }
 
   addr.sun_family = AF_UNIX;
-  memcpy (addr.sun_path, params.console_path, UNIX_PATH_MAX);
+  memcpy (addr.sun_path, data->console_path, UNIX_PATH_MAX);
 
   if (bind (console_sock, (struct sockaddr *) &addr, sizeof addr) == -1) {
     perrorf (g, "bind");
@@ -533,24 +532,24 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
      */
     struct group *grp;
 
-    if (chmod (params.guestfsd_path, 0660) == -1) {
-      perrorf (g, "chmod: %s", params.guestfsd_path);
+    if (chmod (data->guestfsd_path, 0660) == -1) {
+      perrorf (g, "chmod: %s", data->guestfsd_path);
       goto cleanup;
     }
 
-    if (chmod (params.console_path, 0660) == -1) {
-      perrorf (g, "chmod: %s", params.console_path);
+    if (chmod (data->console_path, 0660) == -1) {
+      perrorf (g, "chmod: %s", data->console_path);
       goto cleanup;
     }
 
     grp = getgrnam ("qemu");
     if (grp != NULL) {
-      if (chown (params.guestfsd_path, 0, grp->gr_gid) == -1) {
-        perrorf (g, "chown: %s", params.guestfsd_path);
+      if (chown (data->guestfsd_path, 0, grp->gr_gid) == -1) {
+        perrorf (g, "chown: %s", data->guestfsd_path);
         goto cleanup;
       }
-      if (chown (params.console_path, 0, grp->gr_gid) == -1) {
-        perrorf (g, "chown: %s", params.console_path);
+      if (chown (data->console_path, 0, grp->gr_gid) == -1) {
+        perrorf (g, "chown: %s", data->console_path);
         goto cleanup;
       }
     } else
@@ -566,8 +565,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   }
 
   /* Construct the libvirt XML. */
-  if (g->verbose)
-    guestfs_int_print_timestamped_message (g, "create libvirt XML");
+  debug (g, "create libvirt XML");
 
   params.appliance_index = g->nr_drives;
   strcpy (params.appliance_dev, "/dev/sd");
@@ -585,8 +583,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   }
 
   /* Launch the libvirt guest. */
-  if (g->verbose)
-    guestfs_int_print_timestamped_message (g, "launch libvirt guest");
+  debug (g, "launch libvirt guest");
 
   dom = virDomainCreateXML (conn, (char *) xml, VIR_DOMAIN_START_AUTODESTROY);
   if (!dom) {
@@ -654,8 +651,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
     goto cleanup;
   }
 
-  if (g->verbose)
-    guestfs_int_print_timestamped_message (g, "appliance is up");
+  debug (g, "appliance is up");
 
   /* This is possible in some really strange situations, such as
    * guestfsd starts up OK but then qemu immediately exits.  Check for
@@ -678,7 +674,6 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   data->dom = dom;
 
   free (params.kernel);
-  free (params.dtb);
   free (params.initrd);
   free (params.appliance_overlay);
 
@@ -704,7 +699,6 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
     virConnectClose (conn);
 
   free (params.kernel);
-  free (params.dtb);
   free (params.initrd);
   free (params.appliance_overlay);
 
@@ -920,7 +914,7 @@ debug_socket_permissions (guestfs_h *g)
     guestfs_int_cmd_add_arg (cmd, "-a");
     guestfs_int_cmd_add_arg (cmd, "-l");
     guestfs_int_cmd_add_arg (cmd, "-Z");
-    guestfs_int_cmd_add_arg (cmd, g->tmpdir);
+    guestfs_int_cmd_add_arg (cmd, g->sockdir);
     guestfs_int_cmd_set_stdout_callback (cmd, debug_permissions_cb, NULL, 0);
     guestfs_int_cmd_run (cmd);
   }
@@ -1222,12 +1216,6 @@ construct_libvirt_xml_boot (guestfs_h *g,
       string (params->kernel);
     } end_element ();
 
-    if (params->dtb) {
-      start_element ("dtb") {
-        string (params->dtb);
-      } end_element ();
-    }
-
     start_element ("initrd") {
       string (params->initrd);
     } end_element ();
@@ -1237,9 +1225,11 @@ construct_libvirt_xml_boot (guestfs_h *g,
     } end_element ();
 
 #if defined(__i386__) || defined(__x86_64__)
-    start_element ("bios") {
-      attribute ("useserial", "yes");
-    } end_element ();
+    if (g->verbose) {
+      start_element ("bios") {
+        attribute ("useserial", "yes");
+      } end_element ();
+    }
 #endif
 
   } end_element ();
@@ -1322,6 +1312,20 @@ construct_libvirt_xml_devices (guestfs_h *g,
     }
 #endif
 
+    /* Add a random number generator (backend for virtio-rng).  This
+     * requires Cole Robinson's patch to permit /dev/urandom to be
+     * used, which was added in libvirt 1.3.4.
+     */
+    if (guestfs_int_version_ge (&params->data->libvirt_version, 1, 3, 4)) {
+      start_element ("rng") {
+        attribute ("model", "virtio");
+        start_element ("backend") {
+          attribute ("model", "random");
+          string ("/dev/urandom");
+        } end_element ();
+      } end_element ();
+    }
+
     /* virtio-scsi controller. */
     start_element ("controller") {
       attribute ("type", "scsi");
@@ -1346,7 +1350,7 @@ construct_libvirt_xml_devices (guestfs_h *g,
       attribute ("type", "unix");
       start_element ("source") {
         attribute ("mode", "connect");
-        attribute ("path", params->console_path);
+        attribute ("path", params->data->console_path);
       } end_element ();
       start_element ("target") {
         attribute ("port", "0");
@@ -1358,7 +1362,7 @@ construct_libvirt_xml_devices (guestfs_h *g,
       attribute ("type", "unix");
       start_element ("source") {
         attribute ("mode", "connect");
-        attribute ("path", params->guestfsd_path);
+        attribute ("path", params->data->guestfsd_path);
       } end_element ();
       start_element ("target") {
         attribute ("type", "virtio");
@@ -1600,14 +1604,14 @@ construct_libvirt_xml_disk_driver_qemu (guestfs_h *g,
      */
     break;
   case discard_enable:
-    if (!guestfs_int_discard_possible (g, drv, data->qemu_version))
+    if (!guestfs_int_discard_possible (g, drv, &data->qemu_version))
       return -1;
     /*FALLTHROUGH*/
   case discard_besteffort:
     /* I believe from reading the code that this is always safe as
      * long as qemu >= 1.5.
      */
-    if (data->qemu_version >= 1005000)
+    if (guestfs_int_version_ge (&data->qemu_version, 1, 5, 0))
       discard_unmap = true;
     break;
   }
@@ -2047,6 +2051,16 @@ shutdown_libvirt (guestfs_h *g, void *datav, int check_for_errors)
   }
   if (conn != NULL)
     virConnectClose (conn);
+
+  if (data->guestfsd_path[0] != '\0') {
+    unlink (data->guestfsd_path);
+    data->guestfsd_path[0] = '\0';
+  }
+
+  if (data->console_path[0] != '\0') {
+    unlink (data->console_path);
+    data->console_path[0] = '\0';
+  }
 
   data->conn = NULL;
   data->dom = NULL;

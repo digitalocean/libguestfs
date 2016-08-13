@@ -24,8 +24,10 @@ guestfs_copy_file_to_file_get_type
 guestfs_cpio_out_get_type
 guestfs_dirent_get_type
 guestfs_disk_create_get_type
+guestfs_download_blocks_get_type
 guestfs_e2fsck_get_type
 guestfs_fstrim_get_type
+guestfs_glob_expand_get_type
 guestfs_grep_get_type
 guestfs_hivex_node_get_type
 guestfs_hivex_open_get_type
@@ -63,6 +65,7 @@ guestfs_remount_get_type
 guestfs_rsync_get_type
 guestfs_rsync_in_get_type
 guestfs_rsync_out_get_type
+guestfs_selinux_relabel_get_type
 guestfs_session_event_get_type
 guestfs_session_event_params_get_type
 guestfs_session_get_type
@@ -74,6 +77,7 @@ guestfs_syslinux_get_type
 guestfs_tar_in_get_type
 guestfs_tar_out_get_type
 guestfs_tristate_get_type
+guestfs_tsk_dirent_get_type
 guestfs_tune2fs_get_type
 guestfs_umount_get_type
 guestfs_umount_local_get_type

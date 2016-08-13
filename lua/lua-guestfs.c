@@ -101,6 +101,8 @@ static void push_btrfsqgroup (lua_State *L, struct guestfs_btrfsqgroup *v);
 static void push_btrfsqgroup_list (lua_State *L, struct guestfs_btrfsqgroup_list *v);
 static void push_version (lua_State *L, struct guestfs_version *v);
 static void push_int_bool (lua_State *L, struct guestfs_int_bool *v);
+static void push_tsk_dirent (lua_State *L, struct guestfs_tsk_dirent *v);
+static void push_tsk_dirent_list (lua_State *L, struct guestfs_tsk_dirent_list *v);
 static void push_partition (lua_State *L, struct guestfs_partition *v);
 static void push_partition_list (lua_State *L, struct guestfs_partition_list *v);
 static void push_statns (lua_State *L, struct guestfs_statns *v);
@@ -1806,6 +1808,29 @@ guestfs_int_lua_btrfs_filesystem_resize (lua_State *L)
     return last_error (L, g);
 
   return 0;
+}
+
+static int
+guestfs_int_lua_btrfs_filesystem_show (lua_State *L)
+{
+  char **r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "btrfs_filesystem_show");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_btrfs_filesystem_show (g, device);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_string_list (L, r);
+  guestfs_int_free_string_list (r);
+  return 1;
 }
 
 static int
@@ -3662,6 +3687,68 @@ guestfs_int_lua_download (lua_State *L)
 }
 
 static int
+guestfs_int_lua_download_blocks (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int64_t start;
+  int64_t stop;
+  const char *filename;
+  struct guestfs_download_blocks_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_download_blocks_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "download_blocks");
+
+  device = luaL_checkstring (L, 2);
+  start = get_int64 (L, 3);
+  stop = get_int64 (L, 4);
+  filename = luaL_checkstring (L, 5);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 6) == LUA_TTABLE) {
+    OPTARG_IF_SET (6, "unallocated",
+      optargs_s.bitmask |= GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK;
+      optargs_s.unallocated = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_download_blocks_argv (g, device, start, stop, filename, optargs);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_int_lua_download_inode (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int64_t inode;
+  const char *filename;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "download_inode");
+
+  device = luaL_checkstring (L, 2);
+  inode = get_int64 (L, 3);
+  filename = luaL_checkstring (L, 4);
+
+  r = guestfs_download_inode (g, device, inode, filename);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_int_lua_download_offset (lua_State *L)
 {
   int r;
@@ -4134,6 +4221,29 @@ guestfs_int_lua_filesystem_available (lua_State *L)
     return last_error (L, g);
 
   lua_pushboolean (L, r);
+  return 1;
+}
+
+static int
+guestfs_int_lua_filesystem_walk (lua_State *L)
+{
+  struct guestfs_tsk_dirent_list *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "filesystem_walk");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_filesystem_walk (g, device);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_tsk_dirent_list (L, r);
+  guestfs_free_tsk_dirent_list (r);
   return 1;
 }
 
@@ -4952,6 +5062,27 @@ guestfs_int_lua_get_smp (lua_State *L)
 }
 
 static int
+guestfs_int_lua_get_sockdir (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "get_sockdir");
+
+
+  r = guestfs_get_sockdir (g);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
 guestfs_int_lua_get_state (lua_State *L)
 {
   int r;
@@ -5129,6 +5260,8 @@ guestfs_int_lua_glob_expand (lua_State *L)
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
   const char *pattern;
+  struct guestfs_glob_expand_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_glob_expand_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
     return luaL_error (L, "Guestfs.%s: handle is closed",
@@ -5136,7 +5269,15 @@ guestfs_int_lua_glob_expand (lua_State *L)
 
   pattern = luaL_checkstring (L, 2);
 
-  r = guestfs_glob_expand (g, pattern);
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "directoryslash",
+      optargs_s.bitmask |= GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH_BITMASK;
+      optargs_s.directoryslash = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_glob_expand_opts_argv (g, pattern, optargs);
   if (r == NULL)
     return last_error (L, g);
 
@@ -7575,15 +7716,15 @@ guestfs_int_lua_is_lv (lua_State *L)
   int r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *device;
+  const char *mountable;
 
   if (g == NULL)
     return luaL_error (L, "Guestfs.%s: handle is closed",
                        "is_lv");
 
-  device = luaL_checkstring (L, 2);
+  mountable = luaL_checkstring (L, 2);
 
-  r = guestfs_is_lv (g, device);
+  r = guestfs_is_lv (g, mountable);
   if (r == -1)
     return last_error (L, g);
 
@@ -10501,6 +10642,52 @@ guestfs_int_lua_mount_vfs (lua_State *L)
 }
 
 static int
+guestfs_int_lua_mountable_device (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *mountable;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mountable_device");
+
+  mountable = luaL_checkstring (L, 2);
+
+  r = guestfs_mountable_device (g, mountable);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
+guestfs_int_lua_mountable_subvolume (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *mountable;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mountable_subvolume");
+
+  mountable = luaL_checkstring (L, 2);
+
+  r = guestfs_mountable_subvolume (g, mountable);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
 guestfs_int_lua_mountpoints (lua_State *L)
 {
   char **r;
@@ -10607,6 +10794,31 @@ guestfs_int_lua_ntfs_3g_probe (lua_State *L)
 
   lua_pushinteger (L, r);
   return 1;
+}
+
+static int
+guestfs_int_lua_ntfscat_i (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int64_t inode;
+  const char *filename;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "ntfscat_i");
+
+  device = luaL_checkstring (L, 2);
+  inode = get_int64 (L, 3);
+  filename = luaL_checkstring (L, 4);
+
+  r = guestfs_ntfscat_i (g, device, inode, filename);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
 }
 
 static int
@@ -10885,6 +11097,27 @@ guestfs_int_lua_part_disk (lua_State *L)
 }
 
 static int
+guestfs_int_lua_part_expand_gpt (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_expand_gpt");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_part_expand_gpt (g, device);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_int_lua_part_get_bootable (lua_State *L)
 {
   int r;
@@ -10905,6 +11138,29 @@ guestfs_int_lua_part_get_bootable (lua_State *L)
     return last_error (L, g);
 
   lua_pushboolean (L, r);
+  return 1;
+}
+
+static int
+guestfs_int_lua_part_get_disk_guid (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_get_disk_guid");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_part_get_disk_guid (g, device);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
   return 1;
 }
 
@@ -11120,6 +11376,50 @@ guestfs_int_lua_part_set_bootable (lua_State *L)
   bootable = lua_toboolean (L, 4);
 
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_int_lua_part_set_disk_guid (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  const char *guid;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_set_disk_guid");
+
+  device = luaL_checkstring (L, 2);
+  guid = luaL_checkstring (L, 3);
+
+  r = guestfs_part_set_disk_guid (g, device, guid);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_int_lua_part_set_disk_guid_random (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_set_disk_guid_random");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_part_set_disk_guid_random (g, device);
   if (r == -1)
     return last_error (L, g);
 
@@ -12169,6 +12469,39 @@ guestfs_int_lua_scrub_freespace (lua_State *L)
   dir = luaL_checkstring (L, 2);
 
   r = guestfs_scrub_freespace (g, dir);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_int_lua_selinux_relabel (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *specfile;
+  const char *path;
+  struct guestfs_selinux_relabel_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_selinux_relabel_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "selinux_relabel");
+
+  specfile = luaL_checkstring (L, 2);
+  path = luaL_checkstring (L, 3);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 4) == LUA_TTABLE) {
+    OPTARG_IF_SET (4, "force",
+      optargs_s.bitmask |= GUESTFS_SELINUX_RELABEL_FORCE_BITMASK;
+      optargs_s.force = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_selinux_relabel_argv (g, specfile, path, optargs);
   if (r == -1)
     return last_error (L, g);
 
@@ -15531,6 +15864,72 @@ push_int_bool (lua_State *L, struct guestfs_int_bool *v)
 }
 
 static void
+push_tsk_dirent (lua_State *L, struct guestfs_tsk_dirent *v)
+{
+  lua_newtable (L);
+  lua_pushliteral (L, "tsk_inode");
+  push_int64 (L, (int64_t) v->tsk_inode);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_type");
+  lua_pushlstring (L, &v->tsk_type, 1);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_size");
+  push_int64 (L, (int64_t) v->tsk_size);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_name");
+  lua_pushstring (L, v->tsk_name);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_flags");
+  lua_pushinteger (L, v->tsk_flags);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_atime_sec");
+  push_int64 (L, (int64_t) v->tsk_atime_sec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_atime_nsec");
+  push_int64 (L, (int64_t) v->tsk_atime_nsec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_mtime_sec");
+  push_int64 (L, (int64_t) v->tsk_mtime_sec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_mtime_nsec");
+  push_int64 (L, (int64_t) v->tsk_mtime_nsec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_ctime_sec");
+  push_int64 (L, (int64_t) v->tsk_ctime_sec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_ctime_nsec");
+  push_int64 (L, (int64_t) v->tsk_ctime_nsec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_crtime_sec");
+  push_int64 (L, (int64_t) v->tsk_crtime_sec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_crtime_nsec");
+  push_int64 (L, (int64_t) v->tsk_crtime_nsec);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_nlink");
+  push_int64 (L, (int64_t) v->tsk_nlink);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_link");
+  lua_pushstring (L, v->tsk_link);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "tsk_spare1");
+  push_int64 (L, (int64_t) v->tsk_spare1);
+  lua_settable (L, -3);
+}
+
+static void
+push_tsk_dirent_list (lua_State *L, struct guestfs_tsk_dirent_list *v)
+{
+  size_t i;
+
+  lua_newtable (L);
+  for (i = 0; i < v->len; ++i) {
+    push_tsk_dirent (L, &v->val[i]);
+    lua_rawseti (L, -2, i+1 /* because of base 1 arrays */);
+  }
+}
+
+static void
 push_partition (lua_State *L, struct guestfs_partition *v)
 {
   lua_newtable (L);
@@ -16432,6 +16831,7 @@ static luaL_Reg methods[] = {
   { "btrfs_filesystem_balance", guestfs_int_lua_btrfs_filesystem_balance },
   { "btrfs_filesystem_defragment", guestfs_int_lua_btrfs_filesystem_defragment },
   { "btrfs_filesystem_resize", guestfs_int_lua_btrfs_filesystem_resize },
+  { "btrfs_filesystem_show", guestfs_int_lua_btrfs_filesystem_show },
   { "btrfs_filesystem_sync", guestfs_int_lua_btrfs_filesystem_sync },
   { "btrfs_fsck", guestfs_int_lua_btrfs_fsck },
   { "btrfs_image", guestfs_int_lua_btrfs_image },
@@ -16503,6 +16903,8 @@ static luaL_Reg methods[] = {
   { "disk_virtual_size", guestfs_int_lua_disk_virtual_size },
   { "dmesg", guestfs_int_lua_dmesg },
   { "download", guestfs_int_lua_download },
+  { "download_blocks", guestfs_int_lua_download_blocks },
+  { "download_inode", guestfs_int_lua_download_inode },
   { "download_offset", guestfs_int_lua_download_offset },
   { "drop_caches", guestfs_int_lua_drop_caches },
   { "du", guestfs_int_lua_du },
@@ -16523,6 +16925,7 @@ static luaL_Reg methods[] = {
   { "file_architecture", guestfs_int_lua_file_architecture },
   { "filesize", guestfs_int_lua_filesize },
   { "filesystem_available", guestfs_int_lua_filesystem_available },
+  { "filesystem_walk", guestfs_int_lua_filesystem_walk },
   { "fill", guestfs_int_lua_fill },
   { "fill_dir", guestfs_int_lua_fill_dir },
   { "fill_pattern", guestfs_int_lua_fill_pattern },
@@ -16560,6 +16963,7 @@ static luaL_Reg methods[] = {
   { "get_recovery_proc", guestfs_int_lua_get_recovery_proc },
   { "get_selinux", guestfs_int_lua_get_selinux },
   { "get_smp", guestfs_int_lua_get_smp },
+  { "get_sockdir", guestfs_int_lua_get_sockdir },
   { "get_state", guestfs_int_lua_get_state },
   { "get_tmpdir", guestfs_int_lua_get_tmpdir },
   { "get_trace", guestfs_int_lua_get_trace },
@@ -16775,11 +17179,14 @@ static luaL_Reg methods[] = {
   { "mount_options", guestfs_int_lua_mount_options },
   { "mount_ro", guestfs_int_lua_mount_ro },
   { "mount_vfs", guestfs_int_lua_mount_vfs },
+  { "mountable_device", guestfs_int_lua_mountable_device },
+  { "mountable_subvolume", guestfs_int_lua_mountable_subvolume },
   { "mountpoints", guestfs_int_lua_mountpoints },
   { "mounts", guestfs_int_lua_mounts },
   { "mv", guestfs_int_lua_mv },
   { "nr_devices", guestfs_int_lua_nr_devices },
   { "ntfs_3g_probe", guestfs_int_lua_ntfs_3g_probe },
+  { "ntfscat_i", guestfs_int_lua_ntfscat_i },
   { "ntfsclone_in", guestfs_int_lua_ntfsclone_in },
   { "ntfsclone_out", guestfs_int_lua_ntfsclone_out },
   { "ntfsfix", guestfs_int_lua_ntfsfix },
@@ -16790,7 +17197,9 @@ static luaL_Reg methods[] = {
   { "part_add", guestfs_int_lua_part_add },
   { "part_del", guestfs_int_lua_part_del },
   { "part_disk", guestfs_int_lua_part_disk },
+  { "part_expand_gpt", guestfs_int_lua_part_expand_gpt },
   { "part_get_bootable", guestfs_int_lua_part_get_bootable },
+  { "part_get_disk_guid", guestfs_int_lua_part_get_disk_guid },
   { "part_get_gpt_guid", guestfs_int_lua_part_get_gpt_guid },
   { "part_get_gpt_type", guestfs_int_lua_part_get_gpt_type },
   { "part_get_mbr_id", guestfs_int_lua_part_get_mbr_id },
@@ -16800,6 +17209,8 @@ static luaL_Reg methods[] = {
   { "part_init", guestfs_int_lua_part_init },
   { "part_list", guestfs_int_lua_part_list },
   { "part_set_bootable", guestfs_int_lua_part_set_bootable },
+  { "part_set_disk_guid", guestfs_int_lua_part_set_disk_guid },
+  { "part_set_disk_guid_random", guestfs_int_lua_part_set_disk_guid_random },
   { "part_set_gpt_guid", guestfs_int_lua_part_set_gpt_guid },
   { "part_set_gpt_type", guestfs_int_lua_part_set_gpt_type },
   { "part_set_mbr_id", guestfs_int_lua_part_set_mbr_id },
@@ -16844,6 +17255,7 @@ static luaL_Reg methods[] = {
   { "scrub_device", guestfs_int_lua_scrub_device },
   { "scrub_file", guestfs_int_lua_scrub_file },
   { "scrub_freespace", guestfs_int_lua_scrub_freespace },
+  { "selinux_relabel", guestfs_int_lua_selinux_relabel },
   { "set_append", guestfs_int_lua_set_append },
   { "set_attach_method", guestfs_int_lua_set_attach_method },
   { "set_autosync", guestfs_int_lua_set_autosync },

@@ -636,10 +636,10 @@ and generate_python_py () =
 \"\"\"Python bindings for libguestfs
 
 import guestfs
-g = guestfs.GuestFS (python_return_dict=True)
-g.add_drive_opts (\"guest.img\", format=\"raw\")
-g.launch ()
-parts = g.list_partitions ()
+g = guestfs.GuestFS(python_return_dict=True)
+g.add_drive_opts(\"guest.img\", format=\"raw\")
+g.launch()
+parts = g.list_partitions()
 
 The guestfs module provides a Python binding to the libguestfs API
 for examining and modifying virtual machine disk images.
@@ -669,14 +669,14 @@ sequence of calls:
 
 # Create the handle, call add_drive* at least once, and possibly
 # several times if the guest has multiple block devices:
-g = guestfs.GuestFS ()
-g.add_drive_opts (\"guest.img\", format=\"raw\")
+g = guestfs.GuestFS()
+g.add_drive_opts(\"guest.img\", format=\"raw\")
 
 # Launch the qemu subprocess and wait for it to become ready:
-g.launch ()
+g.launch()
 
 # Now you can issue commands, for example:
-logvols = g.lvs ()
+logvols = g.lvs()
 
 \"\"\"
 
@@ -694,18 +694,20 @@ import libguestfsmod
   pr "\n";
   pr "\
 
-def event_to_string (events):
+def event_to_string(events):
     \"\"\"Return a printable string from an event or event bitmask\"\"\"
-    return libguestfsmod.event_to_string (events)
+    return libguestfsmod.event_to_string(events)
+
 
 class ClosedHandle(ValueError):
     pass
 
+
 class GuestFS(object):
     \"\"\"Instances of this class are libguestfs API handles.\"\"\"
 
-    def __init__ (self, python_return_dict=False,
-                  environment=True, close_on_exit=True):
+    def __init__(self, python_return_dict=False,
+                 environment=True, close_on_exit=True):
         \"\"\"Create a new libguestfs handle.
 
         Note about \"python_return_dict\" flag:
@@ -728,23 +730,23 @@ class GuestFS(object):
         self._python_return_dict = python_return_dict
 
         # If we don't do this, the program name is always set to 'python'.
-        program = os.path.basename (sys.argv[0])
-        libguestfsmod.set_program (self._o, program)
+        program = os.path.basename(sys.argv[0])
+        libguestfsmod.set_program(self._o, program)
 
-    def __del__ (self):
+    def __del__(self):
         if self._o:
-            libguestfsmod.close (self._o)
+            libguestfsmod.close(self._o)
 
-    def _check_not_closed (self):
+    def _check_not_closed(self):
         if not self._o:
-            raise ClosedHandle (\"GuestFS: method called on closed handle\")
+            raise ClosedHandle(\"GuestFS: method called on closed handle\")
 
-    def _maybe_convert_to_dict (self, r):
-        if self._python_return_dict == True:
-            r = dict (r)
+    def _maybe_convert_to_dict(self, r):
+        if self._python_return_dict:
+            r = dict(r)
         return r
 
-    def close (self):
+    def close(self):
         \"\"\"Explicitly close the guestfs handle.
 
         The handle is closed implicitly when its reference count goes
@@ -755,11 +757,11 @@ class GuestFS(object):
         any method on the handle (except the implicit call to
         __del__ which happens when the final reference is cleaned up).
         \"\"\"
-        self._check_not_closed ()
-        libguestfsmod.close (self._o)
+        self._check_not_closed()
+        libguestfsmod.close(self._o)
         self._o = None
 
-    def set_event_callback (self, cb, event_bitmask):
+    def set_event_callback(self, cb, event_bitmask):
         \"\"\"Register an event callback.
 
         Register \"cb\" as a callback function for all of the
@@ -781,26 +783,32 @@ class GuestFS(object):
         \"guestfs_set_event_callback\" in guestfs(3) before using
         this function.
         \"\"\"
-        self._check_not_closed ()
-        return libguestfsmod.set_event_callback (self._o, cb, event_bitmask)
+        self._check_not_closed()
+        return libguestfsmod.set_event_callback(self._o, cb, event_bitmask)
 
-    def delete_event_callback (self, event_handle):
+    def delete_event_callback(self, event_handle):
         \"\"\"Delete an event callback.\"\"\"
-        self._check_not_closed ()
-        libguestfsmod.delete_event_callback (self._o, event_handle)
+        self._check_not_closed()
+        libguestfsmod.delete_event_callback(self._o, event_handle)
 
 ";
+
+  let map_join f l =
+    String.concat "" (List.map f l)
+  in
 
   List.iter (
     fun f ->
       let ret, args, optargs = f.style in
-      pr "    def %s (self" f.name;
-      List.iter (fun arg -> pr ", %s" (name_of_argt arg)) args;
-      List.iter (
-        fun optarg ->
-          pr ", %s=None" (name_of_optargt optarg)
-      ) optargs;
-      pr "):\n";
+      let len_name = String.length f.name in
+      let decl_string =
+        "self" ^
+        map_join (fun arg ->sprintf ", %s" (name_of_argt arg))
+          args ^
+        map_join (fun optarg -> sprintf ", %s=None" (name_of_optargt optarg))
+          optargs in
+      pr "    def %s(%s):\n"
+        f.name (indent_python decl_string (9 + len_name) 78);
 
       if is_documented f then (
         let doc = replace_str f.longdesc "C<guestfs_" "C<g." in
@@ -832,7 +840,25 @@ class GuestFS(object):
             doc ^ sprintf "\n\nThis function depends on the feature C<%s>.  See also C<g.feature-available>." opt in
         let doc = pod2text ~width:60 f.name doc in
         let doc = List.map (fun line -> replace_str line "\\" "\\\\") doc in
-        let doc = String.concat "\n        " doc in
+        let doc =
+          match doc with
+          | [] -> ""
+          | [line] -> line
+          | hd :: tl ->
+            let endpos = List.length tl - 1 in
+            (* Add indentation spaces, but only if the line is not empty or
+             * it is not the last one (since there will be the 3 dobule-quotes
+             * at the end.
+             *)
+            let lines =
+              mapi (
+                fun lineno line ->
+                  if line = "" && lineno <> endpos then
+                    ""
+                  else
+                    "        " ^ line
+              ) tl in
+            hd ^ "\n" ^ (String.concat "\n" lines) in
         pr "        \"\"\"%s\"\"\"\n" doc;
       );
       (* Callers might pass in iterables instead of plain lists;
@@ -846,22 +872,24 @@ class GuestFS(object):
         | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
         | BufferIn _ | GUID _ -> ()
         | StringList n | DeviceList n | FilenameList n ->
-          pr "        %s = list (%s)\n" n n
+          pr "        %s = list(%s)\n" n n
         | Pointer (_, n) ->
           pr "        %s = %s.c_pointer()\n" n n
       ) args;
-      pr "        self._check_not_closed ()\n";
-      pr "        r = libguestfsmod.%s (self._o" f.name;
-      List.iter (fun arg -> pr ", %s" (name_of_argt arg))
-        (args @ args_of_optargs optargs);
-      pr ")\n";
+      pr "        self._check_not_closed()\n";
+      let function_string =
+        "self._o" ^
+        map_join (fun arg -> sprintf ", %s" (name_of_argt arg))
+          (args @ args_of_optargs optargs) in
+      pr "        r = libguestfsmod.%s(%s)\n"
+        f.name (indent_python function_string (27 + len_name) 78);
 
       (* For RHashtable, if self._python_return_dict=True then we
        * have to convert the result to a dict.
        *)
       (match ret with
       | RHashtable _ ->
-        pr "        r = self._maybe_convert_to_dict (r)\n";
+        pr "        r = self._maybe_convert_to_dict(r)\n";
       | _ -> ()
       );
 
@@ -874,3 +902,23 @@ class GuestFS(object):
           pr "    %s = %s\n\n" alias f.name
       ) f.non_c_aliases
   ) external_functions_sorted
+
+and indent_python str indent columns =
+  let rec loop str endpos =
+    let len = String.length str in
+    if len + indent > columns then
+      try
+        let pos = String.rindex_from str endpos ',' in
+        if pos + indent > columns then
+          loop str (pos - 1)
+        else (
+          let rest = String.sub str (pos + 2) (len - pos - 2) in
+          String.sub str 0 pos :: loop rest (String.length rest - 1)
+        )
+      with Not_found ->
+        [str]
+    else
+      [str]
+  in
+  let lines = loop str (String.length str - 1) in
+  String.concat (",\n" ^ String.make indent ' ') lines

@@ -77,14 +77,7 @@ let parse_conf file =
           try
             (match (List.assoc ("format", None) fields) with
             | "native" | "" -> FormatNative
-            | "simplestreams" as fmt ->
-              if not (Yajl.yajl_is_available ()) then (
-                if verbose () then (
-                  eprintf (f_"%s: repository type '%s' not supported (missing YAJL support), skipping it\n") prog fmt;
-                );
-                invalid_arg fmt
-              ) else
-                FormatSimpleStreams
+            | "simplestreams" -> FormatSimpleStreams
             | fmt ->
                debug "unknown repository type '%s' in %s, skipping it" fmt file;
                invalid_arg fmt

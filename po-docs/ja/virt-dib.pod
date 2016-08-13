@@ -72,6 +72,14 @@ Right now this option does nothing more than setting the C<ARCH> environment
 variable for the elements, and it's up to them to produce an image for the
 requested architecture.
 
+=item B<--colors>
+
+=item B<--colours>
+
+Use ANSI colour sequences to colourize messages.  This is the default when
+the output is a tty.  If the output of the program is redirected to a file,
+ANSI colour sequences are disabled unless you use this option.
+
 =item B<--debug> LEVEL
 
 Set the debug level to C<LEVEL>, which is a non-negative integer number.
@@ -82,10 +90,31 @@ increases the debugging information printed out.  Specifically, this sets
 the C<DIB_DEBUG_TRACE>, and any value E<gt> C<0> enables tracing in the
 scripts executed.
 
+=item B<--docker-target> TARGET
+
+Set the repository and tag for docker.
+
+This is used only when the formats include C<docker>, and it is required in
+that case.
+
 =item B<--drive> DISK
 
 Add the specified disk to be used as helper drive where to cache files of
 the elements, like disk images, distribution packages, etc.
+
+See L</HELPER DRIVE>.
+
+=item B<--drive-format> raw
+
+=item B<--drive-format> qcow2
+
+Specify the format of the helper drive.  If this flag is not given then it
+is auto-detected from the drive itself.
+
+If working with untrusted raw-format guest disk images, you should ensure
+the format is always specified.
+
+This option is used only if I<--drive> is specified.
 
 See L</HELPER DRIVE>.
 
@@ -156,6 +185,16 @@ Set the list of output formats, separating them with comma.
 Supported formats are:
 
 =over 4
+
+=item C<docker>
+
+Import the image to docker, running B<docker import>.  The target for the
+image B<must> be specified using I<--docker-target>.
+
+Please note this operation usually requires the docker service to be
+enabled, otherwise it will fail.  Furthermore, B<docker> is run using
+L<sudo(8)>, so make sure the user has the permissions to run at least
+B<docker>.
 
 =item C<qcow2> (enabled by default)
 
@@ -543,28 +582,6 @@ Furthermore, other than the libguestfs own environment variables (see
 L<guestfs(3)/ENVIRONMENT VARIABLES>), virt-dib does not read any other
 environment variable: this means that all the options and behaviour changes
 are specified solely using command line arguments
-
-=item 
-
-C<extra-data.d> scripts run in the host environment, before all the other
-ones (even C<root.d>); this means that, depending on the configuration for
-the elements, some of them may fail due to missing content (usually
-directories) in C<TMP_HOOKS_PATH>.
-
-Workarounds for this may be either:
-
-=over 4
-
-=item 
-
-fix the C<extra-data.d> scripts to create the missing directories
-
-=item 
-
-create (and use) a simple element with a C<extra-data.d> script named
-e.g. F<00-create-missing-dirs> to create the missing directories
-
-=back
 
 =item 
 

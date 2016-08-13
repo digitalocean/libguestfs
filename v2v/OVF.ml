@@ -42,60 +42,37 @@ let iso_time =
     (tm.tm_year + 1900) (tm.tm_mon + 1) tm.tm_mday
     tm.tm_hour tm.tm_min tm.tm_sec
 
-(* Guess vmtype based on the guest inspection data.  This is used
- * when the [--vmtype] parameter is NOT passed.
- *)
+(* Guess vmtype based on the guest inspection data. *)
 let get_vmtype = function
-  | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
+  (* Special cases for RHEL 3 & RHEL 4. *)
+  | { i_type = "linux"; i_distro = "rhel"; i_major_version = (3|4);
       i_product_name = product }
-      when major >= 5 && String.find product "Server" >= 0 ->
-    Server
+       when String.find product "ES" >= 0 ->
+     `Server
 
-  | { i_type = "linux"; i_distro = "rhel"; i_major_version = major }
-      when major >= 5 ->
-    Desktop
-
-  | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
+  | { i_type = "linux"; i_distro = "rhel"; i_major_version = (3|4);
       i_product_name = product }
-      when major >= 3 && String.find product "ES" >= 0 ->
-    Server
+       when String.find product "AS" >= 0 ->
+     `Server
 
-  | { i_type = "linux"; i_distro = "rhel"; i_major_version = major;
-      i_product_name = product }
-      when major >= 3 && String.find product "AS" >= 0 ->
-    Server
+  | { i_type = "linux"; i_distro = "rhel"; i_major_version = (3|4) } ->
+     `Desktop
 
-  | { i_type = "linux"; i_distro = "rhel"; i_major_version = major }
-      when major >= 3 ->
-    Desktop
+  (* For Windows (and maybe Linux in future, but it is not set now),
+   * use the i_product_variant field.
+   *)
+  | { i_product_variant = ("Server"|"Server Core"|"Embedded") } -> `Server
+  | { i_product_variant = "Client" } -> `Desktop
 
-  | { i_type = "linux"; i_distro = "fedora" } -> Desktop
+  (* If the product name has "Server" or "Desktop" in it, use that. *)
+  | { i_product_name = product } when String.find product "Server" >= 0 ->
+     `Server
 
-  | { i_type = "windows"; i_major_version = 5; i_minor_version = 1 } ->
-    Desktop                            (* Windows XP *)
+  | { i_product_name = product } when String.find product "Desktop" >= 0 ->
+     `Desktop
 
-  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
-      i_product_name = product } when String.find product "XP" >= 0 ->
-    Desktop                            (* Windows XP *)
-
-  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2 } ->
-    Server                             (* Windows 2003 *)
-
-  | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
-      i_product_name = product } when String.find product "Server" >= 0 ->
-    Server                             (* Windows 2008 *)
-
-  | { i_type = "windows"; i_major_version = 6; i_minor_version = 0 } ->
-    Desktop                            (* Vista *)
-
-  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
-      i_product_name = product } when String.find product "Server" >= 0 ->
-    Server                             (* Windows 2008R2 *)
-
-  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1 } ->
-    Server                             (* Windows 7 *)
-
-  | _ -> Server
+  (* Otherwise return server, a safe choice. *)
+  | _ -> `Server
 
 (* Determine the ovf:OperatingSystemSection_Type from libguestfs
  * inspection.  See ovirt-engine sources, file:
@@ -271,16 +248,13 @@ let create_meta_files output_alloc sd_uuid image_uuids targets =
 
 (* Create the OVF file. *)
 let rec create_ovf source targets guestcaps inspect
-    output_alloc vmtype sd_uuid image_uuids vol_uuids vm_uuid =
+    output_alloc sd_uuid image_uuids vol_uuids vm_uuid =
   assert (List.length targets = List.length vol_uuids);
 
   let memsize_mb = source.s_memory /^ 1024L /^ 1024L in
 
-  let vmtype =
-    match vmtype with
-      | Some vmtype -> vmtype
-      | None -> get_vmtype inspect in
-  let vmtype = match vmtype with Desktop -> "0" | Server -> "1" in
+  let vmtype = get_vmtype inspect in
+  let vmtype = match vmtype with `Desktop -> "0" | `Server -> "1" in
   let ostype = get_ostype inspect in
 
   let ovf : doc =
@@ -422,7 +396,14 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
   (* Iterate over the disks, adding them to the OVF document. *)
   iteri (
     fun i ({ target_overlay = ov } as t, image_uuid, vol_uuid) ->
-      let is_boot_drive = i == 0 in
+      (* This sets the boot order to boot the first disk first.  This
+       * isn't generally correct.  We should copy over the boot order
+       * from the source hypervisor.  See long discussion in
+       * https://bugzilla.redhat.com/show_bug.cgi?id=1308535 for
+       * what we should be doing.  (XXX)
+       *)
+      let is_bootable_drive = i == 0 in
+      let boot_order = i+1 in
 
       let fileref = sprintf "%s/%s" image_uuid vol_uuid in
 
@@ -480,9 +461,11 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
           "ovf:format", "http://en.wikipedia.org/wiki/Byte"; (* wtf? *)
           "ovf:disk-interface",
           (match guestcaps.gcaps_block_bus with
-          | Virtio_blk -> "VirtIO" | IDE -> "IDE");
+          | Virtio_blk -> "VirtIO"
+          | Virtio_SCSI -> "VirtIO_SCSI"
+          | IDE -> "IDE");
           "ovf:disk-type", "System"; (* RHBZ#744538 *)
-          "ovf:boot", if is_boot_drive then "True" else "False";
+          "ovf:boot", if is_bootable_drive then "True" else "False";
         ] in
         (match actual_size_gb with
          | None -> ()
@@ -517,6 +500,9 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
           e "rasd:LastModified" [] [PCData iso_time];
           e "rasd:last_modified_date" [] [PCData iso_time];
         ] in
+        if is_bootable_drive then
+          push_back item_subnodes
+                    (e "BootOrder" [] [PCData (string_of_int boot_order)]);
 
         e "Item" [] !item_subnodes in
       append_child item virtualhardware_section;

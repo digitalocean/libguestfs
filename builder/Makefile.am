@@ -27,6 +27,7 @@ EXTRA_DIST = \
 	test-simplestreams/streams/v1/index.json \
 	test-simplestreams/streams/v1/net.cirros-cloud_released_download.json \
 	test-virt-builder.sh \
+	test-virt-builder-docs.sh \
 	test-virt-builder-list.sh \
 	test-virt-builder-list-simplestreams.sh \
 	test-virt-builder-planner.sh \
@@ -89,13 +90,6 @@ SOURCES_ML = \
 	builder.ml
 
 SOURCES_C = \
-	../mllib/fsync-c.c \
-	../mllib/uri-c.c \
-	../mllib/mkdtemp-c.c \
-	../customize/perl_edit-c.c \
-	../customize/crypt-c.c \
-	../fish/uri.c \
-	../fish/file-edit.c \
 	index-scan.c \
 	index-struct.c \
 	index-parse.c \
@@ -130,32 +124,7 @@ virt_builder_CFLAGS = \
 	$(LIBXML2_CFLAGS) \
 	$(YAJL_CFLAGS)
 
-BOBJECTS = \
-	$(top_builddir)/mllib/libdir.cmo \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/fsync.cmo \
-	$(top_builddir)/mllib/planner.cmo \
-	$(top_builddir)/mllib/regedit.cmo \
-	$(top_builddir)/mllib/JSON.cmo \
-	$(top_builddir)/mllib/URI.cmo \
-	$(top_builddir)/mllib/mkdtemp.cmo \
-	$(top_builddir)/mllib/curl.cmo \
-	$(top_builddir)/customize/customize_utils.cmo \
-	$(top_builddir)/customize/urandom.cmo \
-	$(top_builddir)/customize/random_seed.cmo \
-	$(top_builddir)/customize/hostname.cmo \
-	$(top_builddir)/customize/timezone.cmo \
-	$(top_builddir)/customize/firstboot.cmo \
-	$(top_builddir)/customize/perl_edit.cmo \
-	$(top_builddir)/customize/crypt.cmo \
-	$(top_builddir)/customize/password.cmo \
-	$(top_builddir)/customize/ssh_key.cmo \
-	$(top_builddir)/customize/subscription_manager.cmo \
-	$(top_builddir)/customize/customize_cmdline.cmo \
-	$(top_builddir)/customize/customize_run.cmo \
-	$(SOURCES_ML:.ml=.cmo)
+BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
@@ -191,15 +160,17 @@ OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
-BEST    = c
-OCAMLLINKFLAGS = mlguestfs.cma -custom
 else
 OBJECTS = $(XOBJECTS)
-BEST    = opt
-OCAMLLINKFLAGS = mlguestfs.cmxa
 endif
 
-virt_builder_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
+OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) customize.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+
+virt_builder_DEPENDENCIES = \
+	$(OBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	../customize/customize.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 virt_builder_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
@@ -268,21 +239,24 @@ yajl_tests_THEOBJECTS = $(yajl_tests_BOBJECTS)
 yajl_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 endif
 
-yajl_tests_DEPENDENCIES = $(yajl_tests_THEOBJECTS) $(top_srcdir)/ocaml-link.sh
+yajl_tests_DEPENDENCIES = \
+	$(yajl_tests_THEOBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	../customize/customize.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 yajl_tests_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) $(OCAMLLINKFLAGS) \
 	  $(yajl_tests_THEOBJECTS) -o $@
 
 TESTS = \
+	test-virt-builder-docs.sh \
 	test-virt-builder-list.sh \
 	test-virt-index-validate.sh \
 	$(SLOW_TESTS)
 check_PROGRAMS =
 
-if HAVE_YAJL
 TESTS += test-virt-builder-list-simplestreams.sh
-endif
 
 if ENABLE_APPLIANCE
 TESTS += test-virt-builder.sh

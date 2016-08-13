@@ -20,6 +20,7 @@ open Printf
 
 open Common_utils
 open Common_gettext.Gettext
+open Getopt.OptionName
 
 module G = Guestfs
 
@@ -182,37 +183,29 @@ let main () =
     let sparse = ref true in
     let unknown_fs_mode = ref "warn" in
 
-    let ditto = " -\"-" in
     let argspec = [
-      "--align-first", Arg.Set_string align_first, s_"never|always|auto" ^ " " ^ s_"Align first partition (default: auto)";
-      "--alignment", Arg.Set_int alignment,   s_"sectors" ^ " " ^ s_"Set partition alignment (default: 128 sectors)";
-      "--no-copy-boot-loader", Arg.Clear copy_boot_loader, " " ^ s_"Don't copy boot loader";
-      "-d",        Arg.Unit set_verbose,      " " ^ s_"Enable debugging messages";
-      "--debug",   Arg.Unit set_verbose,      ditto;
-      "--delete",  Arg.String (add deletes),  s_"part" ^ " " ^ s_"Delete partition";
-      "--expand",  Arg.String set_expand,     s_"part" ^ " " ^ s_"Expand partition";
-      "--no-expand-content", Arg.Clear expand_content, " " ^ s_"Don't expand content";
-      "--no-extra-partition", Arg.Clear extra_partition, " " ^ s_"Don't create extra partition";
-      "--format",  Arg.Set_string format,     s_"format" ^ " " ^ s_"Format of input disk";
-      "--ignore",  Arg.String (add ignores),  s_"part" ^ " " ^ s_"Ignore partition";
-      "--lv-expand", Arg.String (add lv_expands), s_"lv" ^ " " ^ s_"Expand logical volume";
-      "--LV-expand", Arg.String (add lv_expands), s_"lv" ^ ditto;
-      "--lvexpand", Arg.String (add lv_expands), s_"lv" ^ ditto;
-      "--LVexpand", Arg.String (add lv_expands), s_"lv" ^ ditto;
-      "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
-      "-n",        Arg.Set dryrun,            " " ^ s_"Don't perform changes";
-      "--dry-run", Arg.Set dryrun,            " " ^ s_"Don't perform changes";
-      "--dryrun",  Arg.Set dryrun,            ditto;
-      "--ntfsresize-force", Arg.Set ntfsresize_force, " " ^ s_"Force ntfsresize";
-      "--output-format", Arg.Set_string output_format, s_"format" ^ " " ^ s_"Format of output disk";
-      "--resize",  Arg.String (add resizes),  s_"part=size" ^ " " ^ s_"Resize partition";
-      "--resize-force", Arg.String (add resizes_force), s_"part=size" ^ " " ^ s_"Forcefully resize partition";
-      "--shrink",  Arg.String set_shrink,     s_"part" ^ " " ^ s_"Shrink partition";
-      "--no-sparse", Arg.Clear sparse,        " " ^ s_"Turn off sparse copying";
-      "--unknown-filesystems", Arg.Set_string unknown_fs_mode,
-                                              s_"ignore|warn|error" ^ " " ^ s_"Behaviour on expand unknown filesystems (default: warn)";
+      [ L"align-first" ], Getopt.Set_string (s_"never|always|auto", align_first), s_"Align first partition (default: auto)";
+      [ L"alignment" ], Getopt.Set_int (s_"sectors", alignment),   s_"Set partition alignment (default: 128 sectors)";
+      [ L"no-copy-boot-loader" ], Getopt.Clear copy_boot_loader, s_"Don't copy boot loader";
+      [ S 'd'; L"debug" ],        Getopt.Unit set_verbose,      s_"Enable debugging messages";
+      [ L"delete" ],  Getopt.String (s_"part", add deletes),  s_"Delete partition";
+      [ L"expand" ],  Getopt.String (s_"part", set_expand),     s_"Expand partition";
+      [ L"no-expand-content" ], Getopt.Clear expand_content, s_"Don't expand content";
+      [ L"no-extra-partition" ], Getopt.Clear extra_partition, s_"Don't create extra partition";
+      [ L"format" ],  Getopt.Set_string (s_"format", format),     s_"Format of input disk";
+      [ L"ignore" ],  Getopt.String (s_"part", add ignores),  s_"Ignore partition";
+      [ L"lv-expand"; L"LV-expand"; L"lvexpand"; L"LVexpand" ], Getopt.String (s_"lv", add lv_expands), s_"Expand logical volume";
+      [ L"machine-readable" ], Getopt.Set machine_readable, s_"Make output machine readable";
+      [ S 'n'; L"dry-run"; L"dryrun" ],        Getopt.Set dryrun,            s_"Don't perform changes";
+      [ L"ntfsresize-force" ], Getopt.Set ntfsresize_force, s_"Force ntfsresize";
+      [ L"output-format" ], Getopt.Set_string (s_"format", output_format), s_"Format of output disk";
+      [ L"resize" ],  Getopt.String (s_"part=size", add resizes),  s_"Resize partition";
+      [ L"resize-force" ], Getopt.String (s_"part=size", add resizes_force), s_"Forcefully resize partition";
+      [ L"shrink" ],  Getopt.String (s_"part", set_shrink),     s_"Shrink partition";
+      [ L"no-sparse" ], Getopt.Clear sparse,        s_"Turn off sparse copying";
+      [ L"unknown-filesystems" ], Getopt.Set_string (s_"ignore|warn|error", unknown_fs_mode),
+                                              s_"Behaviour on expand unknown filesystems (default: warn)";
     ] in
-    let argspec = set_standard_options argspec in
     let disks = ref [] in
     let anon_fun s = push_front s disks in
     let usage_msg =
@@ -223,7 +216,8 @@ A short summary of the options is given below.  For detailed help please
 read the man page virt-resize(1).
 ")
         prog in
-    Arg.parse argspec anon_fun usage_msg;
+    let opthandle = create_standard_options argspec ~anon_fun usage_msg in
+    Getopt.parse opthandle;
 
     if verbose () then (
       printf "command line:";
@@ -404,6 +398,13 @@ read the man page virt-resize(1).
     | _ ->
       error (f_"%s: unknown partition table type\nvirt-resize only supports MBR (DOS) and GPT partition tables.")
         (fst infile) in
+
+  let disk_guid =
+    match parttype with
+    | MBR -> None
+    | GPT ->
+      try Some (g#part_get_disk_guid "/dev/sda")
+      with G.Error _ -> None in
 
   (* Build a data structure describing the source disk's partition layout. *)
   let get_partition_content =
@@ -973,7 +974,10 @@ read the man page virt-resize(1).
     let last_error = ref "" in
     let rec initialize_partition_table g attempts =
       let ok =
-        try g#part_init "/dev/sdb" parttype_string; true
+        try
+          g#part_init "/dev/sdb" parttype_string;
+          may (g#part_set_disk_guid "/dev/sdb") disk_guid;
+          true
         with G.Error error -> last_error := error; false in
       if ok then g, true
       else if attempts > 0 then (

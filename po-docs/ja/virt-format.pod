@@ -35,11 +35,11 @@ filesystems, etc.  The most commonly used options are:
 
 =over 4
 
-=item I<--filesystem=[ext3|ntfs|vfat|...]>
+=item B<--filesystem=[ext3|ntfs|vfat|...]>
 
 Create an empty filesystem (C<ext3>, C<ntfs> etc) inside the partition.
 
-=item I<--lvm[=/dev/VG/LV]>
+=item B<--lvm[=/dev/VG/LV]>
 
 Create a Linux LVM2 logical volume on the disk.  When used with
 I<--filesystem>, the filesystem is created inside the LV.
@@ -71,9 +71,9 @@ I<ファイル>、ディスクイメージ、ホストのパーティション�
 
 B<ディスクにある既存のデータはすべて削除されます。>
 
-=item B<-a URI>
+=item B<-a> URI
 
-=item B<--add URI>
+=item B<--add> URI
 
 リモートディスクを追加します。 L<guestfish(1)/リモートストレージの追加> 参照。
 
@@ -108,7 +108,7 @@ auto-detection for F<another.img>.
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
 
-=item B<--label=LABEL>
+=item B<--label=>LABEL
 
 Set the filesystem label.
 

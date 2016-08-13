@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <errno.h>
+#include <error.h>
 #include <locale.h>
 #include <assert.h>
 #include <libintl.h>
@@ -115,10 +116,8 @@ main (int argc, char *argv[])
   int option_index;
 
   g = guestfs_create ();
-  if (g == NULL) {
-    fprintf (stderr, _("guestfs_create: failed to create handle\n"));
-    exit (EXIT_FAILURE);
-  }
+  if (g == NULL)
+    error (EXIT_FAILURE, errno, "guestfs_create");
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -136,12 +135,10 @@ main (int argc, char *argv[])
         echo_keys = 1;
       } else if (STREQ (long_options[option_index].name, "format")) {
         OPTION_format;
-      } else {
-        fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name,
-                 long_options[option_index].name, option_index);
-        exit (EXIT_FAILURE);
-      }
+      } else
+        error (EXIT_FAILURE, 0,
+               _("unknown long option: %s (%d)"),
+               long_options[option_index].name, option_index);
       break;
 
     case 'a':
@@ -190,24 +187,18 @@ main (int argc, char *argv[])
       if (strchr (argv[optind], '/') ||
           access (argv[optind], F_OK) == 0) { /* simulate -a option */
         drv = calloc (1, sizeof (struct drv));
-        if (!drv) {
-          perror ("calloc");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv)
+          error (EXIT_FAILURE, errno, "calloc");
         drv->type = drv_a;
         drv->a.filename = strdup (argv[optind]);
-        if (!drv->a.filename) {
-          perror ("strdup");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv->a.filename)
+          error (EXIT_FAILURE, errno, "strdup");
         drv->next = drvs;
         drvs = drv;
       } else {                  /* simulate -d option */
         drv = calloc (1, sizeof (struct drv));
-        if (!drv) {
-          perror ("calloc");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv)
+          error (EXIT_FAILURE, errno, "calloc");
         drv->type = drv_d;
         drv->d.guest = argv[optind];
         drv->next = drvs;

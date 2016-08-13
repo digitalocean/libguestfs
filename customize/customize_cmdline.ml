@@ -29,6 +29,7 @@ open Printf
 
 open Common_utils
 open Common_gettext.Gettext
+open Getopt.OptionName
 
 open Customize_utils
 
@@ -93,6 +94,8 @@ and op = [
       (* --timezone TIMEZONE *)
   | `Touch of string
       (* --touch FILE *)
+  | `UninstallPackages of string list
+      (* --uninstall PKG,PKG.. *)
   | `Update
       (* --update *)
   | `Upload of string * string
@@ -111,7 +114,7 @@ and flags = {
       (* --sm-credentials SELECTOR *)
 }
 
-type argspec = Arg.key * Arg.spec * Arg.doc
+type argspec = Getopt.keys * Getopt.spec * Getopt.doc
 
 let rec argspec () =
   let ops = ref [] in
@@ -154,281 +157,309 @@ let rec argspec () =
 
   let rec argspec = [
     (
-      "--chmod",
-      Arg.String (
+      [ L"chmod" ],
+      Getopt.String (
+        s_"PERMISSIONS:FILE",
         fun s ->
           let p = split_string_pair "chmod" s in
           push_front (`Chmod p) ops
       ),
-      s_"PERMISSIONS:FILE" ^ " " ^ s_"Change the permissions of a file"
+      s_"Change the permissions of a file"
     ),
     Some "PERMISSIONS:FILE", "Change the permissions of C<FILE> to C<PERMISSIONS>.\n\nI<Note>: C<PERMISSIONS> by default would be decimal, unless you prefix\nit with C<0> to get octal, ie. use C<0700> not C<700>.";
     (
-      "--commands-from-file",
-      Arg.String (
+      [ L"commands-from-file" ],
+      Getopt.String (
+        s_"FILENAME",
         fun s ->
           customize_read_from_file s;
           push_front (`CommandsFromFile s) ops
       ),
-      s_"FILENAME" ^ " " ^ s_"Read customize commands from file"
+      s_"Read customize commands from file"
     ),
     Some "FILENAME", "Read the customize commands from a file, one (and its arguments)\neach line.\n\nEach line contains a single customization command and its arguments,\nfor example:\n\n delete /some/file\n install some-package\n password some-user:password:its-new-password\n\nEmpty lines are ignored, and lines starting with C<#> are comments\nand are ignored as well.  Furthermore, arguments can be spread across\nmultiple lines, by adding a C<\\> (continuation character) at the of\na line, for example\n\n edit /some/file:\\\n   s/^OPT=.*/OPT=ok/\n\nThe commands are handled in the same order as they are in the file,\nas if they were specified as I<--delete /some/file> on the command\nline.";
     (
-      "--copy",
-      Arg.String (
+      [ L"copy" ],
+      Getopt.String (
+        s_"SOURCE:DEST",
         fun s ->
           let p = split_string_pair "copy" s in
           push_front (`Copy p) ops
       ),
-      s_"SOURCE:DEST" ^ " " ^ s_"Copy files in disk image"
+      s_"Copy files in disk image"
     ),
     Some "SOURCE:DEST", "Copy files or directories recursively inside the guest.\n\nWildcards cannot be used.";
     (
-      "--copy-in",
-      Arg.String (
+      [ L"copy-in" ],
+      Getopt.String (
+        s_"LOCALPATH:REMOTEDIR",
         fun s ->
           let p = split_string_pair "copy-in" s in
           push_front (`CopyIn p) ops
       ),
-      s_"LOCALPATH:REMOTEDIR" ^ " " ^ s_"Copy local files or directories into image"
+      s_"Copy local files or directories into image"
     ),
     Some "LOCALPATH:REMOTEDIR", "Copy local files or directories recursively into the disk image,\nplacing them in the directory C<REMOTEDIR> (which must exist).\n\nWildcards cannot be used.";
     (
-      "--delete",
-      Arg.String (fun s -> push_front (`Delete s) ops),
-      s_"PATH" ^ " " ^ s_"Delete a file or directory"
+      [ L"delete" ],
+      Getopt.String (s_"PATH", fun s -> push_front (`Delete s) ops),
+      s_"Delete a file or directory"
     ),
-    Some "PATH", "Delete a file from the guest.  Or delete a directory (and all its\ncontents, recursively).\n\nSee also: I<--upload>, I<--scrub>.";
+    Some "PATH", "Delete a file from the guest.  Or delete a directory (and all its\ncontents, recursively).\n\nYou can use shell glob characters in the specified path.  Be careful\nto escape glob characters from the host shell, if that is required.\nFor example:\n\n virt-customize --delete '/var/log/*.log'.\n\nSee also: I<--upload>, I<--scrub>.";
     (
-      "--edit",
-      Arg.String (
+      [ L"edit" ],
+      Getopt.String (
+        s_"FILE:EXPR",
         fun s ->
           let p = split_string_pair "edit" s in
           push_front (`Edit p) ops
       ),
-      s_"FILE:EXPR" ^ " " ^ s_"Edit file using Perl expression"
+      s_"Edit file using Perl expression"
     ),
     Some "FILE:EXPR", "Edit C<FILE> using the Perl expression C<EXPR>.\n\nBe careful to properly quote the expression to prevent it from\nbeing altered by the shell.\n\nNote that this option is only available when Perl 5 is installed.\n\nSee L<virt-edit(1)/NON-INTERACTIVE EDITING>.";
     (
-      "--firstboot",
-      Arg.String (fun s -> push_front (`FirstbootScript s) ops),
-      s_"SCRIPT" ^ " " ^ s_"Run script at first guest boot"
+      [ L"firstboot" ],
+      Getopt.String (s_"SCRIPT", fun s -> push_front (`FirstbootScript s) ops),
+      s_"Run script at first guest boot"
     ),
     Some "SCRIPT", "Install C<SCRIPT> inside the guest, so that when the guest first boots\nup, the script runs (as root, late in the boot process).\n\nThe script is automatically chmod +x after installation in the guest.\n\nThe alternative version I<--firstboot-command> is the same, but it\nconveniently wraps the command up in a single line script for you.\n\nYou can have multiple I<--firstboot> options.  They run in the same\norder that they appear on the command line.\n\nPlease take a look at L<virt-builder(1)/FIRST BOOT SCRIPTS> for more\ninformation and caveats about the first boot scripts.\n\nSee also I<--run>.";
     (
-      "--firstboot-command",
-      Arg.String (fun s -> push_front (`FirstbootCommand s) ops),
-      s_"'CMD+ARGS'" ^ " " ^ s_"Run command at first guest boot"
+      [ L"firstboot-command" ],
+      Getopt.String (s_"'CMD+ARGS'", fun s -> push_front (`FirstbootCommand s) ops),
+      s_"Run command at first guest boot"
     ),
     Some "'CMD+ARGS'", "Run command (and arguments) inside the guest when the guest first\nboots up (as root, late in the boot process).\n\nYou can have multiple I<--firstboot> options.  They run in the same\norder that they appear on the command line.\n\nPlease take a look at L<virt-builder(1)/FIRST BOOT SCRIPTS> for more\ninformation and caveats about the first boot scripts.\n\nSee also I<--run>.";
     (
-      "--firstboot-install",
-      Arg.String (
+      [ L"firstboot-install" ],
+      Getopt.String (
+        s_"PKG,PKG..",
         fun s ->
           let ss = split_string_list s in
           push_front (`FirstbootPackages ss) ops
       ),
-      s_"PKG,PKG.." ^ " " ^ s_"Add package(s) to install at first boot"
+      s_"Add package(s) to install at first boot"
     ),
     Some "PKG,PKG..", "Install the named packages (a comma-separated list).  These are\ninstalled when the guest first boots using the guest's package manager\n(eg. apt, yum, etc.) and the guest's network connection.\n\nFor an overview on the different ways to install packages, see\nL<virt-builder(1)/INSTALLING PACKAGES>.";
     (
-      "--hostname",
-      Arg.String (fun s -> push_front (`Hostname s) ops),
-      s_"HOSTNAME" ^ " " ^ s_"Set the hostname"
+      [ L"hostname" ],
+      Getopt.String (s_"HOSTNAME", fun s -> push_front (`Hostname s) ops),
+      s_"Set the hostname"
     ),
     Some "HOSTNAME", "Set the hostname of the guest to C<HOSTNAME>.  You can use a\ndotted hostname.domainname (FQDN) if you want.";
     (
-      "--install",
-      Arg.String (
+      [ L"install" ],
+      Getopt.String (
+        s_"PKG,PKG..",
         fun s ->
           let ss = split_string_list s in
           push_front (`InstallPackages ss) ops
       ),
-      s_"PKG,PKG.." ^ " " ^ s_"Add package(s) to install"
+      s_"Add package(s) to install"
     ),
-    Some "PKG,PKG..", "Install the named packages (a comma-separated list).  These are\ninstalled during the image build using the guest's package manager\n(eg. apt, yum, etc.) and the host's network connection.\n\nFor an overview on the different ways to install packages, see\nL<virt-builder(1)/INSTALLING PACKAGES>.\n\nSee also I<--update>.";
+    Some "PKG,PKG..", "Install the named packages (a comma-separated list).  These are\ninstalled during the image build using the guest's package manager\n(eg. apt, yum, etc.) and the host's network connection.\n\nFor an overview on the different ways to install packages, see\nL<virt-builder(1)/INSTALLING PACKAGES>.\n\nSee also I<--update>, I<--uninstall>.";
     (
-      "--link",
-      Arg.String (
+      [ L"link" ],
+      Getopt.String (
+        s_"TARGET:LINK[:LINK..]",
         fun s ->
           let ss = split_links_list "link" s in
           push_front (`Link ss) ops
       ),
-      s_"TARGET:LINK[:LINK..]" ^ " " ^ s_"Create symbolic links"
+      s_"Create symbolic links"
     ),
     Some "TARGET:LINK[:LINK..]", "Create symbolic link(s) in the guest, starting at C<LINK> and\npointing at C<TARGET>.";
     (
-      "--mkdir",
-      Arg.String (fun s -> push_front (`Mkdir s) ops),
-      s_"DIR" ^ " " ^ s_"Create a directory"
+      [ L"mkdir" ],
+      Getopt.String (s_"DIR", fun s -> push_front (`Mkdir s) ops),
+      s_"Create a directory"
     ),
     Some "DIR", "Create a directory in the guest.\n\nThis uses S<C<mkdir -p>> so any intermediate directories are created,\nand it also works if the directory already exists.";
     (
-      "--move",
-      Arg.String (
+      [ L"move" ],
+      Getopt.String (
+        s_"SOURCE:DEST",
         fun s ->
           let p = split_string_pair "move" s in
           push_front (`Move p) ops
       ),
-      s_"SOURCE:DEST" ^ " " ^ s_"Move files in disk image"
+      s_"Move files in disk image"
     ),
     Some "SOURCE:DEST", "Move files or directories inside the guest.\n\nWildcards cannot be used.";
     (
-      "--password",
-      Arg.String (
+      [ L"password" ],
+      Getopt.String (
+        s_"USER:SELECTOR",
         fun s ->
           let user, sel = split_string_pair "password" s in
           let sel = Password.parse_selector sel in
           push_front (`Password (user, sel)) ops
       ),
-      s_"USER:SELECTOR" ^ " " ^ s_"Set user password"
+      s_"Set user password"
     ),
     Some "USER:SELECTOR", "Set the password for C<USER>.  (Note this option does I<not>\ncreate the user account).\n\nSee L<virt-builder(1)/USERS AND PASSWORDS> for the format of\nthe C<SELECTOR> field, and also how to set up user accounts.";
     (
-      "--root-password",
-      Arg.String (
+      [ L"root-password" ],
+      Getopt.String (
+        s_"SELECTOR",
         fun s ->
           let sel = Password.parse_selector s in
           push_front (`RootPassword sel) ops
       ),
-      s_"SELECTOR" ^ " " ^ s_"Set root password"
+      s_"Set root password"
     ),
     Some "SELECTOR", "Set the root password.\n\nSee L<virt-builder(1)/USERS AND PASSWORDS> for the format of\nthe C<SELECTOR> field, and also how to set up user accounts.\n\nNote: In virt-builder, if you I<don't> set I<--root-password>\nthen the guest is given a I<random> root password.";
     (
-      "--run",
-      Arg.String (fun s -> push_front (`Script s) ops),
-      s_"SCRIPT" ^ " " ^ s_"Run script in disk image"
+      [ L"run" ],
+      Getopt.String (s_"SCRIPT", fun s -> push_front (`Script s) ops),
+      s_"Run script in disk image"
     ),
     Some "SCRIPT", "Run the shell script (or any program) called C<SCRIPT> on the disk\nimage.  The script runs virtualized inside a small appliance, chrooted\ninto the guest filesystem.\n\nThe script is automatically chmod +x.\n\nIf libguestfs supports it then a limited network connection is\navailable but it only allows outgoing network connections.  You can\nalso attach data disks (eg. ISO files) as another way to provide data\n(eg. software packages) to the script without needing a network\nconnection (I<--attach>).  You can also upload data files (I<--upload>).\n\nYou can have multiple I<--run> options.  They run\nin the same order that they appear on the command line.\n\nSee also: I<--firstboot>, I<--attach>, I<--upload>.";
     (
-      "--run-command",
-      Arg.String (fun s -> push_front (`Command s) ops),
-      s_"'CMD+ARGS'" ^ " " ^ s_"Run command in disk image"
+      [ L"run-command" ],
+      Getopt.String (s_"'CMD+ARGS'", fun s -> push_front (`Command s) ops),
+      s_"Run command in disk image"
     ),
     Some "'CMD+ARGS'", "Run the command and arguments on the disk image.  The command runs\nvirtualized inside a small appliance, chrooted into the guest filesystem.\n\nIf libguestfs supports it then a limited network connection is\navailable but it only allows outgoing network connections.  You can\nalso attach data disks (eg. ISO files) as another way to provide data\n(eg. software packages) to the script without needing a network\nconnection (I<--attach>).  You can also upload data files (I<--upload>).\n\nYou can have multiple I<--run-command> options.  They run\nin the same order that they appear on the command line.\n\nSee also: I<--firstboot>, I<--attach>, I<--upload>.";
     (
-      "--scrub",
-      Arg.String (fun s -> push_front (`Scrub s) ops),
-      s_"FILE" ^ " " ^ s_"Scrub a file"
+      [ L"scrub" ],
+      Getopt.String (s_"FILE", fun s -> push_front (`Scrub s) ops),
+      s_"Scrub a file"
     ),
     Some "FILE", "Scrub a file from the guest.  This is like I<--delete> except that:\n\n=over 4\n\n=item *\n\nIt scrubs the data so a guest could not recover it.\n\n=item *\n\nIt cannot delete directories, only regular files.\n\n=back";
     (
-      "--sm-attach",
-      Arg.String (
+      [ L"sm-attach" ],
+      Getopt.String (
+        s_"SELECTOR",
         fun s ->
           let sel = Subscription_manager.parse_pool_selector s in
           push_front (`SMAttach sel) ops
       ),
-      s_"SELECTOR" ^ " " ^ s_"Attach to a subscription-manager pool"
+      s_"Attach to a subscription-manager pool"
     ),
     Some "SELECTOR", "Attach to a pool using C<subscription-manager>.\n\nSee L<virt-builder(1)/SUBSCRIPTION-MANAGER> for the format of\nthe C<SELECTOR> field.";
     (
-      "--sm-register",
-      Arg.Unit (fun () -> push_front `SMRegister ops),
-      " " ^ s_"Register using subscription-manager"
+      [ L"sm-register" ],
+      Getopt.Unit (fun () -> push_front `SMRegister ops),
+      s_"Register using subscription-manager"
     ),
     None, "Register the guest using C<subscription-manager>.\n\nThis requires credentials being set using I<--sm-credentials>.";
     (
-      "--sm-remove",
-      Arg.Unit (fun () -> push_front `SMRemove ops),
-      " " ^ s_"Remove all the subscriptions"
+      [ L"sm-remove" ],
+      Getopt.Unit (fun () -> push_front `SMRemove ops),
+      s_"Remove all the subscriptions"
     ),
     None, "Remove all the subscriptions from the guest using\nC<subscription-manager>.";
     (
-      "--sm-unregister",
-      Arg.Unit (fun () -> push_front `SMUnregister ops),
-      " " ^ s_"Unregister using subscription-manager"
+      [ L"sm-unregister" ],
+      Getopt.Unit (fun () -> push_front `SMUnregister ops),
+      s_"Unregister using subscription-manager"
     ),
     None, "Unregister the guest using C<subscription-manager>.";
     (
-      "--ssh-inject",
-      Arg.String (
+      [ L"ssh-inject" ],
+      Getopt.String (
+        s_"USER[:SELECTOR]",
         fun s ->
           let user, selstr = String.split ":" s in
           let sel = Ssh_key.parse_selector selstr in
           push_front (`SSHInject (user, sel)) ops
       ),
-      s_"USER[:SELECTOR]" ^ " " ^ s_"Inject a public key into the guest"
+      s_"Inject a public key into the guest"
     ),
     Some "USER[:SELECTOR]", "Inject an ssh key so the given C<USER> will be able to log in over\nssh without supplying a password.  The C<USER> must exist already\nin the guest.\n\nSee L<virt-builder(1)/SSH KEYS> for the format of\nthe C<SELECTOR> field.\n\nYou can have multiple I<--ssh-inject> options, for different users\nand also for more keys for each user.";
     (
-      "--truncate",
-      Arg.String (fun s -> push_front (`Truncate s) ops),
-      s_"FILE" ^ " " ^ s_"Truncate a file to zero size"
+      [ L"truncate" ],
+      Getopt.String (s_"FILE", fun s -> push_front (`Truncate s) ops),
+      s_"Truncate a file to zero size"
     ),
     Some "FILE", "This command truncates C<FILE> to a zero-length file. The file must exist\nalready.";
     (
-      "--truncate-recursive",
-      Arg.String (fun s -> push_front (`TruncateRecursive s) ops),
-      s_"PATH" ^ " " ^ s_"Recursively truncate all files in directory"
+      [ L"truncate-recursive" ],
+      Getopt.String (s_"PATH", fun s -> push_front (`TruncateRecursive s) ops),
+      s_"Recursively truncate all files in directory"
     ),
     Some "PATH", "This command recursively truncates all files under C<PATH> to zero-length.";
     (
-      "--timezone",
-      Arg.String (fun s -> push_front (`Timezone s) ops),
-      s_"TIMEZONE" ^ " " ^ s_"Set the default timezone"
+      [ L"timezone" ],
+      Getopt.String (s_"TIMEZONE", fun s -> push_front (`Timezone s) ops),
+      s_"Set the default timezone"
     ),
     Some "TIMEZONE", "Set the default timezone of the guest to C<TIMEZONE>.  Use a location\nstring like C<Europe/London>";
     (
-      "--touch",
-      Arg.String (fun s -> push_front (`Touch s) ops),
-      s_"FILE" ^ " " ^ s_"Run touch on a file"
+      [ L"touch" ],
+      Getopt.String (s_"FILE", fun s -> push_front (`Touch s) ops),
+      s_"Run touch on a file"
     ),
     Some "FILE", "This command performs a L<touch(1)>-like operation on C<FILE>.";
     (
-      "--update",
-      Arg.Unit (fun () -> push_front `Update ops),
-      " " ^ s_"Update packages"
+      [ L"uninstall" ],
+      Getopt.String (
+        s_"PKG,PKG..",
+        fun s ->
+          let ss = split_string_list s in
+          push_front (`UninstallPackages ss) ops
+      ),
+      s_"Uninstall package(s)"
     ),
-    None, "Do the equivalent of C<yum update>, C<apt-get upgrade>, or whatever\ncommand is required to update the packages already installed in the\ntemplate to their latest versions.\n\nSee also I<--install>.";
+    Some "PKG,PKG..", "Uninstall the named packages (a comma-separated list).  These are\nremoved during the image build using the guest's package manager\n(eg. apt, yum, etc.).  Dependent packages may also need to be\nuninstalled to satisfy the request.\n\nSee also I<--install>, I<--update>.";
     (
-      "--upload",
-      Arg.String (
+      [ L"update" ],
+      Getopt.Unit (fun () -> push_front `Update ops),
+      s_"Update packages"
+    ),
+    None, "Do the equivalent of C<yum update>, C<apt-get upgrade>, or whatever\ncommand is required to update the packages already installed in the\ntemplate to their latest versions.\n\nSee also I<--install>, I<--uninstall>.";
+    (
+      [ L"upload" ],
+      Getopt.String (
+        s_"FILE:DEST",
         fun s ->
           let p = split_string_pair "upload" s in
           push_front (`Upload p) ops
       ),
-      s_"FILE:DEST" ^ " " ^ s_"Upload local file to destination"
+      s_"Upload local file to destination"
     ),
     Some "FILE:DEST", "Upload local file C<FILE> to destination C<DEST> in the disk image.\nFile owner and permissions from the original are preserved, so you\nshould set them to what you want them to be in the disk image.\n\nC<DEST> could be the final filename.  This can be used to rename\nthe file on upload.\n\nIf C<DEST> is a directory name (which must already exist in the guest)\nthen the file is uploaded into that directory, and it keeps the same\nname as on the local filesystem.\n\nSee also: I<--mkdir>, I<--delete>, I<--scrub>.";
     (
-      "--write",
-      Arg.String (
+      [ L"write" ],
+      Getopt.String (
+        s_"FILE:CONTENT",
         fun s ->
           let p = split_string_pair "write" s in
           push_front (`Write p) ops
       ),
-      s_"FILE:CONTENT" ^ " " ^ s_"Write file"
+      s_"Write file"
     ),
     Some "FILE:CONTENT", "Write C<CONTENT> to C<FILE>.";
     (
-      "--no-logfile",
-      Arg.Set scrub_logfile,
-      " " ^ s_"Scrub build log file"
+      [ L"no-logfile" ],
+      Getopt.Set scrub_logfile,
+      s_"Scrub build log file"
     ),
     None, "Scrub C<builder.log> (log file from build commands) from the image\nafter building is complete.  If you don't want to reveal precisely how\nthe image was built, use this option.\n\nSee also: L</LOG FILE>.";
     (
-      "--password-crypto",
-      Arg.String (
+      [ L"password-crypto" ],
+      Getopt.String (
+        s_"md5|sha256|sha512",
         fun s ->
           password_crypto := Some (Password.password_crypto_of_string s)
       ),
-      "md5|sha256|sha512" ^ " " ^ s_"Set password crypto"
+      s_"Set password crypto"
     ),
     Some "md5|sha256|sha512", "When the virt tools change or set a password in the guest, this\noption sets the password encryption of that password to\nC<md5>, C<sha256> or C<sha512>.\n\nC<sha256> and C<sha512> require glibc E<ge> 2.7 (check crypt(3) inside\nthe guest).\n\nC<md5> will work with relatively old Linux guests (eg. RHEL 3), but\nis not secure against modern attacks.\n\nThe default is C<sha512> unless libguestfs detects an old guest that\ndidn't have support for SHA-512, in which case it will use C<md5>.\nYou can override libguestfs by specifying this option.\n\nNote this does not change the default password encryption used\nby the guest when you create new user accounts inside the guest.\nIf you want to do that, then you should use the I<--edit> option\nto modify C</etc/sysconfig/authconfig> (Fedora, RHEL) or\nC</etc/pam.d/common-password> (Debian, Ubuntu).";
     (
-      "--selinux-relabel",
-      Arg.Set selinux_relabel,
-      " " ^ s_"Relabel files with correct SELinux labels"
+      [ L"selinux-relabel" ],
+      Getopt.Set selinux_relabel,
+      s_"Relabel files with correct SELinux labels"
     ),
     None, "Relabel files in the guest so that they have the correct SELinux label.\n\nThis will attempt to relabel files immediately, but if the operation fails\nthis will instead touch F</.autorelabel> on the image to schedule a\nrelabel operation for the next time the image boots.\n\nYou should only use this option for guests which support SELinux.";
     (
-      "--sm-credentials",
-      Arg.String (
+      [ L"sm-credentials" ],
+      Getopt.String (
+        s_"SELECTOR",
         fun s ->
           sm_credentials := Some (Subscription_manager.parse_credentials_selector s)
       ),
-      "SELECTOR" ^ " " ^ s_"Credentials for subscription-manager"
+      s_"Credentials for subscription-manager"
     ),
     Some "SELECTOR", "Set the credentials for C<subscription-manager>.\n\nSee L<virt-builder(1)/SUBSCRIPTION-MANAGER> for the format of\nthe C<SELECTOR> field.";
   ]
@@ -454,13 +485,13 @@ let rec argspec () =
       fun (cmd, arg) ->
         try
           let ((_, spec, _), _, _) = List.find (
-            fun ((key, _, _), _, _) ->
-              key = "--" ^ cmd
+            fun ((keys, _, _), _, _) ->
+              List.mem (L cmd) keys
           ) argspec in
           (match spec with
-          | Arg.Unit fn -> fn ()
-          | Arg.String fn -> fn arg
-          | Arg.Set varref -> varref := true
+          | Getopt.Unit fn -> fn ()
+          | Getopt.String (_, fn) -> fn arg
+          | Getopt.Set varref -> varref := true
           | _ -> error "INTERNAL error: spec not handled for %s" cmd
           )
         with Not_found ->

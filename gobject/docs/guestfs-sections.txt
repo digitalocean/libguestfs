@@ -322,6 +322,23 @@ guestfs_disk_create_get_type
 </SECTION>
 
 <SECTION>
+<FILE>optargs-download_blocks</FILE>
+<TITLE>GuestfsDownloadBlocks</TITLE>
+GuestfsDownloadBlocks
+GuestfsDownloadBlocksClass
+guestfs_download_blocks_new
+<SUBSECTION Standard>
+GUESTFS_DOWNLOAD_BLOCKS
+GUESTFS_DOWNLOAD_BLOCKS_CLASS
+GUESTFS_DOWNLOAD_BLOCKS_GET_CLASS
+GUESTFS_IS_DOWNLOAD_BLOCKS
+GUESTFS_IS_DOWNLOAD_BLOCKS_CLASS
+GUESTFS_TYPE_DOWNLOAD_BLOCKS
+GuestfsDownloadBlocksPrivate
+guestfs_download_blocks_get_type
+</SECTION>
+
+<SECTION>
 <FILE>optargs-e2fsck</FILE>
 <TITLE>GuestfsE2fsck</TITLE>
 GuestfsE2fsck
@@ -353,6 +370,23 @@ GUESTFS_IS_FSTRIM_CLASS
 GUESTFS_TYPE_FSTRIM
 GuestfsFstrimPrivate
 guestfs_fstrim_get_type
+</SECTION>
+
+<SECTION>
+<FILE>optargs-glob_expand</FILE>
+<TITLE>GuestfsGlobExpand</TITLE>
+GuestfsGlobExpand
+GuestfsGlobExpandClass
+guestfs_glob_expand_new
+<SUBSECTION Standard>
+GUESTFS_GLOB_EXPAND
+GUESTFS_GLOB_EXPAND_CLASS
+GUESTFS_GLOB_EXPAND_GET_CLASS
+GUESTFS_IS_GLOB_EXPAND
+GUESTFS_IS_GLOB_EXPAND_CLASS
+GUESTFS_TYPE_GLOB_EXPAND
+GuestfsGlobExpandPrivate
+guestfs_glob_expand_get_type
 </SECTION>
 
 <SECTION>
@@ -815,6 +849,23 @@ guestfs_rsync_out_get_type
 </SECTION>
 
 <SECTION>
+<FILE>optargs-selinux_relabel</FILE>
+<TITLE>GuestfsSelinuxRelabel</TITLE>
+GuestfsSelinuxRelabel
+GuestfsSelinuxRelabelClass
+guestfs_selinux_relabel_new
+<SUBSECTION Standard>
+GUESTFS_IS_SELINUX_RELABEL
+GUESTFS_IS_SELINUX_RELABEL_CLASS
+GUESTFS_SELINUX_RELABEL
+GUESTFS_SELINUX_RELABEL_CLASS
+GUESTFS_SELINUX_RELABEL_GET_CLASS
+GUESTFS_TYPE_SELINUX_RELABEL
+GuestfsSelinuxRelabelPrivate
+guestfs_selinux_relabel_get_type
+</SECTION>
+
+<SECTION>
 <FILE>optargs-set_e2attrs</FILE>
 <TITLE>GuestfsSetE2attrs</TITLE>
 GuestfsSetE2attrs
@@ -1047,6 +1098,7 @@ guestfs_session_btrfs_device_delete
 guestfs_session_btrfs_filesystem_balance
 guestfs_session_btrfs_filesystem_defragment
 guestfs_session_btrfs_filesystem_resize
+guestfs_session_btrfs_filesystem_show
 guestfs_session_btrfs_filesystem_sync
 guestfs_session_btrfs_fsck
 guestfs_session_btrfs_image
@@ -1118,6 +1170,8 @@ guestfs_session_disk_has_backing_file
 guestfs_session_disk_virtual_size
 guestfs_session_dmesg
 guestfs_session_download
+guestfs_session_download_blocks
+guestfs_session_download_inode
 guestfs_session_download_offset
 guestfs_session_drop_caches
 guestfs_session_du
@@ -1138,6 +1192,7 @@ guestfs_session_file
 guestfs_session_file_architecture
 guestfs_session_filesize
 guestfs_session_filesystem_available
+guestfs_session_filesystem_walk
 guestfs_session_fill
 guestfs_session_fill_dir
 guestfs_session_fill_pattern
@@ -1175,6 +1230,7 @@ guestfs_session_get_qemu
 guestfs_session_get_recovery_proc
 guestfs_session_get_selinux
 guestfs_session_get_smp
+guestfs_session_get_sockdir
 guestfs_session_get_state
 guestfs_session_get_tmpdir
 guestfs_session_get_trace
@@ -1389,11 +1445,14 @@ guestfs_session_mount_loop
 guestfs_session_mount_options
 guestfs_session_mount_ro
 guestfs_session_mount_vfs
+guestfs_session_mountable_device
+guestfs_session_mountable_subvolume
 guestfs_session_mountpoints
 guestfs_session_mounts
 guestfs_session_mv
 guestfs_session_nr_devices
 guestfs_session_ntfs_3g_probe
+guestfs_session_ntfscat_i
 guestfs_session_ntfsclone_in
 guestfs_session_ntfsclone_out
 guestfs_session_ntfsfix
@@ -1404,7 +1463,9 @@ guestfs_session_parse_environment_list
 guestfs_session_part_add
 guestfs_session_part_del
 guestfs_session_part_disk
+guestfs_session_part_expand_gpt
 guestfs_session_part_get_bootable
+guestfs_session_part_get_disk_guid
 guestfs_session_part_get_gpt_guid
 guestfs_session_part_get_gpt_type
 guestfs_session_part_get_mbr_id
@@ -1414,6 +1475,8 @@ guestfs_session_part_get_parttype
 guestfs_session_part_init
 guestfs_session_part_list
 guestfs_session_part_set_bootable
+guestfs_session_part_set_disk_guid
+guestfs_session_part_set_disk_guid_random
 guestfs_session_part_set_gpt_guid
 guestfs_session_part_set_gpt_type
 guestfs_session_part_set_mbr_id
@@ -1458,6 +1521,7 @@ guestfs_session_rsync_out
 guestfs_session_scrub_device
 guestfs_session_scrub_file
 guestfs_session_scrub_freespace
+guestfs_session_selinux_relabel
 guestfs_session_set_append
 guestfs_session_set_attach_method
 guestfs_session_set_autosync
@@ -1733,6 +1797,13 @@ guestfs_statns_get_type
 GuestfsStatVFS
 <SUBSECTION Standard>
 guestfs_statvfs_get_type
+</SECTION>
+
+<SECTION>
+<FILE>struct-tsk_dirent</FILE>
+GuestfsTSKDirent
+<SUBSECTION Standard>
+guestfs_tsk_dirent_get_type
 </SECTION>
 
 <SECTION>

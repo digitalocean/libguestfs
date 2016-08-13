@@ -19,8 +19,9 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
-	virt-resize.pod \
-	test-virt-resize.pl
+	test-virt-resize.pl \
+	test-virt-resize-docs.sh \
+	virt-resize.pod
 
 CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-resize
 
@@ -30,11 +31,7 @@ SOURCES_ML = \
 	resize.ml
 
 SOURCES_C = \
-	../mllib/fsync-c.c \
-	../fish/progress.c \
-	../mllib/progress-c.c \
-	../fish/uri.c \
-	../mllib/uri-c.c
+	dummy.c
 
 if HAVE_OCAML
 
@@ -52,14 +49,7 @@ virt_resize_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(LIBXML2_CFLAGS)
 
-BOBJECTS = \
-	$(top_builddir)/mllib/fsync.cmo \
-	$(top_builddir)/mllib/progress.cmo \
-	$(top_builddir)/mllib/URI.cmo \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(SOURCES_ML:.ml=.cmo)
+BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
@@ -86,15 +76,16 @@ OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
-BEST    = c
-OCAMLLINKFLAGS = mlguestfs.cma -custom
 else
 OBJECTS = $(XOBJECTS)
-BEST    = opt
-OCAMLLINKFLAGS = mlguestfs.cmxa
 endif
 
-virt_resize_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
+OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+
+virt_resize_DEPENDENCIES = \
+	$(OBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 virt_resize_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
@@ -125,9 +116,12 @@ CLEANFILES += \
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-TESTS =
+TESTS = \
+	test-virt-resize-docs.sh
+
 if ENABLE_APPLIANCE
-TESTS += test-virt-resize.pl
+TESTS += \
+	test-virt-resize.pl
 endif
 
 check-valgrind:

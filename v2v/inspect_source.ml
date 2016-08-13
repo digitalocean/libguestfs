@@ -65,11 +65,6 @@ let rec inspect_source root_choice g =
       StringMap.add name (app :: vs) map
   ) StringMap.empty apps in
 
-  (* See if this guest could use UEFI to boot.  It should use GPT and
-   * it should have an EFI System Partition (ESP).
-   *)
-  let uefi = has_uefi_bootable_device g in
-
   let inspect = {
     i_root = root;
     i_type = g#inspect_get_type root;
@@ -84,7 +79,7 @@ let rec inspect_source root_choice g =
     i_mountpoints = mps;
     i_apps = apps;
     i_apps_map = apps_map;
-    i_uefi = uefi
+    i_firmware = get_firmware_bootable_device g;
   } in
   debug "%s" (string_of_inspect inspect);
 
@@ -153,10 +148,19 @@ and reject_if_not_installed_image g root =
   if fmt <> "installed" then
     error (f_"libguestfs thinks this is not an installed operating system (it might be, for example, an installer disk or live CD).  If this is wrong, it is probably a bug in libguestfs.  root=%s fmt=%s") root fmt
 
-and has_uefi_bootable_device g =
+(* See if this guest could use UEFI to boot.  It should use GPT and
+ * it should have an EFI System Partition (ESP).
+ *
+ * If it has ESP(s), then [UEFI devs] is returned where [devs] is the
+ * list of at least one ESP.
+ *
+ * Otherwise, [BIOS] is returned.
+ *)
+and get_firmware_bootable_device g =
   let rec uefi_ESP_guid = "C12A7328-F81F-11D2-BA4B-00A0C93EC93B"
-  and is_uefi_ESP dev { G.part_num = partnum } =
-    g#part_get_gpt_type dev (Int32.to_int partnum) = uefi_ESP_guid
+  and is_uefi_ESP dev part =
+    let partnum = g#part_to_partnum part in
+    g#part_get_gpt_type dev partnum = uefi_ESP_guid
   and parttype_is_gpt dev =
     try g#part_get_parttype dev = "gpt"
     with G.Error msg as exn ->
@@ -164,14 +168,17 @@ and has_uefi_bootable_device g =
          if g#last_errno () <> G.Errno.errno_EINVAL then raise exn;
          debug "%s (ignored)" msg;
          false
-  and is_uefi_bootable_device dev =
-    parttype_is_gpt dev && (
-      let partitions = Array.to_list (g#part_list dev) in
-      List.exists (is_uefi_ESP dev) partitions
-    )
+  and is_uefi_bootable_part part =
+    let dev = g#part_to_dev part in
+    parttype_is_gpt dev && is_uefi_ESP dev part
   in
-  let devices = Array.to_list (g#list_devices ()) in
-  List.exists is_uefi_bootable_device devices
+
+  let partitions = Array.to_list (g#list_partitions ()) in
+  let partitions = List.filter is_uefi_bootable_part partitions in
+
+  match partitions with
+  | [] -> I_BIOS
+  | partitions -> I_UEFI partitions
 
 (* If some inspection fields are "unknown", then that indicates a
  * failure in inspection, and we shouldn't continue.  For an example

@@ -963,6 +963,14 @@ EXTRA_DIST += $(top_srcdir)/GNUmakefile
 
 ## end   gnulib module gnumakefile
 
+## begin gnulib module hard-locale
+
+libgnu_la_SOURCES += hard-locale.c
+
+EXTRA_DIST += hard-locale.h
+
+## end   gnulib module hard-locale
+
 ## begin gnulib module hash
 
 libgnu_la_SOURCES += hash.c

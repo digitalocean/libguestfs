@@ -102,6 +102,11 @@ exec >>%s 2>&1
   let rec guest_install_command packages =
     let quoted_args = String.concat " " (List.map quote packages) in
     match g#inspect_get_package_management root with
+    | "apk" ->
+       sprintf "
+         apk update
+         apk add %s
+       " quoted_args
     | "apt" ->
       (* http://unix.stackexchange.com/questions/22820 *)
       sprintf "
@@ -110,18 +115,14 @@ exec >>%s 2>&1
         apt-get $apt_opts update
         apt-get $apt_opts install %s
       " quoted_args
-    | "dnf" ->
-      sprintf "dnf -y install %s" quoted_args
-    | "pisi" ->
-      sprintf "pisi it %s" quoted_args
-    | "pacman" ->
-      sprintf "pacman -S --noconfirm %s" quoted_args
-    | "urpmi" ->
-      sprintf "urpmi %s" quoted_args
-    | "yum" ->
-      sprintf "yum -y install %s" quoted_args
-    | "zypper" ->
-      sprintf "zypper -n in -l %s" quoted_args
+    | "dnf" ->    sprintf "dnf -y install %s" quoted_args
+    | "pisi" ->   sprintf "pisi it %s" quoted_args
+    | "pacman" -> sprintf "pacman -S --noconfirm %s" quoted_args
+    | "urpmi" ->  sprintf "urpmi %s" quoted_args
+    | "xbps" ->   sprintf "xbps-install -Sy %s" quoted_args
+    | "yum" ->    sprintf "yum -y install %s" quoted_args
+    | "zypper" -> sprintf "zypper -n in -l %s" quoted_args
+
     | "unknown" ->
       error_unknown_package_manager (s_"--install")
     | pm ->
@@ -129,30 +130,55 @@ exec >>%s 2>&1
 
   and guest_update_command () =
     match g#inspect_get_package_management root with
+    | "apk" ->
+       "
+         apk update
+         apk upgrade
+       "
     | "apt" ->
       (* http://unix.stackexchange.com/questions/22820 *)
-      sprintf "
+      "
         export DEBIAN_FRONTEND=noninteractive
         apt_opts='-q -y -o Dpkg::Options::=--force-confnew'
         apt-get $apt_opts update
         apt-get $apt_opts upgrade
       "
-    | "dnf" ->
-      sprintf "dnf -y --best upgrade"
-    | "pisi" ->
-      sprintf "pisi upgrade"
-    | "pacman" ->
-      sprintf "pacman -Su"
-    | "urpmi" ->
-      sprintf "urpmi --auto-select"
-    | "yum" ->
-      sprintf "yum -y update"
-    | "zypper" ->
-      sprintf "zypper -n update -l"
+    | "dnf" ->    "dnf -y --best upgrade"
+    | "pisi" ->   "pisi upgrade"
+    | "pacman" -> "pacman -Su"
+    | "urpmi" ->  "urpmi --auto-select"
+    | "xbps" ->   "xbps-install -Suy"
+    | "yum" ->    "yum -y update"
+    | "zypper" -> "zypper -n update -l"
+
     | "unknown" ->
       error_unknown_package_manager (s_"--update")
     | pm ->
       error_unimplemented_package_manager (s_"--update") pm
+
+  and guest_uninstall_command packages =
+    let quoted_args = String.concat " " (List.map quote packages) in
+    match g#inspect_get_package_management root with
+    | "apk" -> sprintf "apk del %s" quoted_args
+    | "apt" ->
+      (* http://unix.stackexchange.com/questions/22820 *)
+      sprintf "
+        export DEBIAN_FRONTEND=noninteractive
+        apt_opts='-q -y -o Dpkg::Options::=--force-confnew'
+        apt-get $apt_opts remove %s
+      " quoted_args
+    | "dnf" ->    sprintf "dnf -y remove %s" quoted_args
+    | "pisi" ->   sprintf "pisi rm %s" quoted_args
+    | "pacman" -> sprintf "pacman -R %s" quoted_args
+    | "urpmi" ->  sprintf "urpme %s" quoted_args
+    | "xbps" ->   sprintf "xbps-remove -Sy %s" quoted_args
+    | "yum" ->    sprintf "yum -y remove %s" quoted_args
+    | "zypper" -> sprintf "zypper -n rm -l %s" quoted_args
+
+    | "unknown" ->
+      error_unknown_package_manager (s_"--uninstall")
+    | pm ->
+      error_unimplemented_package_manager (s_"--uninstall") pm
 
   (* Windows has package_management == "unknown". *)
   and error_unknown_package_manager flag =
@@ -205,7 +231,7 @@ exec >>%s 2>&1
 
     | `Delete path ->
       message (f_"Deleting: %s") path;
-      g#rm_rf path
+      Array.iter g#rm_rf (g#glob_expand ~directoryslash:false path)
 
     | `Edit (path, expr) ->
       message (f_"Editing: %s") path;
@@ -334,6 +360,11 @@ exec >>%s 2>&1
       message (f_"Running touch: %s") path;
       g#touch path
 
+    | `UninstallPackages pkgs ->
+      message (f_"Uninstalling packages: %s") (String.concat " " pkgs);
+      let cmd = guest_uninstall_command pkgs in
+      do_run ~display:cmd cmd
+
     | `Update ->
       message (f_"Updating packages");
       let cmd = guest_update_command () in
@@ -383,19 +414,7 @@ exec >>%s 2>&1
 
   if ops.flags.selinux_relabel then (
     message (f_"SELinux relabelling");
-    if guest_arch_compatible then (
-      let cmd = sprintf "
-        if load_policy && fixfiles restore; then
-          rm -f /.autorelabel
-        else
-          touch /.autorelabel
-          echo '%s: SELinux relabelling failed, will relabel at boot instead.'
-        fi
-      " prog in
-      do_run ~display:"load_policy && fixfiles restore" cmd
-    ) else (
-      g#touch "/.autorelabel"
-    )
+    SELinux_relabel.relabel g
   );
 
   (* Clean up the log file:

@@ -937,6 +937,57 @@ func return_StatVFS_list (c *C.struct_guestfs_statvfs_list) *[]StatVFS {
     return &r
 }
 
+type TSKDirent struct {
+    tsk_inode uint64
+    tsk_type byte
+    tsk_size int64
+    tsk_name string
+    tsk_flags uint32
+    tsk_atime_sec int64
+    tsk_atime_nsec int64
+    tsk_mtime_sec int64
+    tsk_mtime_nsec int64
+    tsk_ctime_sec int64
+    tsk_ctime_nsec int64
+    tsk_crtime_sec int64
+    tsk_crtime_nsec int64
+    tsk_nlink int64
+    tsk_link string
+    tsk_spare1 int64
+}
+
+func return_TSKDirent (c *C.struct_guestfs_tsk_dirent) *TSKDirent {
+    r := TSKDirent{}
+    r.tsk_inode = uint64 (c.tsk_inode)
+    r.tsk_type = byte (c.tsk_type)
+    r.tsk_size = int64 (c.tsk_size)
+    r.tsk_name = C.GoString (c.tsk_name)
+    r.tsk_flags = uint32 (c.tsk_flags)
+    r.tsk_atime_sec = int64 (c.tsk_atime_sec)
+    r.tsk_atime_nsec = int64 (c.tsk_atime_nsec)
+    r.tsk_mtime_sec = int64 (c.tsk_mtime_sec)
+    r.tsk_mtime_nsec = int64 (c.tsk_mtime_nsec)
+    r.tsk_ctime_sec = int64 (c.tsk_ctime_sec)
+    r.tsk_ctime_nsec = int64 (c.tsk_ctime_nsec)
+    r.tsk_crtime_sec = int64 (c.tsk_crtime_sec)
+    r.tsk_crtime_nsec = int64 (c.tsk_crtime_nsec)
+    r.tsk_nlink = int64 (c.tsk_nlink)
+    r.tsk_link = C.GoString (c.tsk_link)
+    r.tsk_spare1 = int64 (c.tsk_spare1)
+    return &r
+}
+
+func return_TSKDirent_list (c *C.struct_guestfs_tsk_dirent_list) *[]TSKDirent {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]TSKDirent, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_TSKDirent ((*C.struct_guestfs_tsk_dirent) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
 type UTSName struct {
     uts_sysname string
     uts_release string
@@ -2345,6 +2396,24 @@ func (g *Guestfs) Btrfs_filesystem_resize (mountpoint string, optargs *OptargsBt
         return get_error_from_handle (g, "btrfs_filesystem_resize")
     }
     return nil
+}
+
+/* btrfs_filesystem_show : list devices for btrfs filesystem */
+func (g *Guestfs) Btrfs_filesystem_show (device string) ([]string, *GuestfsError) {
+    if g.g == nil {
+        return nil, closed_handle_error ("btrfs_filesystem_show")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_btrfs_filesystem_show (g.g, c_device)
+
+    if r == nil {
+        return nil, get_error_from_handle (g, "btrfs_filesystem_show")
+    }
+    defer free_string_list (r)
+    return return_string_list (r), nil
 }
 
 /* btrfs_filesystem_sync : sync a btrfs filesystem */
@@ -4044,6 +4113,60 @@ func (g *Guestfs) Download (remotefilename string, filename string) *GuestfsErro
     return nil
 }
 
+/* Struct carrying optional arguments for Download_blocks */
+type OptargsDownload_blocks struct {
+    /* Unallocated field is ignored unless Unallocated_is_set == true */
+    Unallocated_is_set bool
+    Unallocated bool
+}
+
+/* download_blocks : download the given data units from the disk */
+func (g *Guestfs) Download_blocks (device string, start int64, stop int64, filename string, optargs *OptargsDownload_blocks) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("download_blocks")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    c_filename := C.CString (filename)
+    defer C.free (unsafe.Pointer (c_filename))
+    c_optargs := C.struct_guestfs_download_blocks_argv{}
+    if optargs != nil {
+        if optargs.Unallocated_is_set {
+            c_optargs.bitmask |= C.GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK
+            if optargs.Unallocated { c_optargs.unallocated = 1 } else { c_optargs.unallocated = 0}
+        }
+    }
+
+    r := C.guestfs_download_blocks_argv (g.g, c_device, C.int64_t (start), C.int64_t (stop), c_filename, &c_optargs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "download_blocks")
+    }
+    return nil
+}
+
+/* download_inode : download a file to the local machine given its inode */
+func (g *Guestfs) Download_inode (device string, inode int64, filename string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("download_inode")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    c_filename := C.CString (filename)
+    defer C.free (unsafe.Pointer (c_filename))
+
+    r := C.guestfs_download_inode (g.g, c_device, C.int64_t (inode), c_filename)
+
+    if r == -1 {
+        return get_error_from_handle (g, "download_inode")
+    }
+    return nil
+}
+
 /* download_offset : download a file to the local machine with offset and size */
 func (g *Guestfs) Download_offset (remotefilename string, filename string, offset int64, size int64) *GuestfsError {
     if g.g == nil {
@@ -4425,6 +4548,24 @@ func (g *Guestfs) Filesystem_available (filesystem string) (bool, *GuestfsError)
         return false, get_error_from_handle (g, "filesystem_available")
     }
     return r != 0, nil
+}
+
+/* filesystem_walk : walk through the filesystem content */
+func (g *Guestfs) Filesystem_walk (device string) (*[]TSKDirent, *GuestfsError) {
+    if g.g == nil {
+        return nil, closed_handle_error ("filesystem_walk")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_filesystem_walk (g.g, c_device)
+
+    if r == nil {
+        return nil, get_error_from_handle (g, "filesystem_walk")
+    }
+    defer C.guestfs_free_tsk_dirent_list (r)
+    return return_TSKDirent_list (r), nil
 }
 
 /* fill : fill a file with octets */
@@ -5041,6 +5182,21 @@ func (g *Guestfs) Get_smp () (int, *GuestfsError) {
     return int (r), nil
 }
 
+/* get_sockdir : get the temporary directory for sockets */
+func (g *Guestfs) Get_sockdir () (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("get_sockdir")
+    }
+
+    r := C.guestfs_get_sockdir (g.g)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "get_sockdir")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
 /* get_state : get the current state */
 func (g *Guestfs) Get_state () (int, *GuestfsError) {
     if g.g == nil {
@@ -5168,16 +5324,30 @@ func (g *Guestfs) Getxattrs (path string) (*[]XAttr, *GuestfsError) {
     return return_XAttr_list (r), nil
 }
 
+/* Struct carrying optional arguments for Glob_expand */
+type OptargsGlob_expand struct {
+    /* Directoryslash field is ignored unless Directoryslash_is_set == true */
+    Directoryslash_is_set bool
+    Directoryslash bool
+}
+
 /* glob_expand : expand a wildcard path */
-func (g *Guestfs) Glob_expand (pattern string) ([]string, *GuestfsError) {
+func (g *Guestfs) Glob_expand (pattern string, optargs *OptargsGlob_expand) ([]string, *GuestfsError) {
     if g.g == nil {
         return nil, closed_handle_error ("glob_expand")
     }
 
     c_pattern := C.CString (pattern)
     defer C.free (unsafe.Pointer (c_pattern))
+    c_optargs := C.struct_guestfs_glob_expand_opts_argv{}
+    if optargs != nil {
+        if optargs.Directoryslash_is_set {
+            c_optargs.bitmask |= C.GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH_BITMASK
+            if optargs.Directoryslash { c_optargs.directoryslash = 1 } else { c_optargs.directoryslash = 0}
+        }
+    }
 
-    r := C.guestfs_glob_expand (g.g, c_pattern)
+    r := C.guestfs_glob_expand_opts_argv (g.g, c_pattern, &c_optargs)
 
     if r == nil {
         return nil, get_error_from_handle (g, "glob_expand")
@@ -7392,16 +7562,16 @@ func (g *Guestfs) Is_launching () (bool, *GuestfsError) {
     return r != 0, nil
 }
 
-/* is_lv : test if device is a logical volume */
-func (g *Guestfs) Is_lv (device string) (bool, *GuestfsError) {
+/* is_lv : test if mountable is a logical volume */
+func (g *Guestfs) Is_lv (mountable string) (bool, *GuestfsError) {
     if g.g == nil {
         return false, closed_handle_error ("is_lv")
     }
 
-    c_device := C.CString (device)
-    defer C.free (unsafe.Pointer (c_device))
+    c_mountable := C.CString (mountable)
+    defer C.free (unsafe.Pointer (c_mountable))
 
-    r := C.guestfs_is_lv (g.g, c_device)
+    r := C.guestfs_is_lv (g.g, c_mountable)
 
     if r == -1 {
         return false, get_error_from_handle (g, "is_lv")
@@ -9989,6 +10159,42 @@ func (g *Guestfs) Mount_vfs (options string, vfstype string, mountable string, m
     return nil
 }
 
+/* mountable_device : extract the device part of a mountable */
+func (g *Guestfs) Mountable_device (mountable string) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("mountable_device")
+    }
+
+    c_mountable := C.CString (mountable)
+    defer C.free (unsafe.Pointer (c_mountable))
+
+    r := C.guestfs_mountable_device (g.g, c_mountable)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "mountable_device")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
+/* mountable_subvolume : extract the subvolume part of a mountable */
+func (g *Guestfs) Mountable_subvolume (mountable string) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("mountable_subvolume")
+    }
+
+    c_mountable := C.CString (mountable)
+    defer C.free (unsafe.Pointer (c_mountable))
+
+    r := C.guestfs_mountable_subvolume (g.g, c_mountable)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "mountable_subvolume")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
 /* mountpoints : show mountpoints */
 func (g *Guestfs) Mountpoints () (map[string]string, *GuestfsError) {
     if g.g == nil {
@@ -10071,6 +10277,26 @@ func (g *Guestfs) Ntfs_3g_probe (rw bool, device string) (int, *GuestfsError) {
         return 0, get_error_from_handle (g, "ntfs_3g_probe")
     }
     return int (r), nil
+}
+
+/* ntfscat_i : download a file to the local machine given its inode */
+func (g *Guestfs) Ntfscat_i (device string, inode int64, filename string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("ntfscat_i")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    c_filename := C.CString (filename)
+    defer C.free (unsafe.Pointer (c_filename))
+
+    r := C.guestfs_ntfscat_i (g.g, c_device, C.int64_t (inode), c_filename)
+
+    if r == -1 {
+        return get_error_from_handle (g, "ntfscat_i")
+    }
+    return nil
 }
 
 /* ntfsclone_in : restore NTFS from backup file */
@@ -10329,6 +10555,23 @@ func (g *Guestfs) Part_disk (device string, parttype string) *GuestfsError {
     return nil
 }
 
+/* part_expand_gpt : move backup GPT header to the end of the disk */
+func (g *Guestfs) Part_expand_gpt (device string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("part_expand_gpt")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_part_expand_gpt (g.g, c_device)
+
+    if r == -1 {
+        return get_error_from_handle (g, "part_expand_gpt")
+    }
+    return nil
+}
+
 /* part_get_bootable : return true if a partition is bootable */
 func (g *Guestfs) Part_get_bootable (device string, partnum int) (bool, *GuestfsError) {
     if g.g == nil {
@@ -10344,6 +10587,24 @@ func (g *Guestfs) Part_get_bootable (device string, partnum int) (bool, *Guestfs
         return false, get_error_from_handle (g, "part_get_bootable")
     }
     return r != 0, nil
+}
+
+/* part_get_disk_guid : get the GUID of a GPT-partitioned disk */
+func (g *Guestfs) Part_get_disk_guid (device string) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("part_get_disk_guid")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_part_get_disk_guid (g.g, c_device)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "part_get_disk_guid")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
 }
 
 /* part_get_gpt_guid : get the GUID of a GPT partition */
@@ -10507,6 +10768,43 @@ func (g *Guestfs) Part_set_bootable (device string, partnum int, bootable bool) 
 
     if r == -1 {
         return get_error_from_handle (g, "part_set_bootable")
+    }
+    return nil
+}
+
+/* part_set_disk_guid : set the GUID of a GPT-partitioned disk */
+func (g *Guestfs) Part_set_disk_guid (device string, guid string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("part_set_disk_guid")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    c_guid := C.CString (guid)
+    defer C.free (unsafe.Pointer (c_guid))
+
+    r := C.guestfs_part_set_disk_guid (g.g, c_device, c_guid)
+
+    if r == -1 {
+        return get_error_from_handle (g, "part_set_disk_guid")
+    }
+    return nil
+}
+
+/* part_set_disk_guid_random : set the GUID of a GPT-partitioned disk to random value */
+func (g *Guestfs) Part_set_disk_guid_random (device string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("part_set_disk_guid_random")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_part_set_disk_guid_random (g.g, c_device)
+
+    if r == -1 {
+        return get_error_from_handle (g, "part_set_disk_guid_random")
     }
     return nil
 }
@@ -11381,6 +11679,40 @@ func (g *Guestfs) Scrub_freespace (dir string) *GuestfsError {
 
     if r == -1 {
         return get_error_from_handle (g, "scrub_freespace")
+    }
+    return nil
+}
+
+/* Struct carrying optional arguments for Selinux_relabel */
+type OptargsSelinux_relabel struct {
+    /* Force field is ignored unless Force_is_set == true */
+    Force_is_set bool
+    Force bool
+}
+
+/* selinux_relabel : relabel parts of the filesystem */
+func (g *Guestfs) Selinux_relabel (specfile string, path string, optargs *OptargsSelinux_relabel) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("selinux_relabel")
+    }
+
+    c_specfile := C.CString (specfile)
+    defer C.free (unsafe.Pointer (c_specfile))
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+    c_optargs := C.struct_guestfs_selinux_relabel_argv{}
+    if optargs != nil {
+        if optargs.Force_is_set {
+            c_optargs.bitmask |= C.GUESTFS_SELINUX_RELABEL_FORCE_BITMASK
+            if optargs.Force { c_optargs.force = 1 } else { c_optargs.force = 0}
+        }
+    }
+
+    r := C.guestfs_selinux_relabel_argv (g.g, c_specfile, c_path, &c_optargs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "selinux_relabel")
     }
     return nil
 }

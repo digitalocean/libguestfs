@@ -11,13 +11,14 @@ libguestfs-make-fixed-appliance - Make a "fixed appliance" for libguestfs
 
 =head1 ОПИС
 
-libguestfs-make-fixed-appliance lets you make a pre-built binary appliance
-for libguestfs.
+libguestfs-make-fixed-appliance надає вам змогу створити попередньо зібрану
+бінарну базову систему для libguestfs.
 
 B<Зауважте, що у звичайних користувачів не повинно виникнути потреби у
 запуску цієї програми>.
 
-Some reasons why you I<might> want to use this include:
+Декілька причин, з яких у вас I<може> виникнути потребу у використанні цього
+інструмента:
 
 =over 4
 
@@ -34,8 +35,8 @@ appliance.
 
 =item *
 
-You want to have very predictable performance from libguestfs (see
-L<guestfs-performance(1)>).
+Вам потрібна дуже передбачувана щодо швидкодії система з libguestfs
+(див. L<guestfs-performance(1)>).
 
 =back
 
@@ -129,8 +130,8 @@ GNU General Public License).
 
 =head1 СТАН ВИХОДУ
 
-libguestfs-make-fixed-appliance returns I<0> if the appliance was built
-without errors.
+libguestfs-make-fixed-appliance повертає I<0>, якщо базову систему було
+зібрано без помилок.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
@@ -148,5 +149,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

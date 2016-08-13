@@ -71,6 +71,7 @@ module Guestfs (
   btrfs_device_add,
   btrfs_device_delete,
   btrfs_filesystem_balance,
+  btrfs_filesystem_show,
   btrfs_filesystem_sync,
   btrfs_qgroup_assign,
   btrfs_qgroup_create,
@@ -126,6 +127,7 @@ module Guestfs (
   disk_virtual_size,
   dmesg,
   download,
+  download_inode,
   download_offset,
   drop_caches,
   du,
@@ -180,13 +182,13 @@ module Guestfs (
   get_recovery_proc,
   get_selinux,
   get_smp,
+  get_sockdir,
   get_state,
   get_tmpdir,
   get_trace,
   get_umask,
   get_verbose,
   getcon,
-  glob_expand,
   grepi,
   grub_install,
   head,
@@ -346,11 +348,14 @@ module Guestfs (
   mount_options,
   mount_ro,
   mount_vfs,
+  mountable_device,
+  mountable_subvolume,
   mountpoints,
   mounts,
   mv,
   nr_devices,
   ntfs_3g_probe,
+  ntfscat_i,
   ntfsclone_in,
   ntfsresize_size,
   parse_environment,
@@ -358,7 +363,9 @@ module Guestfs (
   part_add,
   part_del,
   part_disk,
+  part_expand_gpt,
   part_get_bootable,
+  part_get_disk_guid,
   part_get_gpt_guid,
   part_get_gpt_type,
   part_get_mbr_id,
@@ -367,6 +374,8 @@ module Guestfs (
   part_get_parttype,
   part_init,
   part_set_bootable,
+  part_set_disk_guid,
+  part_set_disk_guid_random,
   part_set_gpt_guid,
   part_set_gpt_type,
   part_set_mbr_id,
@@ -1114,6 +1123,18 @@ btrfs_filesystem_balance h fs = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_filesystem_show" c_btrfs_filesystem_show
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+btrfs_filesystem_show :: GuestfsH -> String -> IO [String]
+btrfs_filesystem_show h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_btrfs_filesystem_show p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
 foreign import ccall unsafe "guestfs.h guestfs_btrfs_filesystem_sync" c_btrfs_filesystem_sync
   :: GuestfsP -> CString -> IO CInt
 
@@ -1777,6 +1798,18 @@ download h remotefilename filename = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_download_inode" c_download_inode
+  :: GuestfsP -> CString -> Int64 -> CString -> IO CInt
+
+download_inode :: GuestfsH -> String -> Integer -> String -> IO ()
+download_inode h device inode filename = do
+  r <- withCString device $ \device -> withCString filename $ \filename -> withForeignPtr h (\p -> c_download_inode p device (fromIntegral inode) filename)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
 foreign import ccall unsafe "guestfs.h guestfs_download_offset" c_download_offset
   :: GuestfsP -> CString -> CString -> Int64 -> Int64 -> IO CInt
 
@@ -2425,6 +2458,18 @@ get_smp h = do
       fail err
     else return (fromIntegral r)
 
+foreign import ccall unsafe "guestfs.h guestfs_get_sockdir" c_get_sockdir
+  :: GuestfsP -> IO CString
+
+get_sockdir :: GuestfsH -> IO String
+get_sockdir h = do
+  r <- withForeignPtr h (\p -> c_get_sockdir p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
 foreign import ccall unsafe "guestfs.h guestfs_get_state" c_get_state
   :: GuestfsP -> IO CInt
 
@@ -2496,18 +2541,6 @@ getcon h = do
       err <- last_error h
       fail err
     else peekCString r
-
-foreign import ccall unsafe "guestfs.h guestfs_glob_expand" c_glob_expand
-  :: GuestfsP -> CString -> IO (Ptr CString)
-
-glob_expand :: GuestfsH -> String -> IO [String]
-glob_expand h pattern = do
-  r <- withCString pattern $ \pattern -> withForeignPtr h (\p -> c_glob_expand p pattern)
-  if (r == nullPtr)
-    then do
-      err <- last_error h
-      fail err
-    else peekArray0 nullPtr r >>= mapM peekCString
 
 foreign import ccall unsafe "guestfs.h guestfs_grepi" c_grepi
   :: GuestfsP -> CString -> CString -> IO (Ptr CString)
@@ -3305,8 +3338,8 @@ foreign import ccall unsafe "guestfs.h guestfs_is_lv" c_is_lv
   :: GuestfsP -> CString -> IO CInt
 
 is_lv :: GuestfsH -> String -> IO Bool
-is_lv h device = do
-  r <- withCString device $ \device -> withForeignPtr h (\p -> c_is_lv p device)
+is_lv h mountable = do
+  r <- withCString mountable $ \mountable -> withForeignPtr h (\p -> c_is_lv p mountable)
   if (r == -1)
     then do
       err <- last_error h
@@ -4438,6 +4471,30 @@ mount_vfs h options vfstype mountable mountpoint = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_mountable_device" c_mountable_device
+  :: GuestfsP -> CString -> IO CString
+
+mountable_device :: GuestfsH -> String -> IO String
+mountable_device h mountable = do
+  r <- withCString mountable $ \mountable -> withForeignPtr h (\p -> c_mountable_device p mountable)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_mountable_subvolume" c_mountable_subvolume
+  :: GuestfsP -> CString -> IO CString
+
+mountable_subvolume :: GuestfsH -> String -> IO String
+mountable_subvolume h mountable = do
+  r <- withCString mountable $ \mountable -> withForeignPtr h (\p -> c_mountable_subvolume p mountable)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
 foreign import ccall unsafe "guestfs.h guestfs_mountpoints" c_mountpoints
   :: GuestfsP -> IO (Ptr CString)
 
@@ -4500,6 +4557,18 @@ ntfs_3g_probe h rw device = do
       err <- last_error h
       fail err
     else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs.h guestfs_ntfscat_i" c_ntfscat_i
+  :: GuestfsP -> CString -> Int64 -> CString -> IO CInt
+
+ntfscat_i :: GuestfsH -> String -> Integer -> String -> IO ()
+ntfscat_i h device inode filename = do
+  r <- withCString device $ \device -> withCString filename $ \filename -> withForeignPtr h (\p -> c_ntfscat_i p device (fromIntegral inode) filename)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
 
 foreign import ccall unsafe "guestfs.h guestfs_ntfsclone_in" c_ntfsclone_in
   :: GuestfsP -> CString -> CString -> IO CInt
@@ -4585,6 +4654,18 @@ part_disk h device parttype = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_part_expand_gpt" c_part_expand_gpt
+  :: GuestfsP -> CString -> IO CInt
+
+part_expand_gpt :: GuestfsH -> String -> IO ()
+part_expand_gpt h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_expand_gpt p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
 foreign import ccall unsafe "guestfs.h guestfs_part_get_bootable" c_part_get_bootable
   :: GuestfsP -> CString -> CInt -> IO CInt
 
@@ -4596,6 +4677,18 @@ part_get_bootable h device partnum = do
       err <- last_error h
       fail err
     else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_part_get_disk_guid" c_part_get_disk_guid
+  :: GuestfsP -> CString -> IO CString
+
+part_get_disk_guid :: GuestfsH -> String -> IO String
+part_get_disk_guid h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_get_disk_guid p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
 
 foreign import ccall unsafe "guestfs.h guestfs_part_get_gpt_guid" c_part_get_gpt_guid
   :: GuestfsP -> CString -> CInt -> IO CString
@@ -4687,6 +4780,30 @@ foreign import ccall unsafe "guestfs.h guestfs_part_set_bootable" c_part_set_boo
 part_set_bootable :: GuestfsH -> String -> Int -> Bool -> IO ()
 part_set_bootable h device partnum bootable = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_set_bootable p device (fromIntegral partnum) (fromBool bootable))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_part_set_disk_guid" c_part_set_disk_guid
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+part_set_disk_guid :: GuestfsH -> String -> String -> IO ()
+part_set_disk_guid h device guid = do
+  r <- withCString device $ \device -> withCString guid $ \guid -> withForeignPtr h (\p -> c_part_set_disk_guid p device guid)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_part_set_disk_guid_random" c_part_set_disk_guid_random
+  :: GuestfsP -> CString -> IO CInt
+
+part_set_disk_guid_random :: GuestfsH -> String -> IO ()
+part_set_disk_guid_random h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_set_disk_guid_random p device)
   if (r == -1)
     then do
       err <- last_error h

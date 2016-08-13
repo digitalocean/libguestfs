@@ -337,6 +337,27 @@ guestfs_int_print_statvfs_indent (struct guestfs_statvfs *statvfs, FILE *dest, c
 }
 
 void
+guestfs_int_print_tsk_dirent_indent (struct guestfs_tsk_dirent *tsk_dirent, FILE *dest, const char *linesep, const char *indent)
+{
+  fprintf (dest, "%stsk_inode: %" PRIu64 "%s", indent, tsk_dirent->tsk_inode, linesep);
+  fprintf (dest, "%stsk_type: %c%s", indent, tsk_dirent->tsk_type, linesep);
+  fprintf (dest, "%stsk_size: %" PRIi64 "%s", indent, tsk_dirent->tsk_size, linesep);
+  fprintf (dest, "%stsk_name: %s%s", indent, tsk_dirent->tsk_name, linesep);
+  fprintf (dest, "%stsk_flags: %" PRIu32 "%s", indent, tsk_dirent->tsk_flags, linesep);
+  fprintf (dest, "%stsk_atime_sec: %" PRIi64 "%s", indent, tsk_dirent->tsk_atime_sec, linesep);
+  fprintf (dest, "%stsk_atime_nsec: %" PRIi64 "%s", indent, tsk_dirent->tsk_atime_nsec, linesep);
+  fprintf (dest, "%stsk_mtime_sec: %" PRIi64 "%s", indent, tsk_dirent->tsk_mtime_sec, linesep);
+  fprintf (dest, "%stsk_mtime_nsec: %" PRIi64 "%s", indent, tsk_dirent->tsk_mtime_nsec, linesep);
+  fprintf (dest, "%stsk_ctime_sec: %" PRIi64 "%s", indent, tsk_dirent->tsk_ctime_sec, linesep);
+  fprintf (dest, "%stsk_ctime_nsec: %" PRIi64 "%s", indent, tsk_dirent->tsk_ctime_nsec, linesep);
+  fprintf (dest, "%stsk_crtime_sec: %" PRIi64 "%s", indent, tsk_dirent->tsk_crtime_sec, linesep);
+  fprintf (dest, "%stsk_crtime_nsec: %" PRIi64 "%s", indent, tsk_dirent->tsk_crtime_nsec, linesep);
+  fprintf (dest, "%stsk_nlink: %" PRIi64 "%s", indent, tsk_dirent->tsk_nlink, linesep);
+  fprintf (dest, "%stsk_link: %s%s", indent, tsk_dirent->tsk_link, linesep);
+  fprintf (dest, "%stsk_spare1: %" PRIi64 "%s", indent, tsk_dirent->tsk_spare1, linesep);
+}
+
+void
 guestfs_int_print_utsname_indent (struct guestfs_utsname *utsname, FILE *dest, const char *linesep, const char *indent)
 {
   fprintf (dest, "%suts_sysname: %s%s", indent, utsname->uts_sysname, linesep);

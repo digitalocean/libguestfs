@@ -152,9 +152,9 @@ program.
 
 =over 4
 
-=item B<-a образ>
+=item B<-a> IMAGE
 
-=item B<--add образ>
+=item B<--add> IMAGE
 
 Add a block device or virtual machine image.
 
@@ -162,22 +162,22 @@ Add a block device or virtual machine image.
 примусово використати певний формат, скористайтеся параметром
 I<--format=..>.
 
-=item B<-a адреса>
+=item B<-a> адреса
 
-=item B<--add адреса>
+=item B<--add> адреса
 
 Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
-=item B<-c адреса>
+=item B<-c> адреса
 
-=item B<--connect адреса>
+=item B<--connect> адреса
 
 When used in conjunction with the I<-d> option, this specifies the libvirt
 URI to use.  The default is to use the default libvirt connection.
 
-=item B<-d домен-libvirt>
+=item B<-d> LIBVIRT-DOMAIN
 
-=item B<--domain домен-libvirt>
+=item B<--domain> LIBVIRT-DOMAIN
 
 Add disks from the named libvirt domain.  If the I<--ro> option is also
 used, then any libvirt domain can be used.  However in write mode, only
@@ -185,7 +185,7 @@ libvirt domains which are shut down can be named here.
 
 Domain UUIDs can be used instead of names.
 
-=item B<--dir-cache-timeout N>
+=item B<--dir-cache-timeout> N
 
 Set the readdir cache timeout to I<N> seconds, the default being 60
 seconds.  The readdir cache [actually, there are several semi-independent
@@ -204,7 +204,7 @@ off so you cannot see what you are typing.  If you are not worried about
 Tempest attacks and there is no one else in the room you can specify this
 flag to see what you are typing.
 
-=item B<--fd=FD>
+=item B<--fd=>FD
 
 Specify a pipe or eventfd file descriptor.  When the mountpoint is ready to
 be used, guestmount writes a single byte to this file descriptor.  This can
@@ -253,9 +253,9 @@ passphrases from the user by opening F</dev/tty>.
 Connect to a live virtual machine.  (Experimental, see
 L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
-=item B<-m пристрій[:точка монтування[:параметри[:тип файлової системи]]>
+=item B<-m> dev[:mountpoint[:options[:fstype]]
 
-=item B<--mount пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
+=item B<--mount> dev[:mountpoint[:options[:fstype]]]
 
 Mount the named partition or logical volume on the given mountpoint B<in the
 guest> (this has nothing to do with mountpoints in the host).
@@ -289,9 +289,9 @@ By default, we attempt to sync the guest disk when the FUSE mountpoint is
 unmounted.  If you specify this option, then we don't attempt to sync the
 disk.  See the discussion of autosync in the L<guestfs(3)> manpage.
 
-=item B<-o параметр>
+=item B<-o> OPTION
 
-=item B<--option параметр>
+=item B<--option> OPTION
 
 Pass extra options to FUSE.
 
@@ -305,26 +305,26 @@ of them are a good idea.
 
 =over 4
 
-=item B<-o allow_other>
+=item B<-o> B<allow_other>
 
 Дозволити іншим користувачам переглядати файлову систему.
 
-=item B<-o attr_timeout=N>
+=item B<-o> B<attr_timeout=N>
 
 Enable attribute caching by FUSE, and set the timeout to I<N> seconds.
 
-=item B<-o kernel_cache>
+=item B<-o> B<kernel_cache>
 
 Allow the kernel to cache files (reduces the number of reads that have to go
 through the L<guestfs(3)> API).  This is generally a good idea if you can
 afford the extra memory usage.
 
-=item B<-o uid=N> B<-o gid=N>
+=item B<-o> B<uid=N> B<-o> B<gid=N>
 
 Use these options to map all UIDs and GIDs inside the guest filesystem to
 the chosen values.
 
-=item B<-o use_ino>
+=item B<-o> B<use_ino>
 
 Preserve inode numbers from the underlying filesystem.
 
@@ -338,7 +338,7 @@ appearing through FUSE.  Use of this option can confuse some software.
 
 =back
 
-=item B<--pid-file назва_файла>
+=item B<--pid-file> FILENAME
 
 Write the PID of the guestmount worker process to C<filename>.
 
@@ -358,7 +358,7 @@ happening, but it is not always possible.
 
 =item B<--selinux>
 
-Enable SELinux support for the guest.
+This option is provided for backwards compatibility and does nothing.
 
 =item B<-v>
 
@@ -429,5 +429,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

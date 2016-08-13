@@ -118,13 +118,13 @@ fields of directories.
 
 =item B<--domain> гість
 
-Add all the disks from the named libvirt guest, as the first guest.  Domain
-UUIDs can be used instead of names.
+Додати всі диски з вказаної гостьової системи libvirt як першої гостьової
+системи. UUID доменів можна використовувати замість назв.
 
 =item B<-D> гість
 
-Add all the disks from the named libvirt guest, as the second guest.  Domain
-UUIDs can be used instead of names.
+Додати всі диски з вказаної гостьової системи libvirt як другої гостьової
+системи. UUID доменів можна використовувати замість назв.
 
 =item B<--echo-keys>
 
@@ -141,10 +141,11 @@ flag to see what you are typing.
 
 =item B<--format>
 
-The default for the I<-a>/I<-A> option is to auto-detect the format of the
-disk image.  Using this forces the disk format for I<-a>/I<-A> options which
-follow on the command line.  Using I<--format> with no argument switches
-back to auto-detection for subsequent I<-a>/I<-A> options.
+Типовим значенням для параметра I<-a>/I<-A> є автоматичне визначення формату
+образу диска. Використання цього параметра примусово визначає значення
+параметрів I<-a>/I<-A> формату диска у наступному рядку
+команди. Використання параметра I<--format> без аргументу перемикає програму
+у режим автоматичного визначення у наступних параметрах I<-a>/I<-A>.
 
 Приклад:
 
@@ -215,7 +216,7 @@ Display time fields as seconds since the Unix epoch.
 
 =item B<--xattrs>
 
-Display extended attributes.
+Показати розширені атрибути.
 
 =back
 
@@ -259,5 +260,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

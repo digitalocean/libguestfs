@@ -121,17 +121,21 @@ libguestfs_la_SOURCES = \
 	listfs.c \
 	lpj.c \
 	match.c \
+	mountable.c \
 	osinfo.c \
 	private-data.c \
 	proto.c \
+	qemu.c \
 	stringsbuf.c \
 	structs-compare.c \
 	structs-copy.c \
 	structs-free.c \
 	tmpdirs.c \
+	tsk.c \
 	umask.c \
 	wait.c \
 	whole-file.c \
+	version.c \
 	libguestfs.syms
 
 libguestfs_la_CPPFLAGS = \
@@ -232,6 +236,7 @@ libutils_la_SOURCES = \
 	structs-cleanup.c \
 	structs-print.c \
 	structs-print.h \
+	uefi.c \
 	utils.c
 libutils_la_CPPFLAGS = $(libguestfs_la_CPPFLAGS)
 libutils_la_CFLAGS = $(libguestfs_la_CFLAGS)

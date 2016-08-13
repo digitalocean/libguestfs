@@ -16,9 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* Adapted from
-https://rwmj.wordpress.com/2010/12/15/tip-audit-virtual-machine-for-setuid-files/
-*/
+/**
+ * This file contains a recursive function for visiting all files and
+ * directories in a guestfs filesystem.
+ *
+ * Adapted from
+ * L<https://rwmj.wordpress.com/2010/12/15/tip-audit-virtual-machine-for-setuid-files/>
+ */
 
 #include <config.h>
 
@@ -36,6 +40,29 @@ https://rwmj.wordpress.com/2010/12/15/tip-audit-virtual-machine-for-setuid-files
 
 static int _visit (guestfs_h *g, int depth, const char *dir, visitor_function f, void *opaque);
 
+/**
+ * Visit every file and directory in a guestfs filesystem, starting
+ * at C<dir>.
+ *
+ * C<dir> may be C<"/"> to visit the entire filesystem, or may be some
+ * subdirectory.  Symbolic links are not followed.
+ *
+ * The visitor function C<f> is called once for every directory and
+ * every file.  The parameters passed to C<f> include the current
+ * directory name, the current file name (or C<NULL> when we're
+ * visiting a directory), the C<guestfs_statns> (file permissions
+ * etc), and the list of extended attributes of the file.  The visitor
+ * function may return C<-1> which causes the whole recursion to stop
+ * with an error.
+ *
+ * Also passed to this function is an C<opaque> pointer which is
+ * passed through to the visitor function.
+ *
+ * Returns C<0> if everything went OK, or C<-1> if there was an error.
+ * Error handling is not particularly well defined.  It will either
+ * set an error in the libguestfs handle or print an error on stderr,
+ * but there is no way for the caller to tell the difference.
+ */
 int
 visit (guestfs_h *g, const char *dir, visitor_function f, void *opaque)
 {
@@ -89,6 +116,7 @@ _visit (guestfs_h *g, int depth, const char *dir,
   /* Call function on everything in this directory. */
   for (i = 0, xattrp = 0; names[i] != NULL; ++i, ++xattrp) {
     CLEANUP_FREE char *path = NULL;
+    CLEANUP_FREE char *attrval = NULL;
     struct guestfs_xattr_list file_xattrs;
     size_t nr_xattrs;
 
@@ -104,7 +132,11 @@ _visit (guestfs_h *g, int depth, const char *dir,
       return -1;
     }
     /* attrval is not \0-terminated. */
-    char attrval[xattrs->val[xattrp].attrval_len+1];
+    attrval = malloc (xattrs->val[xattrp].attrval_len + 1);
+    if (attrval == NULL) {
+      perror ("malloc");
+      return -1;
+    }
     memcpy (attrval, xattrs->val[xattrp].attrval,
             xattrs->val[xattrp].attrval_len);
     attrval[xattrs->val[xattrp].attrval_len] = '\0';

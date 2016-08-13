@@ -30,21 +30,27 @@ they were specified as I<--delete /some/file> on the command line.
 
 =item B<--copy> SOURCE:DEST (see C<customize> below)
 
-Copy files or directories recursively inside the guest.
+Копіювати файли або каталоги рекурсивно у межах гостьової системи.
 
-Wildcards cannot be used.
+Не можна використовувати символи-замінники.
 
 =item B<--copy-in> LOCALPATH:REMOTEDIR (see C<customize> below)
 
 Copy local files or directories recursively into the disk image, placing
 them in the directory C<REMOTEDIR> (which must exist).
 
-Wildcards cannot be used.
+Не можна використовувати символи-замінники.
 
 =item B<--delete> PATH (see C<customize> below)
 
 Delete a file from the guest.  Or delete a directory (and all its contents,
 recursively).
+
+You can use shell glob characters in the specified path.  Be careful to
+escape glob characters from the host shell, if that is required.  For
+example:
+
+ virt-customize --delete '/var/log/*.log'.
 
 Див. також I<--upload>, I<--scrub>.
 
@@ -113,7 +119,7 @@ etc.) and the host's network connection.
 For an overview on the different ways to install packages, see
 L<virt-builder(1)/INSTALLING PACKAGES>.
 
-Див. також I<--update>.
+See also I<--update>, I<--uninstall>.
 
 =item B<--keep-user-accounts> USERS (see C<user-account> below)
 
@@ -134,16 +140,16 @@ C<TARGET>.
 
 =item B<--mkdir> DIR (see C<customize> below)
 
-Create a directory in the guest.
+Створити каталог у гостьовій системі.
 
 This uses S<C<mkdir -p>> so any intermediate directories are created, and it
 also works if the directory already exists.
 
 =item B<--move> SOURCE:DEST (see C<customize> below)
 
-Move files or directories inside the guest.
+Пересунути файли або каталоги у межах гостьової системи.
 
-Wildcards cannot be used.
+Не можна використовувати символи-замінники.
 
 =item B<--no-logfile> (see C<customize> below)
 
@@ -223,7 +229,7 @@ upload data files (I<--upload>).
 You can have multiple I<--run> options.  They run in the same order that
 they appear on the command line.
 
-See also: I<--firstboot>, I<--attach>, I<--upload>.
+Див. також I<--firstboot>, I<--attach>, I<--upload>.
 
 =item B<--run-command> 'CMD+ARGS' (see C<customize> below)
 
@@ -239,7 +245,7 @@ upload data files (I<--upload>).
 You can have multiple I<--run-command> options.  They run in the same order
 that they appear on the command line.
 
-See also: I<--firstboot>, I<--attach>, I<--upload>.
+Див. також I<--firstboot>, I<--attach>, I<--upload>.
 
 =item B<--script> SCRIPT (see C<script> below)
 
@@ -342,13 +348,22 @@ already.
 
 This command recursively truncates all files under C<PATH> to zero-length.
 
+=item B<--uninstall> PKG,PKG..  (see C<customize> below)
+
+Uninstall the named packages (a comma-separated list).  These are removed
+during the image build using the guest's package manager (eg. apt, yum,
+etc.).  Dependent packages may also need to be uninstalled to satisfy the
+request.
+
+See also I<--install>, I<--update>.
+
 =item B<--update> (see C<customize> below)
 
 Do the equivalent of C<yum update>, C<apt-get upgrade>, or whatever command
 is required to update the packages already installed in the template to
 their latest versions.
 
-Див. також I<--install>.
+See also I<--install>, I<--uninstall>.
 
 =item B<--upload> FILE:DEST (see C<customize> below)
 

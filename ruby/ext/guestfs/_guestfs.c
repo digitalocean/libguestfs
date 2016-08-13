@@ -249,7 +249,9 @@ set_event_callback (VALUE gv, VALUE cbv, VALUE event_bitmaskv)
 
   event_bitmask = NUM2ULL (event_bitmaskv);
 
-  root = guestfs_int_safe_malloc (g, sizeof *root);
+  root = malloc (sizeof *root);
+  if (root == NULL)
+    rb_raise (rb_eNoMemError, "malloc: %m");
   *root = cbv;
 
   eh = guestfs_set_event_callback (g, event_callback_wrapper,
@@ -422,7 +424,9 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_int_safe_malloc (g, sizeof (VALUE *) * (*len_rtn));
+  r = malloc (sizeof (VALUE *) * (*len_rtn));
+  if (r == NULL)
+    rb_raise (rb_eNoMemError, "malloc: %m");
 
   i = 0;
   root = guestfs_first_private (g, &key);
@@ -3293,6 +3297,54 @@ guestfs_int_ruby_btrfs_filesystem_resize (int argc, VALUE *argv, VALUE gv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_filesystem_show(device) -> list
+ *
+ * list devices for btrfs filesystem
+ *
+ * Show all the devices where the filesystems in "device"
+ * is spanned over.
+ * 
+ * If not all the devices for the filesystems are present,
+ * then this function fails and the "errno" is set to
+ * "ENODEV".
+ *
+ *
+ * [Since] Added in version 1.33.29.
+ *
+ * [Feature] This function depends on the feature +btrfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_btrfs_filesystem_show}[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_show].
+ */
+static VALUE
+guestfs_int_ruby_btrfs_filesystem_show (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_filesystem_show");
+
+  const char *device = StringValueCStr (devicev);
+
+  char **r;
+
+  r = guestfs_btrfs_filesystem_show (g, device);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
 }
 
 /*
@@ -6708,6 +6760,129 @@ guestfs_int_ruby_download (VALUE gv, VALUE remotefilenamev, VALUE filenamev)
 
 /*
  * call-seq:
+ *   g.download_blocks(device, start, stop, filename, {optargs...}) -> nil
+ *
+ * download the given data units from the disk
+ *
+ * Download the data units from start address to stop from
+ * the disk partition (eg. /dev/sda1) and save them as
+ * filename on the local machine.
+ * 
+ * The use of this API on sparse disk image formats such as
+ * QCOW, may result in large zero-filled files downloaded
+ * on the host.
+ * 
+ * The size of a data unit varies across filesystem
+ * implementations. On NTFS filesystems data units are
+ * referred as clusters while on ExtX ones they are
+ * referred as fragments.
+ * 
+ * If the optional "unallocated" flag is true (default is
+ * false), only the unallocated blocks will be extracted.
+ * This is useful to detect hidden data or to retrieve
+ * deleted files which data units have not been overwritten
+ * yet.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * [Since] Added in version 1.33.45.
+ *
+ * [Feature] This function depends on the feature +sleuthkit+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_download_blocks}[http://libguestfs.org/guestfs.3.html#guestfs_download_blocks].
+ */
+static VALUE
+guestfs_int_ruby_download_blocks (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "download_blocks");
+
+  if (argc < 4 || argc > 5)
+    rb_raise (rb_eArgError, "expecting 4 or 5 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE startv = argv[1];
+  volatile VALUE stopv = argv[2];
+  volatile VALUE filenamev = argv[3];
+  volatile VALUE optargsv = argc > 4 ? argv[4] : rb_hash_new ();
+
+  const char *device = StringValueCStr (devicev);
+  long long start = NUM2LL (startv);
+  long long stop = NUM2LL (stopv);
+  const char *filename = StringValueCStr (filenamev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_download_blocks_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_download_blocks_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("unallocated")));
+  if (v != Qnil) {
+    optargs_s.unallocated = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_download_blocks_argv (g, device, start, stop, filename, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.download_inode(device, inode, filename) -> nil
+ *
+ * download a file to the local machine given its inode
+ *
+ * Download a file given its inode from the disk partition
+ * (eg. /dev/sda1) and save it as filename on the local
+ * machine.
+ * 
+ * It is not required to mount the disk to run this
+ * command.
+ * 
+ * The command is capable of downloading deleted or
+ * inaccessible files.
+ *
+ *
+ * [Since] Added in version 1.33.14.
+ *
+ * [Feature] This function depends on the feature +sleuthkit+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_download_inode}[http://libguestfs.org/guestfs.3.html#guestfs_download_inode].
+ */
+static VALUE
+guestfs_int_ruby_download_inode (VALUE gv, VALUE devicev, VALUE inodev, VALUE filenamev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "download_inode");
+
+  const char *device = StringValueCStr (devicev);
+  long long inode = NUM2LL (inodev);
+  const char *filename = StringValueCStr (filenamev);
+
+  int r;
+
+  r = guestfs_download_inode (g, device, inode, filename);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.download_offset(remotefilename, filename, offset, size) -> nil
  *
  * download a file to the local machine with offset and size
@@ -7708,6 +7883,163 @@ guestfs_int_ruby_filesystem_available (VALUE gv, VALUE filesystemv)
 
 /*
  * call-seq:
+ *   g.filesystem_walk(device) -> list
+ *
+ * walk through the filesystem content
+ *
+ * Walk through the internal structures of a disk partition
+ * (eg. /dev/sda1) in order to return a list of all the
+ * files and directories stored within.
+ * 
+ * It is not necessary to mount the disk partition to run
+ * this command.
+ * 
+ * All entries in the filesystem are returned, excluding
+ * "." and "..". This function can list deleted or
+ * unaccessible files. The entries are *not* sorted.
+ * 
+ * The "tsk_dirent" structure contains the following
+ * fields.
+ * 
+ * 'tsk_inode'
+ * Filesystem reference number of the node. It migh be
+ * 0 if the node has been deleted.
+ * 
+ * 'tsk_type'
+ * Basic file type information. See below for a
+ * detailed list of values.
+ * 
+ * 'tsk_size'
+ * File size in bytes. It migh be -1 if the node has
+ * been deleted.
+ * 
+ * 'tsk_name'
+ * The file path relative to its directory.
+ * 
+ * 'tsk_flags'
+ * Bitfield containing extra information regarding the
+ * entry. It contains the logical OR of the following
+ * values:
+ * 
+ * 0x0001
+ * If set to 1, the file is allocated and visible
+ * within the filesystem. Otherwise, the file has
+ * been deleted. Under certain circumstances, the
+ * function "download_inode" can be used to recover
+ * deleted files.
+ * 
+ * 0x0002
+ * Filesystem such as NTFS and Ext2 or greater,
+ * separate the file name from the metadata
+ * structure. The bit is set to 1 when the file
+ * name is in an unallocated state and the metadata
+ * structure is in an allocated one. This generally
+ * implies the metadata has been reallocated to a
+ * new file. Therefore, information such as file
+ * type, file size, timestamps, number of links and
+ * symlink target might not correspond with the
+ * ones of the original deleted entry.
+ * 
+ * 0x0004
+ * The bit is set to 1 when the file is compressed
+ * using filesystem native compression support
+ * (NTFS). The API is not able to detect
+ * application level compression.
+ * 
+ * 'tsk_atime_sec'
+ * 'tsk_atime_nsec'
+ * 'tsk_mtime_sec'
+ * 'tsk_mtime_nsec'
+ * 'tsk_ctime_sec'
+ * 'tsk_ctime_nsec'
+ * 'tsk_crtime_sec'
+ * 'tsk_crtime_nsec'
+ * Respectively, access, modification, last status
+ * change and creation time in Unix format in seconds
+ * and nanoseconds.
+ * 
+ * 'tsk_nlink'
+ * Number of file names pointing to this entry.
+ * 
+ * 'tsk_link'
+ * If the entry is a symbolic link, this field will
+ * contain the path to the target file.
+ * 
+ * The "tsk_type" field will contain one of the following
+ * characters:
+ * 
+ * 'b' Block special
+ * 
+ * 'c' Char special
+ * 
+ * 'd' Directory
+ * 
+ * 'f' FIFO (named pipe)
+ * 
+ * 'l' Symbolic link
+ * 
+ * 'r' Regular file
+ * 
+ * 's' Socket
+ * 
+ * 'h' Shadow inode (Solaris)
+ * 
+ * 'w' Whiteout inode (BSD)
+ * 
+ * 'u' Unknown file type
+ *
+ *
+ * [Since] Added in version 1.33.39.
+ *
+ * [Feature] This function depends on the feature +libtsk+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_filesystem_walk}[http://libguestfs.org/guestfs.3.html#guestfs_filesystem_walk].
+ */
+static VALUE
+guestfs_int_ruby_filesystem_walk (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "filesystem_walk");
+
+  const char *device = StringValueCStr (devicev);
+
+  struct guestfs_tsk_dirent_list *r;
+
+  r = guestfs_filesystem_walk (g, device);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("tsk_inode"), ULL2NUM (r->val[i].tsk_inode));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_type"), ULL2NUM (r->val[i].tsk_type));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_size"), LL2NUM (r->val[i].tsk_size));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_name"), rb_str_new2 (r->val[i].tsk_name));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_flags"), UINT2NUM (r->val[i].tsk_flags));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_atime_sec"), LL2NUM (r->val[i].tsk_atime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_atime_nsec"), LL2NUM (r->val[i].tsk_atime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_mtime_sec"), LL2NUM (r->val[i].tsk_mtime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_mtime_nsec"), LL2NUM (r->val[i].tsk_mtime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_ctime_sec"), LL2NUM (r->val[i].tsk_ctime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_ctime_nsec"), LL2NUM (r->val[i].tsk_ctime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_crtime_sec"), LL2NUM (r->val[i].tsk_crtime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_crtime_nsec"), LL2NUM (r->val[i].tsk_crtime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_nlink"), LL2NUM (r->val[i].tsk_nlink));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_link"), rb_str_new2 (r->val[i].tsk_link));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_spare1"), LL2NUM (r->val[i].tsk_spare1));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_tsk_dirent_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.fill(c, len, path) -> nil
  *
  * fill a file with octets
@@ -8084,6 +8416,11 @@ guestfs_int_ruby_fsck (VALUE gv, VALUE fstypev, VALUE devicev)
  * mounted filesystem, the host filesystem, qemu and the
  * host kernel. If this support isn't present it may give
  * an error or even appear to run but do nothing.
+ * 
+ * In the case where the kernel vfs driver does not support
+ * trimming, this call will fail with errno set to
+ * "ENOTSUP". Currently this happens when trying to trim
+ * FAT filesystems.
  * 
  * See also "g.zero_free_space". That is a slightly
  * different operation that turns free space in the
@@ -9208,6 +9545,8 @@ guestfs_int_ruby_get_recovery_proc (VALUE gv)
  *
  * [Since] Added in version 1.0.67.
  *
+ * [Deprecated] In new code, use rdoc-ref:selinux_relabel instead.
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_get_selinux}[http://libguestfs.org/guestfs.3.html#guestfs_get_selinux].
  */
@@ -9260,6 +9599,50 @@ guestfs_int_ruby_get_smp (VALUE gv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.get_sockdir() -> string
+ *
+ * get the temporary directory for sockets
+ *
+ * Get the directory used by the handle to store temporary
+ * socket files.
+ * 
+ * This is different from "g.tmpdir", as we need shorter
+ * paths for sockets (due to the limited buffers of
+ * filenames for UNIX sockets), and "g.tmpdir" may be too
+ * long for them.
+ * 
+ * The environment variable "XDG_RUNTIME_DIR" controls the
+ * default value: If "XDG_RUNTIME_DIR" is set, then that is
+ * the default. Else /tmp is the default.
+ *
+ *
+ * [Since] Added in version 1.33.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_get_sockdir}[http://libguestfs.org/guestfs.3.html#guestfs_get_sockdir].
+ */
+static VALUE
+guestfs_int_ruby_get_sockdir (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_sockdir");
+
+
+  char *r;
+
+  r = guestfs_get_sockdir (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
 }
 
 /*
@@ -9444,6 +9827,8 @@ guestfs_int_ruby_get_verbose (VALUE gv)
  *
  * [Since] Added in version 1.0.67.
  *
+ * [Deprecated] In new code, use rdoc-ref:selinux_relabel instead.
+ *
  * [Feature] This function depends on the feature +selinux+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
  * [C API] For the C API documentation for this function, see
@@ -9577,7 +9962,7 @@ guestfs_int_ruby_getxattrs (VALUE gv, VALUE pathv)
 
 /*
  * call-seq:
- *   g.glob_expand(pattern) -> list
+ *   g.glob_expand(pattern, {optargs...}) -> list
  *
  * expand a wildcard path
  *
@@ -9592,9 +9977,18 @@ guestfs_int_ruby_getxattrs (VALUE gv, VALUE pathv)
  * flags "GLOB_MARK|GLOB_BRACE". See that manual page for
  * more details.
  * 
+ * "directoryslash" controls whether use the "GLOB_MARK"
+ * flag for glob(3), and it defaults to true. It can be
+ * explicitly set as off to return no trailing slashes in
+ * filenames of directories.
+ * 
  * Notice that there is no equivalent command for expanding
  * a device name (eg. /dev/sd*). Use "g.list_devices",
  * "g.list_partitions" etc functions instead.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * [Since] Added in version 1.0.50.
@@ -9603,18 +9997,34 @@ guestfs_int_ruby_getxattrs (VALUE gv, VALUE pathv)
  *         {guestfs_glob_expand}[http://libguestfs.org/guestfs.3.html#guestfs_glob_expand].
  */
 static VALUE
-guestfs_int_ruby_glob_expand (VALUE gv, VALUE patternv)
+guestfs_int_ruby_glob_expand (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "glob_expand");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE patternv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *pattern = StringValueCStr (patternv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_glob_expand_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_glob_expand_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("directoryslash")));
+  if (v != Qnil) {
+    optargs_s.directoryslash = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH_BITMASK;
+  }
 
   char **r;
 
-  r = guestfs_glob_expand (g, pattern);
+  r = guestfs_glob_expand_opts_argv (g, pattern, optargs);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -11249,6 +11659,9 @@ guestfs_int_ruby_inspect_get_arch (VALUE gv, VALUE rootv)
  * "unknown"
  * The distro could not be determined.
  * 
+ * "voidlinux"
+ * Void Linux.
+ * 
  * "windows"
  * Windows does not have distributions. This string is
  * returned if the OS type is Windows.
@@ -11787,8 +12200,8 @@ guestfs_int_ruby_inspect_get_mountpoints (VALUE gv, VALUE rootv)
  * Windows).
  * 
  * Possible strings include: "rpm", "deb", "ebuild",
- * "pisi", "pacman", "pkgsrc", "apk". Future versions of
- * libguestfs may return other strings.
+ * "pisi", "pacman", "pkgsrc", "apk", "xbps". Future
+ * versions of libguestfs may return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
@@ -11838,8 +12251,8 @@ guestfs_int_ruby_inspect_get_package_format (VALUE gv, VALUE rootv)
  * 
  * Possible strings include: "yum", "dnf", "up2date", "apt"
  * (for all Debian derivatives), "portage", "pisi",
- * "pacman", "urpmi", "zypper", "apk". Future versions of
- * libguestfs may return other strings.
+ * "pacman", "urpmi", "zypper", "apk", "xbps". Future
+ * versions of libguestfs may return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
@@ -14285,12 +14698,12 @@ guestfs_int_ruby_is_launching (VALUE gv)
 
 /*
  * call-seq:
- *   g.is_lv(device) -> [True|False]
+ *   g.is_lv(mountable) -> [True|False]
  *
- * test if device is a logical volume
+ * test if mountable is a logical volume
  *
- * This command tests whether "device" is a logical volume,
- * and returns true iff this is the case.
+ * This command tests whether "mountable" is a logical
+ * volume, and returns true iff this is the case.
  *
  *
  * [Since] Added in version 1.5.3.
@@ -14299,18 +14712,18 @@ guestfs_int_ruby_is_launching (VALUE gv)
  *         {guestfs_is_lv}[http://libguestfs.org/guestfs.3.html#guestfs_is_lv].
  */
 static VALUE
-guestfs_int_ruby_is_lv (VALUE gv, VALUE devicev)
+guestfs_int_ruby_is_lv (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "is_lv");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
 
   int r;
 
-  r = guestfs_is_lv (g, device);
+  r = guestfs_is_lv (g, mountable);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -16160,6 +16573,8 @@ guestfs_int_ruby_ll (VALUE gv, VALUE directoryv)
  *
  *
  * [Since] Added in version 1.17.6.
+ *
+ * [Deprecated] In new code, use rdoc-ref:lgetxattrs instead.
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_llz}[http://libguestfs.org/guestfs.3.html#guestfs_llz].
@@ -19955,6 +20370,90 @@ guestfs_int_ruby_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE moun
 
 /*
  * call-seq:
+ *   g.mountable_device(mountable) -> string
+ *
+ * extract the device part of a mountable
+ *
+ * Returns the device name of a mountable. In quite a lot
+ * of cases, the mountable is the device name.
+ * 
+ * However this doesn't apply for btrfs subvolumes, where
+ * the mountable is a combination of both the device name
+ * and the subvolume path (see also "g.mountable_subvolume"
+ * to extract the subvolume path of the mountable if any).
+ *
+ *
+ * [Since] Added in version 1.33.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mountable_device}[http://libguestfs.org/guestfs.3.html#guestfs_mountable_device].
+ */
+static VALUE
+guestfs_int_ruby_mountable_device (VALUE gv, VALUE mountablev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mountable_device");
+
+  const char *mountable = StringValueCStr (mountablev);
+
+  char *r;
+
+  r = guestfs_mountable_device (g, mountable);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.mountable_subvolume(mountable) -> string
+ *
+ * extract the subvolume part of a mountable
+ *
+ * Returns the subvolume path of a mountable. Btrfs
+ * subvolumes mountables are a combination of both the
+ * device name and the subvolume path (see also
+ * "g.mountable_device" to extract the device of the
+ * mountable).
+ * 
+ * If the mountable does not represent a btrfs subvolume,
+ * then this function fails and the "errno" is set to
+ * "EINVAL".
+ *
+ *
+ * [Since] Added in version 1.33.15.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mountable_subvolume}[http://libguestfs.org/guestfs.3.html#guestfs_mountable_subvolume].
+ */
+static VALUE
+guestfs_int_ruby_mountable_subvolume (VALUE gv, VALUE mountablev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mountable_subvolume");
+
+  const char *mountable = StringValueCStr (mountablev);
+
+  char *r;
+
+  r = guestfs_mountable_subvolume (g, mountable);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.mountpoints() -> hash
  *
  * show mountpoints
@@ -20161,6 +20660,48 @@ guestfs_int_ruby_ntfs_3g_probe (VALUE gv, VALUE rwv, VALUE devicev)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.ntfscat_i(device, inode, filename) -> nil
+ *
+ * download a file to the local machine given its inode
+ *
+ * Download a file given its inode from a NTFS filesystem
+ * and save it as filename on the local machine.
+ * 
+ * This allows to download some otherwise inaccessible
+ * files such as the ones within the $Extend folder.
+ * 
+ * The filesystem from which to extract the file must be
+ * unmounted, otherwise the call will fail.
+ *
+ *
+ * [Since] Added in version 1.33.14.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_ntfscat_i}[http://libguestfs.org/guestfs.3.html#guestfs_ntfscat_i].
+ */
+static VALUE
+guestfs_int_ruby_ntfscat_i (VALUE gv, VALUE devicev, VALUE inodev, VALUE filenamev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfscat_i");
+
+  const char *device = StringValueCStr (devicev);
+  long long inode = NUM2LL (inodev);
+  const char *filename = StringValueCStr (filenamev);
+
+  int r;
+
+  r = guestfs_ntfscat_i (g, device, inode, filename);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
 }
 
 /*
@@ -20706,6 +21247,46 @@ guestfs_int_ruby_part_disk (VALUE gv, VALUE devicev, VALUE parttypev)
 
 /*
  * call-seq:
+ *   g.part_expand_gpt(device) -> nil
+ *
+ * move backup GPT header to the end of the disk
+ *
+ * Move backup GPT data structures to the end of the disk.
+ * This is useful in case of in-place image expand since
+ * disk space after backup GPT header is not usable. This
+ * is equivalent to "sgdisk -e".
+ * 
+ * See also sgdisk(8).
+ *
+ *
+ * [Since] Added in version 1.33.2.
+ *
+ * [Feature] This function depends on the feature +gdisk+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_expand_gpt}[http://libguestfs.org/guestfs.3.html#guestfs_part_expand_gpt].
+ */
+static VALUE
+guestfs_int_ruby_part_expand_gpt (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_expand_gpt");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_part_expand_gpt (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.part_get_bootable(device, partnum) -> [True|False]
  *
  * return true if a partition is bootable
@@ -20739,6 +21320,45 @@ guestfs_int_ruby_part_get_bootable (VALUE gv, VALUE devicev, VALUE partnumv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.part_get_disk_guid(device) -> string
+ *
+ * get the GUID of a GPT-partitioned disk
+ *
+ * Return the disk identifier (GUID) of a GPT-partitioned
+ * "device". Behaviour is undefined for other partition
+ * types.
+ *
+ *
+ * [Since] Added in version 1.33.2.
+ *
+ * [Feature] This function depends on the feature +gdisk+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_get_disk_guid}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_disk_guid].
+ */
+static VALUE
+guestfs_int_ruby_part_get_disk_guid (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_get_disk_guid");
+
+  const char *device = StringValueCStr (devicev);
+
+  char *r;
+
+  r = guestfs_part_get_disk_guid (g, device);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
 }
 
 /*
@@ -21156,6 +21776,82 @@ guestfs_int_ruby_part_set_bootable (VALUE gv, VALUE devicev, VALUE partnumv, VAL
   int r;
 
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.part_set_disk_guid(device, guid) -> nil
+ *
+ * set the GUID of a GPT-partitioned disk
+ *
+ * Set the disk identifier (GUID) of a GPT-partitioned
+ * "device" to "guid". Return an error if the partition
+ * table of "device" isn't GPT, or if "guid" is not a valid
+ * GUID.
+ *
+ *
+ * [Since] Added in version 1.33.2.
+ *
+ * [Feature] This function depends on the feature +gdisk+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_set_disk_guid}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_disk_guid].
+ */
+static VALUE
+guestfs_int_ruby_part_set_disk_guid (VALUE gv, VALUE devicev, VALUE guidv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_set_disk_guid");
+
+  const char *device = StringValueCStr (devicev);
+  const char *guid = StringValueCStr (guidv);
+
+  int r;
+
+  r = guestfs_part_set_disk_guid (g, device, guid);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.part_set_disk_guid_random(device) -> nil
+ *
+ * set the GUID of a GPT-partitioned disk to random value
+ *
+ * Set the disk identifier (GUID) of a GPT-partitioned
+ * "device" to a randomly generated value. Return an error
+ * if the partition table of "device" isn't GPT.
+ *
+ *
+ * [Since] Added in version 1.33.2.
+ *
+ * [Feature] This function depends on the feature +gdisk+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_set_disk_guid_random}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_disk_guid_random].
+ */
+static VALUE
+guestfs_int_ruby_part_set_disk_guid_random (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_set_disk_guid_random");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_part_set_disk_guid_random (g, device);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -23175,6 +23871,78 @@ guestfs_int_ruby_scrub_freespace (VALUE gv, VALUE dirv)
 
 /*
  * call-seq:
+ *   g.selinux_relabel(specfile, path, {optargs...}) -> nil
+ *
+ * relabel parts of the filesystem
+ *
+ * SELinux relabel parts of the filesystem.
+ * 
+ * The "specfile" parameter controls the policy spec file
+ * used. You have to parse "/etc/selinux/config" to find
+ * the correct SELinux policy and then pass the spec file,
+ * usually: "/etc/selinux/" + *selinuxtype* +
+ * "/contexts/files/file_contexts".
+ * 
+ * The required "path" parameter is the top level directory
+ * where relabelling starts. Normally you should pass
+ * "path" as "/" to relabel the whole guest filesystem.
+ * 
+ * The optional "force" boolean controls whether the
+ * context is reset for customizable files, and also
+ * whether the user, role and range parts of the file
+ * context is changed.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * [Since] Added in version 1.33.43.
+ *
+ * [Feature] This function depends on the feature +selinuxrelabel+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_selinux_relabel}[http://libguestfs.org/guestfs.3.html#guestfs_selinux_relabel].
+ */
+static VALUE
+guestfs_int_ruby_selinux_relabel (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "selinux_relabel");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE specfilev = argv[0];
+  volatile VALUE pathv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
+  const char *specfile = StringValueCStr (specfilev);
+  const char *path = StringValueCStr (pathv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_selinux_relabel_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_selinux_relabel_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("force")));
+  if (v != Qnil) {
+    optargs_s.force = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_SELINUX_RELABEL_FORCE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_selinux_relabel_argv (g, specfile, path, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.set_append(append) -> nil
  *
  * add options to kernel command line
@@ -24311,6 +25079,8 @@ guestfs_int_ruby_set_recovery_proc (VALUE gv, VALUE recoveryprocv)
  *
  * [Since] Added in version 1.0.67.
  *
+ * [Deprecated] In new code, use rdoc-ref:selinux_relabel instead.
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_set_selinux}[http://libguestfs.org/guestfs.3.html#guestfs_set_selinux].
  */
@@ -24589,6 +25359,8 @@ guestfs_int_ruby_set_verbose (VALUE gv, VALUE verbosev)
  *
  *
  * [Since] Added in version 1.0.67.
+ *
+ * [Deprecated] In new code, use rdoc-ref:selinux_relabel instead.
  *
  * [Feature] This function depends on the feature +selinux+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
@@ -29250,6 +30022,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_btrfs_filesystem_defragment, -1);
   rb_define_method (c_guestfs, "btrfs_filesystem_resize",
                     guestfs_int_ruby_btrfs_filesystem_resize, -1);
+  rb_define_method (c_guestfs, "btrfs_filesystem_show",
+                    guestfs_int_ruby_btrfs_filesystem_show, 1);
   rb_define_method (c_guestfs, "btrfs_filesystem_sync",
                     guestfs_int_ruby_btrfs_filesystem_sync, 1);
   rb_define_method (c_guestfs, "btrfs_fsck",
@@ -29396,6 +30170,10 @@ Init__guestfs (void)
                     guestfs_int_ruby_dmesg, 0);
   rb_define_method (c_guestfs, "download",
                     guestfs_int_ruby_download, 2);
+  rb_define_method (c_guestfs, "download_blocks",
+                    guestfs_int_ruby_download_blocks, -1);
+  rb_define_method (c_guestfs, "download_inode",
+                    guestfs_int_ruby_download_inode, 3);
   rb_define_method (c_guestfs, "download_offset",
                     guestfs_int_ruby_download_offset, 4);
   rb_define_method (c_guestfs, "drop_caches",
@@ -29436,6 +30214,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_filesize, 1);
   rb_define_method (c_guestfs, "filesystem_available",
                     guestfs_int_ruby_filesystem_available, 1);
+  rb_define_method (c_guestfs, "filesystem_walk",
+                    guestfs_int_ruby_filesystem_walk, 1);
   rb_define_method (c_guestfs, "fill",
                     guestfs_int_ruby_fill, 3);
   rb_define_method (c_guestfs, "fill_dir",
@@ -29510,6 +30290,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_get_selinux, 0);
   rb_define_method (c_guestfs, "get_smp",
                     guestfs_int_ruby_get_smp, 0);
+  rb_define_method (c_guestfs, "get_sockdir",
+                    guestfs_int_ruby_get_sockdir, 0);
   rb_define_method (c_guestfs, "get_state",
                     guestfs_int_ruby_get_state, 0);
   rb_define_method (c_guestfs, "get_tmpdir",
@@ -29527,7 +30309,9 @@ Init__guestfs (void)
   rb_define_method (c_guestfs, "getxattrs",
                     guestfs_int_ruby_getxattrs, 1);
   rb_define_method (c_guestfs, "glob_expand",
-                    guestfs_int_ruby_glob_expand, 1);
+                    guestfs_int_ruby_glob_expand, -1);
+  rb_define_method (c_guestfs, "glob_expand_opts",
+                    guestfs_int_ruby_glob_expand, -1);
   rb_define_method (c_guestfs, "grep",
                     guestfs_int_ruby_grep, -1);
   rb_define_method (c_guestfs, "grep_opts",
@@ -29958,6 +30742,10 @@ Init__guestfs (void)
                     guestfs_int_ruby_mount_ro, 2);
   rb_define_method (c_guestfs, "mount_vfs",
                     guestfs_int_ruby_mount_vfs, 4);
+  rb_define_method (c_guestfs, "mountable_device",
+                    guestfs_int_ruby_mountable_device, 1);
+  rb_define_method (c_guestfs, "mountable_subvolume",
+                    guestfs_int_ruby_mountable_subvolume, 1);
   rb_define_method (c_guestfs, "mountpoints",
                     guestfs_int_ruby_mountpoints, 0);
   rb_define_method (c_guestfs, "mounts",
@@ -29968,6 +30756,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_nr_devices, 0);
   rb_define_method (c_guestfs, "ntfs_3g_probe",
                     guestfs_int_ruby_ntfs_3g_probe, 2);
+  rb_define_method (c_guestfs, "ntfscat_i",
+                    guestfs_int_ruby_ntfscat_i, 3);
   rb_define_method (c_guestfs, "ntfsclone_in",
                     guestfs_int_ruby_ntfsclone_in, 2);
   rb_define_method (c_guestfs, "ntfsclone_out",
@@ -29990,8 +30780,12 @@ Init__guestfs (void)
                     guestfs_int_ruby_part_del, 2);
   rb_define_method (c_guestfs, "part_disk",
                     guestfs_int_ruby_part_disk, 2);
+  rb_define_method (c_guestfs, "part_expand_gpt",
+                    guestfs_int_ruby_part_expand_gpt, 1);
   rb_define_method (c_guestfs, "part_get_bootable",
                     guestfs_int_ruby_part_get_bootable, 2);
+  rb_define_method (c_guestfs, "part_get_disk_guid",
+                    guestfs_int_ruby_part_get_disk_guid, 1);
   rb_define_method (c_guestfs, "part_get_gpt_guid",
                     guestfs_int_ruby_part_get_gpt_guid, 2);
   rb_define_method (c_guestfs, "part_get_gpt_type",
@@ -30010,6 +30804,10 @@ Init__guestfs (void)
                     guestfs_int_ruby_part_list, 1);
   rb_define_method (c_guestfs, "part_set_bootable",
                     guestfs_int_ruby_part_set_bootable, 3);
+  rb_define_method (c_guestfs, "part_set_disk_guid",
+                    guestfs_int_ruby_part_set_disk_guid, 2);
+  rb_define_method (c_guestfs, "part_set_disk_guid_random",
+                    guestfs_int_ruby_part_set_disk_guid_random, 1);
   rb_define_method (c_guestfs, "part_set_gpt_guid",
                     guestfs_int_ruby_part_set_gpt_guid, 3);
   rb_define_method (c_guestfs, "part_set_gpt_type",
@@ -30098,6 +30896,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_scrub_file, 1);
   rb_define_method (c_guestfs, "scrub_freespace",
                     guestfs_int_ruby_scrub_freespace, 1);
+  rb_define_method (c_guestfs, "selinux_relabel",
+                    guestfs_int_ruby_selinux_relabel, -1);
   rb_define_method (c_guestfs, "set_append",
                     guestfs_int_ruby_set_append, 1);
   rb_define_method (c_guestfs, "set_attach_method",

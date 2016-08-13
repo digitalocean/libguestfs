@@ -18,6 +18,7 @@
 
 open Common_gettext.Gettext
 open Common_utils
+open Getopt.OptionName
 
 module G = Guestfs
 
@@ -50,24 +51,17 @@ let parse_cmdline () =
       error (f_"--prefix option can only be given once");
     prefix := Some p in
 
-  let ditto = " -\"-" in
   let argspec = [
-    "-a",        Arg.String set_file,       s_"file" ^ " " ^ s_"Add disk image file";
-    "--add",     Arg.String set_file,       s_"file" ^ " " ^ s_"Add disk image file";
-    "-c",        Arg.Set_string libvirturi, s_"uri" ^ " " ^ s_"Set libvirt URI";
-    "--connect", Arg.Set_string libvirturi, s_"uri" ^ " " ^ s_"Set libvirt URI";
-    "-d",        Arg.String set_domain,     s_"domain" ^ " " ^ s_"Set libvirt guest name";
-    "--domain",  Arg.String set_domain,     s_"domain" ^ " " ^ s_"Set libvirt guest name";
-    "--format",  Arg.Set_string format,     s_"format" ^ " " ^ s_"Format of input disk";
-    "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
-    "-o",        Arg.Set_string output, s_"directory" ^ " " ^ s_"Output directory";
-    "--output",  Arg.Set_string output,     ditto;
-    "--unversioned-names", Arg.Set unversioned,
-                                            " " ^ s_"Use unversioned names for files";
-    "--prefix",  Arg.String set_prefix,     "prefix" ^ " " ^ s_"Prefix for files";
+    [ S 'a'; L"add" ],        Getopt.String (s_"file", set_file),        s_"Add disk image file";
+    [ S 'c'; L"connect" ],        Getopt.Set_string (s_"uri", libvirturi), s_"Set libvirt URI";
+    [ S 'd'; L"domain" ],        Getopt.String (s_"domain", set_domain),      s_"Set libvirt guest name";
+    [ L"format" ],  Getopt.Set_string (s_"format", format),      s_"Format of input disk";
+    [ L"machine-readable" ], Getopt.Set machine_readable, s_"Make output machine readable";
+    [ S 'o'; L"output" ],        Getopt.Set_string (s_"directory", output),  s_"Output directory";
+    [ L"unversioned-names" ], Getopt.Set unversioned,
+                                            s_"Use unversioned names for files";
+    [ L"prefix" ],  Getopt.String (s_"prefix", set_prefix),      s_"Prefix for files";
   ] in
-  let argspec = set_standard_options argspec in
-  let anon_fun _ = raise (Arg.Bad (s_"extra parameter on the command line")) in
   let usage_msg =
     sprintf (f_"\
 %s: extract kernel and ramdisk from a guest
@@ -76,7 +70,8 @@ A short summary of the options is given below.  For detailed help please
 read the man page virt-get-kernel(1).
 ")
       prog in
-  Arg.parse argspec anon_fun usage_msg;
+  let opthandle = create_standard_options argspec usage_msg in
+  Getopt.parse opthandle;
 
   (* Machine-readable mode?  Print out some facts about what
    * this binary supports.
@@ -122,14 +117,7 @@ read the man page virt-get-kernel(1).
 
 let rec do_fetch ~transform_fn ~outputdir g root =
   (* Mount up the disks. *)
-  let mps = g#inspect_get_mountpoints root in
-  let cmp (a,_) (b,_) = compare (String.length a) (String.length b) in
-  let mps = List.sort cmp mps in
-  List.iter (
-    fun (mp, dev) ->
-      try g#mount_ro dev mp
-      with Guestfs.Error msg -> warning (f_"%s (ignored)") msg
-  ) mps;
+  inspect_mount_root_ro g root;
 
   let files =
     let typ = g#inspect_get_type root in

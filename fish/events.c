@@ -16,6 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * This file implements the guestfish event-related commands,
+ * C<event>, C<delete-event> and C<list-events>.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -27,6 +32,8 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
+#include <error.h>
 
 #include <guestfs.h>
 
@@ -99,11 +106,17 @@ do_event_handler (guestfs_h *g,
                   const uint64_t *array, size_t array_len)
 {
   pid_t pid;
-  const char *argv[8 + array_len];
+  CLEANUP_FREE const char **argv = NULL;
   const char *shell;
   struct entry *entry = opaque;
   size_t i, j;
   char *s;
+
+  argv = malloc (sizeof (const char *) * (8 + array_len));
+  if (argv == NULL) {
+    perror ("malloc");
+    return;
+  }
 
   pid = fork ();
   if (pid == -1) {
@@ -255,10 +268,8 @@ print_event_set (uint64_t event_bitmask, FILE *fp)
     fputs ("*", fp);
   else {
     CLEANUP_FREE char *str = guestfs_event_to_string (event_bitmask);
-    if (!str) {
-      perror ("guestfs_event_to_string");
-      exit (EXIT_FAILURE);
-    }
+    if (!str)
+      error (EXIT_FAILURE, errno, "guestfs_event_to_string");
     fputs (str, fp);
   }
 }

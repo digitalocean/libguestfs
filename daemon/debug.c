@@ -437,11 +437,17 @@ static char *
 debug_ls (const char *subcmd, size_t argc, char *const *const argv)
 {
   const size_t len = count_strings (argv);
-  const char *cargv[len+3];
+  CLEANUP_FREE const char **cargv = NULL;
   size_t i;
   int r;
   char *out;
   CLEANUP_FREE char *err = NULL;
+
+  cargv = malloc (sizeof (char *) * (len+3));
+  if (cargv == NULL) {
+    reply_with_perror ("malloc");
+    return NULL;
+  }
 
   cargv[0] = str_ls;
   cargv[1] = "-a";
@@ -464,11 +470,17 @@ static char *
 debug_ll (const char *subcmd, size_t argc, char *const *const argv)
 {
   const size_t len = count_strings (argv);
-  const char *cargv[len+3];
+  CLEANUP_FREE const char **cargv = NULL;
   size_t i;
   int r;
   char *out;
   CLEANUP_FREE char *err = NULL;
+
+  cargv = malloc (sizeof (char *) * (len+3));
+  if (cargv == NULL) {
+    reply_with_perror ("malloc");
+    return NULL;
+  }
 
   cargv[0] = str_ls;
   cargv[1] = "-la";
@@ -977,6 +989,11 @@ do_internal_rhbz914931 (int count)
   return 0;
 }
 
+#pragma GCC diagnostic push
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 60000 /* gcc >= 6 */
+#pragma GCC diagnostic ignored "-Wnull-dereference"
+#endif
+
 static void
 deliberately_cause_a_segfault (void)
 {
@@ -989,3 +1006,5 @@ deliberately_cause_a_segfault (void)
   /* coverity[var_deref_op] */
   *ptr = 1;
 }
+
+#pragma GCC diagnostic pop

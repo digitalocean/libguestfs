@@ -26,14 +26,21 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <error.h>
 #include <dirent.h>
 #include <locale.h>
 #include <libintl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#pragma GCC diagnostic ignored "-Wstrict-prototypes" /* error in <gtk.h> */
+/* errors in <gtk.h> */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#if defined(__GNUC__) && __GNUC__ >= 6 /* gcc >= 6 */
+#pragma GCC diagnostic ignored "-Wshift-overflow"
+#endif
 #include <gtk/gtk.h>
+#pragma GCC diagnostic pop
 
 #include "ignore-value.h"
 #include "p2v.h"
@@ -42,6 +49,10 @@ char **all_disks;
 char **all_removable;
 char **all_interfaces;
 int is_iso_environment = 0;
+int feature_colours_option = 0;
+int force_colour = 0;
+
+static const char *test_disk = NULL;
 
 static void udevadm_settle (void);
 static void set_config_defaults (struct config *config);
@@ -54,9 +65,14 @@ static const char options[] = "Vv";
 static const struct option long_options[] = {
   { "help", 0, 0, HELP_OPTION },
   { "cmdline", 1, 0, 0 },
+  { "color", 0, 0, 0 },
+  { "colors", 0, 0, 0 },
+  { "colour", 0, 0, 0 },
+  { "colours", 0, 0, 0 },
   { "iso", 0, 0, 0 },
   { "long-options", 0, 0, 0 },
   { "short-options", 0, 0, 0 },
+  { "test-disk", 1, 0, 0 },
   { "verbose", 0, 0, 'v' },
   { "version", 0, 0, 'V' },
   { 0, 0, 0, 0 }
@@ -76,7 +92,9 @@ usage (int status)
               "Options:\n"
               "  --help                 Display brief help\n"
               " --cmdline=CMDLINE       Used to debug command line parsing\n"
+              " --colors|--colours      Use ANSI colour sequences even if not tty\n"
               " --iso                   Running in the ISO environment\n"
+              " --test-disk=DISK.IMG    For testing, use disk as /dev/sda\n"
               "  -v|--verbose           Verbose messages\n"
               "  -V|--version           Display version and exit\n"
               "For more information, see the manpage %s(1).\n"),
@@ -130,15 +148,6 @@ main (int argc, char *argv[])
    */
   udevadm_settle ();
 
-#if ! GLIB_CHECK_VERSION(2,32,0)
-  /* In glib2 < 2.32 you had to call g_thread_init().  In later glib2
-   * that is not required and should not be called.
-   */
-  if (glib_check_version (2, 32, 0) != NULL) /* This checks < 2.32 */
-    g_thread_init (NULL);
-#endif
-  gdk_threads_init ();
-  gdk_threads_enter ();
   gui_possible = gtk_init_check (&argc, &argv);
 
   for (;;) {
@@ -157,18 +166,34 @@ main (int argc, char *argv[])
         cmdline = parse_cmdline_string (optarg);
         cmdline_source = CMDLINE_SOURCE_COMMAND_LINE;
       }
+      else if (STREQ (long_options[option_index].name, "color") ||
+               STREQ (long_options[option_index].name, "colour") ||
+               STREQ (long_options[option_index].name, "colors") ||
+               STREQ (long_options[option_index].name, "colours")) {
+        force_colour = 1;
+      }
       else if (STREQ (long_options[option_index].name, "iso")) {
         is_iso_environment = 1;
       }
-      else {
-        fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name, long_options[option_index].name, option_index);
-        exit (EXIT_FAILURE);
+      else if (STREQ (long_options[option_index].name, "test-disk")) {
+        if (test_disk != NULL)
+          error (EXIT_FAILURE, 0,
+                 _("only a single --test-disk option can be used"));
+        if (optarg[0] != '/')
+          error (EXIT_FAILURE, 0,
+                 _("--test-disk must be an absolute path"));
+        test_disk = optarg;
       }
+      else
+        error (EXIT_FAILURE, 0,
+               _("unknown long option: %s (%d)"),
+               long_options[option_index].name, option_index);
       break;
 
     case 'v':
-      config->verbose = 1;
+      /* This option does nothing since 1.33.41.  Verbose is always
+       * enabled.
+       */
       break;
 
     case 'V':
@@ -191,33 +216,31 @@ main (int argc, char *argv[])
 
   set_config_defaults (config);
 
-  /* If /proc/cmdline exists and contains "p2v.server=" then we enable
-   * non-interactive configuration.
-   * If /proc/cmdline contains p2v.debug then we enable verbose mode
-   * even for interactive configuration.
+  /* Parse /proc/cmdline (if it exists) or use the --cmdline parameter
+   * to initialize the configuration.  This allows defaults to be pass
+   * using the kernel command line, with additional GUI configuration
+   * later.
    */
   if (cmdline == NULL) {
     cmdline = parse_proc_cmdline ();
-    if (cmdline == NULL)
-      goto gui;
-    cmdline_source = CMDLINE_SOURCE_PROC_CMDLINE;
+    if (cmdline != NULL)
+      cmdline_source = CMDLINE_SOURCE_PROC_CMDLINE;
   }
 
-  if (get_cmdline_key (cmdline, "p2v.debug") != NULL)
-    config->verbose = 1;
+  if (cmdline)
+    update_config_from_kernel_cmdline (config, cmdline);
 
-  if (get_cmdline_key (cmdline, "p2v.server") != NULL)
-    kernel_configuration (config, cmdline, cmdline_source);
+  /* If p2v.server exists, then we use the non-interactive kernel
+   * conversion.  Otherwise we run the GUI.
+   */
+  if (config->server != NULL)
+    kernel_conversion (config, cmdline, cmdline_source);
   else {
-  gui:
-    if (!gui_possible) {
-      fprintf (stderr,
-               _("%s: gtk_init_check returned false, indicating that\n"
-                 "a GUI is not possible on this host.  Check X11, $DISPLAY etc.\n"),
-               guestfs_int_program_name);
-      exit (EXIT_FAILURE);
-    }
-    gui_application (config);
+    if (!gui_possible)
+      error (EXIT_FAILURE, 0,
+             _("gtk_init_check returned false, indicating that\n"
+               "a GUI is not possible on this host.  Check X11, $DISPLAY etc."));
+    gui_conversion (config);
   }
 
   guestfs_int_free_string_list (cmdline);
@@ -247,10 +270,8 @@ set_config_defaults (struct config *config)
   if (gethostname (hostname, sizeof hostname) == -1) {
     perror ("gethostname");
     /* Generate a simple random name. */
-    if (guestfs_int_random_string (hostname, 8) == -1) {
-      perror ("guestfs_int_random_string");
-      exit (EXIT_FAILURE);
-    }
+    if (guestfs_int_random_string (hostname, 8) == -1)
+      error (EXIT_FAILURE, errno, "guestfs_int_random_string");
   } else {
     char *p;
 
@@ -308,11 +329,29 @@ set_config_defaults (struct config *config)
   else
     config->flags = 0;
 
-  find_all_disks ();
+  /* Find all block devices in the system. */
+  if (!test_disk)
+    find_all_disks ();
+  else {
+    /* For testing and debugging purposes, you can use
+     * --test-disk=/path/to/disk.img
+     */
+    all_disks = malloc (2 * sizeof (char *));
+    if (all_disks == NULL)
+      error (EXIT_FAILURE, errno, "realloc");
+    all_disks[0] = strdup (test_disk);
+    if (all_disks[0] == NULL)
+      error (EXIT_FAILURE, errno, "strdup");
+    all_disks[1] = NULL;
+  }
   if (all_disks)
     config->disks = guestfs_int_copy_string_list (all_disks);
+
+  /* Find all removable devices in the system. */
   if (all_removable)
     config->removable = guestfs_int_copy_string_list (all_removable);
+
+  /* Find all network interfaces in the system. */
   find_all_interfaces ();
   if (all_interfaces)
     config->interfaces = guestfs_int_copy_string_list (all_interfaces);
@@ -332,8 +371,10 @@ compare (const void *vp1, const void *vp2)
   return strcmp (*p1, *p2);
 }
 
-/* Get parent device of a partition.  Returns 0 if no parent device
- * could be found.
+/**
+ * Get parent device of a partition.
+ *
+ * Returns C<0> if no parent device could be found.
  */
 static dev_t
 partition_parent (dev_t part_dev)
@@ -345,19 +386,15 @@ partition_parent (dev_t part_dev)
 
   if (asprintf (&path, "/sys/dev/block/%ju:%ju/../dev",
                 (uintmax_t) major (part_dev),
-                (uintmax_t) minor (part_dev)) == -1) {
-    perror ("asprintf");
-    exit (EXIT_FAILURE);
-  }
+                (uintmax_t) minor (part_dev)) == -1)
+    error (EXIT_FAILURE, errno, "asprintf");
 
   fp = fopen (path, "r");
   if (fp == NULL)
     return 0;
 
-  if (getline (&content, &len, fp) == -1) {
-    perror ("getline");
-    exit (EXIT_FAILURE);
-  }
+  if (getline (&content, &len, fp) == -1)
+    error (EXIT_FAILURE, errno, "getline");
 
   if (sscanf (content, "%u:%u", &parent_major, &parent_minor) != 2)
     return 0;
@@ -365,9 +402,10 @@ partition_parent (dev_t part_dev)
   return makedev (parent_major, parent_minor);
 }
 
-/* Return true if the named device (eg. dev == "sda") contains the
- * root filesystem.  root_device is the major:minor of the root
- * filesystem (eg. 8:1 if the root filesystem was /dev/sda1).
+/**
+ * Return true if the named device (eg. C<dev == "sda">) contains the
+ * root filesystem.  C<root_device> is the major:minor of the root
+ * filesystem (eg. C<8:1> if the root filesystem was F</dev/sda1>).
  *
  * This doesn't work for LVs and so on.  However we only really care
  * if this test works on the P2V ISO where the root device is a
@@ -380,10 +418,8 @@ device_contains (const char *dev, dev_t root_device)
   CLEANUP_FREE char *dev_name = NULL;
   dev_t root_device_parent;
 
-  if (asprintf (&dev_name, "/dev/%s", dev) == -1) {
-    perror ("asprintf");
-    exit (EXIT_FAILURE);
-  }
+  if (asprintf (&dev_name, "/dev/%s", dev) == -1)
+    error (EXIT_FAILURE, errno, "asprintf");
 
   if (stat (dev_name, &statbuf) == -1)
     return 0;
@@ -402,6 +438,10 @@ device_contains (const char *dev, dev_t root_device)
   return 0;
 }
 
+/**
+ * Enumerate all disks in F</sys/block> and add them to the global
+ * C<all_disks> and C<all_removable> arrays.
+ */
 static void
 find_all_disks (void)
 {
@@ -418,10 +458,8 @@ find_all_disks (void)
    * matches the common patterns for disk names.
    */
   dir = opendir ("/sys/block");
-  if (!dir) {
-    perror ("opendir");
-    exit (EXIT_FAILURE);
-  }
+  if (!dir)
+    error (EXIT_FAILURE, errno, "opendir");
 
   for (;;) {
     errno = 0;
@@ -441,10 +479,8 @@ find_all_disks (void)
 
       nr_disks++;
       all_disks = realloc (all_disks, sizeof (char *) * (nr_disks + 1));
-      if (!all_disks) {
-        perror ("realloc");
-        exit (EXIT_FAILURE);
-      }
+      if (!all_disks)
+        error (EXIT_FAILURE, errno, "realloc");
 
       all_disks[nr_disks-1] = strdup (d->d_name);
 
@@ -458,26 +494,20 @@ find_all_disks (void)
       nr_removable++;
       all_removable = realloc (all_removable,
                                sizeof (char *) * (nr_removable + 1));
-      if (!all_removable) {
-        perror ("realloc");
-        exit (EXIT_FAILURE);
-      }
+      if (!all_removable)
+        error (EXIT_FAILURE, errno, "realloc");
       all_removable[nr_removable-1] = strdup (d->d_name);
       all_removable[nr_removable] = NULL;
     }
   }
 
   /* Check readdir didn't fail */
-  if (errno != 0) {
-    perror ("readdir: /sys/block");
-    exit (EXIT_FAILURE);
-  }
+  if (errno != 0)
+    error (EXIT_FAILURE, errno, "readdir: %s", "/sys/block");
 
   /* Close the directory handle */
-  if (closedir (dir) == -1) {
-    perror ("closedir: /sys/block");
-    exit (EXIT_FAILURE);
-  }
+  if (closedir (dir) == -1)
+    error (EXIT_FAILURE, errno, "closedir: %s", "/sys/block");
 
   if (all_disks)
     qsort (all_disks, nr_disks, sizeof (char *), compare);
@@ -485,6 +515,10 @@ find_all_disks (void)
     qsort (all_removable, nr_removable, sizeof (char *), compare);
 }
 
+/**
+ * Enumerate all network interfaces in F</sys/class/net> and add them
+ * to the global C<all_interfaces> array.
+ */
 static void
 find_all_interfaces (void)
 {
@@ -496,10 +530,8 @@ find_all_interfaces (void)
    * /sys/class/net which matches some common patterns.
    */
   dir = opendir ("/sys/class/net");
-  if (!dir) {
-    perror ("opendir");
-    exit (EXIT_FAILURE);
-  }
+  if (!dir)
+    error (EXIT_FAILURE, errno, "opendir: %s", "/sys/class/net");
 
   for (;;) {
     errno = 0;
@@ -518,32 +550,28 @@ find_all_interfaces (void)
       nr_interfaces++;
       all_interfaces =
         realloc (all_interfaces, sizeof (char *) * (nr_interfaces + 1));
-      if (!all_interfaces) {
-        perror ("realloc");
-        exit (EXIT_FAILURE);
-      }
+      if (!all_interfaces)
+        error (EXIT_FAILURE, errno, "realloc");
       all_interfaces[nr_interfaces-1] = strdup (d->d_name);
       all_interfaces[nr_interfaces] = NULL;
     }
   }
 
   /* Check readdir didn't fail */
-  if (errno != 0) {
-    perror ("readdir: /sys/class/net");
-    exit (EXIT_FAILURE);
-  }
+  if (errno != 0)
+    error (EXIT_FAILURE, errno, "readdir: %s", "/sys/class/net");
 
   /* Close the directory handle */
-  if (closedir (dir) == -1) {
-    perror ("closedir: /sys/class/net");
-    exit (EXIT_FAILURE);
-  }
+  if (closedir (dir) == -1)
+    error (EXIT_FAILURE, errno, "closedir: %s", "/sys/class/net");
 
   if (all_interfaces)
     qsort (all_interfaces, nr_interfaces, sizeof (char *), compare);
 }
 
-/* Read the list of flags from /proc/cpuinfo. */
+/**
+ * Read the list of flags from F</proc/cpuinfo>.
+ */
 static int
 cpuinfo_flags (void)
 {

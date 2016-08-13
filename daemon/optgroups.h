@@ -36,6 +36,7 @@ extern int optgroup_hivex_available (void);
 extern int optgroup_inotify_available (void);
 extern int optgroup_journal_available (void);
 extern int optgroup_ldm_available (void);
+extern int optgroup_libtsk_available (void);
 extern int optgroup_linuxcaps_available (void);
 extern int optgroup_linuxfsuuid_available (void);
 extern int optgroup_linuxmodules_available (void);
@@ -49,6 +50,8 @@ extern int optgroup_ntfsprogs_available (void);
 extern int optgroup_rsync_available (void);
 extern int optgroup_scrub_available (void);
 extern int optgroup_selinux_available (void);
+extern int optgroup_selinuxrelabel_available (void);
+extern int optgroup_sleuthkit_available (void);
 extern int optgroup_syslinux_available (void);
 extern int optgroup_wipefs_available (void);
 extern int optgroup_xfs_available (void);
@@ -87,6 +90,7 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_btrfs_filesystem_balance (const char *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_filesystem_defragment (const char *path, int flush, const char *compress) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_filesystem_resize (const char *mountpoint, int64_t size) { abort (); } \
+  char **__attribute__((noreturn)) do_btrfs_filesystem_show (const char *device) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_filesystem_sync (const char *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_fsck (const char *device, int64_t superblock, int repair) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_image (char *const *source, const char *image, int compresslevel) { abort (); } \
@@ -128,8 +132,12 @@ extern int optgroup_zerofree_available (void);
   int optgroup_fstrim_available (void) { return 0; }
 
 #define OPTGROUP_GDISK_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_part_expand_gpt (const char *device) { abort (); } \
+  char *__attribute__((noreturn)) do_part_get_disk_guid (const char *device) { abort (); } \
   char *__attribute__((noreturn)) do_part_get_gpt_guid (const char *device, int partnum) { abort (); } \
   char *__attribute__((noreturn)) do_part_get_gpt_type (const char *device, int partnum) { abort (); } \
+  int __attribute__((noreturn)) do_part_set_disk_guid (const char *device, const char *guid) { abort (); } \
+  int __attribute__((noreturn)) do_part_set_disk_guid_random (const char *device) { abort (); } \
   int __attribute__((noreturn)) do_part_set_gpt_guid (const char *device, int partnum, const char *guid) { abort (); } \
   int __attribute__((noreturn)) do_part_set_gpt_type (const char *device, int partnum, const char *guid) { abort (); } \
   int optgroup_gdisk_available (void) { return 0; }
@@ -191,6 +199,10 @@ extern int optgroup_zerofree_available (void);
   char **__attribute__((noreturn)) do_list_ldm_partitions (void) { abort (); } \
   char **__attribute__((noreturn)) do_list_ldm_volumes (void) { abort (); } \
   int optgroup_ldm_available (void) { return 0; }
+
+#define OPTGROUP_LIBTSK_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_internal_filesystem_walk (const mountable_t *device) { abort (); } \
+  int optgroup_libtsk_available (void) { return 0; }
 
 #define OPTGROUP_LINUXCAPS_NOT_AVAILABLE \
   char *__attribute__((noreturn)) do_cap_get_file (const char *path) { abort (); } \
@@ -302,6 +314,15 @@ extern int optgroup_zerofree_available (void);
   char *__attribute__((noreturn)) do_getcon (void) { abort (); } \
   int __attribute__((noreturn)) do_setcon (const char *context) { abort (); } \
   int optgroup_selinux_available (void) { return 0; }
+
+#define OPTGROUP_SELINUXRELABEL_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_selinux_relabel (const char *specfile, const char *path, int force) { abort (); } \
+  int optgroup_selinuxrelabel_available (void) { return 0; }
+
+#define OPTGROUP_SLEUTHKIT_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_download_blocks (const mountable_t *device, int64_t start, int64_t stop, int unallocated) { abort (); } \
+  int __attribute__((noreturn)) do_download_inode (const mountable_t *device, int64_t inode) { abort (); } \
+  int optgroup_sleuthkit_available (void) { return 0; }
 
 #define OPTGROUP_SYSLINUX_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_syslinux (const char *device, const char *directory) { abort (); } \

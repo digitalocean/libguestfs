@@ -1700,6 +1700,26 @@ This is the "argv variant" of L</guestfs_btrfs_filesystem_resize>.
 
 See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
+=head2 guestfs_btrfs_filesystem_show
+
+ char **
+ guestfs_btrfs_filesystem_show (guestfs_h *g,
+                                const char *device);
+
+Show all the devices where the filesystems in C<device> is spanned over.
+
+If not all the devices for the filesystems are present, then this function
+fails and the C<errno> is set to C<ENODEV>.
+
+This function returns a NULL-terminated array of strings
+(like L<environ(3)>), or NULL if there was an error.
+I<The caller must free the strings and the array after use>.
+
+This function depends on the feature C<btrfs>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.33.29)
+
 =head2 guestfs_btrfs_filesystem_sync
 
  int
@@ -3633,6 +3653,106 @@ event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
 (Added in 1.0.2)
 
+=head2 guestfs_download_blocks
+
+ int
+ guestfs_download_blocks (guestfs_h *g,
+                          const char *device,
+                          int64_t start,
+                          int64_t stop,
+                          const char *filename,
+                          ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED, int unallocated,
+
+Download the data units from F<start> address
+to F<stop> from the disk partition (eg. F</dev/sda1>)
+and save them as F<filename> on the local machine.
+
+The use of this API on sparse disk image formats such as QCOW,
+may result in large zero-filled files downloaded on the host.
+
+The size of a data unit varies across filesystem implementations.
+On NTFS filesystems data units are referred as clusters
+while on ExtX ones they are referred as fragments.
+
+If the optional C<unallocated> flag is true (default is false),
+only the unallocated blocks will be extracted.
+This is useful to detect hidden data or to retrieve deleted files
+which data units have not been overwritten yet.
+
+This function returns 0 on success or -1 on error.
+
+This long-running command can generate progress notification messages
+so that the caller can display a progress bar or indicator.
+To receive these messages, the caller must register a progress
+event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
+
+This function depends on the feature C<sleuthkit>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.33.45)
+
+=head2 guestfs_download_blocks_va
+
+ int
+ guestfs_download_blocks_va (guestfs_h *g,
+                             const char *device,
+                             int64_t start,
+                             int64_t stop,
+                             const char *filename,
+                             va_list args);
+
+This is the "va_list variant" of L</guestfs_download_blocks>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_download_blocks_argv
+
+ int
+ guestfs_download_blocks_argv (guestfs_h *g,
+                               const char *device,
+                               int64_t start,
+                               int64_t stop,
+                               const char *filename,
+                               const struct guestfs_download_blocks_argv *optargs);
+
+This is the "argv variant" of L</guestfs_download_blocks>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_download_inode
+
+ int
+ guestfs_download_inode (guestfs_h *g,
+                         const char *device,
+                         int64_t inode,
+                         const char *filename);
+
+Download a file given its inode from the disk partition
+(eg. F</dev/sda1>) and save it as F<filename> on the local machine.
+
+It is not required to mount the disk to run this command.
+
+The command is capable of downloading deleted or inaccessible files.
+
+This function returns 0 on success or -1 on error.
+
+This long-running command can generate progress notification messages
+so that the caller can display a progress bar or indicator.
+To receive these messages, the caller must register a progress
+event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
+
+This function depends on the feature C<sleuthkit>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.33.14)
+
 =head2 guestfs_download_offset
 
  int
@@ -4238,6 +4358,168 @@ This function returns a C truth value on success or -1 on error.
 
 (Added in 1.19.5)
 
+=head2 guestfs_filesystem_walk
+
+ struct guestfs_tsk_dirent_list *
+ guestfs_filesystem_walk (guestfs_h *g,
+                          const char *device);
+
+Walk through the internal structures of a disk partition
+(eg. F</dev/sda1>) in order to return a list of all the files
+and directories stored within.
+
+It is not necessary to mount the disk partition to run this command.
+
+All entries in the filesystem are returned, excluding C<.> and
+C<..>. This function can list deleted or unaccessible files.
+The entries are I<not> sorted.
+
+The C<tsk_dirent> structure contains the following fields.
+
+=over 4
+
+=item 'tsk_inode'
+
+Filesystem reference number of the node. It migh be C<0>
+if the node has been deleted.
+
+=item 'tsk_type'
+
+Basic file type information.
+See below for a detailed list of values.
+
+=item 'tsk_size'
+
+File size in bytes. It migh be C<-1>
+if the node has been deleted.
+
+=item 'tsk_name'
+
+The file path relative to its directory.
+
+=item 'tsk_flags'
+
+Bitfield containing extra information regarding the entry.
+It contains the logical OR of the following values:
+
+=over 4
+
+=item 0x0001
+
+If set to C<1>, the file is allocated and visible within the filesystem.
+Otherwise, the file has been deleted.
+Under certain circumstances, the function C<download_inode>
+can be used to recover deleted files.
+
+=item 0x0002
+
+Filesystem such as NTFS and Ext2 or greater, separate the file name
+from the metadata structure.
+The bit is set to C<1> when the file name is in an unallocated state
+and the metadata structure is in an allocated one.
+This generally implies the metadata has been reallocated to a new file.
+Therefore, information such as file type, file size, timestamps,
+number of links and symlink target might not correspond
+with the ones of the original deleted entry.
+
+=item 0x0004
+
+The bit is set to C<1> when the file is compressed using filesystem
+native compression support (NTFS). The API is not able to detect
+application level compression.
+
+=back
+
+=item 'tsk_atime_sec'
+
+=item 'tsk_atime_nsec'
+
+=item 'tsk_mtime_sec'
+
+=item 'tsk_mtime_nsec'
+
+=item 'tsk_ctime_sec'
+
+=item 'tsk_ctime_nsec'
+
+=item 'tsk_crtime_sec'
+
+=item 'tsk_crtime_nsec'
+
+Respectively, access, modification, last status change and creation
+time in Unix format in seconds and nanoseconds.
+
+=item 'tsk_nlink'
+
+Number of file names pointing to this entry.
+
+=item 'tsk_link'
+
+If the entry is a symbolic link, this field will contain the path
+to the target file.
+
+=back
+
+The C<tsk_type> field will contain one of the following characters:
+
+=over 4
+
+=item 'b'
+
+Block special
+
+=item 'c'
+
+Char special
+
+=item 'd'
+
+Directory
+
+=item 'f'
+
+FIFO (named pipe)
+
+=item 'l'
+
+Symbolic link
+
+=item 'r'
+
+Regular file
+
+=item 's'
+
+Socket
+
+=item 'h'
+
+Shadow inode (Solaris)
+
+=item 'w'
+
+Whiteout inode (BSD)
+
+=item 'u'
+
+Unknown file type
+
+=back
+
+This function returns a C<struct guestfs_tsk_dirent_list *>,
+or NULL if there was an error.
+I<The caller must call C<guestfs_free_tsk_dirent_list> after use>.
+
+This long-running command can generate progress notification messages
+so that the caller can display a progress bar or indicator.
+To receive these messages, the caller must register a progress
+event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
+
+This function depends on the feature C<libtsk>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.33.39)
+
 =head2 guestfs_fill
 
  int
@@ -4475,6 +4757,10 @@ This operation requires support in libguestfs, the mounted
 filesystem, the host filesystem, qemu and the host kernel.
 If this support isn't present it may give an error or even
 appear to run but do nothing.
+
+In the case where the kernel vfs driver does not support
+trimming, this call will fail with errno set to C<ENOTSUP>.
+Currently this happens when trying to trim FAT filesystems.
 
 See also C<guestfs_zero_free_space>.  That is a slightly
 different operation that turns free space in the filesystem
@@ -5036,6 +5322,13 @@ This function returns a C truth value on success or -1 on error.
  int
  guestfs_get_selinux (guestfs_h *g);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_selinux_relabel> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This returns the current setting of the selinux flag which
 is passed to the appliance at boot time.  See C<guestfs_set_selinux>.
 
@@ -5056,6 +5349,26 @@ This returns the number of virtual CPUs assigned to the appliance.
 On error this function returns -1.
 
 (Added in 1.13.15)
+
+=head2 guestfs_get_sockdir
+
+ char *
+ guestfs_get_sockdir (guestfs_h *g);
+
+Get the directory used by the handle to store temporary socket files.
+
+This is different from C<guestfs_tmpdir>, as we need shorter paths for
+sockets (due to the limited buffers of filenames for UNIX sockets),
+and C<guestfs_tmpdir> may be too long for them.
+
+The environment variable C<XDG_RUNTIME_DIR> controls the default
+value: If C<XDG_RUNTIME_DIR> is set, then that is the default.
+Else F</tmp> is the default.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.33.8)
 
 =head2 guestfs_get_state
 
@@ -5121,6 +5434,13 @@ This function returns a C truth value on success or -1 on error.
 
  char *
  guestfs_getcon (guestfs_h *g);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_selinux_relabel> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This gets the SELinux security context of the daemon.
 
@@ -5197,6 +5517,27 @@ L</guestfs_feature_available>.
  guestfs_glob_expand (guestfs_h *g,
                       const char *pattern);
 
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_glob_expand_opts> with no optional arguments.
+
+(Added in 1.0.50)
+
+
+=head2 guestfs_glob_expand_opts
+
+ char **
+ guestfs_glob_expand_opts (guestfs_h *g,
+                           const char *pattern,
+                           ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH, int directoryslash,
+
 This command searches for all the pathnames matching
 C<pattern> according to the wildcard expansion rules
 used by the shell.
@@ -5208,6 +5549,10 @@ It is just a wrapper around the C L<glob(3)> function
 with flags C<GLOB_MARK|GLOB_BRACE>.
 See that manual page for more details.
 
+C<directoryslash> controls whether use the C<GLOB_MARK> flag for
+L<glob(3)>, and it defaults to true.  It can be explicitly set as
+off to return no trailing slashes in filenames of directories.
+
 Notice that there is no equivalent command for expanding a device
 name (eg. F</dev/sd*>).  Use C<guestfs_list_devices>,
 C<guestfs_list_partitions> etc functions instead.
@@ -5217,6 +5562,28 @@ This function returns a NULL-terminated array of strings
 I<The caller must free the strings and the array after use>.
 
 (Added in 1.0.50)
+
+=head2 guestfs_glob_expand_opts_va
+
+ char **
+ guestfs_glob_expand_opts_va (guestfs_h *g,
+                              const char *pattern,
+                              va_list args);
+
+This is the "va_list variant" of L</guestfs_glob_expand_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_glob_expand_opts_argv
+
+ char **
+ guestfs_glob_expand_opts_argv (guestfs_h *g,
+                                const char *pattern,
+                                const struct guestfs_glob_expand_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_glob_expand_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_grep
 
@@ -6159,6 +6526,10 @@ Ubuntu.
 
 The distro could not be determined.
 
+=item "voidlinux"
+
+Void Linux.
+
 =item "windows"
 
 Windows does not have distributions.  This string is
@@ -6504,7 +6875,8 @@ package format I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
 Possible strings include:
-C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>, C<apk>.
+C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>, C<apk>,
+C<xbps>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
@@ -6532,7 +6904,7 @@ a real packaging system (eg. Windows).
 
 Possible strings include: C<yum>, C<dnf>, C<up2date>,
 C<apt> (for all Debian derivatives),
-C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>.
+C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>, C<xbps>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
@@ -7392,9 +7764,9 @@ This function returns a C truth value on success or -1 on error.
 
  int
  guestfs_is_lv (guestfs_h *g,
-                const char *device);
+                const char *mountable);
 
-This command tests whether C<device> is a logical volume, and
+This command tests whether C<mountable> is a logical volume, and
 returns true iff this is the case.
 
 This function returns a C truth value on success or -1 on error.
@@ -8258,6 +8630,13 @@ I<The caller must free the returned string after use>.
  char *
  guestfs_llz (guestfs_h *g,
               const char *directory);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_lgetxattrs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 List the files in F<directory> in the format of 'ls -laZ'.
 
@@ -10313,6 +10692,44 @@ This function returns 0 on success or -1 on error.
 
 (Added in 1.0.10)
 
+=head2 guestfs_mountable_device
+
+ char *
+ guestfs_mountable_device (guestfs_h *g,
+                           const char *mountable);
+
+Returns the device name of a mountable. In quite a lot of
+cases, the mountable is the device name.
+
+However this doesn't apply for btrfs subvolumes, where the
+mountable is a combination of both the device name and the
+subvolume path (see also C<guestfs_mountable_subvolume> to
+extract the subvolume path of the mountable if any).
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.33.15)
+
+=head2 guestfs_mountable_subvolume
+
+ char *
+ guestfs_mountable_subvolume (guestfs_h *g,
+                              const char *mountable);
+
+Returns the subvolume path of a mountable. Btrfs subvolumes
+mountables are a combination of both the device name and the
+subvolume path (see also C<guestfs_mountable_device> to extract
+the device of the mountable).
+
+If the mountable does not represent a btrfs subvolume, then
+this function fails and the C<errno> is set to C<EINVAL>.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.33.15)
+
 =head2 guestfs_mountpoints
 
  char **
@@ -10405,6 +10822,32 @@ This function depends on the feature C<ntfs3g>.  See also
 L</guestfs_feature_available>.
 
 (Added in 1.0.43)
+
+=head2 guestfs_ntfscat_i
+
+ int
+ guestfs_ntfscat_i (guestfs_h *g,
+                    const char *device,
+                    int64_t inode,
+                    const char *filename);
+
+Download a file given its inode from a NTFS filesystem and save it as
+F<filename> on the local machine.
+
+This allows to download some otherwise inaccessible files such as the ones
+within the C<$Extend> folder.
+
+The filesystem from which to extract the file must be unmounted,
+otherwise the call will fail.
+
+This function returns 0 on success or -1 on error.
+
+This long-running command can generate progress notification messages
+so that the caller can display a progress bar or indicator.
+To receive these messages, the caller must register a progress
+event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
+
+(Added in 1.33.14)
 
 =head2 guestfs_ntfsclone_in
 
@@ -10754,6 +11197,26 @@ This function returns 0 on success or -1 on error.
 
 (Added in 1.0.78)
 
+=head2 guestfs_part_expand_gpt
+
+ int
+ guestfs_part_expand_gpt (guestfs_h *g,
+                          const char *device);
+
+Move backup GPT data structures to the end of the disk.
+This is useful in case of in-place image expand
+since disk space after backup GPT header is not usable.
+This is equivalent to C<sgdisk -e>.
+
+See also L<sgdisk(8)>.
+
+This function returns 0 on success or -1 on error.
+
+This function depends on the feature C<gdisk>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.33.2)
+
 =head2 guestfs_part_get_bootable
 
  int
@@ -10769,6 +11232,23 @@ See also C<guestfs_part_set_bootable>.
 This function returns a C truth value on success or -1 on error.
 
 (Added in 1.3.2)
+
+=head2 guestfs_part_get_disk_guid
+
+ char *
+ guestfs_part_get_disk_guid (guestfs_h *g,
+                             const char *device);
+
+Return the disk identifier (GUID) of a GPT-partitioned C<device>.
+Behaviour is undefined for other partition types.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+This function depends on the feature C<gdisk>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.33.2)
 
 =head2 guestfs_part_get_gpt_guid
 
@@ -11018,6 +11498,41 @@ no means universally recognized.
 This function returns 0 on success or -1 on error.
 
 (Added in 1.0.78)
+
+=head2 guestfs_part_set_disk_guid
+
+ int
+ guestfs_part_set_disk_guid (guestfs_h *g,
+                             const char *device,
+                             const char *guid);
+
+Set the disk identifier (GUID) of a GPT-partitioned C<device> to C<guid>.
+Return an error if the partition table of C<device> isn't GPT,
+or if C<guid> is not a valid GUID.
+
+This function returns 0 on success or -1 on error.
+
+This function depends on the feature C<gdisk>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.33.2)
+
+=head2 guestfs_part_set_disk_guid_random
+
+ int
+ guestfs_part_set_disk_guid_random (guestfs_h *g,
+                                    const char *device);
+
+Set the disk identifier (GUID) of a GPT-partitioned C<device> to
+a randomly generated value.
+Return an error if the partition table of C<device> isn't GPT.
+
+This function returns 0 on success or -1 on error.
+
+This function depends on the feature C<gdisk>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.33.2)
 
 =head2 guestfs_part_set_gpt_guid
 
@@ -12072,6 +12587,67 @@ L</guestfs_feature_available>.
 
 (Added in 1.0.52)
 
+=head2 guestfs_selinux_relabel
+
+ int
+ guestfs_selinux_relabel (guestfs_h *g,
+                          const char *specfile,
+                          const char *path,
+                          ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_SELINUX_RELABEL_FORCE, int force,
+
+SELinux relabel parts of the filesystem.
+
+The C<specfile> parameter controls the policy spec file used.
+You have to parse C</etc/selinux/config> to find the correct
+SELinux policy and then pass the spec file, usually:
+C</etc/selinux/> + I<selinuxtype> + C</contexts/files/file_contexts>.
+
+The required C<path> parameter is the top level directory where
+relabelling starts.  Normally you should pass C<path> as C</>
+to relabel the whole guest filesystem.
+
+The optional C<force> boolean controls whether the context
+is reset for customizable files, and also whether the
+user, role and range parts of the file context is changed.
+
+This function returns 0 on success or -1 on error.
+
+This function depends on the feature C<selinuxrelabel>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.33.43)
+
+=head2 guestfs_selinux_relabel_va
+
+ int
+ guestfs_selinux_relabel_va (guestfs_h *g,
+                             const char *specfile,
+                             const char *path,
+                             va_list args);
+
+This is the "va_list variant" of L</guestfs_selinux_relabel>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_selinux_relabel_argv
+
+ int
+ guestfs_selinux_relabel_argv (guestfs_h *g,
+                               const char *specfile,
+                               const char *path,
+                               const struct guestfs_selinux_relabel_argv *optargs);
+
+This is the "argv variant" of L</guestfs_selinux_relabel>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_set_append
 
  int
@@ -12697,6 +13273,13 @@ This function returns 0 on success or -1 on error.
  guestfs_set_selinux (guestfs_h *g,
                       int selinux);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_selinux_relabel> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This sets the selinux flag that is passed to the appliance
 at boot time.  The default is C<selinux=0> (disabled).
 
@@ -12830,6 +13413,13 @@ This function returns 0 on success or -1 on error.
  int
  guestfs_setcon (guestfs_h *g,
                  const char *context);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_selinux_relabel> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This sets the SELinux security context of the daemon
 to the string C<context>.

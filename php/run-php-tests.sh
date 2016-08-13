@@ -29,7 +29,7 @@ rm -f env
 echo "PATH=$PATH" > env
 printenv | grep -E '^(LIBGUESTFS|LIBVIRT|LIBVIRTD|VIRTLOCKD|LD|MALLOC)_' >> env
 
-TESTS=$(echo tests/guestfs_php_*.phpt)
+TESTS=$(echo tests/guestfs_*.phpt)
 echo TESTS: $TESTS
 
 ${MAKE:-make} test TESTS="$TESTS" PHP_EXECUTABLE="$PWD/php-for-tests.sh" REPORT_EXIT_STATUS=1 TEST_TIMEOUT=300

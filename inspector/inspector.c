@@ -24,6 +24,7 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <errno.h>
+#include <error.h>
 #include <getopt.h>
 #include <locale.h>
 #include <assert.h>
@@ -50,6 +51,8 @@ int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 1;
 static const char *xpath = NULL;
+static int inspect_apps = 1;
+static int inspect_icon = 1;
 
 static void output (char **roots);
 static void output_roots (xmlTextWriterPtr xo, char **roots);
@@ -80,6 +83,8 @@ usage (int status)
               "  --format[=raw|..]    Force disk format for -a option\n"
               "  --help               Display brief help\n"
               "  --keys-from-stdin    Read passphrases from stdin\n"
+              "  --no-applications    Do not output the installed applications\n"
+              "  --no-icon            Do not output the guest icon\n"
               "  -v|--verbose         Verbose messages\n"
               "  -V|--version         Display version and exit\n"
               "  -x                   Trace libguestfs API calls\n"
@@ -110,6 +115,8 @@ main (int argc, char *argv[])
     { "help", 0, 0, HELP_OPTION },
     { "keys-from-stdin", 0, 0, 0 },
     { "long-options", 0, 0, 0 },
+    { "no-applications", 0, 0, 0 },
+    { "no-icon", 0, 0, 0 },
     { "short-options", 0, 0, 0 },
     { "verbose", 0, 0, 'v' },
     { "version", 0, 0, 'V' },
@@ -124,10 +131,8 @@ main (int argc, char *argv[])
   int option_index;
 
   g = guestfs_create ();
-  if (g == NULL) {
-    fprintf (stderr, _("guestfs_create: failed to create handle\n"));
-    exit (EXIT_FAILURE);
-  }
+  if (g == NULL)
+    error (EXIT_FAILURE, errno, "guestfs_create");
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -147,12 +152,14 @@ main (int argc, char *argv[])
         OPTION_format;
       } else if (STREQ (long_options[option_index].name, "xpath")) {
         xpath = optarg;
-      } else {
-        fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name,
-                 long_options[option_index].name, option_index);
-        exit (EXIT_FAILURE);
-      }
+      } else if (STREQ (long_options[option_index].name, "no-applications")) {
+        inspect_apps = 0;
+      } else if (STREQ (long_options[option_index].name, "no-icon")) {
+        inspect_icon = 0;
+      } else
+        error (EXIT_FAILURE, 0,
+               _("unknown long option: %s (%d)"),
+               long_options[option_index].name, option_index);
       break;
 
     case 'a':
@@ -195,24 +202,18 @@ main (int argc, char *argv[])
       if (strchr (argv[optind], '/') ||
           access (argv[optind], F_OK) == 0) { /* simulate -a option */
         drv = calloc (1, sizeof (struct drv));
-        if (!drv) {
-          perror ("calloc");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv)
+          error (EXIT_FAILURE, errno, "calloc");
         drv->type = drv_a;
         drv->a.filename = strdup (argv[optind]);
-        if (!drv->a.filename) {
-          perror ("strdup");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv->a.filename)
+          error (EXIT_FAILURE, errno, "strdup");
         drv->next = drvs;
         drvs = drv;
       } else {                  /* simulate -d option */
         drv = calloc (1, sizeof (struct drv));
-        if (!drv) {
-          perror ("calloc");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv)
+          error (EXIT_FAILURE, errno, "calloc");
         drv->type = drv_d;
         drv->d.guest = argv[optind];
         drv->next = drvs;
@@ -246,11 +247,9 @@ main (int argc, char *argv[])
    * one extra parameter on the command line.
    */
   if (xpath) {
-    if (drvs != NULL) {
-      fprintf (stderr, _("%s: cannot use --xpath together with other options.\n"),
-               guestfs_int_program_name);
-      exit (EXIT_FAILURE);
-    }
+    if (drvs != NULL)
+      error (EXIT_FAILURE, 0,
+             _("cannot use --xpath together with other options."));
 
     do_xpath (xpath);
 
@@ -283,11 +282,9 @@ main (int argc, char *argv[])
 
   {
     CLEANUP_FREE_STRING_LIST char **roots = guestfs_inspect_os (g);
-    if (roots == NULL) {
-      fprintf (stderr, _("%s: no operating system could be detected inside this disk image.\n\nThis may be because the file is not a disk image, or is not a virtual machine\nimage, or because the OS type is not understood by libguestfs.\n\nNOTE for Red Hat Enterprise Linux 6 users: for Windows guest support you must\ninstall the separate libguestfs-winsupport package.\n\nIf you feel this is an error, please file a bug report including as much\ninformation about the disk image as possible.\n"),
-               guestfs_int_program_name);
-      exit (EXIT_FAILURE);
-    }
+    if (roots == NULL)
+      error (EXIT_FAILURE, 0,
+             _("no operating system could be detected inside this disk image.\n\nThis may be because the file is not a disk image, or is not a virtual machine\nimage, or because the OS type is not understood by libguestfs.\n\nNOTE for Red Hat Enterprise Linux 6 users: for Windows guest support you must\ninstall the separate libguestfs-winsupport package.\n\nIf you feel this is an error, please file a bug report including as much\ninformation about the disk image as possible.\n"));
 
     output (roots);
   }
@@ -298,32 +295,23 @@ main (int argc, char *argv[])
 }
 
 #define XMLERROR(code,e) do {                                           \
-    if ((e) == (code)) {                                                \
-      fprintf (stderr, _("%s: XML write error at \"%s\": %m\n"),        \
-               #e, guestfs_int_program_name);				\
-      exit (EXIT_FAILURE);                                              \
-    }                                                                   \
+    if ((e) == (code))                                                  \
+      error (EXIT_FAILURE, errno, _("XML write error at \"%s\""), #e);	\
   } while (0)
 
 static void
 output (char **roots)
 {
   xmlOutputBufferPtr ob = xmlOutputBufferCreateFd (1, NULL);
-  if (ob == NULL) {
-    fprintf (stderr,
-             _("%s: xmlOutputBufferCreateFd: failed to open stdout\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (ob == NULL)
+    error (EXIT_FAILURE, 0,
+           _("xmlOutputBufferCreateFd: failed to open stdout"));
 
   /* 'ob' is freed when 'xo' is freed.. */
   CLEANUP_XMLFREETEXTWRITER xmlTextWriterPtr xo = xmlNewTextWriter (ob);
-  if (xo == NULL) {
-    fprintf (stderr,
-             _("%s: xmlNewTextWriter: failed to create libxml2 writer\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (xo == NULL)
+    error (EXIT_FAILURE, 0,
+           _("xmlNewTextWriter: failed to create libxml2 writer"));
 
   /* Pretty-print the output. */
   XMLERROR (-1, xmlTextWriterSetIndent (xo, 1));
@@ -487,30 +475,35 @@ output_root (xmlTextWriterPtr xo, char *root)
   /* We need to mount everything up in order to read out the list of
    * applications and the icon, ie. everything below this point.
    */
-  inspect_mount_root (g, root);
+  if (inspect_apps || inspect_icon) {
+    inspect_mount_root (g, root);
 
-  output_applications (xo, root);
+    if (inspect_apps)
+      output_applications (xo, root);
 
-  /* Don't return favicon.  RHEL 7 and Fedora have crappy 16x16
-   * favicons in the base distro.
-   */
-  str = guestfs_inspect_get_icon (g, root, &size,
-                                  GUESTFS_INSPECT_GET_ICON_FAVICON, 0,
-                                  -1);
-  if (!str) exit (EXIT_FAILURE);
-  if (size > 0) {
-    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "icon"));
-    XMLERROR (-1, xmlTextWriterWriteBase64 (xo, str, 0, size));
-    XMLERROR (-1, xmlTextWriterEndElement (xo));
+    if (inspect_icon) {
+      /* Don't return favicon.  RHEL 7 and Fedora have crappy 16x16
+       * favicons in the base distro.
+       */
+      str = guestfs_inspect_get_icon (g, root, &size,
+                                      GUESTFS_INSPECT_GET_ICON_FAVICON, 0,
+                                      -1);
+      if (!str) exit (EXIT_FAILURE);
+      if (size > 0) {
+        XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "icon"));
+        XMLERROR (-1, xmlTextWriterWriteBase64 (xo, str, 0, size));
+        XMLERROR (-1, xmlTextWriterEndElement (xo));
+      }
+      /* Note we must free (str) even if size == 0, because that indicates
+       * there was no icon.
+       */
+      free (str);
+    }
+
+    /* Unmount (see inspect_mount_root above). */
+    if (guestfs_umount_all (g) == -1)
+      exit (EXIT_FAILURE);
   }
-  /* Note we must free (str) even if size == 0, because that indicates
-   * there was no icon.
-   */
-  free (str);
-
-  /* Unmount (see inspect_mount_root above). */
-  if (guestfs_umount_all (g) == -1)
-    exit (EXIT_FAILURE);
 
   XMLERROR (-1, xmlTextWriterEndElement (xo));
 }
@@ -778,25 +771,16 @@ do_xpath (const char *query)
   xmlNodePtr wrnode;
 
   doc = xmlReadFd (STDIN_FILENO, NULL, "utf8", XML_PARSE_NOBLANKS);
-  if (doc == NULL) {
-    fprintf (stderr, _("%s: unable to parse XML from stdin\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (doc == NULL)
+    error (EXIT_FAILURE, 0, _("unable to parse XML from stdin"));
 
   xpathCtx = xmlXPathNewContext (doc);
-  if (xpathCtx == NULL) {
-    fprintf (stderr, _("%s: unable to create new XPath context\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (xpathCtx == NULL)
+    error (EXIT_FAILURE, 0, _("unable to create new XPath context"));
 
   xpathObj = xmlXPathEvalExpression (BAD_CAST query, xpathCtx);
-  if (xpathObj == NULL) {
-    fprintf (stderr, _("%s: unable to evaluate XPath expression\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (xpathObj == NULL)
+    error (EXIT_FAILURE, 0, _("unable to evaluate XPath expression"));
 
   switch (xpathObj->type) {
   case XPATH_NODESET:
@@ -806,33 +790,21 @@ do_xpath (const char *query)
 
     saveCtx = xmlSaveToFd (STDOUT_FILENO, NULL,
                            XML_SAVE_NO_DECL | XML_SAVE_FORMAT);
-    if (saveCtx == NULL) {
-      fprintf (stderr, _("%s: xmlSaveToFd failed\n"),
-               guestfs_int_program_name);
-      exit (EXIT_FAILURE);
-    }
+    if (saveCtx == NULL)
+      error (EXIT_FAILURE, 0, _("xmlSaveToFd failed"));
 
     for (i = 0; i < (size_t) nodes->nodeNr; ++i) {
       CLEANUP_XMLFREEDOC xmlDocPtr wrdoc = xmlNewDoc (BAD_CAST "1.0");
-      if (wrdoc == NULL) {
-        fprintf (stderr, _("%s: xmlNewDoc failed\n"),
-                 guestfs_int_program_name);
-        exit (EXIT_FAILURE);
-      }
+      if (wrdoc == NULL)
+        error (EXIT_FAILURE, 0, _("xmlNewDoc failed"));
       wrnode = xmlDocCopyNode (nodes->nodeTab[i], wrdoc, 1);
-      if (wrnode == NULL) {
-        fprintf (stderr, _("%s: xmlCopyNode failed\n"),
-                 guestfs_int_program_name);
-        exit (EXIT_FAILURE);
-      }
+      if (wrnode == NULL)
+        error (EXIT_FAILURE, 0, _("xmlCopyNode failed"));
 
       xmlDocSetRootElement (wrdoc, wrnode);
 
-      if (xmlSaveDoc (saveCtx, wrdoc) == -1) {
-        fprintf (stderr, _("%s: xmlSaveDoc failed\n"),
-                 guestfs_int_program_name);
-        exit (EXIT_FAILURE);
-      }
+      if (xmlSaveDoc (saveCtx, wrdoc) == -1)
+        error (EXIT_FAILURE, 0, _("xmlSaveDoc failed"));
     }
 
     xmlSaveClose (saveCtx);

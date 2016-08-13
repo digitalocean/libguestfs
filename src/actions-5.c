@@ -8986,3 +8986,114 @@ guestfs_set_uuid_random (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC char **
+guestfs_btrfs_filesystem_show (guestfs_h *g,
+                               const char *device)
+{
+  struct guestfs_btrfs_filesystem_show_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_btrfs_filesystem_show_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char **ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                      "btrfs_filesystem_show", 21);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_filesystem_show", "device");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_filesystem_show");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs_int_check_appliance_up (g, "btrfs_filesystem_show") == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_filesystem_show", "NULL");
+    return NULL;
+  }
+
+  args.device = (char *) device;
+  serial = guestfs_int_send (g, GUESTFS_PROC_BTRFS_FILESYSTEM_SHOW,
+                             progress_hint, 0,
+                             (xdrproc_t) xdr_guestfs_btrfs_filesystem_show_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_filesystem_show", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs_int_recv (g, "btrfs_filesystem_show", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_btrfs_filesystem_show_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_filesystem_show", "NULL");
+    return NULL;
+  }
+
+  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_FILESYSTEM_SHOW, serial) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_filesystem_show", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "btrfs_filesystem_show", "NULL");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs_int_string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_filesystem_show", err.error_message);
+    else
+      guestfs_int_error_errno (g, errnum, "%s: %s", "btrfs_filesystem_show",
+                               err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return NULL;
+  }
+
+  /* caller will free this, but we need to add a NULL entry */
+  ret.devices.devices_val =
+    safe_realloc (g, ret.devices.devices_val,
+                  sizeof (char *) * (ret.devices.devices_len + 1));
+  ret.devices.devices_val[ret.devices.devices_len] = NULL;
+  ret_v = ret.devices.devices_val;
+  if (trace_flag) {
+    size_t i;
+
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_filesystem_show");
+    fputs ("[", trace_buffer.fp);
+    for (i = 0; ret_v[i]; ++i) {
+      if (i > 0) fputs (", ", trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
+      fputs (ret_v[i], trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
+    }
+    fputs ("]", trace_buffer.fp);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

@@ -21,21 +21,6 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	copy_to_local.ml \
 	v2v_unit_tests.ml \
-	$(TESTS) \
-	HACKING \
-	test-v2v-cdrom.expected \
-	test-v2v-cdrom.xml \
-	test-v2v-i-ova.ovf \
-	test-v2v-i-ova.xml \
-	test-v2v-i-ova-formats.expected \
-	test-v2v-i-ova-formats.ovf \
-	test-v2v-i-ova-gz.expected \
-	test-v2v-i-ova-gz.ovf \
-	test-v2v-i-ova-two-disks.expected \
-	test-v2v-i-ova-two-disks.ovf \
-	test-v2v-networks-and-bridges-expected.xml \
-	test-v2v-networks-and-bridges.xml \
-	test-v2v-sound.xml \
 	virt-v2v.pod \
 	virt-v2v-copy-to-local.pod
 
@@ -66,7 +51,7 @@ SOURCES_MLI = \
 	output_rhev.mli \
 	output_vdsm.mli \
 	OVF.mli \
-	stringMap.mli \
+	target_bus_assignment.mli \
 	types.mli \
 	utils.mli \
 	vCenter.mli \
@@ -75,7 +60,6 @@ SOURCES_MLI = \
 	xml.mli
 
 SOURCES_ML = \
-	stringMap.ml \
 	types.ml \
 	xml.ml \
 	utils.ml \
@@ -105,13 +89,12 @@ SOURCES_ML = \
 	output_rhev.ml \
 	output_vdsm.ml \
 	inspect_source.ml \
+	target_bus_assignment.ml \
 	cmdline.ml \
 	v2v.ml
 
 SOURCES_C = \
-	../mllib/mkdtemp-c.c \
 	domainxml-c.c \
-	changeuid-c.c \
 	utils-c.c \
 	xml-c.c
 
@@ -131,15 +114,9 @@ virt_v2v_CFLAGS = \
 	$(LIBVIRT_CFLAGS)
 
 BOBJECTS = \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/regedit.cmo \
-	$(top_builddir)/mllib/mkdtemp.cmo \
-	$(top_builddir)/mllib/JSON.cmo \
-	$(top_builddir)/mllib/curl.cmo \
 	$(top_builddir)/customize/customize_utils.cmo \
 	$(top_builddir)/customize/firstboot.cmo \
+	$(top_builddir)/customize/SELinux_relabel.cmo \
 	$(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
@@ -168,13 +145,11 @@ OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
-BEST    = c
-OCAMLLINKFLAGS = mlguestfs.cma -custom
 else
 OBJECTS = $(XOBJECTS)
-BEST    = opt
-OCAMLLINKFLAGS = mlguestfs.cmxa
 endif
+
+OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
 
 virt_v2v_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
 virt_v2v_LINK = \
@@ -197,11 +172,6 @@ virt_v2v_copy_to_local_CFLAGS = \
 	$(LIBVIRT_CFLAGS)
 
 COPY_TO_LOCAL_BOBJECTS = \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/JSON.cmo \
-	$(top_builddir)/mllib/curl.cmo \
 	xml.cmo \
 	utils.cmo \
 	vCenter.cmo \
@@ -216,7 +186,9 @@ COPY_TO_LOCAL_OBJECTS = $(COPY_TO_LOCAL_XOBJECTS)
 endif
 
 virt_v2v_copy_to_local_DEPENDENCIES = \
-	$(COPY_TO_LOCAL_OBJECTS) $(top_srcdir)/ocaml-link.sh
+	$(COPY_TO_LOCAL_OBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 virt_v2v_copy_to_local_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
@@ -281,8 +253,10 @@ CLEANFILES += \
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 TESTS = \
+	test-v2v-docs.sh \
 	test-v2v-i-ova-formats.sh \
 	test-v2v-i-ova-gz.sh \
+	test-v2v-i-ova-subfolders.sh \
 	test-v2v-i-ova-two-disks.sh \
 	test-v2v-copy-to-local.sh \
 	test-v2v-bad-networks-and-bridges.sh
@@ -294,6 +268,7 @@ endif
 if ENABLE_APPLIANCE
 TESTS += \
 	test-v2v-cdrom.sh \
+	test-v2v-floppy.sh \
 	test-v2v-i-ova.sh \
 	test-v2v-i-disk.sh \
 	test-v2v-in-place.sh \
@@ -320,7 +295,8 @@ check-valgrind:
 	$(MAKE) VG="$(abs_top_builddir)/run @VG@" check
 
 SLOW_TESTS = \
-	test-v2v-real-conversions.sh
+	test-v2v-real-conversions.sh \
+	test-v2v-trim.sh
 
 check-slow: $(real_guests:%=%.img)
 	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
@@ -332,9 +308,11 @@ real_guests = \
 	centos-6 \
 	centos-7.0 \
 	fedora-20 \
+	fedora-23 \
 	rhel-5.10 \
 	rhel-6.5 \
-	rhel-7.0
+	rhel-7.0 \
+	rhel-7.2
 
 $(real_guests:%=%.img):
 	rm -f $@
@@ -348,6 +326,55 @@ $(real_guests:%=%.img):
 
 CLEANFILES += $(real_guests:%=%.img)
 
+EXTRA_DIST += \
+	test-v2v-bad-networks-and-bridges.sh \
+	test-v2v-cdrom.expected \
+	test-v2v-cdrom.sh \
+	test-v2v-cdrom.xml \
+	test-v2v-copy-to-local.sh \
+	test-v2v-docs.sh \
+	test-v2v-floppy.expected \
+	test-v2v-floppy.sh \
+	test-v2v-floppy.xml \
+	test-v2v-i-disk.sh \
+	test-v2v-i-ova-formats.expected \
+	test-v2v-i-ova-formats.ovf \
+	test-v2v-i-ova-formats.sh \
+	test-v2v-i-ova-gz.expected \
+	test-v2v-i-ova-gz.ovf \
+	test-v2v-i-ova-gz.sh \
+	test-v2v-i-ova-subfolders.expected \
+	test-v2v-i-ova-subfolders.ovf \
+	test-v2v-i-ova-subfolders.sh \
+	test-v2v-i-ova-two-disks.expected \
+	test-v2v-i-ova-two-disks.ovf \
+	test-v2v-i-ova-two-disks.sh \
+	test-v2v-i-ova.ovf \
+	test-v2v-i-ova.sh \
+	test-v2v-i-ova.xml \
+	test-v2v-in-place.sh \
+	test-v2v-machine-readable.sh \
+	test-v2v-networks-and-bridges-expected.xml \
+	test-v2v-networks-and-bridges.sh \
+	test-v2v-networks-and-bridges.xml \
+	test-v2v-no-copy.sh \
+	test-v2v-o-glance.sh \
+	test-v2v-o-libvirt.sh \
+	test-v2v-o-null.sh \
+	test-v2v-o-qemu.sh \
+	test-v2v-o-rhev.sh \
+	test-v2v-o-vdsm-options.sh \
+	test-v2v-oa-option.sh \
+	test-v2v-of-option.sh \
+	test-v2v-on-option.sh \
+	test-v2v-print-source.sh \
+	test-v2v-real-conversions.sh \
+	test-v2v-sound.sh \
+	test-v2v-sound.xml \
+	test-v2v-trim.sh \
+	test-v2v-virtio-win-iso.sh \
+	test-v2v-windows-conversion.sh
+
 # Unit tests.
 check_PROGRAMS =
 if HAVE_OCAML_PKG_OUNIT
@@ -355,11 +382,6 @@ check_PROGRAMS += v2v_unit_tests
 endif
 
 v2v_unit_tests_BOBJECTS = \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/regedit.cmo \
-	stringMap.cmo \
 	types.cmo \
 	xml.cmo \
 	utils.cmo \
@@ -384,7 +406,10 @@ v2v_unit_tests_THEOBJECTS = $(v2v_unit_tests_XOBJECTS)
 v2v_unit_tests.cmx: OCAMLPACKAGES += -package oUnit
 endif
 
-v2v_unit_tests_DEPENDENCIES = $(v2v_unit_tests_THEOBJECTS) $(top_srcdir)/ocaml-link.sh
+v2v_unit_tests_DEPENDENCIES = \
+	$(v2v_unit_tests_THEOBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 v2v_unit_tests_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) \

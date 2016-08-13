@@ -69,7 +69,7 @@ object
 
     (match uefi_firmware with
      | None -> ()
-     | Some (_, vars_template) ->
+     | Some { vars = vars_template } ->
         fpf "# Make a copy of the UEFI variables template\n";
         fpf "uefi_vars=\"$(mktemp)\"\n";
         fpf "cp %s \"$uefi_vars\"\n" (quote vars_template);
@@ -83,7 +83,7 @@ object
 
     (match uefi_firmware with
      | None -> ()
-     | Some (code, _) ->
+     | Some { code = code } ->
         fpf "%s-drive if=pflash,format=raw,file=%s,readonly" nl (quote code);
         fpf "%s-drive if=pflash,format=raw,file=\"$uefi_vars\"" nl
     );
@@ -136,6 +136,10 @@ object
        fpf "%s-drive %s" nl (quote drive_param)
     in
     Array.iteri make_scsi target_buses.target_scsi_bus;
+
+    (* XXX Highly unlikely that anyone cares, but the current
+     * code ignores target_buses.target_floppy_bus.
+     *)
 
     let net_bus =
       match guestcaps.gcaps_net_bus with

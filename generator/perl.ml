@@ -178,7 +178,8 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_int_safe_malloc (g, sizeof (SV *) * (*len_rtn));
+  r = malloc (sizeof (SV *) * (*len_rtn));
+  if (r == NULL) croak (\"malloc: %%m\");
 
   i = 0;
   cb = guestfs_first_private (g, &key);
@@ -479,7 +480,8 @@ PREINIT:
                pr "          /* Note av_len returns index of final element. */\n";
                pr "          len = av_len (av) + 1;\n";
                pr "\n";
-               pr "          r = guestfs_int_safe_malloc (g, (len+1) * sizeof (char *));\n";
+               pr "          r = malloc ((len+1) * sizeof (char *));\n";
+               pr "          if (r == NULL) croak (\"malloc: %%m\");\n";
                pr "          for (i = 0; i < len; ++i) {\n";
                pr "            svp = av_fetch (av, i, 0);\n";
                pr "            r[i] = SvPV_nolen (*svp);\n";
@@ -720,16 +722,17 @@ package Sys::Guestfs;
 use strict;
 use warnings;
 
-# This version number changes whenever a new function
-# is added to the libguestfs API.  It is not directly
-# related to the libguestfs version number.
+# This is always 1.0, never changes, and is unrelated to the
+# real libguestfs version.  If you want to find the libguestfs
+# library version, use $g->version.  If you want to test if
+# APIs/parameters are present, use %%guestfs_introspection.
 use vars qw($VERSION);
-$VERSION = '0.%d';
+$VERSION = '1.0';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
 
-" max_proc_nr;
+";
 
   (* Methods. *)
   pr "\

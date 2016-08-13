@@ -16,6 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * This file implements the guestfish C<hexedit> command.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -100,7 +104,8 @@ run_hexedit (const char *cmd, size_t argc, char *argv[])
   const char *editor;
   int r;
   struct stat oldstat, newstat;
-  char buf[BUFSIZ];
+  char tmpfd[sizeof "/dev/fd/" + 3 * sizeof (int)];
+  CLEANUP_FREE char *editcmd = NULL;
 
   CLEANUP_FREE char *tmpdir = guestfs_get_tmpdir (g), *tmp = NULL;
   if (asprintf (&tmp, "%s/guestfishXXXXXX", tmpdir) == -1) {
@@ -119,9 +124,9 @@ run_hexedit (const char *cmd, size_t argc, char *argv[])
   if (editor == NULL)
     editor = "hexedit";
 
-  snprintf (buf, sizeof buf, "/dev/fd/%d", fd);
+  snprintf (tmpfd, sizeof tmpfd, "/dev/fd/%d", fd);
 
-  if (guestfs_download_offset (g, filename, buf, start, max) == -1) {
+  if (guestfs_download_offset (g, filename, tmpfd, start, max) == -1) {
     unlink (tmp);
     close (fd);
     return -1;
@@ -140,11 +145,14 @@ run_hexedit (const char *cmd, size_t argc, char *argv[])
   }
 
   /* Edit it. */
-  snprintf (buf, sizeof buf, "%s %s", editor, tmp);
+  if (asprintf (&editcmd, "%s %s", editor, tmp) == -1) {
+    perror ("asprintf");
+    return -1;
+  }
 
-  r = system (buf);
+  r = system (editcmd);
   if (r != 0) {
-    perror (buf);
+    perror (editcmd);
     unlink (tmp);
     return -1;
   }

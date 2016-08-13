@@ -16,6 +16,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * This is the guestfs daemon which runs inside the guestfs appliance.
+ * This file handles start up, connecting back to the library, and has
+ * several utility functions.
+ */
+
 #include <config.h>
 
 #ifdef HAVE_WINDOWS_H
@@ -40,6 +46,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <errno.h>
+#include <error.h>
 #include <assert.h>
 #include <termios.h>
 
@@ -220,9 +227,8 @@ main (int argc, char *argv[])
       exit (EXIT_SUCCESS);
 
     default:
-      fprintf (stderr, "guestfsd: unexpected command line option 0x%x\n",
-               (unsigned) c);
-      exit (EXIT_FAILURE);
+      error (EXIT_FAILURE, 0,
+             "unexpected command line option 0x%x\n", (unsigned) c);
     }
   }
 
@@ -268,8 +274,10 @@ main (int argc, char *argv[])
   /* Make a private copy of /etc/lvm so we can change the config (see
    * daemon/lvm-filter.c).
    */
-  if (!test_mode)
+  if (!test_mode) {
     copy_lvm ();
+    start_lvmetad ();
+  }
 
   /* Connect to virtio-serial channel. */
   if (!channel)
@@ -300,8 +308,7 @@ main (int argc, char *argv[])
                  "output to the libguestfs developers, either in a bug report\n"
                  "or on the libguestfs redhat com mailing list.\n"
                  "\n");
-        perror (channel);
-        exit (EXIT_FAILURE);
+        error (EXIT_FAILURE, errno, "open: %s", channel);
       }
     }
   }
@@ -353,10 +360,8 @@ main (int argc, char *argv[])
   xdrmem_create (&xdr, lenbuf, sizeof lenbuf, XDR_ENCODE);
   xdr_u_int (&xdr, &len);
 
-  if (xwrite (sock, lenbuf, sizeof lenbuf) == -1) {
-    perror ("xwrite");
-    exit (EXIT_FAILURE);
-  }
+  if (xwrite (sock, lenbuf, sizeof lenbuf) == -1)
+    error (EXIT_FAILURE, errno, "xwrite");
 
   xdr_destroy (&xdr);
 
@@ -385,7 +390,8 @@ makeraw (const char *channel, int fd)
   }
 }
 
-/* Return true iff device is the root device (and therefore should be
+/**
+ * Return true iff device is the root device (and therefore should be
  * ignored from the point of view of user calls).
  */
 static int
@@ -407,12 +413,14 @@ is_root_device (const char *device)
   return is_root_device_stat (&statbuf);
 }
 
-/* Turn "/path" into "/sysroot/path".
+/**
+ * Turn C<"/path"> into C<"/sysroot/path">.
  *
- * Caller must check for NULL and call reply_with_perror ("malloc")
- * if it is.  Caller must also free the string.
+ * Returns C<NULL> on failure.  The caller I<must> check for this and
+ * call S<C<reply_with_perror ("malloc")>>.  The caller must also free
+ * the returned string.
  *
- * See also the custom %R printf formatter which does shell quoting too.
+ * See also the custom C<%R> printf formatter which does shell quoting too.
  */
 char *
 sysroot_path (const char *path)
@@ -428,12 +436,15 @@ sysroot_path (const char *path)
   return r;
 }
 
-/* Resolve path within sysroot, calling sysroot_path on the resolved path.
+/**
+ * Resolve path within sysroot, calling C<sysroot_path> on the
+ * resolved path.
  *
- * Caller must check for NULL and call reply_with_perror ("malloc/realpath")
- * if it is.  Caller must also free the string.
+ * Returns C<NULL> on failure.  The caller I<must> check for this and
+ * call S<C<reply_with_perror ("malloc")>>.  The caller must also free
+ * the returned string.
  *
- * See also the custom %R printf formatter which does shell quoting too.
+ * See also the custom C<%R> printf formatter which does shell quoting too.
  */
 char *
 sysroot_realpath (const char *path)
@@ -582,7 +593,12 @@ count_strings (char *const *argv)
   return argc;
 }
 
-/* http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2 */
+/**
+ * Returns true if C<v> is a power of 2.
+ *
+ * Uses the algorithm described at
+ * L<http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2>
+ */
 int
 is_power_of_2 (unsigned long v)
 {
@@ -629,8 +645,10 @@ free_stringslen (char **argv, size_t len)
   free (argv);
 }
 
-/* Compare device names (including partition numbers if present).
- * https://rwmj.wordpress.com/2011/01/09/how-are-linux-drives-named-beyond-drive-26-devsdz/
+/**
+ * Compare device names (including partition numbers if present).
+ *
+ * L<https://rwmj.wordpress.com/2011/01/09/how-are-linux-drives-named-beyond-drive-26-devsdz/>
  */
 int
 compare_device_names (const char *a, const char *b)
@@ -743,26 +761,46 @@ join_strings (const char *separator, char *const *argv)
   return r;
 }
 
-/* Split an output string into a NULL-terminated list of lines,
+/**
+ * Split an output string into a NULL-terminated list of lines,
  * wrapped into a stringsbuf.
+ *
  * Typically this is used where we have run an external command
  * which has printed out a list of things, and we want to return
  * an actual list.
  *
  * The corner cases here are quite tricky.  Note in particular:
  *
- *   "" -> []
- *   "\n" -> [""]
- *   "a\nb" -> ["a"; "b"]
- *   "a\nb\n" -> ["a"; "b"]
- *   "a\nb\n\n" -> ["a"; "b"; ""]
+ * =over 4
  *
- * The original string is written over and destroyed by this
- * function (which is usually OK because it's the 'out' string
- * from command()).  You can free the original string, because
- * add_string() strdups the strings.
+ * =item C<"">
  *
- * argv in the stringsbuf will be NULL in case of errors.
+ * returns C<[]>
+ *
+ * =item C<"\n">
+ *
+ * returns C<[""]>
+ *
+ * =item C<"a\nb">
+ *
+ * returns C<["a"; "b"]>
+ *
+ * =item C<"a\nb\n">
+ *
+ * returns C<["a"; "b"]>
+ *
+ * =item C<"a\nb\n\n">
+ *
+ * returns C<["a"; "b"; ""]>
+ *
+ * =back
+ *
+ * The original string is written over and destroyed by this function
+ * (which is usually OK because it's the 'out' string from
+ * C<command*()>).  You can free the original string, because
+ * C<add_string()> strdups the strings.
+ *
+ * C<argv> in the C<struct stringsbuf> will be C<NULL> in case of errors.
  */
 struct stringsbuf
 split_lines_sb (char *str)
@@ -825,7 +863,8 @@ empty_list (void)
   return ret.argv;
 }
 
-/* Skip leading and trailing whitespace, updating the original string
+/**
+ * Skip leading and trailing whitespace, updating the original string
  * in-place.
  */
 void
@@ -847,8 +886,9 @@ trim (char *str)
   memmove (str, p, len+1);
 }
 
-/* printf helper function so we can use %Q ("quoted") and %R to print
- * shell-quoted strings.  See guestfs-hacking(1) for more
+/**
+ * printf helper function so we can use C<%Q> ("quoted") and C<%R> to
+ * print shell-quoted strings.  See L<guestfs-hacking(1)> for more
  * details.
  */
 static int
@@ -907,15 +947,17 @@ print_arginfo (const struct printf_info *info, size_t n, int *argtypes)
 #endif
 #endif
 
-/* Perform device name translation.  See guestfs(3) for the algorithm.
- * Usually you should not call this directly.
+/**
+ * Perform device name translation.  See L<guestfs(3)> for the
+ * algorithm.  Usually you should not call this directly.
  *
  * It returns a newly allocated string which the caller must free.
  *
- * It returns NULL on error.  *Note* it does *NOT* call reply_with_*.
+ * It returns C<NULL> on error.  B<Note> it does I<not> call
+ * C<reply_with_*>.
  *
- * We have to open the device and test for ENXIO, because the device
- * nodes may exist in the appliance.
+ * We have to open the device and test for C<ENXIO>, because the
+ * device nodes may exist in the appliance.
  */
 char *
 device_name_translation (const char *device)
@@ -970,25 +1012,25 @@ device_name_translation (const char *device)
   return NULL;
 }
 
-/* Parse the mountable descriptor for a btrfs subvolume.  Don't call
+/**
+ * Parse the mountable descriptor for a btrfs subvolume.  Don't call
  * this directly; it is only used from the stubs.
  *
  * A btrfs subvolume is given as:
  *
- * btrfsvol:/dev/sda3/root
+ *  btrfsvol:/dev/sda3/root
  *
- * where /dev/sda3 is a block device containing a btrfs filesystem,
+ * where F</dev/sda3> is a block device containing a btrfs filesystem,
  * and root is the name of a subvolume on it. This function is passed
- * the string following 'btrfsvol:'.
+ * the string following C<"btrfsvol:">.
  *
- * On success, mountable->device & mountable->volume must be freed by
- * the caller.
+ * On success, C<mountable-E<gt>device> and C<mountable-E<gt>volume>
+ * must be freed by the caller.
  */
 int
 parse_btrfsvol (const char *desc_orig, mountable_t *mountable)
 {
-  size_t len = strlen (desc_orig);
-  char desc[len+1];
+  CLEANUP_FREE char *desc = NULL;
   CLEANUP_FREE char *device = NULL;
   const char *volume = NULL;
   char *slash;
@@ -996,10 +1038,14 @@ parse_btrfsvol (const char *desc_orig, mountable_t *mountable)
 
   mountable->type = MOUNTABLE_BTRFSVOL;
 
-  memcpy (desc, desc_orig, len+1);
-
-  if (! STRPREFIX (desc, "/dev/"))
+  if (!STRPREFIX (desc_orig, "/dev/"))
     return -1;
+
+  desc = strdup (desc_orig);
+  if (desc == NULL) {
+    perror ("strdup");
+    return -1;
+  }
 
   slash = desc + strlen ("/dev/") - 1;
   while ((slash = strchr (slash + 1, '/'))) {
@@ -1042,10 +1088,11 @@ parse_btrfsvol (const char *desc_orig, mountable_t *mountable)
   return 0;
 }
 
-/* Convert a mountable_t back to its string representation
+/**
+ * Convert a C<mountable_t> back to its string representation
  *
- * This function can be used in an error path, and must not call
- * reply_with_error().
+ * This function can be used in an error path, so must not call
+ * C<reply_with_error>.
  */
 char *
 mountable_to_string (const mountable_t *mountable)
@@ -1068,7 +1115,14 @@ mountable_to_string (const mountable_t *mountable)
   }
 }
 
-/* Check program exists and is executable on $PATH. */
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstack-usage="
+#endif
+
+/**
+ * Check program exists and is executable on C<$PATH>.
+ */
 int
 prog_exists (const char *prog)
 {
@@ -1100,9 +1154,15 @@ prog_exists (const char *prog)
   return 0;
 }
 
-/* Pass a template such as "/sysroot/XXXXXXXX.XXX".  This updates the
- * template to contain a randomly named file.  Any 'X' characters
- * after the final '/' are replaced with random characters.
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic pop
+#endif
+
+/**
+ * Pass a template such as C<"/sysroot/XXXXXXXX.XXX">.  This updates
+ * the template to contain a randomly named file.  Any C<'X'>
+ * characters after the final C<'/'> in the template are replaced with
+ * random characters.
  *
  * Notes: You should probably use an 8.3 path, so it's compatible with
  * all filesystems including basic FAT.  Also this only substitutes
@@ -1113,7 +1173,7 @@ prog_exists (const char *prog)
  * (it would be extremely unlikely to exist as long as the RNG is
  * working).
  *
- * If there is an error, -1 is returned.
+ * If there is an error, C<-1> is returned.
  */
 int
 random_name (char *template)
@@ -1146,12 +1206,13 @@ random_name (char *template)
   return 0;
 }
 
-/* LVM and other commands aren't synchronous, especially when udev is
- * involved.  eg. You can create or remove some device, but the /dev
- * device node won't appear until some time later.  This means that
- * you get an error if you run one command followed by another.
+/**
+ * LVM and other commands aren't synchronous, especially when udev is
+ * involved.  eg. You can create or remove some device, but the
+ * C</dev> device node won't appear until some time later.  This means
+ * that you get an error if you run one command followed by another.
  *
- * Use 'udevadm settle' after certain commands, but don't be too
+ * Use C<udevadm settle> after certain commands, but don't be too
  * fussed if it fails.
  */
 void

@@ -266,3 +266,71 @@ do_ntfsfix (const char *device, int clearbadsectors)
 
   return 0;
 }
+
+int
+do_ntfscat_i (const mountable_t *mountable, int64_t inode)
+{
+  int r;
+  FILE *fp;
+  CLEANUP_FREE char *cmd = NULL;
+  CLEANUP_FREE char *buffer = NULL;
+
+  buffer = malloc (GUESTFS_MAX_CHUNK_SIZE);
+  if (buffer == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  /* Inode must be greater than 0 */
+  if (inode < 0) {
+    reply_with_error ("inode must be >= 0");
+    return -1;
+  }
+
+  /* Construct the command. */
+  if (asprintf (&cmd, "ntfscat -i %" PRIi64 " %s",
+                inode, mountable->device) == -1) {
+    reply_with_perror ("asprintf");
+    return -1;
+  }
+
+  if (verbose)
+    fprintf (stderr, "%s\n", cmd);
+
+  fp = popen (cmd, "r");
+  if (fp == NULL) {
+    reply_with_perror ("%s", cmd);
+    return -1;
+  }
+
+  /* Now we must send the reply message, before the file contents.  After
+   * this there is no opportunity in the protocol to send any error
+   * message back.  Instead we can only cancel the transfer.
+   */
+  reply (NULL, NULL);
+
+  while ((r = fread (buffer, 1, GUESTFS_MAX_CHUNK_SIZE, fp)) > 0) {
+    if (send_file_write (buffer, r) < 0) {
+      pclose (fp);
+      return -1;
+    }
+  }
+
+  if (ferror (fp)) {
+    fprintf (stderr, "fread: %" PRIi64 ": %m\n", inode);
+    send_file_end (1);		/* Cancel. */
+    pclose (fp);
+    return -1;
+  }
+
+  if (pclose (fp) != 0) {
+    fprintf (stderr, "pclose: %" PRIi64 ": %m\n", inode);
+    send_file_end (1);		/* Cancel. */
+    return -1;
+  }
+
+  if (send_file_end (0))	/* Normal end of file. */
+    return -1;
+
+  return 0;
+}

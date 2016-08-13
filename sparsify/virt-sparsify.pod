@@ -119,13 +119,13 @@ in place by doing:
 
 Display help.
 
-=item B<--check-tmpdir ignore>
+=item B<--check-tmpdir> B<ignore>
 
-=item B<--check-tmpdir continue>
+=item B<--check-tmpdir> B<continue>
 
-=item B<--check-tmpdir warn>
+=item B<--check-tmpdir> B<warn>
 
-=item B<--check-tmpdir fail>
+=item B<--check-tmpdir> B<fail>
 
 Check if L</TMPDIR> or I<--tmp> directory has enough space to complete
 the operation.  This is just an estimate.
@@ -155,6 +155,15 @@ B<fail> and exit.
 
 You cannot use this option and I<--in-place> together.
 
+=item B<--colors>
+
+=item B<--colours>
+
+Use ANSI colour sequences to colourize messages.  This is the default
+when the output is a tty.  If the output of the program is redirected
+to a file, ANSI colour sequences are disabled unless you use this
+option.
+
 =item B<--compress>
 
 Compress the output file.  This I<only> works if the output format is
@@ -182,12 +191,6 @@ then virt-sparsify doesn't need to try to guess the input format.
 For fine-tuning the output format, see: I<--compress>, I<-o>.
 
 You cannot use this option and I<--in-place> together.
-
-=item B<--debug-gc>
-
-Debug garbage collection and memory allocation.  This is only useful
-when debugging memory problems in virt-sparsify or the OCaml libguestfs
-bindings.
 
 =item B<--format> raw
 

@@ -42,28 +42,16 @@ class input_disk input_format disk = object
      * the filename passed in.  Users can override this using the
      * `-on name' option.
      *)
+    let name = Filename.basename disk in
     let name =
-      let name = Filename.basename disk in
-      (* Remove the extension (or suffix), only if it's one usually
-       * used for disk images. *)
-      let suffixes = [
-        ".img"; ".qcow2"; ".raw"; ".vmdk";
-        "-sda";
-      ] in
-      let rec loop = function
-        | suff :: xs ->
-          if Filename.check_suffix name suff then
-            Filename.chop_suffix name suff
-          else
-            loop xs
-        | [] -> name
-      in
-      loop suffixes in
+      try Filename.chop_extension name with Invalid_argument _ -> name in
     if name = "" then
       error (f_"-i disk: invalid input filename (%s)") disk;
 
     (* Get the absolute path to the disk file. *)
-    let disk_absolute = absolute_path disk in
+    let disk_absolute =
+      if not (Filename.is_relative disk) then disk
+      else Sys.getcwd () // disk in
 
     (* The rest of virt-v2v doesn't actually work unless we detect
      * the format of the input, so:
@@ -87,6 +75,7 @@ class input_disk input_format disk = object
     (* Give the guest a simple generic network interface. *)
     let network = {
       s_mac = None;
+      s_nic_model = None;
       s_vnet = "default"; s_vnet_orig = "default";
       s_vnet_type = Network
     } in
@@ -101,6 +90,7 @@ class input_disk input_format disk = object
       s_display =
         Some { s_display_type = Window; s_keymap = None; s_password = None;
                s_listen = LNone; s_port = None };
+      s_video = None;
       s_sound = None;
       s_disks = [disk];
       s_removables = [];

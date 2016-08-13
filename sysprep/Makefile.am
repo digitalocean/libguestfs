@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	script1.sh script2.sh script3.sh script4.sh \
 	test-virt-sysprep.sh \
+	test-virt-sysprep-docs.sh \
 	test-virt-sysprep-passwords.sh \
 	test-virt-sysprep-script.sh \
 	virt-sysprep.pod
@@ -80,12 +81,7 @@ SOURCES_ML = \
 	main.ml
 
 SOURCES_C = \
-	../mllib/uri-c.c \
-	../mllib/mkdtemp-c.c \
-	../customize/crypt-c.c \
-	../customize/perl_edit-c.c \
-	../fish/uri.c \
-	../fish/file-edit.c
+	dummy.c
 
 if HAVE_OCAML
 
@@ -103,27 +99,7 @@ virt_sysprep_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(LIBXML2_CFLAGS)
 
-BOBJECTS = \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/URI.cmo \
-	$(top_builddir)/mllib/mkdtemp.cmo \
-	$(top_builddir)/mllib/regedit.cmo \
-	$(top_builddir)/customize/customize_utils.cmo \
-	$(top_builddir)/customize/crypt.cmo \
-	$(top_builddir)/customize/urandom.cmo \
-	$(top_builddir)/customize/password.cmo \
-	$(top_builddir)/customize/random_seed.cmo \
-	$(top_builddir)/customize/hostname.cmo \
-	$(top_builddir)/customize/timezone.cmo \
-	$(top_builddir)/customize/firstboot.cmo \
-	$(top_builddir)/customize/perl_edit.cmo \
-	$(top_builddir)/customize/ssh_key.cmo \
-	$(top_builddir)/customize/subscription_manager.cmo \
-	$(top_builddir)/customize/customize_cmdline.cmo \
-	$(top_builddir)/customize/customize_run.cmo \
-	$(SOURCES_ML:.ml=.cmo)
+BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
@@ -152,15 +128,17 @@ OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
-BEST    = c
-OCAMLLINKFLAGS = mlguestfs.cma -custom
 else
 OBJECTS = $(XOBJECTS)
-BEST    = opt
-OCAMLLINKFLAGS = mlguestfs.cmxa
 endif
 
-virt_sysprep_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
+OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) customize.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+
+virt_sysprep_DEPENDENCIES = \
+	$(OBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	../customize/customize.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 virt_sysprep_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
@@ -201,8 +179,11 @@ TESTS_ENVIRONMENT = \
 	PATH=$(abs_top_builddir)/fuse:$(PATH) \
 	$(top_builddir)/run --test
 
-if ENABLE_APPLIANCE
 TESTS = \
+	test-virt-sysprep-docs.sh
+
+if ENABLE_APPLIANCE
+TESTS += \
 	test-virt-sysprep.sh \
 	test-virt-sysprep-passwords.sh
 

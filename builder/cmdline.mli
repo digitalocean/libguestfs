@@ -30,7 +30,7 @@ type cmdline = {
   delete_on_failure : bool;
   format : string option;
   gpg : string;
-  list_format : [`Short|`Long|`Json];
+  list_format : List_entries.format;
   memsize : int option;
   network : bool;
   ops : Customize_cmdline.ops;
@@ -39,6 +39,7 @@ type cmdline = {
   smp : int option;
   sources : (string * string) list;
   sync : bool;
+  warn_if_partition : bool;
 }
 
 val parse_cmdline : unit -> cmdline

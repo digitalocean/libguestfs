@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <errno.h>
+#include <error.h>
 #include <locale.h>
 #include <assert.h>
 #include <libintl.h>
@@ -72,7 +73,7 @@ usage (int status)
               "  --network            Enable network\n"
               "  -r|--ro              Access read-only\n"
               "  --scratch[=N]        Add scratch disk(s)\n"
-              "  --selinux            Enable SELinux\n"
+              "  --selinux            For backwards compat only, does nothing\n"
               "  --smp N              Enable SMP with N >= 2 virtual CPUs\n"
               "  --suggest            Suggest mount commands for this guest\n"
               "  -v|--verbose         Verbose messages\n"
@@ -132,10 +133,8 @@ main (int argc, char *argv[])
   int suggest = 0;
 
   g = guestfs_create ();
-  if (g == NULL) {
-    fprintf (stderr, _("guestfs_create: failed to create handle\n"));
-    exit (EXIT_FAILURE);
-  }
+  if (g == NULL)
+    error (EXIT_FAILURE, errno, "guestfs_create");
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -148,8 +147,7 @@ main (int argc, char *argv[])
       else if (STREQ (long_options[option_index].name, "short-options"))
         display_short_options (options);
       else if (STREQ (long_options[option_index].name, "selinux")) {
-        if (guestfs_set_selinux (g, 1) == -1)
-          exit (EXIT_FAILURE);
+        /* nothing */
       } else if (STREQ (long_options[option_index].name, "append")) {
         append = optarg;
       } else if (STREQ (long_options[option_index].name, "network")) {
@@ -157,16 +155,12 @@ main (int argc, char *argv[])
       } else if (STREQ (long_options[option_index].name, "format")) {
         OPTION_format;
       } else if (STREQ (long_options[option_index].name, "smp")) {
-        if (sscanf (optarg, "%d", &smp) != 1) {
-          fprintf (stderr, _("%s: could not parse --smp parameter '%s'\n"),
-                   guestfs_int_program_name, optarg);
-          exit (EXIT_FAILURE);
-        }
-        if (smp < 1) {
-          fprintf (stderr, _("%s: --smp parameter '%s' should be >= 1\n"),
-                   guestfs_int_program_name, optarg);
-          exit (EXIT_FAILURE);
-        }
+        if (sscanf (optarg, "%d", &smp) != 1)
+          error (EXIT_FAILURE, 0,
+                 _("could not parse --smp parameter '%s'"), optarg);
+        if (smp < 1)
+          error (EXIT_FAILURE, 0,
+                 _("--smp parameter '%s' should be >= 1"), optarg);
       } else if (STREQ (long_options[option_index].name, "suggest")) {
         suggest = 1;
       } else if (STREQ (long_options[option_index].name, "scratch")) {
@@ -174,25 +168,18 @@ main (int argc, char *argv[])
           add_scratch_disks (1, &drvs);
         else {
           int n;
-          if (sscanf (optarg, "%d", &n) != 1) {
-            fprintf (stderr,
-                     _("%s: could not parse --scratch parameter '%s'\n"),
-                     guestfs_int_program_name, optarg);
-            exit (EXIT_FAILURE);
-          }
-          if (n < 1) {
-            fprintf (stderr,
-                     _("%s: --scratch parameter '%s' should be >= 1\n"),
-                     guestfs_int_program_name, optarg);
-            exit (EXIT_FAILURE);
-          }
+          if (sscanf (optarg, "%d", &n) != 1)
+            error (EXIT_FAILURE, 0,
+                   _("could not parse --scratch parameter '%s'"), optarg);
+          if (n < 1)
+            error (EXIT_FAILURE, 0,
+                   _("--scratch parameter '%s' should be >= 1"), optarg);
           add_scratch_disks (n, &drvs);
         }
-      } else {
-        fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name, long_options[option_index].name, option_index);
-        exit (EXIT_FAILURE);
-      }
+      } else
+        error (EXIT_FAILURE, 0,
+               _("unknown long option: %s (%d)"),
+               long_options[option_index].name, option_index);
       break;
 
     case 'a':
@@ -208,11 +195,9 @@ main (int argc, char *argv[])
       break;
 
     case 'm':
-      if (sscanf (optarg, "%d", &memsize) != 1) {
-        fprintf (stderr, _("%s: could not parse memory size '%s'\n"),
-                 guestfs_int_program_name, optarg);
-        exit (EXIT_FAILURE);
-      }
+      if (sscanf (optarg, "%d", &memsize) != 1)
+        error (EXIT_FAILURE, 0,
+               _("could not parse memory size '%s'"), optarg);
       break;
 
     case 'r':
@@ -251,24 +236,18 @@ main (int argc, char *argv[])
       if (strchr (argv[optind], '/') ||
           access (argv[optind], F_OK) == 0) { /* simulate -a option */
         drv = calloc (1, sizeof (struct drv));
-        if (!drv) {
-          perror ("calloc");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv)
+          error (EXIT_FAILURE, errno, "calloc");
         drv->type = drv_a;
         drv->a.filename = strdup (argv[optind]);
-        if (!drv->a.filename) {
-          perror ("strdup");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv->a.filename)
+          error (EXIT_FAILURE, errno, "strdup");
         drv->next = drvs;
         drvs = drv;
       } else {                  /* simulate -d option */
         drv = calloc (1, sizeof (struct drv));
-        if (!drv) {
-          perror ("calloc");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv)
+          error (EXIT_FAILURE, errno, "calloc");
         drv->type = drv_d;
         drv->d.guest = argv[optind];
         drv->next = drvs;
@@ -459,12 +438,14 @@ do_suggestion (struct drv *drvs)
     for (j = 0; mps[j] != NULL; j += 2)
       printf ("mount %s /sysroot%s\n", mps[j+1], mps[j]);
 
-    /* If it's Linux, print the bind-mounts. */
+    /* If it's Linux, print the bind-mounts and a chroot command. */
     if (type && STREQ (type, "linux")) {
-      printf ("mount --bind /dev /sysroot/dev\n");
-      printf ("mount --bind /dev/pts /sysroot/dev/pts\n");
-      printf ("mount --bind /proc /sysroot/proc\n");
-      printf ("mount --bind /sys /sysroot/sys\n");
+      printf ("mount --rbind /dev /sysroot/dev\n");
+      printf ("mount --rbind /proc /sysroot/proc\n");
+      printf ("mount --rbind /sys /sysroot/sys\n");
+      printf ("\n");
+      printf ("cd /sysroot\n");
+      printf ("chroot /sysroot\n");
     }
 
     printf ("\n");
@@ -536,10 +517,8 @@ add_scratch_disk (struct drv **drvs)
 
   /* Add the scratch disk to the drives list. */
   drv = calloc (1, sizeof (struct drv));
-  if (!drv) {
-    perror ("calloc");
-    exit (EXIT_FAILURE);
-  }
+  if (!drv)
+    error (EXIT_FAILURE, errno, "calloc");
   drv->type = drv_scratch;
   drv->nr_drives = -1;
   drv->scratch.size = INT64_C (10737418240);

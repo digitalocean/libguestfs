@@ -42,40 +42,26 @@
 #include <string.h>
 #include <libintl.h>
 
-#include <pcre.h>
-
-#include <libxml/uri.h>
-
 #include "cloexec.h"
-#include "ignore-value.h"
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs_protocol.h"
 
-COMPILE_REGEXP (re_major_minor, "(\\d+)\\.(\\d+)", 0)
-
 /* Per-handle data. */
 struct backend_direct_data {
-  pid_t pid;                  /* Qemu PID. */
-  pid_t recoverypid;          /* Recovery process PID. */
+  pid_t pid;                    /* Qemu PID. */
+  pid_t recoverypid;            /* Recovery process PID. */
 
-  char *qemu_help;            /* Output of qemu -help. */
-  char *qemu_version;         /* Output of qemu -version. */
-  char *qemu_devices;         /* Output of qemu -device ? */
+  struct version qemu_version;  /* qemu version (0 if unable to parse). */
+  struct qemu_data *qemu_data;  /* qemu -help output etc. */
 
-  /* qemu version (0, 0 if unable to parse). */
-  int qemu_version_major, qemu_version_minor;
-
-  int virtio_scsi;        /* See function qemu_supports_virtio_scsi */
+  char guestfsd_sock[UNIX_PATH_MAX]; /* Path to daemon socket. */
 };
 
 static int is_openable (guestfs_h *g, const char *path, int flags);
 static char *make_appliance_dev (guestfs_h *g, int virtio_scsi);
 static void print_qemu_command_line (guestfs_h *g, char **argv);
-static int qemu_supports (guestfs_h *g, struct backend_direct_data *, const char *option);
-static int qemu_supports_device (guestfs_h *g, struct backend_direct_data *, const char *device_name);
-static int qemu_supports_virtio_scsi (guestfs_h *g, struct backend_direct_data *);
 
 static char *
 create_cow_overlay_direct (guestfs_h *g, void *datav, struct drive *drv)
@@ -238,11 +224,9 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   int r;
   int flags;
   int sv[2];
-  char guestfsd_sock[256];
   struct sockaddr_un addr;
   CLEANUP_FREE char *uefi_code = NULL, *uefi_vars = NULL;
-  CLEANUP_FREE char *kernel = NULL, *dtb = NULL,
-    *initrd = NULL, *appliance = NULL;
+  CLEANUP_FREE char *kernel = NULL, *initrd = NULL, *appliance = NULL;
   int has_appliance_drive;
   CLEANUP_FREE char *appliance_dev = NULL;
   uint32_t size;
@@ -283,7 +267,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   TRACE0 (launch_build_appliance_start);
 
   /* Locate and/or build the appliance. */
-  if (guestfs_int_build_appliance (g, &kernel, &dtb, &initrd, &appliance) == -1)
+  if (guestfs_int_build_appliance (g, &kernel, &initrd, &appliance) == -1)
     return -1;
   has_appliance_drive = appliance != NULL;
 
@@ -291,18 +275,21 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 
   guestfs_int_launch_send_progress (g, 3);
 
-  if (g->verbose)
-    guestfs_int_print_timestamped_message (g, "begin testing qemu features");
+  debug (g, "begin testing qemu features");
 
   /* Get qemu help text and version. */
-  if (qemu_supports (g, data, NULL) == -1)
-    goto cleanup0;
+  if (data->qemu_data == NULL) {
+    data->qemu_data = guestfs_int_test_qemu (g, &data->qemu_version);
+    if (data->qemu_data == NULL)
+      goto cleanup0;
+  }
 
   /* Using virtio-serial, we need to create a local Unix domain socket
    * for qemu to connect to.
    */
-  snprintf (guestfsd_sock, sizeof guestfsd_sock, "%s/guestfsd.sock", g->tmpdir);
-  unlink (guestfsd_sock);
+  if (guestfs_int_create_socketname (g, "guestfsd.sock",
+                                     &data->guestfsd_sock) == -1)
+    goto cleanup0;
 
   daemon_accept_sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
   if (daemon_accept_sock == -1) {
@@ -311,7 +298,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   }
 
   addr.sun_family = AF_UNIX;
-  strncpy (addr.sun_path, guestfsd_sock, UNIX_PATH_MAX);
+  strncpy (addr.sun_path, data->guestfsd_sock, UNIX_PATH_MAX);
   addr.sun_path[UNIX_PATH_MAX-1] = '\0';
 
   if (bind (daemon_accept_sock, (struct sockaddr *) &addr,
@@ -332,8 +319,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     }
   }
 
-  if (g->verbose)
-    guestfs_int_print_timestamped_message (g, "finished testing qemu features");
+  debug (g, "finished testing qemu features");
 
   /* Construct the qemu command line.  We have to do this before
    * forking, because after fork we are not allowed to use
@@ -353,19 +339,19 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    * strings to it so we don't need to check for the specific virtio
    * feature.
    */
-  if (qemu_supports (g, data, "-global")) {
+  if (guestfs_int_qemu_supports (g, data->qemu_data, "-global")) {
     ADD_CMDLINE ("-global");
     ADD_CMDLINE (VIRTIO_BLK ".scsi=off");
   }
 
-  if (qemu_supports (g, data, "-nodefconfig"))
+  if (guestfs_int_qemu_supports (g, data->qemu_data, "-nodefconfig"))
     ADD_CMDLINE ("-nodefconfig");
 
   /* This oddly named option doesn't actually enable FIPS.  It just
    * causes qemu to do the right thing if FIPS is enabled in the
    * kernel.  So like libvirt, we pass it unconditionally.
    */
-  if (qemu_supports (g, data, "-enable-fips"))
+  if (guestfs_int_qemu_supports (g, data->qemu_data, "-enable-fips"))
     ADD_CMDLINE ("-enable-fips");
 
   /* Newer versions of qemu (from around 2009/12) changed the
@@ -376,9 +362,10 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    * called -nodefaults which gets rid of all this default crud, so
    * let's use that to avoid this and any future surprises.
    */
-  if (qemu_supports (g, data, "-nodefaults"))
+  if (guestfs_int_qemu_supports (g, data->qemu_data, "-nodefaults"))
     ADD_CMDLINE ("-nodefaults");
 
+  /* This disables the host-side display (SDL, Gtk). */
   ADD_CMDLINE ("-display");
   ADD_CMDLINE ("none");
 
@@ -423,11 +410,10 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   /* These are recommended settings, see RHBZ#1053847. */
   ADD_CMDLINE ("-rtc");
   ADD_CMDLINE ("driftfix=slew");
-  if (qemu_supports (g, data, "-no-hpet")) {
+  if (guestfs_int_qemu_supports (g, data->qemu_data, "-no-hpet")) {
     ADD_CMDLINE ("-no-hpet");
   }
-  if (data->qemu_version_major < 1 ||
-      (data->qemu_version_major == 1 && data->qemu_version_minor <= 2))
+  if (!guestfs_int_version_ge (&data->qemu_version, 1, 3, 0))
     ADD_CMDLINE ("-no-kvm-pit-reinjection");
   else {
     /* New non-deprecated way, added in qemu >= 1.3. */
@@ -447,18 +433,27 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     }
   }
 
-  /* Kernel, DTB and initrd. */
+  /* Kernel and initrd. */
   ADD_CMDLINE ("-kernel");
   ADD_CMDLINE (kernel);
-  if (dtb) {
-    ADD_CMDLINE ("-dtb");
-    ADD_CMDLINE (dtb);
-  }
   ADD_CMDLINE ("-initrd");
   ADD_CMDLINE (initrd);
 
+  /* Add a random number generator (backend for virtio-rng).  This
+   * isn't strictly necessary but means we won't need to hang around
+   * when needing entropy.
+   */
+  if (guestfs_int_qemu_supports_device (g, data->qemu_data,
+                                        "virtio-rng-pci")) {
+    ADD_CMDLINE ("-object");
+    ADD_CMDLINE ("rng-random,filename=/dev/urandom,id=rng0");
+    ADD_CMDLINE ("-device");
+    ADD_CMDLINE ("virtio-rng-pci,rng=rng0");
+  }
+
   /* Add drives */
-  virtio_scsi = qemu_supports_virtio_scsi (g, data);
+  virtio_scsi = guestfs_int_qemu_supports_virtio_scsi (g, data->qemu_data,
+                                                       &data->qemu_version);
 
   if (virtio_scsi) {
     /* Create the virtio-scsi bus. */
@@ -471,8 +466,6 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 
     if (!drv->overlay) {
       const char *discard_mode = "";
-      int major = data->qemu_version_major, minor = data->qemu_version_minor;
-      unsigned long qemu_version = major * 1000000 + minor * 1000;
 
       switch (drv->discard) {
       case discard_disable:
@@ -482,14 +475,14 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
          */
         break;
       case discard_enable:
-        if (!guestfs_int_discard_possible (g, drv, qemu_version))
+        if (!guestfs_int_discard_possible (g, drv, &data->qemu_version))
           goto cleanup0;
         /*FALLTHROUGH*/
       case discard_besteffort:
         /* I believe from reading the code that this is always safe as
          * long as qemu >= 1.5.
          */
-        if (major > 1 || (major == 1 && minor >= 5))
+        if (guestfs_int_version_ge (&data->qemu_version, 1, 5, 0))
           discard_mode = ",discard=unmap";
         break;
       }
@@ -582,7 +575,9 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   ADD_CMDLINE ("-serial");
   ADD_CMDLINE ("stdio");
 
-  if (qemu_supports_device (g, data, "Serial Graphics Adapter")) {
+  if (g->verbose &&
+      guestfs_int_qemu_supports_device (g, data->qemu_data,
+                                        "Serial Graphics Adapter")) {
     /* Use sgabios instead of vgabios.  This means we'll see BIOS
      * messages on the serial port, and also works around this bug
      * in qemu 1.1.0:
@@ -595,7 +590,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 
   /* Set up virtio-serial for the communications channel. */
   ADD_CMDLINE ("-chardev");
-  ADD_CMDLINE_PRINTF ("socket,path=%s,id=channel0", guestfsd_sock);
+  ADD_CMDLINE_PRINTF ("socket,path=%s,id=channel0", data->guestfsd_sock);
   ADD_CMDLINE ("-device");
   ADD_CMDLINE ("virtserialport,chardev=channel0,name=org.libguestfs.channel.0");
 
@@ -819,8 +814,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     goto cleanup1;
   }
 
-  if (g->verbose)
-    guestfs_int_print_timestamped_message (g, "appliance is up");
+  debug (g, "appliance is up");
 
   /* This is possible in some really strange situations, such as
    * guestfsd starts up OK but then qemu immediately exits.  Check for
@@ -851,6 +845,8 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   data->pid = 0;
   data->recoverypid = 0;
   memset (&g->launch_t, 0, sizeof g->launch_t);
+  guestfs_int_free_qemu_data (data->qemu_data);
+  data->qemu_data = NULL;
 
  cleanup0:
   if (daemon_accept_sock >= 0)
@@ -932,163 +928,6 @@ print_qemu_command_line (guestfs_h *g, char **argv)
   fputc ('\n', stderr);
 }
 
-static void parse_qemu_version (guestfs_h *g, struct backend_direct_data *data);
-static void read_all (guestfs_h *g, void *retv, const char *buf, size_t len);
-
-/* Test qemu binary (or wrapper) runs, and do 'qemu -help' and
- * 'qemu -version' so we know what options this qemu supports and
- * the version.
- */
-static int
-test_qemu (guestfs_h *g, struct backend_direct_data *data)
-{
-  CLEANUP_CMD_CLOSE struct command *cmd1 = guestfs_int_new_command (g);
-  CLEANUP_CMD_CLOSE struct command *cmd2 = guestfs_int_new_command (g);
-  CLEANUP_CMD_CLOSE struct command *cmd3 = guestfs_int_new_command (g);
-  int r;
-
-  free (data->qemu_help);
-  data->qemu_help = NULL;
-  free (data->qemu_version);
-  data->qemu_version = NULL;
-  free (data->qemu_devices);
-  data->qemu_devices = NULL;
-
-  guestfs_int_cmd_add_arg (cmd1, g->hv);
-  guestfs_int_cmd_add_arg (cmd1, "-display");
-  guestfs_int_cmd_add_arg (cmd1, "none");
-  guestfs_int_cmd_add_arg (cmd1, "-help");
-  guestfs_int_cmd_set_stdout_callback (cmd1, read_all, &data->qemu_help,
-				       CMD_STDOUT_FLAG_WHOLE_BUFFER);
-  r = guestfs_int_cmd_run (cmd1);
-  if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
-    goto error;
-
-  guestfs_int_cmd_add_arg (cmd2, g->hv);
-  guestfs_int_cmd_add_arg (cmd2, "-display");
-  guestfs_int_cmd_add_arg (cmd2, "none");
-  guestfs_int_cmd_add_arg (cmd2, "-version");
-  guestfs_int_cmd_set_stdout_callback (cmd2, read_all, &data->qemu_version,
-				       CMD_STDOUT_FLAG_WHOLE_BUFFER);
-  r = guestfs_int_cmd_run (cmd2);
-  if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
-    goto error;
-
-  parse_qemu_version (g, data);
-
-  guestfs_int_cmd_add_arg (cmd3, g->hv);
-  guestfs_int_cmd_add_arg (cmd3, "-display");
-  guestfs_int_cmd_add_arg (cmd3, "none");
-  guestfs_int_cmd_add_arg (cmd3, "-machine");
-  guestfs_int_cmd_add_arg (cmd3,
-#ifdef MACHINE_TYPE
-                           MACHINE_TYPE ","
-#endif
-                           "accel=kvm:tcg");
-  guestfs_int_cmd_add_arg (cmd3, "-device");
-  guestfs_int_cmd_add_arg (cmd3, "?");
-  guestfs_int_cmd_clear_capture_errors (cmd3);
-  guestfs_int_cmd_set_stderr_to_stdout (cmd3);
-  guestfs_int_cmd_set_stdout_callback (cmd3, read_all, &data->qemu_devices,
-				       CMD_STDOUT_FLAG_WHOLE_BUFFER);
-  r = guestfs_int_cmd_run (cmd3);
-  if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
-    goto error;
-
-  return 0;
-
- error:
-  if (r == -1)
-    return -1;
-
-  guestfs_int_external_command_failed (g, r, g->hv, NULL);
-  return -1;
-}
-
-/* Parse data->qemu_version (if not NULL) into the major and minor
- * version of qemu, but don't fail if parsing is not possible.
- */
-static void
-parse_qemu_version (guestfs_h *g, struct backend_direct_data *data)
-{
-  CLEANUP_FREE char *major_s = NULL, *minor_s = NULL;
-  int major_i, minor_i;
-
-  data->qemu_version_major = 0;
-  data->qemu_version_minor = 0;
-
-  if (!data->qemu_version)
-    return;
-
-  if (!match2 (g, data->qemu_version, re_major_minor, &major_s, &minor_s)) {
-  parse_failed:
-    debug (g, "%s: failed to parse qemu version string '%s'",
-           __func__, data->qemu_version);
-    return;
-  }
-
-  major_i = guestfs_int_parse_unsigned_int (g, major_s);
-  if (major_i == -1)
-    goto parse_failed;
-
-  minor_i = guestfs_int_parse_unsigned_int (g, minor_s);
-  if (minor_i == -1)
-    goto parse_failed;
-
-  data->qemu_version_major = major_i;
-  data->qemu_version_minor = minor_i;
-
-  debug (g, "qemu version %d.%d", major_i, minor_i);
-}
-
-static void
-read_all (guestfs_h *g, void *retv, const char *buf, size_t len)
-{
-  char **ret = retv;
-
-  *ret = safe_strndup (g, buf, len);
-}
-
-/* Test if option is supported by qemu command line (just by grepping
- * the help text).
- *
- * The first time this is used, it has to run the external qemu
- * binary.  If that fails, it returns -1.
- *
- * To just do the first-time run of the qemu binary, call this with
- * option == NULL, in which case it will return -1 if there was an
- * error doing that.
- */
-static int
-qemu_supports (guestfs_h *g, struct backend_direct_data *data,
-               const char *option)
-{
-  if (!data->qemu_help) {
-    if (test_qemu (g, data) == -1)
-      return -1;
-  }
-
-  if (option == NULL)
-    return 1;
-
-  return strstr (data->qemu_help, option) != NULL;
-}
-
-/* Test if device is supported by qemu (currently just greps the -device ?
- * output).
- */
-static int
-qemu_supports_device (guestfs_h *g, struct backend_direct_data *data,
-                      const char *device_name)
-{
-  if (!data->qemu_devices) {
-    if (test_qemu (g, data) == -1)
-      return -1;
-  }
-
-  return strstr (data->qemu_devices, device_name) != NULL;
-}
-
 /* Check if a file can be opened. */
 static int
 is_openable (guestfs_h *g, const char *path, int flags)
@@ -1100,382 +939,6 @@ is_openable (guestfs_h *g, const char *path, int flags)
   }
   close (fd);
   return 1;
-}
-
-static int
-old_or_broken_virtio_scsi (guestfs_h *g, struct backend_direct_data *data)
-{
-  /* qemu 1.1 claims to support virtio-scsi but in reality it's broken. */
-  if (data->qemu_version_major == 1 && data->qemu_version_minor < 2)
-    return 1;
-
-  return 0;
-}
-
-/* Returns 1 = use virtio-scsi, or 0 = use virtio-blk. */
-static int
-qemu_supports_virtio_scsi (guestfs_h *g, struct backend_direct_data *data)
-{
-  int r;
-
-  if (!data->qemu_help) {
-    if (test_qemu (g, data) == -1)
-      return 0;                 /* safe option? */
-  }
-
-  /* data->virtio_scsi has these values:
-   *   0 = untested (after handle creation)
-   *   1 = supported
-   *   2 = not supported (use virtio-blk)
-   *   3 = test failed (use virtio-blk)
-   */
-  if (data->virtio_scsi == 0) {
-    if (old_or_broken_virtio_scsi (g, data))
-      data->virtio_scsi = 2;
-    else {
-      r = qemu_supports_device (g, data, VIRTIO_SCSI);
-      if (r > 0)
-        data->virtio_scsi = 1;
-      else if (r == 0)
-        data->virtio_scsi = 2;
-      else
-        data->virtio_scsi = 3;
-    }
-  }
-
-  return data->virtio_scsi == 1;
-}
-
-/**
- * Escape a qemu parameter.
- *
- * Every C<,> becomes C<,,>.  The caller must free the returned string.
- */
-char *
-guestfs_int_qemu_escape_param (guestfs_h *g, const char *param)
-{
-  size_t i, len = strlen (param);
-  char *p, *ret;
-
-  ret = p = safe_malloc (g, len*2 + 1); /* max length of escaped name*/
-  for (i = 0; i < len; ++i) {
-    *p++ = param[i];
-    if (param[i] == ',')
-      *p++ = ',';
-  }
-  *p = '\0';
-
-  return ret;
-}
-
-static char *
-make_uri (guestfs_h *g, const char *scheme, const char *user,
-          const char *password,
-          struct drive_server *server, const char *path)
-{
-  xmlURI uri = { .scheme = (char *) scheme,
-                 .user = (char *) user };
-  CLEANUP_FREE char *query = NULL;
-  CLEANUP_FREE char *pathslash = NULL;
-  CLEANUP_FREE char *userauth = NULL;
-
-  /* Need to add a leading '/' to URI paths since xmlSaveUri doesn't. */
-  if (path != NULL && path[0] != '/') {
-    pathslash = safe_asprintf (g, "/%s", path);
-    uri.path = pathslash;
-  }
-  else
-    uri.path = (char *) path;
-
-  /* Rebuild user:password. */
-  if (user != NULL && password != NULL) {
-    /* Keep the string in an own variable so it can be freed automatically. */
-    userauth = safe_asprintf (g, "%s:%s", user, password);
-    uri.user = userauth;
-  }
-
-  switch (server->transport) {
-  case drive_transport_none:
-  case drive_transport_tcp:
-    uri.server = server->u.hostname;
-    uri.port = server->port;
-    break;
-  case drive_transport_unix:
-    query = safe_asprintf (g, "socket=%s", server->u.socket);
-    uri.query_raw = query;
-    break;
-  }
-
-  return (char *) xmlSaveUri (&uri);
-}
-
-/* Useful function to format a drive + protocol for qemu.  Also shared
- * with launch-libvirt.c.
- *
- * Note that the qemu parameter is the bit after "file=".  It is not
- * escaped here, but would usually be escaped if passed to qemu as
- * part of a full -drive parameter (but not for qemu-img).
- */
-char *
-guestfs_int_drive_source_qemu_param (guestfs_h *g, const struct drive_source *src)
-{
-  char *path;
-
-  switch (src->protocol) {
-  case drive_protocol_file:
-    /* We have to convert the path to an absolute path, since
-     * otherwise qemu will look for the backing file relative to the
-     * overlay (which is located in g->tmpdir).
-     *
-     * As a side-effect this deals with paths that contain ':' since
-     * qemu will not process the ':' if the path begins with '/'.
-     */
-    path = realpath (src->u.path, NULL);
-    if (path == NULL) {
-      perrorf (g, _("realpath: could not convert '%s' to absolute path"),
-               src->u.path);
-      return NULL;
-    }
-    return path;
-
-  case drive_protocol_ftp:
-    return make_uri (g, "ftp", src->username, src->secret,
-                     &src->servers[0], src->u.exportname);
-
-  case drive_protocol_ftps:
-    return make_uri (g, "ftps", src->username, src->secret,
-                     &src->servers[0], src->u.exportname);
-
-  case drive_protocol_gluster:
-    switch (src->servers[0].transport) {
-    case drive_transport_none:
-      return make_uri (g, "gluster", NULL, NULL,
-                       &src->servers[0], src->u.exportname);
-    case drive_transport_tcp:
-      return make_uri (g, "gluster+tcp", NULL, NULL,
-                       &src->servers[0], src->u.exportname);
-    case drive_transport_unix:
-      return make_uri (g, "gluster+unix", NULL, NULL,
-                       &src->servers[0], NULL);
-    }
-
-  case drive_protocol_http:
-    return make_uri (g, "http", src->username, src->secret,
-                     &src->servers[0], src->u.exportname);
-
-  case drive_protocol_https:
-    return make_uri (g, "https", src->username, src->secret,
-                     &src->servers[0], src->u.exportname);
-
-  case drive_protocol_iscsi: {
-    CLEANUP_FREE char *escaped_hostname = NULL;
-    CLEANUP_FREE char *escaped_target = NULL;
-    CLEANUP_FREE char *userauth = NULL;
-    char port_str[16];
-    char *ret;
-
-    escaped_hostname =
-      (char *) xmlURIEscapeStr(BAD_CAST src->servers[0].u.hostname,
-                               BAD_CAST "");
-    /* The target string must keep slash as it is, as exportname contains
-     * "iqn/lun".
-     */
-    escaped_target =
-      (char *) xmlURIEscapeStr(BAD_CAST src->u.exportname, BAD_CAST "/");
-    if (src->username != NULL && src->secret != NULL)
-      userauth = safe_asprintf (g, "%s%%%s@", src->username, src->secret);
-    if (src->servers[0].port != 0)
-      snprintf (port_str, sizeof port_str, ":%d", src->servers[0].port);
-
-    ret = safe_asprintf (g, "iscsi://%s%s%s/%s",
-                         userauth != NULL ? userauth : "",
-                         escaped_hostname,
-                         src->servers[0].port != 0 ? port_str : "",
-                         escaped_target);
-
-    return ret;
-  }
-
-  case drive_protocol_nbd: {
-    CLEANUP_FREE char *p = NULL;
-    char *ret;
-
-    switch (src->servers[0].transport) {
-    case drive_transport_none:
-    case drive_transport_tcp:
-      p = safe_asprintf (g, "nbd:%s:%d",
-                         src->servers[0].u.hostname, src->servers[0].port);
-      break;
-    case drive_transport_unix:
-      p = safe_asprintf (g, "nbd:unix:%s", src->servers[0].u.socket);
-      break;
-    }
-    assert (p);
-
-    if (STREQ (src->u.exportname, ""))
-      ret = safe_strdup (g, p);
-    else
-      ret = safe_asprintf (g, "%s:exportname=%s", p, src->u.exportname);
-
-    return ret;
-  }
-
-  case drive_protocol_rbd: {
-    CLEANUP_FREE char *mon_host = NULL, *username = NULL, *secret = NULL;
-    const char *auth;
-    size_t n = 0;
-    size_t i, j;
-
-    /* build the list of all the mon hosts */
-    for (i = 0; i < src->nr_servers; i++) {
-      n += strlen (src->servers[i].u.hostname);
-      n += 8; /* for slashes, colons, & port numbers */
-    }
-    n++; /* for \0 */
-    mon_host = safe_malloc (g, n);
-    n = 0;
-    for (i = 0; i < src->nr_servers; i++) {
-      CLEANUP_FREE char *port = NULL;
-
-      for (j = 0; j < strlen (src->servers[i].u.hostname); j++)
-        mon_host[n++] = src->servers[i].u.hostname[j];
-      mon_host[n++] = '\\';
-      mon_host[n++] = ':';
-      port = safe_asprintf (g, "%d", src->servers[i].port);
-      for (j = 0; j < strlen (port); j++)
-        mon_host[n++] = port[j];
-
-      /* join each host with \; */
-      if (i != src->nr_servers - 1) {
-        mon_host[n++] = '\\';
-        mon_host[n++] = ';';
-      }
-    }
-    mon_host[n] = '\0';
-
-    if (src->username)
-      username = safe_asprintf (g, ":id=%s", src->username);
-    if (src->secret)
-      secret = safe_asprintf (g, ":key=%s", src->secret);
-    if (username || secret)
-      auth = ":auth_supported=cephx\\;none";
-    else
-      auth = ":auth_supported=none";
-
-    return safe_asprintf (g, "rbd:%s%s%s%s%s%s",
-                          src->u.exportname,
-                          src->nr_servers > 0 ? ":mon_host=" : "",
-                          src->nr_servers > 0 ? mon_host : "",
-                          username ? username : "",
-                          auth,
-                          secret ? secret : "");
-  }
-
-  case drive_protocol_sheepdog:
-    if (src->nr_servers == 0)
-      return safe_asprintf (g, "sheepdog:%s", src->u.exportname);
-    else                        /* XXX How to pass multiple hosts? */
-      return safe_asprintf (g, "sheepdog:%s:%d:%s",
-                            src->servers[0].u.hostname, src->servers[0].port,
-                            src->u.exportname);
-
-  case drive_protocol_ssh:
-    return make_uri (g, "ssh", src->username, src->secret,
-                     &src->servers[0], src->u.exportname);
-
-  case drive_protocol_tftp:
-    return make_uri (g, "tftp", src->username, src->secret,
-                     &src->servers[0], src->u.exportname);
-  }
-
-  abort ();
-}
-
-/* Test if discard is both supported by qemu AND possible with the
- * underlying file or device.  This returns 1 if discard is possible.
- * It returns 0 if not possible and sets the error to the reason why.
- *
- * This function is called when the user set discard == "enable".
- *
- * qemu_version is the version of qemu in the form returned by libvirt:
- * major * 1,000,000 + minor * 1,000 + release
- */
-bool
-guestfs_int_discard_possible (guestfs_h *g, struct drive *drv,
-			      unsigned long qemu_version)
-{
-  /* qemu >= 1.5.  This was the first version that supported the
-   * discard option on -drive at all.
-   */
-  bool qemu15 = qemu_version >= 1005000;
-  /* qemu >= 1.6.  This was the first version that supported unmap on
-   * qcow2 backing files.
-   */
-  bool qemu16 = qemu_version >= 1006000;
-
-  if (!qemu15)
-    NOT_SUPPORTED (g, false,
-                   _("discard cannot be enabled on this drive: "
-                     "qemu < 1.5"));
-
-  /* If it's an overlay, discard is not possible (on the underlying
-   * file).  This has probably been caught earlier since we already
-   * checked that the drive is !readonly.  Nevertheless ...
-   */
-  if (drv->overlay)
-    NOT_SUPPORTED (g, false,
-                   _("discard cannot be enabled on this drive: "
-                     "the drive has a read-only overlay"));
-
-  /* Look at the source format. */
-  if (drv->src.format == NULL) {
-    /* We could autodetect the format, but we don't ... yet. XXX */
-    NOT_SUPPORTED (g, false,
-                   _("discard cannot be enabled on this drive: "
-                     "you have to specify the format of the file"));
-  }
-  else if (STREQ (drv->src.format, "raw"))
-    /* OK */ ;
-  else if (STREQ (drv->src.format, "qcow2")) {
-    if (!qemu16)
-      NOT_SUPPORTED (g, false,
-                     _("discard cannot be enabled on this drive: "
-                       "qemu < 1.6 cannot do discard on qcow2 files"));
-  }
-  else {
-    /* It's possible in future other formats will support discard, but
-     * currently (qemu 1.7) none of them do.
-     */
-    NOT_SUPPORTED (g, false,
-                   _("discard cannot be enabled on this drive: "
-                     "qemu does not support discard for '%s' format files"),
-                   drv->src.format);
-  }
-
-  switch (drv->src.protocol) {
-    /* Protocols which support discard. */
-  case drive_protocol_file:
-  case drive_protocol_gluster:
-  case drive_protocol_iscsi:
-  case drive_protocol_nbd:
-  case drive_protocol_rbd:
-  case drive_protocol_sheepdog: /* XXX depends on server version */
-    break;
-
-    /* Protocols which don't support discard. */
-  case drive_protocol_ftp:
-  case drive_protocol_ftps:
-  case drive_protocol_http:
-  case drive_protocol_https:
-  case drive_protocol_ssh:
-  case drive_protocol_tftp:
-    NOT_SUPPORTED (g, -1,
-                   _("discard cannot be enabled on this drive: "
-                     "protocol '%s' does not support discard"),
-                   guestfs_int_drive_protocol_to_string (drv->src.protocol));
-  }
-
-  return true;
 }
 
 static int
@@ -1511,12 +974,13 @@ shutdown_direct (guestfs_h *g, void *datav, int check_for_errors)
 
   data->pid = data->recoverypid = 0;
 
-  free (data->qemu_help);
-  data->qemu_help = NULL;
-  free (data->qemu_version);
-  data->qemu_version = NULL;
-  free (data->qemu_devices);
-  data->qemu_devices = NULL;
+  if (data->guestfsd_sock[0] != '\0') {
+    unlink (data->guestfsd_sock);
+    data->guestfsd_sock[0] = '\0';
+  }
+
+  guestfs_int_free_qemu_data (data->qemu_data);
+  data->qemu_data = NULL;
 
   return ret;
 }
@@ -1540,7 +1004,15 @@ max_disks_direct (guestfs_h *g, void *datav)
 {
   struct backend_direct_data *data = datav;
 
-  if (qemu_supports_virtio_scsi (g, data))
+  /* Get qemu help text and version. */
+  if (data->qemu_data == NULL) {
+    data->qemu_data = guestfs_int_test_qemu (g, &data->qemu_version);
+    if (data->qemu_data == NULL)
+      return -1;
+  }
+
+  if (guestfs_int_qemu_supports_virtio_scsi (g, data->qemu_data,
+                                             &data->qemu_version))
     return 255;
   else
     return 27;                  /* conservative estimate */

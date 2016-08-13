@@ -75,6 +75,30 @@ let remove_duplicates index =
         false
   ) index
 
+(* Look for the specified os-version, resolving it as alias first. *)
+let selected_cli_item cmdline index =
+  let arg =
+    (* Try to resolve the alias. *)
+    try
+      let item =
+        List.find (
+          fun (name, { Index.aliases = aliases }) ->
+            match aliases with
+            | None -> false
+            | Some l -> List.mem cmdline.arg l
+        ) index in
+        fst item
+    with Not_found -> cmdline.arg in
+  let item =
+    try List.find (
+      fun (name, { Index.arch = a }) ->
+        name = arg && cmdline.arch = normalize_arch a
+    ) index
+    with Not_found ->
+      error (f_"cannot find os-version '%s' with architecture '%s'.\nUse --list to list available guest types.")
+        arg cmdline.arch in
+  item
+
 let main () =
   (* Command line argument parsing - see cmdline.ml. *)
   let cmdline = parse_cmdline () in
@@ -187,6 +211,12 @@ let main () =
   let mode =
     match mode with
     | `List ->                          (* --list *)
+      let sources, index =
+        match cmdline.arg with
+        | "" -> sources, index   (* no template -> all the available ones *)
+        | arg ->                 (* just the specified template *)
+          let item = selected_cli_item cmdline index in
+          [], [item] in
       List_entries.list_entries ~list_format:cmdline.list_format ~sources index;
       exit 0
 
@@ -227,26 +257,8 @@ let main () =
     | (`Install|`Notes) as mode -> mode in
 
   (* Which os-version (ie. index entry)? *)
-  let arg =
-    (* Try to resolve the alias. *)
-    try
-      let item =
-        List.find (
-          fun (name, { Index.aliases = aliases }) ->
-            match aliases with
-            | None -> false
-            | Some l -> List.mem cmdline.arg l
-        ) index in
-        fst item
-    with Not_found -> cmdline.arg in
-  let item =
-    try List.find (
-      fun (name, { Index.arch = a }) ->
-        name = arg && cmdline.arch = normalize_arch a
-    ) index
-    with Not_found ->
-      error (f_"cannot find os-version '%s' with architecture '%s'.\nUse --list to list available guest types.")
-        arg cmdline.arch in
+  let item = selected_cli_item cmdline index in
+  let arg = fst item in
   let entry = snd item in
   let sigchecker = entry.Index.sigchecker in
 
@@ -267,6 +279,15 @@ let main () =
   );
 
   (* --- If we get here, we want to create a guest. --- *)
+
+  (* Warn if the user might be writing to a partition on a USB key. *)
+  (match cmdline.output with
+   | Some device when is_partition device ->
+      if cmdline.warn_if_partition then
+        warning (f_"output device (%s) is a partition.  If you are writing to a USB key or external drive then you probably need to write to the whole device, not to a partition.  If this warning is wrong then you can disable it with --no-warn-if-partition")
+                device;
+   | Some _ | None -> ()
+  );
 
   (* Download the template, or it may be in the cache. *)
   let template =
@@ -621,12 +642,6 @@ let main () =
     may g#set_smp cmdline.smp;
     g#set_network cmdline.network;
 
-    (* Make sure to turn SELinux off to avoid awkward interactions
-     * between the appliance kernel and applications/libraries interacting
-     * with SELinux xattrs.
-     *)
-    g#set_selinux false;
-
     (* The output disk is being created, so use cache=unsafe here. *)
     g#add_drive_opts ~format:output_format ~cachemode:"unsafe" output_filename;
 
@@ -644,15 +659,7 @@ let main () =
   let root =
     match Array.to_list (g#inspect_os ()) with
     | [root] ->
-      let mps = g#inspect_get_mountpoints root in
-      let cmp (a,_) (b,_) =
-        compare (String.length a) (String.length b) in
-      let mps = List.sort cmp mps in
-      List.iter (
-        fun (mp, dev) ->
-          try g#mount dev mp
-          with G.Error msg -> warning (f_"%s (ignored)") msg
-      ) mps;
+      inspect_mount_root g root;
       root
     | _ ->
       error (f_"no guest operating systems or multiboot OS found in this disk image\nThis is a failure of the source repository.  Use -v for more information.")

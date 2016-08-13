@@ -45,6 +45,14 @@ of a guest, see L<virt-copy-out(1)>.
 Add a remote disk.  The URI format is compatible with guestfish.  See
 L<guestfish(1)/ADDING REMOTE STORAGE>.
 
+=item B<--colors>
+
+=item B<--colours>
+
+Use ANSI colour sequences to colourize messages.  This is the default when
+the output is a tty.  If the output of the program is redirected to a file,
+ANSI colour sequences are disabled unless you use this option.
+
 =item B<-c> адреса
 
 =item B<--connect> адреса
@@ -80,9 +88,9 @@ command line.
 This option is used to make the output more machine friendly when being
 parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
 
-=item B<-o> directory
+=item B<-o> каталог
 
-=item B<--output> directory
+=item B<--output> каталог
 
 This option specifies the output directory where kernel and initramfs from
 the guest are written.
@@ -104,7 +112,7 @@ C<mydistro-vmlinuz-3.19.0-20-generic> when the prefix is C<mydistro>.
 
 =item B<--quiet>
 
-Don't print ordinary progress messages.
+Не виводити звичайних повідомлень щодо поступу.
 
 =item B<--unversioned-names>
 

@@ -157,15 +157,15 @@ Displays general help on options.
 
 Lists all available guestfish commands.
 
-=item B<-h команда>
+=item B<-h> CMD
 
-=item B<--cmd-help команда>
+=item B<--cmd-help> CMD
 
 Displays detailed help on a single command C<cmd>.
 
-=item B<-a образ>
+=item B<-a> IMAGE
 
-=item B<--add образ>
+=item B<--add> IMAGE
 
 Add a block device or virtual machine image to the shell.
 
@@ -177,15 +177,15 @@ Using this flag is mostly equivalent to using the C<add> command, with
 C<readonly:true> if the I<--ro> flag was given, and with C<format:...> if
 the I<--format=...> flag was given.
 
-=item B<-a адреса>
+=item B<-a> адреса
 
-=item B<--add адреса>
+=item B<--add> адреса
 
 Додати віддалений диск. Див. L</ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
-=item B<-c адреса>
+=item B<-c> адреса
 
-=item B<--connect адреса>
+=item B<--connect> адреса
 
 When used in conjunction with the I<-d> option, this specifies the libvirt
 URI to use.  The default is to use the default libvirt connection.
@@ -195,9 +195,9 @@ URI to use.  The default is to use the default libvirt connection.
 If using the I<--listen> option and a csh-like shell, use this option.  See
 section L</REMOTE CONTROL AND CSH> below.
 
-=item B<-d домен-libvirt>
+=item B<-d> LIBVIRT-DOMAIN
 
-=item B<--domain домен-libvirt>
+=item B<--domain> LIBVIRT-DOMAIN
 
 Add disks from the named libvirt domain.  If the I<--ro> option is also
 used, then any libvirt domain can be used.  However in write mode, only
@@ -216,11 +216,11 @@ off so you cannot see what you are typing.  If you are not worried about
 Tempest attacks and there is no one else in the room you can specify this
 flag to see what you are typing.
 
-=item B<-f файл>
+=item B<-f> FILE
 
-=item B<--file файл>
+=item B<--file> FILE
 
-Read commands from C<file>.  To write pure guestfish scripts, use:
+Read commands from C<FILE>.  To write pure guestfish scripts, use:
 
  #!/usr/bin/guestfish -f
 
@@ -297,9 +297,9 @@ L</REMOTE CONTROL GUESTFISH OVER A SOCKET> below.
 Connect to a live virtual machine.  (Experimental, see
 L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
-=item B<-m пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
+=item B<-m> dev[:mountpoint[:options[:fstype]]]
 
-=item B<--mount пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
+=item B<--mount> dev[:mountpoint[:options[:fstype]]]
 
 Змонтувати названий розділ або логічний том до вказаної точки монтування.
 
@@ -335,13 +335,13 @@ libguestfs misidentifies a filesystem.
 
 Enable QEMU user networking in the guest.
 
-=item B<-N [назва_файла=]тип>
+=item B<-N> [FILENAME=]TYPE
 
-=item B<--new [назва_файла=]тип>
+=item B<--new> [FILENAME=]TYPE
 
-=item B<-N help>
+=item B<-N> B<help>
 
-Prepare a fresh disk image formatted as "type".  This is an alternative to
+Prepare a fresh disk image formatted as C<TYPE>.  This is an alternative to
 the I<-a> option: whereas I<-a> adds an existing disk, I<-N> creates a
 preformatted disk with a filesystem and adds it.  See L</PREPARED DISK
 IMAGES> below.
@@ -382,7 +382,9 @@ interactive shell.
 
 Disable progress bars.
 
-=item B<--remote[=pid]>
+=item B<--remote>
+
+=item B<--remote=>PID
 
 Send remote commands to C<$GUESTFISH_PID> or C<pid>.  See section L</REMOTE
 CONTROL GUESTFISH OVER A SOCKET> below.
@@ -402,11 +404,11 @@ Note that prepared disk images created with I<-N> are not affected by this
 option.  Also commands like C<add> are not affected - you have to specify
 the C<readonly:true> option explicitly if you need it.
 
-See also L</OPENING DISKS FOR READ AND WRITE> below.
+Див. також L</ВІДКРИТТЯ ДИСКІВ ДЛЯ ЧИТАННЯ ТА ЗАПИСУ> нижче.
 
 =item B<--selinux>
 
-Enable SELinux support for the guest.  See L<guestfs(3)/SELINUX>.
+This option is provided for backwards compatibility and does nothing.
 
 =item B<-v>
 
@@ -428,7 +430,7 @@ Display the guestfish / libguestfs version number and exit.
 This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
 mounts are done read-write.
 
-Див. L</OPENING DISKS FOR READ AND WRITE> нижче.
+Див. L</ВІДКРИТТЯ ДИСКІВ ДЛЯ ЧИТАННЯ ТА ЗАПИСУ> нижче.
 
 =item B<-x>
 
@@ -486,7 +488,7 @@ The only exception is that if any of the I<-i>, I<-m>, I<--mount>, I<-N> or
 I<--new> options were given then C<run> is done automatically, simply
 because guestfish can't perform the action you asked for without doing this.
 
-=head1 OPENING DISKS FOR READ AND WRITE
+=head1 ВІДКРИТТЯ ДИСКІВ ДЛЯ ЧИТАННЯ ТА ЗАПИСУ
 
 The guestfish, L<guestmount(1)> and L<virt-rescue(1)> options I<--ro> and
 I<--rw> affect whether the other command line options I<-a>, I<-c>, I<-d>,
@@ -1489,6 +1491,17 @@ selection, see L<supermin(1)>.
 
 Див. L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
 
+=item XDG_RUNTIME_DIR
+
+This directory represents a user-specific directory for storing
+non-essential runtime files.
+
+If it is set, then is used to store temporary sockets.  Otherwise, F</tmp>
+is used.
+
+See also L</get-sockdir>,
+L<http://www.freedesktop.org/wiki/Specifications/basedir-spec/>.
+
 =back
 
 =head1 ФАЙЛИ
@@ -1573,5 +1586,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

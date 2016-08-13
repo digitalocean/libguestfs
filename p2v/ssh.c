@@ -16,12 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* This file handles the ssh connections to the conversion server.
+/**
+ * This file handles the ssh connections to the conversion server.
  *
  * virt-p2v will open several connections over the lifetime of
  * the conversion process.
  *
- * In 'test_connection', it will first open a connection (to check it
+ * In C<test_connection>, it will first open a connection (to check it
  * is possible) and query virt-v2v on the server to ensure it exists,
  * it is the right version, and so on.  This connection is then
  * closed, because in the GUI case we don't want to deal with keeping
@@ -30,10 +31,10 @@
  * Once we start conversion, we will open a control connection to send
  * the libvirt configuration data and to start up virt-v2v, and we
  * will open up one data connection per local hard disk.  The data
- * connection(s) have a reverse port forward to the local qemu-nbd
- * server which is serving the content of that hard disk.  The remote
- * port for each data connection is assigned by ssh.  See
- * 'open_data_connection' and 'start_remote_conversion'.
+ * connection(s) have a reverse port forward to the local
+ * L<qemu-nbd(8)> server which is serving the content of that hard
+ * disk.  The remote port for each data connection is assigned by ssh.
+ * See C<open_data_connection> and C<start_remote_conversion>.
  */
 
 #include <config.h>
@@ -45,6 +46,7 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <errno.h>
+#include <error.h>
 #include <locale.h>
 #include <assert.h>
 #include <libintl.h>
@@ -55,6 +57,8 @@
 
 #include "miniexpect.h"
 #include "p2v.h"
+
+#define SSH_TIMEOUT 60          /* seconds */
 
 char *v2v_version = NULL;
 char **input_drivers = NULL;
@@ -76,11 +80,9 @@ set_ssh_error (const char *fs, ...)
   len = vasprintf (&msg, fs, args);
   va_end (args);
 
-  if (len < 0) {
-    perror ("vasprintf");
-    fprintf (stderr, "original error format string: %s\n", fs);
-    exit (EXIT_FAILURE);
-  }
+  if (len < 0)
+    error (EXIT_FAILURE, errno,
+           "vasprintf (original error format string: %s)", fs);
 
   free (ssh_error);
   ssh_error = msg;
@@ -92,13 +94,31 @@ get_ssh_error (void)
   return ssh_error;
 }
 
+/* Like set_ssh_error, but for errors that aren't supposed to happen. */
+#define set_ssh_internal_error(fs, ...) \
+  set_ssh_error ("internal error: " fs, ##__VA_ARGS__)
+#define set_ssh_mexp_error(fn) \
+  set_ssh_internal_error ("%s: %m", fn)
+#define set_ssh_pcre_error() \
+  set_ssh_internal_error ("pcre error: %d\n", mexp_get_pcre_error (h))
+
+#define set_ssh_unexpected_eof(fs, ...)                               \
+  set_ssh_error ("remote server closed the connection unexpectedly, " \
+                 "waiting for: " fs, ##__VA_ARGS__)
+#define set_ssh_unexpected_timeout(fs, ...)               \
+  set_ssh_error ("remote server timed out unexpectedly, " \
+                 "waiting for: " fs, ##__VA_ARGS__)
+
 static void compile_regexps (void) __attribute__((constructor));
 static void free_regexps (void) __attribute__((destructor));
 
 static pcre *password_re;
+static pcre *ssh_message_re;
+static pcre *sudo_password_re;
 static pcre *prompt_re;
 static pcre *version_re;
 static pcre *feature_libguestfs_rewrite_re;
+static pcre *feature_colours_option_re;
 static pcre *feature_input_re;
 static pcre *feature_output_re;
 static pcre *portfwd_re;
@@ -137,6 +157,8 @@ compile_regexps (void)
   } while (0)
 
   COMPILE (password_re, "password:", 0);
+  COMPILE (ssh_message_re, "(ssh: .*)", 0);
+  COMPILE (sudo_password_re, "sudo: a password is required", 0);
   /* The magic synchronization strings all match this expression.  See
    * start_ssh function below.
    */
@@ -146,6 +168,7 @@ compile_regexps (void)
            "virt-v2v ([1-9].*)",
 	   0);
   COMPILE (feature_libguestfs_rewrite_re, "libguestfs-rewrite", 0);
+  COMPILE (feature_colours_option_re, "colours-option", 0);
   COMPILE (feature_input_re, "input:((?:\\w)*)", 0);
   COMPILE (feature_output_re, "output:((?:\\w)*)", 0);
   COMPILE (portfwd_re, "Allocated port ((?:\\d)+) for remote forward", 0);
@@ -155,35 +178,43 @@ static void
 free_regexps (void)
 {
   pcre_free (password_re);
+  pcre_free (ssh_message_re);
+  pcre_free (sudo_password_re);
   pcre_free (prompt_re);
   pcre_free (version_re);
   pcre_free (feature_libguestfs_rewrite_re);
+  pcre_free (feature_colours_option_re);
   pcre_free (feature_input_re);
   pcre_free (feature_output_re);
   pcre_free (portfwd_re);
 }
 
-/* Download URL to local file using the external 'curl' command. */
+/**
+ * Download URL to local file using the external 'curl' command.
+ */
 static int
 curl_download (const char *url, const char *local_file)
 {
   char curl_config_file[] = "/tmp/curl.XXXXXX";
+  char error_file[] = "/tmp/curlerr.XXXXXX";
+  CLEANUP_FREE char *error_message = NULL;
   int fd, r;
   size_t i, len;
   FILE *fp;
   CLEANUP_FREE char *curl_cmd = NULL;
 
+  fd = mkstemp (error_file);
+  if (fd == -1)
+    error (EXIT_FAILURE, errno, "mkstemp: %s", error_file);
+  close (fd);
+
   /* Use a secure curl config file because escaping is easier. */
   fd = mkstemp (curl_config_file);
-  if (fd == -1) {
-    perror ("mkstemp");
-    exit (EXIT_FAILURE);
-  }
+  if (fd == -1)
+    error (EXIT_FAILURE, errno, "mkstemp: %s", curl_config_file);
   fp = fdopen (fd, "w");
-  if (fp == NULL) {
-    perror ("fdopen");
-    exit (EXIT_FAILURE);
-  }
+  if (fp == NULL)
+    error (EXIT_FAILURE, errno, "fdopen: %s", curl_config_file);
   fprintf (fp, "url = \"");
   len = strlen (url);
   for (i = 0; i < len; ++i) {
@@ -201,36 +232,37 @@ curl_download (const char *url, const char *local_file)
   fclose (fp);
 
   /* Run curl to download the URL to a file. */
-  if (asprintf (&curl_cmd, "curl -f -o %s -K %s",
-                local_file, curl_config_file) == -1) {
-    perror ("asprintf");
-    exit (EXIT_FAILURE);
-  }
+  if (asprintf (&curl_cmd, "curl -f -s -S -o %s -K %s 2>%s",
+                local_file, curl_config_file, error_file) == -1)
+    error (EXIT_FAILURE, errno, "asprintf");
 
   r = system (curl_cmd);
   /* unlink (curl_config_file); - useful for debugging */
-  if (r == -1) {
-    perror ("system");
-    exit (EXIT_FAILURE);
-  }
+  if (r == -1)
+    error (EXIT_FAILURE, errno, "system: %s", curl_cmd);
 
   /* Did curl subprocess fail? */
   if (WIFEXITED (r) && WEXITSTATUS (r) != 0) {
-    /* XXX Better error handling.  The codes can be looked up in
-     * the curl(1) man page.
-     */
-    set_ssh_error ("%s: curl error %d", url, WEXITSTATUS (r));
+    if (read_whole_file (error_file, &error_message, NULL) == 0)
+      set_ssh_error ("%s: %s", url, error_message);
+    else
+      set_ssh_error ("%s: curl error %d", url, WEXITSTATUS (r));
+    unlink (error_file);
     return -1;
   }
   else if (!WIFEXITED (r)) {
-    set_ssh_error ("curl subprocess got a signal (%d)", r);
+    set_ssh_internal_error ("curl subprocess got a signal (%d)", r);
+    unlink (error_file);
     return -1;
   }
 
+  unlink (error_file);
   return 0;
 }
 
-/* Re-cache the identity_url if needed. */
+/**
+ * Re-cache the C<config-E<gt>identity_url> if needed.
+ */
 static int
 cache_ssh_identity (struct config *config)
 {
@@ -244,15 +276,11 @@ cache_ssh_identity (struct config *config)
   /* Generate a random filename. */
   free (config->identity_file);
   config->identity_file = strdup ("/tmp/id.XXXXXX");
-  if (config->identity_file == NULL) {
-    perror ("strdup");
-    exit (EXIT_FAILURE);
-  }
+  if (config->identity_file == NULL)
+    error (EXIT_FAILURE, errno, "strdup");
   fd = mkstemp (config->identity_file);
-  if (fd == -1) {
-    perror ("mkstemp");
-    exit (EXIT_FAILURE);
-  }
+  if (fd == -1)
+    error (EXIT_FAILURE, errno, "mkstemp");
   close (fd);
 
   /* Curl download URL to file. */
@@ -266,14 +294,17 @@ cache_ssh_identity (struct config *config)
   return 0;
 }
 
-/* Start ssh subprocess with the standard arguments and possibly some
+/**
+ * Start ssh subprocess with the standard arguments and possibly some
  * optional arguments.  Also handles authentication.
  */
 static mexp_h *
-start_ssh (struct config *config, char **extra_args, int wait_prompt)
+start_ssh (unsigned spawn_flags, struct config *config,
+           char **extra_args, int wait_prompt)
 {
   size_t i, j, nr_args, count;
   char port_str[64];
+  char connect_timeout_str[128];
   CLEANUP_FREE /* [sic] */ const char **args = NULL;
   mexp_h *h;
   const int ovecsize = 12;
@@ -293,14 +324,12 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
     nr_args = guestfs_int_count_strings (extra_args);
 
   if (using_password_auth)
-    nr_args += 11;
-  else
     nr_args += 13;
+  else
+    nr_args += 15;
   args = malloc (sizeof (char *) * nr_args);
-  if (args == NULL) {
-    perror ("malloc");
-    exit (EXIT_FAILURE);
-  }
+  if (args == NULL)
+    error (EXIT_FAILURE, errno, "malloc");
 
   j = 0;
   args[j++] = "ssh";
@@ -311,6 +340,10 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
   args[j++] = config->username ? config->username : "root";
   args[j++] = "-o";             /* Host key will always be novel. */
   args[j++] = "StrictHostKeyChecking=no";
+  args[j++] = "-o";             /* ConnectTimeout */
+  snprintf (connect_timeout_str, sizeof connect_timeout_str,
+            "ConnectTimeout=%d", SSH_TIMEOUT);
+  args[j++] = connect_timeout_str;
   if (using_password_auth) {
     /* Only use password authentication. */
     args[j++] = "-o";
@@ -331,45 +364,81 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
   args[j++] = NULL;
   assert (j == nr_args);
 
-  h = mexp_spawnv ("ssh", (char **) args);
+#if DEBUG_STDERR
+  fputs ("ssh command: ", stderr);
+  for (i = 0; i < nr_args - 1; ++i) {
+    if (i > 0) fputc (' ', stderr);
+    fputs (args[i], stderr);
+  }
+  fputc ('\n', stderr);
+#endif
+
+  /* Create the miniexpect handle. */
+  h = mexp_spawnvf (spawn_flags, "ssh", (char **) args);
   if (h == NULL) {
-    set_ssh_error ("internal error: ssh: mexp_spawnv: %m");
+    set_ssh_internal_error ("ssh: mexp_spawnvf: %m");
     return NULL;
   }
 
+  /* We want the ssh ConnectTimeout to be less than the miniexpect
+   * timeout, so that if the server is completely unresponsive we
+   * still see the error from ssh, not a timeout from miniexpect.  The
+   * obvious solution to this is to set ConnectTimeout (above) and to
+   * set the miniexpect timeout to be a little bit larger.
+   */
+  mexp_set_timeout (h, SSH_TIMEOUT + 20);
+
   if (using_password_auth &&
       config->password && strlen (config->password) > 0) {
+    CLEANUP_FREE char *ssh_message = NULL;
+
     /* Wait for the password prompt. */
+  wait_password_again:
     switch (mexp_expect (h,
                          (mexp_regexp[]) {
                            { 100, .re = password_re },
+                           { 101, .re = ssh_message_re },
                            { 0 }
                          }, ovector, ovecsize)) {
     case 100:                   /* Got password prompt. */
       if (mexp_printf (h, "%s\n", config->password) == -1) {
-        set_ssh_error ("mexp_printf: %m");
+        set_ssh_mexp_error ("mexp_printf");
         mexp_close (h);
         return NULL;
       }
       break;
 
+    case 101:
+      free (ssh_message);
+      ssh_message = strndup (&h->buffer[ovector[2]], ovector[3]-ovector[2]);
+      goto wait_password_again;
+
     case MEXP_EOF:
+      /* This is where we get to if the user enters an incorrect or
+       * impossible hostname or port number.  Hopefully ssh printed an
+       * error message, and we picked it up and put it in
+       * 'ssh_message' in case 101 above.  If not we have to print a
+       * generic error instead.
+       */
+      if (ssh_message)
+        set_ssh_error ("%s", ssh_message);
+      else
+        set_ssh_error ("ssh closed the connection without printing an error.");
       mexp_close (h);
-      set_ssh_error ("unexpected end of file waiting for password prompt");
       return NULL;
 
     case MEXP_TIMEOUT:
+      set_ssh_unexpected_timeout ("password prompt");
       mexp_close (h);
-      set_ssh_error ("timeout waiting for password prompt");
       return NULL;
 
     case MEXP_ERROR:
-      set_ssh_error ("mexp_expect: %m");
+      set_ssh_mexp_error ("mexp_expect");
       mexp_close (h);
       return NULL;
 
     case MEXP_PCRE_ERROR:
-      set_ssh_error ("PCRE error: %d\n", mexp_get_pcre_error (h));
+      set_ssh_pcre_error ();
       mexp_close (h);
       return NULL;
     }
@@ -378,13 +447,30 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
   if (!wait_prompt)
     return h;
 
-  /* Synchronize with the command prompt and set it to a known string. */
-
-  /* Note that we cannot control the initial prompt.  It would involve
+  /* Ensure we are running bash, set environment variables, and
+   * synchronize with the command prompt and set it to a known
+   * string.  There are multiple issues being solved here:
+   *
+   * We cannot control the initial shell prompt.  It would involve
    * changing the remote SSH configuration (AcceptEnv).  However what
    * we can do is to repeatedly send 'export PS1=<magic>' commands
    * until we synchronize with the remote shell.
+   *
+   * Since we parse error messages, we must set LANG=C.
+   *
+   * We don't know if the user is using a Bourne-like shell (eg sh,
+   * bash) or csh/tcsh.  Setting environment variables works
+   * differently.
+   *
+   * We don't know how command line editing is set up
+   * (https://bugzilla.redhat.com/1314244#c9).
    */
+  if (mexp_printf (h, "exec bash --noediting --noprofile\n") == -1) {
+    set_ssh_mexp_error ("mexp_printf");
+    mexp_close (h);
+    return NULL;
+  }
+
   saved_timeout = mexp_get_timeout_ms (h);
   mexp_set_timeout (h, 2);
 
@@ -394,7 +480,7 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
     int r;
 
     if (guestfs_int_random_string (magic, 8) == -1) {
-      set_ssh_error ("random_string: %m");
+      set_ssh_internal_error ("random_string: %m");
       mexp_close (h);
       return NULL;
     }
@@ -402,8 +488,8 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
     /* The purpose of the '' inside the string is to ensure we don't
      * mistake the command echo for the prompt.
      */
-    if (mexp_printf (h, "export PS1='###''%s''### '\n", magic) == -1) {
-      set_ssh_error ("random_string: %m");
+    if (mexp_printf (h, "export LANG=C PS1='###''%s''### '\n", magic) == -1) {
+      set_ssh_mexp_error ("mexp_printf");
       mexp_close (h);
       return NULL;
     }
@@ -417,8 +503,8 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
                            { 0 }
                          }, ovector, ovecsize)) {
     case 100:                    /* Got password prompt unexpectedly. */
+      set_ssh_error ("Login failed.  Probably the username and/or password is wrong.");
       mexp_close (h);
-      set_ssh_error ("login failed - probably the username and/or password is wrong");
       return NULL;
 
     case 101:
@@ -427,10 +513,8 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
        */
       r = pcre_get_substring (h->buffer, ovector,
                               mexp_get_pcre_error (h), 1, &matched);
-      if (r < 0) {
-        fprintf (stderr, "error: PCRE error reading substring (%d)\n", r);
-        exit (EXIT_FAILURE);
-      }
+      if (r < 0)
+        error (EXIT_FAILURE, 0, "pcre error reading substring (%d)", r);
       r = STREQ (magic, matched);
       pcre_free_substring (matched);
       if (!r)
@@ -438,8 +522,8 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
       goto got_prompt;
 
     case MEXP_EOF:
+      set_ssh_unexpected_eof ("the command prompt");
       mexp_close (h);
-      set_ssh_error ("unexpected end of file waiting for command prompt");
       return NULL;
 
     case MEXP_TIMEOUT:
@@ -449,25 +533,200 @@ start_ssh (struct config *config, char **extra_args, int wait_prompt)
       break;
 
     case MEXP_ERROR:
-      set_ssh_error ("mexp_expect: %m");
+      set_ssh_mexp_error ("mexp_expect");
       mexp_close (h);
       return NULL;
 
     case MEXP_PCRE_ERROR:
-      set_ssh_error ("PCRE error: %d\n", mexp_get_pcre_error (h));
+      set_ssh_pcre_error ();
       mexp_close (h);
       return NULL;
     }
   }
 
+  set_ssh_error ("Failed to synchronize with remote shell after 60 seconds.");
   mexp_close (h);
-  set_ssh_error ("failed to synchronize with remote shell after 60 seconds");
   return NULL;
 
  got_prompt:
   mexp_set_timeout_ms (h, saved_timeout);
 
   return h;
+}
+
+/**
+ * Upload a file to remote using L<scp(1)>.
+ *
+ * This is a simplified version of L</start_ssh> above.
+ */
+int
+scp_file (struct config *config, const char *localfile, const char *remotefile)
+{
+  size_t j, nr_args;
+  char port_str[64];
+  char connect_timeout_str[128];
+  CLEANUP_FREE char *remote = NULL;
+  CLEANUP_FREE /* [sic] */ const char **args = NULL;
+  mexp_h *h;
+  const int ovecsize = 12;
+  int ovector[ovecsize];
+  int using_password_auth;
+  size_t i;
+
+  if (cache_ssh_identity (config) == -1)
+    return -1;
+
+  /* Are we using password or identity authentication? */
+  using_password_auth = config->identity_file == NULL;
+
+  /* Create the scp argument array. */
+  if (using_password_auth)
+    nr_args = 12;
+  else
+    nr_args = 14;
+  args = malloc (sizeof (char *) * nr_args);
+  if (args == NULL)
+    error (EXIT_FAILURE, errno, "malloc");
+
+  j = 0;
+  args[j++] = "scp";
+  args[j++] = "-P";             /* Port. */
+  snprintf (port_str, sizeof port_str, "%d", config->port);
+  args[j++] = port_str;
+  args[j++] = "-o";             /* Host key will always be novel. */
+  args[j++] = "StrictHostKeyChecking=no";
+  args[j++] = "-o";             /* ConnectTimeout */
+  snprintf (connect_timeout_str, sizeof connect_timeout_str,
+            "ConnectTimeout=%d", SSH_TIMEOUT);
+  args[j++] = connect_timeout_str;
+  if (using_password_auth) {
+    /* Only use password authentication. */
+    args[j++] = "-o";
+    args[j++] = "PreferredAuthentications=keyboard-interactive,password";
+  }
+  else {
+    /* Use identity file (private key). */
+    args[j++] = "-o";
+    args[j++] = "PreferredAuthentications=publickey";
+    args[j++] = "-i";
+    args[j++] = config->identity_file;
+  }
+  args[j++] = localfile;
+  if (asprintf (&remote, "%s@%s:%s",
+                config->username ? config->username : "root",
+                config->server, remotefile) == -1)
+    error (EXIT_FAILURE, errno, "asprintf");
+  args[j++] = remote;
+  args[j++] = NULL;
+  assert (j == nr_args);
+
+#if DEBUG_STDERR
+  fputs ("scp command: ", stderr);
+  for (i = 0; i < nr_args - 1; ++i) {
+    if (i > 0) fputc (' ', stderr);
+    fputs (args[i], stderr);
+  }
+  fputc ('\n', stderr);
+#endif
+
+  /* Create the miniexpect handle. */
+  h = mexp_spawnv ("scp", (char **) args);
+  if (h == NULL) {
+    set_ssh_internal_error ("scp: mexp_spawnv: %m");
+    return -1;
+  }
+
+  /* We want the ssh ConnectTimeout to be less than the miniexpect
+   * timeout, so that if the server is completely unresponsive we
+   * still see the error from ssh, not a timeout from miniexpect.  The
+   * obvious solution to this is to set ConnectTimeout (above) and to
+   * set the miniexpect timeout to be a little bit larger.
+   */
+  mexp_set_timeout (h, SSH_TIMEOUT + 20);
+
+  if (using_password_auth &&
+      config->password && strlen (config->password) > 0) {
+    CLEANUP_FREE char *ssh_message = NULL;
+
+    /* Wait for the password prompt. */
+  wait_password_again:
+    switch (mexp_expect (h,
+                         (mexp_regexp[]) {
+                           { 100, .re = password_re },
+                           { 101, .re = ssh_message_re },
+                           { 0 }
+                         }, ovector, ovecsize)) {
+    case 100:                   /* Got password prompt. */
+      if (mexp_printf (h, "%s\n", config->password) == -1) {
+        set_ssh_mexp_error ("mexp_printf");
+        mexp_close (h);
+        return -1;
+      }
+      break;
+
+    case 101:
+      free (ssh_message);
+      ssh_message = strndup (&h->buffer[ovector[2]], ovector[3]-ovector[2]);
+      goto wait_password_again;
+
+    case MEXP_EOF:
+      /* This is where we get to if the user enters an incorrect or
+       * impossible hostname or port number.  Hopefully scp printed an
+       * error message, and we picked it up and put it in
+       * 'ssh_message' in case 101 above.  If not we have to print a
+       * generic error instead.
+       */
+      if (ssh_message)
+        set_ssh_error ("%s", ssh_message);
+      else
+        set_ssh_error ("scp closed the connection without printing an error.");
+      mexp_close (h);
+      return -1;
+
+    case MEXP_TIMEOUT:
+      set_ssh_unexpected_timeout ("password prompt");
+      mexp_close (h);
+      return -1;
+
+    case MEXP_ERROR:
+      set_ssh_mexp_error ("mexp_expect");
+      mexp_close (h);
+      return -1;
+
+    case MEXP_PCRE_ERROR:
+      set_ssh_pcre_error ();
+      mexp_close (h);
+      return -1;
+    }
+  }
+
+  /* Wait for the scp subprocess to finish. */
+  switch (mexp_expect (h, NULL, NULL, 0)) {
+  case MEXP_EOF:
+    break;
+
+  case MEXP_TIMEOUT:
+    set_ssh_unexpected_timeout ("copying (scp) file");
+    mexp_close (h);
+    return -1;
+
+  case MEXP_ERROR:
+    set_ssh_mexp_error ("mexp_expect");
+    mexp_close (h);
+    return -1;
+
+  case MEXP_PCRE_ERROR:
+    set_ssh_pcre_error ();
+    mexp_close (h);
+    return -1;
+  }
+
+  if (mexp_close (h) == -1) {
+    set_ssh_internal_error ("scp: mexp_close: %m");
+    return -1;
+  }
+
+  return 0;
 }
 
 static void add_input_driver (const char *name, size_t len);
@@ -485,7 +744,7 @@ test_connection (struct config *config)
   const int ovecsize = 12;
   int ovector[ovecsize];
 
-  h = start_ssh (config, NULL, 1);
+  h = start_ssh (0, config, NULL, 1);
   if (h == NULL)
     return -1;
 
@@ -501,7 +760,7 @@ test_connection (struct config *config)
   if (mexp_printf (h,
                    "%svirt-v2v --version\n",
                    config->sudo ? "sudo -n " : "") == -1) {
-    set_ssh_error ("mexp_printf: %m");
+    set_ssh_mexp_error ("mexp_printf");
     mexp_close (h);
     return -1;
   }
@@ -511,6 +770,7 @@ test_connection (struct config *config)
                          (mexp_regexp[]) {
                            { 100, .re = version_re },
                            { 101, .re = prompt_re },
+                           { 102, .re = sudo_password_re },
                            { 0 }
                          }, ovector, ovecsize)) {
     case 100:                   /* Got version string. */
@@ -525,23 +785,29 @@ test_connection (struct config *config)
     case 101:             /* Got the prompt. */
       goto end_of_version;
 
-    case MEXP_EOF:
+    case 102:
+      set_ssh_error ("sudo for user \"%s\" requires a password.  Edit /etc/sudoers on the conversion server to ensure the \"NOPASSWD:\" option is set for this user.",
+                     config->username);
       mexp_close (h);
-      set_ssh_error ("unexpected end of file waiting virt-v2v --version output");
+      return -1;
+
+    case MEXP_EOF:
+      set_ssh_unexpected_eof ("\"virt-v2v --version\" output");
+      mexp_close (h);
       return -1;
 
     case MEXP_TIMEOUT:
+      set_ssh_unexpected_timeout ("\"virt-v2v --version\" output");
       mexp_close (h);
-      set_ssh_error ("timeout waiting for virt-v2v --version output");
       return -1;
 
     case MEXP_ERROR:
-      set_ssh_error ("mexp_expect: %m");
+      set_ssh_mexp_error ("mexp_expect");
       mexp_close (h);
       return -1;
 
     case MEXP_PCRE_ERROR:
-      set_ssh_error ("PCRE error: %d\n", mexp_get_pcre_error (h));
+      set_ssh_pcre_error ();
       mexp_close (h);
       return -1;
     }
@@ -550,9 +816,9 @@ test_connection (struct config *config)
 
   /* Got the prompt but no version number. */
   if (v2v_version == NULL) {
-    mexp_close (h);
     set_ssh_error ("virt-v2v is not installed on the conversion server, "
-                   "or it might be a too old version");
+                   "or it might be a too old version.");
+    mexp_close (h);
     return -1;
   }
 
@@ -572,7 +838,7 @@ test_connection (struct config *config)
   /* Get virt-v2v features.  See: v2v/cmdline.ml */
   if (mexp_printf (h, "%svirt-v2v --machine-readable\n",
                    config->sudo ? "sudo -n " : "") == -1) {
-    set_ssh_error ("mexp_printf: %m");
+    set_ssh_mexp_error ("mexp_printf");
     mexp_close (h);
     return -1;
   }
@@ -581,47 +847,56 @@ test_connection (struct config *config)
     switch (mexp_expect (h,
                          (mexp_regexp[]) {
                            { 100, .re = feature_libguestfs_rewrite_re },
-                           { 101, .re = feature_input_re },
-                           { 102, .re = feature_output_re },
-                           { 103, .re = prompt_re },
+                           { 101, .re = feature_colours_option_re },
+                           { 102, .re = feature_input_re },
+                           { 103, .re = feature_output_re },
+                           { 104, .re = prompt_re },
                            { 0 }
                          }, ovector, ovecsize)) {
     case 100:                   /* libguestfs-rewrite. */
       feature_libguestfs_rewrite = 1;
       break;
 
-    case 101:
+    case 101:                   /* virt-v2v supports --colours option */
+#if DEBUG_STDERR
+  fprintf (stderr, "%s: remote virt-v2v supports --colours option\n",
+           guestfs_int_program_name);
+#endif
+      feature_colours_option = 1;
+      break;
+
+    case 102:
       /* input:<driver-name> corresponds to an -i option in virt-v2v. */
       add_input_driver (&h->buffer[ovector[2]],
                         (size_t) (ovector[3]-ovector[2]));
       break;
 
-    case 102:
+    case 103:
       /* output:<driver-name> corresponds to an -o option in virt-v2v. */
       add_output_driver (&h->buffer[ovector[2]],
                          (size_t) (ovector[3]-ovector[2]));
       break;
 
-    case 103:                   /* Got prompt, so end of output. */
+    case 104:                   /* Got prompt, so end of output. */
       goto end_of_machine_readable;
 
     case MEXP_EOF:
+      set_ssh_unexpected_eof ("\"virt-v2v --machine-readable\" output");
       mexp_close (h);
-      set_ssh_error ("unexpected end of file waiting virt-v2v --machine-readable output");
       return -1;
 
     case MEXP_TIMEOUT:
+      set_ssh_unexpected_timeout ("\"virt-v2v --machine-readable\" output");
       mexp_close (h);
-      set_ssh_error ("timeout waiting virt-v2v --machine-readable output");
       return -1;
 
     case MEXP_ERROR:
-      set_ssh_error ("mexp_expect: %m");
+      set_ssh_mexp_error ("mexp_expect");
       mexp_close (h);
       return -1;
 
     case MEXP_PCRE_ERROR:
-      set_ssh_error ("PCRE error: %d\n", mexp_get_pcre_error (h));
+      set_ssh_pcre_error ();
       mexp_close (h);
       return -1;
     }
@@ -629,14 +904,14 @@ test_connection (struct config *config)
  end_of_machine_readable:
 
   if (!feature_libguestfs_rewrite) {
+    set_ssh_error ("Invalid output of \"virt-v2v --machine-readable\" command.");
     mexp_close (h);
-    set_ssh_error ("invalid output of virt-v2v --machine-readable command");
     return -1;
   }
 
   /* Test finished, shut down ssh. */
   if (mexp_printf (h, "exit\n") == -1) {
-    set_ssh_error ("mexp_printf: %m");
+    set_ssh_mexp_error ("mexp_printf");
     mexp_close (h);
     return -1;
   }
@@ -646,30 +921,31 @@ test_connection (struct config *config)
     break;
 
   case MEXP_TIMEOUT:
+    set_ssh_unexpected_timeout ("end of ssh session");
     mexp_close (h);
-    set_ssh_error ("timeout waiting for end of ssh session");
     return -1;
 
   case MEXP_ERROR:
-    set_ssh_error ("mexp_expect: %m");
+    set_ssh_mexp_error ("mexp_expect");
     mexp_close (h);
     return -1;
 
   case MEXP_PCRE_ERROR:
-    set_ssh_error ("PCRE error: %d\n", mexp_get_pcre_error (h));
+    set_ssh_pcre_error ();
     mexp_close (h);
     return -1;
   }
 
   status = mexp_close (h);
   if (status == -1) {
-    set_ssh_error ("mexp_close: %m");
+    set_ssh_internal_error ("mexp_close: %m");
     return -1;
   }
   if (WIFSIGNALED (status) && WTERMSIG (status) == SIGHUP)
     return 0; /* not an error */
   if (!WIFEXITED (status) || WEXITSTATUS (status) != 0) {
-    set_ssh_error ("unexpected close status from ssh subprocess (%d)", status);
+    set_ssh_internal_error ("unexpected close status from ssh subprocess (%d)",
+                            status);
     return -1;
   }
   return 0;
@@ -688,16 +964,12 @@ add_option (const char *type, char ***drivers, const char *name, size_t len)
   n++;
 
   *drivers = realloc (*drivers, (n+1) * sizeof (char *));
-  if (*drivers == NULL) {
-    perror ("malloc");
-    exit (EXIT_FAILURE);
-  }
+  if (*drivers == NULL)
+    error (EXIT_FAILURE, errno, "malloc");
 
   (*drivers)[n-1] = strndup (name, len);
-  if ((*drivers)[n-1] == NULL) {
-    perror ("strndup");
-    exit (EXIT_FAILURE);
-  }
+  if ((*drivers)[n-1] == NULL)
+    error (EXIT_FAILURE, errno, "strndup");
   (*drivers)[n] = NULL;
 
 #if DEBUG_STDERR
@@ -728,7 +1000,7 @@ compatible_version (const char *v2v_version)
   /* The major version must always be 1. */
   if (!STRPREFIX (v2v_version, "1.")) {
     set_ssh_error ("virt-v2v major version is not 1 (\"%s\"), "
-                   "this version of virt-p2v is not compatible",
+                   "this version of virt-p2v is not compatible.",
                    v2v_version);
     return 0;
   }
@@ -739,15 +1011,15 @@ compatible_version (const char *v2v_version)
    * We should remain compatible with any virt-v2v after 1.28.
    */
   if (sscanf (v2v_version, "1.%u", &v2v_minor) != 1) {
-    set_ssh_error ("cannot parse virt-v2v version string (\"%s\")",
-                   v2v_version);
+    set_ssh_internal_error ("cannot parse virt-v2v version string (\"%s\")",
+                            v2v_version);
     return 0;
   }
 
   if (v2v_minor < 28) {
     set_ssh_error ("virt-v2v version is < 1.28 (\"%s\"), "
                    "you must upgrade to virt-v2v >= 1.28 on "
-                   "the conversion server", v2v_version);
+                   "the conversion server.", v2v_version);
     return 0;
   }
 
@@ -775,7 +1047,7 @@ open_data_connection (struct config *config, int *local_port, int *remote_port)
   *local_port = nbd_local_port;
   nbd_local_port++;
 
-  h = start_ssh (config, (char **) extra_args, 0);
+  h = start_ssh (0, config, (char **) extra_args, 0);
   if (h == NULL)
     return NULL;
 
@@ -787,34 +1059,35 @@ open_data_connection (struct config *config, int *local_port, int *remote_port)
   case 100:                     /* Ephemeral port. */
     port_str = strndup (&h->buffer[ovector[2]], ovector[3]-ovector[2]);
     if (port_str == NULL) {
-      set_ssh_error ("not enough memory for strndup");
+      set_ssh_internal_error ("strndup: %m");
       mexp_close (h);
       return NULL;
     }
     if (sscanf (port_str, "%d", remote_port) != 1) {
-      set_ssh_error ("cannot extract the port number from '%s'", port_str);
+      set_ssh_internal_error ("cannot extract the port number from '%s'",
+                              port_str);
       mexp_close (h);
       return NULL;
     }
     break;
 
   case MEXP_EOF:
+    set_ssh_unexpected_eof ("\"ssh -R\" output");
     mexp_close (h);
-    set_ssh_error ("unexpected end of file waiting ssh -R output");
     return NULL;
 
   case MEXP_TIMEOUT:
+    set_ssh_unexpected_timeout ("\"ssh -R\" output");
     mexp_close (h);
-    set_ssh_error ("timeout waiting for ssh -R output");
     return NULL;
 
   case MEXP_ERROR:
-    set_ssh_error ("mexp_expect: %m");
+    set_ssh_mexp_error ("mexp_expect");
     mexp_close (h);
     return NULL;
 
   case MEXP_PCRE_ERROR:
-    set_ssh_error ("PCRE error: %d\n", mexp_get_pcre_error (h));
+    set_ssh_pcre_error ();
     mexp_close (h);
     return NULL;
   }
@@ -838,19 +1111,19 @@ wait_for_prompt (mexp_h *h)
     return 0;
 
   case MEXP_EOF:
-    set_ssh_error ("unexpected end of file waiting for prompt");
+    set_ssh_unexpected_eof ("command prompt");
     return -1;
 
   case MEXP_TIMEOUT:
-    set_ssh_error ("timeout waiting for prompt");
+    set_ssh_unexpected_timeout ("command prompt");
     return -1;
 
   case MEXP_ERROR:
-    set_ssh_error ("mexp_expect: %m");
+    set_ssh_mexp_error ("mexp_expect");
     return -1;
 
   case MEXP_PCRE_ERROR:
-    set_ssh_error ("PCRE error: %d\n", mexp_get_pcre_error (h));
+    set_ssh_pcre_error ();
     return -1;
   }
 
@@ -858,81 +1131,38 @@ wait_for_prompt (mexp_h *h)
 }
 
 mexp_h *
-start_remote_connection (struct config *config,
-                         const char *remote_dir, const char *libvirt_xml,
-                         const char *dmesg)
+start_remote_connection (struct config *config, const char *remote_dir)
 {
   mexp_h *h;
-  char magic[9];
 
-  if (guestfs_int_random_string (magic, 8) == -1) {
-    perror ("random_string");
-    return NULL;
-  }
-
-  h = start_ssh (config, NULL, 1);
+  /* This connection is opened in cooked mode so that we can send ^C
+   * if the conversion needs to be cancelled.  However that also means
+   * we must be careful not to accidentally send any control
+   * characters over this connection at other times.
+   */
+  h = start_ssh (MEXP_SPAWN_COOKED_MODE, config, NULL, 1);
   if (h == NULL)
     return NULL;
 
   /* Create the remote directory. */
   if (mexp_printf (h, "mkdir %s\n", remote_dir) == -1) {
-    set_ssh_error ("mexp_printf: %m");
+    set_ssh_mexp_error ("mexp_printf");
     goto error;
   }
 
   if (wait_for_prompt (h) == -1)
     goto error;
 
-  /* Write some useful config information to files in the remote directory. */
-  if (mexp_printf (h, "echo '%s' > %s/name\n",
-                   config->guestname, remote_dir) == -1) {
-    set_ssh_error ("mexp_printf: %m");
-    goto error;
-  }
-
-  if (wait_for_prompt (h) == -1)
-    goto error;
-
+  /* It's simplest to create the remote 'time' file by running the date
+   * command, as that won't send any special control characters.
+   */
   if (mexp_printf (h, "date > %s/time\n", remote_dir) == -1) {
-    set_ssh_error ("mexp_printf: %m");
+    set_ssh_mexp_error ("mexp_printf");
     goto error;
   }
 
   if (wait_for_prompt (h) == -1)
     goto error;
-
-  /* Upload the guest libvirt XML to the remote directory. */
-  if (mexp_printf (h,
-                   "cat > '%s/physical.xml' << '__%s__'\n"
-                   "%s"
-                   "__%s__\n",
-                   remote_dir, magic,
-                   libvirt_xml,
-                   magic) == -1) {
-    set_ssh_error ("mexp_printf: %m");
-    goto error;
-  }
-
-  if (wait_for_prompt (h) == -1)
-    goto error;
-
-  if (dmesg != NULL) {
-    /* Upload the physical host dmesg to the remote directory. */
-    if (mexp_printf (h,
-                     "cat > '%s/dmesg' << '__%s__'\n"
-                     "%s"
-                     "\n"
-                     "__%s__\n",
-                     remote_dir, magic,
-                     dmesg,
-                     magic) == -1) {
-      set_ssh_error ("mexp_printf: %m");
-      goto error;
-    }
-
-    if (wait_for_prompt (h) == -1)
-      goto error;
-  }
 
   return h;
 

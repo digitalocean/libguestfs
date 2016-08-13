@@ -77,11 +77,11 @@ this with unrelated guest disks.>
 
 Показати коротку довідку.
 
-=item B<-a> файл
+=item B<-a> FILE
 
-=item B<--add> файл
+=item B<--add> FILE
 
-Add I<file> which should be a disk image from a virtual machine.  If the
+Add C<FILE> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
@@ -89,9 +89,9 @@ separate I<-a> options.
 примусово використати певний формат, скористайтеся параметром
 I<--format=..>.
 
-=item B<-a адреса>
+=item B<-a> адреса
 
-=item B<--add адреса>
+=item B<--add> адреса
 
 Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
@@ -269,5 +269,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

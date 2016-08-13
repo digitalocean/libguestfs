@@ -645,6 +645,7 @@ Use C<guestfs_available> or C<guestfs_feature_available> instead." };
     style = RErr, [Bool "selinux"], [];
     fish_alias = ["selinux"]; config_only = true;
     blocking = false;
+    deprecated_by = Some "selinux_relabel";
     shortdesc = "set SELinux enabled or disabled at appliance boot";
     longdesc = "\
 This sets the selinux flag that is passed to the appliance
@@ -660,6 +661,7 @@ see L<guestfs(3)>." };
     name = "get_selinux"; added = (1, 0, 67);
     style = RBool "selinux", [], [];
     blocking = false;
+    deprecated_by = Some "selinux_relabel";
     shortdesc = "get SELinux enabled flag";
     longdesc = "\
 This returns the current setting of the selinux flag which
@@ -1183,6 +1185,10 @@ Ubuntu.
 
 The distro could not be determined.
 
+=item \"voidlinux\"
+
+Void Linux.
+
 =item \"windows\"
 
 Windows does not have distributions.  This string is
@@ -1288,6 +1294,32 @@ for a filesystem to be shared between operating systems.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 See also C<guestfs_inspect_get_mountpoints>." };
+
+  { defaults with
+    name = "mountable_device"; added = (1, 33, 15);
+    style = RString "device", [Mountable "mountable"], [];
+    shortdesc = "extract the device part of a mountable";
+    longdesc = "\
+Returns the device name of a mountable. In quite a lot of
+cases, the mountable is the device name.
+
+However this doesn't apply for btrfs subvolumes, where the
+mountable is a combination of both the device name and the
+subvolume path (see also C<guestfs_mountable_subvolume> to
+extract the subvolume path of the mountable if any)." };
+
+  { defaults with
+    name = "mountable_subvolume"; added = (1, 33, 15);
+    style = RString "subvolume", [Mountable "mountable"], [];
+    shortdesc = "extract the subvolume part of a mountable";
+    longdesc = "\
+Returns the subvolume path of a mountable. Btrfs subvolumes
+mountables are a combination of both the device name and the
+subvolume path (see also C<guestfs_mountable_device> to extract
+the device of the mountable).
+
+If the mountable does not represent a btrfs subvolume, then
+this function fails and the C<errno> is set to C<EINVAL>." };
 
   { defaults with
     name = "set_network"; added = (1, 5, 4);
@@ -1796,7 +1828,8 @@ package format I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
 Possible strings include:
-C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>, C<apk>.
+C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>, C<apk>,
+C<xbps>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details." };
@@ -1818,7 +1851,7 @@ a real packaging system (eg. Windows).
 
 Possible strings include: C<yum>, C<dnf>, C<up2date>,
 C<apt> (for all Debian derivatives),
-C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>.
+C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>, C<xbps>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details." };
@@ -3503,6 +3536,171 @@ This is the same as C<guestfs_available>, but unlike that
 call it returns a simple true/false boolean result, instead
 of throwing an exception if a feature is not found.  For
 other documentation see C<guestfs_available>." };
+
+  { defaults with
+    name = "get_sockdir"; added = (1, 33, 8);
+    style = RString "sockdir", [], [];
+    blocking = false;
+    shortdesc = "get the temporary directory for sockets";
+    longdesc = "\
+Get the directory used by the handle to store temporary socket files.
+
+This is different from C<guestfs_tmpdir>, as we need shorter paths for
+sockets (due to the limited buffers of filenames for UNIX sockets),
+and C<guestfs_tmpdir> may be too long for them.
+
+The environment variable C<XDG_RUNTIME_DIR> controls the default
+value: If C<XDG_RUNTIME_DIR> is set, then that is the default.
+Else F</tmp> is the default." };
+
+  { defaults with
+    name = "filesystem_walk"; added = (1, 33, 39);
+    style = RStructList ("dirents", "tsk_dirent"), [Mountable "device";], [];
+    optional = Some "libtsk";
+    progress = true; cancellable = true;
+    shortdesc = "walk through the filesystem content";
+    longdesc = "\
+Walk through the internal structures of a disk partition
+(eg. F</dev/sda1>) in order to return a list of all the files
+and directories stored within.
+
+It is not necessary to mount the disk partition to run this command.
+
+All entries in the filesystem are returned, excluding C<.> and
+C<..>. This function can list deleted or unaccessible files.
+The entries are I<not> sorted.
+
+The C<tsk_dirent> structure contains the following fields.
+
+=over 4
+
+=item 'tsk_inode'
+
+Filesystem reference number of the node. It migh be C<0>
+if the node has been deleted.
+
+=item 'tsk_type'
+
+Basic file type information.
+See below for a detailed list of values.
+
+=item 'tsk_size'
+
+File size in bytes. It migh be C<-1>
+if the node has been deleted.
+
+=item 'tsk_name'
+
+The file path relative to its directory.
+
+=item 'tsk_flags'
+
+Bitfield containing extra information regarding the entry.
+It contains the logical OR of the following values:
+
+=over 4
+
+=item 0x0001
+
+If set to C<1>, the file is allocated and visible within the filesystem.
+Otherwise, the file has been deleted.
+Under certain circumstances, the function C<download_inode>
+can be used to recover deleted files.
+
+=item 0x0002
+
+Filesystem such as NTFS and Ext2 or greater, separate the file name
+from the metadata structure.
+The bit is set to C<1> when the file name is in an unallocated state
+and the metadata structure is in an allocated one.
+This generally implies the metadata has been reallocated to a new file.
+Therefore, information such as file type, file size, timestamps,
+number of links and symlink target might not correspond
+with the ones of the original deleted entry.
+
+=item 0x0004
+
+The bit is set to C<1> when the file is compressed using filesystem
+native compression support (NTFS). The API is not able to detect
+application level compression.
+
+=back
+
+=item 'tsk_atime_sec'
+
+=item 'tsk_atime_nsec'
+
+=item 'tsk_mtime_sec'
+
+=item 'tsk_mtime_nsec'
+
+=item 'tsk_ctime_sec'
+
+=item 'tsk_ctime_nsec'
+
+=item 'tsk_crtime_sec'
+
+=item 'tsk_crtime_nsec'
+
+Respectively, access, modification, last status change and creation
+time in Unix format in seconds and nanoseconds.
+
+=item 'tsk_nlink'
+
+Number of file names pointing to this entry.
+
+=item 'tsk_link'
+
+If the entry is a symbolic link, this field will contain the path
+to the target file.
+
+=back
+
+The C<tsk_type> field will contain one of the following characters:
+
+=over 4
+
+=item 'b'
+
+Block special
+
+=item 'c'
+
+Char special
+
+=item 'd'
+
+Directory
+
+=item 'f'
+
+FIFO (named pipe)
+
+=item 'l'
+
+Symbolic link
+
+=item 'r'
+
+Regular file
+
+=item 's'
+
+Socket
+
+=item 'h'
+
+Shadow inode (Solaris)
+
+=item 'w'
+
+Whiteout inode (BSD)
+
+=item 'u'
+
+Unknown file type
+
+=back" };
 
 ]
 
@@ -5952,27 +6150,34 @@ See also: C<guestfs_command_lines>" };
      * start with "/".  There is no concept of "cwd" in libguestfs,
      * hence no "."-relative names.
      *)
-    style = RStringList "paths", [Pathname "pattern"], [];
+    style = RStringList "paths", [Pathname "pattern"], [OBool "directoryslash"];
     proc_nr = Some 113;
+    once_had_no_optargs = true;
     tests = [
       InitScratchFS, Always, TestResult (
         [["mkdir_p"; "/glob_expand/b/c"];
          ["touch"; "/glob_expand/b/c/d"];
          ["touch"; "/glob_expand/b/c/e"];
-         ["glob_expand"; "/glob_expand/b/c/*"]],
+         ["glob_expand"; "/glob_expand/b/c/*"; ""]],
         "is_string_list (ret, 2, \"/glob_expand/b/c/d\", \"/glob_expand/b/c/e\")"), [];
       InitScratchFS, Always, TestResult (
         [["mkdir_p"; "/glob_expand2/b/c"];
          ["touch"; "/glob_expand2/b/c/d"];
          ["touch"; "/glob_expand2/b/c/e"];
-         ["glob_expand"; "/glob_expand2/*/c/*"]],
+         ["glob_expand"; "/glob_expand2/*/c/*"; ""]],
         "is_string_list (ret, 2, \"/glob_expand2/b/c/d\", \"/glob_expand2/b/c/e\")"), [];
       InitScratchFS, Always, TestResult (
         [["mkdir_p"; "/glob_expand3/b/c"];
          ["touch"; "/glob_expand3/b/c/d"];
          ["touch"; "/glob_expand3/b/c/e"];
-         ["glob_expand"; "/glob_expand3/*/x/*"]],
-        "is_string_list (ret, 0)"), []
+         ["glob_expand"; "/glob_expand3/*/x/*"; ""]],
+        "is_string_list (ret, 0)"), [];
+      InitScratchFS, Always, TestResult (
+        [["mkdir_p"; "/glob_expand4/b/c"];
+         ["touch"; "/glob_expand4/b1"];
+         ["touch"; "/glob_expand4/c1"];
+         ["glob_expand"; "/glob_expand4/b*"; "false"]],
+        "is_string_list (ret, 2, \"/glob_expand4/b\", \"/glob_expand4/b1\")"), [];
     ];
     shortdesc = "expand a wildcard path";
     longdesc = "\
@@ -5986,6 +6191,10 @@ If no paths match, then this returns an empty list
 It is just a wrapper around the C L<glob(3)> function
 with flags C<GLOB_MARK|GLOB_BRACE>.
 See that manual page for more details.
+
+C<directoryslash> controls whether use the C<GLOB_MARK> flag for
+L<glob(3)>, and it defaults to true.  It can be explicitly set as
+off to return no trailing slashes in filenames of directories.
 
 Notice that there is no equivalent command for expanding a device
 name (eg. F</dev/sd*>).  Use C<guestfs_list_devices>,
@@ -7348,6 +7557,7 @@ away any pending events, and deallocates all resources." };
     style = RErr, [String "context"], [];
     proc_nr = Some 185;
     optional = Some "selinux";
+    deprecated_by = Some "selinux_relabel";
     shortdesc = "set SELinux security context";
     longdesc = "\
 This sets the SELinux security context of the daemon
@@ -7360,6 +7570,7 @@ See the documentation about SELINUX in L<guestfs(3)>." };
     style = RString "context", [], [];
     proc_nr = Some 186;
     optional = Some "selinux";
+    deprecated_by = Some "selinux_relabel";
     shortdesc = "get SELinux security context";
     longdesc = "\
 This gets the SELinux security context of the daemon.
@@ -8896,7 +9107,7 @@ I<other> keys." };
 
   { defaults with
     name = "is_lv"; added = (1, 5, 3);
-    style = RBool "lvflag", [Device "device"], [];
+    style = RBool "lvflag", [Mountable "mountable"], [];
     proc_nr = Some 264;
     tests = [
       InitBasicFSonLVM, Always, TestResultTrue (
@@ -8904,9 +9115,9 @@ I<other> keys." };
       InitBasicFSonLVM, Always, TestResultFalse (
         [["is_lv"; "/dev/sda1"]]), []
     ];
-    shortdesc = "test if device is a logical volume";
+    shortdesc = "test if mountable is a logical volume";
     longdesc = "\
-This command tests whether C<device> is a logical volume, and
+This command tests whether C<mountable> is a logical volume, and
 returns true iff this is the case." };
 
   { defaults with
@@ -9919,6 +10130,7 @@ This option may not be specified at the same time as the C<correct> option.
     name = "llz"; added = (1, 17, 6);
     style = RString "listing", [Pathname "directory"], [];
     proc_nr = Some 305;
+    deprecated_by = Some "lgetxattrs";
     shortdesc = "list the files in a directory (long format with SELinux contexts)";
     longdesc = "\
 List the files in F<directory> in the format of 'ls -laZ'.
@@ -10638,6 +10850,10 @@ This operation requires support in libguestfs, the mounted
 filesystem, the host filesystem, qemu and the host kernel.
 If this support isn't present it may give an error or even
 appear to run but do nothing.
+
+In the case where the kernel vfs driver does not support
+trimming, this call will fail with errno set to C<ENOTSUP>.
+Currently this happens when trying to trim FAT filesystems.
 
 See also C<guestfs_zero_free_space>.  That is a slightly
 different operation that turns free space in the filesystem
@@ -12808,6 +13024,186 @@ See also L<ntfsresize(8)>, L<resize2fs(8)>, L<btrfs(8)>, L<xfs_info(8)>." };
     shortdesc = "test availability of some parts of the API";
     longdesc = "\
 This is the internal call which implements C<guestfs_feature_available>." };
+
+  { defaults with
+    name = "part_set_disk_guid"; added = (1, 33, 2);
+    style = RErr, [Device "device"; GUID "guid"], [];
+    proc_nr = Some 459;
+    optional = Some "gdisk";
+    tests = [
+      InitGPT, Always, TestLastFail (
+        [["part_set_disk_guid"; "/dev/sda"; "f"]]), [];
+      InitGPT, Always, TestResultString (
+        [["part_set_disk_guid"; "/dev/sda";
+          "01234567-89AB-CDEF-0123-456789ABCDEF"];
+         ["part_get_disk_guid"; "/dev/sda"]],
+        "01234567-89AB-CDEF-0123-456789ABCDEF"), [];
+    ];
+    shortdesc = "set the GUID of a GPT-partitioned disk";
+    longdesc = "\
+Set the disk identifier (GUID) of a GPT-partitioned C<device> to C<guid>.
+Return an error if the partition table of C<device> isn't GPT,
+or if C<guid> is not a valid GUID." };
+
+  { defaults with
+    name = "part_get_disk_guid"; added = (1, 33, 2);
+    style = RString "guid", [Device "device"], [];
+    proc_nr = Some 460;
+    optional = Some "gdisk";
+    tests = [
+      InitGPT, Always, TestResultString (
+        [["part_set_disk_guid"; "/dev/sda";
+          "01234567-89AB-CDEF-0123-456789ABCDEF"];
+         ["part_get_disk_guid"; "/dev/sda"]],
+        "01234567-89AB-CDEF-0123-456789ABCDEF"), [];
+    ];
+    shortdesc = "get the GUID of a GPT-partitioned disk";
+    longdesc = "\
+Return the disk identifier (GUID) of a GPT-partitioned C<device>.
+Behaviour is undefined for other partition types." };
+
+  { defaults with
+    name = "part_set_disk_guid_random"; added = (1, 33, 2);
+    style = RErr, [Device "device"], [];
+    proc_nr = Some 461;
+    optional = Some "gdisk";
+    tests = [
+      InitGPT, Always, TestRun (
+        [["part_set_disk_guid_random"; "/dev/sda"]]), [];
+    ];
+    shortdesc = "set the GUID of a GPT-partitioned disk to random value";
+    longdesc = "\
+Set the disk identifier (GUID) of a GPT-partitioned C<device> to
+a randomly generated value.
+Return an error if the partition table of C<device> isn't GPT." };
+
+  { defaults with
+    name = "part_expand_gpt"; added = (1, 33, 2);
+    style = RErr, [Device "device"], [];
+    proc_nr = Some 462;
+    optional = Some "gdisk";
+    shortdesc = "move backup GPT header to the end of the disk";
+    longdesc = "\
+Move backup GPT data structures to the end of the disk.
+This is useful in case of in-place image expand
+since disk space after backup GPT header is not usable.
+This is equivalent to C<sgdisk -e>.
+
+See also L<sgdisk(8)>." };
+
+  { defaults with
+    name = "ntfscat_i"; added = (1, 33, 14);
+    style = RErr, [Mountable "device"; Int64 "inode"; FileOut "filename"], [];
+    proc_nr = Some 463;
+    progress = true; cancellable = true;
+    shortdesc = "download a file to the local machine given its inode";
+    longdesc = "\
+Download a file given its inode from a NTFS filesystem and save it as
+F<filename> on the local machine.
+
+This allows to download some otherwise inaccessible files such as the ones
+within the C<$Extend> folder.
+
+The filesystem from which to extract the file must be unmounted,
+otherwise the call will fail." };
+
+  { defaults with
+    name = "download_inode"; added = (1, 33, 14);
+    style = RErr, [Mountable "device"; Int64 "inode"; FileOut "filename"], [];
+    proc_nr = Some 464;
+    optional = Some "sleuthkit";
+    progress = true; cancellable = true;
+    shortdesc = "download a file to the local machine given its inode";
+    longdesc = "\
+Download a file given its inode from the disk partition
+(eg. F</dev/sda1>) and save it as F<filename> on the local machine.
+
+It is not required to mount the disk to run this command.
+
+The command is capable of downloading deleted or inaccessible files." };
+
+  { defaults with
+    name = "btrfs_filesystem_show"; added = (1, 33, 29);
+    style = RStringList "devices", [Device "device"], [];
+    proc_nr = Some 465;
+    optional = Some "btrfs"; camel_name = "BTRFSFilesystemsShow";
+    tests = [
+      InitScratchFS, Always, TestLastFail (
+        [["btrfs_filesystem_show"; "/dev/sdb"]]), [];
+      InitPartition, Always, TestResult (
+        [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_filesystem_show"; "/dev/sda1"]],
+         "is_string_list (ret, 1, \"/dev/sda1\")"), [];
+      InitEmpty, Always, TestResult (
+        [["part_init"; "/dev/sda"; "mbr"];
+         ["part_add"; "/dev/sda"; "p"; "64"; "2047999"];
+         ["part_add"; "/dev/sda"; "p"; "2048000"; "4095999"];
+         ["mkfs_btrfs"; "/dev/sda1 /dev/sda2"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+         ["btrfs_filesystem_show"; "/dev/sda1"]],
+         "is_string_list (ret, 2, \"/dev/sda1\", \"/dev/sda2\")"), [];
+    ];
+    shortdesc = "list devices for btrfs filesystem";
+    longdesc = "\
+Show all the devices where the filesystems in C<device> is spanned over.
+
+If not all the devices for the filesystems are present, then this function
+fails and the C<errno> is set to C<ENODEV>." };
+
+  { defaults with
+    name = "internal_filesystem_walk"; added = (1, 33, 39);
+    style = RErr, [Mountable "device"; FileOut "filename"], [];
+    proc_nr = Some 466;
+    visibility = VInternal;
+    optional = Some "libtsk";
+    shortdesc = "walk through the filesystem content";
+    longdesc = "Internal function for filesystem_walk." };
+
+  { defaults with
+    name = "selinux_relabel"; added = (1, 33, 43);
+    style = RErr, [String "specfile"; Pathname "path"], [OBool "force"];
+    proc_nr = Some 467;
+    optional = Some "selinuxrelabel";
+    test_excuse = "tests are in the tests/relabel directory";
+    shortdesc = "relabel parts of the filesystem";
+    longdesc = "\
+SELinux relabel parts of the filesystem.
+
+The C<specfile> parameter controls the policy spec file used.
+You have to parse C</etc/selinux/config> to find the correct
+SELinux policy and then pass the spec file, usually:
+C</etc/selinux/> + I<selinuxtype> + C</contexts/files/file_contexts>.
+
+The required C<path> parameter is the top level directory where
+relabelling starts.  Normally you should pass C<path> as C</>
+to relabel the whole guest filesystem.
+
+The optional C<force> boolean controls whether the context
+is reset for customizable files, and also whether the
+user, role and range parts of the file context is changed." };
+
+  { defaults with
+    name = "download_blocks"; added = (1, 33, 45);
+    style = RErr, [Mountable "device"; Int64 "start"; Int64 "stop"; FileOut "filename"], [OBool "unallocated"];
+    proc_nr = Some 468;
+    optional = Some "sleuthkit";
+    progress = true; cancellable = true;
+    shortdesc = "download the given data units from the disk";
+    longdesc = "\
+Download the data units from F<start> address
+to F<stop> from the disk partition (eg. F</dev/sda1>)
+and save them as F<filename> on the local machine.
+
+The use of this API on sparse disk image formats such as QCOW,
+may result in large zero-filled files downloaded on the host.
+
+The size of a data unit varies across filesystem implementations.
+On NTFS filesystems data units are referred as clusters
+while on ExtX ones they are referred as fragments.
+
+If the optional C<unallocated> flag is true (default is false),
+only the unallocated blocks will be extracted.
+This is useful to detect hidden data or to retrieve deleted files
+which data units have not been overwritten yet." };
 
 ]
 

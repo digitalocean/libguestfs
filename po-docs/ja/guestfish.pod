@@ -152,15 +152,15 @@ SSH を使用してリモートディスクにアクセスします:
 
 すべての利用可能な guestfish コマンドを一覧表示します。
 
-=item B<-h cmd>
+=item B<-h> CMD
 
-=item B<--cmd-help cmd>
+=item B<--cmd-help> CMD
 
 単一のコマンド C<cmd> の詳細なヘルプを表示します。
 
-=item B<-a image>
+=item B<-a> IMAGE
 
-=item B<--add image>
+=item B<--add> IMAGE
 
 ブロックデバイスまたは仮想マシンイメージをシェルに追加します。
 
@@ -170,15 +170,15 @@ SSH を使用してリモートディスクにアクセスします:
 フラグが指定された場合、C<readonly:true> と同じです。 I<--format=...>
 フラグが指定された場合、C<format:...> と同じです。
 
-=item B<-a URI>
+=item B<-a> URI
 
-=item B<--add URI>
+=item B<--add> URI
 
 リモートディスクを追加します。 L</リモートストレージの追加> 参照。
 
-=item B<-c URI>
+=item B<-c> URI
 
-=item B<--connect URI>
+=item B<--connect> URI
 
  I<-d> オプションと同時に使用するとき、 これは使用する libvirt URI を指定します。 標準状態で標準の libvirt
 接続を使用します。
@@ -188,9 +188,9 @@ SSH を使用してリモートディスクにアクセスします:
 I<--listen> オプションと csh 系シェルを使用している場合、 このオプションを使用します。 以下の L</リモート制御と csh>
 のセクションを参照してください。
 
-=item B<-d libvirt-domain>
+=item B<-d> LIBVIRT-DOMAIN
 
-=item B<--domain libvirt-domain>
+=item B<--domain> LIBVIRT-DOMAIN
 
 名前付き libvirt 仮想マシンからディスクを追加します。 I<--ro> オプションも使用されている場合、すべての libvirt
 仮想マシンを使用できます。 しかしながら、書き込みモードでは、 停止状態の libvirt 仮想マシンのみ指定できます。
@@ -206,11 +206,11 @@ I<--listen> オプションと csh 系シェルを使用している場合、 �
 キーやパスフレーズを入力するとき、通常 guestfish はエコーを無効化します。 そのため、入力内容を確認できません。 テンペスト攻撃の心配がなく、
 部屋に誰も居なければ、 入力内容を確認するためにこのフラグを指定できます。
 
-=item B<-f file>
+=item B<-f> FILE
 
-=item B<--file file>
+=item B<--file> FILE
 
-C<file> からコマンドを読み込みます。 純粋な guestfish スクリプトを書く場合、以下を使用します:
+Read commands from C<FILE>.  To write pure guestfish scripts, use:
 
  #!/usr/bin/guestfish -f
 
@@ -271,15 +271,15 @@ passphrases from the user by opening F</dev/tty>.
 
 =item B<--listen>
 
-バックグラウンドにフォークし、リモートコマンドをリッスンします。 以下の L</guestfish> のソケット経由のリモート制御 > 参照。
+バックグラウンドにフォークし、リモートコマンドをリッスンします。 以下の L</guestfish のソケット経由のリモート制御> 参照。
 
 =item B<--live>
 
 動作中の仮想マシンに接続します。 (実験的、L<guestfs(3)/ATTACHING TO RUNNING DAEMONS> 参照)。
 
-=item B<-m dev[:mountpoint[:options[:fstype]]]>
+=item B<-m> dev[:mountpoint[:options[:fstype]]]
 
-=item B<--mount dev[:mountpoint[:options[:fstype]]]>
+=item B<--mount> dev[:mountpoint[:options[:fstype]]]
 
 指定されたマウントポイントにある、 名前付きパーティションまたは論理ボリュームをマウントします。
 
@@ -310,15 +310,16 @@ L</list-filesystems>, L</lvs> コマンド参照)。 または、 L<virt-filesys
 
 仮想マシンにおいて QEMU のユーザーモードのネットワークを有効にします。
 
-=item B<-N [filename=]type>
+=item B<-N> [FILENAME=]TYPE
 
-=item B<--new [filename=]type>
+=item B<--new> [FILENAME=]TYPE
 
-=item B<-N help>
+=item B<-N> B<help>
 
-"type" としてフォーマットされた新しいディスクイメージを準備します。 これは I<-a> オプションの代わりになります。 I<-a>
-は既存のディスクを追加するのに対して、 I<-N> はファイルシステムの準備済みディスクを作成し、追加します。 以下の L</準備済みディスクイメージ>
-を参照してください。
+Prepare a fresh disk image formatted as C<TYPE>.  This is an alternative to
+the I<-a> option: whereas I<-a> adds an existing disk, I<-N> creates a
+preformatted disk with a filesystem and adds it.  See L</PREPARED DISK
+IMAGES> below.
 
 =item B<-n>
 
@@ -351,10 +352,12 @@ guestfish を対話式シェルで使用するとき、 進行状況バーが標
 
 進行状況バーを無効にします。
 
-=item B<--remote[=pid]>
+=item B<--remote>
 
-リモートコマンドを C<$GUESTFISH_PID> または C<pid> に送信します。 以下の L</guestfish>
-のソケット経由のリモート制御 > 参照。
+=item B<--remote=>PID
+
+リモートコマンドを C<$GUESTFISH_PID> または C<pid> に送信します。 以下の L</guestfish
+のソケット経由のリモート制御> 参照。
 
 =item B<-r>
 
@@ -372,7 +375,7 @@ I<-N> オプションで作成された準備済みディスクイメージは�
 
 =item B<--selinux>
 
-仮想マシンに対して SELinux を有効にします。 L<guestfs(3)> の SELinux 参照。
+This option is provided for backwards compatibility and does nothing.
 
 =item B<-v>
 
@@ -1445,6 +1448,17 @@ selection, see L<supermin(1)>.
 =item TMPDIR
 
 See L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
+
+=item XDG_RUNTIME_DIR
+
+This directory represents a user-specific directory for storing
+non-essential runtime files.
+
+If it is set, then is used to store temporary sockets.  Otherwise, F</tmp>
+is used.
+
+See also L</get-sockdir>,
+L<http://www.freedesktop.org/wiki/Specifications/basedir-spec/>.
 
 =back
 

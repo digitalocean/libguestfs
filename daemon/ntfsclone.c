@@ -23,6 +23,8 @@
 #include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
+#include <error.h>
 
 #include "read-file.h"
 
@@ -42,10 +44,8 @@ read_error_file (char *error_file)
   str = read_file (error_file, &len);
   if (str == NULL) {
     str = strdup ("(no error)");
-    if (str == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (str == NULL)
+      error (EXIT_FAILURE, errno, "strdup"); /* XXX */
     len = strlen (str);
   }
 
@@ -152,7 +152,13 @@ do_ntfsclone_out (const char *device,
   int r;
   FILE *fp;
   CLEANUP_FREE char *cmd = NULL;
-  char buf[GUESTFS_MAX_CHUNK_SIZE];
+  CLEANUP_FREE char *buf = NULL;
+
+  buf = malloc (GUESTFS_MAX_CHUNK_SIZE);
+  if (buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
 
   /* Construct the ntfsclone command. */
   if (asprintf (&cmd, "%s -o - --save-image%s%s%s%s%s %s",
@@ -182,7 +188,7 @@ do_ntfsclone_out (const char *device,
    */
   reply (NULL, NULL);
 
-  while ((r = fread (buf, 1, sizeof buf, fp)) > 0) {
+  while ((r = fread (buf, 1, GUESTFS_MAX_CHUNK_SIZE, fp)) > 0) {
     if (send_file_write (buf, r) < 0) {
       pclose (fp);
       return -1;

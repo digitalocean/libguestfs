@@ -55,6 +55,9 @@ virt-p2v, and it will not work if this is disabled on the conversion
 server.  (C<AllowTcpForwarding> must be C<yes> in the L<sshd_config(5)> file
 on the conversion server).
 
+The scp (secure copy) feature of ssh is required by virt-p2v so it can send
+over small files (this is I<not> the method by which disks are copied).
+
 The conversion server does not need to be a physical machine.  It could be a
 virtual machine, as long as it has sufficient memory and disk space to do
 the conversion, and as long as the physical machine can connect directly to
@@ -78,9 +81,7 @@ When virt-p2v starts up in GUI mode, the first dialog looks like this:
  ┌────────────────────────────────────────────────────────┐
  │                      virt-p2v                          │
  │                                                        │
- │ Conversion server: [_________________________________] │
- │                                                        │
- │          SSH port: [22_______________________________] │
+ │ Conversion server: [_______________________] : [22___] │
  │                                                        │
  │         User name: [root_____________________________] │
  │                                                        │
@@ -171,14 +172,6 @@ host.  This is a good idea if you are a first-time virt-p2v user.
 All output options and paths are relative to the conversion server (I<not>
 to the physical server).
 
-The final option in this panel enables server-side debugging.  This produces
-a lot of output, but is essential if you are tracking down virt-p2v or
-virt-v2v problems, and can generally be left enabled:
-
- │
- │ [✔] Enable server-side debugging
- │
-
 Finally in the left hand column is an information box giving the version of
 virt-p2v (on the physical server) and virt-v2v (on the conversion server).
 You should supply this information when reporting bugs.
@@ -190,9 +183,13 @@ output guest.  Normally leaving these at the default settings is fine.
  ─ ─ ───────────────────────────────────────┐
      Fixed hard disks                       │
                                             │
-     Convert  Device  Size (GB)  Model      │
-     [✔]      sda     1024       HITACHI    │
-     [✔]      sdb     119        HITACHI    │
+     Convert  Device                        │
+     [✔]      sda                           │
+              1024G HITACHI                 │
+              s/n 12345                     │
+     [✔]      sdb                           │
+              119G HITACHI                  │
+              s/n 12346                     │
                                             │
 
 Normally you would want to convert all hard disks.  If you want virt-p2v to
@@ -225,6 +222,10 @@ In the Network interfaces panel, select the network interfaces that should
 be created in the guest after conversion.  You can also connect these to
 target hypervisor networks (for further information about this feature, see
 L<virt-v2v(1)/NETWORKS AND BRIDGES>).
+
+On supported hardware, left-clicking on the device name (eg. C<em1>)  causes
+a light to start flashing on the physical interface, allowing the interface
+to be identified by the operator.
 
 When you are ready to begin the conversion, press the C<Start conversion>
 button:
@@ -259,8 +260,7 @@ When conversion is running you will see this dialog:
  │                                                        │
  └────────────────────────────────────────────────────────┘
 
-In the main scrolling area you will see log messages from the virt-v2v
-process.
+In the main scrolling area you will see messages from the virt-v2v process.
 
 Below the main area, virt-p2v shows you the location of the directory on the
 conversion server that contains log files and other debugging information.
@@ -351,14 +351,6 @@ The size of the guest memory.  You must specify the unit as either megabytes
 or gigabytes by using (eg) C<p2v.memory=1024M> or C<p2v.memory=1G>.
 
 The default is to use the same amount of RAM as on the physical machine.
-
-=item B<p2v.debug>
-
-Use this to enable full debugging of virt-v2v.
-
-If asked to diagnose a problem with virt-p2v, you should add C<p2v.debug> to
-the kernel command line, and examine the log file which is left in F</tmp>
-on the conversion server.
 
 =item B<p2v.disks=sdX,sdY,..>
 
@@ -570,6 +562,14 @@ L<virt-p2v-make-kickstart(1)/ADDING AN SSH IDENTITY>
 This is used for debugging. Instead of parsing the kernel command line from
 F</proc/cmdline>, parse the string parameter C<CMDLINE>.
 
+=item B<--colors>
+
+=item B<--colours>
+
+Use ANSI colour sequences to colourize messages.  This is the default when
+the output is a tty.  If the output of the program is redirected to a file,
+ANSI colour sequences are disabled unless you use this option.
+
 =item B<--iso>
 
 This flag is passed to virt-p2v when it is launched inside the virt-p2v ISO
@@ -577,11 +577,17 @@ environment, ie. when it is running on a real physical machine (and thus not
 when testing).  It enables various dangerous features such as the Reboot
 button.
 
+=item B<--test-disk=/PATH/TO/DISK.IMG>
+
+For testing or debugging purposes, replace F</dev/sda> with a local file.
+You must use an absolute path.
+
 =item B<-v>
 
 =item B<--verbose>
 
-Enable debugging (on the conversion server).
+In libguestfs E<ge> 1.33.41, debugging is always enabled on the conversion
+server, and this option does nothing.
 
 =item B<-V>
 
@@ -673,6 +679,13 @@ conversion server.  If conversion fails, you should examine this log file,
 and you may be asked to supply the B<complete>, B<unedited> log file in any
 bug reports or support tickets.
 
+=item F<virt-v2v-wrapper.sh>
+
+I<(during/after conversion)>
+
+This is the wrapper script which is used when running virt-v2v.  For
+interest only, do not attempt to run this script yourself.
+
 =back
 
 Before conversion actually begins, virt-p2v then makes one or more further
@@ -708,20 +721,21 @@ hard disks: Firstly, the qemu-nbd I<-r> (readonly) option is used.  Secondly
 libguestfs creates an overlay on top of the NBD connection which stores
 writes in a temporary file on the conversion file.
 
-The final step is to send the S<C<virt-v2v -i libvirtxml physical.xml ...>>
-command to the conversion server over the control connection.  This
-references the F<physical.xml> file (see above), which in turn references
-the NBD listening port(s) of the data connection(s).
+The long S<C<virt-v2v -i libvirtxml physical.xml ...>> command is wrapped
+inside a wrapper script and uploaded to the conversion server.  The final
+step is to run this wrapper script, in turn running the virt-v2v command.
+The virt-v2v command references the F<physical.xml> file (see above), which
+in turn references the NBD listening port(s)  of the data connection(s).
 
 Output from the virt-v2v command (messages, debugging etc) is saved both in
-the log file on the conversion server, and sent over the control connection
-to be displayed in the graphical UI.
+the log file on the conversion server.  Only informational messages are sent
+back over the control connection to be displayed in the graphical UI.
 
 =head1 関連項目
 
-L<virt-p2v-make-disk(1)>, L<virt-p2v-make-kickstart(1)>, L<virt-v2v(1)>,
-L<qemu-nbd(1)>, L<ssh(1)>, L<sshd(8)>, L<sshd_config(5)>,
-L<http://libguestfs.org/>.
+L<virt-p2v-make-disk(1)>, L<virt-p2v-make-kickstart(1)>,
+L<virt-p2v-make-kiwi(1)>, L<virt-v2v(1)>, L<qemu-nbd(1)>, L<ssh(1)>,
+L<sshd(8)>, L<sshd_config(5)>, L<http://libguestfs.org/>.
 
 =head1 著者
 

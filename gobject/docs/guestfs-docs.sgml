@@ -8,7 +8,7 @@
   <bookinfo>
     <title>Libguestfs GObject Bindings Reference Manual</title>
     <releaseinfo>
-      for libguestfs 1.32.7.
+      for libguestfs 1.34.0.
       <!--
       The latest version of this documentation can be found on-line at
       <ulink role="online-location" url="http://[SERVER]/guestfs/index.html">http://[SERVER]/guestfs/</ulink>.
@@ -16,7 +16,7 @@
     </releaseinfo>
   </bookinfo>
 
-  <xi:include href="/tmp/goaljobstmp87b23681ca026df5074d0df96e909e5a/libguestfs/gobject/docs/guestfs-title.sgml"/>
+  <xi:include href="/tmp/goaljobstmp92ab4e162bafba12ad21c539688f4686/libguestfs/gobject/docs/guestfs-title.sgml"/>
   <chapter id="object-tree">
     <title>Object Hierarchy</title>
      <xi:include href="xml/tree_index.sgml"/>

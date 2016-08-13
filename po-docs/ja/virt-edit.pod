@@ -65,15 +65,15 @@ separate I<-a> options.
 
 ディスクイメージの形式は自動検知されます。 これを上書きして強制的に特定の形式を使用する場合、 I<--format=..> オプションを使用します。
 
-=item B<-a URI>
+=item B<-a> URI
 
-=item B<--add URI>
+=item B<--add> URI
 
 リモートディスクを追加します。 L<guestfish(1)/リモートストレージの追加> 参照。
 
-=item B<-b> extension
+=item B<-b> EXTENSION
 
-=item B<--backup> extension
+=item B<--backup> EXTENSION
 
 I<仮想マシンのディスクイメージにある> 元のファイルのバックアップを作成します。バックアップは元のファイル名に C<extension>
 を加えたものになります。
@@ -84,17 +84,17 @@ I<仮想マシンのディスクイメージにある> 元のファイルのバ�
 
 初期設定では、バックアップファイルは作成されません。
 
-=item B<-c URI>
+=item B<-c> URI
 
-=item B<--connect URI>
+=item B<--connect> URI
 
 libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
 仮想マシンのブロックデバイスを直接指定すると、libvirt はまったく使用されません。
 
-=item B<-d> guest
+=item B<-d> GUEST
 
-=item B<--domain> guest
+=item B<--domain> GUEST
 
 名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  名前の代わりに仮想マシンの UUID を使用できます。
 
@@ -143,9 +143,9 @@ auto-detection for F<another.img>.
 Read key or passphrase parameters from stdin.  The default is to try to read
 passphrases from the user by opening F</dev/tty>.
 
-=item B<-m dev[:mountpoint[:options[:fstype]]]>
+=item B<-m> dev[:mountpoint[:options[:fstype]]]
 
-=item B<--mount dev[:mountpoint[:options[:fstype]]]>
+=item B<--mount> dev[:mountpoint[:options[:fstype]]]
 
 指定されたマウントポイントにある、 名前付きパーティションまたは論理ボリュームをマウントします。
 

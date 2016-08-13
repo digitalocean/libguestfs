@@ -154,15 +154,15 @@ bin_PROGRAMS = $(am__EXEEXT_1) virt-index-validate$(EXEEXT)
 @HAVE_OCAML_TRUE@am__append_5 = $(top_builddir)/website/virt-builder.1.html
 @HAVE_OCAML_TRUE@am__append_6 = stamp-virt-builder.pod virt-builder.1 \
 @HAVE_OCAML_TRUE@	*.qcow2 *.xz
-@HAVE_OCAML_TRUE@TESTS = test-virt-builder-list.sh \
+@HAVE_OCAML_TRUE@TESTS = test-virt-builder-docs.sh \
+@HAVE_OCAML_TRUE@	test-virt-builder-list.sh \
 @HAVE_OCAML_TRUE@	test-virt-index-validate.sh $(SLOW_TESTS) \
-@HAVE_OCAML_TRUE@	$(am__append_7) $(am__append_8) \
-@HAVE_OCAML_TRUE@	$(am__EXEEXT_2)
+@HAVE_OCAML_TRUE@	test-virt-builder-list-simplestreams.sh \
+@HAVE_OCAML_TRUE@	$(am__append_7) $(am__EXEEXT_2)
 @HAVE_OCAML_TRUE@check_PROGRAMS = $(am__EXEEXT_2)
-@HAVE_OCAML_TRUE@@HAVE_YAJL_TRUE@am__append_7 = test-virt-builder-list-simplestreams.sh
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_8 = test-virt-builder.sh
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_7 = test-virt-builder.sh
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_8 = yajl_tests
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_9 = yajl_tests
-@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_10 = yajl_tests
 subdir = builder
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -200,64 +200,63 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gettime.m4 \
-	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
-	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
-	$(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
+	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
+	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
-	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
-	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/include_next.m4 $(top_srcdir)/m4/inet_ntop.m4 \
-	$(top_srcdir)/m4/inet_pton.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
-	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
-	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
-	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/isatty.m4 \
-	$(top_srcdir)/m4/langinfo_h.m4 $(top_srcdir)/m4/largefile.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
-	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
-	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localeconv.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mkstemps.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/hard-locale.m4 $(top_srcdir)/m4/hostent.m4 \
+	$(top_srcdir)/m4/human.m4 $(top_srcdir)/m4/i-ring.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
+	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
+	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
+	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
+	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
+	$(top_srcdir)/m4/isatty.m4 $(top_srcdir)/m4/langinfo_h.m4 \
+	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
+	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-tr.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localeconv.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/memmem.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mkstemps.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
-	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
-	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
-	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
-	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
+	$(top_srcdir)/m4/ocaml.m4 $(top_srcdir)/m4/off_t.m4 \
+	$(top_srcdir)/m4/onceonly.m4 $(top_srcdir)/m4/open.m4 \
+	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
+	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
+	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
 	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
-	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
-	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
-	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
-	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
-	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
-	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
-	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
-	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
-	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
-	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/ptsname_r.m4 \
+	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
+	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
+	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
+	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
+	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/readlinkat.m4 \
+	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/rewinddir.m4 \
+	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
+	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
+	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
+	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sigaction.m4 \
+	$(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
@@ -316,7 +315,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/guestfs_golang.m4 \
 	$(top_srcdir)/m4/guestfs_gobject.m4 \
 	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/guestfs_misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -329,20 +328,10 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
 	"$(DESTDIR)$(repoconfdir)"
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_2 = yajl_tests$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
-am__virt_builder_SOURCES_DIST = ../mllib/fsync-c.c ../mllib/uri-c.c \
-	../mllib/mkdtemp-c.c ../customize/perl_edit-c.c \
-	../customize/crypt-c.c ../fish/uri.c ../fish/file-edit.c \
-	index-scan.c index-struct.c index-parse.c index-parser-c.c \
-	pxzcat-c.c setlocale-c.c yajl-c.c
-am__dirstamp = $(am__leading_dot)dirstamp
-am__objects_1 = ../mllib/virt_builder-fsync-c.$(OBJEXT) \
-	../mllib/virt_builder-uri-c.$(OBJEXT) \
-	../mllib/virt_builder-mkdtemp-c.$(OBJEXT) \
-	../customize/virt_builder-perl_edit-c.$(OBJEXT) \
-	../customize/virt_builder-crypt-c.$(OBJEXT) \
-	../fish/virt_builder-uri.$(OBJEXT) \
-	../fish/virt_builder-file-edit.$(OBJEXT) \
-	virt_builder-index-scan.$(OBJEXT) \
+am__virt_builder_SOURCES_DIST = index-scan.c index-struct.c \
+	index-parse.c index-parser-c.c pxzcat-c.c setlocale-c.c \
+	yajl-c.c
+am__objects_1 = virt_builder-index-scan.$(OBJEXT) \
 	virt_builder-index-struct.$(OBJEXT) \
 	virt_builder-index-parse.$(OBJEXT) \
 	virt_builder-index-parser-c.$(OBJEXT) \
@@ -1048,13 +1037,14 @@ GOOS = @GOOS@
 GOROOT = @GOROOT@
 GPERF = @GPERF@
 GREP = @GREP@
-GTK2_CFLAGS = @GTK2_CFLAGS@
-GTK2_LIBS = @GTK2_LIBS@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
 GTKDOC_DEPS_LIBS = @GTKDOC_DEPS_LIBS@
 GTKDOC_MKPDF = @GTKDOC_MKPDF@
 GTKDOC_REBASE = @GTKDOC_REBASE@
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_LIBS = @GTK_LIBS@
+GTK_VERSION = @GTK_VERSION@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -1477,7 +1467,10 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
+OCAML_BYTES_COMPAT_CMO = @OCAML_BYTES_COMPAT_CMO@
+OCAML_BYTES_COMPAT_ML = @OCAML_BYTES_COMPAT_ML@
 OCAML_FLAGS = @OCAML_FLAGS@
+OCAML_GENERATOR_BYTES_COMPAT_CMO = @OCAML_GENERATOR_BYTES_COMPAT_CMO@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
@@ -1701,6 +1694,7 @@ SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_U
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
 TIME_H_DEFINES_STRUCT_TIMESPEC = @TIME_H_DEFINES_STRUCT_TIMESPEC@
 TOOL_TRUE = @TOOL_TRUE@
+TSK_LIBS = @TSK_LIBS@
 UINT32_MAX_LT_UINTMAX_MAX = @UINT32_MAX_LT_UINTMAX_MAX@
 UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
@@ -1794,6 +1788,32 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
+
+# Rules for building OCaml objects.
+# See also:
+# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
+@HAVE_OCAMLOPT_FALSE@MLARCHIVE = cma
+@HAVE_OCAMLOPT_TRUE@MLARCHIVE = cmxa
+@HAVE_OCAMLOPT_FALSE@LINK_CUSTOM_OCAMLC_ONLY = -custom
+@HAVE_OCAMLOPT_FALSE@BEST = c
+@HAVE_OCAMLOPT_TRUE@BEST = opt
+
+# custom silent rules
+guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
+guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
+guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
+guestfs_am_v_javac = $(guestfs_am_v_javac_@AM_V@)
+guestfs_am_v_javac_ = $(guestfs_am_v_javac_@AM_DEFAULT_V@)
+guestfs_am_v_javac_0 = @echo "  JAVAC   " $@;
+guestfs_am_v_erlc = $(guestfs_am_v_erlc_@AM_V@)
+guestfs_am_v_erlc_ = $(guestfs_am_v_erlc_@AM_DEFAULT_V@)
+guestfs_am_v_erlc_0 = @echo "  ERLC    " $@;
+guestfs_am_v_podwrapper = $(guestfs_am_v_podwrapper_@AM_V@)
+guestfs_am_v_podwrapper_ = $(guestfs_am_v_podwrapper_@AM_DEFAULT_V@)
+guestfs_am_v_podwrapper_0 = @echo "  POD     " $@;
 AM_YFLAGS = -d
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
@@ -1803,6 +1823,7 @@ EXTRA_DIST = \
 	test-simplestreams/streams/v1/index.json \
 	test-simplestreams/streams/v1/net.cirros-cloud_released_download.json \
 	test-virt-builder.sh \
+	test-virt-builder-docs.sh \
 	test-virt-builder-list.sh \
 	test-virt-builder-list-simplestreams.sh \
 	test-virt-builder-planner.sh \
@@ -1857,13 +1878,6 @@ SOURCES_ML = \
 	builder.ml
 
 SOURCES_C = \
-	../mllib/fsync-c.c \
-	../mllib/uri-c.c \
-	../mllib/mkdtemp-c.c \
-	../customize/perl_edit-c.c \
-	../customize/crypt-c.c \
-	../fish/uri.c \
-	../fish/file-edit.c \
 	index-scan.c \
 	index-struct.c \
 	index-parse.c \
@@ -1894,33 +1908,7 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@	$(LIBXML2_CFLAGS) \
 @HAVE_OCAML_TRUE@	$(YAJL_CFLAGS)
 
-@HAVE_OCAML_TRUE@BOBJECTS = \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/libdir.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/guestfs_config.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_gettext.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/common_utils.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/fsync.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/planner.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/regedit.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/JSON.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/URI.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/mkdtemp.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib/curl.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_utils.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/urandom.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/random_seed.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/hostname.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/timezone.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/firstboot.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/perl_edit.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/crypt.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/password.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/ssh_key.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/subscription_manager.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_cmdline.cmo \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_run.cmo \
-@HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo)
-
+@HAVE_OCAML_TRUE@BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 @HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
@@ -1947,11 +1935,13 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(BOBJECTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(XOBJECTS)
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@BEST = c
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@BEST = opt
-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cma -custom
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.cmxa
-@HAVE_OCAML_TRUE@virt_builder_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
+@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) customize.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+@HAVE_OCAML_TRUE@virt_builder_DEPENDENCIES = \
+@HAVE_OCAML_TRUE@	$(OBJECTS) \
+@HAVE_OCAML_TRUE@	../mllib/mllib.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../customize/customize.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh
+
 @HAVE_OCAML_TRUE@virt_builder_LINK = \
 @HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 @HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
@@ -1976,7 +1966,12 @@ noinst_DATA = $(am__append_5) \
 
 # Can't call the following as <test>_OBJECTS because automake gets confused.
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@yajl_tests_THEOBJECTS = $(yajl_tests_XOBJECTS)
-@HAVE_OCAML_TRUE@yajl_tests_DEPENDENCIES = $(yajl_tests_THEOBJECTS) $(top_srcdir)/ocaml-link.sh
+@HAVE_OCAML_TRUE@yajl_tests_DEPENDENCIES = \
+@HAVE_OCAML_TRUE@	$(yajl_tests_THEOBJECTS) \
+@HAVE_OCAML_TRUE@	../mllib/mllib.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../customize/customize.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh
+
 @HAVE_OCAML_TRUE@yajl_tests_LINK = \
 @HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 @HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) $(OCAMLLINKFLAGS) \
@@ -2108,40 +2103,6 @@ clean-checkPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-../mllib/$(am__dirstamp):
-	@$(MKDIR_P) ../mllib
-	@: > ../mllib/$(am__dirstamp)
-../mllib/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../mllib/$(DEPDIR)
-	@: > ../mllib/$(DEPDIR)/$(am__dirstamp)
-../mllib/virt_builder-fsync-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
-	../mllib/$(DEPDIR)/$(am__dirstamp)
-../mllib/virt_builder-uri-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
-	../mllib/$(DEPDIR)/$(am__dirstamp)
-../mllib/virt_builder-mkdtemp-c.$(OBJEXT): ../mllib/$(am__dirstamp) \
-	../mllib/$(DEPDIR)/$(am__dirstamp)
-../customize/$(am__dirstamp):
-	@$(MKDIR_P) ../customize
-	@: > ../customize/$(am__dirstamp)
-../customize/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../customize/$(DEPDIR)
-	@: > ../customize/$(DEPDIR)/$(am__dirstamp)
-../customize/virt_builder-perl_edit-c.$(OBJEXT):  \
-	../customize/$(am__dirstamp) \
-	../customize/$(DEPDIR)/$(am__dirstamp)
-../customize/virt_builder-crypt-c.$(OBJEXT):  \
-	../customize/$(am__dirstamp) \
-	../customize/$(DEPDIR)/$(am__dirstamp)
-../fish/$(am__dirstamp):
-	@$(MKDIR_P) ../fish
-	@: > ../fish/$(am__dirstamp)
-../fish/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../fish/$(DEPDIR)
-	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_builder-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_builder-file-edit.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
 
 virt-builder$(EXEEXT): $(virt_builder_OBJECTS) $(virt_builder_DEPENDENCIES) $(EXTRA_virt_builder_DEPENDENCIES) 
 	@rm -f virt-builder$(EXEEXT)
@@ -2160,20 +2121,10 @@ yajl_tests$(EXEEXT): $(yajl_tests_OBJECTS) $(yajl_tests_DEPENDENCIES) $(EXTRA_ya
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../customize/*.$(OBJEXT)
-	-rm -f ../fish/*.$(OBJEXT)
-	-rm -f ../mllib/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@../customize/$(DEPDIR)/virt_builder-crypt-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../customize/$(DEPDIR)/virt_builder-perl_edit-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_builder-file-edit.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_builder-uri.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_builder-fsync-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../mllib/$(DEPDIR)/virt_builder-uri-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-index-parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-index-parser-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-index-scan.Po@am__quote@
@@ -2210,104 +2161,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
-
-../mllib/virt_builder-fsync-c.o: ../mllib/fsync-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-fsync-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-fsync-c.Tpo -c -o ../mllib/virt_builder-fsync-c.o `test -f '../mllib/fsync-c.c' || echo '$(srcdir)/'`../mllib/fsync-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-fsync-c.Tpo ../mllib/$(DEPDIR)/virt_builder-fsync-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/fsync-c.c' object='../mllib/virt_builder-fsync-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-fsync-c.o `test -f '../mllib/fsync-c.c' || echo '$(srcdir)/'`../mllib/fsync-c.c
-
-../mllib/virt_builder-fsync-c.obj: ../mllib/fsync-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-fsync-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-fsync-c.Tpo -c -o ../mllib/virt_builder-fsync-c.obj `if test -f '../mllib/fsync-c.c'; then $(CYGPATH_W) '../mllib/fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/fsync-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-fsync-c.Tpo ../mllib/$(DEPDIR)/virt_builder-fsync-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/fsync-c.c' object='../mllib/virt_builder-fsync-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-fsync-c.obj `if test -f '../mllib/fsync-c.c'; then $(CYGPATH_W) '../mllib/fsync-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/fsync-c.c'; fi`
-
-../mllib/virt_builder-uri-c.o: ../mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-uri-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-uri-c.Tpo -c -o ../mllib/virt_builder-uri-c.o `test -f '../mllib/uri-c.c' || echo '$(srcdir)/'`../mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-uri-c.Tpo ../mllib/$(DEPDIR)/virt_builder-uri-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/uri-c.c' object='../mllib/virt_builder-uri-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-uri-c.o `test -f '../mllib/uri-c.c' || echo '$(srcdir)/'`../mllib/uri-c.c
-
-../mllib/virt_builder-uri-c.obj: ../mllib/uri-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-uri-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-uri-c.Tpo -c -o ../mllib/virt_builder-uri-c.obj `if test -f '../mllib/uri-c.c'; then $(CYGPATH_W) '../mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/uri-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-uri-c.Tpo ../mllib/$(DEPDIR)/virt_builder-uri-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/uri-c.c' object='../mllib/virt_builder-uri-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-uri-c.obj `if test -f '../mllib/uri-c.c'; then $(CYGPATH_W) '../mllib/uri-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/uri-c.c'; fi`
-
-../mllib/virt_builder-mkdtemp-c.o: ../mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-mkdtemp-c.o -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Tpo -c -o ../mllib/virt_builder-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/virt_builder-mkdtemp-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-mkdtemp-c.o `test -f '../mllib/mkdtemp-c.c' || echo '$(srcdir)/'`../mllib/mkdtemp-c.c
-
-../mllib/virt_builder-mkdtemp-c.obj: ../mllib/mkdtemp-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../mllib/virt_builder-mkdtemp-c.obj -MD -MP -MF ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Tpo -c -o ../mllib/virt_builder-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Tpo ../mllib/$(DEPDIR)/virt_builder-mkdtemp-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../mllib/mkdtemp-c.c' object='../mllib/virt_builder-mkdtemp-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../mllib/virt_builder-mkdtemp-c.obj `if test -f '../mllib/mkdtemp-c.c'; then $(CYGPATH_W) '../mllib/mkdtemp-c.c'; else $(CYGPATH_W) '$(srcdir)/../mllib/mkdtemp-c.c'; fi`
-
-../customize/virt_builder-perl_edit-c.o: ../customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../customize/virt_builder-perl_edit-c.o -MD -MP -MF ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Tpo -c -o ../customize/virt_builder-perl_edit-c.o `test -f '../customize/perl_edit-c.c' || echo '$(srcdir)/'`../customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Tpo ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/perl_edit-c.c' object='../customize/virt_builder-perl_edit-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../customize/virt_builder-perl_edit-c.o `test -f '../customize/perl_edit-c.c' || echo '$(srcdir)/'`../customize/perl_edit-c.c
-
-../customize/virt_builder-perl_edit-c.obj: ../customize/perl_edit-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../customize/virt_builder-perl_edit-c.obj -MD -MP -MF ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Tpo -c -o ../customize/virt_builder-perl_edit-c.obj `if test -f '../customize/perl_edit-c.c'; then $(CYGPATH_W) '../customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/perl_edit-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Tpo ../customize/$(DEPDIR)/virt_builder-perl_edit-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/perl_edit-c.c' object='../customize/virt_builder-perl_edit-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../customize/virt_builder-perl_edit-c.obj `if test -f '../customize/perl_edit-c.c'; then $(CYGPATH_W) '../customize/perl_edit-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/perl_edit-c.c'; fi`
-
-../customize/virt_builder-crypt-c.o: ../customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../customize/virt_builder-crypt-c.o -MD -MP -MF ../customize/$(DEPDIR)/virt_builder-crypt-c.Tpo -c -o ../customize/virt_builder-crypt-c.o `test -f '../customize/crypt-c.c' || echo '$(srcdir)/'`../customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_builder-crypt-c.Tpo ../customize/$(DEPDIR)/virt_builder-crypt-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/crypt-c.c' object='../customize/virt_builder-crypt-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../customize/virt_builder-crypt-c.o `test -f '../customize/crypt-c.c' || echo '$(srcdir)/'`../customize/crypt-c.c
-
-../customize/virt_builder-crypt-c.obj: ../customize/crypt-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../customize/virt_builder-crypt-c.obj -MD -MP -MF ../customize/$(DEPDIR)/virt_builder-crypt-c.Tpo -c -o ../customize/virt_builder-crypt-c.obj `if test -f '../customize/crypt-c.c'; then $(CYGPATH_W) '../customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/crypt-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../customize/$(DEPDIR)/virt_builder-crypt-c.Tpo ../customize/$(DEPDIR)/virt_builder-crypt-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../customize/crypt-c.c' object='../customize/virt_builder-crypt-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../customize/virt_builder-crypt-c.obj `if test -f '../customize/crypt-c.c'; then $(CYGPATH_W) '../customize/crypt-c.c'; else $(CYGPATH_W) '$(srcdir)/../customize/crypt-c.c'; fi`
-
-../fish/virt_builder-uri.o: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../fish/virt_builder-uri.o -MD -MP -MF ../fish/$(DEPDIR)/virt_builder-uri.Tpo -c -o ../fish/virt_builder-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_builder-uri.Tpo ../fish/$(DEPDIR)/virt_builder-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_builder-uri.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../fish/virt_builder-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-
-../fish/virt_builder-uri.obj: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../fish/virt_builder-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_builder-uri.Tpo -c -o ../fish/virt_builder-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_builder-uri.Tpo ../fish/$(DEPDIR)/virt_builder-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_builder-uri.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../fish/virt_builder-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
-
-../fish/virt_builder-file-edit.o: ../fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../fish/virt_builder-file-edit.o -MD -MP -MF ../fish/$(DEPDIR)/virt_builder-file-edit.Tpo -c -o ../fish/virt_builder-file-edit.o `test -f '../fish/file-edit.c' || echo '$(srcdir)/'`../fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_builder-file-edit.Tpo ../fish/$(DEPDIR)/virt_builder-file-edit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/file-edit.c' object='../fish/virt_builder-file-edit.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../fish/virt_builder-file-edit.o `test -f '../fish/file-edit.c' || echo '$(srcdir)/'`../fish/file-edit.c
-
-../fish/virt_builder-file-edit.obj: ../fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT ../fish/virt_builder-file-edit.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_builder-file-edit.Tpo -c -o ../fish/virt_builder-file-edit.obj `if test -f '../fish/file-edit.c'; then $(CYGPATH_W) '../fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../fish/file-edit.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_builder-file-edit.Tpo ../fish/$(DEPDIR)/virt_builder-file-edit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/file-edit.c' object='../fish/virt_builder-file-edit.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o ../fish/virt_builder-file-edit.obj `if test -f '../fish/file-edit.c'; then $(CYGPATH_W) '../fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../fish/file-edit.c'; fi`
 
 virt_builder-index-scan.o: index-scan.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-index-scan.o -MD -MP -MF $(DEPDIR)/virt_builder-index-scan.Tpo -c -o virt_builder-index-scan.o `test -f 'index-scan.c' || echo '$(srcdir)/'`index-scan.c
@@ -2746,6 +2599,13 @@ recheck: all $(check_PROGRAMS) $(check_DATA)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+test-virt-builder-docs.sh.log: test-virt-builder-docs.sh
+	@p='test-virt-builder-docs.sh'; \
+	b='test-virt-builder-docs.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-virt-builder-list.sh.log: test-virt-builder-list.sh
 	@p='test-virt-builder-list.sh'; \
 	b='test-virt-builder-list.sh'; \
@@ -2875,12 +2735,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../customize/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../customize/$(am__dirstamp)
-	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../fish/$(am__dirstamp)
-	-rm -f ../mllib/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../mllib/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2895,7 +2749,7 @@ clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
 	clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../customize/$(DEPDIR) ../fish/$(DEPDIR) ../mllib/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2942,7 +2796,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../customize/$(DEPDIR) ../fish/$(DEPDIR) ../mllib/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -3011,16 +2865,12 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-# Rules for building OCaml objects.
-# See also:
-# guestfs-hacking(1) section "HOW OCAML PROGRAMS ARE COMPILED AND LINKED"
-
 .mli.cmi:
-	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
-	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
-@HAVE_OCAMLOPT_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+@HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 @HAVE_OCAML_TRUE@virt-builder.1 $(top_builddir)/website/virt-builder.1.html: stamp-virt-builder.pod
 

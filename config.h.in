@@ -29,6 +29,9 @@
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
 
+/* Define to 1 if the C locale may have encoding errors. */
+#undef C_LOCALE_MAYBE_EILSEQ
+
 /* Define as the bit index in the word where to find bit 0 of the exponent of
    'double'. */
 #undef DBL_EXPBIT0_BIT
@@ -823,6 +826,15 @@
 /* Define to 1 if you have the 'getdtablesize' function. */
 #undef HAVE_GETDTABLESIZE
 
+/* Define to 1 if you have the 'getegid' function. */
+#undef HAVE_GETEGID
+
+/* Define to 1 if you have the 'geteuid' function. */
+#undef HAVE_GETEUID
+
+/* Define to 1 if you have the 'getgid' function. */
+#undef HAVE_GETGID
+
 /* Define to 1 if you have the `gethostbyname' function. */
 #undef HAVE_GETHOSTBYNAME
 
@@ -858,6 +870,9 @@
 
 /* Define to 1 if you have the 'gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
+
+/* Define to 1 if you have the 'getuid' function. */
+#undef HAVE_GETUID
 
 /* Define to 1 if you have the `getxattr' function. */
 #undef HAVE_GETXATTR
@@ -952,6 +967,9 @@
 
 /* Define to 1 if you have libselinux. */
 #undef HAVE_LIBSELINUX
+
+/* Define to 1 if The Sleuth Kit library (libtsk) is available. */
+#undef HAVE_LIBTSK
 
 /* libvirt found at compile time. */
 #undef HAVE_LIBVIRT
@@ -2202,9 +2220,6 @@
 /* Define to 1 if you have the `xmlBufferDetach' function. */
 #undef HAVE_XMLBUFFERDETACH
 
-/* Define to 1 if you have yajl. */
-#undef HAVE_YAJL
-
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
@@ -2340,6 +2355,9 @@
 
 /* Define to 1 if readlink fails to recognize a trailing slash. */
 #undef READLINK_TRAILING_SLASH_BUG
+
+/* Define to 1 if gnulib's dirfd() replacement is used. */
+#undef REPLACE_DIRFD
 
 /* Define to 1 if gnulib's fchdir() replacement is used. */
 #undef REPLACE_FCHDIR
@@ -2615,6 +2633,12 @@
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
 
+/* Define to 1 if the system <stdint.h> predates C++11. */
+#undef __STDC_CONSTANT_MACROS
+
+/* Define to 1 if the system <stdint.h> predates C++11. */
+#undef __STDC_LIMIT_MACROS
+
 /* Please see the Gnulib manual for how to use these macros.
 
    Suppress extern inline with HP-UX cc, as it appears to be broken; see
@@ -2661,6 +2685,7 @@
       ? defined __GNUC_STDC_INLINE__ && __GNUC_STDC_INLINE__ \
       : (199901L <= __STDC_VERSION__ \
          && !defined __HP_cc \
+         && !defined __PGI \
          && !(defined __SUNPRO_C && __STDC__))) \
      && !defined _GL_EXTERN_INLINE_STDHEADER_BUG)
 # define _GL_INLINE inline

@@ -94,6 +94,11 @@ btrfs_set_label (const char *device, const char *label)
   return 0;
 }
 
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstack-usage="
+#endif
+
 /* Takes optional arguments, consult optargs_bitmask. */
 int
 do_btrfs_filesystem_resize (const char *filesystem, int64_t size)
@@ -258,6 +263,10 @@ do_mkfs_btrfs (char *const *devices,
 
   return 0;
 }
+
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic pop
+#endif
 
 int
 do_btrfs_subvolume_snapshot (const char *source, const char *dest, int ro,
@@ -715,6 +724,11 @@ test_btrfs_device_add_needs_force (void)
   return strstr (out, "--force") != NULL;
 }
 
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstack-usage="
+#endif
+
 int
 do_btrfs_device_add (char *const *devices, const char *fs)
 {
@@ -804,6 +818,10 @@ do_btrfs_device_delete (char *const *devices, const char *fs)
   return 0;
 }
 
+
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic pop
+#endif
 
 /* btrfstune command add two new options
  * -U UUID      change fsid to UUID
@@ -2097,6 +2115,11 @@ do_btrfstune_enable_skinny_metadata_extent_refs (const char *device)
   return 0;
 }
 
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstack-usage="
+#endif
+
 int
 do_btrfs_image (char *const *sources, const char *image,
 		int compresslevel)
@@ -2138,6 +2161,10 @@ do_btrfs_image (char *const *sources, const char *image,
   return 0;
 }
 
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic pop
+#endif
+
 int
 do_btrfs_replace (const char *srcdev, const char *targetdev,
 		  const char* mntpoint)
@@ -2172,6 +2199,90 @@ do_btrfs_replace (const char *srcdev, const char *targetdev,
   }
 
   return 0;
+}
+
+char **
+do_btrfs_filesystem_show (const char *device)
+{
+  CLEANUP_FREE_STRINGSBUF DECLARE_STRINGSBUF (ret);
+  const size_t MAX_ARGS = 16;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
+  CLEANUP_FREE char *out = NULL;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE_STRING_LIST char **lines = NULL;
+  int r;
+
+  ADD_ARG (argv, i, str_btrfs);
+  ADD_ARG (argv, i, "filesystem");
+  ADD_ARG (argv, i, "show");
+  ADD_ARG (argv, i, device);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (&out, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    return NULL;
+  }
+
+  lines = split_lines (out);
+  if (!lines)
+    return NULL;
+
+  if (count_strings (lines) < 3) {
+    reply_with_error ("truncated output from 'btrfs filesystem show' command");
+    return NULL;
+  }
+
+  /* Output of `btrfs filesystem show' is like:
+   *
+   *   Label: none  uuid: 99a1b6ba-de46-4a93-8f91-7d7685970a6c
+   *           Total devices 3 FS bytes used 1.12MiB
+   *           devid    1 size 10.00GiB used 2.00GiB path /dev/sda
+   *           [...]
+   *
+   * or:
+   *
+   *   Label: none  uuid: 99a1b6ba-de46-4a93-8f91-7d7685970a6c
+   *           Total devices 3 FS bytes used 1.12MiB
+   *           devid    1 size 10.00GiB used 2.00GiB path /dev/sda
+   *           [...]
+   *           *** Some devices missing
+   */
+  for (i = 1; lines[i] != NULL; ++i) {
+    if (lines[i][0] == 0)
+      continue;
+    if (STRPREFIX (lines[i], "Label: "))
+      continue;
+    else if (STRPREFIX (lines[i], "\tTotal devices "))
+      continue;
+    else if (STRPREFIX (lines[i], "\tdevid ")) {
+      const char *p = strstr (lines[i], " path ");
+      const char *end;
+      if (!p)
+        continue;
+
+      p += strlen (" path ");
+      end = strchrnul (p, ' ');
+      add_sprintf (&ret, "%.*s", (int) (end - p), p);
+    } else if (STRPREFIX (lines[i], "\t*** Some devices missing")) {
+      reply_with_error_errno (ENODEV, "%s: missing devices", device);
+      return NULL;
+    } else if (STRPREFIX (lines[i], "btrfs-progs v")) {
+      /* Older versions of btrfs-progs output also the version string
+       * (the same as `btrfs --version`.  This has been fixed upstream
+       * since v4.3.1, commit e29ec82e4e66042ca55bf8cd9ef609e3b21a7eb7.
+       * To support these older versions, ignore the version line.  */
+      continue;
+    } else {
+      reply_with_error ("unrecognized line in output from 'btrfs filesystem show': %s", lines[i]);
+      return NULL;
+    }
+  }
+
+  end_stringsbuf (&ret);
+
+  return take_stringsbuf (&ret);
 }
 
 /* btrfs command add a new command

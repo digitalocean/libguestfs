@@ -333,3 +333,15 @@ guestfs_int_cleanup_free_internal_mountable_list (void *ptr)
   guestfs_free_internal_mountable_list (* (struct guestfs_internal_mountable_list **) ptr);
 }
 
+void
+guestfs_int_cleanup_free_tsk_dirent (void *ptr)
+{
+  guestfs_free_tsk_dirent (* (struct guestfs_tsk_dirent **) ptr);
+}
+
+void
+guestfs_int_cleanup_free_tsk_dirent_list (void *ptr)
+{
+  guestfs_free_tsk_dirent_list (* (struct guestfs_tsk_dirent_list **) ptr);
+}
+

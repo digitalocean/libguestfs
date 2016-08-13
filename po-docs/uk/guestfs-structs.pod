@@ -7,7 +7,7 @@ libguestfs generated file
           and from the code in the generator/ subdirectory.
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2016 Red Hat Inc.
+ © Red Hat Inc., 2009–2016
 
  Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
  змінювати її за умов дотримання GNU General Public License  утому вигляді, що
@@ -729,4 +729,39 @@ libguestfs generated file
  
  void guestfs_free_internal_mountable (struct guestfs_internal_mountable *);
  void guestfs_free_internal_mountable_list (struct guestfs_internal_mountable_list *);
+
+=head2 guestfs_tsk_dirent
+
+ struct guestfs_tsk_dirent {
+   uint64_t tsk_inode;
+   char tsk_type;
+   int64_t tsk_size;
+   char *tsk_name;
+   uint32_t tsk_flags;
+   int64_t tsk_atime_sec;
+   int64_t tsk_atime_nsec;
+   int64_t tsk_mtime_sec;
+   int64_t tsk_mtime_nsec;
+   int64_t tsk_ctime_sec;
+   int64_t tsk_ctime_nsec;
+   int64_t tsk_crtime_sec;
+   int64_t tsk_crtime_nsec;
+   int64_t tsk_nlink;
+   char *tsk_link;
+   int64_t tsk_spare1;
+ };
+ 
+ struct guestfs_tsk_dirent_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_tsk_dirent *val; /* Elements. */
+ };
+
+ int guestfs_compare_tsk_dirent (const struct guestfs_tsk_dirent *, const struct guestfs_tsk_dirent *);
+ int guestfs_compare_tsk_dirent_list (const struct guestfs_tsk_dirent_list *, const struct guestfs_tsk_dirent_list *);
+ 
+ struct guestfs_tsk_dirent *guestfs_copy_tsk_dirent (const struct guestfs_tsk_dirent *);
+ struct guestfs_tsk_dirent_list *guestfs_copy_tsk_dirent_list (const struct guestfs_tsk_dirent_list *);
+ 
+ void guestfs_free_tsk_dirent (struct guestfs_tsk_dirent *);
+ void guestfs_free_tsk_dirent_list (struct guestfs_tsk_dirent_list *);
 

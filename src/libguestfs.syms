@@ -89,6 +89,7 @@
         guestfs_btrfs_filesystem_resize;
         guestfs_btrfs_filesystem_resize_argv;
         guestfs_btrfs_filesystem_resize_va;
+        guestfs_btrfs_filesystem_show;
         guestfs_btrfs_filesystem_sync;
         guestfs_btrfs_fsck;
         guestfs_btrfs_fsck_argv;
@@ -185,6 +186,8 @@
         guestfs_compare_statns_list;
         guestfs_compare_statvfs;
         guestfs_compare_statvfs_list;
+        guestfs_compare_tsk_dirent;
+        guestfs_compare_tsk_dirent_list;
         guestfs_compare_utsname;
         guestfs_compare_utsname_list;
         guestfs_compare_version;
@@ -260,6 +263,8 @@
         guestfs_copy_statns_list;
         guestfs_copy_statvfs;
         guestfs_copy_statvfs_list;
+        guestfs_copy_tsk_dirent;
+        guestfs_copy_tsk_dirent_list;
         guestfs_copy_utsname;
         guestfs_copy_utsname_list;
         guestfs_copy_version;
@@ -292,6 +297,10 @@
         guestfs_disk_virtual_size;
         guestfs_dmesg;
         guestfs_download;
+        guestfs_download_blocks;
+        guestfs_download_blocks_argv;
+        guestfs_download_blocks_va;
+        guestfs_download_inode;
         guestfs_download_offset;
         guestfs_drop_caches;
         guestfs_du;
@@ -315,6 +324,7 @@
         guestfs_file_architecture;
         guestfs_filesize;
         guestfs_filesystem_available;
+        guestfs_filesystem_walk;
         guestfs_fill;
         guestfs_fill_dir;
         guestfs_fill_pattern;
@@ -365,6 +375,8 @@
         guestfs_free_statns_list;
         guestfs_free_statvfs;
         guestfs_free_statvfs_list;
+        guestfs_free_tsk_dirent;
+        guestfs_free_tsk_dirent_list;
         guestfs_free_utsname;
         guestfs_free_utsname_list;
         guestfs_free_version;
@@ -408,6 +420,7 @@
         guestfs_get_recovery_proc;
         guestfs_get_selinux;
         guestfs_get_smp;
+        guestfs_get_sockdir;
         guestfs_get_state;
         guestfs_get_tmpdir;
         guestfs_get_trace;
@@ -417,6 +430,9 @@
         guestfs_getxattr;
         guestfs_getxattrs;
         guestfs_glob_expand;
+        guestfs_glob_expand_opts;
+        guestfs_glob_expand_opts_argv;
+        guestfs_glob_expand_opts_va;
         guestfs_grep;
         guestfs_grep_opts;
         guestfs_grep_opts_argv;
@@ -479,13 +495,10 @@
         guestfs_inspect_list_applications;
         guestfs_inspect_list_applications2;
         guestfs_inspect_os;
-        guestfs_int_safe_calloc;
-        guestfs_int_safe_malloc;
-        guestfs_int_safe_memdup;
-        guestfs_int_safe_strdup;
         guestfs_internal_autosync;
         guestfs_internal_exit;
         guestfs_internal_feature_available;
+        guestfs_internal_filesystem_walk;
         guestfs_internal_hot_add_drive;
         guestfs_internal_hot_remove_drive;
         guestfs_internal_hot_remove_drive_precheck;
@@ -692,12 +705,15 @@
         guestfs_mount_options;
         guestfs_mount_ro;
         guestfs_mount_vfs;
+        guestfs_mountable_device;
+        guestfs_mountable_subvolume;
         guestfs_mountpoints;
         guestfs_mounts;
         guestfs_mv;
         guestfs_next_private;
         guestfs_nr_devices;
         guestfs_ntfs_3g_probe;
+        guestfs_ntfscat_i;
         guestfs_ntfsclone_in;
         guestfs_ntfsclone_out;
         guestfs_ntfsclone_out_argv;
@@ -715,7 +731,9 @@
         guestfs_part_add;
         guestfs_part_del;
         guestfs_part_disk;
+        guestfs_part_expand_gpt;
         guestfs_part_get_bootable;
+        guestfs_part_get_disk_guid;
         guestfs_part_get_gpt_guid;
         guestfs_part_get_gpt_type;
         guestfs_part_get_mbr_id;
@@ -725,6 +743,8 @@
         guestfs_part_init;
         guestfs_part_list;
         guestfs_part_set_bootable;
+        guestfs_part_set_disk_guid;
+        guestfs_part_set_disk_guid_random;
         guestfs_part_set_gpt_guid;
         guestfs_part_set_gpt_type;
         guestfs_part_set_mbr_id;
@@ -779,6 +799,9 @@
         guestfs_scrub_device;
         guestfs_scrub_file;
         guestfs_scrub_freespace;
+        guestfs_selinux_relabel;
+        guestfs_selinux_relabel_argv;
+        guestfs_selinux_relabel_va;
         guestfs_set_append;
         guestfs_set_attach_method;
         guestfs_set_autosync;

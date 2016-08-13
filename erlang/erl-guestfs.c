@@ -427,6 +427,31 @@ make_statvfs (const struct guestfs_statvfs *statvfs)
 }
 
 static ETERM *
+make_tsk_dirent (const struct guestfs_tsk_dirent *tsk_dirent)
+{
+  ETERM *t[16];
+
+  t[0] = erl_mk_longlong (tsk_dirent->tsk_inode);
+  t[1] = erl_mk_int (tsk_dirent->tsk_type);
+  t[2] = erl_mk_longlong (tsk_dirent->tsk_size);
+  t[3] = erl_mk_string (tsk_dirent->tsk_name);
+  t[4] = erl_mk_int (tsk_dirent->tsk_flags);
+  t[5] = erl_mk_longlong (tsk_dirent->tsk_atime_sec);
+  t[6] = erl_mk_longlong (tsk_dirent->tsk_atime_nsec);
+  t[7] = erl_mk_longlong (tsk_dirent->tsk_mtime_sec);
+  t[8] = erl_mk_longlong (tsk_dirent->tsk_mtime_nsec);
+  t[9] = erl_mk_longlong (tsk_dirent->tsk_ctime_sec);
+  t[10] = erl_mk_longlong (tsk_dirent->tsk_ctime_nsec);
+  t[11] = erl_mk_longlong (tsk_dirent->tsk_crtime_sec);
+  t[12] = erl_mk_longlong (tsk_dirent->tsk_crtime_nsec);
+  t[13] = erl_mk_longlong (tsk_dirent->tsk_nlink);
+  t[14] = erl_mk_string (tsk_dirent->tsk_link);
+  t[15] = erl_mk_longlong (tsk_dirent->tsk_spare1);
+
+  return erl_mk_list (t, 16);
+}
+
+static ETERM *
 make_utsname (const struct guestfs_utsname *utsname)
 {
   ETERM *t[4];
@@ -500,193 +525,290 @@ make_xfsinfo (const struct guestfs_xfsinfo *xfsinfo)
 static ETERM *
 make_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
 {
-  ETERM *t[lvm_lvs->len];
+  size_t len = lvm_lvs->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < lvm_lvs->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_lvm_lv_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_lvm_lv (&lvm_lvs->val[i]);
 
-  return erl_mk_list (t, lvm_lvs->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_dirent_list (const struct guestfs_dirent_list *dirents)
 {
-  ETERM *t[dirents->len];
+  size_t len = dirents->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < dirents->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_dirent_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_dirent (&dirents->val[i]);
 
-  return erl_mk_list (t, dirents->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_btrfsqgroup_list (const struct guestfs_btrfsqgroup_list *btrfsqgroups)
 {
-  ETERM *t[btrfsqgroups->len];
+  size_t len = btrfsqgroups->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < btrfsqgroups->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_btrfsqgroup_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_btrfsqgroup (&btrfsqgroups->val[i]);
 
-  return erl_mk_list (t, btrfsqgroups->len);
+  return erl_mk_list (t, len);
+}
+
+static ETERM *
+make_tsk_dirent_list (const struct guestfs_tsk_dirent_list *tsk_dirents)
+{
+  size_t len = tsk_dirents->len;
+  size_t i;
+  CLEANUP_FREE ETERM **t;
+
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_tsk_dirent_list");
+
+  for (i = 0; i < len; ++i)
+    t[i] = make_tsk_dirent (&tsk_dirents->val[i]);
+
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_partition_list (const struct guestfs_partition_list *partitions)
 {
-  ETERM *t[partitions->len];
+  size_t len = partitions->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < partitions->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_partition_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_partition (&partitions->val[i]);
 
-  return erl_mk_list (t, partitions->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_statns_list (const struct guestfs_statns_list *statnss)
 {
-  ETERM *t[statnss->len];
+  size_t len = statnss->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < statnss->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_statns_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_statns (&statnss->val[i]);
 
-  return erl_mk_list (t, statnss->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_application2_list (const struct guestfs_application2_list *application2s)
 {
-  ETERM *t[application2s->len];
+  size_t len = application2s->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < application2s->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_application2_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_application2 (&application2s->val[i]);
 
-  return erl_mk_list (t, application2s->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_inotify_event_list (const struct guestfs_inotify_event_list *inotify_events)
 {
-  ETERM *t[inotify_events->len];
+  size_t len = inotify_events->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < inotify_events->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_inotify_event_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_inotify_event (&inotify_events->val[i]);
 
-  return erl_mk_list (t, inotify_events->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_application_list (const struct guestfs_application_list *applications)
 {
-  ETERM *t[applications->len];
+  size_t len = applications->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < applications->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_application_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_application (&applications->val[i]);
 
-  return erl_mk_list (t, applications->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_hivex_value_list (const struct guestfs_hivex_value_list *hivex_values)
 {
-  ETERM *t[hivex_values->len];
+  size_t len = hivex_values->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < hivex_values->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_hivex_value_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_hivex_value (&hivex_values->val[i]);
 
-  return erl_mk_list (t, hivex_values->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_xattr_list (const struct guestfs_xattr_list *xattrs)
 {
-  ETERM *t[xattrs->len];
+  size_t len = xattrs->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < xattrs->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_xattr_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_xattr (&xattrs->val[i]);
 
-  return erl_mk_list (t, xattrs->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_lvm_pv_list (const struct guestfs_lvm_pv_list *lvm_pvs)
 {
-  ETERM *t[lvm_pvs->len];
+  size_t len = lvm_pvs->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < lvm_pvs->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_lvm_pv_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_lvm_pv (&lvm_pvs->val[i]);
 
-  return erl_mk_list (t, lvm_pvs->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_lvm_vg_list (const struct guestfs_lvm_vg_list *lvm_vgs)
 {
-  ETERM *t[lvm_vgs->len];
+  size_t len = lvm_vgs->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < lvm_vgs->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_lvm_vg_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_lvm_vg (&lvm_vgs->val[i]);
 
-  return erl_mk_list (t, lvm_vgs->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *btrfssubvolumes)
 {
-  ETERM *t[btrfssubvolumes->len];
+  size_t len = btrfssubvolumes->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < btrfssubvolumes->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_btrfssubvolume_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_btrfssubvolume (&btrfssubvolumes->val[i]);
 
-  return erl_mk_list (t, btrfssubvolumes->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_mdstat_list (const struct guestfs_mdstat_list *mdstats)
 {
-  ETERM *t[mdstats->len];
+  size_t len = mdstats->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < mdstats->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_mdstat_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_mdstat (&mdstats->val[i]);
 
-  return erl_mk_list (t, mdstats->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_hivex_node_list (const struct guestfs_hivex_node_list *hivex_nodes)
 {
-  ETERM *t[hivex_nodes->len];
+  size_t len = hivex_nodes->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < hivex_nodes->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_hivex_node_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_hivex_node (&hivex_nodes->val[i]);
 
-  return erl_mk_list (t, hivex_nodes->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
 make_stat_list (const struct guestfs_stat_list *stats)
 {
-  ETERM *t[stats->len];
+  size_t len = stats->len;
   size_t i;
+  CLEANUP_FREE ETERM **t;
 
-  for (i = 0; i < stats->len; ++i)
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_stat_list");
+
+  for (i = 0; i < len; ++i)
     t[i] = make_stat (&stats->val[i]);
 
-  return erl_mk_list (t, stats->len);
+  return erl_mk_list (t, len);
 }
 
 static ETERM *
@@ -1722,6 +1844,22 @@ run_btrfs_filesystem_resize (ETERM *message)
     return make_error ("btrfs_filesystem_resize");
 
   return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_btrfs_filesystem_show (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  char **r;
+
+  r = guestfs_btrfs_filesystem_show (g, device);
+  if (r == NULL)
+    return make_error ("btrfs_filesystem_show");
+
+  ETERM *rt = make_string_list (r);
+  guestfs_int_free_string_list (r);
+
+  return rt;
 }
 
 static ETERM *
@@ -3106,6 +3244,55 @@ run_download (ETERM *message)
 }
 
 static ETERM *
+run_download_blocks (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int64_t start = get_int64 (ARG (1));
+  int64_t stop = get_int64 (ARG (2));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (3));
+
+  struct guestfs_download_blocks_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_download_blocks_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (4);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "unallocated")) {
+      optargs_s.bitmask |= GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK;
+      optargs_s.unallocated = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("download_blocks", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_download_blocks_argv (g, device, start, stop, filename, optargs);
+  if (r == -1)
+    return make_error ("download_blocks");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_download_inode (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int64_t inode = get_int64 (ARG (1));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (2));
+  int r;
+
+  r = guestfs_download_inode (g, device, inode, filename);
+  if (r == -1)
+    return make_error ("download_inode");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_download_offset (ETERM *message)
 {
   CLEANUP_FREE char *remotefilename = erl_iolist_to_string (ARG (0));
@@ -3414,6 +3601,21 @@ run_filesystem_available (ETERM *message)
     return make_error ("filesystem_available");
 
   return make_bool (r);
+}
+
+static ETERM *
+run_filesystem_walk (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  struct guestfs_tsk_dirent_list *r;
+
+  r = guestfs_filesystem_walk (g, device);
+  if (r == NULL)
+    return make_error ("filesystem_walk");
+
+  ETERM *rt = make_tsk_dirent_list (r);
+  guestfs_free_tsk_dirent_list (r);
+  return rt;
 }
 
 static ETERM *
@@ -3951,6 +4153,20 @@ run_get_smp (ETERM *message)
 }
 
 static ETERM *
+run_get_sockdir (ETERM *message)
+{
+  char *r;
+
+  r = guestfs_get_sockdir (g);
+  if (r == NULL)
+    return make_error ("get_sockdir");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_get_state (ETERM *message)
 {
   int r;
@@ -4062,9 +4278,27 @@ static ETERM *
 run_glob_expand (ETERM *message)
 {
   CLEANUP_FREE char *pattern = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_glob_expand_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_glob_expand_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "directoryslash")) {
+      optargs_s.bitmask |= GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH_BITMASK;
+      optargs_s.directoryslash = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("glob_expand", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   char **r;
 
-  r = guestfs_glob_expand (g, pattern);
+  r = guestfs_glob_expand_opts_argv (g, pattern, optargs);
   if (r == NULL)
     return make_error ("glob_expand");
 
@@ -5943,10 +6177,10 @@ run_is_launching (ETERM *message)
 static ETERM *
 run_is_lv (ETERM *message)
 {
-  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
   int r;
 
-  r = guestfs_is_lv (g, device);
+  r = guestfs_is_lv (g, mountable);
   if (r == -1)
     return make_error ("is_lv");
 
@@ -8058,6 +8292,36 @@ run_mount_vfs (ETERM *message)
 }
 
 static ETERM *
+run_mountable_device (ETERM *message)
+{
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_mountable_device (g, mountable);
+  if (r == NULL)
+    return make_error ("mountable_device");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_mountable_subvolume (ETERM *message)
+{
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_mountable_subvolume (g, mountable);
+  if (r == NULL)
+    return make_error ("mountable_subvolume");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_mountpoints (ETERM *message)
 {
   char **r;
@@ -8124,6 +8388,21 @@ run_ntfs_3g_probe (ETERM *message)
     return make_error ("ntfs_3g_probe");
 
   return erl_mk_int (r);
+}
+
+static ETERM *
+run_ntfscat_i (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int64_t inode = get_int64 (ARG (1));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (2));
+  int r;
+
+  r = guestfs_ntfscat_i (g, device, inode, filename);
+  if (r == -1)
+    return make_error ("ntfscat_i");
+
+  return erl_mk_atom ("ok");
 }
 
 static ETERM *
@@ -8343,6 +8622,19 @@ run_part_disk (ETERM *message)
 }
 
 static ETERM *
+run_part_expand_gpt (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_part_expand_gpt (g, device);
+  if (r == -1)
+    return make_error ("part_expand_gpt");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_part_get_bootable (ETERM *message)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
@@ -8354,6 +8646,21 @@ run_part_get_bootable (ETERM *message)
     return make_error ("part_get_bootable");
 
   return make_bool (r);
+}
+
+static ETERM *
+run_part_get_disk_guid (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_part_get_disk_guid (g, device);
+  if (r == NULL)
+    return make_error ("part_get_disk_guid");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
 }
 
 static ETERM *
@@ -8489,6 +8796,33 @@ run_part_set_bootable (ETERM *message)
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
   if (r == -1)
     return make_error ("part_set_bootable");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_part_set_disk_guid (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *guid = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_part_set_disk_guid (g, device, guid);
+  if (r == -1)
+    return make_error ("part_set_disk_guid");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_part_set_disk_guid_random (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_part_set_disk_guid_random (g, device);
+  if (r == -1)
+    return make_error ("part_set_disk_guid_random");
 
   return erl_mk_atom ("ok");
 }
@@ -9202,6 +9536,38 @@ run_scrub_freespace (ETERM *message)
   r = guestfs_scrub_freespace (g, dir);
   if (r == -1)
     return make_error ("scrub_freespace");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_selinux_relabel (ETERM *message)
+{
+  CLEANUP_FREE char *specfile = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_selinux_relabel_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_selinux_relabel_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "force")) {
+      optargs_s.bitmask |= GUESTFS_SELINUX_RELABEL_FORCE_BITMASK;
+      optargs_s.force = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("selinux_relabel", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_selinux_relabel_argv (g, specfile, path, optargs);
+  if (r == -1)
+    return make_error ("selinux_relabel");
 
   return erl_mk_atom ("ok");
 }
@@ -11453,6 +11819,8 @@ dispatch (ETERM *message)
     return run_btrfs_filesystem_defragment (message);
   else if (atom_equals (fun, "btrfs_filesystem_resize"))
     return run_btrfs_filesystem_resize (message);
+  else if (atom_equals (fun, "btrfs_filesystem_show"))
+    return run_btrfs_filesystem_show (message);
   else if (atom_equals (fun, "btrfs_filesystem_sync"))
     return run_btrfs_filesystem_sync (message);
   else if (atom_equals (fun, "btrfs_fsck"))
@@ -11595,6 +11963,10 @@ dispatch (ETERM *message)
     return run_dmesg (message);
   else if (atom_equals (fun, "download"))
     return run_download (message);
+  else if (atom_equals (fun, "download_blocks"))
+    return run_download_blocks (message);
+  else if (atom_equals (fun, "download_inode"))
+    return run_download_inode (message);
   else if (atom_equals (fun, "download_offset"))
     return run_download_offset (message);
   else if (atom_equals (fun, "drop_caches"))
@@ -11635,6 +12007,8 @@ dispatch (ETERM *message)
     return run_filesize (message);
   else if (atom_equals (fun, "filesystem_available"))
     return run_filesystem_available (message);
+  else if (atom_equals (fun, "filesystem_walk"))
+    return run_filesystem_walk (message);
   else if (atom_equals (fun, "fill"))
     return run_fill (message);
   else if (atom_equals (fun, "fill_dir"))
@@ -11709,6 +12083,8 @@ dispatch (ETERM *message)
     return run_get_selinux (message);
   else if (atom_equals (fun, "get_smp"))
     return run_get_smp (message);
+  else if (atom_equals (fun, "get_sockdir"))
+    return run_get_sockdir (message);
   else if (atom_equals (fun, "get_state"))
     return run_get_state (message);
   else if (atom_equals (fun, "get_tmpdir"))
@@ -12139,6 +12515,10 @@ dispatch (ETERM *message)
     return run_mount_ro (message);
   else if (atom_equals (fun, "mount_vfs"))
     return run_mount_vfs (message);
+  else if (atom_equals (fun, "mountable_device"))
+    return run_mountable_device (message);
+  else if (atom_equals (fun, "mountable_subvolume"))
+    return run_mountable_subvolume (message);
   else if (atom_equals (fun, "mountpoints"))
     return run_mountpoints (message);
   else if (atom_equals (fun, "mounts"))
@@ -12149,6 +12529,8 @@ dispatch (ETERM *message)
     return run_nr_devices (message);
   else if (atom_equals (fun, "ntfs_3g_probe"))
     return run_ntfs_3g_probe (message);
+  else if (atom_equals (fun, "ntfscat_i"))
+    return run_ntfscat_i (message);
   else if (atom_equals (fun, "ntfsclone_in"))
     return run_ntfsclone_in (message);
   else if (atom_equals (fun, "ntfsclone_out"))
@@ -12169,8 +12551,12 @@ dispatch (ETERM *message)
     return run_part_del (message);
   else if (atom_equals (fun, "part_disk"))
     return run_part_disk (message);
+  else if (atom_equals (fun, "part_expand_gpt"))
+    return run_part_expand_gpt (message);
   else if (atom_equals (fun, "part_get_bootable"))
     return run_part_get_bootable (message);
+  else if (atom_equals (fun, "part_get_disk_guid"))
+    return run_part_get_disk_guid (message);
   else if (atom_equals (fun, "part_get_gpt_guid"))
     return run_part_get_gpt_guid (message);
   else if (atom_equals (fun, "part_get_gpt_type"))
@@ -12189,6 +12575,10 @@ dispatch (ETERM *message)
     return run_part_list (message);
   else if (atom_equals (fun, "part_set_bootable"))
     return run_part_set_bootable (message);
+  else if (atom_equals (fun, "part_set_disk_guid"))
+    return run_part_set_disk_guid (message);
+  else if (atom_equals (fun, "part_set_disk_guid_random"))
+    return run_part_set_disk_guid_random (message);
   else if (atom_equals (fun, "part_set_gpt_guid"))
     return run_part_set_gpt_guid (message);
   else if (atom_equals (fun, "part_set_gpt_type"))
@@ -12277,6 +12667,8 @@ dispatch (ETERM *message)
     return run_scrub_file (message);
   else if (atom_equals (fun, "scrub_freespace"))
     return run_scrub_freespace (message);
+  else if (atom_equals (fun, "selinux_relabel"))
+    return run_selinux_relabel (message);
   else if (atom_equals (fun, "set_append"))
     return run_set_append (message);
   else if (atom_equals (fun, "set_attach_method"))

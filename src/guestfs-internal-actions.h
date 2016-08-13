@@ -98,6 +98,8 @@ extern int guestfs_impl_inspect_get_minor_version (guestfs_h *g, const char *roo
 extern char *guestfs_impl_inspect_get_product_name (guestfs_h *g, const char *root);
 extern char **guestfs_impl_inspect_get_mountpoints (guestfs_h *g, const char *root);
 extern char **guestfs_impl_inspect_get_filesystems (guestfs_h *g, const char *root);
+extern char *guestfs_impl_mountable_device (guestfs_h *g, const char *mountable);
+extern char *guestfs_impl_mountable_subvolume (guestfs_h *g, const char *mountable);
 extern int guestfs_impl_set_network (guestfs_h *g, int network);
 extern int guestfs_impl_get_network (guestfs_h *g);
 extern char **guestfs_impl_list_filesystems (guestfs_h *g);
@@ -182,5 +184,7 @@ extern int guestfs_impl_set_identifier (guestfs_h *g, const char *identifier);
 extern const char *guestfs_impl_get_identifier (guestfs_h *g);
 extern int guestfs_impl_available (guestfs_h *g, char *const *groups);
 extern int guestfs_impl_feature_available (guestfs_h *g, char *const *groups);
+extern char *guestfs_impl_get_sockdir (guestfs_h *g);
+extern struct guestfs_tsk_dirent_list *guestfs_impl_filesystem_walk (guestfs_h *g, const char *device);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

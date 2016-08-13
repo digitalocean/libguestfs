@@ -311,7 +311,7 @@ ext_minimum_size (const char *device)
   long block_size;
   const char *pattern = "Estimated minimum size of the filesystem: ";
 
-  r = command (&out, &err, str_resize2fs, "-P", device, NULL);
+  r = command (&out, &err, str_resize2fs, "-P", "-f", device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     return -1;
@@ -492,6 +492,8 @@ do_mke2fs_J (const char *fstype, int blocksize, const char *device,
              const char *journal)
 {
   CLEANUP_FREE char *err = NULL;
+  char blocksize_s[32];
+  CLEANUP_FREE char *jdev = NULL;
   int r;
 
   if (!fstype_is_extfs (fstype)) {
@@ -499,12 +501,12 @@ do_mke2fs_J (const char *fstype, int blocksize, const char *device,
     return -1;
   }
 
-  char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
-  size_t len = strlen (journal);
-  char jdev[len+32];
-  snprintf (jdev, len+32, "device=%s", journal);
+  if (asprintf (&jdev, "device=%s", journal) == -1) {
+    reply_with_perror ("asprintf");
+    return -1;
+  }
 
   wipe_device_before_mkfs (device);
 
@@ -524,6 +526,8 @@ do_mke2fs_JL (const char *fstype, int blocksize, const char *device,
               const char *label)
 {
   CLEANUP_FREE char *err = NULL;
+  char blocksize_s[32];
+  CLEANUP_FREE char *jdev = NULL;
   int r;
 
   if (!fstype_is_extfs (fstype)) {
@@ -537,12 +541,12 @@ do_mke2fs_JL (const char *fstype, int blocksize, const char *device,
     return -1;
   }
 
-  char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
-  size_t len = strlen (label);
-  char jdev[len+32];
-  snprintf (jdev, len+32, "device=LABEL=%s", label);
+  if (asprintf (&jdev, "device=LABEL=%s", label) == -1) {
+    reply_with_perror ("asprintf");
+    return -1;
+  }
 
   wipe_device_before_mkfs (device);
 
@@ -562,6 +566,8 @@ do_mke2fs_JU (const char *fstype, int blocksize, const char *device,
               const char *uuid)
 {
   CLEANUP_FREE char *err = NULL;
+  char blocksize_s[32];
+  CLEANUP_FREE char *jdev = NULL;
   int r;
 
   if (!fstype_is_extfs (fstype)) {
@@ -569,12 +575,12 @@ do_mke2fs_JU (const char *fstype, int blocksize, const char *device,
     return -1;
   }
 
-  char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
-  size_t len = strlen (uuid);
-  char jdev[len+32];
-  snprintf (jdev, len+32, "device=UUID=%s", uuid);
+  if (asprintf (&jdev, "device=UUID=%s", uuid) == -1) {
+    reply_with_perror ("asprintf");
+    return -1;
+  }
 
   wipe_device_before_mkfs (device);
 

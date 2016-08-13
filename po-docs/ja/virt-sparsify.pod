@@ -117,13 +117,13 @@ by doing:
 
 ヘルプを表示します。
 
-=item B<--check-tmpdir ignore>
+=item B<--check-tmpdir> B<ignore>
 
-=item B<--check-tmpdir continue>
+=item B<--check-tmpdir> B<continue>
 
-=item B<--check-tmpdir warn>
+=item B<--check-tmpdir> B<warn>
 
-=item B<--check-tmpdir fail>
+=item B<--check-tmpdir> B<fail>
 
 Check if L</TMPDIR> or I<--tmp> directory has enough space to complete the
 operation.  This is just an estimate.
@@ -153,6 +153,14 @@ B<fail> and exit.
 
 You cannot use this option and I<--in-place> together.
 
+=item B<--colors>
+
+=item B<--colours>
+
+Use ANSI colour sequences to colourize messages.  This is the default when
+the output is a tty.  If the output of the program is redirected to a file,
+ANSI colour sequences are disabled unless you use this option.
+
 =item B<--compress>
 
 出力ファイルを圧縮します。これは 出力形式が C<qcow2> の場合 I<のみ> 機能します。
@@ -179,11 +187,6 @@ virt-sparsify doesn't need to try to guess the input format.
 出力形式を詳細に調整します。関連項目: I<--compress>, I<-o>.
 
 You cannot use this option and I<--in-place> together.
-
-=item B<--debug-gc>
-
-ガベージコレクションおよびメモリー割り当てをデバッグします。これは virt-sparsify におけるメモリー問題または OCaml
-libguestfs バインドをデバッグするときのみ有用です。
 
 =item B<--format> raw
 

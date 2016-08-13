@@ -46,15 +46,15 @@ object
         let uncompress_head zcat file =
           let cmd = sprintf "%s %s" zcat (quote file) in
           let chan_out, chan_in, chan_err = Unix.open_process_full cmd [||] in
-          let buf = String.create 512 in
-          let len = input chan_out buf 0 (String.length buf) in
+          let b = Bytes.create 512 in
+          let len = input chan_out b 0 (Bytes.length b) in
           (* We're expecting the subprocess to fail because we close
            * the pipe early, so:
            *)
           ignore (Unix.close_process_full (chan_out, chan_in, chan_err));
 
           let tmpfile, chan = Filename.open_temp_file ~temp_dir:tmpdir "ova.file." "" in
-          output chan buf 0 len;
+          output chan b 0 len;
           close_out chan;
 
           tmpfile in
@@ -100,7 +100,9 @@ object
       ) in
 
     (* Exploded path must be absolute (RHBZ#1155121). *)
-    let exploded = absolute_path exploded in
+    let exploded =
+      if not (Filename.is_relative exploded) then exploded
+      else Sys.getcwd () // exploded in
 
     (* Find files in [dir] ending with [ext]. *)
     let find_files dir ext =
@@ -134,13 +136,14 @@ object
     let rex = Str.regexp "SHA1(\\(.*\\))=\\([0-9a-fA-F]+\\)\r?" in
     List.iter (
       fun mf ->
+        let mf_folder = Filename.dirname mf in
         let chan = open_in mf in
         let rec loop () =
           let line = input_line chan in
           if Str.string_match rex line 0 then (
             let disk = Str.matched_group 1 line in
             let expected = Str.matched_group 2 line in
-            let cmd = sprintf "sha1sum %s" (quote (exploded // disk)) in
+            let cmd = sprintf "sha1sum %s" (quote (mf_folder // disk)) in
             let out = external_command cmd in
             match out with
             | [] ->
@@ -159,6 +162,7 @@ object
     ) mf;
 
     (* Parse the ovf file. *)
+    let ovf_folder = Filename.dirname ovf in
     let xml = read_whole_file ovf in
     let doc = Xml.parse_memory xml in
 
@@ -259,7 +263,7 @@ object
             | Some s -> s in
 
           (* Does the file exist and is it readable? *)
-          let filename = exploded // filename in
+          let filename = ovf_folder // filename in
           Unix.access filename [Unix.R_OK];
 
           (* The spec allows the file to be gzip-compressed, in which case
@@ -342,6 +346,7 @@ object
         xpath_string_default "rasd:ElementName/text()" (sprintf"eth%d" i) in
       let nic = {
         s_mac = None;
+        s_nic_model = None;
         s_vnet = vnet;
         s_vnet_orig = vnet;
         s_vnet_type = Network;
@@ -358,6 +363,7 @@ object
       s_features = []; (* XXX *)
       s_firmware = firmware;
       s_display = None; (* XXX *)
+      s_video = None;
       s_sound = None;
       s_disks = disks;
       s_removables = removables;

@@ -46,6 +46,7 @@ extern void guestfs_int_print_partition_indent (struct guestfs_partition *partit
 extern void guestfs_int_print_stat_indent (struct guestfs_stat *stat, FILE *dest, const char *linesep, const char *indent);
 extern void guestfs_int_print_statns_indent (struct guestfs_statns *statns, FILE *dest, const char *linesep, const char *indent);
 extern void guestfs_int_print_statvfs_indent (struct guestfs_statvfs *statvfs, FILE *dest, const char *linesep, const char *indent);
+extern void guestfs_int_print_tsk_dirent_indent (struct guestfs_tsk_dirent *tsk_dirent, FILE *dest, const char *linesep, const char *indent);
 extern void guestfs_int_print_utsname_indent (struct guestfs_utsname *utsname, FILE *dest, const char *linesep, const char *indent);
 extern void guestfs_int_print_version_indent (struct guestfs_version *version, FILE *dest, const char *linesep, const char *indent);
 extern void guestfs_int_print_xattr_indent (struct guestfs_xattr *xattr, FILE *dest, const char *linesep, const char *indent);

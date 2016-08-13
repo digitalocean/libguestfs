@@ -16,6 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/**
+ * This file, and the other C<src/inspect*.c> files, handle
+ * inspection.  See L<guestfs(3)/INSPECTION>.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -42,7 +47,9 @@ COMPILE_REGEXP (re_primary_partition, "^/dev/(?:h|s|v)d.[1234]$", 0)
 static void check_for_duplicated_bsd_root (guestfs_h *g);
 static void collect_coreos_inspection_info (guestfs_h *g);
 
-/* The main inspection code. */
+/**
+ * The main inspection API.
+ */
 char **
 guestfs_impl_inspect_os (guestfs_h *g)
 {
@@ -92,9 +99,10 @@ guestfs_impl_inspect_os (guestfs_h *g)
   return ret;
 }
 
-/* Traverse through the filesystem list and find out if it contains the
- * "/" and "/usr" filesystems of a CoreOS image. If this is the case,
- * sum up all the collected information on the root fs.
+/**
+ * Traverse through the filesystem list and find out if it contains
+ * the C</> and C</usr> filesystems of a CoreOS image. If this is the
+ * case, sum up all the collected information on the root fs.
  */
 static void
 collect_coreos_inspection_info (guestfs_h *g)
@@ -128,10 +136,7 @@ collect_coreos_inspection_info (guestfs_h *g)
      * the boot loader. As a workaround, we check the OS versions and pick the
      * one with the higher version as active.
      */
-    if (usr &&
-        (usr->major_version > fs->major_version ||
-         (usr->major_version == fs->major_version &&
-          usr->minor_version > fs->minor_version)))
+    if (usr && guestfs_int_version_cmp_ge (&usr->version, &fs->version))
       continue;
 
     usr = fs;
@@ -143,9 +148,10 @@ collect_coreos_inspection_info (guestfs_h *g)
   guestfs_int_merge_fs_inspections (g, root, usr);
 }
 
-/* On *BSD systems, sometimes /dev/sda[1234] is a shadow of the real root
- * filesystem that is probably /dev/sda5
- * (see: http://www.freebsd.org/doc/handbook/disk-organization.html)
+/**
+ * On *BSD systems, sometimes F</dev/sda[1234]> is a shadow of the
+ * real root filesystem that is probably F</dev/sda5> (see:
+ * L<http://www.freebsd.org/doc/handbook/disk-organization.html>)
  */
 static void
 check_for_duplicated_bsd_root (guestfs_h *g)
@@ -285,6 +291,7 @@ guestfs_impl_inspect_get_distro (guestfs_h *g, const char *root)
   case OS_DISTRO_TTYLINUX: ret = safe_strdup (g, "ttylinux"); break;
   case OS_DISTRO_WINDOWS: ret = safe_strdup (g, "windows"); break;
   case OS_DISTRO_UBUNTU: ret = safe_strdup (g, "ubuntu"); break;
+  case OS_DISTRO_VOID_LINUX: ret = safe_strdup (g, "voidlinux"); break;
   case OS_DISTRO_UNKNOWN: ret = safe_strdup (g, "unknown"); break;
   }
 
@@ -301,7 +308,7 @@ guestfs_impl_inspect_get_major_version (guestfs_h *g, const char *root)
   if (!fs)
     return -1;
 
-  return fs->major_version;
+  return fs->version.v_major;
 }
 
 int
@@ -311,7 +318,7 @@ guestfs_impl_inspect_get_minor_version (guestfs_h *g, const char *root)
   if (!fs)
     return -1;
 
-  return fs->minor_version;
+  return fs->version.v_minor;
 }
 
 char *
@@ -532,6 +539,7 @@ guestfs_impl_inspect_get_package_format (guestfs_h *g, const char *root)
   case OS_PACKAGE_FORMAT_PISI: ret = safe_strdup (g, "pisi"); break;
   case OS_PACKAGE_FORMAT_PKGSRC: ret = safe_strdup (g, "pkgsrc"); break;
   case OS_PACKAGE_FORMAT_APK: ret = safe_strdup (g, "apk"); break;
+  case OS_PACKAGE_FORMAT_XBPS: ret = safe_strdup (g, "xbps"); break;
   case OS_PACKAGE_FORMAT_UNKNOWN:
     ret = safe_strdup (g, "unknown");
     break;
@@ -560,6 +568,7 @@ guestfs_impl_inspect_get_package_management (guestfs_h *g, const char *root)
   case OS_PACKAGE_MANAGEMENT_PORTAGE: ret = safe_strdup (g, "portage"); break;
   case OS_PACKAGE_MANAGEMENT_UP2DATE: ret = safe_strdup (g, "up2date"); break;
   case OS_PACKAGE_MANAGEMENT_URPMI: ret = safe_strdup (g, "urpmi"); break;
+  case OS_PACKAGE_MANAGEMENT_XBPS: ret = safe_strdup (g, "xbps"); break;
   case OS_PACKAGE_MANAGEMENT_YUM: ret = safe_strdup (g, "yum"); break;
   case OS_PACKAGE_MANAGEMENT_ZYPPER: ret = safe_strdup (g, "zypper"); break;
   case OS_PACKAGE_MANAGEMENT_UNKNOWN:
@@ -609,18 +618,19 @@ guestfs_int_free_inspect_info (guestfs_h *g)
   g->fses = NULL;
 }
 
-/* Download a guest file to a local temporary file.  The file is
+/**
+ * Download a guest file to a local temporary file.  The file is
  * cached in the temporary directory, and is not downloaded again.
  *
  * The name of the temporary (downloaded) file is returned.  The
- * caller must free the pointer, but does *not* need to delete the
+ * caller must free the pointer, but does I<not> need to delete the
  * temporary file.  It will be deleted when the handle is closed.
  *
- * Refuse to download the guest file if it is larger than max_size.
- * On this and other errors, NULL is returned.
+ * Refuse to download the guest file if it is larger than C<max_size>.
+ * On this and other errors, C<NULL> is returned.
  *
- * There is actually one cache per 'struct inspect_fs *' in order
- * to handle the case of multiple roots.
+ * There is actually one cache per C<struct inspect_fs *> in order to
+ * handle the case of multiple roots.
  */
 char *
 guestfs_int_download_to_tmp (guestfs_h *g, struct inspect_fs *fs,

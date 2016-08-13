@@ -7,7 +7,7 @@ guestfs-hacking - extending and contributing to libguestfs
 
 This manual page is for hackers who want to extend libguestfs itself.
 
-=head2 OVERVIEW OF THE SOURCE CODE
+=head1 OVERVIEW OF THE SOURCE CODE
 
 Код libguestfs зберігається у сховищі github
 L<https://github.com/libguestfs/libguestfs>
@@ -19,12 +19,14 @@ generator (C<./autogen.sh && make -C generator>) in order to create those
 files.
 
 Libguestfs uses an autotools-based build system, with the main files being
-F<configure.ac> and F<Makefile.am>.  The F<generator> subdirectory contains
-the generator, plus files describing the API.  The F<src> subdirectory
-contains source for the library.  The F<appliance> and F<daemon>
-subdirectories contain the source for the code that builds the appliance,
-and the code that runs in the appliance respectively.  Other directories are
-covered in the section L<SOURCE CODE SUBDIRECTORIES> below.
+F<configure.ac> and F<Makefile.am>.  See L</THE BUILD SYSTEM>.
+
+The F<generator> subdirectory contains the generator, plus files describing
+the API.  The F<src> subdirectory contains source for the library.  The
+F<appliance> and F<daemon> subdirectories contain the source for the code
+that builds the appliance, and the code that runs in the appliance
+respectively.  Other directories are covered in the section L<SOURCE CODE
+SUBDIRECTORIES> below.
 
 Apart from the fact that all API entry points go via some generated code,
 the library is straightforward.  (In fact, even the generated code is
@@ -33,44 +35,253 @@ run entirely in the library, and are written as C functions in files under
 F<src>.  Others are forwarded to the daemon where (after some generated RPC
 marshalling) they appear as C functions in files under F<daemon>.
 
-To build from source, first read the C<README> file.
+To build from source, first read the L<guestfs-building(1)>.
 
-=head2 F<local*> FILES
+=head1 SOURCE CODE SUBDIRECTORIES
 
-Files in the top source directory that begin with the prefix F<local*> are
-ignored by git.  These files can contain local configuration or scripts that
-you need to build libguestfs.
+There are a lot of subdirectories in the source tree! Which ones should you
+concentrate on first? F<src> and F<daemon> which contain the source code of
+the core library.  F<generator> is the code generator described above, so
+that is important.  The F<Makefile.am> in the root directory will tell you
+in which order the subdirectories get built.  And then if you are looking at
+a particular tool (eg. F<v2v>) or language binding (eg. F<python>), go
+straight to that subdirectory, but remember that if you didn't run the
+generator yet, then you may find files which appear to be missing.
 
-By convention, I have a file called F<localconfigure> which is a simple
-wrapper around F<autogen.sh> containing local configure customizations that
-I need:
+=over 4
 
- . localenv
- ./autogen.sh \
-     --with-default-backend=libvirt \
-     --enable-gcc-warnings \
-     --enable-gtk-doc \
-     -C \
-     "$@"
+=item F<align>
 
-So I can use this to build libguestfs:
+Програма L<virt-alignment-scan(1)> та документація до неї.
 
- ./localconfigure && make
+=item F<appliance>
 
-If there is a file in the top build directory called F<localenv>, then it
-will be sourced by C<make>.  This file can contain any local environment
-variables needed, eg. for skipping tests:
+The libguestfs appliance, build scripts and so on.
 
- # Use an alternate python binary.
- export PYTHON=python3
- # Skip this test, it is broken.
- export SKIP_TEST_BTRFS_FSCK=1
+=item F<bash>
 
-Note that F<localenv> is included by the top Makefile (so it's a Makefile
-fragment).  But if it is also sourced by your F<localconfigure> script then
-it is used as a shell script.
+Bash tab-completion scripts.
 
-=head2 ADDING A NEW API ACTION
+=item F<build-aux>
+
+Various build scripts used by autotools.
+
+=item F<builder>
+
+Програма L<virt-builder(1)> та документація до неї.
+
+=item F<cat>
+
+The L<virt-cat(1)>, L<virt-filesystems(1)>, L<virt-log(1)> and L<virt-ls(1)>
+commands and documentation.
+
+=item F<contrib>
+
+Outside contributions, experimental parts.
+
+=item F<customize>
+
+Програма L<virt-customize(1)> та документація до неї.
+
+=item F<daemon>
+
+The daemon that runs inside the libguestfs appliance and carries out
+actions.
+
+=item F<df>
+
+Програма L<virt-df(1)> та документація до неї.
+
+=item F<dib>
+
+Програма L<virt-dib(1)> та документація до неї.
+
+=item F<diff>
+
+Програма L<virt-diff(1)> та документація до неї.
+
+=item F<docs>
+
+Miscellaneous manual pages.
+
+=item F<edit>
+
+Програма L<virt-edit(1)> та документація до неї.
+
+=item F<examples>
+
+Код прикладів використання програмного інтерфейсу мовою C.
+
+=item F<fish>
+
+L<guestfish(1)>, the command-line shell, and various shell scripts built on
+top such as L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-tar-in(1)>,
+L<virt-tar-out(1)>.
+
+=item F<format>
+
+Програма L<virt-format(1)> та документація до неї.
+
+=item F<fuse>
+
+L<guestmount(1)>, FUSE (userspace filesystem) built on top of libguestfs.
+
+=item F<generator>
+
+The crucially important generator, used to automatically generate large
+amounts of boilerplate C code for things like RPC and bindings.
+
+=item F<get-kernel>
+
+Програма L<virt-get-kernel(1)> та документація до неї.
+
+=item F<gnulib>
+
+Gnulib is used as a portability library.  A copy of gnulib is included under
+here.
+
+=item F<inspector>
+
+L<virt-inspector(1)>, the virtual machine image inspector.
+
+=item F<logo>
+
+Logo used on the website.  The fish is called Arthur by the way.
+
+=item F<m4>
+
+M4 macros used by autoconf.  See L</THE BUILD SYSTEM>.
+
+=item F<make-fs>
+
+Програма L<virt-make-fs(1)> та документація до неї.
+
+=item F<mllib>
+
+Various libraries and common code used by L<virt-resize(1)> and the other
+tools which are written in OCaml.
+
+=item F<p2v>
+
+L<virt-p2v(1)> command, documentation and scripts for building the virt-p2v
+ISO or disk image.
+
+=item F<po>
+
+Переклади простих рядків gettext.
+
+=item F<po-docs>
+
+The build infrastructure and PO files for translations of manpages and POD
+files.  Eventually this will be combined with the F<po> directory, but that
+is rather complicated.
+
+=item F<rescue>
+
+Програма L<virt-rescue(1)> та документація до неї.
+
+=item F<resize>
+
+Програма L<virt-resize(1)> та документація до неї.
+
+=item F<sparsify>
+
+Програма L<virt-sparsify(1)> та документація до неї.
+
+=item F<src>
+
+Початковий код бібліотеки мовою C.
+
+=item F<sysprep>
+
+Програма L<virt-sysprep(1)> та документація до неї.
+
+=item F<tests>
+
+Тести.
+
+=item F<test-data>
+
+Files and other test data used by the tests.
+
+=item F<test-tool>
+
+Test tool for end users to test if their qemu/kernel combination will work
+with libguestfs.
+
+=item F<tmp>
+
+Used for temporary files when running the tests (instead of F</tmp> etc).
+The reason is so that you can run multiple parallel tests of libguestfs
+without having one set of tests overwriting the appliance created by
+another.
+
+=item F<tools>
+
+Command line tools written in Perl (L<virt-win-reg(1)> and many others).
+
+=item F<utils>
+
+Miscellaneous utilities, such as C<boot-benchmark>.
+
+=item F<v2v>
+
+Програма L<virt-v2v(1)> та документація до неї.
+
+=item F<website>
+
+The L<http://libguestfs.org> website files.
+
+=item F<csharp>
+
+=item F<erlang>
+
+=item F<gobject>
+
+=item F<golang>
+
+=item F<haskell>
+
+=item F<java>
+
+=item F<lua>
+
+=item F<ocaml>
+
+=item F<php>
+
+=item F<perl>
+
+=item F<python>
+
+=item F<ruby>
+
+Прив’язки до мов програмування.
+
+=back
+
+=head1 THE BUILD SYSTEM
+
+Libguestfs uses the GNU autotools build system (autoconf, automake,
+libtool).
+
+The F<./configure> script is generated from F<configure.ac> and
+F<m4/guestfs_*.m4>.  Most of the configure script is split over many m4
+macro files by topic, for example F<m4/guestfs_daemon.m4> deals with the
+dependencies of the daemon.
+
+The job of the top level F<Makefile.am> is mainly to list the subdirectories
+(C<SUBDIRS>) in the order they should be compiled.
+
+F<common-rules.mk> is included in every F<Makefile.am> (top level and
+subdirectories).  F<subdir-rules.mk> is included only in subdirectory
+F<Makefile.am> files.
+
+There are many make targets.  Use this command to list them all:
+
+ make help
+
+=head1 ADDING A NEW API
 
 Because large amounts of boilerplate code in libguestfs are generated, this
 makes it easy to extend the libguestfs API.
@@ -124,7 +335,7 @@ Note that you don't need to implement the RPC, language bindings, manual
 pages or anything else.  It's all automatically generated from the OCaml
 description.
 
-=head2 ADDING TESTS FOR AN API ACTION
+=head2 Adding tests for an API
 
 You can supply zero or as many tests as you want per API call.  The tests
 can either be added as part of the API description
@@ -139,16 +350,16 @@ The test environment has 4 block devices:
 
 =over 4
 
-=item F</dev/sda> 2 GB
+=item F</dev/sda> 2 ГБ
 
 Блоковий пристрій загального типу для тестування.
 
-=item F</dev/sdb> 2 GB
+=item F</dev/sdb> 2 ГБ
 
 F</dev/sdb1> is an ext2 filesystem used for testing filesystem write
 operations.
 
-=item F</dev/sdc> 10 MB
+=item F</dev/sdc> 10 МБ
 
 Used in a few tests where two block devices are needed.
 
@@ -194,7 +405,7 @@ Packagers can run only certain tests by setting for example:
 See F<tests/c-api/tests.c> for more details of how these environment
 variables work.
 
-=head2 ДІАГНОСТИКА НОВИХ ДІЙ API
+=head2 Debugging new APIs
 
 Test new actions work before submitting them.
 
@@ -204,7 +415,7 @@ Debugging the daemon is a problem because it runs inside a minimal
 environment.  However you can fprintf messages in the daemon to stderr, and
 they will show up if you use C<guestfish -v>.
 
-=head2 ДОДАВАННЯ НОВОЇ ПРИВ’ЯЗКИ ДО МОВИ
+=head1 ДОДАВАННЯ НОВОЇ ПРИВ’ЯЗКИ ДО МОВИ
 
 All language bindings must be generated by the generator (see the
 F<generator> subdirectory).
@@ -212,7 +423,7 @@ F<generator> subdirectory).
 There is no documentation for this yet.  We suggest you look at an existing
 binding, eg. F<generator/ocaml.ml> or F<generator/perl.ml>.
 
-=head2 ADDING TESTS FOR LANGUAGE BINDINGS
+=head2 Adding tests for language bindings
 
 Language bindings should come with tests.  Previously testing of language
 bindings was rather ad-hoc, but we have been trying to formalize the set of
@@ -224,7 +435,7 @@ the OCaml tests do.
 
 This is the numbering scheme used by the tests:
 
- - 000+ basic tests:
+ - 000+, базові перевірки:
  
    010  load the library
    020  create
@@ -235,10 +446,11 @@ This is the numbering scheme used by the tests:
    065  implicit close (in GC'd languages)
    070  optargs
    080  version
+   090  retvalues
  
  - 100  launch, create partitions and LVs and filesystems
  
- - 400+ events:
+ - події 400+:
  
    410  close event
    420  log messages
@@ -251,7 +463,7 @@ This is the numbering scheme used by the tests:
 To save time when running the tests, only 100, 430, 800+, 900+ should launch
 the handle.
 
-=head2 FORMATTING CODE
+=head1 ФОРМАТУВАННЯ КОДУ
 
 Our C source code generally adheres to some basic code-formatting
 conventions.  The existing code base is not totally consistent on this
@@ -284,7 +496,7 @@ If you use Emacs, add the following to one of one of your start-up files
                                (buffer-file-name))
                            (libguestfs-c-mode))))
 
-=head2 TESTING YOUR CHANGES
+=head1 ТЕСТУВАННЯ ВНЕСЕНИХ ВАМИ ЗМІН
 
 Turn warnings into errors when developing to make warnings hard to ignore:
 
@@ -296,7 +508,7 @@ Useful targets are:
 
 =item C<make check>
 
-Runs the regular test suite.
+Запускає звичайний комплект перевірок.
 
 This is implemented using the regular automake C<TESTS> target.  See the
 automake documentation for details.
@@ -305,7 +517,7 @@ automake documentation for details.
 
 Runs a subset of the test suite under valgrind.
 
-See L</VALGRIND> below.
+див. L</VALGRIND> нижче.
 
 =item C<make check-valgrind-local-guests>
 
@@ -465,7 +677,16 @@ modify the F<Makefile.am> like this:
 In either case, check that the right program is being tested by examining
 the F<tmp/valgrind*> log files carefully.
 
-=head2 DAEMON CUSTOM PRINTF FORMATTERS
+=head1 НАДСИЛАННЯ ЛАТОК
+
+Submit patches to the mailing list:
+L<http://www.redhat.com/mailman/listinfo/libguestfs> and CC to
+L<rjones@redhat.com>.
+
+You do not need to subscribe to the mailing list if you don't want to.
+There may be a short delay while your message is moderated.
+
+=head1 DAEMON CUSTOM PRINTF FORMATTERS
 
 In the daemon code we have created custom printf formatters C<%Q> and C<%R>,
 which are used to do shell quoting.
@@ -495,13 +716,7 @@ C<command{,r,v,rv}()> functions.  These parameters do NOT need to be quoted
 because they are not passed via the shell (instead, straight to exec).  You
 probably want to use the C<sysroot_path()> function however.
 
-=head2 SUBMITTING YOUR NEW API ACTIONS
-
-Submit patches to the mailing list:
-L<http://www.redhat.com/mailman/listinfo/libguestfs> and CC to
-L<rjones@redhat.com>.
-
-=head2 INTERNATIONALIZATION (I18N) SUPPORT
+=head1 ПІДТРИМКА ІНТЕРНАЦІОНАЛІЗАЦІЇ (I18N)
 
 We support i18n (gettext anyhow) in the library.
 
@@ -513,217 +728,174 @@ some of those, as well as copying our PO files into the appliance.
 Debugging messages are never translated, since they are intended for the
 programmers.
 
-=head2 SOURCE CODE SUBDIRECTORIES
+=head1 HOW OCAML PROGRAMS ARE COMPILED AND LINKED
+
+Mostly this section is "how we make automake & ocamlopt work together" since
+OCaml programs themselves are easy to compile.
+
+Automake has no native support for OCaml programs, ocamlc nor ocamlopt.
+What we do instead is to treat OCaml programs as C programs which happen to
+contain these "other objects" (C<"DEPENDENCIES"> in automake-speak) that
+happen to be the OCaml objects.  This works because OCaml programs usually
+have C files for native bindings etc.
+
+So a typical program is described as just its C sources:
+
+ virt_v2v_SOURCES = ... utils-c.c xml-c.c
+
+For programs that have no explicit C sources, we create an empty F<dummy.c>
+file, and list that instead:
+
+ virt_resize_SOURCES = dummy.c
+
+The OCaml objects which contain most of the code are listed as automake
+dependencies (other dependencies may also be listed):
+
+ virt_v2v_DEPENDENCIES = ... cmdline.cmx v2v.cmx
+
+The only other special thing we need to do is to provide a custom link
+command.  This is needed because automake won't assemble the ocamlopt
+command, the list of objects and the C<-cclib> libraries in the correct
+order otherwise.
+
+ virt_v2v_LINK = \
+     $(top_srcdir)/ocaml-link.sh -cclib '-lutils -lgnu' -- ...
+
+The actual rules, which you can examine in F<v2v/Makefile.am>, are a little
+bit more complicated than this because they have to handle:
 
 =over 4
 
-=item F<align>
+=item *
 
-Програма L<virt-alignment-scan(1)> та документація до неї.
+Compiling for byte code or native code.
 
-=item F<appliance>
+=item *
 
-The libguestfs appliance, build scripts and so on.
+The pattern rules needed to compile the OCaml sources to objects.
 
-=item F<bash>
+These are now kept in F<subdir-rules.mk> at the top level, which is included
+in every subdirectory F<Makefile.am>.
 
-Bash tab-completion scripts.
+=item *
 
-=item F<build-aux>
+Adding OCaml sources files to C<EXTRA_DIST>.
 
-Various build scripts used by autotools.
-
-=item F<builder>
-
-Програма L<virt-builder(1)> та документація до неї.
-
-=item F<cat>
-
-The L<virt-cat(1)>, L<virt-filesystems(1)>, L<virt-log(1)> and L<virt-ls(1)>
-commands and documentation.
-
-=item F<contrib>
-
-Outside contributions, experimental parts.
-
-=item F<customize>
-
-Програма L<virt-customize(1)> та документація до неї.
-
-=item F<daemon>
-
-The daemon that runs inside the libguestfs appliance and carries out
-actions.
-
-=item F<df>
-
-Програма L<virt-df(1)> та документація до неї.
-
-=item F<dib>
-
-Програма L<virt-dib(1)> та документація до неї.
-
-=item F<diff>
-
-Програма L<virt-diff(1)> та документація до неї.
-
-=item F<docs>
-
-Miscellaneous manual pages.
-
-=item F<edit>
-
-Програма L<virt-edit(1)> та документація до неї.
-
-=item F<examples>
-
-Код прикладів використання програмного інтерфейсу мовою C.
-
-=item F<fish>
-
-L<guestfish(1)>, the command-line shell, and various shell scripts built on
-top such as L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>.
-
-=item F<format>
-
-Програма L<virt-format(1)> та документація до неї.
-
-=item F<fuse>
-
-L<guestmount(1)>, FUSE (userspace filesystem) built on top of libguestfs.
-
-=item F<generator>
-
-The crucially important generator, used to automatically generate large
-amounts of boilerplate C code for things like RPC and bindings.
-
-=item F<get-kernel>
-
-Програма L<virt-get-kernel(1)> та документація до неї.
-
-=item F<gnulib>
-
-Gnulib is used as a portability library.  A copy of gnulib is included under
-here.
-
-=item F<inspector>
-
-L<virt-inspector(1)>, the virtual machine image inspector.
-
-=item F<logo>
-
-Logo used on the website.  The fish is called Arthur by the way.
-
-=item F<m4>
-
-M4 macros used by autoconf.
-
-=item F<make-fs>
-
-Програма L<virt-make-fs(1)> та документація до неї.
-
-=item F<mllib>
-
-Various libraries and common code used by L<virt-resize(1)> and the other
-tools which are written in OCaml.
-
-=item F<p2v>
-
-L<virt-p2v(1)> command, documentation and scripts for building the virt-p2v
-ISO or disk image.
-
-=item F<po>
-
-Переклади простих рядків gettext.
-
-=item F<po-docs>
-
-The build infrastructure and PO files for translations of manpages and POD
-files.  Eventually this will be combined with the F<po> directory, but that
-is rather complicated.
-
-=item F<rescue>
-
-Програма L<virt-rescue(1)> та документація до неї.
-
-=item F<resize>
-
-Програма L<virt-resize(1)> та документація до неї.
-
-=item F<sparsify>
-
-Програма L<virt-sparsify(1)> та документація до неї.
-
-=item F<src>
-
-Початковий код бібліотеки мовою C.
-
-=item F<sysprep>
-
-Програма L<virt-sysprep(1)> та документація до неї.
-
-=item F<tests>
-
-Тести.
-
-=item F<test-data>
-
-Files and other test data used by the tests.
-
-=item F<test-tool>
-
-Test tool for end users to test if their qemu/kernel combination will work
-with libguestfs.
-
-=item F<tmp>
-
-Used for temporary files when running the tests (instead of F</tmp> etc).
-The reason is so that you can run multiple parallel tests of libguestfs
-without having one set of tests overwriting the appliance created by
-another.
-
-=item F<tools>
-
-Command line tools written in Perl (L<virt-win-reg(1)> and many others).
-
-=item F<v2v>
-
-Програма L<virt-v2v(1)> та документація до неї.
-
-=item F<website>
-
-The L<http://libguestfs.org> website files.
-
-=item F<csharp>
-
-=item F<erlang>
-
-=item F<gobject>
-
-=item F<golang>
-
-=item F<haskell>
-
-=item F<java>
-
-=item F<lua>
-
-=item F<ocaml>
-
-=item F<php>
-
-=item F<perl>
-
-=item F<python>
-
-=item F<ruby>
-
-Прив’язки до мов програмування.
+Automake isn't aware of the complete list of sources for a binary, so it
+will not add them all automatically.
 
 =back
 
-=head2 СТВОРЕННЯ СТАБІЛЬНОГО ВИПУСКУ
+=head1 VIRT-V2V
+
+First a little history.  Virt-v2v has been through at least two complete
+rewrites, so this is probably about the third version (but we don't intend
+to rewrite it again).  The previous version was written in Perl and can be
+found here: L<https://git.fedorahosted.org/git/virt-v2v.git>
+
+The current version started out as almost a line-for-line rewrite of the
+Perl code in OCaml + C, and it still has a fairly similar structure.
+Therefore if there are details of this code that you don't understand
+(especially in the details of guest conversion), checking the Perl code may
+help.
+
+The files to start with when reading this code are:
+
+=over 4
+
+=item *
+
+F<types.mli>
+
+=item *
+
+F<v2v.ml>
+
+=back
+
+F<types.mli> defines all the structures used and passed around when
+communicating between different bits of the program.  F<v2v.ml> controls how
+the program runs in stages.
+
+After studying those files, you may want to branch out into the input
+modules (F<input_*>), the output modules (F<output_*>) or the conversion
+modules (F<convert_*>).  The input and output modules define I<-i> and I<-o>
+options (see the manual).  The conversion modules define what guest types we
+can handle and the detailed steps involved in converting them.
+
+Every other file in this directory is a support module / library of some
+sort.  Some code is written in C, especially where we want to use an
+external C library such as libxml2.
+
+=head1 VIRT-P2V
+
+Virt-p2v is a front end on virt-v2v.  ie. All it does is act as a GUI front
+end, and it calls out to virt-v2v to perform the actual conversion.
+Therefore most of the C code in the F<p2v/> subdirectory is Gtk (GUI) code,
+or supporting code for talking to the remote conversion server.  There is no
+special support for physical machines in virt-v2v.  They are converted in
+the same way as foreign VMs.
+
+=head2 Running virt-p2v
+
+You can run the F<p2v/virt-p2v> binary directly, but it will try to convert
+your machine's real F</dev/sda> which is unlikely to work well.  However
+virt-p2v also has a test mode in which you can supply a test disk:
+
+ make -C p2v run-virt-p2v-directly
+
+This is a wrapper around the L<virt-p2v(1)> I<--test-disk> option.  You can
+control the "physical machine" disk by setting C<PHYSICAL_MACHINE> to point
+to a disk image.
+
+A more realistic test is to run virt-p2v inside a VM on the local machine.
+To do that, do:
+
+ make -C p2v run-virt-p2v-in-a-vm
+
+This also runs qemu with the "physical machine" disk (which you can set by
+setting C<PHYSICAL_MACHINE>), a virtual CD, and a variety of network cards
+for testing.
+
+A third way to run virt-p2v simulates fairly accurately the program being
+downloaded over PXE and then doing an automatic conversion of the source
+physical machine (the non-GUI path -- see next section below):
+
+ make -C p2v run-virt-p2v-non-gui-conversion
+
+=head2 Understanding the virt-p2v code
+
+I<See also:> L<virt-p2v(1)/HOW VIRT-P2V WORKS>
+
+There are two paths through the code, GUI or non-GUI (parsing the kernel
+command line):
+
+ main.c ──────┬─────▶ gui.c ──────┬─────▶ conversion.c
+              │                   │
+              │                   │
+              └────▶ kernel.c ────┘
+
+but both paths call back to the F<conversion.c> function C<start_conversion>
+to run the remote virt-v2v.
+
+The main task of F<gui.c>/F<kernel.c> is to populate the virt-v2v
+configuration (F<config.c>).
+
+During conversion, we need to establish ssh connections, and that is done
+using two libraries:
+
+ conversion.c ──────▶ ssh.c ──────▶ miniexpect.c
+
+where F<ssh.c> is responsible for managing ssh connections overall, and
+F<miniexpect.c> implements "expect-like" functionality for talking
+interactively to the remote virt-v2v conversion server.
+
+(Note that miniexpect is a separate library with its own upstream, so if you
+patch miniexpect.c, then please make sure the changes get reflected in
+miniexpect's upstream too:
+F<http://git.annexia.org/?p=miniexpect.git;a=summary>)
+
+=head1 СТВОРЕННЯ СТАБІЛЬНОГО ВИПУСКУ
 
 When we make a stable release, there are several steps documented here.  See
 L<guestfs(3)/LIBGUESTFS VERSION NUMBERS> for general information about the
@@ -745,13 +917,13 @@ Finalize F<guestfs-release-notes.pod>
 
 =item *
 
-Push and pull from Zanata.
+Надіслати і отримати дані з Zanata.
 
 Віддайте команду:
 
  zanata push
 
-to push the latest POT files to Zanata.  Then run:
+щоб надіслати найсвіжіші файли POT на Zanata. Потім віддайте команду:
 
  ./zanata-pull.sh
 
@@ -768,7 +940,7 @@ L<http://libguestfs.org/download>.
 
 =item *
 
-Edit F<website/index.html.in>.
+Внесіть зміни до F<website/index.html.in>.
 
 =item *
 
@@ -784,7 +956,7 @@ ie. 1.XX.0, and commit it:
 
 =item *
 
-Create the stable branch in git:
+Створіть стабільну гілку у git:
 
  git branch stable-1.XX
  git push origin stable-1.XX
@@ -800,12 +972,26 @@ do a full release of the development branch.
 
 =back
 
+=head1 INTERNAL DOCUMENTATION
+
+This section documents internal functions inside libguestfs and various
+utilities.  It is intended for libguestfs developers only.
+
+This section is autogenerated from C</**> comments in source files, which
+are marked up in POD format.
+
+B<These functions are not publicly exported, and may change or be removed at
+any time.>
+
+__INTERNAL_DOCUMENTATION__
+
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-internals(3)>,
-L<guestfs-performance(1)>, L<guestfs-release-notes(1)>,
-L<guestfs-testing(1)>, L<libguestfs-test-tool(1)>,
-L<libguestfs-make-fixed-appliance(1)>, L<http://libguestfs.org/>.
+L<guestfs(3)>, L<guestfs-building(1)>, L<guestfs-examples(3)>,
+L<guestfs-internals(3)>, L<guestfs-performance(1)>,
+L<guestfs-release-notes(1)>, L<guestfs-testing(1)>,
+L<libguestfs-test-tool(1)>, L<libguestfs-make-fixed-appliance(1)>,
+L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 
@@ -813,5 +999,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

@@ -331,6 +331,25 @@ type statvfs = {
   namemax : int64;
 }
 
+type tsk_dirent = {
+  tsk_inode : int64;
+  tsk_type : char;
+  tsk_size : int64;
+  tsk_name : string;
+  tsk_flags : int32;
+  tsk_atime_sec : int64;
+  tsk_atime_nsec : int64;
+  tsk_mtime_sec : int64;
+  tsk_mtime_nsec : int64;
+  tsk_ctime_sec : int64;
+  tsk_ctime_nsec : int64;
+  tsk_crtime_sec : int64;
+  tsk_crtime_nsec : int64;
+  tsk_nlink : int64;
+  tsk_link : string;
+  tsk_spare1 : int64;
+}
+
 type utsname = {
   uts_sysname : string;
   uts_release : string;
@@ -433,6 +452,7 @@ external btrfs_device_delete : t -> string array -> string -> unit = "guestfs_in
 external btrfs_filesystem_balance : t -> string -> unit = "guestfs_int_ocaml_btrfs_filesystem_balance"
 external btrfs_filesystem_defragment : t -> ?flush:bool -> ?compress:string -> string -> unit = "guestfs_int_ocaml_btrfs_filesystem_defragment"
 external btrfs_filesystem_resize : t -> ?size:int64 -> string -> unit = "guestfs_int_ocaml_btrfs_filesystem_resize"
+external btrfs_filesystem_show : t -> string -> string array = "guestfs_int_ocaml_btrfs_filesystem_show"
 external btrfs_filesystem_sync : t -> string -> unit = "guestfs_int_ocaml_btrfs_filesystem_sync"
 external btrfs_fsck : t -> ?superblock:int64 -> ?repair:bool -> string -> unit = "guestfs_int_ocaml_btrfs_fsck"
 external btrfs_image : t -> ?compresslevel:int -> string array -> string -> unit = "guestfs_int_ocaml_btrfs_image"
@@ -506,6 +526,8 @@ external disk_has_backing_file : t -> string -> bool = "guestfs_int_ocaml_disk_h
 external disk_virtual_size : t -> string -> int64 = "guestfs_int_ocaml_disk_virtual_size"
 external dmesg : t -> string = "guestfs_int_ocaml_dmesg"
 external download : t -> string -> string -> unit = "guestfs_int_ocaml_download"
+external download_blocks : t -> ?unallocated:bool -> string -> int64 -> int64 -> string -> unit = "guestfs_int_ocaml_download_blocks_byte" "guestfs_int_ocaml_download_blocks"
+external download_inode : t -> string -> int64 -> string -> unit = "guestfs_int_ocaml_download_inode"
 external download_offset : t -> string -> string -> int64 -> int64 -> unit = "guestfs_int_ocaml_download_offset"
 external drop_caches : t -> int -> unit = "guestfs_int_ocaml_drop_caches"
 external du : t -> string -> int64 = "guestfs_int_ocaml_du"
@@ -526,6 +548,7 @@ external file : t -> string -> string = "guestfs_int_ocaml_file"
 external file_architecture : t -> string -> string = "guestfs_int_ocaml_file_architecture"
 external filesize : t -> string -> int64 = "guestfs_int_ocaml_filesize"
 external filesystem_available : t -> string -> bool = "guestfs_int_ocaml_filesystem_available"
+external filesystem_walk : t -> string -> tsk_dirent array = "guestfs_int_ocaml_filesystem_walk"
 external fill : t -> int -> int -> string -> unit = "guestfs_int_ocaml_fill"
 external fill_dir : t -> string -> int -> unit = "guestfs_int_ocaml_fill_dir"
 external fill_pattern : t -> string -> int -> string -> unit = "guestfs_int_ocaml_fill_pattern"
@@ -563,6 +586,7 @@ external get_qemu : t -> string = "guestfs_int_ocaml_get_qemu"
 external get_recovery_proc : t -> bool = "guestfs_int_ocaml_get_recovery_proc"
 external get_selinux : t -> bool = "guestfs_int_ocaml_get_selinux"
 external get_smp : t -> int = "guestfs_int_ocaml_get_smp"
+external get_sockdir : t -> string = "guestfs_int_ocaml_get_sockdir"
 external get_state : t -> int = "guestfs_int_ocaml_get_state"
 external get_tmpdir : t -> string = "guestfs_int_ocaml_get_tmpdir"
 external get_trace : t -> bool = "guestfs_int_ocaml_get_trace"
@@ -571,7 +595,8 @@ external get_verbose : t -> bool = "guestfs_int_ocaml_get_verbose"
 external getcon : t -> string = "guestfs_int_ocaml_getcon"
 external getxattr : t -> string -> string -> string = "guestfs_int_ocaml_getxattr"
 external getxattrs : t -> string -> xattr array = "guestfs_int_ocaml_getxattrs"
-external glob_expand : t -> string -> string array = "guestfs_int_ocaml_glob_expand"
+external glob_expand : t -> ?directoryslash:bool -> string -> string array = "guestfs_int_ocaml_glob_expand"
+let glob_expand_opts = glob_expand
 external grep : t -> ?extended:bool -> ?fixed:bool -> ?insensitive:bool -> ?compressed:bool -> string -> string -> string array = "guestfs_int_ocaml_grep_byte" "guestfs_int_ocaml_grep"
 let grep_opts = grep
 external grepi : t -> string -> string -> string array = "guestfs_int_ocaml_grepi"
@@ -787,11 +812,14 @@ external mount_loop : t -> string -> string -> unit = "guestfs_int_ocaml_mount_l
 external mount_options : t -> string -> string -> string -> unit = "guestfs_int_ocaml_mount_options"
 external mount_ro : t -> string -> string -> unit = "guestfs_int_ocaml_mount_ro"
 external mount_vfs : t -> string -> string -> string -> string -> unit = "guestfs_int_ocaml_mount_vfs"
+external mountable_device : t -> string -> string = "guestfs_int_ocaml_mountable_device"
+external mountable_subvolume : t -> string -> string = "guestfs_int_ocaml_mountable_subvolume"
 external mountpoints : t -> (string * string) list = "guestfs_int_ocaml_mountpoints"
 external mounts : t -> string array = "guestfs_int_ocaml_mounts"
 external mv : t -> string -> string -> unit = "guestfs_int_ocaml_mv"
 external nr_devices : t -> int = "guestfs_int_ocaml_nr_devices"
 external ntfs_3g_probe : t -> bool -> string -> int = "guestfs_int_ocaml_ntfs_3g_probe"
+external ntfscat_i : t -> string -> int64 -> string -> unit = "guestfs_int_ocaml_ntfscat_i"
 external ntfsclone_in : t -> string -> string -> unit = "guestfs_int_ocaml_ntfsclone_in"
 external ntfsclone_out : t -> ?metadataonly:bool -> ?rescue:bool -> ?ignorefscheck:bool -> ?preservetimestamps:bool -> ?force:bool -> string -> string -> unit = "guestfs_int_ocaml_ntfsclone_out_byte" "guestfs_int_ocaml_ntfsclone_out"
 external ntfsfix : t -> ?clearbadsectors:bool -> string -> unit = "guestfs_int_ocaml_ntfsfix"
@@ -803,7 +831,9 @@ external parse_environment_list : t -> string array -> unit = "guestfs_int_ocaml
 external part_add : t -> string -> string -> int64 -> int64 -> unit = "guestfs_int_ocaml_part_add"
 external part_del : t -> string -> int -> unit = "guestfs_int_ocaml_part_del"
 external part_disk : t -> string -> string -> unit = "guestfs_int_ocaml_part_disk"
+external part_expand_gpt : t -> string -> unit = "guestfs_int_ocaml_part_expand_gpt"
 external part_get_bootable : t -> string -> int -> bool = "guestfs_int_ocaml_part_get_bootable"
+external part_get_disk_guid : t -> string -> string = "guestfs_int_ocaml_part_get_disk_guid"
 external part_get_gpt_guid : t -> string -> int -> string = "guestfs_int_ocaml_part_get_gpt_guid"
 external part_get_gpt_type : t -> string -> int -> string = "guestfs_int_ocaml_part_get_gpt_type"
 external part_get_mbr_id : t -> string -> int -> int = "guestfs_int_ocaml_part_get_mbr_id"
@@ -813,6 +843,8 @@ external part_get_parttype : t -> string -> string = "guestfs_int_ocaml_part_get
 external part_init : t -> string -> string -> unit = "guestfs_int_ocaml_part_init"
 external part_list : t -> string -> partition array = "guestfs_int_ocaml_part_list"
 external part_set_bootable : t -> string -> int -> bool -> unit = "guestfs_int_ocaml_part_set_bootable"
+external part_set_disk_guid : t -> string -> string -> unit = "guestfs_int_ocaml_part_set_disk_guid"
+external part_set_disk_guid_random : t -> string -> unit = "guestfs_int_ocaml_part_set_disk_guid_random"
 external part_set_gpt_guid : t -> string -> int -> string -> unit = "guestfs_int_ocaml_part_set_gpt_guid"
 external part_set_gpt_type : t -> string -> int -> string -> unit = "guestfs_int_ocaml_part_set_gpt_type"
 external part_set_mbr_id : t -> string -> int -> int -> unit = "guestfs_int_ocaml_part_set_mbr_id"
@@ -857,6 +889,7 @@ external rsync_out : t -> ?archive:bool -> ?deletedest:bool -> string -> string 
 external scrub_device : t -> string -> unit = "guestfs_int_ocaml_scrub_device"
 external scrub_file : t -> string -> unit = "guestfs_int_ocaml_scrub_file"
 external scrub_freespace : t -> string -> unit = "guestfs_int_ocaml_scrub_freespace"
+external selinux_relabel : t -> ?force:bool -> string -> string -> unit = "guestfs_int_ocaml_selinux_relabel"
 external set_append : t -> string option -> unit = "guestfs_int_ocaml_set_append"
 external set_attach_method : t -> string -> unit = "guestfs_int_ocaml_set_attach_method"
 external set_autosync : t -> bool -> unit = "guestfs_int_ocaml_set_autosync"
@@ -1046,6 +1079,7 @@ class guestfs ?environment ?close_on_exit () =
     method btrfs_filesystem_balance = btrfs_filesystem_balance g
     method btrfs_filesystem_defragment = btrfs_filesystem_defragment g
     method btrfs_filesystem_resize = btrfs_filesystem_resize g
+    method btrfs_filesystem_show = btrfs_filesystem_show g
     method btrfs_filesystem_sync = btrfs_filesystem_sync g
     method btrfs_fsck = btrfs_fsck g
     method btrfs_image = btrfs_image g
@@ -1119,6 +1153,8 @@ class guestfs ?environment ?close_on_exit () =
     method disk_virtual_size = disk_virtual_size g
     method dmesg () = dmesg g
     method download = download g
+    method download_blocks = download_blocks g
+    method download_inode = download_inode g
     method download_offset = download_offset g
     method drop_caches = drop_caches g
     method du = du g
@@ -1139,6 +1175,7 @@ class guestfs ?environment ?close_on_exit () =
     method file_architecture = file_architecture g
     method filesize = filesize g
     method filesystem_available = filesystem_available g
+    method filesystem_walk = filesystem_walk g
     method fill = fill g
     method fill_dir = fill_dir g
     method fill_pattern = fill_pattern g
@@ -1176,6 +1213,7 @@ class guestfs ?environment ?close_on_exit () =
     method get_recovery_proc () = get_recovery_proc g
     method get_selinux () = get_selinux g
     method get_smp () = get_smp g
+    method get_sockdir () = get_sockdir g
     method get_state () = get_state g
     method get_tmpdir () = get_tmpdir g
     method get_trace () = get_trace g
@@ -1185,6 +1223,7 @@ class guestfs ?environment ?close_on_exit () =
     method getxattr = getxattr g
     method getxattrs = getxattrs g
     method glob_expand = glob_expand g
+    method glob_expand_opts = self#glob_expand
     method grep = grep g
     method grep_opts = self#grep
     method grepi = grepi g
@@ -1400,11 +1439,14 @@ class guestfs ?environment ?close_on_exit () =
     method mount_options = mount_options g
     method mount_ro = mount_ro g
     method mount_vfs = mount_vfs g
+    method mountable_device = mountable_device g
+    method mountable_subvolume = mountable_subvolume g
     method mountpoints () = mountpoints g
     method mounts () = mounts g
     method mv = mv g
     method nr_devices () = nr_devices g
     method ntfs_3g_probe = ntfs_3g_probe g
+    method ntfscat_i = ntfscat_i g
     method ntfsclone_in = ntfsclone_in g
     method ntfsclone_out = ntfsclone_out g
     method ntfsfix = ntfsfix g
@@ -1416,7 +1458,9 @@ class guestfs ?environment ?close_on_exit () =
     method part_add = part_add g
     method part_del = part_del g
     method part_disk = part_disk g
+    method part_expand_gpt = part_expand_gpt g
     method part_get_bootable = part_get_bootable g
+    method part_get_disk_guid = part_get_disk_guid g
     method part_get_gpt_guid = part_get_gpt_guid g
     method part_get_gpt_type = part_get_gpt_type g
     method part_get_mbr_id = part_get_mbr_id g
@@ -1426,6 +1470,8 @@ class guestfs ?environment ?close_on_exit () =
     method part_init = part_init g
     method part_list = part_list g
     method part_set_bootable = part_set_bootable g
+    method part_set_disk_guid = part_set_disk_guid g
+    method part_set_disk_guid_random = part_set_disk_guid_random g
     method part_set_gpt_guid = part_set_gpt_guid g
     method part_set_gpt_type = part_set_gpt_type g
     method part_set_mbr_id = part_set_mbr_id g
@@ -1470,6 +1516,7 @@ class guestfs ?environment ?close_on_exit () =
     method scrub_device = scrub_device g
     method scrub_file = scrub_file g
     method scrub_freespace = scrub_freespace g
+    method selinux_relabel = selinux_relabel g
     method set_append = set_append g
     method set_attach_method = set_attach_method g
     method set_autosync = set_autosync g

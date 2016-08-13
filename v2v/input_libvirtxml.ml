@@ -139,6 +139,23 @@ let parse_libvirt_xml ?conn xml =
         None
     ) in
 
+  (* Video adapter. *)
+  let video =
+    let obj = Xml.xpath_eval_expression xpathctx "/domain/devices/video" in
+    let nr_nodes = Xml.xpathobj_nr_nodes obj in
+    if nr_nodes < 1 then None
+    else (
+      (* Ignore everything except the first <video> device. *)
+      let node = Xml.xpathobj_node obj 0 in
+
+      Xml.xpathctx_set_current_context xpathctx node;
+      match xpath_string "model/@type" with
+      | None -> None
+      | Some "qxl" | Some "virtio" -> Some Source_QXL
+      | Some "cirrus" | Some "vga" -> Some Source_Cirrus
+      | Some model -> Some (Source_other_video model)
+    ) in
+
   (* Sound card. *)
   let sound =
     let obj = Xml.xpath_eval_expression xpathctx "/domain/devices/sound" in
@@ -162,6 +179,12 @@ let parse_libvirt_xml ?conn xml =
          warning (f_"unknown sound model %s ignored") model;
          None
     ) in
+
+  (* Presence of virtio-scsi controller. *)
+  let has_virtio_scsi =
+    let obj = Xml.xpath_eval_expression xpathctx
+                "/domain/devices/controller[@model='virtio-scsi']" in
+    Xml.xpathobj_nr_nodes obj > 0 in
 
   (* Non-removable disk devices. *)
   let disks =
@@ -193,12 +216,13 @@ let parse_libvirt_xml ?conn xml =
 
       let controller =
         let target_bus = xpath_string "target/@bus" in
-        match target_bus with
-        | None -> None
-        | Some "ide" -> Some Source_IDE
-        | Some "scsi" -> Some Source_SCSI
-        | Some "virtio" -> Some Source_virtio_blk
-        | Some _ -> None in
+        match target_bus, has_virtio_scsi with
+        | None, _ -> None
+        | Some "ide", _ -> Some Source_IDE
+        | Some "scsi", true -> Some Source_virtio_SCSI
+        | Some "scsi", false -> Some Source_SCSI
+        | Some "virtio", _ -> Some Source_virtio_blk
+        | Some _, _ -> None in
 
       let format =
         match xpath_string "driver/@type" with
@@ -282,12 +306,13 @@ let parse_libvirt_xml ?conn xml =
 
       let controller =
         let target_bus = xpath_string "target/@bus" in
-        match target_bus with
-        | None -> None
-        | Some "ide" -> Some Source_IDE
-        | Some "scsi" -> Some Source_SCSI
-        | Some "virtio" -> Some Source_virtio_blk
-        | Some _ -> None in
+        match target_bus, has_virtio_scsi with
+        | None, _ -> None
+        | Some "ide", _ -> Some Source_IDE
+        | Some "scsi", true -> Some Source_virtio_SCSI
+        | Some "scsi", false -> Some Source_SCSI
+        | Some "virtio", _ -> Some Source_virtio_blk
+        | Some _, _ -> None in
 
       let slot =
         let target_dev = xpath_string "target/@dev" in
@@ -297,6 +322,7 @@ let parse_libvirt_xml ?conn xml =
         | Some s when String.is_prefix s "sd" -> get_drive_slot s 2
         | Some s when String.is_prefix s "vd" -> get_drive_slot s 2
         | Some s when String.is_prefix s "xvd" -> get_drive_slot s 3
+        | Some s when String.is_prefix s "fd" -> get_drive_slot s 2
         | Some s ->
            warning (f_"<target dev='%s'> was ignored because the device name could not be recognized") s;
            None in
@@ -331,6 +357,14 @@ let parse_libvirt_xml ?conn xml =
         | Some "00:00:00:00:00:00" (* thanks, VMware *) -> None
         | Some mac -> Some mac in
 
+      let model =
+        match xpath_string "model/@type" with
+        | None -> None
+        | Some "virtio" -> Some Source_virtio_net
+        | Some "e1000" -> Some Source_e1000
+        | Some "rtl8139" -> Some Source_rtl8139
+        | Some model -> Some (Source_other_nic model) in
+
       let vnet_type =
         match xpath_string "@type" with
         | Some "network" -> Some Network
@@ -342,6 +376,7 @@ let parse_libvirt_xml ?conn xml =
          let add_nic vnet =
            let nic = {
              s_mac = mac;
+             s_nic_model = model;
              s_vnet = vnet;
              s_vnet_orig = vnet;
              s_vnet_type = vnet_type
@@ -368,6 +403,7 @@ let parse_libvirt_xml ?conn xml =
     s_features = features;
     s_firmware = UnknownFirmware; (* XXX until RHBZ#1217444 is fixed *)
     s_display = display;
+    s_video = video;
     s_sound = sound;
     s_disks = [];
     s_removables = removables;
