@@ -22,15 +22,13 @@ EXTRA_DIST = \
 	test-virt-diff-docs.sh \
 	virt-diff.pod
 
-CLEANFILES = \
-	stamp-virt-diff.pod \
-	virt-diff.1
-
 bin_PROGRAMS = virt-diff
 
 SHARED_SOURCE_FILES = \
 	../cat/visit.h \
 	../cat/visit.c \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \

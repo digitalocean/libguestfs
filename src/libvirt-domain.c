@@ -433,7 +433,7 @@ libvirt_selinux_label (guestfs_h *g, xmlDocPtr doc,
   if (nr_nodes == 0)
     return 0;
   if (nr_nodes > 1) {
-    debug (g, _("ignoring %zu nodes matching '%s'"), nr_nodes, xpath_expr);
+    debug (g, "ignoring %zu nodes matching '%s'", nr_nodes, xpath_expr);
     return 0;
   }
 
@@ -552,7 +552,7 @@ for_each_disk (guestfs_h *g,
       } else if (STREQ (type, "network")) { /* type = "network", use source/@name */
         int hi;
 
-        debug (g, _("disk[%zu]: network device"), i);
+        debug (g, "disk[%zu]: network device", i);
         xpathCtx->node = nodes->nodeTab[i];
 
         /* Get the protocol (e.g. "rbd").  Required. */
@@ -567,7 +567,7 @@ for_each_disk (guestfs_h *g,
                 XML_ATTRIBUTE_NODE);
         attr = (xmlAttrPtr) xpprotocol->nodesetval->nodeTab[0];
         protocol = (char *) xmlNodeListGetString (doc, attr->children, 1);
-        debug (g, _("disk[%zu]: protocol: %s"), i, protocol);
+        debug (g, "disk[%zu]: protocol: %s", i, protocol);
 
         /* <source name="..."> is the path/exportname.  Optional. */
         xpfilename = xmlXPathEvalExpression (BAD_CAST "./source/@name",
@@ -586,7 +586,7 @@ for_each_disk (guestfs_h *g,
           assert (xpusername->nodesetval->nodeTab[0]->type == XML_ATTRIBUTE_NODE);
           attr = (xmlAttrPtr) xpusername->nodesetval->nodeTab[0];
           username = (char *) xmlNodeListGetString (doc, attr->children, 1);
-          debug (g, _("disk[%zu]: username: %s"), i, username);
+          debug (g, "disk[%zu]: username: %s", i, username);
         }
 
         xphost = xmlXPathEvalExpression (BAD_CAST "./source/host",
@@ -604,15 +604,20 @@ for_each_disk (guestfs_h *g,
         for (hi = 0; hi < xphost->nodesetval->nodeNr ; hi++) {
           xmlChar *name, *port;
           xmlNodePtr h = xphost->nodesetval->nodeTab[hi];
+          int r;
 
           assert (h);
           assert (h->type == XML_ELEMENT_NODE);
-          name = xmlGetProp(h, BAD_CAST "name");
-          assert(name);
-          port = xmlGetProp(h, BAD_CAST "port");
-          assert (port);
-          debug (g, _("disk[%zu]: host: %s:%s"), i, name, port);
-          if (asprintf(&server[hi], "%s:%s", name, port) == -1) {
+          name = xmlGetProp (h, BAD_CAST "name");
+          assert (name);        // libvirt checks this
+          port = xmlGetProp (h, BAD_CAST "port");
+          debug (g, "disk[%zu]: hostname: %s port: %s",
+                 i, name, port ? (char *) port : "(not set)");
+          if (port)
+            r = asprintf (&server[hi], "%s:%s", name, port);
+          else
+            r = asprintf (&server[hi], "%s", name);
+          if (r == -1) {
             perrorf (g, "asprintf");
             return -1;
           }
@@ -634,7 +639,7 @@ for_each_disk (guestfs_h *g,
                 XML_ATTRIBUTE_NODE);
         attr = (xmlAttrPtr) xpfilename->nodesetval->nodeTab[0];
         filename = (char *) xmlNodeListGetString (doc, attr->children, 1);
-        debug (g, _("disk[%zu]: filename: %s"), i, filename);
+        debug (g, "disk[%zu]: filename: %s", i, filename);
       }
       else
         /* For network protocols (eg. nbd), name may be omitted. */

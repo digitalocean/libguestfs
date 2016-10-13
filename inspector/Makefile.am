@@ -45,10 +45,6 @@ EXTRA_DIST = \
 	test-xmllint.sh.in \
 	virt-inspector.pod
 
-CLEANFILES = \
-	stamp-virt-inspector.pod \
-	virt-inspector.1
-
 docdir = @docdir@
 dist_doc_DATA = \
 	virt-inspector.rng \
@@ -58,6 +54,8 @@ bin_PROGRAMS = virt-inspector
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \

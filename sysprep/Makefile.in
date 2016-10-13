@@ -1728,6 +1728,33 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+
+# Files that should universally be removed by 'make clean'.  Note if
+# there is any case in any subdirectory where a file should not be
+# removed by 'make clean', it should not be listed here!
+
+# Editor backup files
+
+# Patch original and reject files.
+
+# OCaml intermediate and generated files.
+
+# OCaml -annot files (used for displaying types in some IDEs).
+
+# OCaml oUnit generated files.
+
+# Manual pages - these are all generated from *.pod, so the
+# pages themselves should all be removed by 'make clean'.
+
+# Stamp files used when generating man pages.
+
+# Bindtests temporary files used in many language bindings.
+CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
+	dll*.so *.a *.annot oUnit-*.cache oUnit-*.log *.1 *.3 *.5 *.8 \
+	stamp-*.pod bindtests.tmp
+
+# Files that should be universally removed by 'make distclean'.
+DISTCLEANFILES = .depend stamp-*
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 
 # Rules for building OCaml objects.
@@ -1755,6 +1782,9 @@ guestfs_am_v_erlc_0 = @echo "  ERLC    " $@;
 guestfs_am_v_podwrapper = $(guestfs_am_v_podwrapper_@AM_V@)
 guestfs_am_v_podwrapper_ = $(guestfs_am_v_podwrapper_@AM_DEFAULT_V@)
 guestfs_am_v_podwrapper_0 = @echo "  POD     " $@;
+guestfs_am_v_jar = $(guestfs_am_v_jar_@AM_V@)
+guestfs_am_v_jar_ = $(guestfs_am_v_jar_@AM_DEFAULT_V@)
+guestfs_am_v_jar_0 = @echo "  JAR     " $@;
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	script1.sh script2.sh script3.sh script4.sh \
@@ -1763,12 +1793,6 @@ EXTRA_DIST = \
 	test-virt-sysprep-passwords.sh \
 	test-virt-sysprep-script.sh \
 	virt-sysprep.pod
-
-CLEANFILES = \
-	*~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o \
-	stamp-virt-sysprep.pod \
-	virt-sysprep \
-	virt-sysprep.1
 
 
 # Filenames sysprep_operation_<name>.ml in alphabetical order.
@@ -1884,7 +1908,6 @@ SOURCES_C = \
 
 @HAVE_OCAML_TRUE@TESTS = test-virt-sysprep-docs.sh $(am__append_2) \
 @HAVE_OCAML_TRUE@	$(am__append_3)
-DISTCLEANFILES = .depend
 all: all-am
 
 .SUFFIXES:

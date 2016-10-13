@@ -56,8 +56,7 @@ EXTRA_DIST = \
 	run-java-tests \
 	Makefile.inc
 
-CLEANFILES = \
-	bindtests.tmp \
+CLEANFILES += \
 	com/redhat/et/libguestfs/*.class \
 	com_redhat_et_libguestfs_GuestFS.h \
 	doc-stamp \
@@ -82,7 +81,7 @@ $(libguestfs_jar_class_files): %.class: %.java
 	$(guestfs_am_v_javac)$(JAVAC) $(JAVAC_FLAGS) -d . -classpath $(srcdir):. $<
 
 libguestfs-${VERSION}.jar: $(libguestfs_jar_class_files)
-	$(JAR) cf $@ $^
+	$(guestfs_am_v_jar)$(JAR) cf $@ $^
 
 # JNI source.
 

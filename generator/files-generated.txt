@@ -282,4 +282,7 @@ src/structs-copy.c
 src/structs-free.c
 src/structs-print.c
 src/structs-print.h
+src/uefi.c
 tests/c-api/tests.c
+v2v/uefi.ml
+v2v/uefi.mli

@@ -120,6 +120,7 @@ v2v/input_libvirtxml.ml
 v2v/input_ova.ml
 v2v/inspect_source.ml
 v2v/linux.ml
+v2v/linux_bootloaders.ml
 v2v/modules_list.ml
 v2v/output_glance.ml
 v2v/output_libvirt.ml
@@ -131,6 +132,7 @@ v2v/output_vdsm.ml
 v2v/target_bus_assignment.ml
 v2v/test-harness/v2v_test_harness.ml
 v2v/types.ml
+v2v/uefi.ml
 v2v/utils.ml
 v2v/v2v.ml
 v2v/v2v_unit_tests.ml

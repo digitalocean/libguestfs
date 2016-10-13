@@ -353,7 +353,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = guestfish-cmds.$(OBJEXT) \
 	guestfish-completion.$(OBJEXT) guestfish-event-names.$(OBJEXT) \
 	guestfish-prepopts.$(OBJEXT)
-am__objects_2 = guestfish-config.$(OBJEXT) guestfish-domain.$(OBJEXT) \
+am__objects_2 = guestfish-config.$(OBJEXT) \
+	guestfish-display-options.$(OBJEXT) guestfish-domain.$(OBJEXT) \
 	guestfish-inspect.$(OBJEXT) guestfish-keys.$(OBJEXT) \
 	guestfish-options.$(OBJEXT) guestfish-progress.$(OBJEXT) \
 	guestfish-uri.$(OBJEXT)
@@ -1790,6 +1791,33 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+
+# Files that should universally be removed by 'make clean'.  Note if
+# there is any case in any subdirectory where a file should not be
+# removed by 'make clean', it should not be listed here!
+
+# Editor backup files
+
+# Patch original and reject files.
+
+# OCaml intermediate and generated files.
+
+# OCaml -annot files (used for displaying types in some IDEs).
+
+# OCaml oUnit generated files.
+
+# Manual pages - these are all generated from *.pod, so the
+# pages themselves should all be removed by 'make clean'.
+
+# Stamp files used when generating man pages.
+
+# Bindtests temporary files used in many language bindings.
+CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
+	dll*.so *.a *.annot oUnit-*.cache oUnit-*.log *.1 *.3 *.5 *.8 \
+	stamp-*.pod bindtests.tmp
+
+# Files that should be universally removed by 'make distclean'.
+DISTCLEANFILES = .depend stamp-*
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 
 # Rules for building OCaml objects.
@@ -1817,20 +1845,9 @@ guestfs_am_v_erlc_0 = @echo "  ERLC    " $@;
 guestfs_am_v_podwrapper = $(guestfs_am_v_podwrapper_@AM_V@)
 guestfs_am_v_podwrapper_ = $(guestfs_am_v_podwrapper_@AM_DEFAULT_V@)
 guestfs_am_v_podwrapper_0 = @echo "  POD     " $@;
-CLEANFILES = \
-	guestfish.1 \
-	libguestfs-tools.conf.5 \
-	stamp-guestfish.pod \
-	stamp-libguestfs-tools.conf.pod \
-	stamp-virt-copy-in.pod \
-	stamp-virt-copy-out.pod \
-	stamp-virt-tar-in.pod \
-	stamp-virt-tar-out.pod \
-	virt-copy-in.1 \
-	virt-copy-out.1 \
-	virt-tar-in.1 \
-	virt-tar-out.1
-
+guestfs_am_v_jar = $(guestfs_am_v_jar_@AM_V@)
+guestfs_am_v_jar_ = $(guestfs_am_v_jar_@AM_DEFAULT_V@)
+guestfs_am_v_jar_0 = @echo "  JAR     " $@;
 generator_built = \
 	cmds.c \
 	cmds-gperf.gperf \
@@ -1867,6 +1884,8 @@ EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
 # files must not include other guestfish files.
 SHARED_SOURCE_FILES = \
 	config.c \
+	display-options.h \
+	display-options.c \
 	domain.c \
 	inspect.c \
 	keys.c \
@@ -2127,6 +2146,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-copy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-destpaths.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-display-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-display.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-echo.Po@am__quote@
@@ -2269,6 +2289,20 @@ guestfish-config.obj: config.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='config.c' object='guestfish-config.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-config.obj `if test -f 'config.c'; then $(CYGPATH_W) 'config.c'; else $(CYGPATH_W) '$(srcdir)/config.c'; fi`
+
+guestfish-display-options.o: display-options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-display-options.o -MD -MP -MF $(DEPDIR)/guestfish-display-options.Tpo -c -o guestfish-display-options.o `test -f 'display-options.c' || echo '$(srcdir)/'`display-options.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-display-options.Tpo $(DEPDIR)/guestfish-display-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display-options.c' object='guestfish-display-options.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-display-options.o `test -f 'display-options.c' || echo '$(srcdir)/'`display-options.c
+
+guestfish-display-options.obj: display-options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-display-options.obj -MD -MP -MF $(DEPDIR)/guestfish-display-options.Tpo -c -o guestfish-display-options.obj `if test -f 'display-options.c'; then $(CYGPATH_W) 'display-options.c'; else $(CYGPATH_W) '$(srcdir)/display-options.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-display-options.Tpo $(DEPDIR)/guestfish-display-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display-options.c' object='guestfish-display-options.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-display-options.obj `if test -f 'display-options.c'; then $(CYGPATH_W) 'display-options.c'; else $(CYGPATH_W) '$(srcdir)/display-options.c'; fi`
 
 guestfish-domain.o: domain.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-domain.o -MD -MP -MF $(DEPDIR)/guestfish-domain.Tpo -c -o guestfish-domain.o `test -f 'domain.c' || echo '$(srcdir)/'`domain.c
@@ -3291,6 +3325,7 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"

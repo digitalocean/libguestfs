@@ -24,14 +24,12 @@ EXTRA_DIST = \
 	test-virt-df-guests.sh \
 	virt-df.pod
 
-CLEANFILES = \
-	stamp-virt-df.pod \
-	virt-df.1
-
 bin_PROGRAMS = virt-df
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \

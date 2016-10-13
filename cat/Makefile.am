@@ -28,19 +28,11 @@ EXTRA_DIST = \
 	test-virt-ls.sh \
 	virt-ls.pod
 
-CLEANFILES = \
-	stamp-virt-cat.pod \
-	stamp-virt-filesystems.pod \
-	stamp-virt-log.pod \
-	stamp-virt-ls.pod \
-	virt-cat.1 \
-	virt-filesystems.1 \
-	virt-log.1 \
-	virt-ls.1
-
 bin_PROGRAMS = virt-cat virt-filesystems virt-log virt-ls
 
 SHARED_SOURCE_FILES = \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \

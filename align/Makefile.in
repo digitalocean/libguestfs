@@ -316,6 +316,7 @@ am__objects_1 = ../df/virt_alignment_scan-domains.$(OBJEXT) \
 	../df/virt_alignment_scan-estimate-max-threads.$(OBJEXT) \
 	../df/virt_alignment_scan-parallel.$(OBJEXT) \
 	../fish/virt_alignment_scan-config.$(OBJEXT) \
+	../fish/virt_alignment_scan-display-options.$(OBJEXT) \
 	../fish/virt_alignment_scan-domain.$(OBJEXT) \
 	../fish/virt_alignment_scan-inspect.$(OBJEXT) \
 	../fish/virt_alignment_scan-keys.$(OBJEXT) \
@@ -1742,6 +1743,33 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+
+# Files that should universally be removed by 'make clean'.  Note if
+# there is any case in any subdirectory where a file should not be
+# removed by 'make clean', it should not be listed here!
+
+# Editor backup files
+
+# Patch original and reject files.
+
+# OCaml intermediate and generated files.
+
+# OCaml -annot files (used for displaying types in some IDEs).
+
+# OCaml oUnit generated files.
+
+# Manual pages - these are all generated from *.pod, so the
+# pages themselves should all be removed by 'make clean'.
+
+# Stamp files used when generating man pages.
+
+# Bindtests temporary files used in many language bindings.
+CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
+	dll*.so *.a *.annot oUnit-*.cache oUnit-*.log *.1 *.3 *.5 *.8 \
+	stamp-*.pod bindtests.tmp
+
+# Files that should be universally removed by 'make distclean'.
+DISTCLEANFILES = .depend stamp-*
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 
 # Rules for building OCaml objects.
@@ -1769,15 +1797,14 @@ guestfs_am_v_erlc_0 = @echo "  ERLC    " $@;
 guestfs_am_v_podwrapper = $(guestfs_am_v_podwrapper_@AM_V@)
 guestfs_am_v_podwrapper_ = $(guestfs_am_v_podwrapper_@AM_DEFAULT_V@)
 guestfs_am_v_podwrapper_0 = @echo "  POD     " $@;
+guestfs_am_v_jar = $(guestfs_am_v_jar_@AM_V@)
+guestfs_am_v_jar_ = $(guestfs_am_v_jar_@AM_DEFAULT_V@)
+guestfs_am_v_jar_0 = @echo "  JAR     " $@;
 EXTRA_DIST = \
 	test-virt-alignment-scan.sh \
 	test-virt-alignment-scan-docs.sh \
 	test-virt-alignment-scan-guests.sh \
 	virt-alignment-scan.pod
-
-CLEANFILES = \
-	stamp-virt-alignment-scan.pod \
-	virt-alignment-scan.1
 
 SHARED_SOURCE_FILES = \
 	../df/domains.c \
@@ -1787,6 +1814,8 @@ SHARED_SOURCE_FILES = \
 	../df/parallel.c \
 	../df/parallel.h \
 	../fish/config.c \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
@@ -1935,6 +1964,8 @@ clean-binPROGRAMS:
 	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
 ../fish/virt_alignment_scan-config.$(OBJEXT): ../fish/$(am__dirstamp) \
 	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_alignment_scan-display-options.$(OBJEXT):  \
+	../fish/$(am__dirstamp) ../fish/$(DEPDIR)/$(am__dirstamp)
 ../fish/virt_alignment_scan-domain.$(OBJEXT): ../fish/$(am__dirstamp) \
 	../fish/$(DEPDIR)/$(am__dirstamp)
 ../fish/virt_alignment_scan-inspect.$(OBJEXT):  \
@@ -1962,6 +1993,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../df/$(DEPDIR)/virt_alignment_scan-estimate-max-threads.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../df/$(DEPDIR)/virt_alignment_scan-parallel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-config.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-display-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-keys.Po@am__quote@
@@ -2048,6 +2080,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/virt_alignment_scan-config.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
+
+../fish/virt_alignment_scan-display-options.o: ../fish/display-options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-display-options.o -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Tpo -c -o ../fish/virt_alignment_scan-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/display-options.c' object='../fish/virt_alignment_scan-display-options.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
+
+../fish/virt_alignment_scan-display-options.obj: ../fish/display-options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-display-options.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Tpo -c -o ../fish/virt_alignment_scan-display-options.obj `if test -f '../fish/display-options.c'; then $(CYGPATH_W) '../fish/display-options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/display-options.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/display-options.c' object='../fish/virt_alignment_scan-display-options.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-display-options.obj `if test -f '../fish/display-options.c'; then $(CYGPATH_W) '../fish/display-options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/display-options.c'; fi`
 
 ../fish/virt_alignment_scan-domain.o: ../fish/domain.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-domain.o -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-domain.Tpo -c -o ../fish/virt_alignment_scan-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
@@ -2483,6 +2529,7 @@ distclean-generic:
 	-rm -f ../df/$(am__dirstamp)
 	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../fish/$(am__dirstamp)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"

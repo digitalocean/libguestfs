@@ -44,6 +44,18 @@ let rec main () =
         prog Guestfs_config.package_name
         Guestfs_config.package_version Guestfs_config.host_cpu;
 
+  (* Print the libvirt version if debugging.  Note that if
+   * we're configured --without-libvirt, then this will throw
+   * an exception, but some conversions should still be possible,
+   * hence the try block.
+   *)
+  if verbose () then (
+    try
+      let major, minor, release = Domainxml.libvirt_get_version () in
+      debug "libvirt version: %d.%d.%d" major minor release
+    with _ -> ()
+  );
+
   let source = open_source cmdline input in
   let source = amend_source cmdline source in
 
@@ -227,7 +239,7 @@ and check_host_free_space () =
 (* Create a qcow2 v3 overlay to protect the source image(s). *)
 and create_overlays src_disks =
   message (f_"Creating an overlay to protect the source from being modified");
-  List.mapi (
+  mapi (
     fun i ({ s_qemu_uri = qemu_uri; s_format = format } as source) ->
       let overlay_file =
         Filename.temp_file ~temp_dir:overlay_dir "v2vovl" ".qcow2" in
@@ -393,15 +405,14 @@ and do_fstrim g inspect =
   List.iter (
     fun dev ->
       g#umount_all ();
-      let mounted = try g#mount dev "/"; true with G.Error _ -> false in
+      let mounted =
+        try g#mount_options "discard" dev "/"; true
+        with G.Error _ -> false in
+
       if mounted then (
         try g#fstrim "/"
         with G.Error msg ->
-          (* Only emit this warning when debugging, because otherwise
-           * it causes distress (RHBZ#1168144).
-           *)
-          if verbose () then
-            warning (f_"%s (ignored)") msg
+          warning (f_"fstrim on guest filesystem %s failed.  Usually you can ignore this message.  To find out more read \"Trimming\" in virt-v2v(1).\n\nOriginal message: %s") dev msg
       )
   ) fses
 

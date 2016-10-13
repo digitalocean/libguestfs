@@ -38,6 +38,14 @@ end
 module String = struct
     include String
 
+    let map f s =
+      let len = String.length s in
+      let b = Bytes.create len in
+      for i = 0 to len-1 do
+        Bytes.unsafe_set b i (f (unsafe_get s i))
+      done;
+      Bytes.to_string b
+
     let lowercase_ascii s = map Char.lowercase_ascii s
     let uppercase_ascii s = map Char.uppercase_ascii s
 
@@ -319,7 +327,9 @@ let protect ~f ~finally =
   match r with Either ret -> ret | Or exn -> raise exn
 
 let which executable =
-  let paths = String.nsplit ":" (Sys.getenv "PATH") in
+  let paths =
+    try String.nsplit ":" (Sys.getenv "PATH")
+    with Not_found -> [] in
   let paths = filter_map (
     fun p ->
       let path = p // executable in

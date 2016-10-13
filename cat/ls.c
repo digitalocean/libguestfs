@@ -31,12 +31,14 @@
 #include <assert.h>
 #include <time.h>
 #include <libintl.h>
+#include <sys/sysmacros.h>
 
 #include "human.h"
 
 #include "guestfs.h"
 
 #include "options.h"
+#include "display-options.h"
 #include "visit.h"
 
 /* Currently open libguestfs handle. */

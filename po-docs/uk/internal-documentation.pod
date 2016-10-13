@@ -128,7 +128,7 @@ Returns true iff every listed file is contained in C<dir>.
 =head4 Функція C<src/appliance.c:guestfs_int_get_uefi>
 
  int
- guestfs_int_get_uefi (guestfs_h *g, char **code, char **vars)
+ guestfs_int_get_uefi (guestfs_h *g, char **code, char **vars, int *flags)
 
 Return the location of firmware needed to boot the appliance.  This is
 aarch64 only currently, since that's the only architecture where UEFI is
@@ -145,7 +145,7 @@ C<*code> and C<*vars> should be freed by the caller.
 If the function returns C<-1> then there was a real error which should cause
 appliance building to fail (no UEFI firmware is not an error).
 
-XXX Див. також F<v2v/utils.ml>:find_uefi_firmware
+See also F<v2v/utils.ml>:find_uefi_firmware
 
 =head3 Файл F<src/cleanup.c>
 
@@ -1120,7 +1120,7 @@ read the reply.  The sequence of calls is:
 
 =item 3.
 
-An RPC with C<FileOut> parameters (eg. L<guestfs(3)/guestfs_upload>).  We
+An RPC with C<FileIn> parameters (eg. L<guestfs(3)/guestfs_upload>).  We
 write the request, then write the file(s), then read the reply.  The
 sequence of calls is:
 
@@ -1130,7 +1130,7 @@ sequence of calls is:
 
 =item 4.
 
-An RPC with C<FileIn> parameters (eg. L<guestfs(3)/guestfs_download>).  We
+An RPC with C<FileOut> parameters (eg. L<guestfs(3)/guestfs_download>).  We
 write the request, then read the reply, then read the file(s).  The sequence
 of calls is:
 
@@ -1140,7 +1140,7 @@ of calls is:
 
 =item 5.
 
-Both C<FileOut> and C<FileIn> parameters.  There are no calls like this in
+Both C<FileIn> and C<FileOut> parameters.  There are no calls like this in
 the current API, but they would be implemented as a combination of cases 3
 and 4.
 
@@ -1527,10 +1527,6 @@ Recursively remove a temporary directory.  If removal fails, just return
 cleaner).
 
 This is implemented using C<rm -rf> because that's simpler and safer.
-
-=head3 Файл F<src/uefi.c>
-
-Locations of UEFI files.
 
 =head3 Файл F<src/umask.c>
 
@@ -2419,6 +2415,30 @@ This file implements the guestfish commands C<copy-in> and C<copy-out>.
 
 The file handles tab-completion of filesystem paths in guestfish.
 
+=head3 File F<fish/display-options.c>
+
+This file contains common code used to implement I<--short-options> and
+I<--long-options> in C virt tools.  (The equivalent for OCaml virt tools is
+implemented by F<mllib/getopt.ml>).
+
+These "hidden" options are used to implement bash tab completion.
+
+=head4 Function C<fish/display-options.c:display_short_options>
+
+ void
+ display_short_options (const char *format)
+
+Implements the internal C<tool I<--short-options>> flag, which just lists
+out the short options available.  Used by bash completion.
+
+=head4 Function C<fish/display-options.c:display_long_options>
+
+ void
+ display_long_options (const struct option *long_options)
+
+Implements the internal C<tool I<--long-options>> flag, which just lists out
+the long options available.  Used by bash completion.
+
 =head3 Файл F<fish/display.c>
 
 The file implements the guestfish C<display> command, for displaying
@@ -2779,22 +2799,6 @@ Handle the I<-d> option when passed on the command line.
 
 If the I<-m> option fails on any command, display a useful error message
 listing the mountpoints.
-
-=head4 Функція C<fish/options.c:display_short_options>
-
- void
- display_short_options (const char *format)
-
-Implements the internal C<tool I<--short-options>> flag, which just lists
-out the short options available.  Used by bash completion.
-
-=head4 Функція C<fish/options.c:display_long_options>
-
- void
- display_long_options (const struct option *long_options)
-
-Implements the internal C<tool I<--long-options>> flag, which just lists out
-the long options available.  Used by bash completion.
 
 =head3 Файл F<fish/prep.c>
 
