@@ -19,16 +19,15 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
 	test-virt-edit.sh \
+	test-virt-edit-docs.sh \
 	virt-edit.pod
-
-CLEANFILES = \
-	stamp-virt-edit.pod \
-	virt-edit.1
 
 bin_PROGRAMS = virt-edit
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/file-edit.h \
 	../fish/file-edit.c \
@@ -85,6 +84,10 @@ stamp-virt-edit.pod: virt-edit.pod
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
+TESTS = \
+	test-virt-edit-docs.sh
+
 if ENABLE_APPLIANCE
-TESTS = test-virt-edit.sh
+TESTS += \
+	test-virt-edit.sh
 endif ENABLE_APPLIANCE

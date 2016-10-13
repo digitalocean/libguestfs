@@ -189,7 +189,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module getopt-posix:
   # Code from module getopt-posix-tests:
   # Code from module getpagesize:
-  # Code from module gettext:
   # Code from module gettext-h:
   # Code from module gettime:
   # Code from module gettimeofday:
@@ -199,6 +198,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module glob-tests:
   # Code from module gnu-make:
   # Code from module gnumakefile:
+  # Code from module hard-locale:
   # Code from module hash:
   # Code from module hash-pjw:
   # Code from module hash-tests:
@@ -558,7 +558,8 @@ AC_SUBST([LTALLOCA])
   gl_DIRENT_SAFER
   gl_MODULE_INDICATOR([dirent-safer])
   gl_FUNC_DIRFD
-  if test $ac_cv_func_dirfd = no && test $gl_cv_func_dirfd_macro = no; then
+  if test $ac_cv_func_dirfd = no && test $gl_cv_func_dirfd_macro = no \
+     || test $REPLACE_DIRFD = 1; then
     AC_LIBOBJ([dirfd])
     gl_PREREQ_DIRFD
   fi
@@ -750,6 +751,7 @@ AC_SUBST([LTALLOCA])
           m4_defn([m4_PACKAGE_VERSION])), [1], [],
         [AC_CONFIG_LINKS([$GNUmakefile:$GNUmakefile], [],
           [GNUmakefile=$GNUmakefile])])
+  gl_HARD_LOCALE
   gl_HOSTENT
   gl_HUMAN
   gl_I_RING
@@ -1227,8 +1229,6 @@ changequote([, ])dnl
     AC_LIBOBJ([getpagesize])
   fi
   gl_UNISTD_MODULE_INDICATOR([getpagesize])
-  dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
-  AM_GNU_GETTEXT_VERSION([0.18.1])
   AC_C_BIGENDIAN
   gl_FUNC_INET_PTON
   if test $HAVE_INET_PTON = 0 || test $REPLACE_INET_NTOP = 1; then
@@ -1620,6 +1620,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/glthread/lock.c
   lib/glthread/lock.h
   lib/glthread/threadlib.c
+  lib/hard-locale.c
+  lib/hard-locale.h
   lib/hash-pjw.c
   lib/hash-pjw.h
   lib/hash.c
@@ -1863,14 +1865,13 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/getlogin_r.m4
   m4/getopt.m4
   m4/getpagesize.m4
-  m4/gettext.m4
   m4/gettime.m4
   m4/gettimeofday.m4
-  m4/glibc2.m4
   m4/glibc21.m4
   m4/glob.m4
   m4/gnu-make.m4
   m4/gnulib-common.m4
+  m4/hard-locale.m4
   m4/hostent.m4
   m4/human.m4
   m4/i-ring.m4
@@ -1878,11 +1879,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/include_next.m4
   m4/inet_ntop.m4
   m4/inet_pton.m4
-  m4/intdiv0.m4
-  m4/intl.m4
-  m4/intldir.m4
   m4/intlmacosx.m4
-  m4/intmax.m4
   m4/intmax_t.m4
   m4/inttostr.m4
   m4/inttypes-pri.m4
@@ -1931,7 +1928,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/nanosleep.m4
   m4/netdb_h.m4
   m4/netinet_in_h.m4
-  m4/nls.m4
   m4/nocrash.m4
   m4/off_t.m4
   m4/onceonly.m4
@@ -1942,12 +1938,9 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/perror.m4
   m4/pipe.m4
   m4/pipe2.m4
-  m4/po.m4
   m4/pread.m4
-  m4/printf-posix.m4
   m4/printf.m4
   m4/priv-set.m4
-  m4/progtest.m4
   m4/ptsname_r.m4
   m4/putenv.m4
   m4/quote.m4
@@ -2017,7 +2010,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/time_h.m4
   m4/timespec.m4
   m4/ttyname_r.m4
-  m4/uintmax_t.m4
   m4/ungetc.m4
   m4/unistd-safer.m4
   m4/unistd_h.m4
@@ -2030,7 +2022,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/utimes.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
-  m4/visibility.m4
   m4/warn-on-use.m4
   m4/warnings.m4
   m4/wchar_h.m4
@@ -2163,6 +2154,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-mbrtowc2.sh
   tests/test-mbrtowc3.sh
   tests/test-mbrtowc4.sh
+  tests/test-mbrtowc5.sh
   tests/test-mbsinit.c
   tests/test-mbsinit.sh
   tests/test-mbsrtowcs.c

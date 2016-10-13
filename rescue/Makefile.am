@@ -19,17 +19,16 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
 	test-virt-rescue.pl \
+	test-virt-rescue-docs.sh \
 	test-virt-rescue-suggest.sh \
 	virt-rescue.pod
-
-CLEANFILES = \
-	stamp-virt-rescue.pod \
-	virt-rescue.1
 
 bin_PROGRAMS = virt-rescue
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
@@ -83,7 +82,8 @@ stamp-virt-rescue.pod: virt-rescue.pod
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-TESTS =
+TESTS = \
+	test-virt-rescue-docs.sh
 
 if ENABLE_APPLIANCE
 TESTS += \

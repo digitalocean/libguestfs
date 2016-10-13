@@ -17,10 +17,6 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
-CLEANFILES = \
-	stamp-guestfsd.pod \
-	guestfsd.8
-
 generator_built = \
 	actions.h \
 	stubs.c \
@@ -168,9 +164,11 @@ guestfsd_SOURCES = \
 	rsync.c \
 	scrub.c \
 	selinux.c \
+	selinux-relabel.c \
 	sfdisk.c \
 	sh.c \
 	sleep.c \
+	sleuthkit.c \
 	stat.c \
 	statvfs.c \
 	strings.c \
@@ -178,6 +176,7 @@ guestfsd_SOURCES = \
 	sync.c \
 	syslinux.c \
 	tar.c \
+	tsk.c \
 	truncate.c \
 	umask.c \
 	upload.c \
@@ -208,7 +207,8 @@ guestfsd_LDADD = \
 	$(LIB_CLOCK_GETTIME) \
 	$(LIBINTL) \
 	$(SERVENT_LIB) \
-	$(PCRE_LIBS)
+	$(PCRE_LIBS) \
+	$(TSK_LIBS)
 
 guestfsd_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib \

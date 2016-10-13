@@ -19,12 +19,9 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
 	test-virt-alignment-scan.sh \
+	test-virt-alignment-scan-docs.sh \
 	test-virt-alignment-scan-guests.sh \
 	virt-alignment-scan.pod
-
-CLEANFILES = \
-	stamp-virt-alignment-scan.pod \
-	virt-alignment-scan.1
 
 bin_PROGRAMS = virt-alignment-scan
 
@@ -36,6 +33,8 @@ SHARED_SOURCE_FILES = \
 	../df/parallel.c \
 	../df/parallel.h \
 	../fish/config.c \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
@@ -92,7 +91,8 @@ stamp-virt-alignment-scan.pod: virt-alignment-scan.pod
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-TESTS =
+TESTS = \
+	test-virt-alignment-scan-docs.sh
 
 if ENABLE_APPLIANCE
 TESTS += \

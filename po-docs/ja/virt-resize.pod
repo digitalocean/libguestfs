@@ -265,11 +265,11 @@ line.  Doing so will give an error.
 
 ヘルプを表示します。
 
-=item B<--align-first auto>
+=item B<--align-first> B<auto>
 
-=item B<--align-first never>
+=item B<--align-first> B<never>
 
-=item B<--align-first always>
+=item B<--align-first> B<always>
 
 Align the first partition for improved performance (see also the
 I<--alignment> option).
@@ -286,7 +286,7 @@ I<--align-first always> means we always align the first partition (if it
 needs to be aligned).  For some guests this will break the bootloader,
 making the guest unbootable.
 
-=item B<--alignment N>
+=item B<--alignment> N
 
 Set the alignment of partitions to C<N> sectors.  The default in virt-resize
 E<lt> 1.13.19 was 64 sectors, and after that is 128 sectors.
@@ -319,6 +319,14 @@ around 2008.
 
 =back
 
+=item B<--colors>
+
+=item B<--colours>
+
+Use ANSI colour sequences to colourize messages.  This is the default when
+the output is a tty.  If the output of the program is redirected to a file,
+ANSI colour sequences are disabled unless you use this option.
+
 =item B<-d>
 
 =item B<--debug>
@@ -327,12 +335,7 @@ around 2008.
 
 デバッグメッセージを有効にします。
 
-=item B<--debug-gc>
-
-Debug garbage collection and memory allocation.  This is only useful when
-debugging memory problems in virt-resize or the OCaml libguestfs bindings.
-
-=item B<--delete part>
+=item B<--delete> PART
 
 Delete the named partition.  It would be more accurate to describe this as
 "don't copy it over", since virt-resize doesn't do in-place changes and the
@@ -344,7 +347,7 @@ come after to be I<renumbered>, which can easily make your guest unbootable.
 
 このオプションは複数回指定できます。
 
-=item B<--expand part>
+=item B<--expand> PART
 
 Expand the named partition so it uses up all extra space (space left over
 after any other resize changes that you request have been done).
@@ -389,7 +392,7 @@ XFS filesystems, if libguestfs was compiled with support for XFS.
 
 Note that you cannot use I<--expand> and I<--shrink> together.
 
-=item B<--format> raw
+=item B<--format> B<raw>
 
 Specify the format of the input disk image.  If this flag is not given then
 it is auto-detected from the image itself.
@@ -400,7 +403,7 @@ the format is always specified.
 Note that this option I<does not> affect the output format.  See L</QCOW2
 AND NON-SPARSE RAW FORMATS>.
 
-=item B<--ignore part>
+=item B<--ignore> PART
 
 Ignore the named partition.  Effectively this means the partition is
 allocated on the destination disk, but the content is not copied across from
@@ -409,7 +412,7 @@ bytes).
 
 このオプションは複数回指定できます。
 
-=item B<--LV-expand logvol>
+=item B<--LV-expand> LOGVOL
 
 This takes the logical volume and, as a final step, expands it to fill all
 the space available in its volume group.  A typical usage, assuming a Linux
@@ -438,7 +441,7 @@ groups.
 
 =item B<-n>
 
-=item B<--dryrun>
+=item B<--dry-run>
 
 Print a summary of what would be done, but don't do anything.
 
@@ -480,7 +483,7 @@ L<ntfsresize(8)> に I<--force> オプションを渡します。これにより
 ディスクが整合性の確認が必要であるという印をつけたときでも、容量の変更を許可します。Windows
 仮想マシンを各容量において起動することなく、何回も容量変更したいならば、このオプションを使用する必要があります。
 
-=item B<--output-format> raw
+=item B<--output-format> B<raw>
 
 Specify the format of the output disk image.  If this flag is not given then
 it is auto-detected from the image itself.
@@ -499,13 +502,14 @@ NON-SPARSE RAW FORMATS>.
 
 概要を表示しません。
 
-=item B<--resize part=size>
+=item B<--resize> PART=SIZE
 
 Resize the named partition (expanding or shrinking it) so that it has the
 given size.
 
-C<size> は b/K/M/G
-が後につく絶対値として表現されます。それぞれ、バイト、キロバイト、メガバイト、ギガバイトを意味します。または、現在の容量に対する割合、相対的な数値、パーセントとして表現されます。たとえば:
+C<SIZE> can be expressed as an absolute number followed by b/K/M/G to mean
+bytes, Kilobytes, Megabytes, or Gigabytes; or as a percentage of the current
+size; or as a relative number or percentage.  For example:
 
  --resize /dev/sda2=10G
 
@@ -531,7 +535,7 @@ I<--resize-force>).
 
 このオプションは複数回指定できます。
 
-=item B<--resize-force part=size>
+=item B<--resize-force> PART=SIZE
 
 This is the same as I<--resize> except that it will let you decrease the
 size of any partition.  Generally this means you will lose any data which
@@ -541,7 +545,7 @@ as a swap partition).
 
 I<--ignore> オプション参照。
 
-=item B<--shrink part>
+=item B<--shrink> PART
 
 Shrink the named partition until the overall disk image fits in the
 destination.  The named partition B<must> contain a filesystem or PV which
@@ -558,11 +562,11 @@ partition had more than a gigabyte of free space.
 
 Note that you cannot use I<--expand> and I<--shrink> together.
 
-=item B<--unknown-filesystems ignore>
+=item B<--unknown-filesystems> B<ignore>
 
-=item B<--unknown-filesystems warn>
+=item B<--unknown-filesystems> B<warn>
 
-=item B<--unknown-filesystems error>
+=item B<--unknown-filesystems> B<error>
 
 Configure the behaviour of virt-resize when asking to expand a filesystem,
 and neither libguestfs has the support it, nor virt-resize knows how to

@@ -155,8 +155,9 @@ get further information about the failure, you have to run:
 If, after using this, you still don't understand the failure, contact us
 (see previous section).
 
-=head2 libguestfs: error: cannot find any suitable libguestfs supermin, fixed or
-old-style appliance on LIBGUESTFS_PATH
+=head2 libguestfs: помилка: не вдалося знайти відповідного supermin libguestfs,
+фіксованого розгортання або розгортання у застарілому стилі за адресою
+LIBGUESTFS_PATH
 
 =head2 febootstrap-supermin-helper: ext2: parent directory not found
 
@@ -208,7 +209,7 @@ access them.
 
 =back
 
-=head2 execl: /init: Permission denied
+=head2 execl: /init: відмовлено у доступі
 
 B<Note:> If this error happens when you are using a distro package of
 libguestfs (eg. from Fedora, Debian, etc) then file a bug against the
@@ -293,13 +294,13 @@ For libguestfs E<lt> 1.26, after installing libguestfs you need to do:
 (This script has been removed on Debian/Ubuntu with libguestfs E<ge> 1.26
 and instead the appliance is built on demand.)
 
-On Ubuntu only:
+Лише в Ubuntu:
 
  sudo chmod 0644 /boot/vmlinuz*
 
 You may need to add yourself to the C<kvm> group:
 
- sudo usermod -a -G kvm yourlogin
+ sudo usermod -a -G kvm ваш_обліковий_запис
 
 =over 4
 
@@ -1377,5 +1378,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2012-2016 Red Hat Inc.
+© Red Hat Inc., 2012–2016
 

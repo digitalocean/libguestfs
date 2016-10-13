@@ -162,7 +162,8 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_int_safe_malloc (g, sizeof (SV *) * (*len_rtn));
+  r = malloc (sizeof (SV *) * (*len_rtn));
+  if (r == NULL) croak ("malloc: %m");
 
   i = 0;
   cb = guestfs_first_private (g, &key);
@@ -481,7 +482,8 @@ PREINIT:
           /* Note av_len returns index of final element. */
           len = av_len (av) + 1;
 
-          r = guestfs_int_safe_malloc (g, (len+1) * sizeof (char *));
+          r = malloc ((len+1) * sizeof (char *));
+          if (r == NULL) croak ("malloc: %m");
           for (i = 0; i < len; ++i) {
             svp = av_fetch (av, i, 0);
             r[i] = SvPV_nolen (*svp);
@@ -1269,6 +1271,25 @@ PREINIT:
       r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_filesystem_show (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_btrfs_filesystem_show (g, device);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
 
 void
 btrfs_filesystem_sync (g, fs)
@@ -2616,6 +2637,54 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+download_blocks (g, device, start, stop, filename, ...)
+      guestfs_h *g;
+      char *device;
+      int64_t start;
+      int64_t stop;
+      char *filename;
+PREINIT:
+      int r;
+      struct guestfs_download_blocks_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_download_blocks_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 5) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 5; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "unallocated")) {
+          optargs_s.unallocated = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_download_blocks_argv (g, device, start, stop, filename, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+download_inode (g, device, inode, filename)
+      guestfs_h *g;
+      char *device;
+      int64_t inode;
+      char *filename;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_download_inode (g, device, inode, filename);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 download_offset (g, remotefilename, filename, offset, size)
       guestfs_h *g;
       char *remotefilename;
@@ -2933,6 +3002,41 @@ PREINIT:
       RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
+
+void
+filesystem_walk (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      struct guestfs_tsk_dirent_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_filesystem_walk (g, device);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "tsk_inode", 9, my_newSVull (r->val[i].tsk_inode), 0);
+        (void) hv_store (hv, "tsk_type", 8, newSVpv (&r->val[i].tsk_type, 1), 0);
+        (void) hv_store (hv, "tsk_size", 8, my_newSVll (r->val[i].tsk_size), 0);
+        (void) hv_store (hv, "tsk_name", 8, newSVpv (r->val[i].tsk_name, 0), 0);
+        (void) hv_store (hv, "tsk_flags", 9, newSVnv (r->val[i].tsk_flags), 0);
+        (void) hv_store (hv, "tsk_atime_sec", 13, my_newSVll (r->val[i].tsk_atime_sec), 0);
+        (void) hv_store (hv, "tsk_atime_nsec", 14, my_newSVll (r->val[i].tsk_atime_nsec), 0);
+        (void) hv_store (hv, "tsk_mtime_sec", 13, my_newSVll (r->val[i].tsk_mtime_sec), 0);
+        (void) hv_store (hv, "tsk_mtime_nsec", 14, my_newSVll (r->val[i].tsk_mtime_nsec), 0);
+        (void) hv_store (hv, "tsk_ctime_sec", 13, my_newSVll (r->val[i].tsk_ctime_sec), 0);
+        (void) hv_store (hv, "tsk_ctime_nsec", 14, my_newSVll (r->val[i].tsk_ctime_nsec), 0);
+        (void) hv_store (hv, "tsk_crtime_sec", 14, my_newSVll (r->val[i].tsk_crtime_sec), 0);
+        (void) hv_store (hv, "tsk_crtime_nsec", 15, my_newSVll (r->val[i].tsk_crtime_nsec), 0);
+        (void) hv_store (hv, "tsk_nlink", 9, my_newSVll (r->val[i].tsk_nlink), 0);
+        (void) hv_store (hv, "tsk_link", 8, newSVpv (r->val[i].tsk_link, 0), 0);
+        (void) hv_store (hv, "tsk_spare1", 10, my_newSVll (r->val[i].tsk_spare1), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_tsk_dirent_list (r);
 
 void
 fill (g, c, len, path)
@@ -3483,6 +3587,20 @@ PREINIT:
       RETVAL
 
 SV *
+get_sockdir (g)
+      guestfs_h *g;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_sockdir (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
 get_state (g)
       guestfs_h *g;
 PREINIT:
@@ -3601,14 +3719,35 @@ PREINIT:
       guestfs_free_xattr_list (r);
 
 void
-glob_expand (g, pattern)
+glob_expand (g, pattern, ...)
       guestfs_h *g;
       char *pattern;
 PREINIT:
       char **r;
       size_t i, n;
+      struct guestfs_glob_expand_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_glob_expand_opts_argv *optargs = &optargs_s;
+      size_t items_i;
  PPCODE:
-      r = guestfs_glob_expand (g, pattern);
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "directoryslash")) {
+          optargs_s.directoryslash = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_glob_expand_opts_argv (g, pattern, optargs);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       for (n = 0; r[n] != NULL; ++n) /**/;
@@ -4658,7 +4797,8 @@ PREINIT:
           /* Note av_len returns index of final element. */
           len = av_len (av) + 1;
 
-          r = guestfs_int_safe_malloc (g, (len+1) * sizeof (char *));
+          r = malloc ((len+1) * sizeof (char *));
+          if (r == NULL) croak ("malloc: %m");
           for (i = 0; i < len; ++i) {
             svp = av_fetch (av, i, 0);
             r[i] = SvPV_nolen (*svp);
@@ -5642,13 +5782,13 @@ PREINIT:
       RETVAL
 
 SV *
-is_lv (g, device)
+is_lv (g, mountable)
       guestfs_h *g;
-      char *device;
+      char *mountable;
 PREINIT:
       int r;
    CODE:
-      r = guestfs_is_lv (g, device);
+      r = guestfs_is_lv (g, mountable);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -7854,6 +7994,36 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
+SV *
+mountable_device (g, mountable)
+      guestfs_h *g;
+      char *mountable;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_mountable_device (g, mountable);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+mountable_subvolume (g, mountable)
+      guestfs_h *g;
+      char *mountable;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_mountable_subvolume (g, mountable);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
 void
 mountpoints (g)
       guestfs_h *g;
@@ -7929,6 +8099,19 @@ PREINIT:
       RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
+
+void
+ntfscat_i (g, device, inode, filename)
+      guestfs_h *g;
+      char *device;
+      int64_t inode;
+      char *filename;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_ntfscat_i (g, device, inode, filename);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
 
 void
 ntfsclone_in (g, backupfile, device)
@@ -8131,6 +8314,17 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
+void
+part_expand_gpt (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_part_expand_gpt (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
 SV *
 part_get_bootable (g, device, partnum)
       guestfs_h *g;
@@ -8143,6 +8337,21 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+part_get_disk_guid (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_part_get_disk_guid (g, device);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -8285,6 +8494,29 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_part_set_bootable (g, device, partnum, bootable);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+part_set_disk_guid (g, device, guid)
+      guestfs_h *g;
+      char *device;
+      char *guid;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_part_set_disk_guid (g, device, guid);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+part_set_disk_guid_random (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_part_set_disk_guid_random (g, device);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -8985,6 +9217,39 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_scrub_freespace (g, dir);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+selinux_relabel (g, specfile, path, ...)
+      guestfs_h *g;
+      char *specfile;
+      char *path;
+PREINIT:
+      int r;
+      struct guestfs_selinux_relabel_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_selinux_relabel_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "force")) {
+          optargs_s.force = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_SELINUX_RELABEL_FORCE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_selinux_relabel_argv (g, specfile, path, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -9956,7 +10221,8 @@ PREINIT:
           /* Note av_len returns index of final element. */
           len = av_len (av) + 1;
 
-          r = guestfs_int_safe_malloc (g, (len+1) * sizeof (char *));
+          r = malloc ((len+1) * sizeof (char *));
+          if (r == NULL) croak ("malloc: %m");
           for (i = 0; i < len; ++i) {
             svp = av_fetch (av, i, 0);
             r[i] = SvPV_nolen (*svp);

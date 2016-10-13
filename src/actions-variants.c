@@ -1217,6 +1217,63 @@ guestfs_disk_create_va (guestfs_h *g,
 }
 
 int
+guestfs_download_blocks (guestfs_h *g,
+                         const char *device,
+                         int64_t start,
+                         int64_t stop,
+                         const char *filename,
+                         ...)
+{
+  va_list optargs;
+
+  int r;
+
+  va_start (optargs, filename);
+  r = guestfs_download_blocks_va (g, device, start, stop, filename, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_download_blocks_va (guestfs_h *g,
+                            const char *device,
+                            int64_t start,
+                            int64_t stop,
+                            const char *filename,
+                            va_list args)
+{
+  struct guestfs_download_blocks_argv optargs_s;
+  struct guestfs_download_blocks_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED:
+      optargs_s.unallocated = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "download_blocks", i);
+      return -1;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "download_blocks");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_download_blocks_argv (g, device, start, stop, filename, optargs);
+}
+
+int
 guestfs_e2fsck (guestfs_h *g,
                 const char *device,
                 ...)
@@ -1325,6 +1382,67 @@ guestfs_fstrim_va (guestfs_h *g,
   }
 
   return guestfs_fstrim_argv (g, mountpoint, optargs);
+}
+
+char **
+guestfs_glob_expand_opts (guestfs_h *g,
+                          const char *pattern,
+                          ...)
+{
+  va_list optargs;
+
+  char **r;
+
+  va_start (optargs, pattern);
+  r = guestfs_glob_expand_opts_va (g, pattern, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+char **
+guestfs_glob_expand_opts_va (guestfs_h *g,
+                             const char *pattern,
+                             va_list args)
+{
+  struct guestfs_glob_expand_opts_argv optargs_s;
+  struct guestfs_glob_expand_opts_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH:
+      optargs_s.directoryslash = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "glob_expand", i);
+      return NULL;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "glob_expand");
+      return NULL;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_glob_expand_opts_argv (g, pattern, optargs);
+}
+
+char **
+guestfs_glob_expand (guestfs_h *g,
+                     const char *pattern)
+{
+  struct guestfs_glob_expand_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_glob_expand_opts_argv *optargs = &optargs_s;
+
+  return guestfs_glob_expand_opts_argv (g, pattern, optargs);
 }
 
 char **
@@ -3244,6 +3362,59 @@ guestfs_rsync_out_va (guestfs_h *g,
   }
 
   return guestfs_rsync_out_argv (g, src, remote, optargs);
+}
+
+int
+guestfs_selinux_relabel (guestfs_h *g,
+                         const char *specfile,
+                         const char *path,
+                         ...)
+{
+  va_list optargs;
+
+  int r;
+
+  va_start (optargs, path);
+  r = guestfs_selinux_relabel_va (g, specfile, path, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_selinux_relabel_va (guestfs_h *g,
+                            const char *specfile,
+                            const char *path,
+                            va_list args)
+{
+  struct guestfs_selinux_relabel_argv optargs_s;
+  struct guestfs_selinux_relabel_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_SELINUX_RELABEL_FORCE:
+      optargs_s.force = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "selinux_relabel", i);
+      return -1;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "selinux_relabel");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_selinux_relabel_argv (g, specfile, path, optargs);
 }
 
 int

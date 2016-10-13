@@ -9808,3 +9808,139 @@ guestfs_vfs_minimum_size (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_download_blocks_argv (guestfs_h *g,
+                              const char *device,
+                              int64_t start,
+                              int64_t stop,
+                              const char *filename,
+                              const struct guestfs_download_blocks_argv *optargs)
+{
+  struct guestfs_download_blocks_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  struct guestfs_download_blocks_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                      "download_blocks", 15);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "download_blocks", "device");
+    return -1;
+  }
+  if (filename == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "download_blocks", "filename");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "download_blocks", "download_blocks");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "download_blocks");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " %" PRIi64, start);
+    fprintf (trace_buffer.fp, " %" PRIi64, stop);
+    fprintf (trace_buffer.fp, " \"%s\"", filename);
+    if (optargs->bitmask & GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "unallocated", optargs->unallocated ? "true" : "false");
+    }
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs_int_check_appliance_up (g, "download_blocks") == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "download_blocks", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  args.start = start;
+  args.stop = stop;
+  if (optargs->bitmask & GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK) {
+    args.unallocated = optargs->unallocated;
+  } else {
+    args.unallocated = 0;
+  }
+  serial = guestfs_int_send (g, GUESTFS_PROC_DOWNLOAD_BLOCKS,
+                             progress_hint, optargs->bitmask,
+                             (xdrproc_t) xdr_guestfs_download_blocks_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "download_blocks", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs_int_recv (g, "download_blocks", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "download_blocks", "-1");
+    return -1;
+  }
+
+  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_DOWNLOAD_BLOCKS, serial) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "download_blocks", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "download_blocks", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs_int_string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "download_blocks", err.error_message);
+    else
+      guestfs_int_error_errno (g, errnum, "%s: %s", "download_blocks",
+                               err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  if (guestfs_int_recv_file (g, filename) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "download_blocks", "-1");
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "download_blocks");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

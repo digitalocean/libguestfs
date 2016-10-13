@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <errno.h>
+#include <error.h>
 #include <locale.h>
 #include <assert.h>
 #include <libintl.h>
@@ -37,6 +38,7 @@
 
 #include "guestfs.h"
 #include "options.h"
+#include "display-options.h"
 #include "domains.h"
 #include "parallel.h"
 #include "virt-df.h"
@@ -130,10 +132,8 @@ main (int argc, char *argv[])
   int err = 0;
 
   g = guestfs_create ();
-  if (g == NULL) {
-    fprintf (stderr, _("guestfs_create: failed to create handle\n"));
-    exit (EXIT_FAILURE);
-  }
+  if (g == NULL)
+    error (EXIT_FAILURE, errno, "guestfs_create");
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -153,11 +153,10 @@ main (int argc, char *argv[])
         /* nothing - left for backwards compatibility */
       } else if (STREQ (long_options[option_index].name, "uuid")) {
         uuid = 1;
-      } else {
-        fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name, long_options[option_index].name, option_index);
-        exit (EXIT_FAILURE);
-      }
+      } else
+        error (EXIT_FAILURE, 0,
+               _("unknown long option: %s (%d)"),
+               long_options[option_index].name, option_index);
       break;
 
     case 'a':
@@ -181,11 +180,8 @@ main (int argc, char *argv[])
       break;
 
     case 'P':
-      if (sscanf (optarg, "%zu", &max_threads) != 1) {
-        fprintf (stderr, _("%s: -P option is not numeric\n"),
-                 guestfs_int_program_name);
-        exit (EXIT_FAILURE);
-      }
+      if (sscanf (optarg, "%zu", &max_threads) != 1)
+        error (EXIT_FAILURE, 0, _("-P option is not numeric"));
       break;
 
     case 'v':
@@ -216,24 +212,18 @@ main (int argc, char *argv[])
       if (strchr (argv[optind], '/') ||
           access (argv[optind], F_OK) == 0) { /* simulate -a option */
         drv = calloc (1, sizeof (struct drv));
-        if (!drv) {
-          perror ("calloc");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv)
+          error (EXIT_FAILURE, errno, "calloc");
         drv->type = drv_a;
         drv->a.filename = strdup (argv[optind]);
-        if (!drv->a.filename) {
-          perror ("strdup");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv->a.filename)
+          error (EXIT_FAILURE, errno, "strdup");
         drv->next = drvs;
         drvs = drv;
       } else {                  /* simulate -d option */
         drv = calloc (1, sizeof (struct drv));
-        if (!drv) {
-          perror ("calloc");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv)
+          error (EXIT_FAILURE, errno, "calloc");
         drv->type = drv_d;
         drv->d.guest = argv[optind];
         drv->next = drvs;
@@ -261,11 +251,8 @@ main (int argc, char *argv[])
   /* -h and --csv doesn't make sense.  Spreadsheets will corrupt these
    * fields.  (RHBZ#600977).
    */
-  if (human && csv) {
-    fprintf (stderr, _("%s: you cannot use -h and --csv options together.\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (human && csv)
+    error (EXIT_FAILURE, 0, _("you cannot use -h and --csv options together."));
 
   /* virt-df has two modes.  If the user didn't specify any drives,
    * then we do the df on every libvirt guest.  That's the if-clause
@@ -279,9 +266,8 @@ main (int argc, char *argv[])
     err = start_threads (max_threads, g, df_work);
     free_domains ();
 #else
-    fprintf (stderr, _("%s: compiled without support for libvirt.\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
+    error (EXIT_FAILURE, 0,
+           _("compiled without support for libvirt."));
 #endif
   }
   else {                        /* Single guest. */
@@ -335,28 +321,22 @@ single_drive_display_name (struct drv *drvs)
     else
       name++;                   /* skip '/' character */
     name = strdup (name);
-    if (name == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (name == NULL)
+      error (EXIT_FAILURE, errno, "strdup");
     break;
 
   case drv_uri:
     name = strdup (drvs->uri.orig_uri);
-    if (name == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (name == NULL)
+      error (EXIT_FAILURE, errno, "strdup");
     /* Try to shorten the URI to just the final element, if it will
      * still make sense.
      */
     p = strrchr (name, '/');
     if (p && strlen (p) > 1) {
       p = strdup (p+1);
-      if (!p) {
-        perror ("strdup");
-        exit (EXIT_FAILURE);
-      }
+      if (!p)
+        error (EXIT_FAILURE, errno, "strdup");
       free (name);
       name = p;
     }
@@ -364,10 +344,8 @@ single_drive_display_name (struct drv *drvs)
 
   case drv_d:
     name = strdup (drvs->d.guest);
-    if (name == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (name == NULL)
+      error (EXIT_FAILURE, errno, "strdup");
     break;
   }
 
@@ -405,10 +383,8 @@ make_display_name (struct drv *drvs)
     len = strlen (ret);
 
     ret = realloc (ret, len + pluses + 1);
-    if (ret == NULL) {
-      perror ("realloc");
-      exit (EXIT_FAILURE);
-    }
+    if (ret == NULL)
+      error (EXIT_FAILURE, errno, "realloc");
     for (i = len; i < len + pluses; ++i)
       ret[i] = '+';
     ret[i] = '\0';

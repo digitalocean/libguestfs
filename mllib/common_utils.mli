@@ -31,15 +31,12 @@ end
 
 module String : sig
     type t = string
-    val blit : string -> int -> string -> int -> int -> unit
     val compare: t -> t -> int
     val concat : string -> string list -> string
     val contains : string -> char -> bool
     val contains_from : string -> int -> char -> bool
     val copy : string -> string
-    val create : int -> string
     val escaped : string -> string
-    val fill : string -> int -> int -> char -> unit
     val get : string -> int -> char
     val index : string -> char -> int
     val index_from : string -> int -> char -> int
@@ -49,12 +46,10 @@ module String : sig
     val rcontains_from : string -> int -> char -> bool
     val rindex : string -> char -> int
     val rindex_from : string -> int -> char -> int
-    val set : string -> int -> char -> unit
     val sub : string -> int -> int -> string
-    val unsafe_blit : string -> int -> string -> int -> int -> unit
-    val unsafe_fill : string -> int -> int -> char -> unit
     val unsafe_get : string -> int -> char
-    val unsafe_set : string -> int -> char -> unit
+
+    val map : (char -> char) -> string -> string
 
     val lowercase_ascii : string -> string
     val uppercase_ascii : string -> string
@@ -84,6 +79,10 @@ module String : sig
     (** Return a string of 8 random printable characters. *)
 end
 (** Override the String module from stdlib. *)
+
+(** Exception thrown by [which] when the specified executable is not found
+    in [$PATH]. *)
+exception Executable_not_found of string (* executable *)
 
 val ( // ) : string -> string -> string
 (** Concatenate directory and filename. *)
@@ -141,6 +140,12 @@ val combine3 : 'a list -> 'b list -> 'c list -> ('a * 'b * 'c) list
 val assoc : ?cmp:('a -> 'a -> int) -> default:'b -> 'a -> ('a * 'b) list -> 'b
 (** Like {!List.assoc} but with a user-defined comparison function, and
     instead of raising [Not_found], it returns the [~default] value. *)
+
+val uniq : ?cmp:('a -> 'a -> int) -> 'a list -> 'a list
+(** Uniquify a list (the list must be sorted first). *)
+
+val sort_uniq : ?cmp:('a -> 'a -> int) -> 'a list -> 'a list
+(** Sort and uniquify a list. *)
 
 val push_back : 'a list ref -> 'a -> unit
 val push_front : 'a -> 'a list ref -> unit
@@ -255,17 +260,11 @@ val parse_resize : int64 -> string -> int64
 val human_size : int64 -> string
 (** Converts a size in bytes to a human-readable string. *)
 
-val skip_dashes : string -> string
-(** Skip any leading '-' characters when comparing command line args. *)
-
-val compare_command_line_args : string -> string -> int
-(** Compare command line arguments for equality, ignoring any leading [-]s. *)
-
-val set_standard_options : (Arg.key * Arg.spec * Arg.doc) list -> (Arg.key * Arg.spec * Arg.doc) list
+val create_standard_options : Getopt.speclist -> ?anon_fun:Getopt.anon_fun -> Getopt.usage_msg -> Getopt.t
 (** Adds the standard libguestfs command line options to the specified ones,
     sorting them, and setting [long_options] to them.
 
-    Returns the resulting options. *)
+    Returns a new [Getopt.t] handle. *)
 
 val compare_version : string -> string -> int
 (** Compare two version strings. *)
@@ -319,6 +318,20 @@ val truncate_recursive : Guestfs.guestfs -> string -> unit
 (** Using the libguestfs API, recurse into the given directory and
     truncate all files found to zero size. *)
 
+val debug_augeas_errors : Guestfs.guestfs -> unit
+(** In verbose mode, any Augeas errors which happened most recently
+    on the handle and printed on standard error.  You should usually
+    call this just after either [g#aug_init] or [g#aug_load].
+
+    Note this doesn't call {!error} if there were any errors on the
+    handle.  It is just for debugging.  It is expected that a
+    subsequent Augeas command will fail, eg. when trying to match
+    an Augeas path which is expected to exist but does not exist
+    because of a parsing error.  In that case turning on debugging
+    will reveal the parse error.
+
+    If not in verbose mode, this does nothing. *)
+
 val detect_file_type : string -> [`GZip | `Tar | `XZ | `Zip | `Unknown]
 (** Detect type of a file (for a very limited range of file types). *)
 
@@ -326,6 +339,10 @@ val is_block_device : string -> bool
 val is_char_device : string -> bool
 val is_directory : string -> bool
 (** These don't throw exceptions, unlike the [Sys] functions. *)
+
+val is_partition : string -> bool
+(** Return true if the host device [dev] is a partition.  If it's
+    anything else, or missing, returns false. *)
 
 val absolute_path : string -> string
 (** Convert any path to an absolute path. *)
@@ -354,3 +371,22 @@ val read_first_line_from_file : string -> string
 
 val is_regular_file : string -> bool
 (** Checks whether the file is a regular file. *)
+
+val inspect_mount_root : Guestfs.guestfs -> ?mount_opts_fn:(string -> string) -> string -> unit
+(** Mounts all the mount points of the specified root, just like
+    [guestfish -i] does.
+
+    [mount_opts_fn] represents a function providing the mount options
+    for each mount point. *)
+
+val inspect_mount_root_ro : Guestfs.guestfs -> string -> unit
+(** Like [inspect_mount_root], but mounting every mount point as
+    read-only. *)
+
+val is_btrfs_subvolume : Guestfs.guestfs -> string -> bool
+(** Checks if a filesystem is a btrfs subvolume. *)
+
+val which : string -> string
+(** Return the full path of the specified executable from [$PATH].
+
+    Throw [Executable_not_found] if not available. *)

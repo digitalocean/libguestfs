@@ -26,15 +26,18 @@
 #include <glob.h>
 #include <string.h>
 
-#if HAVE_YAJL
 #include <yajl/yajl_tree.h>
-#endif
 
 #include "daemon.h"
 #include "actions.h"
 #include "optgroups.h"
 
-#if HAVE_YAJL
+/* GCC can't work out that the YAJL_IS_<foo> test is sufficient to
+ * ensure that YAJL_GET_<foo> later doesn't return NULL.
+ */
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 60000 /* gcc >= 6 */
+#pragma GCC diagnostic ignored "-Wnull-dereference"
+#endif
 
 GUESTFSD_EXT_CMD(str_ldmtool, ldmtool);
 
@@ -439,9 +442,3 @@ do_ldmtool_volume_partitions (const char *diskgroup, const char *volume)
   return parse_json_get_object_string_list (out, "partitions",
                                             __func__, "ldmtool show volume");
 }
-
-#else /* !HAVE_YAJL */
-
-OPTGROUP_LDM_NOT_AVAILABLE
-
-#endif

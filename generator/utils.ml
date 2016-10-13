@@ -59,8 +59,10 @@ let uuidgen () =
    * the UUID being zero, so we artificially rewrite such UUIDs.
    * http://article.gmane.org/gmane.linux.utilities.util-linux-ng/4273
    *)
-  if s.[0] = '0' && s.[1] = '0' then
-    s.[0] <- '1';
+  let s =
+    if s.[0] = '0' && s.[1] = '0' then
+      "1" ^ String.sub s 1 (String.length s - 1)
+    else s in
 
   String.sub s 0 8 ^ "-"
   ^ String.sub s 8 4 ^ "-"
@@ -120,15 +122,15 @@ let failwithf fs = ksprintf failwith fs
 let unique = let i = ref 0 in fun () -> incr i; !i
 
 let replace_char s c1 c2 =
-  let s2 = String.copy s in
+  let b2 = Bytes.of_string s in
   let r = ref false in
-  for i = 0 to String.length s2 - 1 do
-    if String.unsafe_get s2 i = c1 then (
-      String.unsafe_set s2 i c2;
+  for i = 0 to Bytes.length b2 - 1 do
+    if Bytes.unsafe_get b2 i = c1 then (
+      Bytes.unsafe_set b2 i c2;
       r := true
     )
   done;
-  if not !r then s else s2
+  if not !r then s else Bytes.to_string b2
 
 let isspace c =
   c = ' '
@@ -230,6 +232,22 @@ let mapi f xs =
     | x :: xs -> let r = f i x in r :: loop (i+1) xs
   in
   loop 0 xs
+
+let uniq ?(cmp = Pervasives.compare) xs =
+  let rec loop acc = function
+    | [] -> acc
+    | [x] -> x :: acc
+    | x :: (y :: _ as xs) when cmp x y = 0 ->
+       loop acc xs
+    | x :: (y :: _ as xs) ->
+       loop (x :: acc) xs
+  in
+  List.rev (loop [] xs)
+
+let sort_uniq ?(cmp = Pervasives.compare) xs =
+  let xs = List.sort cmp xs in
+  let xs = uniq ~cmp xs in
+  xs
 
 let count_chars c str =
   let count = ref 0 in

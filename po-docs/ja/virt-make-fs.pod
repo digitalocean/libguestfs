@@ -127,13 +127,13 @@ to build another image from scratch.
 今のところ、容量 (1440K)、パーティション形式 (MBR) およびファイルシステム形式 (VFAT)
 が事前に選択されています。将来的に、ジオメトリーを選択できるようになる可能性があります。
 
-=item B<--size=E<lt>NE<gt>>
+=item B<--size=>N
 
-=item B<--size=+E<lt>NE<gt>>
+=item B<--size=+>N
 
-=item B<-s E<lt>NE<gt>>
+=item B<-s> N
 
-=item B<-s +E<lt>NE<gt>>
+=item B<-s> B<+>N
 
 Use the I<--size> (or I<-s>) option to choose the size of the output image.
 
@@ -155,17 +155,17 @@ filesystems containing precisely the free space requested.  (It is much more
 expensive and time-consuming to produce a filesystem which has precisely the
 desired free space).
 
-=item B<--format=E<lt>fmtE<gt>>
+=item B<--format=>FMT
 
-=item B<-F E<lt>fmtE<gt>>
+=item B<-F> FMT
 
 出力するディスクイメージ形式を選択します。
 
 デフォルトは C<raw> です (スパースな raw 形式のディスクイメージ)。
 
-=item B<--type=E<lt>fsE<gt>>
+=item B<--type=>FS
 
-=item B<-t E<lt>fsE<gt>>
+=item B<-t> FS
 
 出力ファイルシステム形式を選択します。
 
@@ -173,13 +173,13 @@ desired free space).
 
 Any filesystem which is supported read-write by libguestfs can be used here.
 
-=item B<--label=E<lt>LABELE<gt>>
+=item B<--label=>LABEL
 
 Set the filesystem label.
 
 =item B<--partition>
 
-=item B<--partition=E<lt>parttypeE<gt>>
+=item B<--partition=>PARTTYPE
 
 このフラグが指定されていると、出力ディスクイメージに MBR パーティションテーブルを追加します。
 

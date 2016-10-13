@@ -74,6 +74,14 @@ format (not just an ISO).
 Specify the disk format for the next I<--attach> option.  The C<FORMAT> is
 usually C<raw> or C<qcow2>.  Use C<raw> for ISOs.
 
+=item B<--colors>
+
+=item B<--colours>
+
+Use ANSI colour sequences to colourize messages.  This is the default when
+the output is a tty.  If the output of the program is redirected to a file,
+ANSI colour sequences are disabled unless you use this option.
+
 =item B<-c> адреса
 
 =item B<--connect> адреса
@@ -125,15 +133,15 @@ operation, but throws away any changes to the disk at the end.
 диска. Таким чином можна уникнути можливих проблем з захистом для
 сформованих зловмисниками гостьових систем (CVE-2010-3851).
 
-=item B<-m> MB
+=item B<-m> МБ
 
-=item B<--memsize> MB
+=item B<--memsize> МБ
 
 Change the amount of memory allocated to I<--run> scripts.  Increase this if
 you find that I<--run> scripts or the I<--install> option are running out of
 memory.
 
-The default can be found with this command:
+Типові значення можна визначити за допомогою такої команди:
 
  guestfish get-memsize
 
@@ -141,9 +149,11 @@ The default can be found with this command:
 
 =item B<--no-network>
 
-Enable or disable network access from the guest during the installation.
+Увімкнути чи вимкнути доступ до мережі для гостьової системи під час
+встановлення.
 
-Enabled is the default.  Use I<--no-network> to disable access.
+Типово увімкнено. Скористайтеся параметром I<--no-network>, щоб вимкнути
+доступ.
 
 The network only allows outgoing connections and has other minor
 limitations.  See L<virt-rescue(1)/NETWORK>.
@@ -212,7 +222,7 @@ Enable N E<ge> 2 virtual CPUs for I<--run> scripts to use.
 
 =back
 
-=head2 Customization options
+=head2 Параметри налаштовування
 
 __CUSTOMIZE_OPTIONS__
 
@@ -251,6 +261,12 @@ I<--firstboot-command> options with Windows guests.
 
 Див. також C<https://github.com/rwmjones/rhsrvany>
 
+=item F<pvvxsvc.exe>
+
+This is a Windows binary shipped with SUSE VMDP, used to install a
+"firstboot" script in Windows guests.  It is required if you intend to use
+the I<--firstboot> or I<--firstboot-command> options with Windows guests.
+
 =back
 
 =back
@@ -271,5 +287,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2016 Red Hat Inc.
+© Red Hat Inc., 2011–2016
 

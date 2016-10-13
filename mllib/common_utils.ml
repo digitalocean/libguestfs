@@ -19,6 +19,7 @@
 open Printf
 
 open Common_gettext.Gettext
+open Getopt.OptionName
 
 module Char = struct
     include Char
@@ -36,6 +37,14 @@ end
 
 module String = struct
     include String
+
+    let map f s =
+      let len = String.length s in
+      let b = Bytes.create len in
+      for i = 0 to len-1 do
+        Bytes.unsafe_set b i (f (unsafe_get s i))
+      done;
+      Bytes.to_string b
 
     let lowercase_ascii s = map Char.lowercase_ascii s
     let uppercase_ascii s = map Char.uppercase_ascii s
@@ -141,6 +150,8 @@ module String = struct
       )
 end
 
+exception Executable_not_found of string (* executable *)
+
 let (//) = Filename.concat
 
 let ( +^ ) = Int64.add
@@ -169,12 +180,12 @@ let le32_of_int i =
   let c1 = Int64.shift_right (i &^ 0xff00L) 8 in
   let c2 = Int64.shift_right (i &^ 0xff0000L) 16 in
   let c3 = Int64.shift_right (i &^ 0xff000000L) 24 in
-  let s = String.create 4 in
-  String.unsafe_set s 0 (Char.unsafe_chr (Int64.to_int c0));
-  String.unsafe_set s 1 (Char.unsafe_chr (Int64.to_int c1));
-  String.unsafe_set s 2 (Char.unsafe_chr (Int64.to_int c2));
-  String.unsafe_set s 3 (Char.unsafe_chr (Int64.to_int c3));
-  s
+  let b = Bytes.create 4 in
+  Bytes.unsafe_set b 0 (Char.unsafe_chr (Int64.to_int c0));
+  Bytes.unsafe_set b 1 (Char.unsafe_chr (Int64.to_int c1));
+  Bytes.unsafe_set b 2 (Char.unsafe_chr (Int64.to_int c2));
+  Bytes.unsafe_set b 3 (Char.unsafe_chr (Int64.to_int c3));
+  Bytes.to_string b
 
 let isdigit = function
   | '0'..'9' -> true
@@ -202,7 +213,7 @@ and _wrap chan indent column i len str =
         indent + (j-i) + 1
       )
       else column + (j-i) + 1 in
-    output chan str i (j-i);
+    output chan (Bytes.of_string str) i (j-i);
     match break with
     | WrapEOS -> ()
     | WrapSpace ->
@@ -266,6 +277,22 @@ let rec assoc ?(cmp = compare) ~default x = function
   | (y, y') :: _ when cmp x y = 0 -> y'
   | _ :: ys -> assoc ~cmp ~default x ys
 
+let uniq ?(cmp = Pervasives.compare) xs =
+  let rec loop acc = function
+    | [] -> acc
+    | [x] -> x :: acc
+    | x :: (y :: _ as xs) when cmp x y = 0 ->
+       loop acc xs
+    | x :: (y :: _ as xs) ->
+       loop (x :: acc) xs
+  in
+  List.rev (loop [] xs)
+
+let sort_uniq ?(cmp = Pervasives.compare) xs =
+  let xs = List.sort cmp xs in
+  let xs = uniq ~cmp xs in
+  xs
+
 let push_back xsp x = xsp := !xsp @ [x]
 let push_front x xsp = xsp := x :: !xsp
 let pop_back xsp =
@@ -299,27 +326,30 @@ let protect ~f ~finally =
   finally ();
   match r with Either ret -> ret | Or exn -> raise exn
 
-let istty chan =
-  Unix.isatty (Unix.descr_of_out_channel chan)
-
-(* ANSI terminal colours. *)
-let ansi_green ?(chan = stdout) () =
-  if istty chan then output_string chan "\x1b[0;32m"
-let ansi_red ?(chan = stdout) () =
-  if istty chan then output_string chan "\x1b[1;31m"
-let ansi_blue ?(chan = stdout) () =
-  if istty chan then output_string chan "\x1b[1;34m"
-let ansi_magenta ?(chan = stdout) () =
-  if istty chan then output_string chan "\x1b[1;35m"
-let ansi_restore ?(chan = stdout) () =
-  if istty chan then output_string chan "\x1b[0m"
+let which executable =
+  let paths =
+    try String.nsplit ":" (Sys.getenv "PATH")
+    with Not_found -> [] in
+  let paths = filter_map (
+    fun p ->
+      let path = p // executable in
+      try Unix.access path [Unix.X_OK]; Some path
+      with Unix.Unix_error _ -> None
+  ) paths in
+  match paths with
+  | [] -> raise (Executable_not_found executable)
+  | x :: _ -> x
 
 (* Program name. *)
 let prog = Filename.basename Sys.executable_name
 
-(* Stores the quiet (--quiet), trace (-x) and verbose (-v) flags in a
- * global variable.
+(* Stores the colours (--colours), quiet (--quiet), trace (-x) and
+ * verbose (-v) flags in a global variable.
  *)
+let colours = ref false
+let set_colours () = colours := true
+let colours () = !colours
+
 let quiet = ref false
 let set_quiet () = quiet := true
 let quiet () = !quiet
@@ -331,6 +361,21 @@ let trace () = !trace
 let verbose = ref false
 let set_verbose () = verbose := true
 let verbose () = !verbose
+
+(* ANSI terminal colours. *)
+let istty chan =
+  Unix.isatty (Unix.descr_of_out_channel chan)
+
+let ansi_green ?(chan = stdout) () =
+  if colours () || istty chan then output_string chan "\x1b[0;32m"
+let ansi_red ?(chan = stdout) () =
+  if colours () || istty chan then output_string chan "\x1b[1;31m"
+let ansi_blue ?(chan = stdout) () =
+  if colours () || istty chan then output_string chan "\x1b[1;34m"
+let ansi_magenta ?(chan = stdout) () =
+  if colours () || istty chan then output_string chan "\x1b[1;35m"
+let ansi_restore ?(chan = stdout) () =
+  if colours () || istty chan then output_string chan "\x1b[0m"
 
 (* Timestamped progress messages, used for ordinary messages when not
  * --quiet.
@@ -443,11 +488,11 @@ let read_whole_file path =
   let buf = Buffer.create 16384 in
   let chan = open_in path in
   let maxlen = 16384 in
-  let s = String.create maxlen in
+  let b = Bytes.create maxlen in
   let rec loop () =
-    let r = input chan s 0 maxlen in
+    let r = input chan b 0 maxlen in
     if r > 0 then (
-      Buffer.add_substring buf s 0 r;
+      Buffer.add_substring buf (Bytes.to_string b) 0 r;
       loop ()
     )
   in
@@ -546,63 +591,20 @@ let human_size i =
     )
   )
 
-(* Skip any leading '-' characters when comparing command line args. *)
-let skip_dashes str =
-  let n = String.length str in
-  let rec loop i =
-    if i >= n then invalid_arg "skip_dashes"
-    else if String.unsafe_get str i = '-' then loop (i+1)
-    else i
-  in
-  let i = loop 0 in
-  if i = 0 then str
-  else String.sub str i (n-i)
-
-let compare_command_line_args a b =
-  compare (String.lowercase (skip_dashes a)) (String.lowercase (skip_dashes b))
-
-(* Implement `--short-options' and `--long-options'. *)
-let long_options = ref ([] : (Arg.key * Arg.spec * Arg.doc) list)
-let display_short_options () =
-  List.iter (
-    fun (arg, _, _) ->
-      if String.is_prefix arg "-" && not (String.is_prefix arg "--") then
-        printf "%s\n" arg
-  ) !long_options;
-  exit 0
-let display_long_options () =
-  List.iter (
-    fun (arg, _, _) ->
-      if String.is_prefix arg "--" && arg <> "--long-options" &&
-           arg <> "--short-options" then
-        printf "%s\n" arg
-  ) !long_options;
-  exit 0
-
-let set_standard_options argspec =
+let create_standard_options argspec ?anon_fun usage_msg =
   (** Install an exit hook to check gc consistency for --debug-gc *)
   let set_debug_gc () =
     at_exit (fun () -> Gc.compact()) in
   let argspec = [
-    "--short-options", Arg.Unit display_short_options, " " ^ s_"List short options (internal)";
-    "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options (internal)";
-    "-V",           Arg.Unit print_version_and_exit,
-                                               " " ^ s_"Display version and exit";
-    "--version",    Arg.Unit print_version_and_exit,
-                                               " " ^ s_"Display version and exit";
-    "-v",           Arg.Unit set_verbose,      " " ^ s_"Enable libguestfs debugging messages";
-    "--verbose",    Arg.Unit set_verbose,      " " ^ s_"Enable libguestfs debugging messages";
-    "-x",           Arg.Unit set_trace,        " " ^ s_"Enable tracing of libguestfs calls";
-    "--debug-gc",   Arg.Unit set_debug_gc,     " " ^ s_"Debug GC and memory allocations (internal)";
-    "-q",           Arg.Unit set_quiet,        " " ^ s_"Don't print progress messages";
-    "--quiet",      Arg.Unit set_quiet,        " " ^ s_"Don't print progress messages";
+    [ S 'V'; L"version" ], Getopt.Unit print_version_and_exit, s_"Display version and exit";
+    [ S 'v'; L"verbose" ], Getopt.Unit set_verbose,  s_"Enable libguestfs debugging messages";
+    [ S 'x' ],             Getopt.Unit set_trace,    s_"Enable tracing of libguestfs calls";
+    [ L"debug-gc" ],       Getopt.Unit set_debug_gc, Getopt.hidden_option_description;
+    [ S 'q'; L"quiet" ],   Getopt.Unit set_quiet,    s_"Don't print progress messages";
+    [ L"color"; L"colors";
+      L"colour"; L"colours" ], Getopt.Unit set_colours, s_"Use ANSI colour sequences even if not tty";
   ] @ argspec in
-  let argspec =
-    let cmp (arg1, _, _) (arg2, _, _) = compare_command_line_args arg1 arg2 in
-    List.sort cmp argspec in
-  let argspec = Arg.align argspec in
-  long_options := argspec;
-  argspec
+  Getopt.create argspec ?anon_fun usage_msg
 
 (* Compare two version strings intelligently. *)
 let rex_numbers = Str.regexp "^\\([0-9]+\\)\\(.*\\)$"
@@ -685,18 +687,26 @@ let external_command ?(echo_cmd = true) cmd =
 let run_command ?(echo_cmd = true) args =
   if echo_cmd then
     debug "%s" (stringify_args args);
-  let pid =
-    Unix.create_process (List.hd args) (Array.of_list args) Unix.stdin
-      Unix.stdout Unix.stderr in
-  let _, stat = Unix.waitpid [] pid in
-  match stat with
-  | Unix.WEXITED i -> i
-  | Unix.WSIGNALED i ->
-    error (f_"external command '%s' killed by signal %d")
-      (stringify_args args) i
-  | Unix.WSTOPPED i ->
-    error (f_"external command '%s' stopped by signal %d")
-      (stringify_args args) i
+  let app = List.hd args in
+  try
+    let app =
+      if Filename.is_relative app then which app
+      else (Unix.access app [Unix.X_OK]; app) in
+    let pid =
+      Unix.create_process app (Array.of_list args) Unix.stdin
+        Unix.stdout Unix.stderr in
+    let _, stat = Unix.waitpid [] pid in
+    match stat with
+    | Unix.WEXITED i -> i
+    | Unix.WSIGNALED i ->
+      error (f_"external command '%s' killed by signal %d")
+        (stringify_args args) i
+    | Unix.WSTOPPED i ->
+      error (f_"external command '%s' stopped by signal %d")
+        (stringify_args args) i
+  with
+  | Executable_not_found tool -> 127
+  | Unix.Unix_error (errcode, _, _) when errcode = Unix.ENOENT -> 127
 
 let shell_command ?(echo_cmd = true) cmd =
   if echo_cmd then
@@ -788,15 +798,78 @@ let truncate_recursive (g : Guestfs.guestfs) dir =
   let files = List.filter g#is_file files in
   List.iter g#truncate files
 
+let debug_augeas_errors g =
+  if verbose () then (
+    try
+      let errors = g#aug_match "/augeas/files//error" in
+      let errors = Array.to_list errors in
+      let map =
+        List.fold_left (
+          fun map error ->
+            let detail_paths = g#aug_match (error ^ "//*") in
+            let detail_paths = Array.to_list detail_paths in
+            List.fold_left (
+              fun map path ->
+                (* path is "/augeas/files/<filename>/error/<field>".  Put
+                 * <filename>, <field> and the value of this Augeas field
+                 * into a map.
+                 *)
+                let i = String.find path "/error/" in
+                assert (i >= 0);
+                let filename = String.sub path 13 (i-13) in
+                let field =
+                  String.sub path (i+7) (String.length path - (i+7)) in
+
+                let detail = g#aug_get path in
+
+                let fmap : string StringMap.t =
+                  try StringMap.find filename map
+                  with Not_found -> StringMap.empty in
+                let fmap = StringMap.add field detail fmap in
+                StringMap.add filename fmap map
+            ) map detail_paths
+        ) StringMap.empty errors in
+
+      let filenames = StringMap.keys map in
+      let filenames = List.sort compare filenames in
+
+      List.iter (
+        fun filename ->
+          eprintf "augeas failed to parse %s:\n" filename;
+          let fmap = StringMap.find filename map in
+          (try
+            let msg = StringMap.find "message" fmap in
+            eprintf " error \"%s\"" msg
+          with Not_found -> ()
+          );
+          (try
+            let line = StringMap.find "line" fmap
+            and char = StringMap.find "char" fmap in
+            eprintf " at line %s char %s" line char
+          with Not_found -> ()
+          );
+          (try
+            let lens = StringMap.find "lens" fmap in
+            eprintf " in lens %s" lens
+          with Not_found -> ()
+          );
+          eprintf "\n"
+      ) filenames;
+
+      flush stderr
+    with
+      Guestfs.Error msg -> eprintf "%s: augeas: %s (ignored)\n" prog msg
+  )
+
 (* Detect type of a file. *)
 let detect_file_type filename =
   let chan = open_in filename in
   let get start size =
     try
       seek_in chan start;
-      let buf = String.create size in
-      really_input chan buf 0 size;
-      Some buf
+      let b = Bytes.create size in
+      really_input chan b 0 size;
+      Some (Bytes.to_string b)
     with End_of_file | Invalid_argument _ -> None
   in
   let ret =
@@ -817,6 +890,19 @@ let is_block_device file =
 
 let is_char_device file =
   try (Unix.stat file).Unix.st_kind = Unix.S_CHR
+  with Unix.Unix_error _ -> false
+
+let is_partition dev =
+  try
+    if not (is_block_device dev) then false
+    else (
+      let rdev = (Unix.stat dev).Unix.st_rdev in
+      let major = Dev_t.major rdev in
+      let minor = Dev_t.minor rdev in
+      let path = sprintf "/sys/dev/block/%d:%d/partition" major minor in
+      Unix.access path [Unix.F_OK];
+      true
+    )
   with Unix.Unix_error _ -> false
 
 (* Annoyingly Sys.is_directory throws an exception on failure
@@ -887,3 +973,28 @@ let read_first_line_from_file filename =
 let is_regular_file path = (* NB: follows symlinks. *)
   try (Unix.stat path).Unix.st_kind = Unix.S_REG
   with Unix.Unix_error _ -> false
+
+let inspect_mount_root g ?mount_opts_fn root =
+  let mps = g#inspect_get_mountpoints root in
+  let cmp (a,_) (b,_) =
+    compare (String.length a) (String.length b) in
+  let mps = List.sort cmp mps in
+  List.iter (
+    fun (mp, dev) ->
+      let mountfn =
+        match mount_opts_fn with
+        | Some fn -> g#mount_options (fn mp)
+        | None -> g#mount in
+      try mountfn dev mp
+      with Guestfs.Error msg -> warning (f_"%s (ignored)") msg
+  ) mps
+
+let inspect_mount_root_ro =
+  inspect_mount_root ~mount_opts_fn:(fun _ -> "ro")
+
+let is_btrfs_subvolume g fs =
+  try
+    ignore (g#mountable_subvolume fs); true
+  with Guestfs.Error msg as exn ->
+    if g#last_errno () = Guestfs.Errno.errno_EINVAL then false
+    else raise exn

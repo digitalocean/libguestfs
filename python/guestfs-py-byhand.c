@@ -16,9 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* This file contains a small number of functions that are written by
+/**
+ * This file contains a small number of functions that are written by
  * hand.  The majority of the bindings are generated (see
- * guestfs-py.c).
+ * F<python/guestfs-py.c>).
  */
 
 /* This has to be included first, else definitions conflict with
@@ -82,6 +83,8 @@ guestfs_int_py_close (PyObject *self, PyObject *args)
    * in a double-free here.  XXX
    */
   callbacks = get_all_event_callbacks (g, &len);
+  if (callbacks == NULL)
+    return NULL;
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
@@ -258,7 +261,11 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_int_safe_malloc (g, sizeof (PyObject *) * (*len_rtn));
+  r = malloc (sizeof (PyObject *) * (*len_rtn));
+  if (r == NULL) {
+    PyErr_SetNone (PyExc_MemoryError);
+    return NULL;
+  }
 
   i = 0;
   cb = guestfs_first_private (g, &key);

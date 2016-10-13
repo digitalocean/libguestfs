@@ -16,6 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/**
+ * Utility functions used by the library, tools and language bindings.
+ *
+ * These functions these I<must not> call internal library functions
+ * such as C<safe_*>, C<error> or C<perrorf>, or any C<guestfs_int_*>.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -38,11 +45,6 @@
 /* NB: MUST NOT include "guestfs-internal.h". */
 #include "guestfs.h"
 #include "guestfs-internal-frontend.h"
-
-/* Note that functions in libutils are used by the tools and language
- * bindings.  Therefore these must not call internal library functions
- * such as safe_*, error or perrorf.
- */
 
 void
 guestfs_int_free_string_list (char **argv)
@@ -135,14 +137,31 @@ guestfs_int_join_strings (const char *sep, char *const *argv)
   return r;
 }
 
-/* Split string at separator character 'sep', returning the list of
- * strings.  Returns NULL on memory allocation failure.
+/**
+ * Split string at separator character C<sep>, returning the list of
+ * strings.  Returns C<NULL> on memory allocation failure.
  *
- * Note (assuming sep is ':'):
- * str == NULL  => aborts
- * str == ""    => returns []
- * str == "abc" => returns ["abc"]
- * str == ":"   => returns ["", ""]
+ * Note (assuming C<sep> is C<:>):
+ *
+ * =over 4
+ *
+ * =item C<str == NULL>
+ *
+ * aborts
+ *
+ * =item C<str == "">
+ *
+ * returns C<[]>
+ *
+ * =item C<str == "abc">
+ *
+ * returns C<["abc"]>
+ *
+ * =item C<str == ":">
+ *
+ * returns C<["", ""]>
+ *
+ * =back
  */
 char **
 guestfs_int_split_string (char sep, const char *str)
@@ -192,7 +211,9 @@ guestfs_int_split_string (char sep, const char *str)
   return ret;
 }
 
-/* Translate a wait/system exit status into a printable string. */
+/**
+ * Translate a wait/system exit status into a printable string.
+ */
 char *
 guestfs_int_exit_status_to_string (int status, const char *cmd_name,
 				   char *buffer, size_t buflen)
@@ -221,13 +242,24 @@ guestfs_int_exit_status_to_string (int status, const char *cmd_name,
   return buffer;
 }
 
-/* Notes:
+/**
+ * Return a random string of characters.
  *
- * The 'ret' buffer must have length len+1 in order to store the final
- * \0 character.
+ * Notes:
+ *
+ * =over 4
+ *
+ * =item *
+ *
+ * The C<ret> buffer must have length C<len+1> in order to store the
+ * final C<\0> character.
+ *
+ * =item *
  *
  * There is about 5 bits of randomness per output character (so about
- * 5*len bits of randomness in the resulting string).
+ * C<5*len> bits of randomness in the resulting string).
+ *
+ * =back
  */
 int
 guestfs_int_random_string (char *ret, size_t len)
@@ -259,12 +291,15 @@ guestfs_int_random_string (char *ret, size_t len)
   return 0;
 }
 
-/* This turns a drive index (eg. 27) into a drive name (eg. "ab").
- * Drive indexes count from 0.  The return buffer has to be large
+/**
+ * This turns a drive index (eg. C<27>) into a drive name
+ * (eg. C<"ab">).
+ *
+ * Drive indexes count from C<0>.  The return buffer has to be large
  * enough for the resulting string, and the returned pointer points to
  * the *end* of the string.
  *
- * https://rwmj.wordpress.com/2011/01/09/how-are-linux-drives-named-beyond-drive-26-devsdz/
+ * L<https://rwmj.wordpress.com/2011/01/09/how-are-linux-drives-named-beyond-drive-26-devsdz/>
  */
 char *
 guestfs_int_drive_name (size_t index, char *ret)
@@ -277,10 +312,12 @@ guestfs_int_drive_name (size_t index, char *ret)
   return ret;
 }
 
-/* The opposite of guestfs_int_drive_name.  Take a string like "ab"
- * and return the index (eg 27).  Note that you must remove any prefix
- * such as "hd", "sd" etc, or any partition number before calling the
- * function.
+/**
+ * The opposite of C<guestfs_int_drive_name>.  Take a string like
+ * C<"ab"> and return the index (eg C<27>).
+ *
+ * Note that you must remove any prefix such as C<"hd">, C<"sd"> etc,
+ * or any partition number before calling the function.
  */
 ssize_t
 guestfs_int_drive_index (const char *name)
@@ -298,7 +335,9 @@ guestfs_int_drive_index (const char *name)
   return r-1;
 }
 
-/* Similar to Tcl_GetBoolean. */
+/**
+ * Similar to C<Tcl_GetBoolean>.
+ */
 int
 guestfs_int_is_true (const char *str)
 {
@@ -320,40 +359,6 @@ guestfs_int_is_true (const char *str)
 
   return -1;
 }
-
-/* See src/appliance.c:guestfs_int_get_uefi. */
-const char *
-guestfs_int_ovmf_i386_firmware[] = {
-  "/usr/share/edk2.git/ovmf-ia32/OVMF_CODE-pure-efi.fd",
-  "/usr/share/edk2.git/ovmf-ia32/OVMF_VARS-pure-efi.fd",
-
-  NULL
-};
-
-const char *
-guestfs_int_ovmf_x86_64_firmware[] = {
-  "/usr/share/OVMF/OVMF_CODE.fd",
-  "/usr/share/OVMF/OVMF_VARS.fd",
-
-  "/usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd",
-  "/usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd",
-
-  "/usr/share/qemu/ovmf-x86_64-code.bin",
-  "/usr/share/qemu/ovmf-x86_64-vars.bin",
-
-  NULL
-};
-
-const char *
-guestfs_int_aavmf_firmware[] = {
-  "/usr/share/AAVMF/AAVMF_CODE.fd",
-  "/usr/share/AAVMF/AAVMF_VARS.fd",
-
-  "/usr/share/edk2.git/aarch64/QEMU_EFI-pflash.raw",
-  "/usr/share/edk2.git/aarch64/vars-template-pflash.raw",
-
-  NULL
-};
 
 #if 0 /* not used yet */
 /**

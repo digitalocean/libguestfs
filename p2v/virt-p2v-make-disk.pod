@@ -4,7 +4,7 @@ virt-p2v-make-disk - Build the virt-p2v disk using virt-builder
 
 =head1 SYNOPSIS
 
- virt-p2v-make-disk -o /dev/sdX os-version
+ virt-p2v-make-disk -o /dev/sdX [os-version]
 
 =head1 DESCRIPTION
 
@@ -17,34 +17,49 @@ virt-p2v-make-disk is a script which creates a bootable disk image or
 USB key containing virt-p2v.  It uses L<virt-builder(1)> to do this,
 and is just a small shell script around virt-builder.
 
-virt-p2v-make-disk has two required parameters:
+The required I<-o> parameter specifies where the output should go, for
+example to a USB key (eg. C<-o /dev/sdX>) or to a file.  If you pass a
+device name, then B<the existing contents of the device will be erased>.
 
-The I<-o> parameter specifies where the output should go, for example
-to a USB key (eg. C<-o /dev/sdX>) or to a file.  If you pass a device
-name, then B<the existing contents of the device will be erased>.
+=head2 C<os-version> parameter
 
-The C<os-version> parameter is the base Linux distro to use for the
-operating system on the ISO.  To list possible C<os-version>
-combinations, do:
+The optional C<os-version> parameter is the base Linux distro to use
+for the operating system on the ISO.  If you don't set this parameter,
+the script tries to choose a suitable default for you.  Most users
+should I<not> use the C<os-version> parameter.
+
+The base OS selected for virt-p2v is not related in any way to the OS
+of the physical machine that you are trying to convert.
+
+To list possible C<os-version> combinations, do:
 
  virt-builder -l
 
-=head2 EXAMPLES
+=head1 EXAMPLES
 
 Write a virt-p2v bootable USB key on F</dev/sdX> (any existing content
-is erased), using Fedora 20 as the base distribution:
+on F</dev/sdX> is erased):
 
- virt-p2v-make-disk -o /dev/sdX fedora-20
+ virt-p2v-make-disk -o /dev/sdX
 
 Write a virt-p2v bootable virtual disk image, and boot it under qemu:
 
- virt-p2v-make-disk -o /var/tmp/p2v.img fedora-20
+ virt-p2v-make-disk -o /var/tmp/p2v.img
  qemu-kvm -m 1024 -boot c \
    -drive file=/var/tmp/p2v.img,if=virtio,index=0 \
    -drive file=/var/tmp/guest.img,if=virtio,index=1
 
 where F</var/tmp/guest.img> would be the disk image of some guest that
 you want to convert (for testing only).
+
+=head1 ADDING EXTRA PACKAGES
+
+You can install extra packages using the I<--install> option.  This
+can be useful for making a more fully-featured virt-p2v disk with
+extra tools for debugging and troubleshooting.  Give a list of
+packages, separated by commas.  For example:
+
+ virt-p2v-make-disk -o /var/tmp/p2v.img --install tcpdump,traceroute
 
 =head1 ADDING AN SSH IDENTITY
 
@@ -80,6 +95,22 @@ or if using the kernel command line, add:
 
 For more information, see L<virt-p2v(1)/SSH IDENTITIES>.
 
+=head1 32 BIT VIRT-P2V
+
+For improved compatibility with older hardware, virt-p2v-make-disk has
+an I<--arch> option.  The most useful setting (on x86-64 hosts) is
+I<--arch i686>, which builds a 32 bit virt-p2v environment that will
+work on older hardware.  32 bit virt-p2v can convert 64 bit physical
+machines and can interoperate with 64 bit virt-v2v and 64 bit
+hypervisors.
+
+This option requires that you have built F<virt-p2v.$arch> (ie.
+usually F<virt-p2v.i686>) by some means, and that you install it next
+to the ordinary F<virt-p2v> binary (eg. in libexecdir or
+C<$VIRT_V2V_DATA_DIR>).  This is outside the scope of this manual
+page, but you can find some tips in
+L<guestfs-building(1)/BUILDING i686 32 BIT VIRT-P2V>.
+
 =head1 OPTIONS
 
 =over 4
@@ -88,10 +119,29 @@ For more information, see L<virt-p2v(1)/SSH IDENTITIES>.
 
 Display help.
 
+=item B<--arch> ARCH
+
+Set the architecture of the virt-p2v ISO.  See L</32 BIT VIRT-P2V> above.
+
+If this option is not supplied, then the default is to use the same
+architecture as the host that is running virt-p2v-make-disk.
+
 =item B<--inject-ssh-identity> id_rsa
 
 Add an SSH identity (private key) file into the image.
 See L</ADDING AN SSH IDENTITY> above.
+
+=item B<--install> pkg,pkg,...
+
+Add extra packages to the image.
+See L</ADDING EXTRA PACKAGES> above.
+
+=item B<--no-warn-if-partition>
+
+Normally you should not write to a partition on a USB drive (ie. don't
+use S<C<-o /dev/sdX1>>, use S<C<-o /dev/sdX>> to make a bootable USB
+drive).  If you do this, virt-builder prints a warning.  This option
+suppresses that warning.
 
 =item B<-o> OUTPUT
 
@@ -99,6 +149,13 @@ See L</ADDING AN SSH IDENTITY> above.
 
 Write output to C<OUTPUT>, which can be a local file or block device.
 B<The existing contents of the device will be erased>.
+
+=item B<-v>
+
+=item B<--verbose>
+
+Enable verbose output.  Use this if you need to debug problems with
+the script or if you are filing a bug.
 
 =item B<-V>
 
@@ -148,6 +205,7 @@ L</FILES> above).  If not set, a compiled-in location is used.
 
 L<virt-p2v(1)>,
 L<virt-p2v-make-kickstart(1)>,
+L<virt-p2v-make-kiwi(1)>,
 L<virt-v2v(1)>,
 L<http://libguestfs.org/>.
 

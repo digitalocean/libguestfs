@@ -16,16 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* Read /proc/cmdline.
- *
- * We only support double quoting, consistent with the Linux
- * documentation.
- * https://www.kernel.org/doc/Documentation/kernel-parameters.txt
- *
- * systemd supports single and double quoting and single character
- * escaping, but we don't support all that.
- *
- * Returns a list of key, value pairs, terminated by NULL.
+/**
+ * Mini library to read and parse C</proc/cmdline>.
  */
 
 #include <config.h>
@@ -35,6 +27,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <error.h>
 
 #include "p2v.h"
 
@@ -43,10 +36,8 @@ add_null (char ***argv, size_t *lenp)
 {
   (*lenp)++;
   *argv = realloc (*argv, *lenp * sizeof (char *));
-  if (*argv == NULL) {
-    perror ("realloc");
-    exit (EXIT_FAILURE);
-  }
+  if (*argv == NULL)
+    error (EXIT_FAILURE, errno, "realloc");
   (*argv)[(*lenp)-1] = NULL;
 }
 
@@ -55,12 +46,22 @@ add_string (char ***argv, size_t *lenp, const char *str, size_t len)
 {
   add_null (argv, lenp);
   (*argv)[(*lenp)-1] = strndup (str, len);
-  if ((*argv)[(*lenp)-1] == NULL) {
-    perror ("strndup");
-    exit (EXIT_FAILURE);
-  }
+  if ((*argv)[(*lenp)-1] == NULL)
+    error (EXIT_FAILURE, errno, "strndup");
 }
 
+/**
+ * Read and parse C</proc/cmdline>.
+ *
+ * We only support double quoting, consistent with the Linux
+ * documentation.
+ * L<https://www.kernel.org/doc/Documentation/kernel-parameters.txt>
+ *
+ * systemd supports single and double quoting and single character
+ * escaping, but we don't support all that.
+ *
+ * Returns a list of key, value pairs, terminated by C<NULL>.
+ */
 char **
 parse_cmdline_string (const char *cmdline)
 {

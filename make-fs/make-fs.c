@@ -26,6 +26,7 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <error.h>
 #include <locale.h>
 #include <assert.h>
 #include <libintl.h>
@@ -39,6 +40,7 @@
 #include "xstrtol.h"
 
 #include "options.h"
+#include "display-options.h"
 
 guestfs_h *g;
 const char *libvirt_uri;
@@ -112,10 +114,8 @@ main (int argc, char *argv[])
   textdomain (PACKAGE);
 
   g = guestfs_create ();
-  if (g == NULL) {
-    fprintf (stderr, _("guestfs_create: failed to create handle\n"));
-    exit (EXIT_FAILURE);
-  }
+  if (g == NULL)
+    error (EXIT_FAILURE, errno, "guestfs_create");
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -142,12 +142,10 @@ main (int argc, char *argv[])
           partition = "mbr";
         else
           partition = optarg;
-      } else {
-        fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name,
-                 long_options[option_index].name, option_index);
-        exit (EXIT_FAILURE);
-      }
+      } else
+        error (EXIT_FAILURE, 0,
+               _("unknown long option: %s (%d)"),
+               long_options[option_index].name, option_index);
       break;
 
     case 'F':
@@ -281,8 +279,14 @@ exec_command_count_output (char **argv, uint64_t *bytes_rtn)
   pid_t pid;
   int status;
   int fd[2];
-  char buffer[BUFSIZ];
+  CLEANUP_FREE char *buffer = NULL;
   ssize_t r;
+
+  buffer = malloc (BUFSIZ);
+  if (buffer == NULL) {
+    perror ("malloc");
+    return -1;
+  }
 
   if (pipe (fd) == -1) {
     perror ("pipe");
@@ -297,7 +301,7 @@ exec_command_count_output (char **argv, uint64_t *bytes_rtn)
     close (fd[1]);
 
     /* Read output from the subprocess and count the length. */
-    while ((r = read (fd[0], buffer, sizeof buffer)) > 0) {
+    while ((r = read (fd[0], buffer, BUFSIZ)) > 0) {
       *bytes_rtn += r;
     }
     if (r == -1) {

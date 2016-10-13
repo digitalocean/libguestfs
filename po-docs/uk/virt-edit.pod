@@ -71,15 +71,15 @@ separate I<-a> options.
 примусово використати певний формат, скористайтеся параметром
 I<--format=..>.
 
-=item B<-a адреса>
+=item B<-a> адреса
 
-=item B<--add адреса>
+=item B<--add> адреса
 
 Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
-=item B<-b> суфікс
+=item B<-b> EXTENSION
 
-=item B<--backup> суфікс
+=item B<--backup> EXTENSION
 
 Create a backup of the original file I<in the guest disk image>.  The backup
 has the original filename with C<extension> added.
@@ -91,9 +91,9 @@ write:
 
 Типово створюється файл резервної копії.
 
-=item B<-c адреса>
+=item B<-c> адреса
 
-=item B<--connect адреса>
+=item B<--connect> адреса
 
 Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
 пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
@@ -101,9 +101,9 @@ write:
 Якщо вказати блокові пристрої гостьових систем безпосередньо, libvirt не
 буде використовуватися взагалі.
 
-=item B<-d> гість
+=item B<-d> GUEST
 
-=item B<--domain> гість
+=item B<--domain> GUEST
 
 Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
 використовувати замість назв.
@@ -147,7 +147,7 @@ Note that this option is only available when Perl 5 is installed.
 примусове встановлення формату без обробки (без автоматичного визначення)
 для F<disk.img>.
 
- virt-edit --format=raw -a disk.img --format -a another.img file
+ virt-cat --format=raw -a диск.img --format -a інший.img файл
 
 примусове встановлення формату без обробки (без автоматичного визначення)
 для F<diskimg> і повернення до автоматичного визначення для F<another.img>.
@@ -162,9 +162,9 @@ Note that this option is only available when Perl 5 is installed.
 Read key or passphrase parameters from stdin.  The default is to try to read
 passphrases from the user by opening F</dev/tty>.
 
-=item B<-m пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
+=item B<-m> dev[:mountpoint[:options[:fstype]]]
 
-=item B<--mount пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
+=item B<--mount> dev[:mountpoint[:options[:fstype]]]
 
 Змонтувати названий розділ або логічний том до вказаної точки монтування.
 
@@ -389,5 +389,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

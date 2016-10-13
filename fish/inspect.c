@@ -16,12 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * This file implements inspecting the guest and mounting the
+ * filesystems found in the right places.  It is used by the
+ * L<guestfish(1)> I<-i> option and some utilities such as
+ * L<virt-cat(1)>.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <error.h>
 #include <libintl.h>
 
 #include "c-ctype.h"
@@ -54,15 +62,14 @@ compare_keys (const void *p1, const void *p2)
   return strcasecmp (key1, key2);
 }
 
-/* This function implements the -i option. */
+/**
+ * This function implements the I<-i> option.
+ */
 void
 inspect_mount_handle (guestfs_h *g)
 {
-  if (live) {
-    fprintf (stderr, _("%s: don't use --live and -i options together\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (live)
+    error (EXIT_FAILURE, 0, _("don't use --live and -i options together"));
 
   inspect_do_decrypt (g);
 
@@ -159,7 +166,8 @@ inspect_mount_root (guestfs_h *g, const char *root)
              guestfs_int_program_name);
 }
 
-/* This function is called only if the above function was called,
+/**
+ * This function is called only if C<inspect_mount_root> was called,
  * and only after we've printed the prompt in interactive mode.
  */
 void
@@ -194,8 +202,9 @@ print_inspect_prompt (void)
   }
 }
 
-/* Make a LUKS map name from the partition name,
- * eg "/dev/vda2" => "luksvda2"
+/**
+ * Make a LUKS map name from the partition name,
+ * eg. C<"/dev/vda2" =E<gt> "luksvda2">
  */
 static void
 make_mapname (const char *device, char *mapname, size_t len)
@@ -221,7 +230,8 @@ make_mapname (const char *device, char *mapname, size_t len)
   *mapname = '\0';
 }
 
-/* Simple implementation of decryption: look for any crypto_LUKS
+/**
+ * Simple implementation of decryption: look for any C<crypto_LUKS>
  * partitions and decrypt them, then rescan for VGs.  This only works
  * for Fedora whole-disk encryption.  WIP to make this work for other
  * encryption schemes.

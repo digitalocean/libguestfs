@@ -75,29 +75,6 @@
 #define CLEANUP_PCLOSE
 #endif
 
-/* NB: At some point we will stop exporting these safe_* allocation
- * functions outside the library, so don't use them in new tools or
- * bindings code.
- */
-extern GUESTFS_DLL_PUBLIC void *guestfs_int_safe_malloc (guestfs_h *g, size_t nbytes);
-extern GUESTFS_DLL_PUBLIC void *guestfs_int_safe_calloc (guestfs_h *g, size_t n, size_t s);
-extern GUESTFS_DLL_PUBLIC char *guestfs_int_safe_strdup (guestfs_h *g, const char *str);
-extern GUESTFS_DLL_PUBLIC void *guestfs_int_safe_memdup (guestfs_h *g, const void *ptr, size_t size);
-extern void *guestfs_int_safe_realloc (guestfs_h *g, void *ptr, size_t nbytes);
-extern char *guestfs_int_safe_strdup (guestfs_h *g, const char *str);
-extern char *guestfs_int_safe_strndup (guestfs_h *g, const char *str, size_t n);
-extern void *guestfs_int_safe_memdup (guestfs_h *g, const void *ptr, size_t size);
-extern char *guestfs_int_safe_asprintf (guestfs_h *g, const char *fs, ...)
-  __attribute__((format (printf,2,3)));
-
-#define safe_calloc guestfs_int_safe_calloc
-#define safe_malloc guestfs_int_safe_malloc
-#define safe_realloc guestfs_int_safe_realloc
-#define safe_strdup guestfs_int_safe_strdup
-#define safe_strndup guestfs_int_safe_strndup
-#define safe_memdup guestfs_int_safe_memdup
-#define safe_asprintf guestfs_int_safe_asprintf
-
 /* utils.c */
 extern void guestfs_int_free_string_list (char **);
 extern size_t guestfs_int_count_strings (char *const *);
@@ -110,9 +87,6 @@ extern int guestfs_int_random_string (char *ret, size_t len);
 extern char *guestfs_int_drive_name (size_t index, char *ret);
 extern ssize_t guestfs_int_drive_index (const char *);
 extern int guestfs_int_is_true (const char *str);
-extern const char *guestfs_int_ovmf_i386_firmware[];
-extern const char *guestfs_int_ovmf_x86_64_firmware[];
-extern const char *guestfs_int_aavmf_firmware[];
 //extern void guestfs_int_fadvise_normal (int fd);
 extern void guestfs_int_fadvise_sequential (int fd);
 extern void guestfs_int_fadvise_random (int fd);
@@ -120,6 +94,18 @@ extern void guestfs_int_fadvise_noreuse (int fd);
 //extern void guestfs_int_fadvise_dontneed (int fd);
 //extern void guestfs_int_fadvise_willneed (int fd);
 extern char *guestfs_int_shell_unquote (const char *str);
+
+/* uefi.c */
+struct uefi_firmware {
+  const char *code;		/* code file (NULL = end of list) */
+  const char *code_debug;	/* code file with debugging msgs (may be NULL)*/
+  const char *vars;		/* vars template file */
+  int flags;                    /* various flags, see below */
+#define UEFI_FLAG_SECURE_BOOT_REQUIRED 1 /* secure boot (see RHBZ#1367615) */
+};
+extern struct uefi_firmware guestfs_int_uefi_i386_firmware[];
+extern struct uefi_firmware guestfs_int_uefi_x86_64_firmware[];
+extern struct uefi_firmware guestfs_int_uefi_aarch64_firmware[];
 
 /* These functions are used internally by the CLEANUP_* macros.
  * Don't call them directly.
@@ -178,5 +164,34 @@ extern void guestfs_int_cleanup_pclose (void *ptr);
             type),                                                      \
    NULL                                                                 \
 )
+
+/* ANSI colours.  These are defined as macros so that we don't have to
+ * define the force_colour global variable in the library.
+ */
+#define ansi_green(fp)                           \
+  do {                                           \
+    if (force_colour || isatty (fileno (fp)))    \
+      fputs ("\033[0;32m", (fp));                \
+  } while (0)
+#define ansi_red(fp)                             \
+  do {                                           \
+    if (force_colour || isatty (fileno (fp)))    \
+      fputs ("\033[1;31m", (fp));                \
+  } while (0)
+#define ansi_blue(fp)                            \
+  do {                                           \
+    if (force_colour || isatty (fileno (fp)))    \
+      fputs ("\033[1;34m", (fp));                \
+  } while (0)
+#define ansi_magenta(fp)                         \
+  do {                                           \
+    if (force_colour || isatty (fileno (fp)))    \
+      fputs ("\033[1;35m", (fp));                \
+  } while (0)
+#define ansi_restore(fp)                         \
+  do {                                           \
+    if (force_colour || isatty (fileno (fp)))    \
+      fputs ("\033[0m", (fp));                   \
+  } while (0)
 
 #endif /* GUESTFS_INTERNAL_FRONTEND_H_ */

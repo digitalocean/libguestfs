@@ -21,25 +21,8 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	copy_to_local.ml \
 	v2v_unit_tests.ml \
-	$(TESTS) \
-	HACKING \
-	test-v2v-cdrom.expected \
-	test-v2v-cdrom.xml \
-	test-v2v-i-ova.ovf \
-	test-v2v-i-ova.xml \
-	test-v2v-i-ova-formats.expected \
-	test-v2v-i-ova-formats.ovf \
-	test-v2v-i-ova-gz.expected \
-	test-v2v-i-ova-gz.ovf \
-	test-v2v-i-ova-two-disks.expected \
-	test-v2v-i-ova-two-disks.ovf \
-	test-v2v-networks-and-bridges-expected.xml \
-	test-v2v-networks-and-bridges.xml \
-	test-v2v-sound.xml \
 	virt-v2v.pod \
 	virt-v2v-copy-to-local.pod
-
-CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-v2v
 
 SOURCES_MLI = \
 	changeuid.mli \
@@ -57,6 +40,7 @@ SOURCES_MLI = \
 	input_ova.mli \
 	inspect_source.mli \
 	linux.mli \
+	linux_bootloaders.mli \
 	modules_list.mli \
 	output_glance.mli \
 	output_libvirt.mli \
@@ -66,8 +50,9 @@ SOURCES_MLI = \
 	output_rhev.mli \
 	output_vdsm.mli \
 	OVF.mli \
-	stringMap.mli \
+	target_bus_assignment.mli \
 	types.mli \
+	uefi.mli \
 	utils.mli \
 	vCenter.mli \
 	windows.mli \
@@ -75,9 +60,9 @@ SOURCES_MLI = \
 	xml.mli
 
 SOURCES_ML = \
-	stringMap.ml \
 	types.ml \
 	xml.ml \
+	uefi.ml \
 	utils.ml \
 	vCenter.ml \
 	domainxml.ml \
@@ -95,6 +80,7 @@ SOURCES_ML = \
 	input_libvirt_xen_ssh.ml \
 	input_libvirt.ml \
 	input_ova.ml \
+	linux_bootloaders.ml \
 	convert_linux.ml \
 	convert_windows.ml \
 	output_null.ml \
@@ -105,13 +91,12 @@ SOURCES_ML = \
 	output_rhev.ml \
 	output_vdsm.ml \
 	inspect_source.ml \
+	target_bus_assignment.ml \
 	cmdline.ml \
 	v2v.ml
 
 SOURCES_C = \
-	../mllib/mkdtemp-c.c \
 	domainxml-c.c \
-	changeuid-c.c \
 	utils-c.c \
 	xml-c.c
 
@@ -131,15 +116,9 @@ virt_v2v_CFLAGS = \
 	$(LIBVIRT_CFLAGS)
 
 BOBJECTS = \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/regedit.cmo \
-	$(top_builddir)/mllib/mkdtemp.cmo \
-	$(top_builddir)/mllib/JSON.cmo \
-	$(top_builddir)/mllib/curl.cmo \
 	$(top_builddir)/customize/customize_utils.cmo \
 	$(top_builddir)/customize/firstboot.cmo \
+	$(top_builddir)/customize/SELinux_relabel.cmo \
 	$(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
@@ -168,13 +147,11 @@ OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
-BEST    = c
-OCAMLLINKFLAGS = mlguestfs.cma -custom
 else
 OBJECTS = $(XOBJECTS)
-BEST    = opt
-OCAMLLINKFLAGS = mlguestfs.cmxa
 endif
+
+OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
 
 virt_v2v_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
 virt_v2v_LINK = \
@@ -197,12 +174,8 @@ virt_v2v_copy_to_local_CFLAGS = \
 	$(LIBVIRT_CFLAGS)
 
 COPY_TO_LOCAL_BOBJECTS = \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/JSON.cmo \
-	$(top_builddir)/mllib/curl.cmo \
 	xml.cmo \
+	uefi.cmo \
 	utils.cmo \
 	vCenter.cmo \
 	domainxml.cmo \
@@ -216,7 +189,9 @@ COPY_TO_LOCAL_OBJECTS = $(COPY_TO_LOCAL_XOBJECTS)
 endif
 
 virt_v2v_copy_to_local_DEPENDENCIES = \
-	$(COPY_TO_LOCAL_OBJECTS) $(top_srcdir)/ocaml-link.sh
+	$(COPY_TO_LOCAL_OBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 virt_v2v_copy_to_local_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
@@ -256,12 +231,6 @@ stamp-virt-v2v-copy-to-local.pod: virt-v2v-copy-to-local.pod
 	  $<
 	touch $@
 
-CLEANFILES += \
-	stamp-virt-v2v.pod \
-	stamp-virt-v2v-copy-to-local.pod \
-	virt-v2v.1 \
-	virt-v2v-copy-to-local.1
-
 # Tests.
 
 # The virt-v2v tests here are not meant to be thorough tests of guest
@@ -281,8 +250,10 @@ CLEANFILES += \
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 TESTS = \
+	test-v2v-docs.sh \
 	test-v2v-i-ova-formats.sh \
 	test-v2v-i-ova-gz.sh \
+	test-v2v-i-ova-subfolders.sh \
 	test-v2v-i-ova-two-disks.sh \
 	test-v2v-copy-to-local.sh \
 	test-v2v-bad-networks-and-bridges.sh
@@ -294,6 +265,7 @@ endif
 if ENABLE_APPLIANCE
 TESTS += \
 	test-v2v-cdrom.sh \
+	test-v2v-floppy.sh \
 	test-v2v-i-ova.sh \
 	test-v2v-i-disk.sh \
 	test-v2v-in-place.sh \
@@ -320,33 +292,85 @@ check-valgrind:
 	$(MAKE) VG="$(abs_top_builddir)/run @VG@" check
 
 SLOW_TESTS = \
-	test-v2v-real-conversions.sh
+	$(real_guests_scripts) \
+	test-v2v-trim.sh
 
-check-slow: $(real_guests:%=%.img)
+check-slow:
 	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
-# A selection of real guests that test-v2v-real-conversions.sh will
+# A selection of real guests that test-v2v-conversion-of.sh will
 # try to convert.  This is only used by 'make check-slow'.
 
-real_guests = \
-	centos-6 \
-	centos-7.0 \
-	fedora-20 \
-	rhel-5.10 \
-	rhel-6.5 \
-	rhel-7.0
+real_guests_scripts = \
+	test-v2v-conversion-of-centos-6.sh \
+	test-v2v-conversion-of-centos-7.0.sh \
+	test-v2v-conversion-of-fedora-20.sh \
+	test-v2v-conversion-of-fedora-23.sh \
+	test-v2v-conversion-of-rhel-5.10.sh \
+	test-v2v-conversion-of-rhel-6.8.sh \
+	test-v2v-conversion-of-rhel-7.0.sh \
+	test-v2v-conversion-of-rhel-7.2.sh
 
-$(real_guests:%=%.img):
-	rm -f $@
-	n=`basename $@ .img`;                                            \
-	vb="$(top_builddir)/run $(top_builddir)/builder/virt-builder";   \
-	if $$vb --help >/dev/null && $$vb --notes $$n >/dev/null; then   \
-	  $$vb $$n;                                                      \
-	else                                                             \
-	  touch $$n.img;                                                 \
-	fi
+test-v2v-conversion-of-%.sh:
+	rm -f $@ $@-t
+	f=`echo "$@" | $(SED) 's/test-v2v-conversion-of-\(.*\).sh/\1/'`; \
+	echo 'exec $$srcdir/test-v2v-conversion-of.sh' "$$f" > $@-t
+	chmod 0755 $@-t
+	mv $@-t $@
 
-CLEANFILES += $(real_guests:%=%.img)
+CLEANFILES += \
+	$(real_guests_scripts) \
+	real-*.img \
+	real-*.xml
+
+EXTRA_DIST += \
+	test-v2v-bad-networks-and-bridges.sh \
+	test-v2v-cdrom.expected \
+	test-v2v-cdrom.sh \
+	test-v2v-cdrom.xml \
+	test-v2v-copy-to-local.sh \
+	test-v2v-docs.sh \
+	test-v2v-floppy.expected \
+	test-v2v-floppy.sh \
+	test-v2v-floppy.xml \
+	test-v2v-i-disk.sh \
+	test-v2v-i-ova-formats.expected \
+	test-v2v-i-ova-formats.ovf \
+	test-v2v-i-ova-formats.sh \
+	test-v2v-i-ova-gz.expected \
+	test-v2v-i-ova-gz.ovf \
+	test-v2v-i-ova-gz.sh \
+	test-v2v-i-ova-subfolders.expected \
+	test-v2v-i-ova-subfolders.ovf \
+	test-v2v-i-ova-subfolders.sh \
+	test-v2v-i-ova-two-disks.expected \
+	test-v2v-i-ova-two-disks.ovf \
+	test-v2v-i-ova-two-disks.sh \
+	test-v2v-i-ova.ovf \
+	test-v2v-i-ova.sh \
+	test-v2v-i-ova.xml \
+	test-v2v-in-place.sh \
+	test-v2v-machine-readable.sh \
+	test-v2v-networks-and-bridges-expected.xml \
+	test-v2v-networks-and-bridges.sh \
+	test-v2v-networks-and-bridges.xml \
+	test-v2v-no-copy.sh \
+	test-v2v-o-glance.sh \
+	test-v2v-o-libvirt.sh \
+	test-v2v-o-null.sh \
+	test-v2v-o-qemu.sh \
+	test-v2v-o-rhev.sh \
+	test-v2v-o-vdsm-options.sh \
+	test-v2v-oa-option.sh \
+	test-v2v-of-option.sh \
+	test-v2v-on-option.sh \
+	test-v2v-print-source.sh \
+	test-v2v-conversion-of.sh \
+	test-v2v-sound.sh \
+	test-v2v-sound.xml \
+	test-v2v-trim.sh \
+	test-v2v-virtio-win-iso.sh \
+	test-v2v-windows-conversion.sh
 
 # Unit tests.
 check_PROGRAMS =
@@ -355,13 +379,9 @@ check_PROGRAMS += v2v_unit_tests
 endif
 
 v2v_unit_tests_BOBJECTS = \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/regedit.cmo \
-	stringMap.cmo \
 	types.cmo \
 	xml.cmo \
+	uefi.cmo \
 	utils.cmo \
 	DOM.cmo \
 	OVF.cmo \
@@ -384,15 +404,16 @@ v2v_unit_tests_THEOBJECTS = $(v2v_unit_tests_XOBJECTS)
 v2v_unit_tests.cmx: OCAMLPACKAGES += -package oUnit
 endif
 
-v2v_unit_tests_DEPENDENCIES = $(v2v_unit_tests_THEOBJECTS) $(top_srcdir)/ocaml-link.sh
+v2v_unit_tests_DEPENDENCIES = \
+	$(v2v_unit_tests_THEOBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 v2v_unit_tests_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) \
 	  $(OCAMLPACKAGES) -package oUnit \
 	  $(OCAMLLINKFLAGS) \
 	  $(v2v_unit_tests_THEOBJECTS) -o $@
-
-CLEANFILES += oUnit-*
 
 # Dependencies.
 depend: .depend
@@ -409,7 +430,5 @@ depend: .depend
 -include .depend
 
 endif
-
-DISTCLEANFILES = .depend
 
 .PHONY: depend docs

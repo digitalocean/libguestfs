@@ -3850,9 +3850,10 @@ glob_expand_stub (XDR *xdr_in)
   char **r;
   struct guestfs_glob_expand_args args;
   const char *pattern;
+  int directoryslash;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -3864,9 +3865,10 @@ glob_expand_stub (XDR *xdr_in)
   }
   pattern = args.pattern;
   ABS_PATH (pattern, , goto done);
+  directoryslash = args.directoryslash;
 
   NEED_ROOT (, goto done);
-  r = do_glob_expand (pattern);
+  r = do_glob_expand (pattern, directoryslash);
   if (r == NULL)
     /* do_glob_expand has already called reply_with_error */
     goto done;
@@ -9356,7 +9358,8 @@ is_lv_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_lv_args args;
-  CLEANUP_FREE char *device = NULL;
+  CLEANUP_FREE_MOUNTABLE mountable_t mountable
+      = { .device = NULL, .volume = NULL };
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9369,9 +9372,9 @@ is_lv_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  RESOLVE_DEVICE (args.device, device, , goto done);
+  RESOLVE_MOUNTABLE (args.mountable, mountable, , goto done);
 
-  r = do_is_lv (device);
+  r = do_is_lv (&mountable);
   if (r == -1)
     /* do_is_lv has already called reply_with_error */
     goto done;
@@ -16921,6 +16924,409 @@ done_no_free:
   return;
 }
 
+static void
+part_set_disk_guid_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_part_set_disk_guid_args args;
+  CLEANUP_FREE char *device = NULL;
+  const char *guid;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_gdisk_available ()) {
+    reply_with_unavailable_feature ("gdisk");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_set_disk_guid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+  guid = args.guid;
+
+  r = do_part_set_disk_guid (device, guid);
+  if (r == -1)
+    /* do_part_set_disk_guid has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_set_disk_guid_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+part_get_disk_guid_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_part_get_disk_guid_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_gdisk_available ()) {
+    reply_with_unavailable_feature ("gdisk");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_get_disk_guid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_part_get_disk_guid (device);
+  if (r == NULL)
+    /* do_part_get_disk_guid has already called reply_with_error */
+    goto done;
+
+  struct guestfs_part_get_disk_guid_ret ret;
+  ret.guid = r;
+  reply ((xdrproc_t) &xdr_guestfs_part_get_disk_guid_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_get_disk_guid_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+part_set_disk_guid_random_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_part_set_disk_guid_random_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_gdisk_available ()) {
+    reply_with_unavailable_feature ("gdisk");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_set_disk_guid_random_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_part_set_disk_guid_random (device);
+  if (r == -1)
+    /* do_part_set_disk_guid_random has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_set_disk_guid_random_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+part_expand_gpt_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_part_expand_gpt_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_gdisk_available ()) {
+    reply_with_unavailable_feature ("gdisk");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_expand_gpt_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_part_expand_gpt (device);
+  if (r == -1)
+    /* do_part_expand_gpt has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_expand_gpt_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+ntfscat_i_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_ntfscat_i_args args;
+  CLEANUP_FREE_MOUNTABLE mountable_t device
+      = { .device = NULL, .volume = NULL };
+  int64_t inode;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ntfscat_i_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_MOUNTABLE (args.device, device, , goto done);
+  inode = args.inode;
+
+  r = do_ntfscat_i (&device, inode);
+  if (r == -1)
+    /* do_ntfscat_i has already called reply_with_error */
+    goto done;
+
+  /* do_ntfscat_i has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ntfscat_i_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+download_inode_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_download_inode_args args;
+  CLEANUP_FREE_MOUNTABLE mountable_t device
+      = { .device = NULL, .volume = NULL };
+  int64_t inode;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_sleuthkit_available ()) {
+    reply_with_unavailable_feature ("sleuthkit");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_download_inode_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_MOUNTABLE (args.device, device, , goto done);
+  inode = args.inode;
+
+  r = do_download_inode (&device, inode);
+  if (r == -1)
+    /* do_download_inode has already called reply_with_error */
+    goto done;
+
+  /* do_download_inode has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_download_inode_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+btrfs_filesystem_show_stub (XDR *xdr_in)
+{
+  char **r;
+  struct guestfs_btrfs_filesystem_show_args args;
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_unavailable_feature ("btrfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_filesystem_show_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_DEVICE (args.device, device, , goto done);
+
+  r = do_btrfs_filesystem_show (device);
+  if (r == NULL)
+    /* do_btrfs_filesystem_show has already called reply_with_error */
+    goto done;
+
+  struct guestfs_btrfs_filesystem_show_ret ret;
+  ret.devices.devices_len = count_strings (r);
+  ret.devices.devices_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_btrfs_filesystem_show_ret, (char *) &ret);
+  free_strings (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_filesystem_show_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+internal_filesystem_walk_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_internal_filesystem_walk_args args;
+  CLEANUP_FREE_MOUNTABLE mountable_t device
+      = { .device = NULL, .volume = NULL };
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_libtsk_available ()) {
+    reply_with_unavailable_feature ("libtsk");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_internal_filesystem_walk_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_MOUNTABLE (args.device, device, , goto done);
+
+  r = do_internal_filesystem_walk (&device);
+  if (r == -1)
+    /* do_internal_filesystem_walk has already called reply_with_error */
+    goto done;
+
+  /* do_internal_filesystem_walk has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_filesystem_walk_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+selinux_relabel_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_selinux_relabel_args args;
+  const char *specfile;
+  const char *path;
+  int force;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_selinuxrelabel_available ()) {
+    reply_with_unavailable_feature ("selinuxrelabel");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_selinux_relabel_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  specfile = args.specfile;
+  path = args.path;
+  ABS_PATH (path, , goto done);
+  force = args.force;
+
+  NEED_ROOT (, goto done);
+  r = do_selinux_relabel (specfile, path, force);
+  if (r == -1)
+    /* do_selinux_relabel has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_selinux_relabel_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+download_blocks_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_download_blocks_args args;
+  CLEANUP_FREE_MOUNTABLE mountable_t device
+      = { .device = NULL, .volume = NULL };
+  int64_t start;
+  int64_t stop;
+  int unallocated;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_sleuthkit_available ()) {
+    reply_with_unavailable_feature ("sleuthkit");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_download_blocks_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_MOUNTABLE (args.device, device, , goto done);
+  start = args.start;
+  stop = args.stop;
+  unallocated = args.unallocated;
+
+  r = do_download_blocks (&device, start, stop, unallocated);
+  if (r == -1)
+    /* do_download_blocks has already called reply_with_error */
+    goto done;
+
+  /* do_download_blocks has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_download_blocks_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -18255,6 +18661,36 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_INTERNAL_FEATURE_AVAILABLE:
       internal_feature_available_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_SET_DISK_GUID:
+      part_set_disk_guid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_GET_DISK_GUID:
+      part_get_disk_guid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_SET_DISK_GUID_RANDOM:
+      part_set_disk_guid_random_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_EXPAND_GPT:
+      part_expand_gpt_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_NTFSCAT_I:
+      ntfscat_i_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_DOWNLOAD_INODE:
+      download_inode_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_FILESYSTEM_SHOW:
+      btrfs_filesystem_show_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_FILESYSTEM_WALK:
+      internal_filesystem_walk_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_SELINUX_RELABEL:
+      selinux_relabel_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_DOWNLOAD_BLOCKS:
+      download_blocks_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

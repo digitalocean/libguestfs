@@ -23,6 +23,8 @@
 #include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
+#include <error.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 
@@ -37,6 +39,7 @@
 GUESTFSD_EXT_CMD(str_lvm, lvm);
 GUESTFSD_EXT_CMD(str_cp, cp);
 GUESTFSD_EXT_CMD(str_rm, rm);
+GUESTFSD_EXT_CMD(str_lvmetad, lvmetad);
 
 /* This runs during daemon start up and creates a complete copy of
  * /etc/lvm so that we can modify it as we desire.  We set
@@ -72,10 +75,8 @@ copy_lvm (void)
     return;
   }
 
-  if (mkdtemp (lvm_system_dir) == NULL) {
-    fprintf (stderr, "mkdtemp: %s: %m\n", lvm_system_dir);
-    exit (EXIT_FAILURE);
-  }
+  if (mkdtemp (lvm_system_dir) == NULL)
+    error (EXIT_FAILURE, errno, "mkdtemp: %s", lvm_system_dir);
 
   /* Copy the entire directory */
   snprintf (cmd, sizeof cmd, "%s -a /etc/lvm/ %s", str_cp, lvm_system_dir);
@@ -99,6 +100,23 @@ copy_lvm (void)
 
   /* Set a handler to remove the temporary directory at exit. */
   atexit (rm_lvm_system_dir);
+}
+
+/* Try to run lvmetad, without failing if it couldn't. */
+void
+start_lvmetad (void)
+{
+  char cmd[64];
+  int r;
+
+  snprintf (cmd, sizeof cmd, "%s", str_lvmetad);
+  if (verbose)
+    printf ("%s\n", cmd);
+  r = system (cmd);
+  if (r == -1)
+    perror ("system/lvmetad");
+  else if (!WIFEXITED (r) || WEXITSTATUS (r) != 0)
+    fprintf (stderr, "warning: lvmetad command failed\n");
 }
 
 static void
@@ -148,7 +166,12 @@ set_filter (char *const *filters)
   /* Remove all the old filters ... */
   r = aug_rm (aug, "/files/lvm/lvm.conf/devices/dict/filter/list/*");
   if (r == -1) {
-    AUGEAS_ERROR ("aug_rm");
+    AUGEAS_ERROR ("aug_rm/filter");
+    return -1;
+  }
+  r = aug_rm (aug, "/files/lvm/lvm.conf/devices/dict/global_filter/list/*");
+  if (r == -1) {
+    AUGEAS_ERROR ("aug_rm/global_filter");
     return -1;
   }
 
@@ -161,7 +184,16 @@ set_filter (char *const *filters)
               count + 1);
 
     if (aug_set (aug, buf, filters[count]) == -1) {
-      AUGEAS_ERROR ("aug_set: %d: %s", count, filters[count]);
+      AUGEAS_ERROR ("aug_set/filter: %d: %s", count, filters[count]);
+      return -1;
+    }
+
+    snprintf (buf, sizeof buf,
+              "/files/lvm/lvm.conf/devices/dict/global_filter/list/%d/str",
+              count + 1);
+
+    if (aug_set (aug, buf, filters[count]) == -1) {
+      AUGEAS_ERROR ("aug_set/global_filter: %d: %s", count, filters[count]);
       return -1;
     }
   }
@@ -170,11 +202,21 @@ set_filter (char *const *filters)
   r = aug_match (aug, "/files/lvm/lvm.conf/devices/dict/filter/list/*/str",
                  NULL);
   if (r == -1) {
-    AUGEAS_ERROR ("aug_match");
+    AUGEAS_ERROR ("aug_match/filter");
     return -1;
   }
   if (r != count) {
     reply_with_error ("filters# vs matches mismatch: %d vs %d", count, r);
+    return -1;
+  }
+  r = aug_match (aug, "/files/lvm/lvm.conf/devices/dict/global_filter/list/*/str",
+                 NULL);
+  if (r == -1) {
+    AUGEAS_ERROR ("aug_match/global_filter");
+    return -1;
+  }
+  if (r != count) {
+    reply_with_error ("global_filter# vs matches mismatch: %d vs %d", count, r);
     return -1;
   }
 

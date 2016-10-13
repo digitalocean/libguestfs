@@ -26,12 +26,6 @@
  */
 #define DEBUG_STDERR 1
 
-/* Force remote debugging even if user doesn't enable it.  Since
- * remote debugging is mostly free, we might as well enable this even
- * in production.
- */
-#define FORCE_REMOTE_DEBUG 1
-
 #include "miniexpect.h"
 
 /* We don't use libguestfs directly here, and we don't link to it
@@ -58,9 +52,14 @@ extern char **all_interfaces;
  */
 extern int is_iso_environment;
 
+/* True if virt-v2v supports the --colours option. */
+extern int feature_colours_option;
+
+/* virt-p2v --colours option (used by ansi_* macros). */
+extern int force_colour;
+
 /* config.c */
 struct config {
-  int verbose;
   char *server;
   int port;
   char *username;
@@ -106,10 +105,11 @@ extern const char *get_cmdline_key (char **cmdline, const char *key);
 #define CMDLINE_SOURCE_PROC_CMDLINE 2 /* /proc/cmdline */
 
 /* kernel.c */
-extern void kernel_configuration (struct config *, char **cmdline, int cmdline_source);
+extern void update_config_from_kernel_cmdline (struct config *config, char **cmdline);
+extern void kernel_conversion (struct config *, char **cmdline, int cmdline_source);
 
 /* gui.c */
-extern void gui_application (struct config *);
+extern void gui_conversion (struct config *);
 
 /* conversion.c */
 extern int start_conversion (struct config *, void (*notify_ui) (int type, const char *data));
@@ -123,10 +123,14 @@ extern int conversion_is_running (void);
 /* ssh.c */
 extern int test_connection (struct config *);
 extern mexp_h *open_data_connection (struct config *, int *local_port, int *remote_port);
-extern mexp_h *start_remote_connection (struct config *, const char *remote_dir, const char *libvirt_xml, const char *dmesg);
+extern mexp_h *start_remote_connection (struct config *, const char *remote_dir);
 extern const char *get_ssh_error (void);
+extern int scp_file (struct config *config, const char *localfile, const char *remotefile);
 
 /* utils.c */
+extern uint64_t get_blockdev_size (const char *dev);
+extern char *get_blockdev_model (const char *dev);
+extern char *get_blockdev_serial (const char *dev);
 extern char *get_if_addr (const char *if_name);
 extern char *get_if_vendor (const char *if_name, int truncate);
 extern void wait_network_online (const struct config *);

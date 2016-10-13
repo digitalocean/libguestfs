@@ -16,6 +16,39 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * This file implements almost all of the virt-p2v graphical user
+ * interface (GUI).
+ *
+ * The GUI has three main dialogs:
+ *
+ * =over 4
+ *
+ * =item Connection dialog
+ *
+ * The connection dialog is the one shown initially.  It asks the user
+ * to type in the login details for the remote conversion server and
+ * invites the user to test the ssh connection.
+ *
+ * =item Conversion dialog
+ *
+ * The conversion dialog asks for information about the target VM
+ * (eg. the number of vCPUs required), and about what to convert
+ * (eg. which network interfaces should be copied and which should be
+ * ignored).
+ *
+ * =item Running dialog
+ *
+ * The running dialog is displayed when the P2V process is underway.
+ * It mainly displays the virt-v2v debug messages.
+ *
+ * =back
+ *
+ * Note that the other major dialog (C<"Configure network ...">) is
+ * handled entirely by NetworkManager's L<nm-connection-editor(1)>
+ * program and has nothing to do with this code.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -26,20 +59,130 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <error.h>
 #include <locale.h>
 #include <assert.h>
 #include <libintl.h>
 
 #include <pthread.h>
 
-#pragma GCC diagnostic ignored "-Wstrict-prototypes" /* error in <gtk.h> */
+/* errors in <gtk.h> */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#if defined(__GNUC__) && __GNUC__ >= 6 /* gcc >= 6 */
+#pragma GCC diagnostic ignored "-Wshift-overflow"
+#endif
 #include <gtk/gtk.h>
+#pragma GCC diagnostic pop
 
 #include "ignore-value.h"
 
 #include "p2v.h"
 
-/* Interactive GUI configuration. */
+/* Maximum vCPUs and guest memory that we will allow users to set.
+ * These limits come from
+ * https://access.redhat.com/articles/rhel-kvm-limits
+ */
+#define MAX_SUPPORTED_VCPUS 160
+#define MAX_SUPPORTED_MEMORY_MB (UINT64_C (4000 * 1024))
+
+/* Backwards compatibility for some deprecated functions in Gtk 3. */
+#if GTK_CHECK_VERSION(3,2,0)   /* gtk >= 3.2 */
+#define hbox_new(box, homogeneous, spacing)                    \
+  do {                                                         \
+    (box) = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, spacing); \
+    if (homogeneous)                                           \
+      gtk_box_set_homogeneous (GTK_BOX (box), TRUE);           \
+  } while (0)
+#define vbox_new(box, homogeneous, spacing)                    \
+  do {                                                         \
+    (box) = gtk_box_new (GTK_ORIENTATION_VERTICAL, spacing);   \
+    if (homogeneous)                                           \
+      gtk_box_set_homogeneous (GTK_BOX (box), TRUE);           \
+  } while (0)
+#else /* gtk < 3.2 */
+#define hbox_new(box, homogeneous, spacing)             \
+  (box) = gtk_hbox_new ((homogeneous), (spacing))
+#define vbox_new(box, homogeneous, spacing)             \
+  (box) = gtk_vbox_new ((homogeneous), (spacing))
+#endif
+
+#if GTK_CHECK_VERSION(3,4,0)   /* gtk >= 3.4 */
+/* GtkGrid is sufficiently similar to GtkTable that we can just
+ * redefine these functions.
+ */
+#define table_new(grid, rows, columns)          \
+  (grid) = gtk_grid_new ()
+#define table_attach(grid, child, left, right, top, bottom, xoptions, yoptions, xpadding, ypadding) \
+  do {                                                                  \
+    if (((xoptions) & GTK_EXPAND) != 0)                                 \
+      gtk_widget_set_hexpand ((child), TRUE);                           \
+    if (((xoptions) & GTK_FILL) != 0)                                   \
+      gtk_widget_set_halign ((child), GTK_ALIGN_FILL);                  \
+    if (((yoptions) & GTK_EXPAND) != 0)                                 \
+      gtk_widget_set_vexpand ((child), TRUE);                           \
+    if (((yoptions) & GTK_FILL) != 0)                                   \
+      gtk_widget_set_valign ((child), GTK_ALIGN_FILL);                  \
+    set_padding ((child), (xpadding), (ypadding));                      \
+    gtk_grid_attach (GTK_GRID (grid), (child),                          \
+                     (left), (top), (right)-(left), (bottom)-(top));    \
+  } while (0)
+#else
+#define table_new(table, rows, columns)                 \
+  (table) = gtk_table_new ((rows), (columns), FALSE)
+#define table_attach(table, child, left, right,top, bottom, xoptions, yoptions, xpadding, ypadding) \
+  gtk_table_attach (GTK_TABLE (table), (child),                         \
+                    (left), (right), (top), (bottom),                   \
+                    (xoptions), (yoptions), (xpadding), (ypadding))
+#endif
+
+#if GTK_CHECK_VERSION(3,8,0)   /* gtk >= 3.8 */
+#define scrolled_window_add_with_viewport(container, child)     \
+  gtk_container_add (GTK_CONTAINER (container), child)
+#else
+#define scrolled_window_add_with_viewport(container, child)             \
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (container), child)
+#endif
+
+#if GTK_CHECK_VERSION(3,10,0)   /* gtk >= 3.10 */
+#undef GTK_STOCK_DIALOG_WARNING
+#define GTK_STOCK_DIALOG_WARNING "dialog-warning"
+#define gtk_image_new_from_stock gtk_image_new_from_icon_name
+#endif
+
+#if GTK_CHECK_VERSION(3,14,0)   /* gtk >= 3.14 */
+#define set_padding(widget, xpad, ypad)                               \
+  do {                                                                \
+    if ((xpad) != 0) {                                                \
+      gtk_widget_set_margin_start ((widget), (xpad));                 \
+      gtk_widget_set_margin_end ((widget), (xpad));                   \
+    }                                                                 \
+    if ((ypad) != 0) {                                                \
+      gtk_widget_set_margin_top ((widget), (ypad));                   \
+      gtk_widget_set_margin_bottom ((widget), (ypad));                \
+    }                                                                 \
+  } while (0)
+#define set_alignment(widget, xalign, yalign)                   \
+  do {                                                          \
+    if ((xalign) == 0.)                                         \
+      gtk_widget_set_halign ((widget), GTK_ALIGN_START);        \
+    else if ((xalign) == 1.)                                    \
+      gtk_widget_set_halign ((widget), GTK_ALIGN_END);          \
+    else                                                        \
+      gtk_widget_set_halign ((widget), GTK_ALIGN_CENTER);       \
+    if ((yalign) == 0.)                                         \
+      gtk_widget_set_valign ((widget), GTK_ALIGN_START);        \
+    else if ((xalign) == 1.)                                    \
+      gtk_widget_set_valign ((widget), GTK_ALIGN_END);          \
+    else                                                        \
+      gtk_widget_set_valign ((widget), GTK_ALIGN_CENTER);       \
+  } while (0)
+#else  /* gtk < 3.14 */
+#define set_padding(widget, xpad, ypad)                 \
+  gtk_misc_set_padding(GTK_MISC(widget),(xpad),(ypad))
+#define set_alignment(widget, xalign, yalign)                   \
+  gtk_misc_set_alignment(GTK_MISC(widget),(xalign),(yalign))
+#endif
 
 static void create_connection_dialog (struct config *);
 static void create_conversion_dialog (struct config *);
@@ -62,7 +205,6 @@ static GtkWidget *conv_dlg,
   *vcpus_warning, *memory_warning, *target_warning_label,
   *o_combo, *oc_entry, *os_entry, *of_entry, *oa_combo,
   *info_label,
-  *debug_button,
   *disks_list, *removable_list, *interfaces_list,
   *start_button;
 
@@ -71,11 +213,16 @@ static GtkWidget *run_dlg,
   *v2v_output_sw, *v2v_output, *log_label, *status_label,
   *cancel_button, *reboot_button;
 
-/* The entry point from the main program.
- * Note that gtk_init etc have already been called in main.
+/* Colour tags used in the v2v_output GtkTextBuffer. */
+static GtkTextTag *v2v_output_tags[16];
+
+/**
+ * The entry point from the main program.
+ *
+ * Note that C<gtk_init> etc have already been called in C<main>.
  */
 void
-gui_application (struct config *config)
+gui_conversion (struct config *config)
 {
   /* Create the dialogs. */
   create_connection_dialog (config);
@@ -86,32 +233,45 @@ gui_application (struct config *config)
   show_connection_dialog ();
 
   gtk_main ();
-  gdk_threads_leave ();
 }
 
 /*----------------------------------------------------------------------*/
 /* Connection dialog. */
 
+static void username_changed_callback (GtkWidget *w, gpointer data);
+static void password_or_identity_changed_callback (GtkWidget *w, gpointer data);
 static void test_connection_clicked (GtkWidget *w, gpointer data);
 static void *test_connection_thread (void *data);
+static gboolean start_spinner (gpointer user_data);
+static gboolean stop_spinner (gpointer user_data);
+static gboolean test_connection_error (gpointer user_data);
+static gboolean test_connection_ok (gpointer user_data);
 static void configure_network_button_clicked (GtkWidget *w, gpointer data);
+static void xterm_button_clicked (GtkWidget *w, gpointer data);
 static void about_button_clicked (GtkWidget *w, gpointer data);
 static void connection_next_clicked (GtkWidget *w, gpointer data);
 static void repopulate_output_combo (struct config *config);
 
+/**
+ * Create the connection dialog.
+ *
+ * This creates the dialog, but it is not displayed.  See
+ * C<show_connection_dialog>.
+ */
 static void
 create_connection_dialog (struct config *config)
 {
   GtkWidget *intro, *table;
   GtkWidget *server_label;
-  GtkWidget *port_label;
+  GtkWidget *server_hbox;
+  GtkWidget *port_colon_label;
   GtkWidget *username_label;
   GtkWidget *password_label;
   GtkWidget *identity_label;
-  GtkWidget *identity_tip_label;
   GtkWidget *test_hbox, *test;
   GtkWidget *about;
   GtkWidget *configure_network;
+  GtkWidget *xterm;
   char port_str[64];
 
   conn_dlg = gtk_dialog_new ();
@@ -121,46 +281,45 @@ create_connection_dialog (struct config *config)
   /* The main dialog area. */
   intro = gtk_label_new (_("Connect to a virt-v2v conversion server over SSH:"));
   gtk_label_set_line_wrap (GTK_LABEL (intro), TRUE);
-  gtk_misc_set_padding (GTK_MISC (intro), 10, 10);
+  set_padding (intro, 10, 10);
 
-  table = gtk_table_new (7, 2, FALSE);
+  table_new (table, 5, 2);
   server_label = gtk_label_new (_("Conversion server:"));
-  gtk_misc_set_alignment (GTK_MISC (server_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (table), server_label,
-                    0, 1, 0, 1, GTK_FILL, GTK_FILL, 4, 4);
+  table_attach (table, server_label,
+                0, 1, 0, 1, GTK_FILL, GTK_FILL, 4, 4);
+  set_alignment (server_label, 1., 0.5);
+
+  hbox_new (server_hbox, FALSE, 4);
   server_entry = gtk_entry_new ();
   if (config->server != NULL)
     gtk_entry_set_text (GTK_ENTRY (server_entry), config->server);
-  gtk_table_attach (GTK_TABLE (table), server_entry,
-                    1, 2, 0, 1, GTK_FILL, GTK_FILL, 4, 4);
-
-  port_label = gtk_label_new (_("SSH port:"));
-  gtk_misc_set_alignment (GTK_MISC (port_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (table), port_label,
-                    0, 1, 1, 2, GTK_FILL, GTK_FILL, 4, 4);
+  port_colon_label = gtk_label_new (":");
   port_entry = gtk_entry_new ();
   gtk_entry_set_width_chars (GTK_ENTRY (port_entry), 6);
   snprintf (port_str, sizeof port_str, "%d", config->port);
   gtk_entry_set_text (GTK_ENTRY (port_entry), port_str);
-  gtk_table_attach (GTK_TABLE (table), port_entry,
-                    1, 2, 1, 2, GTK_FILL, GTK_FILL, 4, 4);
+  gtk_box_pack_start (GTK_BOX (server_hbox), server_entry, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (server_hbox), port_colon_label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (server_hbox), port_entry, FALSE, FALSE, 0);
+  table_attach (table, server_hbox,
+                1, 2, 0, 1, GTK_EXPAND|GTK_FILL, GTK_FILL, 4, 4);
 
   username_label = gtk_label_new (_("User name:"));
-  gtk_misc_set_alignment (GTK_MISC (username_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (table), username_label,
-                    0, 1, 2, 3, GTK_FILL, GTK_FILL, 4, 4);
+  table_attach (table, username_label,
+                0, 1, 1, 2, GTK_FILL, GTK_FILL, 4, 4);
+  set_alignment (username_label, 1., 0.5);
   username_entry = gtk_entry_new ();
   if (config->username != NULL)
     gtk_entry_set_text (GTK_ENTRY (username_entry), config->username);
   else
     gtk_entry_set_text (GTK_ENTRY (username_entry), "root");
-  gtk_table_attach (GTK_TABLE (table), username_entry,
-                    1, 2, 2, 3, GTK_FILL, GTK_FILL, 4, 4);
+  table_attach (table, username_entry,
+                1, 2, 1, 2, GTK_EXPAND|GTK_FILL, GTK_FILL, 4, 4);
 
   password_label = gtk_label_new (_("Password:"));
-  gtk_misc_set_alignment (GTK_MISC (password_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (table), password_label,
-                    0, 1, 3, 4, GTK_FILL, GTK_FILL, 4, 4);
+  table_attach (table, password_label,
+                0, 1, 2, 3, GTK_FILL, GTK_FILL, 4, 4);
+  set_alignment (password_label, 1., 0.5);
   password_entry = gtk_entry_new ();
   gtk_entry_set_visibility (GTK_ENTRY (password_entry), FALSE);
 #ifdef GTK_INPUT_PURPOSE_PASSWORD
@@ -169,67 +328,66 @@ create_connection_dialog (struct config *config)
 #endif
   if (config->password != NULL)
     gtk_entry_set_text (GTK_ENTRY (password_entry), config->password);
-  gtk_table_attach (GTK_TABLE (table), password_entry,
-                    1, 2, 3, 4, GTK_FILL, GTK_FILL, 4, 4);
+  table_attach (table, password_entry,
+                1, 2, 2, 3, GTK_EXPAND|GTK_FILL, GTK_FILL, 4, 4);
 
   identity_label = gtk_label_new (_("SSH Identity URL:"));
-  gtk_misc_set_alignment (GTK_MISC (identity_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (table), identity_label,
-                    0, 1, 4, 5, GTK_FILL, GTK_FILL, 4, 4);
+  table_attach (table, identity_label,
+                0, 1, 3, 4, GTK_FILL, GTK_FILL, 4, 4);
+  set_alignment (identity_label, 1., 0.5);
   identity_entry = gtk_entry_new ();
   if (config->identity_url != NULL)
     gtk_entry_set_text (GTK_ENTRY (identity_entry), config->identity_url);
-  gtk_table_attach (GTK_TABLE (table), identity_entry,
-                    1, 2, 4, 5, GTK_FILL, GTK_FILL, 4, 4);
-
-  identity_tip_label = gtk_label_new (NULL);
-  gtk_label_set_markup (GTK_LABEL (identity_tip_label),
-                        _("<i>If using password authentication, leave the SSH Identity URL blank</i>"));
-  gtk_label_set_line_wrap (GTK_LABEL (identity_tip_label), TRUE);
-  gtk_table_attach (GTK_TABLE (table), identity_tip_label,
-                    1, 2, 5, 6, GTK_FILL, GTK_FILL, 4, 4);
+  table_attach (table, identity_entry,
+                1, 2, 3, 4, GTK_EXPAND|GTK_FILL, GTK_FILL, 4, 4);
 
   sudo_button =
     gtk_check_button_new_with_label (_("Use sudo when running virt-v2v"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (sudo_button),
                                 config->sudo);
-  gtk_table_attach (GTK_TABLE (table), sudo_button,
-                    1, 2, 6, 7, GTK_FILL, GTK_FILL, 4, 4);
+  table_attach (table, sudo_button,
+                1, 2, 4, 5, GTK_FILL, GTK_FILL, 4, 4);
 
-  test_hbox = gtk_hbox_new (FALSE, 0);
+  hbox_new (test_hbox, FALSE, 0);
   test = gtk_button_new_with_label (_("Test connection"));
   gtk_box_pack_start (GTK_BOX (test_hbox), test, TRUE, FALSE, 0);
 
-  spinner_hbox = gtk_hbox_new (FALSE, 10);
+  hbox_new (spinner_hbox, FALSE, 10);
   spinner = gtk_spinner_new ();
   gtk_box_pack_start (GTK_BOX (spinner_hbox), spinner, FALSE, FALSE, 0);
   spinner_message = gtk_label_new (NULL);
   gtk_label_set_line_wrap (GTK_LABEL (spinner_message), TRUE);
-  gtk_misc_set_padding (GTK_MISC (spinner_message), 10, 10);
+  set_padding (spinner_message, 10, 10);
   gtk_box_pack_start (GTK_BOX (spinner_hbox), spinner_message, TRUE, TRUE, 0);
 
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (conn_dlg)->vbox),
-                      intro, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (conn_dlg)->vbox),
-                      table, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (conn_dlg)->vbox),
-                      test_hbox, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (conn_dlg)->vbox),
-                      spinner_hbox, TRUE, TRUE, 0);
+  gtk_box_pack_start
+    (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (conn_dlg))),
+     intro, TRUE, TRUE, 0);
+  gtk_box_pack_start
+    (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (conn_dlg))),
+     table, TRUE, TRUE, 0);
+  gtk_box_pack_start
+    (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (conn_dlg))),
+     test_hbox, FALSE, FALSE, 0);
+  gtk_box_pack_start
+    (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (conn_dlg))),
+     spinner_hbox, TRUE, TRUE, 0);
 
   /* Buttons. */
   gtk_dialog_add_buttons (GTK_DIALOG (conn_dlg),
                           _("Configure network ..."), 1,
-                          _("About virt-p2v " PACKAGE_VERSION " ..."), 2,
-                          _("Next"), 3,
+                          _("XTerm ..."), 2,
+                          _("About virt-p2v " PACKAGE_VERSION " ..."), 3,
+                          _("Next"), 4,
                           NULL);
 
-  next_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (conn_dlg), 3);
+  next_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (conn_dlg), 4);
   gtk_widget_set_sensitive (next_button, FALSE);
 
   configure_network =
     gtk_dialog_get_widget_for_response (GTK_DIALOG (conn_dlg), 1);
-  about = gtk_dialog_get_widget_for_response (GTK_DIALOG (conn_dlg), 2);
+  xterm = gtk_dialog_get_widget_for_response (GTK_DIALOG (conn_dlg), 2);
+  about = gtk_dialog_get_widget_for_response (GTK_DIALOG (conn_dlg), 3);
 
   /* Signals. */
   g_signal_connect_swapped (G_OBJECT (conn_dlg), "destroy",
@@ -238,12 +396,76 @@ create_connection_dialog (struct config *config)
                     G_CALLBACK (test_connection_clicked), config);
   g_signal_connect (G_OBJECT (configure_network), "clicked",
                     G_CALLBACK (configure_network_button_clicked), NULL);
+  g_signal_connect (G_OBJECT (xterm), "clicked",
+                    G_CALLBACK (xterm_button_clicked), NULL);
   g_signal_connect (G_OBJECT (about), "clicked",
                     G_CALLBACK (about_button_clicked), NULL);
   g_signal_connect (G_OBJECT (next_button), "clicked",
                     G_CALLBACK (connection_next_clicked), NULL);
+  g_signal_connect (G_OBJECT (username_entry), "changed",
+                    G_CALLBACK (username_changed_callback), NULL);
+  g_signal_connect (G_OBJECT (password_entry), "changed",
+                    G_CALLBACK (password_or_identity_changed_callback), NULL);
+  g_signal_connect (G_OBJECT (identity_entry), "changed",
+                    G_CALLBACK (password_or_identity_changed_callback), NULL);
+
+  /* Call this signal to initialize the sensitivity of the sudo
+   * button correctly.
+   */
+  username_changed_callback (NULL, NULL);
 }
 
+/**
+ * If the username is "root", disable the sudo button.
+ */
+static void
+username_changed_callback (GtkWidget *w, gpointer data)
+{
+  const char *str;
+  int username_is_root;
+  int sudo_is_set;
+
+  str = gtk_entry_get_text (GTK_ENTRY (username_entry));
+  username_is_root = str != NULL && STREQ (str, "root");
+  sudo_is_set = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (sudo_button));
+
+  /* The sudo button is sensitive if:
+   * - The username is not "root", or
+   * - The button is not already checked (to allow the user to uncheck it)
+   */
+  gtk_widget_set_sensitive (sudo_button, !username_is_root || sudo_is_set);
+}
+
+/**
+ * The password or SSH identity URL entries are mutually exclusive, so
+ * if one contains text then disable the other.  This function is
+ * called when the "changed" signal is received on either.
+ */
+static void
+password_or_identity_changed_callback (GtkWidget *w, gpointer data)
+{
+  const char *str;
+  int password_set;
+  int identity_set;
+
+  str = gtk_entry_get_text (GTK_ENTRY (password_entry));
+  password_set = str != NULL && STRNEQ (str, "");
+  str = gtk_entry_get_text (GTK_ENTRY (identity_entry));
+  identity_set = str != NULL && STRNEQ (str, "");
+
+  if (!password_set && !identity_set) {
+    gtk_widget_set_sensitive (password_entry, TRUE);
+    gtk_widget_set_sensitive (identity_entry, TRUE);
+  }
+  else if (identity_set)
+    gtk_widget_set_sensitive (password_entry, FALSE);
+  else if (password_set)
+    gtk_widget_set_sensitive (identity_entry, FALSE);
+}
+
+/**
+ * Hide all other dialogs and show the connection dialog.
+ */
 static void
 show_connection_dialog (void)
 {
@@ -253,9 +475,16 @@ show_connection_dialog (void)
 
   /* Show everything except the spinner. */
   gtk_widget_show_all (conn_dlg);
-  gtk_widget_hide_all (spinner_hbox);
+  gtk_widget_hide (spinner_hbox);
 }
 
+/**
+ * Callback from the C<Test connection> button.
+ *
+ * This initiates a background thread which actually does the ssh to
+ * the conversion server and the rest of the testing (see
+ * C<test_connection_thread>).
+ */
 static void
 test_connection_clicked (GtkWidget *w, gpointer data)
 {
@@ -322,17 +551,17 @@ test_connection_clicked (GtkWidget *w, gpointer data)
   pthread_attr_init (&attr);
   pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_DETACHED);
   err = pthread_create (&tid, &attr, test_connection_thread, copy);
-  if (err != 0) {
-    fprintf (stderr, "pthread_create: %s\n", strerror (err));
-    exit (EXIT_FAILURE);
-  }
+  if (err != 0)
+    error (EXIT_FAILURE, err, "pthread_create");
   pthread_attr_destroy (&attr);
 }
 
-/* Run test_connection (in a detached background thread).  Once it
+/**
+ * Run C<test_connection> (in a detached background thread).  Once it
  * finishes stop the spinner and set the spinner message
- * appropriately.  If the test is successful then we enable the "Next"
- * button.
+ * appropriately.  If the test is successful then we enable the
+ * C<Next> button.  If unsuccessful, an error is shown in the
+ * connection dialog.
  */
 static void *
 test_connection_thread (void *data)
@@ -340,53 +569,116 @@ test_connection_thread (void *data)
   struct config *copy = data;
   int r;
 
-  gdk_threads_enter ();
-  gtk_label_set_text (GTK_LABEL (spinner_message),
-                      _("Testing the connection to the conversion server ..."));
-  gtk_widget_show (spinner);
-  gtk_spinner_start (GTK_SPINNER (spinner));
-  gdk_threads_leave ();
+  g_idle_add (start_spinner, NULL);
 
   wait_network_online (copy);
   r = test_connection (copy);
   free_config (copy);
 
-  gdk_threads_enter ();
-  gtk_spinner_stop (GTK_SPINNER (spinner));
-  gtk_widget_hide (spinner);
+  g_idle_add (stop_spinner, NULL);
 
-  if (r == -1) {
-    /* Error testing the connection. */
-    const char *err = get_ssh_error ();
-
-    gtk_label_set_text (GTK_LABEL (spinner_message), err);
-    /* Disable the Next button. */
-    gtk_widget_set_sensitive (next_button, FALSE);
-  }
-  else {
-    /* Connection is good. */
-    gtk_label_set_text (GTK_LABEL (spinner_message),
-                        _("Connected to the conversion server.\n"
-                          "Press the \"Next\" button to configure the conversion process."));
-    /* Enable the Next button. */
-    gtk_widget_set_sensitive (next_button, TRUE);
-    gtk_widget_grab_focus (next_button);
-
-    /* Update the information in the conversion dialog. */
-    set_info_label ();
-  }
-  gdk_threads_leave ();
+  if (r == -1)
+    g_idle_add (test_connection_error, NULL);
+  else
+    g_idle_add (test_connection_ok, NULL);
 
   /* Thread is detached anyway, so no one is waiting for the status. */
   return NULL;
 }
 
+/**
+ * Idle task called from C<test_connection_thread> (but run on the
+ * main thread) to start the spinner in the connection dialog.
+ */
+static gboolean
+start_spinner (gpointer user_data)
+{
+  gtk_label_set_text (GTK_LABEL (spinner_message),
+                      _("Testing the connection to the conversion server ..."));
+  gtk_widget_show (spinner);
+  gtk_spinner_start (GTK_SPINNER (spinner));
+  return FALSE;
+}
+
+/**
+ * Idle task called from C<test_connection_thread> (but run on the
+ * main thread) to stop the spinner in the connection dialog.
+ */
+static gboolean
+stop_spinner (gpointer user_data)
+{
+  gtk_spinner_stop (GTK_SPINNER (spinner));
+  gtk_widget_hide (spinner);
+  return FALSE;
+}
+
+/**
+ * Idle task called from C<test_connection_thread> (but run on the
+ * main thread) when there is an error.  Display the error message and
+ * disable the C<Next> button so the user is forced to correct it.
+ */
+static gboolean
+test_connection_error (gpointer user_data)
+{
+  const char *err = get_ssh_error ();
+
+  gtk_label_set_text (GTK_LABEL (spinner_message), err);
+  /* Disable the Next button. */
+  gtk_widget_set_sensitive (next_button, FALSE);
+
+  return FALSE;
+}
+
+/**
+ * Idle task called from C<test_connection_thread> (but run on the
+ * main thread) when the connection test was successful.
+ */
+static gboolean
+test_connection_ok (gpointer user_data)
+{
+  gtk_label_set_text
+    (GTK_LABEL (spinner_message),
+     _("Connected to the conversion server.\n"
+       "Press the \"Next\" button to configure the conversion process."));
+
+  /* Enable the Next button. */
+  gtk_widget_set_sensitive (next_button, TRUE);
+  gtk_widget_grab_focus (next_button);
+
+  /* Update the information in the conversion dialog. */
+  set_info_label ();
+
+  return FALSE;
+}
+
+/**
+ * Callback from the C<Configure network ...> button.  This dialog is
+ * handled entirely by an external program which is part of
+ * NetworkManager.
+ */
 static void
 configure_network_button_clicked (GtkWidget *w, gpointer data)
 {
-  ignore_value (system ("nm-connection-editor &"));
+  if (access ("/sbin/yast2", X_OK) >= 0)
+    ignore_value (system ("yast2 lan &"));
+  else
+    ignore_value (system ("nm-connection-editor &"));
 }
 
+/**
+ * Callback from the C<XTerm ...> button.
+ */
+static void
+xterm_button_clicked (GtkWidget *w, gpointer data)
+{
+  ignore_value (system ("xterm &"));
+}
+
+/**
+ * Callback from the C<About virt-p2v ...> button.
+ *
+ * See also F<p2v/about-authors.c> and F<p2v/about-license.c>.
+ */
 static void
 about_button_clicked (GtkWidget *w, gpointer data)
 {
@@ -402,7 +694,10 @@ about_button_clicked (GtkWidget *w, gpointer data)
                          NULL);
 }
 
-/* The connection dialog Next button has been clicked. */
+/**
+ * Callback when the connection dialog C<Next> button has been
+ * clicked.
+ */
 static void
 connection_next_clicked (GtkWidget *w, gpointer data)
 {
@@ -418,6 +713,7 @@ static void populate_removable (GtkTreeView *removable_list);
 static void populate_interfaces (GtkTreeView *interfaces_list);
 static void toggled (GtkCellRendererToggle *cell, gchar *path_str, gpointer data);
 static void network_edited_callback (GtkCellRendererToggle *cell, gchar *path_str, gchar *new_text, gpointer data);
+static gboolean maybe_identify_click (GtkWidget *interfaces_list, GdkEventButton *event, gpointer data);
 static void set_disks_from_ui (struct config *);
 static void set_removable_from_ui (struct config *);
 static void set_interfaces_from_ui (struct config *);
@@ -431,8 +727,6 @@ static uint64_t get_memory_from_conv_dlg (void);
 enum {
   DISKS_COL_CONVERT = 0,
   DISKS_COL_DEVICE,
-  DISKS_COL_SIZE,
-  DISKS_COL_MODEL,
   NUM_DISKS_COLS,
 };
 
@@ -449,6 +743,12 @@ enum {
   NUM_INTERFACES_COLS,
 };
 
+/**
+ * Create the conversion dialog.
+ *
+ * This creates the dialog, but it is not displayed.  See
+ * C<show_conversion_dialog>.
+ */
 static void
 create_conversion_dialog (struct config *config)
 {
@@ -471,58 +771,58 @@ create_conversion_dialog (struct config *config)
   /* XXX It would be nice not to have to set this explicitly, but
    * if we don't then Gtk chooses a very small window.
    */
-  gtk_widget_set_size_request (conv_dlg, 900, 560);
+  gtk_widget_set_size_request (conv_dlg, 900, 600);
 
   /* The main dialog area. */
-  hbox = gtk_hbox_new (TRUE, 1);
-  left_vbox = gtk_vbox_new (FALSE, 1);
-  right_vbox = gtk_vbox_new (TRUE, 1);
+  hbox_new (hbox, TRUE, 1);
+  vbox_new (left_vbox, FALSE, 1);
+  vbox_new (right_vbox, TRUE, 1);
 
   /* The left column: target properties and output options. */
   target_frame = gtk_frame_new (_("Target properties"));
   gtk_container_set_border_width (GTK_CONTAINER (target_frame), 4);
 
-  target_vbox = gtk_vbox_new (FALSE, 1);
+  vbox_new (target_vbox, FALSE, 1);
 
-  target_tbl = gtk_table_new (3, 3, FALSE);
+  table_new (target_tbl, 3, 3);
   guestname_label = gtk_label_new (_("Name:"));
-  gtk_misc_set_alignment (GTK_MISC (guestname_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (target_tbl), guestname_label,
-                    0, 1, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (target_tbl, guestname_label,
+                0, 1, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
+  set_alignment (guestname_label, 1., 0.5);
   guestname_entry = gtk_entry_new ();
   if (config->guestname != NULL)
     gtk_entry_set_text (GTK_ENTRY (guestname_entry), config->guestname);
-  gtk_table_attach (GTK_TABLE (target_tbl), guestname_entry,
-                    1, 2, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (target_tbl, guestname_entry,
+                1, 2, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
 
   vcpus_label = gtk_label_new (_("# vCPUs:"));
-  gtk_misc_set_alignment (GTK_MISC (vcpus_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (target_tbl), vcpus_label,
-                    0, 1, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (target_tbl, vcpus_label,
+                0, 1, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
+  set_alignment (vcpus_label, 1., 0.5);
   vcpus_entry = gtk_entry_new ();
   snprintf (vcpus_str, sizeof vcpus_str, "%d", config->vcpus);
   gtk_entry_set_text (GTK_ENTRY (vcpus_entry), vcpus_str);
-  gtk_table_attach (GTK_TABLE (target_tbl), vcpus_entry,
-                    1, 2, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (target_tbl, vcpus_entry,
+                1, 2, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
   vcpus_warning = gtk_image_new_from_stock (GTK_STOCK_DIALOG_WARNING,
                                             GTK_ICON_SIZE_BUTTON);
-  gtk_table_attach (GTK_TABLE (target_tbl), vcpus_warning,
-                    2, 3, 1, 2, 0, 0, 1, 1);
+  table_attach (target_tbl, vcpus_warning,
+                2, 3, 1, 2, 0, 0, 1, 1);
 
   memory_label = gtk_label_new (_("Memory (MB):"));
-  gtk_misc_set_alignment (GTK_MISC (memory_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (target_tbl), memory_label,
-                    0, 1, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (target_tbl, memory_label,
+                0, 1, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
+  set_alignment (memory_label, 1., 0.5);
   memory_entry = gtk_entry_new ();
   snprintf (memory_str, sizeof memory_str, "%" PRIu64,
             config->memory / 1024 / 1024);
   gtk_entry_set_text (GTK_ENTRY (memory_entry), memory_str);
-  gtk_table_attach (GTK_TABLE (target_tbl), memory_entry,
-                    1, 2, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (target_tbl, memory_entry,
+                1, 2, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
   memory_warning = gtk_image_new_from_stock (GTK_STOCK_DIALOG_WARNING,
                                              GTK_ICON_SIZE_BUTTON);
-  gtk_table_attach (GTK_TABLE (target_tbl), memory_warning,
-                    2, 3, 2, 3, 0, 0, 1, 1);
+  table_attach (target_tbl, memory_warning,
+                2, 3, 2, 3, 0, 0, 1, 1);
 
   gtk_box_pack_start (GTK_BOX (target_vbox), target_tbl, TRUE, TRUE, 0);
 
@@ -538,56 +838,56 @@ create_conversion_dialog (struct config *config)
   output_frame = gtk_frame_new (_("Virt-v2v output options"));
   gtk_container_set_border_width (GTK_CONTAINER (output_frame), 4);
 
-  output_vbox = gtk_vbox_new (FALSE, 1);
+  vbox_new (output_vbox, FALSE, 1);
 
-  output_tbl = gtk_table_new (5, 2, FALSE);
+  table_new (output_tbl, 5, 2);
   o_label = gtk_label_new (_("Output to (-o):"));
-  gtk_misc_set_alignment (GTK_MISC (o_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (output_tbl), o_label,
-                    0, 1, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (output_tbl, o_label,
+                0, 1, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
+  set_alignment (o_label, 1., 0.5);
   o_combo = gtk_combo_box_text_new ();
   gtk_widget_set_tooltip_markup (o_combo, _("<b>libvirt</b> means send the converted guest to libvirt-managed KVM on the conversion server.  <b>local</b> means put it in a directory on the conversion server.  <b>rhev</b> means write it to RHEV-M/oVirt.  <b>glance</b> means write it to OpenStack Glance.  See the virt-v2v(1) manual page for more information about output options."));
   repopulate_output_combo (config);
-  gtk_table_attach (GTK_TABLE (output_tbl), o_combo,
-                    1, 2, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (output_tbl, o_combo,
+                1, 2, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
 
   oc_label = gtk_label_new (_("Output conn. (-oc):"));
-  gtk_misc_set_alignment (GTK_MISC (oc_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (output_tbl), oc_label,
-                    0, 1, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (output_tbl, oc_label,
+                0, 1, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
+  set_alignment (oc_label, 1., 0.5);
   oc_entry = gtk_entry_new ();
   gtk_widget_set_tooltip_markup (oc_entry, _("For <b>libvirt</b> only, the libvirt connection URI, or leave blank to add the guest to the default libvirt instance on the conversion server.  For others, leave this field blank."));
   if (config->output_connection != NULL)
     gtk_entry_set_text (GTK_ENTRY (oc_entry), config->output_connection);
-  gtk_table_attach (GTK_TABLE (output_tbl), oc_entry,
-                    1, 2, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (output_tbl, oc_entry,
+                1, 2, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
 
   os_label = gtk_label_new (_("Output storage (-os):"));
-  gtk_misc_set_alignment (GTK_MISC (os_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (output_tbl), os_label,
-                    0, 1, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (output_tbl, os_label,
+                0, 1, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
+  set_alignment (os_label, 1., 0.5);
   os_entry = gtk_entry_new ();
   gtk_widget_set_tooltip_markup (os_entry, _("For <b>local</b>, put the directory name on the conversion server.  For <b>rhev</b>, put the Export Storage Domain (server:/mountpoint).  For others, leave this field blank."));
   if (config->output_storage != NULL)
     gtk_entry_set_text (GTK_ENTRY (os_entry), config->output_storage);
-  gtk_table_attach (GTK_TABLE (output_tbl), os_entry,
-                    1, 2, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (output_tbl, os_entry,
+                1, 2, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
 
   of_label = gtk_label_new (_("Output format (-of):"));
-  gtk_misc_set_alignment (GTK_MISC (of_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (output_tbl), of_label,
-                    0, 1, 3, 4, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (output_tbl, of_label,
+                0, 1, 3, 4, GTK_FILL, GTK_FILL, 1, 1);
+  set_alignment (of_label, 1., 0.5);
   of_entry = gtk_entry_new ();
   gtk_widget_set_tooltip_markup (of_entry, _("The output disk format, typically <b>raw</b> or <b>qcow2</b>.  If blank, defaults to <b>raw</b>."));
   if (config->output_format != NULL)
     gtk_entry_set_text (GTK_ENTRY (of_entry), config->output_format);
-  gtk_table_attach (GTK_TABLE (output_tbl), of_entry,
-                    1, 2, 3, 4, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (output_tbl, of_entry,
+                1, 2, 3, 4, GTK_FILL, GTK_FILL, 1, 1);
 
   oa_label = gtk_label_new (_("Output allocation (-oa):"));
-  gtk_misc_set_alignment (GTK_MISC (oa_label), 1., 0.5);
-  gtk_table_attach (GTK_TABLE (output_tbl), oa_label,
-                    0, 1, 4, 5, GTK_FILL, GTK_FILL, 1, 1);
+  table_attach (output_tbl, oa_label,
+                0, 1, 4, 5, GTK_FILL, GTK_FILL, 1, 1);
+  set_alignment (oa_label, 1., 0.5);
   oa_combo = gtk_combo_box_text_new ();
   gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (oa_combo),
                                   "sparse");
@@ -601,23 +901,16 @@ create_conversion_dialog (struct config *config)
     gtk_combo_box_set_active (GTK_COMBO_BOX (oa_combo), 0);
     break;
   }
-  gtk_table_attach (GTK_TABLE (output_tbl), oa_combo,
-                    1, 2, 4, 5, GTK_FILL, GTK_FILL, 1, 1);
-
-  debug_button =
-    gtk_check_button_new_with_label (_("Enable server-side debugging\n"
-                                       "(This is saved in /tmp on the conversion server)"));
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (debug_button),
-                                config->verbose);
+  table_attach (output_tbl, oa_combo,
+                1, 2, 4, 5, GTK_FILL, GTK_FILL, 1, 1);
 
   gtk_box_pack_start (GTK_BOX (output_vbox), output_tbl, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (output_vbox), debug_button, TRUE, TRUE, 0);
   gtk_container_add (GTK_CONTAINER (output_frame), output_vbox);
 
   info_frame = gtk_frame_new (_("Information"));
   gtk_container_set_border_width (GTK_CONTAINER (info_frame), 4);
   info_label = gtk_label_new (NULL);
-  gtk_misc_set_alignment (GTK_MISC (info_label), 0.1, 0.5);
+  set_alignment (info_label, 0.1, 0.5);
   set_info_label ();
   gtk_container_add (GTK_CONTAINER (info_frame), info_label);
 
@@ -630,8 +923,7 @@ create_conversion_dialog (struct config *config)
                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   disks_list = gtk_tree_view_new ();
   populate_disks (GTK_TREE_VIEW (disks_list));
-  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (disks_sw),
-                                         disks_list);
+  scrolled_window_add_with_viewport (disks_sw, disks_list);
   gtk_container_add (GTK_CONTAINER (disks_frame), disks_sw);
 
   removable_frame = gtk_frame_new (_("Removable media"));
@@ -642,8 +934,7 @@ create_conversion_dialog (struct config *config)
                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   removable_list = gtk_tree_view_new ();
   populate_removable (GTK_TREE_VIEW (removable_list));
-  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (removable_sw),
-                                         removable_list);
+  scrolled_window_add_with_viewport (removable_sw,  removable_list);
   gtk_container_add (GTK_CONTAINER (removable_frame), removable_sw);
 
   interfaces_frame = gtk_frame_new (_("Network interfaces"));
@@ -653,9 +944,12 @@ create_conversion_dialog (struct config *config)
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (interfaces_sw),
                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   interfaces_list = gtk_tree_view_new ();
+  /* See maybe_identify_click below for what we're doing. */
+  g_signal_connect (interfaces_list, "button-press-event",
+                    G_CALLBACK (maybe_identify_click), NULL);
+  gtk_widget_set_tooltip_markup (interfaces_list, _("Left click on an interface name to flash the light on the physical interface."));
   populate_interfaces (GTK_TREE_VIEW (interfaces_list));
-  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (interfaces_sw),
-                                         interfaces_list);
+  scrolled_window_add_with_viewport (interfaces_sw, interfaces_list);
   gtk_container_add (GTK_CONTAINER (interfaces_frame), interfaces_sw);
 
   /* Pack the top level dialog. */
@@ -669,8 +963,9 @@ create_conversion_dialog (struct config *config)
 
   gtk_box_pack_start (GTK_BOX (hbox), left_vbox, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (hbox), right_vbox, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (conv_dlg)->vbox),
-                      hbox, TRUE, TRUE, 0);
+  gtk_box_pack_start
+    (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (conv_dlg))),
+     hbox, TRUE, TRUE, 0);
 
   /* Buttons. */
   gtk_dialog_add_buttons (GTK_DIALOG (conv_dlg),
@@ -693,6 +988,9 @@ create_conversion_dialog (struct config *config)
                     G_CALLBACK (vcpus_or_memory_check_callback), NULL);
 }
 
+/**
+ * Hide all other dialogs and show the conversion dialog.
+ */
 static void
 show_conversion_dialog (void)
 {
@@ -709,7 +1007,12 @@ show_conversion_dialog (void)
   repopulate_output_combo (NULL);
 }
 
-/* Update the information in the conversion dialog. */
+/**
+ * Update the C<Information> section in the conversion dialog.
+ *
+ * Note that C<v2v_version> (the remote virt-v2v version) is read from
+ * the remote virt-v2v in the C<test_connection> function.
+ */
 static void
 set_info_label (void)
 {
@@ -733,6 +1036,11 @@ set_info_label (void)
   gtk_label_set_text (GTK_LABEL (info_label), text);
 }
 
+/**
+ * Repopulate the list of output drivers in the C<Output to (-o)>
+ * combo.  The list of drivers is read from the remote virt-v2v
+ * instance in C<test_connection>.
+ */
 static void
 repopulate_output_combo (struct config *config)
 {
@@ -779,61 +1087,50 @@ repopulate_output_combo (struct config *config)
   }
 }
 
+/**
+ * Populate the C<Fixed hard disks> treeview.
+ */
 static void
 populate_disks (GtkTreeView *disks_list)
 {
   GtkListStore *disks_store;
-  GtkCellRenderer *disks_col_convert, *disks_col_device,
-    *disks_col_size, *disks_col_model;
+  GtkCellRenderer *disks_col_convert, *disks_col_device;
   GtkTreeIter iter;
   size_t i;
 
   disks_store = gtk_list_store_new (NUM_DISKS_COLS,
-                                    G_TYPE_BOOLEAN, G_TYPE_STRING,
-                                    G_TYPE_STRING, G_TYPE_STRING);
+                                    G_TYPE_BOOLEAN, G_TYPE_STRING);
   if (all_disks != NULL) {
     for (i = 0; all_disks[i] != NULL; ++i) {
-      CLEANUP_FREE char *size_filename = NULL;
-      CLEANUP_FREE char *model_filename = NULL;
-      CLEANUP_FREE char *size_str = NULL;
+      uint64_t size;
       CLEANUP_FREE char *size_gb = NULL;
       CLEANUP_FREE char *model = NULL;
-      uint64_t size;
+      CLEANUP_FREE char *serial = NULL;
+      CLEANUP_FREE char *device_descr = NULL;
 
-      if (asprintf (&size_filename, "/sys/block/%s/size",
-                    all_disks[i]) == -1) {
-        perror ("asprintf");
-        exit (EXIT_FAILURE);
-      }
-      if (g_file_get_contents (size_filename, &size_str, NULL, NULL) &&
-          sscanf (size_str, "%" SCNu64, &size) == 1) {
-        size /= 2*1024*1024; /* size from kernel is given in sectors? */
-        if (asprintf (&size_gb, "%" PRIu64, size) == -1) {
-          perror ("asprintf");
-          exit (EXIT_FAILURE);
-        }
+      if (all_disks[i][0] != '/') { /* not using --test-disk */
+        size = get_blockdev_size (all_disks[i]);
+        if (asprintf (&size_gb, "%" PRIu64 "G", size) == -1)
+          error (EXIT_FAILURE, errno, "asprintf");
+        model = get_blockdev_model (all_disks[i]);
+        serial = get_blockdev_serial (all_disks[i]);
       }
 
-      if (asprintf (&model_filename, "/sys/block/%s/device/model",
-                    all_disks[i]) == -1) {
-        perror ("asprintf");
-        exit (EXIT_FAILURE);
-      }
-      if (g_file_get_contents (model_filename, &model, NULL, NULL)) {
-        /* Need to chomp trailing \n from the content. */
-        size_t len = strlen (model);
-        if (len > 0 && model[len-1] == '\n')
-          model[len-1] = '\0';
-      } else {
-        model = strdup ("");
-      }
+      if (asprintf (&device_descr,
+                    "<b>%s</b>\n"
+                    "<small>"
+                    "%s %s\n"
+                    "%s%s"
+                    "</small>",
+                    all_disks[i],
+                    size_gb ? size_gb : "", model ? model : "",
+                    serial ? "s/n " : "", serial ? serial : "") == -1)
+        error (EXIT_FAILURE, errno, "asprintf");
 
       gtk_list_store_append (disks_store, &iter);
       gtk_list_store_set (disks_store, &iter,
                           DISKS_COL_CONVERT, TRUE,
-                          DISKS_COL_DEVICE, all_disks[i],
-                          DISKS_COL_SIZE, size_gb,
-                          DISKS_COL_MODEL, model,
+                          DISKS_COL_DEVICE, device_descr,
                           -1);
     }
   }
@@ -853,30 +1150,17 @@ populate_disks (GtkTreeView *disks_list)
                                                -1,
                                                _("Device"),
                                                disks_col_device,
-                                               "text", DISKS_COL_DEVICE,
+                                               "markup", DISKS_COL_DEVICE,
                                                NULL);
   gtk_cell_renderer_set_alignment (disks_col_device, 0.0, 0.0);
-  disks_col_size = gtk_cell_renderer_text_new ();
-  gtk_tree_view_insert_column_with_attributes (disks_list,
-                                               -1,
-                                               _("Size (GB)"),
-                                               disks_col_size,
-                                               "text", DISKS_COL_SIZE,
-                                               NULL);
-  gtk_cell_renderer_set_alignment (disks_col_size, 0.0, 0.0);
-  disks_col_model = gtk_cell_renderer_text_new ();
-  gtk_tree_view_insert_column_with_attributes (disks_list,
-                                               -1,
-                                               _("Model"),
-                                               disks_col_model,
-                                               "text", DISKS_COL_MODEL,
-                                               NULL);
-  gtk_cell_renderer_set_alignment (disks_col_model, 0.0, 0.0);
 
   g_signal_connect (disks_col_convert, "toggled",
                     G_CALLBACK (toggled), disks_store);
 }
 
+/**
+ * Populate the C<Removable media> treeview.
+ */
 static void
 populate_removable (GtkTreeView *removable_list)
 {
@@ -889,10 +1173,15 @@ populate_removable (GtkTreeView *removable_list)
                                         G_TYPE_BOOLEAN, G_TYPE_STRING);
   if (all_removable != NULL) {
     for (i = 0; all_removable[i] != NULL; ++i) {
+      CLEANUP_FREE char *device_descr = NULL;
+
+      if (asprintf (&device_descr, "<b>%s</b>\n", all_removable[i]) == -1)
+        error (EXIT_FAILURE, errno, "asprintf");
+
       gtk_list_store_append (removable_store, &iter);
       gtk_list_store_set (removable_store, &iter,
                           REMOVABLE_COL_CONVERT, TRUE,
-                          REMOVABLE_COL_DEVICE, all_removable[i],
+                          REMOVABLE_COL_DEVICE, device_descr,
                           -1);
     }
   }
@@ -912,7 +1201,7 @@ populate_removable (GtkTreeView *removable_list)
                                                -1,
                                                _("Device"),
                                                removable_col_device,
-                                               "text", REMOVABLE_COL_DEVICE,
+                                               "markup", REMOVABLE_COL_DEVICE,
                                                NULL);
   gtk_cell_renderer_set_alignment (removable_col_device, 0.0, 0.0);
 
@@ -920,6 +1209,9 @@ populate_removable (GtkTreeView *removable_list)
                     G_CALLBACK (toggled), removable_store);
 }
 
+/**
+ * Populate the C<Network interfaces> treeview.
+ */
 static void
 populate_interfaces (GtkTreeView *interfaces_list)
 {
@@ -944,13 +1236,12 @@ populate_interfaces (GtkTreeView *interfaces_list)
                     "<small>"
                     "%s\n"
                     "%s"
-                    "</small>",
+                    "</small>\n"
+                    "<small><u><span foreground=\"blue\">Identify interface</span></u></small>",
                     if_name,
                     if_addr ? : _("Unknown"),
-                    if_vendor ? : _("Unknown")) == -1) {
-        perror ("asprintf");
-        exit (EXIT_FAILURE);
-      }
+                    if_vendor ? : _("Unknown")) == -1)
+        error (EXIT_FAILURE, errno, "asprintf");
 
       gtk_list_store_append (interfaces_store, &iter);
       gtk_list_store_set (interfaces_store, &iter,
@@ -1034,6 +1325,68 @@ network_edited_callback (GtkCellRendererToggle *cell, gchar *path_str,
   gtk_tree_path_free (path);
 }
 
+/**
+ * When the user clicks on the interface name on the list of
+ * interfaces, we want to run C<ethtool --identify>, which usually
+ * makes some lights flash on the physical interface.
+ *
+ * We cannot catch clicks on the cell itself, so we have to go via a
+ * more obscure route.  See L<http://stackoverflow.com/a/27207433> and
+ * L<https://en.wikibooks.org/wiki/GTK%2B_By_Example/Tree_View/Events>
+ */
+static gboolean
+maybe_identify_click (GtkWidget *interfaces_list, GdkEventButton *event,
+                      gpointer data)
+{
+  gboolean ret = FALSE;         /* Did we handle this event? */
+
+  /* Single left click only. */
+  if (event->type == GDK_BUTTON_PRESS && event->button == 1) {
+    GtkTreePath *path;
+    GtkTreeViewColumn *column;
+
+    if (gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (interfaces_list),
+                                       event->x, event->y,
+                                       &path, &column, NULL, NULL)) {
+      GList *cols;
+      gint column_index;
+
+      /* Get column index. */
+      cols = gtk_tree_view_get_columns (GTK_TREE_VIEW (interfaces_list));
+      column_index = g_list_index (cols, (gpointer) column);
+      g_list_free (cols);
+
+      if (column_index == INTERFACES_COL_DEVICE) {
+        const gint *indices;
+        gint row_index;
+        const char *if_name;
+        char *cmd;
+
+        /* Get the row index. */
+        indices = gtk_tree_path_get_indices (path);
+        row_index = indices[0];
+
+        /* And the interface name. */
+        if_name = all_interfaces[row_index];
+
+        /* Issue the ethtool command in the background. */
+        if (asprintf (&cmd, "ethtool --identify '%s' 10 &", if_name) == -1)
+          error (EXIT_FAILURE, errno, "asprintf");
+        printf ("%s\n", cmd);
+        ignore_value (system (cmd));
+
+        free (cmd);
+
+        ret = TRUE;             /* We handled this event. */
+      }
+
+      gtk_tree_path_free (path);
+    }
+  }
+
+  return ret;
+}
+
 static void
 set_from_ui_generic (char **all, char ***ret, GtkTreeView *list)
 {
@@ -1052,10 +1405,8 @@ set_from_ui_generic (char **all, char ***ret, GtkTreeView *list)
 
   guestfs_int_free_string_list (*ret);
   *ret = malloc ((1 + guestfs_int_count_strings (all)) * sizeof (char *));
-  if (*ret == NULL) {
-    perror ("malloc");
-    exit (EXIT_FAILURE);
-  }
+  if (*ret == NULL)
+    error (EXIT_FAILURE, errno, "malloc");
   i = j = 0;
 
   b = gtk_tree_model_get_iter_first (model, &iter);
@@ -1116,10 +1467,8 @@ set_network_map_from_ui (struct config *config)
   config->network_map =
     malloc ((1 + guestfs_int_count_strings (all_interfaces))
             * sizeof (char *));
-  if (config->network_map == NULL) {
-    perror ("malloc");
-    exit (EXIT_FAILURE);
-  }
+  if (config->network_map == NULL)
+    error (EXIT_FAILURE, errno, "malloc");
   i = j = 0;
 
   b = gtk_tree_model_get_iter_first (model, &iter);
@@ -1128,10 +1477,8 @@ set_network_map_from_ui (struct config *config)
     if (s) {
       assert (all_interfaces[i] != NULL);
       if (asprintf (&config->network_map[j], "%s:%s",
-                    all_interfaces[i], s) == -1) {
-        perror ("asprintf");
-        exit (EXIT_FAILURE);
-      }
+                    all_interfaces[i], s) == -1)
+        error (EXIT_FAILURE, errno, "asprintf");
       ++j;
     }
     b = gtk_tree_model_iter_next (model, &iter);
@@ -1141,7 +1488,9 @@ set_network_map_from_ui (struct config *config)
   config->network_map[j] = NULL;
 }
 
-/* The conversion dialog Back button has been clicked. */
+/**
+ * The conversion dialog C<Back> button has been clicked.
+ */
 static void
 conversion_back_clicked (GtkWidget *w, gpointer data)
 {
@@ -1153,13 +1502,6 @@ conversion_back_clicked (GtkWidget *w, gpointer data)
    */
   gtk_widget_set_sensitive (next_button, FALSE);
 }
-
-/* Display a warning if the vCPUs or memory is outside the supported
- * range.  (RHBZ#823758).  See also:
- * https://access.redhat.com/articles/rhel-kvm-limits
- */
-#define MAX_SUPPORTED_VCPUS 160
-#define MAX_SUPPORTED_MEMORY_MB (UINT64_C (4000 * 1024))
 
 static char *concat_warning (char *warning, const char *fs, ...)
   __attribute__((format (printf,2,3)));
@@ -1174,11 +1516,9 @@ concat_warning (char *warning, const char *fs, ...)
 
   if (warning == NULL) {
     warning = strdup ("");
-    if (warning == NULL) {
+    if (warning == NULL)
     malloc_fail:
-      perror ("malloc");
-      exit (EXIT_FAILURE);
-    }
+      error (EXIT_FAILURE, errno, "malloc");
   }
 
   len = strlen (warning);
@@ -1201,6 +1541,10 @@ concat_warning (char *warning, const char *fs, ...)
   return warning;
 }
 
+/**
+ * Display a warning if the vCPUs or memory is outside the supported
+ * range (L<https://bugzilla.redhat.com/823758>).
+ */
 static void
 vcpus_or_memory_check_callback (GtkWidget *w, gpointer data)
 {
@@ -1269,18 +1613,31 @@ get_memory_from_conv_dlg (void)
 /*----------------------------------------------------------------------*/
 /* Running dialog. */
 
-static void set_log_dir (const char *remote_dir);
-static void set_status (const char *msg);
-static void add_v2v_output (const char *msg);
-static void add_v2v_output_2 (const char *msg, size_t len);
+static gboolean set_log_dir (gpointer remote_dir);
+static gboolean set_status (gpointer msg);
+static gboolean add_v2v_output (gpointer msg);
 static void *start_conversion_thread (void *data);
-static void cancel_conversion_clicked (GtkWidget *w, gpointer data);
+static gboolean conversion_error (gpointer user_data);
+static gboolean conversion_finished (gpointer user_data);
+static void cancel_conversion_dialog (GtkWidget *w, gpointer data);
 static void reboot_clicked (GtkWidget *w, gpointer data);
 static gboolean close_running_dialog (GtkWidget *w, GdkEvent *event, gpointer data);
 
+/**
+ * Create the running dialog.
+ *
+ * This creates the dialog, but it is not displayed.  See
+ * C<show_running_dialog>.
+ */
 static void
 create_running_dialog (void)
 {
+  size_t i;
+  static const char *tags[16] =
+    { "black", "maroon", "green", "olive", "navy", "purple", "teal", "silver",
+      "gray", "red", "lime", "yellow", "blue", "fuchsia", "cyan", "white" };
+  GtkTextBuffer *buf;
+
   run_dlg = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (run_dlg), guestfs_int_program_name);
   gtk_window_set_resizable (GTK_WINDOW (run_dlg), FALSE);
@@ -1289,30 +1646,63 @@ create_running_dialog (void)
   v2v_output_sw = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (v2v_output_sw),
                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_size_request (v2v_output_sw, 700, 400);
+
   v2v_output = gtk_text_view_new ();
   gtk_text_view_set_editable (GTK_TEXT_VIEW (v2v_output), FALSE);
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (v2v_output), GTK_WRAP_CHAR);
-  gtk_widget_set_size_request (v2v_output, 700, 400);
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (v2v_output));
+  for (i = 0; i < 16; ++i) {
+    CLEANUP_FREE char *tag_name;
+
+    if (asprintf (&tag_name, "tag_%s", tags[i]) == -1)
+      error (EXIT_FAILURE, errno, "asprintf");
+    v2v_output_tags[i] =
+      gtk_text_buffer_create_tag (buf, tag_name, "foreground", tags[i], NULL);
+  }
+
+#if GTK_CHECK_VERSION(3,16,0)   /* gtk >= 3.16 */
+  /* XXX This only sets the "CSS" style.  It's not clear how to set
+   * the particular font.  However (by accident) this does at least
+   * set the widget to use a monospace font.
+   */
+  GtkStyleContext *context = gtk_widget_get_style_context (v2v_output);
+  gtk_style_context_add_class (context, "monospace");
+#else
+  PangoFontDescription *font;
+  font = pango_font_description_from_string ("Monospace 11");
+#if GTK_CHECK_VERSION(3,0,0)	/* gtk >= 3 */
+  gtk_widget_override_font (v2v_output, font);
+#else
+  gtk_widget_modify_font (v2v_output, font);
+#endif
+  pango_font_description_free (font);
+#endif
+
   log_label = gtk_label_new (NULL);
-  gtk_misc_set_alignment (GTK_MISC (log_label), 0., 0.5);
-  gtk_misc_set_padding (GTK_MISC (log_label), 10, 10);
+  set_alignment (log_label, 0., 0.5);
+  set_padding (log_label, 10, 10);
   set_log_dir (NULL);
   status_label = gtk_label_new (NULL);
-  gtk_misc_set_alignment (GTK_MISC (status_label), 0., 0.5);
-  gtk_misc_set_padding (GTK_MISC (status_label), 10, 10);
+  set_alignment (status_label, 0., 0.5);
+  set_padding (status_label, 10, 10);
 
   gtk_container_add (GTK_CONTAINER (v2v_output_sw), v2v_output);
 
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (run_dlg)->vbox),
-                      v2v_output_sw, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (run_dlg)->vbox),
-                      log_label, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (run_dlg)->vbox),
-                      status_label, TRUE, TRUE, 0);
+  gtk_box_pack_start
+    (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (run_dlg))),
+     v2v_output_sw, TRUE, TRUE, 0);
+  gtk_box_pack_start
+    (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (run_dlg))),
+     log_label, TRUE, TRUE, 0);
+  gtk_box_pack_start
+    (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (run_dlg))),
+     status_label, TRUE, TRUE, 0);
 
   /* Buttons. */
   gtk_dialog_add_buttons (GTK_DIALOG (run_dlg),
-                          _("Cancel conversion"), 1,
+                          _("Cancel conversion ..."), 1,
                           _("Reboot"), 2,
                           NULL);
   cancel_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (run_dlg), 1);
@@ -1326,11 +1716,14 @@ create_running_dialog (void)
   g_signal_connect_swapped (G_OBJECT (run_dlg), "destroy",
                             G_CALLBACK (gtk_main_quit), NULL);
   g_signal_connect (G_OBJECT (cancel_button), "clicked",
-                    G_CALLBACK (cancel_conversion_clicked), NULL);
+                    G_CALLBACK (cancel_conversion_dialog), NULL);
   g_signal_connect (G_OBJECT (reboot_button), "clicked",
                     G_CALLBACK (reboot_clicked), NULL);
 }
 
+/**
+ * Hide all other dialogs and show the running dialog.
+ */
 static void
 show_running_dialog (void)
 {
@@ -1345,76 +1738,208 @@ show_running_dialog (void)
     gtk_widget_set_sensitive (reboot_button, FALSE);
 }
 
-static void
-set_log_dir (const char *remote_dir)
+/**
+ * Display the remote log directory in the running dialog.
+ *
+ * If this isn't called from the main thread, then you must only
+ * call it via an idle task (C<g_idle_add>).
+ *
+ * B<NB:> This frees the remote_dir (C<user_data> pointer) which was
+ * strdup'd in C<notify_ui_callback>.
+ */
+static gboolean
+set_log_dir (gpointer user_data)
 {
+  CLEANUP_FREE const char *remote_dir = user_data;
   CLEANUP_FREE char *msg;
 
   if (asprintf (&msg,
-                _("Log files and debug information "
-                  "is saved to this directory "
+                _("Debug information and log files "
+                  "are saved to this directory "
                   "on the conversion server:\n"
                   "%s"),
-                remote_dir ? remote_dir : "") == -1) {
-    perror ("asprintf");
-    exit (EXIT_FAILURE);
-  }
+                remote_dir ? remote_dir : "") == -1)
+    error (EXIT_FAILURE, errno, "asprintf");
 
   gtk_label_set_text (GTK_LABEL (log_label), msg);
+
+  return FALSE;
 }
 
-static void
-set_status (const char *msg)
-{
-  gtk_label_set_text (GTK_LABEL (status_label), msg);
-}
-
-/* Append output from the virt-v2v process to the buffer, and scroll
- * to ensure it is visible.
+/**
+ * Display the conversion status in the running dialog.
+ *
+ * If this isn't called from the main thread, then you must only
+ * call it via an idle task (C<g_idle_add>).
+ *
+ * B<NB:> This frees the message (C<user_data> pointer) which was
+ * strdup'd in C<notify_ui_callback>.
  */
-static void
-add_v2v_output (const char *msg)
+static gboolean
+set_status (gpointer user_data)
 {
-  static size_t linelen = 0;
-  const char *p0, *p;
+  CLEANUP_FREE const char *msg = user_data;
 
-  /* Gtk2 (in ~ Fedora 23) has a regression where it takes much
-   * longer to display long lines, to the point where the virt-p2v
-   * UI would still be slowly display kernel modules while the
-   * conversion had finished.  For this reason, arbitrarily break
-   * long lines.
-   */
-  for (p0 = p = msg; *p; ++p) {
-    linelen++;
-    if (*p == '\n' || linelen > 1024) {
-      add_v2v_output_2 (p0, p-p0+1);
-      if (*p != '\n')
-        add_v2v_output_2 ("\n", 1);
-      linelen = 0;
-      p0 = p+1;
-    }
-  }
-  add_v2v_output_2 (p0, p-p0);
+  gtk_label_set_text (GTK_LABEL (status_label), msg);
+
+  return FALSE;
 }
 
-static void
-add_v2v_output_2 (const char *msg, size_t len)
+/**
+ * Append output from the virt-v2v process to the buffer, and scroll
+ * to ensure it is visible.
+ *
+ * This function is able to parse ANSI colour sequences and more.
+ *
+ * If this isn't called from the main thread, then you must only
+ * call it via an idle task (C<g_idle_add>).
+ *
+ * B<NB:> This frees the message (C<user_data> pointer) which was
+ * strdup'd in C<notify_ui_callback>.
+ */
+static gboolean
+add_v2v_output (gpointer user_data)
 {
-  GtkTextBuffer *buf;
-  GtkTextIter iter;
+  CLEANUP_FREE const char *msg = user_data;
+  const char *p;
+  static size_t linelen = 0;
+  static enum {
+    state_normal,
+    state_escape1,       /* seen ESC, expecting [ */
+    state_escape2,       /* seen ESC [, expecting 0 or 1 */
+    state_escape3,       /* seen ESC [ 0/1, expecting ; or m */
+    state_escape4,       /* seen ESC [ 0/1 ;, expecting 3 */
+    state_escape5,       /* seen ESC [ 0/1 ; 3, expecting 1/2/4/5 */
+    state_escape6,       /* seen ESC [ 0/1 ; 3 1/2/5/5, expecting m */
+    state_cr,            /* seen CR */
+    state_truncating,    /* truncating line until next \n */
+  } state = state_normal;
+  static int colour = 0;
+  static GtkTextTag *tag = NULL;
+  GtkTextBuffer *buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (v2v_output));
+  GtkTextIter iter, iter2;
+  const char *dots = " [...]";
 
-  /* Insert it at the end. */
-  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (v2v_output));
-  gtk_text_buffer_get_end_iter (buf, &iter);
-  gtk_text_buffer_insert (buf, &iter, msg, len);
+  for (p = msg; *p != '\0'; ++p) {
+    char c = *p;
+
+    switch (state) {
+    case state_normal:
+      if (c == '\r')            /* Start of possible CRLF sequence. */
+        state = state_cr;
+      else if (c == '\x1b') {   /* Start of an escape sequence. */
+        state = state_escape1;
+        colour = 0;
+      }
+      else if (c != '\n' && linelen >= 256) {
+        /* Gtk2 (in ~ Fedora 23) has a regression where it takes much
+         * longer to display long lines, to the point where the
+         * virt-p2v UI would still be slowly displaying kernel modules
+         * while the conversion had finished.  For this reason,
+         * arbitrarily truncate very long lines.
+         */
+        gtk_text_buffer_get_end_iter (buf, &iter);
+        gtk_text_buffer_insert_with_tags (buf, &iter,
+                                          dots, strlen (dots), tag, NULL);
+        state = state_truncating;
+        colour = 0;
+        tag = NULL;
+      }
+      else {             /* Treat everything else as a normal char. */
+        if (c != '\n') linelen++; else linelen = 0;
+        gtk_text_buffer_get_end_iter (buf, &iter);
+        gtk_text_buffer_insert_with_tags (buf, &iter, &c, 1, tag, NULL);
+      }
+      break;
+
+    case state_escape1:
+      if (c == '[')
+        state = state_escape2;
+      else
+        state = state_normal;
+      break;
+
+    case state_escape2:
+      if (c == '0')
+        state = state_escape3;
+      else if (c == '1') {
+        state = state_escape3;
+        colour += 8;
+      }
+      else
+        state = state_normal;
+      break;
+
+    case state_escape3:
+      if (c == ';')
+        state = state_escape4;
+      else if (c == 'm') {
+        tag = NULL;             /* restore text colour */
+        state = state_normal;
+      }
+      else
+        state = state_normal;
+      break;
+
+    case state_escape4:
+      if (c == '3')
+        state = state_escape5;
+      else
+        state = state_normal;
+      break;
+
+    case state_escape5:
+      if (c >= '0' && c <= '7') {
+        state = state_escape6;
+        colour += c - '0';
+      }
+      else
+        state = state_normal;
+      break;
+
+    case state_escape6:
+      if (c == 'm') {
+        assert (colour >= 0 && colour <= 15);
+        tag = v2v_output_tags[colour]; /* set colour tag */
+      }
+      state = state_normal;
+      break;
+
+    case state_cr:
+      if (c == '\n')
+        /* Process CRLF as single a newline character. */
+        p--;
+      else {                    /* Delete current (== last) line. */
+        linelen = 0;
+        gtk_text_buffer_get_end_iter (buf, &iter);
+        iter2 = iter;
+        gtk_text_iter_set_line_offset (&iter, 0);
+        /* Delete from iter..iter2 */
+        gtk_text_buffer_delete (buf, &iter, &iter2);
+      }
+      state = state_normal;
+      break;
+
+    case state_truncating:
+      if (c == '\n') {
+        p--;
+        state = state_normal;
+      }
+      break;
+    } /* switch (state) */
+  } /* for */
 
   /* Scroll to the end of the buffer. */
   gtk_text_buffer_get_end_iter (buf, &iter);
   gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (v2v_output), &iter,
                                 0, FALSE, 0., 1.);
+
+  return FALSE;
 }
 
-/* User clicked the Start conversion button. */
+/**
+ * Callback when the C<Start conversion> button is clicked.
+ */
 static void
 start_conversion_clicked (GtkWidget *w, gpointer data)
 {
@@ -1446,9 +1971,6 @@ start_conversion_clicked (GtkWidget *w, gpointer data)
 
   config->vcpus = get_vcpus_from_conv_dlg ();
   config->memory = get_memory_from_conv_dlg ();
-
-  config->verbose =
-    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (debug_button));
 
   /* Get the list of disks to be converted. */
   set_disks_from_ui (config);
@@ -1521,47 +2043,50 @@ start_conversion_clicked (GtkWidget *w, gpointer data)
   pthread_attr_init (&attr);
   pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_DETACHED);
   err = pthread_create (&tid, &attr, start_conversion_thread, copy);
-  if (err != 0) {
-    fprintf (stderr, "pthread_create: %s\n", strerror (err));
-    exit (EXIT_FAILURE);
-  }
+  if (err != 0)
+    error (EXIT_FAILURE, err, "pthread_create");
   pthread_attr_destroy (&attr);
 }
 
+/**
+ * This is the background thread which performs the conversion.
+ */
 static void *
 start_conversion_thread (void *data)
 {
   struct config *copy = data;
   int r;
-  GtkWidget *dlg;
 
   r = start_conversion (copy, notify_ui_callback);
   free_config (copy);
 
-  gdk_threads_enter ();
+  if (r == -1)
+    g_idle_add (conversion_error, NULL);
+  else
+    g_idle_add (conversion_finished, NULL);
 
-  if (r == -1) {
-    const char *err = get_conversion_error ();
+  /* Thread is detached anyway, so no one is waiting for the status. */
+  return NULL;
+}
 
-    dlg = gtk_message_dialog_new (GTK_WINDOW (run_dlg),
-                                  GTK_DIALOG_DESTROY_WITH_PARENT,
-                                  GTK_MESSAGE_ERROR,
-                                  GTK_BUTTONS_OK,
-                                  _("Conversion failed: %s"), err);
-    gtk_window_set_title (GTK_WINDOW (dlg), _("Conversion failed"));
-    gtk_dialog_run (GTK_DIALOG (dlg));
-    gtk_widget_destroy (dlg);
-  }
-  else {
-    dlg = gtk_message_dialog_new (GTK_WINDOW (run_dlg),
-                                  GTK_DIALOG_DESTROY_WITH_PARENT,
-                                  GTK_MESSAGE_INFO,
-                                  GTK_BUTTONS_OK,
-                                  _("The conversion was successful."));
-    gtk_window_set_title (GTK_WINDOW (dlg), _("Conversion was successful"));
-    gtk_dialog_run (GTK_DIALOG (dlg));
-    gtk_widget_destroy (dlg);
-  }
+/**
+ * Idle task called from C<start_conversion_thread> (but run on the
+ * main thread) when there was an error during the conversion.
+ */
+static gboolean
+conversion_error (gpointer user_data)
+{
+  const char *err = get_conversion_error ();
+  GtkWidget *dlg;
+
+  dlg = gtk_message_dialog_new (GTK_WINDOW (run_dlg),
+                                GTK_DIALOG_DESTROY_WITH_PARENT,
+                                GTK_MESSAGE_ERROR,
+                                GTK_BUTTONS_OK,
+                                _("Conversion failed: %s"), err);
+  gtk_window_set_title (GTK_WINDOW (dlg), _("Conversion failed"));
+  gtk_dialog_run (GTK_DIALOG (dlg));
+  gtk_widget_destroy (dlg);
 
   /* Disable the cancel button. */
   gtk_widget_set_sensitive (cancel_button, FALSE);
@@ -1570,37 +2095,71 @@ start_conversion_thread (void *data)
   if (is_iso_environment)
     gtk_widget_set_sensitive (reboot_button, TRUE);
 
-  gdk_threads_leave ();
-
-  /* Thread is detached anyway, so no one is waiting for the status. */
-  return NULL;
+  return FALSE;
 }
 
+/**
+ * Idle task called from C<start_conversion_thread> (but run on the
+ * main thread) when the conversion completed without errors.
+ */
+static gboolean
+conversion_finished (gpointer user_data)
+{
+  GtkWidget *dlg;
+
+  dlg = gtk_message_dialog_new (GTK_WINDOW (run_dlg),
+                                GTK_DIALOG_DESTROY_WITH_PARENT,
+                                GTK_MESSAGE_INFO,
+                                GTK_BUTTONS_OK,
+                                _("The conversion was successful."));
+  gtk_window_set_title (GTK_WINDOW (dlg), _("Conversion was successful"));
+  gtk_dialog_run (GTK_DIALOG (dlg));
+  gtk_widget_destroy (dlg);
+
+  /* Disable the cancel button. */
+  gtk_widget_set_sensitive (cancel_button, FALSE);
+
+  /* Enable the reboot button. */
+  if (is_iso_environment)
+    gtk_widget_set_sensitive (reboot_button, TRUE);
+
+  return FALSE;
+}
+
+/**
+ * This is called from F<conversion.c>:C<start_conversion>
+ * when there is a status change or a log message.
+ */
 static void
 notify_ui_callback (int type, const char *data)
 {
-  gdk_threads_enter ();
+  /* Because we call the functions as idle callbacks which run
+   * in the main thread some time later, we must duplicate the
+   * 'data' parameter (which is always a \0-terminated string).
+   *
+   * This is freed by the idle task function.
+   */
+  char *copy = strdup (data);
 
   switch (type) {
   case NOTIFY_LOG_DIR:
-    set_log_dir (data);
+    g_idle_add (set_log_dir, (gpointer) copy);
     break;
 
   case NOTIFY_REMOTE_MESSAGE:
-    add_v2v_output (data);
+    g_idle_add (add_v2v_output, (gpointer) copy);
     break;
 
   case NOTIFY_STATUS:
-    set_status (data);
+    g_idle_add (set_status, (gpointer) copy);
     break;
 
   default:
     fprintf (stderr,
              "%s: unknown message during conversion: type=%d data=%s\n",
              guestfs_int_program_name, type, data);
+    free (copy);
   }
-
-  gdk_threads_leave ();
 }
 
 static gboolean
@@ -1618,11 +2177,33 @@ close_running_dialog (GtkWidget *w, GdkEvent *event, gpointer data)
     return FALSE;
 }
 
+/**
+ * This is called when the user clicks on the "Cancel conversion"
+ * button.  Since conversions can run for a long time, and cancelling
+ * the conversion is non-recoverable, this function displays a
+ * confirmation dialog before cancelling the conversion.
+ */
 static void
-cancel_conversion_clicked (GtkWidget *w, gpointer data)
+cancel_conversion_dialog (GtkWidget *w, gpointer data)
 {
-  /* This makes start_conversion return an error (eventually). */
-  cancel_conversion ();
+  GtkWidget *dlg;
+
+  if (!conversion_is_running ())
+    return;
+
+  dlg = gtk_message_dialog_new (GTK_WINDOW (run_dlg),
+                                GTK_DIALOG_DESTROY_WITH_PARENT,
+                                GTK_MESSAGE_QUESTION,
+                                GTK_BUTTONS_YES_NO,
+                                _("Really cancel the conversion? "
+                                  "To convert this machine you will need to "
+                                  "re-run the conversion from the beginning."));
+  gtk_window_set_title (GTK_WINDOW (dlg), _("Cancel the conversion"));
+  if (gtk_dialog_run (GTK_DIALOG (dlg)) == GTK_RESPONSE_YES)
+    /* This makes start_conversion return an error (eventually). */
+    cancel_conversion ();
+
+  gtk_widget_destroy (dlg);
 }
 
 static void

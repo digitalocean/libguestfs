@@ -31,7 +31,8 @@ include $(srcdir)/Makefile.inc
 java_sources = \
 	$(java_built_sources) \
 	com/redhat/et/libguestfs/EventCallback.java \
-	com/redhat/et/libguestfs/LibGuestFSException.java
+	com/redhat/et/libguestfs/LibGuestFSException.java \
+	com/redhat/et/libguestfs/LibGuestFSOutOfMemory.java
 
 java_tests = \
 	Bindtests.java \
@@ -55,8 +56,7 @@ EXTRA_DIST = \
 	run-java-tests \
 	Makefile.inc
 
-CLEANFILES = \
-	bindtests.tmp \
+CLEANFILES += \
 	com/redhat/et/libguestfs/*.class \
 	com_redhat_et_libguestfs_GuestFS.h \
 	doc-stamp \
@@ -78,10 +78,10 @@ libguestfs_jardir = $(JAR_INSTALL_DIR)
 libguestfs_jar_DATA = libguestfs-${VERSION}.jar
 libguestfs_jar_class_files = $(java_sources:.java=.class)
 $(libguestfs_jar_class_files): %.class: %.java
-	$(JAVAC) $(JAVAC_FLAGS) -d . -classpath $(srcdir):. $<
+	$(guestfs_am_v_javac)$(JAVAC) $(JAVAC_FLAGS) -d . -classpath $(srcdir):. $<
 
 libguestfs-${VERSION}.jar: $(libguestfs_jar_class_files)
-	$(JAR) cf $@ $^
+	$(guestfs_am_v_jar)$(JAR) cf $@ $^
 
 # JNI source.
 
@@ -139,9 +139,9 @@ TESTS_ENVIRONMENT = $(top_builddir)/run --test
 check_DATA = Bindtests.class $(java_tests:.java=.class)
 
 t/%.class: t/%.java libguestfs-$(VERSION).jar
-	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d t $<
+	$(guestfs_am_v_javac)$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d t $<
 
 Bindtests.class: Bindtests.java libguestfs-$(VERSION).jar
-	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d . $<
+	$(guestfs_am_v_javac)$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d . $<
 
 endif

@@ -2600,9 +2600,16 @@ guestfs_sh (guestfs_h *g,
 }
 
 GUESTFS_DLL_PUBLIC char **
-guestfs_glob_expand (guestfs_h *g,
-                     const char *pattern)
+guestfs_glob_expand_opts_argv (guestfs_h *g,
+                               const char *pattern,
+                               const struct guestfs_glob_expand_opts_argv *optargs)
 {
+  struct guestfs_glob_expand_opts_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
   struct guestfs_glob_expand_args args;
   guestfs_message_header hdr;
   guestfs_message_error err;
@@ -2618,7 +2625,13 @@ guestfs_glob_expand (guestfs_h *g,
                                       "glob_expand", 11);
   if (pattern == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "glob_expand", "pattern");
+           "glob_expand_opts", "pattern");
+    return NULL;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "glob_expand_opts", "glob_expand_opts");
     return NULL;
   }
 
@@ -2626,6 +2639,9 @@ guestfs_glob_expand (guestfs_h *g,
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "glob_expand");
     fprintf (trace_buffer.fp, " \"%s\"", pattern);
+    if (optargs->bitmask & GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "directoryslash", optargs->directoryslash ? "true" : "false");
+    }
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -2637,8 +2653,13 @@ guestfs_glob_expand (guestfs_h *g,
   }
 
   args.pattern = (char *) pattern;
+  if (optargs->bitmask & GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH_BITMASK) {
+    args.directoryslash = optargs->directoryslash;
+  } else {
+    args.directoryslash = 0;
+  }
   serial = guestfs_int_send (g, GUESTFS_PROC_GLOB_EXPAND,
-                             progress_hint, 0,
+                             progress_hint, optargs->bitmask,
                              (xdrproc_t) xdr_guestfs_glob_expand_args, (char *) &args);
   if (serial == -1) {
     if (trace_flag)
@@ -4096,7 +4117,7 @@ guestfs_luks_kill_slot (guestfs_h *g,
 
 GUESTFS_DLL_PUBLIC int
 guestfs_is_lv (guestfs_h *g,
-               const char *device)
+               const char *mountable)
 {
   struct guestfs_is_lv_args args;
   guestfs_message_header hdr;
@@ -4111,16 +4132,16 @@ guestfs_is_lv (guestfs_h *g,
 
   guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                       "is_lv", 5);
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "is_lv", "device");
+           "is_lv", "mountable");
     return -1;
   }
 
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "is_lv");
-    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", mountable);
     guestfs_int_trace_send_line (g, &trace_buffer);
   }
 
@@ -4131,7 +4152,7 @@ guestfs_is_lv (guestfs_h *g,
     return -1;
   }
 
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   serial = guestfs_int_send (g, GUESTFS_PROC_IS_LV,
                              progress_hint, 0,
                              (xdrproc_t) xdr_guestfs_is_lv_args, (char *) &args);
@@ -6751,6 +6772,215 @@ guestfs_part_set_gpt_guid (guestfs_h *g,
   if (trace_flag) {
     guestfs_int_trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "part_set_gpt_guid");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC char *
+guestfs_part_get_disk_guid (guestfs_h *g,
+                            const char *device)
+{
+  struct guestfs_part_get_disk_guid_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_part_get_disk_guid_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char *ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                      "part_get_disk_guid", 18);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "part_get_disk_guid", "device");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "part_get_disk_guid");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs_int_check_appliance_up (g, "part_get_disk_guid") == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "part_get_disk_guid", "NULL");
+    return NULL;
+  }
+
+  args.device = (char *) device;
+  serial = guestfs_int_send (g, GUESTFS_PROC_PART_GET_DISK_GUID,
+                             progress_hint, 0,
+                             (xdrproc_t) xdr_guestfs_part_get_disk_guid_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "part_get_disk_guid", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs_int_recv (g, "part_get_disk_guid", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_part_get_disk_guid_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "part_get_disk_guid", "NULL");
+    return NULL;
+  }
+
+  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_PART_GET_DISK_GUID, serial) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "part_get_disk_guid", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "part_get_disk_guid", "NULL");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs_int_string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "part_get_disk_guid", err.error_message);
+    else
+      guestfs_int_error_errno (g, errnum, "%s: %s", "part_get_disk_guid",
+                               err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return NULL;
+  }
+
+  ret_v = ret.guid; /* caller will free */
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "part_get_disk_guid");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_ntfscat_i (guestfs_h *g,
+                   const char *device,
+                   int64_t inode,
+                   const char *filename)
+{
+  struct guestfs_ntfscat_i_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs_int_call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                      "ntfscat_i", 9);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "ntfscat_i", "device");
+    return -1;
+  }
+  if (filename == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "ntfscat_i", "filename");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "ntfscat_i");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " %" PRIi64, inode);
+    fprintf (trace_buffer.fp, " \"%s\"", filename);
+    guestfs_int_trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs_int_check_appliance_up (g, "ntfscat_i") == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "ntfscat_i", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  args.inode = inode;
+  serial = guestfs_int_send (g, GUESTFS_PROC_NTFSCAT_I,
+                             progress_hint, 0,
+                             (xdrproc_t) xdr_guestfs_ntfscat_i_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "ntfscat_i", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs_int_recv (g, "ntfscat_i", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "ntfscat_i", "-1");
+    return -1;
+  }
+
+  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_NTFSCAT_I, serial) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "ntfscat_i", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    int errnum = 0;
+
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "ntfscat_i", "-1");
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs_int_string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "ntfscat_i", err.error_message);
+    else
+      guestfs_int_error_errno (g, errnum, "%s: %s", "ntfscat_i",
+                               err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  if (guestfs_int_recv_file (g, filename) == -1) {
+    if (trace_flag)
+      guestfs_int_trace (g, "%s = %s (error)",
+                         "ntfscat_i", "-1");
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs_int_trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "ntfscat_i");
     fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs_int_trace_send_line (g, &trace_buffer);
   }

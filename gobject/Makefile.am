@@ -32,16 +32,17 @@ EXTRA_DIST = \
 	$(generator_built) \
 	TODO.txt \
 	.gitignore \
-	bindtests-manual.js \
+	bindtests-retvalues.js \
 	docs/.gitignore \
 	tests-misc.js \
 	run-tests \
+	run-tests-retvalues \
 	run-live-tests
 
 # Remove the old generated files which were directly in the gobject/
 # directory.  These have now moved into gobject/src/
-CLEANFILES = \
-	guestfs-gobject*.c *.o *.lo
+CLEANFILES += \
+	guestfs-gobject*.c
 
 libname = libguestfs-gobject-1.0.la
 
@@ -90,7 +91,9 @@ gir_DATA = $(INTROSPECTION_GIRS)
 typelibdir = $(libdir)/girepository-1.0
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
-TESTS = run-tests
+TESTS = \
+	run-tests \
+	run-tests-retvalues
 
 if ENABLE_APPLIANCE
 TESTS += run-live-tests

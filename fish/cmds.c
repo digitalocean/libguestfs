@@ -106,6 +106,7 @@ static int run_btrfs_device_delete (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_balance (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_defragment (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_filesystem_show (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_fsck (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_image (const char *cmd, size_t argc, char *argv[]);
@@ -175,6 +176,8 @@ static int run_disk_has_backing_file (const char *cmd, size_t argc, char *argv[]
 static int run_disk_virtual_size (const char *cmd, size_t argc, char *argv[]);
 static int run_dmesg (const char *cmd, size_t argc, char *argv[]);
 static int run_download (const char *cmd, size_t argc, char *argv[]);
+static int run_download_blocks (const char *cmd, size_t argc, char *argv[]);
+static int run_download_inode (const char *cmd, size_t argc, char *argv[]);
 static int run_download_offset (const char *cmd, size_t argc, char *argv[]);
 static int run_drop_caches (const char *cmd, size_t argc, char *argv[]);
 static int run_du (const char *cmd, size_t argc, char *argv[]);
@@ -195,6 +198,7 @@ static int run_file (const char *cmd, size_t argc, char *argv[]);
 static int run_file_architecture (const char *cmd, size_t argc, char *argv[]);
 static int run_filesize (const char *cmd, size_t argc, char *argv[]);
 static int run_filesystem_available (const char *cmd, size_t argc, char *argv[]);
+static int run_filesystem_walk (const char *cmd, size_t argc, char *argv[]);
 static int run_fill (const char *cmd, size_t argc, char *argv[]);
 static int run_fill_dir (const char *cmd, size_t argc, char *argv[]);
 static int run_fill_pattern (const char *cmd, size_t argc, char *argv[]);
@@ -232,6 +236,7 @@ static int run_get_qemu (const char *cmd, size_t argc, char *argv[]);
 static int run_get_recovery_proc (const char *cmd, size_t argc, char *argv[]);
 static int run_get_selinux (const char *cmd, size_t argc, char *argv[]);
 static int run_get_smp (const char *cmd, size_t argc, char *argv[]);
+static int run_get_sockdir (const char *cmd, size_t argc, char *argv[]);
 static int run_get_tmpdir (const char *cmd, size_t argc, char *argv[]);
 static int run_get_trace (const char *cmd, size_t argc, char *argv[]);
 static int run_get_umask (const char *cmd, size_t argc, char *argv[]);
@@ -416,11 +421,14 @@ static int run_mount_loop (const char *cmd, size_t argc, char *argv[]);
 static int run_mount_options (const char *cmd, size_t argc, char *argv[]);
 static int run_mount_ro (const char *cmd, size_t argc, char *argv[]);
 static int run_mount_vfs (const char *cmd, size_t argc, char *argv[]);
+static int run_mountable_device (const char *cmd, size_t argc, char *argv[]);
+static int run_mountable_subvolume (const char *cmd, size_t argc, char *argv[]);
 static int run_mountpoints (const char *cmd, size_t argc, char *argv[]);
 static int run_mounts (const char *cmd, size_t argc, char *argv[]);
 static int run_mv (const char *cmd, size_t argc, char *argv[]);
 static int run_nr_devices (const char *cmd, size_t argc, char *argv[]);
 static int run_ntfs_3g_probe (const char *cmd, size_t argc, char *argv[]);
+static int run_ntfscat_i (const char *cmd, size_t argc, char *argv[]);
 static int run_ntfsclone_in (const char *cmd, size_t argc, char *argv[]);
 static int run_ntfsclone_out (const char *cmd, size_t argc, char *argv[]);
 static int run_ntfsfix (const char *cmd, size_t argc, char *argv[]);
@@ -431,7 +439,9 @@ static int run_parse_environment_list (const char *cmd, size_t argc, char *argv[
 static int run_part_add (const char *cmd, size_t argc, char *argv[]);
 static int run_part_del (const char *cmd, size_t argc, char *argv[]);
 static int run_part_disk (const char *cmd, size_t argc, char *argv[]);
+static int run_part_expand_gpt (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_bootable (const char *cmd, size_t argc, char *argv[]);
+static int run_part_get_disk_guid (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_gpt_guid (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_mbr_id (const char *cmd, size_t argc, char *argv[]);
@@ -441,6 +451,8 @@ static int run_part_get_parttype (const char *cmd, size_t argc, char *argv[]);
 static int run_part_init (const char *cmd, size_t argc, char *argv[]);
 static int run_part_list (const char *cmd, size_t argc, char *argv[]);
 static int run_part_set_bootable (const char *cmd, size_t argc, char *argv[]);
+static int run_part_set_disk_guid (const char *cmd, size_t argc, char *argv[]);
+static int run_part_set_disk_guid_random (const char *cmd, size_t argc, char *argv[]);
 static int run_part_set_gpt_guid (const char *cmd, size_t argc, char *argv[]);
 static int run_part_set_gpt_type (const char *cmd, size_t argc, char *argv[]);
 static int run_part_set_mbr_id (const char *cmd, size_t argc, char *argv[]);
@@ -485,6 +497,7 @@ static int run_rsync_out (const char *cmd, size_t argc, char *argv[]);
 static int run_scrub_device (const char *cmd, size_t argc, char *argv[]);
 static int run_scrub_file (const char *cmd, size_t argc, char *argv[]);
 static int run_scrub_freespace (const char *cmd, size_t argc, char *argv[]);
+static int run_selinux_relabel (const char *cmd, size_t argc, char *argv[]);
 static int run_set_append (const char *cmd, size_t argc, char *argv[]);
 static int run_set_attach_method (const char *cmd, size_t argc, char *argv[]);
 static int run_set_autosync (const char *cmd, size_t argc, char *argv[]);
@@ -2483,6 +2496,25 @@ struct command_entry btrfs_filesystem_resize_cmd_entry = {
   .run = run_btrfs_filesystem_resize
 };
 
+struct command_entry btrfs_filesystem_show_cmd_entry = {
+  .name = "btrfs-filesystem-show",
+  .help = "NAME\n"
+          "    btrfs-filesystem-show - list devices for btrfs filesystem\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     btrfs-filesystem-show device\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Show all the devices where the filesystems in \"device\" is spanned over.\n"
+          "\n"
+          "    If not all the devices for the filesystems are present, then this\n"
+          "    function fails and the \"errno\" is set to \"ENODEV\".\n"
+          "\n"
+          "",
+  .synopsis = "btrfs-filesystem-show device",
+  .run = run_btrfs_filesystem_show
+};
+
 struct command_entry btrfs_filesystem_sync_cmd_entry = {
   .name = "btrfs-filesystem-sync",
   .help = "NAME\n"
@@ -3979,6 +4011,57 @@ struct command_entry download_cmd_entry = {
   .run = run_download
 };
 
+struct command_entry download_blocks_cmd_entry = {
+  .name = "download-blocks",
+  .help = "NAME\n"
+          "    download-blocks - download the given data units from the disk\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     download-blocks device start stop filename [unallocated:true|false]\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Download the data units from start address to stop from the disk\n"
+          "    partition (eg. /dev/sda1) and save them as filename on the local\n"
+          "    machine.\n"
+          "\n"
+          "    The use of this API on sparse disk image formats such as QCOW, may\n"
+          "    result in large zero-filled files downloaded on the host.\n"
+          "\n"
+          "    The size of a data unit varies across filesystem implementations. On\n"
+          "    NTFS filesystems data units are referred as clusters while on ExtX ones\n"
+          "    they are referred as fragments.\n"
+          "\n"
+          "    If the optional \"unallocated\" flag is true (default is false), only the\n"
+          "    unallocated blocks will be extracted. This is useful to detect hidden\n"
+          "    data or to retrieve deleted files which data units have not been\n"
+          "    overwritten yet.\n"
+          "\n"
+          "",
+  .synopsis = "download-blocks device start stop filename [unallocated:true|false]",
+  .run = run_download_blocks
+};
+
+struct command_entry download_inode_cmd_entry = {
+  .name = "download-inode",
+  .help = "NAME\n"
+          "    download-inode - download a file to the local machine given its inode\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     download-inode device inode filename\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Download a file given its inode from the disk partition (eg. /dev/sda1)\n"
+          "    and save it as filename on the local machine.\n"
+          "\n"
+          "    It is not required to mount the disk to run this command.\n"
+          "\n"
+          "    The command is capable of downloading deleted or inaccessible files.\n"
+          "\n"
+          "",
+  .synopsis = "download-inode device inode filename",
+  .run = run_download_inode
+};
+
 struct command_entry download_offset_cmd_entry = {
   .name = "download-offset",
   .help = "NAME\n"
@@ -4537,6 +4620,111 @@ struct command_entry filesystem_available_cmd_entry = {
   .run = run_filesystem_available
 };
 
+struct command_entry filesystem_walk_cmd_entry = {
+  .name = "filesystem-walk",
+  .help = "NAME\n"
+          "    filesystem-walk - walk through the filesystem content\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     filesystem-walk device\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Walk through the internal structures of a disk partition (eg. /dev/sda1)\n"
+          "    in order to return a list of all the files and directories stored\n"
+          "    within.\n"
+          "\n"
+          "    It is not necessary to mount the disk partition to run this command.\n"
+          "\n"
+          "    All entries in the filesystem are returned, excluding \".\" and \"..\". This\n"
+          "    function can list deleted or unaccessible files. The entries are *not*\n"
+          "    sorted.\n"
+          "\n"
+          "    The \"tsk_dirent\" structure contains the following fields.\n"
+          "\n"
+          "    'tsk_inode'\n"
+          "        Filesystem reference number of the node. It migh be 0 if the node\n"
+          "        has been deleted.\n"
+          "\n"
+          "    'tsk_type'\n"
+          "        Basic file type information. See below for a detailed list of\n"
+          "        values.\n"
+          "\n"
+          "    'tsk_size'\n"
+          "        File size in bytes. It migh be -1 if the node has been deleted.\n"
+          "\n"
+          "    'tsk_name'\n"
+          "        The file path relative to its directory.\n"
+          "\n"
+          "    'tsk_flags'\n"
+          "        Bitfield containing extra information regarding the entry. It\n"
+          "        contains the logical OR of the following values:\n"
+          "\n"
+          "        0x0001\n"
+          "            If set to 1, the file is allocated and visible within the\n"
+          "            filesystem. Otherwise, the file has been deleted. Under certain\n"
+          "            circumstances, the function \"download_inode\" can be used to\n"
+          "            recover deleted files.\n"
+          "\n"
+          "        0x0002\n"
+          "            Filesystem such as NTFS and Ext2 or greater, separate the file\n"
+          "            name from the metadata structure. The bit is set to 1 when the\n"
+          "            file name is in an unallocated state and the metadata structure\n"
+          "            is in an allocated one. This generally implies the metadata has\n"
+          "            been reallocated to a new file. Therefore, information such as\n"
+          "            file type, file size, timestamps, number of links and symlink\n"
+          "            target might not correspond with the ones of the original\n"
+          "            deleted entry.\n"
+          "\n"
+          "        0x0004\n"
+          "            The bit is set to 1 when the file is compressed using filesystem\n"
+          "            native compression support (NTFS). The API is not able to detect\n"
+          "            application level compression.\n"
+          "\n"
+          "    'tsk_atime_sec'\n"
+          "    'tsk_atime_nsec'\n"
+          "    'tsk_mtime_sec'\n"
+          "    'tsk_mtime_nsec'\n"
+          "    'tsk_ctime_sec'\n"
+          "    'tsk_ctime_nsec'\n"
+          "    'tsk_crtime_sec'\n"
+          "    'tsk_crtime_nsec'\n"
+          "        Respectively, access, modification, last status change and creation\n"
+          "        time in Unix format in seconds and nanoseconds.\n"
+          "\n"
+          "    'tsk_nlink'\n"
+          "        Number of file names pointing to this entry.\n"
+          "\n"
+          "    'tsk_link'\n"
+          "        If the entry is a symbolic link, this field will contain the path to\n"
+          "        the target file.\n"
+          "\n"
+          "    The \"tsk_type\" field will contain one of the following characters:\n"
+          "\n"
+          "    'b' Block special\n"
+          "\n"
+          "    'c' Char special\n"
+          "\n"
+          "    'd' Directory\n"
+          "\n"
+          "    'f' FIFO (named pipe)\n"
+          "\n"
+          "    'l' Symbolic link\n"
+          "\n"
+          "    'r' Regular file\n"
+          "\n"
+          "    's' Socket\n"
+          "\n"
+          "    'h' Shadow inode (Solaris)\n"
+          "\n"
+          "    'w' Whiteout inode (BSD)\n"
+          "\n"
+          "    'u' Unknown file type\n"
+          "\n"
+          "",
+  .synopsis = "filesystem-walk device",
+  .run = run_filesystem_walk
+};
+
 struct command_entry fill_cmd_entry = {
   .name = "fill",
   .help = "NAME\n"
@@ -4750,6 +4938,10 @@ struct command_entry fstrim_cmd_entry = {
           "    This operation requires support in libguestfs, the mounted filesystem,\n"
           "    the host filesystem, qemu and the host kernel. If this support isn't\n"
           "    present it may give an error or even appear to run but do nothing.\n"
+          "\n"
+          "    In the case where the kernel vfs driver does not support trimming, this\n"
+          "    call will fail with errno set to \"ENOTSUP\". Currently this happens when\n"
+          "    trying to trim FAT filesystems.\n"
           "\n"
           "    See also \"zero_free_space\". That is a slightly different operation that\n"
           "    turns free space in the filesystem into zeroes. It is valid to call\n"
@@ -5359,6 +5551,13 @@ struct command_entry get_selinux_cmd_entry = {
           "\n"
           "    For more information on the architecture of libguestfs, see guestfs(3).\n"
           "\n"
+          "    *This function is deprecated.* In new code, use the \"selinux-relabel\"\n"
+          "    call instead.\n"
+          "\n"
+          "    Deprecated functions will not be removed from the API, but the fact that\n"
+          "    they are deprecated indicates that there are problems with correct use\n"
+          "    of these functions.\n"
+          "\n"
           "",
   .synopsis = "get-selinux",
   .run = run_get_selinux
@@ -5378,6 +5577,30 @@ struct command_entry get_smp_cmd_entry = {
           "",
   .synopsis = "get-smp",
   .run = run_get_smp
+};
+
+struct command_entry get_sockdir_cmd_entry = {
+  .name = "get-sockdir",
+  .help = "NAME\n"
+          "    get-sockdir - get the temporary directory for sockets\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     get-sockdir\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Get the directory used by the handle to store temporary socket files.\n"
+          "\n"
+          "    This is different from \"tmpdir\", as we need shorter paths for sockets\n"
+          "    (due to the limited buffers of filenames for UNIX sockets), and \"tmpdir\"\n"
+          "    may be too long for them.\n"
+          "\n"
+          "    The environment variable \"XDG_RUNTIME_DIR\" controls the default value:\n"
+          "    If \"XDG_RUNTIME_DIR\" is set, then that is the default. Else /tmp is the\n"
+          "    default.\n"
+          "\n"
+          "",
+  .synopsis = "get-sockdir",
+  .run = run_get_sockdir
 };
 
 struct command_entry get_tmpdir_cmd_entry = {
@@ -5458,6 +5681,13 @@ struct command_entry getcon_cmd_entry = {
           "\n"
           "    See the documentation about SELINUX in guestfs(3), and \"setcon\"\n"
           "\n"
+          "    *This function is deprecated.* In new code, use the \"selinux-relabel\"\n"
+          "    call instead.\n"
+          "\n"
+          "    Deprecated functions will not be removed from the API, but the fact that\n"
+          "    they are deprecated indicates that there are problems with correct use\n"
+          "    of these functions.\n"
+          "\n"
           "",
   .synopsis = "getcon",
   .run = run_getcon
@@ -5519,7 +5749,7 @@ struct command_entry glob_expand_cmd_entry = {
           "    glob-expand - expand a wildcard path\n"
           "\n"
           "SYNOPSIS\n"
-          "     glob-expand pattern\n"
+          "     glob-expand pattern [directoryslash:true|false]\n"
           "\n"
           "DESCRIPTION\n"
           "    This command searches for all the pathnames matching \"pattern\" according\n"
@@ -5530,12 +5760,18 @@ struct command_entry glob_expand_cmd_entry = {
           "    It is just a wrapper around the C glob(3) function with flags\n"
           "    \"GLOB_MARK|GLOB_BRACE\". See that manual page for more details.\n"
           "\n"
+          "    \"directoryslash\" controls whether use the \"GLOB_MARK\" flag for glob(3),\n"
+          "    and it defaults to true. It can be explicitly set as off to return no\n"
+          "    trailing slashes in filenames of directories.\n"
+          "\n"
           "    Notice that there is no equivalent command for expanding a device name\n"
           "    (eg. /dev/sd*). Use \"list_devices\", \"list_partitions\" etc functions\n"
           "    instead.\n"
           "\n"
+          "    You can use 'glob-expand-opts' as an alias for this command.\n"
+          "\n"
           "",
-  .synopsis = "glob-expand pattern",
+  .synopsis = "glob-expand pattern [directoryslash:true|false]",
   .run = run_glob_expand
 };
 
@@ -6355,6 +6591,9 @@ struct command_entry inspect_get_distro_cmd_entry = {
           "    \"unknown\"\n"
           "        The distro could not be determined.\n"
           "\n"
+          "    \"voidlinux\"\n"
+          "        Void Linux.\n"
+          "\n"
           "    \"windows\"\n"
           "        Windows does not have distributions. This string is returned if the\n"
           "        OS type is Windows.\n"
@@ -6654,7 +6893,8 @@ struct command_entry inspect_get_package_format_cmd_entry = {
           "    system (eg. Windows).\n"
           "\n"
           "    Possible strings include: \"rpm\", \"deb\", \"ebuild\", \"pisi\", \"pacman\",\n"
-          "    \"pkgsrc\", \"apk\". Future versions of libguestfs may return other strings.\n"
+          "    \"pkgsrc\", \"apk\", \"xbps\". Future versions of libguestfs may return other\n"
+          "    strings.\n"
           "\n"
           "    Please read \"INSPECTION\" in guestfs(3) for more details.\n"
           "\n"
@@ -6683,8 +6923,8 @@ struct command_entry inspect_get_package_management_cmd_entry = {
           "    packaging system (eg. Windows).\n"
           "\n"
           "    Possible strings include: \"yum\", \"dnf\", \"up2date\", \"apt\" (for all Debian\n"
-          "    derivatives), \"portage\", \"pisi\", \"pacman\", \"urpmi\", \"zypper\", \"apk\".\n"
-          "    Future versions of libguestfs may return other strings.\n"
+          "    derivatives), \"portage\", \"pisi\", \"pacman\", \"urpmi\", \"zypper\", \"apk\",\n"
+          "    \"xbps\". Future versions of libguestfs may return other strings.\n"
           "\n"
           "    Please read \"INSPECTION\" in guestfs(3) for more details.\n"
           "\n"
@@ -7333,17 +7573,17 @@ struct command_entry is_file_cmd_entry = {
 struct command_entry is_lv_cmd_entry = {
   .name = "is-lv",
   .help = "NAME\n"
-          "    is-lv - test if device is a logical volume\n"
+          "    is-lv - test if mountable is a logical volume\n"
           "\n"
           "SYNOPSIS\n"
-          "     is-lv device\n"
+          "     is-lv mountable\n"
           "\n"
           "DESCRIPTION\n"
-          "    This command tests whether \"device\" is a logical volume, and returns\n"
+          "    This command tests whether \"mountable\" is a logical volume, and returns\n"
           "    true iff this is the case.\n"
           "\n"
           "",
-  .synopsis = "is-lv device",
+  .synopsis = "is-lv mountable",
   .run = run_is_lv
 };
 
@@ -8206,6 +8446,13 @@ struct command_entry llz_cmd_entry = {
           "\n"
           "    This command is mostly useful for interactive sessions. It is *not*\n"
           "    intended that you try to parse the output string.\n"
+          "\n"
+          "    *This function is deprecated.* In new code, use the \"lgetxattrs\" call\n"
+          "    instead.\n"
+          "\n"
+          "    Deprecated functions will not be removed from the API, but the fact that\n"
+          "    they are deprecated indicates that there are problems with correct use\n"
+          "    of these functions.\n"
           "\n"
           "",
   .synopsis = "llz directory",
@@ -9933,6 +10180,49 @@ struct command_entry mount_vfs_cmd_entry = {
   .run = run_mount_vfs
 };
 
+struct command_entry mountable_device_cmd_entry = {
+  .name = "mountable-device",
+  .help = "NAME\n"
+          "    mountable-device - extract the device part of a mountable\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     mountable-device mountable\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Returns the device name of a mountable. In quite a lot of cases, the\n"
+          "    mountable is the device name.\n"
+          "\n"
+          "    However this doesn't apply for btrfs subvolumes, where the mountable is\n"
+          "    a combination of both the device name and the subvolume path (see also\n"
+          "    \"mountable_subvolume\" to extract the subvolume path of the mountable if\n"
+          "    any).\n"
+          "\n"
+          "",
+  .synopsis = "mountable-device mountable",
+  .run = run_mountable_device
+};
+
+struct command_entry mountable_subvolume_cmd_entry = {
+  .name = "mountable-subvolume",
+  .help = "NAME\n"
+          "    mountable-subvolume - extract the subvolume part of a mountable\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     mountable-subvolume mountable\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Returns the subvolume path of a mountable. Btrfs subvolumes mountables\n"
+          "    are a combination of both the device name and the subvolume path (see\n"
+          "    also \"mountable_device\" to extract the device of the mountable).\n"
+          "\n"
+          "    If the mountable does not represent a btrfs subvolume, then this\n"
+          "    function fails and the \"errno\" is set to \"EINVAL\".\n"
+          "\n"
+          "",
+  .synopsis = "mountable-subvolume mountable",
+  .run = run_mountable_subvolume
+};
+
 struct command_entry mountpoints_cmd_entry = {
   .name = "mountpoints",
   .help = "NAME\n"
@@ -10035,6 +10325,29 @@ struct command_entry ntfs_3g_probe_cmd_entry = {
           "",
   .synopsis = "ntfs-3g-probe rw device",
   .run = run_ntfs_3g_probe
+};
+
+struct command_entry ntfscat_i_cmd_entry = {
+  .name = "ntfscat-i",
+  .help = "NAME\n"
+          "    ntfscat-i - download a file to the local machine given its inode\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     ntfscat-i device inode filename\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Download a file given its inode from a NTFS filesystem and save it as\n"
+          "    filename on the local machine.\n"
+          "\n"
+          "    This allows to download some otherwise inaccessible files such as the\n"
+          "    ones within the $Extend folder.\n"
+          "\n"
+          "    The filesystem from which to extract the file must be unmounted,\n"
+          "    otherwise the call will fail.\n"
+          "\n"
+          "",
+  .synopsis = "ntfscat-i device inode filename",
+  .run = run_ntfscat_i
 };
 
 struct command_entry ntfsclone_in_cmd_entry = {
@@ -10282,6 +10595,26 @@ struct command_entry part_disk_cmd_entry = {
   .run = run_part_disk
 };
 
+struct command_entry part_expand_gpt_cmd_entry = {
+  .name = "part-expand-gpt",
+  .help = "NAME\n"
+          "    part-expand-gpt - move backup GPT header to the end of the disk\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     part-expand-gpt device\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Move backup GPT data structures to the end of the disk. This is useful\n"
+          "    in case of in-place image expand since disk space after backup GPT\n"
+          "    header is not usable. This is equivalent to \"sgdisk -e\".\n"
+          "\n"
+          "    See also sgdisk(8).\n"
+          "\n"
+          "",
+  .synopsis = "part-expand-gpt device",
+  .run = run_part_expand_gpt
+};
+
 struct command_entry part_get_bootable_cmd_entry = {
   .name = "part-get-bootable",
   .help = "NAME\n"
@@ -10299,6 +10632,23 @@ struct command_entry part_get_bootable_cmd_entry = {
           "",
   .synopsis = "part-get-bootable device partnum",
   .run = run_part_get_bootable
+};
+
+struct command_entry part_get_disk_guid_cmd_entry = {
+  .name = "part-get-disk-guid",
+  .help = "NAME\n"
+          "    part-get-disk-guid - get the GUID of a GPT-partitioned disk\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     part-get-disk-guid device\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Return the disk identifier (GUID) of a GPT-partitioned \"device\".\n"
+          "    Behaviour is undefined for other partition types.\n"
+          "\n"
+          "",
+  .synopsis = "part-get-disk-guid device",
+  .run = run_part_get_disk_guid
 };
 
 struct command_entry part_get_gpt_guid_cmd_entry = {
@@ -10524,6 +10874,43 @@ struct command_entry part_set_bootable_cmd_entry = {
           "",
   .synopsis = "part-set-bootable device partnum bootable",
   .run = run_part_set_bootable
+};
+
+struct command_entry part_set_disk_guid_cmd_entry = {
+  .name = "part-set-disk-guid",
+  .help = "NAME\n"
+          "    part-set-disk-guid - set the GUID of a GPT-partitioned disk\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     part-set-disk-guid device guid\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Set the disk identifier (GUID) of a GPT-partitioned \"device\" to \"guid\".\n"
+          "    Return an error if the partition table of \"device\" isn't GPT, or if\n"
+          "    \"guid\" is not a valid GUID.\n"
+          "\n"
+          "",
+  .synopsis = "part-set-disk-guid device guid",
+  .run = run_part_set_disk_guid
+};
+
+struct command_entry part_set_disk_guid_random_cmd_entry = {
+  .name = "part-set-disk-guid-random",
+  .help = "NAME\n"
+          "    part-set-disk-guid-random - set the GUID of a GPT-partitioned disk to\n"
+          "    random value\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     part-set-disk-guid-random device\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Set the disk identifier (GUID) of a GPT-partitioned \"device\" to a\n"
+          "    randomly generated value. Return an error if the partition table of\n"
+          "    \"device\" isn't GPT.\n"
+          "\n"
+          "",
+  .synopsis = "part-set-disk-guid-random device",
+  .run = run_part_set_disk_guid_random
 };
 
 struct command_entry part_set_gpt_guid_cmd_entry = {
@@ -11491,6 +11878,35 @@ struct command_entry scrub_freespace_cmd_entry = {
   .run = run_scrub_freespace
 };
 
+struct command_entry selinux_relabel_cmd_entry = {
+  .name = "selinux-relabel",
+  .help = "NAME\n"
+          "    selinux-relabel - relabel parts of the filesystem\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     selinux-relabel specfile path [force:true|false]\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    SELinux relabel parts of the filesystem.\n"
+          "\n"
+          "    The \"specfile\" parameter controls the policy spec file used. You have to\n"
+          "    parse \"/etc/selinux/config\" to find the correct SELinux policy and then\n"
+          "    pass the spec file, usually: \"/etc/selinux/\" + *selinuxtype* +\n"
+          "    \"/contexts/files/file_contexts\".\n"
+          "\n"
+          "    The required \"path\" parameter is the top level directory where\n"
+          "    relabelling starts. Normally you should pass \"path\" as \"/\" to relabel\n"
+          "    the whole guest filesystem.\n"
+          "\n"
+          "    The optional \"force\" boolean controls whether the context is reset for\n"
+          "    customizable files, and also whether the user, role and range parts of\n"
+          "    the file context is changed.\n"
+          "\n"
+          "",
+  .synopsis = "selinux-relabel specfile path [force:true|false]",
+  .run = run_selinux_relabel
+};
+
 struct command_entry set_append_cmd_entry = {
   .name = "set-append",
   .help = "NAME\n"
@@ -12175,6 +12591,13 @@ struct command_entry set_selinux_cmd_entry = {
           "\n"
           "    For more information on the architecture of libguestfs, see guestfs(3).\n"
           "\n"
+          "    *This function is deprecated.* In new code, use the \"selinux-relabel\"\n"
+          "    call instead.\n"
+          "\n"
+          "    Deprecated functions will not be removed from the API, but the fact that\n"
+          "    they are deprecated indicates that there are problems with correct use\n"
+          "    of these functions.\n"
+          "\n"
           "    You can use 'selinux' as an alias for this command.\n"
           "\n"
           "",
@@ -12336,6 +12759,13 @@ struct command_entry setcon_cmd_entry = {
           "    \"context\".\n"
           "\n"
           "    See the documentation about SELINUX in guestfs(3).\n"
+          "\n"
+          "    *This function is deprecated.* In new code, use the \"selinux-relabel\"\n"
+          "    call instead.\n"
+          "\n"
+          "    Deprecated functions will not be removed from the API, but the fact that\n"
+          "    they are deprecated indicates that there are problems with correct use\n"
+          "    of these functions.\n"
           "\n"
           "",
   .synopsis = "setcon context",
@@ -14522,6 +14952,7 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-filesystem-balance", _("balance a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-filesystem-defragment", _("defragment a file or directory"));
   printf ("%-20s %s\n", "btrfs-filesystem-resize", _("resize a btrfs filesystem"));
+  printf ("%-20s %s\n", "btrfs-filesystem-show", _("list devices for btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-filesystem-sync", _("sync a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-fsck", _("check a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-image", _("create an image of a btrfs filesystem"));
@@ -14604,6 +15035,8 @@ list_commands (void)
   printf (_("alias for '%s'"), "add-domain");
   putchar ('\n');
   printf ("%-20s %s\n", "download", _("download a file to the local machine"));
+  printf ("%-20s %s\n", "download-blocks", _("download the given data units from the disk"));
+  printf ("%-20s %s\n", "download-inode", _("download a file to the local machine given its inode"));
   printf ("%-20s %s\n", "download-offset", _("download a file to the local machine with offset and size"));
   printf ("%-20s %s\n", "drop-caches", _("drop kernel page cache, dentries and inodes"));
   printf ("%-20s %s\n", "du", _("estimate file space usage"));
@@ -14630,6 +15063,7 @@ list_commands (void)
   printf ("%-20s %s\n", "file-architecture", _("detect the architecture of a binary file"));
   printf ("%-20s %s\n", "filesize", _("return the size of the file in bytes"));
   printf ("%-20s %s\n", "filesystem-available", _("check if filesystem is available"));
+  printf ("%-20s %s\n", "filesystem-walk", _("walk through the filesystem content"));
   printf ("%-20s %s\n", "fill", _("fill a file with octets"));
   printf ("%-20s %s\n", "fill-dir", _("fill a directory with empty files"));
   printf ("%-20s %s\n", "fill-pattern", _("fill a file with a repeating pattern of bytes"));
@@ -14670,6 +15104,7 @@ list_commands (void)
   printf ("%-20s %s\n", "get-recovery-proc", _("get recovery process enabled flag"));
   printf ("%-20s %s\n", "get-selinux", _("get SELinux enabled flag"));
   printf ("%-20s %s\n", "get-smp", _("get number of virtual CPUs in appliance"));
+  printf ("%-20s %s\n", "get-sockdir", _("get the temporary directory for sockets"));
   printf ("%-20s %s\n", "get-tmpdir", _("get the temporary directory"));
   printf ("%-20s %s\n", "get-trace", _("get command trace enabled flag"));
   printf ("%-20s %s\n", "get-umask", _("get the current umask"));
@@ -14748,7 +15183,7 @@ list_commands (void)
   printf ("%-20s %s\n", "is-dir", _("test if a directory"));
   printf ("%-20s %s\n", "is-fifo", _("test if FIFO (named pipe)"));
   printf ("%-20s %s\n", "is-file", _("test if a regular file"));
-  printf ("%-20s %s\n", "is-lv", _("test if device is a logical volume"));
+  printf ("%-20s %s\n", "is-lv", _("test if mountable is a logical volume"));
   printf ("%-20s %s\n", "is-socket", _("test if socket"));
   printf ("%-20s %s\n", "is-symlink", _("test if symbolic link"));
   printf ("%-20s %s\n", "is-whole-device", _("test if a device is a whole device"));
@@ -14875,6 +15310,8 @@ list_commands (void)
   printf ("%-20s %s\n", "mount-options", _("mount a guest disk with mount options"));
   printf ("%-20s %s\n", "mount-ro", _("mount a guest disk, read-only"));
   printf ("%-20s %s\n", "mount-vfs", _("mount a guest disk with mount options and vfstype"));
+  printf ("%-20s %s\n", "mountable-device", _("extract the device part of a mountable"));
+  printf ("%-20s %s\n", "mountable-subvolume", _("extract the subvolume part of a mountable"));
   printf ("%-20s %s\n", "mountpoints", _("show mountpoints"));
   printf ("%-20s %s\n", "mounts", _("show mounted filesystems"));
   printf ("%-20s %s\n", "mv", _("move a file"));
@@ -14883,6 +15320,7 @@ list_commands (void)
   putchar ('\n');
   printf ("%-20s %s\n", "nr-devices", _("return number of whole block devices (disks) added"));
   printf ("%-20s %s\n", "ntfs-3g-probe", _("probe NTFS volume"));
+  printf ("%-20s %s\n", "ntfscat-i", _("download a file to the local machine given its inode"));
   printf ("%-20s %s\n", "ntfsclone-in", _("restore NTFS from backup file"));
   printf ("%-20s %s\n", "ntfsclone-out", _("save NTFS to backup file"));
   printf ("%-20s %s\n", "ntfsfix", _("fix common errors and force Windows to check NTFS"));
@@ -14893,7 +15331,9 @@ list_commands (void)
   printf ("%-20s %s\n", "part-add", _("add a partition to the device"));
   printf ("%-20s %s\n", "part-del", _("delete a partition"));
   printf ("%-20s %s\n", "part-disk", _("partition whole disk with a single primary partition"));
+  printf ("%-20s %s\n", "part-expand-gpt", _("move backup GPT header to the end of the disk"));
   printf ("%-20s %s\n", "part-get-bootable", _("return true if a partition is bootable"));
+  printf ("%-20s %s\n", "part-get-disk-guid", _("get the GUID of a GPT-partitioned disk"));
   printf ("%-20s %s\n", "part-get-gpt-guid", _("get the GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-get-gpt-type", _("get the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-get-mbr-id", _("get the MBR type byte (ID byte) from a partition"));
@@ -14903,6 +15343,8 @@ list_commands (void)
   printf ("%-20s %s\n", "part-init", _("create an empty partition table"));
   printf ("%-20s %s\n", "part-list", _("list partitions on a device"));
   printf ("%-20s %s\n", "part-set-bootable", _("make a partition bootable"));
+  printf ("%-20s %s\n", "part-set-disk-guid", _("set the GUID of a GPT-partitioned disk"));
+  printf ("%-20s %s\n", "part-set-disk-guid-random", _("set the GUID of a GPT-partitioned disk to random value"));
   printf ("%-20s %s\n", "part-set-gpt-guid", _("set the GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-set-gpt-type", _("set the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-set-mbr-id", _("set the MBR type byte (ID byte) of a partition"));
@@ -14975,6 +15417,7 @@ list_commands (void)
   printf ("%-20s ", "selinux");
   printf (_("alias for '%s'"), "set-selinux");
   putchar ('\n');
+  printf ("%-20s %s\n", "selinux-relabel", _("relabel parts of the filesystem"));
   printf ("%-20s %s\n", "set-append", _("add options to kernel command line"));
   printf ("%-20s %s\n", "set-attach-method", _("set the backend"));
   printf ("%-20s %s\n", "set-autosync", _("set autosync mode"));
@@ -15171,6 +15614,18 @@ print_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *btrfsqgroups)
   for (i = 0; i < btrfsqgroups->len; ++i) {
     printf ("[%zu] = {\n", i);
     guestfs_int_print_btrfsqgroup_indent (&btrfsqgroups->val[i], stdout, "\n", "  ");
+    printf ("}\n");
+  }
+}
+
+static void
+print_tsk_dirent_list (struct guestfs_tsk_dirent_list *tsk_dirents)
+{
+  size_t i;
+
+  for (i = 0; i < tsk_dirents->len; ++i) {
+    printf ("[%zu] = {\n", i);
+    guestfs_int_print_tsk_dirent_indent (&tsk_dirents->val[i], stdout, "\n", "  ");
     printf ("}\n");
   }
 }
@@ -17006,6 +17461,29 @@ run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[])
  out:
   free (mountpoint);
  out_mountpoint:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_filesystem_show (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  char **r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_btrfs_filesystem_show (g, device);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  guestfs_int_free_string_list (r);
+ out:
  out_noargs:
   return ret;
 }
@@ -19715,6 +20193,137 @@ run_download (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_download_blocks (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  int64_t start;
+  int64_t stop;
+  char *filename;
+  struct guestfs_download_blocks_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_download_blocks_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 4 || argc > 5) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "start", "xstrtoll", xerr);
+      goto out_start;
+    }
+    start = r;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "stop", "xstrtoll", xerr);
+      goto out_stop;
+    }
+    stop = r;
+  }
+  filename = file_out (argv[i++]);
+  if (filename == NULL) goto out_filename;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "unallocated:")) {
+      switch (guestfs_int_is_true (&argv[i][12])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][12]);
+          goto out;
+        case 0:  optargs_s.unallocated = 0; break;
+        default: optargs_s.unallocated = 1;
+      }
+      this_mask = GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK;
+      this_arg = "unallocated";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_download_blocks_argv (g, device, start, stop, filename, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (filename);
+ out_filename:
+ out_stop:
+ out_start:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_download_inode (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  int64_t inode;
+  char *filename;
+  size_t i = 0;
+
+  if (argc != 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "inode", "xstrtoll", xerr);
+      goto out_inode;
+    }
+    inode = r;
+  }
+  filename = file_out (argv[i++]);
+  if (filename == NULL) goto out_filename;
+  r = guestfs_download_inode (g, device, inode, filename);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (filename);
+ out_filename:
+ out_inode:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_download_offset (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -20347,6 +20956,29 @@ run_filesystem_available (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_filesystem_walk (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  struct guestfs_tsk_dirent_list *r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_filesystem_walk (g, device);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_tsk_dirent_list (r);
+  guestfs_free_tsk_dirent_list (r);
  out:
  out_noargs:
   return ret;
@@ -21362,6 +21994,26 @@ run_get_smp (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_get_sockdir (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  char *r;
+
+  if (argc != 0) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  r = guestfs_get_sockdir (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_get_tmpdir (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -21523,15 +22175,49 @@ run_glob_expand (const char *cmd, size_t argc, char *argv[])
   int ret = RUN_ERROR;
   char **r;
   char *pattern;
+  struct guestfs_glob_expand_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_glob_expand_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 1) {
+  if (argc < 1 || argc > 2) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
   pattern = win_prefix (argv[i++]); /* process "win:" prefix */
   if (pattern == NULL) goto out_pattern;
-  r = guestfs_glob_expand (g, pattern);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "directoryslash:")) {
+      switch (guestfs_int_is_true (&argv[i][15])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][15]);
+          goto out;
+        case 0:  optargs_s.directoryslash = 0; break;
+        default: optargs_s.directoryslash = 1;
+      }
+      this_mask = GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH_BITMASK;
+      this_arg = "directoryslash";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_glob_expand_opts_argv (g, pattern, optargs);
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
@@ -23605,15 +24291,15 @@ run_is_lv (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
   int r;
-  const char *device;
+  const char *mountable;
   size_t i = 0;
 
   if (argc != 1) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
-  device = argv[i++];
-  r = guestfs_is_lv (g, device);
+  mountable = argv[i++];
+  r = guestfs_is_lv (g, mountable);
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
@@ -27978,6 +28664,52 @@ run_mount_vfs (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_mountable_device (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  char *r;
+  const char *mountable;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  mountable = argv[i++];
+  r = guestfs_mountable_device (g, mountable);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_mountable_subvolume (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  char *r;
+  const char *mountable;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  mountable = argv[i++];
+  r = guestfs_mountable_subvolume (g, mountable);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_mountpoints (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -28094,6 +28826,47 @@ run_ntfs_3g_probe (const char *cmd, size_t argc, char *argv[])
   printf ("%d\n", r);
  out:
  out_rw:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ntfscat_i (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  int64_t inode;
+  char *filename;
+  size_t i = 0;
+
+  if (argc != 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "inode", "xstrtoll", xerr);
+      goto out_inode;
+    }
+    inode = r;
+  }
+  filename = file_out (argv[i++]);
+  if (filename == NULL) goto out_filename;
+  r = guestfs_ntfscat_i (g, device, inode, filename);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (filename);
+ out_filename:
+ out_inode:
  out_noargs:
   return ret;
 }
@@ -28560,6 +29333,27 @@ run_part_disk (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_part_expand_gpt (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_part_expand_gpt (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_part_get_bootable (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -28598,6 +29392,29 @@ run_part_get_bootable (const char *cmd, size_t argc, char *argv[])
   if (r) printf ("true\n"); else printf ("false\n");
  out:
  out_partnum:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_part_get_disk_guid (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  char *r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_part_get_disk_guid (g, device);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
  out_noargs:
   return ret;
 }
@@ -28939,6 +29756,50 @@ run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
  out:
  out_bootable:
  out_partnum:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_part_set_disk_guid (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  const char *guid;
+  size_t i = 0;
+
+  if (argc != 2) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  guid = argv[i++];
+  r = guestfs_part_set_disk_guid (g, device, guid);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_part_set_disk_guid_random (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_part_set_disk_guid_random (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
  out_noargs:
   return ret;
 }
@@ -30402,6 +31263,66 @@ run_scrub_freespace (const char *cmd, size_t argc, char *argv[])
  out:
   free (dir);
  out_dir:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_selinux_relabel (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *specfile;
+  char *path;
+  struct guestfs_selinux_relabel_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_selinux_relabel_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  specfile = argv[i++];
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "force:")) {
+      switch (guestfs_int_is_true (&argv[i][6])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   guestfs_int_program_name, &argv[i][6]);
+          goto out;
+        case 0:  optargs_s.force = 0; break;
+        default: optargs_s.force = 1;
+      }
+      this_mask = GUESTFS_SELINUX_RELABEL_FORCE_BITMASK;
+      this_arg = "force";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_selinux_relabel_argv (g, specfile, path, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
  out_noargs:
   return ret;
 }

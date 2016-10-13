@@ -176,7 +176,7 @@ If this works successfully you will see messages such as:
 Note that C<Starting /init script ...> indicates that the appliance's init
 script is now running.
 
-=item Initialize the appliance
+=item Ініціалізація базової системи
 
 The appliance itself now initializes itself.  This involves starting certain
 processes like C<udev>, possibly printing some debug information, and
@@ -400,5 +400,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

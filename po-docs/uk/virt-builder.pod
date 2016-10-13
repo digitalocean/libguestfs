@@ -12,9 +12,9 @@ virt-builder — засіб швидкої побудови образів дл�
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-builder os-version
-    [-o|--output DISKIMAGE] [--size SIZE] [--format raw|qcow2]
-    [--arch ARCHITECTURE] [--attach ISOFILE]
+ virt-builder ОС-версія
+    [-o|--output ОБРАЗ ДИСКА] [--size РОЗМІР] [--format raw|qcow2]
+    [--arch АРХІТЕКТУРА] [--attach ФАЙЛ ISO]
 __CUSTOMIZE_SYNOPSIS__
 
  virt-builder -l|--list [--long] [--list-format short|long|json]
@@ -27,8 +27,8 @@ __CUSTOMIZE_SYNOPSIS__
 
  virt-builder --delete-cache
 
- virt-builder --get-kernel DISKIMAGE
-    [--format raw|qcow2] [--output OUTPUTDIR]
+ virt-builder --get-kernel ОБРАЗДИСКА
+    [--format raw|qcow2] [--output КАТАЛОГВИВЕДЕННЯ]
 
 =head1 ОПИС
 
@@ -96,7 +96,7 @@ is copied to the output (automatically, using L<virt-resize(1)>).
 
  virt-builder fedora-20 --arch i386
 
-As above, but using an i386 template, if available.
+Те саме, що і вище, але із застосуванням шаблону i386, якщо він є доступним.
 
 =head2 Встановлення пароля root
 
@@ -126,7 +126,7 @@ or apt):
 (In Fedora, C<@> is used to install groups of packages.  On Debian you would
 install a meta-package instead.)
 
-To update the core packages to the latest version:
+Для оновлення основних пакунків до останньої версії виконайте такі дії:
 
  virt-builder debian-7 --update
 
@@ -169,7 +169,7 @@ guest boots.
 which edits F</etc/yum.conf> inside the disk image (during disk image
 creation, long before boot).
 
-You can combine these options, and have multiple options of all types.
+Ви можете поєднувати ці параметри і додавати декілька параметрів усіх типів.
 
 =head1 ПАРАМЕТРИ
 
@@ -236,6 +236,14 @@ to check the signature and exit if it is not correct.  Using
 I<--no-check-signature> bypasses this check.
 
 Див. також I<--fingerprint>.
+
+=item B<--colors>
+
+=item B<--colours>
+
+Use ANSI colour sequences to colourize messages.  This is the default when
+the output is a tty.  If the output of the program is redirected to a file,
+ANSI colour sequences are disabled unless you use this option.
 
 =item B<--curl> CURL
 
@@ -306,15 +314,16 @@ directory:
 
  virt-builder --gpg "gpg --homedir /tmp" [...]
 
-=item B<-l>
+=item B<-l> [версія-ОС]
 
-=item B<--list>
+=item B<--list> [версія-ОС]
 
-=item B<--list --list-format> формат
+=item B<--list> B<--list-format> format [os-version]
 
-=item B<--list --long>
+=item B<--list> B<--long> [os-version]
 
-Показати список доступних шаблонів.
+List all the available templates if no guest is specified, or only for the
+specified one.
 
 It is possible to choose with I<--list-format> the output format for the
 list templates:
@@ -343,24 +352,24 @@ changed, or non-optional keys are no more present).
 
 =back
 
-I<--long> is a shorthand for the C<long> format.
+I<--long> — скорочення для формату C<long>.
 
-See also: I<--source>, I<--notes>, L</SOURCES OF TEMPLATES>.
+Див також: I<--source>, I<--notes>, L</ДЖЕРЕЛА ШАБЛОНІВ>.
 
 =item B<--machine-readable>
 
 This option is used to make the output more machine friendly when being
 parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
 
-=item B<-m> MB
+=item B<-m> МБ
 
-=item B<--memsize> MB
+=item B<--memsize> МБ
 
 Change the amount of memory allocated to I<--run> scripts.  Increase this if
 you find that I<--run> scripts or the I<--install> option are running out of
 memory.
 
-The default can be found with this command:
+Типові значення можна визначити за допомогою такої команди:
 
  guestfish get-memsize
 
@@ -368,9 +377,11 @@ The default can be found with this command:
 
 =item B<--no-network>
 
-Enable or disable network access from the guest during the installation.
+Увімкнути чи вимкнути доступ до мережі для гостьової системи під час
+встановлення.
 
-Enabled is the default.  Use I<--no-network> to disable access.
+Типово увімкнено. Скористайтеся параметром I<--no-network>, щоб вимкнути
+доступ.
 
 The network only allows outgoing connections and has other minor
 limitations.  See L<virt-rescue(1)/NETWORK>.
@@ -425,7 +436,7 @@ and other reasons.)
 If you are not using these broken caching modes, you can use I<--no-sync> to
 avoid this unnecessary sync and gain considerable extra performance.
 
-=item B<--notes> os-version
+=item B<--notes> версія-ОС
 
 List any notes associated with this guest, then exit (this does not do the
 install).
@@ -445,13 +456,13 @@ When used with I<--get-kernel>, this option specifies the output directory.
 
 =item B<--print-cache>
 
-Print information about the template cache.  See L</CACHING>.
+Вивести інформацію щодо кешу шаблонів. Див. L</КЕШУВАННЯ>.
 
 =item B<-q>
 
 =item B<--quiet>
 
-Don't print ordinary progress messages.
+Не виводити звичайних повідомлень щодо поступу.
 
 =item B<--size> РОЗМІР
 
@@ -477,11 +488,19 @@ Set the source URL to look for indexes.
 
 You can give this option multiple times to specify multiple sources.
 
-See also L</SOURCES OF TEMPLATES> below.
+Див. також L</ДЖЕРЕЛА ШАБЛОНІВ> нижче.
 
 Note that you should not point I<--source> to sources that you don't trust
 (unless the source is signed by someone you do trust).  See also the
 I<--no-network> option.
+
+=item B<--no-warn-if-partition>
+
+Do not emit a warning if the output device is a partition.  This warning
+avoids a common user error when writing to a USB key or external drive, when
+you should normally write to the whole device (S<I<--output /dev/sdX>>), not
+to a partition on the device (S<I<--output /dev/sdX1>>).  Use this option to
+I<suppress> this warning.
 
 =item B<-v>
 
@@ -504,7 +523,7 @@ bug report.
 
 =back
 
-=head2 Customization options
+=head2 Параметри налаштовування
 
 __CUSTOMIZE_OPTIONS__
 
@@ -576,7 +595,7 @@ create /tmp/install.sh containing:
  
  yum -y install famousdatabase
 
-For apt, create /tmp/install.sh containing:
+Для apt створіть файл /tmp/install.sh із таким вмістом:
 
  mkdir /tmp/mount
  mount LABEL=EXTRA /tmp/mount
@@ -748,22 +767,22 @@ in one of the following locations:
 
 =item F</tmp/builder.log>
 
-On Linux, BSD and other guests.
+У Linux, BSD та інших гостьових системах.
 
 =item F<C:\Temp\builder.log>
 
-On Windows, DOS guests.
+У гостьових системах Windows, DOS.
 
 =item F</builder.log>
 
-If F</tmp> or F<C:\Temp> is missing.
+Якщо немає F</tmp> або F<C:\Temp>.
 
 =back
 
 If you don't want the log file to appear in the final image, then use the
 I<--no-logfile> command line option.
 
-=head2 SSH KEYS
+=head2 КЛЮЧІ SSH
 
 The I<--ssh-inject> option is used to inject ssh keys for users in the
 guest, so they can login without supplying a password.
@@ -792,14 +811,14 @@ like I<ssh-rsa AAAA.... user@localhost>.
 In any case, the F<~USER/.ssh> directory and the
 F<~USER/.ssh/authorized_keys> file will be created if not existing already.
 
-=head2 FIRST BOOT SCRIPTS
+=head2 СКРИПТИ ПЕРШОГО ЗАВАНТАЖЕННЯ
 
 The I<--firstboot> and I<--firstboot-command> options allow you to execute
 commands at the first boot of the guest.  To do so, an init script for the
 guest init system is installed, which takes care of running all the added
 scripts and commands.
 
-Supported operating systems are:
+Підтримувані операційні системи:
 
 =over 4
 
@@ -818,16 +837,16 @@ F<~root/virt-sysprep-firstboot.log>.
 =item Windows
 
 F<rhsrvany.exe>, available from sources at
-L<https://github.com/rwmjones/rhsrvany>, is installed to run the first boot
-scripts.  It is required, and the setup of first boot scripts will fail if
-it is not present.
+L<https://github.com/rwmjones/rhsrvany>, or F<pvvxsvc.exe>, available with
+SUSE VMDP is installed to run the first boot scripts.  It is required, and
+the setup of first boot scripts will fail if it is not present.
 
-F<rhsrvany.exe> is copied from the location pointed to by the
-C<VIRT_TOOLS_DATA_DIR> environment variable; if not set, a compiled-in
+F<rhsrvany.exe> or F<pvvxsvc.exe> is copied from the location pointed to by
+the C<VIRT_TOOLS_DATA_DIR> environment variable; if not set, a compiled-in
 default will be used (something like F</usr/share/virt-tools>).
 
 The output of the first boot scripts is available in the guest as
-F<C:\Program Files\Red Hat\Firstboot\log.txt>.
+F<C:\Program Files\Guestfs\Firstboot\log.txt>.
 
 =back
 
@@ -877,7 +896,7 @@ Use the literal string C<POOL> as pool ID.
 I<--sm-remove> removes all the subscriptions from the guest, while
 I<--sm-unregister> completely unregister the system.
 
-=head2 INSTALLATION PROCESS
+=head2 ПРОЦЕДУРА ВСТАНОВЛЕННЯ
 
 When you invoke virt-builder, installation proceeds as follows:
 
@@ -885,14 +904,14 @@ When you invoke virt-builder, installation proceeds as follows:
 
 =item *
 
-The template image is downloaded.
+Отримано образ шаблону.
 
 If the template image is present in the cache, the cached version is used
 instead.  (See L</CACHING>).
 
 =item *
 
-The template signature is checked.
+Перевірено підпис шаблону.
 
 =item *
 
@@ -904,11 +923,11 @@ The template image is resized into the destination, using L<virt-resize(1)>.
 
 =item *
 
-Extra disks are attached (I<--attach>).
+Долучено додаткові диски (I<--attach>).
 
 =item *
 
-A new random seed is generated for the guest.
+Створено нову базу псевдовипадкових чисел для гостьової системи.
 
 =item *
 
@@ -947,9 +966,9 @@ I<--os-variant> is highly recommended, because it will present optimum
 devices to enable the guest to run most efficiently.  To get a list of all
 variants, do:
 
- osinfo-query os
+ osinfo-query ОС
 
-The above tool is provided by libosinfo package.
+Вказана вище програма є частиною пакунка libosinfo.
 
 =item 3.
 
@@ -986,7 +1005,7 @@ To boot up an instance of your image on a Nova compute node, do:
 Use S<C<nova flavor-list>> to list possible machine flavors.  Use S<C<nova
 list>> to list running instances.
 
-=head3 Booting directly using qemu or KVM
+=head3 Безпосереднє завантаження за допомогою qemu або KVM
 
 The qemu command line is not very stable or easy to use, hence libvirt
 should be used if possible.  However a command line similar to the following
@@ -1090,8 +1109,8 @@ I<.conf> extension and located in the following paths:
 
 =item *
 
-$XDG_CONFIG_HOME/virt-builder/repos.d/ (C<$XDG_CONFIG_HOME> is
-F<$HOME/.config> if not set).
+$XDG_CONFIG_HOME/virt-builder/reposd/ (C<$XDG_CONFIG_HOME> дорівнює
+F<$HOME/.config>, якщо не встановлено).
 
 =item *
 
@@ -1209,7 +1228,7 @@ file.
 You can host this on any web or FTP server, or a local or network
 filesystem.
 
-=head3 Setting up a GPG key
+=head3 Встановлення ключа GPG
 
 If you don't have a GnuPG key, you will need to set one up.  (Strictly
 speaking this is optional, but if your index and template files are not
@@ -1219,7 +1238,7 @@ flag every time they use virt-builder.)
 To create a key, see the GPG manual
 L<http://www.gnupg.org/gph/en/manual.html>.
 
-Export your GPG public key:
+Експортувати ваш відкрити ключ GPG:
 
  gpg --export -a "you@example.com" > pubkey
  
@@ -1235,7 +1254,7 @@ options (see L<nbdkit-xz-plugin(1)> for further explanation):
 
  xz --best --block-size=16777216 disk
 
-=head3 Creating and signing the index file
+=head3 Створення і підписування файла покажчика
 
 The index file has a simple text format (shown here without the digital
 signature):
@@ -1704,20 +1723,19 @@ possible strategies it can use to ensure correct labelling:
 
 =item Користування I<--selinux-relabel>
 
-This runs L<fixfiles(8)> just before finalizing the guest, which sets
+This runs L<setfiles(8)> just before finalizing the guest, which sets
 SELinux labels correctly in the disk image.
 
-Sometimes fixfiles is not possible during installation, in which case this
-option falls back on:
+This is the recommended method.
 
-=item Touching F</.autorelabel>
+=item I<--touch> F</.autorelabel>
 
-Guest templates may already contain a file called F</.autorelabel>, or it is
-touched if I<--selinux-relabel> cannot run fixfiles.
+Guest templates may already contain a file called F</.autorelabel> or you
+may touch it.
 
-For guests that use SELinux, this causes fixfiles to run at first boot.
-Guests will reboot themselves once the first time you use them, which is
-normal and harmless.
+For guests that use SELinux, this causes L<restorecon(8)> to run at first
+boot.  Guests will reboot themselves once the first time you use them, which
+is normal and harmless.
 
 =back
 
@@ -1764,8 +1782,8 @@ actually interpreted by L<curl(1)>, not virt-builder.
 
 =item C<HOME>
 
-Used to determine the location of the template cache, and the location of
-the user' sources.  See L</CACHING> and L</SOURCES OF TEMPLATES>.
+Використовується для визначення місця кешу шаблонів та місця джерел
+користувача. Див. L</КЕШУВАННЯ> і L</ДЖЕРЕЛА ШАБЛОНІВ>.
 
 =item C<VIRT_TOOLS_DATA_DIR>
 
@@ -1787,21 +1805,27 @@ I<--firstboot-command> options with Windows guests.
 
 Див. також C<https://github.com/rwmjones/rhsrvany>
 
+=item F<pvvxsvc.exe>
+
+This is a Windows binary shipped with SUSE VMDP, used to install a
+"firstboot" script in Windows guests.  It is required if you intend to use
+the I<--firstboot> or I<--firstboot-command> options with Windows guests.
+
 =back
 
 =item C<XDG_CACHE_HOME>
 
-Used to determine the location of the template cache.  See L</CACHING>.
+Використовується для визначення місця кешу шаблонів. Див. L</КЕШУВАННЯ>.
 
 =item C<XDG_CONFIG_HOME>
 
-Used to determine the location of the user' sources.  See L</SOURCES OF
-TEMPLATES>.
+Використовується для визначення місця джерел користувача. Див. L</ДЖЕРЕЛА
+ШАБЛОНІВ>.
 
 =item C<XDG_CONFIG_DIRS>
 
-Used to determine the location of the system sources.  See L</SOURCES OF
-TEMPLATES>.
+Використовується для визначення місця джерел системи. Див. L</ДЖЕРЕЛА
+ШАБЛОНІВ>.
 
 =back
 
@@ -1815,7 +1839,7 @@ TEMPLATES>.
 L<guestfs(3)>, L<guestfish(1)>, L<guestmount(1)>, L<virt-copy-out(1)>,
 L<virt-customize(1)>, L<virt-install(1)>, L<virt-rescue(1)>,
 L<virt-resize(1)>, L<virt-sysprep(1)>, L<oz-install(1)>, L<gpg(1)>,
-L<curl(1)>, L<virt-make-fs(1)>, L<genisoimage(1)>, L<fixfiles(8)>,
+L<curl(1)>, L<virt-make-fs(1)>, L<genisoimage(1)>,
 L<http://libguestfs.org/>.
 
 =head1 АВТОР

@@ -19,14 +19,14 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [32])
-m4_define([libguestfs_release], [7])
+m4_define([libguestfs_minor],   [34])
+m4_define([libguestfs_release], [2])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 
 dnl The date that the above version was released.  This is used in
 dnl the website 'index.html' file.
-AC_SUBST([RELEASE_DATE], [2016-08-08])
+AC_SUBST([RELEASE_DATE], [2016-09-01])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_REQUIRE_AUX_FILE([guestfs-test-driver])
@@ -124,10 +124,8 @@ m4_include([m4/guestfs_gobject.m4])
 dnl Bash completion.
 m4_include([m4/guestfs_bash_completion.m4])
 
-dnl Replace libtool with a wrapper that clobbers dependency_libs in *.la files
-dnl http://lists.fedoraproject.org/pipermail/devel/2010-November/146343.html
-LIBTOOL='bash $(top_srcdir)/libtool-kill-dependency_libs.sh $(top_builddir)/libtool'
-AC_SUBST([LIBTOOL])
+dnl Miscellaneous configuration that doesn't fit anywhere else.
+m4_include([m4/guestfs_misc.m4])
 
 dnl Work around autoconf's lack of expanded variables.
 eval my_sysconfdir="\"[$]sysconfdir\""
@@ -159,6 +157,8 @@ AC_CONFIG_FILES([p2v/virt-p2v-make-disk],
                 [chmod +x,-w p2v/virt-p2v-make-disk])
 AC_CONFIG_FILES([p2v/virt-p2v-make-kickstart],
                 [chmod +x,-w p2v/virt-p2v-make-kickstart])
+AC_CONFIG_FILES([p2v/virt-p2v-make-kiwi],
+                [chmod +x,-w p2v/virt-p2v-make-kiwi])
 AC_CONFIG_FILES([php/extension/php-for-tests.sh],
                 [chmod +x,-w php/extension/php-for-tests.sh])
 AC_CONFIG_FILES([pick-guests.pl],
@@ -260,6 +260,7 @@ AC_CONFIG_FILES([Makefile
                  tests/disks/test-qemu-drive-libvirt.xml
                  tests/disk-labels/Makefile
                  tests/events/Makefile
+                 tests/gdisk/Makefile
                  tests/hotplug/Makefile
                  tests/http/Makefile
                  tests/journal/Makefile
@@ -270,19 +271,25 @@ AC_CONFIG_FILES([Makefile
                  tests/mountable/Makefile
                  tests/nbd/Makefile
                  tests/network/Makefile
-                 tests/ntfsclone/Makefile
+                 tests/ntfs/Makefile
                  tests/parallel/Makefile
                  tests/protocol/Makefile
                  tests/qemu/Makefile
                  tests/regressions/Makefile
+                 tests/relabel/Makefile
                  tests/relative-paths/Makefile
                  tests/rsync/Makefile
                  tests/selinux/Makefile
                  tests/syslinux/Makefile
                  tests/tmpdirs/Makefile
+                 tests/tsk/Makefile
                  tests/xfs/Makefile
                  tests/xml/Makefile
                  tools/Makefile
+                 utils/boot-analysis/Makefile
+                 utils/boot-benchmark/Makefile
+                 utils/qemu-boot/Makefile
+                 utils/qemu-speed-test/Makefile
                  v2v/Makefile
                  v2v/test-harness/Makefile
                  v2v/test-harness/META

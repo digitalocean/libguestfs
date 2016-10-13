@@ -651,6 +651,48 @@ copy_statvfs (const struct guestfs_statvfs *statvfs)
 }
 
 static value
+copy_tsk_dirent (const struct guestfs_tsk_dirent *tsk_dirent)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (16, 0);
+  v = caml_copy_int64 (tsk_dirent->tsk_inode);
+  Store_field (rv, 0, v);
+  v = Val_int (tsk_dirent->tsk_type);
+  Store_field (rv, 1, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_size);
+  Store_field (rv, 2, v);
+  v = caml_copy_string (tsk_dirent->tsk_name);
+  Store_field (rv, 3, v);
+  v = caml_copy_int32 (tsk_dirent->tsk_flags);
+  Store_field (rv, 4, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_atime_sec);
+  Store_field (rv, 5, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_atime_nsec);
+  Store_field (rv, 6, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_mtime_sec);
+  Store_field (rv, 7, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_mtime_nsec);
+  Store_field (rv, 8, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_ctime_sec);
+  Store_field (rv, 9, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_ctime_nsec);
+  Store_field (rv, 10, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_crtime_sec);
+  Store_field (rv, 11, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_crtime_nsec);
+  Store_field (rv, 12, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_nlink);
+  Store_field (rv, 13, v);
+  v = caml_copy_string (tsk_dirent->tsk_link);
+  Store_field (rv, 14, v);
+  v = caml_copy_int64 (tsk_dirent->tsk_spare1);
+  Store_field (rv, 15, v);
+  CAMLreturn (rv);
+}
+
+static value
 copy_utsname (const struct guestfs_utsname *utsname)
 {
   CAMLparam0 ();
@@ -812,6 +854,25 @@ copy_btrfsqgroup_list (const struct guestfs_btrfsqgroup_list *btrfsqgroups)
     rv = caml_alloc (btrfsqgroups->len, 0);
     for (i = 0; i < btrfsqgroups->len; ++i) {
       v = copy_btrfsqgroup (&btrfsqgroups->val[i]);
+      Store_field (rv, i, v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static value
+copy_tsk_dirent_list (const struct guestfs_tsk_dirent_list *tsk_dirents)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (tsk_dirents->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (tsk_dirents->len, 0);
+    for (i = 0; i < tsk_dirents->len; ++i) {
+      v = copy_tsk_dirent (&tsk_dirents->val[i]);
       Store_field (rv, i, v);
     }
     CAMLreturn (rv);
@@ -1082,7 +1143,9 @@ guestfs_int_ocaml_acl_delete_def_file (value gv, value dirv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("acl_delete_def_file");
 
-  char *dir = guestfs_int_safe_strdup (g, String_val (dirv));
+  char *dir;
+  dir = strdup (String_val (dirv));
+  if (dir == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -1113,8 +1176,12 @@ guestfs_int_ocaml_acl_get_file (value gv, value pathv, value acltypev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("acl_get_file");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
-  char *acltype = guestfs_int_safe_strdup (g, String_val (acltypev));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
+  char *acltype;
+  acltype = strdup (String_val (acltypev));
+  if (acltype == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -1147,9 +1214,15 @@ guestfs_int_ocaml_acl_set_file (value gv, value pathv, value acltypev, value acl
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("acl_set_file");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
-  char *acltype = guestfs_int_safe_strdup (g, String_val (acltypev));
-  char *acl = guestfs_int_safe_strdup (g, String_val (aclv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
+  char *acltype;
+  acltype = strdup (String_val (acltypev));
+  if (acltype == NULL) caml_raise_out_of_memory ();
+  char *acl;
+  acl = strdup (String_val (aclv));
+  if (acl == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -1182,7 +1255,9 @@ guestfs_int_ocaml_add_cdrom (value gv, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("add_cdrom");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_add_cdrom (g, filename);
@@ -1213,12 +1288,15 @@ guestfs_int_ocaml_add_domain (value gv, value libvirturiv, value readonlyv, valu
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("add_domain");
 
-  char *dom = guestfs_int_safe_strdup (g, String_val (domv));
+  char *dom;
+  dom = strdup (String_val (domv));
+  if (dom == NULL) caml_raise_out_of_memory ();
   struct guestfs_add_domain_argv optargs_s = { .bitmask = 0 };
   struct guestfs_add_domain_argv *optargs = &optargs_s;
   if (libvirturiv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK;
-    optargs_s.libvirturi = guestfs_int_safe_strdup (g, String_val (Field (libvirturiv, 0)));
+    optargs_s.libvirturi = strdup (String_val (Field (libvirturiv, 0)));
+    if (optargs_s.libvirturi == NULL) caml_raise_out_of_memory ();
   }
   if (readonlyv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_READONLY_BITMASK;
@@ -1226,7 +1304,8 @@ guestfs_int_ocaml_add_domain (value gv, value libvirturiv, value readonlyv, valu
   }
   if (ifacev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_IFACE_BITMASK;
-    optargs_s.iface = guestfs_int_safe_strdup (g, String_val (Field (ifacev, 0)));
+    optargs_s.iface = strdup (String_val (Field (ifacev, 0)));
+    if (optargs_s.iface == NULL) caml_raise_out_of_memory ();
   }
   if (livev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_LIVE_BITMASK;
@@ -1238,15 +1317,18 @@ guestfs_int_ocaml_add_domain (value gv, value libvirturiv, value readonlyv, valu
   }
   if (readonlydiskv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
-    optargs_s.readonlydisk = guestfs_int_safe_strdup (g, String_val (Field (readonlydiskv, 0)));
+    optargs_s.readonlydisk = strdup (String_val (Field (readonlydiskv, 0)));
+    if (optargs_s.readonlydisk == NULL) caml_raise_out_of_memory ();
   }
   if (cachemodev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_CACHEMODE_BITMASK;
-    optargs_s.cachemode = guestfs_int_safe_strdup (g, String_val (Field (cachemodev, 0)));
+    optargs_s.cachemode = strdup (String_val (Field (cachemodev, 0)));
+    if (optargs_s.cachemode == NULL) caml_raise_out_of_memory ();
   }
   if (discardv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_DISCARD_BITMASK;
-    optargs_s.discard = guestfs_int_safe_strdup (g, String_val (Field (discardv, 0)));
+    optargs_s.discard = strdup (String_val (Field (discardv, 0)));
+    if (optargs_s.discard == NULL) caml_raise_out_of_memory ();
   }
   if (copyonreadv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_COPYONREAD_BITMASK;
@@ -1303,7 +1385,9 @@ guestfs_int_ocaml_add_drive (value gv, value readonlyv, value formatv, value ifa
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("add_drive");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   struct guestfs_add_drive_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
   if (readonlyv != Val_int (0)) {
@@ -1312,44 +1396,52 @@ guestfs_int_ocaml_add_drive (value gv, value readonlyv, value formatv, value ifa
   }
   if (formatv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK;
-    optargs_s.format = guestfs_int_safe_strdup (g, String_val (Field (formatv, 0)));
+    optargs_s.format = strdup (String_val (Field (formatv, 0)));
+    if (optargs_s.format == NULL) caml_raise_out_of_memory ();
   }
   if (ifacev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK;
-    optargs_s.iface = guestfs_int_safe_strdup (g, String_val (Field (ifacev, 0)));
+    optargs_s.iface = strdup (String_val (Field (ifacev, 0)));
+    if (optargs_s.iface == NULL) caml_raise_out_of_memory ();
   }
   if (namev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK;
-    optargs_s.name = guestfs_int_safe_strdup (g, String_val (Field (namev, 0)));
+    optargs_s.name = strdup (String_val (Field (namev, 0)));
+    if (optargs_s.name == NULL) caml_raise_out_of_memory ();
   }
   if (labelv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
-    optargs_s.label = guestfs_int_safe_strdup (g, String_val (Field (labelv, 0)));
+    optargs_s.label = strdup (String_val (Field (labelv, 0)));
+    if (optargs_s.label == NULL) caml_raise_out_of_memory ();
   }
   if (protocolv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
-    optargs_s.protocol = guestfs_int_safe_strdup (g, String_val (Field (protocolv, 0)));
+    optargs_s.protocol = strdup (String_val (Field (protocolv, 0)));
+    if (optargs_s.protocol == NULL) caml_raise_out_of_memory ();
   }
   if (serverv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
-    optargs_s.server = guestfs_int_ocaml_strings_val (g, Field (serverv, 0))
-;
+    optargs_s.server = guestfs_int_ocaml_strings_val (g, Field (serverv, 0));
   }
   if (usernamev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
-    optargs_s.username = guestfs_int_safe_strdup (g, String_val (Field (usernamev, 0)));
+    optargs_s.username = strdup (String_val (Field (usernamev, 0)));
+    if (optargs_s.username == NULL) caml_raise_out_of_memory ();
   }
   if (secretv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
-    optargs_s.secret = guestfs_int_safe_strdup (g, String_val (Field (secretv, 0)));
+    optargs_s.secret = strdup (String_val (Field (secretv, 0)));
+    if (optargs_s.secret == NULL) caml_raise_out_of_memory ();
   }
   if (cachemodev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
-    optargs_s.cachemode = guestfs_int_safe_strdup (g, String_val (Field (cachemodev, 0)));
+    optargs_s.cachemode = strdup (String_val (Field (cachemodev, 0)));
+    if (optargs_s.cachemode == NULL) caml_raise_out_of_memory ();
   }
   if (discardv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK;
-    optargs_s.discard = guestfs_int_safe_strdup (g, String_val (Field (discardv, 0)));
+    optargs_s.discard = strdup (String_val (Field (discardv, 0)));
+    if (optargs_s.discard == NULL) caml_raise_out_of_memory ();
   }
   if (copyonreadv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK;
@@ -1412,7 +1504,9 @@ guestfs_int_ocaml_add_drive_ro (value gv, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("add_drive_ro");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_add_drive_ro (g, filename);
@@ -1441,8 +1535,12 @@ guestfs_int_ocaml_add_drive_ro_with_if (value gv, value filenamev, value ifacev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("add_drive_ro_with_if");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
-  char *iface = guestfs_int_safe_strdup (g, String_val (ifacev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  char *iface;
+  iface = strdup (String_val (ifacev));
+  if (iface == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_add_drive_ro_with_if (g, filename, iface);
@@ -1477,11 +1575,13 @@ guestfs_int_ocaml_add_drive_scratch (value gv, value namev, value labelv, value 
   struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
   if (namev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
-    optargs_s.name = guestfs_int_safe_strdup (g, String_val (Field (namev, 0)));
+    optargs_s.name = strdup (String_val (Field (namev, 0)));
+    if (optargs_s.name == NULL) caml_raise_out_of_memory ();
   }
   if (labelv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
-    optargs_s.label = guestfs_int_safe_strdup (g, String_val (Field (labelv, 0)));
+    optargs_s.label = strdup (String_val (Field (labelv, 0)));
+    if (optargs_s.label == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -1514,8 +1614,12 @@ guestfs_int_ocaml_add_drive_with_if (value gv, value filenamev, value ifacev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("add_drive_with_if");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
-  char *iface = guestfs_int_safe_strdup (g, String_val (ifacev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  char *iface;
+  iface = strdup (String_val (ifacev));
+  if (iface == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_add_drive_with_if (g, filename, iface);
@@ -1555,7 +1659,8 @@ guestfs_int_ocaml_add_libvirt_dom (value gv, value readonlyv, value ifacev, valu
   }
   if (ifacev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
-    optargs_s.iface = guestfs_int_safe_strdup (g, String_val (Field (ifacev, 0)));
+    optargs_s.iface = strdup (String_val (Field (ifacev, 0)));
+    if (optargs_s.iface == NULL) caml_raise_out_of_memory ();
   }
   if (livev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK;
@@ -1563,15 +1668,18 @@ guestfs_int_ocaml_add_libvirt_dom (value gv, value readonlyv, value ifacev, valu
   }
   if (readonlydiskv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
-    optargs_s.readonlydisk = guestfs_int_safe_strdup (g, String_val (Field (readonlydiskv, 0)));
+    optargs_s.readonlydisk = strdup (String_val (Field (readonlydiskv, 0)));
+    if (optargs_s.readonlydisk == NULL) caml_raise_out_of_memory ();
   }
   if (cachemodev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
-    optargs_s.cachemode = guestfs_int_safe_strdup (g, String_val (Field (cachemodev, 0)));
+    optargs_s.cachemode = strdup (String_val (Field (cachemodev, 0)));
+    if (optargs_s.cachemode == NULL) caml_raise_out_of_memory ();
   }
   if (discardv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
-    optargs_s.discard = guestfs_int_safe_strdup (g, String_val (Field (discardv, 0)));
+    optargs_s.discard = strdup (String_val (Field (discardv, 0)));
+    if (optargs_s.discard == NULL) caml_raise_out_of_memory ();
   }
   if (copyonreadv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK;
@@ -1623,7 +1731,9 @@ guestfs_int_ocaml_aug_clear (value gv, value augpathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_clear");
 
-  char *augpath = guestfs_int_safe_strdup (g, String_val (augpathv));
+  char *augpath;
+  augpath = strdup (String_val (augpathv));
+  if (augpath == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -1683,9 +1793,15 @@ guestfs_int_ocaml_aug_defnode (value gv, value namev, value exprv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_defnode");
 
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
-  char *expr = guestfs_int_safe_strdup (g, String_val (exprv));
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
+  char *expr;
+  expr = strdup (String_val (exprv));
+  if (expr == NULL) caml_raise_out_of_memory ();
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   struct guestfs_int_bool *r;
 
   caml_enter_blocking_section ();
@@ -1719,10 +1835,16 @@ guestfs_int_ocaml_aug_defvar (value gv, value namev, value exprv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_defvar");
 
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
-  char *expr =
-    exprv != Val_int (0) ?
-      guestfs_int_safe_strdup (g, String_val (Field (exprv, 0))) : NULL;
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
+  char *expr;
+  if (exprv == Val_int (0))
+    expr = NULL;
+  else {
+    expr = strdup (String_val (Field (exprv, 0)));
+    if (expr == NULL) caml_raise_out_of_memory ();
+  }
   int r;
 
   caml_enter_blocking_section ();
@@ -1754,7 +1876,9 @@ guestfs_int_ocaml_aug_get (value gv, value augpathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_get");
 
-  char *augpath = guestfs_int_safe_strdup (g, String_val (augpathv));
+  char *augpath;
+  augpath = strdup (String_val (augpathv));
+  if (augpath == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -1786,7 +1910,9 @@ guestfs_int_ocaml_aug_init (value gv, value rootv, value flagsv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_init");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   int flags = Int_val (flagsv);
   int r;
 
@@ -1818,8 +1944,12 @@ guestfs_int_ocaml_aug_insert (value gv, value augpathv, value labelv, value befo
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_insert");
 
-  char *augpath = guestfs_int_safe_strdup (g, String_val (augpathv));
-  char *label = guestfs_int_safe_strdup (g, String_val (labelv));
+  char *augpath;
+  augpath = strdup (String_val (augpathv));
+  if (augpath == NULL) caml_raise_out_of_memory ();
+  char *label;
+  label = strdup (String_val (labelv));
+  if (label == NULL) caml_raise_out_of_memory ();
   int before = Bool_val (beforev);
   int r;
 
@@ -1852,7 +1982,9 @@ guestfs_int_ocaml_aug_label (value gv, value augpathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_label");
 
-  char *augpath = guestfs_int_safe_strdup (g, String_val (augpathv));
+  char *augpath;
+  augpath = strdup (String_val (augpathv));
+  if (augpath == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -1913,7 +2045,9 @@ guestfs_int_ocaml_aug_ls (value gv, value augpathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_ls");
 
-  char *augpath = guestfs_int_safe_strdup (g, String_val (augpathv));
+  char *augpath;
+  augpath = strdup (String_val (augpathv));
+  if (augpath == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -1947,7 +2081,9 @@ guestfs_int_ocaml_aug_match (value gv, value augpathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_match");
 
-  char *augpath = guestfs_int_safe_strdup (g, String_val (augpathv));
+  char *augpath;
+  augpath = strdup (String_val (augpathv));
+  if (augpath == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -1981,8 +2117,12 @@ guestfs_int_ocaml_aug_mv (value gv, value srcv, value destv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_mv");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2014,7 +2154,9 @@ guestfs_int_ocaml_aug_rm (value gv, value augpathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_rm");
 
-  char *augpath = guestfs_int_safe_strdup (g, String_val (augpathv));
+  char *augpath;
+  augpath = strdup (String_val (augpathv));
+  if (augpath == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2074,8 +2216,12 @@ guestfs_int_ocaml_aug_set (value gv, value augpathv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_set");
 
-  char *augpath = guestfs_int_safe_strdup (g, String_val (augpathv));
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *augpath;
+  augpath = strdup (String_val (augpathv));
+  if (augpath == NULL) caml_raise_out_of_memory ();
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2107,11 +2253,19 @@ guestfs_int_ocaml_aug_setm (value gv, value basev, value subv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("aug_setm");
 
-  char *base = guestfs_int_safe_strdup (g, String_val (basev));
-  char *sub =
-    subv != Val_int (0) ?
-      guestfs_int_safe_strdup (g, String_val (Field (subv, 0))) : NULL;
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *base;
+  base = strdup (String_val (basev));
+  if (base == NULL) caml_raise_out_of_memory ();
+  char *sub;
+  if (subv == Val_int (0))
+    sub = NULL;
+  else {
+    sub = strdup (String_val (Field (subv, 0)));
+    if (sub == NULL) caml_raise_out_of_memory ();
+  }
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2207,8 +2361,12 @@ guestfs_int_ocaml_base64_in (value gv, value base64filev, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("base64_in");
 
-  char *base64file = guestfs_int_safe_strdup (g, String_val (base64filev));
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *base64file;
+  base64file = strdup (String_val (base64filev));
+  if (base64file == NULL) caml_raise_out_of_memory ();
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2240,8 +2398,12 @@ guestfs_int_ocaml_base64_out (value gv, value filenamev, value base64filev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("base64_out");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
-  char *base64file = guestfs_int_safe_strdup (g, String_val (base64filev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  char *base64file;
+  base64file = strdup (String_val (base64filev));
+  if (base64file == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2273,7 +2435,9 @@ guestfs_int_ocaml_blkdiscard (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blkdiscard");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2304,7 +2468,9 @@ guestfs_int_ocaml_blkdiscardzeroes (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blkdiscardzeroes");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2335,7 +2501,9 @@ guestfs_int_ocaml_blkid (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blkid");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -2369,7 +2537,9 @@ guestfs_int_ocaml_blockdev_flushbufs (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_flushbufs");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2400,7 +2570,9 @@ guestfs_int_ocaml_blockdev_getbsz (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_getbsz");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2431,7 +2603,9 @@ guestfs_int_ocaml_blockdev_getro (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_getro");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2462,7 +2636,9 @@ guestfs_int_ocaml_blockdev_getsize64 (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_getsize64");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -2493,7 +2669,9 @@ guestfs_int_ocaml_blockdev_getss (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_getss");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2524,7 +2702,9 @@ guestfs_int_ocaml_blockdev_getsz (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_getsz");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -2555,7 +2735,9 @@ guestfs_int_ocaml_blockdev_rereadpt (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_rereadpt");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2586,7 +2768,9 @@ guestfs_int_ocaml_blockdev_setbsz (value gv, value devicev, value blocksizev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_setbsz");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int blocksize = Int_val (blocksizev);
   int r;
 
@@ -2618,7 +2802,9 @@ guestfs_int_ocaml_blockdev_setra (value gv, value devicev, value sectorsv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_setra");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int sectors = Int_val (sectorsv);
   int r;
 
@@ -2650,7 +2836,9 @@ guestfs_int_ocaml_blockdev_setro (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_setro");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2681,7 +2869,9 @@ guestfs_int_ocaml_blockdev_setrw (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("blockdev_setrw");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2712,7 +2902,9 @@ guestfs_int_ocaml_btrfs_balance_cancel (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_balance_cancel");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2743,7 +2935,9 @@ guestfs_int_ocaml_btrfs_balance_pause (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_balance_pause");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2774,7 +2968,9 @@ guestfs_int_ocaml_btrfs_balance_resume (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_balance_resume");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2805,7 +3001,9 @@ guestfs_int_ocaml_btrfs_balance_status (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_balance_status");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_btrfsbalance *r;
 
   caml_enter_blocking_section ();
@@ -2838,7 +3036,9 @@ guestfs_int_ocaml_btrfs_device_add (value gv, value devicesv, value fsv)
     guestfs_int_ocaml_raise_closed ("btrfs_device_add");
 
   char **devices = guestfs_int_ocaml_strings_val (g, devicesv);
-  char *fs = guestfs_int_safe_strdup (g, String_val (fsv));
+  char *fs;
+  fs = strdup (String_val (fsv));
+  if (fs == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2871,7 +3071,9 @@ guestfs_int_ocaml_btrfs_device_delete (value gv, value devicesv, value fsv)
     guestfs_int_ocaml_raise_closed ("btrfs_device_delete");
 
   char **devices = guestfs_int_ocaml_strings_val (g, devicesv);
-  char *fs = guestfs_int_safe_strdup (g, String_val (fsv));
+  char *fs;
+  fs = strdup (String_val (fsv));
+  if (fs == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2903,7 +3105,9 @@ guestfs_int_ocaml_btrfs_filesystem_balance (value gv, value fsv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_filesystem_balance");
 
-  char *fs = guestfs_int_safe_strdup (g, String_val (fsv));
+  char *fs;
+  fs = strdup (String_val (fsv));
+  if (fs == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -2934,7 +3138,9 @@ guestfs_int_ocaml_btrfs_filesystem_defragment (value gv, value flushv, value com
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_filesystem_defragment");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_btrfs_filesystem_defragment_argv optargs_s = { .bitmask = 0 };
   struct guestfs_btrfs_filesystem_defragment_argv *optargs = &optargs_s;
   if (flushv != Val_int (0)) {
@@ -2943,7 +3149,8 @@ guestfs_int_ocaml_btrfs_filesystem_defragment (value gv, value flushv, value com
   }
   if (compressv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK;
-    optargs_s.compress = guestfs_int_safe_strdup (g, String_val (Field (compressv, 0)));
+    optargs_s.compress = strdup (String_val (Field (compressv, 0)));
+    if (optargs_s.compress == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -2977,7 +3184,9 @@ guestfs_int_ocaml_btrfs_filesystem_resize (value gv, value sizev, value mountpoi
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_filesystem_resize");
 
-  char *mountpoint = guestfs_int_safe_strdup (g, String_val (mountpointv));
+  char *mountpoint;
+  mountpoint = strdup (String_val (mountpointv));
+  if (mountpoint == NULL) caml_raise_out_of_memory ();
   struct guestfs_btrfs_filesystem_resize_argv optargs_s = { .bitmask = 0 };
   struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
   if (sizev != Val_int (0)) {
@@ -2998,6 +3207,42 @@ guestfs_int_ocaml_btrfs_filesystem_resize (value gv, value sizev, value mountpoi
 }
 
 /* Automatically generated wrapper for function
+ * val btrfs_filesystem_show : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_btrfs_filesystem_show (value gv, value devicev);
+
+value
+guestfs_int_ocaml_btrfs_filesystem_show (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("btrfs_filesystem_show");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  size_t i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_btrfs_filesystem_show (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "btrfs_filesystem_show");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val btrfs_filesystem_sync : t -> string -> unit
  */
 
@@ -3014,7 +3259,9 @@ guestfs_int_ocaml_btrfs_filesystem_sync (value gv, value fsv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_filesystem_sync");
 
-  char *fs = guestfs_int_safe_strdup (g, String_val (fsv));
+  char *fs;
+  fs = strdup (String_val (fsv));
+  if (fs == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3045,7 +3292,9 @@ guestfs_int_ocaml_btrfs_fsck (value gv, value superblockv, value repairv, value 
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_fsck");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_btrfs_fsck_argv optargs_s = { .bitmask = 0 };
   struct guestfs_btrfs_fsck_argv *optargs = &optargs_s;
   if (superblockv != Val_int (0)) {
@@ -3087,7 +3336,9 @@ guestfs_int_ocaml_btrfs_image (value gv, value compresslevelv, value sourcev, va
     guestfs_int_ocaml_raise_closed ("btrfs_image");
 
   char **source = guestfs_int_ocaml_strings_val (g, sourcev);
-  char *image = guestfs_int_safe_strdup (g, String_val (imagev));
+  char *image;
+  image = strdup (String_val (imagev));
+  if (image == NULL) caml_raise_out_of_memory ();
   struct guestfs_btrfs_image_argv optargs_s = { .bitmask = 0 };
   struct guestfs_btrfs_image_argv *optargs = &optargs_s;
   if (compresslevelv != Val_int (0)) {
@@ -3125,9 +3376,15 @@ guestfs_int_ocaml_btrfs_qgroup_assign (value gv, value srcv, value dstv, value p
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_qgroup_assign");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dst = guestfs_int_safe_strdup (g, String_val (dstv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dst;
+  dst = strdup (String_val (dstv));
+  if (dst == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3160,8 +3417,12 @@ guestfs_int_ocaml_btrfs_qgroup_create (value gv, value qgroupidv, value subvolum
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_qgroup_create");
 
-  char *qgroupid = guestfs_int_safe_strdup (g, String_val (qgroupidv));
-  char *subvolume = guestfs_int_safe_strdup (g, String_val (subvolumev));
+  char *qgroupid;
+  qgroupid = strdup (String_val (qgroupidv));
+  if (qgroupid == NULL) caml_raise_out_of_memory ();
+  char *subvolume;
+  subvolume = strdup (String_val (subvolumev));
+  if (subvolume == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3193,8 +3454,12 @@ guestfs_int_ocaml_btrfs_qgroup_destroy (value gv, value qgroupidv, value subvolu
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_qgroup_destroy");
 
-  char *qgroupid = guestfs_int_safe_strdup (g, String_val (qgroupidv));
-  char *subvolume = guestfs_int_safe_strdup (g, String_val (subvolumev));
+  char *qgroupid;
+  qgroupid = strdup (String_val (qgroupidv));
+  if (qgroupid == NULL) caml_raise_out_of_memory ();
+  char *subvolume;
+  subvolume = strdup (String_val (subvolumev));
+  if (subvolume == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3226,7 +3491,9 @@ guestfs_int_ocaml_btrfs_qgroup_limit (value gv, value subvolumev, value sizev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_qgroup_limit");
 
-  char *subvolume = guestfs_int_safe_strdup (g, String_val (subvolumev));
+  char *subvolume;
+  subvolume = strdup (String_val (subvolumev));
+  if (subvolume == NULL) caml_raise_out_of_memory ();
   int64_t size = Int64_val (sizev);
   int r;
 
@@ -3258,9 +3525,15 @@ guestfs_int_ocaml_btrfs_qgroup_remove (value gv, value srcv, value dstv, value p
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_qgroup_remove");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dst = guestfs_int_safe_strdup (g, String_val (dstv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dst;
+  dst = strdup (String_val (dstv));
+  if (dst == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3293,7 +3566,9 @@ guestfs_int_ocaml_btrfs_qgroup_show (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_qgroup_show");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_btrfsqgroup_list *r;
 
   caml_enter_blocking_section ();
@@ -3325,7 +3600,9 @@ guestfs_int_ocaml_btrfs_quota_enable (value gv, value fsv, value enablev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_quota_enable");
 
-  char *fs = guestfs_int_safe_strdup (g, String_val (fsv));
+  char *fs;
+  fs = strdup (String_val (fsv));
+  if (fs == NULL) caml_raise_out_of_memory ();
   int enable = Bool_val (enablev);
   int r;
 
@@ -3357,7 +3634,9 @@ guestfs_int_ocaml_btrfs_quota_rescan (value gv, value fsv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_quota_rescan");
 
-  char *fs = guestfs_int_safe_strdup (g, String_val (fsv));
+  char *fs;
+  fs = strdup (String_val (fsv));
+  if (fs == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3388,9 +3667,15 @@ guestfs_int_ocaml_btrfs_replace (value gv, value srcdevv, value targetdevv, valu
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_replace");
 
-  char *srcdev = guestfs_int_safe_strdup (g, String_val (srcdevv));
-  char *targetdev = guestfs_int_safe_strdup (g, String_val (targetdevv));
-  char *mntpoint = guestfs_int_safe_strdup (g, String_val (mntpointv));
+  char *srcdev;
+  srcdev = strdup (String_val (srcdevv));
+  if (srcdev == NULL) caml_raise_out_of_memory ();
+  char *targetdev;
+  targetdev = strdup (String_val (targetdevv));
+  if (targetdev == NULL) caml_raise_out_of_memory ();
+  char *mntpoint;
+  mntpoint = strdup (String_val (mntpointv));
+  if (mntpoint == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3423,7 +3708,9 @@ guestfs_int_ocaml_btrfs_rescue_chunk_recover (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_rescue_chunk_recover");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3454,7 +3741,9 @@ guestfs_int_ocaml_btrfs_rescue_super_recover (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_rescue_super_recover");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3485,7 +3774,9 @@ guestfs_int_ocaml_btrfs_scrub_cancel (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_scrub_cancel");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3516,7 +3807,9 @@ guestfs_int_ocaml_btrfs_scrub_resume (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_scrub_resume");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3547,7 +3840,9 @@ guestfs_int_ocaml_btrfs_scrub_start (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_scrub_start");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3578,7 +3873,9 @@ guestfs_int_ocaml_btrfs_scrub_status (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_scrub_status");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_btrfsscrub *r;
 
   caml_enter_blocking_section ();
@@ -3610,7 +3907,9 @@ guestfs_int_ocaml_btrfs_set_seeding (value gv, value devicev, value seedingv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_set_seeding");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int seeding = Bool_val (seedingv);
   int r;
 
@@ -3642,12 +3941,15 @@ guestfs_int_ocaml_btrfs_subvolume_create (value gv, value qgroupidv, value destv
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_subvolume_create");
 
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   struct guestfs_btrfs_subvolume_create_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_btrfs_subvolume_create_opts_argv *optargs = &optargs_s;
   if (qgroupidv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
-    optargs_s.qgroupid = guestfs_int_safe_strdup (g, String_val (Field (qgroupidv, 0)));
+    optargs_s.qgroupid = strdup (String_val (Field (qgroupidv, 0)));
+    if (optargs_s.qgroupid == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -3681,7 +3983,9 @@ guestfs_int_ocaml_btrfs_subvolume_delete (value gv, value subvolumev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_subvolume_delete");
 
-  char *subvolume = guestfs_int_safe_strdup (g, String_val (subvolumev));
+  char *subvolume;
+  subvolume = strdup (String_val (subvolumev));
+  if (subvolume == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3712,7 +4016,9 @@ guestfs_int_ocaml_btrfs_subvolume_get_default (value gv, value fsv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_subvolume_get_default");
 
-  char *fs = guestfs_int_safe_strdup (g, String_val (fsv));
+  char *fs;
+  fs = strdup (String_val (fsv));
+  if (fs == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -3743,7 +4049,9 @@ guestfs_int_ocaml_btrfs_subvolume_list (value gv, value fsv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_subvolume_list");
 
-  char *fs = guestfs_int_safe_strdup (g, String_val (fsv));
+  char *fs;
+  fs = strdup (String_val (fsv));
+  if (fs == NULL) caml_raise_out_of_memory ();
   struct guestfs_btrfssubvolume_list *r;
 
   caml_enter_blocking_section ();
@@ -3776,7 +4084,9 @@ guestfs_int_ocaml_btrfs_subvolume_set_default (value gv, value idv, value fsv)
     guestfs_int_ocaml_raise_closed ("btrfs_subvolume_set_default");
 
   int64_t id = Int64_val (idv);
-  char *fs = guestfs_int_safe_strdup (g, String_val (fsv));
+  char *fs;
+  fs = strdup (String_val (fsv));
+  if (fs == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3807,7 +4117,9 @@ guestfs_int_ocaml_btrfs_subvolume_show (value gv, value subvolumev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_subvolume_show");
 
-  char *subvolume = guestfs_int_safe_strdup (g, String_val (subvolumev));
+  char *subvolume;
+  subvolume = strdup (String_val (subvolumev));
+  if (subvolume == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -3841,8 +4153,12 @@ guestfs_int_ocaml_btrfs_subvolume_snapshot (value gv, value rov, value qgroupidv
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfs_subvolume_snapshot");
 
-  char *source = guestfs_int_safe_strdup (g, String_val (sourcev));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *source;
+  source = strdup (String_val (sourcev));
+  if (source == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   struct guestfs_btrfs_subvolume_snapshot_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_btrfs_subvolume_snapshot_opts_argv *optargs = &optargs_s;
   if (rov != Val_int (0)) {
@@ -3851,7 +4167,8 @@ guestfs_int_ocaml_btrfs_subvolume_snapshot (value gv, value rov, value qgroupidv
   }
   if (qgroupidv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
-    optargs_s.qgroupid = guestfs_int_safe_strdup (g, String_val (Field (qgroupidv, 0)));
+    optargs_s.qgroupid = strdup (String_val (Field (qgroupidv, 0)));
+    if (optargs_s.qgroupid == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -3886,7 +4203,9 @@ guestfs_int_ocaml_btrfstune_enable_extended_inode_refs (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfstune_enable_extended_inode_refs");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3917,7 +4236,9 @@ guestfs_int_ocaml_btrfstune_enable_skinny_metadata_extent_refs (value gv, value 
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfstune_enable_skinny_metadata_extent_refs");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -3948,7 +4269,9 @@ guestfs_int_ocaml_btrfstune_seeding (value gv, value devicev, value seedingv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("btrfstune_seeding");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int seeding = Bool_val (seedingv);
   int r;
 
@@ -4009,7 +4332,9 @@ guestfs_int_ocaml_canonical_device_name (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("canonical_device_name");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -4041,7 +4366,9 @@ guestfs_int_ocaml_cap_get_file (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("cap_get_file");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -4073,8 +4400,12 @@ guestfs_int_ocaml_cap_set_file (value gv, value pathv, value capv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("cap_set_file");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
-  char *cap = guestfs_int_safe_strdup (g, String_val (capv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
+  char *cap;
+  cap = strdup (String_val (capv));
+  if (cap == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -4106,7 +4437,9 @@ guestfs_int_ocaml_case_sensitive_path (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("case_sensitive_path");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -4138,7 +4471,9 @@ guestfs_int_ocaml_cat (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("cat");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -4170,8 +4505,12 @@ guestfs_int_ocaml_checksum (value gv, value csumtypev, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("checksum");
 
-  char *csumtype = guestfs_int_safe_strdup (g, String_val (csumtypev));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *csumtype;
+  csumtype = strdup (String_val (csumtypev));
+  if (csumtype == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -4204,8 +4543,12 @@ guestfs_int_ocaml_checksum_device (value gv, value csumtypev, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("checksum_device");
 
-  char *csumtype = guestfs_int_safe_strdup (g, String_val (csumtypev));
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *csumtype;
+  csumtype = strdup (String_val (csumtypev));
+  if (csumtype == NULL) caml_raise_out_of_memory ();
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -4238,9 +4581,15 @@ guestfs_int_ocaml_checksums_out (value gv, value csumtypev, value directoryv, va
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("checksums_out");
 
-  char *csumtype = guestfs_int_safe_strdup (g, String_val (csumtypev));
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
-  char *sumsfile = guestfs_int_safe_strdup (g, String_val (sumsfilev));
+  char *csumtype;
+  csumtype = strdup (String_val (csumtypev));
+  if (csumtype == NULL) caml_raise_out_of_memory ();
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
+  char *sumsfile;
+  sumsfile = strdup (String_val (sumsfilev));
+  if (sumsfile == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -4274,7 +4623,9 @@ guestfs_int_ocaml_chmod (value gv, value modev, value pathv)
     guestfs_int_ocaml_raise_closed ("chmod");
 
   int mode = Int_val (modev);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -4307,7 +4658,9 @@ guestfs_int_ocaml_chown (value gv, value ownerv, value groupv, value pathv)
 
   int owner = Int_val (ownerv);
   int group = Int_val (groupv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -4338,7 +4691,9 @@ guestfs_int_ocaml_clear_backend_setting (value gv, value namev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("clear_backend_setting");
 
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_clear_backend_setting (g, name);
@@ -4433,9 +4788,15 @@ guestfs_int_ocaml_compress_device_out (value gv, value levelv, value ctypev, val
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("compress_device_out");
 
-  char *ctype = guestfs_int_safe_strdup (g, String_val (ctypev));
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *zdevice = guestfs_int_safe_strdup (g, String_val (zdevicev));
+  char *ctype;
+  ctype = strdup (String_val (ctypev));
+  if (ctype == NULL) caml_raise_out_of_memory ();
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *zdevice;
+  zdevice = strdup (String_val (zdevicev));
+  if (zdevice == NULL) caml_raise_out_of_memory ();
   struct guestfs_compress_device_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_compress_device_out_argv *optargs = &optargs_s;
   if (levelv != Val_int (0)) {
@@ -4474,9 +4835,15 @@ guestfs_int_ocaml_compress_out (value gv, value levelv, value ctypev, value file
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("compress_out");
 
-  char *ctype = guestfs_int_safe_strdup (g, String_val (ctypev));
-  char *file = guestfs_int_safe_strdup (g, String_val (filev));
-  char *zfile = guestfs_int_safe_strdup (g, String_val (zfilev));
+  char *ctype;
+  ctype = strdup (String_val (ctypev));
+  if (ctype == NULL) caml_raise_out_of_memory ();
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
+  char *zfile;
+  zfile = strdup (String_val (zfilev));
+  if (zfile == NULL) caml_raise_out_of_memory ();
   struct guestfs_compress_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_compress_out_argv *optargs = &optargs_s;
   if (levelv != Val_int (0)) {
@@ -4515,10 +4882,16 @@ guestfs_int_ocaml_config (value gv, value hvparamv, value hvvaluev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("config");
 
-  char *hvparam = guestfs_int_safe_strdup (g, String_val (hvparamv));
-  char *hvvalue =
-    hvvaluev != Val_int (0) ?
-      guestfs_int_safe_strdup (g, String_val (Field (hvvaluev, 0))) : NULL;
+  char *hvparam;
+  hvparam = strdup (String_val (hvparamv));
+  if (hvparam == NULL) caml_raise_out_of_memory ();
+  char *hvvalue;
+  if (hvvaluev == Val_int (0))
+    hvvalue = NULL;
+  else {
+    hvvalue = strdup (String_val (Field (hvvaluev, 0)));
+    if (hvvalue == NULL) caml_raise_out_of_memory ();
+  }
   int r;
 
   r = guestfs_config (g, hvparam, hvvalue);
@@ -4549,8 +4922,12 @@ guestfs_int_ocaml_copy_attributes (value gv, value allv, value modev, value xatt
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("copy_attributes");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   struct guestfs_copy_attributes_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_attributes_argv *optargs = &optargs_s;
   if (allv != Val_int (0)) {
@@ -4610,8 +4987,12 @@ guestfs_int_ocaml_copy_device_to_device (value gv, value srcoffsetv, value desto
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("copy_device_to_device");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   struct guestfs_copy_device_to_device_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
   if (srcoffsetv != Val_int (0)) {
@@ -4675,8 +5056,12 @@ guestfs_int_ocaml_copy_device_to_file (value gv, value srcoffsetv, value destoff
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("copy_device_to_file");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   struct guestfs_copy_device_to_file_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
   if (srcoffsetv != Val_int (0)) {
@@ -4740,8 +5125,12 @@ guestfs_int_ocaml_copy_file_to_device (value gv, value srcoffsetv, value destoff
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("copy_file_to_device");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   struct guestfs_copy_file_to_device_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
   if (srcoffsetv != Val_int (0)) {
@@ -4805,8 +5194,12 @@ guestfs_int_ocaml_copy_file_to_file (value gv, value srcoffsetv, value destoffse
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("copy_file_to_file");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   struct guestfs_copy_file_to_file_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
   if (srcoffsetv != Val_int (0)) {
@@ -4869,8 +5262,12 @@ guestfs_int_ocaml_copy_in (value gv, value localpathv, value remotedirv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("copy_in");
 
-  char *localpath = guestfs_int_safe_strdup (g, String_val (localpathv));
-  char *remotedir = guestfs_int_safe_strdup (g, String_val (remotedirv));
+  char *localpath;
+  localpath = strdup (String_val (localpathv));
+  if (localpath == NULL) caml_raise_out_of_memory ();
+  char *remotedir;
+  remotedir = strdup (String_val (remotedirv));
+  if (remotedir == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -4902,8 +5299,12 @@ guestfs_int_ocaml_copy_out (value gv, value remotepathv, value localdirv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("copy_out");
 
-  char *remotepath = guestfs_int_safe_strdup (g, String_val (remotepathv));
-  char *localdir = guestfs_int_safe_strdup (g, String_val (localdirv));
+  char *remotepath;
+  remotepath = strdup (String_val (remotepathv));
+  if (remotepath == NULL) caml_raise_out_of_memory ();
+  char *localdir;
+  localdir = strdup (String_val (localdirv));
+  if (localdir == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -4935,8 +5336,12 @@ guestfs_int_ocaml_copy_size (value gv, value srcv, value destv, value sizev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("copy_size");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   int64_t size = Int64_val (sizev);
   int r;
 
@@ -4969,8 +5374,12 @@ guestfs_int_ocaml_cp (value gv, value srcv, value destv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("cp");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5002,8 +5411,12 @@ guestfs_int_ocaml_cp_a (value gv, value srcv, value destv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("cp_a");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5035,8 +5448,12 @@ guestfs_int_ocaml_cp_r (value gv, value srcv, value destv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("cp_r");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5068,13 +5485,18 @@ guestfs_int_ocaml_cpio_out (value gv, value formatv, value directoryv, value cpi
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("cpio_out");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
-  char *cpiofile = guestfs_int_safe_strdup (g, String_val (cpiofilev));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
+  char *cpiofile;
+  cpiofile = strdup (String_val (cpiofilev));
+  if (cpiofile == NULL) caml_raise_out_of_memory ();
   struct guestfs_cpio_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_cpio_out_argv *optargs = &optargs_s;
   if (formatv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_CPIO_OUT_FORMAT_BITMASK;
-    optargs_s.format = guestfs_int_safe_strdup (g, String_val (Field (formatv, 0)));
+    optargs_s.format = strdup (String_val (Field (formatv, 0)));
+    if (optargs_s.format == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -5109,8 +5531,12 @@ guestfs_int_ocaml_dd (value gv, value srcv, value destv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("dd");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5142,7 +5568,9 @@ guestfs_int_ocaml_debug (value gv, value subcmdv, value extraargsv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("debug");
 
-  char *subcmd = guestfs_int_safe_strdup (g, String_val (subcmdv));
+  char *subcmd;
+  subcmd = strdup (String_val (subcmdv));
+  if (subcmd == NULL) caml_raise_out_of_memory ();
   char **extraargs = guestfs_int_ocaml_strings_val (g, extraargsv);
   char *r;
 
@@ -5206,8 +5634,12 @@ guestfs_int_ocaml_debug_upload (value gv, value filenamev, value tmpnamev, value
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("debug_upload");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
-  char *tmpname = guestfs_int_safe_strdup (g, String_val (tmpnamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  char *tmpname;
+  tmpname = strdup (String_val (tmpnamev));
+  if (tmpname == NULL) caml_raise_out_of_memory ();
   int mode = Int_val (modev);
   int r;
 
@@ -5240,7 +5672,9 @@ guestfs_int_ocaml_device_index (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("device_index");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5332,26 +5766,34 @@ guestfs_int_ocaml_disk_create (value gv, value backingfilev, value backingformat
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("disk_create");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
-  char *format = guestfs_int_safe_strdup (g, String_val (formatv));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  char *format;
+  format = strdup (String_val (formatv));
+  if (format == NULL) caml_raise_out_of_memory ();
   int64_t size = Int64_val (sizev);
   struct guestfs_disk_create_argv optargs_s = { .bitmask = 0 };
   struct guestfs_disk_create_argv *optargs = &optargs_s;
   if (backingfilev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
-    optargs_s.backingfile = guestfs_int_safe_strdup (g, String_val (Field (backingfilev, 0)));
+    optargs_s.backingfile = strdup (String_val (Field (backingfilev, 0)));
+    if (optargs_s.backingfile == NULL) caml_raise_out_of_memory ();
   }
   if (backingformatv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
-    optargs_s.backingformat = guestfs_int_safe_strdup (g, String_val (Field (backingformatv, 0)));
+    optargs_s.backingformat = strdup (String_val (Field (backingformatv, 0)));
+    if (optargs_s.backingformat == NULL) caml_raise_out_of_memory ();
   }
   if (preallocationv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK;
-    optargs_s.preallocation = guestfs_int_safe_strdup (g, String_val (Field (preallocationv, 0)));
+    optargs_s.preallocation = strdup (String_val (Field (preallocationv, 0)));
+    if (optargs_s.preallocation == NULL) caml_raise_out_of_memory ();
   }
   if (compatv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_DISK_CREATE_COMPAT_BITMASK;
-    optargs_s.compat = guestfs_int_safe_strdup (g, String_val (Field (compatv, 0)));
+    optargs_s.compat = strdup (String_val (Field (compatv, 0)));
+    if (optargs_s.compat == NULL) caml_raise_out_of_memory ();
   }
   if (clustersizev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK;
@@ -5405,7 +5847,9 @@ guestfs_int_ocaml_disk_format (value gv, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("disk_format");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -5437,7 +5881,9 @@ guestfs_int_ocaml_disk_has_backing_file (value gv, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("disk_has_backing_file");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5468,7 +5914,9 @@ guestfs_int_ocaml_disk_virtual_size (value gv, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("disk_virtual_size");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -5529,8 +5977,12 @@ guestfs_int_ocaml_download (value gv, value remotefilenamev, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("download");
 
-  char *remotefilename = guestfs_int_safe_strdup (g, String_val (remotefilenamev));
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *remotefilename;
+  remotefilename = strdup (String_val (remotefilenamev));
+  if (remotefilename == NULL) caml_raise_out_of_memory ();
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5540,6 +5992,99 @@ guestfs_int_ocaml_download (value gv, value remotefilenamev, value filenamev)
   free (filename);
   if (r == -1)
     guestfs_int_ocaml_raise_error (g, "download");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val download_blocks : t -> ?unallocated:bool -> string -> int64 -> int64 -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_download_blocks (value gv, value unallocatedv, value devicev, value startv, value stopv, value filenamev);
+
+value
+guestfs_int_ocaml_download_blocks (value gv, value unallocatedv, value devicev, value startv, value stopv, value filenamev)
+{
+  CAMLparam5 (gv, unallocatedv, devicev, startv, stopv);
+  CAMLxparam1 (filenamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("download_blocks");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  int64_t start = Int64_val (startv);
+  int64_t stop = Int64_val (stopv);
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  struct guestfs_download_blocks_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_download_blocks_argv *optargs = &optargs_s;
+  if (unallocatedv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK;
+    optargs_s.unallocated = Bool_val (Field (unallocatedv, 0));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_download_blocks_argv (g, device, start, stop, filename, optargs);
+  caml_leave_blocking_section ();
+  free (device);
+  free (filename);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "download_blocks");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_download_blocks_byte (value *argv, int argn);
+
+value
+guestfs_int_ocaml_download_blocks_byte (value *argv, int argn ATTRIBUTE_UNUSED)
+{
+  return guestfs_int_ocaml_download_blocks (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+}
+
+/* Automatically generated wrapper for function
+ * val download_inode : t -> string -> int64 -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_download_inode (value gv, value devicev, value inodev, value filenamev);
+
+value
+guestfs_int_ocaml_download_inode (value gv, value devicev, value inodev, value filenamev)
+{
+  CAMLparam4 (gv, devicev, inodev, filenamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("download_inode");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  int64_t inode = Int64_val (inodev);
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_download_inode (g, device, inode, filename);
+  caml_leave_blocking_section ();
+  free (device);
+  free (filename);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "download_inode");
 
   rv = Val_unit;
   CAMLreturn (rv);
@@ -5562,8 +6107,12 @@ guestfs_int_ocaml_download_offset (value gv, value remotefilenamev, value filena
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("download_offset");
 
-  char *remotefilename = guestfs_int_safe_strdup (g, String_val (remotefilenamev));
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *remotefilename;
+  remotefilename = strdup (String_val (remotefilenamev));
+  if (remotefilename == NULL) caml_raise_out_of_memory ();
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   int64_t offset = Int64_val (offsetv);
   int64_t size = Int64_val (sizev);
   int r;
@@ -5627,7 +6176,9 @@ guestfs_int_ocaml_du (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("du");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -5658,7 +6209,9 @@ guestfs_int_ocaml_e2fsck (value gv, value correctv, value forceallv, value devic
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("e2fsck");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_e2fsck_argv optargs_s = { .bitmask = 0 };
   struct guestfs_e2fsck_argv *optargs = &optargs_s;
   if (correctv != Val_int (0)) {
@@ -5699,7 +6252,9 @@ guestfs_int_ocaml_e2fsck_f (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("e2fsck_f");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5762,8 +6317,12 @@ guestfs_int_ocaml_egrep (value gv, value regexv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("egrep");
 
-  char *regex = guestfs_int_safe_strdup (g, String_val (regexv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *regex;
+  regex = strdup (String_val (regexv));
+  if (regex == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -5798,8 +6357,12 @@ guestfs_int_ocaml_egrepi (value gv, value regexv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("egrepi");
 
-  char *regex = guestfs_int_safe_strdup (g, String_val (regexv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *regex;
+  regex = strdup (String_val (regexv));
+  if (regex == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -5834,8 +6397,12 @@ guestfs_int_ocaml_equal (value gv, value file1v, value file2v)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("equal");
 
-  char *file1 = guestfs_int_safe_strdup (g, String_val (file1v));
-  char *file2 = guestfs_int_safe_strdup (g, String_val (file2v));
+  char *file1;
+  file1 = strdup (String_val (file1v));
+  if (file1 == NULL) caml_raise_out_of_memory ();
+  char *file2;
+  file2 = strdup (String_val (file2v));
+  if (file2 == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5867,7 +6434,9 @@ guestfs_int_ocaml_exists (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("exists");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5898,7 +6467,9 @@ guestfs_int_ocaml_extlinux (value gv, value directoryv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("extlinux");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -5929,7 +6500,9 @@ guestfs_int_ocaml_fallocate (value gv, value pathv, value lenv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("fallocate");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int len = Int_val (lenv);
   int r;
 
@@ -5961,7 +6534,9 @@ guestfs_int_ocaml_fallocate64 (value gv, value pathv, value lenv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("fallocate64");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int64_t len = Int64_val (lenv);
   int r;
 
@@ -6024,8 +6599,12 @@ guestfs_int_ocaml_fgrep (value gv, value patternv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("fgrep");
 
-  char *pattern = guestfs_int_safe_strdup (g, String_val (patternv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *pattern;
+  pattern = strdup (String_val (patternv));
+  if (pattern == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -6060,8 +6639,12 @@ guestfs_int_ocaml_fgrepi (value gv, value patternv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("fgrepi");
 
-  char *pattern = guestfs_int_safe_strdup (g, String_val (patternv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *pattern;
+  pattern = strdup (String_val (patternv));
+  if (pattern == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -6096,7 +6679,9 @@ guestfs_int_ocaml_file (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("file");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -6128,7 +6713,9 @@ guestfs_int_ocaml_file_architecture (value gv, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("file_architecture");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -6160,7 +6747,9 @@ guestfs_int_ocaml_filesize (value gv, value filev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("filesize");
 
-  char *file = guestfs_int_safe_strdup (g, String_val (filev));
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -6191,7 +6780,9 @@ guestfs_int_ocaml_filesystem_available (value gv, value filesystemv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("filesystem_available");
 
-  char *filesystem = guestfs_int_safe_strdup (g, String_val (filesystemv));
+  char *filesystem;
+  filesystem = strdup (String_val (filesystemv));
+  if (filesystem == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -6202,6 +6793,40 @@ guestfs_int_ocaml_filesystem_available (value gv, value filesystemv)
     guestfs_int_ocaml_raise_error (g, "filesystem_available");
 
   rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val filesystem_walk : t -> string -> tsk_dirent array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_filesystem_walk (value gv, value devicev);
+
+value
+guestfs_int_ocaml_filesystem_walk (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("filesystem_walk");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  struct guestfs_tsk_dirent_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_filesystem_walk (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "filesystem_walk");
+
+  rv = copy_tsk_dirent_list (r);
+  guestfs_free_tsk_dirent_list (r);
   CAMLreturn (rv);
 }
 
@@ -6224,7 +6849,9 @@ guestfs_int_ocaml_fill (value gv, value cv, value lenv, value pathv)
 
   int c = Int_val (cv);
   int len = Int_val (lenv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -6255,7 +6882,9 @@ guestfs_int_ocaml_fill_dir (value gv, value dirv, value nrv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("fill_dir");
 
-  char *dir = guestfs_int_safe_strdup (g, String_val (dirv));
+  char *dir;
+  dir = strdup (String_val (dirv));
+  if (dir == NULL) caml_raise_out_of_memory ();
   int nr = Int_val (nrv);
   int r;
 
@@ -6287,9 +6916,13 @@ guestfs_int_ocaml_fill_pattern (value gv, value patternv, value lenv, value path
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("fill_pattern");
 
-  char *pattern = guestfs_int_safe_strdup (g, String_val (patternv));
+  char *pattern;
+  pattern = strdup (String_val (patternv));
+  if (pattern == NULL) caml_raise_out_of_memory ();
   int len = Int_val (lenv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -6321,7 +6954,9 @@ guestfs_int_ocaml_find (value gv, value directoryv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("find");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -6355,8 +6990,12 @@ guestfs_int_ocaml_find0 (value gv, value directoryv, value filesv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("find0");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
-  char *files = guestfs_int_safe_strdup (g, String_val (filesv));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
+  char *files;
+  files = strdup (String_val (filesv));
+  if (files == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -6388,7 +7027,9 @@ guestfs_int_ocaml_findfs_label (value gv, value labelv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("findfs_label");
 
-  char *label = guestfs_int_safe_strdup (g, String_val (labelv));
+  char *label;
+  label = strdup (String_val (labelv));
+  if (label == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -6420,7 +7061,9 @@ guestfs_int_ocaml_findfs_uuid (value gv, value uuidv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("findfs_uuid");
 
-  char *uuid = guestfs_int_safe_strdup (g, String_val (uuidv));
+  char *uuid;
+  uuid = strdup (String_val (uuidv));
+  if (uuid == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -6452,8 +7095,12 @@ guestfs_int_ocaml_fsck (value gv, value fstypev, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("fsck");
 
-  char *fstype = guestfs_int_safe_strdup (g, String_val (fstypev));
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *fstype;
+  fstype = strdup (String_val (fstypev));
+  if (fstype == NULL) caml_raise_out_of_memory ();
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -6485,7 +7132,9 @@ guestfs_int_ocaml_fstrim (value gv, value offsetv, value lengthv, value minimumf
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("fstrim");
 
-  char *mountpoint = guestfs_int_safe_strdup (g, String_val (mountpointv));
+  char *mountpoint;
+  mountpoint = strdup (String_val (mountpointv));
+  if (mountpoint == NULL) caml_raise_out_of_memory ();
   struct guestfs_fstrim_argv optargs_s = { .bitmask = 0 };
   struct guestfs_fstrim_argv *optargs = &optargs_s;
   if (offsetv != Val_int (0)) {
@@ -6643,7 +7292,9 @@ guestfs_int_ocaml_get_backend_setting (value gv, value namev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("get_backend_setting");
 
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
   char *r;
 
   r = guestfs_get_backend_setting (g, name);
@@ -6758,7 +7409,9 @@ guestfs_int_ocaml_get_e2attrs (value gv, value filev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("get_e2attrs");
 
-  char *file = guestfs_int_safe_strdup (g, String_val (filev));
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -6790,7 +7443,9 @@ guestfs_int_ocaml_get_e2generation (value gv, value filev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("get_e2generation");
 
-  char *file = guestfs_int_safe_strdup (g, String_val (filev));
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -6821,7 +7476,9 @@ guestfs_int_ocaml_get_e2label (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("get_e2label");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -6853,7 +7510,9 @@ guestfs_int_ocaml_get_e2uuid (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("get_e2uuid");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -7311,6 +7970,34 @@ guestfs_int_ocaml_get_smp (value gv)
 }
 
 /* Automatically generated wrapper for function
+ * val get_sockdir : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_get_sockdir (value gv);
+
+value
+guestfs_int_ocaml_get_sockdir (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("get_sockdir");
+
+  char *r;
+
+  r = guestfs_get_sockdir (g);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "get_sockdir");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val get_state : t -> int
  */
 
@@ -7495,8 +8182,12 @@ guestfs_int_ocaml_getxattr (value gv, value pathv, value namev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("getxattr");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
   char *r;
   size_t size;
 
@@ -7531,7 +8222,9 @@ guestfs_int_ocaml_getxattrs (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("getxattrs");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_xattr_list *r;
 
   caml_enter_blocking_section ();
@@ -7547,28 +8240,36 @@ guestfs_int_ocaml_getxattrs (value gv, value pathv)
 }
 
 /* Automatically generated wrapper for function
- * val glob_expand : t -> string -> string array
+ * val glob_expand : t -> ?directoryslash:bool -> string -> string array
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value guestfs_int_ocaml_glob_expand (value gv, value patternv);
+value guestfs_int_ocaml_glob_expand (value gv, value directoryslashv, value patternv);
 
 value
-guestfs_int_ocaml_glob_expand (value gv, value patternv)
+guestfs_int_ocaml_glob_expand (value gv, value directoryslashv, value patternv)
 {
-  CAMLparam2 (gv, patternv);
+  CAMLparam3 (gv, directoryslashv, patternv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("glob_expand");
 
-  char *pattern = guestfs_int_safe_strdup (g, String_val (patternv));
+  char *pattern;
+  pattern = strdup (String_val (patternv));
+  if (pattern == NULL) caml_raise_out_of_memory ();
+  struct guestfs_glob_expand_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_glob_expand_opts_argv *optargs = &optargs_s;
+  if (directoryslashv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_GLOB_EXPAND_OPTS_DIRECTORYSLASH_BITMASK;
+    optargs_s.directoryslash = Bool_val (Field (directoryslashv, 0));
+  }
   size_t i;
   char **r;
 
   caml_enter_blocking_section ();
-  r = guestfs_glob_expand (g, pattern);
+  r = guestfs_glob_expand_opts_argv (g, pattern, optargs);
   caml_leave_blocking_section ();
   free (pattern);
   if (r == NULL)
@@ -7598,8 +8299,12 @@ guestfs_int_ocaml_grep (value gv, value extendedv, value fixedv, value insensiti
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("grep");
 
-  char *regex = guestfs_int_safe_strdup (g, String_val (regexv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *regex;
+  regex = strdup (String_val (regexv));
+  if (regex == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_grep_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_grep_opts_argv *optargs = &optargs_s;
   if (extendedv != Val_int (0)) {
@@ -7661,8 +8366,12 @@ guestfs_int_ocaml_grepi (value gv, value regexv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("grepi");
 
-  char *regex = guestfs_int_safe_strdup (g, String_val (regexv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *regex;
+  regex = strdup (String_val (regexv));
+  if (regex == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -7697,8 +8406,12 @@ guestfs_int_ocaml_grub_install (value gv, value rootv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("grub_install");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -7730,7 +8443,9 @@ guestfs_int_ocaml_head (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("head");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -7765,7 +8480,9 @@ guestfs_int_ocaml_head_n (value gv, value nrlinesv, value pathv)
     guestfs_int_ocaml_raise_closed ("head_n");
 
   int nrlines = Int_val (nrlinesv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -7799,7 +8516,9 @@ guestfs_int_ocaml_hexdump (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("hexdump");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -7860,9 +8579,13 @@ guestfs_int_ocaml_hivex_commit (value gv, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("hivex_commit");
 
-  char *filename =
-    filenamev != Val_int (0) ?
-      guestfs_int_safe_strdup (g, String_val (Field (filenamev, 0))) : NULL;
+  char *filename;
+  if (filenamev == Val_int (0))
+    filename = NULL;
+  else {
+    filename = strdup (String_val (Field (filenamev, 0)));
+    if (filename == NULL) caml_raise_out_of_memory ();
+  }
   int r;
 
   caml_enter_blocking_section ();
@@ -7894,7 +8617,9 @@ guestfs_int_ocaml_hivex_node_add_child (value gv, value parentv, value namev)
     guestfs_int_ocaml_raise_closed ("hivex_node_add_child");
 
   int64_t parent = Int64_val (parentv);
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -7987,7 +8712,9 @@ guestfs_int_ocaml_hivex_node_get_child (value gv, value nodehv, value namev)
     guestfs_int_ocaml_raise_closed ("hivex_node_get_child");
 
   int64_t nodeh = Int64_val (nodehv);
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -8019,7 +8746,9 @@ guestfs_int_ocaml_hivex_node_get_value (value gv, value nodehv, value keyv)
     guestfs_int_ocaml_raise_closed ("hivex_node_get_value");
 
   int64_t nodeh = Int64_val (nodehv);
-  char *key = guestfs_int_safe_strdup (g, String_val (keyv));
+  char *key;
+  key = strdup (String_val (keyv));
+  if (key == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -8112,10 +8841,15 @@ guestfs_int_ocaml_hivex_node_set_value (value gv, value nodehv, value keyv, valu
     guestfs_int_ocaml_raise_closed ("hivex_node_set_value");
 
   int64_t nodeh = Int64_val (nodehv);
-  char *key = guestfs_int_safe_strdup (g, String_val (keyv));
+  char *key;
+  key = strdup (String_val (keyv));
+  if (key == NULL) caml_raise_out_of_memory ();
   int64_t t = Int64_val (tv);
   size_t val_size = caml_string_length (valv);
-  char *val = guestfs_int_safe_memdup (g, String_val (valv), val_size);
+  char *val;
+  val = malloc (val_size);
+  if (val == NULL) caml_raise_out_of_memory ();
+  memcpy (val, String_val (valv), val_size);
   int r;
 
   caml_enter_blocking_section ();
@@ -8178,7 +8912,9 @@ guestfs_int_ocaml_hivex_open (value gv, value verbosev, value debugv, value writ
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("hivex_open");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   struct guestfs_hivex_open_argv optargs_s = { .bitmask = 0 };
   struct guestfs_hivex_open_argv *optargs = &optargs_s;
   if (verbosev != Val_int (0)) {
@@ -8377,8 +9113,12 @@ guestfs_int_ocaml_initrd_cat (value gv, value initrdpathv, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("initrd_cat");
 
-  char *initrdpath = guestfs_int_safe_strdup (g, String_val (initrdpathv));
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *initrdpath;
+  initrdpath = strdup (String_val (initrdpathv));
+  if (initrdpath == NULL) caml_raise_out_of_memory ();
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   char *r;
   size_t size;
 
@@ -8413,7 +9153,9 @@ guestfs_int_ocaml_initrd_list (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("initrd_list");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -8447,7 +9189,9 @@ guestfs_int_ocaml_inotify_add_watch (value gv, value pathv, value maskv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inotify_add_watch");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int mask = Int_val (maskv);
   int64_t r;
 
@@ -8630,7 +9374,9 @@ guestfs_int_ocaml_inspect_get_arch (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_arch");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -8662,7 +9408,9 @@ guestfs_int_ocaml_inspect_get_distro (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_distro");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -8694,7 +9442,9 @@ guestfs_int_ocaml_inspect_get_drive_mappings (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_drive_mappings");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -8728,7 +9478,9 @@ guestfs_int_ocaml_inspect_get_filesystems (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_filesystems");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -8762,7 +9514,9 @@ guestfs_int_ocaml_inspect_get_format (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_format");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -8794,7 +9548,9 @@ guestfs_int_ocaml_inspect_get_hostname (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_hostname");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -8826,7 +9582,9 @@ guestfs_int_ocaml_inspect_get_icon (value gv, value faviconv, value highqualityv
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_icon");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   struct guestfs_inspect_get_icon_argv optargs_s = { .bitmask = 0 };
   struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
   if (faviconv != Val_int (0)) {
@@ -8870,7 +9628,9 @@ guestfs_int_ocaml_inspect_get_major_version (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_major_version");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -8901,7 +9661,9 @@ guestfs_int_ocaml_inspect_get_minor_version (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_minor_version");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -8932,7 +9694,9 @@ guestfs_int_ocaml_inspect_get_mountpoints (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_mountpoints");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -8966,7 +9730,9 @@ guestfs_int_ocaml_inspect_get_package_format (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_package_format");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -8998,7 +9764,9 @@ guestfs_int_ocaml_inspect_get_package_management (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_package_management");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -9030,7 +9798,9 @@ guestfs_int_ocaml_inspect_get_product_name (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_product_name");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -9062,7 +9832,9 @@ guestfs_int_ocaml_inspect_get_product_variant (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_product_variant");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -9126,7 +9898,9 @@ guestfs_int_ocaml_inspect_get_type (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_type");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -9158,7 +9932,9 @@ guestfs_int_ocaml_inspect_get_windows_current_control_set (value gv, value rootv
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_windows_current_control_set");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -9190,7 +9966,9 @@ guestfs_int_ocaml_inspect_get_windows_systemroot (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_get_windows_systemroot");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -9222,7 +10000,9 @@ guestfs_int_ocaml_inspect_is_live (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_is_live");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -9253,7 +10033,9 @@ guestfs_int_ocaml_inspect_is_multipart (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_is_multipart");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -9284,7 +10066,9 @@ guestfs_int_ocaml_inspect_is_netinst (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_is_netinst");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -9315,7 +10099,9 @@ guestfs_int_ocaml_inspect_list_applications (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_list_applications");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   struct guestfs_application_list *r;
 
   caml_enter_blocking_section ();
@@ -9347,7 +10133,9 @@ guestfs_int_ocaml_inspect_list_applications2 (value gv, value rootv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("inspect_list_applications2");
 
-  char *root = guestfs_int_safe_strdup (g, String_val (rootv));
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
   struct guestfs_application2_list *r;
 
   caml_enter_blocking_section ();
@@ -9442,18 +10230,31 @@ guestfs_int_ocaml_internal_test (value gv, value oboolv, value ointv, value oint
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test");
 
-  char *str = guestfs_int_safe_strdup (g, String_val (strv));
-  char *optstr =
-    optstrv != Val_int (0) ?
-      guestfs_int_safe_strdup (g, String_val (Field (optstrv, 0))) : NULL;
+  char *str;
+  str = strdup (String_val (strv));
+  if (str == NULL) caml_raise_out_of_memory ();
+  char *optstr;
+  if (optstrv == Val_int (0))
+    optstr = NULL;
+  else {
+    optstr = strdup (String_val (Field (optstrv, 0)));
+    if (optstr == NULL) caml_raise_out_of_memory ();
+  }
   char **strlist = guestfs_int_ocaml_strings_val (g, strlistv);
   int b = Bool_val (bv);
   int integer = Int_val (integerv);
   int64_t integer64 = Int64_val (integer64v);
-  char *filein = guestfs_int_safe_strdup (g, String_val (fileinv));
-  char *fileout = guestfs_int_safe_strdup (g, String_val (fileoutv));
+  char *filein;
+  filein = strdup (String_val (fileinv));
+  if (filein == NULL) caml_raise_out_of_memory ();
+  char *fileout;
+  fileout = strdup (String_val (fileoutv));
+  if (fileout == NULL) caml_raise_out_of_memory ();
   size_t bufferin_size = caml_string_length (bufferinv);
-  char *bufferin = guestfs_int_safe_memdup (g, String_val (bufferinv), bufferin_size);
+  char *bufferin;
+  bufferin = malloc (bufferin_size);
+  if (bufferin == NULL) caml_raise_out_of_memory ();
+  memcpy (bufferin, String_val (bufferinv), bufferin_size);
   struct guestfs_internal_test_argv optargs_s = { .bitmask = 0 };
   struct guestfs_internal_test_argv *optargs = &optargs_s;
   if (oboolv != Val_int (0)) {
@@ -9470,12 +10271,12 @@ guestfs_int_ocaml_internal_test (value gv, value oboolv, value ointv, value oint
   }
   if (ostringv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRING_BITMASK;
-    optargs_s.ostring = guestfs_int_safe_strdup (g, String_val (Field (ostringv, 0)));
+    optargs_s.ostring = strdup (String_val (Field (ostringv, 0)));
+    if (optargs_s.ostring == NULL) caml_raise_out_of_memory ();
   }
   if (ostringlistv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK;
-    optargs_s.ostringlist = guestfs_int_ocaml_strings_val (g, Field (ostringlistv, 0))
-;
+    optargs_s.ostringlist = guestfs_int_ocaml_strings_val (g, Field (ostringlistv, 0));
   }
   int r;
 
@@ -9885,7 +10686,9 @@ guestfs_int_ocaml_internal_test_rbool (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rbool");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_internal_test_rbool (g, val);
@@ -9941,7 +10744,9 @@ guestfs_int_ocaml_internal_test_rbufferout (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rbufferout");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   char *r;
   size_t size;
 
@@ -10003,7 +10808,9 @@ guestfs_int_ocaml_internal_test_rconstoptstring (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rconstoptstring");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   const char *r;
 
   r = guestfs_internal_test_rconstoptstring (g, val);
@@ -10065,7 +10872,9 @@ guestfs_int_ocaml_internal_test_rconststring (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rconststring");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   const char *r;
 
   r = guestfs_internal_test_rconststring (g, val);
@@ -10121,7 +10930,9 @@ guestfs_int_ocaml_internal_test_rhashtable (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rhashtable");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -10183,7 +10994,9 @@ guestfs_int_ocaml_internal_test_rint (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rint");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_internal_test_rint (g, val);
@@ -10212,7 +11025,9 @@ guestfs_int_ocaml_internal_test_rint64 (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rint64");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   r = guestfs_internal_test_rint64 (g, val);
@@ -10295,7 +11110,9 @@ guestfs_int_ocaml_internal_test_rstring (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rstring");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   char *r;
 
   r = guestfs_internal_test_rstring (g, val);
@@ -10353,7 +11170,9 @@ guestfs_int_ocaml_internal_test_rstringlist (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rstringlist");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -10415,7 +11234,9 @@ guestfs_int_ocaml_internal_test_rstruct (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rstruct");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   struct guestfs_lvm_pv *r;
 
   r = guestfs_internal_test_rstruct (g, val);
@@ -10473,7 +11294,9 @@ guestfs_int_ocaml_internal_test_rstructlist (value gv, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_rstructlist");
 
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   struct guestfs_lvm_pv_list *r;
 
   r = guestfs_internal_test_rstructlist (g, val);
@@ -10531,7 +11354,9 @@ guestfs_int_ocaml_internal_test_set_output (value gv, value filenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("internal_test_set_output");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_internal_test_set_output (g, filename);
@@ -10560,7 +11385,9 @@ guestfs_int_ocaml_is_blockdev (value gv, value followsymlinksv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_blockdev");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_is_blockdev_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
   if (followsymlinksv != Val_int (0)) {
@@ -10624,7 +11451,9 @@ guestfs_int_ocaml_is_chardev (value gv, value followsymlinksv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_chardev");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_is_chardev_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
   if (followsymlinksv != Val_int (0)) {
@@ -10688,7 +11517,9 @@ guestfs_int_ocaml_is_dir (value gv, value followsymlinksv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_dir");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_is_dir_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
   if (followsymlinksv != Val_int (0)) {
@@ -10725,7 +11556,9 @@ guestfs_int_ocaml_is_fifo (value gv, value followsymlinksv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_fifo");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_is_fifo_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
   if (followsymlinksv != Val_int (0)) {
@@ -10762,7 +11595,9 @@ guestfs_int_ocaml_is_file (value gv, value followsymlinksv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_file");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_is_file_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_is_file_opts_argv *optargs = &optargs_s;
   if (followsymlinksv != Val_int (0)) {
@@ -10814,25 +11649,27 @@ guestfs_int_ocaml_is_launching (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value guestfs_int_ocaml_is_lv (value gv, value devicev);
+value guestfs_int_ocaml_is_lv (value gv, value mountablev);
 
 value
-guestfs_int_ocaml_is_lv (value gv, value devicev)
+guestfs_int_ocaml_is_lv (value gv, value mountablev)
 {
-  CAMLparam2 (gv, devicev);
+  CAMLparam2 (gv, mountablev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_lv");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_is_lv (g, device);
+  r = guestfs_is_lv (g, mountable);
   caml_leave_blocking_section ();
-  free (device);
+  free (mountable);
   if (r == -1)
     guestfs_int_ocaml_raise_error (g, "is_lv");
 
@@ -10884,7 +11721,9 @@ guestfs_int_ocaml_is_socket (value gv, value followsymlinksv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_socket");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_is_socket_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
   if (followsymlinksv != Val_int (0)) {
@@ -10921,7 +11760,9 @@ guestfs_int_ocaml_is_symlink (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_symlink");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -10952,7 +11793,9 @@ guestfs_int_ocaml_is_whole_device (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_whole_device");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -10983,7 +11826,9 @@ guestfs_int_ocaml_is_zero (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_zero");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -11014,7 +11859,9 @@ guestfs_int_ocaml_is_zero_device (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("is_zero_device");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -11045,7 +11892,9 @@ guestfs_int_ocaml_isoinfo (value gv, value isofilev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("isoinfo");
 
-  char *isofile = guestfs_int_safe_strdup (g, String_val (isofilev));
+  char *isofile;
+  isofile = strdup (String_val (isofilev));
+  if (isofile == NULL) caml_raise_out_of_memory ();
   struct guestfs_isoinfo *r;
 
   caml_enter_blocking_section ();
@@ -11077,7 +11926,9 @@ guestfs_int_ocaml_isoinfo_device (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("isoinfo_device");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_isoinfo *r;
 
   caml_enter_blocking_section ();
@@ -11255,7 +12106,9 @@ guestfs_int_ocaml_journal_open (value gv, value directoryv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("journal_open");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -11406,7 +12259,9 @@ guestfs_int_ocaml_lchown (value gv, value ownerv, value groupv, value pathv)
 
   int owner = Int_val (ownerv);
   int group = Int_val (groupv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -11466,7 +12321,9 @@ guestfs_int_ocaml_ldmtool_diskgroup_disks (value gv, value diskgroupv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ldmtool_diskgroup_disks");
 
-  char *diskgroup = guestfs_int_safe_strdup (g, String_val (diskgroupv));
+  char *diskgroup;
+  diskgroup = strdup (String_val (diskgroupv));
+  if (diskgroup == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -11500,7 +12357,9 @@ guestfs_int_ocaml_ldmtool_diskgroup_name (value gv, value diskgroupv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ldmtool_diskgroup_name");
 
-  char *diskgroup = guestfs_int_safe_strdup (g, String_val (diskgroupv));
+  char *diskgroup;
+  diskgroup = strdup (String_val (diskgroupv));
+  if (diskgroup == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -11532,7 +12391,9 @@ guestfs_int_ocaml_ldmtool_diskgroup_volumes (value gv, value diskgroupv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ldmtool_diskgroup_volumes");
 
-  char *diskgroup = guestfs_int_safe_strdup (g, String_val (diskgroupv));
+  char *diskgroup;
+  diskgroup = strdup (String_val (diskgroupv));
+  if (diskgroup == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -11661,8 +12522,12 @@ guestfs_int_ocaml_ldmtool_volume_hint (value gv, value diskgroupv, value volumev
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ldmtool_volume_hint");
 
-  char *diskgroup = guestfs_int_safe_strdup (g, String_val (diskgroupv));
-  char *volume = guestfs_int_safe_strdup (g, String_val (volumev));
+  char *diskgroup;
+  diskgroup = strdup (String_val (diskgroupv));
+  if (diskgroup == NULL) caml_raise_out_of_memory ();
+  char *volume;
+  volume = strdup (String_val (volumev));
+  if (volume == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -11695,8 +12560,12 @@ guestfs_int_ocaml_ldmtool_volume_partitions (value gv, value diskgroupv, value v
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ldmtool_volume_partitions");
 
-  char *diskgroup = guestfs_int_safe_strdup (g, String_val (diskgroupv));
-  char *volume = guestfs_int_safe_strdup (g, String_val (volumev));
+  char *diskgroup;
+  diskgroup = strdup (String_val (diskgroupv));
+  if (diskgroup == NULL) caml_raise_out_of_memory ();
+  char *volume;
+  volume = strdup (String_val (volumev));
+  if (volume == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -11731,8 +12600,12 @@ guestfs_int_ocaml_ldmtool_volume_type (value gv, value diskgroupv, value volumev
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ldmtool_volume_type");
 
-  char *diskgroup = guestfs_int_safe_strdup (g, String_val (diskgroupv));
-  char *volume = guestfs_int_safe_strdup (g, String_val (volumev));
+  char *diskgroup;
+  diskgroup = strdup (String_val (diskgroupv));
+  if (diskgroup == NULL) caml_raise_out_of_memory ();
+  char *volume;
+  volume = strdup (String_val (volumev));
+  if (volume == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -11765,8 +12638,12 @@ guestfs_int_ocaml_lgetxattr (value gv, value pathv, value namev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lgetxattr");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
   char *r;
   size_t size;
 
@@ -11801,7 +12678,9 @@ guestfs_int_ocaml_lgetxattrs (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lgetxattrs");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_xattr_list *r;
 
   caml_enter_blocking_section ();
@@ -12121,7 +13000,9 @@ guestfs_int_ocaml_ll (value gv, value directoryv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ll");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -12153,7 +13034,9 @@ guestfs_int_ocaml_llz (value gv, value directoryv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("llz");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -12185,8 +13068,12 @@ guestfs_int_ocaml_ln (value gv, value targetv, value linknamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ln");
 
-  char *target = guestfs_int_safe_strdup (g, String_val (targetv));
-  char *linkname = guestfs_int_safe_strdup (g, String_val (linknamev));
+  char *target;
+  target = strdup (String_val (targetv));
+  if (target == NULL) caml_raise_out_of_memory ();
+  char *linkname;
+  linkname = strdup (String_val (linknamev));
+  if (linkname == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12218,8 +13105,12 @@ guestfs_int_ocaml_ln_f (value gv, value targetv, value linknamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ln_f");
 
-  char *target = guestfs_int_safe_strdup (g, String_val (targetv));
-  char *linkname = guestfs_int_safe_strdup (g, String_val (linknamev));
+  char *target;
+  target = strdup (String_val (targetv));
+  if (target == NULL) caml_raise_out_of_memory ();
+  char *linkname;
+  linkname = strdup (String_val (linknamev));
+  if (linkname == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12251,8 +13142,12 @@ guestfs_int_ocaml_ln_s (value gv, value targetv, value linknamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ln_s");
 
-  char *target = guestfs_int_safe_strdup (g, String_val (targetv));
-  char *linkname = guestfs_int_safe_strdup (g, String_val (linknamev));
+  char *target;
+  target = strdup (String_val (targetv));
+  if (target == NULL) caml_raise_out_of_memory ();
+  char *linkname;
+  linkname = strdup (String_val (linknamev));
+  if (linkname == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12284,8 +13179,12 @@ guestfs_int_ocaml_ln_sf (value gv, value targetv, value linknamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ln_sf");
 
-  char *target = guestfs_int_safe_strdup (g, String_val (targetv));
-  char *linkname = guestfs_int_safe_strdup (g, String_val (linknamev));
+  char *target;
+  target = strdup (String_val (targetv));
+  if (target == NULL) caml_raise_out_of_memory ();
+  char *linkname;
+  linkname = strdup (String_val (linknamev));
+  if (linkname == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12317,8 +13216,12 @@ guestfs_int_ocaml_lremovexattr (value gv, value xattrv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lremovexattr");
 
-  char *xattr = guestfs_int_safe_strdup (g, String_val (xattrv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *xattr;
+  xattr = strdup (String_val (xattrv));
+  if (xattr == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12350,7 +13253,9 @@ guestfs_int_ocaml_ls (value gv, value directoryv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ls");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -12384,8 +13289,12 @@ guestfs_int_ocaml_ls0 (value gv, value dirv, value filenamesv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ls0");
 
-  char *dir = guestfs_int_safe_strdup (g, String_val (dirv));
-  char *filenames = guestfs_int_safe_strdup (g, String_val (filenamesv));
+  char *dir;
+  dir = strdup (String_val (dirv));
+  if (dir == NULL) caml_raise_out_of_memory ();
+  char *filenames;
+  filenames = strdup (String_val (filenamesv));
+  if (filenames == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12417,10 +13326,16 @@ guestfs_int_ocaml_lsetxattr (value gv, value xattrv, value valv, value vallenv, 
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lsetxattr");
 
-  char *xattr = guestfs_int_safe_strdup (g, String_val (xattrv));
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *xattr;
+  xattr = strdup (String_val (xattrv));
+  if (xattr == NULL) caml_raise_out_of_memory ();
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   int vallen = Int_val (vallenv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12453,7 +13368,9 @@ guestfs_int_ocaml_lstat (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lstat");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_stat *r;
 
   caml_enter_blocking_section ();
@@ -12485,7 +13402,9 @@ guestfs_int_ocaml_lstatlist (value gv, value pathv, value namesv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lstatlist");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char **names = guestfs_int_ocaml_strings_val (g, namesv);
   struct guestfs_stat_list *r;
 
@@ -12519,7 +13438,9 @@ guestfs_int_ocaml_lstatns (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lstatns");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_statns *r;
 
   caml_enter_blocking_section ();
@@ -12551,7 +13472,9 @@ guestfs_int_ocaml_lstatnslist (value gv, value pathv, value namesv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lstatnslist");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char **names = guestfs_int_ocaml_strings_val (g, namesv);
   struct guestfs_statns_list *r;
 
@@ -12585,9 +13508,15 @@ guestfs_int_ocaml_luks_add_key (value gv, value devicev, value keyv, value newke
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("luks_add_key");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *key = guestfs_int_safe_strdup (g, String_val (keyv));
-  char *newkey = guestfs_int_safe_strdup (g, String_val (newkeyv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *key;
+  key = strdup (String_val (keyv));
+  if (key == NULL) caml_raise_out_of_memory ();
+  char *newkey;
+  newkey = strdup (String_val (newkeyv));
+  if (newkey == NULL) caml_raise_out_of_memory ();
   int keyslot = Int_val (keyslotv);
   int r;
 
@@ -12621,7 +13550,9 @@ guestfs_int_ocaml_luks_close (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("luks_close");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12652,8 +13583,12 @@ guestfs_int_ocaml_luks_format (value gv, value devicev, value keyv, value keyslo
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("luks_format");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *key = guestfs_int_safe_strdup (g, String_val (keyv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *key;
+  key = strdup (String_val (keyv));
+  if (key == NULL) caml_raise_out_of_memory ();
   int keyslot = Int_val (keyslotv);
   int r;
 
@@ -12686,10 +13621,16 @@ guestfs_int_ocaml_luks_format_cipher (value gv, value devicev, value keyv, value
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("luks_format_cipher");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *key = guestfs_int_safe_strdup (g, String_val (keyv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *key;
+  key = strdup (String_val (keyv));
+  if (key == NULL) caml_raise_out_of_memory ();
   int keyslot = Int_val (keyslotv);
-  char *cipher = guestfs_int_safe_strdup (g, String_val (cipherv));
+  char *cipher;
+  cipher = strdup (String_val (cipherv));
+  if (cipher == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12722,8 +13663,12 @@ guestfs_int_ocaml_luks_kill_slot (value gv, value devicev, value keyv, value key
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("luks_kill_slot");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *key = guestfs_int_safe_strdup (g, String_val (keyv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *key;
+  key = strdup (String_val (keyv));
+  if (key == NULL) caml_raise_out_of_memory ();
   int keyslot = Int_val (keyslotv);
   int r;
 
@@ -12756,9 +13701,15 @@ guestfs_int_ocaml_luks_open (value gv, value devicev, value keyv, value mapnamev
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("luks_open");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *key = guestfs_int_safe_strdup (g, String_val (keyv));
-  char *mapname = guestfs_int_safe_strdup (g, String_val (mapnamev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *key;
+  key = strdup (String_val (keyv));
+  if (key == NULL) caml_raise_out_of_memory ();
+  char *mapname;
+  mapname = strdup (String_val (mapnamev));
+  if (mapname == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12791,9 +13742,15 @@ guestfs_int_ocaml_luks_open_ro (value gv, value devicev, value keyv, value mapna
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("luks_open_ro");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *key = guestfs_int_safe_strdup (g, String_val (keyv));
-  char *mapname = guestfs_int_safe_strdup (g, String_val (mapnamev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *key;
+  key = strdup (String_val (keyv));
+  if (key == NULL) caml_raise_out_of_memory ();
+  char *mapname;
+  mapname = strdup (String_val (mapnamev));
+  if (mapname == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -12826,8 +13783,12 @@ guestfs_int_ocaml_lvcreate (value gv, value logvolv, value volgroupv, value mbyt
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lvcreate");
 
-  char *logvol = guestfs_int_safe_strdup (g, String_val (logvolv));
-  char *volgroup = guestfs_int_safe_strdup (g, String_val (volgroupv));
+  char *logvol;
+  logvol = strdup (String_val (logvolv));
+  if (logvol == NULL) caml_raise_out_of_memory ();
+  char *volgroup;
+  volgroup = strdup (String_val (volgroupv));
+  if (volgroup == NULL) caml_raise_out_of_memory ();
   int mbytes = Int_val (mbytesv);
   int r;
 
@@ -12860,8 +13821,12 @@ guestfs_int_ocaml_lvcreate_free (value gv, value logvolv, value volgroupv, value
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lvcreate_free");
 
-  char *logvol = guestfs_int_safe_strdup (g, String_val (logvolv));
-  char *volgroup = guestfs_int_safe_strdup (g, String_val (volgroupv));
+  char *logvol;
+  logvol = strdup (String_val (logvolv));
+  if (logvol == NULL) caml_raise_out_of_memory ();
+  char *volgroup;
+  volgroup = strdup (String_val (volgroupv));
+  if (volgroup == NULL) caml_raise_out_of_memory ();
   int percent = Int_val (percentv);
   int r;
 
@@ -12894,7 +13859,9 @@ guestfs_int_ocaml_lvm_canonical_lv_name (value gv, value lvnamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lvm_canonical_lv_name");
 
-  char *lvname = guestfs_int_safe_strdup (g, String_val (lvnamev));
+  char *lvname;
+  lvname = strdup (String_val (lvnamev));
+  if (lvname == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -13015,7 +13982,9 @@ guestfs_int_ocaml_lvremove (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lvremove");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -13046,8 +14015,12 @@ guestfs_int_ocaml_lvrename (value gv, value logvolv, value newlogvolv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lvrename");
 
-  char *logvol = guestfs_int_safe_strdup (g, String_val (logvolv));
-  char *newlogvol = guestfs_int_safe_strdup (g, String_val (newlogvolv));
+  char *logvol;
+  logvol = strdup (String_val (logvolv));
+  if (logvol == NULL) caml_raise_out_of_memory ();
+  char *newlogvol;
+  newlogvol = strdup (String_val (newlogvolv));
+  if (newlogvol == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -13079,7 +14052,9 @@ guestfs_int_ocaml_lvresize (value gv, value devicev, value mbytesv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lvresize");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int mbytes = Int_val (mbytesv);
   int r;
 
@@ -13111,7 +14086,9 @@ guestfs_int_ocaml_lvresize_free (value gv, value lvv, value percentv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lvresize_free");
 
-  char *lv = guestfs_int_safe_strdup (g, String_val (lvv));
+  char *lv;
+  lv = strdup (String_val (lvv));
+  if (lv == NULL) caml_raise_out_of_memory ();
   int percent = Int_val (percentv);
   int r;
 
@@ -13205,7 +14182,9 @@ guestfs_int_ocaml_lvuuid (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lvuuid");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -13237,7 +14216,9 @@ guestfs_int_ocaml_lxattrlist (value gv, value pathv, value namesv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("lxattrlist");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char **names = guestfs_int_ocaml_strings_val (g, namesv);
   struct guestfs_xattr_list *r;
 
@@ -13299,7 +14280,9 @@ guestfs_int_ocaml_md_create (value gv, value missingbitmapv, value nrdevicesv, v
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("md_create");
 
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
   char **devices = guestfs_int_ocaml_strings_val (g, devicesv);
   struct guestfs_md_create_argv optargs_s = { .bitmask = 0 };
   struct guestfs_md_create_argv *optargs = &optargs_s;
@@ -13321,7 +14304,8 @@ guestfs_int_ocaml_md_create (value gv, value missingbitmapv, value nrdevicesv, v
   }
   if (levelv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MD_CREATE_LEVEL_BITMASK;
-    optargs_s.level = guestfs_int_safe_strdup (g, String_val (Field (levelv, 0)));
+    optargs_s.level = strdup (String_val (Field (levelv, 0)));
+    if (optargs_s.level == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -13365,7 +14349,9 @@ guestfs_int_ocaml_md_detail (value gv, value mdv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("md_detail");
 
-  char *md = guestfs_int_safe_strdup (g, String_val (mdv));
+  char *md;
+  md = strdup (String_val (mdv));
+  if (md == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -13399,7 +14385,9 @@ guestfs_int_ocaml_md_stat (value gv, value mdv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("md_stat");
 
-  char *md = guestfs_int_safe_strdup (g, String_val (mdv));
+  char *md;
+  md = strdup (String_val (mdv));
+  if (md == NULL) caml_raise_out_of_memory ();
   struct guestfs_mdstat_list *r;
 
   caml_enter_blocking_section ();
@@ -13431,7 +14419,9 @@ guestfs_int_ocaml_md_stop (value gv, value mdv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("md_stop");
 
-  char *md = guestfs_int_safe_strdup (g, String_val (mdv));
+  char *md;
+  md = strdup (String_val (mdv));
+  if (md == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -13462,7 +14452,9 @@ guestfs_int_ocaml_mkdir (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkdir");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -13493,7 +14485,9 @@ guestfs_int_ocaml_mkdir_mode (value gv, value pathv, value modev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkdir_mode");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int mode = Int_val (modev);
   int r;
 
@@ -13525,7 +14519,9 @@ guestfs_int_ocaml_mkdir_p (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkdir_p");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -13556,7 +14552,9 @@ guestfs_int_ocaml_mkdtemp (value gv, value tmplv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkdtemp");
 
-  char *tmpl = guestfs_int_safe_strdup (g, String_val (tmplv));
+  char *tmpl;
+  tmpl = strdup (String_val (tmplv));
+  if (tmpl == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -13595,7 +14593,9 @@ guestfs_int_ocaml_mke2fs (value gv, value blockscountv, value blocksizev, value 
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mke2fs");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_mke2fs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mke2fs_argv *optargs = &optargs_s;
   if (blockscountv != Val_int (0)) {
@@ -13656,31 +14656,38 @@ guestfs_int_ocaml_mke2fs (value gv, value blockscountv, value blocksizev, value 
   }
   if (journaldevicev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK;
-    optargs_s.journaldevice = guestfs_int_safe_strdup (g, String_val (Field (journaldevicev, 0)));
+    optargs_s.journaldevice = strdup (String_val (Field (journaldevicev, 0)));
+    if (optargs_s.journaldevice == NULL) caml_raise_out_of_memory ();
   }
   if (labelv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_LABEL_BITMASK;
-    optargs_s.label = guestfs_int_safe_strdup (g, String_val (Field (labelv, 0)));
+    optargs_s.label = strdup (String_val (Field (labelv, 0)));
+    if (optargs_s.label == NULL) caml_raise_out_of_memory ();
   }
   if (lastmounteddirv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK;
-    optargs_s.lastmounteddir = guestfs_int_safe_strdup (g, String_val (Field (lastmounteddirv, 0)));
+    optargs_s.lastmounteddir = strdup (String_val (Field (lastmounteddirv, 0)));
+    if (optargs_s.lastmounteddir == NULL) caml_raise_out_of_memory ();
   }
   if (creatorosv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_CREATOROS_BITMASK;
-    optargs_s.creatoros = guestfs_int_safe_strdup (g, String_val (Field (creatorosv, 0)));
+    optargs_s.creatoros = strdup (String_val (Field (creatorosv, 0)));
+    if (optargs_s.creatoros == NULL) caml_raise_out_of_memory ();
   }
   if (fstypev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_FSTYPE_BITMASK;
-    optargs_s.fstype = guestfs_int_safe_strdup (g, String_val (Field (fstypev, 0)));
+    optargs_s.fstype = strdup (String_val (Field (fstypev, 0)));
+    if (optargs_s.fstype == NULL) caml_raise_out_of_memory ();
   }
   if (usagetypev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_USAGETYPE_BITMASK;
-    optargs_s.usagetype = guestfs_int_safe_strdup (g, String_val (Field (usagetypev, 0)));
+    optargs_s.usagetype = strdup (String_val (Field (usagetypev, 0)));
+    if (optargs_s.usagetype == NULL) caml_raise_out_of_memory ();
   }
   if (uuidv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_UUID_BITMASK;
-    optargs_s.uuid = guestfs_int_safe_strdup (g, String_val (Field (uuidv, 0)));
+    optargs_s.uuid = strdup (String_val (Field (uuidv, 0)));
+    if (optargs_s.uuid == NULL) caml_raise_out_of_memory ();
   }
   if (forcecreatev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKE2FS_FORCECREATE_BITMASK;
@@ -13803,10 +14810,16 @@ guestfs_int_ocaml_mke2fs_J (value gv, value fstypev, value blocksizev, value dev
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mke2fs_J");
 
-  char *fstype = guestfs_int_safe_strdup (g, String_val (fstypev));
+  char *fstype;
+  fstype = strdup (String_val (fstypev));
+  if (fstype == NULL) caml_raise_out_of_memory ();
   int blocksize = Int_val (blocksizev);
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *journal = guestfs_int_safe_strdup (g, String_val (journalv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *journal;
+  journal = strdup (String_val (journalv));
+  if (journal == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -13839,10 +14852,16 @@ guestfs_int_ocaml_mke2fs_JL (value gv, value fstypev, value blocksizev, value de
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mke2fs_JL");
 
-  char *fstype = guestfs_int_safe_strdup (g, String_val (fstypev));
+  char *fstype;
+  fstype = strdup (String_val (fstypev));
+  if (fstype == NULL) caml_raise_out_of_memory ();
   int blocksize = Int_val (blocksizev);
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *label = guestfs_int_safe_strdup (g, String_val (labelv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *label;
+  label = strdup (String_val (labelv));
+  if (label == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -13875,10 +14894,16 @@ guestfs_int_ocaml_mke2fs_JU (value gv, value fstypev, value blocksizev, value de
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mke2fs_JU");
 
-  char *fstype = guestfs_int_safe_strdup (g, String_val (fstypev));
+  char *fstype;
+  fstype = strdup (String_val (fstypev));
+  if (fstype == NULL) caml_raise_out_of_memory ();
   int blocksize = Int_val (blocksizev);
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *uuid = guestfs_int_safe_strdup (g, String_val (uuidv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *uuid;
+  uuid = strdup (String_val (uuidv));
+  if (uuid == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -13912,7 +14937,9 @@ guestfs_int_ocaml_mke2journal (value gv, value blocksizev, value devicev)
     guestfs_int_ocaml_raise_closed ("mke2journal");
 
   int blocksize = Int_val (blocksizev);
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -13944,8 +14971,12 @@ guestfs_int_ocaml_mke2journal_L (value gv, value blocksizev, value labelv, value
     guestfs_int_ocaml_raise_closed ("mke2journal_L");
 
   int blocksize = Int_val (blocksizev);
-  char *label = guestfs_int_safe_strdup (g, String_val (labelv));
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *label;
+  label = strdup (String_val (labelv));
+  if (label == NULL) caml_raise_out_of_memory ();
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -13978,8 +15009,12 @@ guestfs_int_ocaml_mke2journal_U (value gv, value blocksizev, value uuidv, value 
     guestfs_int_ocaml_raise_closed ("mke2journal_U");
 
   int blocksize = Int_val (blocksizev);
-  char *uuid = guestfs_int_safe_strdup (g, String_val (uuidv));
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *uuid;
+  uuid = strdup (String_val (uuidv));
+  if (uuid == NULL) caml_raise_out_of_memory ();
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14012,7 +15047,9 @@ guestfs_int_ocaml_mkfifo (value gv, value modev, value pathv)
     guestfs_int_ocaml_raise_closed ("mkfifo");
 
   int mode = Int_val (modev);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14044,8 +15081,12 @@ guestfs_int_ocaml_mkfs (value gv, value blocksizev, value featuresv, value inode
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkfs");
 
-  char *fstype = guestfs_int_safe_strdup (g, String_val (fstypev));
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *fstype;
+  fstype = strdup (String_val (fstypev));
+  if (fstype == NULL) caml_raise_out_of_memory ();
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_mkfs_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
   if (blocksizev != Val_int (0)) {
@@ -14054,7 +15095,8 @@ guestfs_int_ocaml_mkfs (value gv, value blocksizev, value featuresv, value inode
   }
   if (featuresv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
-    optargs_s.features = guestfs_int_safe_strdup (g, String_val (Field (featuresv, 0)));
+    optargs_s.features = strdup (String_val (Field (featuresv, 0)));
+    if (optargs_s.features == NULL) caml_raise_out_of_memory ();
   }
   if (inodev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_INODE_BITMASK;
@@ -14066,7 +15108,8 @@ guestfs_int_ocaml_mkfs (value gv, value blocksizev, value featuresv, value inode
   }
   if (labelv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_LABEL_BITMASK;
-    optargs_s.label = guestfs_int_safe_strdup (g, String_val (Field (labelv, 0)));
+    optargs_s.label = strdup (String_val (Field (labelv, 0)));
+    if (optargs_s.label == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -14112,9 +15155,13 @@ guestfs_int_ocaml_mkfs_b (value gv, value fstypev, value blocksizev, value devic
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkfs_b");
 
-  char *fstype = guestfs_int_safe_strdup (g, String_val (fstypev));
+  char *fstype;
+  fstype = strdup (String_val (fstypev));
+  if (fstype == NULL) caml_raise_out_of_memory ();
   int blocksize = Int_val (blocksizev);
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14160,7 +15207,8 @@ guestfs_int_ocaml_mkfs_btrfs (value gv, value allocstartv, value bytecountv, val
   }
   if (datatypev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK;
-    optargs_s.datatype = guestfs_int_safe_strdup (g, String_val (Field (datatypev, 0)));
+    optargs_s.datatype = strdup (String_val (Field (datatypev, 0)));
+    if (optargs_s.datatype == NULL) caml_raise_out_of_memory ();
   }
   if (leafsizev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_LEAFSIZE_BITMASK;
@@ -14168,11 +15216,13 @@ guestfs_int_ocaml_mkfs_btrfs (value gv, value allocstartv, value bytecountv, val
   }
   if (labelv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_LABEL_BITMASK;
-    optargs_s.label = guestfs_int_safe_strdup (g, String_val (Field (labelv, 0)));
+    optargs_s.label = strdup (String_val (Field (labelv, 0)));
+    if (optargs_s.label == NULL) caml_raise_out_of_memory ();
   }
   if (metadatav != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_METADATA_BITMASK;
-    optargs_s.metadata = guestfs_int_safe_strdup (g, String_val (Field (metadatav, 0)));
+    optargs_s.metadata = strdup (String_val (Field (metadatav, 0)));
+    if (optargs_s.metadata == NULL) caml_raise_out_of_memory ();
   }
   if (nodesizev != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK;
@@ -14227,7 +15277,9 @@ guestfs_int_ocaml_mklost_and_found (value gv, value mountpointv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mklost_and_found");
 
-  char *mountpoint = guestfs_int_safe_strdup (g, String_val (mountpointv));
+  char *mountpoint;
+  mountpoint = strdup (String_val (mountpointv));
+  if (mountpoint == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14258,7 +15310,9 @@ guestfs_int_ocaml_mkmountpoint (value gv, value exemptpathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkmountpoint");
 
-  char *exemptpath = guestfs_int_safe_strdup (g, String_val (exemptpathv));
+  char *exemptpath;
+  exemptpath = strdup (String_val (exemptpathv));
+  if (exemptpath == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14292,7 +15346,9 @@ guestfs_int_ocaml_mknod (value gv, value modev, value devmajorv, value devminorv
   int mode = Int_val (modev);
   int devmajor = Int_val (devmajorv);
   int devminor = Int_val (devminorv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14326,7 +15382,9 @@ guestfs_int_ocaml_mknod_b (value gv, value modev, value devmajorv, value devmino
   int mode = Int_val (modev);
   int devmajor = Int_val (devmajorv);
   int devminor = Int_val (devminorv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14360,7 +15418,9 @@ guestfs_int_ocaml_mknod_c (value gv, value modev, value devmajorv, value devmino
   int mode = Int_val (modev);
   int devmajor = Int_val (devmajorv);
   int devminor = Int_val (devminorv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14391,16 +15451,20 @@ guestfs_int_ocaml_mkswap (value gv, value labelv, value uuidv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkswap");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_mkswap_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mkswap_opts_argv *optargs = &optargs_s;
   if (labelv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKSWAP_OPTS_LABEL_BITMASK;
-    optargs_s.label = guestfs_int_safe_strdup (g, String_val (Field (labelv, 0)));
+    optargs_s.label = strdup (String_val (Field (labelv, 0)));
+    if (optargs_s.label == NULL) caml_raise_out_of_memory ();
   }
   if (uuidv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKSWAP_OPTS_UUID_BITMASK;
-    optargs_s.uuid = guestfs_int_safe_strdup (g, String_val (Field (uuidv, 0)));
+    optargs_s.uuid = strdup (String_val (Field (uuidv, 0)));
+    if (optargs_s.uuid == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -14436,8 +15500,12 @@ guestfs_int_ocaml_mkswap_L (value gv, value labelv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkswap_L");
 
-  char *label = guestfs_int_safe_strdup (g, String_val (labelv));
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *label;
+  label = strdup (String_val (labelv));
+  if (label == NULL) caml_raise_out_of_memory ();
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14469,8 +15537,12 @@ guestfs_int_ocaml_mkswap_U (value gv, value uuidv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkswap_U");
 
-  char *uuid = guestfs_int_safe_strdup (g, String_val (uuidv));
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *uuid;
+  uuid = strdup (String_val (uuidv));
+  if (uuid == NULL) caml_raise_out_of_memory ();
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14502,7 +15574,9 @@ guestfs_int_ocaml_mkswap_file (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mkswap_file");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14533,12 +15607,15 @@ guestfs_int_ocaml_mktemp (value gv, value suffixv, value tmplv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mktemp");
 
-  char *tmpl = guestfs_int_safe_strdup (g, String_val (tmplv));
+  char *tmpl;
+  tmpl = strdup (String_val (tmplv));
+  if (tmpl == NULL) caml_raise_out_of_memory ();
   struct guestfs_mktemp_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mktemp_argv *optargs = &optargs_s;
   if (suffixv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MKTEMP_SUFFIX_BITMASK;
-    optargs_s.suffix = guestfs_int_safe_strdup (g, String_val (Field (suffixv, 0)));
+    optargs_s.suffix = strdup (String_val (Field (suffixv, 0)));
+    if (optargs_s.suffix == NULL) caml_raise_out_of_memory ();
   }
   char *r;
 
@@ -14573,7 +15650,9 @@ guestfs_int_ocaml_modprobe (value gv, value modulenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("modprobe");
 
-  char *modulename = guestfs_int_safe_strdup (g, String_val (modulenamev));
+  char *modulename;
+  modulename = strdup (String_val (modulenamev));
+  if (modulename == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14604,8 +15683,12 @@ guestfs_int_ocaml_mount (value gv, value mountablev, value mountpointv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mount");
 
-  char *mountable = guestfs_int_safe_strdup (g, String_val (mountablev));
-  char *mountpoint = guestfs_int_safe_strdup (g, String_val (mountpointv));
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
+  char *mountpoint;
+  mountpoint = strdup (String_val (mountpointv));
+  if (mountpoint == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14637,13 +15720,18 @@ guestfs_int_ocaml_mount_9p (value gv, value optionsv, value mounttagv, value mou
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mount_9p");
 
-  char *mounttag = guestfs_int_safe_strdup (g, String_val (mounttagv));
-  char *mountpoint = guestfs_int_safe_strdup (g, String_val (mountpointv));
+  char *mounttag;
+  mounttag = strdup (String_val (mounttagv));
+  if (mounttag == NULL) caml_raise_out_of_memory ();
+  char *mountpoint;
+  mountpoint = strdup (String_val (mountpointv));
+  if (mountpoint == NULL) caml_raise_out_of_memory ();
   struct guestfs_mount_9p_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mount_9p_argv *optargs = &optargs_s;
   if (optionsv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MOUNT_9P_OPTIONS_BITMASK;
-    optargs_s.options = guestfs_int_safe_strdup (g, String_val (Field (optionsv, 0)));
+    optargs_s.options = strdup (String_val (Field (optionsv, 0)));
+    if (optargs_s.options == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -14679,7 +15767,9 @@ guestfs_int_ocaml_mount_local (value gv, value readonlyv, value optionsv, value 
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mount_local");
 
-  char *localmountpoint = guestfs_int_safe_strdup (g, String_val (localmountpointv));
+  char *localmountpoint;
+  localmountpoint = strdup (String_val (localmountpointv));
+  if (localmountpoint == NULL) caml_raise_out_of_memory ();
   struct guestfs_mount_local_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mount_local_argv *optargs = &optargs_s;
   if (readonlyv != Val_int (0)) {
@@ -14688,7 +15778,8 @@ guestfs_int_ocaml_mount_local (value gv, value readonlyv, value optionsv, value 
   }
   if (optionsv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_OPTIONS_BITMASK;
-    optargs_s.options = guestfs_int_safe_strdup (g, String_val (Field (optionsv, 0)));
+    optargs_s.options = strdup (String_val (Field (optionsv, 0)));
+    if (optargs_s.options == NULL) caml_raise_out_of_memory ();
   }
   if (cachetimeoutv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_CACHETIMEOUT_BITMASK;
@@ -14768,8 +15859,12 @@ guestfs_int_ocaml_mount_loop (value gv, value filev, value mountpointv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mount_loop");
 
-  char *file = guestfs_int_safe_strdup (g, String_val (filev));
-  char *mountpoint = guestfs_int_safe_strdup (g, String_val (mountpointv));
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
+  char *mountpoint;
+  mountpoint = strdup (String_val (mountpointv));
+  if (mountpoint == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14801,9 +15896,15 @@ guestfs_int_ocaml_mount_options (value gv, value optionsv, value mountablev, val
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mount_options");
 
-  char *options = guestfs_int_safe_strdup (g, String_val (optionsv));
-  char *mountable = guestfs_int_safe_strdup (g, String_val (mountablev));
-  char *mountpoint = guestfs_int_safe_strdup (g, String_val (mountpointv));
+  char *options;
+  options = strdup (String_val (optionsv));
+  if (options == NULL) caml_raise_out_of_memory ();
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
+  char *mountpoint;
+  mountpoint = strdup (String_val (mountpointv));
+  if (mountpoint == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14836,8 +15937,12 @@ guestfs_int_ocaml_mount_ro (value gv, value mountablev, value mountpointv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mount_ro");
 
-  char *mountable = guestfs_int_safe_strdup (g, String_val (mountablev));
-  char *mountpoint = guestfs_int_safe_strdup (g, String_val (mountpointv));
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
+  char *mountpoint;
+  mountpoint = strdup (String_val (mountpointv));
+  if (mountpoint == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14869,10 +15974,18 @@ guestfs_int_ocaml_mount_vfs (value gv, value optionsv, value vfstypev, value mou
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mount_vfs");
 
-  char *options = guestfs_int_safe_strdup (g, String_val (optionsv));
-  char *vfstype = guestfs_int_safe_strdup (g, String_val (vfstypev));
-  char *mountable = guestfs_int_safe_strdup (g, String_val (mountablev));
-  char *mountpoint = guestfs_int_safe_strdup (g, String_val (mountpointv));
+  char *options;
+  options = strdup (String_val (optionsv));
+  if (options == NULL) caml_raise_out_of_memory ();
+  char *vfstype;
+  vfstype = strdup (String_val (vfstypev));
+  if (vfstype == NULL) caml_raise_out_of_memory ();
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
+  char *mountpoint;
+  mountpoint = strdup (String_val (mountpointv));
+  if (mountpoint == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -14886,6 +15999,74 @@ guestfs_int_ocaml_mount_vfs (value gv, value optionsv, value vfstypev, value mou
     guestfs_int_ocaml_raise_error (g, "mount_vfs");
 
   rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mountable_device : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_mountable_device (value gv, value mountablev);
+
+value
+guestfs_int_ocaml_mountable_device (value gv, value mountablev)
+{
+  CAMLparam2 (gv, mountablev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("mountable_device");
+
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mountable_device (g, mountable);
+  caml_leave_blocking_section ();
+  free (mountable);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "mountable_device");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mountable_subvolume : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_mountable_subvolume (value gv, value mountablev);
+
+value
+guestfs_int_ocaml_mountable_subvolume (value gv, value mountablev)
+{
+  CAMLparam2 (gv, mountablev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("mountable_subvolume");
+
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mountable_subvolume (g, mountable);
+  caml_leave_blocking_section ();
+  free (mountable);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "mountable_subvolume");
+
+  rv = caml_copy_string (r);
+  free (r);
   CAMLreturn (rv);
 }
 
@@ -14970,8 +16151,12 @@ guestfs_int_ocaml_mv (value gv, value srcv, value destv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("mv");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -15033,7 +16218,9 @@ guestfs_int_ocaml_ntfs_3g_probe (value gv, value rwv, value devicev)
     guestfs_int_ocaml_raise_closed ("ntfs_3g_probe");
 
   int rw = Bool_val (rwv);
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -15044,6 +16231,44 @@ guestfs_int_ocaml_ntfs_3g_probe (value gv, value rwv, value devicev)
     guestfs_int_ocaml_raise_error (g, "ntfs_3g_probe");
 
   rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val ntfscat_i : t -> string -> int64 -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_ntfscat_i (value gv, value devicev, value inodev, value filenamev);
+
+value
+guestfs_int_ocaml_ntfscat_i (value gv, value devicev, value inodev, value filenamev)
+{
+  CAMLparam4 (gv, devicev, inodev, filenamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("ntfscat_i");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  int64_t inode = Int64_val (inodev);
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_ntfscat_i (g, device, inode, filename);
+  caml_leave_blocking_section ();
+  free (device);
+  free (filename);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "ntfscat_i");
+
+  rv = Val_unit;
   CAMLreturn (rv);
 }
 
@@ -15064,8 +16289,12 @@ guestfs_int_ocaml_ntfsclone_in (value gv, value backupfilev, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ntfsclone_in");
 
-  char *backupfile = guestfs_int_safe_strdup (g, String_val (backupfilev));
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *backupfile;
+  backupfile = strdup (String_val (backupfilev));
+  if (backupfile == NULL) caml_raise_out_of_memory ();
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -15098,8 +16327,12 @@ guestfs_int_ocaml_ntfsclone_out (value gv, value metadataonlyv, value rescuev, v
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ntfsclone_out");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *backupfile = guestfs_int_safe_strdup (g, String_val (backupfilev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *backupfile;
+  backupfile = strdup (String_val (backupfilev));
+  if (backupfile == NULL) caml_raise_out_of_memory ();
   struct guestfs_ntfsclone_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_ntfsclone_out_argv *optargs = &optargs_s;
   if (metadataonlyv != Val_int (0)) {
@@ -15162,7 +16395,9 @@ guestfs_int_ocaml_ntfsfix (value gv, value clearbadsectorsv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ntfsfix");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_ntfsfix_argv optargs_s = { .bitmask = 0 };
   struct guestfs_ntfsfix_argv *optargs = &optargs_s;
   if (clearbadsectorsv != Val_int (0)) {
@@ -15199,7 +16434,9 @@ guestfs_int_ocaml_ntfsresize (value gv, value sizev, value forcev, value devicev
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ntfsresize");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_ntfsresize_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
   if (sizev != Val_int (0)) {
@@ -15240,7 +16477,9 @@ guestfs_int_ocaml_ntfsresize_size (value gv, value devicev, value sizev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("ntfsresize_size");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int64_t size = Int64_val (sizev);
   int r;
 
@@ -15328,8 +16567,12 @@ guestfs_int_ocaml_part_add (value gv, value devicev, value prlogexv, value start
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_add");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *prlogex = guestfs_int_safe_strdup (g, String_val (prlogexv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *prlogex;
+  prlogex = strdup (String_val (prlogexv));
+  if (prlogex == NULL) caml_raise_out_of_memory ();
   int64_t startsect = Int64_val (startsectv);
   int64_t endsect = Int64_val (endsectv);
   int r;
@@ -15363,7 +16606,9 @@ guestfs_int_ocaml_part_del (value gv, value devicev, value partnumv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_del");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
   int r;
 
@@ -15395,8 +16640,12 @@ guestfs_int_ocaml_part_disk (value gv, value devicev, value parttypev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_disk");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *parttype = guestfs_int_safe_strdup (g, String_val (parttypev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *parttype;
+  parttype = strdup (String_val (parttypev));
+  if (parttype == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -15406,6 +16655,39 @@ guestfs_int_ocaml_part_disk (value gv, value devicev, value parttypev)
   free (parttype);
   if (r == -1)
     guestfs_int_ocaml_raise_error (g, "part_disk");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_expand_gpt : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_part_expand_gpt (value gv, value devicev);
+
+value
+guestfs_int_ocaml_part_expand_gpt (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("part_expand_gpt");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_expand_gpt (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "part_expand_gpt");
 
   rv = Val_unit;
   CAMLreturn (rv);
@@ -15428,7 +16710,9 @@ guestfs_int_ocaml_part_get_bootable (value gv, value devicev, value partnumv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_get_bootable");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
   int r;
 
@@ -15440,6 +16724,40 @@ guestfs_int_ocaml_part_get_bootable (value gv, value devicev, value partnumv)
     guestfs_int_ocaml_raise_error (g, "part_get_bootable");
 
   rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_get_disk_guid : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_part_get_disk_guid (value gv, value devicev);
+
+value
+guestfs_int_ocaml_part_get_disk_guid (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("part_get_disk_guid");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_get_disk_guid (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "part_get_disk_guid");
+
+  rv = caml_copy_string (r);
+  free (r);
   CAMLreturn (rv);
 }
 
@@ -15460,7 +16778,9 @@ guestfs_int_ocaml_part_get_gpt_guid (value gv, value devicev, value partnumv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_get_gpt_guid");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
   char *r;
 
@@ -15493,7 +16813,9 @@ guestfs_int_ocaml_part_get_gpt_type (value gv, value devicev, value partnumv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_get_gpt_type");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
   char *r;
 
@@ -15526,7 +16848,9 @@ guestfs_int_ocaml_part_get_mbr_id (value gv, value devicev, value partnumv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_get_mbr_id");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
   int r;
 
@@ -15558,7 +16882,9 @@ guestfs_int_ocaml_part_get_mbr_part_type (value gv, value devicev, value partnum
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_get_mbr_part_type");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
   char *r;
 
@@ -15591,7 +16917,9 @@ guestfs_int_ocaml_part_get_name (value gv, value devicev, value partnumv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_get_name");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
   char *r;
 
@@ -15624,7 +16952,9 @@ guestfs_int_ocaml_part_get_parttype (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_get_parttype");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -15656,8 +16986,12 @@ guestfs_int_ocaml_part_init (value gv, value devicev, value parttypev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_init");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *parttype = guestfs_int_safe_strdup (g, String_val (parttypev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *parttype;
+  parttype = strdup (String_val (parttypev));
+  if (parttype == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -15689,7 +17023,9 @@ guestfs_int_ocaml_part_list (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_list");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_partition_list *r;
 
   caml_enter_blocking_section ();
@@ -15721,7 +17057,9 @@ guestfs_int_ocaml_part_set_bootable (value gv, value devicev, value partnumv, va
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_set_bootable");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
   int bootable = Bool_val (bootablev);
   int r;
@@ -15732,6 +17070,76 @@ guestfs_int_ocaml_part_set_bootable (value gv, value devicev, value partnumv, va
   free (device);
   if (r == -1)
     guestfs_int_ocaml_raise_error (g, "part_set_bootable");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_set_disk_guid : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_part_set_disk_guid (value gv, value devicev, value guidv);
+
+value
+guestfs_int_ocaml_part_set_disk_guid (value gv, value devicev, value guidv)
+{
+  CAMLparam3 (gv, devicev, guidv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("part_set_disk_guid");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *guid;
+  guid = strdup (String_val (guidv));
+  if (guid == NULL) caml_raise_out_of_memory ();
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_set_disk_guid (g, device, guid);
+  caml_leave_blocking_section ();
+  free (device);
+  free (guid);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "part_set_disk_guid");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_set_disk_guid_random : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_part_set_disk_guid_random (value gv, value devicev);
+
+value
+guestfs_int_ocaml_part_set_disk_guid_random (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("part_set_disk_guid_random");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_set_disk_guid_random (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "part_set_disk_guid_random");
 
   rv = Val_unit;
   CAMLreturn (rv);
@@ -15754,9 +17162,13 @@ guestfs_int_ocaml_part_set_gpt_guid (value gv, value devicev, value partnumv, va
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_set_gpt_guid");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
-  char *guid = guestfs_int_safe_strdup (g, String_val (guidv));
+  char *guid;
+  guid = strdup (String_val (guidv));
+  if (guid == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -15788,9 +17200,13 @@ guestfs_int_ocaml_part_set_gpt_type (value gv, value devicev, value partnumv, va
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_set_gpt_type");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
-  char *guid = guestfs_int_safe_strdup (g, String_val (guidv));
+  char *guid;
+  guid = strdup (String_val (guidv));
+  if (guid == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -15822,7 +17238,9 @@ guestfs_int_ocaml_part_set_mbr_id (value gv, value devicev, value partnumv, valu
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_set_mbr_id");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
   int idbyte = Int_val (idbytev);
   int r;
@@ -15855,9 +17273,13 @@ guestfs_int_ocaml_part_set_name (value gv, value devicev, value partnumv, value 
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_set_name");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -15889,7 +17311,9 @@ guestfs_int_ocaml_part_to_dev (value gv, value partitionv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_to_dev");
 
-  char *partition = guestfs_int_safe_strdup (g, String_val (partitionv));
+  char *partition;
+  partition = strdup (String_val (partitionv));
+  if (partition == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -15921,7 +17345,9 @@ guestfs_int_ocaml_part_to_partnum (value gv, value partitionv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("part_to_partnum");
 
-  char *partition = guestfs_int_safe_strdup (g, String_val (partitionv));
+  char *partition;
+  partition = strdup (String_val (partitionv));
+  if (partition == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -15981,7 +17407,9 @@ guestfs_int_ocaml_pread (value gv, value pathv, value countv, value offsetv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("pread");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int count = Int_val (countv);
   int64_t offset = Int64_val (offsetv);
   char *r;
@@ -16017,7 +17445,9 @@ guestfs_int_ocaml_pread_device (value gv, value devicev, value countv, value off
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("pread_device");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int count = Int_val (countv);
   int64_t offset = Int64_val (offsetv);
   char *r;
@@ -16053,7 +17483,9 @@ guestfs_int_ocaml_pvchange_uuid (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("pvchange_uuid");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16113,7 +17545,9 @@ guestfs_int_ocaml_pvcreate (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("pvcreate");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16144,7 +17578,9 @@ guestfs_int_ocaml_pvremove (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("pvremove");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16175,7 +17611,9 @@ guestfs_int_ocaml_pvresize (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("pvresize");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16206,7 +17644,9 @@ guestfs_int_ocaml_pvresize_size (value gv, value devicev, value sizev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("pvresize_size");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int64_t size = Int64_val (sizev);
   int r;
 
@@ -16300,7 +17740,9 @@ guestfs_int_ocaml_pvuuid (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("pvuuid");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -16332,9 +17774,14 @@ guestfs_int_ocaml_pwrite (value gv, value pathv, value contentv, value offsetv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("pwrite");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t content_size = caml_string_length (contentv);
-  char *content = guestfs_int_safe_memdup (g, String_val (contentv), content_size);
+  char *content;
+  content = malloc (content_size);
+  if (content == NULL) caml_raise_out_of_memory ();
+  memcpy (content, String_val (contentv), content_size);
   int64_t offset = Int64_val (offsetv);
   int r;
 
@@ -16367,9 +17814,14 @@ guestfs_int_ocaml_pwrite_device (value gv, value devicev, value contentv, value 
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("pwrite_device");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   size_t content_size = caml_string_length (contentv);
-  char *content = guestfs_int_safe_memdup (g, String_val (contentv), content_size);
+  char *content;
+  content = malloc (content_size);
+  if (content == NULL) caml_raise_out_of_memory ();
+  memcpy (content, String_val (contentv), content_size);
   int64_t offset = Int64_val (offsetv);
   int r;
 
@@ -16402,7 +17854,9 @@ guestfs_int_ocaml_read_file (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("read_file");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char *r;
   size_t size;
 
@@ -16436,7 +17890,9 @@ guestfs_int_ocaml_read_lines (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("read_lines");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -16470,7 +17926,9 @@ guestfs_int_ocaml_readdir (value gv, value dirv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("readdir");
 
-  char *dir = guestfs_int_safe_strdup (g, String_val (dirv));
+  char *dir;
+  dir = strdup (String_val (dirv));
+  if (dir == NULL) caml_raise_out_of_memory ();
   struct guestfs_dirent_list *r;
 
   caml_enter_blocking_section ();
@@ -16502,7 +17960,9 @@ guestfs_int_ocaml_readlink (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("readlink");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -16534,7 +17994,9 @@ guestfs_int_ocaml_readlinklist (value gv, value pathv, value namesv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("readlinklist");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char **names = guestfs_int_ocaml_strings_val (g, namesv);
   size_t i;
   char **r;
@@ -16570,7 +18032,9 @@ guestfs_int_ocaml_realpath (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("realpath");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -16602,7 +18066,9 @@ guestfs_int_ocaml_remount (value gv, value rwv, value mountpointv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("remount");
 
-  char *mountpoint = guestfs_int_safe_strdup (g, String_val (mountpointv));
+  char *mountpoint;
+  mountpoint = strdup (String_val (mountpointv));
+  if (mountpoint == NULL) caml_raise_out_of_memory ();
   struct guestfs_remount_argv optargs_s = { .bitmask = 0 };
   struct guestfs_remount_argv *optargs = &optargs_s;
   if (rwv != Val_int (0)) {
@@ -16639,7 +18105,9 @@ guestfs_int_ocaml_remove_drive (value gv, value labelv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("remove_drive");
 
-  char *label = guestfs_int_safe_strdup (g, String_val (labelv));
+  char *label;
+  label = strdup (String_val (labelv));
+  if (label == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_remove_drive (g, label);
@@ -16668,8 +18136,12 @@ guestfs_int_ocaml_removexattr (value gv, value xattrv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("removexattr");
 
-  char *xattr = guestfs_int_safe_strdup (g, String_val (xattrv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *xattr;
+  xattr = strdup (String_val (xattrv));
+  if (xattr == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16701,8 +18173,12 @@ guestfs_int_ocaml_rename (value gv, value oldpathv, value newpathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("rename");
 
-  char *oldpath = guestfs_int_safe_strdup (g, String_val (oldpathv));
-  char *newpath = guestfs_int_safe_strdup (g, String_val (newpathv));
+  char *oldpath;
+  oldpath = strdup (String_val (oldpathv));
+  if (oldpath == NULL) caml_raise_out_of_memory ();
+  char *newpath;
+  newpath = strdup (String_val (newpathv));
+  if (newpath == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16734,7 +18210,9 @@ guestfs_int_ocaml_resize2fs (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("resize2fs");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16765,7 +18243,9 @@ guestfs_int_ocaml_resize2fs_M (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("resize2fs_M");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16796,7 +18276,9 @@ guestfs_int_ocaml_resize2fs_size (value gv, value devicev, value sizev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("resize2fs_size");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int64_t size = Int64_val (sizev);
   int r;
 
@@ -16828,7 +18310,9 @@ guestfs_int_ocaml_rm (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("rm");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16859,7 +18343,9 @@ guestfs_int_ocaml_rm_f (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("rm_f");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16890,7 +18376,9 @@ guestfs_int_ocaml_rm_rf (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("rm_rf");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16921,7 +18409,9 @@ guestfs_int_ocaml_rmdir (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("rmdir");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16952,7 +18442,9 @@ guestfs_int_ocaml_rmmountpoint (value gv, value exemptpathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("rmmountpoint");
 
-  char *exemptpath = guestfs_int_safe_strdup (g, String_val (exemptpathv));
+  char *exemptpath;
+  exemptpath = strdup (String_val (exemptpathv));
+  if (exemptpath == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -16983,8 +18475,12 @@ guestfs_int_ocaml_rsync (value gv, value archivev, value deletedestv, value srcv
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("rsync");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   struct guestfs_rsync_argv optargs_s = { .bitmask = 0 };
   struct guestfs_rsync_argv *optargs = &optargs_s;
   if (archivev != Val_int (0)) {
@@ -17026,8 +18522,12 @@ guestfs_int_ocaml_rsync_in (value gv, value archivev, value deletedestv, value r
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("rsync_in");
 
-  char *remote = guestfs_int_safe_strdup (g, String_val (remotev));
-  char *dest = guestfs_int_safe_strdup (g, String_val (destv));
+  char *remote;
+  remote = strdup (String_val (remotev));
+  if (remote == NULL) caml_raise_out_of_memory ();
+  char *dest;
+  dest = strdup (String_val (destv));
+  if (dest == NULL) caml_raise_out_of_memory ();
   struct guestfs_rsync_in_argv optargs_s = { .bitmask = 0 };
   struct guestfs_rsync_in_argv *optargs = &optargs_s;
   if (archivev != Val_int (0)) {
@@ -17069,8 +18569,12 @@ guestfs_int_ocaml_rsync_out (value gv, value archivev, value deletedestv, value 
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("rsync_out");
 
-  char *src = guestfs_int_safe_strdup (g, String_val (srcv));
-  char *remote = guestfs_int_safe_strdup (g, String_val (remotev));
+  char *src;
+  src = strdup (String_val (srcv));
+  if (src == NULL) caml_raise_out_of_memory ();
+  char *remote;
+  remote = strdup (String_val (remotev));
+  if (remote == NULL) caml_raise_out_of_memory ();
   struct guestfs_rsync_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_rsync_out_argv *optargs = &optargs_s;
   if (archivev != Val_int (0)) {
@@ -17112,7 +18616,9 @@ guestfs_int_ocaml_scrub_device (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("scrub_device");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -17143,7 +18649,9 @@ guestfs_int_ocaml_scrub_file (value gv, value filev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("scrub_file");
 
-  char *file = guestfs_int_safe_strdup (g, String_val (filev));
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -17174,7 +18682,9 @@ guestfs_int_ocaml_scrub_freespace (value gv, value dirv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("scrub_freespace");
 
-  char *dir = guestfs_int_safe_strdup (g, String_val (dirv));
+  char *dir;
+  dir = strdup (String_val (dirv));
+  if (dir == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -17183,6 +18693,49 @@ guestfs_int_ocaml_scrub_freespace (value gv, value dirv)
   free (dir);
   if (r == -1)
     guestfs_int_ocaml_raise_error (g, "scrub_freespace");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val selinux_relabel : t -> ?force:bool -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_selinux_relabel (value gv, value forcev, value specfilev, value pathv);
+
+value
+guestfs_int_ocaml_selinux_relabel (value gv, value forcev, value specfilev, value pathv)
+{
+  CAMLparam4 (gv, forcev, specfilev, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("selinux_relabel");
+
+  char *specfile;
+  specfile = strdup (String_val (specfilev));
+  if (specfile == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
+  struct guestfs_selinux_relabel_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_selinux_relabel_argv *optargs = &optargs_s;
+  if (forcev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_SELINUX_RELABEL_FORCE_BITMASK;
+    optargs_s.force = Bool_val (Field (forcev, 0));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_selinux_relabel_argv (g, specfile, path, optargs);
+  caml_leave_blocking_section ();
+  free (specfile);
+  free (path);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "selinux_relabel");
 
   rv = Val_unit;
   CAMLreturn (rv);
@@ -17205,9 +18758,13 @@ guestfs_int_ocaml_set_append (value gv, value appendv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_append");
 
-  char *append =
-    appendv != Val_int (0) ?
-      guestfs_int_safe_strdup (g, String_val (Field (appendv, 0))) : NULL;
+  char *append;
+  if (appendv == Val_int (0))
+    append = NULL;
+  else {
+    append = strdup (String_val (Field (appendv, 0)));
+    if (append == NULL) caml_raise_out_of_memory ();
+  }
   int r;
 
   r = guestfs_set_append (g, append);
@@ -17236,7 +18793,9 @@ guestfs_int_ocaml_set_attach_method (value gv, value backendv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_attach_method");
 
-  char *backend = guestfs_int_safe_strdup (g, String_val (backendv));
+  char *backend;
+  backend = strdup (String_val (backendv));
+  if (backend == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_set_attach_method (g, backend);
@@ -17293,7 +18852,9 @@ guestfs_int_ocaml_set_backend (value gv, value backendv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_backend");
 
-  char *backend = guestfs_int_safe_strdup (g, String_val (backendv));
+  char *backend;
+  backend = strdup (String_val (backendv));
+  if (backend == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_set_backend (g, backend);
@@ -17322,8 +18883,12 @@ guestfs_int_ocaml_set_backend_setting (value gv, value namev, value valv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_backend_setting");
 
-  char *name = guestfs_int_safe_strdup (g, String_val (namev));
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *name;
+  name = strdup (String_val (namev));
+  if (name == NULL) caml_raise_out_of_memory ();
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_set_backend_setting (g, name, val);
@@ -17382,9 +18947,13 @@ guestfs_int_ocaml_set_cachedir (value gv, value cachedirv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_cachedir");
 
-  char *cachedir =
-    cachedirv != Val_int (0) ?
-      guestfs_int_safe_strdup (g, String_val (Field (cachedirv, 0))) : NULL;
+  char *cachedir;
+  if (cachedirv == Val_int (0))
+    cachedir = NULL;
+  else {
+    cachedir = strdup (String_val (Field (cachedirv, 0)));
+    if (cachedir == NULL) caml_raise_out_of_memory ();
+  }
   int r;
 
   r = guestfs_set_cachedir (g, cachedir);
@@ -17441,8 +19010,12 @@ guestfs_int_ocaml_set_e2attrs (value gv, value clearv, value filev, value attrsv
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_e2attrs");
 
-  char *file = guestfs_int_safe_strdup (g, String_val (filev));
-  char *attrs = guestfs_int_safe_strdup (g, String_val (attrsv));
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
+  char *attrs;
+  attrs = strdup (String_val (attrsv));
+  if (attrs == NULL) caml_raise_out_of_memory ();
   struct guestfs_set_e2attrs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_set_e2attrs_argv *optargs = &optargs_s;
   if (clearv != Val_int (0)) {
@@ -17480,7 +19053,9 @@ guestfs_int_ocaml_set_e2generation (value gv, value filev, value generationv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_e2generation");
 
-  char *file = guestfs_int_safe_strdup (g, String_val (filev));
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
   int64_t generation = Int64_val (generationv);
   int r;
 
@@ -17512,8 +19087,12 @@ guestfs_int_ocaml_set_e2label (value gv, value devicev, value labelv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_e2label");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *label = guestfs_int_safe_strdup (g, String_val (labelv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *label;
+  label = strdup (String_val (labelv));
+  if (label == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -17545,8 +19124,12 @@ guestfs_int_ocaml_set_e2uuid (value gv, value devicev, value uuidv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_e2uuid");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *uuid = guestfs_int_safe_strdup (g, String_val (uuidv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *uuid;
+  uuid = strdup (String_val (uuidv));
+  if (uuid == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -17578,7 +19161,9 @@ guestfs_int_ocaml_set_hv (value gv, value hvv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_hv");
 
-  char *hv = guestfs_int_safe_strdup (g, String_val (hvv));
+  char *hv;
+  hv = strdup (String_val (hvv));
+  if (hv == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_set_hv (g, hv);
@@ -17607,7 +19192,9 @@ guestfs_int_ocaml_set_identifier (value gv, value identifierv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_identifier");
 
-  char *identifier = guestfs_int_safe_strdup (g, String_val (identifierv));
+  char *identifier;
+  identifier = strdup (String_val (identifierv));
+  if (identifier == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_set_identifier (g, identifier);
@@ -17636,8 +19223,12 @@ guestfs_int_ocaml_set_label (value gv, value mountablev, value labelv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_label");
 
-  char *mountable = guestfs_int_safe_strdup (g, String_val (mountablev));
-  char *label = guestfs_int_safe_strdup (g, String_val (labelv));
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
+  char *label;
+  label = strdup (String_val (labelv));
+  if (label == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -17671,7 +19262,10 @@ guestfs_int_ocaml_set_libvirt_requested_credential (value gv, value indexv, valu
 
   int index = Int_val (indexv);
   size_t cred_size = caml_string_length (credv);
-  char *cred = guestfs_int_safe_memdup (g, String_val (credv), cred_size);
+  char *cred;
+  cred = malloc (cred_size);
+  if (cred == NULL) caml_raise_out_of_memory ();
+  memcpy (cred, String_val (credv), cred_size);
   int r;
 
   r = guestfs_set_libvirt_requested_credential (g, index, cred, cred_size);
@@ -17785,9 +19379,13 @@ guestfs_int_ocaml_set_path (value gv, value searchpathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_path");
 
-  char *searchpath =
-    searchpathv != Val_int (0) ?
-      guestfs_int_safe_strdup (g, String_val (Field (searchpathv, 0))) : NULL;
+  char *searchpath;
+  if (searchpathv == Val_int (0))
+    searchpath = NULL;
+  else {
+    searchpath = strdup (String_val (Field (searchpathv, 0)));
+    if (searchpath == NULL) caml_raise_out_of_memory ();
+  }
   int r;
 
   r = guestfs_set_path (g, searchpath);
@@ -17844,7 +19442,9 @@ guestfs_int_ocaml_set_program (value gv, value programv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_program");
 
-  char *program = guestfs_int_safe_strdup (g, String_val (programv));
+  char *program;
+  program = strdup (String_val (programv));
+  if (program == NULL) caml_raise_out_of_memory ();
   int r;
 
   r = guestfs_set_program (g, program);
@@ -17873,9 +19473,13 @@ guestfs_int_ocaml_set_qemu (value gv, value hvv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_qemu");
 
-  char *hv =
-    hvv != Val_int (0) ?
-      guestfs_int_safe_strdup (g, String_val (Field (hvv, 0))) : NULL;
+  char *hv;
+  if (hvv == Val_int (0))
+    hv = NULL;
+  else {
+    hv = strdup (String_val (Field (hvv, 0)));
+    if (hv == NULL) caml_raise_out_of_memory ();
+  }
   int r;
 
   r = guestfs_set_qemu (g, hv);
@@ -17988,9 +19592,13 @@ guestfs_int_ocaml_set_tmpdir (value gv, value tmpdirv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_tmpdir");
 
-  char *tmpdir =
-    tmpdirv != Val_int (0) ?
-      guestfs_int_safe_strdup (g, String_val (Field (tmpdirv, 0))) : NULL;
+  char *tmpdir;
+  if (tmpdirv == Val_int (0))
+    tmpdir = NULL;
+  else {
+    tmpdir = strdup (String_val (Field (tmpdirv, 0)));
+    if (tmpdir == NULL) caml_raise_out_of_memory ();
+  }
   int r;
 
   r = guestfs_set_tmpdir (g, tmpdir);
@@ -18047,8 +19655,12 @@ guestfs_int_ocaml_set_uuid (value gv, value devicev, value uuidv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_uuid");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
-  char *uuid = guestfs_int_safe_strdup (g, String_val (uuidv));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  char *uuid;
+  uuid = strdup (String_val (uuidv));
+  if (uuid == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18080,7 +19692,9 @@ guestfs_int_ocaml_set_uuid_random (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("set_uuid_random");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18139,7 +19753,9 @@ guestfs_int_ocaml_setcon (value gv, value contextv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("setcon");
 
-  char *context = guestfs_int_safe_strdup (g, String_val (contextv));
+  char *context;
+  context = strdup (String_val (contextv));
+  if (context == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18170,10 +19786,16 @@ guestfs_int_ocaml_setxattr (value gv, value xattrv, value valv, value vallenv, v
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("setxattr");
 
-  char *xattr = guestfs_int_safe_strdup (g, String_val (xattrv));
-  char *val = guestfs_int_safe_strdup (g, String_val (valv));
+  char *xattr;
+  xattr = strdup (String_val (xattrv));
+  if (xattr == NULL) caml_raise_out_of_memory ();
+  char *val;
+  val = strdup (String_val (valv));
+  if (val == NULL) caml_raise_out_of_memory ();
   int vallen = Int_val (vallenv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18207,7 +19829,9 @@ guestfs_int_ocaml_sfdisk (value gv, value devicev, value cylsv, value headsv, va
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("sfdisk");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int cyls = Int_val (cylsv);
   int heads = Int_val (headsv);
   int sectors = Int_val (sectorsv);
@@ -18252,7 +19876,9 @@ guestfs_int_ocaml_sfdiskM (value gv, value devicev, value linesv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("sfdiskM");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char **lines = guestfs_int_ocaml_strings_val (g, linesv);
   int r;
 
@@ -18286,12 +19912,16 @@ guestfs_int_ocaml_sfdisk_N (value gv, value devicev, value partnumv, value cylsv
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("sfdisk_N");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int partnum = Int_val (partnumv);
   int cyls = Int_val (cylsv);
   int heads = Int_val (headsv);
   int sectors = Int_val (sectorsv);
-  char *line = guestfs_int_safe_strdup (g, String_val (linev));
+  char *line;
+  line = strdup (String_val (linev));
+  if (line == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18332,7 +19962,9 @@ guestfs_int_ocaml_sfdisk_disk_geometry (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("sfdisk_disk_geometry");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -18364,7 +19996,9 @@ guestfs_int_ocaml_sfdisk_kernel_geometry (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("sfdisk_kernel_geometry");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -18396,7 +20030,9 @@ guestfs_int_ocaml_sfdisk_l (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("sfdisk_l");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -18428,7 +20064,9 @@ guestfs_int_ocaml_sh (value gv, value commandv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("sh");
 
-  char *command = guestfs_int_safe_strdup (g, String_val (commandv));
+  char *command;
+  command = strdup (String_val (commandv));
+  if (command == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -18460,7 +20098,9 @@ guestfs_int_ocaml_sh_lines (value gv, value commandv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("sh_lines");
 
-  char *command = guestfs_int_safe_strdup (g, String_val (commandv));
+  char *command;
+  command = strdup (String_val (commandv));
+  if (command == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -18553,7 +20193,9 @@ guestfs_int_ocaml_stat (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("stat");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_stat *r;
 
   caml_enter_blocking_section ();
@@ -18585,7 +20227,9 @@ guestfs_int_ocaml_statns (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("statns");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_statns *r;
 
   caml_enter_blocking_section ();
@@ -18617,7 +20261,9 @@ guestfs_int_ocaml_statvfs (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("statvfs");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_statvfs *r;
 
   caml_enter_blocking_section ();
@@ -18649,7 +20295,9 @@ guestfs_int_ocaml_strings (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("strings");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -18683,8 +20331,12 @@ guestfs_int_ocaml_strings_e (value gv, value encodingv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("strings_e");
 
-  char *encoding = guestfs_int_safe_strdup (g, String_val (encodingv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *encoding;
+  encoding = strdup (String_val (encodingv));
+  if (encoding == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -18719,7 +20371,9 @@ guestfs_int_ocaml_swapoff_device (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("swapoff_device");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18750,7 +20404,9 @@ guestfs_int_ocaml_swapoff_file (value gv, value filev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("swapoff_file");
 
-  char *file = guestfs_int_safe_strdup (g, String_val (filev));
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18781,7 +20437,9 @@ guestfs_int_ocaml_swapoff_label (value gv, value labelv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("swapoff_label");
 
-  char *label = guestfs_int_safe_strdup (g, String_val (labelv));
+  char *label;
+  label = strdup (String_val (labelv));
+  if (label == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18812,7 +20470,9 @@ guestfs_int_ocaml_swapoff_uuid (value gv, value uuidv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("swapoff_uuid");
 
-  char *uuid = guestfs_int_safe_strdup (g, String_val (uuidv));
+  char *uuid;
+  uuid = strdup (String_val (uuidv));
+  if (uuid == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18843,7 +20503,9 @@ guestfs_int_ocaml_swapon_device (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("swapon_device");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18874,7 +20536,9 @@ guestfs_int_ocaml_swapon_file (value gv, value filev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("swapon_file");
 
-  char *file = guestfs_int_safe_strdup (g, String_val (filev));
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18905,7 +20569,9 @@ guestfs_int_ocaml_swapon_label (value gv, value labelv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("swapon_label");
 
-  char *label = guestfs_int_safe_strdup (g, String_val (labelv));
+  char *label;
+  label = strdup (String_val (labelv));
+  if (label == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18936,7 +20602,9 @@ guestfs_int_ocaml_swapon_uuid (value gv, value uuidv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("swapon_uuid");
 
-  char *uuid = guestfs_int_safe_strdup (g, String_val (uuidv));
+  char *uuid;
+  uuid = strdup (String_val (uuidv));
+  if (uuid == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -18996,12 +20664,15 @@ guestfs_int_ocaml_syslinux (value gv, value directoryv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("syslinux");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
   struct guestfs_syslinux_argv *optargs = &optargs_s;
   if (directoryv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
-    optargs_s.directory = guestfs_int_safe_strdup (g, String_val (Field (directoryv, 0)));
+    optargs_s.directory = strdup (String_val (Field (directoryv, 0)));
+    if (optargs_s.directory == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -19035,7 +20706,9 @@ guestfs_int_ocaml_tail (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("tail");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -19070,7 +20743,9 @@ guestfs_int_ocaml_tail_n (value gv, value nrlinesv, value pathv)
     guestfs_int_ocaml_raise_closed ("tail_n");
 
   int nrlines = Int_val (nrlinesv);
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -19105,13 +20780,18 @@ guestfs_int_ocaml_tar_in (value gv, value compressv, value xattrsv, value selinu
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("tar_in");
 
-  char *tarfile = guestfs_int_safe_strdup (g, String_val (tarfilev));
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
+  char *tarfile;
+  tarfile = strdup (String_val (tarfilev));
+  if (tarfile == NULL) caml_raise_out_of_memory ();
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
   struct guestfs_tar_in_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_tar_in_opts_argv *optargs = &optargs_s;
   if (compressv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
-    optargs_s.compress = guestfs_int_safe_strdup (g, String_val (Field (compressv, 0)));
+    optargs_s.compress = strdup (String_val (Field (compressv, 0)));
+    if (optargs_s.compress == NULL) caml_raise_out_of_memory ();
   }
   if (xattrsv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_XATTRS_BITMASK;
@@ -19168,13 +20848,18 @@ guestfs_int_ocaml_tar_out (value gv, value compressv, value numericownerv, value
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("tar_out");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
-  char *tarfile = guestfs_int_safe_strdup (g, String_val (tarfilev));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
+  char *tarfile;
+  tarfile = strdup (String_val (tarfilev));
+  if (tarfile == NULL) caml_raise_out_of_memory ();
   struct guestfs_tar_out_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_tar_out_opts_argv *optargs = &optargs_s;
   if (compressv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK;
-    optargs_s.compress = guestfs_int_safe_strdup (g, String_val (Field (compressv, 0)));
+    optargs_s.compress = strdup (String_val (Field (compressv, 0)));
+    if (optargs_s.compress == NULL) caml_raise_out_of_memory ();
   }
   if (numericownerv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
@@ -19182,8 +20867,7 @@ guestfs_int_ocaml_tar_out (value gv, value compressv, value numericownerv, value
   }
   if (excludesv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
-    optargs_s.excludes = guestfs_int_ocaml_strings_val (g, Field (excludesv, 0))
-;
+    optargs_s.excludes = guestfs_int_ocaml_strings_val (g, Field (excludesv, 0));
   }
   if (xattrsv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_XATTRS_BITMASK;
@@ -19241,8 +20925,12 @@ guestfs_int_ocaml_tgz_in (value gv, value tarballv, value directoryv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("tgz_in");
 
-  char *tarball = guestfs_int_safe_strdup (g, String_val (tarballv));
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
+  char *tarball;
+  tarball = strdup (String_val (tarballv));
+  if (tarball == NULL) caml_raise_out_of_memory ();
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -19274,8 +20962,12 @@ guestfs_int_ocaml_tgz_out (value gv, value directoryv, value tarballv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("tgz_out");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
-  char *tarball = guestfs_int_safe_strdup (g, String_val (tarballv));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
+  char *tarball;
+  tarball = strdup (String_val (tarballv));
+  if (tarball == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -19307,7 +20999,9 @@ guestfs_int_ocaml_touch (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("touch");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -19338,7 +21032,9 @@ guestfs_int_ocaml_truncate (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("truncate");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -19369,7 +21065,9 @@ guestfs_int_ocaml_truncate_size (value gv, value pathv, value sizev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("truncate_size");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int64_t size = Int64_val (sizev);
   int r;
 
@@ -19403,7 +21101,9 @@ guestfs_int_ocaml_tune2fs (value gv, value forcev, value maxmountcountv, value m
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("tune2fs");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_tune2fs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_tune2fs_argv *optargs = &optargs_s;
   if (forcev != Val_int (0)) {
@@ -19420,7 +21120,8 @@ guestfs_int_ocaml_tune2fs (value gv, value forcev, value maxmountcountv, value m
   }
   if (errorbehaviorv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK;
-    optargs_s.errorbehavior = guestfs_int_safe_strdup (g, String_val (Field (errorbehaviorv, 0)));
+    optargs_s.errorbehavior = strdup (String_val (Field (errorbehaviorv, 0)));
+    if (optargs_s.errorbehavior == NULL) caml_raise_out_of_memory ();
   }
   if (groupv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_GROUP_BITMASK;
@@ -19436,7 +21137,8 @@ guestfs_int_ocaml_tune2fs (value gv, value forcev, value maxmountcountv, value m
   }
   if (lastmounteddirectoryv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK;
-    optargs_s.lastmounteddirectory = guestfs_int_safe_strdup (g, String_val (Field (lastmounteddirectoryv, 0)));
+    optargs_s.lastmounteddirectory = strdup (String_val (Field (lastmounteddirectoryv, 0)));
+    if (optargs_s.lastmounteddirectory == NULL) caml_raise_out_of_memory ();
   }
   if (reservedblockscountv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK;
@@ -19489,7 +21191,9 @@ guestfs_int_ocaml_tune2fs_l (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("tune2fs_l");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -19523,8 +21227,12 @@ guestfs_int_ocaml_txz_in (value gv, value tarballv, value directoryv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("txz_in");
 
-  char *tarball = guestfs_int_safe_strdup (g, String_val (tarballv));
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
+  char *tarball;
+  tarball = strdup (String_val (tarballv));
+  if (tarball == NULL) caml_raise_out_of_memory ();
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -19556,8 +21264,12 @@ guestfs_int_ocaml_txz_out (value gv, value directoryv, value tarballv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("txz_out");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
-  char *tarball = guestfs_int_safe_strdup (g, String_val (tarballv));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
+  char *tarball;
+  tarball = strdup (String_val (tarballv));
+  if (tarball == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -19619,7 +21331,9 @@ guestfs_int_ocaml_umount (value gv, value forcev, value lazyunmountv, value path
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("umount");
 
-  char *pathordevice = guestfs_int_safe_strdup (g, String_val (pathordevicev));
+  char *pathordevice;
+  pathordevice = strdup (String_val (pathordevicev));
+  if (pathordevice == NULL) caml_raise_out_of_memory ();
   struct guestfs_umount_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_umount_opts_argv *optargs = &optargs_s;
   if (forcev != Val_int (0)) {
@@ -19724,8 +21438,12 @@ guestfs_int_ocaml_upload (value gv, value filenamev, value remotefilenamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("upload");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
-  char *remotefilename = guestfs_int_safe_strdup (g, String_val (remotefilenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  char *remotefilename;
+  remotefilename = strdup (String_val (remotefilenamev));
+  if (remotefilename == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -19757,8 +21475,12 @@ guestfs_int_ocaml_upload_offset (value gv, value filenamev, value remotefilename
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("upload_offset");
 
-  char *filename = guestfs_int_safe_strdup (g, String_val (filenamev));
-  char *remotefilename = guestfs_int_safe_strdup (g, String_val (remotefilenamev));
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  char *remotefilename;
+  remotefilename = strdup (String_val (remotefilenamev));
+  if (remotefilename == NULL) caml_raise_out_of_memory ();
   int64_t offset = Int64_val (offsetv);
   int r;
 
@@ -19819,7 +21541,9 @@ guestfs_int_ocaml_utimens (value gv, value pathv, value atsecsv, value atnsecsv,
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("utimens");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int64_t atsecs = Int64_val (atsecsv);
   int64_t atnsecs = Int64_val (atnsecsv);
   int64_t mtsecs = Int64_val (mtsecsv);
@@ -19921,7 +21645,9 @@ guestfs_int_ocaml_vfs_label (value gv, value mountablev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vfs_label");
 
-  char *mountable = guestfs_int_safe_strdup (g, String_val (mountablev));
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -19953,7 +21679,9 @@ guestfs_int_ocaml_vfs_minimum_size (value gv, value mountablev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vfs_minimum_size");
 
-  char *mountable = guestfs_int_safe_strdup (g, String_val (mountablev));
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
   int64_t r;
 
   caml_enter_blocking_section ();
@@ -19984,7 +21712,9 @@ guestfs_int_ocaml_vfs_type (value gv, value mountablev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vfs_type");
 
-  char *mountable = guestfs_int_safe_strdup (g, String_val (mountablev));
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -20016,7 +21746,9 @@ guestfs_int_ocaml_vfs_uuid (value gv, value mountablev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vfs_uuid");
 
-  char *mountable = guestfs_int_safe_strdup (g, String_val (mountablev));
+  char *mountable;
+  mountable = strdup (String_val (mountablev));
+  if (mountable == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -20110,7 +21842,9 @@ guestfs_int_ocaml_vgchange_uuid (value gv, value vgv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vgchange_uuid");
 
-  char *vg = guestfs_int_safe_strdup (g, String_val (vgv));
+  char *vg;
+  vg = strdup (String_val (vgv));
+  if (vg == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -20170,7 +21904,9 @@ guestfs_int_ocaml_vgcreate (value gv, value volgroupv, value physvolsv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vgcreate");
 
-  char *volgroup = guestfs_int_safe_strdup (g, String_val (volgroupv));
+  char *volgroup;
+  volgroup = strdup (String_val (volgroupv));
+  if (volgroup == NULL) caml_raise_out_of_memory ();
   char **physvols = guestfs_int_ocaml_strings_val (g, physvolsv);
   int r;
 
@@ -20203,7 +21939,9 @@ guestfs_int_ocaml_vglvuuids (value gv, value vgnamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vglvuuids");
 
-  char *vgname = guestfs_int_safe_strdup (g, String_val (vgnamev));
+  char *vgname;
+  vgname = strdup (String_val (vgnamev));
+  if (vgname == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -20237,7 +21975,9 @@ guestfs_int_ocaml_vgmeta (value gv, value vgnamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vgmeta");
 
-  char *vgname = guestfs_int_safe_strdup (g, String_val (vgnamev));
+  char *vgname;
+  vgname = strdup (String_val (vgnamev));
+  if (vgname == NULL) caml_raise_out_of_memory ();
   char *r;
   size_t size;
 
@@ -20271,7 +22011,9 @@ guestfs_int_ocaml_vgpvuuids (value gv, value vgnamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vgpvuuids");
 
-  char *vgname = guestfs_int_safe_strdup (g, String_val (vgnamev));
+  char *vgname;
+  vgname = strdup (String_val (vgnamev));
+  if (vgname == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -20305,7 +22047,9 @@ guestfs_int_ocaml_vgremove (value gv, value vgnamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vgremove");
 
-  char *vgname = guestfs_int_safe_strdup (g, String_val (vgnamev));
+  char *vgname;
+  vgname = strdup (String_val (vgnamev));
+  if (vgname == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -20336,8 +22080,12 @@ guestfs_int_ocaml_vgrename (value gv, value volgroupv, value newvolgroupv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vgrename");
 
-  char *volgroup = guestfs_int_safe_strdup (g, String_val (volgroupv));
-  char *newvolgroup = guestfs_int_safe_strdup (g, String_val (newvolgroupv));
+  char *volgroup;
+  volgroup = strdup (String_val (volgroupv));
+  if (volgroup == NULL) caml_raise_out_of_memory ();
+  char *newvolgroup;
+  newvolgroup = strdup (String_val (newvolgroupv));
+  if (newvolgroup == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -20460,7 +22208,9 @@ guestfs_int_ocaml_vguuid (value gv, value vgnamev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("vguuid");
 
-  char *vgname = guestfs_int_safe_strdup (g, String_val (vgnamev));
+  char *vgname;
+  vgname = strdup (String_val (vgnamev));
+  if (vgname == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -20519,7 +22269,9 @@ guestfs_int_ocaml_wc_c (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("wc_c");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -20550,7 +22302,9 @@ guestfs_int_ocaml_wc_l (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("wc_l");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -20581,7 +22335,9 @@ guestfs_int_ocaml_wc_w (value gv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("wc_w");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -20612,7 +22368,9 @@ guestfs_int_ocaml_wipefs (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("wipefs");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -20643,9 +22401,14 @@ guestfs_int_ocaml_write (value gv, value pathv, value contentv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("write");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t content_size = caml_string_length (contentv);
-  char *content = guestfs_int_safe_memdup (g, String_val (contentv), content_size);
+  char *content;
+  content = malloc (content_size);
+  if (content == NULL) caml_raise_out_of_memory ();
+  memcpy (content, String_val (contentv), content_size);
   int r;
 
   caml_enter_blocking_section ();
@@ -20677,9 +22440,14 @@ guestfs_int_ocaml_write_append (value gv, value pathv, value contentv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("write_append");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t content_size = caml_string_length (contentv);
-  char *content = guestfs_int_safe_memdup (g, String_val (contentv), content_size);
+  char *content;
+  content = malloc (content_size);
+  if (content == NULL) caml_raise_out_of_memory ();
+  memcpy (content, String_val (contentv), content_size);
   int r;
 
   caml_enter_blocking_section ();
@@ -20711,8 +22479,12 @@ guestfs_int_ocaml_write_file (value gv, value pathv, value contentv, value sizev
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("write_file");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
-  char *content = guestfs_int_safe_strdup (g, String_val (contentv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
+  char *content;
+  content = strdup (String_val (contentv));
+  if (content == NULL) caml_raise_out_of_memory ();
   int size = Int_val (sizev);
   int r;
 
@@ -20746,7 +22518,9 @@ guestfs_int_ocaml_xfs_admin (value gv, value extunwrittenv, value imgfilev, valu
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("xfs_admin");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_xfs_admin_argv optargs_s = { .bitmask = 0 };
   struct guestfs_xfs_admin_argv *optargs = &optargs_s;
   if (extunwrittenv != Val_int (0)) {
@@ -20771,11 +22545,13 @@ guestfs_int_ocaml_xfs_admin (value gv, value extunwrittenv, value imgfilev, valu
   }
   if (labelv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_XFS_ADMIN_LABEL_BITMASK;
-    optargs_s.label = guestfs_int_safe_strdup (g, String_val (Field (labelv, 0)));
+    optargs_s.label = strdup (String_val (Field (labelv, 0)));
+    if (optargs_s.label == NULL) caml_raise_out_of_memory ();
   }
   if (uuidv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_XFS_ADMIN_UUID_BITMASK;
-    optargs_s.uuid = guestfs_int_safe_strdup (g, String_val (Field (uuidv, 0)));
+    optargs_s.uuid = strdup (String_val (Field (uuidv, 0)));
+    if (optargs_s.uuid == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -20821,7 +22597,9 @@ guestfs_int_ocaml_xfs_growfs (value gv, value datasecv, value logsecv, value rts
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("xfs_growfs");
 
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   struct guestfs_xfs_growfs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_xfs_growfs_argv *optargs = &optargs_s;
   if (datasecv != Val_int (0)) {
@@ -20895,7 +22673,9 @@ guestfs_int_ocaml_xfs_info (value gv, value pathordevicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("xfs_info");
 
-  char *pathordevice = guestfs_int_safe_strdup (g, String_val (pathordevicev));
+  char *pathordevice;
+  pathordevice = strdup (String_val (pathordevicev));
+  if (pathordevice == NULL) caml_raise_out_of_memory ();
   struct guestfs_xfsinfo *r;
 
   caml_enter_blocking_section ();
@@ -20929,7 +22709,9 @@ guestfs_int_ocaml_xfs_repair (value gv, value forcelogzerov, value nomodifyv, va
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("xfs_repair");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   struct guestfs_xfs_repair_argv optargs_s = { .bitmask = 0 };
   struct guestfs_xfs_repair_argv *optargs = &optargs_s;
   if (forcelogzerov != Val_int (0)) {
@@ -20966,11 +22748,13 @@ guestfs_int_ocaml_xfs_repair (value gv, value forcelogzerov, value nomodifyv, va
   }
   if (logdevv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_LOGDEV_BITMASK;
-    optargs_s.logdev = guestfs_int_safe_strdup (g, String_val (Field (logdevv, 0)));
+    optargs_s.logdev = strdup (String_val (Field (logdevv, 0)));
+    if (optargs_s.logdev == NULL) caml_raise_out_of_memory ();
   }
   if (rtdevv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_RTDEV_BITMASK;
-    optargs_s.rtdev = guestfs_int_safe_strdup (g, String_val (Field (rtdevv, 0)));
+    optargs_s.rtdev = strdup (String_val (Field (rtdevv, 0)));
+    if (optargs_s.rtdev == NULL) caml_raise_out_of_memory ();
   }
   int r;
 
@@ -21015,8 +22799,12 @@ guestfs_int_ocaml_zegrep (value gv, value regexv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zegrep");
 
-  char *regex = guestfs_int_safe_strdup (g, String_val (regexv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *regex;
+  regex = strdup (String_val (regexv));
+  if (regex == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -21051,8 +22839,12 @@ guestfs_int_ocaml_zegrepi (value gv, value regexv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zegrepi");
 
-  char *regex = guestfs_int_safe_strdup (g, String_val (regexv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *regex;
+  regex = strdup (String_val (regexv));
+  if (regex == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -21087,7 +22879,9 @@ guestfs_int_ocaml_zero (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zero");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -21118,7 +22912,9 @@ guestfs_int_ocaml_zero_device (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zero_device");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -21149,7 +22945,9 @@ guestfs_int_ocaml_zero_free_space (value gv, value directoryv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zero_free_space");
 
-  char *directory = guestfs_int_safe_strdup (g, String_val (directoryv));
+  char *directory;
+  directory = strdup (String_val (directoryv));
+  if (directory == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -21180,7 +22978,9 @@ guestfs_int_ocaml_zerofree (value gv, value devicev)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zerofree");
 
-  char *device = guestfs_int_safe_strdup (g, String_val (devicev));
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
   int r;
 
   caml_enter_blocking_section ();
@@ -21211,8 +23011,12 @@ guestfs_int_ocaml_zfgrep (value gv, value patternv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zfgrep");
 
-  char *pattern = guestfs_int_safe_strdup (g, String_val (patternv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *pattern;
+  pattern = strdup (String_val (patternv));
+  if (pattern == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -21247,8 +23051,12 @@ guestfs_int_ocaml_zfgrepi (value gv, value patternv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zfgrepi");
 
-  char *pattern = guestfs_int_safe_strdup (g, String_val (patternv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *pattern;
+  pattern = strdup (String_val (patternv));
+  if (pattern == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -21283,8 +23091,12 @@ guestfs_int_ocaml_zfile (value gv, value methv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zfile");
 
-  char *meth = guestfs_int_safe_strdup (g, String_val (methv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *meth;
+  meth = strdup (String_val (methv));
+  if (meth == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   char *r;
 
   caml_enter_blocking_section ();
@@ -21317,8 +23129,12 @@ guestfs_int_ocaml_zgrep (value gv, value regexv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zgrep");
 
-  char *regex = guestfs_int_safe_strdup (g, String_val (regexv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *regex;
+  regex = strdup (String_val (regexv));
+  if (regex == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 
@@ -21353,8 +23169,12 @@ guestfs_int_ocaml_zgrepi (value gv, value regexv, value pathv)
   if (g == NULL)
     guestfs_int_ocaml_raise_closed ("zgrepi");
 
-  char *regex = guestfs_int_safe_strdup (g, String_val (regexv));
-  char *path = guestfs_int_safe_strdup (g, String_val (pathv));
+  char *regex;
+  regex = strdup (String_val (regexv));
+  if (regex == NULL) caml_raise_out_of_memory ();
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
   size_t i;
   char **r;
 

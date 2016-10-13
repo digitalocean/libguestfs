@@ -85,6 +85,8 @@ and op = [
       (* --timezone TIMEZONE *)
   | `Touch of string
       (* --touch FILE *)
+  | `UninstallPackages of string list
+      (* --uninstall PKG,PKG.. *)
   | `Update
       (* --update *)
   | `Upload of string * string
@@ -103,7 +105,7 @@ and flags = {
       (* --sm-credentials SELECTOR *)
 }
 
-type argspec = Arg.key * Arg.spec * Arg.doc
+type argspec = Getopt.keys * Getopt.spec * Getopt.doc
 val argspec : unit -> (argspec * string option * string) list * (unit -> ops)
 (** This returns a pair [(list, get_ops)].
 

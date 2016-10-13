@@ -90,6 +90,7 @@ extern struct command_entry btrfs_device_delete_cmd_entry;
 extern struct command_entry btrfs_filesystem_balance_cmd_entry;
 extern struct command_entry btrfs_filesystem_defragment_cmd_entry;
 extern struct command_entry btrfs_filesystem_resize_cmd_entry;
+extern struct command_entry btrfs_filesystem_show_cmd_entry;
 extern struct command_entry btrfs_filesystem_sync_cmd_entry;
 extern struct command_entry btrfs_fsck_cmd_entry;
 extern struct command_entry btrfs_image_cmd_entry;
@@ -163,6 +164,8 @@ extern struct command_entry disk_virtual_size_cmd_entry;
 extern struct command_entry display_cmd_entry;
 extern struct command_entry dmesg_cmd_entry;
 extern struct command_entry download_cmd_entry;
+extern struct command_entry download_blocks_cmd_entry;
+extern struct command_entry download_inode_cmd_entry;
 extern struct command_entry download_offset_cmd_entry;
 extern struct command_entry drop_caches_cmd_entry;
 extern struct command_entry du_cmd_entry;
@@ -186,6 +189,7 @@ extern struct command_entry file_cmd_entry;
 extern struct command_entry file_architecture_cmd_entry;
 extern struct command_entry filesize_cmd_entry;
 extern struct command_entry filesystem_available_cmd_entry;
+extern struct command_entry filesystem_walk_cmd_entry;
 extern struct command_entry fill_cmd_entry;
 extern struct command_entry fill_dir_cmd_entry;
 extern struct command_entry fill_pattern_cmd_entry;
@@ -223,6 +227,7 @@ extern struct command_entry get_qemu_cmd_entry;
 extern struct command_entry get_recovery_proc_cmd_entry;
 extern struct command_entry get_selinux_cmd_entry;
 extern struct command_entry get_smp_cmd_entry;
+extern struct command_entry get_sockdir_cmd_entry;
 extern struct command_entry get_tmpdir_cmd_entry;
 extern struct command_entry get_trace_cmd_entry;
 extern struct command_entry get_umask_cmd_entry;
@@ -413,11 +418,14 @@ extern struct command_entry mount_loop_cmd_entry;
 extern struct command_entry mount_options_cmd_entry;
 extern struct command_entry mount_ro_cmd_entry;
 extern struct command_entry mount_vfs_cmd_entry;
+extern struct command_entry mountable_device_cmd_entry;
+extern struct command_entry mountable_subvolume_cmd_entry;
 extern struct command_entry mountpoints_cmd_entry;
 extern struct command_entry mounts_cmd_entry;
 extern struct command_entry mv_cmd_entry;
 extern struct command_entry nr_devices_cmd_entry;
 extern struct command_entry ntfs_3g_probe_cmd_entry;
+extern struct command_entry ntfscat_i_cmd_entry;
 extern struct command_entry ntfsclone_in_cmd_entry;
 extern struct command_entry ntfsclone_out_cmd_entry;
 extern struct command_entry ntfsfix_cmd_entry;
@@ -428,7 +436,9 @@ extern struct command_entry parse_environment_list_cmd_entry;
 extern struct command_entry part_add_cmd_entry;
 extern struct command_entry part_del_cmd_entry;
 extern struct command_entry part_disk_cmd_entry;
+extern struct command_entry part_expand_gpt_cmd_entry;
 extern struct command_entry part_get_bootable_cmd_entry;
+extern struct command_entry part_get_disk_guid_cmd_entry;
 extern struct command_entry part_get_gpt_guid_cmd_entry;
 extern struct command_entry part_get_gpt_type_cmd_entry;
 extern struct command_entry part_get_mbr_id_cmd_entry;
@@ -438,6 +448,8 @@ extern struct command_entry part_get_parttype_cmd_entry;
 extern struct command_entry part_init_cmd_entry;
 extern struct command_entry part_list_cmd_entry;
 extern struct command_entry part_set_bootable_cmd_entry;
+extern struct command_entry part_set_disk_guid_cmd_entry;
+extern struct command_entry part_set_disk_guid_random_cmd_entry;
 extern struct command_entry part_set_gpt_guid_cmd_entry;
 extern struct command_entry part_set_gpt_type_cmd_entry;
 extern struct command_entry part_set_mbr_id_cmd_entry;
@@ -483,6 +495,7 @@ extern struct command_entry rsync_out_cmd_entry;
 extern struct command_entry scrub_device_cmd_entry;
 extern struct command_entry scrub_file_cmd_entry;
 extern struct command_entry scrub_freespace_cmd_entry;
+extern struct command_entry selinux_relabel_cmd_entry;
 extern struct command_entry set_append_cmd_entry;
 extern struct command_entry set_attach_method_cmd_entry;
 extern struct command_entry set_autosync_cmd_entry;
@@ -724,6 +737,8 @@ btrfs_filesystem_defragment, &btrfs_filesystem_defragment_cmd_entry
 btrfs-filesystem-defragment, &btrfs_filesystem_defragment_cmd_entry
 btrfs_filesystem_resize, &btrfs_filesystem_resize_cmd_entry
 btrfs-filesystem-resize, &btrfs_filesystem_resize_cmd_entry
+btrfs_filesystem_show, &btrfs_filesystem_show_cmd_entry
+btrfs-filesystem-show, &btrfs_filesystem_show_cmd_entry
 btrfs_filesystem_sync, &btrfs_filesystem_sync_cmd_entry
 btrfs-filesystem-sync, &btrfs_filesystem_sync_cmd_entry
 btrfs_fsck, &btrfs_fsck_cmd_entry
@@ -859,6 +874,10 @@ disk-virtual-size, &disk_virtual_size_cmd_entry
 display, &display_cmd_entry
 dmesg, &dmesg_cmd_entry
 download, &download_cmd_entry
+download_blocks, &download_blocks_cmd_entry
+download-blocks, &download_blocks_cmd_entry
+download_inode, &download_inode_cmd_entry
+download-inode, &download_inode_cmd_entry
 download_offset, &download_offset_cmd_entry
 download-offset, &download_offset_cmd_entry
 drop_caches, &drop_caches_cmd_entry
@@ -891,6 +910,8 @@ file-architecture, &file_architecture_cmd_entry
 filesize, &filesize_cmd_entry
 filesystem_available, &filesystem_available_cmd_entry
 filesystem-available, &filesystem_available_cmd_entry
+filesystem_walk, &filesystem_walk_cmd_entry
+filesystem-walk, &filesystem_walk_cmd_entry
 fill, &fill_cmd_entry
 fill_dir, &fill_dir_cmd_entry
 fill-dir, &fill_dir_cmd_entry
@@ -961,6 +982,8 @@ get_selinux, &get_selinux_cmd_entry
 get-selinux, &get_selinux_cmd_entry
 get_smp, &get_smp_cmd_entry
 get-smp, &get_smp_cmd_entry
+get_sockdir, &get_sockdir_cmd_entry
+get-sockdir, &get_sockdir_cmd_entry
 get_tmpdir, &get_tmpdir_cmd_entry
 get-tmpdir, &get_tmpdir_cmd_entry
 get_trace, &get_trace_cmd_entry
@@ -975,6 +998,7 @@ getxattrs, &getxattrs_cmd_entry
 glob, &glob_cmd_entry
 glob_expand, &glob_expand_cmd_entry
 glob-expand, &glob_expand_cmd_entry
+glob-expand-opts, &glob_expand_cmd_entry
 grep, &grep_cmd_entry
 grep-opts, &grep_cmd_entry
 grepi, &grepi_cmd_entry
@@ -1306,6 +1330,10 @@ mount_ro, &mount_ro_cmd_entry
 mount-ro, &mount_ro_cmd_entry
 mount_vfs, &mount_vfs_cmd_entry
 mount-vfs, &mount_vfs_cmd_entry
+mountable_device, &mountable_device_cmd_entry
+mountable-device, &mountable_device_cmd_entry
+mountable_subvolume, &mountable_subvolume_cmd_entry
+mountable-subvolume, &mountable_subvolume_cmd_entry
 mountpoints, &mountpoints_cmd_entry
 mounts, &mounts_cmd_entry
 mv, &mv_cmd_entry
@@ -1313,6 +1341,8 @@ nr_devices, &nr_devices_cmd_entry
 nr-devices, &nr_devices_cmd_entry
 ntfs_3g_probe, &ntfs_3g_probe_cmd_entry
 ntfs-3g-probe, &ntfs_3g_probe_cmd_entry
+ntfscat_i, &ntfscat_i_cmd_entry
+ntfscat-i, &ntfscat_i_cmd_entry
 ntfsclone_in, &ntfsclone_in_cmd_entry
 ntfsclone-in, &ntfsclone_in_cmd_entry
 ntfsclone_out, &ntfsclone_out_cmd_entry
@@ -1332,8 +1362,12 @@ part_del, &part_del_cmd_entry
 part-del, &part_del_cmd_entry
 part_disk, &part_disk_cmd_entry
 part-disk, &part_disk_cmd_entry
+part_expand_gpt, &part_expand_gpt_cmd_entry
+part-expand-gpt, &part_expand_gpt_cmd_entry
 part_get_bootable, &part_get_bootable_cmd_entry
 part-get-bootable, &part_get_bootable_cmd_entry
+part_get_disk_guid, &part_get_disk_guid_cmd_entry
+part-get-disk-guid, &part_get_disk_guid_cmd_entry
 part_get_gpt_guid, &part_get_gpt_guid_cmd_entry
 part-get-gpt-guid, &part_get_gpt_guid_cmd_entry
 part_get_gpt_type, &part_get_gpt_type_cmd_entry
@@ -1352,6 +1386,10 @@ part_list, &part_list_cmd_entry
 part-list, &part_list_cmd_entry
 part_set_bootable, &part_set_bootable_cmd_entry
 part-set-bootable, &part_set_bootable_cmd_entry
+part_set_disk_guid, &part_set_disk_guid_cmd_entry
+part-set-disk-guid, &part_set_disk_guid_cmd_entry
+part_set_disk_guid_random, &part_set_disk_guid_random_cmd_entry
+part-set-disk-guid-random, &part_set_disk_guid_random_cmd_entry
 part_set_gpt_guid, &part_set_gpt_guid_cmd_entry
 part-set-gpt-guid, &part_set_gpt_guid_cmd_entry
 part_set_gpt_type, &part_set_gpt_type_cmd_entry
@@ -1422,6 +1460,8 @@ scrub_file, &scrub_file_cmd_entry
 scrub-file, &scrub_file_cmd_entry
 scrub_freespace, &scrub_freespace_cmd_entry
 scrub-freespace, &scrub_freespace_cmd_entry
+selinux_relabel, &selinux_relabel_cmd_entry
+selinux-relabel, &selinux_relabel_cmd_entry
 set_append, &set_append_cmd_entry
 set-append, &set_append_cmd_entry
 append, &set_append_cmd_entry

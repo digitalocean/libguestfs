@@ -19,16 +19,14 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
 	$(SOURCES_ML) $(SOURCES_C) \
+	test-virt-get-kernel-docs.sh \
 	virt-get-kernel.pod
-
-CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-get-kernel
 
 SOURCES_ML = \
 	get_kernel.ml
 
 SOURCES_C = \
-	../mllib/uri-c.c \
-	../fish/uri.c
+	dummy.c
 
 man_MANS =
 noinst_DATA =
@@ -52,13 +50,7 @@ virt_get_kernel_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(LIBXML2_CFLAGS)
 
-BOBJECTS = \
-	$(top_builddir)/mllib/libdir.cmo \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/URI.cmo \
-	$(SOURCES_ML:.ml=.cmo)
+BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
@@ -85,19 +77,26 @@ OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
-BEST    = c
-OCAMLLINKFLAGS = mlguestfs.cma -custom
 else
 OBJECTS = $(XOBJECTS)
-BEST    = opt
-OCAMLLINKFLAGS = mlguestfs.cmxa
 endif
 
-virt_get_kernel_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
+OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+
+virt_get_kernel_DEPENDENCIES = \
+	$(OBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 virt_get_kernel_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
 	  $(OBJECTS) -o $@
+
+# Tests.
+
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+
+TESTS = test-virt-get-kernel-docs.sh
 
 # Manual pages and HTML files for the website.
 
@@ -115,10 +114,6 @@ stamp-virt-get-kernel.pod: virt-get-kernel.pod
 	  $<
 	touch $@
 
-CLEANFILES += \
-	stamp-virt-get-kernel.pod \
-	virt-get-kernel.1
-
 # Dependencies.
 depend: .depend
 
@@ -134,7 +129,5 @@ depend: .depend
 -include .depend
 
 endif
-
-DISTCLEANFILES = .depend
 
 .PHONY: depend

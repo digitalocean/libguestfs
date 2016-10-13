@@ -16,12 +16,22 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * This file parses the guestfish configuration file, usually
+ * F<~/.libguestfs-tools.rc> or F</etc/libguestfs-tools.conf>.
+ *
+ * Note that C<parse_config> is called very early, before command line
+ * parsing, before the C<verbose> flag has been set, even before the
+ * global handle C<g> is opened.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <error.h>
 #include <libintl.h>
 
 #ifdef HAVE_LIBCONFIG
@@ -37,11 +47,6 @@
 #define GLOBAL_CONFIG_FILENAME "libguestfs-tools.conf"
 static const char home_filename[] = /* $HOME/ */ ".libguestfs-tools.rc";
 static const char etc_filename[] = "/etc/" GLOBAL_CONFIG_FILENAME;
-
-/* Note that parse_config is called very early, before command line
- * parsing, before the verbose flag has been set, even before the
- * global handle 'g' is opened.
- */
 
 static void
 read_config_from_file (const char *filename)
@@ -60,18 +65,13 @@ read_config_from_file (const char *filename)
                guestfs_int_program_name, filename);
     */
 
-    if (config_read (&conf, fp) == CONFIG_FALSE) {
-      fprintf (stderr,
-               _("%s: %s: line %d: error parsing configuration file: %s\n"),
-               guestfs_int_program_name, filename, config_error_line (&conf),
-               config_error_text (&conf));
-      exit (EXIT_FAILURE);
-    }
+    if (config_read (&conf, fp) == CONFIG_FALSE)
+      error (EXIT_FAILURE, 0,
+             _("%s: line %d: error parsing configuration file: %s"),
+             filename, config_error_line (&conf), config_error_text (&conf));
 
-    if (fclose (fp) == -1) {
-      perror (filename);
-      exit (EXIT_FAILURE);
-    }
+    if (fclose (fp) == -1)
+      error (EXIT_FAILURE, errno, "fclose: %s", filename);
 
     config_lookup_bool (&conf, "read_only", &read_only);
 
@@ -101,10 +101,8 @@ parse_config (void)
       CLEANUP_FREE char *path = NULL;
       const char *dir = xdg_config_dirs[i - 1];
 
-      if (asprintf (&path, "%s/libguestfs/" GLOBAL_CONFIG_FILENAME, dir) == -1) {
-        perror ("asprintf");
-        exit (EXIT_FAILURE);
-      }
+      if (asprintf (&path, "%s/libguestfs/" GLOBAL_CONFIG_FILENAME, dir) == -1)
+        error (EXIT_FAILURE, errno, "asprintf");
 
       read_config_from_file (path);
     }
@@ -117,10 +115,8 @@ parse_config (void)
       /* Old-style configuration file first. */
       CLEANUP_FREE char *path = NULL;
 
-      if (asprintf (&path, "%s/%s", home, home_filename) == -1) {
-        perror ("asprintf");
-        exit (EXIT_FAILURE);
-      }
+      if (asprintf (&path, "%s/%s", home, home_filename) == -1)
+        error (EXIT_FAILURE, errno, "asprintf");
 
       read_config_from_file (path);
     }
@@ -131,24 +127,18 @@ parse_config (void)
       CLEANUP_FREE char *home_copy = strdup (home);
       const char *xdg_env;
 
-      if (home_copy == NULL) {
-        perror ("strdup");
-        exit (EXIT_FAILURE);
-      }
+      if (home_copy == NULL)
+        error (EXIT_FAILURE, errno, "strdup");
 
       xdg_env = getenv ("XDG_CONFIG_HOME");
       if (xdg_env == NULL) {
         if (asprintf (&path, "%s/.config/libguestfs/" GLOBAL_CONFIG_FILENAME,
-                      home_copy) == -1) {
-          perror ("asprintf");
-          exit (EXIT_FAILURE);
-        }
+                      home_copy) == -1)
+          error (EXIT_FAILURE, errno, "asprintf");
       } else {
         if (asprintf (&path, "%s/libguestfs/" GLOBAL_CONFIG_FILENAME,
-                      xdg_env) == -1) {
-          perror ("asprintf");
-          exit (EXIT_FAILURE);
-        }
+                      xdg_env) == -1)
+          error (EXIT_FAILURE, errno, "asprintf");
       }
 
       read_config_from_file (path);

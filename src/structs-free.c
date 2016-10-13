@@ -485,3 +485,21 @@ guestfs_free_internal_mountable_list (struct guestfs_internal_mountable_list *x)
   }
 }
 
+GUESTFS_DLL_PUBLIC void
+guestfs_free_tsk_dirent (struct guestfs_tsk_dirent *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_tsk_dirent, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
+guestfs_free_tsk_dirent_list (struct guestfs_tsk_dirent_list *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_tsk_dirent_list, (char *) x);
+    free (x);
+  }
+}
+

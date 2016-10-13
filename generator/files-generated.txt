@@ -45,8 +45,10 @@ gobject/include/guestfs-gobject/optargs-copy_file_to_device.h
 gobject/include/guestfs-gobject/optargs-copy_file_to_file.h
 gobject/include/guestfs-gobject/optargs-cpio_out.h
 gobject/include/guestfs-gobject/optargs-disk_create.h
+gobject/include/guestfs-gobject/optargs-download_blocks.h
 gobject/include/guestfs-gobject/optargs-e2fsck.h
 gobject/include/guestfs-gobject/optargs-fstrim.h
+gobject/include/guestfs-gobject/optargs-glob_expand.h
 gobject/include/guestfs-gobject/optargs-grep.h
 gobject/include/guestfs-gobject/optargs-hivex_open.h
 gobject/include/guestfs-gobject/optargs-inspect_get_icon.h
@@ -74,6 +76,7 @@ gobject/include/guestfs-gobject/optargs-remount.h
 gobject/include/guestfs-gobject/optargs-rsync.h
 gobject/include/guestfs-gobject/optargs-rsync_in.h
 gobject/include/guestfs-gobject/optargs-rsync_out.h
+gobject/include/guestfs-gobject/optargs-selinux_relabel.h
 gobject/include/guestfs-gobject/optargs-set_e2attrs.h
 gobject/include/guestfs-gobject/optargs-syslinux.h
 gobject/include/guestfs-gobject/optargs-tar_in.h
@@ -105,6 +108,7 @@ gobject/include/guestfs-gobject/struct-partition.h
 gobject/include/guestfs-gobject/struct-stat.h
 gobject/include/guestfs-gobject/struct-statns.h
 gobject/include/guestfs-gobject/struct-statvfs.h
+gobject/include/guestfs-gobject/struct-tsk_dirent.h
 gobject/include/guestfs-gobject/struct-utsname.h
 gobject/include/guestfs-gobject/struct-version.h
 gobject/include/guestfs-gobject/struct-xattr.h
@@ -129,8 +133,10 @@ gobject/src/optargs-copy_file_to_device.c
 gobject/src/optargs-copy_file_to_file.c
 gobject/src/optargs-cpio_out.c
 gobject/src/optargs-disk_create.c
+gobject/src/optargs-download_blocks.c
 gobject/src/optargs-e2fsck.c
 gobject/src/optargs-fstrim.c
+gobject/src/optargs-glob_expand.c
 gobject/src/optargs-grep.c
 gobject/src/optargs-hivex_open.c
 gobject/src/optargs-inspect_get_icon.c
@@ -158,6 +164,7 @@ gobject/src/optargs-remount.c
 gobject/src/optargs-rsync.c
 gobject/src/optargs-rsync_in.c
 gobject/src/optargs-rsync_out.c
+gobject/src/optargs-selinux_relabel.c
 gobject/src/optargs-set_e2attrs.c
 gobject/src/optargs-syslinux.c
 gobject/src/optargs-tar_in.c
@@ -189,6 +196,7 @@ gobject/src/struct-partition.c
 gobject/src/struct-stat.c
 gobject/src/struct-statns.c
 gobject/src/struct-statvfs.c
+gobject/src/struct-tsk_dirent.c
 gobject/src/struct-utsname.c
 gobject/src/struct-version.c
 gobject/src/struct-xattr.c
@@ -221,6 +229,7 @@ java/com/redhat/et/libguestfs/Partition.java
 java/com/redhat/et/libguestfs/Stat.java
 java/com/redhat/et/libguestfs/StatNS.java
 java/com/redhat/et/libguestfs/StatVFS.java
+java/com/redhat/et/libguestfs/TSKDirent.java
 java/com/redhat/et/libguestfs/UTSName.java
 java/com/redhat/et/libguestfs/VG.java
 java/com/redhat/et/libguestfs/Version.java
@@ -239,7 +248,7 @@ perl/lib/Sys/Guestfs.pm
 perl/lib/Sys/Guestfs.xs
 php/extension/guestfs_php.c
 php/extension/php_guestfs_php.h
-php/extension/tests/guestfs_php_bindtests.phpt
+php/extension/tests/guestfs_090_bindtests.phpt
 python/bindtests.py
 python/guestfs-py.c
 python/guestfs.py
@@ -273,4 +282,7 @@ src/structs-copy.c
 src/structs-free.c
 src/structs-print.c
 src/structs-print.h
+src/uefi.c
 tests/c-api/tests.c
+v2v/uefi.ml
+v2v/uefi.mli

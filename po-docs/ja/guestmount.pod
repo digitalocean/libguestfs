@@ -152,37 +152,37 @@ program.
 
 =over 4
 
-=item B<-a image>
+=item B<-a> IMAGE
 
-=item B<--add image>
+=item B<--add> IMAGE
 
 ブロックデバイスまたは仮想マシンイメージを追加します。
 
 ディスクイメージの形式は自動検知されます。 これを上書きして強制的に特定の形式を使用する場合、 I<--format=..> オプションを使用します。
 
-=item B<-a URI>
+=item B<-a> URI
 
-=item B<--add URI>
+=item B<--add> URI
 
 リモートディスクを追加します。 L<guestfish(1)/リモートストレージの追加> 参照。
 
-=item B<-c URI>
+=item B<-c> URI
 
-=item B<--connect URI>
+=item B<--connect> URI
 
  I<-d> オプションと同時に使用するとき、 これは使用する libvirt URI を指定します。 標準状態で標準の libvirt
 接続を使用します。
 
-=item B<-d libvirt-domain>
+=item B<-d> LIBVIRT-DOMAIN
 
-=item B<--domain libvirt-domain>
+=item B<--domain> LIBVIRT-DOMAIN
 
 名前付き libvirt 仮想マシンからディスクを追加します。 I<--ro> オプションも使用されている場合、すべての libvirt
 仮想マシンを使用できます。 しかしながら、書き込みモードでは、 停止状態の libvirt 仮想マシンのみ指定できます。
 
 名前の代わりに仮想マシンの UUID を使用できます。
 
-=item B<--dir-cache-timeout N>
+=item B<--dir-cache-timeout> N
 
 Set the readdir cache timeout to I<N> seconds, the default being 60
 seconds.  The readdir cache [actually, there are several semi-independent
@@ -199,7 +199,7 @@ requests, only cache existing ones.
 キーやパスフレーズを入力するとき、通常 guestfish はエコーを無効化します。 そのため、入力内容を確認できません。 テンペスト攻撃の心配がなく、
 部屋に誰も居なければ、 入力内容を確認するためにこのフラグを指定できます。
 
-=item B<--fd=FD>
+=item B<--fd=>FD
 
 Specify a pipe or eventfd file descriptor.  When the mountpoint is ready to
 be used, guestmount writes a single byte to this file descriptor.  This can
@@ -242,9 +242,9 @@ passphrases from the user by opening F</dev/tty>.
 
 動作中の仮想マシンに接続します。 (実験的、L<guestfs(3)/ATTACHING TO RUNNING DAEMONS> 参照)。
 
-=item B<-m dev[:mountpoint[:options[:fstype]]>
+=item B<-m> dev[:mountpoint[:options[:fstype]]
 
-=item B<--mount dev[:mountpoint[:options[:fstype]]]>
+=item B<--mount> dev[:mountpoint[:options[:fstype]]]
 
 Mount the named partition or logical volume on the given mountpoint B<in the
 guest> (this has nothing to do with mountpoints in the host).
@@ -274,9 +274,9 @@ By default, we attempt to sync the guest disk when the FUSE mountpoint is
 unmounted.  If you specify this option, then we don't attempt to sync the
 disk.  See the discussion of autosync in the L<guestfs(3)> manpage.
 
-=item B<-o option>
+=item B<-o> OPTION
 
-=item B<--option option>
+=item B<--option> OPTION
 
 追加オプションを FUSE に渡します。
 
@@ -290,26 +290,26 @@ Some potentially useful FUSE options:
 
 =over 4
 
-=item B<-o allow_other>
+=item B<-o> B<allow_other>
 
 Allow other users to see the filesystem.
 
-=item B<-o attr_timeout=N>
+=item B<-o> B<attr_timeout=N>
 
 Enable attribute caching by FUSE, and set the timeout to I<N> seconds.
 
-=item B<-o kernel_cache>
+=item B<-o> B<kernel_cache>
 
 Allow the kernel to cache files (reduces the number of reads that have to go
 through the L<guestfs(3)> API).  This is generally a good idea if you can
 afford the extra memory usage.
 
-=item B<-o uid=N> B<-o gid=N>
+=item B<-o> B<uid=N> B<-o> B<gid=N>
 
 Use these options to map all UIDs and GIDs inside the guest filesystem to
 the chosen values.
 
-=item B<-o use_ino>
+=item B<-o> B<use_ino>
 
 Preserve inode numbers from the underlying filesystem.
 
@@ -323,7 +323,7 @@ appearing through FUSE.  Use of this option can confuse some software.
 
 =back
 
-=item B<--pid-file filename>
+=item B<--pid-file> FILENAME
 
 C<filename> に guestmount ワーカープロセスの PID を書き込みます。
 
@@ -343,7 +343,7 @@ L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 
 =item B<--selinux>
 
-仮想マシンの SELinux サポートを有効にします。
+This option is provided for backwards compatibility and does nothing.
 
 =item B<-v>
 

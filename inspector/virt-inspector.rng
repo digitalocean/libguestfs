@@ -108,6 +108,7 @@
         <value>suse-based</value>
         <value>ttylinux</value>
         <value>ubuntu</value>
+        <value>voidlinux</value>
         <value>windows</value>
         <!-- "unknown" is intentionally left out -->
       </choice>
@@ -125,6 +126,7 @@
         <value>pisi</value>
         <value>pkgsrc</value>
         <value>rpm</value>
+        <value>xbps</value>
         <!-- "unknown" is intentionally left out -->
       </choice>
     </element>
@@ -142,6 +144,7 @@
         <value>portage</value>
         <value>up2date</value>
         <value>urpmi</value>
+        <value>xbps</value>
         <value>yum</value>
         <value>zypper</value>
         <!-- "unknown" is intentionally left out -->

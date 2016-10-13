@@ -444,6 +444,30 @@ let structs = [
     ];
     s_camel_name = "InternalMountable";
   };
+
+  (* The Sleuth Kit directory entry information. *)
+  { defaults with
+    s_name = "tsk_dirent";
+    s_cols = [
+    "tsk_inode", FUInt64;
+    "tsk_type", FChar;
+    "tsk_size", FInt64;
+    "tsk_name", FString;
+    "tsk_flags", FUInt32;
+    "tsk_atime_sec", FInt64;
+    "tsk_atime_nsec", FInt64;
+    "tsk_mtime_sec", FInt64;
+    "tsk_mtime_nsec", FInt64;
+    "tsk_ctime_sec", FInt64;
+    "tsk_ctime_nsec", FInt64;
+    "tsk_crtime_sec", FInt64;
+    "tsk_crtime_nsec", FInt64;
+    "tsk_nlink", FInt64;
+    "tsk_link", FString;
+    "tsk_spare1", FInt64;
+    ];
+    s_camel_name = "TSKDirent" };
+
 ] (* end of structs *)
 
 let lookup_struct name =

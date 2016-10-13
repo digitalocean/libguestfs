@@ -20,6 +20,7 @@
 
 open Common_gettext.Gettext
 open Common_utils
+open Getopt.OptionName
 
 open Utils
 
@@ -34,6 +35,7 @@ type cmdline = {
   excluded_scripts : string list;
   use_base : bool;
   drive : string option;
+  drive_format : string option;
   image_name : string;
   fs_type : string;
   size : int64;
@@ -53,6 +55,7 @@ type cmdline = {
   formats : string list;
   arch : string;
   envvars : string list;
+  docker_target : string option;
 }
 
 let parse_cmdline () =
@@ -107,7 +110,7 @@ read the man page virt-dib(1).
     let fmts = remove_dups (String.nsplit "," arg) in
     List.iter (
       function
-      | "qcow2" | "tar" | "raw" | "vhd" -> ()
+      | "qcow2" | "tar" | "raw" | "vhd" | "docker" -> ()
       | fmt ->
         error (f_"invalid format '%s' in --formats") fmt
     ) fmts;
@@ -122,6 +125,8 @@ read the man page virt-dib(1).
 
   let drive = ref None in
   let set_drive arg = drive := Some arg in
+  let drive_format = ref None in
+  let set_drive_format arg = drive_format := Some arg in
 
   let root_label = ref None in
   let set_root_label arg = root_label := Some arg in
@@ -150,52 +155,54 @@ read the man page virt-dib(1).
   let append_extra_packages arg =
     prepend (List.rev (String.nsplit "," arg)) extra_packages in
 
+  let docker_target = ref None in
+  let set_docker_target arg = docker_target := Some arg in
+
   let argspec = [
-    "-p",           Arg.String append_element_path, "path" ^ " " ^ s_"Add new a elements location";
-    "--element-path", Arg.String append_element_path, "path" ^ " " ^ s_"Add new a elements location";
-    "--exclude-element", Arg.String append_excluded_element,
-      "element" ^ " " ^ s_"Exclude the specified element";
-    "--exclude-script", Arg.String append_excluded_script,
-      "script" ^ " " ^ s_"Exclude the specified script";
-    "--envvar",     Arg.String append_envvar,  "envvar[=value]" ^ " " ^ s_"Carry/set this environment variable";
-    "--skip-base",  Arg.Clear use_base,        " " ^ s_"Skip the inclusion of the 'base' element";
-    "--root-label", Arg.String set_root_label, "label" ^ " " ^ s_"Label for the root fs";
-    "--install-type", Arg.Set_string install_type, "type" ^ " " ^ s_"Installation type";
-    "--image-cache", Arg.String set_image_cache, "directory" ^ " " ^ s_"Location for cached images";
-    "-u",           Arg.Clear compressed,      " " ^ "Do not compress the qcow2 image";
-    "--qemu-img-options", Arg.String set_qemu_img_options,
-                                              "option" ^ " " ^ s_"Add qemu-img options";
-    "--mkfs-options", Arg.String set_mkfs_options,
-                                              "option" ^ " " ^ s_"Add mkfs options";
-    "--extra-packages", Arg.String append_extra_packages,
-      "pkg,..." ^ " " ^ s_"Add extra packages to install";
+    [ S 'p'; L"element-path" ],           Getopt.String ("path", append_element_path),  s_"Add new a elements location";
+    [ L"exclude-element" ], Getopt.String ("element", append_excluded_element),
+      s_"Exclude the specified element";
+    [ L"exclude-script" ], Getopt.String ("script", append_excluded_script),
+      s_"Exclude the specified script";
+    [ L"envvar" ],     Getopt.String ("envvar[=value]", append_envvar),   s_"Carry/set this environment variable";
+    [ L"skip-base" ],  Getopt.Clear use_base,        s_"Skip the inclusion of the 'base' element";
+    [ L"root-label" ], Getopt.String ("label", set_root_label), s_"Label for the root fs";
+    [ L"install-type" ], Getopt.Set_string ("type", install_type),  s_"Installation type";
+    [ L"image-cache" ], Getopt.String ("directory", set_image_cache), s_"Location for cached images";
+    [ S 'u' ],           Getopt.Clear compressed,      "Do not compress the qcow2 image";
+    [ L"qemu-img-options" ], Getopt.String ("option", set_qemu_img_options),
+                                              s_"Add qemu-img options";
+    [ L"mkfs-options" ], Getopt.String ("option", set_mkfs_options),
+                                              s_"Add mkfs options";
+    [ L"extra-packages" ], Getopt.String ("pkg,...", append_extra_packages),
+      s_"Add extra packages to install";
+    [ L"docker-target" ], Getopt.String ("target", set_docker_target), s_"Repo and tag for docker";
 
-    "--ramdisk",    Arg.Set is_ramdisk,        " " ^ "Switch to a ramdisk build";
-    "--ramdisk-element", Arg.Set_string ramdisk_element, "name" ^ " " ^ s_"Main element for building ramdisks";
+    [ L"ramdisk" ],    Getopt.Set is_ramdisk,        "Switch to a ramdisk build";
+    [ L"ramdisk-element" ], Getopt.Set_string ("name", ramdisk_element), s_"Main element for building ramdisks";
 
-    "--name",       Arg.Set_string image_name, "name" ^ " " ^ s_"Name of the image";
-    "--fs-type",    Arg.Set_string fs_type,    "fs" ^ " " ^ s_"Filesystem for the image";
-    "--size",       Arg.String set_size,       "size" ^ " " ^ s_"Set output disk size";
-    "--formats",    Arg.String set_format,     "qcow2,tgz,..." ^ " " ^ s_"Output formats";
-    "--arch",       Arg.Set_string arch,       "arch" ^ " " ^ s_"Output architecture";
-    "--drive",      Arg.String set_drive,      "path" ^ " " ^ s_"Optional drive for caches";
+    [ L"name" ],       Getopt.Set_string ("name", image_name), s_"Name of the image";
+    [ L"fs-type" ],    Getopt.Set_string ("fs", fs_type),    s_"Filesystem for the image";
+    [ L"size" ],       Getopt.String ("size", set_size),       s_"Set output disk size";
+    [ L"formats" ],    Getopt.String ("qcow2,tgz,...", set_format),     s_"Output formats";
+    [ L"arch" ],       Getopt.Set_string ("arch", arch),       s_"Output architecture";
+    [ L"drive" ],      Getopt.String ("path", set_drive),      s_"Optional drive for caches";
+    [ L"drive-format" ], Getopt.String (s_"format", set_drive_format), s_"Format of optional drive";
 
-    "-m",           Arg.Int set_memsize,       "mb" ^ " " ^ s_"Set memory size";
-    "--memsize",    Arg.Int set_memsize,       "mb" ^ " " ^ s_"Set memory size";
-    "--network",    Arg.Set network,           " " ^ s_"Enable appliance network (default)";
-    "--no-network", Arg.Clear network,      " " ^ s_"Disable appliance network";
-    "--smp",        Arg.Int set_smp,           "vcpus" ^ " " ^ s_"Set number of vCPUs";
-    "--no-delete-on-failure", Arg.Clear delete_on_failure,
-                                               " " ^ s_"Don't delete output file on failure";
-    "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
+    [ S 'm'; L"memsize" ],           Getopt.Int ("mb", set_memsize),       s_"Set memory size";
+    [ L"network" ],    Getopt.Set network,           s_"Enable appliance network (default)";
+    [ L"no-network" ], Getopt.Clear network,      s_"Disable appliance network";
+    [ L"smp" ],        Getopt.Int ("vcpus", set_smp),           s_"Set number of vCPUs";
+    [ L"no-delete-on-failure" ], Getopt.Clear delete_on_failure,
+                                               s_"Don't delete output file on failure";
+    [ L"machine-readable" ], Getopt.Set machine_readable, s_"Make output machine readable";
 
-    "--debug",      Arg.Int set_debug,         "level" ^ " " ^ s_"Set debug level";
-    "-B",           Arg.Set_string basepath,   "path" ^ " " ^ s_"Base path of diskimage-builder library";
+    [ L"debug" ],      Getopt.Int ("level", set_debug),         s_"Set debug level";
+    [ S 'B' ],           Getopt.Set_string ("path", basepath),   s_"Base path of diskimage-builder library";
   ] in
 
-  let argspec = set_standard_options argspec in
-
-  Arg.parse argspec append_element usage_msg;
+  let opthandle = create_standard_options argspec ~anon_fun:append_element usage_msg in
+  Getopt.parse opthandle;
 
   let debug = !debug in
   let basepath = !basepath in
@@ -214,6 +221,7 @@ read the man page virt-dib(1).
   let use_base = !use_base in
   let arch = !arch in
   let drive = !drive in
+  let drive_format = !drive_format in
   let root_label = !root_label in
   let install_type = !install_type in
   let image_cache = !image_cache in
@@ -225,6 +233,7 @@ read the man page virt-dib(1).
   let mkfs_options = !mkfs_options in
   let machine_readable = !machine_readable in
   let extra_packages = List.rev !extra_packages in
+  let docker_target = !docker_target in
 
   (* No elements and machine-readable mode?  Print some facts. *)
   if elements = [] && machine_readable then (
@@ -233,6 +242,7 @@ read the man page virt-dib(1).
     printf "output:tar\n";
     printf "output:raw\n";
     printf "output:vhd\n";
+    printf "output:docker\n";
     exit 0
   );
 
@@ -248,12 +258,13 @@ read the man page virt-dib(1).
   { debug = debug; basepath = basepath; elements = elements;
     excluded_elements = excluded_elements; element_paths = element_paths;
     excluded_scripts = excluded_scripts; use_base = use_base; drive = drive;
-    image_name = image_name; fs_type = fs_type; size = size;
-    root_label = root_label; install_type = install_type;
+    drive_format = drive_format; image_name = image_name; fs_type = fs_type;
+    size = size; root_label = root_label; install_type = install_type;
     image_cache = image_cache; compressed = compressed;
     qemu_img_options = qemu_img_options; mkfs_options = mkfs_options;
     is_ramdisk = is_ramdisk; ramdisk_element = ramdisk_element;
     extra_packages = extra_packages; memsize = memsize; network = network;
     smp = smp; delete_on_failure = delete_on_failure;
     formats = formats; arch = arch; envvars = envvars;
+    docker_target = docker_target;
   }

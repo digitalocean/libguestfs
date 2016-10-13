@@ -19,11 +19,11 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
-	virt-sparsify.pod \
 	test-virt-sparsify.sh \
-	test-virt-sparsify-in-place.sh
-
-CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify
+	test-virt-sparsify-docs.sh \
+	test-virt-sparsify-in-place.sh \
+	test-virt-sparsify-in-place-fstrim-unsupported.sh \
+	virt-sparsify.pod
 
 SOURCES_MLI = \
 	cmdline.mli
@@ -36,9 +36,7 @@ SOURCES_ML = \
 	sparsify.ml
 
 SOURCES_C = \
-	../fish/progress.c \
-	../mllib/progress-c.c \
-	statvfs-c.c
+	dummy.c
 
 if HAVE_OCAML
 
@@ -54,12 +52,7 @@ virt_sparsify_CPPFLAGS = \
 virt_sparsify_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
-BOBJECTS = \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/progress.cmo \
-	$(SOURCES_ML:.ml=.cmo)
+BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
@@ -68,6 +61,7 @@ XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 OCAMLPACKAGES = \
 	-package str,unix \
 	-I $(top_builddir)/src/.libs \
+	-I $(top_builddir)/gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
 	-I $(top_builddir)/mllib
 if HAVE_OCAML_PKG_GETTEXT
@@ -75,22 +69,26 @@ OCAMLPACKAGES += -package gettext-stub
 endif
 
 OCAMLCLIBS = \
-	$(LIBTINFO_LIBS)
+	-lutils \
+	$(LIBTINFO_LIBS) \
+	$(LIBXML2_LIBS) \
+	$(LIBINTL) \
+	-lgnu
 
 OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
-BEST    = c
-OCAMLLINKFLAGS = mlguestfs.cma -custom
 else
 OBJECTS = $(XOBJECTS)
-BEST    = opt
-OCAMLLINKFLAGS = mlguestfs.cmxa
 endif
 
-virt_sparsify_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
+OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
 
+virt_sparsify_DEPENDENCIES = \
+	$(OBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 virt_sparsify_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
@@ -113,18 +111,18 @@ stamp-virt-sparsify.pod: virt-sparsify.pod
 	  $<
 	touch $@
 
-CLEANFILES += \
-	stamp-virt-sparsify.pod \
-	virt-sparsify.1
-
 # Tests.
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-if ENABLE_APPLIANCE
 TESTS = \
+	test-virt-sparsify-docs.sh
+
+if ENABLE_APPLIANCE
+TESTS += \
 	test-virt-sparsify.sh \
-	test-virt-sparsify-in-place.sh
+	test-virt-sparsify-in-place.sh \
+	test-virt-sparsify-in-place-fstrim-unsupported.sh
 endif ENABLE_APPLIANCE
 
 check-valgrind:
@@ -145,7 +143,5 @@ depend: .depend
 -include .depend
 
 endif
-
-DISTCLEANFILES = .depend
 
 .PHONY: depend docs

@@ -41,6 +41,7 @@
 #define GUESTFS_TAR_OUT_XATTRS_BITMASK (UINT64_C(1)<<3)
 #define GUESTFS_TAR_OUT_SELINUX_BITMASK (UINT64_C(1)<<4)
 #define GUESTFS_TAR_OUT_ACLS_BITMASK (UINT64_C(1)<<5)
+#define GUESTFS_GLOB_EXPAND_DIRECTORYSLASH_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_MKSWAP_LABEL_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_MKSWAP_UUID_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_GREP_EXTENDED_BITMASK (UINT64_C(1)<<0)
@@ -205,6 +206,8 @@
 #define GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_FLUSH_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_BTRFS_FILESYSTEM_DEFRAGMENT_COMPRESS_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_BTRFS_IMAGE_COMPRESSLEVEL_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_SELINUX_RELABEL_FORCE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_DOWNLOAD_BLOCKS_UNALLOCATED_BITMASK (UINT64_C(1)<<0)
 extern int do_mount (const mountable_t *mountable, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -310,7 +313,7 @@ extern int do_sleep (int secs);
 extern int do_ntfs_3g_probe (int rw, const char *device);
 extern char *do_sh (const char *command);
 extern char **do_sh_lines (const char *command);
-extern char **do_glob_expand (const char *pattern);
+extern char **do_glob_expand (const char *pattern, int directoryslash);
 extern int do_scrub_device (const char *device);
 extern int do_scrub_file (const char *file);
 extern int do_scrub_freespace (const char *dir);
@@ -457,7 +460,7 @@ extern int do_luks_format (const char *device, const char *key, int keyslot);
 extern int do_luks_format_cipher (const char *device, const char *key, int keyslot, const char *cipher);
 extern int do_luks_add_key (const char *device, const char *key, const char *newkey, int keyslot);
 extern int do_luks_kill_slot (const char *device, const char *key, int keyslot);
-extern int do_is_lv (const char *device);
+extern int do_is_lv (const mountable_t *mountable);
 extern char *do_findfs_uuid (const char *uuid);
 extern char *do_findfs_label (const char *label);
 extern int do_is_chardev (const char *path, int followsymlinks);
@@ -649,5 +652,15 @@ extern int do_btrfs_replace (const char *srcdev, const char *targetdev, const ch
 extern int do_set_uuid_random (const char *device);
 extern int64_t do_vfs_minimum_size (const mountable_t *mountable);
 extern int do_internal_feature_available (const char *group);
+extern int do_part_set_disk_guid (const char *device, const char *guid);
+extern char *do_part_get_disk_guid (const char *device);
+extern int do_part_set_disk_guid_random (const char *device);
+extern int do_part_expand_gpt (const char *device);
+extern int do_ntfscat_i (const mountable_t *device, int64_t inode);
+extern int do_download_inode (const mountable_t *device, int64_t inode);
+extern char **do_btrfs_filesystem_show (const char *device);
+extern int do_internal_filesystem_walk (const mountable_t *device);
+extern int do_selinux_relabel (const char *specfile, const char *path, int force);
+extern int do_download_blocks (const mountable_t *device, int64_t start, int64_t stop, int unallocated);
 
 #endif /* GUESTFSD_ACTIONS_H */

@@ -928,3 +928,112 @@ do_part_get_mbr_part_type (const char *device, int partnum)
   reply_with_error ("strdup failed");
   return NULL;
 }
+
+char *
+do_part_get_disk_guid (const char *device)
+{
+  const char *pattern = "Disk identifier (GUID):";
+  size_t i;
+
+  CLEANUP_FREE char *err = NULL;
+  int r = commandf (NULL, &err, COMMAND_FLAG_FOLD_STDOUT_ON_STDERR,
+                    str_sgdisk, device, "-p", NULL);
+  if (r == -1) {
+    reply_with_error ("%s %s -p: %s", str_sgdisk, device, err);
+    return NULL;
+  }
+
+  CLEANUP_FREE_STRING_LIST char **lines = split_lines (err);
+  if (lines == NULL) {
+    reply_with_error ("'%s %s -p' returned no output",
+                      str_sgdisk, device);
+    return NULL;
+  }
+
+  for (i = 0; lines[i] != NULL; ++i) {
+    if (STRPREFIX (lines[i], pattern)) {
+      char *value = lines[i] + strlen (pattern);
+
+      /* Skip any leading whitespace */
+      value += strspn (value, " \t");
+
+      /* Extract the actual information from the field. */
+      char *ret = extract_uuid (value);
+      if (ret == NULL) {
+        /* The extraction function already sends the error. */
+        return NULL;
+      }
+
+      return ret;
+    }
+  }
+
+  /* If we got here it means we didn't find the field */
+  reply_with_error ("sgdisk output did not contain disk GUID. "
+                    "See LIBGUESTFS_DEBUG output for more details");
+  return NULL;
+}
+
+int
+do_part_set_disk_guid (const char *device, const char *guid)
+{
+  CLEANUP_FREE char *err = NULL;
+  int r = commandf (NULL, &err, COMMAND_FLAG_FOLD_STDOUT_ON_STDERR,
+                    str_sgdisk, device, "-U", guid, NULL);
+
+  if (r == -1) {
+    reply_with_error ("%s %s -U %s: %s", str_sgdisk, device, guid, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_part_set_disk_guid_random (const char *device)
+{
+  CLEANUP_FREE char *err = NULL;
+  int r = commandf (NULL, &err, COMMAND_FLAG_FOLD_STDOUT_ON_STDERR,
+                    str_sgdisk, device, "-U", "R", NULL);
+
+  if (r == -1) {
+    reply_with_error ("%s %s -U R: %s", str_sgdisk, device, err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_part_expand_gpt(const char *device)
+{
+  CLEANUP_FREE char *err = NULL;
+
+  /* If something is broken, sgdisk may try to correct it.
+   * (e.g. recreate partition table and so on).
+   * We do not want such behavior, so dry-run at first.*/
+  int r = commandf (NULL, &err, COMMAND_FLAG_FOLD_STDOUT_ON_STDERR,
+                    str_sgdisk, "--pretend", "-e", device, NULL);
+
+  if (r == -1) {
+    reply_with_error ("%s --pretend -e %s: %s", str_sgdisk, device, err);
+    return -1;
+  }
+  if (err && strlen(err) != 0) {
+    /* Unexpected actions. */
+    reply_with_error ("%s --pretend -e %s: %s", str_sgdisk, device, err);
+    return -1;
+  }
+  free(err);
+
+  /* Now we can do a real run. */
+  r = commandf (NULL, &err, COMMAND_FLAG_FOLD_STDOUT_ON_STDERR,
+                str_sgdisk, "-e", device, NULL);
+
+  if (r == -1) {
+    reply_with_error ("%s -e %s: %s", str_sgdisk, device, err);
+    return -1;
+  }
+
+  return 0;
+}

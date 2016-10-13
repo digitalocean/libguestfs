@@ -20,14 +20,9 @@ include $(top_srcdir)/subdir-rules.mk
 EXTRA_DIST = \
 	guestmount.pod \
 	guestunmount.pod \
+	test-docs.sh \
 	test-fuse-umount-race.sh \
 	test-guestunmount-not-mounted.sh
-
-CLEANFILES = \
-	guestmount.1 \
-	guestunmount.1 \
-	stamp-guestmount.pod \
-	stamp-guestunmount.pod
 
 if HAVE_FUSE
 
@@ -39,6 +34,8 @@ bin_PROGRAMS = \
 # between guestfish and guestmount.
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
@@ -79,11 +76,14 @@ guestmount_LDADD = \
 # guestunmount
 
 guestunmount_SOURCES = \
+	../fish/display-options.c \
+	../fish/display-options.h \
 	guestunmount.c
 
 guestunmount_CPPFLAGS = \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/fish \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 guestunmount_CFLAGS = \
@@ -131,6 +131,7 @@ stamp-guestunmount.pod: guestunmount.pod
 # Tests.
 
 TESTS = \
+	test-docs.sh \
 	test-guestunmount-fd \
 	test-guestunmount-not-mounted.sh
 

@@ -396,6 +396,27 @@ struct guestfs_int_internal_mountable {
 
 typedef struct guestfs_int_internal_mountable guestfs_int_internal_mountable_list<>;
 
+struct guestfs_int_tsk_dirent {
+  uint64_t tsk_inode;
+  char tsk_type;
+  int64_t tsk_size;
+  string tsk_name<>;
+  unsigned int tsk_flags;
+  int64_t tsk_atime_sec;
+  int64_t tsk_atime_nsec;
+  int64_t tsk_mtime_sec;
+  int64_t tsk_mtime_nsec;
+  int64_t tsk_ctime_sec;
+  int64_t tsk_ctime_nsec;
+  int64_t tsk_crtime_sec;
+  int64_t tsk_crtime_nsec;
+  int64_t tsk_nlink;
+  string tsk_link<>;
+  int64_t tsk_spare1;
+};
+
+typedef struct guestfs_int_tsk_dirent guestfs_int_tsk_dirent_list<>;
+
 /* Function arguments and return values. */
 
 struct guestfs_mount_args {
@@ -993,6 +1014,7 @@ struct guestfs_sh_lines_ret {
 
 struct guestfs_glob_expand_args {
   string pattern<>;
+  bool directoryslash;
 };
 
 struct guestfs_glob_expand_ret {
@@ -1902,7 +1924,7 @@ struct guestfs_luks_kill_slot_args {
 };
 
 struct guestfs_is_lv_args {
-  string device<>;
+  string mountable<>;
 };
 
 struct guestfs_is_lv_ret {
@@ -3150,6 +3172,62 @@ struct guestfs_internal_feature_available_ret {
   int result;
 };
 
+struct guestfs_part_set_disk_guid_args {
+  string device<>;
+  string guid<>;
+};
+
+struct guestfs_part_get_disk_guid_args {
+  string device<>;
+};
+
+struct guestfs_part_get_disk_guid_ret {
+  string guid<>;
+};
+
+struct guestfs_part_set_disk_guid_random_args {
+  string device<>;
+};
+
+struct guestfs_part_expand_gpt_args {
+  string device<>;
+};
+
+struct guestfs_ntfscat_i_args {
+  string device<>;
+  int64_t inode;
+};
+
+struct guestfs_download_inode_args {
+  string device<>;
+  int64_t inode;
+};
+
+struct guestfs_btrfs_filesystem_show_args {
+  string device<>;
+};
+
+struct guestfs_btrfs_filesystem_show_ret {
+  guestfs_str devices<>;
+};
+
+struct guestfs_internal_filesystem_walk_args {
+  string device<>;
+};
+
+struct guestfs_selinux_relabel_args {
+  string specfile<>;
+  string path<>;
+  bool force;
+};
+
+struct guestfs_download_blocks_args {
+  string device<>;
+  int64_t start;
+  int64_t stop;
+  bool unallocated;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3595,10 +3673,20 @@ enum guestfs_procedure {
   GUESTFS_PROC_BTRFS_REPLACE = 455,
   GUESTFS_PROC_SET_UUID_RANDOM = 456,
   GUESTFS_PROC_VFS_MINIMUM_SIZE = 457,
-  GUESTFS_PROC_INTERNAL_FEATURE_AVAILABLE = 458
+  GUESTFS_PROC_INTERNAL_FEATURE_AVAILABLE = 458,
+  GUESTFS_PROC_PART_SET_DISK_GUID = 459,
+  GUESTFS_PROC_PART_GET_DISK_GUID = 460,
+  GUESTFS_PROC_PART_SET_DISK_GUID_RANDOM = 461,
+  GUESTFS_PROC_PART_EXPAND_GPT = 462,
+  GUESTFS_PROC_NTFSCAT_I = 463,
+  GUESTFS_PROC_DOWNLOAD_INODE = 464,
+  GUESTFS_PROC_BTRFS_FILESYSTEM_SHOW = 465,
+  GUESTFS_PROC_INTERNAL_FILESYSTEM_WALK = 466,
+  GUESTFS_PROC_SELINUX_RELABEL = 467,
+  GUESTFS_PROC_DOWNLOAD_BLOCKS = 468
 };
 
-const GUESTFS_MAX_PROC_NR = 458;
+const GUESTFS_MAX_PROC_NR = 468;
 
 /* The remote procedure call protocol. */
 

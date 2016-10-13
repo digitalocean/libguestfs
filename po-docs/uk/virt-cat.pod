@@ -131,9 +131,9 @@ see what you are typing.
 Read key or passphrase parameters from stdin.  The default is to try to read
 passphrases from the user by opening F</dev/tty>.
 
-=item B<-m пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
+=item B<-m> dev[:mountpoint[:options[:fstype]]]
 
-=item B<--mount пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
+=item B<--mount> dev[:mountpoint[:options[:fstype]]]
 
 Змонтувати названий розділ або логічний том до вказаної точки монтування.
 

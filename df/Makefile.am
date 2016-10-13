@@ -20,17 +20,16 @@ include $(top_srcdir)/subdir-rules.mk
 EXTRA_DIST = \
 	README \
 	test-virt-df.sh \
+	test-virt-df-docs.sh \
 	test-virt-df-guests.sh \
 	virt-df.pod
-
-CLEANFILES = \
-	stamp-virt-df.pod \
-	virt-df.1
 
 bin_PROGRAMS = virt-df
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
@@ -95,7 +94,8 @@ stamp-virt-df.pod: virt-df.pod
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-TESTS =
+TESTS = \
+	test-virt-df-docs.sh
 
 if ENABLE_APPLIANCE
 TESTS += \

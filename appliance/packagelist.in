@@ -43,6 +43,7 @@ ifelse(REDHAT,1,
   ntfs-3g
   openssh-clients
   pcre
+  policycoreutils
   reiserfs-utils
   libselinux
   syslinux-extlinux
@@ -220,6 +221,7 @@ cpio
 diffutils
 dosfstools
 e2fsprogs
+f2fs-tools
 file
 findutils
 gawk
@@ -240,12 +242,14 @@ dnl Enabling this pulls out 140 extra packages
 dnl into the appliance:
 dnl ocfs2-tools
 parted
+pciutils
 procps
 procps-ng
 psmisc
 rsync
 scrub
 sed
+sleuthkit
 strace
 syslinux
 tar

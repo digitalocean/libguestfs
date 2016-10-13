@@ -41,12 +41,9 @@ EXTRA_DIST = \
 	expected-coreos.img.xml \
 	expected-windows.img.xml \
 	test-virt-inspector.sh \
+	test-virt-inspector-docs.sh \
 	test-xmllint.sh.in \
 	virt-inspector.pod
-
-CLEANFILES = \
-	stamp-virt-inspector.pod \
-	virt-inspector.1
 
 docdir = @docdir@
 dist_doc_DATA = \
@@ -57,6 +54,8 @@ bin_PROGRAMS = virt-inspector
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
@@ -107,7 +106,14 @@ stamp-virt-inspector.pod: virt-inspector.pod
 	touch $@
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
-TESTS = test-virt-inspector.sh
+
+TESTS = \
+	test-virt-inspector-docs.sh
+
+if ENABLE_APPLIANCE
+TESTS += \
+	test-virt-inspector.sh
+endif ENABLE_APPLIANCE
 if HAVE_XMLLINT
 TESTS += test-xmllint.sh
 endif

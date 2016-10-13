@@ -357,9 +357,9 @@ LISTING> above.
 Read key or passphrase parameters from stdin.  The default is to try to read
 passphrases from the user by opening F</dev/tty>.
 
-=item B<-m пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
+=item B<-m> dev[:mountpoint[:options[:fstype]]]
 
-=item B<--mount пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]>
+=item B<--mount> dev[:mountpoint[:options[:fstype]]]
 
 Змонтувати названий розділ або логічний том до вказаної точки монтування.
 
@@ -523,5 +523,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

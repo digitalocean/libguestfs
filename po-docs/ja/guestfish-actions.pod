@@ -1054,6 +1054,18 @@ L<btrfs(8)> 参照。
 This command depends on the feature C<btrfs>.  See also
 L</feature-available>.
 
+=head2 btrfs-filesystem-show
+
+ btrfs-filesystem-show device
+
+Show all the devices where the filesystems in C<device> is spanned over.
+
+If not all the devices for the filesystems are present, then this function
+fails and the C<errno> is set to C<ENODEV>.
+
+This command depends on the feature C<btrfs>.  See also
+L</feature-available>.
+
 =head2 btrfs-filesystem-sync
 
  btrfs-filesystem-sync fs
@@ -1984,6 +1996,48 @@ L</upload>, L</cat> 参照。
 
 標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
+=head2 download-blocks
+
+ download-blocks device start stop (filename|-) [unallocated:true|false]
+
+Download the data units from F<start> address to F<stop> from the disk
+partition (eg. F</dev/sda1>)  and save them as F<filename> on the local
+machine.
+
+The use of this API on sparse disk image formats such as QCOW, may result in
+large zero-filled files downloaded on the host.
+
+The size of a data unit varies across filesystem implementations.  On NTFS
+filesystems data units are referred as clusters while on ExtX ones they are
+referred as fragments.
+
+If the optional C<unallocated> flag is true (default is false), only the
+unallocated blocks will be extracted.  This is useful to detect hidden data
+or to retrieve deleted files which data units have not been overwritten yet.
+
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
+This command depends on the feature C<sleuthkit>.  See also
+L</feature-available>.
+
+=head2 download-inode
+
+ download-inode device inode (filename|-)
+
+Download a file given its inode from the disk partition (eg. F</dev/sda1>)
+and save it as F<filename> on the local machine.
+
+It is not required to mount the disk to run this command.
+
+The command is capable of downloading deleted or inaccessible files.
+
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
+
+This command depends on the feature C<sleuthkit>.  See also
+L</feature-available>.
+
 =head2 download-offset
 
  download-offset remotefilename (filename|-) offset size
@@ -2382,6 +2436,150 @@ mkfs.E<lt>I<fs>E<gt> tool.
 
 See also L</available>, L</feature-available>, L<guestfs(3)/AVAILABILITY>.
 
+=head2 filesystem-walk
+
+ filesystem-walk device
+
+Walk through the internal structures of a disk partition (eg. F</dev/sda1>)
+in order to return a list of all the files and directories stored within.
+
+It is not necessary to mount the disk partition to run this command.
+
+All entries in the filesystem are returned, excluding C<.> and C<..>. This
+function can list deleted or unaccessible files.  The entries are I<not>
+sorted.
+
+The C<tsk_dirent> structure contains the following fields.
+
+=over 4
+
+=item 'tsk_inode'
+
+Filesystem reference number of the node. It migh be C<0> if the node has
+been deleted.
+
+=item 'tsk_type'
+
+Basic file type information.  See below for a detailed list of values.
+
+=item 'tsk_size'
+
+File size in bytes. It migh be C<-1> if the node has been deleted.
+
+=item 'tsk_name'
+
+The file path relative to its directory.
+
+=item 'tsk_flags'
+
+Bitfield containing extra information regarding the entry.  It contains the
+logical OR of the following values:
+
+=over 4
+
+=item 0x0001
+
+If set to C<1>, the file is allocated and visible within the filesystem.
+Otherwise, the file has been deleted.  Under certain circumstances, the
+function C<download_inode> can be used to recover deleted files.
+
+=item 0x0002
+
+Filesystem such as NTFS and Ext2 or greater, separate the file name from the
+metadata structure.  The bit is set to C<1> when the file name is in an
+unallocated state and the metadata structure is in an allocated one.  This
+generally implies the metadata has been reallocated to a new file.
+Therefore, information such as file type, file size, timestamps, number of
+links and symlink target might not correspond with the ones of the original
+deleted entry.
+
+=item 0x0004
+
+The bit is set to C<1> when the file is compressed using filesystem native
+compression support (NTFS). The API is not able to detect application level
+compression.
+
+=back
+
+=item 'tsk_atime_sec'
+
+=item 'tsk_atime_nsec'
+
+=item 'tsk_mtime_sec'
+
+=item 'tsk_mtime_nsec'
+
+=item 'tsk_ctime_sec'
+
+=item 'tsk_ctime_nsec'
+
+=item 'tsk_crtime_sec'
+
+=item 'tsk_crtime_nsec'
+
+Respectively, access, modification, last status change and creation time in
+Unix format in seconds and nanoseconds.
+
+=item 'tsk_nlink'
+
+Number of file names pointing to this entry.
+
+=item 'tsk_link'
+
+If the entry is a symbolic link, this field will contain the path to the
+target file.
+
+=back
+
+The C<tsk_type> field will contain one of the following characters:
+
+=over 4
+
+=item 'b'
+
+ブロック特殊
+
+=item 'c'
+
+キャラクター特殊
+
+=item 'd'
+
+ディレクトリ
+
+=item 'f'
+
+FIFO (名前付きパイプ)
+
+=item 'l'
+
+シンボリックリンク
+
+=item 'r'
+
+通常のファイル
+
+=item 's'
+
+ソケット
+
+=item 'h'
+
+Shadow inode (Solaris)
+
+=item 'w'
+
+Whiteout inode (BSD)
+
+=item 'u'
+
+未知のファイル種別
+
+=back
+
+This command depends on the feature C<libtsk>.  See also
+L</feature-available>.
+
 =head2 fill
 
  fill c len path
@@ -2529,6 +2727,10 @@ etc.
 This operation requires support in libguestfs, the mounted filesystem, the
 host filesystem, qemu and the host kernel.  If this support isn't present it
 may give an error or even appear to run but do nothing.
+
+In the case where the kernel vfs driver does not support trimming, this call
+will fail with errno set to C<ENOTSUP>.  Currently this happens when trying
+to trim FAT filesystems.
 
 See also L</zero-free-space>.  That is a slightly different operation that
 turns free space in the filesystem into zeroes.  It is valid to call
@@ -2901,11 +3103,32 @@ appliance at boot time.  See L</set-selinux>.
 
 libguestfs のアーキテクチャーの詳細は L<guestfs(3)> を参照してください。
 
+I<This function is deprecated.> In new code, use the L</selinux-relabel>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 get-smp
 
  get-smp
 
 This returns the number of virtual CPUs assigned to the appliance.
+
+=head2 get-sockdir
+
+ get-sockdir
+
+Get the directory used by the handle to store temporary socket files.
+
+This is different from L</tmpdir>, as we need shorter paths for sockets (due
+to the limited buffers of filenames for UNIX sockets), and L</tmpdir> may be
+too long for them.
+
+The environment variable C<XDG_RUNTIME_DIR> controls the default value: If
+C<XDG_RUNTIME_DIR> is set, then that is the default.  Else F</tmp> is the
+default.
 
 =head2 get-tmpdir
 
@@ -2939,6 +3162,13 @@ set by calling L</umask>.
 これはデーモンの SELinux セキュリティコンテキストを取得します。
 
 L<guestfs(3)> の SELINUX および L</setcon> に関するドキュメントを参照してください
+
+I<This function is deprecated.> In new code, use the L</selinux-relabel>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 This command depends on the feature C<selinux>.  See also
 L</feature-available>.
@@ -2981,7 +3211,9 @@ L</feature-available>.
 
 =head2 glob-expand
 
- glob-expand pattern
+=head2 glob-expand-opts
+
+ glob-expand pattern [directoryslash:true|false]
 
 This command searches for all the pathnames matching C<pattern> according to
 the wildcard expansion rules used by the shell.
@@ -2991,9 +3223,15 @@ If no paths match, then this returns an empty list (note: not an error).
 It is just a wrapper around the C L<glob(3)> function with flags
 C<GLOB_MARK|GLOB_BRACE>.  See that manual page for more details.
 
+C<directoryslash> controls whether use the C<GLOB_MARK> flag for L<glob(3)>,
+and it defaults to true.  It can be explicitly set as off to return no
+trailing slashes in filenames of directories.
+
 Notice that there is no equivalent command for expanding a device name
 (eg. F</dev/sd*>).  Use L</list-devices>, L</list-partitions> etc functions
 instead.
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 grep
 
@@ -3601,6 +3839,10 @@ Ubuntu.
 
 ディストリビューションがわかりませんでした。
 
+=item "voidlinux"
+
+Void Linux.
+
 =item "windows"
 
 Windows はディストリビューションがありません。OS 種別が Windows ならば、この文字列は返されません。
@@ -3824,7 +4066,8 @@ format I<or> if the operating system does not have a real packaging system
 (eg. Windows).
 
 Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>,
-C<pkgsrc>, C<apk>.  Future versions of libguestfs may return other strings.
+C<pkgsrc>, C<apk>, C<xbps>.  Future versions of libguestfs may return other
+strings.
 
 詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
@@ -3842,8 +4085,8 @@ management tool I<or> if the operating system does not have a real packaging
 system (eg. Windows).
 
 Possible strings include: C<yum>, C<dnf>, C<up2date>, C<apt> (for all Debian
-derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>.
-Future versions of libguestfs may return other strings.
+derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>,
+C<xbps>.  Future versions of libguestfs may return other strings.
 
 詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
@@ -4322,10 +4565,10 @@ L</stat> 参照。
 
 =head2 is-lv
 
- is-lv device
+ is-lv mountable
 
-This command tests whether C<device> is a logical volume, and returns true
-iff this is the case.
+This command tests whether C<mountable> is a logical volume, and returns
+true iff this is the case.
 
 =head2 is-socket
 
@@ -4821,6 +5064,13 @@ cwd) in the format of 'ls -la'.
 List the files in F<directory> in the format of 'ls -laZ'.
 
 このコマンドはほとんどの対話式セッションのために有用です。出力文字列を構文解析しようという意図はI<ありません>。
+
+I<This function is deprecated.> In new code, use the L</lgetxattrs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 ln
 
@@ -5949,6 +6199,29 @@ the read-only (I<-o ro>) flag.
 This is the same as the L</mount> command, but it allows you to set both the
 mount options and the vfstype as for the L<mount(8)> I<-o> and I<-t> flags.
 
+=head2 mountable-device
+
+ mountable-device mountable
+
+Returns the device name of a mountable. In quite a lot of cases, the
+mountable is the device name.
+
+However this doesn't apply for btrfs subvolumes, where the mountable is a
+combination of both the device name and the subvolume path (see also
+L</mountable-subvolume> to extract the subvolume path of the mountable if
+any).
+
+=head2 mountable-subvolume
+
+ mountable-subvolume mountable
+
+Returns the subvolume path of a mountable. Btrfs subvolumes mountables are a
+combination of both the device name and the subvolume path (see also
+L</mountable-device> to extract the device of the mountable).
+
+If the mountable does not represent a btrfs subvolume, then this function
+fails and the C<errno> is set to C<EINVAL>.
+
 =head2 mountpoints
 
  mountpoints
@@ -6002,6 +6275,21 @@ some non-zero value documented in the L<ntfs-3g.probe(8)> manual page.
 
 This command depends on the feature C<ntfs3g>.  See also
 L</feature-available>.
+
+=head2 ntfscat-i
+
+ ntfscat-i device inode (filename|-)
+
+Download a file given its inode from a NTFS filesystem and save it as
+F<filename> on the local machine.
+
+This allows to download some otherwise inaccessible files such as the ones
+within the C<$Extend> folder.
+
+The filesystem from which to extract the file must be unmounted, otherwise
+the call will fail.
+
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 =head2 ntfsclone-in
 
@@ -6172,6 +6460,19 @@ L</part-add> to create a single primary partition covering the whole disk.
 C<parttype> is the partition table type, usually C<mbr> or C<gpt>, but other
 possible values are described in L</part-init>.
 
+=head2 part-expand-gpt
+
+ part-expand-gpt device
+
+Move backup GPT data structures to the end of the disk.  This is useful in
+case of in-place image expand since disk space after backup GPT header is
+not usable.  This is equivalent to C<sgdisk -e>.
+
+See also L<sgdisk(8)>.
+
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
+
 =head2 part-get-bootable
 
  part-get-bootable device partnum
@@ -6179,6 +6480,16 @@ possible values are described in L</part-init>.
 C<device> にあるパーティション C<partnum> にブート可能フラグが設定されていると、このコマンドは真を返します。
 
 L</part-set-bootable> 参照。
+
+=head2 part-get-disk-guid
+
+ part-get-disk-guid device
+
+Return the disk identifier (GUID) of a GPT-partitioned C<device>.  Behaviour
+is undefined for other partition types.
+
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
 
 =head2 part-get-gpt-guid
 
@@ -6356,6 +6667,28 @@ L</blockdev-getss> 参照。
 The bootable flag is used by some operating systems (notably Windows) to
 determine which partition to boot from.  It is by no means universally
 recognized.
+
+=head2 part-set-disk-guid
+
+ part-set-disk-guid device guid
+
+Set the disk identifier (GUID) of a GPT-partitioned C<device> to C<guid>.
+Return an error if the partition table of C<device> isn't GPT, or if C<guid>
+is not a valid GUID.
+
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
+
+=head2 part-set-disk-guid-random
+
+ part-set-disk-guid-random device
+
+Set the disk identifier (GUID) of a GPT-partitioned C<device> to a randomly
+generated value.  Return an error if the partition table of C<device> isn't
+GPT.
+
+This command depends on the feature C<gdisk>.  See also
+L</feature-available>.
 
 =head2 part-set-gpt-guid
 
@@ -6964,6 +7297,30 @@ more details.
 This command depends on the feature C<scrub>.  See also
 L</feature-available>.
 
+=head2 selinux-relabel
+
+ selinux-relabel specfile path [force:true|false]
+
+SELinux relabel parts of the filesystem.
+
+The C<specfile> parameter controls the policy spec file used.  You have to
+parse C</etc/selinux/config> to find the correct SELinux policy and then
+pass the spec file, usually: C</etc/selinux/> + I<selinuxtype> +
+C</contexts/files/file_contexts>.
+
+The required C<path> parameter is the top level directory where relabelling
+starts.  Normally you should pass C<path> as C</> to relabel the whole guest
+filesystem.
+
+The optional C<force> boolean controls whether the context is reset for
+customizable files, and also whether the user, role and range parts of the
+file context is changed.
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
+This command depends on the feature C<selinuxrelabel>.  See also
+L</feature-available>.
+
 =head2 set-append
 
 =head2 append
@@ -7413,6 +7770,13 @@ Note that if SELinux is enabled, it is always in Permissive mode
 
 libguestfs のアーキテクチャーの詳細は L<guestfs(3)> を参照してください。
 
+I<This function is deprecated.> In new code, use the L</selinux-relabel>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 set-smp
 
 =head2 smp
@@ -7501,6 +7865,13 @@ This sets the SELinux security context of the daemon to the string
 C<context>.
 
 L<guestfs(3)> における SELinux に関するドキュメントを参照してください。
+
+I<This function is deprecated.> In new code, use the L</selinux-relabel>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 This command depends on the feature C<selinux>.  See also
 L</feature-available>.

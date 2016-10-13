@@ -22,12 +22,9 @@
 # pragma GCC diagnostic ignored "-Woverlength-strings"
 # pragma GCC diagnostic ignored "-Wtype-limits"
 
-/* Work around a bug in GCC 5.3.1 and earlier; see:
-   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=68971
-   Hope it will be fixed by the time GCC 6 comes out.  */
-# if __GNUC__ < 6
-#  pragma GCC diagnostic ignored "-Woverflow"
-# endif
+/* Work around a bug in GCC 6.1 and earlier; see:
+   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=68971  */
+# pragma GCC diagnostic ignored "-Woverflow"
 
 #endif
 
@@ -94,12 +91,8 @@ main (void)
   ASSERT (TYPE_SIGNED (double));
   ASSERT (TYPE_SIGNED (long double));
 
-  /* Integer representation.  */
-  VERIFY (INT_MIN + INT_MAX < 0
-          ? (TYPE_TWOS_COMPLEMENT (int)
-             && ! TYPE_ONES_COMPLEMENT (int) && ! TYPE_SIGNED_MAGNITUDE (int))
-          : (! TYPE_TWOS_COMPLEMENT (int)
-             && (TYPE_ONES_COMPLEMENT (int) || TYPE_SIGNED_MAGNITUDE (int))));
+  /* Integer representation.  Check that it is two's complement.  */
+  VERIFY (INT_MIN + INT_MAX < 0);
 
   /* TYPE_MINIMUM, TYPE_MAXIMUM.  */
   VERIFY (TYPE_MINIMUM (char) == CHAR_MIN);
@@ -156,8 +149,7 @@ main (void)
     {                                                                     \
       t result;                                                           \
       ASSERT (INT_##opname##_WRAPV (a, b, &result) == (v));               \
-      ASSERT (result == ((v) ? (vres) : ((a) op (b)))                     \
-              || ((v) && !TYPE_TWOS_COMPLEMENT (t)));                     \
+      ASSERT (result == ((v) ? (vres) : ((a) op (b))));                   \
     }
   #define CHECK_UNOP(op, opname, a, t, v)                                 \
     VERIFY (INT_##opname##_RANGE_OVERFLOW (a, TYPE_MINIMUM (t),           \
@@ -183,7 +175,7 @@ main (void)
   CHECK_BINOP (-, SUBTRACT, UINT_MAX, 1u, unsigned int, false, UINT_MAX - 1u);
   CHECK_BINOP (-, SUBTRACT, 0u, 1u, unsigned int, true, 0u - 1u);
 
-  CHECK_UNOP (-, NEGATE, INT_MIN, int, TYPE_TWOS_COMPLEMENT (int));
+  CHECK_UNOP (-, NEGATE, INT_MIN, int, true);
   CHECK_UNOP (-, NEGATE, 0, int, false);
   CHECK_UNOP (-, NEGATE, INT_MAX, int, false);
   CHECK_UNOP (-, NEGATE, 0u, unsigned int, false);
@@ -230,8 +222,7 @@ main (void)
     {                                                                     \
       t result;                                                           \
       ASSERT (INT_ADD_WRAPV (a, b, &result) == (v));                      \
-      ASSERT (result == ((v) ? (vres) : ((a) + (b)))                      \
-              || ((v) && !TYPE_TWOS_COMPLEMENT (t)));                     \
+      ASSERT (result == ((v) ? (vres) : ((a) + (b))));                    \
     }
   CHECK_SSUM (-1, LONG_MIN, long int, true, LONG_MAX);
   CHECK_SUM (-1, UINT_MAX, unsigned int, false, DONTCARE);
@@ -259,8 +250,7 @@ main (void)
     {                                                                     \
       t result;                                                           \
       ASSERT (INT_SUBTRACT_WRAPV (a, b, &result) == (v));                 \
-      ASSERT (result == ((v) ? (vres) : ((a) - (b)))                      \
-              || ((v) && !TYPE_TWOS_COMPLEMENT (t)));                     \
+      ASSERT (result == ((v) ? (vres) : ((a) - (b))));                    \
     }
   CHECK_DIFFERENCE (INT_MAX, 1u, unsigned int, UINT_MAX < INT_MAX - 1,
                     INT_MAX - 1u);
@@ -292,8 +282,7 @@ main (void)
     {                                                                     \
       t result;                                                           \
       ASSERT (INT_MULTIPLY_WRAPV (a, b, &result) == (v));                 \
-      ASSERT (result == ((v) ? (vres) : ((a) * (b)))                      \
-              || ((v) && !TYPE_TWOS_COMPLEMENT (t)));                     \
+      ASSERT (result == ((v) ? (vres) : ((a) * (b))));                    \
     }
   CHECK_PRODUCT (-1, 1u, unsigned int, true, -1 * 1u);
   CHECK_SPRODUCT (-1, INT_MIN, int, INT_NEGATE_OVERFLOW (INT_MIN), INT_MIN);
@@ -351,8 +340,7 @@ main (void)
 
   #define CHECK_QUOTIENT(a, b, v) VERIFY (INT_DIVIDE_OVERFLOW (a, b) == (v))
 
-  CHECK_QUOTIENT (INT_MIN, -1L,
-                  TYPE_TWOS_COMPLEMENT (long int) && INT_MIN == LONG_MIN);
+  CHECK_QUOTIENT (INT_MIN, -1L, INT_MIN == LONG_MIN);
   CHECK_QUOTIENT (INT_MIN, UINT_MAX, false);
   CHECK_QUOTIENT (INTMAX_MIN, UINTMAX_MAX, false);
   CHECK_QUOTIENT (INTMAX_MIN, UINT_MAX, false);
@@ -365,8 +353,7 @@ main (void)
 
   #define CHECK_REMAINDER(a, b, v) VERIFY (INT_REMAINDER_OVERFLOW (a, b) == (v))
 
-  CHECK_REMAINDER (INT_MIN, -1L,
-                   TYPE_TWOS_COMPLEMENT (long int) && INT_MIN == LONG_MIN);
+  CHECK_REMAINDER (INT_MIN, -1L, INT_MIN == LONG_MIN);
   CHECK_REMAINDER (-1, UINT_MAX, true);
   CHECK_REMAINDER ((intmax_t) -1, UINTMAX_MAX, true);
   CHECK_REMAINDER (INTMAX_MIN, UINT_MAX,

@@ -16,6 +16,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/**
+ * This file implements L<guestfs(3)/guestfs_launch>.
+ *
+ * Most of the work is done by the backends (see
+ * L<guestfs(3)/BACKEND>), which are implemented in
+ * F<src/launch-direct.c>, F<src/launch-libvirt.c> etc, so this file
+ * mostly passes calls through to the current backend.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -58,13 +67,6 @@ guestfs_impl_launch (guestfs_h *g)
   if (guestfs_int_lazy_make_tmpdir (g) == -1)
     return -1;
 
-  /* Allow anyone to read the temporary directory.  The socket in this
-   * directory won't be readable but anyone can see it exists if they
-   * want. (RHBZ#610880).
-   */
-  if (chmod (g->tmpdir, 0755) == -1)
-    warning (g, "chmod: %s: %m (ignored)", g->tmpdir);
-
   /* Some common debugging information. */
   if (g->verbose) {
     CLEANUP_FREE_VERSION struct guestfs_version *v =
@@ -97,7 +99,10 @@ guestfs_impl_launch (guestfs_h *g)
   return 0;
 }
 
-/* launch (of the appliance) generates approximate progress
+/**
+ * This function sends a launch progress message.
+ *
+ * Launching the appliance generates approximate progress
  * messages.  Currently these are defined as follows:
  *
  *    0 / 12: launch clock starts
@@ -107,11 +112,24 @@ guestfs_impl_launch (guestfs_h *g)
  *   12 / 12: launch completed successfully
  *
  * Notes:
- * (1) This is not a documented ABI and the behaviour may be changed
+ *
+ * =over 4
+ *
+ * =item 1.
+ *
+ * This is not a documented ABI and the behaviour may be changed
  * or removed in future.
- * (2) Messages are only sent if more than 5 seconds has elapsed
+ *
+ * =item 2.
+ *
+ * Messages are only sent if more than 5 seconds has elapsed
  * since the launch clock started.
- * (3) There is a hack in proto.c to make this work.
+ *
+ * =item 3.
+ *
+ * There is a hack in F<src/proto.c> to make this work.
+ *
+ * =back
  */
 void
 guestfs_int_launch_send_progress (guestfs_h *g, int perdozen)
@@ -127,34 +145,11 @@ guestfs_int_launch_send_progress (guestfs_h *g, int perdozen)
   }
 }
 
-/* Note that since this calls 'debug' it should only be called
- * from the parent process.
- */
-void
-guestfs_int_print_timestamped_message (guestfs_h *g, const char *fs, ...)
-{
-  va_list args;
-  char *msg;
-  int err;
-  struct timeval tv;
-
-  va_start (args, fs);
-  err = vasprintf (&msg, fs, args);
-  va_end (args);
-
-  if (err < 0) return;
-
-  gettimeofday (&tv, NULL);
-
-  debug (g, "[%05" PRIi64 "ms] %s",
-         guestfs_int_timeval_diff (&g->launch_t, &tv), msg);
-
-  free (msg);
-}
-
-/* Compute Y - X and return the result in milliseconds.
+/**
+ * Compute C<y - x> and return the result in milliseconds.
+ *
  * Approximately the same as this code:
- * http://www.mpp.mpg.de/~huber/util/timevaldiff.c
+ * L<http://www.mpp.mpg.de/~huber/util/timevaldiff.c>
  */
 int64_t
 guestfs_int_timeval_diff (const struct timeval *x, const struct timeval *y)
@@ -181,7 +176,10 @@ guestfs_impl_get_pid (guestfs_h *g)
   return g->backend_ops->get_pid (g, g->backend_data);
 }
 
-/* Maximum number of disks. */
+/**
+ * Returns the maximum number of disks allowed to be added to the
+ * backend (backend dependent).
+ */
 int
 guestfs_impl_max_disks (guestfs_h *g)
 {
@@ -192,8 +190,10 @@ guestfs_impl_max_disks (guestfs_h *g)
   return g->backend_ops->max_disks (g, g->backend_data);
 }
 
-/* You had to call this function after launch in versions <= 1.0.70,
- * but it is now a no-op.
+/**
+ * Implementation of L<guestfs(3)/guestfs_wait_ready>.  You had to
+ * call this function after launch in versions E<le> 1.0.70, but it is
+ * now an (almost) no-op.
  */
 int
 guestfs_impl_wait_ready (guestfs_h *g)
@@ -284,25 +284,6 @@ guestfs_impl_config (guestfs_h *g,
   return 0;
 }
 
-/* Construct the Linux command line passed to the appliance.  This is
- * used by the 'direct' and 'libvirt' backends, and is simply
- * located in this file because it's a convenient place for this
- * common code.
- *
- * The 'appliance_dev' parameter must be the full device name of the
- * appliance disk and must have already been adjusted to take into
- * account virtio-blk or virtio-scsi; eg "/dev/sdb".
- *
- * The 'flags' parameter can contain the following flags logically
- * or'd together (or 0):
- *
- * GUESTFS___APPLIANCE_COMMAND_LINE_IS_TCG: If we are launching a qemu
- * TCG guest (ie. KVM is known to be disabled or unavailable).  If you
- * don't know, don't pass this flag.
- *
- * Note that this returns a newly allocated buffer which must be freed
- * by the caller.
- */
 #if defined(__powerpc64__)
 #define SERIAL_CONSOLE "console=hvc0 console=ttyS0"
 #elif defined(__arm__) || defined(__aarch64__)
@@ -311,6 +292,37 @@ guestfs_impl_config (guestfs_h *g,
 #define SERIAL_CONSOLE "console=ttyS0"
 #endif
 
+#if defined(__aarch64__)
+#define EARLYPRINTK " earlyprintk=pl011,0x9000000"
+#else
+#define EARLYPRINTK ""
+#endif
+
+/**
+ * Construct the Linux command line passed to the appliance.  This is
+ * used by the C<direct> and C<libvirt> backends, and is simply
+ * located in this file because it's a convenient place for this
+ * common code.
+ *
+ * The C<appliance_dev> parameter must be the full device name of the
+ * appliance disk and must have already been adjusted to take into
+ * account virtio-blk or virtio-scsi; eg C</dev/sdb>.
+ *
+ * The C<flags> parameter can contain the following flags logically
+ * or'd together (or 0):
+ *
+ * =over 4
+ *
+ * =item C<APPLIANCE_COMMAND_LINE_IS_TCG>
+ *
+ * If we are launching a qemu TCG guest (ie. KVM is known to be
+ * disabled or unavailable).  If you don't know, don't pass this flag.
+ *
+ * =back
+ *
+ * Note that this function returns a newly allocated buffer which must
+ * be freed by the caller.
+ */
 char *
 guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
 				    int flags)
@@ -339,9 +351,10 @@ guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
 #ifdef __i386__
      " noapic"                  /* workaround for RHBZ#857026 */
 #endif
-     " " SERIAL_CONSOLE /* serial console */
+     " " SERIAL_CONSOLE         /* serial console */
+     EARLYPRINTK                /* get messages from early boot */
 #ifdef __aarch64__
-     " earlyprintk=pl011,0x9000000 ignore_loglevel"
+     " ignore_loglevel"
      /* This option turns off the EFI RTC device.  QEMU VMs don't
       * currently provide EFI, and if the device is compiled in it
       * will try to call the EFI function GetTime unconditionally
@@ -354,12 +367,16 @@ guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
      " udev.event-timeout=6000" /* for newer udevd */
      " no_timer_check"  /* fix for RHBZ#502058 */
      "%s"               /* lpj */
-     " acpi=off"        /* we don't need ACPI, turn it off */
      " printk.time=1"   /* display timestamp before kernel messages */
      " cgroup_disable=memory"   /* saves us about 5 MB of RAM */
+     " usbcore.nousb"           /* disable USB, only saves about 1ms */
+     " cryptomgr.notests"       /* disable crypto tests, saves 28ms */
+     " tsc=reliable"            /* don't synch TSCs when using SMP,
+                                   saves 21ms for each secondary vCPU */
+     " 8250.nr_uarts=1"         /* don't scan all 8250 UARTS */
      "%s"                       /* root=appliance_dev */
      " %s"                      /* selinux */
-     "%s"                       /* verbose */
+     " %s"                      /* quiet/verbose */
      "%s"                       /* network */
      " TERM=%s"                 /* TERM environment variable */
      "%s%s"                     /* handle identifier */
@@ -370,7 +387,7 @@ guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
      lpj_s,
      root,
      g->selinux ? "selinux=1 enforcing=0" : "selinux=0",
-     g->verbose ? " guestfs_verbose=1" : "",
+     g->verbose ? "guestfs_verbose=1" : "quiet",
      g->enable_network ? " guestfs_network=1" : "",
      term ? term : "linux",
      STRNEQ (g->identifier, "") ? " guestfs_identifier=" : "",
@@ -380,22 +397,44 @@ guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
   return ret;
 }
 
-/* Return the right CPU model to use as the -cpu parameter or its
- * equivalent in libvirt.  This returns:
+/**
+ * Return the right CPU model to use as the qemu C<-cpu> parameter or
+ * its equivalent in libvirt.  This returns:
  *
- * - "host" (means use -cpu host)
- * - some string such as "cortex-a57" (means use -cpu string)
- * - NULL (means no -cpu option at all)
+ * =over 4
+ *
+ * =item C<"host">
+ *
+ * The literal string C<"host"> means use C<-cpu host>.
+ *
+ * =item some string
+ *
+ * Some string such as C<"cortex-a57"> means use C<-cpu cortex-a57>.
+ *
+ * =item C<NULL>
+ *
+ * C<NULL> means no C<-cpu> option at all.  Note returning C<NULL>
+ * does not indicate an error.
+ *
+ * =back
  *
  * This is made unnecessarily hard and fragile because of two stupid
  * choices in QEMU:
  *
- * (1) The default for qemu-system-aarch64 -M virt is to emulate a
- * cortex-a15 (WTF?).
+ * =over 4
  *
- * (2) We don't know for sure if KVM will work, but -cpu host is
- * broken with TCG, so we almost always pass a broken -cpu flag if KVM
- * is semi-broken in any way.
+ * =item *
+ *
+ * The default for C<qemu-system-aarch64 -M virt> is to emulate a
+ * C<cortex-a15> (WTF?).
+ *
+ * =item *
+ *
+ * We don't know for sure if KVM will work, but C<-cpu host> is broken
+ * with TCG, so we almost always pass a broken C<-cpu> flag if KVM is
+ * semi-broken in any way.
+ *
+ * =back
  */
 const char *
 guestfs_int_get_cpu_model (int kvm)
@@ -419,7 +458,31 @@ guestfs_int_get_cpu_model (int kvm)
 #endif
 }
 
-/* Register backends in a global list when the library is loaded. */
+/**
+ * Create the path for a socket with the selected filename in the
+ * tmpdir.
+ */
+int
+guestfs_int_create_socketname (guestfs_h *g, const char *filename,
+                               char (*sockpath)[UNIX_PATH_MAX])
+{
+  if (guestfs_int_lazy_make_sockdir (g) == -1)
+    return -1;
+
+  if (strlen (g->sockdir) + 1 + strlen (filename) > UNIX_PATH_MAX-1) {
+    error (g, _("socket path too long: %s/%s"), g->sockdir, filename);
+    return -1;
+  }
+
+  snprintf (*sockpath, UNIX_PATH_MAX, "%s/%s", g->sockdir, filename);
+
+  return 0;
+}
+
+/**
+ * When the library is loaded, each backend calls this function to
+ * register itself in a global list.
+ */
 void
 guestfs_int_register_backend (const char *name, const struct backend_ops *ops)
 {
@@ -435,10 +498,21 @@ guestfs_int_register_backend (const char *name, const struct backend_ops *ops)
   backends = b;
 }
 
-/* Set the current backend.  Notes:
- * (1) Callers must ensure this is only called in the config state.
- * (2) This shouldn't call 'error' since it may be called early in
+/**
+ * Implementation of L<guestfs(3)/guestfs_set_backend>.
+ *
+ * =over 4
+ *
+ * =item *
+ *
+ * Callers must ensure this is only called in the config state.
+ *
+ * =item *
+ *
+ * This shouldn't call C<error> since it may be called early in
  * handle initialization.  It can return an error code however.
+ *
+ * =back
  */
 int
 guestfs_int_set_backend (guestfs_h *g, const char *method)

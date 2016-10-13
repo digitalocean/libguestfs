@@ -16,7 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* Connection module for regular POSIX sockets. */
+/**
+ * This file handles connections to the child process where this is
+ * done over regular POSIX sockets.
+ */
 
 #include <config.h>
 
@@ -32,6 +35,8 @@
 #include <sys/types.h>
 #include <assert.h>
 #include <libintl.h>
+
+#include "ignore-value.h"
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
@@ -299,21 +304,38 @@ write_data (guestfs_h *g, struct connection *connv,
   return original_len;
 }
 
-/* This is called if conn->console_sock becomes ready to read while we
- * are doing one of the connection operations above.  It reads and
- * deals with the log message.
+/**
+ * This is called if C<conn-E<gt>console_sock> becomes ready to read
+ * while we are doing one of the connection operations above.  It
+ * reads and deals with the log message.
  *
  * Returns:
- *   1 = log message(s) were handled successfully
- *   0 = connection to appliance closed
- *  -1 = error
+ *
+ * =over 4
+ *
+ * =item C<1>
+ *
+ * log message(s) were handled successfully
+ *
+ * =item C<0>
+ *
+ * connection to appliance closed
+ *
+ * =item C<-1>
+ *
+ * error
+ *
+ * =back
  */
 static int
 handle_log_message (guestfs_h *g,
                     struct connection_socket *conn)
 {
-  char buf[BUFSIZ];
+  CLEANUP_FREE char *buf = safe_malloc (g, BUFSIZ);
   ssize_t n;
+  const char dsr_request[] = "\033[6n";
+  const char dsr_reply[] = "\033[24;80R";
+  const char dsr_reply_padding[] = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
 
   /* Carried over from ancient proto.c code.  The comment there was:
    *
@@ -329,7 +351,7 @@ handle_log_message (guestfs_h *g,
    */
   usleep (1000);
 
-  n = read (conn->console_sock, buf, sizeof buf);
+  n = read (conn->console_sock, buf, BUFSIZ);
   if (n == 0)
     return 0;
 
@@ -341,7 +363,34 @@ handle_log_message (guestfs_h *g,
     return -1;
   }
 
-  /* It's an actual log message, send it upwards. */
+  /* It's an actual log message. */
+
+  /* SGABIOS tries to query the "serial console" for its size using the
+   * ISO/IEC 6429 Device Status Report (ESC [ 6 n).  If it doesn't
+   * read anything back, then it unfortunately hangs for 0.26 seconds.
+   * Therefore we detect this situation and send back a fake console
+   * size.
+   */
+  if (memmem (buf, n, dsr_request, sizeof dsr_request - 1) != NULL) {
+    debug (g, "responding to serial console Device Status Report");
+
+    /* Ignore any error from this write, as it's just an optimization.
+     * We can't even be sure that console_sock is a socket or that
+     * it's writable.
+     */
+    ignore_value (write (conn->console_sock, dsr_reply,
+                         sizeof dsr_reply - 1));
+    /* Additionally, because of a bug in sgabios, it will still pause
+     * unless you write at least 14 bytes, so we have to pad the
+     * reply.  We can't pad with NULs since sgabios's input routine
+     * ignores these, so we have to use some other safe padding
+     * characters.  Backspace seems innocuous.
+     */
+    ignore_value (write (conn->console_sock, dsr_reply_padding,
+                         sizeof dsr_reply_padding - 1));
+  }
+
+  /* Send it upwards. */
   guestfs_int_log_message_callback (g, buf, n);
 
   return 1;
@@ -370,14 +419,15 @@ static struct connection_ops ops = {
   .can_read_data = can_read_data,
 };
 
-/* Create a new socket connection, listening.
+/**
+ * Create a new socket connection, listening.
  *
- * Note that it's OK for console_sock to be passed as -1, meaning
- * there's no console available for this appliance.
+ * Note that it's OK for C<console_sock> to be passed as C<-1>,
+ * meaning there's no console available for this appliance.
  *
- * After calling this, daemon_accept_sock is owned by the connection,
- * and will be closed properly either in accept_connection or
- * free_connection.
+ * After calling this, C<daemon_accept_sock> is owned by the
+ * connection, and will be closed properly either in
+ * C<accept_connection> or C<free_connection>.
  */
 struct connection *
 guestfs_int_new_conn_socket_listening (guestfs_h *g,
@@ -413,10 +463,11 @@ guestfs_int_new_conn_socket_listening (guestfs_h *g,
   return (struct connection *) conn;
 }
 
-/* Create a new socket connection, connected.
+/**
+ * Create a new socket connection, connected.
  *
- * As above, but the caller passes us a connected daemon_sock
- * and promises not to call accept_connection.
+ * As above, but the caller passes us a connected C<daemon_sock> and
+ * promises not to call C<accept_connection>.
  */
 struct connection *
 guestfs_int_new_conn_socket_connected (guestfs_h *g,

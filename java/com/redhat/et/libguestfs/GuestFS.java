@@ -2491,6 +2491,34 @@ public class GuestFS {
 
   /**
    * <p>
+   * list devices for btrfs filesystem
+   * </p><p>
+   * Show all the devices where the filesystems in "device"
+   * is spanned over.
+   * </p><p>
+   * If not all the devices for the filesystems are present,
+   * then this function fails and the "errno" is set to
+   * "ENODEV".
+   * </p><p>
+   * This function depends on the feature "btrfs".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.33.29
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public String[] btrfs_filesystem_show (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_filesystem_show: handle is closed");
+
+    return _btrfs_filesystem_show (g, device);
+  }
+
+  private native String[] _btrfs_filesystem_show (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * sync a btrfs filesystem
    * </p><p>
    * Force sync on the btrfs filesystem mounted at "fs".
@@ -4998,6 +5026,100 @@ public class GuestFS {
 
   /**
    * <p>
+   * download the given data units from the disk
+   * </p><p>
+   * Download the data units from start address to stop from
+   * the disk partition (eg. /dev/sda1) and save them as
+   * filename on the local machine.
+   * </p><p>
+   * The use of this API on sparse disk image formats such as
+   * QCOW, may result in large zero-filled files downloaded
+   * on the host.
+   * </p><p>
+   * The size of a data unit varies across filesystem
+   * implementations. On NTFS filesystems data units are
+   * referred as clusters while on ExtX ones they are
+   * referred as fragments.
+   * </p><p>
+   * If the optional "unallocated" flag is true (default is
+   * false), only the unallocated blocks will be extracted.
+   * This is useful to detect hidden data or to retrieve
+   * deleted files which data units have not been overwritten
+   * yet.
+   * </p><p>
+   * Optional arguments are supplied in the final
+   * Map&lt;String,Object&gt; parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * </p><p>
+   * This function depends on the feature "sleuthkit".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.33.45
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void download_blocks (String device, long start, long stop, String filename, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("download_blocks: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean unallocated = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("unallocated");
+    if (_optobj != null) {
+      unallocated = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    _download_blocks (g, device, start, stop, filename, _optargs_bitmask, unallocated);
+  }
+
+  public void download_blocks (String device, long start, long stop, String filename)
+    throws LibGuestFSException
+  {
+    download_blocks (device, start, stop, filename, null);
+  }
+
+  private native void _download_blocks (long g, String device, long start, long stop, String filename, long _optargs_bitmask, boolean unallocated)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * download a file to the local machine given its inode
+   * </p><p>
+   * Download a file given its inode from the disk partition
+   * (eg. /dev/sda1) and save it as filename on the local
+   * machine.
+   * </p><p>
+   * It is not required to mount the disk to run this
+   * command.
+   * </p><p>
+   * The command is capable of downloading deleted or
+   * inaccessible files.
+   * </p><p>
+   * This function depends on the feature "sleuthkit".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.33.14
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void download_inode (String device, long inode, String filename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("download_inode: handle is closed");
+
+    _download_inode (g, device, inode, filename);
+  }
+
+  private native void _download_inode (long g, String device, long inode, String filename)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * download a file to the local machine with offset and size
    * </p><p>
    * Download file remotefilename and save it as filename on
@@ -5686,6 +5808,128 @@ public class GuestFS {
 
   /**
    * <p>
+   * walk through the filesystem content
+   * </p><p>
+   * Walk through the internal structures of a disk partition
+   * (eg. /dev/sda1) in order to return a list of all the
+   * files and directories stored within.
+   * </p><p>
+   * It is not necessary to mount the disk partition to run
+   * this command.
+   * </p><p>
+   * All entries in the filesystem are returned, excluding
+   * "." and "..". This function can list deleted or
+   * unaccessible files. The entries are *not* sorted.
+   * </p><p>
+   * The "tsk_dirent" structure contains the following
+   * fields.
+   * </p><p>
+   * 'tsk_inode'
+   * Filesystem reference number of the node. It migh be
+   * 0 if the node has been deleted.
+   * </p><p>
+   * 'tsk_type'
+   * Basic file type information. See below for a
+   * detailed list of values.
+   * </p><p>
+   * 'tsk_size'
+   * File size in bytes. It migh be -1 if the node has
+   * been deleted.
+   * </p><p>
+   * 'tsk_name'
+   * The file path relative to its directory.
+   * </p><p>
+   * 'tsk_flags'
+   * Bitfield containing extra information regarding the
+   * entry. It contains the logical OR of the following
+   * values:
+   * </p><p>
+   * 0x0001
+   * If set to 1, the file is allocated and visible
+   * within the filesystem. Otherwise, the file has
+   * been deleted. Under certain circumstances, the
+   * function "download_inode" can be used to recover
+   * deleted files.
+   * </p><p>
+   * 0x0002
+   * Filesystem such as NTFS and Ext2 or greater,
+   * separate the file name from the metadata
+   * structure. The bit is set to 1 when the file
+   * name is in an unallocated state and the metadata
+   * structure is in an allocated one. This generally
+   * implies the metadata has been reallocated to a
+   * new file. Therefore, information such as file
+   * type, file size, timestamps, number of links and
+   * symlink target might not correspond with the
+   * ones of the original deleted entry.
+   * </p><p>
+   * 0x0004
+   * The bit is set to 1 when the file is compressed
+   * using filesystem native compression support
+   * (NTFS). The API is not able to detect
+   * application level compression.
+   * </p><p>
+   * 'tsk_atime_sec'
+   * 'tsk_atime_nsec'
+   * 'tsk_mtime_sec'
+   * 'tsk_mtime_nsec'
+   * 'tsk_ctime_sec'
+   * 'tsk_ctime_nsec'
+   * 'tsk_crtime_sec'
+   * 'tsk_crtime_nsec'
+   * Respectively, access, modification, last status
+   * change and creation time in Unix format in seconds
+   * and nanoseconds.
+   * </p><p>
+   * 'tsk_nlink'
+   * Number of file names pointing to this entry.
+   * </p><p>
+   * 'tsk_link'
+   * If the entry is a symbolic link, this field will
+   * contain the path to the target file.
+   * </p><p>
+   * The "tsk_type" field will contain one of the following
+   * characters:
+   * </p><p>
+   * 'b' Block special
+   * </p><p>
+   * 'c' Char special
+   * </p><p>
+   * 'd' Directory
+   * </p><p>
+   * 'f' FIFO (named pipe)
+   * </p><p>
+   * 'l' Symbolic link
+   * </p><p>
+   * 'r' Regular file
+   * </p><p>
+   * 's' Socket
+   * </p><p>
+   * 'h' Shadow inode (Solaris)
+   * </p><p>
+   * 'w' Whiteout inode (BSD)
+   * </p><p>
+   * 'u' Unknown file type
+   * </p><p>
+   * This function depends on the feature "libtsk".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.33.39
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public TSKDirent[] filesystem_walk (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("filesystem_walk: handle is closed");
+
+    return _filesystem_walk (g, device);
+  }
+
+  private native TSKDirent[] _filesystem_walk (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * fill a file with octets
    * </p><p>
    * This command creates a new file called "path". The
@@ -5945,6 +6189,11 @@ public class GuestFS {
    * mounted filesystem, the host filesystem, qemu and the
    * host kernel. If this support isn't present it may give
    * an error or even appear to run but do nothing.
+   * </p><p>
+   * In the case where the kernel vfs driver does not support
+   * trimming, this call will fail with errno set to
+   * "ENOTSUP". Currently this happens when trying to trim
+   * FAT filesystems.
    * </p><p>
    * See also "g.zero_free_space". That is a slightly
    * different operation that turns free space in the
@@ -6727,9 +6976,10 @@ public class GuestFS {
    * see guestfs(3).
    * </p>
    * @since 1.0.67
+   * @deprecated In new code, use {@link #selinux_relabel} instead
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public boolean get_selinux ()
+  @Deprecated public boolean get_selinux ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -6761,6 +7011,37 @@ public class GuestFS {
   }
 
   private native int _get_smp (long g)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * get the temporary directory for sockets
+   * </p><p>
+   * Get the directory used by the handle to store temporary
+   * socket files.
+   * </p><p>
+   * This is different from "g.tmpdir", as we need shorter
+   * paths for sockets (due to the limited buffers of
+   * filenames for UNIX sockets), and "g.tmpdir" may be too
+   * long for them.
+   * </p><p>
+   * The environment variable "XDG_RUNTIME_DIR" controls the
+   * default value: If "XDG_RUNTIME_DIR" is set, then that is
+   * the default. Else /tmp is the default.
+   * </p>
+   * @since 1.33.8
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public String get_sockdir ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_sockdir: handle is closed");
+
+    return _get_sockdir (g);
+  }
+
+  private native String _get_sockdir (long g)
     throws LibGuestFSException;
 
   /**
@@ -6886,9 +7167,10 @@ public class GuestFS {
    * This function depends on the feature "selinux".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.67
+   * @deprecated In new code, use {@link #selinux_relabel} instead
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public String getcon ()
+  @Deprecated public String getcon ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -6984,23 +7266,63 @@ public class GuestFS {
    * flags "GLOB_MARK|GLOB_BRACE". See that manual page for
    * more details.
    * </p><p>
+   * "directoryslash" controls whether use the "GLOB_MARK"
+   * flag for glob(3), and it defaults to true. It can be
+   * explicitly set as off to return no trailing slashes in
+   * filenames of directories.
+   * </p><p>
    * Notice that there is no equivalent command for expanding
    * a device name (eg. /dev/sd*). Use "g.list_devices",
    * "g.list_partitions" etc functions instead.
+   * </p><p>
+   * Optional arguments are supplied in the final
+   * Map&lt;String,Object&gt; parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * </p>
    * @since 1.0.50
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public String[] glob_expand (String pattern)
+  public String[] glob_expand (String pattern, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("glob_expand: handle is closed");
 
-    return _glob_expand (g, pattern);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean directoryslash = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("directoryslash");
+    if (_optobj != null) {
+      directoryslash = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    return _glob_expand (g, pattern, _optargs_bitmask, directoryslash);
   }
 
-  private native String[] _glob_expand (long g, String pattern)
+  public String[] glob_expand (String pattern)
+    throws LibGuestFSException
+  {
+    return glob_expand (pattern, null);
+  }
+
+  public String[] glob_expand_opts (String pattern, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    return glob_expand (pattern, optargs);
+  }
+
+  public String[] glob_expand_opts (String pattern)
+    throws LibGuestFSException
+  {
+    return glob_expand (pattern, null);
+  }
+
+  private native String[] _glob_expand (long g, String pattern, long _optargs_bitmask, boolean directoryslash)
     throws LibGuestFSException;
 
   /**
@@ -8165,6 +8487,9 @@ public class GuestFS {
    * "unknown"
    * The distro could not be determined.
    * </p><p>
+   * "voidlinux"
+   * Void Linux.
+   * </p><p>
    * "windows"
    * Windows does not have distributions. This string is
    * returned if the OS type is Windows.
@@ -8578,8 +8903,8 @@ public class GuestFS {
    * Windows).
    * </p><p>
    * Possible strings include: "rpm", "deb", "ebuild",
-   * "pisi", "pacman", "pkgsrc", "apk". Future versions of
-   * libguestfs may return other strings.
+   * "pisi", "pacman", "pkgsrc", "apk", "xbps". Future
+   * versions of libguestfs may return other strings.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p>
@@ -8615,8 +8940,8 @@ public class GuestFS {
    * </p><p>
    * Possible strings include: "yum", "dnf", "up2date", "apt"
    * (for all Debian derivatives), "portage", "pisi",
-   * "pacman", "urpmi", "zypper", "apk". Future versions of
-   * libguestfs may return other strings.
+   * "pacman", "urpmi", "zypper", "apk", "xbps". Future
+   * versions of libguestfs may return other strings.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p>
@@ -10523,24 +10848,24 @@ public class GuestFS {
 
   /**
    * <p>
-   * test if device is a logical volume
+   * test if mountable is a logical volume
    * </p><p>
-   * This command tests whether "device" is a logical volume,
-   * and returns true iff this is the case.
+   * This command tests whether "mountable" is a logical
+   * volume, and returns true iff this is the case.
    * </p>
    * @since 1.5.3
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public boolean is_lv (String device)
+  public boolean is_lv (String mountable)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("is_lv: handle is closed");
 
-    return _is_lv (g, device);
+    return _is_lv (g, mountable);
   }
 
-  private native boolean _is_lv (long g, String device)
+  private native boolean _is_lv (long g, String mountable)
     throws LibGuestFSException;
 
   /**
@@ -11738,9 +12063,10 @@ public class GuestFS {
    * string.
    * </p>
    * @since 1.17.6
+   * @deprecated In new code, use {@link #lgetxattrs} instead
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public String llz (String directory)
+  @Deprecated public String llz (String directory)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -14564,6 +14890,62 @@ public class GuestFS {
 
   /**
    * <p>
+   * extract the device part of a mountable
+   * </p><p>
+   * Returns the device name of a mountable. In quite a lot
+   * of cases, the mountable is the device name.
+   * </p><p>
+   * However this doesn't apply for btrfs subvolumes, where
+   * the mountable is a combination of both the device name
+   * and the subvolume path (see also "g.mountable_subvolume"
+   * to extract the subvolume path of the mountable if any).
+   * </p>
+   * @since 1.33.15
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public String mountable_device (String mountable)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mountable_device: handle is closed");
+
+    return _mountable_device (g, mountable);
+  }
+
+  private native String _mountable_device (long g, String mountable)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * extract the subvolume part of a mountable
+   * </p><p>
+   * Returns the subvolume path of a mountable. Btrfs
+   * subvolumes mountables are a combination of both the
+   * device name and the subvolume path (see also
+   * "g.mountable_device" to extract the device of the
+   * mountable).
+   * </p><p>
+   * If the mountable does not represent a btrfs subvolume,
+   * then this function fails and the "errno" is set to
+   * "EINVAL".
+   * </p>
+   * @since 1.33.15
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public String mountable_subvolume (String mountable)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mountable_subvolume: handle is closed");
+
+    return _mountable_subvolume (g, mountable);
+  }
+
+  private native String _mountable_subvolume (long g, String mountable)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * show mountpoints
    * </p><p>
    * This call is similar to "g.mounts". That call returns a
@@ -14700,6 +15082,34 @@ public class GuestFS {
   }
 
   private native int _ntfs_3g_probe (long g, boolean rw, String device)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * download a file to the local machine given its inode
+   * </p><p>
+   * Download a file given its inode from a NTFS filesystem
+   * and save it as filename on the local machine.
+   * </p><p>
+   * This allows to download some otherwise inaccessible
+   * files such as the ones within the $Extend folder.
+   * </p><p>
+   * The filesystem from which to extract the file must be
+   * unmounted, otherwise the call will fail.
+   * </p>
+   * @since 1.33.14
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void ntfscat_i (String device, long inode, String filename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ntfscat_i: handle is closed");
+
+    _ntfscat_i (g, device, inode, filename);
+  }
+
+  private native void _ntfscat_i (long g, String device, long inode, String filename)
     throws LibGuestFSException;
 
   /**
@@ -15140,6 +15550,34 @@ public class GuestFS {
 
   /**
    * <p>
+   * move backup GPT header to the end of the disk
+   * </p><p>
+   * Move backup GPT data structures to the end of the disk.
+   * This is useful in case of in-place image expand since
+   * disk space after backup GPT header is not usable. This
+   * is equivalent to "sgdisk -e".
+   * </p><p>
+   * See also sgdisk(8).
+   * </p><p>
+   * This function depends on the feature "gdisk".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.33.2
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void part_expand_gpt (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_expand_gpt: handle is closed");
+
+    _part_expand_gpt (g, device);
+  }
+
+  private native void _part_expand_gpt (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * return true if a partition is bootable
    * </p><p>
    * This command returns true if the partition "partnum" on
@@ -15160,6 +15598,31 @@ public class GuestFS {
   }
 
   private native boolean _part_get_bootable (long g, String device, int partnum)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * get the GUID of a GPT-partitioned disk
+   * </p><p>
+   * Return the disk identifier (GUID) of a GPT-partitioned
+   * "device". Behaviour is undefined for other partition
+   * types.
+   * </p><p>
+   * This function depends on the feature "gdisk".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.33.2
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public String part_get_disk_guid (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_get_disk_guid: handle is closed");
+
+    return _part_get_disk_guid (g, device);
+  }
+
+  private native String _part_get_disk_guid (long g, String device)
     throws LibGuestFSException;
 
   /**
@@ -15444,6 +15907,57 @@ public class GuestFS {
   }
 
   private native void _part_set_bootable (long g, String device, int partnum, boolean bootable)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * set the GUID of a GPT-partitioned disk
+   * </p><p>
+   * Set the disk identifier (GUID) of a GPT-partitioned
+   * "device" to "guid". Return an error if the partition
+   * table of "device" isn't GPT, or if "guid" is not a valid
+   * GUID.
+   * </p><p>
+   * This function depends on the feature "gdisk".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.33.2
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void part_set_disk_guid (String device, String guid)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_set_disk_guid: handle is closed");
+
+    _part_set_disk_guid (g, device, guid);
+  }
+
+  private native void _part_set_disk_guid (long g, String device, String guid)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * set the GUID of a GPT-partitioned disk to random value
+   * </p><p>
+   * Set the disk identifier (GUID) of a GPT-partitioned
+   * "device" to a randomly generated value. Return an error
+   * if the partition table of "device" isn't GPT.
+   * </p><p>
+   * This function depends on the feature "gdisk".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.33.2
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void part_set_disk_guid_random (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_set_disk_guid_random: handle is closed");
+
+    _part_set_disk_guid_random (g, device);
+  }
+
+  private native void _part_set_disk_guid_random (long g, String device)
     throws LibGuestFSException;
 
   /**
@@ -16835,6 +17349,67 @@ public class GuestFS {
 
   /**
    * <p>
+   * relabel parts of the filesystem
+   * </p><p>
+   * SELinux relabel parts of the filesystem.
+   * </p><p>
+   * The "specfile" parameter controls the policy spec file
+   * used. You have to parse "/etc/selinux/config" to find
+   * the correct SELinux policy and then pass the spec file,
+   * usually: "/etc/selinux/" + *selinuxtype* +
+   * "/contexts/files/file_contexts".
+   * </p><p>
+   * The required "path" parameter is the top level directory
+   * where relabelling starts. Normally you should pass
+   * "path" as "/" to relabel the whole guest filesystem.
+   * </p><p>
+   * The optional "force" boolean controls whether the
+   * context is reset for customizable files, and also
+   * whether the user, role and range parts of the file
+   * context is changed.
+   * </p><p>
+   * Optional arguments are supplied in the final
+   * Map&lt;String,Object&gt; parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * </p><p>
+   * This function depends on the feature "selinuxrelabel".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.33.43
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void selinux_relabel (String specfile, String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("selinux_relabel: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean force = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("force");
+    if (_optobj != null) {
+      force = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    _selinux_relabel (g, specfile, path, _optargs_bitmask, force);
+  }
+
+  public void selinux_relabel (String specfile, String path)
+    throws LibGuestFSException
+  {
+    selinux_relabel (specfile, path, null);
+  }
+
+  private native void _selinux_relabel (long g, String specfile, String path, long _optargs_bitmask, boolean force)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * add options to kernel command line
    * </p><p>
    * This function is used to add additional options to the
@@ -17641,9 +18216,10 @@ public class GuestFS {
    * see guestfs(3).
    * </p>
    * @since 1.0.67
+   * @deprecated In new code, use {@link #selinux_relabel} instead
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public void set_selinux (boolean selinux)
+  @Deprecated public void set_selinux (boolean selinux)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -17837,9 +18413,10 @@ public class GuestFS {
    * This function depends on the feature "selinux".  See also {@link #feature_available}.
    * </p>
    * @since 1.0.67
+   * @deprecated In new code, use {@link #selinux_relabel} instead
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public void setcon (String context)
+  @Deprecated public void setcon (String context)
     throws LibGuestFSException
   {
     if (g == 0)

@@ -75,6 +75,8 @@ sources = \
 	tests_c_api.ml \
 	tests_c_api.mli \
 	types.ml \
+	uefi.ml \
+	uefi.mli \
 	utils.ml \
 	utils.mli \
 	xdr.ml \
@@ -82,6 +84,7 @@ sources = \
 
 # In build dependency order.
 objects = \
+	$(OCAML_GENERATOR_BYTES_COMPAT_CMO) \
 	types.cmo \
 	utils.cmo \
 	actions.cmo \
@@ -112,6 +115,7 @@ objects = \
 	bindtests.cmo \
 	errnostring.cmo \
 	customize.cmo \
+	uefi.cmo \
 	main.cmo
 
 EXTRA_DIST = $(sources) files-generated.txt
@@ -170,8 +174,8 @@ stamp-generator: generator
 	cd $(top_srcdir) && $(abs_builddir)/generator
 	touch $@
 
-CLEANFILES = $(noinst_DATA) $(noinst_PROGRAM) *.cmi *.cmo *~
+CLEANFILES += $(noinst_DATA) $(noinst_PROGRAM)
 
-DISTCLEANFILES = .depend .pod2text.data.version.2
+DISTCLEANFILES += .pod2text.data.version.2
 
 SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly

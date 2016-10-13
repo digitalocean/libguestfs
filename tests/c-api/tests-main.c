@@ -23,6 +23,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
+#include <error.h>
 #include <fcntl.h>
 #include <assert.h>
 #include <sys/utsname.h>
@@ -271,18 +273,12 @@ md5sum (const char *filename, char *result)
   char cmd[256];
   snprintf (cmd, sizeof cmd, "md5sum %s", filename);
   FILE *pp = popen (cmd, "r");
-  if (pp == NULL) {
-    perror (cmd);
-    exit (EXIT_FAILURE);
-  }
-  if (fread (result, 1, 32, pp) != 32) {
-    perror ("md5sum: fread");
-    exit (EXIT_FAILURE);
-  }
-  if (pclose (pp) != 0) {
-    perror ("pclose");
-    exit (EXIT_FAILURE);
-  }
+  if (pp == NULL)
+    error (EXIT_FAILURE, errno, "popen: %s", cmd);
+  if (fread (result, 1, 32, pp) != 32)
+    error (EXIT_FAILURE, errno, "md5sum: fread");
+  if (pclose (pp) != 0)
+    error (EXIT_FAILURE, errno, "pclose");
   result[32] = '\0';
 }
 
@@ -349,11 +345,9 @@ match_re (const char *str, const char *pattern)
   int vec[30], r;
 
   re = pcre_compile (pattern, 0, &err, &offset, NULL);
-  if (re == NULL) {
-    fprintf (stderr, "tests: cannot compile regular expression '%s': %s\n",
-             pattern, err);
-    exit (EXIT_FAILURE);
-  }
+  if (re == NULL)
+    error (EXIT_FAILURE, 0,
+           "cannot compile regular expression '%s': %s", pattern, err);
   r = pcre_exec (re, NULL, str, len, 0, 0, vec, sizeof vec / sizeof vec[0]);
   pcre_free (re);
 
@@ -374,25 +368,20 @@ substitute_srcdir (const char *path)
     const char *srcdir;
 
     srcdir = getenv ("srcdir");
-    if (!srcdir) {
-      fprintf (stderr, "tests: environment variable $srcdir is not defined.\n"
-               "Normally it is defined by automake.  If you are running the\n"
-               "tests directly, set $srcdir to point to the source tests/c-api\n"
-               "directory.\n");
-      exit (EXIT_FAILURE);
-    }
+    if (!srcdir)
+      error (EXIT_FAILURE, 0,
+             "environment variable $srcdir is not defined.\n"
+             "Normally it is defined by automake.  If you are running the\n"
+             "tests directly, set $srcdir to point to the source tests/c-api\n"
+             "directory.");
 
-    if (asprintf (&ret, "%s%s", srcdir, path + 7) == -1) {
-      perror ("asprintf");
-      exit (EXIT_FAILURE);
-    }
+    if (asprintf (&ret, "%s%s", srcdir, path + 7) == -1)
+      error (EXIT_FAILURE, errno, "asprintf");
   }
   else {
     ret = strdup (path);
-    if (!ret) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (!ret)
+      error (EXIT_FAILURE, errno, "strdup");
   }
 
   return ret;
@@ -493,17 +482,12 @@ check_cross_appliance (guestfs_h *g)
   struct guestfs_utsname host_utsname;
 
   r = uname (&host);
-  if (r == -1) {
-    fprintf (stderr, "call to uname failed\n");
-    exit (EXIT_FAILURE);
-  }
+  if (r == -1)
+    error (EXIT_FAILURE, errno, "uname");
 
   appliance = guestfs_utsname (g);
-  if (appliance == NULL) {
-    fprintf (stderr, "call to guestfs_utsname failed: %d, %s\n",
-             guestfs_last_errno (g), guestfs_last_error (g));
+  if (appliance == NULL)
     exit (EXIT_FAILURE);
-  }
 
   host_utsname.uts_sysname = host.sysname;
   host_utsname.uts_release = host.release;

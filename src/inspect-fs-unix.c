@@ -54,7 +54,6 @@ COMPILE_REGEXP (re_oracle_linux_old,
 COMPILE_REGEXP (re_oracle_linux,
                 "Oracle Linux.*release (\\d+)\\.(\\d+)", 0)
 COMPILE_REGEXP (re_oracle_linux_no_minor, "Oracle Linux.*release (\\d+)", 0)
-COMPILE_REGEXP (re_major_minor, "(\\d+)\\.(\\d+)", 0)
 COMPILE_REGEXP (re_xdev, "^/dev/(h|s|v|xv)d([a-z]+)(\\d*)$", 0)
 COMPILE_REGEXP (re_cciss, "^/dev/(cciss/c\\d+d\\d+)(?:p(\\d+))?$", 0)
 COMPILE_REGEXP (re_mdN, "^(/dev/md\\d+)$", 0)
@@ -77,6 +76,7 @@ COMPILE_REGEXP (re_openbsd_dev, "^/dev/(s|w)d([0-9])([a-z])$", 0)
 COMPILE_REGEXP (re_netbsd_dev, "^/dev/(l|s)d([0-9])([a-z])$", 0)
 COMPILE_REGEXP (re_altlinux, " (?:(\\d+)(?:\\.(\\d+)(?:[\\.\\d]+)?)?)\\s+\\((?:[^)]+)\\)$", 0)
 COMPILE_REGEXP (re_frugalware, "Frugalware (\\d+)\\.(\\d+)", 0)
+COMPILE_REGEXP (re_pldlinux, "(\\d+)\\.(\\d+) PLD Linux", 0)
 
 static void check_architecture (guestfs_h *g, struct inspect_fs *fs);
 static int check_hostname_unix (guestfs_h *g, struct inspect_fs *fs);
@@ -148,7 +148,8 @@ parse_os_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
   size_t i;
   enum inspect_os_distro distro = OS_DISTRO_UNKNOWN;
   CLEANUP_FREE char *product_name = NULL;
-  int major_version = -1, minor_version = -1;
+  struct version version;
+  guestfs_int_version_from_values (&version, -1, -1, 0);
 
   /* Don't trust guestfs_read_lines not to break with very large files.
    * Check the file size is something reasonable first.
@@ -196,6 +197,8 @@ parse_os_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
         distro = OS_DISTRO_ARCHLINUX;
       else if (VALUE_IS ("centos"))
         distro = OS_DISTRO_CENTOS;
+      else if (VALUE_IS ("coreos"))
+        distro = OS_DISTRO_COREOS;
       else if (VALUE_IS ("debian"))
         distro = OS_DISTRO_DEBIAN;
       else if (VALUE_IS ("fedora"))
@@ -214,47 +217,41 @@ parse_os_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
         distro = OS_DISTRO_SLES;
       else if (VALUE_IS ("ubuntu"))
         distro = OS_DISTRO_UBUNTU;
+      else if (VALUE_IS ("void"))
+        distro = OS_DISTRO_VOID_LINUX;
     } else if (STRPREFIX (line, "PRETTY_NAME=")) {
       free (product_name);
       product_name = safe_strndup (g, value, value_len);
     } else if (STRPREFIX (line, "VERSION_ID=")) {
-      char *major, *minor;
-      if (match2 (g, value, re_major_minor, &major, &minor)) {
-        major_version = guestfs_int_parse_unsigned_int (g, major);
-        free (major);
-        if (major_version == -1) {
-          free (minor);
-          return -1;
-        }
-        minor_version = guestfs_int_parse_unsigned_int (g, minor);
-        free (minor);
-        if (minor_version == -1)
-          return -1;
-      } else {
-        char buf[value_len + 1];
-        snprintf (buf, sizeof buf, "%*s", (int) value_len, value);
-        major_version = guestfs_int_parse_unsigned_int (g, buf);
-        /* Handle cases where VERSION_ID is not a number. */
-        if (major_version != -1)
-          minor_version = 0;
-      }
+      CLEANUP_FREE char *buf =
+        safe_asprintf (g, "%.*s", (int) value_len, value);
+      if (guestfs_int_version_from_x_y_or_x (g, &version, buf) == -1)
+        return -1;
     }
 #undef VALUE_IS
   }
 
   /* If we haven't got all the fields, exit right away. */
-  if (distro == OS_DISTRO_UNKNOWN || product_name == NULL ||
-      major_version == -1 || minor_version == -1)
+  if (distro == OS_DISTRO_UNKNOWN || product_name == NULL)
     return 0;
+
+  if (version.v_major == -1 || version.v_minor == -1) {
+    /* Void Linux has no VERSION_ID (yet), but since it's a rolling
+     * distro and has no other version/release-like file. */
+    if (distro == OS_DISTRO_VOID_LINUX)
+      version_init_null (&version);
+    else
+      return 0;
+  }
 
   /* Apparently, os-release in Debian and CentOS does not provide the full
    * version number in VERSION_ID, but just the "major" part of it.
-   * Hence, if minor_version is 0, act as there was no information in
+   * Hence, if version.v_minor is 0, act as there was no information in
    * os-release, which will continue the inspection using the release files
    * as done previously.
    */
   if ((distro == OS_DISTRO_DEBIAN || distro == OS_DISTRO_CENTOS) &&
-      minor_version == 0)
+      version.v_minor == 0)
     return 0;
 
   /* We got everything, so set the fields and report the inspection
@@ -263,8 +260,7 @@ parse_os_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
   fs->distro = distro;
   fs->product_name = product_name;
   product_name = NULL;
-  fs->major_version = major_version;
-  fs->minor_version = minor_version;
+  fs->version = version;
 
   return 1;
 }
@@ -349,19 +345,8 @@ parse_lsb_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
       r = 1;
     }
     else if (STRPREFIX (lines[i], "DISTRIB_RELEASE=")) {
-      char *major, *minor;
-      if (match2 (g, &lines[i][16], re_major_minor, &major, &minor)) {
-        fs->major_version = guestfs_int_parse_unsigned_int (g, major);
-        free (major);
-        if (fs->major_version == -1) {
-          free (minor);
-          return -1;
-        }
-        fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
-        free (minor);
-        if (fs->minor_version == -1)
-          return -1;
-      }
+      if (guestfs_int_version_from_x_y_or_x (g, &fs->version, &lines[i][16]) == -1)
+        return -1;
     }
     else if (fs->product_name == NULL &&
              (STRPREFIX (lines[i], "DISTRIB_DESCRIPTION=\"") ||
@@ -388,7 +373,6 @@ static int
 parse_suse_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
 {
   int64_t size;
-  char *major, *minor;
   CLEANUP_FREE_STRING_LIST char **lines = NULL;
   int r = -1;
 
@@ -417,6 +401,8 @@ parse_suse_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
 
   /* Match SLES first because openSuSE regex overlaps some SLES release strings */
   if (match (g, fs->product_name, re_sles) || match (g, fs->product_name, re_nld)) {
+    char *major, *minor;
+
     fs->distro = OS_DISTRO_SLES;
 
     /* Second line contains version string */
@@ -425,9 +411,9 @@ parse_suse_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
     major = match1 (g, lines[1], re_sles_version);
     if (major == NULL)
       goto out;
-    fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+    fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
     free (major);
-    if (fs->major_version == -1)
+    if (fs->version.v_major == -1)
       goto out;
 
     /* Third line contains service pack string */
@@ -436,9 +422,9 @@ parse_suse_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
     minor = match1 (g, lines[2], re_sles_patchlevel);
     if (minor == NULL)
       goto out;
-    fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
+    fs->version.v_minor = guestfs_int_parse_unsigned_int (g, minor);
     free (minor);
-    if (fs->minor_version == -1)
+    if (fs->version.v_minor == -1)
       goto out;
   }
   else if (match (g, fs->product_name, re_opensuse)) {
@@ -447,14 +433,9 @@ parse_suse_release (guestfs_h *g, struct inspect_fs *fs, const char *filename)
     /* Second line contains version string */
     if (lines[1] == NULL)
       goto out;
-    if (match2 (g, lines[1], re_opensuse_version, &major, &minor)) {
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
-      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
-      free (major);
-      free (minor);
-      if (fs->major_version == -1 || fs->minor_version == -1)
-        goto out;
-    }
+    if (guestfs_int_version_from_x_y_re (g, &fs->version, lines[1],
+                                         re_opensuse_version) == -1)
+      goto out;
   }
 
   r = 0;
@@ -507,22 +488,22 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
 
     if (match2 (g, fs->product_name, re_oracle_linux_old, &major, &minor) ||
         match2 (g, fs->product_name, re_oracle_linux, &major, &minor)) {
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1) {
+      if (fs->version.v_major == -1) {
         free (minor);
         return -1;
       }
-      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
+      fs->version.v_minor = guestfs_int_parse_unsigned_int (g, minor);
       free (minor);
-      if (fs->minor_version == -1)
+      if (fs->version.v_minor == -1)
         return -1;
     } else if ((major = match1 (g, fs->product_name, re_oracle_linux_no_minor)) != NULL) {
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1)
+      if (fs->version.v_major == -1)
         return -1;
-      fs->minor_version = 0;
+      fs->version.v_minor = 0;
     }
   }
   else if (guestfs_is_file_opts (g, "/etc/centos-release",
@@ -534,23 +515,23 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
 
     if (match2 (g, fs->product_name, re_centos_old, &major, &minor) ||
 	match2 (g, fs->product_name, re_centos, &major, &minor)) {
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1) {
+      if (fs->version.v_major == -1) {
         free (minor);
         return -1;
       }
-      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
+      fs->version.v_minor = guestfs_int_parse_unsigned_int (g, minor);
       free (minor);
-      if (fs->minor_version == -1)
+      if (fs->version.v_minor == -1)
         return -1;
     }
     else if ((major = match1 (g, fs->product_name, re_centos_no_minor)) != NULL) {
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1)
+      if (fs->version.v_major == -1)
         return -1;
-      fs->minor_version = 0;
+      fs->version.v_minor = 0;
     }
   }
   else if (guestfs_is_file_opts (g, "/etc/altlinux-release",
@@ -560,18 +541,9 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
     if (parse_release_file (g, fs, "/etc/altlinux-release") == -1)
       return -1;
 
-    if (match2 (g, fs->product_name, re_altlinux, &major, &minor)) {
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
-      free (major);
-      if (fs->major_version == -1) {
-        free (minor);
-        return -1;
-      }
-      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
-      free (minor);
-      if (fs->minor_version == -1)
-        return -1;
-    }
+    if (guestfs_int_version_from_x_y_re (g, &fs->version, fs->product_name,
+                                         re_altlinux) == -1)
+      return -1;
   }
   else if (guestfs_is_file_opts (g, "/etc/redhat-release",
                                  GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
@@ -582,76 +554,76 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
 
     if ((major = match1 (g, fs->product_name, re_fedora)) != NULL) {
       fs->distro = OS_DISTRO_FEDORA;
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1)
+      if (fs->version.v_major == -1)
         return -1;
     }
     else if (match2 (g, fs->product_name, re_rhel_old, &major, &minor) ||
              match2 (g, fs->product_name, re_rhel, &major, &minor)) {
       fs->distro = OS_DISTRO_RHEL;
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1) {
+      if (fs->version.v_major == -1) {
         free (minor);
         return -1;
       }
-      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
+      fs->version.v_minor = guestfs_int_parse_unsigned_int (g, minor);
       free (minor);
-      if (fs->minor_version == -1)
+      if (fs->version.v_minor == -1)
         return -1;
     }
     else if ((major = match1 (g, fs->product_name, re_rhel_no_minor)) != NULL) {
       fs->distro = OS_DISTRO_RHEL;
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1)
+      if (fs->version.v_major == -1)
         return -1;
-      fs->minor_version = 0;
+      fs->version.v_minor = 0;
     }
     else if (match2 (g, fs->product_name, re_centos_old, &major, &minor) ||
              match2 (g, fs->product_name, re_centos, &major, &minor)) {
       fs->distro = OS_DISTRO_CENTOS;
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1) {
+      if (fs->version.v_major == -1) {
         free (minor);
         return -1;
       }
-      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
+      fs->version.v_minor = guestfs_int_parse_unsigned_int (g, minor);
       free (minor);
-      if (fs->minor_version == -1)
+      if (fs->version.v_minor == -1)
         return -1;
     }
     else if ((major = match1 (g, fs->product_name, re_centos_no_minor)) != NULL) {
       fs->distro = OS_DISTRO_CENTOS;
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1)
+      if (fs->version.v_major == -1)
         return -1;
-      fs->minor_version = 0;
+      fs->version.v_minor = 0;
     }
     else if (match2 (g, fs->product_name, re_scientific_linux_old, &major, &minor) ||
              match2 (g, fs->product_name, re_scientific_linux, &major, &minor)) {
       fs->distro = OS_DISTRO_SCIENTIFIC_LINUX;
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1) {
+      if (fs->version.v_major == -1) {
         free (minor);
         return -1;
       }
-      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
+      fs->version.v_minor = guestfs_int_parse_unsigned_int (g, minor);
       free (minor);
-      if (fs->minor_version == -1)
+      if (fs->version.v_minor == -1)
         return -1;
     }
     else if ((major = match1 (g, fs->product_name, re_scientific_linux_no_minor)) != NULL) {
       fs->distro = OS_DISTRO_SCIENTIFIC_LINUX;
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
+      fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
       free (major);
-      if (fs->major_version == -1)
+      if (fs->version.v_major == -1)
         return -1;
-      fs->minor_version = 0;
+      fs->version.v_minor = 0;
     }
   }
   else if (guestfs_is_file_opts (g, "/etc/debian_version",
@@ -777,18 +749,20 @@ guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs)
     if (parse_release_file (g, fs, "/etc/frugalware-release") == -1)
       return -1;
 
-    if (match2 (g, fs->product_name, re_frugalware, &major, &minor)) {
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
-      free (major);
-      if (fs->major_version == -1) {
-        free (minor);
-        return -1;
-      }
-      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
-      free (minor);
-      if (fs->minor_version == -1)
-        return -1;
-    }
+    if (guestfs_int_version_from_x_y_re (g, &fs->version, fs->product_name,
+                                         re_frugalware) == -1)
+      return -1;
+  }
+  else if (guestfs_is_file_opts (g, "/etc/pld-release",
+                                 GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
+    fs->distro = OS_DISTRO_PLD_LINUX;
+
+    if (parse_release_file (g, fs, "/etc/pld-release") == -1)
+      return -1;
+
+    if (guestfs_int_version_from_x_y_re (g, &fs->version, fs->product_name,
+                                         re_pldlinux) == -1)
+      return -1;
   }
 
  skip_release_checks:;
@@ -855,23 +829,17 @@ guestfs_int_check_netbsd_root (guestfs_h *g, struct inspect_fs *fs)
 
   if (guestfs_is_file_opts (g, "/etc/release",
                             GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
-    char *major, *minor;
+    int result;
     if (parse_release_file (g, fs, "/etc/release") == -1)
       return -1;
 
-    if (match2 (g, fs->product_name, re_netbsd, &major, &minor)) {
+    result = guestfs_int_version_from_x_y_re (g, &fs->version,
+                                              fs->product_name, re_netbsd);
+    if (result == -1) {
+      return -1;
+    } else if (result == 1) {
       fs->type = OS_TYPE_NETBSD;
       fs->distro = OS_DISTRO_NETBSD;
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
-      free (major);
-      if (fs->major_version == -1) {
-        free (minor);
-        return -1;
-      }
-      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
-      free (minor);
-      if (fs->minor_version == -1)
-        return -1;
     }
   } else {
     return -1;
@@ -913,12 +881,12 @@ guestfs_int_check_openbsd_root (guestfs_h *g, struct inspect_fs *fs)
        * OpenBSD ?.? (UNKNOWN)
        */
       if ((fs->product_name[8] != '?') && (fs->product_name[10] != '?')) {
-        fs->major_version = guestfs_int_parse_unsigned_int (g, major);
-        if (fs->major_version == -1)
+        fs->version.v_major = guestfs_int_parse_unsigned_int (g, major);
+        if (fs->version.v_major == -1)
           return -1;
 
-        fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
-        if (fs->minor_version == -1)
+        fs->version.v_minor = guestfs_int_parse_unsigned_int (g, minor);
+        if (fs->version.v_minor == -1)
           return -1;
       }
     }
@@ -988,22 +956,12 @@ guestfs_int_check_minix_root (guestfs_h *g, struct inspect_fs *fs)
 
   if (guestfs_is_file_opts (g, "/etc/version",
                             GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
-    char *major, *minor;
     if (parse_release_file (g, fs, "/etc/version") == -1)
       return -1;
 
-    if (match2 (g, fs->product_name, re_minix, &major, &minor)) {
-      fs->major_version = guestfs_int_parse_unsigned_int (g, major);
-      free (major);
-      if (fs->major_version == -1) {
-        free (minor);
-        return -1;
-      }
-      fs->minor_version = guestfs_int_parse_unsigned_int (g, minor);
-      free (minor);
-      if (fs->minor_version == -1)
-        return -1;
-    }
+    if (guestfs_int_version_from_x_y_re (g, &fs->version, fs->product_name,
+                                         re_minix) == -1)
+      return -1;
   } else {
     return -1;
   }
@@ -1055,12 +1013,24 @@ guestfs_int_check_coreos_usr (guestfs_h *g, struct inspect_fs *fs)
 
   fs->type = OS_TYPE_LINUX;
   fs->distro = OS_DISTRO_COREOS;
+
+  if (guestfs_is_file_opts (g, "/lib/os-release",
+                            GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
+    r = parse_os_release (g, fs, "/lib/os-release");
+    if (r == -1)        /* error */
+      return -1;
+    if (r == 1)         /* ok - detected the release from this file */
+      goto skip_release_checks;
+  }
+
   if (guestfs_is_file_opts (g, "/share/coreos/lsb-release",
                             GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1) > 0) {
     r = parse_lsb_release (g, fs, "/share/coreos/lsb-release");
     if (r == -1)        /* error */
       return -1;
   }
+
+ skip_release_checks:;
 
   /* Determine the architecture. */
   check_architecture (g, fs);
@@ -1377,27 +1347,28 @@ check_fstab (guestfs_h *g, struct inspect_fs *fs)
     if (vfstype == NULL) return -1;
 
     if (STREQ (vfstype, "btrfs")) {
-      char **opt;
+      size_t i;
 
       snprintf (augpath, sizeof augpath, "%s/opt", *entry);
       CLEANUP_FREE_STRING_LIST char **opts = guestfs_aug_match (g, augpath);
       if (opts == NULL) return -1;
 
-      for (opt = opts; *opt; opt++) {
-        CLEANUP_FREE char *optname = guestfs_aug_get (g, augpath);
+      for (i = 0; opts[i] != NULL; ++i) {
+        CLEANUP_FREE char *optname = NULL, *optvalue = NULL, *subvol = NULL;
+        char *old_mountable;
+
+        optname = guestfs_aug_get (g, opts[i]);
         if (optname == NULL) return -1;
 
         if (STREQ (optname, "subvol")) {
-          CLEANUP_FREE char *subvol = NULL;
-          char *new;
+          optvalue = safe_asprintf (g, "%s/value", opts[i]);
 
-          snprintf (augpath, sizeof augpath, "%s/value", *opt);
-          subvol = guestfs_aug_get (g, augpath);
+          subvol = guestfs_aug_get (g, optvalue);
           if (subvol == NULL) return -1;
 
-          new = safe_asprintf (g, "btrfsvol:%s/%s", mountable, subvol);
-          free (mountable);
-          mountable = new;
+          old_mountable = mountable;
+          mountable = safe_asprintf (g, "btrfsvol:%s/%s", mountable, subvol);
+          free (old_mountable);
         }
       }
     }

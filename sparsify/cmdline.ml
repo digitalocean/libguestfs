@@ -22,6 +22,7 @@ open Printf
 
 open Common_gettext.Gettext
 open Common_utils
+open Getopt.OptionName
 
 open Utils
 
@@ -63,21 +64,18 @@ let parse_cmdline () =
   let tmp = ref "" in
   let zeroes = ref [] in
 
-  let ditto = " -\"-" in
   let argspec = [
-    "--check-tmpdir", Arg.String set_check_tmpdir,  "ignore|..." ^ " " ^ s_"Check there is enough space in $TMPDIR";
-    "--compress", Arg.Set compress,         " " ^ s_"Compressed output format";
-    "--convert", Arg.Set_string convert,    s_"format" ^ " " ^ s_"Format of output disk (default: same as input)";
-    "--format",  Arg.Set_string format,     s_"format" ^ " " ^ s_"Format of input disk";
-    "--ignore",  Arg.String (add ignores),  s_"fs" ^ " " ^ s_"Ignore filesystem";
-    "--in-place", Arg.Set in_place,         " " ^ s_"Modify the disk image in-place";
-    "--inplace", Arg.Set in_place,          ditto;
-    "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
-    "-o",        Arg.Set_string option,     s_"option" ^ " " ^ s_"Add qemu-img options";
-    "--tmp",     Arg.Set_string tmp,        s_"block|dir|prebuilt:file" ^ " " ^ s_"Set temporary block device, directory or prebuilt file";
-    "--zero",    Arg.String (add zeroes),   s_"fs" ^ " " ^ s_"Zero filesystem";
+    [ L"check-tmpdir" ], Getopt.String ("ignore|...", set_check_tmpdir),  s_"Check there is enough space in $TMPDIR";
+    [ L"compress" ], Getopt.Set compress,         s_"Compressed output format";
+    [ L"convert" ], Getopt.Set_string (s_"format", convert),    s_"Format of output disk (default: same as input)";
+    [ L"format" ],  Getopt.Set_string (s_"format", format),     s_"Format of input disk";
+    [ L"ignore" ],  Getopt.String (s_"fs", add ignores),  s_"Ignore filesystem";
+    [ L"in-place"; L"inplace" ], Getopt.Set in_place,         s_"Modify the disk image in-place";
+    [ L"machine-readable" ], Getopt.Set machine_readable, s_"Make output machine readable";
+    [ S 'o' ],        Getopt.Set_string (s_"option", option),     s_"Add qemu-img options";
+    [ L"tmp" ],     Getopt.Set_string (s_"block|dir|prebuilt:file", tmp),        s_"Set temporary block device, directory or prebuilt file";
+    [ L"zero" ],    Getopt.String (s_"fs", add zeroes),   s_"Zero filesystem";
   ] in
-  let argspec = set_standard_options argspec in
   let disks = ref [] in
   let anon_fun s = push_front s disks in
   let usage_msg =
@@ -92,7 +90,8 @@ A short summary of the options is given below.  For detailed help please
 read the man page virt-sparsify(1).
 ")
       prog in
-  Arg.parse argspec anon_fun usage_msg;
+  let opthandle = create_standard_options argspec ~anon_fun usage_msg in
+  Getopt.parse opthandle;
 
   (* Dereference the rest of the args. *)
   let check_tmpdir = !check_tmpdir in

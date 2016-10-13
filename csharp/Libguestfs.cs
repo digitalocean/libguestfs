@@ -357,6 +357,26 @@ namespace Guestfs
     }
 
     [StructLayout (LayoutKind.Sequential)]
+    public class _tsk_dirent {
+      ulong tsk_inode;
+      char tsk_type;
+      long tsk_size;
+      string tsk_name;
+      uint tsk_flags;
+      long tsk_atime_sec;
+      long tsk_atime_nsec;
+      long tsk_mtime_sec;
+      long tsk_mtime_nsec;
+      long tsk_ctime_sec;
+      long tsk_ctime_nsec;
+      long tsk_crtime_sec;
+      long tsk_crtime_nsec;
+      long tsk_nlink;
+      string tsk_link;
+      long tsk_spare1;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
     public class _utsname {
       string uts_sysname;
       string uts_release;
@@ -1190,6 +1210,21 @@ namespace Guestfs
       r = guestfs_btrfs_filesystem_resize_argv (_handle, mountpoint, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_btrfs_filesystem_show (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// list devices for btrfs filesystem
+    /// </summary>
+    public string[] btrfs_filesystem_show (string device)
+    {
+      string[] r;
+      r = guestfs_btrfs_filesystem_show (_handle, device);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -2224,6 +2259,34 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_download_blocks_argv (IntPtr h, [In] string device, long start, long stop, [In] string filename, void *);
+
+    /// <summary>
+    /// download the given data units from the disk
+    /// </summary>
+    public void download_blocks (string device, long start, long stop, string filename)
+    {
+      int r;
+      r = guestfs_download_blocks_argv (_handle, device, start, stop, filename, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_download_inode (IntPtr h, [In] string device, long inode, [In] string filename);
+
+    /// <summary>
+    /// download a file to the local machine given its inode
+    /// </summary>
+    public void download_inode (string device, long inode, string filename)
+    {
+      int r;
+      r = guestfs_download_inode (_handle, device, inode, filename);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_download_offset (IntPtr h, [In] string remotefilename, [In] string filename, long offset, long size);
 
     /// <summary>
@@ -2514,6 +2577,21 @@ namespace Guestfs
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _tsk_dirent[] guestfs_filesystem_walk (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// walk through the filesystem content
+    /// </summary>
+    public _tsk_dirent[] filesystem_walk (string device)
+    {
+      _tsk_dirent[] r;
+      r = guestfs_filesystem_walk (_handle, device);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -3067,6 +3145,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_sockdir (IntPtr h);
+
+    /// <summary>
+    /// get the temporary directory for sockets
+    /// </summary>
+    public string get_sockdir ()
+    {
+      string r;
+      r = guestfs_get_sockdir (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_get_state (IntPtr h);
 
     /// <summary>
@@ -3187,7 +3280,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern string[] guestfs_glob_expand (IntPtr h, [In] string pattern);
+    static extern string[] guestfs_glob_expand_opts_argv (IntPtr h, [In] string pattern, void *);
 
     /// <summary>
     /// expand a wildcard path
@@ -3195,10 +3288,15 @@ namespace Guestfs
     public string[] glob_expand (string pattern)
     {
       string[] r;
-      r = guestfs_glob_expand (_handle, pattern);
+      r = guestfs_glob_expand_opts_argv (_handle, pattern, NULL);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
+    }
+
+    public string[] glob_expand_opts (string pattern)
+    {
+      return glob_expand (pattern);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -4594,15 +4692,15 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_is_lv (IntPtr h, [In] string device);
+    static extern int guestfs_is_lv (IntPtr h, [In] string mountable);
 
     /// <summary>
-    /// test if device is a logical volume
+    /// test if mountable is a logical volume
     /// </summary>
-    public bool is_lv (string device)
+    public bool is_lv (string mountable)
     {
       int r;
-      r = guestfs_is_lv (_handle, device);
+      r = guestfs_is_lv (_handle, mountable);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
@@ -6278,6 +6376,36 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_mountable_device (IntPtr h, [In] string mountable);
+
+    /// <summary>
+    /// extract the device part of a mountable
+    /// </summary>
+    public string mountable_device (string mountable)
+    {
+      string r;
+      r = guestfs_mountable_device (_handle, mountable);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_mountable_subvolume (IntPtr h, [In] string mountable);
+
+    /// <summary>
+    /// extract the subvolume part of a mountable
+    /// </summary>
+    public string mountable_subvolume (string mountable)
+    {
+      string r;
+      r = guestfs_mountable_subvolume (_handle, mountable);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string[] guestfs_mountpoints (IntPtr h);
 
     /// <summary>
@@ -6352,6 +6480,20 @@ namespace Guestfs
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_ntfscat_i (IntPtr h, [In] string device, long inode, [In] string filename);
+
+    /// <summary>
+    /// download a file to the local machine given its inode
+    /// </summary>
+    public void ntfscat_i (string device, long inode, string filename)
+    {
+      int r;
+      r = guestfs_ntfscat_i (_handle, device, inode, filename);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -6500,6 +6642,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_part_expand_gpt (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// move backup GPT header to the end of the disk
+    /// </summary>
+    public void part_expand_gpt (string device)
+    {
+      int r;
+      r = guestfs_part_expand_gpt (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_part_get_bootable (IntPtr h, [In] string device, int partnum);
 
     /// <summary>
@@ -6512,6 +6668,21 @@ namespace Guestfs
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_part_get_disk_guid (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// get the GUID of a GPT-partitioned disk
+    /// </summary>
+    public string part_get_disk_guid (string device)
+    {
+      string r;
+      r = guestfs_part_get_disk_guid (_handle, device);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -6643,6 +6814,34 @@ namespace Guestfs
     {
       int r;
       r = guestfs_part_set_bootable (_handle, device, partnum, bootable);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_part_set_disk_guid (IntPtr h, [In] string device, [In] string guid);
+
+    /// <summary>
+    /// set the GUID of a GPT-partitioned disk
+    /// </summary>
+    public void part_set_disk_guid (string device, string guid)
+    {
+      int r;
+      r = guestfs_part_set_disk_guid (_handle, device, guid);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_part_set_disk_guid_random (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// set the GUID of a GPT-partitioned disk to random value
+    /// </summary>
+    public void part_set_disk_guid_random (string device)
+    {
+      int r;
+      r = guestfs_part_set_disk_guid_random (_handle, device);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -7274,6 +7473,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_scrub_freespace (_handle, dir);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_selinux_relabel_argv (IntPtr h, [In] string specfile, [In] string path, void *);
+
+    /// <summary>
+    /// relabel parts of the filesystem
+    /// </summary>
+    public void selinux_relabel (string specfile, string path)
+    {
+      int r;
+      r = guestfs_selinux_relabel_argv (_handle, specfile, path, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

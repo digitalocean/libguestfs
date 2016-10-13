@@ -1,0 +1,3596 @@
+
+=head2 Підкаталог F<src>
+
+=head3 Файл F<src/actions-support.c>
+
+Helper functions for the actions code in F<src/actions-*.c>.
+
+=head3 Файл F<src/appliance.c>
+
+This file deals with building the libguestfs appliance.
+
+=head4 Функція C<src/appliance.c:guestfs_int_build_appliance>
+
+ int
+ guestfs_int_build_appliance (guestfs_h *g,
+ 			     char **kernel_rtn,
+ 			     char **initrd_rtn,
+ 			     char **appliance_rtn)
+
+Locate or build the appliance.
+
+This function locates or builds the appliance as necessary, handling the
+supermin appliance, caching of supermin-built appliances, or using either a
+fixed or old-style appliance.
+
+The return value is C<0> = good, C<-1> = error.  Returned in C<*kernel> will
+be the name of the kernel to use, C<*initrd> the name of the initrd,
+C<*appliance> the name of the ext2 root filesystem.  C<*appliance> can be
+C<NULL>, meaning that we are using an old-style (non-ext2) appliance.  All
+three strings must be freed by the caller.  However the referenced files
+themselves must I<not> be deleted.
+
+Процедура така:
+
+=over 4
+
+=item 1.
+
+Look for the first element of C<g-E<gt>path> which contains a supermin
+appliance skeleton.  If no element has this, skip straight to step 3.
+
+=item 2.
+
+Call C<supermin --build> to build the full appliance (if it needs to be
+rebuilt).  If this is successful, return the full appliance.
+
+=item 3.
+
+Check each element of C<g-E<gt>path>, looking for a fixed appliance.  If one
+is found, return it.
+
+=item 4.
+
+Check each element of C<g-E<gt>path>, looking for an old-style appliance.
+If one is found, return it.
+
+=back
+
+The supermin appliance cache directory lives in F<$TMPDIR/.guestfs-$UID/>
+and consists of up to four files:
+
+  $TMPDIR/.guestfs-$UID/lock            - the supermin lock file
+  $TMPDIR/.guestfs-$UID/appliance.d/kernel - the kernel
+  $TMPDIR/.guestfs-$UID/appliance.d/initrd - the supermin initrd
+  $TMPDIR/.guestfs-$UID/appliance.d/root   - the appliance
+
+Multiple instances of libguestfs with the same UID may be racing to create
+an appliance.  However (since supermin E<ge> 5) supermin provides a
+I<--lock> flag and atomic update of the F<appliance.d> subdirectory.
+
+=head4 Функція C<src/appliance.c:build_supermin_appliance>
+
+ static int
+ build_supermin_appliance (guestfs_h *g,
+                           const char *supermin_path,
+                           char **kernel, char **initrd,
+                           char **appliance)
+
+Build supermin appliance from C<supermin_path> to F<$TMPDIR/.guestfs-$UID>.
+
+Returns: C<0> = built or C<-1> = error (aborts launch).
+
+=head4 Функція C<src/appliance.c:run_supermin_build>
+
+ static int
+ run_supermin_build (guestfs_h *g,
+                     const char *lockfile,
+                     const char *appliancedir,
+                     const char *supermin_path)
+
+Run C<supermin --build> and tell it to generate the appliance.
+
+=head4 Функція C<src/appliance.c:find_path>
+
+ static int
+ find_path (guestfs_h *g,
+            int (*pred) (guestfs_h *g, const char *pelem, void *data),
+            void *data,
+            char **pelem_ret)
+
+Search elements of C<g-E<gt>path>, returning the first path element which
+matches the predicate function C<pred>.
+
+Function C<pred> must return a true or false value.  If it returns C<-1>
+then the entire search is aborted.
+
+Повернуті значення:
+
+  1 = a path element matched, it is returned in *pelem_ret and must be
+      freed by the caller,
+  0 = no path element matched, *pelem_ret is set to NULL, or
+ -1 = error which aborts the launch process
+
+=head4 Функція C<src/appliance.c:dir_contains_file>
+
+ static int
+ dir_contains_file (guestfs_h *g, const char *dir, const char *file)
+
+Returns true iff C<file> is contained in C<dir>.
+
+=head4 Функція C<src/appliance.c:dir_contains_files>
+
+ static int
+ dir_contains_files (guestfs_h *g, const char *dir, ...)
+
+Returns true iff every listed file is contained in C<dir>.
+
+=head4 Функція C<src/appliance.c:guestfs_int_get_uefi>
+
+ int
+ guestfs_int_get_uefi (guestfs_h *g, char **code, char **vars, int *flags)
+
+Return the location of firmware needed to boot the appliance.  This is
+aarch64 only currently, since that's the only architecture where UEFI is
+mandatory (and that only for RHEL).
+
+C<*code> is initialized with the path to the read-only UEFI code file.
+C<*vars> is initialized with the path to a copy of the UEFI vars file (which
+is cleaned up automatically on exit).
+
+If C<*code> == C<*vars> == C<NULL> then no UEFI firmware is available.
+
+C<*code> and C<*vars> should be freed by the caller.
+
+If the function returns C<-1> then there was a real error which should cause
+appliance building to fail (no UEFI firmware is not an error).
+
+See also F<v2v/utils.ml>:find_uefi_firmware
+
+=head3 Файл F<src/cleanup.c>
+
+Libguestfs uses C<CLEANUP_*> macros to simplify temporary allocations.  They
+are implemented using the C<__attribute__((cleanup))> feature of gcc and
+clang.  Typical usage is:
+
+ fn ()
+ {
+   CLEANUP_FREE char *str = NULL;
+   str = safe_asprintf (g, "foo");
+   // str is freed automatically when the function returns
+ }
+
+There are a few catches to be aware of with the cleanup mechanism:
+
+=over 4
+
+=item *
+
+If a cleanup variable is not initialized, then you can end up calling
+L<free(3)> with an undefined value, resulting in the program crashing.  For
+this reason, you should usually initialize every cleanup variable with
+something, eg. C<NULL>
+
+=item *
+
+Don't mark variables holding return values as cleanup variables.
+
+=item *
+
+The C<main()> function shouldn't use cleanup variables since it is normally
+exited by calling L<exit(3)>, and that doesn't call the cleanup handlers.
+
+=back
+
+The functions in this file are used internally by the C<CLEANUP_*> macros.
+Don't call them directly.
+
+=head3 Файл F<src/command.c>
+
+A wrapper for running external commands, loosely based on libvirt's
+C<virCommand> interface.
+
+In outline to use this interface you must:
+
+=over 4
+
+=item 1.
+
+Create a new command handle:
+
+ struct command *cmd;
+ cmd = guestfs_int_new_command (g);
+
+=item 2.
+
+I<Either> add arguments:
+
+ guestfs_int_cmd_add_arg (cmd, "qemu-img");
+ guestfs_int_cmd_add_arg (cmd, "info");
+ guestfs_int_cmd_add_arg (cmd, filename);
+
+(B<NB:> You don't need to add a C<NULL> argument at the end.)
+
+=item 3.
+
+I<Or> construct a command using a mix of quoted and unquoted strings.  (This
+is useful for L<system(3)>/C<popen("r")>-style shell commands, with the
+added safety of allowing args to be quoted properly).
+
+ guestfs_int_cmd_add_string_unquoted (cmd, "qemu-img info ");
+ guestfs_int_cmd_add_string_quoted (cmd, filename);
+
+=item 4.
+
+Set various flags, such as whether you want to capture errors in the regular
+libguestfs error log.
+
+=item 5.
+
+Run the command.  This is what does the L<fork(2)> call, optionally loops
+over the output, and then does a L<waitpid(3)> and returns the exit status
+of the command.
+
+ r = guestfs_int_cmd_run (cmd);
+ if (r == -1)
+   // error
+ // else test r using the WIF* functions
+
+=item 6.
+
+Close the handle:
+
+ guestfs_int_cmd_close (cmd);
+
+(or use C<CLEANUP_CMD_CLOSE>).
+
+=back
+
+=head4 Функція C<src/command.c:guestfs_int_new_command>
+
+ struct command *
+ guestfs_int_new_command (guestfs_h *g)
+
+Create a new command handle.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_add_arg>
+
+ void
+ guestfs_int_cmd_add_arg (struct command *cmd, const char *arg)
+
+Add single arg (for C<execv>-style command execution).
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_add_arg_format>
+
+ void
+ guestfs_int_cmd_add_arg_format (struct command *cmd, const char *fs, ...)
+
+Add single arg (for C<execv>-style command execution)  using a
+L<printf(3)>-style format string.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_add_string_unquoted>
+
+ void
+ guestfs_int_cmd_add_string_unquoted (struct command *cmd, const char *str)
+
+Add a string (for L<system(3)>-style command execution).
+
+This variant adds the strings without quoting them, which is dangerous if
+the string contains untrusted content.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_add_string_quoted>
+
+ void
+ guestfs_int_cmd_add_string_quoted (struct command *cmd, const char *str)
+
+Add a string (for L<system(3)>-style command execution).
+
+The string is enclosed in double quotes, with any special characters within
+the string which need escaping done.  This is used to add a single argument
+to a L<system(3)>-style command string.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_set_stdout_callback>
+
+ void
+ guestfs_int_cmd_set_stdout_callback (struct command *cmd,
+                                      cmd_stdout_callback stdout_callback,
+                                      void *stdout_data, unsigned flags)
+
+Set a callback which will capture stdout.
+
+If flags contains C<CMD_STDOUT_FLAG_LINE_BUFFER> (the default), then the
+callback is called line by line on the output.  If there is a trailing C<\n>
+then it is automatically removed before the callback is called.  The line
+buffer is C<\0>-terminated.
+
+If flags contains C<CMD_STDOUT_FLAG_UNBUFFERED>, then buffers are passed to
+the callback as it is received from the command.  Note in this case the
+buffer is I<not> C<\0>-terminated, so you need to may attention to the
+length field in the callback.
+
+If flags contains C<CMD_STDOUT_FLAG_WHOLE_BUFFER>, then the callback is
+called exactly once, with the entire buffer.  Note in this case the buffer
+is I<not> C<\0>-terminated, so you need to may attention to the length field
+in the callback.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_set_stderr_to_stdout>
+
+ void
+ guestfs_int_cmd_set_stderr_to_stdout (struct command *cmd)
+
+Equivalent to adding C<2E<gt>&1> to the end of the command.  This is
+incompatible with the C<capture_errors> flag, because it doesn't make sense
+to combine them.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_clear_capture_errors>
+
+ void
+ guestfs_int_cmd_clear_capture_errors (struct command *cmd)
+
+Clear the C<capture_errors> flag.  This means that any errors will go to
+stderr, instead of being captured in the event log, and that is usually
+undesirable.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_clear_close_files>
+
+ void
+ guestfs_int_cmd_clear_close_files (struct command *cmd)
+
+Don't close file descriptors after the fork.
+
+XXX Should allow single fds to be sent to child process.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_set_child_callback>
+
+ void
+ guestfs_int_cmd_set_child_callback (struct command *cmd,
+                                     cmd_child_callback child_callback,
+                                     void *data)
+
+Set a function to be executed in the child, right before the execution.  Can
+be used to setup the child, for example changing its current directory.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_set_child_rlimit>
+
+ void
+ guestfs_int_cmd_set_child_rlimit (struct command *cmd, int resource, long limit)
+
+Set up child rlimits, in case the process we are running could consume lots
+of space or time.
+
+=head4 Функція C<src/command.c:finish_command>
+
+ static void
+ finish_command (struct command *cmd)
+
+Finish off the command by either C<NULL>-terminating the argv array or
+adding a terminating C<\0> to the string, or die with an internal error if
+no command has been added.
+
+=head4 Функція C<src/command.c:loop>
+
+ static int
+ loop (struct command *cmd)
+
+The loop which reads errors and output and directs it either to the log or
+to the stdout callback as appropriate.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_run>
+
+ int
+ guestfs_int_cmd_run (struct command *cmd)
+
+Fork, run the command, loop over the output, and waitpid.
+
+Returns the exit status.  Test it using C<WIF*> macros.
+
+On error: Calls C<error> and returns C<-1>.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_pipe_run>
+
+ int
+ guestfs_int_cmd_pipe_run (struct command *cmd, const char *mode)
+
+Fork and run the command, but don't wait.  Roughly equivalent to S<C<popen
+(..., "r"|"w")>>.
+
+Returns the file descriptor of the pipe, connected to stdout (C<"r">) or
+stdin (C<"w">) of the child process.
+
+After reading/writing to this pipe, call C<guestfs_int_cmd_pipe_wait> to
+wait for the status of the child.
+
+Errors from the subcommand cannot be captured to the error log using this
+interface.  Instead the caller should call
+C<guestfs_int_cmd_get_pipe_errors> (after C<guestfs_int_cmd_pipe_wait>
+returns an error).
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_pipe_wait>
+
+ int
+ guestfs_int_cmd_pipe_wait (struct command *cmd)
+
+Wait for a subprocess created by C<guestfs_int_cmd_pipe_run> to finish.  On
+error (eg. failed syscall) this returns C<-1> and sets the error.  If the
+subcommand fails, then use C<WIF*> macros to check this, and call
+C<guestfs_int_cmd_get_pipe_errors> to read the error messages printed by the
+child.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_get_pipe_errors>
+
+ char *
+ guestfs_int_cmd_get_pipe_errors (struct command *cmd)
+
+Read the error messages printed by the child.  The caller must free the
+returned buffer after use.
+
+=head4 Функція C<src/command.c:guestfs_int_cmd_close>
+
+ void
+ guestfs_int_cmd_close (struct command *cmd)
+
+Close the C<cmd> object and free all resources.
+
+=head4 Функція C<src/command.c:process_line_buffer>
+
+ static void
+ process_line_buffer (struct command *cmd, int closed)
+
+Deal with buffering stdout for the callback.
+
+=head3 Файл F<src/conn-socket.c>
+
+This file handles connections to the child process where this is done over
+regular POSIX sockets.
+
+=head4 Функція C<src/conn-socket.c:handle_log_message>
+
+ static int
+ handle_log_message (guestfs_h *g,
+                     struct connection_socket *conn)
+
+This is called if C<conn-E<gt>console_sock> becomes ready to read while we
+are doing one of the connection operations above.  It reads and deals with
+the log message.
+
+Повертає:
+
+=over 4
+
+=item C<1>
+
+log message(s) were handled successfully
+
+=item C<0>
+
+connection to appliance closed
+
+=item C<-1>
+
+помилка
+
+=back
+
+=head4 Функція C<src/conn-socket.c:guestfs_int_new_conn_socket_listening>
+
+ struct connection *
+ guestfs_int_new_conn_socket_listening (guestfs_h *g,
+ 				       int daemon_accept_sock,
+ 				       int console_sock)
+
+Create a new socket connection, listening.
+
+Note that it's OK for C<console_sock> to be passed as C<-1>, meaning there's
+no console available for this appliance.
+
+After calling this, C<daemon_accept_sock> is owned by the connection, and
+will be closed properly either in C<accept_connection> or
+C<free_connection>.
+
+=head4 Функція C<src/conn-socket.c:guestfs_int_new_conn_socket_connected>
+
+ struct connection *
+ guestfs_int_new_conn_socket_connected (guestfs_h *g,
+ 				       int daemon_sock,
+ 				       int console_sock)
+
+Create a new socket connection, connected.
+
+As above, but the caller passes us a connected C<daemon_sock> and promises
+not to call C<accept_connection>.
+
+=head3 Файл F<src/create.c>
+
+APIs for creating empty disks.
+
+Mostly this consists of wrappers around the L<qemu-img(1)> program.
+
+=head3 Файл F<src/drives.c>
+
+Drives added are stored in an array in the handle.  Code here manages that
+array and the individual C<struct drive> data.
+
+=head4 Функція C<src/drives.c:create_overlay>
+
+ static int
+ create_overlay (guestfs_h *g, struct drive *drv)
+
+For readonly drives, create an overlay to protect the original drive
+content.  Note we never need to clean up these overlays since they are
+created in the temporary directory and deleted when the handle is closed.
+
+=head4 Функція C<src/drives.c:create_drive_file>
+
+ static struct drive *
+ create_drive_file (guestfs_h *g,
+                    const struct drive_create_data *data)
+
+Create and free the C<struct drive>.
+
+=head4 Функція C<src/drives.c:create_drive_dev_null>
+
+ static struct drive *
+ create_drive_dev_null (guestfs_h *g,
+                        struct drive_create_data *data)
+
+Create the special F</dev/null> drive.
+
+Traditionally you have been able to use F</dev/null> as a filename, as many
+times as you like.  Ancient KVM (RHEL 5) cannot handle adding F</dev/null>
+readonly.  qemu 1.2 + virtio-scsi segfaults when you use any zero-sized file
+including F</dev/null>.
+
+Because of these problems, we replace F</dev/null> with a non-zero sized
+temporary file.  This shouldn't make any difference since users are not
+supposed to try and access a null drive.
+
+=head4 Функція C<src/drives.c:drive_to_string>
+
+ static char *
+ drive_to_string (guestfs_h *g, const struct drive *drv)
+
+Convert a C<struct drive> to a string for debugging.  The caller must free
+this string.
+
+=head4 Функція C<src/drives.c:add_drive_to_handle_at>
+
+ static void
+ add_drive_to_handle_at (guestfs_h *g, struct drive *d, size_t drv_index)
+
+Add C<struct drive> to the C<g-E<gt>drives> vector at the given index
+C<drv_index>.  If the array isn't large enough it is reallocated.  The index
+must not contain a drive already.
+
+=head4 Функція C<src/drives.c:add_drive_to_handle>
+
+ static void
+ add_drive_to_handle (guestfs_h *g, struct drive *d)
+
+Add struct drive to the end of the C<g-E<gt>drives> vector in the handle.
+
+=head4 Функція C<src/drives.c:guestfs_int_add_dummy_appliance_drive>
+
+ void
+ guestfs_int_add_dummy_appliance_drive (guestfs_h *g)
+
+Called during launch to add a dummy slot to C<g-E<gt>drives>.
+
+=head4 Функція C<src/drives.c:guestfs_int_free_drives>
+
+ void
+ guestfs_int_free_drives (guestfs_h *g)
+
+Free up all the drives in the handle.
+
+=head4 Функція C<src/drives.c:valid_format_iface>
+
+ static int
+ valid_format_iface (const char *str)
+
+Check string parameter matches regular expression C<^[-_[:alnum:]]+$> (in C
+locale).
+
+=head4 Функція C<src/drives.c:valid_disk_label>
+
+ static int
+ valid_disk_label (const char *str)
+
+Check the disk label is reasonable.  It can't contain certain characters,
+eg. C<'/'>, C<','>.  However be stricter here and ensure it's just
+alphabetic and E<le> 20 characters in length.
+
+=head4 Функція C<src/drives.c:valid_hostname>
+
+ static int
+ valid_hostname (const char *str)
+
+Check the server hostname is reasonable.
+
+=head4 Функція C<src/drives.c:valid_port>
+
+ static int
+ valid_port (int port)
+
+Check the port number is reasonable.
+
+=head4 Функція C<src/drives.c:guestfs_impl_remove_drive>
+
+ int
+ guestfs_impl_remove_drive (guestfs_h *g, const char *label)
+
+Ця функція реалізує L<guestfs(3)/guestfs_remove_drive>.
+
+Depending on whether we are hotplugging or not, this function does slightly
+different things: If not hotplugging, then the drive just disappears as if
+it had never been added.  The later drives "move up" to fill the space.
+When hotplugging we have to do some complex stuff, and we usually end up
+leaving an empty (C<NULL>) slot in the C<g-E<gt>drives> vector.
+
+=head4 Функція C<src/drives.c:guestfs_int_checkpoint_drives>
+
+ size_t
+ guestfs_int_checkpoint_drives (guestfs_h *g)
+
+Checkpoint and roll back drives, so that groups of drives can be added
+atomicly.  Only used by L<guestfs(3)/guestfs_add_domain>.
+
+=head4 Функція C<src/drives.c:guestfs_impl_debug_drives>
+
+ char **
+ guestfs_impl_debug_drives (guestfs_h *g)
+
+Internal function to return the list of drives.
+
+=head3 Файл F<src/errors.c>
+
+This file handles errors, and also debug, trace and warning messages.
+
+Errors in libguestfs API calls are handled by setting an error message and
+optional errno in the handle.  The caller has the choice of testing API
+calls to find out if they failed and then querying the last error from the
+handle, and/or getting a callback.
+
+From the point of view of the library source, generally you should use the
+C<error> or C<perrorf> macros along error paths, eg:
+
+ if (something_bad) {
+   error (g, "something bad happened");
+   return -1;
+ }
+
+Make sure to call the C<error> or C<perrorf> macro exactly once along each
+error path, since the handle can only store a single error and the previous
+error will be overwritten.
+
+=head4 Функція C<src/errors.c:guestfs_int_warning>
+
+ void
+ guestfs_int_warning (guestfs_h *g, const char *fs, ...)
+
+Виводить попередження.
+
+Code should I<not> call this function directly.  Use the S<C<warning (g, fs,
+...)>> macro.
+
+Warnings are printed unconditionally.  We try to make these rare: Generally
+speaking, a warning should either be an error, or if it's not important for
+end users then it should be a debug message.
+
+=head4 Функція C<src/errors.c:guestfs_int_debug>
+
+ void
+ guestfs_int_debug (guestfs_h *g, const char *fs, ...)
+
+Виводить діагностичне повідомлення.
+
+Code should I<not> call this function directly.  To add debug messages in
+the library, use the S<C<debug (g, fs, ...)>> macro.  The macro checks if
+C<g-E<gt>verbose> is false and avoids the function call, meaning the macro
+is more efficient.
+
+=head4 Функція C<src/errors.c:guestfs_int_trace>
+
+ void
+ guestfs_int_trace (guestfs_h *g, const char *fs, ...)
+
+Виводить повідомлення трасування.
+
+Do not call this function.  All calls are generated automatically.
+
+=head4 Функція C<src/errors.c:guestfs_int_error_errno>
+
+ void
+ guestfs_int_error_errno (guestfs_h *g, int errnum, const char *fs, ...)
+
+Set the last error and errno in the handle, and optionally raise the error
+callback if one is defined.
+
+If you don't need to set errno, use the S<C<error (g, fs, ...)>> macro
+instead of calling this directly.  If you need to set errno then there is no
+macro wrapper, so calling this function directly is fine.
+
+=head4 Функція C<src/errors.c:guestfs_int_perrorf>
+
+ void
+ guestfs_int_perrorf (guestfs_h *g, const char *fs, ...)
+
+Similar to L<perror(3)>, but it sets the last error in the handle, raises
+the error callback if one is defined, and supports format strings.
+
+You should probably use the S<C<perrorf (g, fs, ...)>> macro instead of
+calling this directly.
+
+=head4 Функція C<src/errors.c:guestfs_int_launch_failed_error>
+
+ void
+ guestfs_int_launch_failed_error (guestfs_h *g)
+
+Raise a launch failed error in a standard format.
+
+Since this is the most common error seen by people who have installation
+problems, buggy qemu, etc, and since no one reads the FAQ, describe in this
+error message what resources are available to debug launch problems.
+
+=head4 Функція C<src/errors.c:guestfs_int_unexpected_close_error>
+
+ void
+ guestfs_int_unexpected_close_error (guestfs_h *g)
+
+Raise an error if the appliance unexpectedly crashes after launch.
+
+=head4 Функція C<src/errors.c:guestfs_int_launch_timeout>
+
+ void
+ guestfs_int_launch_timeout (guestfs_h *g)
+
+Raise an error if the appliance hangs during launch.
+
+=head4 Функція C<src/errors.c:guestfs_int_external_command_failed>
+
+ void
+ guestfs_int_external_command_failed (guestfs_h *g, int status,
+ 				     const char *cmd_name, const char *extra)
+
+Raise an error if an external command fails.
+
+C<status> is the status code of the command (eg. returned from L<waitpid(2)>
+or L<system(3)>).  This function turns the status code into an explanatory
+string.
+
+=head3 Файл F<src/events.c>
+
+=head4 Функція C<src/events.c:replace_old_style_event_callback>
+
+ static void
+ replace_old_style_event_callback (guestfs_h *g,
+                                   guestfs_event_callback cb,
+                                   uint64_t event_bitmask,
+                                   void *opaque,
+                                   void *opaque2)
+
+Emulate old-style callback API.
+
+There were no event handles, so multiple callbacks per event were not
+supported.  Calling the same C<guestfs_set_*_callback> function would
+replace the existing event.  Calling it with C<cb == NULL> meant that the
+caller wanted to remove the callback.
+
+=head3 Файл F<src/guid.c>
+
+=head4 Функція C<src/guid.c:guestfs_int_validate_guid>
+
+ int
+ guestfs_int_validate_guid (const char *str)
+
+Check whether a string supposed to contain a GUID actually contains it.  It
+can recognize strings either as C<{21EC2020-3AEA-1069-A2DD-08002B30309D}> or
+C<21EC2020-3AEA-1069-A2DD-08002B30309D>.
+
+=head3 Файл F<src/handle.c>
+
+This file deals with the C<guestfs_h> handle, creating it, closing it, and
+initializing/setting/getting fields.
+
+=head4 Функція C<src/handle.c:init_libguestfs>
+
+ static void
+ init_libguestfs (void)
+
+No initialization is required by libguestfs, but libvirt and libxml2 require
+initialization if they might be called from multiple threads.  Hence this
+constructor function which is called when libguestfs is first loaded.
+
+=head4 Функція C<src/handle.c:shutdown_backend>
+
+ static int
+ shutdown_backend (guestfs_h *g, int check_for_errors)
+
+This function is the common path for shutting down the backend qemu process.
+
+C<guestfs_shutdown> calls C<shutdown_backend> with C<check_for_errors=1>.
+C<guestfs_close> calls C<shutdown_backend> with C<check_for_errors=0>.
+
+C<check_for_errors> is a hint to the backend about whether we care about
+errors or not.  In the libvirt case it can be used to optimize the shutdown
+for speed when we don't care.
+
+=head4 Функція C<src/handle.c:close_handles>
+
+ static void
+ close_handles (void)
+
+Close all open handles (called from L<atexit(3)>).
+
+=head4 Функція C<src/handle.c:guestfs_int_get_backend_setting_bool>
+
+ int
+ guestfs_int_get_backend_setting_bool (guestfs_h *g, const char *name)
+
+This is a convenience function, but we might consider exporting it as an API
+in future.
+
+=head3 Файл F<src/inspect.c>
+
+This file, and the other C<src/inspect*.c> files, handle inspection.  See
+L<guestfs(3)/INSPECTION>.
+
+=head4 Функція C<src/inspect.c:guestfs_impl_inspect_os>
+
+ char **
+ guestfs_impl_inspect_os (guestfs_h *g)
+
+The main inspection API.
+
+=head4 Функція C<src/inspect.c:collect_coreos_inspection_info>
+
+ static void
+ collect_coreos_inspection_info (guestfs_h *g)
+
+Traverse through the filesystem list and find out if it contains the C</>
+and C</usr> filesystems of a CoreOS image. If this is the case, sum up all
+the collected information on the root fs.
+
+=head4 Функція C<src/inspect.c:check_for_duplicated_bsd_root>
+
+ static void
+ check_for_duplicated_bsd_root (guestfs_h *g)
+
+On *BSD systems, sometimes F</dev/sda[1234]> is a shadow of the real root
+filesystem that is probably F</dev/sda5> (see:
+L<http://www.freebsd.org/doc/handbook/disk-organization.html>)
+
+=head4 Функція C<src/inspect.c:guestfs_int_download_to_tmp>
+
+ char *
+ guestfs_int_download_to_tmp (guestfs_h *g, struct inspect_fs *fs,
+ 			     const char *filename,
+ 			     const char *basename, uint64_t max_size)
+
+Download a guest file to a local temporary file.  The file is cached in the
+temporary directory, and is not downloaded again.
+
+The name of the temporary (downloaded) file is returned.  The caller must
+free the pointer, but does I<not> need to delete the temporary file.  It
+will be deleted when the handle is closed.
+
+Refuse to download the guest file if it is larger than C<max_size>.  On this
+and other errors, C<NULL> is returned.
+
+There is actually one cache per C<struct inspect_fs *> in order to handle
+the case of multiple roots.
+
+=head3 Файл F<src/launch-direct.c>
+
+Implementation of the C<direct> backend.
+
+For more details see L<guestfs(3)/BACKENDS>.
+
+=head3 File F<src/launch-libvirt.c>
+
+=head4 Function C<src/launch-libvirt.c:get_source_format_or_autodetect>
+
+ static char *
+ get_source_format_or_autodetect (guestfs_h *g, struct drive *drv)
+
+Return C<drv-E<gt>src.format>, but if it is C<NULL>, autodetect the format.
+
+libvirt has disabled the feature of detecting the disk format, unless the
+administrator sets C<allow_disk_format_probing=1> in
+F</etc/libvirt/qemu.conf>.  There is no way to detect if this option is set,
+so we have to do format detection here using C<qemu-img> and pass that to
+libvirt.
+
+This can still be a security issue, so in most cases it is recommended the
+users pass the format to libguestfs which will faithfully pass that straight
+through to libvirt without doing autodetection.
+
+Caller must free the returned string.  On error this function sets the error
+in the handle and returns C<NULL>.
+
+=head4 Function C<src/launch-libvirt.c:make_qcow2_overlay>
+
+ static char *
+ make_qcow2_overlay (guestfs_h *g, const char *backing_drive,
+                     const char *format)
+
+Create a qcow2 format overlay, with the given C<backing_drive> (file).  The
+C<format> parameter, which must be non-NULL, is the backing file format.
+This is used to create the appliance overlay, and also for read-only drives.
+
+=head3 Файл F<src/launch.c>
+
+This file implements L<guestfs(3)/guestfs_launch>.
+
+Most of the work is done by the backends (see L<guestfs(3)/BACKEND>), which
+are implemented in F<src/launch-direct.c>, F<src/launch-libvirt.c> etc, so
+this file mostly passes calls through to the current backend.
+
+=head4 Функція C<src/launch.c:guestfs_int_launch_send_progress>
+
+ void
+ guestfs_int_launch_send_progress (guestfs_h *g, int perdozen)
+
+This function sends a launch progress message.
+
+Launching the appliance generates approximate progress messages.  Currently
+these are defined as follows:
+
+   0 / 12: launch clock starts
+   3 / 12: appliance created
+   6 / 12: detected that guest kernel started
+   9 / 12: detected that /init script is running
+  12 / 12: launch completed successfully
+
+Нотатки:
+
+=over 4
+
+=item 1.
+
+This is not a documented ABI and the behaviour may be changed or removed in
+future.
+
+=item 2.
+
+Messages are only sent if more than 5 seconds has elapsed since the launch
+clock started.
+
+=item 3.
+
+There is a hack in F<src/proto.c> to make this work.
+
+=back
+
+=head4 Функція C<src/launch.c:guestfs_int_timeval_diff>
+
+ int64_t
+ guestfs_int_timeval_diff (const struct timeval *x, const struct timeval *y)
+
+Compute C<y - x> and return the result in milliseconds.
+
+Approximately the same as this code:
+L<http://www.mpp.mpg.de/~huber/util/timevaldiff.c>
+
+=head4 Функція C<src/launch.c:guestfs_impl_max_disks>
+
+ int
+ guestfs_impl_max_disks (guestfs_h *g)
+
+Returns the maximum number of disks allowed to be added to the backend
+(backend dependent).
+
+=head4 Функція C<src/launch.c:guestfs_impl_wait_ready>
+
+ int
+ guestfs_impl_wait_ready (guestfs_h *g)
+
+Implementation of L<guestfs(3)/guestfs_wait_ready>.  You had to call this
+function after launch in versions E<le> 1.0.70, but it is now an (almost)
+no-op.
+
+=head4 Функція C<src/launch.c:guestfs_int_appliance_command_line>
+
+ char *
+ guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
+ 				    int flags)
+
+Construct the Linux command line passed to the appliance.  This is used by
+the C<direct> and C<libvirt> backends, and is simply located in this file
+because it's a convenient place for this common code.
+
+The C<appliance_dev> parameter must be the full device name of the appliance
+disk and must have already been adjusted to take into account virtio-blk or
+virtio-scsi; eg C</dev/sdb>.
+
+The C<flags> parameter can contain the following flags logically or'd
+together (or 0):
+
+=over 4
+
+=item C<APPLIANCE_COMMAND_LINE_IS_TCG>
+
+If we are launching a qemu TCG guest (ie. KVM is known to be disabled or
+unavailable).  If you don't know, don't pass this flag.
+
+=back
+
+Note that this function returns a newly allocated buffer which must be freed
+by the caller.
+
+=head4 Функція C<src/launch.c:guestfs_int_get_cpu_model>
+
+ const char *
+ guestfs_int_get_cpu_model (int kvm)
+
+Return the right CPU model to use as the qemu C<-cpu> parameter or its
+equivalent in libvirt.  This returns:
+
+=over 4
+
+=item C<"host">
+
+The literal string C<"host"> means use C<-cpu host>.
+
+=item some string
+
+Some string such as C<"cortex-a57"> means use C<-cpu cortex-a57>.
+
+=item C<NULL>
+
+C<NULL> means no C<-cpu> option at all.  Note returning C<NULL> does not
+indicate an error.
+
+=back
+
+This is made unnecessarily hard and fragile because of two stupid choices in
+QEMU:
+
+=over 4
+
+=item *
+
+The default for C<qemu-system-aarch64 -M virt> is to emulate a C<cortex-a15>
+(WTF?).
+
+=item *
+
+We don't know for sure if KVM will work, but C<-cpu host> is broken with
+TCG, so we almost always pass a broken C<-cpu> flag if KVM is semi-broken in
+any way.
+
+=back
+
+=head4 Функція C<src/launch.c:guestfs_int_create_socketname>
+
+ int
+ guestfs_int_create_socketname (guestfs_h *g, const char *filename,
+                                char (*sockpath)[UNIX_PATH_MAX])
+
+Create the path for a socket with the selected filename in the tmpdir.
+
+=head4 Функція C<src/launch.c:guestfs_int_register_backend>
+
+ void
+ guestfs_int_register_backend (const char *name, const struct backend_ops *ops)
+
+When the library is loaded, each backend calls this function to register
+itself in a global list.
+
+=head4 Функція C<src/launch.c:guestfs_int_set_backend>
+
+ int
+ guestfs_int_set_backend (guestfs_h *g, const char *method)
+
+Implementation of L<guestfs(3)/guestfs_set_backend>.
+
+=over 4
+
+=item *
+
+Callers must ensure this is only called in the config state.
+
+=item *
+
+This shouldn't call C<error> since it may be called early in handle
+initialization.  It can return an error code however.
+
+=back
+
+=head3 Файл F<src/proto.c>
+
+This is the code used to send and receive RPC messages and (for certain
+types of message) to perform file transfers.  This code is driven from the
+generated actions (F<src/actions-*.c>).  There are five different cases to
+consider:
+
+=over 4
+
+=item 1.
+
+A non-daemon function (eg. L<guestfs(3)/guestfs_set_verbose>).  There is no
+RPC involved at all, it's all handled inside the library.
+
+=item 2.
+
+A simple RPC (eg. L<guestfs(3)/guestfs_mount>).  We write the request, then
+read the reply.  The sequence of calls is:
+
+  guestfs_int_send
+  guestfs_int_recv
+
+=item 3.
+
+An RPC with C<FileIn> parameters (eg. L<guestfs(3)/guestfs_upload>).  We
+write the request, then write the file(s), then read the reply.  The
+sequence of calls is:
+
+  guestfs_int_send
+  guestfs_int_send_file  (possibly multiple times)
+  guestfs_int_recv
+
+=item 4.
+
+An RPC with C<FileOut> parameters (eg. L<guestfs(3)/guestfs_download>).  We
+write the request, then read the reply, then read the file(s).  The sequence
+of calls is:
+
+  guestfs_int_send
+  guestfs_int_recv
+  guestfs_int_recv_file  (можливо декілька разів)
+
+=item 5.
+
+Both C<FileIn> and C<FileOut> parameters.  There are no calls like this in
+the current API, but they would be implemented as a combination of cases 3
+and 4.
+
+=back
+
+All read/write/etc operations are performed using the current connection
+module (C<g-E<gt>conn>).  During operations the connection module
+transparently handles log messages that appear on the console.
+
+=head4 Функція C<src/proto.c:child_cleanup>
+
+ static void
+ child_cleanup (guestfs_h *g)
+
+This is called if we detect EOF, ie. qemu died.
+
+=head4 Функція C<src/proto.c:guestfs_int_progress_message_callback>
+
+ void
+ guestfs_int_progress_message_callback (guestfs_h *g,
+ 				       const guestfs_progress *message)
+
+Convenient wrapper to generate a progress message callback.
+
+=head4 Функція C<src/proto.c:guestfs_int_log_message_callback>
+
+ void
+ guestfs_int_log_message_callback (guestfs_h *g, const char *buf, size_t len)
+
+Connection modules call us back here when they get a log message.
+
+=head4 Функція C<src/proto.c:check_daemon_socket>
+
+ static ssize_t
+ check_daemon_socket (guestfs_h *g)
+
+Before writing to the daemon socket, check the read side of the daemon
+socket for any of these conditions:
+
+=over 4
+
+=item помилка
+
+повертає -1
+
+=item daemon cancellation message
+
+повертає -2
+
+=item progress message
+
+handle it here
+
+=item end of input or appliance exited unexpectedly
+
+повертає 0
+
+=item усе інше
+
+повертає 1
+
+=back
+
+=head4 Функція C<src/proto.c:guestfs_int_send_file>
+
+ int
+ guestfs_int_send_file (guestfs_h *g, const char *filename)
+
+Надіслати файл.
+
+Returns C<0> on success, C<-1> for error, C<-2> if the daemon cancelled (we
+must read the error message).
+
+=head4 Функція C<src/proto.c:send_file_data>
+
+ static int
+ send_file_data (guestfs_h *g, const char *buf, size_t len)
+
+Send a chunk of file data.
+
+=head4 Функція C<src/proto.c:send_file_cancellation>
+
+ static int
+ send_file_cancellation (guestfs_h *g)
+
+Надіслати повідомлення скасовування.
+
+=head4 Функція C<src/proto.c:send_file_complete>
+
+ static int
+ send_file_complete (guestfs_h *g)
+
+Send a file complete chunk.
+
+=head4 Функція C<src/proto.c:recv_from_daemon>
+
+ static int
+ recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn)
+
+This function reads a single message, file chunk, launch flag or
+cancellation flag from the daemon.  If something was read, it returns C<0>,
+otherwise C<-1>.
+
+Both C<size_rtn> and C<buf_rtn> must be passed by the caller as non-NULL.
+
+C<*size_rtn> returns the size of the returned message or it may be
+C<GUESTFS_LAUNCH_FLAG> or C<GUESTFS_CANCEL_FLAG>.
+
+C<*buf_rtn> is returned containing the message (if any) or will be set to
+C<NULL>.  C<*buf_rtn> must be freed by the caller.
+
+This checks for EOF (appliance died) and passes that up through the
+child_cleanup function above.
+
+Log message, progress messages are handled transparently here.
+
+=head4 Функція C<src/proto.c:guestfs_int_recv>
+
+ int
+ guestfs_int_recv (guestfs_h *g, const char *fn,
+ 		  guestfs_message_header *hdr,
+ 		  guestfs_message_error *err,
+ 		  xdrproc_t xdrp, char *ret)
+
+Receive a reply.
+
+=head4 Функція C<src/proto.c:guestfs_int_recv_discard>
+
+ int
+ guestfs_int_recv_discard (guestfs_h *g, const char *fn)
+
+Same as C<guestfs_int_recv>, but it discards the reply message.
+
+Notes (XXX):
+
+=over 4
+
+=item *
+
+This returns an int, but all current callers ignore it.
+
+=item *
+
+The error string may end up being set twice on error paths.
+
+=back
+
+=head4 Функція C<src/proto.c:guestfs_int_recv_file>
+
+ int
+ guestfs_int_recv_file (guestfs_h *g, const char *filename)
+
+Returns C<-1> = error, C<0> = EOF, C<E<gt>0> = more data
+
+=head4 Функція C<src/proto.c:receive_file_data>
+
+ static ssize_t
+ receive_file_data (guestfs_h *g, void **buf_r)
+
+Receive a chunk of file data.
+
+Returns C<-1> = error, C<0> = EOF, C<E<gt>0> = more data
+
+=head3 Файл F<src/qemu.c>
+
+Functions to handle qemu versions and features.
+
+=head4 Функція C<src/qemu.c:guestfs_int_test_qemu>
+
+ struct qemu_data *
+ guestfs_int_test_qemu (guestfs_h *g, struct version *qemu_version)
+
+Test qemu binary (or wrapper) runs, and do C<qemu -help> so we know the
+version of qemu what options this qemu supports, and C<qemu -device ?> so we
+know what devices are available.
+
+The version number of qemu (from the C<-help> output) is saved in
+C<&qemu_version>.
+
+This caches the results in the cachedir so that as long as the qemu binary
+does not change, calling this is effectively free.
+
+=head4 Функція C<src/qemu.c:parse_qemu_version>
+
+ static void
+ parse_qemu_version (guestfs_h *g, const char *qemu_help,
+                     struct version *qemu_version)
+
+Parse the first line of C<qemu_help> into the major and minor version of
+qemu, but don't fail if parsing is not possible.
+
+=head4 Функція C<src/qemu.c:guestfs_int_qemu_supports>
+
+ int
+ guestfs_int_qemu_supports (guestfs_h *g, const struct qemu_data *data,
+                            const char *option)
+
+Test if option is supported by qemu command line (just by grepping the help
+text).
+
+=head4 Функція C<src/qemu.c:guestfs_int_qemu_supports_device>
+
+ int
+ guestfs_int_qemu_supports_device (guestfs_h *g,
+                                   const struct qemu_data *data,
+                                   const char *device_name)
+
+Test if device is supported by qemu (currently just greps the C<qemu -device
+?> output).
+
+=head4 Функція C<src/qemu.c:guestfs_int_qemu_supports_virtio_scsi>
+
+ int
+ guestfs_int_qemu_supports_virtio_scsi (guestfs_h *g, struct qemu_data *data,
+                                        const struct version *qemu_version)
+
+Test if qemu supports virtio-scsi.
+
+Returns C<1> = use virtio-scsi, or C<0> = use virtio-blk.
+
+=head4 Функція C<src/qemu.c:guestfs_int_qemu_escape_param>
+
+ char *
+ guestfs_int_qemu_escape_param (guestfs_h *g, const char *param)
+
+Escape a qemu parameter.
+
+Every C<,> becomes C<,,>.  The caller must free the returned string.
+
+=head4 Функція C<src/qemu.c:guestfs_int_drive_source_qemu_param>
+
+ char *
+ guestfs_int_drive_source_qemu_param (guestfs_h *g,
+                                      const struct drive_source *src)
+
+Useful function to format a drive + protocol for qemu.
+
+Note that the qemu parameter is the bit after C<"file=">.  It is not escaped
+here, but would usually be escaped if passed to qemu as part of a full
+-drive parameter (but not for L<qemu-img(1)>).
+
+=head4 Функція C<src/qemu.c:guestfs_int_discard_possible>
+
+ bool
+ guestfs_int_discard_possible (guestfs_h *g, struct drive *drv,
+ 			      const struct version *qemu_version)
+
+Test if discard is both supported by qemu AND possible with the underlying
+file or device.  This returns C<1> if discard is possible.  It returns C<0>
+if not possible and sets the error to the reason why.
+
+This function is called when the user set C<discard == "enable">.
+
+=head4 Функція C<src/qemu.c:guestfs_int_free_qemu_data>
+
+ void
+ guestfs_int_free_qemu_data (struct qemu_data *data)
+
+Free the C<struct qemu_data>.
+
+=head3 Файл F<src/stringsbuf.c>
+
+An expandable NULL-terminated vector of strings (like C<argv>).
+
+Use the C<DECLARE_STRINGSBUF> macro to declare the stringsbuf.
+
+Note: Don't confuse this with stringsbuf in the daemon which is a different
+type with different methods.
+
+=head4 Функція C<src/stringsbuf.c:guestfs_int_add_string_nodup>
+
+ void
+ guestfs_int_add_string_nodup (guestfs_h *g, struct stringsbuf *sb, char *str)
+
+Add a string to the end of the list.
+
+This doesn't call L<strdup(3)> on the string, so the string itself is stored
+inside the vector.
+
+=head4 Функція C<src/stringsbuf.c:guestfs_int_add_string>
+
+ void
+ guestfs_int_add_string (guestfs_h *g, struct stringsbuf *sb, const char *str)
+
+Add a string to the end of the list.
+
+This makes a copy of the string.
+
+=head4 Функція C<src/stringsbuf.c:guestfs_int_add_sprintf>
+
+ void
+ guestfs_int_add_sprintf (guestfs_h *g, struct stringsbuf *sb,
+ 			 const char *fs, ...)
+
+Add a string to the end of the list.
+
+Uses an sprintf-like format string when creating the string.
+
+=head4 Функція C<src/stringsbuf.c:guestfs_int_end_stringsbuf>
+
+ void
+ guestfs_int_end_stringsbuf (guestfs_h *g, struct stringsbuf *sb)
+
+Finish the string buffer.
+
+This adds the terminating NULL to the end of the vector.
+
+=head4 Функція C<src/stringsbuf.c:guestfs_int_free_stringsbuf>
+
+ void
+ guestfs_int_free_stringsbuf (struct stringsbuf *sb)
+
+Free the string buffer and the strings.
+
+=head3 Файл F<src/tmpdirs.c>
+
+Handle temporary directories.
+
+=head4 Функція C<src/tmpdirs.c:set_abs_path>
+
+ static int
+ set_abs_path (guestfs_h *g, const char *tmpdir, char **tmpdir_ret)
+
+We need to make all tmpdir paths absolute because lots of places in the code
+assume this.  Do it at the time we set the path or read the environment
+variable (L<https://bugzilla.redhat.com/882417>).
+
+=head4 Функція C<src/tmpdirs.c:guestfs_impl_get_tmpdir>
+
+ char *
+ guestfs_impl_get_tmpdir (guestfs_h *g)
+
+Implements the C<guestfs_get_tmpdir> API.
+
+Note this actually calculates the tmpdir, so it never returns C<NULL>.
+
+=head4 Функція C<src/tmpdirs.c:guestfs_impl_get_cachedir>
+
+ char *
+ guestfs_impl_get_cachedir (guestfs_h *g)
+
+Implements the C<guestfs_get_cachedir> API.
+
+Note this actually calculates the cachedir, so it never returns C<NULL>.
+
+=head4 Функція C<src/tmpdirs.c:guestfs_impl_get_sockdir>
+
+ char *
+ guestfs_impl_get_sockdir (guestfs_h *g)
+
+Implements the C<guestfs_get_sockdir> API.
+
+Note this actually calculates the sockdir, so it never returns C<NULL>.
+
+=head4 Функція C<src/tmpdirs.c:guestfs_int_lazy_make_tmpdir>
+
+ int
+ guestfs_int_lazy_make_tmpdir (guestfs_h *g)
+
+The C<g-E<gt>tmpdir> (per-handle temporary directory) is not created when
+the handle is created.  Instead we create it lazily before the first time it
+is used, or during launch.
+
+=head4 Функція C<src/tmpdirs.c:guestfs_int_lazy_make_supermin_appliance_dir>
+
+ char *
+ guestfs_int_lazy_make_supermin_appliance_dir (guestfs_h *g)
+
+Create the supermin appliance directory under cachedir, if it does not
+exist.
+
+Sanity-check that the permissions on the cachedir are safe, in case it has
+been pre-created maliciously or tampered with.
+
+Returns the directory name which the caller must free.
+
+=head4 Функція C<src/tmpdirs.c:guestfs_int_recursive_remove_dir>
+
+ void
+ guestfs_int_recursive_remove_dir (guestfs_h *g, const char *dir)
+
+Recursively remove a temporary directory.  If removal fails, just return
+(it's a temporary directory so it'll eventually be cleaned up by a temp
+cleaner).
+
+This is implemented using C<rm -rf> because that's simpler and safer.
+
+=head3 Файл F<src/umask.c>
+
+Return current umask in a thread-safe way.
+
+glibc documents, but does not actually implement, a "getumask(3)" call.
+
+We use C<Umask> from F</proc/self/status> for Linux E<ge> 4.7.  For older
+Linux and other Unix, this file implements an expensive but thread-safe way
+to get the current process's umask.
+
+Thanks to: Josh Stone, Jiri Jaburek, Eric Blake.
+
+=head4 Функція C<src/umask.c:guestfs_int_getumask>
+
+ int
+ guestfs_int_getumask (guestfs_h *g)
+
+Returns the current process's umask.  On failure, returns C<-1> and sets the
+error in the guestfs handle.
+
+=head4 Функція C<src/umask.c:get_umask_from_proc>
+
+ static int
+ get_umask_from_proc (guestfs_h *g)
+
+For Linux E<ge> 4.7 get the umask from F</proc/self/status>.
+
+On failure this returns C<-1>.  However if we could not open the F</proc>
+file or find the C<Umask> entry in it, return C<-2> which causes the
+fallback path to run.
+
+=head4 Функція C<src/umask.c:get_umask_from_fork>
+
+ static int
+ get_umask_from_fork (guestfs_h *g)
+
+Fallback method of getting the umask using fork.
+
+=head3 Файл F<src/unit-tests.c>
+
+Unit tests of internal functions.
+
+These tests may use a libguestfs handle, but must not launch the handle.
+Also, avoid long-running tests.
+
+=head4 Функція C<src/unit-tests.c:test_split>
+
+ static void
+ test_split (void)
+
+Test C<guestfs_int_split_string>.
+
+=head4 Функція C<src/unit-tests.c:test_concat>
+
+ static void
+ test_concat (void)
+
+Test C<guestfs_int_concat_strings>.
+
+=head4 Функція C<src/unit-tests.c:test_join>
+
+ static void
+ test_join (void)
+
+Test C<guestfs_int_join_strings>.
+
+=head4 Функція C<src/unit-tests.c:test_validate_guid>
+
+ static void
+ test_validate_guid (void)
+
+Test C<guestfs_int_validate_guid>.
+
+=head4 Функція C<src/unit-tests.c:test_drive_name>
+
+ static void
+ test_drive_name (void)
+
+Test C<guestfs_int_drive_name>.
+
+=head4 Функція C<src/unit-tests.c:test_drive_index>
+
+ static void
+ test_drive_index (void)
+
+Test C<guestfs_int_drive_index>.
+
+=head4 Функція C<src/unit-tests.c:test_getumask>
+
+ static void
+ test_getumask (void)
+
+Test C<guestfs_int_getumask>.
+
+=head4 Функція C<src/unit-tests.c:test_command>
+
+ static void
+ test_command (void)
+
+Test C<guestfs_int_new_command> etc.
+
+XXX These tests could be made much more thorough.  So far we simply test
+that it's not obviously broken.
+
+=head4 Функція C<src/unit-tests.c:test_qemu_escape_param>
+
+ static void
+ test_qemu_escape_param (void)
+
+Test C<guestfs_int_qemu_escape_param>
+
+XXX I wanted to make this test run qemu, passing some parameters which need
+to be escaped, but I cannot think of a way to do that without launching a
+VM.
+
+=head4 Функція C<src/unit-tests.c:test_timeval_diff>
+
+ static void
+ test_timeval_diff (void)
+
+Test C<guestfs_int_timeval_diff>.
+
+=head3 Файл F<src/utils.c>
+
+Utility functions used by the library, tools and language bindings.
+
+These functions these I<must not> call internal library functions such as
+C<safe_*>, C<error> or C<perrorf>, or any C<guestfs_int_*>.
+
+=head4 Функція C<src/utils.c:guestfs_int_split_string>
+
+ char **
+ guestfs_int_split_string (char sep, const char *str)
+
+Split string at separator character C<sep>, returning the list of strings.
+Returns C<NULL> on memory allocation failure.
+
+Note (assuming C<sep> is C<:>):
+
+=over 4
+
+=item C<str == NULL>
+
+aborts
+
+=item C<str == "">
+
+returns C<[]>
+
+=item C<str == "abc">
+
+returns C<["abc"]>
+
+=item C<str == ":">
+
+returns C<["", ""]>
+
+=back
+
+=head4 Функція C<src/utils.c:guestfs_int_exit_status_to_string>
+
+ char *
+ guestfs_int_exit_status_to_string (int status, const char *cmd_name,
+ 				   char *buffer, size_t buflen)
+
+Translate a wait/system exit status into a printable string.
+
+=head4 Функція C<src/utils.c:guestfs_int_random_string>
+
+ int
+ guestfs_int_random_string (char *ret, size_t len)
+
+Return a random string of characters.
+
+Нотатки:
+
+=over 4
+
+=item *
+
+The C<ret> buffer must have length C<len+1> in order to store the final
+C<\0> character.
+
+=item *
+
+There is about 5 bits of randomness per output character (so about C<5*len>
+bits of randomness in the resulting string).
+
+=back
+
+=head4 Функція C<src/utils.c:guestfs_int_drive_name>
+
+ char *
+ guestfs_int_drive_name (size_t index, char *ret)
+
+This turns a drive index (eg. C<27>) into a drive name (eg. C<"ab">).
+
+Drive indexes count from C<0>.  The return buffer has to be large enough for
+the resulting string, and the returned pointer points to the *end* of the
+string.
+
+L<https://rwmj.wordpress.com/2011/01/09/how-are-linux-drives-named-beyond-drive-26-devsdz/>
+
+=head4 Функція C<src/utils.c:guestfs_int_drive_index>
+
+ ssize_t
+ guestfs_int_drive_index (const char *name)
+
+The opposite of C<guestfs_int_drive_name>.  Take a string like C<"ab"> and
+return the index (eg C<27>).
+
+Note that you must remove any prefix such as C<"hd">, C<"sd"> etc, or any
+partition number before calling the function.
+
+=head4 Функція C<src/utils.c:guestfs_int_is_true>
+
+ int
+ guestfs_int_is_true (const char *str)
+
+Similar to C<Tcl_GetBoolean>.
+
+=head4 Функція C<src/utils.c:guestfs_int_fadvise_normal>
+
+ void
+ guestfs_int_fadvise_normal (int fd)
+
+Hint that we will read or write the file descriptor normally.
+
+On Linux, this clears the C<FMODE_RANDOM> flag on the file [see below] and
+sets the per-file number of readahead pages to equal the block device
+readahead setting.
+
+It's OK to call this on a non-file since we ignore failure as it is only a
+hint.
+
+=head4 Функція C<src/utils.c:guestfs_int_fadvise_sequential>
+
+ void
+ guestfs_int_fadvise_sequential (int fd)
+
+Hint that we will read or write the file descriptor sequentially.
+
+On Linux, this clears the C<FMODE_RANDOM> flag on the file [see below] and
+sets the per-file number of readahead pages to twice the block device
+readahead setting.
+
+It's OK to call this on a non-file since we ignore failure as it is only a
+hint.
+
+=head4 Функція C<src/utils.c:guestfs_int_fadvise_random>
+
+ void
+ guestfs_int_fadvise_random (int fd)
+
+Hint that we will read or write the file descriptor randomly.
+
+On Linux, this sets the C<FMODE_RANDOM> flag on the file.  The effect of
+this flag is to:
+
+=over 4
+
+=item *
+
+Disable normal sequential file readahead.
+
+=item *
+
+If any read of the file is done which misses in the page cache, 2MB are read
+into the page cache.  [I think - I'm not sure I totally understand what this
+is doing]
+
+=back
+
+It's OK to call this on a non-file since we ignore failure as it is only a
+hint.
+
+=head4 Функція C<src/utils.c:guestfs_int_fadvise_noreuse>
+
+ void
+ guestfs_int_fadvise_noreuse (int fd)
+
+Hint that we will access the data only once.
+
+On Linux, this does nothing.
+
+It's OK to call this on a non-file since we ignore failure as it is only a
+hint.
+
+=head4 Функція C<src/utils.c:guestfs_int_fadvise_dontneed>
+
+ void
+ guestfs_int_fadvise_dontneed (int fd)
+
+Hint that we will not access the data in the near future.
+
+On Linux, this immediately writes out any dirty pages in the page cache and
+then invalidates (drops) all pages associated with this file from the page
+cache.  Apparently it does this even if the file is opened or being used by
+other processes.  This setting is not persistent; if you subsequently read
+the file it will be cached in the page cache as normal.
+
+It's OK to call this on a non-file since we ignore failure as it is only a
+hint.
+
+=head4 Функція C<src/utils.c:guestfs_int_fadvise_willneed>
+
+ void
+ guestfs_int_fadvise_willneed (int fd)
+
+Hint that we will access the data in the near future.
+
+On Linux, this immediately reads the whole file into the page cache.  This
+setting is not persistent; subsequently pages may be dropped from the page
+cache as normal.
+
+It's OK to call this on a non-file since we ignore failure as it is only a
+hint.
+
+=head4 Функція C<src/utils.c:guestfs_int_shell_unquote>
+
+ char *
+ guestfs_int_shell_unquote (const char *str)
+
+Unquote a shell-quoted string.
+
+Augeas passes strings to us which may be quoted, eg. if they come from files
+in F</etc/sysconfig>.  This function can do simple unquoting of these
+strings.
+
+Note this function does not do variable substitution, since that is
+impossible without knowing the file context and indeed the environment under
+which the shell script is run.  Configuration files should not use complex
+quoting.
+
+C<str> is the input string from Augeas, a string that may be single- or
+double-quoted or may not be quoted.  The returned string is unquoted, and
+must be freed by the caller.  C<NULL> is returned on error and C<errno> is
+set accordingly.
+
+For information on double-quoting in bash, see
+L<https://www.gnu.org/software/bash/manual/html_node/Double-Quotes.html>
+
+=head3 Файл F<src/version.c>
+
+This file provides simple version number management.
+
+=head4 Функція C<src/version.c:guestfs_int_version_from_x_y>
+
+ int
+ guestfs_int_version_from_x_y (guestfs_h *g, struct version *v, const char *str)
+
+Parses a version from a string, looking for a C<X.Y> pattern.
+
+Returns C<-1> on failure (like failed integer parsing), C<0> on missing
+match, and C<1> on match and successful parsing.  C<v> is changed only on
+successful match.
+
+=head4 Функція C<src/version.c:guestfs_int_version_from_x_y_re>
+
+ int
+ guestfs_int_version_from_x_y_re (guestfs_h *g, struct version *v,
+                                  const char *str, const pcre *re)
+
+Parses a version from a string, using the specified C<re> as regular
+expression which I<must> provide (at least) two matches.
+
+Returns C<-1> on failure (like failed integer parsing), C<0> on missing
+match, and C<1> on match and successful parsing.  C<v> is changed only on
+successful match.
+
+=head4 Функція C<src/version.c:guestfs_int_version_from_x_y_or_x>
+
+ int
+ guestfs_int_version_from_x_y_or_x (guestfs_h *g, struct version *v,
+                                    const char *str)
+
+Parses a version from a string, either looking for a C<X.Y> pattern or
+considering it as whole integer.
+
+Returns C<-1> on failure (like failed integer parsing), C<0> on missing
+match, and C<1> on match and successful parsing.  C<v> is changed only on
+successful match.
+
+=head3 Файл F<src/wait.c>
+
+=head4 Функція C<src/wait.c:guestfs_int_waitpid>
+
+ int
+ guestfs_int_waitpid (guestfs_h *g, pid_t pid, int *status, const char *errmsg)
+
+A safe version of L<waitpid(3)> which retries if C<EINTR> is returned.
+
+I<Note:> this only needs to be used in the library, or in programs that
+install a non-restartable C<SIGCHLD> handler (which is not the case for any
+current libguestfs virt tools).
+
+If the main program installs a SIGCHLD handler and sets it to be
+non-restartable, then what can happen is the library is waiting in a wait
+syscall, the child exits, C<SIGCHLD> is sent to the process, and the wait
+syscall returns C<EINTR>.  Since the library cannot control the signal
+handler, we have to instead restart the wait syscall, which is the purpose
+of this wrapper.
+
+=head4 Функція C<src/wait.c:guestfs_int_waitpid_noerror>
+
+ void
+ guestfs_int_waitpid_noerror (pid_t pid)
+
+Like C<guestfs_int_waitpid>, but ignore errors.
+
+=head4 Функція C<src/wait.c:guestfs_int_wait4>
+
+ int
+ guestfs_int_wait4 (guestfs_h *g, pid_t pid, int *status,
+                    struct rusage *rusage, const char *errmsg)
+
+A safe version of L<wait4(2)> which retries if C<EINTR> is returned.
+
+=head3 Файл F<src/whole-file.c>
+
+=head4 Функція C<src/whole-file.c:guestfs_int_read_whole_file>
+
+ int
+ guestfs_int_read_whole_file (guestfs_h *g, const char *filename,
+                              char **data_r, size_t *size_r)
+
+Read the whole file C<filename> into a memory buffer.
+
+The memory buffer is initialized and returned in C<data_r>.  The size of the
+file in bytes is returned in C<size_r>.  The return buffer must be freed by
+the caller.
+
+On error this sets the error in the handle and returns C<-1>.
+
+For the convenience of callers, the returned buffer is NUL-terminated (the
+NUL is not included in the size).
+
+The file must be a B<regular>, B<local>, B<trusted> file.  In particular, do
+not use this function to read files that might be under control of an
+untrusted user since that will lead to a denial-of-service attack.
+
+=head2 Підкаталог F<builder>
+
+=head3 Файл F<builder/index-parser-c.c>
+
+This file handles the interface between the C/lex/yacc index file parser,
+and the OCaml world.  See F<builder/index_parser.ml> for the OCaml type
+definition.
+
+=head2 Підкаталог F<cat>
+
+=head3 Файл F<cat/visit.c>
+
+This file contains a recursive function for visiting all files and
+directories in a guestfs filesystem.
+
+Adapted from
+L<https://rwmj.wordpress.com/2010/12/15/tip-audit-virtual-machine-for-setuid-files/>
+
+=head4 Функція C<cat/visit.c:visit>
+
+ int
+ visit (guestfs_h *g, const char *dir, visitor_function f, void *opaque)
+
+Visit every file and directory in a guestfs filesystem, starting at C<dir>.
+
+C<dir> may be C<"/"> to visit the entire filesystem, or may be some
+subdirectory.  Symbolic links are not followed.
+
+The visitor function C<f> is called once for every directory and every
+file.  The parameters passed to C<f> include the current directory name, the
+current file name (or C<NULL> when we're visiting a directory), the
+C<guestfs_statns> (file permissions etc), and the list of extended
+attributes of the file.  The visitor function may return C<-1> which causes
+the whole recursion to stop with an error.
+
+Also passed to this function is an C<opaque> pointer which is passed through
+to the visitor function.
+
+Returns C<0> if everything went OK, or C<-1> if there was an error.  Error
+handling is not particularly well defined.  It will either set an error in
+the libguestfs handle or print an error on stderr, but there is no way for
+the caller to tell the difference.
+
+=head2 Підкаталог F<daemon>
+
+=head3 Файл F<daemon/command.c>
+
+This file contains a number of useful functions for running external
+commands and capturing their output.
+
+=head4 Функція C<daemon/command.c:commandf>
+
+ int
+ commandf (char **stdoutput, char **stderror, unsigned flags,
+           const char *name, ...)
+
+Run a command.  Optionally capture stdout and stderr as strings.
+
+Returns C<0> if the command ran successfully, or C<-1> if there was any
+error.
+
+For a description of the C<flags> see C<commandrvf>.
+
+There is also a macro C<command(out,err,name,...)> which calls C<commandf>
+with C<flags=0>.
+
+=head4 Функція C<daemon/command.c:commandrf>
+
+ int
+ commandrf (char **stdoutput, char **stderror, unsigned flags,
+            const char *name, ...)
+
+Same as C<command>, but we allow the status code from the subcommand to be
+non-zero, and return that status code.
+
+We still return C<-1> if there was some other error.
+
+There is also a macro C<commandr(out,err,name,...)> which calls C<commandrf>
+with C<flags=0>.
+
+=head4 Функція C<daemon/command.c:commandvf>
+
+ int
+ commandvf (char **stdoutput, char **stderror, unsigned flags,
+            char const *const *argv)
+
+Same as C<command>, but passing in an argv array.
+
+There is also a macro C<commandv(out,err,argv)> which calls C<commandvf>
+with C<flags=0>.
+
+=head4 Функція C<daemon/command.c:commandrvf>
+
+ int
+ commandrvf (char **stdoutput, char **stderror, unsigned flags,
+             char const* const *argv)
+
+This is a more sane version of L<system(3)> for running external commands.
+It uses fork/execvp, so we don't need to worry about quoting of parameters,
+and it allows us to capture any error messages in a buffer.
+
+If C<stdoutput> is not C<NULL>, then C<*stdoutput> will return the stdout of
+the command as a string.
+
+If C<stderror> is not C<NULL>, then C<*stderror> will return the stderr of
+the command.  If there is a final \n character, it is removed so you can use
+the error string directly in a call to C<reply_with_error>.
+
+Flags are:
+
+=over 4
+
+=item C<COMMAND_FLAG_FOLD_STDOUT_ON_STDERR>
+
+For broken external commands that send error messages to stdout (hello,
+parted) but that don't have any useful stdout information, use this flag to
+capture the error messages in the C<*stderror> buffer.  If using this flag,
+you should pass C<stdoutput=NULL> because nothing could ever be captured in
+that buffer.
+
+=item C<COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN>
+
+For running external commands on chrooted files correctly (see
+L<https://bugzilla.redhat.com/579608>) specifying this flag causes another
+process to be forked which chroots into sysroot and just copies the input
+file to stdin of the specified command.  The file descriptor is ORed with
+the flags, and that file descriptor is always closed by this function.  See
+F<daemon/hexdump.c> for an example of usage.
+
+=back
+
+There is also a macro C<commandrv(out,err,argv)> which calls C<commandrvf>
+with C<flags=0>.
+
+=head3 Файл F<daemon/guestfsd.c>
+
+This is the guestfs daemon which runs inside the guestfs appliance.  This
+file handles start up, connecting back to the library, and has several
+utility functions.
+
+=head4 Функція C<daemon/guestfsd.c:is_root_device_stat>
+
+ static int
+ is_root_device_stat (struct stat *statbuf)
+
+Return true iff device is the root device (and therefore should be ignored
+from the point of view of user calls).
+
+=head4 Функція C<daemon/guestfsd.c:sysroot_path>
+
+ char *
+ sysroot_path (const char *path)
+
+Turn C<"/path"> into C<"/sysroot/path">.
+
+Returns C<NULL> on failure.  The caller I<must> check for this and call
+S<C<reply_with_perror ("malloc")>>.  The caller must also free the returned
+string.
+
+See also the custom C<%R> printf formatter which does shell quoting too.
+
+=head4 Функція C<daemon/guestfsd.c:sysroot_realpath>
+
+ char *
+ sysroot_realpath (const char *path)
+
+Resolve path within sysroot, calling C<sysroot_path> on the resolved path.
+
+Returns C<NULL> on failure.  The caller I<must> check for this and call
+S<C<reply_with_perror ("malloc")>>.  The caller must also free the returned
+string.
+
+See also the custom C<%R> printf formatter which does shell quoting too.
+
+=head4 Функція C<daemon/guestfsd.c:is_power_of_2>
+
+ int
+ is_power_of_2 (unsigned long v)
+
+Returns true if C<v> is a power of 2.
+
+Uses the algorithm described at
+L<http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2>
+
+=head4 Функція C<daemon/guestfsd.c:compare_device_names>
+
+ int
+ compare_device_names (const char *a, const char *b)
+
+Compare device names (including partition numbers if present).
+
+L<https://rwmj.wordpress.com/2011/01/09/how-are-linux-drives-named-beyond-drive-26-devsdz/>
+
+=head4 Функція C<daemon/guestfsd.c:split_lines_sb>
+
+ struct stringsbuf
+ split_lines_sb (char *str)
+
+Split an output string into a NULL-terminated list of lines, wrapped into a
+stringsbuf.
+
+Typically this is used where we have run an external command which has
+printed out a list of things, and we want to return an actual list.
+
+The corner cases here are quite tricky.  Note in particular:
+
+=over 4
+
+=item C<"">
+
+returns C<[]>
+
+=item C<"\n">
+
+повертає C<[""]>
+
+=item C<"a\nb">
+
+повертає C<["a"; "b"]>
+
+=item C<"a\nb\n">
+
+повертає C<["a"; "b"]>
+
+=item C<"a\nb\n\n">
+
+повертає C<["a"; "b"; ""]>
+
+=back
+
+The original string is written over and destroyed by this function (which is
+usually OK because it's the 'out' string from C<command*()>).  You can free
+the original string, because C<add_string()> strdups the strings.
+
+C<argv> in the C<struct stringsbuf> will be C<NULL> in case of errors.
+
+=head4 Функція C<daemon/guestfsd.c:trim>
+
+ void
+ trim (char *str)
+
+Skip leading and trailing whitespace, updating the original string in-place.
+
+=head4 Функція C<daemon/guestfsd.c:print_shell_quote>
+
+ static int
+ print_shell_quote (FILE *stream,
+                    const struct printf_info *info ATTRIBUTE_UNUSED,
+                    const void *const *args)
+
+printf helper function so we can use C<%Q> ("quoted") and C<%R> to print
+shell-quoted strings.  See L<guestfs-hacking(1)> for more details.
+
+=head4 Функція C<daemon/guestfsd.c:device_name_translation>
+
+ char *
+ device_name_translation (const char *device)
+
+Perform device name translation.  See L<guestfs(3)> for the algorithm.
+Usually you should not call this directly.
+
+It returns a newly allocated string which the caller must free.
+
+It returns C<NULL> on error.  B<Note> it does I<not> call C<reply_with_*>.
+
+We have to open the device and test for C<ENXIO>, because the device nodes
+may exist in the appliance.
+
+=head4 Функція C<daemon/guestfsd.c:parse_btrfsvol>
+
+ int
+ parse_btrfsvol (const char *desc_orig, mountable_t *mountable)
+
+Parse the mountable descriptor for a btrfs subvolume.  Don't call this
+directly; it is only used from the stubs.
+
+A btrfs subvolume is given as:
+
+ btrfsvol:/dev/sda3/root
+
+where F</dev/sda3> is a block device containing a btrfs filesystem, and root
+is the name of a subvolume on it. This function is passed the string
+following C<"btrfsvol:">.
+
+On success, C<mountable-E<gt>device> and C<mountable-E<gt>volume> must be
+freed by the caller.
+
+=head4 Функція C<daemon/guestfsd.c:mountable_to_string>
+
+ char *
+ mountable_to_string (const mountable_t *mountable)
+
+Convert a C<mountable_t> back to its string representation
+
+This function can be used in an error path, so must not call
+C<reply_with_error>.
+
+=head4 Функція C<daemon/guestfsd.c:prog_exists>
+
+ int
+ prog_exists (const char *prog)
+
+Check program exists and is executable on C<$PATH>.
+
+=head4 Функція C<daemon/guestfsd.c:random_name>
+
+ int
+ random_name (char *template)
+
+Pass a template such as C<"/sysroot/XXXXXXXX.XXX">.  This updates the
+template to contain a randomly named file.  Any C<'X'> characters after the
+final C<'/'> in the template are replaced with random characters.
+
+Notes: You should probably use an 8.3 path, so it's compatible with all
+filesystems including basic FAT.  Also this only substitutes lowercase ASCII
+letters and numbers, again for compatibility with lowest common denominator
+filesystems.
+
+This doesn't create a file or check whether or not the file exists (it would
+be extremely unlikely to exist as long as the RNG is working).
+
+If there is an error, C<-1> is returned.
+
+=head4 Функція C<daemon/guestfsd.c:udev_settle>
+
+ void
+ udev_settle (void)
+
+LVM and other commands aren't synchronous, especially when udev is
+involved.  eg. You can create or remove some device, but the C</dev> device
+node won't appear until some time later.  This means that you get an error
+if you run one command followed by another.
+
+Use C<udevadm settle> after certain commands, but don't be too fussed if it
+fails.
+
+=head3 Файл F<daemon/internal.c>
+
+Internal functions that are not part of the public API.
+
+=head2 Підкаталог F<df>
+
+=head3 Файл F<df/domains.c>
+
+This file is used by C<virt-df> and some of the other tools when they are
+implicitly asked to operate over all libvirt domains (VMs), for example when
+C<virt-df> is called without specifying any particular disk image.
+
+It hides the complexity of querying the list of domains from libvirt.
+
+=head4 Функція C<df/domains.c:free_domains>
+
+ void
+ free_domains (void)
+
+Frees up everything allocated by C<get_all_libvirt_domains>.
+
+=head4 Функція C<df/domains.c:get_all_libvirt_domains>
+
+ void
+ get_all_libvirt_domains (const char *libvirt_uri)
+
+Read all libguest guests into the global variables C<domains> and
+C<nr_domains>.  The guests are ordered by name.  This exits on any error.
+
+=head3 Файл F<df/estimate-max-threads.c>
+
+=head4 Функція C<df/estimate-max-threads.c:estimate_max_threads>
+
+ size_t
+ estimate_max_threads (void)
+
+This function uses the output of C<free -m> to estimate how many libguestfs
+appliances could be safely started in parallel.  Note that it always returns
+E<ge> 1.
+
+=head4 Функція C<df/estimate-max-threads.c:read_line_from>
+
+ static char *
+ read_line_from (const char *cmd)
+
+Run external command and read the first line of output.
+
+=head3 Файл F<df/parallel.c>
+
+This file is used by C<virt-df> and some of the other tools when they need
+to run multiple parallel libguestfs instances to operate on a large number
+of libvirt domains efficiently.
+
+It implements a multithreaded work queue.  In addition it reorders the
+output so the output still appears in the same order as the input (ie. still
+ordered alphabetically).
+
+=head4 Функція C<df/parallel.c:start_threads>
+
+ int
+ start_threads (size_t option_P, guestfs_h *options_handle, work_fn work)
+
+Run the threads and work through the global list of libvirt domains.
+
+C<option_P> is whatever the user passed in the I<-P> option, or C<0> if the
+user didn't use the I<-P> option (in which case the number of threads is
+chosen heuristically).
+
+C<options_handle> (which may be C<NULL>) is the global guestfs handle
+created by the options mini-library.
+
+The work function (C<work>) should do the work (inspecting the domain, etc.)
+on domain index C<i>.  However it I<must not> print out any result
+directly.  Instead it prints anything it needs to the supplied C<FILE *>.
+The work function should return C<0> on success or C<-1> on error.
+
+The C<start_threads> function returns C<0> if all work items completed
+successfully, or C<-1> if there was an error.
+
+=head2 Підкаталог F<fish>
+
+=head3 Файл F<fish/alloc.c>
+
+This file implements the guestfish C<alloc> and C<sparse> commands.
+
+=head4 Функція C<fish/alloc.c:alloc_disk>
+
+ int
+ alloc_disk (const char *filename, const char *size_str, int add, int sparse)
+
+This is the underlying allocation function.  It's called from a few other
+places in guestfish.
+
+=head3 Файл F<fish/config.c>
+
+This file parses the guestfish configuration file, usually
+F<~/.libguestfs-tools.rc> or F</etc/libguestfs-tools.conf>.
+
+Note that C<parse_config> is called very early, before command line parsing,
+before the C<verbose> flag has been set, even before the global handle C<g>
+is opened.
+
+=head3 Файл F<fish/copy.c>
+
+This file implements the guestfish commands C<copy-in> and C<copy-out>.
+
+=head3 Файл F<fish/destpaths.c>
+
+The file handles tab-completion of filesystem paths in guestfish.
+
+=head3 File F<fish/display-options.c>
+
+This file contains common code used to implement I<--short-options> and
+I<--long-options> in C virt tools.  (The equivalent for OCaml virt tools is
+implemented by F<mllib/getopt.ml>).
+
+These "hidden" options are used to implement bash tab completion.
+
+=head4 Function C<fish/display-options.c:display_short_options>
+
+ void
+ display_short_options (const char *format)
+
+Implements the internal C<tool I<--short-options>> flag, which just lists
+out the short options available.  Used by bash completion.
+
+=head4 Function C<fish/display-options.c:display_long_options>
+
+ void
+ display_long_options (const struct option *long_options)
+
+Implements the internal C<tool I<--long-options>> flag, which just lists out
+the long options available.  Used by bash completion.
+
+=head3 Файл F<fish/display.c>
+
+The file implements the guestfish C<display> command, for displaying
+graphical files (icons, images) in disk images.
+
+=head3 Файл F<fish/domain.c>
+
+Реалізовує параметр guestfish (та інших інструментів) I<-d>.
+
+=head4 Функція C<fish/domain.c:add_libvirt_drives>
+
+ int
+ add_libvirt_drives (guestfs_h *g, const char *guest)
+
+This function is called when a user invokes S<C<guestfish -d guest>>.
+
+Returns the number of drives added (S<C<E<gt> 0>>), or C<-1> for failure.
+
+=head3 Файл F<fish/echo.c>
+
+The file implements the guestfish C<echo> command.
+
+=head3 Файл F<fish/edit.c>
+
+guestfish C<edit> command, suggested by Ján Ondrej.
+
+=head3 Файл F<fish/events.c>
+
+This file implements the guestfish event-related commands, C<event>,
+C<delete-event> and C<list-events>.
+
+=head3 Файл F<fish/file-edit.c>
+
+This file implements common file editing in a range of utilities including
+L<guestfish(1)>, L<virt-edit(1)>, L<virt-customize(1)> and
+L<virt-builder(1)>.
+
+It contains the code for both interactive-(editor-)based editing and
+non-interactive editing using Perl snippets.
+
+=head3 Файл F<fish/fish.c>
+
+guestfish, the guest filesystem shell.  This file contains the main loop and
+utilities.
+
+=head4 Функція C<fish/fish.c:parse_command_line>
+
+ static struct parsed_command
+ parse_command_line (char *buf, int *exit_on_error_rtn)
+
+Parse a command string, splitting at whitespace, handling C<'!'>, C<'#'>
+etc.  This destructively updates C<buf>.
+
+C<exit_on_error_rtn> is used to pass in the global C<exit_on_error> setting
+and to return the local setting (eg. if the command begins with C<'-'>).
+
+Повертає до C<parsed_command.status>:
+
+=over 4
+
+=item C<1>
+
+got a guestfish command (returned in C<cmd_rtn>/C<argv_rtn>/C<pipe_rtn>)
+
+=item C<0>
+
+no guestfish command, but otherwise OK
+
+=item C<-1>
+
+помилку
+
+=back
+
+=head4 Функція C<fish/fish.c:parse_quoted_string>
+
+ static ssize_t
+ parse_quoted_string (char *p)
+
+Parse double-quoted strings, replacing backslash escape sequences with the
+true character.  Since the string is returned in place, the escapes must
+make the string shorter.
+
+=head4 Функція C<fish/fish.c:execute_and_inline>
+
+ static int
+ execute_and_inline (const char *cmd, int global_exit_on_error)
+
+Used to handle C<E<lt>!> (execute command and inline result).
+
+=head4 Функція C<fish/fish.c:issue_command>
+
+ int
+ issue_command (const char *cmd, char *argv[], const char *pipecmd,
+                int rc_exit_on_error_flag)
+
+Виконати команду.
+
+C<rc_exit_on_error_flag> is the C<exit_on_error> flag that we pass to the
+remote server (when issuing I<--remote> commands).  It does not cause
+C<issue_command> itself to exit on error.
+
+=head4 Функція C<fish/fish.c:extended_help_message>
+
+ void
+ extended_help_message (void)
+
+Print an extended help message when the user types in an unknown command for
+the first command issued.  A common case is the user doing:
+
+  guestfish диск.img
+
+expecting guestfish to open F<disk.img> (in fact, this tried to run a
+non-existent command C<disk.img>).
+
+=head4 Функція C<fish/fish.c:error_cb>
+
+ static void
+ error_cb (guestfs_h *g, void *data, const char *msg)
+
+Error callback.  This replaces the standard libguestfs error handler.
+
+=head4 Функція C<fish/fish.c:free_n_strings>
+
+ static void
+ free_n_strings (char **str, size_t len)
+
+Free strings from a non-NULL terminated C<char**>.
+
+=head4 Функція C<fish/fish.c:decode_ps1>
+
+ static char *
+ decode_ps1 (const char *str)
+
+Decode C<str> into the final printable prompt string.
+
+=head4 Функція C<fish/fish.c:win_prefix>
+
+ char *
+ win_prefix (const char *path)
+
+Resolve the special C<win:...> form for Windows-specific paths.  The
+generated code calls this for all device or path arguments.
+
+The function returns a newly allocated string, and the caller must free this
+string; else display an error and return C<NULL>.
+
+=head4 Функція C<fish/fish.c:file_in>
+
+ char *
+ file_in (const char *arg)
+
+Resolve the special C<FileIn> paths (C<-> or C<-<<END> or filename).
+
+The caller (F<fish/cmds.c>) will call C<free_file_in> after the command has
+run which should clean up resources.
+
+=head4 Функція C<fish/fish.c:file_out>
+
+ char *
+ file_out (const char *arg)
+
+Resolve the special C<FileOut> paths (C<-> or filename).
+
+The caller (F<fish/cmds.c>) will call S<C<free (str)>> after the command has
+run.
+
+=head4 Функція C<fish/fish.c:progress_callback>
+
+ void
+ progress_callback (guestfs_h *g, void *data,
+                    uint64_t event, int event_handle, int flags,
+                    const char *buf, size_t buf_len,
+                    const uint64_t *array, size_t array_len)
+
+Callback which displays a progress bar.
+
+=head3 Файл F<fish/glob.c>
+
+This file implements the guestfish C<glob> command.
+
+=head4 Функція C<fish/glob.c:expand_devicename>
+
+ static char **
+ expand_devicename (guestfs_h *g, const char *device)
+
+Glob-expand device patterns, such as C</dev/sd*>
+(L<https://bugzilla.redhat.com/635971>).
+
+There is no C<guestfs_glob_expand_device> function because the equivalent
+can be implemented using functions like C<guestfs_list_devices>.
+
+It's not immediately clear what it means to expand a pattern like
+C</dev/sd*>.  Should that include device name translation? Should the result
+include partitions as well as devices?
+
+Should C<"/dev/"> + C<"*"> return every possible device and filesystem? How
+about VGs? LVs?
+
+To solve this what we do is build up a list of every device, partition,
+etc., then glob against that list.
+
+Notes for future work (XXX):
+
+=over 4
+
+=item *
+
+This doesn't handle device name translation.  It wouldn't be too hard to
+add.
+
+=item *
+
+Could have an API function for returning all device-like things.
+
+=back
+
+=head4 Функція C<fish/glob.c:add_strings_matching>
+
+ static int
+ add_strings_matching (char **pp, const char *glob,
+                       char ***ret, size_t *size_r)
+
+Using POSIX L<fnmatch(3)>, find strings in the list C<pp> which match
+pattern C<glob>.  Add strings which match to the C<ret> array.  C<*size_r>
+is the current size of the C<ret> array, which is updated with the new size.
+
+=head4 Функція C<fish/glob.c:single_element_list>
+
+ static char **
+ single_element_list (const char *element)
+
+Return a single element list containing C<element>.
+
+=head3 Файл F<fish/help.c>
+
+The file implements the guestfish C<help> command.
+
+=head4 Функція C<fish/help.c:display_help>
+
+ void
+ display_help (void)
+
+Команда C<help>.
+
+This used to just list all commands, but that's not very useful.  Instead
+display some useful context-sensitive help.  This could be improved if we
+knew how many drives had been added already, and whether anything was
+mounted.
+
+=head3 Файл F<fish/hexedit.c>
+
+This file implements the guestfish C<hexedit> command.
+
+=head3 Файл F<fish/inspect.c>
+
+This file implements inspecting the guest and mounting the filesystems found
+in the right places.  It is used by the L<guestfish(1)> I<-i> option and
+some utilities such as L<virt-cat(1)>.
+
+=head4 Функція C<fish/inspect.c:inspect_mount_handle>
+
+ void
+ inspect_mount_handle (guestfs_h *g)
+
+Ця функція реалізує роботу параметра I<-i>.
+
+=head4 Функція C<fish/inspect.c:print_inspect_prompt>
+
+ void
+ print_inspect_prompt (void)
+
+This function is called only if C<inspect_mount_root> was called, and only
+after we've printed the prompt in interactive mode.
+
+=head4 Функція C<fish/inspect.c:make_mapname>
+
+ static void
+ make_mapname (const char *device, char *mapname, size_t len)
+
+Make a LUKS map name from the partition name, eg. C<"/dev/vda2" =E<gt>
+"luksvda2">
+
+=head4 Функція C<fish/inspect.c:inspect_do_decrypt>
+
+ void
+ inspect_do_decrypt (guestfs_h *g)
+
+Simple implementation of decryption: look for any C<crypto_LUKS> partitions
+and decrypt them, then rescan for VGs.  This only works for Fedora
+whole-disk encryption.  WIP to make this work for other encryption schemes.
+
+=head3 Файл F<fish/keys.c>
+
+=head4 Функція C<fish/keys.c:read_key>
+
+ char *
+ read_key (const char *param)
+
+Read a passphrase ('Key') from F</dev/tty> with echo off.
+
+The caller (F<fish/cmds.c>) will call free on the string afterwards.  Based
+on the code in cryptsetup file F<lib/utils.c>.
+
+=head3 Файл F<fish/lcd.c>
+
+=head4 Функція C<fish/lcd.c:run_lcd>
+
+ int
+ run_lcd (const char *cmd, size_t argc, char *argv[])
+
+guestfish C<lcd> command (similar to the C<lcd> command in BSD ftp).
+
+=head3 Файл F<fish/man.c>
+
+=head4 Функція C<fish/man.c:run_man>
+
+ int
+ run_man (const char *cmd, size_t argc, char *argv[])
+
+Команда C<man> guestfish
+
+=head3 Файл F<fish/more.c>
+
+This file implements the guestfish C<more> command.
+
+=head3 Файл F<fish/options.c>
+
+This file contains common options parsing code used by guestfish and many
+other tools which share a common options syntax.
+
+For example, guestfish, virt-cat, virt-ls etc all support the I<-a> option,
+and that is handled in all of those tools using a macro C<OPTION_a> defined
+in F<fish/options.h>.
+
+There are a lot of common global variables used, C<drvs> accumulates the
+list of drives, C<verbose> for the I<-v> flag, and many more.
+
+=head4 Функція C<fish/options.c:option_a>
+
+ void
+ option_a (const char *arg, const char *format, struct drv **drvsp)
+
+Handle the guestfish I<-a> option on the command line.
+
+=head4 Функція C<fish/options.c:option_d>
+
+ void
+ option_d (const char *arg, struct drv **drvsp)
+
+Handle the I<-d> option when passed on the command line.
+
+=head4 Функція C<fish/options.c:display_mountpoints_on_failure>
+
+ static void
+ display_mountpoints_on_failure (const char *mp_device,
+                                 const char *user_supplied_options)
+
+If the I<-m> option fails on any command, display a useful error message
+listing the mountpoints.
+
+=head3 Файл F<fish/prep.c>
+
+This file implements the guestfish I<-N> option for creating pre-prepared
+disk layouts.
+
+=head3 Файл F<fish/progress.c>
+
+This file implements the progress bar in L<guestfish(1)>, L<virt-resize(1)>
+and L<virt-sparsify(1)>.
+
+=head4 Функція C<fish/progress.c:progress_bar_init>
+
+ struct progress_bar *
+ progress_bar_init (unsigned flags)
+
+Initialize a progress bar struct.
+
+It is intended that you can reuse the same struct for multiple commands (but
+only in a single thread).  Call C<progress_bar_reset> before each new
+command.
+
+=head4 Функція C<fish/progress.c:progress_bar_free>
+
+ void
+ progress_bar_free (struct progress_bar *bar)
+
+Free a progress bar struct.
+
+=head4 Функція C<fish/progress.c:progress_bar_reset>
+
+ void
+ progress_bar_reset (struct progress_bar *bar)
+
+This function should be called just before you issue any command.
+
+=head4 Функція C<fish/progress.c:estimate_remaining_time>
+
+ static double
+ estimate_remaining_time (struct progress_bar *bar, double ratio)
+
+Return remaining time estimate (in seconds) for current call.
+
+This returns the running mean estimate of remaining time, but if the latest
+estimate of total time is greater than two s.d.'s from the running mean then
+we don't print anything because we're not confident that the estimate is
+meaningful.  (Returned value is E<lt>0.0 when nothing should be printed).
+
+=head4 Функція C<fish/progress.c:progress_bar_set>
+
+ void
+ progress_bar_set (struct progress_bar *bar,
+                   uint64_t position, uint64_t total)
+
+Set the position of the progress bar.
+
+This should be called from a C<GUESTFS_EVENT_PROGRESS> event callback.
+
+=head3 Файл F<fish/rc.c>
+
+This file implements guestfish remote (command) support.
+
+=head4 Функція C<fish/rc.c:rc_listen>
+
+ void
+ rc_listen (void)
+
+The remote control server (ie. C<guestfish --listen>).
+
+=head4 Функція C<fish/rc.c:rc_remote>
+
+ int
+ rc_remote (int pid, const char *cmd, size_t argc, char *argv[],
+            int exit_on_error)
+
+The remote control client (ie. C<guestfish --remote>).
+
+=head3 Файл F<fish/reopen.c>
+
+This file implements the guestfish C<reopen> command.
+
+=head3 Файл F<fish/setenv.c>
+
+This file implements the guestfish C<setenv> and C<unsetenv> commands.
+
+=head3 Файл F<fish/supported.c>
+
+This file implements the guestfish C<supported> command.
+
+=head3 Файл F<fish/tilde.c>
+
+This file implements tilde (C<~>) expansion of home directories in
+L<guestfish(1)>.
+
+=head4 Функція C<fish/tilde.c:try_tilde_expansion>
+
+ char *
+ try_tilde_expansion (char *str)
+
+This is called from the script loop if we find a candidate for C<~username>
+(tilde-expansion).
+
+=head4 Функція C<fish/tilde.c:expand_home>
+
+ static char *
+ expand_home (char *orig, const char *append)
+
+Return C<$HOME> + append string.
+
+=head4 Функція C<fish/tilde.c:find_home_for_username>
+
+ static const char *
+ find_home_for_username (const char *username, size_t ulen)
+
+Lookup C<username> (of length C<ulen>), return home directory if found, or
+C<NULL> if not found.
+
+=head3 Файл F<fish/time.c>
+
+This file implements the guestfish C<time> command.
+
+=head3 Файл F<fish/uri.c>
+
+This file implements URI parsing for the I<-a> option, in many utilities
+including L<guestfish(1)>, L<virt-cat(1)>, L<virt-builder(1)>,
+L<virt-customize(1)>, etc.
+
+=head3 Файл F<fish/windows.c>
+
+This file implements C<win:> Windows file path support in L<guestfish(1)>.
+
+=head2 Підкаталог F<p2v>
+
+=head3 Файл F<p2v/config.c>
+
+=head4 Функція C<p2v/config.c:print_config>
+
+ void
+ print_config (struct config *config, FILE *fp)
+
+Print the conversion parameters and other important information.
+
+=head3 Файл F<p2v/conversion.c>
+
+This file manages the p2v conversion.
+
+The conversion is actually done by L<virt-v2v(1)> running on the remote
+conversion server.  This file manages running the remote command and
+provides callbacks for displaying the output.
+
+When virt-p2v operates in GUI mode, this code runs in a separate thread.
+When virt-p2v operates in kernel mode, this runs synchronously in the main
+thread.
+
+=head4 Функція C<p2v/conversion.c:start_qemu_nbd>
+
+ static pid_t
+ start_qemu_nbd (int port, const char *device)
+
+Start a local L<qemu-nbd(1)> process.
+
+Returns the process ID (E<gt> 0) or C<0> if there is an error.
+
+=head4 Функція C<p2v/conversion.c:connect_with_source_port>
+
+ static int
+ connect_with_source_port (const char *hostname, int dest_port, int source_port)
+
+Connect to C<hostname:dest_port>, resolving the address using
+L<getaddrinfo(3)>.
+
+This also sets the source port of the connection to the first free port
+number E<ge> C<source_port>.
+
+This may involve multiple connections - to IPv4 and IPv6 for instance.
+
+=head4 Функція C<p2v/conversion.c:generate_libvirt_xml>
+
+ static void
+ generate_libvirt_xml (struct config *config, struct data_conn *data_conns,
+                       const char *filename)
+
+Write the libvirt XML for this physical machine.
+
+Note this is not actually input for libvirt.  It's input for virt-v2v on the
+conversion server.  Virt-v2v will (if necessary)  generate the final libvirt
+XML.
+
+=head4 Функція C<p2v/conversion.c:map_interface_to_network>
+
+ static const char *
+ map_interface_to_network (struct config *config, const char *interface)
+
+Using C<config-E<gt>network_map>, map the interface to a target network
+name.  If no map is found, return C<default>.  See L<virt-p2v(1)>
+documentation of C<"p2v.network"> for how the network map works.
+
+Note this returns a static string which is only valid as long as
+C<config-E<gt>network_map> is not freed.
+
+=head4 Функція C<p2v/conversion.c:generate_name>
+
+ static void
+ generate_name (struct config *config, const char *filename)
+
+Write the guest name into C<filename>.
+
+=head4 Функція C<p2v/conversion.c:generate_wrapper_script>
+
+ static void
+ generate_wrapper_script (struct config *config, const char *remote_dir,
+                          const char *filename)
+
+Construct the virt-v2v wrapper script.
+
+This will be sent to the remote server, and is easier than trying to "type"
+a long and complex single command line into the ssh connection when we start
+the conversion.
+
+=head4 Функція C<p2v/conversion.c:print_quoted>
+
+ static void
+ print_quoted (FILE *fp, const char *s)
+
+Print a shell-quoted string on C<fp>.
+
+=head4 Функція C<p2v/conversion.c:generate_dmesg_file>
+
+ static void
+ generate_dmesg_file (const char *filename)
+
+Put the output of the C<dmesg> command into C<filename>.
+
+If the command fails, this is non-fatal.
+
+=head3 Файл F<p2v/gui.c>
+
+This file implements almost all of the virt-p2v graphical user interface
+(GUI).
+
+The GUI has three main dialogs:
+
+=over 4
+
+=item Діалогове вікно з’єднання
+
+The connection dialog is the one shown initially.  It asks the user to type
+in the login details for the remote conversion server and invites the user
+to test the ssh connection.
+
+=item Діалогове вікно перетворення
+
+The conversion dialog asks for information about the target VM (eg. the
+number of vCPUs required), and about what to convert (eg. which network
+interfaces should be copied and which should be ignored).
+
+=item Діалогове вікно запуску
+
+The running dialog is displayed when the P2V process is underway.  It mainly
+displays the virt-v2v debug messages.
+
+=back
+
+Note that the other major dialog (C<"Configure network ...">) is handled
+entirely by NetworkManager's L<nm-connection-editor(1)> program and has
+nothing to do with this code.
+
+=head4 Функція C<p2v/gui.c:gui_conversion>
+
+ void
+ gui_conversion (struct config *config)
+
+The entry point from the main program.
+
+Note that C<gtk_init> etc have already been called in C<main>.
+
+=head4 Функція C<p2v/gui.c:create_connection_dialog>
+
+ static void
+ create_connection_dialog (struct config *config)
+
+Create the connection dialog.
+
+This creates the dialog, but it is not displayed.  See
+C<show_connection_dialog>.
+
+=head4 Функція C<p2v/gui.c:username_changed_callback>
+
+ static void
+ username_changed_callback (GtkWidget *w, gpointer data)
+
+If the username is "root", disable the sudo button.
+
+=head4 Функція C<p2v/gui.c:password_or_identity_changed_callback>
+
+ static void
+ password_or_identity_changed_callback (GtkWidget *w, gpointer data)
+
+The password or SSH identity URL entries are mutually exclusive, so if one
+contains text then disable the other.  This function is called when the
+"changed" signal is received on either.
+
+=head4 Функція C<p2v/gui.c:show_connection_dialog>
+
+ static void
+ show_connection_dialog (void)
+
+Hide all other dialogs and show the connection dialog.
+
+=head4 Функція C<p2v/gui.c:test_connection_clicked>
+
+ static void
+ test_connection_clicked (GtkWidget *w, gpointer data)
+
+Callback from the C<Test connection> button.
+
+This initiates a background thread which actually does the ssh to the
+conversion server and the rest of the testing (see
+C<test_connection_thread>).
+
+=head4 Функція C<p2v/gui.c:test_connection_thread>
+
+ static void *
+ test_connection_thread (void *data)
+
+Run C<test_connection> (in a detached background thread).  Once it finishes
+stop the spinner and set the spinner message appropriately.  If the test is
+successful then we enable the C<Next> button.  If unsuccessful, an error is
+shown in the connection dialog.
+
+=head4 Функція C<p2v/gui.c:start_spinner>
+
+ static gboolean
+ start_spinner (gpointer user_data)
+
+Idle task called from C<test_connection_thread> (but run on the main thread)
+to start the spinner in the connection dialog.
+
+=head4 Функція C<p2v/gui.c:stop_spinner>
+
+ static gboolean
+ stop_spinner (gpointer user_data)
+
+Idle task called from C<test_connection_thread> (but run on the main thread)
+to stop the spinner in the connection dialog.
+
+=head4 Функція C<p2v/gui.c:test_connection_error>
+
+ static gboolean
+ test_connection_error (gpointer user_data)
+
+Idle task called from C<test_connection_thread> (but run on the main thread)
+when there is an error.  Display the error message and disable the C<Next>
+button so the user is forced to correct it.
+
+=head4 Функція C<p2v/gui.c:test_connection_ok>
+
+ static gboolean
+ test_connection_ok (gpointer user_data)
+
+Idle task called from C<test_connection_thread> (but run on the main thread)
+when the connection test was successful.
+
+=head4 Функція C<p2v/gui.c:configure_network_button_clicked>
+
+ static void
+ configure_network_button_clicked (GtkWidget *w, gpointer data)
+
+Callback from the C<Configure network ...> button.  This dialog is handled
+entirely by an external program which is part of NetworkManager.
+
+=head4 Функція C<p2v/gui.c:xterm_button_clicked>
+
+ static void
+ xterm_button_clicked (GtkWidget *w, gpointer data)
+
+Callback from the C<XTerm ...> button.
+
+=head4 Функція C<p2v/gui.c:about_button_clicked>
+
+ static void
+ about_button_clicked (GtkWidget *w, gpointer data)
+
+Callback from the C<About virt-p2v ...> button.
+
+See also F<p2v/about-authors.c> and F<p2v/about-license.c>.
+
+=head4 Функція C<p2v/gui.c:connection_next_clicked>
+
+ static void
+ connection_next_clicked (GtkWidget *w, gpointer data)
+
+Callback when the connection dialog C<Next> button has been clicked.
+
+=head4 Функція C<p2v/gui.c:create_conversion_dialog>
+
+ static void
+ create_conversion_dialog (struct config *config)
+
+Створити діалогове вікно перетворення.
+
+This creates the dialog, but it is not displayed.  See
+C<show_conversion_dialog>.
+
+=head4 Функція C<p2v/gui.c:show_conversion_dialog>
+
+ static void
+ show_conversion_dialog (void)
+
+Hide all other dialogs and show the conversion dialog.
+
+=head4 Функція C<p2v/gui.c:set_info_label>
+
+ static void
+ set_info_label (void)
+
+Update the C<Information> section in the conversion dialog.
+
+Note that C<v2v_version> (the remote virt-v2v version) is read from the
+remote virt-v2v in the C<test_connection> function.
+
+=head4 Функція C<p2v/gui.c:repopulate_output_combo>
+
+ static void
+ repopulate_output_combo (struct config *config)
+
+Repopulate the list of output drivers in the C<Output to (-o)> combo.  The
+list of drivers is read from the remote virt-v2v instance in
+C<test_connection>.
+
+=head4 Функція C<p2v/gui.c:populate_disks>
+
+ static void
+ populate_disks (GtkTreeView *disks_list)
+
+Populate the C<Fixed hard disks> treeview.
+
+=head4 Функція C<p2v/gui.c:populate_removable>
+
+ static void
+ populate_removable (GtkTreeView *removable_list)
+
+Populate the C<Removable media> treeview.
+
+=head4 Функція C<p2v/gui.c:populate_interfaces>
+
+ static void
+ populate_interfaces (GtkTreeView *interfaces_list)
+
+Populate the C<Network interfaces> treeview.
+
+=head4 Функція C<p2v/gui.c:maybe_identify_click>
+
+ static gboolean
+ maybe_identify_click (GtkWidget *interfaces_list, GdkEventButton *event,
+                       gpointer data)
+
+When the user clicks on the interface name on the list of interfaces, we
+want to run C<ethtool --identify>, which usually makes some lights flash on
+the physical interface.
+
+We cannot catch clicks on the cell itself, so we have to go via a more
+obscure route.  See L<http://stackoverflow.com/a/27207433> and
+L<https://en.wikibooks.org/wiki/GTK%2B_By_Example/Tree_View/Events>
+
+=head4 Функція C<p2v/gui.c:conversion_back_clicked>
+
+ static void
+ conversion_back_clicked (GtkWidget *w, gpointer data)
+
+The conversion dialog C<Back> button has been clicked.
+
+=head4 Функція C<p2v/gui.c:vcpus_or_memory_check_callback>
+
+ static void
+ vcpus_or_memory_check_callback (GtkWidget *w, gpointer data)
+
+Display a warning if the vCPUs or memory is outside the supported range
+(L<https://bugzilla.redhat.com/823758>).
+
+=head4 Функція C<p2v/gui.c:create_running_dialog>
+
+ static void
+ create_running_dialog (void)
+
+Create the running dialog.
+
+This creates the dialog, but it is not displayed.  See
+C<show_running_dialog>.
+
+=head4 Функція C<p2v/gui.c:show_running_dialog>
+
+ static void
+ show_running_dialog (void)
+
+Hide all other dialogs and show the running dialog.
+
+=head4 Функція C<p2v/gui.c:set_log_dir>
+
+ static gboolean
+ set_log_dir (gpointer user_data)
+
+Display the remote log directory in the running dialog.
+
+If this isn't called from the main thread, then you must only call it via an
+idle task (C<g_idle_add>).
+
+B<NB:> This frees the remote_dir (C<user_data> pointer) which was strdup'd
+in C<notify_ui_callback>.
+
+=head4 Функція C<p2v/gui.c:set_status>
+
+ static gboolean
+ set_status (gpointer user_data)
+
+Display the conversion status in the running dialog.
+
+If this isn't called from the main thread, then you must only call it via an
+idle task (C<g_idle_add>).
+
+B<NB:> This frees the message (C<user_data> pointer) which was strdup'd in
+C<notify_ui_callback>.
+
+=head4 Функція C<p2v/gui.c:add_v2v_output>
+
+ static gboolean
+ add_v2v_output (gpointer user_data)
+
+Append output from the virt-v2v process to the buffer, and scroll to ensure
+it is visible.
+
+This function is able to parse ANSI colour sequences and more.
+
+If this isn't called from the main thread, then you must only call it via an
+idle task (C<g_idle_add>).
+
+B<NB:> This frees the message (C<user_data> pointer) which was strdup'd in
+C<notify_ui_callback>.
+
+=head4 Функція C<p2v/gui.c:start_conversion_clicked>
+
+ static void
+ start_conversion_clicked (GtkWidget *w, gpointer data)
+
+Callback when the C<Start conversion> button is clicked.
+
+=head4 Функція C<p2v/gui.c:start_conversion_thread>
+
+ static void *
+ start_conversion_thread (void *data)
+
+This is the background thread which performs the conversion.
+
+=head4 Функція C<p2v/gui.c:conversion_error>
+
+ static gboolean
+ conversion_error (gpointer user_data)
+
+Idle task called from C<start_conversion_thread> (but run on the main
+thread) when there was an error during the conversion.
+
+=head4 Функція C<p2v/gui.c:conversion_finished>
+
+ static gboolean
+ conversion_finished (gpointer user_data)
+
+Idle task called from C<start_conversion_thread> (but run on the main
+thread) when the conversion completed without errors.
+
+=head4 Функція C<p2v/gui.c:notify_ui_callback>
+
+ static void
+ notify_ui_callback (int type, const char *data)
+
+This is called from F<conversion.c>:C<start_conversion> when there is a
+status change or a log message.
+
+=head4 Функція C<p2v/gui.c:cancel_conversion_dialog>
+
+ static void
+ cancel_conversion_dialog (GtkWidget *w, gpointer data)
+
+This is called when the user clicks on the "Cancel conversion" button.
+Since conversions can run for a long time, and cancelling the conversion is
+non-recoverable, this function displays a confirmation dialog before
+cancelling the conversion.
+
+=head3 Файл F<p2v/kernel-cmdline.c>
+
+Mini library to read and parse C</proc/cmdline>.
+
+=head4 Функція C<p2v/kernel-cmdline.c:parse_cmdline_string>
+
+ char **
+ parse_cmdline_string (const char *cmdline)
+
+Read and parse C</proc/cmdline>.
+
+We only support double quoting, consistent with the Linux documentation.
+L<https://www.kernel.org/doc/Documentation/kernel-parameters.txt>
+
+systemd supports single and double quoting and single character escaping,
+but we don't support all that.
+
+Returns a list of key, value pairs, terminated by C<NULL>.
+
+=head3 Файл F<p2v/kernel.c>
+
+Kernel-driven, non-interactive configuration of virt-p2v.
+
+=head3 Файл F<p2v/main.c>
+
+=head4 Функція C<p2v/main.c:partition_parent>
+
+ static dev_t
+ partition_parent (dev_t part_dev)
+
+Get parent device of a partition.
+
+Returns C<0> if no parent device could be found.
+
+=head4 Функція C<p2v/main.c:device_contains>
+
+ static int
+ device_contains (const char *dev, dev_t root_device)
+
+Return true if the named device (eg. C<dev == "sda">) contains the root
+filesystem.  C<root_device> is the major:minor of the root filesystem
+(eg. C<8:1> if the root filesystem was F</dev/sda1>).
+
+This doesn't work for LVs and so on.  However we only really care if this
+test works on the P2V ISO where the root device is a regular partition.
+
+=head4 Функція C<p2v/main.c:find_all_disks>
+
+ static void
+ find_all_disks (void)
+
+Enumerate all disks in F</sys/block> and add them to the global C<all_disks>
+and C<all_removable> arrays.
+
+=head4 Функція C<p2v/main.c:find_all_interfaces>
+
+ static void
+ find_all_interfaces (void)
+
+Enumerate all network interfaces in F</sys/class/net> and add them to the
+global C<all_interfaces> array.
+
+=head4 Функція C<p2v/main.c:cpuinfo_flags>
+
+ static int
+ cpuinfo_flags (void)
+
+Read the list of flags from F</proc/cpuinfo>.
+
+=head3 Файл F<p2v/ssh.c>
+
+This file handles the ssh connections to the conversion server.
+
+virt-p2v will open several connections over the lifetime of the conversion
+process.
+
+In C<test_connection>, it will first open a connection (to check it is
+possible) and query virt-v2v on the server to ensure it exists, it is the
+right version, and so on.  This connection is then closed, because in the
+GUI case we don't want to deal with keeping it alive in case the
+administrator has set up an autologout.
+
+Once we start conversion, we will open a control connection to send the
+libvirt configuration data and to start up virt-v2v, and we will open up one
+data connection per local hard disk.  The data connection(s) have a reverse
+port forward to the local L<qemu-nbd(8)> server which is serving the content
+of that hard disk.  The remote port for each data connection is assigned by
+ssh.  See C<open_data_connection> and C<start_remote_conversion>.
+
+=head4 Функція C<p2v/ssh.c:curl_download>
+
+ static int
+ curl_download (const char *url, const char *local_file)
+
+Download URL to local file using the external 'curl' command.
+
+=head4 Функція C<p2v/ssh.c:cache_ssh_identity>
+
+ static int
+ cache_ssh_identity (struct config *config)
+
+Re-cache the C<config-E<gt>identity_url> if needed.
+
+=head4 Функція C<p2v/ssh.c:start_ssh>
+
+ static mexp_h *
+ start_ssh (unsigned spawn_flags, struct config *config,
+            char **extra_args, int wait_prompt)
+
+Start ssh subprocess with the standard arguments and possibly some optional
+arguments.  Also handles authentication.
+
+=head4 Функція C<p2v/ssh.c:scp_file>
+
+ int
+ scp_file (struct config *config, const char *localfile, const char *remotefile)
+
+Upload a file to remote using L<scp(1)>.
+
+This is a simplified version of L</start_ssh> above.
+
+=head3 Файл F<p2v/utils.c>
+
+=head4 Функція C<p2v/utils.c:get_blockdev_size>
+
+ uint64_t
+ get_blockdev_size (const char *dev)
+
+Return size of a block device, from F</sys/block/I<dev>/size>.
+
+This function always succeeds, or else exits (since we expect C<dev> to
+always be valid and the C<size> file to always exist).
+
+=head4 Функція C<p2v/utils.c:get_blockdev_model>
+
+ char *
+ get_blockdev_model (const char *dev)
+
+Return model of a block device, from F</sys/block/I<dev>/device/model>.
+
+Returns C<NULL> if the file was not found.  The caller must free the
+returned string.
+
+=head4 Функція C<p2v/utils.c:get_blockdev_serial>
+
+ char *
+ get_blockdev_serial (const char *dev)
+
+Return the serial number of a block device.
+
+This is found using the lsblk command.
+
+Returns C<NULL> if we could not get the serial number.  The caller must free
+the returned string.
+
+=head4 Функція C<p2v/utils.c:get_if_addr>
+
+ char *
+ get_if_addr (const char *if_name)
+
+Return contents of F</sys/class/net/I<if_name>/address> (if found).
+
+=head4 Функція C<p2v/utils.c:get_if_vendor>
+
+ char *
+ get_if_vendor (const char *if_name, int truncate)
+
+Return contents of F</sys/class/net/I<if_name>/device/vendor> (if found),
+mapped to the PCI vendor.  See:
+L<http://pjwelsh.blogspot.co.uk/2011/11/howto-get-network-card-vendor-device-or.html>
+
+=head4 Функція C<p2v/utils.c:wait_network_online>
+
+ void
+ wait_network_online (const struct config *config)
+
+Wait for the network to come online, but don't error out if that fails.  The
+caller will call C<test_connection> immediately after this which will fail
+if the network didn't come online.
+
+=head3 Файл F<p2v/whole-file.c>
+
+=head4 Функція C<p2v/whole-file.c:read_whole_file>
+
+ int
+ read_whole_file (const char *filename, char **data_r, size_t *size_r)
+
+Read the whole file into a memory buffer and return it.  The file should be
+a regular, local, trusted file.
+
+=head2 Підкаталого F<python>
+
+=head3 Файл F<python/guestfs-py-byhand.c>
+
+This file contains a small number of functions that are written by hand.
+The majority of the bindings are generated (see F<python/guestfs-py.c>).
+
+=head2 Підкаталог F<v2v>
+
+=head3 Файл F<v2v/domainxml-c.c>
+
+This module implements various C<virsh>-like commands, but with non-broken
+authentication handling.
+
+=head3 Файл F<v2v/xml-c.c>
+
+Мініінтерфейс до libxml2.
+

@@ -82,7 +82,7 @@ fi
 
   let firstboot_service = sprintf "\
 [Unit]
-Description=virt-sysprep firstboot service
+Description=libguestfs firstboot service
 After=network.target
 Before=prefdm.service
 
@@ -97,7 +97,7 @@ StandardError=inherit
 WantedBy=default.target
 " firstboot_dir
 
-  let rec install_service (g : Guestfs.guestfs) distro =
+  let rec install_service (g : Guestfs.guestfs) root distro major =
     g#mkdir_p firstboot_dir;
     g#mkdir_p (sprintf "%s/scripts" firstboot_dir);
     g#write (sprintf "%s/firstboot.sh" firstboot_dir) firstboot_sh;
@@ -113,7 +113,7 @@ WantedBy=default.target
     if g#is_dir "/etc/systemd/system" then
       install_systemd_service g;
     if g#is_dir "/etc/rc.d" || g#is_dir "/etc/init.d" then
-      install_sysvinit_service g distro
+      install_sysvinit_service g root distro major
 
   (* Install the systemd firstboot service, if not installed already. *)
   and install_systemd_service g =
@@ -122,17 +122,38 @@ WantedBy=default.target
      *)
     let unitdir = "/usr/lib/systemd/system" in
     g#mkdir_p unitdir;
-    let unitfile = sprintf "%s/firstboot.service" unitdir in
+    let unitfile = sprintf "%s/guestfs-firstboot.service" unitdir in
     g#write unitfile firstboot_service;
     g#mkdir_p "/etc/systemd/system/default.target.wants";
-    g#ln_sf unitfile "/etc/systemd/system/default.target.wants"
+    g#ln_sf unitfile "/etc/systemd/system/default.target.wants";
 
-  and install_sysvinit_service g = function
+    (* Try to remove the old firstboot.service files. *)
+    let oldunitfile = sprintf "%s/firstboot.service" unitdir in
+    if g#is_file oldunitfile then (
+      g#rm_f "/etc/systemd/system/default.target.wants/firstboot.service";
+      (* Remove the old firstboot.service only if it is one of our
+       * versions. *)
+      match g#checksum "md5" oldunitfile with
+      | "6923781f7a1851b40b32b4960eb9a0fc"  (* < 1.23.24 *)
+      | "56fafd8c990fc9d24e5b8497f3582e8d"  (* < 1.23.32 *)
+      | "a83767e01cf398e2fd7c8f59d65d320a"  (* < 1.25.2 *)
+      | "39aeb10df29104797e3a9aca4db37a6e" ->
+        g#rm oldunitfile
+      | csum ->
+        warning (f_"firstboot: unknown version for old firstboot.service file %s (md5=%s), it will not be removed")
+          oldunitfile csum
+    )
+
+  and install_sysvinit_service g root distro major =
+    match distro with
     | "fedora"|"rhel"|"centos"|"scientificlinux"|"redhat-based" ->
       install_sysvinit_redhat g
     | "opensuse"|"sles"|"suse-based" ->
       install_sysvinit_suse g
-    | "debian"|"ubuntu" ->
+    | "debian" ->
+      install_sysvinit_debian g;
+      if major <= 7 then try_update_rc_d g root
+    | "ubuntu" ->
       install_sysvinit_debian g
     | distro ->
       error (f_"guest type %s is not supported") distro
@@ -142,11 +163,16 @@ WantedBy=default.target
     g#mkdir_p "/etc/rc.d/rc3.d";
     g#mkdir_p "/etc/rc.d/rc5.d";
     g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
-      "/etc/rc.d/rc2.d/S99virt-sysprep-firstboot";
+      "/etc/rc.d/rc2.d/S99guestfs-firstboot";
     g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
-      "/etc/rc.d/rc3.d/S99virt-sysprep-firstboot";
+      "/etc/rc.d/rc3.d/S99guestfs-firstboot";
     g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
-      "/etc/rc.d/rc5.d/S99virt-sysprep-firstboot"
+      "/etc/rc.d/rc5.d/S99guestfs-firstboot";
+
+    (* Try to remove the files of the old service. *)
+    g#rm_f "/etc/rc.d/rc2.d/S99virt-sysprep-firstboot";
+    g#rm_f "/etc/rc.d/rc3.d/S99virt-sysprep-firstboot";
+    g#rm_f "/etc/rc.d/rc5.d/S99virt-sysprep-firstboot"
 
   (* Make firstboot.sh look like a runlevel script to avoid insserv warnings. *)
   and install_sysvinit_suse g =
@@ -154,13 +180,19 @@ WantedBy=default.target
     g#mkdir_p "/etc/init.d/rc3.d";
     g#mkdir_p "/etc/init.d/rc5.d";
     g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
-      "/etc/init.d/virt-sysprep-firstboot";
-    g#ln_sf "../virt-sysprep-firstboot"
-      "/etc/init.d/rc2.d/S99virt-sysprep-firstboot";
-    g#ln_sf "../virt-sysprep-firstboot"
-      "/etc/init.d/rc3.d/S99virt-sysprep-firstboot";
-    g#ln_sf "../virt-sysprep-firstboot"
-      "/etc/init.d/rc5.d/S99virt-sysprep-firstboot"
+      "/etc/init.d/guestfs-firstboot";
+    g#ln_sf "../guestfs-firstboot"
+      "/etc/init.d/rc2.d/S99guestfs-firstboot";
+    g#ln_sf "../guestfs-firstboot"
+      "/etc/init.d/rc3.d/S99guestfs-firstboot";
+    g#ln_sf "../guestfs-firstboot"
+      "/etc/init.d/rc5.d/S99guestfs-firstboot";
+
+    (* Try to remove the files of the old service. *)
+    g#rm_f "/etc/init.d/virt-sysprep-firstboot";
+    g#rm_f "/etc/init.d/rc2.d/S99virt-sysprep-firstboot";
+    g#rm_f "/etc/init.d/rc3.d/S99virt-sysprep-firstboot";
+    g#rm_f "/etc/init.d/rc5.d/S99virt-sysprep-firstboot"
 
   and install_sysvinit_debian g =
     g#mkdir_p "/etc/init.d";
@@ -168,13 +200,36 @@ WantedBy=default.target
     g#mkdir_p "/etc/rc3.d";
     g#mkdir_p "/etc/rc5.d";
     g#ln_sf (sprintf "%s/firstboot.sh" firstboot_dir)
-      "/etc/init.d/virt-sysprep-firstboot";
-    g#ln_sf "/etc/init.d/virt-sysprep-firstboot"
-      "/etc/rc2.d/S99virt-sysprep-firstboot";
-    g#ln_sf "/etc/init.d/virt-sysprep-firstboot"
-      "/etc/rc3.d/S99virt-sysprep-firstboot";
-    g#ln_sf "/etc/init.d/virt-sysprep-firstboot"
-      "/etc/rc5.d/S99virt-sysprep-firstboot"
+      "/etc/init.d/guestfs-firstboot";
+    g#ln_sf "../init.d/guestfs-firstboot"
+      "/etc/rc2.d/S99guestfs-firstboot";
+    g#ln_sf "../init.d/guestfs-firstboot"
+      "/etc/rc3.d/S99guestfs-firstboot";
+    g#ln_sf "../init.d/guestfs-firstboot"
+      "/etc/rc5.d/S99guestfs-firstboot";
+
+    (* Try to remove the files of the old service. *)
+    g#rm_f "/etc/init.d/virt-sysprep-firstboot";
+    g#rm_f "/etc/rc2.d/S99virt-sysprep-firstboot";
+    g#rm_f "/etc/rc3.d/S99virt-sysprep-firstboot";
+    g#rm_f "/etc/rc5.d/S99virt-sysprep-firstboot"
+
+  (* On Debian 6 & 7 you have to run: update-rc.d guestfs-firstboot defaults
+   * RHBZ#1019388.
+   *)
+  and try_update_rc_d g root =
+    let guest_arch = g#inspect_get_arch root in
+    let guest_arch_compatible = guest_arch_compatible guest_arch in
+    let cmd = "update-rc.d guestfs-firstboot defaults" in
+    if guest_arch_compatible then
+      try ignore (g#sh cmd)
+      with Guestfs.Error msg ->
+        warning (f_"could not finish firstboot installation by running '%s' because the command failed: %s")
+                cmd msg
+    else (
+      warning (f_"cannot finish firstboot installation by running '%s' because host cpu (%s) and guest arch (%s) are not compatible.  The firstboot service may not run at boot.")
+              cmd Guestfs_config.host_cpu guest_arch
+    )
 end
 
 module Windows = struct
@@ -185,19 +240,19 @@ module Windows = struct
       try Sys.getenv "VIRT_TOOLS_DATA_DIR"
       with Not_found -> Guestfs_config.datadir // "virt-tools" in
 
-    (* rhsrvany.exe must exist.
+    (* Either rhsrvany.exe or pvvxsvc.exe must exist.
      *
      * (Check also that it's not a dangling symlink but a real file).
      *)
-    let rhsrvany_exe = virt_tools_data_dir // "rhsrvany.exe" in
-    (try
-       let chan = open_in rhsrvany_exe in
-       close_in chan
-     with
-       Sys_error msg ->
-         error (f_"'%s' is missing.  This file is required in order to install Windows firstboot scripts.  You can get it by building rhsrvany (https://github.com/rwmjones/rhsrvany).  Original error: %s")
-           rhsrvany_exe msg
-    );
+    let services = ["rhsrvany.exe"; "pvvxsvc.exe"] in
+    let srvany =
+      try
+        List.find (
+          fun service -> Sys.file_exists (virt_tools_data_dir // service)
+        ) services
+      with Not_found ->
+       error (f_"One of rhsrvany.exe or pvvxsvc.exe is missing in %s.  One of them is required in order to install Windows firstboot scripts.  You can get one by building rhsrvany (https://github.com/rwmjones/rhsrvany)")
+         virt_tools_data_dir in
 
     (* Create a directory for firstboot files in the guest. *)
     let firstboot_dir, firstboot_dir_win =
@@ -211,12 +266,12 @@ module Windows = struct
           g#mkdir_p firstboot_dir;
           loop firstboot_dir firstboot_dir_win path
       in
-      loop "" "C:" ["Program Files"; "Red Hat"; "Firstboot"] in
+      loop "" "C:" ["Program Files"; "Guestfs"; "Firstboot"] in
 
     g#mkdir_p (firstboot_dir // "scripts");
 
-    (* Copy rhsrvany to the guest. *)
-    g#upload rhsrvany_exe (firstboot_dir // "rhsrvany.exe");
+    (* Copy pvvxsvc or rhsrvany to the guest. *)
+    g#upload (virt_tools_data_dir // srvany) (firstboot_dir // srvany);
 
     (* Write a firstboot.bat control script which just runs the other
      * scripts in the directory.  Note we need to use CRLF line endings
@@ -232,7 +287,7 @@ set log=%%firstboot%%\\log.txt
 set scripts=%%firstboot%%\\scripts
 set scripts_done=%%firstboot%%\\scripts-done
 
-call :main > \"%%log%%\" 2>&1
+call :main >> \"%%log%%\" 2>&1
 exit /b
 
 :main
@@ -244,17 +299,17 @@ if not exist \"%%scripts_done%%\" (
 
 for %%%%f in (\"%%scripts%%\"\\*.bat) do (
   echo running \"%%%%f\"
-  call \"%%%%f\"
+  move \"%%%%f\" \"%%scripts_done%%\"
+  pushd \"%%scripts_done%%\"
+  call \"%%%%~nf\"
   set elvl=!errorlevel!
   echo .... exit code !elvl!
-  if !elvl! equ 0 (
-    move \"%%%%f\" \"%%scripts_done%%\"
-  )
+  popd
 )
 
 echo uninstalling firstboot service
-rhsrvany.exe -s firstboot uninstall
-" firstboot_dir_win in
+%s -s firstboot uninstall
+" firstboot_dir_win srvany in
 
     g#write (firstboot_dir // "firstboot.bat") (unix2dos firstboot_script);
 
@@ -283,7 +338,7 @@ rhsrvany.exe -s firstboot uninstall
         "Start", REG_DWORD 0x2_l;
         "ErrorControl", REG_DWORD 0x1_l;
         "ImagePath",
-          REG_SZ (firstboot_dir_win ^ "\\rhsrvany.exe -s firstboot");
+          REG_SZ (sprintf "%s\\%s -s firstboot" firstboot_dir_win srvany);
         "DisplayName", REG_SZ "Virt tools firstboot service";
         "ObjectName", REG_SZ "LocalSystem" ];
 
@@ -306,11 +361,12 @@ let script_count = ref 0
 let add_firstboot_script (g : Guestfs.guestfs) root name content =
   let typ = g#inspect_get_type root in
   let distro = g#inspect_get_distro root in
+  let major = g#inspect_get_major_version root in
   incr script_count;
   let filename = sprintf "%04d-%s" !script_count (sanitize_name name) in
   match typ, distro with
   | "linux", _ ->
-    Linux.install_service g distro;
+    Linux.install_service g root distro major;
     let filename = Linux.firstboot_dir // "scripts" // filename in
     g#write filename content;
     g#chmod 0o755 filename

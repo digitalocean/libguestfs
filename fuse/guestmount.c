@@ -27,6 +27,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <error.h>
 #include <getopt.h>
 #include <signal.h>
 #include <locale.h>
@@ -40,6 +41,7 @@
 #include "ignore-value.h"
 
 #include "options.h"
+#include "display-options.h"
 
 static int write_pipe_fd (int fd);
 static int write_pid_file (const char *pid_file, pid_t pid);
@@ -55,10 +57,8 @@ fuse_opt_add_opt_escaped (char **opts, const char *opt)
   const unsigned oldlen = *opts ? strlen(*opts) : 0;
   char *d = realloc (*opts, oldlen + 1 + strlen(opt) * 2 + 1);
 
-  if (!d) {
-    perror ("realloc");
-    exit (EXIT_FAILURE);
-  }
+  if (!d)
+    error (EXIT_FAILURE, errno, "realloc");
 
   *opts = d;
   if (oldlen) {
@@ -124,7 +124,7 @@ usage (int status)
               "  -o|--option opt      Pass extra option to FUSE\n"
               "  --pid-file filename  Write PID to filename\n"
               "  -r|--ro              Mount read-only\n"
-              "  --selinux            Enable SELinux support\n"
+              "  --selinux            For backwards compat only, does nothing\n"
               "  -v|--verbose         Verbose messages\n"
               "  -V|--version         Display version and exit\n"
               "  -w|--rw              Mount read-write\n"
@@ -208,10 +208,8 @@ main (int argc, char *argv[])
   sigaction (SIGPIPE, &sa, NULL);
 
   g = guestfs_create ();
-  if (g == NULL) {
-    fprintf (stderr, _("guestfs_create: failed to create handle\n"));
-    exit (EXIT_FAILURE);
-  }
+  if (g == NULL)
+    error (EXIT_FAILURE, errno, "guestfs_create");
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -228,8 +226,7 @@ main (int argc, char *argv[])
       else if (STREQ (long_options[option_index].name, "fuse-help"))
         fuse_help ();
       else if (STREQ (long_options[option_index].name, "selinux")) {
-        if (guestfs_set_selinux (g, 1) == -1)
-          exit (EXIT_FAILURE);
+        /* nothing */
       } else if (STREQ (long_options[option_index].name, "format")) {
         OPTION_format;
       } else if (STREQ (long_options[option_index].name, "keys-from-stdin")) {
@@ -243,17 +240,13 @@ main (int argc, char *argv[])
       } else if (STREQ (long_options[option_index].name, "no-fork")) {
         do_fork = 0;
       } else if (STREQ (long_options[option_index].name, "fd")) {
-        if (sscanf (optarg, "%d", &pipe_fd) != 1 || pipe_fd < 0) {
-          fprintf (stderr, _("%s: unable to parse --fd option value: %s\n"),
-                   guestfs_int_program_name, optarg);
-          exit (EXIT_FAILURE);
-        }
-      } else {
-        fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name,
-                 long_options[option_index].name, option_index);
-        exit (EXIT_FAILURE);
-      }
+        if (sscanf (optarg, "%d", &pipe_fd) != 1 || pipe_fd < 0)
+          error (EXIT_FAILURE, 0,
+                 _("unable to parse --fd option value: %s"), optarg);
+      } else
+        error (EXIT_FAILURE, 0,
+               _("unknown long option: %s (%d)"),
+               long_options[option_index].name, option_index);
       break;
 
     case 'a':
@@ -318,29 +311,25 @@ main (int argc, char *argv[])
 
   /* Check we have the right options. */
   if (!live) {
-    if (!drvs || !(mps || inspector)) {
-      fprintf (stderr,
-               _("%s: must have at least one -a/-d and at least one -m/-i option\n"),
+    if (drvs == NULL) {
+      fprintf (stderr, _("%s: error: you must specify at least one -a or -d option.\n"),
                guestfs_int_program_name);
-      exit (EXIT_FAILURE);
+      usage (EXIT_FAILURE);
+    }
+    if (!(mps || inspector)) {
+      fprintf (stderr, _("%s: error: you must specify either -i at least one -m option.\n"),
+               guestfs_int_program_name);
+      usage (EXIT_FAILURE);
     }
   } else {
     size_t count_d = 0, count_other = 0;
     struct drv *drv;
 
-    if (read_only) {
-      fprintf (stderr,
-               _("%s: --live is not compatible with --ro option\n"),
-               guestfs_int_program_name);
-      exit (EXIT_FAILURE);
-    }
+    if (read_only)
+      error (EXIT_FAILURE, 0, _("--live is not compatible with --ro option"));
 
-    if (inspector) {
-      fprintf (stderr,
-               _("%s: --live is not compatible with -i option\n"),
-               guestfs_int_program_name);
-      exit (EXIT_FAILURE);
-    }
+    if (inspector)
+      error (EXIT_FAILURE, 0, _("--live is not compatible with -i option"));
 
     /* --live: make sure there was one -d option and no -a options */
     for (drv = drvs; drv; drv = drv->next) {
@@ -350,28 +339,18 @@ main (int argc, char *argv[])
         count_other++;
     }
 
-    if (count_d != 1) {
-      fprintf (stderr,
-               _("%s: with --live, you must use exactly one -d option\n"),
-               guestfs_int_program_name);
-      exit (EXIT_FAILURE);
-    }
+    if (count_d != 1)
+      error (EXIT_FAILURE, 0,
+             _("with --live, you must use exactly one -d option"));
 
-    if (count_other != 0) {
-      fprintf (stderr,
-               _("%s: --live is not compatible with -a option\n"),
-               guestfs_int_program_name);
-      exit (EXIT_FAILURE);
-    }
+    if (count_other != 0)
+      error (EXIT_FAILURE, 0, _("--live is not compatible with -a option"));
   }
 
   /* We'd better have a mountpoint. */
-  if (optind+1 != argc) {
-    fprintf (stderr,
-             _("%s: you must specify a mountpoint in the host filesystem\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (optind+1 != argc)
+    error (EXIT_FAILURE, 0,
+           _("you must specify a mountpoint in the host filesystem"));
 
   /* If we're forking, we can't use the recovery process. */
   if (guestfs_set_recovery_proc (g, !do_fork) == -1)
@@ -419,10 +398,8 @@ main (int argc, char *argv[])
     int fd;
 
     pid = fork ();
-    if (pid == -1) {
-      perror ("fork");
-      exit (EXIT_FAILURE);
-    }
+    if (pid == -1)
+      error (EXIT_FAILURE, errno, "fork");
 
     if (pid != 0) {             /* parent */
       if (write_pid_file (pid_file, pid) == -1)
@@ -434,10 +411,8 @@ main (int argc, char *argv[])
     }
 
     /* Emulate what old fuse_daemonize used to do. */
-    if (setsid () == -1) {
-      perror ("setsid");
-      exit (EXIT_FAILURE);
-    }
+    if (setsid () == -1)
+      error (EXIT_FAILURE, errno, "setsid");
 
     ignore_value (chdir ("/"));
 

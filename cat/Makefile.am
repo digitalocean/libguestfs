@@ -18,6 +18,7 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
+	test-docs.sh \
 	test-virt-cat.sh \
 	virt-cat.pod \
 	test-virt-filesystems.sh \
@@ -27,19 +28,11 @@ EXTRA_DIST = \
 	test-virt-ls.sh \
 	virt-ls.pod
 
-CLEANFILES = \
-	stamp-virt-cat.pod \
-	stamp-virt-filesystems.pod \
-	stamp-virt-log.pod \
-	stamp-virt-ls.pod \
-	virt-cat.1 \
-	virt-filesystems.1 \
-	virt-log.1 \
-	virt-ls.1
-
 bin_PROGRAMS = virt-cat virt-filesystems virt-log virt-ls
 
 SHARED_SOURCE_FILES = \
+	../fish/display-options.h \
+	../fish/display-options.c \
 	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
@@ -201,8 +194,11 @@ stamp-virt-ls.pod: virt-ls.pod
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-if ENABLE_APPLIANCE
 TESTS = \
+	test-docs.sh
+
+if ENABLE_APPLIANCE
+TESTS += \
 	test-virt-cat.sh \
 	test-virt-filesystems.sh \
 	test-virt-log.sh \

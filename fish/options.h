@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include <stdbool.h>
-#include <getopt.h>
 
 #include "guestfs-internal-frontend.h"
 
@@ -140,8 +139,6 @@ extern char add_drives_handle (guestfs_h *g, struct drv *drv, char next_drive);
 extern void mount_mps (struct mp *mp);
 extern void free_drives (struct drv *drv);
 extern void free_mps (struct mp *mp);
-extern void display_short_options (const char *) __attribute__((noreturn));
-extern void display_long_options (const struct option *) __attribute__((noreturn));
 
 #define OPTION_a                                \
   do {                                          \
@@ -178,10 +175,8 @@ extern void display_long_options (const struct option *) __attribute__((noreturn
 
 #define OPTION_m                                \
   mp = malloc (sizeof (struct mp));             \
-  if (!mp) {                                    \
-    perror ("malloc");                          \
-    exit (EXIT_FAILURE);                        \
-  }                                             \
+  if (!mp)                                      \
+    error (EXIT_FAILURE, errno, "malloc");      \
   mp->fstype = NULL;                            \
   mp->options = NULL;                           \
   mp->mountpoint = (char *) "/";                \

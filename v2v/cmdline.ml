@@ -22,6 +22,7 @@ open Printf
 
 open Common_gettext.Gettext
 open Common_utils
+open Getopt.OptionName
 
 open Types
 open Utils
@@ -38,7 +39,6 @@ type cmdline = {
   do_copy : bool;
   in_place : bool;
   network_map : string NetworkMap.t;
-  no_trim : string list;
   output_alloc : output_allocation;
   output_format : string option;
   output_name : string option;
@@ -65,7 +65,7 @@ let parse_cmdline () =
   let password_file = ref None in
   let vdsm_vm_uuid = ref None in
   let vdsm_ovf_output = ref None in (* default "." *)
-  let vmtype = ref None in
+
   let set_string_option_once optname optref arg =
     match !optref with
     | Some _ ->
@@ -109,23 +109,8 @@ let parse_cmdline () =
     add_network, add_bridge
   in
 
-  let no_trim = ref [] in
-  let set_no_trim = function
-    | "all" | "ALL" | "*" ->
-      (* Note: this is a magic value tested in the main code.  The
-       * no_trim list does NOT support wildcards.
-       *)
-      no_trim := ["*"]
-    | mps ->
-      let mps = String.nsplit "," mps in
-      List.iter (
-        fun mp ->
-          if String.length mp = 0 then
-            error (f_"--no-trim: empty parameter");
-          if mp.[0] <> '/' then
-            error (f_"--no-trim: %s: mountpoint/device name does not begin with '/'") mp;
-      ) mps;
-      no_trim := mps
+  let no_trim_warning _ =
+    warning (f_"the --no-trim option has been removed and now does nothing")
   in
 
   let output_mode = ref `Not_set in
@@ -171,61 +156,57 @@ let parse_cmdline () =
   let vdsm_vol_uuids = ref [] in
   let add_vdsm_vol_uuid s = push_front s vdsm_vol_uuids in
 
+  let vmtype_warning _ =
+    warning (f_"the --vmtype option has been removed and now does nothing")
+  in
+
   let i_options =
     String.concat "|" (Modules_list.input_modules ())
   and o_options =
     String.concat "|" (Modules_list.output_modules ()) in
 
-  let ditto = " -\"-" in
   let argspec = [
-    "-b",        Arg.String add_bridge,     "in:out " ^ s_"Map bridge 'in' to 'out'";
-    "--bridge",  Arg.String add_bridge,     "in:out " ^ ditto;
-    "--compressed", Arg.Set compressed,     " " ^ s_"Compress output file";
-    "--dcpath",  Arg.String (set_string_option_once "--dcpath" dcpath),
-                                            "path " ^ s_"Override dcPath (for vCenter)";
-    "--dcPath",  Arg.String (set_string_option_once "--dcPath" dcpath),
-                                            "path " ^ ditto;
-    "--debug-overlay",Arg.Set debug_overlays,
-    " " ^ s_"Save overlay files";
-    "--debug-overlays",Arg.Set debug_overlays,
-    ditto;
-    "-i",        Arg.String set_input_mode, i_options ^ " " ^ s_"Set input mode (default: libvirt)";
-    "-ic",       Arg.String (set_string_option_once "-ic" input_conn),
-                                            "uri " ^ s_"Libvirt URI";
-    "-if",       Arg.String (set_string_option_once "-if" input_format),
-                                            "format " ^ s_"Input format (for -i disk)";
-    "--in-place", Arg.Set in_place,         " " ^ s_"Only tune the guest in the input VM";
-    "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
-    "-n",        Arg.String add_network,    "in:out " ^ s_"Map network 'in' to 'out'";
-    "--network", Arg.String add_network,    "in:out " ^ ditto;
-    "--no-copy", Arg.Clear do_copy,         " " ^ s_"Just write the metadata";
-    "--no-trim", Arg.String set_no_trim,    "all|mp,mp,.." ^ " " ^ s_"Don't trim selected mounts";
-    "-o",        Arg.String set_output_mode, o_options ^ " " ^ s_"Set output mode (default: libvirt)";
-    "-oa",       Arg.String set_output_alloc,
-                                            "sparse|preallocated " ^ s_"Set output allocation mode";
-    "-oc",       Arg.String (set_string_option_once "-oc" output_conn),
-                                            "uri " ^ s_"Libvirt URI";
-    "-of",       Arg.String (set_string_option_once "-of" output_format),
-                                            "raw|qcow2 " ^ s_"Set output format";
-    "-on",       Arg.String (set_string_option_once "-on" output_name),
-                                            "name " ^ s_"Rename guest when converting";
-    "-os",       Arg.String (set_string_option_once "-os" output_storage),
-                                            "storage " ^ s_"Set output storage location";
-    "--password-file", Arg.String (set_string_option_once "--password-file" password_file),
-                                            "file " ^ s_"Use password from file";
-    "--print-source", Arg.Set print_source, " " ^ s_"Print source and stop";
-    "--qemu-boot", Arg.Set qemu_boot,       " " ^ s_"Boot in qemu (-o qemu only)";
-    "--root",    Arg.String set_root_choice,"ask|... " ^ s_"How to choose root filesystem";
-    "--vdsm-image-uuid", Arg.String add_vdsm_image_uuid, "uuid " ^ s_"Output image UUID(s)";
-    "--vdsm-vol-uuid", Arg.String add_vdsm_vol_uuid, "uuid " ^ s_"Output vol UUID(s)";
-    "--vdsm-vm-uuid", Arg.String (set_string_option_once "--vdsm-vm-uuid" vdsm_vm_uuid),
-                                            "uuid " ^ s_"Output VM UUID";
-    "--vdsm-ovf-output", Arg.String (set_string_option_once "--vdsm-ovf-output" vdsm_ovf_output),
-                                            " " ^ s_"Output OVF file";
-    "--vmtype",  Arg.String (set_string_option_once "--vmtype" vmtype),
-                                            "server|desktop " ^ s_"Set vmtype (for RHEV)";
+    [ S 'b'; L"bridge" ],        Getopt.String ("in:out", add_bridge),     s_"Map bridge 'in' to 'out'";
+    [ L"compressed" ], Getopt.Set compressed,     s_"Compress output file";
+    [ L"dcpath"; L"dcPath" ],  Getopt.String ("path", set_string_option_once "--dcpath" dcpath),
+                                            s_"Override dcPath (for vCenter)";
+    [ L"debug-overlay"; L"debug-overlays" ], Getopt.Set debug_overlays, s_"Save overlay files";
+    [ S 'i' ],        Getopt.String (i_options, set_input_mode), s_"Set input mode (default: libvirt)";
+    [ M"ic" ],       Getopt.String ("uri", set_string_option_once "-ic" input_conn),
+                                            s_"Libvirt URI";
+    [ M"if" ],       Getopt.String ("format", set_string_option_once "-if" input_format),
+                                            s_"Input format (for -i disk)";
+    [ L"in-place" ], Getopt.Set in_place,         s_"Only tune the guest in the input VM";
+    [ L"machine-readable" ], Getopt.Set machine_readable, s_"Make output machine readable";
+    [ S 'n'; L"network" ],        Getopt.String ("in:out", add_network),    s_"Map network 'in' to 'out'";
+    [ L"no-copy" ], Getopt.Clear do_copy,         s_"Just write the metadata";
+    [ L"no-trim" ], Getopt.String ("-", no_trim_warning),
+                                            s_"Ignored for backwards compatibility";
+    [ S 'o' ],        Getopt.String (o_options, set_output_mode), s_"Set output mode (default: libvirt)";
+    [ M"oa" ],       Getopt.String ("sparse|preallocated", set_output_alloc),
+                                            s_"Set output allocation mode";
+    [ M"oc" ],       Getopt.String ("uri", set_string_option_once "-oc" output_conn),
+                                            s_"Libvirt URI";
+    [ M"of" ],       Getopt.String ("raw|qcow2", set_string_option_once "-of" output_format),
+                                            s_"Set output format";
+    [ M"on" ],       Getopt.String ("name", set_string_option_once "-on" output_name),
+                                            s_"Rename guest when converting";
+    [ M"os" ],       Getopt.String ("storage", set_string_option_once "-os" output_storage),
+                                            s_"Set output storage location";
+    [ L"password-file" ], Getopt.String ("file", set_string_option_once "--password-file" password_file),
+                                            s_"Use password from file";
+    [ L"print-source" ], Getopt.Set print_source, s_"Print source and stop";
+    [ L"qemu-boot" ], Getopt.Set qemu_boot,       s_"Boot in qemu (-o qemu only)";
+    [ L"root" ],    Getopt.String ("ask|... ", set_root_choice), s_"How to choose root filesystem";
+    [ L"vdsm-image-uuid" ], Getopt.String ("uuid", add_vdsm_image_uuid), s_"Output image UUID(s)";
+    [ L"vdsm-vol-uuid" ], Getopt.String ("uuid", add_vdsm_vol_uuid), s_"Output vol UUID(s)";
+    [ L"vdsm-vm-uuid" ], Getopt.String ("uuid", set_string_option_once "--vdsm-vm-uuid" vdsm_vm_uuid),
+                                            s_"Output VM UUID";
+    [ L"vdsm-ovf-output" ], Getopt.String ("-", set_string_option_once "--vdsm-ovf-output" vdsm_ovf_output),
+                                            s_"Output OVF file";
+    [ L"vmtype" ],  Getopt.String ("-", vmtype_warning),
+                                            s_"Ignored for backwards compatibility";
   ] in
-  let argspec = set_standard_options argspec in
   let args = ref [] in
   let anon_fun s = push_front s args in
   let usage_msg =
@@ -250,7 +231,8 @@ A short summary of the options is given below.  For detailed help please
 read the man page virt-v2v(1).
 ")
       prog in
-  Arg.parse argspec anon_fun usage_msg;
+  let opthandle = create_standard_options argspec ~anon_fun usage_msg in
+  Getopt.parse opthandle;
 
   (* Dereference the arguments. *)
   let args = List.rev !args in
@@ -264,7 +246,6 @@ read the man page virt-v2v(1).
   let in_place = !in_place in
   let machine_readable = !machine_readable in
   let network_map = !network_map in
-  let no_trim = !no_trim in
   let output_alloc =
     match !output_alloc with
     | `Not_set | `Sparse -> Sparse
@@ -283,13 +264,6 @@ read the man page virt-v2v(1).
   let vdsm_vm_uuid = !vdsm_vm_uuid in
   let vdsm_ovf_output =
     match !vdsm_ovf_output with None -> "." | Some s -> s in
-  let vmtype =
-    match !vmtype with
-    | Some "server" -> Some Server
-    | Some "desktop" -> Some Desktop
-    | None -> None
-    | _ ->
-      error (f_"unknown --vmtype option, must be \"server\" or \"desktop\"") in
 
   (* No arguments and machine-readable mode?  Print out some facts
    * about what this binary supports.
@@ -297,6 +271,7 @@ read the man page virt-v2v(1).
   if args = [] && machine_readable then (
     printf "virt-v2v\n";
     printf "libguestfs-rewrite\n";
+    printf "colours-option\n";
     List.iter (printf "input:%s\n") (Modules_list.input_modules ());
     List.iter (printf "output:%s\n") (Modules_list.output_modules ());
     List.iter (printf "convert:%s\n") (Modules_list.convert_modules ());
@@ -365,8 +340,6 @@ read the man page virt-v2v(1).
         error (f_"-o glance: -os option cannot be used in this output mode");
       if qemu_boot then
         error (f_"-o glance: --qemu-boot option cannot be used in this output mode");
-      if vmtype <> None then
-        error (f_"--vmtype option cannot be used with '-o glance'");
       if not do_copy then
         error (f_"--no-copy and '-o glance' cannot be used at the same time");
       Output_glance.output_glance ()
@@ -377,8 +350,6 @@ read the man page virt-v2v(1).
         match output_storage with None -> "default" | Some os -> os in
       if qemu_boot then
         error (f_"-o libvirt: --qemu-boot option cannot be used in this output mode");
-      if vmtype <> None then
-        error (f_"--vmtype option cannot be used with '-o libvirt'");
       if not do_copy then
         error (f_"--no-copy and '-o libvirt' cannot be used at the same time");
       Output_libvirt.output_libvirt output_conn output_storage
@@ -393,8 +364,6 @@ read the man page virt-v2v(1).
         | Some d -> d in
       if qemu_boot then
         error (f_"-o local: --qemu-boot option cannot be used in this output mode");
-      if vmtype <> None then
-        error (f_"--vmtype option cannot be used with '-o local'");
       Output_local.output_local os
 
     | `Null ->
@@ -404,8 +373,6 @@ read the man page virt-v2v(1).
         error (f_"-o null: -os option cannot be used in this output mode");
       if qemu_boot then
         error (f_"-o null: --qemu-boot option cannot be used in this output mode");
-      if vmtype <> None then
-        error (f_"--vmtype option cannot be used with '-o null'");
       Output_null.output_null ()
 
     | `QEmu ->
@@ -426,7 +393,7 @@ read the man page virt-v2v(1).
         | Some d -> d in
       if qemu_boot then
         error (f_"-o rhev: --qemu-boot option cannot be used in this output mode");
-      Output_rhev.output_rhev os vmtype output_alloc
+      Output_rhev.output_rhev os output_alloc
 
     | `VDSM ->
       let os =
@@ -449,12 +416,11 @@ read the man page virt-v2v(1).
         vm_uuid = vdsm_vm_uuid;
         ovf_output = vdsm_ovf_output;
       } in
-      Output_vdsm.output_vdsm os vdsm_params vmtype output_alloc in
+      Output_vdsm.output_vdsm os vdsm_params output_alloc in
 
   {
     compressed = compressed; debug_overlays = debug_overlays;
     do_copy = do_copy; in_place = in_place; network_map = network_map;
-    no_trim = no_trim;
     output_alloc = output_alloc; output_format = output_format;
     output_name = output_name;
     print_source = print_source; root_choice = root_choice;

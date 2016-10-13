@@ -189,6 +189,15 @@ starts up.
 
 =back
 
+=head1 ADDING EXTRA PACKAGES
+
+You can install extra packages using the I<--install> option.  This can be
+useful for making a more fully-featured virt-p2v disk with extra tools for
+debugging and troubleshooting.  Give a list of packages, separated by
+commas.  For example:
+
+ virt-p2v-make-kickstart [...] --install tcpdump,traceroute
+
 =head1 ADDING AN SSH IDENTITY
 
 You can inject an SSH identity (private key) file to the kickstart and hence
@@ -238,6 +247,11 @@ For more information, see L<virt-p2v(1)/SSH IDENTITIES>.
 Add an SSH identity (private key) file into the kickstart.  See L</ADDING AN
 SSH IDENTITY> above.
 
+=item B<--install> pkg,pkg,...
+
+Add extra packages to the kickstart C<%packages> section.  See L</ADDING
+EXTRA PACKAGES> above.
+
 =item B<-o> OUTPUT
 
 =item B<--output> OUTPUT
@@ -248,6 +262,13 @@ the current directory.
 =item B<--proxy> URL
 
 Tell the kickstart to use a proxy server or web cache for downloads.
+
+=item B<-v>
+
+=item B<--verbose>
+
+Enable verbose output.  Use this if you need to debug problems with the
+script or if you are filing a bug.
 
 =item B<-V>
 

@@ -46,9 +46,9 @@
 
 #include <config.h>
 
-#if defined(LIBC_SCCS) && !defined(lint)
+#if defined LIBC_SCCS && !defined GCC_LINT && !defined lint
 static char sccsid[] = "@(#)fts.c       8.6 (Berkeley) 8/14/94";
-#endif /* LIBC_SCCS and not lint */
+#endif
 
 #include "fts_.h"
 
@@ -718,22 +718,23 @@ leaf_optimization_applies (int dir_fd)
 
   switch (fs_buf.f_type)
     {
-    case S_MAGIC_NFS:
-      /* NFS provides usable dirent.d_type but not necessarily for all entries
-         of large directories.  See <https://bugzilla.redhat.com/1252549>.  */
-      return true;
-
       /* List here the file system types that lack usable dirent.d_type
          info, yet for which the optimization does apply.  */
     case S_MAGIC_REISERFS:
     case S_MAGIC_XFS:
       return true;
 
+      /* Explicitly list here any other file system type for which the
+         optimization is not applicable, but need documentation.  */
+    case S_MAGIC_NFS:
+      /* NFS provides usable dirent.d_type but not necessarily for all entries
+         of large directories, so as per <https://bugzilla.redhat.com/1252549>
+         NFS should return true.  However st_nlink values are not accurate on
+         all implementations as per <https://bugzilla.redhat.com/1299169>.  */
+      /* fall through */
     case S_MAGIC_PROC:
-      /* Explicitly listing this or any other file system type for which
-         the optimization is not applicable is not necessary, but we leave
-         it here to document the risk.  Per http://bugs.debian.org/143111,
-         /proc may have bogus stat.st_nlink values.  */
+      /* Per <http://bugs.debian.org/143111> /proc may have
+         bogus stat.st_nlink values.  */
       /* fall through */
     default:
       return false;
@@ -1460,9 +1461,18 @@ fts_build (register FTS *sp, int type)
         while (cur->fts_dirp) {
                 bool is_dir;
                 size_t d_namelen;
+                __set_errno (0);
                 struct dirent *dp = readdir(cur->fts_dirp);
-                if (dp == NULL)
+                if (dp == NULL) {
+                        if (errno) {
+                                cur->fts_errno = errno;
+                                /* If we've not read any items yet, treat
+                                   the error as if we can't access the dir.  */
+                                cur->fts_info = (continue_readdir || nitems)
+                                                ? FTS_ERR : FTS_DNR;
+                        }
                         break;
+                }
                 if (!ISSET(FTS_SEEDOT) && ISDOT(dp->d_name))
                         continue;
 
@@ -1621,7 +1631,8 @@ mem1:                           saved_errno = errno;
 
         /* If didn't find anything, return NULL. */
         if (!nitems) {
-                if (type == BREAD)
+                if (type == BREAD
+                    && cur->fts_info != FTS_DNR && cur->fts_info != FTS_ERR)
                         cur->fts_info = FTS_DP;
                 fts_lfree(head);
                 return (NULL);

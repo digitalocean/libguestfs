@@ -774,6 +774,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_btrfs_filesystem_show ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_btrfs_filesystem_sync ##### -->
 <para>
 
@@ -1617,6 +1628,36 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_download_blocks ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@start: 
+@stop: 
+@filename: 
+@optargs: 
+@cancellable: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_download_inode ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@inode: 
+@filename: 
+@cancellable: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_download_offset ##### -->
 <para>
 
@@ -1845,6 +1886,18 @@ GuestfsSession
 
 @session: 
 @filesystem: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_filesystem_walk ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@cancellable: 
 @err: 
 @Returns: 
 
@@ -2245,6 +2298,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_get_sockdir ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_get_state ##### -->
 <para>
 
@@ -2336,6 +2399,7 @@ GuestfsSession
 
 @session: 
 @pattern: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -3353,7 +3417,7 @@ GuestfsSession
 </para>
 
 @session: 
-@device: 
+@mountable: 
 @err: 
 @Returns: 
 
@@ -4676,6 +4740,28 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_mountable_device ##### -->
+<para>
+
+</para>
+
+@session: 
+@mountable: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_mountable_subvolume ##### -->
+<para>
+
+</para>
+
+@session: 
+@mountable: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_mountpoints ##### -->
 <para>
 
@@ -4726,6 +4812,20 @@ GuestfsSession
 @session: 
 @rw: 
 @device: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ntfscat_i ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@inode: 
+@filename: 
+@cancellable: 
 @err: 
 @Returns: 
 
@@ -4852,6 +4952,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_part_expand_gpt ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_part_get_bootable ##### -->
 <para>
 
@@ -4860,6 +4971,17 @@ GuestfsSession
 @session: 
 @device: 
 @partnum: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_part_get_disk_guid ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
 @err: 
 @Returns: 
 
@@ -4967,6 +5089,29 @@ GuestfsSession
 @device: 
 @partnum: 
 @bootable: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_part_set_disk_guid ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@guid: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_part_set_disk_guid_random ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
 @err: 
 @Returns: 
 
@@ -5480,6 +5625,19 @@ GuestfsSession
 
 @session: 
 @dir: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_selinux_relabel ##### -->
+<para>
+
+</para>
+
+@session: 
+@specfile: 
+@path: 
+@optargs: 
 @err: 
 @Returns: 
 

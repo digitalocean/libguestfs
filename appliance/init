@@ -17,10 +17,6 @@ if [ ! -d /tmp ] || [ ! -d /var/tmp ]; then
     chmod 1777 /tmp /var/tmp
 fi
 
-# Make sure to find all the libraries, also those in non-standard place
-# but with a proper ld.so configuration pointing at them
-ldconfig
-
 # Try to print a stack trace for segfaults inside the appliance.
 for d in /lib64 /lib; do
   f=$d/libSegFault.so
@@ -33,9 +29,32 @@ done
 
 mkdir -p /sysroot
 
+# Mount /proc.
 if [ ! -d /proc ]; then rm -f /proc; fi
 mkdir -p /proc
 mount -t proc /proc /proc
+
+# Parse the kernel command line early (must be after /proc is mounted).
+cmdline=$(</proc/cmdline)
+
+if [[ $cmdline == *guestfs_verbose=1* ]]; then
+    guestfs_verbose=1
+    set -x
+fi
+if [[ $cmdline == *guestfs_network=1* ]]; then
+    guestfs_network=1
+fi
+if [[ $cmdline == *guestfs_rescue=1* ]]; then
+    guestfs_rescue=1
+fi
+if [[ $cmdline == *guestfs_noreboot=1* ]]; then
+    guestfs_noreboot=1
+fi
+if [[ $cmdline == *guestfs_boot_analysis=1* ]]; then
+    guestfs_boot_analysis=1
+fi
+
+# Mount the other special filesystems.
 if [ ! -d /sys ]; then rm -f /sys; fi
 mkdir -p /sys
 mount -t sysfs /sys /sys
@@ -54,56 +73,44 @@ fi
 # devtmpfs is required since udev 176
 mount -t devtmpfs /dev /dev
 
+if [[ $cmdline == *selinux=1* ]]; then
+  mount -t selinuxfs none /sys/fs/selinux
+fi
+
 # Static nodes must happen before udev is started.
 
 # Set up kmod static-nodes (RHBZ#1011907).
 mkdir -p /run/tmpfiles.d
 kmod static-nodes --format=tmpfiles --output=/run/tmpfiles.d/kmod.conf
 
+# Create a machine-id with a random UUID
+machine_id=$(dd if=/dev/urandom bs=16 count=1 status=none | od -x -A n)
+echo "${machine_id// /}" > /etc/machine-id
+
 # Set up tmpfiles (must run after kmod.conf is created above).
-systemd-tmpfiles --prefix=/dev --create --boot
+systemd-tmpfiles --prefix=/dev --prefix=/run --create --boot
 
 # Find udevd and run it directly.
-for f in /sbin/udevd /lib/udev/udevd \
-    /lib/systemd/systemd-udevd /usr/lib/systemd/systemd-udevd \
+for f in /lib/systemd/systemd-udevd /usr/lib/systemd/systemd-udevd \
+    /sbin/udevd /lib/udev/udevd \
     /usr/lib/udev/udevd; do
-  if [ -x "$f" ]; then UDEVD="$f"; fi
+  if [ -x "$f" ]; then UDEVD="$f"; break; fi
 done
 if [ -z "$UDEVD" ]; then
-  echo "udev not found!  Things will probably not work ..."
+  echo "error: udev not found!  Things will probably not work ..."
 fi
 
 $UDEVD --daemon #--debug
 udevadm trigger
 udevadm settle --timeout=600
 
-if grep -sq selinux=1 /proc/cmdline; then
-  mount -t selinuxfs none /sys/fs/selinux
-fi
-
 # Disk optimizations.
 # Increase the SCSI timeout so we can read remote images.
+shopt -s nullglob
 for f in /sys/block/sd*/device/timeout; do echo 300 > $f; done
 # https://access.redhat.com/site/solutions/5427
 for f in /sys/block/{h,s,ub,v}d*/queue/scheduler; do echo noop > $f; done
-
-# Update the system clock.
-hwclock -u -s
-
-# Parse the kernel command line.
-if grep -sq guestfs_verbose=1 /proc/cmdline; then
-    guestfs_verbose=1
-fi
-if grep -sq guestfs_network=1 /proc/cmdline; then
-    guestfs_network=1
-fi
-if grep -sq guestfs_rescue=1 /proc/cmdline; then
-    guestfs_rescue=1
-fi
-if grep -sq guestfs_noreboot=1 /proc/cmdline; then
-    guestfs_noreboot=1
-fi
-eval `grep -Eo 'guestfs_channel=[^[:space:]]+' /proc/cmdline`
+shopt -u nullglob
 
 # Set up the network.
 ip addr add 127.0.0.1/8 brd + dev lo scope host
@@ -124,7 +131,6 @@ mdadm -As --auto=yes --run
 
 # Scan for LVM.
 modprobe dm_mod ||:
-#lvmetad ||:
 
 lvm vgchange -aay --sysinit
 
@@ -132,7 +138,7 @@ lvm vgchange -aay --sysinit
 ldmtool create all
 
 # These are useful when debugging.
-if test "$guestfs_verbose" = 1; then
+if test "$guestfs_verbose" = 1 && test "$guestfs_boot_analysis" != 1; then
     uname -a
     ls -lR /dev
     cat /proc/mounts
@@ -154,6 +160,7 @@ fi
 if ! test "$guestfs_rescue" = 1; then
   # Run the daemon.
   cmd="guestfsd"
+  eval `grep -Eo 'guestfs_channel=[^[:space:]]+' /proc/cmdline`
   if test "x$guestfs_channel" != "x"; then
     cmd="$cmd --channel $guestfs_channel"
   fi

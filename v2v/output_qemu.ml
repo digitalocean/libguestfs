@@ -57,8 +57,17 @@ object
     let uefi_firmware =
       match target_firmware with
       | TargetBIOS -> None
-      | TargetUEFI ->
-         Some (find_uefi_firmware guestcaps.gcaps_arch) in
+      | TargetUEFI -> Some (find_uefi_firmware guestcaps.gcaps_arch) in
+    let secure_boot_required =
+      match uefi_firmware with
+      | Some { Uefi.flags = flags }
+           when List.mem Uefi.UEFI_FLAG_SECURE_BOOT_REQUIRED flags -> true
+      | _ -> false in
+    (* Currently these are required by secure boot, but in theory they
+     * might be independent properties.
+     *)
+    let machine_q35 = secure_boot_required in
+    let smm = secure_boot_required in
 
     let chan = open_out file in
 
@@ -69,7 +78,7 @@ object
 
     (match uefi_firmware with
      | None -> ()
-     | Some (_, vars_template) ->
+     | Some { Uefi.vars = vars_template } ->
         fpf "# Make a copy of the UEFI variables template\n";
         fpf "uefi_vars=\"$(mktemp)\"\n";
         fpf "cp %s \"$uefi_vars\"\n" (quote vars_template);
@@ -79,11 +88,15 @@ object
     fpf "qemu-system-%s" guestcaps.gcaps_arch;
     fpf "%s-no-user-config -nodefaults" nl;
     fpf "%s-name %s" nl (quote source.s_name);
-    fpf "%s-machine accel=kvm:tcg" nl;
+    fpf "%s-machine %s%saccel=kvm:tcg" nl
+        (if machine_q35 then "q35," else "")
+        (if smm then "smm=on," else "");
 
     (match uefi_firmware with
      | None -> ()
-     | Some (code, _) ->
+     | Some { Uefi.code = code } ->
+        if secure_boot_required then
+          fpf "%s-global driver=cfi.pflash01,property=secure,value=on" nl;
         fpf "%s-drive if=pflash,format=raw,file=%s,readonly" nl (quote code);
         fpf "%s-drive if=pflash,format=raw,file=\"$uefi_vars\"" nl
     );
@@ -136,6 +149,10 @@ object
        fpf "%s-drive %s" nl (quote drive_param)
     in
     Array.iteri make_scsi target_buses.target_scsi_bus;
+
+    (* XXX Highly unlikely that anyone cares, but the current
+     * code ignores target_buses.target_floppy_bus.
+     *)
 
     let net_bus =
       match guestcaps.gcaps_net_bus with

@@ -59,6 +59,14 @@ Windows sysprepping in a future version, and we already have code to do it.
 Add a remote disk.  The URI format is compatible with guestfish.  See
 L<guestfish(1)/ADDING REMOTE STORAGE>.
 
+=item B<--colors>
+
+=item B<--colours>
+
+Use ANSI colour sequences to colourize messages.  This is the default when
+the output is a tty.  If the output of the program is redirected to a file,
+ANSI colour sequences are disabled unless you use this option.
+
 =item B<-c> адреса
 
 =item B<--connect> адреса
@@ -223,7 +231,8 @@ To enable detailed logging of individual file operations, use I<-x>.
 
 =item B<--no-network>
 
-Enable or disable network access from the guest during the installation.
+Увімкнути чи вимкнути доступ до мережі для гостьової системи під час
+встановлення.
 
 In virt-sysprep, the network is I<disabled> by default.  You must use
 I<--network> to enable it, in order that options such as I<--install> or
@@ -555,6 +564,12 @@ I<--firstboot-command> options with Windows guests.
 
 Див. також C<https://github.com/rwmjones/rhsrvany>
 
+=item F<pvvxsvc.exe>
+
+This is a Windows binary shipped with SUSE VMDP, used to install a
+"firstboot" script in Windows guests.  It is required if you intend to use
+the I<--firstboot> or I<--firstboot-command> options with Windows guests.
+
 =back
 
 =back
@@ -577,7 +592,7 @@ Wanlong Gao, Fujitsu Ltd.
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2016 Red Hat Inc.
+© Red Hat Inc., 2011–2016
 
 Авторські права належать Fujitsu Ltd., 2012
 

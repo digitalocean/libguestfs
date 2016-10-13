@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-virt-index-validate - Validate virt-builder index file
+virt-index-validate — засіб перевірки файла покажчика virt-builder
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -26,7 +26,7 @@ local file, not a URL.
 Check for compatibility with virt-builder 1.24.0.  (Using this option
 implies I<--compat-1.24.1>, so you don't need to use both.)
 
-In particular:
+Зокрема:
 
 =over 4
 
@@ -45,7 +45,7 @@ It required detached signatures (C<sig=...>).
 
 Check for compatibility with virt-builder E<ge> 1.24.1.
 
-In particular:
+Зокрема:
 
 =over 4
 

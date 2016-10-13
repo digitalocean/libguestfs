@@ -30,9 +30,7 @@ class Test100Launch < MiniTest::Unit::TestCase
     g.lvcreate("LV2", "VG", 200);
 
     lvs = g.lvs()
-    if lvs != ["/dev/VG/LV1", "/dev/VG/LV2"]
-      raise "incorrect lvs returned"
-    end
+    assert_equal ["/dev/VG/LV1", "/dev/VG/LV2"], lvs
 
     g.sync()
   end

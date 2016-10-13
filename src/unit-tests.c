@@ -40,7 +40,9 @@
 #include "guestfs-internal.h"
 #include "guestfs-internal-frontend.h"
 
-/* Test guestfs_int_split_string. */
+/**
+ * Test C<guestfs_int_split_string>.
+ */
 static void
 test_split (void)
 {
@@ -95,7 +97,9 @@ test_split (void)
   guestfs_int_free_string_list (ret);
 }
 
-/* Test guestfs_int_concat_strings. */
+/**
+ * Test C<guestfs_int_concat_strings>.
+ */
 static void
 test_concat (void)
 {
@@ -127,7 +131,9 @@ test_concat (void)
   free (ret);
 }
 
-/* Test guestfs_int_join_strings. */
+/**
+ * Test C<guestfs_int_join_strings>.
+ */
 static void
 test_join (void)
 {
@@ -159,7 +165,9 @@ test_join (void)
   free (ret);
 }
 
-/* Test guestfs_int_validate_guid. */
+/**
+ * Test C<guestfs_int_validate_guid>.
+ */
 static void
 test_validate_guid (void)
 {
@@ -171,7 +179,9 @@ test_validate_guid (void)
   assert (guestfs_int_validate_guid ("21EC2020-3AEA-1069-A2DD-08002B30309D") == 1);
 }
 
-/* Test guestfs_int_drive_name. */
+/**
+ * Test C<guestfs_int_drive_name>.
+ */
 static void
 test_drive_name (void)
 {
@@ -197,7 +207,9 @@ test_drive_name (void)
   assert (STREQ (s, "zzz"));
 }
 
-/* Test guestfs_int_drive_index. */
+/**
+ * Test C<guestfs_int_drive_index>.
+ */
 static void
 test_drive_index (void)
 {

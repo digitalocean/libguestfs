@@ -16,6 +16,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * This file contains common options parsing code used by guestfish
+ * and many other tools which share a common options syntax.
+ *
+ * For example, guestfish, virt-cat, virt-ls etc all support the I<-a>
+ * option, and that is handled in all of those tools using a macro
+ * C<OPTION_a> defined in F<fish/options.h>.
+ *
+ * There are a lot of common global variables used, C<drvs>
+ * accumulates the list of drives, C<verbose> for the I<-v> flag, and
+ * many more.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -23,13 +36,16 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <error.h>
 #include <libintl.h>
 
 #include "guestfs.h"
 #include "options.h"
 #include "uri.h"
 
-/* Handle the '-a' option when passed on the command line. */
+/**
+ * Handle the guestfish I<-a> option on the command line.
+ */
 void
 option_a (const char *arg, const char *format, struct drv **drvsp)
 {
@@ -37,20 +53,16 @@ option_a (const char *arg, const char *format, struct drv **drvsp)
   struct drv *drv;
 
   drv = calloc (1, sizeof (struct drv));
-  if (!drv) {
-    perror ("calloc");
-    exit (EXIT_FAILURE);
-  }
+  if (!drv)
+    error (EXIT_FAILURE, errno, "calloc");
 
   if (parse_uri (arg, &uri) == -1)
     exit (EXIT_FAILURE);
 
   if (STREQ (uri.protocol, "file")) {
     /* Ordinary file. */
-    if (access (uri.path, R_OK) != 0) {
-      perror (uri.path);
-      exit (EXIT_FAILURE);
-    }
+    if (access (uri.path, R_OK) != 0)
+      error (EXIT_FAILURE, errno, "access: %s", uri.path);
 
     drv->type = drv_a;
     drv->nr_drives = -1;
@@ -76,17 +88,17 @@ option_a (const char *arg, const char *format, struct drv **drvsp)
   *drvsp = drv;
 }
 
-/* Handle the '-d' option when passed on the command line. */
+/**
+ * Handle the I<-d> option when passed on the command line.
+ */
 void
 option_d (const char *arg, struct drv **drvsp)
 {
   struct drv *drv;
 
   drv = calloc (1, sizeof (struct drv));
-  if (!drv) {
-    perror ("calloc");
-    exit (EXIT_FAILURE);
-  }
+  if (!drv)
+    error (EXIT_FAILURE, errno, "calloc");
 
   drv->type = drv_d;
   drv->nr_drives = -1;
@@ -102,12 +114,8 @@ add_drives_handle (guestfs_h *g, struct drv *drv, char next_drive)
   int r;
   struct guestfs_add_drive_opts_argv ad_optargs;
 
-  if (next_drive > 'z') {
-    fprintf (stderr,
-             _("%s: too many drives added on the command line\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (next_drive > 'z')
+    error (EXIT_FAILURE, 0, _("too many drives added on the command line"));
 
   if (drv) {
     next_drive = add_drives (drv->next, next_drive);
@@ -115,10 +123,8 @@ add_drives_handle (guestfs_h *g, struct drv *drv, char next_drive)
     free (drv->device);
     drv->device = NULL;
 
-    if (asprintf (&drv->device, "/dev/sd%c", next_drive) == -1) {
-      perror ("asprintf");
-      exit (EXIT_FAILURE);
-    }
+    if (asprintf (&drv->device, "/dev/sd%c", next_drive) == -1)
+      error (EXIT_FAILURE, errno, "asprintf");
 
     switch (drv->type) {
     case drv_a:
@@ -225,13 +231,13 @@ add_drives_handle (guestfs_h *g, struct drv *drv, char next_drive)
 
 static void display_mountpoints_on_failure (const char *mp_device, const char *user_supplied_options);
 
-/* List is built in reverse order, so mount them in reverse order. */
 void
 mount_mps (struct mp *mp)
 {
   int r;
 
   if (mp) {
+    /* List is built in reverse order, so mount them in reverse order. */
     mount_mps (mp->next);
 
     const char *options;
@@ -255,7 +261,8 @@ mount_mps (struct mp *mp)
   }
 }
 
-/* If the -m option fails on any command, display a useful error
+/**
+ * If the I<-m> option fails on any command, display a useful error
  * message listing the mountpoints.
  */
 static void
@@ -280,7 +287,28 @@ display_mountpoints_on_failure (const char *mp_device,
            guestfs_int_program_name);
 
   for (i = 0; fses[i] != NULL; i += 2) {
-    CLEANUP_FREE char *p = guestfs_canonical_device_name (g, fses[i]);
+    CLEANUP_FREE char *p = NULL;
+    CLEANUP_FREE char *device = guestfs_mountable_device (g, fses[i]);
+    CLEANUP_FREE char *subvolume = NULL;
+
+    guestfs_push_error_handler (g, NULL, NULL);
+
+    subvolume = guestfs_mountable_subvolume (g, fses[i]);
+    if (subvolume == NULL && guestfs_last_errno (g) != EINVAL)
+      error (EXIT_FAILURE, 0,
+             _("cannot determine the subvolume for %s: %s (%d)"),
+             fses[i], guestfs_last_error (g), guestfs_last_errno (g));
+
+    guestfs_pop_error_handler (g);
+
+    /* Reformat the internal btrfsvol string into a valid mount option */
+    if (device && subvolume) {
+      if (asprintf (&p, "%s:/:subvol=%s", device, subvolume) == -1)
+        error (EXIT_FAILURE, errno, "asprintf");
+    } else {
+      p = guestfs_canonical_device_name (g, fses[i]);
+    }
+
     fprintf (stderr, "%s: \t%s (%s)\n", guestfs_int_program_name,
              p ? p : fses[i], fses[i+1]);
   }
@@ -338,32 +366,4 @@ free_mps (struct mp *mp)
    */
 
   free (mp);
-}
-
-/* Implements the internal 'tool --short-options' flag, which just
- * lists out the short options available.  Used by bash completion.
- */
-void
-display_short_options (const char *format)
-{
-  while (*format) {
-    if (*format != ':')
-      printf ("-%c\n", *format);
-    ++format;
-  }
-  exit (EXIT_SUCCESS);
-}
-
-/* Implements the internal 'tool --long-options' flag, which just
- * lists out the long options available.  Used by bash completion.
- */
-void
-display_long_options (const struct option *long_options)
-{
-  while (long_options->name) {
-    if (STRNEQ (long_options->name, "long-options") && STRNEQ (long_options->name, "short-options"))
-      printf ("--%s\n", long_options->name);
-    long_options++;
-  }
-  exit (EXIT_SUCCESS);
 }

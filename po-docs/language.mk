@@ -21,14 +21,13 @@ include $(top_srcdir)/subdir-rules.mk
 
 LINGUA = $(shell basename -- `pwd`)
 
-CLEANFILES = *.1 *.3 *.5
-
 # Before 1.23.23, the old Perl tools were called *.pl.
 CLEANFILES += *.pl
 
 MANPAGES = \
 	guestfish.1 \
 	guestfs.3 \
+	guestfs-building.1 \
 	guestfs-erlang.3 \
 	guestfs-examples.3 \
 	guestfs-faq.1 \

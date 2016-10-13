@@ -17,20 +17,6 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
-CLEANFILES = \
-	guestfish.1 \
-	libguestfs-tools.conf.5 \
-	stamp-guestfish.pod \
-	stamp-libguestfs-tools.conf.pod \
-	stamp-virt-copy-in.pod \
-	stamp-virt-copy-out.pod \
-	stamp-virt-tar-in.pod \
-	stamp-virt-tar-out.pod \
-	virt-copy-in.1 \
-	virt-copy-out.1 \
-	virt-tar-in.1 \
-	virt-tar-out.1
-
 bin_PROGRAMS = guestfish
 
 generator_built = \
@@ -72,6 +58,8 @@ EXTRA_DIST = \
 # files must not include other guestfish files.
 SHARED_SOURCE_FILES = \
 	config.c \
+	display-options.h \
+	display-options.c \
 	domain.c \
 	inspect.c \
 	keys.c \
@@ -285,6 +273,7 @@ TESTS = \
 	test-add-domain.sh \
 	test-add-uri.sh \
 	test-d.sh \
+	test-docs.sh \
 	test-escapes.sh \
 	test-events.sh \
 	test-invalid-params.sh \
@@ -323,6 +312,7 @@ EXTRA_DIST += \
 	test-alloc.sh \
 	test-copy.sh \
 	test-d.sh \
+	test-docs.sh \
 	test-edit.sh \
 	test-escapes.sh \
 	test-events.sh \

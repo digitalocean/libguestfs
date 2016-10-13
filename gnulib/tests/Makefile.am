@@ -611,23 +611,6 @@ EXTRA_libtests_a_SOURCES += getpagesize.c
 
 ## end   gnulib module getpagesize
 
-## begin gnulib module gettext
-
-# If your project uses "gettextize --intl" to put a source-code
-# copy of libintl into the package, every Makefile.am needs
-# -I$(top_builddir)/intl, so that <libintl.h> can be found in this directory.
-# Here's one way to do this:
-#AM_CPPFLAGS += -I$(top_builddir)/intl
-# This option has no effect when the user disables NLS (because then
-# the intl directory contains no libintl.h file).  This option is not
-# enabled by default because the intl directory might not exist if
-# your project does not use "gettext --intl", and some compilers
-# complain about -I options applied to nonexistent directories.
-
-EXTRA_DIST += $(top_srcdir)/build-aux/config.rpath
-
-## end   gnulib module gettext
-
 ## begin gnulib module gettimeofday-tests
 
 TESTS += test-gettimeofday
@@ -901,6 +884,7 @@ EXTRA_DIST += test-malloca.c
 
 TESTS += \
   test-mbrtowc1.sh test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh \
+  test-mbrtowc5.sh \
   test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh test-mbrtowc-w32-3.sh \
   test-mbrtowc-w32-4.sh test-mbrtowc-w32-5.sh
 TESTS_ENVIRONMENT += \
@@ -909,8 +893,7 @@ TESTS_ENVIRONMENT += \
   LOCALE_JA='@LOCALE_JA@' \
   LOCALE_ZH_CN='@LOCALE_ZH_CN@'
 check_PROGRAMS += test-mbrtowc test-mbrtowc-w32
-
-EXTRA_DIST += test-mbrtowc1.sh test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh test-mbrtowc.c test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh test-mbrtowc-w32-5.sh test-mbrtowc-w32.c signature.h macros.h
+EXTRA_DIST += test-mbrtowc1.sh test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh test-mbrtowc5.sh test-mbrtowc.c test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh test-mbrtowc-w32-5.sh test-mbrtowc-w32.c signature.h macros.h
 
 ## end   gnulib module mbrtowc-tests
 
@@ -1856,6 +1839,11 @@ EXTRA_DIST += test-vc-list-files-git.sh test-vc-list-files-cvs.sh
 TESTS_ENVIRONMENT += MAKE='$(MAKE)'
 TESTS += test-verify test-verify.sh
 check_PROGRAMS += test-verify
+
+# This test expects compilation of test-verify.c to fail, and
+# each time it fails, the makefile rule does not perform the usual
+#  "mv -f $name.Tpo $name.po, so tell make clean to remove that file.
+MOSTLYCLEANFILES += .deps/test-verify.Tpo
 EXTRA_DIST += test-verify.c test-verify.sh
 
 ## end   gnulib module verify-tests

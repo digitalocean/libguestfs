@@ -26,6 +26,7 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <errno.h>
+#include <error.h>
 #include <sys/param.h>		/* defines MIN */
 #include <sys/select.h>
 #include <sys/time.h>
@@ -106,11 +107,8 @@ main_loop (int _sock)
     if (len == GUESTFS_CANCEL_FLAG)
       continue;
 
-    if (len > GUESTFS_MESSAGE_MAX) {
-      fprintf (stderr, "guestfsd: incoming message is too long (%u bytes)\n",
-               len);
-      exit (EXIT_FAILURE);
-    }
+    if (len > GUESTFS_MESSAGE_MAX)
+      error (EXIT_FAILURE, 0, "incoming message is too long (%u bytes)", len);
 
     buf = malloc (len);
     if (!buf) {
@@ -150,10 +148,8 @@ main_loop (int _sock)
 
     /* Decode the message header. */
     xdrmem_create (&xdr, buf, len, XDR_DECODE);
-    if (!xdr_guestfs_message_header (&xdr, &hdr)) {
-      fprintf (stderr, "guestfsd: could not decode message header\n");
-      exit (EXIT_FAILURE);
-    }
+    if (!xdr_guestfs_message_header (&xdr, &hdr))
+      error (EXIT_FAILURE, 0, "could not decode message header");
 
     /* Check the version etc. */
     if (hdr.prog != GUESTFS_PROGRAM) {
@@ -231,10 +227,8 @@ reply_with_error_errno (int err, const char *fs, ...)
   r = vasprintf (&buf, fs, args);
   va_end (args);
 
-  if (r == -1) {
-    perror ("vasprintf");
-    exit (EXIT_FAILURE);
-  }
+  if (r == -1)
+    error (EXIT_FAILURE, errno, "vasprintf");
 
   send_error (err, buf);
 }
@@ -251,11 +245,9 @@ reply_with_perror_errno (int err, const char *fs, ...)
   r = vasprintf (&buf1, fs, args);
   va_end (args);
 
-  if (r == -1) {
+  if (r == -1)
   error:
-    perror ("vasprintf");
-    exit (EXIT_FAILURE);
-  }
+    error (EXIT_FAILURE, errno, "vasprintf");
 
   r = asprintf (&buf2, "%s: %s", buf1, strerror (err));
   if (r == -1)
@@ -287,10 +279,8 @@ send_error (int errnum, char *msg)
     msg[GUESTFS_ERROR_LEN] = '\0';
 
   buf = malloc (GUESTFS_ERROR_LEN + 200);
-  if (!buf) {
-    perror ("malloc");
-    exit (EXIT_FAILURE);
-  }
+  if (!buf)
+    error (EXIT_FAILURE, errno, "malloc");
   xdrmem_create (&xdr, buf, GUESTFS_ERROR_LEN + 200, XDR_ENCODE);
 
   memset (&hdr, 0, sizeof hdr);
@@ -301,10 +291,8 @@ send_error (int errnum, char *msg)
   hdr.proc = proc_nr;
   hdr.serial = serial;
 
-  if (!xdr_guestfs_message_header (&xdr, &hdr)) {
-    fprintf (stderr, "guestfsd: failed to encode error message header\n");
-    exit (EXIT_FAILURE);
-  }
+  if (!xdr_guestfs_message_header (&xdr, &hdr))
+    error (EXIT_FAILURE, 0, "failed to encode error message header");
 
   /* These strings are not going to be freed.  We just cast them
    * to (char *) because they are defined that way in the XDR structs.
@@ -313,10 +301,8 @@ send_error (int errnum, char *msg)
     (char *) (errnum > 0 ? guestfs_int_errno_to_string (errnum) : "");
   err.error_message = (char *) msg;
 
-  if (!xdr_guestfs_message_error (&xdr, &err)) {
-    fprintf (stderr, "guestfsd: failed to encode error message body\n");
-    exit (EXIT_FAILURE);
-  }
+  if (!xdr_guestfs_message_error (&xdr, &err))
+    error (EXIT_FAILURE, 0, "failed to encode error message body");
 
   len = xdr_getpos (&xdr);
   xdr_destroy (&xdr);
@@ -325,14 +311,10 @@ send_error (int errnum, char *msg)
   xdr_u_int (&xdr, &len);
   xdr_destroy (&xdr);
 
-  if (xwrite (sock, lenbuf, 4) == -1) {
-    fprintf (stderr, "guestfsd: xwrite failed\n");
-    exit (EXIT_FAILURE);
-  }
-  if (xwrite (sock, buf, len) == -1) {
-    fprintf (stderr, "guestfsd: xwrite failed\n");
-    exit (EXIT_FAILURE);
-  }
+  if (xwrite (sock, lenbuf, 4) == -1)
+    error (EXIT_FAILURE, 0, "xwrite failed");
+  if (xwrite (sock, buf, len) == -1)
+    error (EXIT_FAILURE, 0, "xwrite failed");
 }
 
 void
@@ -345,10 +327,8 @@ reply (xdrproc_t xdrp, char *ret)
   uint32_t len;
 
   buf = malloc (GUESTFS_MESSAGE_MAX);
-  if (!buf) {
-    perror ("malloc");
-    exit (EXIT_FAILURE);
-  }
+  if (!buf)
+    error (EXIT_FAILURE, errno, "malloc");
   xdrmem_create (&xdr, buf, GUESTFS_MESSAGE_MAX, XDR_ENCODE);
 
   memset (&hdr, 0, sizeof hdr);
@@ -359,10 +339,8 @@ reply (xdrproc_t xdrp, char *ret)
   hdr.proc = proc_nr;
   hdr.serial = serial;
 
-  if (!xdr_guestfs_message_header (&xdr, &hdr)) {
-    fprintf (stderr, "guestfsd: failed to encode reply header\n");
-    exit (EXIT_FAILURE);
-  }
+  if (!xdr_guestfs_message_header (&xdr, &hdr))
+    error (EXIT_FAILURE, 0, "failed to encode reply header");
 
   if (xdrp) {
     /* This can fail if the reply body is too large, for example
@@ -383,14 +361,10 @@ reply (xdrproc_t xdrp, char *ret)
   xdr_u_int (&xdr, &len);
   xdr_destroy (&xdr);
 
-  if (xwrite (sock, lenbuf, 4) == -1) {
-    fprintf (stderr, "guestfsd: xwrite failed\n");
-    exit (EXIT_FAILURE);
-  }
-  if (xwrite (sock, buf, (size_t) len) == -1) {
-    fprintf (stderr, "guestfsd: xwrite failed\n");
-    exit (EXIT_FAILURE);
-  }
+  if (xwrite (sock, lenbuf, 4) == -1)
+    error (EXIT_FAILURE, 0, "xwrite failed");
+  if (xwrite (sock, buf, (size_t) len) == -1)
+    error (EXIT_FAILURE, 0, "xwrite failed");
 }
 
 /* Receive file chunks, repeatedly calling 'cb'. */
@@ -420,11 +394,8 @@ receive_file (receive_cb cb, void *opaque)
     if (len == GUESTFS_CANCEL_FLAG)
       continue;			/* Just ignore it. */
 
-    if (len > GUESTFS_MESSAGE_MAX) {
-      fprintf (stderr, "guestfsd: incoming message is too long (%u bytes)\n",
-               len);
-      exit (EXIT_FAILURE);
-    }
+    if (len > GUESTFS_MESSAGE_MAX)
+      error (EXIT_FAILURE, 0, "incoming message is too long (%u bytes)", len);
 
     buf = malloc (len);
     if (!buf) {
@@ -596,12 +567,19 @@ send_file_end (int cancel)
 static int
 send_chunk (const guestfs_chunk *chunk)
 {
-  char buf[GUESTFS_MAX_CHUNK_SIZE + 48];
+  const size_t buf_len = GUESTFS_MAX_CHUNK_SIZE + 48;
+  CLEANUP_FREE char *buf = NULL;
   char lenbuf[4];
   XDR xdr;
   uint32_t len;
 
-  xdrmem_create (&xdr, buf, sizeof buf, XDR_ENCODE);
+  buf = malloc (buf_len);
+  if (buf == NULL) {
+    perror ("malloc");
+    return -1;
+  }
+
+  xdrmem_create (&xdr, buf, buf_len, XDR_ENCODE);
   if (!xdr_guestfs_chunk (&xdr, (guestfs_chunk *) chunk)) {
     fprintf (stderr, "guestfsd: send_chunk: failed to encode chunk\n");
     xdr_destroy (&xdr);
@@ -617,10 +595,8 @@ send_chunk (const guestfs_chunk *chunk)
 
   const int err = (xwrite (sock, lenbuf, 4) == 0
                    && xwrite (sock, buf, len) == 0 ? 0 : -1);
-  if (err) {
-    fprintf (stderr, "guestfsd: send_chunk: write failed\n");
-    exit (EXIT_FAILURE);
-  }
+  if (err)
+    error (EXIT_FAILURE, 0, "send_chunk: write failed");
 
   return err;
 }
@@ -684,10 +660,8 @@ notify_progress_no_ratelimit (uint64_t position, uint64_t total,
   xdr_u_int (&xdr, &i);
   xdr_destroy (&xdr);
 
-  if (xwrite (sock, buf, 4) == -1) {
-    fprintf (stderr, "guestfsd: xwrite failed\n");
-    exit (EXIT_FAILURE);
-  }
+  if (xwrite (sock, buf, 4) == -1)
+    error (EXIT_FAILURE, 0, "xwrite failed");
 
   message.proc = proc_nr;
   message.serial = serial;
@@ -703,10 +677,8 @@ notify_progress_no_ratelimit (uint64_t position, uint64_t total,
   len = xdr_getpos (&xdr);
   xdr_destroy (&xdr);
 
-  if (xwrite (sock, buf, len) == -1) {
-    fprintf (stderr, "guestfsd: xwrite failed\n");
-    exit (EXIT_FAILURE);
-  }
+  if (xwrite (sock, buf, len) == -1)
+    error (EXIT_FAILURE, 0, "xwrite failed");
 }
 
 /* "Pulse mode" progress messages. */

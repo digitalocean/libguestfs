@@ -264,7 +264,7 @@ do_lvs (void)
     r = command (&out, &err,
                  str_lvm, "lvs",
                  "-o", "vg_name,lv_name",
-                 "-S", "lv_role=public && lv_active=active",
+                 "-S", "lv_role=public && lv_skip_activation!=1",
                  "--noheadings",
                  "--separator", "/", NULL);
     if (r == -1) {
@@ -863,9 +863,11 @@ lv_canonical (const char *device, char **ret)
 
 /* Test if a device is a logical volume (RHBZ#619793). */
 int
-do_is_lv (const char *device)
+do_is_lv (const mountable_t *mountable)
 {
-  return lv_canonical (device, NULL);
+  if (mountable->type != MOUNTABLE_DEVICE)
+    return 0;
+  return lv_canonical (mountable->device, NULL);
 }
 
 /* Return canonical name of LV to caller (RHBZ#638899). */
@@ -901,6 +903,8 @@ do_list_dm_devices (void)
   }
 
   while (1) {
+    CLEANUP_FREE char *devname = NULL;
+
     errno = 0;
     d = readdir (dir);
     if (d == NULL) break;
@@ -913,10 +917,11 @@ do_list_dm_devices (void)
     if (STREQ (d->d_name, "control"))
       continue;
 
-    size_t len = strlen (d->d_name);
-    char devname[len+64];
-
-    snprintf (devname, len+64, "/dev/mapper/%s", d->d_name);
+    if (asprintf (&devname, "/dev/mapper/%s", d->d_name) == -1) {
+      reply_with_perror ("asprintf");
+      closedir (dir);
+      return NULL;
+    }
 
     /* Ignore dm devices which are LVs. */
     r = lv_canonical (devname, NULL);

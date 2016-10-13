@@ -44,6 +44,7 @@ guestfs_gobject_headers= \
   include/guestfs-gobject/struct-stat.h \
   include/guestfs-gobject/struct-statns.h \
   include/guestfs-gobject/struct-statvfs.h \
+  include/guestfs-gobject/struct-tsk_dirent.h \
   include/guestfs-gobject/struct-utsname.h \
   include/guestfs-gobject/struct-version.h \
   include/guestfs-gobject/struct-xattr.h \
@@ -67,8 +68,10 @@ guestfs_gobject_headers= \
   include/guestfs-gobject/optargs-copy_file_to_file.h \
   include/guestfs-gobject/optargs-cpio_out.h \
   include/guestfs-gobject/optargs-disk_create.h \
+  include/guestfs-gobject/optargs-download_blocks.h \
   include/guestfs-gobject/optargs-e2fsck.h \
   include/guestfs-gobject/optargs-fstrim.h \
+  include/guestfs-gobject/optargs-glob_expand.h \
   include/guestfs-gobject/optargs-grep.h \
   include/guestfs-gobject/optargs-hivex_open.h \
   include/guestfs-gobject/optargs-inspect_get_icon.h \
@@ -96,6 +99,7 @@ guestfs_gobject_headers= \
   include/guestfs-gobject/optargs-rsync.h \
   include/guestfs-gobject/optargs-rsync_in.h \
   include/guestfs-gobject/optargs-rsync_out.h \
+  include/guestfs-gobject/optargs-selinux_relabel.h \
   include/guestfs-gobject/optargs-set_e2attrs.h \
   include/guestfs-gobject/optargs-syslinux.h \
   include/guestfs-gobject/optargs-tar_in.h \
@@ -130,6 +134,7 @@ guestfs_gobject_sources= \
   src/struct-stat.c \
   src/struct-statns.c \
   src/struct-statvfs.c \
+  src/struct-tsk_dirent.c \
   src/struct-utsname.c \
   src/struct-version.c \
   src/struct-xattr.c \
@@ -153,8 +158,10 @@ guestfs_gobject_sources= \
   src/optargs-copy_file_to_file.c \
   src/optargs-cpio_out.c \
   src/optargs-disk_create.c \
+  src/optargs-download_blocks.c \
   src/optargs-e2fsck.c \
   src/optargs-fstrim.c \
+  src/optargs-glob_expand.c \
   src/optargs-grep.c \
   src/optargs-hivex_open.c \
   src/optargs-inspect_get_icon.c \
@@ -182,6 +189,7 @@ guestfs_gobject_sources= \
   src/optargs-rsync.c \
   src/optargs-rsync_in.c \
   src/optargs-rsync_out.c \
+  src/optargs-selinux_relabel.c \
   src/optargs-set_e2attrs.c \
   src/optargs-syslinux.c \
   src/optargs-tar_in.c \

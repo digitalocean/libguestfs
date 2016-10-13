@@ -19,9 +19,8 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
+	test-virt-dib-docs.sh \
         virt-dib.pod
-
-CLEANFILES = *~ *.annot *.cmi *.cmo *.cmx *.cmxa *.o virt-dib
 
 SOURCES_MLI = \
 	cmdline.mli
@@ -33,7 +32,7 @@ SOURCES_ML = \
 	dib.ml
 
 SOURCES_C = \
-	../mllib/mkdtemp-c.c
+	dummy.c
 
 bin_PROGRAMS =
 
@@ -54,11 +53,6 @@ virt_dib_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 BOBJECTS = \
-	$(top_builddir)/mllib/libdir.cmo \
-	$(top_builddir)/mllib/guestfs_config.cmo \
-	$(top_builddir)/mllib/common_gettext.cmo \
-	$(top_builddir)/mllib/common_utils.cmo \
-	$(top_builddir)/mllib/mkdtemp.cmo \
 	$(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
@@ -78,6 +72,7 @@ endif
 OCAMLCLIBS = \
 	-pthread -lpthread \
 	-lutils \
+	$(LIBXML2_LIBS) \
 	$(LIBINTL) \
 	-lgnu
 
@@ -85,19 +80,26 @@ OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
-BEST    = c
-OCAMLLINKFLAGS = mlguestfs.cma -custom
 else
 OBJECTS = $(XOBJECTS)
-BEST    = opt
-OCAMLLINKFLAGS = mlguestfs.cmxa
 endif
 
-virt_dib_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
+OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+
+virt_dib_DEPENDENCIES = \
+	$(OBJECTS) \
+	../mllib/mllib.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
 virt_dib_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
 	  $(OBJECTS) -o $@
+
+# Tests.
+
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+
+TESTS = test-virt-dib-docs.sh
 
 # Manual pages and HTML files for the website.
 
@@ -116,10 +118,6 @@ stamp-virt-dib.pod: virt-dib.pod
 	  $<
 	touch $@
 
-CLEANFILES += \
-	stamp-virt-dib.pod \
-	virt-dib.1
-
 # Dependencies.
 depend: .depend
 
@@ -135,7 +133,5 @@ depend: .depend
 -include .depend
 
 endif
-
-DISTCLEANFILES = .depend
 
 .PHONY: depend docs

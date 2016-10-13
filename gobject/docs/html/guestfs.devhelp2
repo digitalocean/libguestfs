@@ -24,6 +24,7 @@
       <sub name="GuestfsStat" link="GuestfsStat.html"/>
       <sub name="GuestfsStatNS" link="GuestfsStatNS.html"/>
       <sub name="GuestfsStatVFS" link="GuestfsStatVFS.html"/>
+      <sub name="GuestfsTSKDirent" link="GuestfsTSKDirent.html"/>
       <sub name="GuestfsUTSName" link="GuestfsUTSName.html"/>
       <sub name="GuestfsVersion" link="GuestfsVersion.html"/>
       <sub name="GuestfsXAttr" link="GuestfsXAttr.html"/>
@@ -47,8 +48,10 @@
       <sub name="GuestfsCopyFileToFile" link="GuestfsCopyFileToFile.html"/>
       <sub name="GuestfsCpioOut" link="GuestfsCpioOut.html"/>
       <sub name="GuestfsDiskCreate" link="GuestfsDiskCreate.html"/>
+      <sub name="GuestfsDownloadBlocks" link="GuestfsDownloadBlocks.html"/>
       <sub name="GuestfsE2fsck" link="GuestfsE2fsck.html"/>
       <sub name="GuestfsFstrim" link="GuestfsFstrim.html"/>
+      <sub name="GuestfsGlobExpand" link="GuestfsGlobExpand.html"/>
       <sub name="GuestfsGrep" link="GuestfsGrep.html"/>
       <sub name="GuestfsHivexOpen" link="GuestfsHivexOpen.html"/>
       <sub name="GuestfsInspectGetIcon" link="GuestfsInspectGetIcon.html"/>
@@ -76,6 +79,7 @@
       <sub name="GuestfsRsync" link="GuestfsRsync.html"/>
       <sub name="GuestfsRsyncIn" link="GuestfsRsyncIn.html"/>
       <sub name="GuestfsRsyncOut" link="GuestfsRsyncOut.html"/>
+      <sub name="GuestfsSelinuxRelabel" link="GuestfsSelinuxRelabel.html"/>
       <sub name="GuestfsSetE2attrs" link="GuestfsSetE2attrs.html"/>
       <sub name="GuestfsSyslinux" link="GuestfsSyslinux.html"/>
       <sub name="GuestfsTarIn" link="GuestfsTarIn.html"/>
@@ -149,6 +153,7 @@
     <keyword type="function" name="guestfs_session_btrfs_filesystem_balance ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-balance" since="1.17.35"/>
     <keyword type="function" name="guestfs_session_btrfs_filesystem_defragment ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-defragment" since="1.29.22"/>
     <keyword type="function" name="guestfs_session_btrfs_filesystem_resize ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-resize" since="1.11.17"/>
+    <keyword type="function" name="guestfs_session_btrfs_filesystem_show ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-show" since="1.33.29"/>
     <keyword type="function" name="guestfs_session_btrfs_filesystem_sync ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-sync" since="1.17.35"/>
     <keyword type="function" name="guestfs_session_btrfs_fsck ()" link="GuestfsSession.html#guestfs-session-btrfs-fsck" since="1.17.43"/>
     <keyword type="function" name="guestfs_session_btrfs_image ()" link="GuestfsSession.html#guestfs-session-btrfs-image" since="1.29.32"/>
@@ -220,6 +225,8 @@
     <keyword type="function" name="guestfs_session_disk_virtual_size ()" link="GuestfsSession.html#guestfs-session-disk-virtual-size" since="1.19.39"/>
     <keyword type="function" name="guestfs_session_dmesg ()" link="GuestfsSession.html#guestfs-session-dmesg" since="1.0.18"/>
     <keyword type="function" name="guestfs_session_download ()" link="GuestfsSession.html#guestfs-session-download" since="1.0.2"/>
+    <keyword type="function" name="guestfs_session_download_blocks ()" link="GuestfsSession.html#guestfs-session-download-blocks" since="1.33.45"/>
+    <keyword type="function" name="guestfs_session_download_inode ()" link="GuestfsSession.html#guestfs-session-download-inode" since="1.33.14"/>
     <keyword type="function" name="guestfs_session_download_offset ()" link="GuestfsSession.html#guestfs-session-download-offset" since="1.5.17"/>
     <keyword type="function" name="guestfs_session_drop_caches ()" link="GuestfsSession.html#guestfs-session-drop-caches" since="1.0.18"/>
     <keyword type="function" name="guestfs_session_du ()" link="GuestfsSession.html#guestfs-session-du" since="1.0.54"/>
@@ -240,6 +247,7 @@
     <keyword type="function" name="guestfs_session_file_architecture ()" link="GuestfsSession.html#guestfs-session-file-architecture" since="1.5.3"/>
     <keyword type="function" name="guestfs_session_filesize ()" link="GuestfsSession.html#guestfs-session-filesize" since="1.0.82"/>
     <keyword type="function" name="guestfs_session_filesystem_available ()" link="GuestfsSession.html#guestfs-session-filesystem-available" since="1.19.5"/>
+    <keyword type="function" name="guestfs_session_filesystem_walk ()" link="GuestfsSession.html#guestfs-session-filesystem-walk" since="1.33.39"/>
     <keyword type="function" name="guestfs_session_fill ()" link="GuestfsSession.html#guestfs-session-fill" since="1.0.79"/>
     <keyword type="function" name="guestfs_session_fill_dir ()" link="GuestfsSession.html#guestfs-session-fill-dir" since="1.19.32"/>
     <keyword type="function" name="guestfs_session_fill_pattern ()" link="GuestfsSession.html#guestfs-session-fill-pattern" since="1.3.12"/>
@@ -275,14 +283,15 @@
     <keyword type="function" name="guestfs_session_get_program ()" link="GuestfsSession.html#guestfs-session-get-program" since="1.21.29"/>
     <keyword type="function" name="guestfs_session_get_qemu ()" link="GuestfsSession.html#guestfs-session-get-qemu" deprecated="In new code, use guestfs_session_get_hv() instead" since="1.0.6"/>
     <keyword type="function" name="guestfs_session_get_recovery_proc ()" link="GuestfsSession.html#guestfs-session-get-recovery-proc" since="1.0.77"/>
-    <keyword type="function" name="guestfs_session_get_selinux ()" link="GuestfsSession.html#guestfs-session-get-selinux" since="1.0.67"/>
+    <keyword type="function" name="guestfs_session_get_selinux ()" link="GuestfsSession.html#guestfs-session-get-selinux" deprecated="In new code, use guestfs_session_selinux_relabel() instead" since="1.0.67"/>
     <keyword type="function" name="guestfs_session_get_smp ()" link="GuestfsSession.html#guestfs-session-get-smp" since="1.13.15"/>
+    <keyword type="function" name="guestfs_session_get_sockdir ()" link="GuestfsSession.html#guestfs-session-get-sockdir" since="1.33.8"/>
     <keyword type="function" name="guestfs_session_get_state ()" link="GuestfsSession.html#guestfs-session-get-state" since="1.0.2"/>
     <keyword type="function" name="guestfs_session_get_tmpdir ()" link="GuestfsSession.html#guestfs-session-get-tmpdir" since="1.19.58"/>
     <keyword type="function" name="guestfs_session_get_trace ()" link="GuestfsSession.html#guestfs-session-get-trace" since="1.0.69"/>
     <keyword type="function" name="guestfs_session_get_umask ()" link="GuestfsSession.html#guestfs-session-get-umask" since="1.3.4"/>
     <keyword type="function" name="guestfs_session_get_verbose ()" link="GuestfsSession.html#guestfs-session-get-verbose" since="0.3"/>
-    <keyword type="function" name="guestfs_session_getcon ()" link="GuestfsSession.html#guestfs-session-getcon" since="1.0.67"/>
+    <keyword type="function" name="guestfs_session_getcon ()" link="GuestfsSession.html#guestfs-session-getcon" deprecated="In new code, use guestfs_session_selinux_relabel() instead" since="1.0.67"/>
     <keyword type="function" name="guestfs_session_getxattr ()" link="GuestfsSession.html#guestfs-session-getxattr" since="1.7.24"/>
     <keyword type="function" name="guestfs_session_getxattrs ()" link="GuestfsSession.html#guestfs-session-getxattrs" since="1.0.59"/>
     <keyword type="function" name="guestfs_session_glob_expand ()" link="GuestfsSession.html#guestfs-session-glob-expand" since="1.0.50"/>
@@ -418,7 +427,7 @@
     <keyword type="function" name="guestfs_session_list_md_devices ()" link="GuestfsSession.html#guestfs-session-list-md-devices" since="1.15.4"/>
     <keyword type="function" name="guestfs_session_list_partitions ()" link="GuestfsSession.html#guestfs-session-list-partitions" since="0.4"/>
     <keyword type="function" name="guestfs_session_ll ()" link="GuestfsSession.html#guestfs-session-ll" since="0.4"/>
-    <keyword type="function" name="guestfs_session_llz ()" link="GuestfsSession.html#guestfs-session-llz" since="1.17.6"/>
+    <keyword type="function" name="guestfs_session_llz ()" link="GuestfsSession.html#guestfs-session-llz" deprecated="In new code, use guestfs_session_lgetxattrs() instead" since="1.17.6"/>
     <keyword type="function" name="guestfs_session_ln ()" link="GuestfsSession.html#guestfs-session-ln" since="1.0.66"/>
     <keyword type="function" name="guestfs_session_ln_f ()" link="GuestfsSession.html#guestfs-session-ln-f" since="1.0.66"/>
     <keyword type="function" name="guestfs_session_ln_s ()" link="GuestfsSession.html#guestfs-session-ln-s" since="1.0.66"/>
@@ -491,11 +500,14 @@
     <keyword type="function" name="guestfs_session_mount_options ()" link="GuestfsSession.html#guestfs-session-mount-options" since="1.0.10"/>
     <keyword type="function" name="guestfs_session_mount_ro ()" link="GuestfsSession.html#guestfs-session-mount-ro" since="1.0.10"/>
     <keyword type="function" name="guestfs_session_mount_vfs ()" link="GuestfsSession.html#guestfs-session-mount-vfs" since="1.0.10"/>
+    <keyword type="function" name="guestfs_session_mountable_device ()" link="GuestfsSession.html#guestfs-session-mountable-device" since="1.33.15"/>
+    <keyword type="function" name="guestfs_session_mountable_subvolume ()" link="GuestfsSession.html#guestfs-session-mountable-subvolume" since="1.33.15"/>
     <keyword type="function" name="guestfs_session_mountpoints ()" link="GuestfsSession.html#guestfs-session-mountpoints" since="1.0.62"/>
     <keyword type="function" name="guestfs_session_mounts ()" link="GuestfsSession.html#guestfs-session-mounts" since="0.8"/>
     <keyword type="function" name="guestfs_session_mv ()" link="GuestfsSession.html#guestfs-session-mv" since="1.0.18"/>
     <keyword type="function" name="guestfs_session_nr_devices ()" link="GuestfsSession.html#guestfs-session-nr-devices" since="1.19.15"/>
     <keyword type="function" name="guestfs_session_ntfs_3g_probe ()" link="GuestfsSession.html#guestfs-session-ntfs-3g-probe" since="1.0.43"/>
+    <keyword type="function" name="guestfs_session_ntfscat_i ()" link="GuestfsSession.html#guestfs-session-ntfscat-i" since="1.33.14"/>
     <keyword type="function" name="guestfs_session_ntfsclone_in ()" link="GuestfsSession.html#guestfs-session-ntfsclone-in" since="1.17.9"/>
     <keyword type="function" name="guestfs_session_ntfsclone_out ()" link="GuestfsSession.html#guestfs-session-ntfsclone-out" since="1.17.9"/>
     <keyword type="function" name="guestfs_session_ntfsfix ()" link="GuestfsSession.html#guestfs-session-ntfsfix" since="1.17.9"/>
@@ -506,7 +518,9 @@
     <keyword type="function" name="guestfs_session_part_add ()" link="GuestfsSession.html#guestfs-session-part-add" since="1.0.78"/>
     <keyword type="function" name="guestfs_session_part_del ()" link="GuestfsSession.html#guestfs-session-part-del" since="1.3.2"/>
     <keyword type="function" name="guestfs_session_part_disk ()" link="GuestfsSession.html#guestfs-session-part-disk" since="1.0.78"/>
+    <keyword type="function" name="guestfs_session_part_expand_gpt ()" link="GuestfsSession.html#guestfs-session-part-expand-gpt" since="1.33.2"/>
     <keyword type="function" name="guestfs_session_part_get_bootable ()" link="GuestfsSession.html#guestfs-session-part-get-bootable" since="1.3.2"/>
+    <keyword type="function" name="guestfs_session_part_get_disk_guid ()" link="GuestfsSession.html#guestfs-session-part-get-disk-guid" since="1.33.2"/>
     <keyword type="function" name="guestfs_session_part_get_gpt_guid ()" link="GuestfsSession.html#guestfs-session-part-get-gpt-guid" since="1.29.25"/>
     <keyword type="function" name="guestfs_session_part_get_gpt_type ()" link="GuestfsSession.html#guestfs-session-part-get-gpt-type" since="1.21.1"/>
     <keyword type="function" name="guestfs_session_part_get_mbr_id ()" link="GuestfsSession.html#guestfs-session-part-get-mbr-id" since="1.3.2"/>
@@ -516,6 +530,8 @@
     <keyword type="function" name="guestfs_session_part_init ()" link="GuestfsSession.html#guestfs-session-part-init" since="1.0.78"/>
     <keyword type="function" name="guestfs_session_part_list ()" link="GuestfsSession.html#guestfs-session-part-list" since="1.0.78"/>
     <keyword type="function" name="guestfs_session_part_set_bootable ()" link="GuestfsSession.html#guestfs-session-part-set-bootable" since="1.0.78"/>
+    <keyword type="function" name="guestfs_session_part_set_disk_guid ()" link="GuestfsSession.html#guestfs-session-part-set-disk-guid" since="1.33.2"/>
+    <keyword type="function" name="guestfs_session_part_set_disk_guid_random ()" link="GuestfsSession.html#guestfs-session-part-set-disk-guid-random" since="1.33.2"/>
     <keyword type="function" name="guestfs_session_part_set_gpt_guid ()" link="GuestfsSession.html#guestfs-session-part-set-gpt-guid" since="1.29.25"/>
     <keyword type="function" name="guestfs_session_part_set_gpt_type ()" link="GuestfsSession.html#guestfs-session-part-set-gpt-type" since="1.21.1"/>
     <keyword type="function" name="guestfs_session_part_set_mbr_id ()" link="GuestfsSession.html#guestfs-session-part-set-mbr-id" since="1.3.2"/>
@@ -560,6 +576,7 @@
     <keyword type="function" name="guestfs_session_scrub_device ()" link="GuestfsSession.html#guestfs-session-scrub-device" since="1.0.52"/>
     <keyword type="function" name="guestfs_session_scrub_file ()" link="GuestfsSession.html#guestfs-session-scrub-file" since="1.0.52"/>
     <keyword type="function" name="guestfs_session_scrub_freespace ()" link="GuestfsSession.html#guestfs-session-scrub-freespace" since="1.0.52"/>
+    <keyword type="function" name="guestfs_session_selinux_relabel ()" link="GuestfsSession.html#guestfs-session-selinux-relabel" since="1.33.43"/>
     <keyword type="function" name="guestfs_session_set_append ()" link="GuestfsSession.html#guestfs-session-set-append" since="1.0.26"/>
     <keyword type="function" name="guestfs_session_set_attach_method ()" link="GuestfsSession.html#guestfs-session-set-attach-method" deprecated="In new code, use guestfs_session_set_backend() instead" since="1.9.8"/>
     <keyword type="function" name="guestfs_session_set_autosync ()" link="GuestfsSession.html#guestfs-session-set-autosync" since="0.3"/>
@@ -584,14 +601,14 @@
     <keyword type="function" name="guestfs_session_set_program ()" link="GuestfsSession.html#guestfs-session-set-program" since="1.21.29"/>
     <keyword type="function" name="guestfs_session_set_qemu ()" link="GuestfsSession.html#guestfs-session-set-qemu" deprecated="In new code, use guestfs_session_set_hv() instead" since="1.0.6"/>
     <keyword type="function" name="guestfs_session_set_recovery_proc ()" link="GuestfsSession.html#guestfs-session-set-recovery-proc" since="1.0.77"/>
-    <keyword type="function" name="guestfs_session_set_selinux ()" link="GuestfsSession.html#guestfs-session-set-selinux" since="1.0.67"/>
+    <keyword type="function" name="guestfs_session_set_selinux ()" link="GuestfsSession.html#guestfs-session-set-selinux" deprecated="In new code, use guestfs_session_selinux_relabel() instead" since="1.0.67"/>
     <keyword type="function" name="guestfs_session_set_smp ()" link="GuestfsSession.html#guestfs-session-set-smp" since="1.13.15"/>
     <keyword type="function" name="guestfs_session_set_tmpdir ()" link="GuestfsSession.html#guestfs-session-set-tmpdir" since="1.19.58"/>
     <keyword type="function" name="guestfs_session_set_trace ()" link="GuestfsSession.html#guestfs-session-set-trace" since="1.0.69"/>
     <keyword type="function" name="guestfs_session_set_uuid ()" link="GuestfsSession.html#guestfs-session-set-uuid" since="1.23.10"/>
     <keyword type="function" name="guestfs_session_set_uuid_random ()" link="GuestfsSession.html#guestfs-session-set-uuid-random" since="1.29.50"/>
     <keyword type="function" name="guestfs_session_set_verbose ()" link="GuestfsSession.html#guestfs-session-set-verbose" since="0.3"/>
-    <keyword type="function" name="guestfs_session_setcon ()" link="GuestfsSession.html#guestfs-session-setcon" since="1.0.67"/>
+    <keyword type="function" name="guestfs_session_setcon ()" link="GuestfsSession.html#guestfs-session-setcon" deprecated="In new code, use guestfs_session_selinux_relabel() instead" since="1.0.67"/>
     <keyword type="function" name="guestfs_session_setxattr ()" link="GuestfsSession.html#guestfs-session-setxattr" since="1.0.59"/>
     <keyword type="function" name="guestfs_session_sfdisk ()" link="GuestfsSession.html#guestfs-session-sfdisk" deprecated="In new code, use guestfs_session_part_add() instead" since="0.8"/>
     <keyword type="function" name="guestfs_session_sfdiskM ()" link="GuestfsSession.html#guestfs-session-sfdiskM" deprecated="In new code, use guestfs_session_part_add() instead" since="1.0.55"/>
@@ -717,6 +734,7 @@
     <keyword type="struct" name="struct GuestfsStat" link="GuestfsStat.html#GuestfsStat-struct"/>
     <keyword type="struct" name="struct GuestfsStatNS" link="GuestfsStatNS.html#GuestfsStatNS-struct"/>
     <keyword type="struct" name="struct GuestfsStatVFS" link="GuestfsStatVFS.html#GuestfsStatVFS-struct"/>
+    <keyword type="struct" name="struct GuestfsTSKDirent" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct"/>
     <keyword type="struct" name="struct GuestfsUTSName" link="GuestfsUTSName.html#GuestfsUTSName-struct"/>
     <keyword type="struct" name="struct GuestfsVersion" link="GuestfsVersion.html#GuestfsVersion-struct"/>
     <keyword type="struct" name="struct GuestfsXAttr" link="GuestfsXAttr.html#GuestfsXAttr-struct"/>
@@ -848,6 +866,10 @@
     <keyword type="property" name="The “clustersize” property" link="GuestfsDiskCreate.html#GuestfsDiskCreate--clustersize"/>
     <keyword type="property" name="The “compat” property" link="GuestfsDiskCreate.html#GuestfsDiskCreate--compat"/>
     <keyword type="property" name="The “preallocation” property" link="GuestfsDiskCreate.html#GuestfsDiskCreate--preallocation"/>
+    <keyword type="function" name="guestfs_download_blocks_new ()" link="GuestfsDownloadBlocks.html#guestfs-download-blocks-new"/>
+    <keyword type="struct" name="struct GuestfsDownloadBlocks" link="GuestfsDownloadBlocks.html#GuestfsDownloadBlocks-struct"/>
+    <keyword type="struct" name="struct GuestfsDownloadBlocksClass" link="GuestfsDownloadBlocks.html#GuestfsDownloadBlocksClass"/>
+    <keyword type="property" name="The “unallocated” property" link="GuestfsDownloadBlocks.html#GuestfsDownloadBlocks--unallocated"/>
     <keyword type="function" name="guestfs_e2fsck_new ()" link="GuestfsE2fsck.html#guestfs-e2fsck-new"/>
     <keyword type="struct" name="struct GuestfsE2fsck" link="GuestfsE2fsck.html#GuestfsE2fsck-struct"/>
     <keyword type="struct" name="struct GuestfsE2fsckClass" link="GuestfsE2fsck.html#GuestfsE2fsckClass"/>
@@ -859,6 +881,10 @@
     <keyword type="property" name="The “length” property" link="GuestfsFstrim.html#GuestfsFstrim--length"/>
     <keyword type="property" name="The “minimumfreeextent” property" link="GuestfsFstrim.html#GuestfsFstrim--minimumfreeextent"/>
     <keyword type="property" name="The “offset” property" link="GuestfsFstrim.html#GuestfsFstrim--offset"/>
+    <keyword type="function" name="guestfs_glob_expand_new ()" link="GuestfsGlobExpand.html#guestfs-glob-expand-new"/>
+    <keyword type="struct" name="struct GuestfsGlobExpand" link="GuestfsGlobExpand.html#GuestfsGlobExpand-struct"/>
+    <keyword type="struct" name="struct GuestfsGlobExpandClass" link="GuestfsGlobExpand.html#GuestfsGlobExpandClass"/>
+    <keyword type="property" name="The “directoryslash” property" link="GuestfsGlobExpand.html#GuestfsGlobExpand--directoryslash"/>
     <keyword type="function" name="guestfs_grep_new ()" link="GuestfsGrep.html#guestfs-grep-new"/>
     <keyword type="struct" name="struct GuestfsGrep" link="GuestfsGrep.html#GuestfsGrep-struct"/>
     <keyword type="struct" name="struct GuestfsGrepClass" link="GuestfsGrep.html#GuestfsGrepClass"/>
@@ -1109,6 +1135,10 @@
     <keyword type="struct" name="struct GuestfsRsyncOutClass" link="GuestfsRsyncOut.html#GuestfsRsyncOutClass"/>
     <keyword type="property" name="The “archive” property" link="GuestfsRsyncOut.html#GuestfsRsyncOut--archive"/>
     <keyword type="property" name="The “deletedest” property" link="GuestfsRsyncOut.html#GuestfsRsyncOut--deletedest"/>
+    <keyword type="function" name="guestfs_selinux_relabel_new ()" link="GuestfsSelinuxRelabel.html#guestfs-selinux-relabel-new"/>
+    <keyword type="struct" name="struct GuestfsSelinuxRelabel" link="GuestfsSelinuxRelabel.html#GuestfsSelinuxRelabel-struct"/>
+    <keyword type="struct" name="struct GuestfsSelinuxRelabelClass" link="GuestfsSelinuxRelabel.html#GuestfsSelinuxRelabelClass"/>
+    <keyword type="property" name="The “force” property" link="GuestfsSelinuxRelabel.html#GuestfsSelinuxRelabel--force"/>
     <keyword type="function" name="guestfs_set_e2attrs_new ()" link="GuestfsSetE2attrs.html#guestfs-set-e2attrs-new"/>
     <keyword type="struct" name="struct GuestfsSetE2attrs" link="GuestfsSetE2attrs.html#GuestfsSetE2attrs-struct"/>
     <keyword type="struct" name="struct GuestfsSetE2attrsClass" link="GuestfsSetE2attrs.html#GuestfsSetE2attrsClass"/>
@@ -1391,6 +1421,22 @@
     <keyword type="member" name="GuestfsStatVFS-struct.fsid" link="GuestfsStatVFS.html#GuestfsStatVFS-struct.fsid"/>
     <keyword type="member" name="GuestfsStatVFS-struct.flag" link="GuestfsStatVFS.html#GuestfsStatVFS-struct.flag"/>
     <keyword type="member" name="GuestfsStatVFS-struct.namemax" link="GuestfsStatVFS.html#GuestfsStatVFS-struct.namemax"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-inode" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-inode"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-type" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-type"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-size" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-size"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-name" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-name"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-flags" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-flags"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-atime-sec" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-atime-sec"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-atime-nsec" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-atime-nsec"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-mtime-sec" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-mtime-sec"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-mtime-nsec" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-mtime-nsec"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-ctime-sec" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-ctime-sec"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-ctime-nsec" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-ctime-nsec"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-crtime-sec" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-crtime-sec"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-crtime-nsec" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-crtime-nsec"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-nlink" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-nlink"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-link" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-link"/>
+    <keyword type="member" name="GuestfsTSKDirent-struct.tsk-spare1" link="GuestfsTSKDirent.html#GuestfsTSKDirent-struct.tsk-spare1"/>
     <keyword type="member" name="GuestfsUTSName-struct.uts-sysname" link="GuestfsUTSName.html#GuestfsUTSName-struct.uts-sysname"/>
     <keyword type="member" name="GuestfsUTSName-struct.uts-release" link="GuestfsUTSName.html#GuestfsUTSName-struct.uts-release"/>
     <keyword type="member" name="GuestfsUTSName-struct.uts-version" link="GuestfsUTSName.html#GuestfsUTSName-struct.uts-version"/>

@@ -16,6 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/**
+ * This file deals with the C<guestfs_h> handle, creating it, closing
+ * it, and initializing/setting/getting fields.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -43,13 +48,14 @@ static int atexit_handler_set = 0;
 
 gl_lock_define_initialized (static, init_lock);
 
-/* No initialization is required by libguestfs, but libvirt and
+static void init_libguestfs (void) __attribute__((constructor));
+
+/**
+ * No initialization is required by libguestfs, but libvirt and
  * libxml2 require initialization if they might be called from
  * multiple threads.  Hence this constructor function which is called
  * when libguestfs is first loaded.
  */
-static void init_libguestfs (void) __attribute__((constructor));
-
 static void
 init_libguestfs (void)
 {
@@ -273,6 +279,10 @@ parse_environment (guestfs_h *g,
       return -1;
   }
 
+  str = do_getenv (data, "XDG_RUNTIME_DIR");
+  if (guestfs_int_set_env_runtimedir (g, str) == -1)
+    return -1;
+
   return 0;
 }
 
@@ -347,8 +357,9 @@ guestfs_close (guestfs_h *g)
   if (g->test_fp != NULL)
     fclose (g->test_fp);
 
-  /* Remove temporary directory. */
+  /* Remove temporary directories. */
   guestfs_int_remove_tmpdir (g);
+  guestfs_int_remove_sockdir (g);
 
   /* Mark the handle as dead and then free up all memory. */
   g->state = NO_HANDLE;
@@ -377,7 +388,9 @@ guestfs_close (guestfs_h *g)
   if (g->pda)
     hash_free (g->pda);
   free (g->tmpdir);
+  free (g->sockdir);
   free (g->env_tmpdir);
+  free (g->env_runtimedir);
   free (g->int_tmpdir);
   free (g->int_cachedir);
   free (g->last_error);
@@ -407,10 +420,15 @@ guestfs_impl_shutdown (guestfs_h *g)
   return shutdown_backend (g, 1);
 }
 
-/* guestfs_shutdown calls shutdown_backend with check_for_errors = 1.
- * guestfs_close calls shutdown_backend with check_for_errors = 0.
+/**
+ * This function is the common path for shutting down the backend
+ * qemu process.
  *
- * 'check_for_errors' is a hint to the backend about whether we care
+ * C<guestfs_shutdown> calls C<shutdown_backend> with
+ * C<check_for_errors=1>.  C<guestfs_close> calls C<shutdown_backend>
+ * with C<check_for_errors=0>.
+ *
+ * C<check_for_errors> is a hint to the backend about whether we care
  * about errors or not.  In the libvirt case it can be used to
  * optimize the shutdown for speed when we don't care.
  */
@@ -452,7 +470,9 @@ shutdown_backend (guestfs_h *g, int check_for_errors)
   return ret;
 }
 
-/* Close all open handles (called from atexit(3)). */
+/**
+ * Close all open handles (called from L<atexit(3)>).
+ */
 static void
 close_handles (void)
 {
@@ -850,8 +870,9 @@ guestfs_impl_set_backend_setting (guestfs_h *g, const char *name, const char *va
   return 0;
 }
 
-/* This is a convenience function, but we might consider exporting
- * it as an API in future.
+/**
+ * This is a convenience function, but we might consider exporting it
+ * as an API in future.
  */
 int
 guestfs_int_get_backend_setting_bool (guestfs_h *g, const char *name)

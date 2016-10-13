@@ -22,22 +22,31 @@
 
 import guestfs
 
-g = guestfs.GuestFS ()
-g.internal_test ("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc", obool=True, oint=1, oint64=9223372036854775807)
-g.internal_test ("abc", None, [], 0, 0, 0, "123", "456", "abc\0abc", oint64=1, ostring="string")
-g.internal_test ("", "def", [], 0, 0, 0, "123", "456", "abc\0abc", obool=False, oint64=-9223372036854775808)
-g.internal_test ("", "", [], 0, 0, 0, "123", "456", "abc\0abc")
-g.internal_test ("abc", "def", ["1"], 0, 0, 0, "123", "456", "abc\0abc")
-g.internal_test ("abc", "def", ["1","2"], 0, 0, 0, "123", "456", "abc\0abc")
-g.internal_test ("abc", "def", ["1"], 1, 0, 0, "123", "456", "abc\0abc")
-g.internal_test ("abc", "def", ["1"], 0, -1, -1, "123", "456", "abc\0abc")
-g.internal_test ("abc", "def", ["1"], 0, -2, -2, "123", "456", "abc\0abc")
-g.internal_test ("abc", "def", ["1"], 0, 1, 1, "123", "456", "abc\0abc")
-g.internal_test ("abc", "def", ["1"], 0, 2, 2, "123", "456", "abc\0abc")
-g.internal_test ("abc", "def", ["1"], 0, 4095, 9223372036854775807, "123", "456", "abc\0abc")
-g.internal_test ("abc", "def", ["1"], 0, 0, -9223372036854775808, "", "", "abc\0abc")
-g.internal_test ("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc", ostringlist=[])
-g.internal_test ("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc", ostringlist=["optelem1"])
-g.internal_test ("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc", ostringlist=["optelem1","optelem2"])
-g.internal_test ("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc", ostringlist=["optelem1","optelem2","optelem3"])
-print ("EOF")
+g = guestfs.GuestFS()
+g.internal_test("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc",
+                obool=True, oint=1, oint64=9223372036854775807)
+g.internal_test("abc", None, [], 0, 0, 0, "123", "456", "abc\0abc", oint64=1,
+                ostring="string")
+g.internal_test("", "def", [], 0, 0, 0, "123", "456", "abc\0abc", obool=False,
+                oint64=-9223372036854775808)
+g.internal_test("", "", [], 0, 0, 0, "123", "456", "abc\0abc")
+g.internal_test("abc", "def", ["1"], 0, 0, 0, "123", "456", "abc\0abc")
+g.internal_test("abc", "def", ["1", "2"], 0, 0, 0, "123", "456", "abc\0abc")
+g.internal_test("abc", "def", ["1"], 1, 0, 0, "123", "456", "abc\0abc")
+g.internal_test("abc", "def", ["1"], 0, -1, -1, "123", "456", "abc\0abc")
+g.internal_test("abc", "def", ["1"], 0, -2, -2, "123", "456", "abc\0abc")
+g.internal_test("abc", "def", ["1"], 0, 1, 1, "123", "456", "abc\0abc")
+g.internal_test("abc", "def", ["1"], 0, 2, 2, "123", "456", "abc\0abc")
+g.internal_test("abc", "def", ["1"], 0, 4095, 9223372036854775807, "123",
+                "456", "abc\0abc")
+g.internal_test("abc", "def", ["1"], 0, 0, -9223372036854775808, "", "",
+                "abc\0abc")
+g.internal_test("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc",
+                ostringlist=[])
+g.internal_test("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc",
+                ostringlist=["optelem1"])
+g.internal_test("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc",
+                ostringlist=["optelem1", "optelem2"])
+g.internal_test("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc",
+                ostringlist=["optelem1", "optelem2", "optelem3"])
+print("EOF")

@@ -16,6 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * This file implements C<win:> Windows file path support in
+ * L<guestfish(1)>.
+ */
+
 #include <config.h>
 
 #include "windows.h"
@@ -24,6 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <error.h>
 #include <locale.h>
 #include <langinfo.h>
 #include <libintl.h>
@@ -59,24 +65,18 @@ windows_path (guestfs_h *g, const char *root, const char *path, int readonly)
     /* This returns the newly allocated string. */
     mount_drive_letter (g, drive_letter, root, readonly);
     ret = strdup (path + 2);
-    if (ret == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (ret == NULL)
+      error (EXIT_FAILURE, errno, "strdup");
   }
   else if (!*path) {
     ret = strdup ("/");
-    if (ret == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (ret == NULL)
+      error (EXIT_FAILURE, errno, "strdup");
   }
   else {
     ret = strdup (path);
-    if (ret == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (ret == NULL)
+      error (EXIT_FAILURE, errno, "strdup");
   }
 
   /* Blindly convert any backslashes into forward slashes.  Is this good? */
@@ -102,11 +102,9 @@ mount_drive_letter (guestfs_h *g, char drive_letter, const char *root,
   /* Resolve the drive letter using the drive mappings table. */
   CLEANUP_FREE_STRING_LIST char **drives =
     guestfs_inspect_get_drive_mappings (g, root);
-  if (drives == NULL || drives[0] == NULL) {
-    fprintf (stderr, _("%s: to use Windows drive letters, this must be a Windows guest\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (drives == NULL || drives[0] == NULL)
+    error (EXIT_FAILURE, 0,
+           _("to use Windows drive letters, this must be a Windows guest"));
 
   device = NULL;
   for (i = 0; drives[i] != NULL; i += 2) {
@@ -116,11 +114,8 @@ mount_drive_letter (guestfs_h *g, char drive_letter, const char *root,
     }
   }
 
-  if (device == NULL) {
-    fprintf (stderr, _("%s: drive '%c:' not found.\n"),
-             guestfs_int_program_name, drive_letter);
-    exit (EXIT_FAILURE);
-  }
+  if (device == NULL)
+    error (EXIT_FAILURE, 0, _("drive '%c:' not found."), drive_letter);
 
   /* Unmount current disk and remount device. */
   if (guestfs_umount_all (g) == -1)

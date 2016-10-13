@@ -43,6 +43,7 @@
 #include <guestfs-gobject/struct-stat.h>
 #include <guestfs-gobject/struct-statns.h>
 #include <guestfs-gobject/struct-statvfs.h>
+#include <guestfs-gobject/struct-tsk_dirent.h>
 #include <guestfs-gobject/struct-utsname.h>
 #include <guestfs-gobject/struct-version.h>
 #include <guestfs-gobject/struct-xattr.h>
@@ -66,8 +67,10 @@
 #include <guestfs-gobject/optargs-copy_file_to_file.h>
 #include <guestfs-gobject/optargs-cpio_out.h>
 #include <guestfs-gobject/optargs-disk_create.h>
+#include <guestfs-gobject/optargs-download_blocks.h>
 #include <guestfs-gobject/optargs-e2fsck.h>
 #include <guestfs-gobject/optargs-fstrim.h>
+#include <guestfs-gobject/optargs-glob_expand.h>
 #include <guestfs-gobject/optargs-grep.h>
 #include <guestfs-gobject/optargs-hivex_open.h>
 #include <guestfs-gobject/optargs-inspect_get_icon.h>
@@ -95,6 +98,7 @@
 #include <guestfs-gobject/optargs-rsync.h>
 #include <guestfs-gobject/optargs-rsync_in.h>
 #include <guestfs-gobject/optargs-rsync_out.h>
+#include <guestfs-gobject/optargs-selinux_relabel.h>
 #include <guestfs-gobject/optargs-set_e2attrs.h>
 #include <guestfs-gobject/optargs-syslinux.h>
 #include <guestfs-gobject/optargs-tar_in.h>

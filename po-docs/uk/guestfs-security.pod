@@ -8,7 +8,20 @@ guestfs-security - security of libguestfs
 This manual page discusses security implications of using libguestfs,
 particularly with untrusted or malicious guests or disk images.
 
-=head2 ЗАХИСТ ФАЙЛОВИХ СИСТЕМ МОНТУВАННЯ
+=head1 ЗВІТУВАННЯ ЩОДО ПРОБЛЕМ ІЗ БЕЗПЕКОЮ
+
+If you wish to privately report a security issue, please follow the Red Hat
+security procedure at L<https://access.redhat.com/security/team/contact>
+
+If the security problem is not so serious, you can simply file a bug (see
+L</BUGS> below), or send an email to our mailing list
+(L<https://www.redhat.com/mailman/listinfo/libguestfs>).  You do not need to
+subscribe to the mailing list to send email, but there will be a delay while
+the message is moderated.
+
+=head1 ЗАГАЛЬНІ ВАДИ
+
+=head2 Захист змонтованих файлових систем
 
 You should never mount an untrusted guest filesystem directly on your host
 kernel (eg. using loopback or kpartx).
@@ -52,7 +65,7 @@ never say 'never' about security issues.
 Callers can also reduce the attack surface by forcing the filesystem type
 when mounting (use L<guestfs(3)/guestfs_mount_vfs>).
 
-=head2 ЗАГАЛЬНІ ЗАУВАЖЕННЯ ЩОДО ЗАХИСТУ
+=head2 Загальні зауваження щодо захисту
 
 Be careful with any files or data that you download from a guest (by
 "download" we mean not just the L<guestfs(3)/guestfs_download> command but
@@ -88,7 +101,7 @@ containing homoglyphs.
 
 =back
 
-=head2 ЗАХИСТ ПРОТОКОЛУ
+=head2 Захист протоколу
 
 The protocol is designed to be secure, being based on RFC 4506 (XDR)  with a
 defined upper message size.  However a program that uses libguestfs must
@@ -96,7 +109,7 @@ also take care - for example you can write a program that downloads a binary
 from a disk image and executes it locally, and no amount of protocol
 security will save you from the consequences.
 
-=head2 INSPECTION SECURITY
+=head2 Inspection security
 
 Parts of the inspection API (see L<guestfs(3)/INSPECTION>) return untrusted
 strings directly from the guest, and these could contain any 8 bit data.
@@ -116,13 +129,15 @@ designed to be robust in the face of malicious data, although denial of
 service attacks are still possible, for example with oversized configuration
 files.
 
-=head2 ЗАПУСК НЕЗАХИЩЕНИХ КОМАНД ГОСТЬОВОЇ СИСТЕМИ
+=head2 Запуск незахищених команд гостьової системи
 
 Be very cautious about running commands from the guest.  By running a
 command in the guest, you are giving CPU time to a binary that you do not
 control, under the same user account as the library, albeit wrapped in qemu
 virtualization.  More information and alternatives can be found in
 L<guestfs(3)/RUNNING COMMANDS>.
+
+=head1 HISTORICAL SECURITY ISSUES IN LIBGUESTFS
 
 =head2 CVE-2010-3851
 
@@ -332,5 +347,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2016 Red Hat Inc.
+© Red Hat Inc., 2009–2016
 

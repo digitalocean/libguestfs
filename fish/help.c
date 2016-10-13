@@ -16,6 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * The file implements the guestfish C<help> command.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -26,10 +30,13 @@
 
 #include "fish.h"
 
-/* The "help" command.  This used to just list all commands, but
- * that's not very useful.  Instead display some useful
- * context-sensitive help.  This could be improved if we knew how many
- * drives had been added already, and whether anything was mounted.
+/**
+ * The C<help> command.
+ *
+ * This used to just list all commands, but that's not very useful.
+ * Instead display some useful context-sensitive help.  This could be
+ * improved if we knew how many drives had been added already, and
+ * whether anything was mounted.
  */
 void
 display_help (void)

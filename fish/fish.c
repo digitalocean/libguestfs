@@ -16,6 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * guestfish, the guest filesystem shell.  This file contains the
+ * main loop and utilities.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -27,6 +32,7 @@
 #include <getopt.h>
 #include <signal.h>
 #include <errno.h>
+#include <error.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <locale.h>
@@ -42,6 +48,7 @@
 
 #include "fish.h"
 #include "options.h"
+#include "display-options.h"
 #include "progress.h"
 
 #include "c-ctype.h"
@@ -137,7 +144,7 @@ usage (int status)
               "  --no-progress-bars   Disable progress bars\n"
               "  --remote[=pid]       Send commands to remote %s\n"
               "  -r|--ro              Mount read-only\n"
-              "  --selinux            Enable SELinux support\n"
+              "  --selinux            For backwards compat only, does nothing\n"
               "  -v|--verbose         Verbose messages\n"
               "  -V|--version         Display version and exit\n"
               "  -w|--rw              Mount read-write\n"
@@ -234,10 +241,8 @@ main (int argc, char *argv[])
    * it's OK to do it early here.
    */
   g = guestfs_create ();
-  if (g == NULL) {
-    fprintf (stderr, _("guestfs_create: failed to create handle\n"));
-    exit (EXIT_FAILURE);
-  }
+  if (g == NULL)
+    error (EXIT_FAILURE, errno, "guestfs_create");
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -253,23 +258,18 @@ main (int argc, char *argv[])
         remote_control_listen = 1;
       else if (STREQ (long_options[option_index].name, "remote")) {
         if (optarg) {
-          if (sscanf (optarg, "%d", &remote_control) != 1) {
-            fprintf (stderr, _("%s: --listen=PID: PID was not a number: %s\n"),
-                     guestfs_int_program_name, optarg);
-            exit (EXIT_FAILURE);
-          }
+          if (sscanf (optarg, "%d", &remote_control) != 1)
+            error (EXIT_FAILURE, 0,
+                   _("--listen=PID: PID was not a number: %s"), optarg);
         } else {
           p = getenv ("GUESTFISH_PID");
-          if (!p || sscanf (p, "%d", &remote_control) != 1) {
-            fprintf (stderr, _("%s: remote: $GUESTFISH_PID must be set"
-                               " to the PID of the remote process\n"),
-                     guestfs_int_program_name);
-            exit (EXIT_FAILURE);
-          }
+          if (!p || sscanf (p, "%d", &remote_control) != 1)
+            error (EXIT_FAILURE, 0,
+                   _("remote: $GUESTFISH_PID must be set"
+                     " to the PID of the remote process"));
         }
       } else if (STREQ (long_options[option_index].name, "selinux")) {
-        if (guestfs_set_selinux (g, 1) == -1)
-          exit (EXIT_FAILURE);
+        /* nothing */
       } else if (STREQ (long_options[option_index].name, "keys-from-stdin")) {
         keys_from_stdin = 1;
       } else if (STREQ (long_options[option_index].name, "progress-bars")) {
@@ -291,11 +291,10 @@ main (int argc, char *argv[])
           exit (EXIT_FAILURE);
       } else if (STREQ (long_options[option_index].name, "no-dest-paths")) {
         complete_dest_paths = 0;
-      } else {
-        fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
-                 guestfs_int_program_name, long_options[option_index].name, option_index);
-        exit (EXIT_FAILURE);
-      }
+      } else
+        error (EXIT_FAILURE, 0,
+               _("unknown long option: %s (%d)"),
+               long_options[option_index].name, option_index);
       break;
 
     case 'a':
@@ -317,11 +316,8 @@ main (int argc, char *argv[])
       break;
 
     case 'f':
-      if (file) {
-        fprintf (stderr, _("%s: only one -f parameter can be given\n"),
-                 guestfs_int_program_name);
-        exit (EXIT_FAILURE);
-      }
+      if (file)
+        error (EXIT_FAILURE, 0, _("only one -f parameter can be given"));
       file = optarg;
       break;
 
@@ -361,10 +357,8 @@ main (int argc, char *argv[])
         exit (EXIT_SUCCESS);
       }
       drv = calloc (1, sizeof (struct drv));
-      if (!drv) {
-        perror ("calloc");
-        exit (EXIT_FAILURE);
-      }
+      if (!drv)
+        error (EXIT_FAILURE, errno, "calloc");
       drv->type = drv_N;
       drv->nr_drives = -1;
       p = strchr (optarg, '=');
@@ -372,16 +366,12 @@ main (int argc, char *argv[])
         *p = '\0';
         p = p+1;
         drv->N.filename = strdup (optarg);
-        if (drv->N.filename == NULL) {
-          perror ("strdup");
-          exit (EXIT_FAILURE);
-        }
+        if (drv->N.filename == NULL)
+          error (EXIT_FAILURE, errno, "strdup");
       } else {
         if (asprintf (&drv->N.filename, "test%d.img",
-                      next_prepared_drive) == -1) {
-          perror ("asprintf");
-          exit (EXIT_FAILURE);
-        }
+                      next_prepared_drive) == -1)
+          error (EXIT_FAILURE, errno, "asprintf");
         p = optarg;
       }
       drv->N.data = create_prepared_file (p, drv->N.filename);
@@ -449,24 +439,18 @@ main (int argc, char *argv[])
       if (strchr (argv[optind], '/') ||
           access (argv[optind], F_OK) == 0) { /* simulate -a option */
         drv = calloc (1, sizeof (struct drv));
-        if (!drv) {
-          perror ("calloc");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv)
+          error (EXIT_FAILURE, errno, "calloc");
         drv->type = drv_a;
         drv->a.filename = strdup (argv[optind]);
-        if (!drv->a.filename) {
-          perror ("strdup");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv->a.filename)
+          error (EXIT_FAILURE, errno, "strdup");
         drv->next = drvs;
         drvs = drv;
       } else {                  /* simulate -d option */
         drv = calloc (1, sizeof (struct drv));
-        if (!drv) {
-          perror ("calloc");
-          exit (EXIT_FAILURE);
-        }
+        if (!drv)
+          error (EXIT_FAILURE, errno, "calloc");
         drv->type = drv_d;
         drv->d.guest = argv[optind];
         drv->next = drvs;
@@ -513,26 +497,17 @@ main (int argc, char *argv[])
   free_mps (mps);
 
   /* Remote control? */
-  if (remote_control_listen && remote_control) {
-    fprintf (stderr,
-             _("%s: cannot use --listen and --remote options at the same time\n"),
-             guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (remote_control_listen && remote_control)
+    error (EXIT_FAILURE, 0,
+           _("cannot use --listen and --remote options at the same time"));
 
   if (remote_control_listen) {
-    if (optind < argc) {
-      fprintf (stderr,
-               _("%s: extra parameters on the command line with --listen flag\n"),
-               guestfs_int_program_name);
-      exit (EXIT_FAILURE);
-    }
-    if (file) {
-      fprintf (stderr,
-               _("%s: cannot use --listen and --file options at the same time\n"),
-               guestfs_int_program_name);
-      exit (EXIT_FAILURE);
-    }
+    if (optind < argc)
+      error (EXIT_FAILURE, 0,
+             _("extra parameters on the command line with --listen flag"));
+    if (file)
+      error (EXIT_FAILURE, 0,
+             _("cannot use --listen and --file options at the same time"));
     rc_listen ();
     goto out_after_handle_close;
   }
@@ -540,10 +515,8 @@ main (int argc, char *argv[])
   /* -f (file) parameter? */
   if (file) {
     close (0);
-    if (open (file, O_RDONLY|O_CLOEXEC) == -1) {
-      perror (file);
-      exit (EXIT_FAILURE);
-    }
+    if (open (file, O_RDONLY|O_CLOEXEC) == -1)
+      error (EXIT_FAILURE, errno, "open: %s", file);
   }
 
   /* Get the name of the input file, for error messages, and replace
@@ -566,10 +539,8 @@ main (int argc, char *argv[])
 
   if (progress_bars) {
     bar = progress_bar_init (0);
-    if (!bar) {
-      perror ("progress_bar_init");
-      exit (EXIT_FAILURE);
-    }
+    if (!bar)
+      error (EXIT_FAILURE, errno, "progress_bar_init");
 
     guestfs_set_event_callback (g, progress_callback,
                                 GUESTFS_EVENT_PROGRESS, 0, NULL);
@@ -755,17 +726,31 @@ script (int prompt)
 #endif /* HAVE_LIBREADLINE */
 }
 
-/* Parse a command string, splitting at whitespace, handling '!', '#' etc.
- * This destructively updates 'buf'.
+/**
+ * Parse a command string, splitting at whitespace, handling C<'!'>,
+ * C<'#'> etc.  This destructively updates C<buf>.
  *
- * 'exit_on_error_rtn' is used to pass in the global exit_on_error
+ * C<exit_on_error_rtn> is used to pass in the global C<exit_on_error>
  * setting and to return the local setting (eg. if the command begins
- * with '-').
+ * with C<'-'>).
  *
- * Returns in parsed_command.status:
- *   1 = got a guestfish command (returned in cmd_rtn/argv_rtn/pipe_rtn)
- *   0 = no guestfish command, but otherwise OK
- *  -1 = an error
+ * Returns in C<parsed_command.status>:
+ *
+ * =over 4
+ *
+ * =item C<1>
+ *
+ * got a guestfish command (returned in C<cmd_rtn>/C<argv_rtn>/C<pipe_rtn>)
+ *
+ * =item C<0>
+ *
+ * no guestfish command, but otherwise OK
+ *
+ * =item C<-1>
+ *
+ * an error
+ *
+ * =back
  */
 static struct parsed_command
 parse_command_line (char *buf, int *exit_on_error_rtn)
@@ -947,7 +932,8 @@ hexdigit (char d)
   }
 }
 
-/* Parse double-quoted strings, replacing backslash escape sequences
+/**
+ * Parse double-quoted strings, replacing backslash escape sequences
  * with the true character.  Since the string is returned in place,
  * the escapes must make the string shorter.
  */
@@ -1017,7 +1003,9 @@ parse_quoted_string (char *p)
   return p - start;
 }
 
-/* Used to handle "<!" (execute command and inline result). */
+/**
+ * Used to handle C<E<lt>!> (execute command and inline result).
+ */
 static int
 execute_and_inline (const char *cmd, int global_exit_on_error)
 {
@@ -1071,10 +1059,8 @@ cmdline (char *argv[], size_t optind, size_t argc)
   if (optind >= argc) return;
 
   cmd = argv[optind++];
-  if (STREQ (cmd, ":")) {
-    fprintf (stderr, _("%s: empty command on command line\n"), guestfs_int_program_name);
-    exit (EXIT_FAILURE);
-  }
+  if (STREQ (cmd, ":"))
+    error (EXIT_FAILURE, 0, _("empty command on command line"));
 
   /* Allow -cmd on the command line to mean (temporarily) override
    * the normal exit on error (RHBZ#578407).
@@ -1101,9 +1087,12 @@ cmdline (char *argv[], size_t optind, size_t argc)
   }
 }
 
-/* Note: 'rc_exit_on_error_flag' is the exit_on_error flag that we
- * pass to the remote server (when issuing --remote commands).  It
- * does not cause issue_command itself to exit on error.
+/**
+ * Run a command.
+ *
+ * C<rc_exit_on_error_flag> is the C<exit_on_error> flag that we pass
+ * to the remote server (when issuing I<--remote> commands).  It does
+ * not cause C<issue_command> itself to exit on error.
  */
 int
 issue_command (const char *cmd, char *argv[], const char *pipecmd,
@@ -1262,11 +1251,15 @@ display_builtin_command (const char *cmd)
   }
 }
 
-/* This is printed when the user types in an unknown command for the
- * first command issued.  A common case is the user doing:
+/**
+ * Print an extended help message when the user types in an unknown
+ * command for the first command issued.  A common case is the user
+ * doing:
+ *
  *   guestfish disk.img
- * expecting guestfish to open 'disk.img' (in fact, this tried to
- * run a command 'disk.img').
+ *
+ * expecting guestfish to open F<disk.img> (in fact, this tried to run
+ * a non-existent command C<disk.img>).
  */
 void
 extended_help_message (void)
@@ -1277,7 +1270,9 @@ extended_help_message (void)
              "For complete documentation:         man guestfish\n"));
 }
 
-/* Error callback.  This replaces the standard libguestfs error handler. */
+/**
+ * Error callback.  This replaces the standard libguestfs error handler.
+ */
 static void
 error_cb (guestfs_h *g, void *data, const char *msg)
 {
@@ -1303,7 +1298,9 @@ print_table (char *const *argv)
     printf ("%s: %s\n", argv[i], argv[i+1]);
 }
 
-/* Free strings from a non-NULL terminated char** */
+/**
+ * Free strings from a non-NULL terminated C<char**>.
+ */
 static void
 free_n_strings (char **str, size_t len)
 {
@@ -1482,30 +1479,24 @@ initialize_readline (void)
   if (str) {
     free (ps1);
     ps1 = strdup (str);
-    if (!ps1) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (!ps1)
+      error (EXIT_FAILURE, errno, "strdup");
   }
 
   str = getenv ("GUESTFISH_OUTPUT");
   if (str) {
     free (ps_output);
     ps_output = strdup (str);
-    if (!ps_output) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (!ps_output)
+      error (EXIT_FAILURE, errno, "strdup");
   }
 
   str = getenv ("GUESTFISH_INIT");
   if (str) {
     free (ps_init);
     ps_init = strdup (str);
-    if (!ps_init) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
+    if (!ps_init)
+      error (EXIT_FAILURE, errno, "strdup");
   }
 #endif
 }
@@ -1545,7 +1536,9 @@ add_history_line (const char *line)
 static int decode_ps1_octal (const char *s, size_t *i);
 static int decode_ps1_hex (const char *s, size_t *i);
 
-/* Decode 'str' into the final printable prompt string. */
+/**
+ * Decode C<str> into the final printable prompt string.
+ */
 static char *
 decode_ps1 (const char *str)
 {
@@ -1558,10 +1551,8 @@ decode_ps1 (const char *str)
    * future.
    */
   ret = malloc (len + 1);
-  if (!ret) {
-    perror ("malloc");
-    exit (EXIT_FAILURE);
-  }
+  if (!ret)
+    error (EXIT_FAILURE, errno, "malloc");
 
   for (i = j = 0; i < len; ++i) {
     if (str[i] == '\\') {       /* Start of an escape sequence. */
@@ -1670,14 +1661,15 @@ xwrite (int fd, const void *v_buf, size_t len)
   return 0;
 }
 
-/* Resolve the special "win:..." form for Windows-specific paths.  The
- * generated code calls this for all device or path arguments.
- *
- * The function returns a newly allocated string, and the caller must
- * free this string; else display an error and return NULL.
- */
 static char *win_prefix_drive_letter (char drive_letter, const char *path);
 
+/**
+ * Resolve the special C<win:...> form for Windows-specific paths.
+ * The generated code calls this for all device or path arguments.
+ *
+ * The function returns a newly allocated string, and the caller must
+ * free this string; else display an error and return C<NULL>.
+ */
 char *
 win_prefix (const char *path)
 {
@@ -1797,13 +1789,15 @@ win_prefix_drive_letter (char drive_letter, const char *path)
   return ret;
 }
 
-/* Resolve the special FileIn paths ("-" or "-<<END" or filename).
- * The caller (cmds.c) will call free_file_in after the command has
- * run which should clean up resources.
- */
 static char *file_in_heredoc (const char *endmarker);
 static char *file_in_tmpfile = NULL;
 
+/**
+ * Resolve the special C<FileIn> paths (C<-> or C<-<<END> or filename).
+ *
+ * The caller (F<fish/cmds.c>) will call C<free_file_in> after the
+ * command has run which should clean up resources.
+ */
 char *
 file_in (const char *arg)
 {
@@ -1844,8 +1838,14 @@ file_in_heredoc (const char *endmarker)
   CLEANUP_FREE char *tmpdir = guestfs_get_tmpdir (g), *template = NULL;
   int fd;
   size_t markerlen;
-  char buffer[BUFSIZ];
+  CLEANUP_FREE char *buffer = NULL;
   int write_error = 0;
+
+  buffer = malloc (BUFSIZ);
+  if (buffer == NULL) {
+    perror ("malloc");
+    return NULL;
+  }
 
   if (asprintf (&template, "%s/guestfishXXXXXX", tmpdir) == -1) {
     perror ("asprintf");
@@ -1866,7 +1866,7 @@ file_in_heredoc (const char *endmarker)
 
   markerlen = strlen (endmarker);
 
-  while (fgets (buffer, sizeof buffer, stdin) != NULL) {
+  while (fgets (buffer, BUFSIZ, stdin) != NULL) {
     /* Look for "END"<EOF> or "END\n" in input. */
     const size_t blen = strlen (buffer);
     if (STREQLEN (buffer, endmarker, markerlen) &&
@@ -1926,8 +1926,11 @@ free_file_in (char *s)
   free (s);
 }
 
-/* Resolve the special FileOut paths ("-" or filename).
- * The caller (cmds.c) will call free (str) after the command has run.
+/**
+ * Resolve the special C<FileOut> paths (C<-> or filename).
+ *
+ * The caller (F<fish/cmds.c>) will call S<C<free (str)>> after the
+ * command has run.
  */
 char *
 file_out (const char *arg)
@@ -1946,7 +1949,9 @@ file_out (const char *arg)
   return ret;
 }
 
-/* Callback which displays a progress bar. */
+/**
+ * Callback which displays a progress bar.
+ */
 void
 progress_callback (guestfs_h *g, void *data,
                    uint64_t event, int event_handle, int flags,

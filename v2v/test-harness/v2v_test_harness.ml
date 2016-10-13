@@ -86,14 +86,7 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
       | _ ->
         failwithf "multiple roots found in disk image %s" filename in
 
-    let mps = g#inspect_get_mountpoints root in
-    let cmp (a,_) (b,_) = compare (String.length a) (String.length b) in
-    let mps = List.sort cmp mps in
-    List.iter (
-      fun (mp, dev) ->
-        try g#mount_ro dev mp
-        with G.Error msg -> eprintf "%s (ignored)\n" msg
-    ) mps;
+    inspect_mount_root_ro g root;
 
     g, root
   in
@@ -444,6 +437,7 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
   in
 
   printf "v2v_test_harness: starting test: %s\n%!" test;
+  printf "testing: %!"; ignore (Sys.command "which virt-v2v");
 
   (* Check we are started in the correct directory.
    *)

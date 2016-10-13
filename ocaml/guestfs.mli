@@ -383,6 +383,25 @@ type statvfs = {
   namemax : int64;
 }
 
+type tsk_dirent = {
+  tsk_inode : int64;
+  tsk_type : char;
+  tsk_size : int64;
+  tsk_name : string;
+  tsk_flags : int32;
+  tsk_atime_sec : int64;
+  tsk_atime_nsec : int64;
+  tsk_mtime_sec : int64;
+  tsk_mtime_nsec : int64;
+  tsk_ctime_sec : int64;
+  tsk_ctime_nsec : int64;
+  tsk_crtime_sec : int64;
+  tsk_crtime_nsec : int64;
+  tsk_nlink : int64;
+  tsk_link : string;
+  tsk_spare1 : int64;
+}
+
 type utsname = {
   uts_sysname : string;
   uts_release : string;
@@ -797,6 +816,14 @@ val btrfs_filesystem_resize : t -> ?size:int64 -> string -> unit
     This function depends on the feature "btrfs".  See also {!feature_available}.
 
     @since 1.11.17
+ *)
+
+val btrfs_filesystem_show : t -> string -> string array
+(** list devices for btrfs filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
+    @since 1.33.29
  *)
 
 val btrfs_filesystem_sync : t -> string -> unit
@@ -1301,6 +1328,22 @@ val download : t -> string -> string -> unit
     @since 1.0.2
  *)
 
+val download_blocks : t -> ?unallocated:bool -> string -> int64 -> int64 -> string -> unit
+(** download the given data units from the disk
+
+    This function depends on the feature "sleuthkit".  See also {!feature_available}.
+
+    @since 1.33.45
+ *)
+
+val download_inode : t -> string -> int64 -> string -> unit
+(** download a file to the local machine given its inode
+
+    This function depends on the feature "sleuthkit".  See also {!feature_available}.
+
+    @since 1.33.14
+ *)
+
 val download_offset : t -> string -> string -> int64 -> int64 -> unit
 (** download a file to the local machine with offset and size
 
@@ -1433,6 +1476,14 @@ val filesystem_available : t -> string -> bool
 (** check if filesystem is available
 
     @since 1.19.5
+ *)
+
+val filesystem_walk : t -> string -> tsk_dirent array
+(** walk through the filesystem content
+
+    This function depends on the feature "libtsk".  See also {!feature_available}.
+
+    @since 1.33.39
  *)
 
 val fill : t -> int -> int -> string -> unit
@@ -1658,6 +1709,8 @@ val get_recovery_proc : t -> bool
 val get_selinux : t -> bool
 (** get SELinux enabled flag
 
+    @deprecated Use {!selinux_relabel} instead
+
     @since 1.0.67
  *)
 
@@ -1665,6 +1718,12 @@ val get_smp : t -> int
 (** get number of virtual CPUs in appliance
 
     @since 1.13.15
+ *)
+
+val get_sockdir : t -> string
+(** get the temporary directory for sockets
+
+    @since 1.33.8
  *)
 
 val get_state : t -> int
@@ -1702,6 +1761,8 @@ val getcon : t -> string
 
     This function depends on the feature "selinux".  See also {!feature_available}.
 
+    @deprecated Use {!selinux_relabel} instead
+
     @since 1.0.67
  *)
 
@@ -1721,8 +1782,14 @@ val getxattrs : t -> string -> xattr array
     @since 1.0.59
  *)
 
-val glob_expand : t -> string -> string array
+val glob_expand : t -> ?directoryslash:bool -> string -> string array
 (** expand a wildcard path
+
+    @since 1.0.50
+ *)
+
+val glob_expand_opts : t -> ?directoryslash:bool -> string -> string array
+(** alias for {!glob_expand}
 
     @since 1.0.50
  *)
@@ -2306,7 +2373,7 @@ val is_launching : t -> bool
  *)
 
 val is_lv : t -> string -> bool
-(** test if device is a logical volume
+(** test if mountable is a logical volume
 
     @since 1.5.3
  *)
@@ -2611,6 +2678,8 @@ val ll : t -> string -> string
 
 val llz : t -> string -> string
 (** list the files in a directory (long format with SELinux contexts)
+
+    @deprecated Use {!lgetxattrs} instead
 
     @since 1.17.6
  *)
@@ -3145,6 +3214,18 @@ val mount_vfs : t -> string -> string -> string -> string -> unit
     @since 1.0.10
  *)
 
+val mountable_device : t -> string -> string
+(** extract the device part of a mountable
+
+    @since 1.33.15
+ *)
+
+val mountable_subvolume : t -> string -> string
+(** extract the subvolume part of a mountable
+
+    @since 1.33.15
+ *)
+
 val mountpoints : t -> (string * string) list
 (** show mountpoints
 
@@ -3175,6 +3256,12 @@ val ntfs_3g_probe : t -> bool -> string -> int
     This function depends on the feature "ntfs3g".  See also {!feature_available}.
 
     @since 1.0.43
+ *)
+
+val ntfscat_i : t -> string -> int64 -> string -> unit
+(** download a file to the local machine given its inode
+
+    @since 1.33.14
  *)
 
 val ntfsclone_in : t -> string -> string -> unit
@@ -3257,10 +3344,26 @@ val part_disk : t -> string -> string -> unit
     @since 1.0.78
  *)
 
+val part_expand_gpt : t -> string -> unit
+(** move backup GPT header to the end of the disk
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.33.2
+ *)
+
 val part_get_bootable : t -> string -> int -> bool
 (** return true if a partition is bootable
 
     @since 1.3.2
+ *)
+
+val part_get_disk_guid : t -> string -> string
+(** get the GUID of a GPT-partitioned disk
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.33.2
  *)
 
 val part_get_gpt_guid : t -> string -> int -> string
@@ -3319,6 +3422,22 @@ val part_set_bootable : t -> string -> int -> bool -> unit
 (** make a partition bootable
 
     @since 1.0.78
+ *)
+
+val part_set_disk_guid : t -> string -> string -> unit
+(** set the GUID of a GPT-partitioned disk
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.33.2
+ *)
+
+val part_set_disk_guid_random : t -> string -> unit
+(** set the GUID of a GPT-partitioned disk to random value
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.33.2
  *)
 
 val part_set_gpt_guid : t -> string -> int -> string -> unit
@@ -3619,6 +3738,14 @@ val scrub_freespace : t -> string -> unit
     @since 1.0.52
  *)
 
+val selinux_relabel : t -> ?force:bool -> string -> string -> unit
+(** relabel parts of the filesystem
+
+    This function depends on the feature "selinuxrelabel".  See also {!feature_available}.
+
+    @since 1.33.43
+ *)
+
 val set_append : t -> string option -> unit
 (** add options to kernel command line
 
@@ -3774,6 +3901,8 @@ val set_recovery_proc : t -> bool -> unit
 val set_selinux : t -> bool -> unit
 (** set SELinux enabled or disabled at appliance boot
 
+    @deprecated Use {!selinux_relabel} instead
+
     @since 1.0.67
  *)
 
@@ -3817,6 +3946,8 @@ val setcon : t -> string -> unit
 (** set SELinux security context
 
     This function depends on the feature "selinux".  See also {!feature_available}.
+
+    @deprecated Use {!selinux_relabel} instead
 
     @since 1.0.67
  *)
@@ -4801,6 +4932,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.11.17
    *)
+  method btrfs_filesystem_show : string -> string array
+  (** list devices for btrfs filesystem
+
+    This function depends on the feature "btrfs".  See also {!feature_available}.
+
+    @since 1.33.29
+   *)
   method btrfs_filesystem_sync : string -> unit
   (** sync a btrfs filesystem
 
@@ -5230,6 +5368,20 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.0.2
    *)
+  method download_blocks : ?unallocated:bool -> string -> int64 -> int64 -> string -> unit
+  (** download the given data units from the disk
+
+    This function depends on the feature "sleuthkit".  See also {!feature_available}.
+
+    @since 1.33.45
+   *)
+  method download_inode : string -> int64 -> string -> unit
+  (** download a file to the local machine given its inode
+
+    This function depends on the feature "sleuthkit".  See also {!feature_available}.
+
+    @since 1.33.14
+   *)
   method download_offset : string -> string -> int64 -> int64 -> unit
   (** download a file to the local machine with offset and size
 
@@ -5343,6 +5495,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   (** check if filesystem is available
 
     @since 1.19.5
+   *)
+  method filesystem_walk : string -> tsk_dirent array
+  (** walk through the filesystem content
+
+    This function depends on the feature "libtsk".  See also {!feature_available}.
+
+    @since 1.33.39
    *)
   method fill : int -> int -> string -> unit
   (** fill a file with octets
@@ -5532,12 +5691,19 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method get_selinux : unit -> bool
   (** get SELinux enabled flag
 
+    @deprecated Use {!selinux_relabel} instead
+
     @since 1.0.67
    *)
   method get_smp : unit -> int
   (** get number of virtual CPUs in appliance
 
     @since 1.13.15
+   *)
+  method get_sockdir : unit -> string
+  (** get the temporary directory for sockets
+
+    @since 1.33.8
    *)
   method get_state : unit -> int
   (** get the current state
@@ -5569,6 +5735,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     This function depends on the feature "selinux".  See also {!feature_available}.
 
+    @deprecated Use {!selinux_relabel} instead
+
     @since 1.0.67
    *)
   method getxattr : string -> string -> string
@@ -5585,8 +5753,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.0.59
    *)
-  method glob_expand : string -> string array
+  method glob_expand : ?directoryslash:bool -> string -> string array
   (** expand a wildcard path
+
+    @since 1.0.50
+   *)
+  method glob_expand_opts : ?directoryslash:bool -> string -> string array
+  (** alias for {!glob_expand}
 
     @since 1.0.50
    *)
@@ -6072,7 +6245,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
     @since 1.0.2
    *)
   method is_lv : string -> bool
-  (** test if device is a logical volume
+  (** test if mountable is a logical volume
 
     @since 1.5.3
    *)
@@ -6334,6 +6507,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
    *)
   method llz : string -> string
   (** list the files in a directory (long format with SELinux contexts)
+
+    @deprecated Use {!lgetxattrs} instead
 
     @since 1.17.6
    *)
@@ -6793,6 +6968,16 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.0.10
    *)
+  method mountable_device : string -> string
+  (** extract the device part of a mountable
+
+    @since 1.33.15
+   *)
+  method mountable_subvolume : string -> string
+  (** extract the subvolume part of a mountable
+
+    @since 1.33.15
+   *)
   method mountpoints : unit -> (string * string) list
   (** show mountpoints
 
@@ -6819,6 +7004,11 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
     This function depends on the feature "ntfs3g".  See also {!feature_available}.
 
     @since 1.0.43
+   *)
+  method ntfscat_i : string -> int64 -> string -> unit
+  (** download a file to the local machine given its inode
+
+    @since 1.33.14
    *)
   method ntfsclone_in : string -> string -> unit
   (** restore NTFS from backup file
@@ -6889,10 +7079,24 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.0.78
    *)
+  method part_expand_gpt : string -> unit
+  (** move backup GPT header to the end of the disk
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.33.2
+   *)
   method part_get_bootable : string -> int -> bool
   (** return true if a partition is bootable
 
     @since 1.3.2
+   *)
+  method part_get_disk_guid : string -> string
+  (** get the GUID of a GPT-partitioned disk
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.33.2
    *)
   method part_get_gpt_guid : string -> int -> string
   (** get the GUID of a GPT partition
@@ -6942,6 +7146,20 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   (** make a partition bootable
 
     @since 1.0.78
+   *)
+  method part_set_disk_guid : string -> string -> unit
+  (** set the GUID of a GPT-partitioned disk
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.33.2
+   *)
+  method part_set_disk_guid_random : string -> unit
+  (** set the GUID of a GPT-partitioned disk to random value
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.33.2
    *)
   method part_set_gpt_guid : string -> int -> string -> unit
   (** set the GUID of a GPT partition
@@ -7197,6 +7415,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.0.52
    *)
+  method selinux_relabel : ?force:bool -> string -> string -> unit
+  (** relabel parts of the filesystem
+
+    This function depends on the feature "selinuxrelabel".  See also {!feature_available}.
+
+    @since 1.33.43
+   *)
   method set_append : string option -> unit
   (** add options to kernel command line
 
@@ -7328,6 +7553,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_selinux : bool -> unit
   (** set SELinux enabled or disabled at appliance boot
 
+    @deprecated Use {!selinux_relabel} instead
+
     @since 1.0.67
    *)
   method set_smp : int -> unit
@@ -7364,6 +7591,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   (** set SELinux security context
 
     This function depends on the feature "selinux".  See also {!feature_available}.
+
+    @deprecated Use {!selinux_relabel} instead
 
     @since 1.0.67
    *)

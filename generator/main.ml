@@ -45,6 +45,7 @@ open Gobject
 open Golang
 open Bindtests
 open Errnostring
+open Uefi
 open Customize
 
 let perror msg = function
@@ -148,6 +149,7 @@ Run it from the top source directory using the command
   ) external_structs;
   delete_except_generated
     ~skip:["java/com/redhat/et/libguestfs/LibGuestFSException.java";
+           "java/com/redhat/et/libguestfs/LibGuestFSOutOfMemory.java";
            "java/com/redhat/et/libguestfs/EventCallback.java"]
     "java/com/redhat/et/libguestfs/*.java";
 
@@ -160,7 +162,7 @@ Run it from the top source directory using the command
   output_to "csharp/Libguestfs.cs" generate_csharp;
   output_to "php/extension/php_guestfs_php.h" generate_php_h;
   output_to "php/extension/guestfs_php.c" generate_php_c;
-  output_to "php/extension/tests/guestfs_php_bindtests.phpt" generate_php_bindtests;
+  output_to "php/extension/tests/guestfs_090_bindtests.phpt" generate_php_bindtests;
   output_to "erlang/guestfs.erl" generate_erlang_erl;
   output_to "erlang/erl-guestfs.c" generate_erlang_c;
   output_to ~perm:0o555 "erlang/bindtests.erl" generate_erlang_bindtests;
@@ -209,6 +211,10 @@ Run it from the top source directory using the command
   output_to "gobject/include/guestfs-gobject/session.h"
     generate_gobject_session_header;
   output_to "gobject/src/session.c" generate_gobject_session_source;
+
+  output_to "src/uefi.c" generate_uefi_c;
+  output_to "v2v/uefi.ml" generate_uefi_ml;
+  output_to "v2v/uefi.mli" generate_uefi_mli;
 
   output_to "customize/customize_cmdline.mli" generate_customize_cmdline_mli;
   output_to "customize/customize_cmdline.ml" generate_customize_cmdline_ml;

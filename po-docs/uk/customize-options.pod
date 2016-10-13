@@ -7,7 +7,7 @@ libguestfs generated file
           and from the code in the generator/ subdirectory.
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2016 Red Hat Inc.
+ © Red Hat Inc., 2009–2016
 
  Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
  змінювати її за умов дотримання GNU General Public License  утому вигляді, що
@@ -27,7 +27,7 @@ libguestfs generated file
 
 =over 4
 
-=item B<--chmod> PERMISSIONS:FILE
+=item B<--chmod> ПРАВА_ДОСТУПУ:ФАЙЛ
 
 Change the permissions of C<FILE> to C<PERMISSIONS>.
 
@@ -56,23 +56,29 @@ example
 The commands are handled in the same order as they are in the file, as if
 they were specified as I<--delete /some/file> on the command line.
 
-=item B<--copy> SOURCE:DEST
+=item B<--copy> ДЖЕРЕЛО:ПРИЗНАЧЕННЯ
 
-Copy files or directories recursively inside the guest.
+Копіювати файли або каталоги рекурсивно у межах гостьової системи.
 
-Wildcards cannot be used.
+Не можна використовувати символи-замінники.
 
-=item B<--copy-in> LOCALPATH:REMOTEDIR
+=item B<--copy-in> ЛОКАЛЬНИЙ_ШЛЯХ:ВІДДАЛЕНИЙ_КАТАЛОГ
 
 Copy local files or directories recursively into the disk image, placing
 them in the directory C<REMOTEDIR> (which must exist).
 
-Wildcards cannot be used.
+Не можна використовувати символи-замінники.
 
 =item B<--delete> ШЛЯХ
 
 Delete a file from the guest.  Or delete a directory (and all its contents,
 recursively).
+
+You can use shell glob characters in the specified path.  Be careful to
+escape glob characters from the host shell, if that is required.  For
+example:
+
+ virt-customize --delete '/var/log/*.log'.
 
 Див. також I<--upload>, I<--scrub>.
 
@@ -127,7 +133,7 @@ etc.) and the guest's network connection.
 For an overview on the different ways to install packages, see
 L<virt-builder(1)/INSTALLING PACKAGES>.
 
-=item B<--hostname> HOSTNAME
+=item B<--hostname> НАЗВА_ВУЗЛА
 
 Set the hostname of the guest to C<HOSTNAME>.  You can use a dotted
 hostname.domainname (FQDN) if you want.
@@ -141,7 +147,7 @@ etc.) and the host's network connection.
 For an overview on the different ways to install packages, see
 L<virt-builder(1)/INSTALLING PACKAGES>.
 
-Див. також I<--update>.
+See also I<--update>, I<--uninstall>.
 
 =item B<--link> TARGET:LINK[:LINK..]
 
@@ -150,16 +156,16 @@ C<TARGET>.
 
 =item B<--mkdir> КАТАЛОГ
 
-Create a directory in the guest.
+Створити каталог у гостьовій системі.
 
 This uses S<C<mkdir -p>> so any intermediate directories are created, and it
 also works if the directory already exists.
 
-=item B<--move> SOURCE:DEST
+=item B<--move> ДЖЕРЕЛО:ПРИЗНАЧЕННЯ
 
-Move files or directories inside the guest.
+Пересунути файли або каталоги у межах гостьової системи.
 
-Wildcards cannot be used.
+Не можна використовувати символи-замінники.
 
 =item B<--no-logfile>
 
@@ -227,7 +233,7 @@ upload data files (I<--upload>).
 You can have multiple I<--run> options.  They run in the same order that
 they appear on the command line.
 
-See also: I<--firstboot>, I<--attach>, I<--upload>.
+Див. також I<--firstboot>, I<--attach>, I<--upload>.
 
 =item B<--run-command> 'КОМАНДА+ПАРАМЕТРИ'
 
@@ -243,7 +249,7 @@ upload data files (I<--upload>).
 You can have multiple I<--run-command> options.  They run in the same order
 that they appear on the command line.
 
-See also: I<--firstboot>, I<--attach>, I<--upload>.
+Див. також I<--firstboot>, I<--attach>, I<--upload>.
 
 =item B<--scrub> ФАЙЛ
 
@@ -327,13 +333,22 @@ already.
 
 This command recursively truncates all files under C<PATH> to zero-length.
 
+=item B<--uninstall> ПАКУНОК,ПАКУНОК..
+
+Uninstall the named packages (a comma-separated list).  These are removed
+during the image build using the guest's package manager (eg. apt, yum,
+etc.).  Dependent packages may also need to be uninstalled to satisfy the
+request.
+
+See also I<--install>, I<--update>.
+
 =item B<--update>
 
 Do the equivalent of C<yum update>, C<apt-get upgrade>, or whatever command
 is required to update the packages already installed in the template to
 their latest versions.
 
-Див. також I<--install>.
+See also I<--install>, I<--uninstall>.
 
 =item B<--upload> ФАЙЛ:ПРИЗНАЧЕННЯ
 

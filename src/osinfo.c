@@ -62,11 +62,10 @@
 
 #include "ignore-value.h"
 #include "glthread/lock.h"
+#include "c-ctype.h"
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
-
-COMPILE_REGEXP (re_major_minor, "(\\d+)\\.(\\d+)", 0)
 
 gl_lock_define_initialized (static, osinfo_db_lock);
 static ssize_t osinfo_db_size = 0; /* 0 = unread, -1 = error, >= 1 = #records */
@@ -548,17 +547,19 @@ static int
 parse_version (guestfs_h *g, xmlNodePtr node, struct osinfo *osinfo)
 {
   CLEANUP_FREE char *content = NULL;
-  CLEANUP_FREE char *major = NULL, *minor = NULL;
 
   content = (char *) xmlNodeGetContent (node);
-  if (content) {
-    if (match2 (g, content, re_major_minor, &major, &minor)) {
-      osinfo->major_version = guestfs_int_parse_unsigned_int (g, major);
-      if (osinfo->major_version == -1)
-        return -1;
-      osinfo->minor_version = guestfs_int_parse_unsigned_int (g, minor);
-      if (osinfo->minor_version == -1)
-        return -1;
+  /* We parse either "X.Y" or "X" as version strings, so try to parse
+   * only if the first character is a digit.
+   */
+  if (content && c_isdigit (content[0])) {
+    struct version version;
+    const int res = guestfs_int_version_from_x_y_or_x (g, &version, content);
+    if (res < 0)
+      return -1;
+    else if (res > 0) {
+      osinfo->major_version = version.v_major;
+      osinfo->minor_version = version.v_minor;
     }
   }
 

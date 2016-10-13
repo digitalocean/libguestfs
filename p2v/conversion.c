@@ -16,6 +16,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * This file manages the p2v conversion.
+ *
+ * The conversion is actually done by L<virt-v2v(1)> running on the
+ * remote conversion server.  This file manages running the remote
+ * command and provides callbacks for displaying the output.
+ *
+ * When virt-p2v operates in GUI mode, this code runs in a separate
+ * thread.  When virt-p2v operates in kernel mode, this runs
+ * synchronously in the main thread.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -27,9 +39,11 @@
 #include <unistd.h>
 #include <time.h>
 #include <errno.h>
+#include <error.h>
 #include <locale.h>
 #include <libintl.h>
 #include <netdb.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -78,12 +92,15 @@ struct data_conn {
   int nbd_remote_port;      /* remote NBD port on conversion server */
 };
 
-static int send_quoted (mexp_h *, const char *s);
 static pid_t start_qemu_nbd (int nbd_local_port, const char *device);
 static int wait_qemu_nbd (int nbd_local_port, int timeout_seconds);
 static void cleanup_data_conns (struct data_conn *data_conns, size_t nr);
-static char *generate_libvirt_xml (struct config *, struct data_conn *);
+static void generate_name (struct config *, const char *filename);
+static void generate_libvirt_xml (struct config *, struct data_conn *, const char *filename);
+static void generate_wrapper_script (struct config *, const char *remote_dir, const char *filename);
+static void generate_dmesg_file (const char *filename);
 static const char *map_interface_to_network (struct config *, const char *interface);
+static void print_quoted (FILE *fp, const char *s);
 
 static char *conversion_error;
 
@@ -101,11 +118,9 @@ set_conversion_error (const char *fs, ...)
   len = vasprintf (&msg, fs, args);
   va_end (args);
 
-  if (len < 0) {
-    perror ("vasprintf");
-    fprintf (stderr, "original error format string: %s\n", fs);
-    exit (EXIT_FAILURE);
-  }
+  if (len < 0)
+    error (EXIT_FAILURE, errno,
+           "vasprintf (original error format string: %s)", fs);
 
   free (conversion_error);
   conversion_error = msg;
@@ -121,6 +136,7 @@ static pthread_mutex_t running_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int running = 0;
 static pthread_mutex_t cancel_requested_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int cancel_requested = 0;
+static mexp_h *control_h = NULL;
 
 static int
 is_running (void)
@@ -155,6 +171,21 @@ set_cancel_requested (int r)
 {
   pthread_mutex_lock (&cancel_requested_mutex);
   cancel_requested = r;
+
+  /* Send ^C to the remote so that virt-v2v "knows" the connection has
+   * been cancelled.  mexp_send_interrupt is a single write(2) call.
+   */
+  if (r && control_h)
+    ignore_value (mexp_send_interrupt (control_h));
+
+  pthread_mutex_unlock (&cancel_requested_mutex);
+}
+
+static void
+set_control_h (mexp_h *new_h)
+{
+  pthread_mutex_lock (&cancel_requested_mutex);
+  control_h = new_h;
   pthread_mutex_unlock (&cancel_requested_mutex);
 }
 
@@ -167,22 +198,28 @@ start_conversion (struct config *config,
   int status;
   size_t i, len;
   const size_t nr_disks = guestfs_int_count_strings (config->disks);
-  struct data_conn data_conns[nr_disks];
-  CLEANUP_FREE char *remote_dir = NULL, *libvirt_xml = NULL;
   time_t now;
   struct tm tm;
-  mexp_h *control_h = NULL;
-  char dmesg_cmd[] = "dmesg > /tmp/dmesg.XXXXXX", *dmesg_file = &dmesg_cmd[8];
-  CLEANUP_FREE char *dmesg = NULL;
-  int fd, r;
+  CLEANUP_FREE struct data_conn *data_conns = NULL;
+  CLEANUP_FREE char *remote_dir = NULL;
+  char tmpdir[]           = "/tmp/p2v.XXXXXX";
+  char name_file[]        = "/tmp/p2v.XXXXXX/name";
+  char libvirt_xml_file[] = "/tmp/p2v.XXXXXX/physical.xml";
+  char wrapper_script[]   = "/tmp/p2v.XXXXXX/virt-v2v-wrapper.sh";
+  char dmesg_file[]       = "/tmp/p2v.XXXXXX/dmesg";
 
 #if DEBUG_STDERR
   print_config (config, stderr);
   fprintf (stderr, "\n");
 #endif
 
+  set_control_h (NULL);
   set_running (1);
   set_cancel_requested (0);
+
+  data_conns = malloc (sizeof (struct data_conn) * nr_disks);
+  if (data_conns == NULL)
+    error (EXIT_FAILURE, errno, "malloc");
 
   for (i = 0; config->disks[i] != NULL; ++i) {
     data_conns[i].h = NULL;
@@ -199,10 +236,8 @@ start_conversion (struct config *config,
       CLEANUP_FREE char *msg;
       if (asprintf (&msg,
                     _("Opening data connection for %s ..."),
-                    config->disks[i]) == -1) {
-        perror ("asprintf");
-        exit (EXIT_FAILURE);
-      }
+                    config->disks[i]) == -1)
+        error (EXIT_FAILURE, errno, "asprintf");
       notify_ui (NOTIFY_STATUS, msg);
     }
 
@@ -270,46 +305,53 @@ start_conversion (struct config *config,
   if (notify_ui)
     notify_ui (NOTIFY_LOG_DIR, remote_dir);
 
-  /* Generate the libvirt XML. */
-  libvirt_xml = generate_libvirt_xml (config, data_conns);
-  if (libvirt_xml == NULL)
-    goto out;
-
-#if DEBUG_STDERR
-  fprintf (stderr, "%s: libvirt XML:\n%s", guestfs_int_program_name, libvirt_xml);
-#endif
-
-  /* Get the output from the 'dmesg' command.  We will store this
-   * on the remote server.
-   */
-  fd = mkstemp (dmesg_file);
-  if (fd == -1) {
-    perror ("mkstemp");
-    goto skip_dmesg;
+  /* Generate the local temporary directory. */
+  if (mkdtemp (tmpdir) == NULL) {
+    perror ("mkdtemp");
+    cleanup_data_conns (data_conns, nr_disks);
+    exit (EXIT_FAILURE);
   }
-  close (fd);
-  r = system (dmesg_cmd);
-  if (r == -1) {
-    perror ("system");
-    goto skip_dmesg;
-  }
-  if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
-    fprintf (stderr, "'dmesg' failed (ignored)\n");
-    goto skip_dmesg;
-  }
+  memcpy (name_file, tmpdir, strlen (tmpdir));
+  memcpy (libvirt_xml_file, tmpdir, strlen (tmpdir));
+  memcpy (wrapper_script, tmpdir, strlen (tmpdir));
+  memcpy (dmesg_file, tmpdir, strlen (tmpdir));
 
-  ignore_value (read_whole_file (dmesg_file, &dmesg, NULL));
- skip_dmesg:
+  /* Generate the static files. */
+  generate_name (config, name_file);
+  generate_libvirt_xml (config, data_conns, libvirt_xml_file);
+  generate_wrapper_script (config, remote_dir, wrapper_script);
+  generate_dmesg_file (dmesg_file);
 
-  /* Open the control connection and start conversion */
+  /* Open the control connection.  This also creates remote_dir. */
   if (notify_ui)
     notify_ui (NOTIFY_STATUS, _("Setting up the control connection ..."));
 
-  control_h = start_remote_connection (config, remote_dir, libvirt_xml, dmesg);
+  set_control_h (start_remote_connection (config, remote_dir));
   if (control_h == NULL) {
-    const char *err = get_ssh_error ();
+    set_conversion_error ("could not open control connection over SSH to the conversion server: %s",
+                          get_ssh_error ());
+    goto out;
+  }
 
-    set_conversion_error ("could not open control connection over SSH to the conversion server: %s", err);
+  /* Copy the static files to the remote dir. */
+  if (scp_file (config, name_file, remote_dir) == -1) {
+    set_conversion_error ("scp: %s to %s: %s",
+                          name_file, remote_dir, get_ssh_error ());
+    goto out;
+  }
+  if (scp_file (config, libvirt_xml_file, remote_dir) == -1) {
+    set_conversion_error ("scp: %s to %s: %s",
+                          libvirt_xml_file, remote_dir, get_ssh_error ());
+    goto out;
+  }
+  if (scp_file (config, wrapper_script, remote_dir) == -1) {
+    set_conversion_error ("scp: %s to %s: %s",
+                          wrapper_script, remote_dir, get_ssh_error ());
+    goto out;
+  }
+  if (scp_file (config, dmesg_file, remote_dir) == -1) {
+    set_conversion_error ("scp: %s to %s: %s",
+                          dmesg_file, remote_dir, get_ssh_error ());
     goto out;
   }
 
@@ -317,65 +359,18 @@ start_conversion (struct config *config,
   if (notify_ui)
     notify_ui (NOTIFY_STATUS, _("Doing conversion ..."));
 
-  /* Build the virt-v2v command up in pieces to make the quoting
-   * slightly more sane.
-   */
-  if (mexp_printf (control_h, "( %s virt-v2v%s -i libvirtxml",
-                   config->sudo ? "sudo -n " : "",
-                   config->verbose ? " -v -x" : "") == -1) {
-  printf_fail:
-    set_conversion_error ("mexp_printf: virt-v2v command: %m");
+  if (mexp_printf (control_h,
+                   /* To simplify things in the wrapper script, it
+                    * writes virt-v2v's exit status to
+                    * /remote_dir/status, and here we read that and
+                    * exit the ssh shell with the same status.
+                    */
+                   "%s/virt-v2v-wrapper.sh; "
+                   "exit $(< %s/status)\n",
+                   remote_dir, remote_dir) == -1) {
+    set_conversion_error ("mexp_printf: virt-v2v: %m");
     goto out;
   }
-  if (config->output) {         /* -o */
-    if (mexp_printf (control_h, " -o ") == -1)
-      goto printf_fail;
-    if (send_quoted (control_h, config->output) == -1)
-      goto printf_fail;
-  }
-  switch (config->output_allocation) { /* -oa */
-  case OUTPUT_ALLOCATION_NONE:
-    /* nothing */
-    break;
-  case OUTPUT_ALLOCATION_SPARSE:
-    if (mexp_printf (control_h, " -oa sparse") == -1)
-      goto printf_fail;
-    break;
-  case OUTPUT_ALLOCATION_PREALLOCATED:
-    if (mexp_printf (control_h, " -oa preallocated") == -1)
-      goto printf_fail;
-    break;
-  default:
-    abort ();
-  }
-  if (config->output_format) {  /* -of */
-    if (mexp_printf (control_h, " -of ") == -1)
-      goto printf_fail;
-    if (send_quoted (control_h, config->output_format) == -1)
-      goto printf_fail;
-  }
-  if (config->output_storage) { /* -os */
-    if (mexp_printf (control_h, " -os ") == -1)
-      goto printf_fail;
-    if (send_quoted (control_h, config->output_storage) == -1)
-      goto printf_fail;
-  }
-  if (mexp_printf (control_h, " --root first") == -1)
-    goto printf_fail;
-  if (mexp_printf (control_h, " %s/physical.xml", remote_dir) == -1)
-    goto printf_fail;
-  /* no stdin, and send stdout and stderr to the same place */
-  if (mexp_printf (control_h, " </dev/null 2>&1") == -1)
-    goto printf_fail;
-  if (mexp_printf (control_h, " ; echo $? > %s/status", remote_dir) == -1)
-    goto printf_fail;
-  if (mexp_printf (control_h, " ) | tee %s/virt-v2v-conversion-log.txt",
-                   remote_dir) == -1)
-    goto printf_fail;
-  if (mexp_printf (control_h, "; exit $(< %s/status)", remote_dir) == -1)
-    goto printf_fail;
-  if (mexp_printf (control_h, "\n") == -1)
-    goto printf_fail;
 
   /* Read output from the virt-v2v process and echo it through the
    * notify function, until virt-v2v closes the connection.
@@ -412,12 +407,17 @@ start_conversion (struct config *config,
   ret = 0;
  out:
   if (control_h) {
-    if ((status = mexp_close (control_h)) == -1) {
+    mexp_h *h = control_h;
+    set_control_h (NULL);
+    status = mexp_close (h);
+
+    if (status == -1) {
       set_conversion_error ("mexp_close: %m");
       ret = -1;
-    } else if (ret == 0 &&
-               WIFEXITED (status) &&
-               WEXITSTATUS (status) != 0) {
+    }
+    else if (ret == 0 &&
+             WIFEXITED (status) &&
+             WEXITSTATUS (status) != 0) {
       set_conversion_error ("virt-v2v exited with status %d",
                             WEXITSTATUS (status));
       ret = -1;
@@ -442,27 +442,11 @@ cancel_conversion (void)
   set_cancel_requested (1);
 }
 
-/* Send a shell-quoted string to remote. */
-static int
-send_quoted (mexp_h *h, const char *s)
-{
-  if (mexp_printf (h, "\"") == -1)
-    return -1;
-  while (*s) {
-    if (*s == '$' || *s == '`' || *s == '\\' || *s == '"') {
-      if (mexp_printf (h, "\\") == -1)
-        return -1;
-    }
-    if (mexp_printf (h, "%c", *s) == -1)
-      return -1;
-    ++s;
-  }
-  if (mexp_printf (h, "\"") == -1)
-    return -1;
-  return 0;
-}
-
-/* Note: returns process ID (> 0) or 0 if there is an error. */
+/**
+ * Start a local L<qemu-nbd(1)> process.
+ *
+ * Returns the process ID (E<gt> 0) or C<0> if there is an error.
+ */
 static pid_t
 start_qemu_nbd (int port, const char *device)
 {
@@ -499,12 +483,18 @@ start_qemu_nbd (int port, const char *device)
   return pid;
 }
 
-/* Connect to a host/port, resolving the address using getaddrinfo and
- * setting the source port kernel hint.  This may involve multiple
- * connections - to IPv4 and IPv6 for instance.
- */
 static int bind_source_port (int sockfd, int family, int source_port);
 
+/**
+ * Connect to C<hostname:dest_port>, resolving the address using
+ * L<getaddrinfo(3)>.
+ *
+ * This also sets the source port of the connection to the first free
+ * port number E<ge> C<source_port>.
+ *
+ * This may involve multiple connections - to IPv4 and IPv6 for
+ * instance.
+ */
 static int
 connect_with_source_port (const char *hostname, int dest_port, int source_port)
 {
@@ -696,20 +686,16 @@ cleanup_data_conns (struct data_conn *data_conns, size_t nr)
 /* Macros "inspired" by src/launch-libvirt.c */
 /* <element */
 #define start_element(element)						\
-  if (xmlTextWriterStartElement (xo, BAD_CAST (element)) == -1) {	\
-    set_conversion_error ("xmlTextWriterStartElement: %m");		\
-    return NULL;							\
-  }									\
+  if (xmlTextWriterStartElement (xo, BAD_CAST (element)) == -1)         \
+    error (EXIT_FAILURE, errno, "xmlTextWriterStartElement");		\
   do
 
 /* finish current </element> */
 #define end_element()						\
   while (0);							\
   do {								\
-    if (xmlTextWriterEndElement (xo) == -1) {			\
-      set_conversion_error ("xmlTextWriterEndElement: %m");	\
-      return NULL;						\
-    }								\
+    if (xmlTextWriterEndElement (xo) == -1)			\
+      error (EXIT_FAILURE, errno, "xmlTextWriterEndElement");	\
   } while (0)
 
 /* <element/> */
@@ -718,80 +704,64 @@ cleanup_data_conns (struct data_conn *data_conns, size_t nr)
 
 /* key=value attribute of the current element. */
 #define attribute(key,value)                                            \
-  if (xmlTextWriterWriteAttribute (xo, BAD_CAST (key), BAD_CAST (value)) == -1) { \
-    set_conversion_error ("xmlTextWriterWriteAttribute: %m");           \
-    return NULL;                                                        \
-  }
+  do {                                                                  \
+    if (xmlTextWriterWriteAttribute (xo, BAD_CAST (key), BAD_CAST (value)) == -1) \
+    error (EXIT_FAILURE, errno, "xmlTextWriterWriteAttribute");         \
+  } while (0)
 
 /* key=value, but value is a printf-style format string. */
 #define attribute_format(key,fs,...)                                    \
-  if (xmlTextWriterWriteFormatAttribute (xo, BAD_CAST (key),            \
-					 fs, ##__VA_ARGS__) == -1) {	\
-    set_conversion_error ("xmlTextWriterWriteFormatAttribute: %m");     \
-    return NULL;                                                        \
-  }
+  do {                                                                  \
+    if (xmlTextWriterWriteFormatAttribute (xo, BAD_CAST (key),          \
+                                           fs, ##__VA_ARGS__) == -1)	\
+      error (EXIT_FAILURE, errno, "xmlTextWriterWriteFormatAttribute"); \
+  } while (0)
 
 /* A string, eg. within an element. */
-#define string(str)						\
-  if (xmlTextWriterWriteString (xo, BAD_CAST (str)) == -1) {	\
-    set_conversion_error ("xmlTextWriterWriteString: %m");	\
-    return NULL;						\
-  }
+#define string(str)                                             \
+  do {                                                          \
+    if (xmlTextWriterWriteString (xo, BAD_CAST (str)) == -1)	\
+      error (EXIT_FAILURE, errno, "xmlTextWriterWriteString");	\
+  } while (0)
 
 /* A string, using printf-style formatting. */
 #define string_format(fs,...)                                           \
-  if (xmlTextWriterWriteFormatString (xo, fs, ##__VA_ARGS__) == -1) {   \
-    set_conversion_error ("xmlTextWriterWriteFormatString: %m");        \
-    return NULL;                                                        \
-  }
+  do {                                                                  \
+    if (xmlTextWriterWriteFormatString (xo, fs, ##__VA_ARGS__) == -1)   \
+      error (EXIT_FAILURE, errno, "xmlTextWriterWriteFormatString");    \
+  } while (0)
 
 /* An XML comment. */
 #define comment(str)						\
-  if (xmlTextWriterWriteComment (xo, BAD_CAST (str)) == -1) {	\
-    set_conversion_error ("xmlTextWriterWriteComment: %m");	\
-    return NULL;						\
-  }
+  do {                                                          \
+    if (xmlTextWriterWriteComment (xo, BAD_CAST (str)) == -1)	\
+      error (EXIT_FAILURE, errno, "xmlTextWriterWriteComment");	\
+  } while (0)
 
-/* Write the libvirt XML for this physical machine.  Note this is not
- * actually input for libvirt.  It's input for virt-v2v on the
- * conversion server, and virt-v2v will (if necessary) generate the
- * final libvirt XML.
+/**
+ * Write the libvirt XML for this physical machine.
+ *
+ * Note this is not actually input for libvirt.  It's input for
+ * virt-v2v on the conversion server.  Virt-v2v will (if necessary)
+ * generate the final libvirt XML.
  */
-static char *
-generate_libvirt_xml (struct config *config, struct data_conn *data_conns)
+static void
+generate_libvirt_xml (struct config *config, struct data_conn *data_conns,
+                      const char *filename)
 {
   uint64_t memkb;
-  char *ret;
-  CLEANUP_XMLBUFFERFREE xmlBufferPtr xb = NULL;
-  xmlOutputBufferPtr ob;
   CLEANUP_XMLFREETEXTWRITER xmlTextWriterPtr xo = NULL;
   size_t i;
 
-  xb = xmlBufferCreate ();
-  if (xb == NULL) {
-    set_conversion_error ("xmlBufferCreate: %m");
-    return NULL;
-  }
-  ob = xmlOutputBufferCreateBuffer (xb, NULL);
-  if (ob == NULL) {
-    set_conversion_error ("xmlOutputBufferCreateBuffer: %m");
-    return NULL;
-  }
-  xo = xmlNewTextWriter (ob);
-  if (xo == NULL) {
-    set_conversion_error ("xmlNewTextWriter: %m");
-    return NULL;
-  }
+  xo = xmlNewTextWriterFilename (filename, 0);
+  if (xo == NULL)
+    error (EXIT_FAILURE, errno, "xmlNewTextWriterFilename");
 
   if (xmlTextWriterSetIndent (xo, 1) == -1 ||
-      xmlTextWriterSetIndentString (xo, BAD_CAST "  ") == -1) {
-    set_conversion_error ("could not set XML indent: %m");
-    return NULL;
-  }
-  if (xmlTextWriterStartDocument (xo, NULL, NULL, NULL) == -1) {
-    set_conversion_error ("xmlTextWriterStartDocument: %m");
-    return NULL;
-  }
+      xmlTextWriterSetIndentString (xo, BAD_CAST "  ") == -1)
+    error (EXIT_FAILURE, errno, "could not set XML indent");
+  if (xmlTextWriterStartDocument (xo, NULL, NULL, NULL) == -1)
+    error (EXIT_FAILURE, errno, "xmlTextWriterStartDocument");
 
   memkb = config->memory / 1024;
 
@@ -904,10 +874,8 @@ generate_libvirt_xml (struct config *config, struct data_conn *data_conns)
             map_interface_to_network (config, config->interfaces[i]);
 
           if (asprintf (&mac_filename, "/sys/class/net/%s/address",
-                        config->interfaces[i]) == -1) {
-            perror ("asprintf");
-            exit (EXIT_FAILURE);
-          }
+                        config->interfaces[i]) == -1)
+            error (EXIT_FAILURE, errno, "asprintf");
           if (g_file_get_contents (mac_filename, &mac, NULL, NULL)) {
             const size_t len = strlen (mac);
 
@@ -936,25 +904,18 @@ generate_libvirt_xml (struct config *config, struct data_conn *data_conns)
 
   } end_element (); /* </domain> */
 
-  if (xmlTextWriterEndDocument (xo) == -1) {
-    set_conversion_error ("xmlTextWriterEndDocument: %m");
-    return NULL;
-  }
-  ret = (char *) xmlBufferDetach (xb); /* caller frees */
-  if (ret == NULL) {
-    set_conversion_error ("xmlBufferDetach: %m");
-    return NULL;
-  }
-
-  return ret;
+  if (xmlTextWriterEndDocument (xo) == -1)
+    error (EXIT_FAILURE, errno, "xmlTextWriterEndDocument");
 }
 
-/* Using config->network_map, map the interface to a target network
- * name.  If no map is found, return "default".  See virt-p2v(1)
- * documentation of "p2v.network" for how the network map works.
+/**
+ * Using C<config-E<gt>network_map>, map the interface to a target
+ * network name.  If no map is found, return C<default>.  See
+ * L<virt-p2v(1)> documentation of C<"p2v.network"> for how the
+ * network map works.
  *
  * Note this returns a static string which is only valid as long as
- * config->network_map is not freed.
+ * C<config-E<gt>network_map> is not freed.
  */
 static const char *
 map_interface_to_network (struct config *config, const char *interface)
@@ -978,4 +939,171 @@ map_interface_to_network (struct config *config, const char *interface)
 
   /* No mapping found. */
   return "default";
+}
+
+/**
+ * Write the guest name into C<filename>.
+ */
+static void
+generate_name (struct config *config, const char *filename)
+{
+  FILE *fp;
+
+  fp = fopen (filename, "w");
+  if (fp == NULL)
+    error (EXIT_FAILURE, errno, "fopen: %s", filename);
+  fprintf (fp, "%s\n", config->guestname);
+  fclose (fp);
+}
+
+/**
+ * Construct the virt-v2v wrapper script.
+ *
+ * This will be sent to the remote server, and is easier than trying
+ * to "type" a long and complex single command line into the ssh
+ * connection when we start the conversion.
+ */
+static void
+generate_wrapper_script (struct config *config, const char *remote_dir,
+                         const char *filename)
+{
+  FILE *fp;
+
+  fp = fopen (filename, "w");
+  if (fp == NULL)
+    error (EXIT_FAILURE, errno, "fopen: %s", filename);
+
+  fprintf (fp, "#!/bin/bash -\n");
+  fprintf (fp, "\n");
+
+  fprintf (fp, "cd %s\n", remote_dir);
+  fprintf (fp, "\n");
+
+  /* The virt-v2v command, as a shell function called "v2v". */
+  fprintf (fp, "v2v ()\n");
+  fprintf (fp, "{\n");
+  if (config->sudo)
+    fprintf (fp, "sudo -n ");
+  fprintf (fp, "virt-v2v -v -x");
+  if (feature_colours_option)
+    fprintf (fp, " --colours");
+  fprintf (fp, " -i libvirtxml");
+
+  if (config->output) {         /* -o */
+    fprintf (fp, " -o ");
+    print_quoted (fp, config->output);
+  }
+
+  switch (config->output_allocation) { /* -oa */
+  case OUTPUT_ALLOCATION_NONE:
+    /* nothing */
+    break;
+  case OUTPUT_ALLOCATION_SPARSE:
+    fprintf (fp, " -oa sparse");
+    break;
+  case OUTPUT_ALLOCATION_PREALLOCATED:
+    fprintf (fp, " -oa preallocated");
+    break;
+  default:
+    abort ();
+  }
+
+  if (config->output_format) {  /* -of */
+    fprintf (fp, " -of ");
+    print_quoted (fp, config->output_format);
+  }
+
+  if (config->output_storage) { /* -os */
+    fprintf (fp, " -os ");
+    print_quoted (fp, config->output_storage);
+  }
+
+  fprintf (fp, " --root first");
+  fprintf (fp, " physical.xml");
+  fprintf (fp, " </dev/null");  /* no stdin */
+  fprintf (fp, "\n");
+  fprintf (fp,
+           "# Save the exit code of virt-v2v into the 'status' file.\n");
+  fprintf (fp, "echo $? > status\n");
+  fprintf (fp, "}\n");
+  fprintf (fp, "\n");
+
+  fprintf (fp,
+           "# Write a pre-emptive error status, in case the virt-v2v\n"
+           "# command doesn't get to run at all.  This will be\n"
+           "# overwritten with the true exit code when virt-v2v runs.\n");
+  fprintf (fp, "echo 99 > status\n");
+  fprintf (fp, "\n");
+
+  fprintf (fp, "log=virt-v2v-conversion-log.txt\n");
+  fprintf (fp, "rm -f $log\n");
+  fprintf (fp, "\n");
+
+  fprintf (fp,
+           "# Run virt-v2v.  Send stdout back to virt-p2v.  Send stdout\n"
+           "# and stderr (debugging info) to the log file.\n");
+  fprintf (fp, "v2v 2>> $log | tee -a $log\n");
+  fprintf (fp, "\n");
+
+  fprintf (fp,
+           "# If virt-v2v failed then the error message (sent to stderr)\n"
+           "# will not be seen in virt-p2v.  Send the last few lines of\n"
+           "# the log back to virt-p2v in this case.\n");
+  fprintf (fp,
+           "if [ \"$(< status)\" -ne 0 ]; then\n"
+           "    echo\n"
+           "    echo\n"
+           "    echo\n"
+           "    echo -ne '\\e[1;31m'\n"
+           "    echo '***' virt-v2v command failed '***'\n"
+           "    echo\n"
+           "    echo The full log is available on the conversion server in:\n"
+           "    echo '   ' %s/$log\n"
+           "    echo Only the last 50 lines are shown below.\n"
+           "    echo -ne '\\e[0m'\n"
+           "    echo\n"
+           "    echo\n"
+           "    echo\n"
+           "    tail -50 $log\n"
+           "fi\n",
+           remote_dir);
+
+  fprintf (fp, "\n");
+  fprintf (fp, "# EOF\n");
+  fclose (fp);
+
+  if (chmod (filename, 0755) == -1)
+    error (EXIT_FAILURE, errno, "chmod: %s", filename);
+}
+
+/**
+ * Print a shell-quoted string on C<fp>.
+ */
+static void
+print_quoted (FILE *fp, const char *s)
+{
+  fprintf (fp, "\"");
+  while (*s) {
+    if (*s == '$' || *s == '`' || *s == '\\' || *s == '"')
+      fprintf (fp, "\\");
+    fprintf (fp, "%c", *s);
+    ++s;
+  }
+  fprintf (fp, "\"");
+}
+
+/**
+ * Put the output of the C<dmesg> command into C<filename>.
+ *
+ * If the command fails, this is non-fatal.
+ */
+static void
+generate_dmesg_file (const char *filename)
+{
+  CLEANUP_FREE char *cmd = NULL;
+
+  if (asprintf (&cmd, "dmesg >%s 2>&1", filename) == -1)
+    error (EXIT_FAILURE, errno, "asprintf");
+
+  ignore_value (system (cmd));
 }

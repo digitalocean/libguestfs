@@ -22,7 +22,9 @@ or:
 =head1 DESCRIPTION
 
 Libguestfs is a library for accessing and modifying disk images and
-virtual machines.  This manual page documents the C API.
+virtual machines.
+
+This manual page documents the C API.
 
 If you are looking for an introduction to libguestfs, see the web
 site: L<http://libguestfs.org/>
@@ -30,22 +32,50 @@ site: L<http://libguestfs.org/>
 Each virt tool has its own man page (for a full list, go to
 L</SEE ALSO> at the end of this file).
 
-The libguestfs FAQ contains many useful answers: L<guestfs-faq(1)>.
+Other libguestfs manual pages:
 
-For examples of using the API from C, see L<guestfs-examples(3)>.  For
-examples in other languages, see
-L</USING LIBGUESTFS WITH OTHER PROGRAMMING LANGUAGES> below.
+=over 4
 
-For tips and recipes, see L<guestfs-recipes(1)>.
+=item L<guestfs-faq(1)>
 
-If you are having performance problems, read
-L<guestfs-performance(1)>.  To help test libguestfs, read
-L<libguestfs-test-tool(1)> and L<guestfs-testing(1)>.  To contribute
-code to libguestfs, see L<guestfs-hacking(1)>.  To find out how
-libguestfs works, see L<guestfs-internals(1)>.
+Frequently Asked Questions (FAQ).
 
-For security information, including CVEs affecting libguestfs, see
-L<guestfs-security(1)>.
+=item L<guestfs-examples(3)>
+
+Examples of using the API from C.  For examples in other languages,
+see L</USING LIBGUESTFS WITH OTHER PROGRAMMING LANGUAGES> below.
+
+=item L<guestfs-recipes(1)>
+
+Tips and recipes.
+
+=item L<guestfs-performance(1)>
+
+Performance tips and solutions.
+
+=item L<libguestfs-test-tool(1)>
+
+=item L<guestfs-testing(1)>
+
+Help testing libguestfs.
+
+=item L<guestfs-building(1)>
+
+How to build libguestfs from source.
+
+=item L<guestfs-hacking(1)>
+
+Contribute code to libguestfs.
+
+=item L<guestfs-internals(1)>
+
+How libguestfs works.
+
+=item L<guestfs-security(1)>
+
+Security information, including CVEs affecting libguestfs.
+
+=back
 
 =head1 API OVERVIEW
 
@@ -433,8 +463,8 @@ an X86 host).
 
 =item *
 
-For SELinux guests, you may need to enable SELinux and load policy
-first.  See L</SELINUX> in this manpage.
+For SELinux guests, you may need to relabel the guest after
+creating new files.  See L</SELINUX> below.
 
 =item *
 
@@ -486,44 +516,23 @@ L<sd-journal(3)>, L<sd_journal_open(3)>.
 
 =head2 SELINUX
 
-We support SELinux guests.  To ensure that labeling happens correctly
-in SELinux guests, you need to enable SELinux and load the guest's
-policy:
+We support SELinux guests.  However it is not possible to load the
+SELinux policy of the guest into the appliance kernel.  Therefore the
+strategy for dealing with SELinux guests is to relabel them after
+making changes.
 
-=over 4
+In libguestfs E<ge> 1.34 there is a new API, L</guestfs_setfiles>,
+which can be used for this.  To properly use this API you have to
+parse the guest SELinux configuration.  See the L<virt-customize(1)>
+module F<customize/SELinux_relabel.ml> for how to do this.
 
-=item 1.
+A simpler but slower alternative is to touch F</.autorelabel> in the
+guest, which means that the guest will relabel itself at next boot.
 
-Before launching, do:
-
- guestfs_set_selinux (g, 1);
-
-=item 2.
-
-After mounting the guest's filesystem(s), load the policy.  This
-is best done by running the L<load_policy(8)> command in the
-guest itself:
-
- guestfs_sh (g, "/usr/sbin/load_policy");
-
-(Older versions of C<load_policy> require you to specify the
-name of the policy file).
-
-=item 3.
-
-Optionally, set the security context for the API.  The correct
-security context to use can only be known by inspecting the
-guest.  As an example:
-
- guestfs_setcon (g, "unconfined_u:unconfined_r:unconfined_t:s0");
-
-=back
-
-This will work for running commands and editing existing files.
-
-When new files are created, you may need to label them explicitly,
-for example by running the external command
-C<restorecon pathname>.
+Libguestfs E<le> 1.32 had APIs C<guestfs_set_selinux>,
+C<guestfs_get_selinux>, C<guestfs_setcon> and C<guestfs_getcon>.
+These did not work properly, are deprecated, and should not be used in
+new code.
 
 =head2 UMASK
 
@@ -3457,6 +3466,17 @@ about kernel selection, see L<supermin(1)>.
 
 See L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
 
+=item XDG_RUNTIME_DIR
+
+This directory represents a user-specific directory for storing
+non-essential runtime files.
+
+If it is set, then is used to store temporary sockets.  Otherwise,
+F</tmp> is used.
+
+See also L</get-sockdir>,
+L<http://www.freedesktop.org/wiki/Specifications/basedir-spec/>.
+
 =back
 
 =head1 SEE ALSO
@@ -3506,6 +3526,7 @@ L<virt-v2v(1)>,
 L<virt-win-reg(1)>.
 
 Other libguestfs topics:
+L<guestfs-building(1)>,
 L<guestfs-faq(1)>,
 L<guestfs-hacking(1)>,
 L<guestfs-internals(1)>,

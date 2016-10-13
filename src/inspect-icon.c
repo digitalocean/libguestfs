@@ -61,6 +61,8 @@ static char *icon_opensuse (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 #if CAN_DO_CIRROS
 static char *icon_cirros (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 #endif
+static char *icon_voidlinux (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
+static char *icon_altlinux (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 #if CAN_DO_WINDOWS
 static char *icon_windows (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 #endif
@@ -159,6 +161,14 @@ guestfs_impl_inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
 #endif
       break;
 
+    case OS_DISTRO_VOID_LINUX:
+      r = icon_voidlinux (g, fs, &size);
+      break;
+
+    case OS_DISTRO_ALTLINUX:
+      r = icon_altlinux (g, fs, &size);
+      break;
+
       /* These are just to keep gcc warnings happy. */
     case OS_DISTRO_ARCHLINUX:
     case OS_DISTRO_BUILDROOT:
@@ -176,7 +186,6 @@ guestfs_impl_inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
     case OS_DISTRO_NETBSD:
     case OS_DISTRO_OPENBSD:
     case OS_DISTRO_ALPINE_LINUX:
-    case OS_DISTRO_ALTLINUX:
     case OS_DISTRO_FRUGALWARE:
     case OS_DISTRO_PLD_LINUX:
     case OS_DISTRO_UNKNOWN:
@@ -325,7 +334,7 @@ icon_rhel (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 {
   const char *shadowman;
 
-  if (fs->major_version <= 6)
+  if (!guestfs_int_version_ge (&fs->version, 7, 0, 0))
     shadowman = "/usr/share/pixmaps/redhat/shadowman-transparent.png";
   else
     shadowman = "/usr/share/pixmaps/fedora-logo-sprite.png";
@@ -437,6 +446,22 @@ icon_cirros (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 }
 
 #endif /* CAN_DO_CIRROS */
+
+#define VOIDLINUX_ICON "/usr/share/void-artwork/void-logo.png"
+
+static char *
+icon_voidlinux (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
+{
+  return get_png (g, fs, VOIDLINUX_ICON, size_r, 20480);
+}
+
+#define ALTLINUX_ICON "/usr/share/doc/alt-docs/altlogo.png"
+
+static char *
+icon_altlinux (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
+{
+  return get_png (g, fs, ALTLINUX_ICON, size_r, 20480);
+}
 
 #if CAN_DO_WINDOWS
 
@@ -622,15 +647,15 @@ icon_windows (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
     return NOT_FOUND;
 
   /* Windows XP. */
-  if (fs->major_version == 5 && fs->minor_version == 1)
+  if (fs->version.v_major == 5 && fs->version.v_minor == 1)
     return icon_windows_xp (g, fs, size_r);
 
   /* Windows 7. */
-  else if (fs->major_version == 6 && fs->minor_version == 1)
+  else if (fs->version.v_major == 6 && fs->version.v_minor == 1)
     return icon_windows_7 (g, fs, size_r);
 
   /* Windows 8. */
-  else if (fs->major_version == 6 && fs->minor_version == 2)
+  else if (fs->version.v_major == 6 && fs->version.v_minor == 2)
     return icon_windows_8 (g, fs, size_r);
 
   /* Not (yet) a supported version of Windows. */
