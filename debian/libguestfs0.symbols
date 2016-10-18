@@ -74,6 +74,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_btrfs_filesystem_resize@Base 1.12
  guestfs_btrfs_filesystem_resize_argv@Base 1.12
  guestfs_btrfs_filesystem_resize_va@Base 1.12
+ guestfs_btrfs_filesystem_show@Base 1:1.33.29
  guestfs_btrfs_filesystem_sync@Base 1:1.18
  guestfs_btrfs_fsck@Base 1:1.18
  guestfs_btrfs_fsck_argv@Base 1:1.18
@@ -167,6 +168,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_compare_statns_list@Base 1:1.27.51
  guestfs_compare_statvfs@Base 1:1.25.16
  guestfs_compare_statvfs_list@Base 1:1.25.16
+ guestfs_compare_tsk_dirent@Base 1:1.33.39
+ guestfs_compare_tsk_dirent_list@Base 1:1.33.39
  guestfs_compare_utsname@Base 1:1.25.16
  guestfs_compare_utsname_list@Base 1:1.25.16
  guestfs_compare_version@Base 1:1.25.16
@@ -242,6 +245,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_copy_statns_list@Base 1:1.27.51
  guestfs_copy_statvfs@Base 1:1.25.16
  guestfs_copy_statvfs_list@Base 1:1.25.16
+ guestfs_copy_tsk_dirent@Base 1:1.33.39
+ guestfs_copy_tsk_dirent_list@Base 1:1.33.39
  guestfs_copy_utsname@Base 1:1.25.16
  guestfs_copy_utsname_list@Base 1:1.25.16
  guestfs_copy_version@Base 1:1.25.16
@@ -274,6 +279,10 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_disk_virtual_size@Base 1:1.20
  guestfs_dmesg@Base 1.10
  guestfs_download@Base 1.10
+ guestfs_download_blocks@Base 1:1.33.45
+ guestfs_download_blocks_argv@Base 1:1.33.45
+ guestfs_download_blocks_va@Base 1:1.33.45
+ guestfs_download_inode@Base 1:1.33.14
  guestfs_download_offset@Base 1.10
  guestfs_drop_caches@Base 1.10
  guestfs_du@Base 1.10
@@ -297,6 +306,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_file_architecture@Base 1.10
  guestfs_filesize@Base 1.10
  guestfs_filesystem_available@Base 1:1.20
+ guestfs_filesystem_walk@Base 1:1.33.39
  guestfs_fill@Base 1.10
  guestfs_fill_dir@Base 1:1.20
  guestfs_fill_pattern@Base 1.10
@@ -347,6 +357,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_free_statns_list@Base 1:1.27.51
  guestfs_free_statvfs@Base 1.10
  guestfs_free_statvfs_list@Base 1.10
+ guestfs_free_tsk_dirent@Base 1:1.33.39
+ guestfs_free_tsk_dirent_list@Base 1:1.33.39
  guestfs_free_utsname@Base 1:1.20
  guestfs_free_utsname_list@Base 1:1.20
  guestfs_free_version@Base 1.10
@@ -390,6 +402,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_get_recovery_proc@Base 1.10
  guestfs_get_selinux@Base 1.10
  guestfs_get_smp@Base 1.14
+ guestfs_get_sockdir@Base 1:1.33.8
  guestfs_get_state@Base 1.10
  guestfs_get_tmpdir@Base 1:1.20
  guestfs_get_trace@Base 1.10
@@ -399,6 +412,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_getxattr@Base 1.10
  guestfs_getxattrs@Base 1.10
  guestfs_glob_expand@Base 1.10
+ guestfs_glob_expand_opts@Base 1:1.33.9
+ guestfs_glob_expand_opts_argv@Base 1:1.33.9
+ guestfs_glob_expand_opts_va@Base 1:1.33.9
  guestfs_grep@Base 1.10
  guestfs_grep_opts@Base 1:1.20
  guestfs_grep_opts_argv@Base 1:1.20
@@ -461,13 +477,14 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_inspect_list_applications2@Base 1:1.20
  guestfs_inspect_list_applications@Base 1.10
  guestfs_inspect_os@Base 1.10
- guestfs_int_safe_calloc@Base 1:1.29.26
- guestfs_int_safe_malloc@Base 1:1.29.26
- guestfs_int_safe_memdup@Base 1:1.29.26
- guestfs_int_safe_strdup@Base 1:1.29.26
- (optional)guestfs_internal_feature_available@Base 1:1.31.25
+ (optional)guestfs_int_safe_calloc@Base 1:1.29.26
+ (optional)guestfs_int_safe_malloc@Base 1:1.29.26
+ (optional)guestfs_int_safe_memdup@Base 1:1.29.26
+ (optional)guestfs_int_safe_strdup@Base 1:1.29.26
  (optional)guestfs_internal_autosync@Base 1.10
+ (optional)guestfs_internal_feature_available@Base 1:1.31.25
  (optional)guestfs_internal_exit@Base 1:1.23.30
+ (optional)guestfs_internal_filesystem_walk@Base 1:1.33.39
  (optional)guestfs_internal_hot_add_drive@Base 1:1.20
  (optional)guestfs_internal_hot_remove_drive@Base 1:1.20
  (optional)guestfs_internal_hot_remove_drive_precheck@Base 1:1.20
@@ -675,12 +692,15 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_mount_options@Base 1.10
  guestfs_mount_ro@Base 1.10
  guestfs_mount_vfs@Base 1.10
+ guestfs_mountable_device@Base 1:1.33.15
+ guestfs_mountable_subvolume@Base 1:1.33.15
  guestfs_mountpoints@Base 1.10
  guestfs_mounts@Base 1.10
  guestfs_mv@Base 1.10
  guestfs_next_private@Base 1.10
  guestfs_nr_devices@Base 1:1.18
  guestfs_ntfs_3g_probe@Base 1.10
+ guestfs_ntfscat_i@Base 1:1.33.14
  guestfs_ntfsclone_in@Base 1:1.18
  guestfs_ntfsclone_out@Base 1:1.18
  guestfs_ntfsclone_out_argv@Base 1:1.18
@@ -698,7 +718,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_part_add@Base 1.10
  guestfs_part_del@Base 1.10
  guestfs_part_disk@Base 1.10
+ guestfs_part_expand_gpt@Base 1:1.33.2
  guestfs_part_get_bootable@Base 1.10
+ guestfs_part_get_disk_guid@Base 1:1.33.2
  guestfs_part_get_gpt_guid@Base 1:1.29.25
  guestfs_part_get_gpt_type@Base 1:1.22
  guestfs_part_get_mbr_id@Base 1.10
@@ -708,6 +730,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_part_init@Base 1.10
  guestfs_part_list@Base 1.10
  guestfs_part_set_bootable@Base 1.10
+ guestfs_part_set_disk_guid@Base 1:1.33.2
+ guestfs_part_set_disk_guid_random@Base 1:1.33.2
  guestfs_part_set_gpt_guid@Base 1:1.29.25
  guestfs_part_set_gpt_type@Base 1:1.22
  guestfs_part_set_mbr_id@Base 1.10
@@ -762,6 +786,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_scrub_device@Base 1.10
  guestfs_scrub_file@Base 1.10
  guestfs_scrub_freespace@Base 1.10
+ guestfs_selinux_relabel@Base 1:1.33.43
+ guestfs_selinux_relabel_argv@Base 1:1.33.43
+ guestfs_selinux_relabel_va@Base 1:1.33.43
  guestfs_set_append@Base 1.10
  guestfs_set_attach_method@Base 1.10
  guestfs_set_autosync@Base 1.10
