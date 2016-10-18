@@ -7,7 +7,7 @@ Subject: golang: Fix for out-of-tree builds
  1 file changed, 2 insertions(+)
 
 diff --git a/golang/Makefile.am b/golang/Makefile.am
-index 58cafc6..ba13691 100644
+index 6afa97c..c4dbd48 100644
 --- a/golang/Makefile.am
 +++ b/golang/Makefile.am
 @@ -49,6 +49,7 @@ golangpkg_DATA = \
@@ -19,7 +19,7 @@ index 58cafc6..ba13691 100644
  
  golangsrc_DATA = $(source_files)
 @@ -62,4 +63,5 @@ endif
- CLEANFILES = *~ src/$(pkg)/*~
+ CLEANFILES += src/$(pkg)/*~
  
  clean-local:
 +	-[ $(srcdir) != $(builddir) ] && rm -f $(builddir)/src

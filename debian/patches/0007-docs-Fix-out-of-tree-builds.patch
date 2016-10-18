@@ -1,0 +1,21 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sun, 14 Aug 2016 13:08:25 +0200
+Subject: docs: Fix out-of-tree builds
+
+---
+ docs/Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/docs/Makefile.am b/docs/Makefile.am
+index b67735b..3d1190f 100644
+--- a/docs/Makefile.am
++++ b/docs/Makefile.am
+@@ -93,7 +93,7 @@ source_files := $(shell cat $(srcdir)/C_SOURCE_FILES)
+ 
+ internal-documentation.pod: $(source_files:%=$(top_srcdir)/%)
+ 	rm -f $@ $@-t
+-	./make-internal-documentation.pl \
++	$(srcdir)/make-internal-documentation.pl \
+ 	    --srcdir $(top_srcdir) \
+ 	    -o $@-t \
+ 	    $(source_files)

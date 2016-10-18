@@ -7,7 +7,7 @@ Subject: Make php buildable with builddir != srcdir
  1 file changed, 5 insertions(+), 14 deletions(-)
 
 diff --git a/php/Makefile.am b/php/Makefile.am
-index fc91545..e38331b 100644
+index 4db7d84..4cdbb63 100644
 --- a/php/Makefile.am
 +++ b/php/Makefile.am
 @@ -36,26 +36,16 @@ php_DATA = guestfs_php.ini
