@@ -37,4 +37,4 @@ usr/bin/guestunmount
 usr/share/man/man1/guestunmount*
 usr/share/man/*/man1/guestunmount*
 
-usr/share/bash-completion/completions/guestmount
+usr/share/bash-completion/completions/guest*mount
