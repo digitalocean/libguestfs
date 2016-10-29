@@ -185,9 +185,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -310,20 +311,12 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__dirstamp = $(am__leading_dot)dirstamp
-am__objects_1 = ../fish/virt_format-config.$(OBJEXT) \
-	../fish/virt_format-display-options.$(OBJEXT) \
-	../fish/virt_format-domain.$(OBJEXT) \
-	../fish/virt_format-inspect.$(OBJEXT) \
-	../fish/virt_format-keys.$(OBJEXT) \
-	../fish/virt_format-options.$(OBJEXT) \
-	../fish/virt_format-uri.$(OBJEXT)
-am_virt_format_OBJECTS = $(am__objects_1) virt_format-format.$(OBJEXT)
+am_virt_format_OBJECTS = virt_format-format.$(OBJEXT)
 virt_format_OBJECTS = $(am_virt_format_OBJECTS)
 am__DEPENDENCIES_1 =
-virt_format_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+virt_format_DEPENDENCIES = $(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/fish/libfishcommon.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -647,6 +640,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1779,6 +1774,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -1799,20 +1797,7 @@ EXTRA_DIST = \
 	test-virt-format.sh \
 	virt-format.pod
 
-SHARED_SOURCE_FILES = \
-	../fish/config.c \
-	../fish/display-options.h \
-	../fish/display-options.c \
-	../fish/domain.c \
-	../fish/inspect.c \
-	../fish/keys.c \
-	../fish/options.h \
-	../fish/options.c \
-	../fish/uri.h \
-	../fish/uri.c
-
 virt_format_SOURCES = \
-	$(SHARED_SOURCE_FILES) \
 	format.c
 
 virt_format_CPPFLAGS = \
@@ -1824,14 +1809,13 @@ virt_format_CPPFLAGS = \
 
 virt_format_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(LIBCONFIG_CFLAGS) \
 	$(LIBXML2_CFLAGS) \
 	$(LIBVIRT_CFLAGS)
 
 virt_format_LDADD = \
-	$(LIBCONFIG_LIBS) \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/fish/libfishcommon.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -1928,26 +1912,6 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-../fish/$(am__dirstamp):
-	@$(MKDIR_P) ../fish
-	@: > ../fish/$(am__dirstamp)
-../fish/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../fish/$(DEPDIR)
-	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_format-config.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_format-display-options.$(OBJEXT):  \
-	../fish/$(am__dirstamp) ../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_format-domain.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_format-inspect.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_format-keys.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_format-options.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_format-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
 
 virt-format$(EXEEXT): $(virt_format_OBJECTS) $(virt_format_DEPENDENCIES) $(EXTRA_virt_format_DEPENDENCIES) 
 	@rm -f virt-format$(EXEEXT)
@@ -1955,18 +1919,10 @@ virt-format$(EXEEXT): $(virt_format_OBJECTS) $(virt_format_DEPENDENCIES) $(EXTRA
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../fish/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_format-config.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_format-display-options.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_format-domain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_format-inspect.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_format-keys.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_format-options.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_format-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_format-format.Po@am__quote@
 
 .c.o:
@@ -1992,104 +1948,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
-
-../fish/virt_format-config.o: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-config.o -MD -MP -MF ../fish/$(DEPDIR)/virt_format-config.Tpo -c -o ../fish/virt_format-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-config.Tpo ../fish/$(DEPDIR)/virt_format-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/virt_format-config.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-
-../fish/virt_format-config.obj: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-config.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_format-config.Tpo -c -o ../fish/virt_format-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-config.Tpo ../fish/$(DEPDIR)/virt_format-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/virt_format-config.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-
-../fish/virt_format-display-options.o: ../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-display-options.o -MD -MP -MF ../fish/$(DEPDIR)/virt_format-display-options.Tpo -c -o ../fish/virt_format-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-display-options.Tpo ../fish/$(DEPDIR)/virt_format-display-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/display-options.c' object='../fish/virt_format-display-options.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
-
-../fish/virt_format-display-options.obj: ../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-display-options.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_format-display-options.Tpo -c -o ../fish/virt_format-display-options.obj `if test -f '../fish/display-options.c'; then $(CYGPATH_W) '../fish/display-options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/display-options.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-display-options.Tpo ../fish/$(DEPDIR)/virt_format-display-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/display-options.c' object='../fish/virt_format-display-options.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-display-options.obj `if test -f '../fish/display-options.c'; then $(CYGPATH_W) '../fish/display-options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/display-options.c'; fi`
-
-../fish/virt_format-domain.o: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-domain.o -MD -MP -MF ../fish/$(DEPDIR)/virt_format-domain.Tpo -c -o ../fish/virt_format-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-domain.Tpo ../fish/$(DEPDIR)/virt_format-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/virt_format-domain.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
-
-../fish/virt_format-domain.obj: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-domain.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_format-domain.Tpo -c -o ../fish/virt_format-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-domain.Tpo ../fish/$(DEPDIR)/virt_format-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/virt_format-domain.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
-
-../fish/virt_format-inspect.o: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-inspect.o -MD -MP -MF ../fish/$(DEPDIR)/virt_format-inspect.Tpo -c -o ../fish/virt_format-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-inspect.Tpo ../fish/$(DEPDIR)/virt_format-inspect.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='../fish/virt_format-inspect.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
-
-../fish/virt_format-inspect.obj: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-inspect.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_format-inspect.Tpo -c -o ../fish/virt_format-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-inspect.Tpo ../fish/$(DEPDIR)/virt_format-inspect.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='../fish/virt_format-inspect.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
-
-../fish/virt_format-keys.o: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-keys.o -MD -MP -MF ../fish/$(DEPDIR)/virt_format-keys.Tpo -c -o ../fish/virt_format-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-keys.Tpo ../fish/$(DEPDIR)/virt_format-keys.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/virt_format-keys.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
-
-../fish/virt_format-keys.obj: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-keys.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_format-keys.Tpo -c -o ../fish/virt_format-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-keys.Tpo ../fish/$(DEPDIR)/virt_format-keys.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/virt_format-keys.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
-
-../fish/virt_format-options.o: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-options.o -MD -MP -MF ../fish/$(DEPDIR)/virt_format-options.Tpo -c -o ../fish/virt_format-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-options.Tpo ../fish/$(DEPDIR)/virt_format-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/virt_format-options.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
-
-../fish/virt_format-options.obj: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-options.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_format-options.Tpo -c -o ../fish/virt_format-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-options.Tpo ../fish/$(DEPDIR)/virt_format-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/virt_format-options.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
-
-../fish/virt_format-uri.o: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-uri.o -MD -MP -MF ../fish/$(DEPDIR)/virt_format-uri.Tpo -c -o ../fish/virt_format-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-uri.Tpo ../fish/$(DEPDIR)/virt_format-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_format-uri.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-
-../fish/virt_format-uri.obj: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT ../fish/virt_format-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_format-uri.Tpo -c -o ../fish/virt_format-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_format-uri.Tpo ../fish/$(DEPDIR)/virt_format-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_format-uri.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -c -o ../fish/virt_format-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 virt_format-format.o: format.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_format_CPPFLAGS) $(CPPFLAGS) $(virt_format_CFLAGS) $(CFLAGS) -MT virt_format-format.o -MD -MP -MF $(DEPDIR)/virt_format-format.Tpo -c -o virt_format-format.o `test -f 'format.c' || echo '$(srcdir)/'`format.c
@@ -2444,8 +2302,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../fish/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2456,7 +2312,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2502,7 +2358,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -2569,7 +2425,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
@@ -2587,7 +2443,7 @@ stamp-virt-format.pod: virt-format.pod
 	touch $@
 
 check-valgrind:
-	$(MAKE) VG="$(top_builddir)/run @VG@" check
+	$(MAKE) VG="@VG@" check
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -184,9 +184,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -324,19 +325,19 @@ am_libprotocol_a_OBJECTS = libprotocol_a-guestfs_protocol.$(OBJEXT)
 libprotocol_a_OBJECTS = $(am_libprotocol_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(man8dir)"
 PROGRAMS = $(noinst_PROGRAMS) $(sbin_PROGRAMS)
-am_guestfsd_OBJECTS = guestfsd-stubs.$(OBJEXT) guestfsd-9p.$(OBJEXT) \
-	guestfsd-acl.$(OBJEXT) guestfsd-available.$(OBJEXT) \
-	guestfsd-augeas.$(OBJEXT) guestfsd-base64.$(OBJEXT) \
-	guestfsd-blkdiscard.$(OBJEXT) guestfsd-blkid.$(OBJEXT) \
-	guestfsd-blockdev.$(OBJEXT) guestfsd-btrfs.$(OBJEXT) \
-	guestfsd-cap.$(OBJEXT) guestfsd-checksum.$(OBJEXT) \
-	guestfsd-cleanups.$(OBJEXT) guestfsd-cmp.$(OBJEXT) \
-	guestfsd-command.$(OBJEXT) guestfsd-compress.$(OBJEXT) \
-	guestfsd-copy.$(OBJEXT) guestfsd-cpio.$(OBJEXT) \
-	guestfsd-cpmv.$(OBJEXT) guestfsd-dd.$(OBJEXT) \
-	guestfsd-debug.$(OBJEXT) guestfsd-debug-bmap.$(OBJEXT) \
-	guestfsd-devsparts.$(OBJEXT) guestfsd-df.$(OBJEXT) \
-	guestfsd-dir.$(OBJEXT) guestfsd-dmesg.$(OBJEXT) \
+am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
+	guestfsd-available.$(OBJEXT) guestfsd-augeas.$(OBJEXT) \
+	guestfsd-base64.$(OBJEXT) guestfsd-blkdiscard.$(OBJEXT) \
+	guestfsd-blkid.$(OBJEXT) guestfsd-blockdev.$(OBJEXT) \
+	guestfsd-btrfs.$(OBJEXT) guestfsd-cap.$(OBJEXT) \
+	guestfsd-checksum.$(OBJEXT) guestfsd-cleanups.$(OBJEXT) \
+	guestfsd-cmp.$(OBJEXT) guestfsd-command.$(OBJEXT) \
+	guestfsd-compress.$(OBJEXT) guestfsd-copy.$(OBJEXT) \
+	guestfsd-cpio.$(OBJEXT) guestfsd-cpmv.$(OBJEXT) \
+	guestfsd-dd.$(OBJEXT) guestfsd-debug.$(OBJEXT) \
+	guestfsd-debug-bmap.$(OBJEXT) guestfsd-devsparts.$(OBJEXT) \
+	guestfsd-df.$(OBJEXT) guestfsd-dir.$(OBJEXT) \
+	guestfsd-dispatch.$(OBJEXT) guestfsd-dmesg.$(OBJEXT) \
 	guestfsd-dropcaches.$(OBJEXT) guestfsd-du.$(OBJEXT) \
 	guestfsd-echo-daemon.$(OBJEXT) guestfsd-ext2.$(OBJEXT) \
 	guestfsd-fallocate.$(OBJEXT) guestfsd-file.$(OBJEXT) \
@@ -354,7 +355,8 @@ am_guestfsd_OBJECTS = guestfsd-stubs.$(OBJEXT) guestfsd-9p.$(OBJEXT) \
 	guestfsd-labels.$(OBJEXT) guestfsd-ldm.$(OBJEXT) \
 	guestfsd-link.$(OBJEXT) guestfsd-ls.$(OBJEXT) \
 	guestfsd-luks.$(OBJEXT) guestfsd-lvm.$(OBJEXT) \
-	guestfsd-lvm-filter.$(OBJEXT) guestfsd-md.$(OBJEXT) \
+	guestfsd-lvm-filter.$(OBJEXT) \
+	guestfsd-lvm-tokenization.$(OBJEXT) guestfsd-md.$(OBJEXT) \
 	guestfsd-mkfs.$(OBJEXT) guestfsd-mknod.$(OBJEXT) \
 	guestfsd-mktemp.$(OBJEXT) guestfsd-modprobe.$(OBJEXT) \
 	guestfsd-mount.$(OBJEXT) guestfsd-mountable.$(OBJEXT) \
@@ -368,15 +370,18 @@ am_guestfsd_OBJECTS = guestfsd-stubs.$(OBJEXT) guestfsd-9p.$(OBJEXT) \
 	guestfsd-sfdisk.$(OBJEXT) guestfsd-sh.$(OBJEXT) \
 	guestfsd-sleep.$(OBJEXT) guestfsd-sleuthkit.$(OBJEXT) \
 	guestfsd-stat.$(OBJEXT) guestfsd-statvfs.$(OBJEXT) \
-	guestfsd-strings.$(OBJEXT) guestfsd-swap.$(OBJEXT) \
-	guestfsd-sync.$(OBJEXT) guestfsd-syslinux.$(OBJEXT) \
-	guestfsd-tar.$(OBJEXT) guestfsd-tsk.$(OBJEXT) \
-	guestfsd-truncate.$(OBJEXT) guestfsd-umask.$(OBJEXT) \
-	guestfsd-upload.$(OBJEXT) guestfsd-utimens.$(OBJEXT) \
-	guestfsd-utsname.$(OBJEXT) guestfsd-uuids.$(OBJEXT) \
-	guestfsd-wc.$(OBJEXT) guestfsd-xattr.$(OBJEXT) \
-	guestfsd-xfs.$(OBJEXT) guestfsd-zero.$(OBJEXT) \
-	guestfsd-zerofree.$(OBJEXT)
+	guestfsd-strings.$(OBJEXT) guestfsd-stubs-0.$(OBJEXT) \
+	guestfsd-stubs-1.$(OBJEXT) guestfsd-stubs-2.$(OBJEXT) \
+	guestfsd-stubs-3.$(OBJEXT) guestfsd-stubs-4.$(OBJEXT) \
+	guestfsd-stubs-5.$(OBJEXT) guestfsd-stubs-6.$(OBJEXT) \
+	guestfsd-swap.$(OBJEXT) guestfsd-sync.$(OBJEXT) \
+	guestfsd-syslinux.$(OBJEXT) guestfsd-tar.$(OBJEXT) \
+	guestfsd-tsk.$(OBJEXT) guestfsd-truncate.$(OBJEXT) \
+	guestfsd-umask.$(OBJEXT) guestfsd-upload.$(OBJEXT) \
+	guestfsd-utimens.$(OBJEXT) guestfsd-utsname.$(OBJEXT) \
+	guestfsd-uuids.$(OBJEXT) guestfsd-wc.$(OBJEXT) \
+	guestfsd-xattr.$(OBJEXT) guestfsd-xfs.$(OBJEXT) \
+	guestfsd-zero.$(OBJEXT) guestfsd-zerofree.$(OBJEXT)
 guestfsd_OBJECTS = $(am_guestfsd_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfsd_DEPENDENCIES = liberrnostring.a libprotocol.a \
@@ -536,6 +541,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1668,6 +1675,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -1685,8 +1695,16 @@ guestfs_am_v_jar_ = $(guestfs_am_v_jar_@AM_DEFAULT_V@)
 guestfs_am_v_jar_0 = @echo "  JAR     " $@;
 generator_built = \
 	actions.h \
-	stubs.c \
-	names.c
+	dispatch.c \
+	names.c \
+	lvm-tokenization.c \
+	stubs-0.c \
+	stubs-1.c \
+	stubs-2.c \
+	stubs-3.c \
+	stubs-4.c \
+	stubs-5.c \
+	stubs-6.c
 
 shared_with_library = \
 	guestfs_protocol.c \
@@ -1719,12 +1737,7 @@ liberrnostring_a_SOURCES = \
 	errnostring.c
 
 liberrnostring_a_CFLAGS = 
-
-# Compile the largest file (stubs.c) first.  The other files are
-# listed alphabetically.  See also:
-# https://rwmj.wordpress.com/2015/09/30/make-and-queuing-theory/#content
 guestfsd_SOURCES = \
-	stubs.c \
 	9p.c \
 	acl.c \
 	actions.h \
@@ -1753,6 +1766,7 @@ guestfsd_SOURCES = \
 	devsparts.c \
 	df.c \
 	dir.c \
+	dispatch.c \
 	dmesg.c \
 	dropcaches.c \
 	du.c \
@@ -1789,6 +1803,7 @@ guestfsd_SOURCES = \
 	luks.c \
 	lvm.c \
 	lvm-filter.c \
+	lvm-tokenization.c \
 	md.c \
 	mkfs.c \
 	mknod.c \
@@ -1818,6 +1833,14 @@ guestfsd_SOURCES = \
 	stat.c \
 	statvfs.c \
 	strings.c \
+	stubs-0.c \
+	stubs-1.c \
+	stubs-2.c \
+	stubs-3.c \
+	stubs-4.c \
+	stubs-5.c \
+	stubs-6.c \
+	stubs.h \
 	swap.c \
 	sync.c \
 	syslinux.c \
@@ -2019,6 +2042,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-devsparts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-df.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-dir.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-dispatch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-dmesg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-dropcaches.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-du.Po@am__quote@
@@ -2054,6 +2078,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-ls.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-luks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-lvm-filter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-lvm-tokenization.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-lvm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-md.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-mkfs.Po@am__quote@
@@ -2083,7 +2108,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-statvfs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-strings.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-0.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-4.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-5.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-6.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-swap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-sync.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-syslinux.Po@am__quote@
@@ -2169,20 +2200,6 @@ libprotocol_a-guestfs_protocol.obj: guestfs_protocol.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='guestfs_protocol.c' object='libprotocol_a-guestfs_protocol.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libprotocol_a_CFLAGS) $(CFLAGS) -c -o libprotocol_a-guestfs_protocol.obj `if test -f 'guestfs_protocol.c'; then $(CYGPATH_W) 'guestfs_protocol.c'; else $(CYGPATH_W) '$(srcdir)/guestfs_protocol.c'; fi`
-
-guestfsd-stubs.o: stubs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs.o -MD -MP -MF $(DEPDIR)/guestfsd-stubs.Tpo -c -o guestfsd-stubs.o `test -f 'stubs.c' || echo '$(srcdir)/'`stubs.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs.Tpo $(DEPDIR)/guestfsd-stubs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs.c' object='guestfsd-stubs.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs.o `test -f 'stubs.c' || echo '$(srcdir)/'`stubs.c
-
-guestfsd-stubs.obj: stubs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs.obj -MD -MP -MF $(DEPDIR)/guestfsd-stubs.Tpo -c -o guestfsd-stubs.obj `if test -f 'stubs.c'; then $(CYGPATH_W) 'stubs.c'; else $(CYGPATH_W) '$(srcdir)/stubs.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs.Tpo $(DEPDIR)/guestfsd-stubs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs.c' object='guestfsd-stubs.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs.obj `if test -f 'stubs.c'; then $(CYGPATH_W) 'stubs.c'; else $(CYGPATH_W) '$(srcdir)/stubs.c'; fi`
 
 guestfsd-9p.o: 9p.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-9p.o -MD -MP -MF $(DEPDIR)/guestfsd-9p.Tpo -c -o guestfsd-9p.o `test -f '9p.c' || echo '$(srcdir)/'`9p.c
@@ -2519,6 +2536,20 @@ guestfsd-dir.obj: dir.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dir.c' object='guestfsd-dir.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-dir.obj `if test -f 'dir.c'; then $(CYGPATH_W) 'dir.c'; else $(CYGPATH_W) '$(srcdir)/dir.c'; fi`
+
+guestfsd-dispatch.o: dispatch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-dispatch.o -MD -MP -MF $(DEPDIR)/guestfsd-dispatch.Tpo -c -o guestfsd-dispatch.o `test -f 'dispatch.c' || echo '$(srcdir)/'`dispatch.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-dispatch.Tpo $(DEPDIR)/guestfsd-dispatch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dispatch.c' object='guestfsd-dispatch.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-dispatch.o `test -f 'dispatch.c' || echo '$(srcdir)/'`dispatch.c
+
+guestfsd-dispatch.obj: dispatch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-dispatch.obj -MD -MP -MF $(DEPDIR)/guestfsd-dispatch.Tpo -c -o guestfsd-dispatch.obj `if test -f 'dispatch.c'; then $(CYGPATH_W) 'dispatch.c'; else $(CYGPATH_W) '$(srcdir)/dispatch.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-dispatch.Tpo $(DEPDIR)/guestfsd-dispatch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dispatch.c' object='guestfsd-dispatch.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-dispatch.obj `if test -f 'dispatch.c'; then $(CYGPATH_W) 'dispatch.c'; else $(CYGPATH_W) '$(srcdir)/dispatch.c'; fi`
 
 guestfsd-dmesg.o: dmesg.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-dmesg.o -MD -MP -MF $(DEPDIR)/guestfsd-dmesg.Tpo -c -o guestfsd-dmesg.o `test -f 'dmesg.c' || echo '$(srcdir)/'`dmesg.c
@@ -3024,6 +3055,20 @@ guestfsd-lvm-filter.obj: lvm-filter.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-lvm-filter.obj `if test -f 'lvm-filter.c'; then $(CYGPATH_W) 'lvm-filter.c'; else $(CYGPATH_W) '$(srcdir)/lvm-filter.c'; fi`
 
+guestfsd-lvm-tokenization.o: lvm-tokenization.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-lvm-tokenization.o -MD -MP -MF $(DEPDIR)/guestfsd-lvm-tokenization.Tpo -c -o guestfsd-lvm-tokenization.o `test -f 'lvm-tokenization.c' || echo '$(srcdir)/'`lvm-tokenization.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-lvm-tokenization.Tpo $(DEPDIR)/guestfsd-lvm-tokenization.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lvm-tokenization.c' object='guestfsd-lvm-tokenization.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-lvm-tokenization.o `test -f 'lvm-tokenization.c' || echo '$(srcdir)/'`lvm-tokenization.c
+
+guestfsd-lvm-tokenization.obj: lvm-tokenization.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-lvm-tokenization.obj -MD -MP -MF $(DEPDIR)/guestfsd-lvm-tokenization.Tpo -c -o guestfsd-lvm-tokenization.obj `if test -f 'lvm-tokenization.c'; then $(CYGPATH_W) 'lvm-tokenization.c'; else $(CYGPATH_W) '$(srcdir)/lvm-tokenization.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-lvm-tokenization.Tpo $(DEPDIR)/guestfsd-lvm-tokenization.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lvm-tokenization.c' object='guestfsd-lvm-tokenization.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-lvm-tokenization.obj `if test -f 'lvm-tokenization.c'; then $(CYGPATH_W) 'lvm-tokenization.c'; else $(CYGPATH_W) '$(srcdir)/lvm-tokenization.c'; fi`
+
 guestfsd-md.o: md.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-md.o -MD -MP -MF $(DEPDIR)/guestfsd-md.Tpo -c -o guestfsd-md.o `test -f 'md.c' || echo '$(srcdir)/'`md.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-md.Tpo $(DEPDIR)/guestfsd-md.Po
@@ -3415,6 +3460,104 @@ guestfsd-strings.obj: strings.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='strings.c' object='guestfsd-strings.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-strings.obj `if test -f 'strings.c'; then $(CYGPATH_W) 'strings.c'; else $(CYGPATH_W) '$(srcdir)/strings.c'; fi`
+
+guestfsd-stubs-0.o: stubs-0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-0.o -MD -MP -MF $(DEPDIR)/guestfsd-stubs-0.Tpo -c -o guestfsd-stubs-0.o `test -f 'stubs-0.c' || echo '$(srcdir)/'`stubs-0.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-0.Tpo $(DEPDIR)/guestfsd-stubs-0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-0.c' object='guestfsd-stubs-0.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-0.o `test -f 'stubs-0.c' || echo '$(srcdir)/'`stubs-0.c
+
+guestfsd-stubs-0.obj: stubs-0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-0.obj -MD -MP -MF $(DEPDIR)/guestfsd-stubs-0.Tpo -c -o guestfsd-stubs-0.obj `if test -f 'stubs-0.c'; then $(CYGPATH_W) 'stubs-0.c'; else $(CYGPATH_W) '$(srcdir)/stubs-0.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-0.Tpo $(DEPDIR)/guestfsd-stubs-0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-0.c' object='guestfsd-stubs-0.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-0.obj `if test -f 'stubs-0.c'; then $(CYGPATH_W) 'stubs-0.c'; else $(CYGPATH_W) '$(srcdir)/stubs-0.c'; fi`
+
+guestfsd-stubs-1.o: stubs-1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-1.o -MD -MP -MF $(DEPDIR)/guestfsd-stubs-1.Tpo -c -o guestfsd-stubs-1.o `test -f 'stubs-1.c' || echo '$(srcdir)/'`stubs-1.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-1.Tpo $(DEPDIR)/guestfsd-stubs-1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-1.c' object='guestfsd-stubs-1.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-1.o `test -f 'stubs-1.c' || echo '$(srcdir)/'`stubs-1.c
+
+guestfsd-stubs-1.obj: stubs-1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-1.obj -MD -MP -MF $(DEPDIR)/guestfsd-stubs-1.Tpo -c -o guestfsd-stubs-1.obj `if test -f 'stubs-1.c'; then $(CYGPATH_W) 'stubs-1.c'; else $(CYGPATH_W) '$(srcdir)/stubs-1.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-1.Tpo $(DEPDIR)/guestfsd-stubs-1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-1.c' object='guestfsd-stubs-1.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-1.obj `if test -f 'stubs-1.c'; then $(CYGPATH_W) 'stubs-1.c'; else $(CYGPATH_W) '$(srcdir)/stubs-1.c'; fi`
+
+guestfsd-stubs-2.o: stubs-2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-2.o -MD -MP -MF $(DEPDIR)/guestfsd-stubs-2.Tpo -c -o guestfsd-stubs-2.o `test -f 'stubs-2.c' || echo '$(srcdir)/'`stubs-2.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-2.Tpo $(DEPDIR)/guestfsd-stubs-2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-2.c' object='guestfsd-stubs-2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-2.o `test -f 'stubs-2.c' || echo '$(srcdir)/'`stubs-2.c
+
+guestfsd-stubs-2.obj: stubs-2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-2.obj -MD -MP -MF $(DEPDIR)/guestfsd-stubs-2.Tpo -c -o guestfsd-stubs-2.obj `if test -f 'stubs-2.c'; then $(CYGPATH_W) 'stubs-2.c'; else $(CYGPATH_W) '$(srcdir)/stubs-2.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-2.Tpo $(DEPDIR)/guestfsd-stubs-2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-2.c' object='guestfsd-stubs-2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-2.obj `if test -f 'stubs-2.c'; then $(CYGPATH_W) 'stubs-2.c'; else $(CYGPATH_W) '$(srcdir)/stubs-2.c'; fi`
+
+guestfsd-stubs-3.o: stubs-3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-3.o -MD -MP -MF $(DEPDIR)/guestfsd-stubs-3.Tpo -c -o guestfsd-stubs-3.o `test -f 'stubs-3.c' || echo '$(srcdir)/'`stubs-3.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-3.Tpo $(DEPDIR)/guestfsd-stubs-3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-3.c' object='guestfsd-stubs-3.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-3.o `test -f 'stubs-3.c' || echo '$(srcdir)/'`stubs-3.c
+
+guestfsd-stubs-3.obj: stubs-3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-3.obj -MD -MP -MF $(DEPDIR)/guestfsd-stubs-3.Tpo -c -o guestfsd-stubs-3.obj `if test -f 'stubs-3.c'; then $(CYGPATH_W) 'stubs-3.c'; else $(CYGPATH_W) '$(srcdir)/stubs-3.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-3.Tpo $(DEPDIR)/guestfsd-stubs-3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-3.c' object='guestfsd-stubs-3.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-3.obj `if test -f 'stubs-3.c'; then $(CYGPATH_W) 'stubs-3.c'; else $(CYGPATH_W) '$(srcdir)/stubs-3.c'; fi`
+
+guestfsd-stubs-4.o: stubs-4.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-4.o -MD -MP -MF $(DEPDIR)/guestfsd-stubs-4.Tpo -c -o guestfsd-stubs-4.o `test -f 'stubs-4.c' || echo '$(srcdir)/'`stubs-4.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-4.Tpo $(DEPDIR)/guestfsd-stubs-4.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-4.c' object='guestfsd-stubs-4.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-4.o `test -f 'stubs-4.c' || echo '$(srcdir)/'`stubs-4.c
+
+guestfsd-stubs-4.obj: stubs-4.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-4.obj -MD -MP -MF $(DEPDIR)/guestfsd-stubs-4.Tpo -c -o guestfsd-stubs-4.obj `if test -f 'stubs-4.c'; then $(CYGPATH_W) 'stubs-4.c'; else $(CYGPATH_W) '$(srcdir)/stubs-4.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-4.Tpo $(DEPDIR)/guestfsd-stubs-4.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-4.c' object='guestfsd-stubs-4.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-4.obj `if test -f 'stubs-4.c'; then $(CYGPATH_W) 'stubs-4.c'; else $(CYGPATH_W) '$(srcdir)/stubs-4.c'; fi`
+
+guestfsd-stubs-5.o: stubs-5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-5.o -MD -MP -MF $(DEPDIR)/guestfsd-stubs-5.Tpo -c -o guestfsd-stubs-5.o `test -f 'stubs-5.c' || echo '$(srcdir)/'`stubs-5.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-5.Tpo $(DEPDIR)/guestfsd-stubs-5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-5.c' object='guestfsd-stubs-5.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-5.o `test -f 'stubs-5.c' || echo '$(srcdir)/'`stubs-5.c
+
+guestfsd-stubs-5.obj: stubs-5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-5.obj -MD -MP -MF $(DEPDIR)/guestfsd-stubs-5.Tpo -c -o guestfsd-stubs-5.obj `if test -f 'stubs-5.c'; then $(CYGPATH_W) 'stubs-5.c'; else $(CYGPATH_W) '$(srcdir)/stubs-5.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-5.Tpo $(DEPDIR)/guestfsd-stubs-5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-5.c' object='guestfsd-stubs-5.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-5.obj `if test -f 'stubs-5.c'; then $(CYGPATH_W) 'stubs-5.c'; else $(CYGPATH_W) '$(srcdir)/stubs-5.c'; fi`
+
+guestfsd-stubs-6.o: stubs-6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-6.o -MD -MP -MF $(DEPDIR)/guestfsd-stubs-6.Tpo -c -o guestfsd-stubs-6.o `test -f 'stubs-6.c' || echo '$(srcdir)/'`stubs-6.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-6.Tpo $(DEPDIR)/guestfsd-stubs-6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-6.c' object='guestfsd-stubs-6.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-6.o `test -f 'stubs-6.c' || echo '$(srcdir)/'`stubs-6.c
+
+guestfsd-stubs-6.obj: stubs-6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-6.obj -MD -MP -MF $(DEPDIR)/guestfsd-stubs-6.Tpo -c -o guestfsd-stubs-6.obj `if test -f 'stubs-6.c'; then $(CYGPATH_W) 'stubs-6.c'; else $(CYGPATH_W) '$(srcdir)/stubs-6.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stubs-6.Tpo $(DEPDIR)/guestfsd-stubs-6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stubs-6.c' object='guestfsd-stubs-6.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stubs-6.obj `if test -f 'stubs-6.c'; then $(CYGPATH_W) 'stubs-6.c'; else $(CYGPATH_W) '$(srcdir)/stubs-6.c'; fi`
 
 guestfsd-swap.o: swap.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-swap.o -MD -MP -MF $(DEPDIR)/guestfsd-swap.Tpo -c -o guestfsd-swap.o `test -f 'swap.c' || echo '$(srcdir)/'`swap.c
@@ -3932,7 +4075,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:

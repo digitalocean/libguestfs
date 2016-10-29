@@ -4100,23 +4100,19 @@ known.
 
 =over 4
 
+=item "aarch64"
+
+64-бітовий ARM.
+
+=item "arm"
+
+32-бітовий ARM.
+
 =item "i386"
 
 Цей рядок буде повернуто для всіх виконуваних файлів для 32-бітових
 процесорів i386, i486, i586, i686, незалежно від точного значення версії
 процесора, визначеного для виконуваного файла.
-
-=item "x86_64"
-
-64-бітовий x86-64.
-
-=item "sparc"
-
-32-бітовий SPARC.
-
-=item "sparc64"
-
-64-бітовий SPARC V9 або новіша версія.
 
 =item "ia64"
 
@@ -4128,15 +4124,23 @@ Intel Itanium.
 
 =item "ppc64"
 
-64-бітовий Power PC.
+64 bit Power PC (big endian).
 
-=item "arm"
+=item "ppc64le"
 
-32-бітовий ARM.
+64 bit Power PC (little endian).
 
-=item "aarch64"
+=item "sparc"
 
-64-бітовий ARM.
+32-бітовий SPARC.
+
+=item "sparc64"
+
+64-бітовий SPARC V9 або новіша версія.
+
+=item "x86_64"
+
+64-бітовий x86-64.
 
 =back
 
@@ -4259,9 +4263,8 @@ in order to return a list of all the files and directories stored within.
 
 It is not necessary to mount the disk partition to run this command.
 
-All entries in the filesystem are returned, excluding C<.> and C<..>. This
-function can list deleted or unaccessible files.  The entries are I<not>
-sorted.
+All entries in the filesystem are returned. This function can list deleted
+or unaccessible files. The entries are I<not> sorted.
 
 The C<tsk_dirent> structure contains the following fields.
 

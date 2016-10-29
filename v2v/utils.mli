@@ -21,20 +21,16 @@
 val quote : string -> string
 (** The {!Filename.quote} function. *)
 
-val xpath_string : Xml.xpathctx -> string -> string option
-val xpath_int : Xml.xpathctx -> string -> int option
-val xpath_int64 : Xml.xpathctx -> string -> int64 option
-(** Parse an xpath expression and return a string/int.  Returns
-    [Some v], or [None] if the expression doesn't match. *)
-
-val xpath_string_default : Xml.xpathctx -> string -> string -> string
-val xpath_int_default : Xml.xpathctx -> string -> int -> int
-val xpath_int64_default : Xml.xpathctx -> string -> int64 -> int64
-(** Parse an xpath expression and return a string/int; if the expression
-    doesn't match, return the default. *)
-
 val drive_name : int -> string
 val drive_index : string -> int
+
+val shell_unquote : string -> string
+(** If the string looks like a shell quoted string, then attempt to
+    unquote it.
+
+    This is just intended to deal with quoting in configuration files
+    (like ones under /etc/sysconfig), and it doesn't deal with some
+    situations such as $variable interpolation. *)
 
 val kvm_arch : string -> string
 (** Map guest architecture found by inspection to the architecture
@@ -50,9 +46,6 @@ val find_uefi_firmware : string -> Uefi.uefi_firmware
 val compare_app2_versions : Guestfs.application2 -> Guestfs.application2 -> int
 (** Compare two app versions. *)
 
-val remove_duplicates : 'a list -> 'a list
-(** Remove duplicates from a list. *)
-
 val du : string -> int64
 (** Return the true size of a file in bytes, including any wasted
     space caused by internal fragmentation (the overhead of using
@@ -60,11 +53,3 @@ val du : string -> int64
 
     This can raise either [Failure] or [Invalid_argument] in case
     of errors. *)
-
-val shell_unquote : string -> string
-(** If the string looks like a shell quoted string, then attempt to
-    unquote it.
-
-    This is just intended to deal with quoting in configuration files
-    (like ones under /etc/sysconfig), and it doesn't deal with some
-    situations such as $variable interpolation. *)

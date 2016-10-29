@@ -194,9 +194,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -319,19 +320,9 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__guestmount_SOURCES_DIST = ../fish/config.c \
-	../fish/display-options.h ../fish/display-options.c \
-	../fish/domain.c ../fish/inspect.c ../fish/keys.c \
-	../fish/options.h ../fish/options.c ../fish/uri.h \
-	../fish/uri.c guestmount.c
+am__guestmount_SOURCES_DIST = ../fish/config.c guestmount.c
 am__dirstamp = $(am__leading_dot)dirstamp
-@HAVE_FUSE_TRUE@am__objects_1 = ../fish/guestmount-config.$(OBJEXT) \
-@HAVE_FUSE_TRUE@	../fish/guestmount-display-options.$(OBJEXT) \
-@HAVE_FUSE_TRUE@	../fish/guestmount-domain.$(OBJEXT) \
-@HAVE_FUSE_TRUE@	../fish/guestmount-inspect.$(OBJEXT) \
-@HAVE_FUSE_TRUE@	../fish/guestmount-keys.$(OBJEXT) \
-@HAVE_FUSE_TRUE@	../fish/guestmount-options.$(OBJEXT) \
-@HAVE_FUSE_TRUE@	../fish/guestmount-uri.$(OBJEXT)
+@HAVE_FUSE_TRUE@am__objects_1 = ../fish/guestmount-config.$(OBJEXT)
 @HAVE_FUSE_TRUE@am_guestmount_OBJECTS = $(am__objects_1) \
 @HAVE_FUSE_TRUE@	guestmount-guestmount.$(OBJEXT)
 guestmount_OBJECTS = $(am_guestmount_OBJECTS)
@@ -340,6 +331,7 @@ am__DEPENDENCIES_1 =
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
 @HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/fish/libfishcommon.la \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -720,6 +712,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1852,6 +1846,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -1878,16 +1875,7 @@ EXTRA_DIST = \
 # These source files (all related to option parsing) are shared
 # between guestfish and guestmount.
 @HAVE_FUSE_TRUE@SHARED_SOURCE_FILES = \
-@HAVE_FUSE_TRUE@	../fish/config.c \
-@HAVE_FUSE_TRUE@	../fish/display-options.h \
-@HAVE_FUSE_TRUE@	../fish/display-options.c \
-@HAVE_FUSE_TRUE@	../fish/domain.c \
-@HAVE_FUSE_TRUE@	../fish/inspect.c \
-@HAVE_FUSE_TRUE@	../fish/keys.c \
-@HAVE_FUSE_TRUE@	../fish/options.h \
-@HAVE_FUSE_TRUE@	../fish/options.c \
-@HAVE_FUSE_TRUE@	../fish/uri.h \
-@HAVE_FUSE_TRUE@	../fish/uri.c
+@HAVE_FUSE_TRUE@	../fish/config.c
 
 
 # guestmount
@@ -1913,6 +1901,7 @@ EXTRA_DIST = \
 @HAVE_FUSE_TRUE@	$(LIBCONFIG_LIBS) \
 @HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
 @HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/fish/libfishcommon.la \
 @HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
 @HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_FUSE_TRUE@	$(LTLIBINTL) \
@@ -2110,18 +2099,6 @@ clean-checkPROGRAMS:
 	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
 ../fish/guestmount-config.$(OBJEXT): ../fish/$(am__dirstamp) \
 	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/guestmount-display-options.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/guestmount-domain.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/guestmount-inspect.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/guestmount-keys.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/guestmount-options.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/guestmount-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
 
 guestmount$(EXEEXT): $(guestmount_OBJECTS) $(guestmount_DEPENDENCIES) $(EXTRA_guestmount_DEPENDENCIES) 
 	@rm -f guestmount$(EXEEXT)
@@ -2153,12 +2130,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/guestmount-config.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/guestmount-display-options.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/guestmount-domain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/guestmount-inspect.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/guestmount-keys.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/guestmount-options.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/guestmount-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/guestunmount-display-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-guestmount.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestunmount-guestunmount.Po@am__quote@
@@ -2203,90 +2174,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/guestmount-config.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-
-../fish/guestmount-display-options.o: ../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-display-options.o -MD -MP -MF ../fish/$(DEPDIR)/guestmount-display-options.Tpo -c -o ../fish/guestmount-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-display-options.Tpo ../fish/$(DEPDIR)/guestmount-display-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/display-options.c' object='../fish/guestmount-display-options.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
-
-../fish/guestmount-display-options.obj: ../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-display-options.obj -MD -MP -MF ../fish/$(DEPDIR)/guestmount-display-options.Tpo -c -o ../fish/guestmount-display-options.obj `if test -f '../fish/display-options.c'; then $(CYGPATH_W) '../fish/display-options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/display-options.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-display-options.Tpo ../fish/$(DEPDIR)/guestmount-display-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/display-options.c' object='../fish/guestmount-display-options.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-display-options.obj `if test -f '../fish/display-options.c'; then $(CYGPATH_W) '../fish/display-options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/display-options.c'; fi`
-
-../fish/guestmount-domain.o: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-domain.o -MD -MP -MF ../fish/$(DEPDIR)/guestmount-domain.Tpo -c -o ../fish/guestmount-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-domain.Tpo ../fish/$(DEPDIR)/guestmount-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/guestmount-domain.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
-
-../fish/guestmount-domain.obj: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-domain.obj -MD -MP -MF ../fish/$(DEPDIR)/guestmount-domain.Tpo -c -o ../fish/guestmount-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-domain.Tpo ../fish/$(DEPDIR)/guestmount-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/guestmount-domain.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
-
-../fish/guestmount-inspect.o: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-inspect.o -MD -MP -MF ../fish/$(DEPDIR)/guestmount-inspect.Tpo -c -o ../fish/guestmount-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-inspect.Tpo ../fish/$(DEPDIR)/guestmount-inspect.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='../fish/guestmount-inspect.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
-
-../fish/guestmount-inspect.obj: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-inspect.obj -MD -MP -MF ../fish/$(DEPDIR)/guestmount-inspect.Tpo -c -o ../fish/guestmount-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-inspect.Tpo ../fish/$(DEPDIR)/guestmount-inspect.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='../fish/guestmount-inspect.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
-
-../fish/guestmount-keys.o: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-keys.o -MD -MP -MF ../fish/$(DEPDIR)/guestmount-keys.Tpo -c -o ../fish/guestmount-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-keys.Tpo ../fish/$(DEPDIR)/guestmount-keys.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/guestmount-keys.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
-
-../fish/guestmount-keys.obj: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-keys.obj -MD -MP -MF ../fish/$(DEPDIR)/guestmount-keys.Tpo -c -o ../fish/guestmount-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-keys.Tpo ../fish/$(DEPDIR)/guestmount-keys.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/guestmount-keys.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
-
-../fish/guestmount-options.o: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-options.o -MD -MP -MF ../fish/$(DEPDIR)/guestmount-options.Tpo -c -o ../fish/guestmount-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-options.Tpo ../fish/$(DEPDIR)/guestmount-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/guestmount-options.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
-
-../fish/guestmount-options.obj: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-options.obj -MD -MP -MF ../fish/$(DEPDIR)/guestmount-options.Tpo -c -o ../fish/guestmount-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-options.Tpo ../fish/$(DEPDIR)/guestmount-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/guestmount-options.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
-
-../fish/guestmount-uri.o: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-uri.o -MD -MP -MF ../fish/$(DEPDIR)/guestmount-uri.Tpo -c -o ../fish/guestmount-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-uri.Tpo ../fish/$(DEPDIR)/guestmount-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/guestmount-uri.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-
-../fish/guestmount-uri.obj: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/guestmount-uri.Tpo -c -o ../fish/guestmount-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-uri.Tpo ../fish/$(DEPDIR)/guestmount-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/guestmount-uri.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 guestmount-guestmount.o: guestmount.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT guestmount-guestmount.o -MD -MP -MF $(DEPDIR)/guestmount-guestmount.Tpo -c -o guestmount-guestmount.o `test -f 'guestmount.c' || echo '$(srcdir)/'`guestmount.c
@@ -2866,7 +2753,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:

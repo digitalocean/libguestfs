@@ -23,13 +23,28 @@ generator_built = \
 	cmds.c \
 	cmds-gperf.gperf \
 	completion.c \
+	entries-0.c \
+	entries-1.c \
+	entries-2.c \
+	entries-3.c \
+	entries-4.c \
+	entries-5.c \
+	entries-6.c \
 	event-names.c \
 	fish-cmds.h \
 	guestfish-actions.pod \
 	guestfish-commands.pod \
 	guestfish-prepopts.pod \
 	prepopts.h \
-	prepopts.c
+	prepopts.c \
+	run-0.c \
+	run-1.c \
+	run-2.c \
+	run-3.c \
+	run-4.c \
+	run-5.c \
+	run-6.c \
+	run.h
 
 BUILT_SOURCES = \
 	$(generator_built) \
@@ -56,8 +71,8 @@ EXTRA_DIST = \
 # between guestfish, guestmount and some other virt tools.  Keep a
 # convenient list here just so we know which ones are shared.  These
 # files must not include other guestfish files.
-SHARED_SOURCE_FILES = \
-	config.c \
+FISHCOMMON_SOURCE_FILES = \
+	decrypt.c \
 	display-options.h \
 	display-options.c \
 	domain.c \
@@ -65,10 +80,34 @@ SHARED_SOURCE_FILES = \
 	keys.c \
 	options.h \
 	options.c \
-	progress.h \
-	progress.c \
 	uri.h \
 	uri.c
+
+SHARED_SOURCE_FILES = \
+	$(FISHCOMMON_SOURCE_FILES) \
+	config.c \
+	progress.h \
+	progress.c
+
+# libfishcommon.la contains guestfish code which is used in other
+# C tools.  Note this convenience static library is *not* used in
+# guestfish, as the sources are built with extra defines
+# (e.g. -DCOMPILING_GUESTFISH) in that case.
+libfishcommon_la_SOURCES = \
+	$(FISHCOMMON_SOURCE_FILES)
+libfishcommon_la_CPPFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/fish -I$(top_builddir)/fish \
+	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+libfishcommon_la_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(LIBXML2_CFLAGS)
+libfishcommon_la_LIBADD = \
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/src/libutils.la \
+	$(LIBXML2_LIBS) \
+	$(LTLIBINTL)
 
 guestfish_SOURCES = \
 	$(generator_built) \
@@ -143,7 +182,7 @@ guestfish_LDADD = \
 	-lm
 
 # Make guestfish use the convenience libraries.
-noinst_LTLIBRARIES = libcmds.la librc_protocol.la
+noinst_LTLIBRARIES = libcmds.la librc_protocol.la libfishcommon.la
 guestfish_LDADD += libcmds.la librc_protocol.la ../gnulib/lib/libgnu.la
 
 if HAVE_RPCGEN
@@ -303,7 +342,7 @@ endif
 endif
 
 check-valgrind:
-	$(MAKE) TESTS="test-a.sh test-add-domain.sh test-add-uri.sh test-copy.sh test-d.sh test-edit.sh test-escapes.sh test-events.sh test-find0.sh test-glob.sh test-inspect.sh test-prep.sh test-read-file.sh test-remote.sh test-remote-events.sh test-reopen.sh test-run.sh test-stringlist.sh test-tilde.sh test-upload-to-dir.sh" VG="$(top_builddir)/run @VG@" check
+	$(MAKE) TESTS="test-a.sh test-add-domain.sh test-add-uri.sh test-copy.sh test-d.sh test-edit.sh test-escapes.sh test-events.sh test-find0.sh test-glob.sh test-inspect.sh test-prep.sh test-read-file.sh test-remote.sh test-remote-events.sh test-reopen.sh test-run.sh test-stringlist.sh test-tilde.sh test-upload-to-dir.sh" VG="@VG@" check
 
 EXTRA_DIST += \
 	test-a.sh \

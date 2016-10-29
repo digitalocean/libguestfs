@@ -5663,19 +5663,16 @@ public class GuestFS {
    * </p><p>
    * Currently defined architectures are:
    * </p><p>
+   * "aarch64"
+   * 64 bit ARM.
+   * </p><p>
+   * "arm"
+   * 32 bit ARM.
+   * </p><p>
    * "i386"
    * This string is returned for all 32 bit i386, i486,
    * i586, i686 binaries irrespective of the precise
    * processor requirements of the binary.
-   * </p><p>
-   * "x86_64"
-   * 64 bit x86-64.
-   * </p><p>
-   * "sparc"
-   * 32 bit SPARC.
-   * </p><p>
-   * "sparc64"
-   * 64 bit SPARC V9 and above.
    * </p><p>
    * "ia64"
    * Intel Itanium.
@@ -5684,13 +5681,19 @@ public class GuestFS {
    * 32 bit Power PC.
    * </p><p>
    * "ppc64"
-   * 64 bit Power PC.
+   * 64 bit Power PC (big endian).
    * </p><p>
-   * "arm"
-   * 32 bit ARM.
+   * "ppc64le"
+   * 64 bit Power PC (little endian).
    * </p><p>
-   * "aarch64"
-   * 64 bit ARM.
+   * "sparc"
+   * 32 bit SPARC.
+   * </p><p>
+   * "sparc64"
+   * 64 bit SPARC V9 and above.
+   * </p><p>
+   * "x86_64"
+   * 64 bit x86-64.
    * </p><p>
    * Libguestfs may return other architecture strings in
    * future.
@@ -5817,9 +5820,9 @@ public class GuestFS {
    * It is not necessary to mount the disk partition to run
    * this command.
    * </p><p>
-   * All entries in the filesystem are returned, excluding
-   * "." and "..". This function can list deleted or
-   * unaccessible files. The entries are *not* sorted.
+   * All entries in the filesystem are returned. This
+   * function can list deleted or unaccessible files. The
+   * entries are *not* sorted.
    * </p><p>
    * The "tsk_dirent" structure contains the following
    * fields.

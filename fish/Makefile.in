@@ -205,9 +205,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -339,6 +340,20 @@ am__v_lt_1 =
 libcmds_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libcmds_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__DEPENDENCIES_1 =
+libfishcommon_la_DEPENDENCIES = $(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/src/libutils.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+am__objects_1 = libfishcommon_la-decrypt.lo \
+	libfishcommon_la-display-options.lo libfishcommon_la-domain.lo \
+	libfishcommon_la-inspect.lo libfishcommon_la-keys.lo \
+	libfishcommon_la-options.lo libfishcommon_la-uri.lo
+am_libfishcommon_la_OBJECTS = $(am__objects_1)
+libfishcommon_la_OBJECTS = $(am_libfishcommon_la_OBJECTS)
+libfishcommon_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(libfishcommon_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 librc_protocol_la_LIBADD =
 am_librc_protocol_la_OBJECTS = librc_protocol_la-rc_protocol.lo
 librc_protocol_la_OBJECTS = $(am_librc_protocol_la_OBJECTS)
@@ -350,15 +365,23 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man5dir)" \
 	"$(DESTDIR)$(toolsconfdir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_1 = guestfish-cmds.$(OBJEXT) \
-	guestfish-completion.$(OBJEXT) guestfish-event-names.$(OBJEXT) \
-	guestfish-prepopts.$(OBJEXT)
-am__objects_2 = guestfish-config.$(OBJEXT) \
+am__objects_2 = guestfish-cmds.$(OBJEXT) \
+	guestfish-completion.$(OBJEXT) guestfish-entries-0.$(OBJEXT) \
+	guestfish-entries-1.$(OBJEXT) guestfish-entries-2.$(OBJEXT) \
+	guestfish-entries-3.$(OBJEXT) guestfish-entries-4.$(OBJEXT) \
+	guestfish-entries-5.$(OBJEXT) guestfish-entries-6.$(OBJEXT) \
+	guestfish-event-names.$(OBJEXT) guestfish-prepopts.$(OBJEXT) \
+	guestfish-run-0.$(OBJEXT) guestfish-run-1.$(OBJEXT) \
+	guestfish-run-2.$(OBJEXT) guestfish-run-3.$(OBJEXT) \
+	guestfish-run-4.$(OBJEXT) guestfish-run-5.$(OBJEXT) \
+	guestfish-run-6.$(OBJEXT)
+am__objects_3 = guestfish-decrypt.$(OBJEXT) \
 	guestfish-display-options.$(OBJEXT) guestfish-domain.$(OBJEXT) \
 	guestfish-inspect.$(OBJEXT) guestfish-keys.$(OBJEXT) \
-	guestfish-options.$(OBJEXT) guestfish-progress.$(OBJEXT) \
-	guestfish-uri.$(OBJEXT)
-am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
+	guestfish-options.$(OBJEXT) guestfish-uri.$(OBJEXT)
+am__objects_4 = $(am__objects_3) guestfish-config.$(OBJEXT) \
+	guestfish-progress.$(OBJEXT)
+am_guestfish_OBJECTS = $(am__objects_2) $(am__objects_4) \
 	guestfish-alloc.$(OBJEXT) guestfish-copy.$(OBJEXT) \
 	guestfish-destpaths.$(OBJEXT) guestfish-display.$(OBJEXT) \
 	guestfish-echo.$(OBJEXT) guestfish-edit.$(OBJEXT) \
@@ -374,7 +397,6 @@ am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	guestfish-supported.$(OBJEXT) guestfish-tilde.$(OBJEXT) \
 	guestfish-time.$(OBJEXT)
 guestfish_OBJECTS = $(am_guestfish_OBJECTS)
-am__DEPENDENCIES_1 =
 guestfish_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(top_builddir)/src/libguestfs.la \
 	$(top_builddir)/src/libutils.la $(am__DEPENDENCIES_1) \
@@ -445,10 +467,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libcmds_la_SOURCES) $(librc_protocol_la_SOURCES) \
-	$(guestfish_SOURCES)
-DIST_SOURCES = $(libcmds_la_SOURCES) $(librc_protocol_la_SOURCES) \
-	$(guestfish_SOURCES)
+SOURCES = $(libcmds_la_SOURCES) $(libfishcommon_la_SOURCES) \
+	$(librc_protocol_la_SOURCES) $(guestfish_SOURCES)
+DIST_SOURCES = $(libcmds_la_SOURCES) $(libfishcommon_la_SOURCES) \
+	$(librc_protocol_la_SOURCES) $(guestfish_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -701,6 +723,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1833,6 +1857,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -1852,13 +1879,28 @@ generator_built = \
 	cmds.c \
 	cmds-gperf.gperf \
 	completion.c \
+	entries-0.c \
+	entries-1.c \
+	entries-2.c \
+	entries-3.c \
+	entries-4.c \
+	entries-5.c \
+	entries-6.c \
 	event-names.c \
 	fish-cmds.h \
 	guestfish-actions.pod \
 	guestfish-commands.pod \
 	guestfish-prepopts.pod \
 	prepopts.h \
-	prepopts.c
+	prepopts.c \
+	run-0.c \
+	run-1.c \
+	run-2.c \
+	run-3.c \
+	run-4.c \
+	run-5.c \
+	run-6.c \
+	run.h
 
 BUILT_SOURCES = \
 	$(generator_built) \
@@ -1882,8 +1924,8 @@ EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
 # between guestfish, guestmount and some other virt tools.  Keep a
 # convenient list here just so we know which ones are shared.  These
 # files must not include other guestfish files.
-SHARED_SOURCE_FILES = \
-	config.c \
+FISHCOMMON_SOURCE_FILES = \
+	decrypt.c \
 	display-options.h \
 	display-options.c \
 	domain.c \
@@ -1891,10 +1933,38 @@ SHARED_SOURCE_FILES = \
 	keys.c \
 	options.h \
 	options.c \
-	progress.h \
-	progress.c \
 	uri.h \
 	uri.c
+
+SHARED_SOURCE_FILES = \
+	$(FISHCOMMON_SOURCE_FILES) \
+	config.c \
+	progress.h \
+	progress.c
+
+
+# libfishcommon.la contains guestfish code which is used in other
+# C tools.  Note this convenience static library is *not* used in
+# guestfish, as the sources are built with extra defines
+# (e.g. -DCOMPILING_GUESTFISH) in that case.
+libfishcommon_la_SOURCES = \
+	$(FISHCOMMON_SOURCE_FILES)
+
+libfishcommon_la_CPPFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/fish -I$(top_builddir)/fish \
+	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+
+libfishcommon_la_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(LIBXML2_CFLAGS)
+
+libfishcommon_la_LIBADD = \
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/src/libutils.la \
+	$(LIBXML2_LIBS) \
+	$(LTLIBINTL)
 
 guestfish_SOURCES = \
 	$(generator_built) \
@@ -1959,7 +2029,7 @@ guestfish_LDADD = $(LIBCONFIG_LIBS) $(LIBREADLINE) $(LIBTINFO_LIBS) \
 	-lm libcmds.la librc_protocol.la ../gnulib/lib/libgnu.la
 
 # Make guestfish use the convenience libraries.
-noinst_LTLIBRARIES = libcmds.la librc_protocol.la
+noinst_LTLIBRARIES = libcmds.la librc_protocol.la libfishcommon.la
 @HAVE_RPCGEN_TRUE@RPCGEN_DEFS = $(am__append_1) $(am__append_2)
 
 # Script wrappers.
@@ -2042,6 +2112,9 @@ clean-noinstLTLIBRARIES:
 
 libcmds.la: $(libcmds_la_OBJECTS) $(libcmds_la_DEPENDENCIES) $(EXTRA_libcmds_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(libcmds_la_LINK)  $(libcmds_la_OBJECTS) $(libcmds_la_LIBADD) $(LIBS)
+
+libfishcommon.la: $(libfishcommon_la_OBJECTS) $(libfishcommon_la_DEPENDENCIES) $(EXTRA_libfishcommon_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libfishcommon_la_LINK)  $(libfishcommon_la_OBJECTS) $(libfishcommon_la_LIBADD) $(LIBS)
 
 librc_protocol.la: $(librc_protocol_la_OBJECTS) $(librc_protocol_la_DEPENDENCIES) $(EXTRA_librc_protocol_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(librc_protocol_la_LINK)  $(librc_protocol_la_OBJECTS) $(librc_protocol_la_LIBADD) $(LIBS)
@@ -2145,12 +2218,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-completion.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-copy.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-decrypt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-destpaths.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-display-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-display.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-echo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-edit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-entries-0.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-entries-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-entries-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-entries-3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-entries-4.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-entries-5.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-entries-6.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-event-names.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-events.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-file-edit.Po@am__quote@
@@ -2174,12 +2255,26 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-progress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-rc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-reopen.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-run-0.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-run-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-run-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-run-3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-run-4.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-run-5.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-run-6.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-setenv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-supported.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-tilde.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-time.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcmds_la-cmds-gperf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfishcommon_la-decrypt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfishcommon_la-display-options.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfishcommon_la-domain.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfishcommon_la-inspect.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfishcommon_la-keys.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfishcommon_la-options.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfishcommon_la-uri.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librc_protocol_la-rc_protocol.Plo@am__quote@
 
 .c.o:
@@ -2212,6 +2307,55 @@ libcmds_la-cmds-gperf.lo: cmds-gperf.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmds-gperf.c' object='libcmds_la-cmds-gperf.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcmds_la_CFLAGS) $(CFLAGS) -c -o libcmds_la-cmds-gperf.lo `test -f 'cmds-gperf.c' || echo '$(srcdir)/'`cmds-gperf.c
+
+libfishcommon_la-decrypt.lo: decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -MT libfishcommon_la-decrypt.lo -MD -MP -MF $(DEPDIR)/libfishcommon_la-decrypt.Tpo -c -o libfishcommon_la-decrypt.lo `test -f 'decrypt.c' || echo '$(srcdir)/'`decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfishcommon_la-decrypt.Tpo $(DEPDIR)/libfishcommon_la-decrypt.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='decrypt.c' object='libfishcommon_la-decrypt.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -c -o libfishcommon_la-decrypt.lo `test -f 'decrypt.c' || echo '$(srcdir)/'`decrypt.c
+
+libfishcommon_la-display-options.lo: display-options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -MT libfishcommon_la-display-options.lo -MD -MP -MF $(DEPDIR)/libfishcommon_la-display-options.Tpo -c -o libfishcommon_la-display-options.lo `test -f 'display-options.c' || echo '$(srcdir)/'`display-options.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfishcommon_la-display-options.Tpo $(DEPDIR)/libfishcommon_la-display-options.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display-options.c' object='libfishcommon_la-display-options.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -c -o libfishcommon_la-display-options.lo `test -f 'display-options.c' || echo '$(srcdir)/'`display-options.c
+
+libfishcommon_la-domain.lo: domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -MT libfishcommon_la-domain.lo -MD -MP -MF $(DEPDIR)/libfishcommon_la-domain.Tpo -c -o libfishcommon_la-domain.lo `test -f 'domain.c' || echo '$(srcdir)/'`domain.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfishcommon_la-domain.Tpo $(DEPDIR)/libfishcommon_la-domain.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domain.c' object='libfishcommon_la-domain.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -c -o libfishcommon_la-domain.lo `test -f 'domain.c' || echo '$(srcdir)/'`domain.c
+
+libfishcommon_la-inspect.lo: inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -MT libfishcommon_la-inspect.lo -MD -MP -MF $(DEPDIR)/libfishcommon_la-inspect.Tpo -c -o libfishcommon_la-inspect.lo `test -f 'inspect.c' || echo '$(srcdir)/'`inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfishcommon_la-inspect.Tpo $(DEPDIR)/libfishcommon_la-inspect.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='inspect.c' object='libfishcommon_la-inspect.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -c -o libfishcommon_la-inspect.lo `test -f 'inspect.c' || echo '$(srcdir)/'`inspect.c
+
+libfishcommon_la-keys.lo: keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -MT libfishcommon_la-keys.lo -MD -MP -MF $(DEPDIR)/libfishcommon_la-keys.Tpo -c -o libfishcommon_la-keys.lo `test -f 'keys.c' || echo '$(srcdir)/'`keys.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfishcommon_la-keys.Tpo $(DEPDIR)/libfishcommon_la-keys.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='keys.c' object='libfishcommon_la-keys.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -c -o libfishcommon_la-keys.lo `test -f 'keys.c' || echo '$(srcdir)/'`keys.c
+
+libfishcommon_la-options.lo: options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -MT libfishcommon_la-options.lo -MD -MP -MF $(DEPDIR)/libfishcommon_la-options.Tpo -c -o libfishcommon_la-options.lo `test -f 'options.c' || echo '$(srcdir)/'`options.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfishcommon_la-options.Tpo $(DEPDIR)/libfishcommon_la-options.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='options.c' object='libfishcommon_la-options.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -c -o libfishcommon_la-options.lo `test -f 'options.c' || echo '$(srcdir)/'`options.c
+
+libfishcommon_la-uri.lo: uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -MT libfishcommon_la-uri.lo -MD -MP -MF $(DEPDIR)/libfishcommon_la-uri.Tpo -c -o libfishcommon_la-uri.lo `test -f 'uri.c' || echo '$(srcdir)/'`uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfishcommon_la-uri.Tpo $(DEPDIR)/libfishcommon_la-uri.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='uri.c' object='libfishcommon_la-uri.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libfishcommon_la_CPPFLAGS) $(CPPFLAGS) $(libfishcommon_la_CFLAGS) $(CFLAGS) -c -o libfishcommon_la-uri.lo `test -f 'uri.c' || echo '$(srcdir)/'`uri.c
 
 librc_protocol_la-rc_protocol.lo: rc_protocol.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(librc_protocol_la_CFLAGS) $(CFLAGS) -MT librc_protocol_la-rc_protocol.lo -MD -MP -MF $(DEPDIR)/librc_protocol_la-rc_protocol.Tpo -c -o librc_protocol_la-rc_protocol.lo `test -f 'rc_protocol.c' || echo '$(srcdir)/'`rc_protocol.c
@@ -2248,6 +2392,104 @@ guestfish-completion.obj: completion.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-completion.obj `if test -f 'completion.c'; then $(CYGPATH_W) 'completion.c'; else $(CYGPATH_W) '$(srcdir)/completion.c'; fi`
 
+guestfish-entries-0.o: entries-0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-0.o -MD -MP -MF $(DEPDIR)/guestfish-entries-0.Tpo -c -o guestfish-entries-0.o `test -f 'entries-0.c' || echo '$(srcdir)/'`entries-0.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-0.Tpo $(DEPDIR)/guestfish-entries-0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-0.c' object='guestfish-entries-0.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-0.o `test -f 'entries-0.c' || echo '$(srcdir)/'`entries-0.c
+
+guestfish-entries-0.obj: entries-0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-0.obj -MD -MP -MF $(DEPDIR)/guestfish-entries-0.Tpo -c -o guestfish-entries-0.obj `if test -f 'entries-0.c'; then $(CYGPATH_W) 'entries-0.c'; else $(CYGPATH_W) '$(srcdir)/entries-0.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-0.Tpo $(DEPDIR)/guestfish-entries-0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-0.c' object='guestfish-entries-0.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-0.obj `if test -f 'entries-0.c'; then $(CYGPATH_W) 'entries-0.c'; else $(CYGPATH_W) '$(srcdir)/entries-0.c'; fi`
+
+guestfish-entries-1.o: entries-1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-1.o -MD -MP -MF $(DEPDIR)/guestfish-entries-1.Tpo -c -o guestfish-entries-1.o `test -f 'entries-1.c' || echo '$(srcdir)/'`entries-1.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-1.Tpo $(DEPDIR)/guestfish-entries-1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-1.c' object='guestfish-entries-1.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-1.o `test -f 'entries-1.c' || echo '$(srcdir)/'`entries-1.c
+
+guestfish-entries-1.obj: entries-1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-1.obj -MD -MP -MF $(DEPDIR)/guestfish-entries-1.Tpo -c -o guestfish-entries-1.obj `if test -f 'entries-1.c'; then $(CYGPATH_W) 'entries-1.c'; else $(CYGPATH_W) '$(srcdir)/entries-1.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-1.Tpo $(DEPDIR)/guestfish-entries-1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-1.c' object='guestfish-entries-1.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-1.obj `if test -f 'entries-1.c'; then $(CYGPATH_W) 'entries-1.c'; else $(CYGPATH_W) '$(srcdir)/entries-1.c'; fi`
+
+guestfish-entries-2.o: entries-2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-2.o -MD -MP -MF $(DEPDIR)/guestfish-entries-2.Tpo -c -o guestfish-entries-2.o `test -f 'entries-2.c' || echo '$(srcdir)/'`entries-2.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-2.Tpo $(DEPDIR)/guestfish-entries-2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-2.c' object='guestfish-entries-2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-2.o `test -f 'entries-2.c' || echo '$(srcdir)/'`entries-2.c
+
+guestfish-entries-2.obj: entries-2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-2.obj -MD -MP -MF $(DEPDIR)/guestfish-entries-2.Tpo -c -o guestfish-entries-2.obj `if test -f 'entries-2.c'; then $(CYGPATH_W) 'entries-2.c'; else $(CYGPATH_W) '$(srcdir)/entries-2.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-2.Tpo $(DEPDIR)/guestfish-entries-2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-2.c' object='guestfish-entries-2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-2.obj `if test -f 'entries-2.c'; then $(CYGPATH_W) 'entries-2.c'; else $(CYGPATH_W) '$(srcdir)/entries-2.c'; fi`
+
+guestfish-entries-3.o: entries-3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-3.o -MD -MP -MF $(DEPDIR)/guestfish-entries-3.Tpo -c -o guestfish-entries-3.o `test -f 'entries-3.c' || echo '$(srcdir)/'`entries-3.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-3.Tpo $(DEPDIR)/guestfish-entries-3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-3.c' object='guestfish-entries-3.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-3.o `test -f 'entries-3.c' || echo '$(srcdir)/'`entries-3.c
+
+guestfish-entries-3.obj: entries-3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-3.obj -MD -MP -MF $(DEPDIR)/guestfish-entries-3.Tpo -c -o guestfish-entries-3.obj `if test -f 'entries-3.c'; then $(CYGPATH_W) 'entries-3.c'; else $(CYGPATH_W) '$(srcdir)/entries-3.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-3.Tpo $(DEPDIR)/guestfish-entries-3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-3.c' object='guestfish-entries-3.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-3.obj `if test -f 'entries-3.c'; then $(CYGPATH_W) 'entries-3.c'; else $(CYGPATH_W) '$(srcdir)/entries-3.c'; fi`
+
+guestfish-entries-4.o: entries-4.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-4.o -MD -MP -MF $(DEPDIR)/guestfish-entries-4.Tpo -c -o guestfish-entries-4.o `test -f 'entries-4.c' || echo '$(srcdir)/'`entries-4.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-4.Tpo $(DEPDIR)/guestfish-entries-4.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-4.c' object='guestfish-entries-4.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-4.o `test -f 'entries-4.c' || echo '$(srcdir)/'`entries-4.c
+
+guestfish-entries-4.obj: entries-4.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-4.obj -MD -MP -MF $(DEPDIR)/guestfish-entries-4.Tpo -c -o guestfish-entries-4.obj `if test -f 'entries-4.c'; then $(CYGPATH_W) 'entries-4.c'; else $(CYGPATH_W) '$(srcdir)/entries-4.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-4.Tpo $(DEPDIR)/guestfish-entries-4.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-4.c' object='guestfish-entries-4.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-4.obj `if test -f 'entries-4.c'; then $(CYGPATH_W) 'entries-4.c'; else $(CYGPATH_W) '$(srcdir)/entries-4.c'; fi`
+
+guestfish-entries-5.o: entries-5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-5.o -MD -MP -MF $(DEPDIR)/guestfish-entries-5.Tpo -c -o guestfish-entries-5.o `test -f 'entries-5.c' || echo '$(srcdir)/'`entries-5.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-5.Tpo $(DEPDIR)/guestfish-entries-5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-5.c' object='guestfish-entries-5.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-5.o `test -f 'entries-5.c' || echo '$(srcdir)/'`entries-5.c
+
+guestfish-entries-5.obj: entries-5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-5.obj -MD -MP -MF $(DEPDIR)/guestfish-entries-5.Tpo -c -o guestfish-entries-5.obj `if test -f 'entries-5.c'; then $(CYGPATH_W) 'entries-5.c'; else $(CYGPATH_W) '$(srcdir)/entries-5.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-5.Tpo $(DEPDIR)/guestfish-entries-5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-5.c' object='guestfish-entries-5.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-5.obj `if test -f 'entries-5.c'; then $(CYGPATH_W) 'entries-5.c'; else $(CYGPATH_W) '$(srcdir)/entries-5.c'; fi`
+
+guestfish-entries-6.o: entries-6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-6.o -MD -MP -MF $(DEPDIR)/guestfish-entries-6.Tpo -c -o guestfish-entries-6.o `test -f 'entries-6.c' || echo '$(srcdir)/'`entries-6.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-6.Tpo $(DEPDIR)/guestfish-entries-6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-6.c' object='guestfish-entries-6.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-6.o `test -f 'entries-6.c' || echo '$(srcdir)/'`entries-6.c
+
+guestfish-entries-6.obj: entries-6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-entries-6.obj -MD -MP -MF $(DEPDIR)/guestfish-entries-6.Tpo -c -o guestfish-entries-6.obj `if test -f 'entries-6.c'; then $(CYGPATH_W) 'entries-6.c'; else $(CYGPATH_W) '$(srcdir)/entries-6.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-entries-6.Tpo $(DEPDIR)/guestfish-entries-6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='entries-6.c' object='guestfish-entries-6.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-entries-6.obj `if test -f 'entries-6.c'; then $(CYGPATH_W) 'entries-6.c'; else $(CYGPATH_W) '$(srcdir)/entries-6.c'; fi`
+
 guestfish-event-names.o: event-names.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-event-names.o -MD -MP -MF $(DEPDIR)/guestfish-event-names.Tpo -c -o guestfish-event-names.o `test -f 'event-names.c' || echo '$(srcdir)/'`event-names.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-event-names.Tpo $(DEPDIR)/guestfish-event-names.Po
@@ -2276,19 +2518,117 @@ guestfish-prepopts.obj: prepopts.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prepopts.obj `if test -f 'prepopts.c'; then $(CYGPATH_W) 'prepopts.c'; else $(CYGPATH_W) '$(srcdir)/prepopts.c'; fi`
 
-guestfish-config.o: config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-config.o -MD -MP -MF $(DEPDIR)/guestfish-config.Tpo -c -o guestfish-config.o `test -f 'config.c' || echo '$(srcdir)/'`config.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-config.Tpo $(DEPDIR)/guestfish-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='config.c' object='guestfish-config.o' libtool=no @AMDEPBACKSLASH@
+guestfish-run-0.o: run-0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-0.o -MD -MP -MF $(DEPDIR)/guestfish-run-0.Tpo -c -o guestfish-run-0.o `test -f 'run-0.c' || echo '$(srcdir)/'`run-0.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-0.Tpo $(DEPDIR)/guestfish-run-0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-0.c' object='guestfish-run-0.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-config.o `test -f 'config.c' || echo '$(srcdir)/'`config.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-0.o `test -f 'run-0.c' || echo '$(srcdir)/'`run-0.c
 
-guestfish-config.obj: config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-config.obj -MD -MP -MF $(DEPDIR)/guestfish-config.Tpo -c -o guestfish-config.obj `if test -f 'config.c'; then $(CYGPATH_W) 'config.c'; else $(CYGPATH_W) '$(srcdir)/config.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-config.Tpo $(DEPDIR)/guestfish-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='config.c' object='guestfish-config.obj' libtool=no @AMDEPBACKSLASH@
+guestfish-run-0.obj: run-0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-0.obj -MD -MP -MF $(DEPDIR)/guestfish-run-0.Tpo -c -o guestfish-run-0.obj `if test -f 'run-0.c'; then $(CYGPATH_W) 'run-0.c'; else $(CYGPATH_W) '$(srcdir)/run-0.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-0.Tpo $(DEPDIR)/guestfish-run-0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-0.c' object='guestfish-run-0.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-config.obj `if test -f 'config.c'; then $(CYGPATH_W) 'config.c'; else $(CYGPATH_W) '$(srcdir)/config.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-0.obj `if test -f 'run-0.c'; then $(CYGPATH_W) 'run-0.c'; else $(CYGPATH_W) '$(srcdir)/run-0.c'; fi`
+
+guestfish-run-1.o: run-1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-1.o -MD -MP -MF $(DEPDIR)/guestfish-run-1.Tpo -c -o guestfish-run-1.o `test -f 'run-1.c' || echo '$(srcdir)/'`run-1.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-1.Tpo $(DEPDIR)/guestfish-run-1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-1.c' object='guestfish-run-1.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-1.o `test -f 'run-1.c' || echo '$(srcdir)/'`run-1.c
+
+guestfish-run-1.obj: run-1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-1.obj -MD -MP -MF $(DEPDIR)/guestfish-run-1.Tpo -c -o guestfish-run-1.obj `if test -f 'run-1.c'; then $(CYGPATH_W) 'run-1.c'; else $(CYGPATH_W) '$(srcdir)/run-1.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-1.Tpo $(DEPDIR)/guestfish-run-1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-1.c' object='guestfish-run-1.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-1.obj `if test -f 'run-1.c'; then $(CYGPATH_W) 'run-1.c'; else $(CYGPATH_W) '$(srcdir)/run-1.c'; fi`
+
+guestfish-run-2.o: run-2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-2.o -MD -MP -MF $(DEPDIR)/guestfish-run-2.Tpo -c -o guestfish-run-2.o `test -f 'run-2.c' || echo '$(srcdir)/'`run-2.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-2.Tpo $(DEPDIR)/guestfish-run-2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-2.c' object='guestfish-run-2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-2.o `test -f 'run-2.c' || echo '$(srcdir)/'`run-2.c
+
+guestfish-run-2.obj: run-2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-2.obj -MD -MP -MF $(DEPDIR)/guestfish-run-2.Tpo -c -o guestfish-run-2.obj `if test -f 'run-2.c'; then $(CYGPATH_W) 'run-2.c'; else $(CYGPATH_W) '$(srcdir)/run-2.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-2.Tpo $(DEPDIR)/guestfish-run-2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-2.c' object='guestfish-run-2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-2.obj `if test -f 'run-2.c'; then $(CYGPATH_W) 'run-2.c'; else $(CYGPATH_W) '$(srcdir)/run-2.c'; fi`
+
+guestfish-run-3.o: run-3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-3.o -MD -MP -MF $(DEPDIR)/guestfish-run-3.Tpo -c -o guestfish-run-3.o `test -f 'run-3.c' || echo '$(srcdir)/'`run-3.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-3.Tpo $(DEPDIR)/guestfish-run-3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-3.c' object='guestfish-run-3.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-3.o `test -f 'run-3.c' || echo '$(srcdir)/'`run-3.c
+
+guestfish-run-3.obj: run-3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-3.obj -MD -MP -MF $(DEPDIR)/guestfish-run-3.Tpo -c -o guestfish-run-3.obj `if test -f 'run-3.c'; then $(CYGPATH_W) 'run-3.c'; else $(CYGPATH_W) '$(srcdir)/run-3.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-3.Tpo $(DEPDIR)/guestfish-run-3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-3.c' object='guestfish-run-3.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-3.obj `if test -f 'run-3.c'; then $(CYGPATH_W) 'run-3.c'; else $(CYGPATH_W) '$(srcdir)/run-3.c'; fi`
+
+guestfish-run-4.o: run-4.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-4.o -MD -MP -MF $(DEPDIR)/guestfish-run-4.Tpo -c -o guestfish-run-4.o `test -f 'run-4.c' || echo '$(srcdir)/'`run-4.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-4.Tpo $(DEPDIR)/guestfish-run-4.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-4.c' object='guestfish-run-4.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-4.o `test -f 'run-4.c' || echo '$(srcdir)/'`run-4.c
+
+guestfish-run-4.obj: run-4.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-4.obj -MD -MP -MF $(DEPDIR)/guestfish-run-4.Tpo -c -o guestfish-run-4.obj `if test -f 'run-4.c'; then $(CYGPATH_W) 'run-4.c'; else $(CYGPATH_W) '$(srcdir)/run-4.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-4.Tpo $(DEPDIR)/guestfish-run-4.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-4.c' object='guestfish-run-4.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-4.obj `if test -f 'run-4.c'; then $(CYGPATH_W) 'run-4.c'; else $(CYGPATH_W) '$(srcdir)/run-4.c'; fi`
+
+guestfish-run-5.o: run-5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-5.o -MD -MP -MF $(DEPDIR)/guestfish-run-5.Tpo -c -o guestfish-run-5.o `test -f 'run-5.c' || echo '$(srcdir)/'`run-5.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-5.Tpo $(DEPDIR)/guestfish-run-5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-5.c' object='guestfish-run-5.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-5.o `test -f 'run-5.c' || echo '$(srcdir)/'`run-5.c
+
+guestfish-run-5.obj: run-5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-5.obj -MD -MP -MF $(DEPDIR)/guestfish-run-5.Tpo -c -o guestfish-run-5.obj `if test -f 'run-5.c'; then $(CYGPATH_W) 'run-5.c'; else $(CYGPATH_W) '$(srcdir)/run-5.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-5.Tpo $(DEPDIR)/guestfish-run-5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-5.c' object='guestfish-run-5.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-5.obj `if test -f 'run-5.c'; then $(CYGPATH_W) 'run-5.c'; else $(CYGPATH_W) '$(srcdir)/run-5.c'; fi`
+
+guestfish-run-6.o: run-6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-6.o -MD -MP -MF $(DEPDIR)/guestfish-run-6.Tpo -c -o guestfish-run-6.o `test -f 'run-6.c' || echo '$(srcdir)/'`run-6.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-6.Tpo $(DEPDIR)/guestfish-run-6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-6.c' object='guestfish-run-6.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-6.o `test -f 'run-6.c' || echo '$(srcdir)/'`run-6.c
+
+guestfish-run-6.obj: run-6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-run-6.obj -MD -MP -MF $(DEPDIR)/guestfish-run-6.Tpo -c -o guestfish-run-6.obj `if test -f 'run-6.c'; then $(CYGPATH_W) 'run-6.c'; else $(CYGPATH_W) '$(srcdir)/run-6.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-run-6.Tpo $(DEPDIR)/guestfish-run-6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='run-6.c' object='guestfish-run-6.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-run-6.obj `if test -f 'run-6.c'; then $(CYGPATH_W) 'run-6.c'; else $(CYGPATH_W) '$(srcdir)/run-6.c'; fi`
+
+guestfish-decrypt.o: decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-decrypt.o -MD -MP -MF $(DEPDIR)/guestfish-decrypt.Tpo -c -o guestfish-decrypt.o `test -f 'decrypt.c' || echo '$(srcdir)/'`decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-decrypt.Tpo $(DEPDIR)/guestfish-decrypt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='decrypt.c' object='guestfish-decrypt.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-decrypt.o `test -f 'decrypt.c' || echo '$(srcdir)/'`decrypt.c
+
+guestfish-decrypt.obj: decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-decrypt.obj -MD -MP -MF $(DEPDIR)/guestfish-decrypt.Tpo -c -o guestfish-decrypt.obj `if test -f 'decrypt.c'; then $(CYGPATH_W) 'decrypt.c'; else $(CYGPATH_W) '$(srcdir)/decrypt.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-decrypt.Tpo $(DEPDIR)/guestfish-decrypt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='decrypt.c' object='guestfish-decrypt.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-decrypt.obj `if test -f 'decrypt.c'; then $(CYGPATH_W) 'decrypt.c'; else $(CYGPATH_W) '$(srcdir)/decrypt.c'; fi`
 
 guestfish-display-options.o: display-options.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-display-options.o -MD -MP -MF $(DEPDIR)/guestfish-display-options.Tpo -c -o guestfish-display-options.o `test -f 'display-options.c' || echo '$(srcdir)/'`display-options.c
@@ -2360,20 +2700,6 @@ guestfish-options.obj: options.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-options.obj `if test -f 'options.c'; then $(CYGPATH_W) 'options.c'; else $(CYGPATH_W) '$(srcdir)/options.c'; fi`
 
-guestfish-progress.o: progress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-progress.o -MD -MP -MF $(DEPDIR)/guestfish-progress.Tpo -c -o guestfish-progress.o `test -f 'progress.c' || echo '$(srcdir)/'`progress.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-progress.Tpo $(DEPDIR)/guestfish-progress.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='progress.c' object='guestfish-progress.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-progress.o `test -f 'progress.c' || echo '$(srcdir)/'`progress.c
-
-guestfish-progress.obj: progress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-progress.obj -MD -MP -MF $(DEPDIR)/guestfish-progress.Tpo -c -o guestfish-progress.obj `if test -f 'progress.c'; then $(CYGPATH_W) 'progress.c'; else $(CYGPATH_W) '$(srcdir)/progress.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-progress.Tpo $(DEPDIR)/guestfish-progress.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='progress.c' object='guestfish-progress.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-progress.obj `if test -f 'progress.c'; then $(CYGPATH_W) 'progress.c'; else $(CYGPATH_W) '$(srcdir)/progress.c'; fi`
-
 guestfish-uri.o: uri.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-uri.o -MD -MP -MF $(DEPDIR)/guestfish-uri.Tpo -c -o guestfish-uri.o `test -f 'uri.c' || echo '$(srcdir)/'`uri.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-uri.Tpo $(DEPDIR)/guestfish-uri.Po
@@ -2387,6 +2713,34 @@ guestfish-uri.obj: uri.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='uri.c' object='guestfish-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-uri.obj `if test -f 'uri.c'; then $(CYGPATH_W) 'uri.c'; else $(CYGPATH_W) '$(srcdir)/uri.c'; fi`
+
+guestfish-config.o: config.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-config.o -MD -MP -MF $(DEPDIR)/guestfish-config.Tpo -c -o guestfish-config.o `test -f 'config.c' || echo '$(srcdir)/'`config.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-config.Tpo $(DEPDIR)/guestfish-config.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='config.c' object='guestfish-config.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-config.o `test -f 'config.c' || echo '$(srcdir)/'`config.c
+
+guestfish-config.obj: config.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-config.obj -MD -MP -MF $(DEPDIR)/guestfish-config.Tpo -c -o guestfish-config.obj `if test -f 'config.c'; then $(CYGPATH_W) 'config.c'; else $(CYGPATH_W) '$(srcdir)/config.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-config.Tpo $(DEPDIR)/guestfish-config.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='config.c' object='guestfish-config.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-config.obj `if test -f 'config.c'; then $(CYGPATH_W) 'config.c'; else $(CYGPATH_W) '$(srcdir)/config.c'; fi`
+
+guestfish-progress.o: progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-progress.o -MD -MP -MF $(DEPDIR)/guestfish-progress.Tpo -c -o guestfish-progress.o `test -f 'progress.c' || echo '$(srcdir)/'`progress.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-progress.Tpo $(DEPDIR)/guestfish-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='progress.c' object='guestfish-progress.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-progress.o `test -f 'progress.c' || echo '$(srcdir)/'`progress.c
+
+guestfish-progress.obj: progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-progress.obj -MD -MP -MF $(DEPDIR)/guestfish-progress.Tpo -c -o guestfish-progress.obj `if test -f 'progress.c'; then $(CYGPATH_W) 'progress.c'; else $(CYGPATH_W) '$(srcdir)/progress.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-progress.Tpo $(DEPDIR)/guestfish-progress.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='progress.c' object='guestfish-progress.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-progress.obj `if test -f 'progress.c'; then $(CYGPATH_W) 'progress.c'; else $(CYGPATH_W) '$(srcdir)/progress.c'; fi`
 
 guestfish-alloc.o: alloc.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfish_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-alloc.o -MD -MP -MF $(DEPDIR)/guestfish-alloc.Tpo -c -o guestfish-alloc.o `test -f 'alloc.c' || echo '$(srcdir)/'`alloc.c
@@ -3453,7 +3807,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
@@ -3546,7 +3900,7 @@ stamp-virt-tar-out.pod: virt-tar-out.pod
 	touch $@
 
 check-valgrind:
-	$(MAKE) TESTS="test-a.sh test-add-domain.sh test-add-uri.sh test-copy.sh test-d.sh test-edit.sh test-escapes.sh test-events.sh test-find0.sh test-glob.sh test-inspect.sh test-prep.sh test-read-file.sh test-remote.sh test-remote-events.sh test-reopen.sh test-run.sh test-stringlist.sh test-tilde.sh test-upload-to-dir.sh" VG="$(top_builddir)/run @VG@" check
+	$(MAKE) TESTS="test-a.sh test-add-domain.sh test-add-uri.sh test-copy.sh test-d.sh test-edit.sh test-escapes.sh test-events.sh test-find0.sh test-glob.sh test-inspect.sh test-prep.sh test-read-file.sh test-remote.sh test-remote-events.sh test-reopen.sh test-run.sh test-stringlist.sh test-tilde.sh test-upload-to-dir.sh" VG="@VG@" check
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

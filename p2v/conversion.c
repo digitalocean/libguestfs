@@ -54,6 +54,7 @@
 #include <libxml/xmlwriter.h>
 
 #include "ignore-value.h"
+#include "getprogname.h"
 
 #include "miniexpect.h"
 #include "p2v.h"
@@ -207,6 +208,7 @@ start_conversion (struct config *config,
   char libvirt_xml_file[] = "/tmp/p2v.XXXXXX/physical.xml";
   char wrapper_script[]   = "/tmp/p2v.XXXXXX/virt-v2v-wrapper.sh";
   char dmesg_file[]       = "/tmp/p2v.XXXXXX/dmesg";
+  int inhibit_fd = -1;
 
 #if DEBUG_STDERR
   print_config (config, stderr);
@@ -216,6 +218,12 @@ start_conversion (struct config *config,
   set_control_h (NULL);
   set_running (1);
   set_cancel_requested (0);
+
+  inhibit_fd = inhibit_power_saving ();
+#ifdef DEBUG_STDERR
+  if (inhibit_fd == -1)
+    fprintf (stderr, "warning: virt-p2v cannot inhibit power saving during conversion.\n");
+#endif
 
   data_conns = malloc (sizeof (struct data_conn) * nr_disks);
   if (data_conns == NULL)
@@ -268,7 +276,7 @@ start_conversion (struct config *config,
 #if DEBUG_STDERR
     fprintf (stderr,
              "%s: data connection for %s: SSH remote port %d, local port %d\n",
-             guestfs_int_program_name, device,
+             getprogname (), device,
              data_conns[i].nbd_remote_port, data_conns[i].nbd_local_port);
 #endif
 
@@ -424,6 +432,9 @@ start_conversion (struct config *config,
     }
   }
   cleanup_data_conns (data_conns, nr_disks);
+
+  if (inhibit_fd >= 0)
+    close (inhibit_fd);
 
   set_running (0);
 

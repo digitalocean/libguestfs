@@ -111,21 +111,19 @@ struct mp {
 /* in config.c */
 extern void parse_config (void);
 
+/* in decrypt.c */
+extern void inspect_do_decrypt (guestfs_h *g);
+
 /* in domain.c */
 extern int add_libvirt_drives (guestfs_h *g, const char *guest);
 
 /* in inspect.c */
 extern void inspect_mount_handle (guestfs_h *g);
+extern void inspect_mount_root (guestfs_h *g, const char *root);
 #define inspect_mount() inspect_mount_handle (g)
 
 #if COMPILING_GUESTFISH
 extern void print_inspect_prompt (void);
-#endif
-
-#if COMPILING_VIRT_INSPECTOR
-/* (low-level inspection functions, used by virt-inspector only) */
-extern void inspect_do_decrypt (guestfs_h *g);
-extern void inspect_mount_root (guestfs_h *g, const char *root);
 #endif
 
 /* in key.c */
@@ -215,7 +213,7 @@ extern void free_mps (struct mp *mp);
 #define OPTION_V                                                        \
   {                                                                     \
     printf ("%s %s\n",                                                  \
-            guestfs_int_program_name,                                   \
+            getprogname (),                                             \
             PACKAGE_VERSION_FULL);                                      \
     exit (EXIT_SUCCESS);                                                \
   }
@@ -223,7 +221,7 @@ extern void free_mps (struct mp *mp);
 #define OPTION_w                                                        \
   if (read_only) {                                                      \
     fprintf (stderr, _("%s: cannot mix --ro and --rw options\n"),       \
-             guestfs_int_program_name);                                 \
+             getprogname ());                                           \
     exit (EXIT_FAILURE);                                                \
   }
 
@@ -235,7 +233,7 @@ extern void free_mps (struct mp *mp);
     if (!format_consumed) {                                             \
       fprintf (stderr,                                                  \
                _("%s: --format parameter must appear before -a parameter\n"), \
-               guestfs_int_program_name);                               \
+               getprogname ());                                         \
       exit (EXIT_FAILURE);                                              \
     }                                                                   \
   } while (0)

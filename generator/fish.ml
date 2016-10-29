@@ -42,7 +42,7 @@ type func =
 let func_compare (n1, _) (n2, _) = compare n1 n2
 
 let fish_functions_and_commands_sorted =
-  List.sort action_compare (fish_functions_sorted @ fish_commands)
+  List.sort action_compare ((actions |> fish_functions |> sort) @ fish_commands)
 
 let doc_opttype_of = function
   | OBool n -> "true|false"
@@ -68,7 +68,7 @@ let all_functions_commands_and_aliases_sorted =
         let aliases = List.map (fun x -> x, Alias name) aliases in
         let foo = (name, Function shortdesc) :: aliases in
         foo @ acc
-    ) (fish_functions_sorted @ fish_commands) [] in
+    ) ((actions |> fish_functions |> sort) @ fish_commands) [] in
   List.sort func_compare all
 
 let c_quoted_indented ~indent str =
@@ -76,10 +76,9 @@ let c_quoted_indented ~indent str =
   let str = replace_str str "\\n" ("\\n\"\n" ^ indent ^ "\"") in
   str
 
-(* Generate a lot of different functions for guestfish. *)
-let generate_fish_cmds () =
+(* Generate run_* functions and header for libguestfs API functions. *)
+let generate_fish_run_cmds actions () =
   generate_header CStyle GPLv2plus;
-
 
   pr "#include <config.h>\n";
   pr "\n";
@@ -93,166 +92,25 @@ let generate_fish_cmds () =
   pr "#include <libintl.h>\n";
   pr "#include <errno.h>\n";
   pr "\n";
-  pr "#include \"c-ctype.h\"\n";
   pr "#include \"full-write.h\"\n";
   pr "#include \"xstrtol.h\"\n";
+  pr "#include \"getprogname.h\"\n";
   pr "\n";
   pr "#include \"guestfs.h\"\n";
   pr "#include \"guestfs-internal-frontend.h\"\n";
   pr "#include \"structs-print.h\"\n";
   pr "\n";
   pr "#include \"fish.h\"\n";
-  pr "#include \"fish-cmds.h\"\n";
   pr "#include \"options.h\"\n";
-  pr "#include \"cmds-gperf.h\"\n";
+  pr "#include \"fish-cmds.h\"\n";
+  pr "#include \"run.h\"\n";
   pr "\n";
   pr "/* Valid suffixes allowed for numbers.  See Gnulib xstrtol function. */\n";
   pr "static const char xstrtol_suffixes[] = \"0kKMGTPEZY\";\n";
   pr "\n";
-  pr "/* Return these errors from run_* functions. */\n";
-  pr "#define RUN_ERROR -1\n";
-  pr "#define RUN_WRONG_ARGS -2\n";
-  pr "\n";
-
-  List.iter (
-    fun { name = name } ->
-      pr "static int run_%s (const char *cmd, size_t argc, char *argv[]);\n"
-        name
-  ) fish_functions_sorted;
-
-  pr "\n";
-
-  (* List of command_entry structs. *)
-  List.iter (
-    fun ({ name = name; shortdesc = shortdesc; longdesc = longdesc } as f) ->
-      let aliases = get_aliases f in
-
-      let name2 = replace_char name '_' '-' in
-      let describe_alias =
-        if aliases <> [] then
-          sprintf "\n\nYou can use %s as an alias for this command."
-            (String.concat " or " (List.map (fun s -> "'" ^ s ^ "'") aliases))
-        else "" in
-
-      let pod =
-        sprintf "%s - %s\n\n=head1 DESCRIPTION\n\n%s\n\n%s"
-          name2 shortdesc longdesc describe_alias in
-      let text =
-        String.concat "\n" (pod2text ~trim:false ~discard:false "NAME" pod)
-        ^ "\n" in
-
-      pr "struct command_entry %s_cmd_entry = {\n" name;
-      pr "  .name = \"%s\",\n" name2;
-      pr "  .help = \"%s\",\n" (c_quoted_indented ~indent:"          " text);
-      pr "  .synopsis = NULL,\n";
-      pr "  .run = run_%s\n" name;
-      pr "};\n";
-      pr "\n";
-  ) fish_commands;
-
-  List.iter (
-    fun ({ name = name; style = _, args, optargs;
-           shortdesc = shortdesc; longdesc = longdesc } as f) ->
-      let aliases = get_aliases f in
-
-      let name2 = replace_char name '_' '-' in
-
-      let longdesc = replace_str longdesc "C<guestfs_" "C<" in
-      let synopsis =
-        match args with
-        | [] -> name2
-        | args ->
-            let args = List.filter (function Key _ -> false | _ -> true) args in
-            sprintf "%s%s%s"
-              name2
-              (String.concat ""
-                 (List.map (fun arg -> " " ^ name_of_argt arg) args))
-              (String.concat ""
-                 (List.map (fun arg ->
-                   sprintf " [%s:%s]" (name_of_optargt arg) (doc_opttype_of arg)
-                  ) optargs)) in
-
-      let warnings =
-        if List.exists (function Key _ -> true | _ -> false) args then
-          "\n\nThis command has one or more key or passphrase parameters.
-Guestfish will prompt for these separately."
-        else "" in
-
-      let warnings =
-        warnings ^
-          if f.protocol_limit_warning then
-            "\n\n" ^ protocol_limit_warning
-          else "" in
-
-      let warnings =
-        warnings ^
-          match deprecation_notice ~replace_underscores:true f with
-          | None -> ""
-          | Some txt -> "\n\n" ^ txt in
-
-      let describe_alias =
-        if aliases <> [] then
-          sprintf "\n\nYou can use %s as an alias for this command."
-            (String.concat " or " (List.map (fun s -> "'" ^ s ^ "'") aliases))
-        else "" in
-
-      let pod =
-        sprintf "%s - %s\n\n=head1 SYNOPSIS\n\n %s\n\n=head1 DESCRIPTION\n\n%s%s%s"
-          name2 shortdesc synopsis longdesc warnings describe_alias in
-      let text =
-        String.concat "\n" (pod2text ~trim:false ~discard:false "NAME" pod)
-        ^ "\n" in
-
-      pr "struct command_entry %s_cmd_entry = {\n" name;
-      pr "  .name = \"%s\",\n" name2;
-      pr "  .help = \"%s\",\n" (c_quoted_indented ~indent:"          " text);
-      pr "  .synopsis = \"%s\",\n" (c_quote synopsis);
-      pr "  .run = run_%s\n" name;
-      pr "};\n";
-      pr "\n";
-  ) fish_functions_sorted;
-
-  (* list_commands function, which implements guestfish -h *)
-  pr "void\n";
-  pr "list_commands (void)\n";
-  pr "{\n";
-  pr "  printf (\"    %%-16s     %%s\\n\", _(\"Command\"), _(\"Description\"));\n";
-  pr "  list_builtin_commands ();\n";
-  List.iter (
-    fun (name, f) ->
-      let name = replace_char name '_' '-' in
-      match f with
-      | Function shortdesc ->
-        pr "  printf (\"%%-20s %%s\\n\", \"%s\", _(\"%s\"));\n"
-          name shortdesc
-      | Alias f ->
-        let f = replace_char f '_' '-' in
-        pr "  printf (\"%%-20s \", \"%s\");\n" name;
-        pr "  printf (_(\"alias for '%%s'\"), \"%s\");\n" f;
-        pr "  putchar ('\\n');\n"
-  ) all_functions_commands_and_aliases_sorted;
-  pr "  printf (\"    %%s\\n\",";
-  pr "          _(\"Use -h <cmd> / help <cmd> to show detailed help for a command.\"));\n";
-  pr "}\n";
-  pr "\n";
-
-  (* display_command function, which implements guestfish -h cmd *)
-  pr "int\n";
-  pr "display_command (const char *cmd)\n";
-  pr "{\n";
-  pr "  const struct command_table *ct;\n";
-  pr "\n";
-  pr "  ct = lookup_fish_command (cmd, strlen (cmd));\n";
-  pr "  if (ct) {\n";
-  pr "    fputs (ct->entry->help, stdout);\n";
-  pr "    return 0;\n";
-  pr "  }\n";
-  pr "  else\n";
-  pr "    return display_builtin_command (cmd);\n";
-  pr "}\n";
-  pr "\n";
 
   let emit_print_list_function typ =
+    pr "\n";
     pr "static void\n";
     pr "print_%s_list (struct guestfs_%s_list *%ss)\n"
       typ typ typ;
@@ -266,7 +124,6 @@ Guestfish will prompt for these separately."
     pr "    printf (\"}\\n\");\n";
     pr "  }\n";
     pr "}\n";
-    pr "\n";
   in
 
   (* Emit a print_TYPE_list function definition only if that function is used. *)
@@ -276,28 +133,28 @@ Guestfish will prompt for these separately."
         (* generate the function for typ *)
         emit_print_list_function typ
     | typ, _ -> () (* empty *)
-  ) (rstructs_used_by fish_functions);
+  ) (rstructs_used_by (actions |> fish_functions));
 
   (* Emit a print_TYPE function definition only if that function is used. *)
   List.iter (
     function
     | typ, (RStructOnly | RStructAndList) ->
+        pr "\n";
         pr "static void\n";
         pr "print_%s (struct guestfs_%s *%s)\n" typ typ typ;
         pr "{\n";
         pr "  guestfs_int_print_%s_indent (%s, stdout, \"\\n\", \"\");\n"
           typ typ;
         pr "}\n";
-        pr "\n";
     | typ, _ -> () (* empty *)
-  ) (rstructs_used_by fish_functions);
+  ) (rstructs_used_by (actions |> fish_functions));
 
-  (* run_<action> actions *)
   List.iter (
     fun { name = name; style = (ret, args, optargs as style);
           fish_output = fish_output; c_function = c_function;
           c_optarg_prefix = c_optarg_prefix } ->
-      pr "static int\n";
+      pr "\n";
+      pr "int\n";
       pr "run_%s (const char *cmd, size_t argc, char *argv[])\n" name;
       pr "{\n";
       pr "  int ret = RUN_ERROR;\n";
@@ -431,7 +288,7 @@ Guestfish will prompt for these separately."
             pr "    case -1:\n";
             pr "      fprintf (stderr,\n";
             pr "               _(\"%%s: '%%s': invalid boolean value, use 'true' or 'false'\\n\"),\n";
-            pr "               guestfs_int_program_name, argv[i-1]);\n";
+            pr "               getprogname (), argv[i-1]);\n";
             pr "      goto out_%s;\n" name;
             pr "    case 0:  %s = 0; break;\n" name;
             pr "    default: %s = 1;\n" name;
@@ -474,7 +331,7 @@ Guestfish will prompt for these separately."
                  pr "        case -1:\n";
                  pr "          fprintf (stderr,\n";
                  pr "                   _(\"%%s: '%%s': invalid boolean value, use 'true' or 'false'\\n\"),\n";
-                 pr "                   guestfs_int_program_name, &argv[i][%d]);\n" (len+1);
+                 pr "                   getprogname (), &argv[i][%d]);\n" (len+1);
                  pr "          goto out;\n";
                  pr "        case 0:  optargs_s.%s = 0; break;\n" n;
                  pr "        default: optargs_s.%s = 1;\n" n;
@@ -642,8 +499,194 @@ Guestfish will prompt for these separately."
       pr " out_noargs:\n";
       pr "  return ret;\n";
       pr "}\n";
-      pr "\n"
-  ) fish_functions_sorted;
+  ) (actions |> fish_functions |> sort)
+
+let generate_fish_run_header () =
+  generate_header CStyle GPLv2plus;
+
+  pr "#ifndef FISH_RUN_H\n";
+  pr "#define FISH_RUN_H\n";
+  pr "\n";
+
+  pr "/* Return these errors from run_* functions. */\n";
+  pr "#define RUN_ERROR -1\n";
+  pr "#define RUN_WRONG_ARGS -2\n";
+  pr "\n";
+
+  List.iter (
+    fun { name = name } ->
+      pr "extern int run_%s (const char *cmd, size_t argc, char *argv[]);\n"
+        name
+  ) (actions |> fish_functions |> sort);
+
+  pr "\n";
+  pr "#endif /* FISH_RUN_H */\n"
+
+let generate_fish_cmd_entries actions () =
+  generate_header CStyle GPLv2plus;
+
+  pr "#include <config.h>\n";
+  pr "\n";
+  pr "#include <stdio.h>\n";
+  pr "#include <stdlib.h>\n";
+  pr "\n";
+  pr "#include \"cmds-gperf.h\"\n";
+  pr "#include \"run.h\"\n";
+  pr "\n";
+
+  List.iter (
+    fun ({ name = name; style = _, args, optargs;
+           shortdesc = shortdesc; longdesc = longdesc } as f) ->
+      let aliases = get_aliases f in
+
+      let name2 = replace_char name '_' '-' in
+
+      let longdesc = replace_str longdesc "C<guestfs_" "C<" in
+      let synopsis =
+        match args with
+        | [] -> name2
+        | args ->
+            let args = List.filter (function Key _ -> false | _ -> true) args in
+            sprintf "%s%s%s"
+              name2
+              (String.concat ""
+                 (List.map (fun arg -> " " ^ name_of_argt arg) args))
+              (String.concat ""
+                 (List.map (fun arg ->
+                   sprintf " [%s:%s]" (name_of_optargt arg) (doc_opttype_of arg)
+                  ) optargs)) in
+
+      let warnings =
+        if List.exists (function Key _ -> true | _ -> false) args then
+          "\n\nThis command has one or more key or passphrase parameters.
+Guestfish will prompt for these separately."
+        else "" in
+
+      let warnings =
+        warnings ^
+          if f.protocol_limit_warning then
+            "\n\n" ^ protocol_limit_warning
+          else "" in
+
+      let warnings =
+        warnings ^
+          match deprecation_notice ~replace_underscores:true f with
+          | None -> ""
+          | Some txt -> "\n\n" ^ txt in
+
+      let describe_alias =
+        if aliases <> [] then
+          sprintf "\n\nYou can use %s as an alias for this command."
+            (String.concat " or " (List.map (fun s -> "'" ^ s ^ "'") aliases))
+        else "" in
+
+      let pod =
+        sprintf "%s - %s\n\n=head1 SYNOPSIS\n\n %s\n\n=head1 DESCRIPTION\n\n%s%s%s"
+          name2 shortdesc synopsis longdesc warnings describe_alias in
+      let text =
+        String.concat "\n" (pod2text ~trim:false ~discard:false "NAME" pod)
+        ^ "\n" in
+
+      pr "struct command_entry %s_cmd_entry = {\n" name;
+      pr "  .name = \"%s\",\n" name2;
+      pr "  .help = \"%s\",\n" (c_quoted_indented ~indent:"          " text);
+      pr "  .synopsis = \"%s\",\n" (c_quote synopsis);
+      pr "  .run = run_%s\n" name;
+      pr "};\n";
+      pr "\n";
+  ) (actions |> fish_functions |> sort)
+
+(* Generate a lot of different functions for guestfish. *)
+let generate_fish_cmds () =
+  generate_header CStyle GPLv2plus;
+
+  pr "#include <config.h>\n";
+  pr "\n";
+  pr "#include <stdio.h>\n";
+  pr "#include <stdlib.h>\n";
+  pr "#include <string.h>\n";
+  pr "#include <inttypes.h>\n";
+  pr "#include <libintl.h>\n";
+  pr "#include <errno.h>\n";
+  pr "\n";
+  pr "#include \"guestfs.h\"\n";
+  pr "#include \"guestfs-internal-frontend.h\"\n";
+  pr "#include \"structs-print.h\"\n";
+  pr "\n";
+  pr "#include \"fish.h\"\n";
+  pr "#include \"fish-cmds.h\"\n";
+  pr "#include \"options.h\"\n";
+  pr "#include \"cmds-gperf.h\"\n";
+  pr "#include \"run.h\"\n";
+  pr "\n";
+
+  (* List of command_entry structs for pure guestfish commands. *)
+  List.iter (
+    fun ({ name = name; shortdesc = shortdesc; longdesc = longdesc } as f) ->
+      let aliases = get_aliases f in
+
+      let name2 = replace_char name '_' '-' in
+      let describe_alias =
+        if aliases <> [] then
+          sprintf "\n\nYou can use %s as an alias for this command."
+            (String.concat " or " (List.map (fun s -> "'" ^ s ^ "'") aliases))
+        else "" in
+
+      let pod =
+        sprintf "%s - %s\n\n=head1 DESCRIPTION\n\n%s\n\n%s"
+          name2 shortdesc longdesc describe_alias in
+      let text =
+        String.concat "\n" (pod2text ~trim:false ~discard:false "NAME" pod)
+        ^ "\n" in
+
+      pr "struct command_entry %s_cmd_entry = {\n" name;
+      pr "  .name = \"%s\",\n" name2;
+      pr "  .help = \"%s\",\n" (c_quoted_indented ~indent:"          " text);
+      pr "  .synopsis = NULL,\n";
+      pr "  .run = run_%s\n" name;
+      pr "};\n";
+      pr "\n";
+  ) fish_commands;
+
+  (* list_commands function, which implements guestfish -h *)
+  pr "void\n";
+  pr "list_commands (void)\n";
+  pr "{\n";
+  pr "  printf (\"    %%-16s     %%s\\n\", _(\"Command\"), _(\"Description\"));\n";
+  pr "  list_builtin_commands ();\n";
+  List.iter (
+    fun (name, f) ->
+      let name = replace_char name '_' '-' in
+      match f with
+      | Function shortdesc ->
+        pr "  printf (\"%%-20s %%s\\n\", \"%s\", _(\"%s\"));\n"
+          name shortdesc
+      | Alias f ->
+        let f = replace_char f '_' '-' in
+        pr "  printf (\"%%-20s \", \"%s\");\n" name;
+        pr "  printf (_(\"alias for '%%s'\"), \"%s\");\n" f;
+        pr "  putchar ('\\n');\n"
+  ) all_functions_commands_and_aliases_sorted;
+  pr "  printf (\"    %%s\\n\",";
+  pr "          _(\"Use -h <cmd> / help <cmd> to show detailed help for a command.\"));\n";
+  pr "}\n";
+  pr "\n";
+
+  (* display_command function, which implements guestfish -h cmd *)
+  pr "int\n";
+  pr "display_command (const char *cmd)\n";
+  pr "{\n";
+  pr "  const struct command_table *ct;\n";
+  pr "\n";
+  pr "  ct = lookup_fish_command (cmd, strlen (cmd));\n";
+  pr "  if (ct) {\n";
+  pr "    fputs (ct->entry->help, stdout);\n";
+  pr "    return 0;\n";
+  pr "  }\n";
+  pr "  else\n";
+  pr "    return display_builtin_command (cmd);\n";
+  pr "}\n";
+  pr "\n";
 
   (* run_action function *)
   pr "int\n";
@@ -838,10 +881,6 @@ do_completion (const char *text, int start, int end)
 and generate_fish_actions_pod () =
   generate_header PODStyle GPLv2plus;
 
-  let fishdoc_functions_sorted =
-    List.filter is_documented fish_functions_sorted
-  in
-
   let rex = Str.regexp "C<guestfs_\\([^>]+\\)>" in
 
   List.iter (
@@ -913,7 +952,7 @@ Guestfish will prompt for these separately.\n\n";
         pr "This command depends on the feature C<%s>.   See also
 L</feature-available>.\n\n" opt
       );
-  ) fishdoc_functions_sorted
+  ) (actions |> fish_functions |> documented_functions |> sort)
 
 (* Generate documentation for guestfish-only commands. *)
 and generate_fish_commands_pod () =

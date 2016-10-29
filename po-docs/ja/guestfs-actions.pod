@@ -4042,22 +4042,18 @@ known.
 
 =over 4
 
+=item "aarch64"
+
+64 bit ARM.
+
+=item "arm"
+
+32 bit ARM.
+
 =item "i386"
 
 この文字列は、バイナリーの正確なプロセッサー要求にかかわりなく、すべての 32 ビット i386, i486, i586, i686
 バイナリーに対して返されます。
-
-=item "x86_64"
-
-64 ビット x86-64.
-
-=item "sparc"
-
-32 ビット SPARC.
-
-=item "sparc64"
-
-64 ビット SPARC V9 およびそれ以降.
 
 =item "ia64"
 
@@ -4069,15 +4065,23 @@ Intel Itanium.
 
 =item "ppc64"
 
-64 ビット Power PC.
+64 bit Power PC (big endian).
 
-=item "arm"
+=item "ppc64le"
 
-32 bit ARM.
+64 bit Power PC (little endian).
 
-=item "aarch64"
+=item "sparc"
 
-64 bit ARM.
+32 ビット SPARC.
+
+=item "sparc64"
+
+64 ビット SPARC V9 およびそれ以降.
+
+=item "x86_64"
+
+64 ビット x86-64.
 
 =back
 
@@ -4199,9 +4203,8 @@ in order to return a list of all the files and directories stored within.
 
 It is not necessary to mount the disk partition to run this command.
 
-All entries in the filesystem are returned, excluding C<.> and C<..>. This
-function can list deleted or unaccessible files.  The entries are I<not>
-sorted.
+All entries in the filesystem are returned. This function can list deleted
+or unaccessible files. The entries are I<not> sorted.
 
 The C<tsk_dirent> structure contains the following fields.
 

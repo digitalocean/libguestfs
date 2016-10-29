@@ -31,15 +31,6 @@ EXTRA_DIST = \
 bin_PROGRAMS = virt-cat virt-filesystems virt-log virt-ls
 
 SHARED_SOURCE_FILES = \
-	../fish/display-options.h \
-	../fish/display-options.c \
-	../fish/domain.c \
-	../fish/inspect.c \
-	../fish/keys.c \
-	../fish/options.h \
-	../fish/options.c \
-	../fish/uri.h \
-	../fish/uri.c \
 	../fish/windows.h \
 	../fish/windows.c
 
@@ -61,6 +52,7 @@ virt_cat_CFLAGS = \
 virt_cat_LDADD = \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/fish/libfishcommon.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -84,6 +76,7 @@ virt_filesystems_CFLAGS = \
 virt_filesystems_LDADD = \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/fish/libfishcommon.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -107,6 +100,7 @@ virt_log_CFLAGS = \
 virt_log_LDADD = \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/fish/libfishcommon.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -132,6 +126,7 @@ virt_ls_CFLAGS = \
 virt_ls_LDADD = \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/fish/libfishcommon.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -206,7 +201,7 @@ TESTS += \
 endif ENABLE_APPLIANCE
 
 check-valgrind:
-	$(MAKE) VG="$(top_builddir)/run @VG@" check
+	$(MAKE) VG="@VG@" check
 
 check-valgrind-local-guests:
 	for g in $(GUESTS); do \

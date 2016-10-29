@@ -2445,22 +2445,18 @@ Currently defined architectures are:
 
 =over 4
 
+=item "aarch64"
+
+64 bit ARM.
+
+=item "arm"
+
+32 bit ARM.
+
 =item "i386"
 
 This string is returned for all 32 bit i386, i486, i586, i686 binaries
 irrespective of the precise processor requirements of the binary.
-
-=item "x86_64"
-
-64 bit x86-64.
-
-=item "sparc"
-
-32 bit SPARC.
-
-=item "sparc64"
-
-64 bit SPARC V9 and above.
 
 =item "ia64"
 
@@ -2472,15 +2468,23 @@ Intel Itanium.
 
 =item "ppc64"
 
-64 bit Power PC.
+64 bit Power PC (big endian).
 
-=item "arm"
+=item "ppc64le"
 
-32 bit ARM.
+64 bit Power PC (little endian).
 
-=item "aarch64"
+=item "sparc"
 
-64 bit ARM.
+32 bit SPARC.
+
+=item "sparc64"
+
+64 bit SPARC V9 and above.
+
+=item "x86_64"
+
+64 bit x86-64.
 
 =back
 
@@ -2581,9 +2585,8 @@ and directories stored within.
 
 It is not necessary to mount the disk partition to run this command.
 
-All entries in the filesystem are returned, excluding C<.> and
-C<..>. This function can list deleted or unaccessible files.
-The entries are I<not> sorted.
+All entries in the filesystem are returned. This function can list deleted
+or unaccessible files. The entries are I<not> sorted.
 
 The C<tsk_dirent> structure contains the following fields.
 

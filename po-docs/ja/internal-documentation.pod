@@ -775,6 +775,342 @@ supported.  Calling the same C<guestfs_set_*_callback> function would
 replace the existing event.  Calling it with C<cb == NULL> meant that the
 caller wanted to remove the callback.
 
+=head3 File F<src/guestfs-internal-all.h>
+
+This header contains definitions which are shared by all parts of
+libguestfs, ie. the daemon, the library, language bindings and virt tools
+(ie. I<all> C code).
+
+If you need a definition used by only the library, put it in
+F<src/guestfs-internal.h> instead.  If you need a definition used by only
+the frontend (non-daemon) parts of libguestfs, try
+F<src/guestfs-internal-frontend.h>.  If a definition is used by only a
+single tool, it should not be in any shared header file at all.
+
+=head3 File F<src/guestfs-internal-frontend.h>
+
+This header file is included in all "frontend" parts of libguestfs, namely
+the library, non-C language bindings, virt tools and tests.
+
+The daemon does B<not> use this header.  If you need a place to put
+something shared with absolutely everything including the daemon, put it in
+F<src/guestfs-internal-all.h>
+
+If a definition is only needed by a single component of libguestfs (eg. just
+the library, or just a single virt tool) then it should B<not> be here!
+
+=head3 File F<src/guestfs-internal.h>
+
+This header file is included in the libguestfs library (F<src/>)  only.
+
+See also F<src/guestfs-internal-frontend.h> and
+F<src/guestfs-internal-all.h>
+
+=head4 Structure C<src/guestfs-internal.h:event>
+
+ struct event {
+   uint64_t event_bitmask;
+   guestfs_event_callback cb;
+   void *opaque;
+ 
+   /* opaque2 is not exposed through the API, but is used internally to
+    * emulate the old-style callback API.
+    */
+   void *opaque2;
+ };
+
+This struct is used to maintain a list of events registered against the
+handle.  See C<g-E<gt>events> in the handle.
+
+=head4 Structure C<src/guestfs-internal.h:drive>
+
+ struct drive {
+   /* Original source of the drive, eg. file:..., http:... */
+   struct drive_source src;
+ 
+   /* If the drive is readonly, then an overlay [a local file] is
+    * created before launch to protect the original drive content, and
+    * the filename is stored here.  Backends should open this file if
+    * it is non-NULL, else consult the original source above.
+    *
+    * Note that the overlay is in a backend-specific format, probably
+    * different from the source format.  eg. qcow2, UML COW.
+    */
+   char *overlay;
+ 
+   /* Various per-drive flags. */
+   bool readonly;
+   char *iface;
+   char *name;
+   char *disk_label;
+   char *cachemode;
+   enum discard discard;
+   bool copyonread;
+ };
+
+There is one C<struct drive> per drive, including hot-plugged drives.
+
+=head4 Structure C<src/guestfs-internal.h:backend_ops>
+
+ struct backend_ops {
+   /* Size (in bytes) of the per-handle data structure needed by this
+    * backend.  The data pointer is allocated and freed by libguestfs
+    * and passed to the functions in the 'void *data' parameter.
+    * Inside the data structure is opaque to libguestfs.  Any strings
+    * etc pointed to by it must be freed by the backend during
+    * shutdown.
+    */
+   size_t data_size;
+ 
+   /* Create a COW overlay on top of a drive.  This must be a local
+    * file, created in the temporary directory.  This is called when
+    * the drive is added to the handle.
+    */
+   char *(*create_cow_overlay) (guestfs_h *g, void *data, struct drive *drv);
+ 
+   /* Launch and shut down. */
+   int (*launch) (guestfs_h *g, void *data, const char *arg);
+   int (*shutdown) (guestfs_h *g, void *data, int check_for_errors);
+ 
+   /* Miscellaneous. */
+   int (*get_pid) (guestfs_h *g, void *data);
+   int (*max_disks) (guestfs_h *g, void *data);
+ 
+   /* Hotplugging drives. */
+   int (*hot_add_drive) (guestfs_h *g, void *data, struct drive *drv, size_t drv_index);
+   int (*hot_remove_drive) (guestfs_h *g, void *data, struct drive *drv, size_t drv_index);
+ };
+
+Backend operations.
+
+Each backend (eg. libvirt, direct) defines some functions which get run at
+various places in the handle lifecycle (eg. at launch, shutdown).  The
+backend defines this struct pointing to those functions.
+
+=head4 Structure C<src/guestfs-internal.h:connection>
+
+ struct connection {
+   const struct connection_ops *ops;
+ 
+   /* In the real struct, private data used by each connection module
+    * follows here.
+    */
+ };
+
+Connection module.
+
+A C<connection> represents the appliance console connection plus the daemon
+connection.  It hides the underlying representation (POSIX sockets,
+C<virStreamPtr>).
+
+=head4 Structure C<src/guestfs-internal.h:error_cb_stack>
+
+ struct error_cb_stack {
+   struct error_cb_stack   *next;
+   guestfs_error_handler_cb error_cb;
+   void *                   error_cb_data;
+ };
+
+Stack of old error handlers.
+
+=head4 Structure C<src/guestfs-internal.h:cached_feature>
+
+ struct cached_feature {
+   char *group;
+   int result;
+ };
+
+Cache of queried features.
+
+Used to cache the appliance features (see F<src/available.c>).
+
+=head4 Structure C<src/guestfs-internal.h:guestfs_h>
+
+ struct guestfs_h {
+   struct guestfs_h *next;	/* Linked list of open handles. */
+   enum state state;             /* See the state machine diagram in guestfs(3)*/
+ 
+   /**** Configuration of the handle. ****/
+   bool verbose;                 /* Debugging. */
+   bool trace;                   /* Trace calls. */
+   bool autosync;                /* Autosync. */
+   bool direct_mode;             /* Direct mode. */
+   bool recovery_proc;           /* Create a recovery process. */
+   bool enable_network;          /* Enable the network. */
+   bool selinux;                 /* selinux enabled? */
+   bool pgroup;                  /* Create process group for children? */
+   bool close_on_exit;           /* Is this handle on the atexit list? */
+ 
+   int smp;                      /* If > 1, -smp flag passed to hv. */
+   int memsize;			/* Size of RAM (megabytes). */
+ 
+   char *path;			/* Path to the appliance. */
+   char *hv;			/* Hypervisor (HV) binary. */
+   char *append;			/* Append to kernel command line. */
+ 
+   struct hv_param *hv_params;   /* Extra hv parameters. */
+ 
+   char *program;                /* Program name. */
+   char *identifier;             /* Handle identifier. */
+ 
+   /* Array of drives added by add-drive* APIs.
+    *
+    * Before launch this list can be empty or contain some drives.
+    *
+    * During launch, a dummy slot may be added which represents the
+    * slot taken up by the appliance drive.
+    *
+    * When hotplugging is supported by the backend, drives can be
+    * added to the end of this list after launch.  Also hot-removing a
+    * drive causes a NULL slot to appear in the list.
+    *
+    * During shutdown, this list is deleted, so that each launch gets a
+    * fresh set of drives (however callers: don't do this, create a new
+    * handle each time).
+    *
+    * Always use ITER_DRIVES macro to iterate over this list!
+    */
+   struct drive **drives;
+   size_t nr_drives;
+ 
+ #define ITER_DRIVES(g,i,drv)              \
+   for (i = 0; i < (g)->nr_drives; ++i)    \
+     if (((drv) = (g)->drives[i]) != NULL)
+ 
+   /* Backend.  NB: Use guestfs_int_set_backend to change the backend. */
+   char *backend;                /* The full string, always non-NULL. */
+   char *backend_arg;            /* Pointer to the argument part. */
+   const struct backend_ops *backend_ops;
+   void *backend_data;           /* Per-handle data. */
+   char **backend_settings;      /* Backend settings (can be NULL). */
+ 
+   /**** Runtime information. ****/
+   char *last_error;             /* Last error on handle. */
+   int last_errnum;              /* errno, or 0 if there was no errno */
+ 
+   /* Temporary and cache directories. */
+   /* The actual temporary directory - this is not created with the
+    * handle, you have to call guestfs_int_lazy_make_tmpdir.
+    */
+   char *tmpdir;
+   char *sockdir;
+   /* Environment variables that affect tmpdir/cachedir/sockdir locations. */
+   char *env_tmpdir;             /* $TMPDIR (NULL if not set) */
+   char *env_runtimedir;         /* $XDG_RUNTIME_DIR (NULL if not set)*/
+   char *int_tmpdir;   /* $LIBGUESTFS_TMPDIR or guestfs_set_tmpdir or NULL */
+   char *int_cachedir; /* $LIBGUESTFS_CACHEDIR or guestfs_set_cachedir or NULL */
+ 
+   /* Error handler, plus stack of old error handlers. */
+   guestfs_error_handler_cb   error_cb;
+   void *                     error_cb_data;
+   struct error_cb_stack     *error_cb_stack;
+ 
+   /* Out of memory error handler. */
+   guestfs_abort_cb           abort_cb;
+ 
+   /* Events. */
+   struct event *events;
+   size_t nr_events;
+ 
+   /* Information gathered by inspect_os.  Must be freed by calling
+    * guestfs_int_free_inspect_info.
+    */
+   struct inspect_fs *fses;
+   size_t nr_fses;
+ 
+   /* Private data area. */
+   struct hash_table *pda;
+   struct pda_entry *pda_next;
+ 
+   /* User cancelled transfer.  Not signal-atomic, but it doesn't
+    * matter for this case because we only care if it is != 0.
+    */
+   int user_cancel;
+ 
+   struct timeval launch_t;      /* The time that we called guestfs_launch. */
+ 
+   /* Used by bindtests. */
+   FILE *test_fp;
+ 
+   /* Used to generate unique numbers, eg for temp files.  To use this,
+    * '++g->unique'.  Note these are only unique per-handle, not
+    * globally unique.
+    */
+   int unique;
+ 
+   /*** Protocol. ***/
+   struct connection *conn;              /* Connection to appliance. */
+   int msg_next_serial;
+ 
+ #if HAVE_FUSE
+   /**** Used by the mount-local APIs. ****/
+   const char *localmountpoint;
+   struct fuse *fuse;                    /* FUSE handle. */
+   int ml_dir_cache_timeout;             /* Directory cache timeout. */
+   Hash_table *lsc_ht, *xac_ht, *rlc_ht; /* Directory cache. */
+   int ml_read_only;                     /* If mounted read-only. */
+   int ml_debug_calls;        /* Extra debug info on each FUSE call. */
+ #endif
+ 
+ #ifdef HAVE_LIBVIRT_BACKEND
+   /* Used by src/libvirt-auth.c. */
+ #define NR_CREDENTIAL_TYPES 9
+   unsigned int nr_supported_credentials;
+   int supported_credentials[NR_CREDENTIAL_TYPES];
+   const char *saved_libvirt_uri; /* Doesn't need to be freed. */
+   bool wrapper_warning_done;
+   unsigned int nr_requested_credentials;
+   virConnectCredentialPtr requested_credentials;
+ #endif
+ 
+   /* Cached features. */
+   struct cached_feature *features;
+   size_t nr_features;
+ };
+
+The libguestfs handle.
+
+=head4 Structure C<src/guestfs-internal.h:version>
+
+ struct version {
+   int v_major;
+   int v_minor;
+   int v_micro;
+ };
+
+Used for storing major.minor.micro version numbers.  See F<src/version.c>
+for more information.
+
+=head4 Structure C<src/guestfs-internal.h:inspect_fs>
+
+ struct inspect_fs {
+   int is_root;
+   char *mountable;
+   enum inspect_os_type type;
+   enum inspect_os_distro distro;
+   enum inspect_os_package_format package_format;
+   enum inspect_os_package_management package_management;
+   char *product_name;
+   char *product_variant;
+   struct version version;
+   char *arch;
+   char *hostname;
+   char *windows_systemroot;
+   char *windows_current_control_set;
+   char **drive_mappings;
+   enum inspect_os_format format;
+   int is_live_disk;
+   int is_netinst_disk;
+   int is_multipart_disk;
+   struct inspect_fstab_entry *fstab;
+   size_t nr_fstab;
+ };
+
+The inspection code maintains one of these structures per mountable
+filesystem found in the disk image.  The struct (or structs) which have the
+C<is_root> flag set are inspection roots, each corresponding to a single
+guest.  Note that a filesystem can be shared between multiple guests.
+
 =head3 File F<src/guid.c>
 
 =head4 Function C<src/guid.c:guestfs_int_validate_guid>
@@ -1095,6 +1431,31 @@ This shouldn't call C<error> since it may be called early in handle
 initialization.  It can return an error code however.
 
 =back
+
+=head3 File F<src/private-data.c>
+
+Implement a private data area where libguestfs C API users can attach
+arbitrary pieces of data to a C<guestfs_h> handle.
+
+For more information see L<guestfs(3)/PRIVATE DATA AREA>.
+
+Language bindings do not generally expose this, largely because in non-C
+languages it is easy to associate data with handles in other ways (using
+hash tables or maps).
+
+=head4 Structure C<src/private-data.c:pda_entry>
+
+ struct pda_entry {
+   char *key;                    /* key */
+   void *data;                   /* opaque user data pointer */
+ };
+
+The private data area is internally stored as a gnulib hash table containing
+C<pda_entry> structures.
+
+Note the private data area is allocated lazily, since the vast majority of
+callers will never use it.  This means C<g-E<gt>pda> is likely to be
+C<NULL>.
 
 =head3 File F<src/proto.c>
 
@@ -2411,6 +2772,28 @@ is opened.
 
 This file implements the guestfish commands C<copy-in> and C<copy-out>.
 
+=head3 File F<fish/decrypt.c>
+
+This file implements the decryption of disk images, usually done before
+mounting their partitions.
+
+=head4 Function C<fish/decrypt.c:make_mapname>
+
+ static void
+ make_mapname (const char *device, char *mapname, size_t len)
+
+Make a LUKS map name from the partition name, eg. C<"/dev/vda2" =E<gt>
+"luksvda2">
+
+=head4 Function C<fish/decrypt.c:inspect_do_decrypt>
+
+ void
+ inspect_do_decrypt (guestfs_h *g)
+
+Simple implementation of decryption: look for any C<crypto_LUKS> partitions
+and decrypt them, then rescan for VGs.  This only works for Fedora
+whole-disk encryption.  WIP to make this work for other encryption schemes.
+
 =head3 File F<fish/destpaths.c>
 
 The file handles tab-completion of filesystem paths in guestfish.
@@ -2478,6 +2861,36 @@ L<virt-builder(1)>.
 
 It contains the code for both interactive-(editor-)based editing and
 non-interactive editing using Perl snippets.
+
+=head4 Function C<fish/file-edit.c:edit_file_editor>
+
+ int
+ edit_file_editor (guestfs_h *g, const char *filename, const char *editor,
+                   const char *backup_extension, int verbose)
+
+Edit C<filename> using the specified C<editor> application.
+
+If C<backup_extension> is not null, then a copy of C<filename> is saved with
+C<backup_extension> appended to its file name.
+
+If C<editor> is null, then the C<$EDITOR> environment variable will be
+queried for the editor application, leaving C<vi> as fallback if not set.
+
+Returns C<-1> for failure, C<0> on success, C<1> if the editor did not
+change the file (e.g. the user closed the editor without saving).
+
+=head4 Function C<fish/file-edit.c:edit_file_perl>
+
+ int
+ edit_file_perl (guestfs_h *g, const char *filename, const char *perl_expr,
+                 const char *backup_extension, int verbose)
+
+Edit C<filename> running the specified C<perl_expr> using Perl.
+
+If C<backup_extension> is not null, then a copy of C<filename> is saved with
+C<backup_extension> appended to its file name.
+
+Returns C<-1> for failure, C<0> on success.
 
 =head3 File F<fish/fish.c>
 
@@ -2714,23 +3127,6 @@ This function implements the I<-i> option.
 This function is called only if C<inspect_mount_root> was called, and only
 after we've printed the prompt in interactive mode.
 
-=head4 Function C<fish/inspect.c:make_mapname>
-
- static void
- make_mapname (const char *device, char *mapname, size_t len)
-
-Make a LUKS map name from the partition name, eg. C<"/dev/vda2" =E<gt>
-"luksvda2">
-
-=head4 Function C<fish/inspect.c:inspect_do_decrypt>
-
- void
- inspect_do_decrypt (guestfs_h *g)
-
-Simple implementation of decryption: look for any C<crypto_LUKS> partitions
-and decrypt them, then rescan for VGs.  This only works for Fedora
-whole-disk encryption.  WIP to make this work for other encryption schemes.
-
 =head3 File F<fish/keys.c>
 
 =head4 Function C<fish/keys.c:read_key>
@@ -2929,6 +3325,46 @@ L<virt-customize(1)>, etc.
 =head3 File F<fish/windows.c>
 
 This file implements C<win:> Windows file path support in L<guestfish(1)>.
+
+=head4 Function C<fish/windows.c:is_windows>
+
+ int
+ is_windows (guestfs_h *g, const char *root)
+
+Checks whether C<root> is a Windows installation.
+
+This relies on an already being done introspection.
+
+=head4 Function C<fish/windows.c:windows_path>
+
+ char *
+ windows_path (guestfs_h *g, const char *root, const char *path, int readonly)
+
+Resolves C<path> as possible Windows path according to C<root>, giving a new
+path that can be used in libguestfs API calls.
+
+注:
+
+=over 4
+
+=item *
+
+C<root> must be a Windows installation
+
+=item *
+
+relies on an already being done introspection
+
+=item *
+
+will unmount all the existing mount points and mount the Windows root
+(according to C<readonly>)
+
+=item *
+
+calls L<exit(3)> on memory allocation failures
+
+=back
 
 =head2 Subdirectory F<p2v>
 
@@ -3386,6 +3822,30 @@ Since conversions can run for a long time, and cancelling the conversion is
 non-recoverable, this function displays a confirmation dialog before
 cancelling the conversion.
 
+=head3 File F<p2v/inhibit.c>
+
+This file is used to inhibit power saving, sleep, suspend etc during the
+conversion.
+
+The method it uses is to send a D-Bus message to logind, as described here:
+
+https://www.freedesktop.org/wiki/Software/systemd/inhibit/
+
+If virt-p2v is compiled without D-Bus support then this does nothing.
+
+=head4 Function C<p2v/inhibit.c:inhibit_power_saving>
+
+ int
+ inhibit_power_saving (void)
+
+Inhibit all forms of power saving.  A file descriptor is returned, and when
+the file descriptor is closed the inhibit is stopped.
+
+If the function returns C<-1> then C<Inhibit> operation could not be
+performed (eg. if we are compiled without D-Bus support, or there is some
+error contacting logind).  This is not usually fatal from the point of view
+of the caller, conversion can continue.
+
 =head3 File F<p2v/kernel-cmdline.c>
 
 Mini library to read and parse C</proc/cmdline>.
@@ -3578,10 +4038,10 @@ a regular, local, trusted file.
 
 =head2 Subdirectory F<python>
 
-=head3 File F<python/guestfs-py-byhand.c>
+=head3 File F<python/handle.c>
 
 This file contains a small number of functions that are written by hand.
-The majority of the bindings are generated (see F<python/guestfs-py.c>).
+The majority of the bindings are generated (see F<python/actions-*.c>).
 
 =head2 Subdirectory F<v2v>
 

@@ -27,6 +27,7 @@ bin_PROGRAMS = virt-rescue
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/decrypt.c \
 	../fish/display-options.h \
 	../fish/display-options.c \
 	../fish/domain.c \
@@ -92,4 +93,4 @@ TESTS += \
 endif ENABLE_APPLIANCE
 
 check-valgrind:
-	$(MAKE) TESTS="test-virt-rescue-suggest.sh" VG="$(top_builddir)/run @VG@" check
+	$(MAKE) TESTS="test-virt-rescue-suggest.sh" VG="@VG@" check

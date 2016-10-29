@@ -186,9 +186,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -578,6 +579,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1710,6 +1713,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -2144,7 +2150,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:

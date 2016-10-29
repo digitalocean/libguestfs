@@ -189,9 +189,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -314,10 +315,20 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(erlang_bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__erl_guestfs_SOURCES_DIST = erl-guestfs.c erl-guestfs-proto.c
+am__erl_guestfs_SOURCES_DIST = actions-0.c actions-1.c actions-2.c \
+	actions-3.c actions-4.c actions-5.c actions-6.c actions.h \
+	dispatch.c structs.c main.c
 @HAVE_ERLANG_TRUE@am_erl_guestfs_OBJECTS =  \
-@HAVE_ERLANG_TRUE@	erl_guestfs-erl-guestfs.$(OBJEXT) \
-@HAVE_ERLANG_TRUE@	erl_guestfs-erl-guestfs-proto.$(OBJEXT)
+@HAVE_ERLANG_TRUE@	erl_guestfs-actions-0.$(OBJEXT) \
+@HAVE_ERLANG_TRUE@	erl_guestfs-actions-1.$(OBJEXT) \
+@HAVE_ERLANG_TRUE@	erl_guestfs-actions-2.$(OBJEXT) \
+@HAVE_ERLANG_TRUE@	erl_guestfs-actions-3.$(OBJEXT) \
+@HAVE_ERLANG_TRUE@	erl_guestfs-actions-4.$(OBJEXT) \
+@HAVE_ERLANG_TRUE@	erl_guestfs-actions-5.$(OBJEXT) \
+@HAVE_ERLANG_TRUE@	erl_guestfs-actions-6.$(OBJEXT) \
+@HAVE_ERLANG_TRUE@	erl_guestfs-dispatch.$(OBJEXT) \
+@HAVE_ERLANG_TRUE@	erl_guestfs-structs.$(OBJEXT) \
+@HAVE_ERLANG_TRUE@	erl_guestfs-main.$(OBJEXT)
 erl_guestfs_OBJECTS = $(am_erl_guestfs_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_ERLANG_TRUE@erl_guestfs_DEPENDENCIES = $(ERLANG_LIB_DIR_erl_interface)/lib/liberl_interface.a \
@@ -646,6 +657,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1778,6 +1791,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -1795,7 +1811,16 @@ guestfs_am_v_jar_ = $(guestfs_am_v_jar_@AM_DEFAULT_V@)
 guestfs_am_v_jar_0 = @echo "  JAR     " $@;
 generator_built = \
 	bindtests.erl \
-	erl-guestfs.c \
+	actions-0.c \
+	actions-1.c \
+	actions-2.c \
+	actions-3.c \
+	actions-4.c \
+	actions-5.c \
+	actions-6.c \
+	actions.h \
+	dispatch.c \
+	structs.c \
 	guestfs.erl
 
 EXTRA_DIST = \
@@ -1806,7 +1831,19 @@ EXTRA_DIST = \
 
 @HAVE_ERLANG_TRUE@erlang_bindir = $(ERLANG_LIB_DIR)/$(PACKAGE_NAME)-$(PACKAGE_VERSION)/ebin
 @HAVE_ERLANG_TRUE@erlang_bin_DATA = guestfs.beam
-@HAVE_ERLANG_TRUE@erl_guestfs_SOURCES = erl-guestfs.c erl-guestfs-proto.c
+@HAVE_ERLANG_TRUE@erl_guestfs_SOURCES = \
+@HAVE_ERLANG_TRUE@	actions-0.c \
+@HAVE_ERLANG_TRUE@	actions-1.c \
+@HAVE_ERLANG_TRUE@	actions-2.c \
+@HAVE_ERLANG_TRUE@	actions-3.c \
+@HAVE_ERLANG_TRUE@	actions-4.c \
+@HAVE_ERLANG_TRUE@	actions-5.c \
+@HAVE_ERLANG_TRUE@	actions-6.c \
+@HAVE_ERLANG_TRUE@	actions.h \
+@HAVE_ERLANG_TRUE@	dispatch.c \
+@HAVE_ERLANG_TRUE@	structs.c \
+@HAVE_ERLANG_TRUE@	main.c
+
 @HAVE_ERLANG_TRUE@erl_guestfs_CPPFLAGS = \
 @HAVE_ERLANG_TRUE@	-DGUESTFS_PRIVATE=1 \
 @HAVE_ERLANG_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
@@ -1923,8 +1960,16 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-erl-guestfs-proto.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-erl-guestfs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-actions-0.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-actions-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-actions-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-actions-3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-actions-4.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-actions-5.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-actions-6.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-dispatch.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/erl_guestfs-structs.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1950,33 +1995,145 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-erl_guestfs-erl-guestfs.o: erl-guestfs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-erl-guestfs.o -MD -MP -MF $(DEPDIR)/erl_guestfs-erl-guestfs.Tpo -c -o erl_guestfs-erl-guestfs.o `test -f 'erl-guestfs.c' || echo '$(srcdir)/'`erl-guestfs.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-erl-guestfs.Tpo $(DEPDIR)/erl_guestfs-erl-guestfs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='erl-guestfs.c' object='erl_guestfs-erl-guestfs.o' libtool=no @AMDEPBACKSLASH@
+erl_guestfs-actions-0.o: actions-0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-0.o -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-0.Tpo -c -o erl_guestfs-actions-0.o `test -f 'actions-0.c' || echo '$(srcdir)/'`actions-0.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-0.Tpo $(DEPDIR)/erl_guestfs-actions-0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-0.c' object='erl_guestfs-actions-0.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-erl-guestfs.o `test -f 'erl-guestfs.c' || echo '$(srcdir)/'`erl-guestfs.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-0.o `test -f 'actions-0.c' || echo '$(srcdir)/'`actions-0.c
 
-erl_guestfs-erl-guestfs.obj: erl-guestfs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-erl-guestfs.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-erl-guestfs.Tpo -c -o erl_guestfs-erl-guestfs.obj `if test -f 'erl-guestfs.c'; then $(CYGPATH_W) 'erl-guestfs.c'; else $(CYGPATH_W) '$(srcdir)/erl-guestfs.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-erl-guestfs.Tpo $(DEPDIR)/erl_guestfs-erl-guestfs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='erl-guestfs.c' object='erl_guestfs-erl-guestfs.obj' libtool=no @AMDEPBACKSLASH@
+erl_guestfs-actions-0.obj: actions-0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-0.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-0.Tpo -c -o erl_guestfs-actions-0.obj `if test -f 'actions-0.c'; then $(CYGPATH_W) 'actions-0.c'; else $(CYGPATH_W) '$(srcdir)/actions-0.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-0.Tpo $(DEPDIR)/erl_guestfs-actions-0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-0.c' object='erl_guestfs-actions-0.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-erl-guestfs.obj `if test -f 'erl-guestfs.c'; then $(CYGPATH_W) 'erl-guestfs.c'; else $(CYGPATH_W) '$(srcdir)/erl-guestfs.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-0.obj `if test -f 'actions-0.c'; then $(CYGPATH_W) 'actions-0.c'; else $(CYGPATH_W) '$(srcdir)/actions-0.c'; fi`
 
-erl_guestfs-erl-guestfs-proto.o: erl-guestfs-proto.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-erl-guestfs-proto.o -MD -MP -MF $(DEPDIR)/erl_guestfs-erl-guestfs-proto.Tpo -c -o erl_guestfs-erl-guestfs-proto.o `test -f 'erl-guestfs-proto.c' || echo '$(srcdir)/'`erl-guestfs-proto.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-erl-guestfs-proto.Tpo $(DEPDIR)/erl_guestfs-erl-guestfs-proto.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='erl-guestfs-proto.c' object='erl_guestfs-erl-guestfs-proto.o' libtool=no @AMDEPBACKSLASH@
+erl_guestfs-actions-1.o: actions-1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-1.o -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-1.Tpo -c -o erl_guestfs-actions-1.o `test -f 'actions-1.c' || echo '$(srcdir)/'`actions-1.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-1.Tpo $(DEPDIR)/erl_guestfs-actions-1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-1.c' object='erl_guestfs-actions-1.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-erl-guestfs-proto.o `test -f 'erl-guestfs-proto.c' || echo '$(srcdir)/'`erl-guestfs-proto.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-1.o `test -f 'actions-1.c' || echo '$(srcdir)/'`actions-1.c
 
-erl_guestfs-erl-guestfs-proto.obj: erl-guestfs-proto.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-erl-guestfs-proto.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-erl-guestfs-proto.Tpo -c -o erl_guestfs-erl-guestfs-proto.obj `if test -f 'erl-guestfs-proto.c'; then $(CYGPATH_W) 'erl-guestfs-proto.c'; else $(CYGPATH_W) '$(srcdir)/erl-guestfs-proto.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-erl-guestfs-proto.Tpo $(DEPDIR)/erl_guestfs-erl-guestfs-proto.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='erl-guestfs-proto.c' object='erl_guestfs-erl-guestfs-proto.obj' libtool=no @AMDEPBACKSLASH@
+erl_guestfs-actions-1.obj: actions-1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-1.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-1.Tpo -c -o erl_guestfs-actions-1.obj `if test -f 'actions-1.c'; then $(CYGPATH_W) 'actions-1.c'; else $(CYGPATH_W) '$(srcdir)/actions-1.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-1.Tpo $(DEPDIR)/erl_guestfs-actions-1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-1.c' object='erl_guestfs-actions-1.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-erl-guestfs-proto.obj `if test -f 'erl-guestfs-proto.c'; then $(CYGPATH_W) 'erl-guestfs-proto.c'; else $(CYGPATH_W) '$(srcdir)/erl-guestfs-proto.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-1.obj `if test -f 'actions-1.c'; then $(CYGPATH_W) 'actions-1.c'; else $(CYGPATH_W) '$(srcdir)/actions-1.c'; fi`
+
+erl_guestfs-actions-2.o: actions-2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-2.o -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-2.Tpo -c -o erl_guestfs-actions-2.o `test -f 'actions-2.c' || echo '$(srcdir)/'`actions-2.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-2.Tpo $(DEPDIR)/erl_guestfs-actions-2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-2.c' object='erl_guestfs-actions-2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-2.o `test -f 'actions-2.c' || echo '$(srcdir)/'`actions-2.c
+
+erl_guestfs-actions-2.obj: actions-2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-2.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-2.Tpo -c -o erl_guestfs-actions-2.obj `if test -f 'actions-2.c'; then $(CYGPATH_W) 'actions-2.c'; else $(CYGPATH_W) '$(srcdir)/actions-2.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-2.Tpo $(DEPDIR)/erl_guestfs-actions-2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-2.c' object='erl_guestfs-actions-2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-2.obj `if test -f 'actions-2.c'; then $(CYGPATH_W) 'actions-2.c'; else $(CYGPATH_W) '$(srcdir)/actions-2.c'; fi`
+
+erl_guestfs-actions-3.o: actions-3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-3.o -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-3.Tpo -c -o erl_guestfs-actions-3.o `test -f 'actions-3.c' || echo '$(srcdir)/'`actions-3.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-3.Tpo $(DEPDIR)/erl_guestfs-actions-3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-3.c' object='erl_guestfs-actions-3.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-3.o `test -f 'actions-3.c' || echo '$(srcdir)/'`actions-3.c
+
+erl_guestfs-actions-3.obj: actions-3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-3.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-3.Tpo -c -o erl_guestfs-actions-3.obj `if test -f 'actions-3.c'; then $(CYGPATH_W) 'actions-3.c'; else $(CYGPATH_W) '$(srcdir)/actions-3.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-3.Tpo $(DEPDIR)/erl_guestfs-actions-3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-3.c' object='erl_guestfs-actions-3.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-3.obj `if test -f 'actions-3.c'; then $(CYGPATH_W) 'actions-3.c'; else $(CYGPATH_W) '$(srcdir)/actions-3.c'; fi`
+
+erl_guestfs-actions-4.o: actions-4.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-4.o -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-4.Tpo -c -o erl_guestfs-actions-4.o `test -f 'actions-4.c' || echo '$(srcdir)/'`actions-4.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-4.Tpo $(DEPDIR)/erl_guestfs-actions-4.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-4.c' object='erl_guestfs-actions-4.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-4.o `test -f 'actions-4.c' || echo '$(srcdir)/'`actions-4.c
+
+erl_guestfs-actions-4.obj: actions-4.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-4.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-4.Tpo -c -o erl_guestfs-actions-4.obj `if test -f 'actions-4.c'; then $(CYGPATH_W) 'actions-4.c'; else $(CYGPATH_W) '$(srcdir)/actions-4.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-4.Tpo $(DEPDIR)/erl_guestfs-actions-4.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-4.c' object='erl_guestfs-actions-4.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-4.obj `if test -f 'actions-4.c'; then $(CYGPATH_W) 'actions-4.c'; else $(CYGPATH_W) '$(srcdir)/actions-4.c'; fi`
+
+erl_guestfs-actions-5.o: actions-5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-5.o -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-5.Tpo -c -o erl_guestfs-actions-5.o `test -f 'actions-5.c' || echo '$(srcdir)/'`actions-5.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-5.Tpo $(DEPDIR)/erl_guestfs-actions-5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-5.c' object='erl_guestfs-actions-5.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-5.o `test -f 'actions-5.c' || echo '$(srcdir)/'`actions-5.c
+
+erl_guestfs-actions-5.obj: actions-5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-5.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-5.Tpo -c -o erl_guestfs-actions-5.obj `if test -f 'actions-5.c'; then $(CYGPATH_W) 'actions-5.c'; else $(CYGPATH_W) '$(srcdir)/actions-5.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-5.Tpo $(DEPDIR)/erl_guestfs-actions-5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-5.c' object='erl_guestfs-actions-5.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-5.obj `if test -f 'actions-5.c'; then $(CYGPATH_W) 'actions-5.c'; else $(CYGPATH_W) '$(srcdir)/actions-5.c'; fi`
+
+erl_guestfs-actions-6.o: actions-6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-6.o -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-6.Tpo -c -o erl_guestfs-actions-6.o `test -f 'actions-6.c' || echo '$(srcdir)/'`actions-6.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-6.Tpo $(DEPDIR)/erl_guestfs-actions-6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-6.c' object='erl_guestfs-actions-6.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-6.o `test -f 'actions-6.c' || echo '$(srcdir)/'`actions-6.c
+
+erl_guestfs-actions-6.obj: actions-6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-actions-6.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-actions-6.Tpo -c -o erl_guestfs-actions-6.obj `if test -f 'actions-6.c'; then $(CYGPATH_W) 'actions-6.c'; else $(CYGPATH_W) '$(srcdir)/actions-6.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-actions-6.Tpo $(DEPDIR)/erl_guestfs-actions-6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-6.c' object='erl_guestfs-actions-6.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-actions-6.obj `if test -f 'actions-6.c'; then $(CYGPATH_W) 'actions-6.c'; else $(CYGPATH_W) '$(srcdir)/actions-6.c'; fi`
+
+erl_guestfs-dispatch.o: dispatch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-dispatch.o -MD -MP -MF $(DEPDIR)/erl_guestfs-dispatch.Tpo -c -o erl_guestfs-dispatch.o `test -f 'dispatch.c' || echo '$(srcdir)/'`dispatch.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-dispatch.Tpo $(DEPDIR)/erl_guestfs-dispatch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dispatch.c' object='erl_guestfs-dispatch.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-dispatch.o `test -f 'dispatch.c' || echo '$(srcdir)/'`dispatch.c
+
+erl_guestfs-dispatch.obj: dispatch.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-dispatch.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-dispatch.Tpo -c -o erl_guestfs-dispatch.obj `if test -f 'dispatch.c'; then $(CYGPATH_W) 'dispatch.c'; else $(CYGPATH_W) '$(srcdir)/dispatch.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-dispatch.Tpo $(DEPDIR)/erl_guestfs-dispatch.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dispatch.c' object='erl_guestfs-dispatch.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-dispatch.obj `if test -f 'dispatch.c'; then $(CYGPATH_W) 'dispatch.c'; else $(CYGPATH_W) '$(srcdir)/dispatch.c'; fi`
+
+erl_guestfs-structs.o: structs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-structs.o -MD -MP -MF $(DEPDIR)/erl_guestfs-structs.Tpo -c -o erl_guestfs-structs.o `test -f 'structs.c' || echo '$(srcdir)/'`structs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-structs.Tpo $(DEPDIR)/erl_guestfs-structs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs.c' object='erl_guestfs-structs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-structs.o `test -f 'structs.c' || echo '$(srcdir)/'`structs.c
+
+erl_guestfs-structs.obj: structs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-structs.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-structs.Tpo -c -o erl_guestfs-structs.obj `if test -f 'structs.c'; then $(CYGPATH_W) 'structs.c'; else $(CYGPATH_W) '$(srcdir)/structs.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-structs.Tpo $(DEPDIR)/erl_guestfs-structs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs.c' object='erl_guestfs-structs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-structs.obj `if test -f 'structs.c'; then $(CYGPATH_W) 'structs.c'; else $(CYGPATH_W) '$(srcdir)/structs.c'; fi`
+
+erl_guestfs-main.o: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-main.o -MD -MP -MF $(DEPDIR)/erl_guestfs-main.Tpo -c -o erl_guestfs-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-main.Tpo $(DEPDIR)/erl_guestfs-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='erl_guestfs-main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+
+erl_guestfs-main.obj: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -MT erl_guestfs-main.obj -MD -MP -MF $(DEPDIR)/erl_guestfs-main.Tpo -c -o erl_guestfs-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/erl_guestfs-main.Tpo $(DEPDIR)/erl_guestfs-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='erl_guestfs-main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(erl_guestfs_CPPFLAGS) $(CPPFLAGS) $(erl_guestfs_CFLAGS) $(CFLAGS) -c -o erl_guestfs-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2445,7 +2602,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:

@@ -80,13 +80,17 @@
 # define __stat64(fname, buf)   stat (fname, buf)
 # define __fxstatat64(_, d, f, st, flag) fstatat (d, f, st, flag)
 # define struct_stat64          struct stat
-# define __alloca               alloca
+# ifndef __MVS__
+#  define __alloca              alloca
+# endif
 # define __readdir              readdir
 # define __glob_pattern_p       glob_pattern_p
 # define COMPILE_GLOB64
 #endif /* _LIBC */
 
 #include <fnmatch.h>
+
+#include "flexmember.h"
 
 #ifdef _SC_GETPW_R_SIZE_MAX
 # define GETPW_R_SIZE_MAX()     sysconf (_SC_GETPW_R_SIZE_MAX)
@@ -1675,7 +1679,8 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
                           struct globnames *newnames;
                           size_t count = names->count * 2;
                           size_t nameoff = offsetof (struct globnames, name);
-                          size_t size = nameoff + count * sizeof (char *);
+                          size_t size = FLEXSIZEOF (struct globnames, name,
+                                                    count * sizeof (char *));
                           if ((SIZE_MAX - nameoff) / 2 / sizeof (char *)
                               < names->count)
                             goto memory_error;

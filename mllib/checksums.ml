@@ -19,30 +19,41 @@
 open Common_gettext.Gettext
 open Common_utils
 
-open Utils
-
 open Printf
 
 type csum_t =
+| SHA1 of string
 | SHA256 of string
 | SHA512 of string
 
+exception Mismatched_checksum of (csum_t * string)
+
 let string_of_csum_t = function
+  | SHA1 _ -> "sha1"
   | SHA256 _ -> "sha256"
   | SHA512 _ -> "sha512"
 
 let string_of_csum = function
+  | SHA1 c -> c
   | SHA256 c -> c
   | SHA512 c -> c
+
+let of_string csum_type csum_value =
+  match String.lowercase_ascii csum_type with
+  | "sha1" -> SHA1 csum_value
+  | "sha256" -> SHA256 csum_value
+  | "sha512" -> SHA512 csum_value
+  | _ -> invalid_arg csum_type
 
 let verify_checksum csum filename =
   let prog, csum_ref =
     match csum with
+    | SHA1 c -> "sha1sum", c
     | SHA256 c -> "sha256sum", c
     | SHA512 c -> "sha512sum", c
   in
 
-  let cmd = sprintf "%s %s" prog (quote filename) in
+  let cmd = sprintf "%s %s" prog (Filename.quote filename) in
   let lines = external_command cmd in
   match lines with
   | [] ->
@@ -50,8 +61,7 @@ let verify_checksum csum filename =
   | line :: _ ->
     let csum_actual = fst (String.split " " line) in
     if csum_ref <> csum_actual then
-      error (f_"%s checksum of template did not match the expected checksum!\n  found checksum: %s\n  expected checksum: %s\nTry:\n - Use the '-v' option and look for earlier error messages.\n - Delete the cache: virt-builder --delete-cache\n - Check no one has tampered with the website or your network!")
-        (string_of_csum_t csum) csum_actual csum_ref
+      raise (Mismatched_checksum (csum, csum_actual))
 
 let verify_checksums checksums filename =
   List.iter (fun c -> verify_checksum c filename) checksums

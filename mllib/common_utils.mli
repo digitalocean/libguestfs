@@ -147,6 +147,12 @@ val uniq : ?cmp:('a -> 'a -> int) -> 'a list -> 'a list
 val sort_uniq : ?cmp:('a -> 'a -> int) -> 'a list -> 'a list
 (** Sort and uniquify a list. *)
 
+val remove_duplicates : 'a list -> 'a list
+(** Remove duplicates from an unsorted list; useful when the order
+    of the elements matter.
+
+    Please use [sort_uniq] when the order does not matter. *)
+
 val push_back : 'a list ref -> 'a -> unit
 val push_front : 'a -> 'a list ref -> unit
 val pop_back : 'a list ref -> 'a
@@ -260,9 +266,12 @@ val parse_resize : int64 -> string -> int64
 val human_size : int64 -> string
 (** Converts a size in bytes to a human-readable string. *)
 
-val create_standard_options : Getopt.speclist -> ?anon_fun:Getopt.anon_fun -> Getopt.usage_msg -> Getopt.t
+val create_standard_options : Getopt.speclist -> ?anon_fun:Getopt.anon_fun -> ?key_opts:bool -> Getopt.usage_msg -> Getopt.t
 (** Adds the standard libguestfs command line options to the specified ones,
     sorting them, and setting [long_options] to them.
+
+    [key_opts] specifies whether add the standard options related to
+    keys management, i.e. [--echo-keys] and [--keys-from-stdin].
 
     Returns a new [Getopt.t] handle. *)
 
@@ -390,3 +399,8 @@ val which : string -> string
 (** Return the full path of the specified executable from [$PATH].
 
     Throw [Executable_not_found] if not available. *)
+
+val inspect_decrypt : Guestfs.guestfs -> unit
+(** Simple implementation of decryption: look for any [crypto_LUKS]
+    partitions and decrypt them, then rescan for VGs.  This only works
+    for Fedora whole-disk encryption. *)

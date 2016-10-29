@@ -125,9 +125,6 @@ int autosync_umount = 1;
 /* If set, we are testing the daemon as part of the libguestfs tests. */
 int test_mode = 0;
 
-/* Not used explicitly, but required by the gnulib 'error' module. */
-const char *program_name = "guestfsd";
-
 /* Name of the virtio-serial channel. */
 #define VIRTIO_SERIAL_CHANNEL "/dev/virtio-ports/org.libguestfs.channel.0"
 
@@ -1248,4 +1245,13 @@ get_random_uuid (void)
   /* caller free */
   return out;
 
+}
+
+void
+cleanup_free_mountable (mountable_t *mountable)
+{
+  if (mountable) {
+    free (mountable->device);
+    free (mountable->volume);
+  }
 }
