@@ -1081,12 +1081,6 @@ EXTRA_DIST += test-priv-set.c macros.h
 
 ## end   gnulib module priv-set-tests
 
-## begin gnulib module progname
-
-libtests_a_SOURCES += progname.h progname.c
-
-## end   gnulib module progname
-
 ## begin gnulib module ptsname_r-tests
 
 TESTS += test-ptsname_r

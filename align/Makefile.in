@@ -186,9 +186,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -314,21 +315,14 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = ../df/virt_alignment_scan-domains.$(OBJEXT) \
 	../df/virt_alignment_scan-estimate-max-threads.$(OBJEXT) \
-	../df/virt_alignment_scan-parallel.$(OBJEXT) \
-	../fish/virt_alignment_scan-config.$(OBJEXT) \
-	../fish/virt_alignment_scan-display-options.$(OBJEXT) \
-	../fish/virt_alignment_scan-domain.$(OBJEXT) \
-	../fish/virt_alignment_scan-inspect.$(OBJEXT) \
-	../fish/virt_alignment_scan-keys.$(OBJEXT) \
-	../fish/virt_alignment_scan-options.$(OBJEXT) \
-	../fish/virt_alignment_scan-uri.$(OBJEXT)
+	../df/virt_alignment_scan-parallel.$(OBJEXT)
 am_virt_alignment_scan_OBJECTS = $(am__objects_1) \
 	virt_alignment_scan-scan.$(OBJEXT)
 virt_alignment_scan_OBJECTS = $(am_virt_alignment_scan_OBJECTS)
 am__DEPENDENCIES_1 =
-virt_alignment_scan_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+virt_alignment_scan_DEPENDENCIES = $(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/fish/libfishcommon.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -653,6 +647,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1785,6 +1781,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -1812,17 +1811,7 @@ SHARED_SOURCE_FILES = \
 	../df/estimate-max-threads.c \
 	../df/estimate-max-threads.h \
 	../df/parallel.c \
-	../df/parallel.h \
-	../fish/config.c \
-	../fish/display-options.h \
-	../fish/display-options.c \
-	../fish/domain.c \
-	../fish/inspect.c \
-	../fish/keys.c \
-	../fish/options.h \
-	../fish/options.c \
-	../fish/uri.h \
-	../fish/uri.c
+	../df/parallel.h
 
 virt_alignment_scan_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -1839,14 +1828,13 @@ virt_alignment_scan_CPPFLAGS = \
 virt_alignment_scan_CFLAGS = \
 	-pthread \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(LIBCONFIG_CFLAGS) \
 	$(LIBXML2_CFLAGS) \
 	$(LIBVIRT_CFLAGS)
 
 virt_alignment_scan_LDADD = \
-	$(LIBCONFIG_LIBS) \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/fish/libfishcommon.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -1956,26 +1944,6 @@ clean-binPROGRAMS:
 	../df/$(am__dirstamp) ../df/$(DEPDIR)/$(am__dirstamp)
 ../df/virt_alignment_scan-parallel.$(OBJEXT): ../df/$(am__dirstamp) \
 	../df/$(DEPDIR)/$(am__dirstamp)
-../fish/$(am__dirstamp):
-	@$(MKDIR_P) ../fish
-	@: > ../fish/$(am__dirstamp)
-../fish/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../fish/$(DEPDIR)
-	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_alignment_scan-config.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_alignment_scan-display-options.$(OBJEXT):  \
-	../fish/$(am__dirstamp) ../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_alignment_scan-domain.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_alignment_scan-inspect.$(OBJEXT):  \
-	../fish/$(am__dirstamp) ../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_alignment_scan-keys.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_alignment_scan-options.$(OBJEXT):  \
-	../fish/$(am__dirstamp) ../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/virt_alignment_scan-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
 
 virt-alignment-scan$(EXEEXT): $(virt_alignment_scan_OBJECTS) $(virt_alignment_scan_DEPENDENCIES) $(EXTRA_virt_alignment_scan_DEPENDENCIES) 
 	@rm -f virt-alignment-scan$(EXEEXT)
@@ -1984,7 +1952,6 @@ virt-alignment-scan$(EXEEXT): $(virt_alignment_scan_OBJECTS) $(virt_alignment_sc
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ../df/*.$(OBJEXT)
-	-rm -f ../fish/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -1992,13 +1959,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../df/$(DEPDIR)/virt_alignment_scan-domains.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../df/$(DEPDIR)/virt_alignment_scan-estimate-max-threads.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../df/$(DEPDIR)/virt_alignment_scan-parallel.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-config.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-display-options.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-domain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-inspect.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-keys.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-options.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_alignment_scan-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-scan.Po@am__quote@
 
 .c.o:
@@ -2066,104 +2026,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/parallel.c' object='../df/virt_alignment_scan-parallel.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../df/virt_alignment_scan-parallel.obj `if test -f '../df/parallel.c'; then $(CYGPATH_W) '../df/parallel.c'; else $(CYGPATH_W) '$(srcdir)/../df/parallel.c'; fi`
-
-../fish/virt_alignment_scan-config.o: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-config.o -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-config.Tpo -c -o ../fish/virt_alignment_scan-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-config.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/virt_alignment_scan-config.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-
-../fish/virt_alignment_scan-config.obj: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-config.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-config.Tpo -c -o ../fish/virt_alignment_scan-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-config.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/virt_alignment_scan-config.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-
-../fish/virt_alignment_scan-display-options.o: ../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-display-options.o -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Tpo -c -o ../fish/virt_alignment_scan-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/display-options.c' object='../fish/virt_alignment_scan-display-options.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
-
-../fish/virt_alignment_scan-display-options.obj: ../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-display-options.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Tpo -c -o ../fish/virt_alignment_scan-display-options.obj `if test -f '../fish/display-options.c'; then $(CYGPATH_W) '../fish/display-options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/display-options.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-display-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/display-options.c' object='../fish/virt_alignment_scan-display-options.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-display-options.obj `if test -f '../fish/display-options.c'; then $(CYGPATH_W) '../fish/display-options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/display-options.c'; fi`
-
-../fish/virt_alignment_scan-domain.o: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-domain.o -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-domain.Tpo -c -o ../fish/virt_alignment_scan-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-domain.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/virt_alignment_scan-domain.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
-
-../fish/virt_alignment_scan-domain.obj: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-domain.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-domain.Tpo -c -o ../fish/virt_alignment_scan-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-domain.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-domain.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='../fish/virt_alignment_scan-domain.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
-
-../fish/virt_alignment_scan-inspect.o: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-inspect.o -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-inspect.Tpo -c -o ../fish/virt_alignment_scan-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-inspect.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-inspect.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='../fish/virt_alignment_scan-inspect.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
-
-../fish/virt_alignment_scan-inspect.obj: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-inspect.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-inspect.Tpo -c -o ../fish/virt_alignment_scan-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-inspect.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-inspect.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='../fish/virt_alignment_scan-inspect.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
-
-../fish/virt_alignment_scan-keys.o: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-keys.o -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-keys.Tpo -c -o ../fish/virt_alignment_scan-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-keys.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-keys.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/virt_alignment_scan-keys.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
-
-../fish/virt_alignment_scan-keys.obj: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-keys.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-keys.Tpo -c -o ../fish/virt_alignment_scan-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-keys.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-keys.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/virt_alignment_scan-keys.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
-
-../fish/virt_alignment_scan-options.o: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-options.o -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-options.Tpo -c -o ../fish/virt_alignment_scan-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-options.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/virt_alignment_scan-options.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
-
-../fish/virt_alignment_scan-options.obj: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-options.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-options.Tpo -c -o ../fish/virt_alignment_scan-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-options.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='../fish/virt_alignment_scan-options.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
-
-../fish/virt_alignment_scan-uri.o: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-uri.o -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-uri.Tpo -c -o ../fish/virt_alignment_scan-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-uri.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_alignment_scan-uri.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-uri.o `test -f '../fish/uri.c' || echo '$(srcdir)/'`../fish/uri.c
-
-../fish/virt_alignment_scan-uri.obj: ../fish/uri.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../fish/virt_alignment_scan-uri.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_alignment_scan-uri.Tpo -c -o ../fish/virt_alignment_scan-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_alignment_scan-uri.Tpo ../fish/$(DEPDIR)/virt_alignment_scan-uri.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/virt_alignment_scan-uri.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../fish/virt_alignment_scan-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
 
 virt_alignment_scan-scan.o: scan.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-scan.o -MD -MP -MF $(DEPDIR)/virt_alignment_scan-scan.Tpo -c -o virt_alignment_scan-scan.o `test -f 'scan.c' || echo '$(srcdir)/'`scan.c
@@ -2527,8 +2389,6 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f ../df/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../df/$(am__dirstamp)
-	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../fish/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2539,7 +2399,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../df/$(DEPDIR) ../fish/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ../df/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2585,7 +2445,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../df/$(DEPDIR) ../fish/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ../df/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -2652,7 +2512,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
@@ -2670,7 +2530,7 @@ stamp-virt-alignment-scan.pod: virt-alignment-scan.pod
 	touch $@
 
 check-valgrind:
-	$(MAKE) VG="$(top_builddir)/run @VG@" check
+	$(MAKE) VG="@VG@" check
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

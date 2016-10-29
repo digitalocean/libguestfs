@@ -7549,19 +7549,16 @@ guestfs_session_file (GuestfsSession *session, const gchar *path, GError **err)
  * 
  * Currently defined architectures are:
  * 
+ * "aarch64"
+ * 64 bit ARM.
+ * 
+ * "arm"
+ * 32 bit ARM.
+ * 
  * "i386"
  * This string is returned for all 32 bit i386, i486, i586, i686
  * binaries irrespective of the precise processor requirements of the
  * binary.
- * 
- * "x86_64"
- * 64 bit x86-64.
- * 
- * "sparc"
- * 32 bit SPARC.
- * 
- * "sparc64"
- * 64 bit SPARC V9 and above.
  * 
  * "ia64"
  * Intel Itanium.
@@ -7570,13 +7567,19 @@ guestfs_session_file (GuestfsSession *session, const gchar *path, GError **err)
  * 32 bit Power PC.
  * 
  * "ppc64"
- * 64 bit Power PC.
+ * 64 bit Power PC (big endian).
  * 
- * "arm"
- * 32 bit ARM.
+ * "ppc64le"
+ * 64 bit Power PC (little endian).
  * 
- * "aarch64"
- * 64 bit ARM.
+ * "sparc"
+ * 32 bit SPARC.
+ * 
+ * "sparc64"
+ * 64 bit SPARC V9 and above.
+ * 
+ * "x86_64"
+ * 64 bit x86-64.
  * 
  * Libguestfs may return other architecture strings in future.
  * 
@@ -7734,9 +7737,8 @@ guestfs_session_filesystem_available (GuestfsSession *session, const gchar *file
  * 
  * It is not necessary to mount the disk partition to run this command.
  * 
- * All entries in the filesystem are returned, excluding "." and "..". This
- * function can list deleted or unaccessible files. The entries are *not*
- * sorted.
+ * All entries in the filesystem are returned. This function can list
+ * deleted or unaccessible files. The entries are *not* sorted.
  * 
  * The @tsk_dirent structure contains the following fields.
  * 

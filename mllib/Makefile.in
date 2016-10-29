@@ -188,9 +188,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -318,16 +319,20 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libmllib_a_AR = $(AR) $(ARFLAGS)
 libmllib_a_LIBADD =
-am__libmllib_a_SOURCES_DIST = ../fish/progress.c ../fish/uri.c \
-	dev_t-c.c exit-c.c fsync-c.c getopt-c.c mkdtemp-c.c \
-	progress-c.c statvfs-c.c uri-c.c
+am__libmllib_a_SOURCES_DIST = ../fish/decrypt.c ../fish/keys.c \
+	../fish/progress.c ../fish/uri.c common_utils-c.c dev_t-c.c \
+	exit-c.c fsync-c.c getopt-c.c mkdtemp-c.c progress-c.c \
+	statvfs-c.c uri-c.c
 am__dirstamp = $(am__leading_dot)dirstamp
-am__objects_1 = ../fish/libmllib_a-progress.$(OBJEXT) \
-	../fish/libmllib_a-uri.$(OBJEXT) libmllib_a-dev_t-c.$(OBJEXT) \
-	libmllib_a-exit-c.$(OBJEXT) libmllib_a-fsync-c.$(OBJEXT) \
-	libmllib_a-getopt-c.$(OBJEXT) libmllib_a-mkdtemp-c.$(OBJEXT) \
-	libmllib_a-progress-c.$(OBJEXT) libmllib_a-statvfs-c.$(OBJEXT) \
-	libmllib_a-uri-c.$(OBJEXT)
+am__objects_1 = ../fish/libmllib_a-decrypt.$(OBJEXT) \
+	../fish/libmllib_a-keys.$(OBJEXT) \
+	../fish/libmllib_a-progress.$(OBJEXT) \
+	../fish/libmllib_a-uri.$(OBJEXT) \
+	libmllib_a-common_utils-c.$(OBJEXT) \
+	libmllib_a-dev_t-c.$(OBJEXT) libmllib_a-exit-c.$(OBJEXT) \
+	libmllib_a-fsync-c.$(OBJEXT) libmllib_a-getopt-c.$(OBJEXT) \
+	libmllib_a-mkdtemp-c.$(OBJEXT) libmllib_a-progress-c.$(OBJEXT) \
+	libmllib_a-statvfs-c.$(OBJEXT) libmllib_a-uri-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_libmllib_a_OBJECTS = $(am__objects_1)
 libmllib_a_OBJECTS = $(am_libmllib_a_OBJECTS)
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_1 = common_utils_tests$(EXEEXT) \
@@ -665,6 +670,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1797,6 +1804,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -1822,6 +1832,7 @@ EXTRA_DIST = \
 	test-getopt.sh
 
 SOURCES_MLI = \
+	checksums.mli \
 	common_utils.mli \
 	curl.mli \
 	dev_t.mli \
@@ -1855,11 +1866,15 @@ SOURCES_ML = \
 	StatVFS.ml \
 	JSON.ml \
 	curl.ml \
-	exit.ml
+	exit.ml \
+	checksums.ml
 
 SOURCES_C = \
+	../fish/decrypt.c \
+	../fish/keys.c \
 	../fish/progress.c \
 	../fish/uri.c \
+	common_utils-c.c \
 	dev_t-c.c \
 	exit-c.c \
 	fsync-c.c \
@@ -2028,6 +2043,10 @@ clean-noinstLIBRARIES:
 ../fish/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ../fish/$(DEPDIR)
 	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/libmllib_a-decrypt.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/libmllib_a-keys.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
 ../fish/libmllib_a-progress.$(OBJEXT): ../fish/$(am__dirstamp) \
 	../fish/$(DEPDIR)/$(am__dirstamp)
 ../fish/libmllib_a-uri.$(OBJEXT): ../fish/$(am__dirstamp) \
@@ -2066,11 +2085,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/libmllib_a-decrypt.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/libmllib_a-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/libmllib_a-progress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/libmllib_a-uri.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common_utils_tests-dummy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt_tests-dummy.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmllib_a-common_utils-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmllib_a-dev_t-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmllib_a-exit-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmllib_a-fsync-c.Po@am__quote@
@@ -2104,6 +2126,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
+../fish/libmllib_a-decrypt.o: ../fish/decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -MT ../fish/libmllib_a-decrypt.o -MD -MP -MF ../fish/$(DEPDIR)/libmllib_a-decrypt.Tpo -c -o ../fish/libmllib_a-decrypt.o `test -f '../fish/decrypt.c' || echo '$(srcdir)/'`../fish/decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/libmllib_a-decrypt.Tpo ../fish/$(DEPDIR)/libmllib_a-decrypt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/decrypt.c' object='../fish/libmllib_a-decrypt.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -c -o ../fish/libmllib_a-decrypt.o `test -f '../fish/decrypt.c' || echo '$(srcdir)/'`../fish/decrypt.c
+
+../fish/libmllib_a-decrypt.obj: ../fish/decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -MT ../fish/libmllib_a-decrypt.obj -MD -MP -MF ../fish/$(DEPDIR)/libmllib_a-decrypt.Tpo -c -o ../fish/libmllib_a-decrypt.obj `if test -f '../fish/decrypt.c'; then $(CYGPATH_W) '../fish/decrypt.c'; else $(CYGPATH_W) '$(srcdir)/../fish/decrypt.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/libmllib_a-decrypt.Tpo ../fish/$(DEPDIR)/libmllib_a-decrypt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/decrypt.c' object='../fish/libmllib_a-decrypt.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -c -o ../fish/libmllib_a-decrypt.obj `if test -f '../fish/decrypt.c'; then $(CYGPATH_W) '../fish/decrypt.c'; else $(CYGPATH_W) '$(srcdir)/../fish/decrypt.c'; fi`
+
+../fish/libmllib_a-keys.o: ../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -MT ../fish/libmllib_a-keys.o -MD -MP -MF ../fish/$(DEPDIR)/libmllib_a-keys.Tpo -c -o ../fish/libmllib_a-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/libmllib_a-keys.Tpo ../fish/$(DEPDIR)/libmllib_a-keys.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/libmllib_a-keys.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -c -o ../fish/libmllib_a-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+
+../fish/libmllib_a-keys.obj: ../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -MT ../fish/libmllib_a-keys.obj -MD -MP -MF ../fish/$(DEPDIR)/libmllib_a-keys.Tpo -c -o ../fish/libmllib_a-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/libmllib_a-keys.Tpo ../fish/$(DEPDIR)/libmllib_a-keys.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='../fish/libmllib_a-keys.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -c -o ../fish/libmllib_a-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+
 ../fish/libmllib_a-progress.o: ../fish/progress.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -MT ../fish/libmllib_a-progress.o -MD -MP -MF ../fish/$(DEPDIR)/libmllib_a-progress.Tpo -c -o ../fish/libmllib_a-progress.o `test -f '../fish/progress.c' || echo '$(srcdir)/'`../fish/progress.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/libmllib_a-progress.Tpo ../fish/$(DEPDIR)/libmllib_a-progress.Po
@@ -2131,6 +2181,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/uri.c' object='../fish/libmllib_a-uri.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -c -o ../fish/libmllib_a-uri.obj `if test -f '../fish/uri.c'; then $(CYGPATH_W) '../fish/uri.c'; else $(CYGPATH_W) '$(srcdir)/../fish/uri.c'; fi`
+
+libmllib_a-common_utils-c.o: common_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -MT libmllib_a-common_utils-c.o -MD -MP -MF $(DEPDIR)/libmllib_a-common_utils-c.Tpo -c -o libmllib_a-common_utils-c.o `test -f 'common_utils-c.c' || echo '$(srcdir)/'`common_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmllib_a-common_utils-c.Tpo $(DEPDIR)/libmllib_a-common_utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='common_utils-c.c' object='libmllib_a-common_utils-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -c -o libmllib_a-common_utils-c.o `test -f 'common_utils-c.c' || echo '$(srcdir)/'`common_utils-c.c
+
+libmllib_a-common_utils-c.obj: common_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -MT libmllib_a-common_utils-c.obj -MD -MP -MF $(DEPDIR)/libmllib_a-common_utils-c.Tpo -c -o libmllib_a-common_utils-c.obj `if test -f 'common_utils-c.c'; then $(CYGPATH_W) 'common_utils-c.c'; else $(CYGPATH_W) '$(srcdir)/common_utils-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmllib_a-common_utils-c.Tpo $(DEPDIR)/libmllib_a-common_utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='common_utils-c.c' object='libmllib_a-common_utils-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -c -o libmllib_a-common_utils-c.obj `if test -f 'common_utils-c.c'; then $(CYGPATH_W) 'common_utils-c.c'; else $(CYGPATH_W) '$(srcdir)/common_utils-c.c'; fi`
 
 libmllib_a-dev_t-c.o: dev_t-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmllib_a_CPPFLAGS) $(CPPFLAGS) $(libmllib_a_CFLAGS) $(CFLAGS) -MT libmllib_a-dev_t-c.o -MD -MP -MF $(DEPDIR)/libmllib_a-dev_t-c.Tpo -c -o libmllib_a-dev_t-c.o `test -f 'dev_t-c.c' || echo '$(srcdir)/'`dev_t-c.c
@@ -2696,7 +2760,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
@@ -2720,7 +2784,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@JSON_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 
 @HAVE_OCAML_TRUE@check-valgrind:
-@HAVE_OCAML_TRUE@	$(MAKE) VG="$(top_builddir)/run @VG@" check
+@HAVE_OCAML_TRUE@	$(MAKE) VG="@VG@" check
 
 # Dependencies.
 @HAVE_OCAML_TRUE@depend: .depend

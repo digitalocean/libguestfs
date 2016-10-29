@@ -27,6 +27,7 @@ EXTRA_DIST = \
 	test-getopt.sh
 
 SOURCES_MLI = \
+	checksums.mli \
 	common_utils.mli \
 	curl.mli \
 	dev_t.mli \
@@ -60,11 +61,15 @@ SOURCES_ML = \
 	StatVFS.ml \
 	JSON.ml \
 	curl.ml \
-	exit.ml
+	exit.ml \
+	checksums.ml
 
 SOURCES_C = \
+	../fish/decrypt.c \
+	../fish/keys.c \
 	../fish/progress.c \
 	../fish/uri.c \
+	common_utils-c.c \
 	dev_t-c.c \
 	exit-c.c \
 	fsync-c.c \
@@ -244,7 +249,7 @@ TESTS += common_utils_tests JSON_tests
 endif
 
 check-valgrind:
-	$(MAKE) VG="$(top_builddir)/run @VG@" check
+	$(MAKE) VG="@VG@" check
 
 # Dependencies.
 depend: .depend

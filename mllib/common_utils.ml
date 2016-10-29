@@ -21,6 +21,10 @@ open Printf
 open Common_gettext.Gettext
 open Getopt.OptionName
 
+external c_inspect_decrypt : Guestfs.t -> int64 -> unit = "guestfs_int_mllib_inspect_decrypt"
+external c_set_echo_keys : unit -> unit = "guestfs_int_mllib_set_echo_keys" "noalloc"
+external c_set_keys_from_stdin : unit -> unit = "guestfs_int_mllib_set_keys_from_stdin" "noalloc"
+
 module Char = struct
     include Char
 
@@ -292,6 +296,15 @@ let sort_uniq ?(cmp = Pervasives.compare) xs =
   let xs = List.sort cmp xs in
   let xs = uniq ~cmp xs in
   xs
+
+let remove_duplicates xs =
+  let h = Hashtbl.create (List.length xs) in
+  let rec loop = function
+    | [] -> []
+    | x :: xs when Hashtbl.mem h x -> xs
+    | x :: xs -> Hashtbl.add h x true; x :: loop xs
+  in
+  loop xs
 
 let push_back xsp x = xsp := !xsp @ [x]
 let push_front x xsp = xsp := x :: !xsp
@@ -591,7 +604,7 @@ let human_size i =
     )
   )
 
-let create_standard_options argspec ?anon_fun usage_msg =
+let create_standard_options argspec ?anon_fun ?(key_opts = false) usage_msg =
   (** Install an exit hook to check gc consistency for --debug-gc *)
   let set_debug_gc () =
     at_exit (fun () -> Gc.compact()) in
@@ -604,6 +617,14 @@ let create_standard_options argspec ?anon_fun usage_msg =
     [ L"color"; L"colors";
       L"colour"; L"colours" ], Getopt.Unit set_colours, s_"Use ANSI colour sequences even if not tty";
   ] @ argspec in
+  let argspec =
+    argspec @
+      (if key_opts then
+      [
+        [ L"echo-keys" ],       Getopt.Unit c_set_echo_keys,       s_"Don't turn off echo for passphrases";
+        [ L"keys-from-stdin" ], Getopt.Unit c_set_keys_from_stdin, s_"Read passphrases from stdin";
+      ]
+      else []) in
   Getopt.create argspec ?anon_fun usage_msg
 
 (* Compare two version strings intelligently. *)
@@ -998,3 +1019,11 @@ let is_btrfs_subvolume g fs =
   with Guestfs.Error msg as exn ->
     if g#last_errno () = Guestfs.Errno.errno_EINVAL then false
     else raise exn
+
+let inspect_decrypt g =
+  (* Note we pass original 'g' even though it is not used by the
+   * callee.  This is so that 'g' is kept as a root on the stack, and
+   * so cannot be garbage collected while we are in the c_inspect_decrypt
+   * function.
+   *)
+  c_inspect_decrypt g#ocaml_handle (Guestfs.c_pointer g#ocaml_handle)

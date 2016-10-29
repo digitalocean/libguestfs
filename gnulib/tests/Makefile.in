@@ -315,9 +315,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -451,7 +452,7 @@ am_libtests_a_OBJECTS = dtotimespec.$(OBJEXT) fd-safer-flag.$(OBJEXT) \
 	dup-safer-flag.$(OBJEXT) imaxtostr.$(OBJEXT) \
 	inttostr.$(OBJEXT) offtostr.$(OBJEXT) uinttostr.$(OBJEXT) \
 	umaxtostr.$(OBJEXT) localename.$(OBJEXT) priv-set.$(OBJEXT) \
-	progname.$(OBJEXT) sig-handler.$(OBJEXT) statat.$(OBJEXT) \
+	sig-handler.$(OBJEXT) statat.$(OBJEXT) \
 	glthread/thread.$(OBJEXT) timespec-add.$(OBJEXT) \
 	timespec-sub.$(OBJEXT) unlinkdir.$(OBJEXT) utimecmp.$(OBJEXT)
 libtests_a_OBJECTS = $(am_libtests_a_OBJECTS)
@@ -1705,6 +1706,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -2972,8 +2975,8 @@ AM_CPPFLAGS = \
 LDADD = libtests.a ../../gnulib/lib/libgnu.la libtests.a $(LIBTESTS_LIBDEPS)
 libtests_a_SOURCES = dtotimespec.c fd-safer-flag.c dup-safer-flag.c \
 	imaxtostr.c inttostr.c offtostr.c uinttostr.c umaxtostr.c \
-	localename.c priv-set.c progname.h progname.c sig-handler.c \
-	statat.c glthread/thread.h glthread/thread.c timespec-add.c \
+	localename.c priv-set.c sig-handler.c statat.c \
+	glthread/thread.h glthread/thread.c timespec-add.c \
 	timespec-sub.c unlinkdir.c utimecmp.c glthread/yield.h
 libtests_a_LIBADD = $(gltests_LIBOBJS)
 libtests_a_DEPENDENCIES = $(gltests_LIBOBJS)
@@ -3840,7 +3843,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/offtostr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pipe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/priv-set.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/progname.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/putenv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rmdir.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/setlocale.Po@am__quote@

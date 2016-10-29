@@ -16,15 +16,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* NB: This contains ONLY definitions which are shared by libguestfs
- * library, bindings, tools and tests (NOT the daemon).
+/**
+ * This header file is included in all "frontend" parts of libguestfs,
+ * namely the library, non-C language bindings, virt tools and tests.
  *
- * If a definition is only needed by a single component of libguestfs,
- * then it should NOT be here!
- *
- * The daemon does NOT use this header.  If you need a place to put
+ * The daemon does B<not> use this header.  If you need a place to put
  * something shared with absolutely everything including the daemon,
- * put it in 'src/guestfs-internal-all.h'.
+ * put it in F<src/guestfs-internal-all.h>
+ *
+ * If a definition is only needed by a single component of libguestfs
+ * (eg. just the library, or just a single virt tool) then it should
+ * B<not> be here!
  */
 
 #ifndef GUESTFS_INTERNAL_FRONTEND_H_
@@ -128,17 +130,6 @@ extern void guestfs_int_cleanup_pclose (void *ptr);
  * Don't include the following file directly:
  */
 #include "guestfs-internal-frontend-cleanups.h"
-
-/* Current program name.  Note <errno.h> must be included in all files
- * that want to use 'guestfs_int_program_name'.
- */
-#if HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME == 1
-#  define guestfs_int_program_name program_invocation_short_name
-#elif HAVE_GETPROGNAME
-#  define guestfs_int_program_name getprogname()
-#else
-#  define guestfs_int_program_name "libguestfs"
-#endif
 
 /* Close all file descriptors matching the condition. */
 #define close_file_descriptors(cond) do {                               \

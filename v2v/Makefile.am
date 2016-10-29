@@ -41,7 +41,9 @@ SOURCES_MLI = \
 	inspect_source.mli \
 	linux.mli \
 	linux_bootloaders.mli \
+	linux_kernels.mli \
 	modules_list.mli \
+	name_from_disk.mli \
 	output_glance.mli \
 	output_libvirt.mli \
 	output_local.mli \
@@ -57,13 +59,16 @@ SOURCES_MLI = \
 	vCenter.mli \
 	windows.mli \
 	windows_virtio.mli \
-	xml.mli
+	xml.mli \
+	xpath_helpers.mli
 
 SOURCES_ML = \
 	types.ml \
 	xml.ml \
+	xpath_helpers.ml \
 	uefi.ml \
 	utils.ml \
+	name_from_disk.ml \
 	vCenter.ml \
 	domainxml.ml \
 	DOM.ml \
@@ -81,6 +86,7 @@ SOURCES_ML = \
 	input_libvirt.ml \
 	input_ova.ml \
 	linux_bootloaders.ml \
+	linux_kernels.ml \
 	convert_linux.ml \
 	convert_windows.ml \
 	output_null.ml \
@@ -175,6 +181,7 @@ virt_v2v_copy_to_local_CFLAGS = \
 
 COPY_TO_LOCAL_BOBJECTS = \
 	xml.cmo \
+	xpath_helpers.cmo \
 	uefi.cmo \
 	utils.cmo \
 	vCenter.cmo \
@@ -289,7 +296,7 @@ TESTS += \
 endif ENABLE_APPLIANCE
 
 check-valgrind:
-	$(MAKE) VG="$(abs_top_builddir)/run @VG@" check
+	$(MAKE) VG="@VG@" check
 
 SLOW_TESTS = \
 	$(real_guests_scripts) \

@@ -1,3 +1,1105 @@
+commit 83cde6758f86c54af9b06e1d5fffe5f18971a99b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 27 13:06:46 2016 +0100
+
+    Version 1.34.3.
+
+commit 3581cf7948082c1456c33b2893540a00c6ea698f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 25 22:22:59 2016 +0100
+
+    docs: Ignore ruby/ext/guestfs/extconf.h
+    
+    Updates commit bd21993d77bd2d38557ba2c74476e619732a543a.
+    
+    (cherry picked from commit e73763de1fc150f51469568052cd494f2f018917)
+
+commit 4ffa42263d254c37f33ebaf7368d7cc838569697
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 25 21:59:19 2016 +0100
+
+    docs: Ignore php/extension/config.h.
+    
+    Updates commit bd21993d77bd2d38557ba2c74476e619732a543a.
+    
+    (cherry picked from commit 67cc867da84077d2480cbbe7dd9b10ceaf862d24)
+
+commit 2fdc426401978ba434d076f4a43b4f48ffee02ce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 25 21:37:30 2016 +0100
+
+    docs: Ignore java/com_redhat_et_libguestfs_GuestFS.h
+    
+    Updates commit bd21993d77bd2d38557ba2c74476e619732a543a.
+    
+    (cherry picked from commit 4f3269ac23f15ad950204a7fda22d27f67c562ff)
+
+commit 2bcf1d3f5e1636fb6b0f00632f87455946dee5c1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 25 21:12:56 2016 +0100
+
+    docs: Ignore more generated headers.
+    
+    Updates commit bd21993d77bd2d38557ba2c74476e619732a543a.
+    
+    (cherry picked from commit 08759893846683af14fcda79f4098ce0a4a13c28)
+
+commit c317c3878d63fd1c2307e0ba48e45f7e4f2e8265
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 25 20:42:40 2016 +0100
+
+    docs: Ignore errnostring.h files too.
+    
+    Updates commit bd21993d77bd2d38557ba2c74476e619732a543a.
+    
+    (cherry picked from commit 7855c8e4a8f7ac9e85c2420ebdedd9a5756af2de)
+
+commit 099014789b3829c9cad1daa653738da7338e95b2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 25 19:14:06 2016 +0100
+
+    docs: Remove builder/index-parse.h from documented files.
+    
+    Breaks things when building from clean.
+    
+    (cherry picked from commit bd21993d77bd2d38557ba2c74476e619732a543a)
+
+commit ef174dc33bfcf7f759a0879240fe0a9fe6c03083
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 25 19:05:15 2016 +0100
+
+    p2v: Add dbus dependency to dependencies.m4.
+    
+    Probably not necessary since dbus is part of most base distros, but
+    added for completeness.
+    
+    Fixes commit 54979e88421e08987cc2361707863d51d35138d2.
+    
+    (cherry picked from commit 0e1f8c4de70b98d6177984f02a78d1027cd1112f)
+
+commit 31961a1e27dc8b6978b063d307d67ba4a4d1aca0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 25 15:47:39 2016 +0100
+
+    docs: Document some more internal library structs.
+    
+    (cherry picked from commit 851f1771bc8475f405cd4b9a65d5413d49e3f4d6)
+
+commit 871118107bce94fbf403ebc00d7484b07e391d95
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 25 12:49:15 2016 +0100
+
+    docs: internal: Allow headers and structs to be documented.
+    
+    This makes a number of small changes to how the internal documentation
+    is generated and what can be documented.
+    
+    Header files are now permitted to contain internal documentation.
+    This works in the same wasy as .c files.
+    
+    Also documentation can be added for structs as well as functions.
+    
+    This commit also adds documentation to some header files and structs,
+    and fixes a few places which contained broken header documentation.
+    
+    (cherry picked from commit 4d535c7038ee71436f74ae30b397ddfb866d54f1)
+
+commit 714d52dda2219f5b040ce8d7232924c88aa3aa75
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 25 11:57:47 2016 +0100
+
+    docs: building: Document additional deps needed to build from git.
+    
+    Also document the gettext (C library) dependency which was missing.
+    
+    (cherry picked from commit 8823247bd50c17e00ffb250e4239c88164e37050)
+
+commit 55ca119174f2df57b69c654f2f1591faaa7bf6dd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 24 16:58:18 2016 +0100
+
+    p2v: Inhibit power saving during the conversion.
+    
+    We do this by sending an Inhibit() message to logind and receiving a
+    file descriptor back, which we hold open until the conversion
+    completes (or fails).  This is described here:
+    https://www.freedesktop.org/wiki/Software/systemd/inhibit/
+    
+    This adds an additional optional dependency on DBus since we use DBus
+    to call the Inhibit() method.
+    
+    Reported-by: Chris Cowley.
+    (cherry picked from commit 54979e88421e08987cc2361707863d51d35138d2)
+
+commit af47ff8f1b52a24bc03130cf553d1461f45c27d3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 24 18:14:59 2016 +0200
+
+    builder: consolidate handling of temporary files/dirs
+    
+    Create a single temporary directory for all the files created during the
+    virt-builder run (except big disk images, which already use the
+    libguestfs cache directory).  A single directory means there is no need
+    to manually schedule all the temporary files and directories for removal
+    when the application quits.
+    
+    (cherry picked from commit 75fbe4511e05dfcd20c6fec6d6e50a17f69f821f)
+
+commit 2b9c3577c535a950538af05c4d2f9243963da738
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 24 18:12:04 2016 +0200
+
+    mllib: curl: add optional tmpdir parameter
+    
+    Add a new optional parameter for the Curl ADT, so temporary files can be
+    created in a specified directory (which is supposed to be temporary, and
+    disposed only when the application quits).
+    
+    (cherry picked from commit 0a5954f4f7c5f2f4baafd09a6d485985862c0645)
+
+commit 9a2bdde0e406258ad5ee08b2ceab529f6b99f0ad
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Oct 21 16:53:12 2016 +0200
+
+    inspect: map "sled" in /etc/os-release as "sles" distro
+    
+    Map SLED as "sles" when parsing /etc/os-release, just like it is done
+    already when using /etc/SuSE-release.
+    
+    Thanks to Cédric Bosdonnat for testing.
+    
+    (cherry picked from commit ab8007ecda28ad14dee027a9a0e938803a94bba0)
+
+commit da4a99e83f079df73d9f5dd1f4a75df8aacc2af1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 19 14:50:01 2016 +0100
+
+    builder: Add virt-builder --notes for enabling serial console.
+    
+    On debian-8 and ubuntu-16.04.
+    
+    (cherry picked from commit a01c828f0c465d16fe75b7130e42606d881c13ae)
+
+commit 0ea8df3d0359665f6b36e2e45dce85899316ec33
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 19 11:38:14 2016 +0100
+
+    builder: Allow test-virt-builder-planner to be skipped.
+    
+    (cherry picked from commit fc35cfe361fef0a618485f7c36c9fddcfd6e6477)
+
+commit a43f33a34acda4c4e64424bc3c09551ae979a9dd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 12 13:46:37 2016 +0100
+
+    p2v: Fix virt-p2v-make-kickstart for new location of virt-p2v.xz.
+    
+    Fixes commit face52f62e5731cc33183d5995a13b04f7f6a4c2.
+    
+    (cherry picked from commit 19332919a224e8fd989d30a28673d4e6dea5f58d)
+
+commit 274795da696249451c38d0b514c4d32796ee42d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 11 18:02:16 2016 +0100
+
+    valgrind: Don't use "nested" run scripts.
+    
+    When TESTS_ENVIRONMENT already uses 'run', the VG variable
+    doesn't also need to use 'run'.
+    
+    The specific problem is that if the command contains newlines
+    then double invocations of the 'run' script fails (in libtool).
+    ie the following command failed causing errors in check-valgrind:
+    
+      $VG virt-builder phony-fedora \
+          -v --no-cache --no-check-signature $no_network \
+      ...
+          --write '/etc/append4:line1
+      ' \
+      ...
+    
+    (cherry picked from commit d6c42a6c587028bfb29ccfcdf343fa00d86b6e52)
+
+commit 1c0c1632ca4fef26aaad7768a1f734d93b3839ef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 11 14:17:06 2016 +0100
+
+    p2v: Fix EXTRA_DIST.
+    
+    Fixes commit face52f62e5731cc33183d5995a13b04f7f6a4c2.
+    
+    (cherry picked from commit 4c8fc40d6624181939aaa3a6e4eda4f2505318cd)
+
+commit e18e334b6fd1bfbdda9320df5f2b755c0b9cc1ab
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 10 19:40:38 2016 +0100
+
+    p2v: Compress virt-p2v binary and store it in $libdir/virt-p2v (RHBZ#1382275).
+    
+    Currently 'make install' installs the virt-p2v binary in
+    /usr/libexec/virt-p2v on the host.  It is never supposed to be run
+    from there, even by another program, so use of /usr/libexec is
+    incorrect.  It is only supposed to be copied into USB keys / ISOs /
+    etc created by virt-p2v-make-* scripts.
+    
+    The other problem with shipping a "naked" binary on the host is that
+    packages built from that get all the dependencies of virt-p2v, for
+    example Gtk.  This is unnecessary just for running the command line
+    scripts mentioned above.
+    
+    This changes the Makefile and scripts so that the binary is stored
+    compressed in $libdir/virt-p2v/virt-p2v.xz.  It is compressed to avoid
+    exposing the dependencies.  It is stored under $libdir since the
+    binary is still architecture-dependent.
+    
+    A further change is that when we copy the binary into the virt-p2v
+    ISO, it is now installed in /usr/bin instead of /usr/libexec.  (And
+    note that we always use /usr/bin, not $bindir, since this path should
+    not need to be affected by the configuration of libguestfs).
+    
+    (cherry picked from commit face52f62e5731cc33183d5995a13b04f7f6a4c2)
+
+commit e58f3b0eebef79fbd6ee9987dda5fb15d3227ecd
+Author: Tomáš Golembiovský <tgolembi@redhat.com>
+Date:   Thu Oct 6 16:54:33 2016 +0200
+
+    appliance: add/remove some packages for Arch Linux
+    
+    Added:
+    - cdrtools: added as alternative to cdrkit
+    - multipath-tools: contains kpartx (in AUR)
+    
+    Removed:
+    - ntfsprogs: the package is no longer available, it has been completely
+      replaced by ntfs-3g (already in packagelist.in)
+    - zfs-fuse: no longer in AUR
+    
+    Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
+    (cherry picked from commit 2bed3e480138e33caa59327fb3b92e389bbdf8cb)
+
+commit 2340afd8d571437bb5ac4569b4e1c648be80e97f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 12 11:52:38 2016 +0100
+
+    v2v: ova: Make OVA directory public readable to work around libvirt bug (RHBZ#1375157).
+    
+    Only do this if running as root and if the backend is set
+    to libvirt.
+    
+    (cherry picked from commit d9b2a16c71d0c87195e28c1325fd83b344741339)
+
+commit 9988b01ea660ef993f06995b698d3862ed405f88
+Author: Tomáš Golembiovský <tgolembi@redhat.com>
+Date:   Fri Oct 7 14:12:22 2016 +0200
+
+    v2v: ova: support SHA256 hashes in manifest
+    
+    The OVF standard allows the use of SHA256 hashes in the manifest file.
+    Adding support for this.
+    
+    One of the tests was updated to put SHA256 into manifest file.
+    
+    Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
+    (cherry picked from commit 52a8202635b22557416b8aa19ca44557c8e5c168)
+
+commit f17224089f2d6281edbad884b5a05513aa7e61b3
+Author: Tomáš Golembiovský <tgolembi@redhat.com>
+Date:   Fri Oct 7 14:12:21 2016 +0200
+
+    v2v: ova: fix checking of the manifest file
+    
+    The regular expression for parsing the manifest line was wrong. There is
+    a mandatory space between '=' and the hash.
+    
+    Another problem was that only the first line of the manifest file was
+    actually processed.
+    
+    Also added some debugging info and warning to catch problems with
+    parsing.
+    
+    Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
+    (cherry picked from commit 6b7ea3c681dd3dbcdf90a30540a0b36fa9840189)
+
+commit 50dec0dc589f88eaf41aec165a81e43645ba1410
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Oct 4 14:45:18 2016 +0200
+
+    v2v: linux: try to fix removal of VMware tools
+    
+    Try to improve the way packages of VMware tools are removed from
+    YUM-based guests:
+    
+    - when filtering the package itself from its providers, do a stricter
+      check so either the provide is the unversioned package, or it is
+      exactly its own name
+    
+    - if the package has no other providers, then going further will cause
+      the invocation of 'yum install' with no packages, and thus the package
+      itself will not be added to the list of packages to be removed; to
+      overcome this issue, just mark the package as "to be removed" in that
+      case
+    
+    Related to: RHBZ#1155150
+    
+    (cherry picked from commit be8ad60b8ecac51037ba2815c0675e3cac5edaa1)
+
+commit 86ea6d01522815fbfc45df2a7f2c1417903e8ead
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 27 17:24:57 2016 +0200
+
+    v2v: linux kernels: set type of 'g'
+    
+    Make sure the type checker can detect the real type of 'g', even when
+    adding more code using it in detect_kernels.
+    
+    (cherry picked from commit d3736eb0a3e5f095d3bb26d111dfb27e4d7cdc97)
+
+commit f7ecf6269078ad7ee681e627f4a6fedf03304d77
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 30 11:24:30 2016 +0200
+
+    v2v: -i ova: use Checksums
+    
+    Make use of the Checksums module to ease the verification of the SHA1
+    checksums in manifests.
+    
+    (cherry picked from commit b548c41951ec85d6f1c8b054f5ce2d10183a2ae7)
+
+commit b741a938cf3a572b10dbba0e560145d8c647cb23
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 30 11:09:13 2016 +0200
+
+    mllib: add SHA1 support in Checksums
+    
+    This way Checksums can be used in v2v.
+    
+    (cherry picked from commit 484c64c29faa735f729fc34cbabe4eee5f9f4b11)
+
+commit 392971614abf73f42cee0c1b2b6f36032b9f40eb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 30 11:04:27 2016 +0200
+
+    mllib, builder: add and use Checksums.of_string
+    
+    Add a simple way to turn a combination of checksum type and value into a
+    csum_t.  Use it in builder, even if still constrained.
+    
+    (cherry picked from commit a58dff49c501db3d7d357541494cc6683a13b77c)
+
+commit 238971ec71ae0fa64a54855ad1bf9dc49d2c8c31
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 30 10:30:24 2016 +0200
+
+    mllib: move Checksums from builder
+    
+    Move the Checksums module from virt-builder mostly as it is; the only
+    change is that on checksum mismatch an exception is raised rather than
+    invoking "error" directly: this way users of verify_checksum &
+    verify_checksums can do their own handling of the situation.
+    
+    (cherry picked from commit 7a09db5e485672748018a3b0cdba953225a0eb9b)
+
+commit 21ca11d88ca3a7e2192bc9783485dd60991a6b3a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 28 11:06:09 2016 +0100
+
+    daemon: Choose /usr/sbin first for the daemon (debian bug 838995).
+    
+    Debian is also doing a UsrMove/UsrMerge:
+    https://wiki.debian.org/UsrMerge
+    
+    However it is not finalized that Debian will actually make this
+    change.
+    
+    Since some Debian systems have /sbin as a symlink and other have /sbin
+    as a real directory, and we should avoid choosing a symlinked
+    directory for the daemon, the easiest fix is simply to probe /usr/sbin
+    before /sbin since under all scenarios (and Fedora too) /usr/sbin is a
+    real directory.
+    
+    https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=838995
+    (cherry picked from commit a31f657db02bb570a645eb33938c09196ff93553)
+
+commit 0bbb6c8412241e2cbac1998d3db2bc3ea6cdf38e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Sep 26 16:04:10 2016 +0200
+
+    p2v: add mnemonics to labels and buttons (RHBZ#1379289)
+    
+    Set mnemonics for all the labels with a text entry or combo box next to
+    them, and for all the buttons, and check boxes.
+    
+    (cherry picked from commit 7f236d2201e1063570ac18b118e83b31c778f304)
+
+commit cb9e98aeebb5f1861e1adaebe53b6f6e0ca787e0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Sep 26 14:16:44 2016 +0200
+
+    tools: build common fish sources in a static library
+    
+    Create a new libfishcommon convenience static library to build just once
+    (instead of 12 times!) the majority of the guestfish sources used in the
+    rest of the C tools (mostly for command line stuff, inspection, and
+    mount).
+    
+    The notable exceptions not using libfishcommon are guestfish itself, and
+    virt-rescue: both need to build at least one of the common sources using
+    additional CPPFLAGS.
+    
+    (cherry picked from commit e3f681e1b80dba5e3c3981cadad3ee6aea1a7def)
+
+commit 5801ec86470fe269aa1d47dbf5cef8045b24cf33
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Sep 26 11:45:07 2016 +0200
+
+    fish, inspector: get rid of COMPILING_VIRT_INSPECTOR
+    
+    All the define was doing in options.h was masking the declaration of
+    inspect_mount_root, which was always built-in in inspect.c (because of
+    the unconditional #define there) anyway.
+    
+    Since this is common code used by all the C tools, try to avoid extra
+    knobs which add different code paths for no benefit.
+    
+    (cherry picked from commit 23ca442f63b1be891378186a44bf8f49218b4e8f)
+
+commit 0767a29992ce986dc295d4119d4e23e29cf9c47c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Sep 26 11:13:17 2016 +0200
+
+    build: remove extra libconfig linkage
+    
+    Some of the C tools were building also config.c as part of the shared
+    sources from guestfish, and thus bringing a dependency on libconfig.
+    Since none of them actually read the libguestfs configuration at all,
+    then exclude fish/config.c from their build, and stop linking to
+    libconfig.
+    
+    (cherry picked from commit 284c6e10785b7bd642f1f850a35ccaf0ac7c67c9)
+
+commit 99f6d15fb5541fde058d22b49d5327a023a97522
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 23 17:43:07 2016 +0200
+
+    dib: use remove_duplicates instead of own code
+    
+    Use a common function to remove duplicates in an unsorted list.
+    
+    Just refactoring, with no behaviour change.
+    
+    (cherry picked from commit f057086b60530032acd240b53354858476a86bfe)
+
+commit a6905210e47f748d567e96da880f14fe3e9c0ca9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 23 17:40:09 2016 +0200
+
+    mllib: move remove_duplicates from v2v
+    
+    Simple code motion.
+    
+    (cherry picked from commit d7551ec39b84e912a27b1829b8bd49cafb9e9b89)
+
+commit 53c233ebf3c2577432d15312ff920c85d30a25b5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 22 17:35:20 2016 +0200
+
+    libvirt: read disk paths from pools (RHBZ#1366049)
+    
+    A disk of type 'volume' is stored as
+      <source pool='pool_name' volume='volume_name'/>
+    and its real location is inside the 'volume_name', as 'pool_name': in
+    this case, query libvirt for the actual path of the specified volume in
+    the specified pool.
+    
+    Adjust the code so that:
+    - for_each_disk gets the virConnectPtr, needed to do operations with
+      libvirt
+    - when extracting the disk filename depending on the type, the code
+      snippet doing it can directly set 'filename', without setting an XPath
+      result variable
+    
+    Only file-based volumes are supported for now; more types can be added
+    (with proper testing) later on.
+    
+    (cherry picked from commit 4c3968f262e8a45f65f8980d6af39144bd52f0ea)
+
+commit 4521f2a3eb3801fd0574adc6d027a67849a26018
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 21 13:56:55 2016 +0100
+
+    v2v: Support <listen type='socket'> and <listen type='none'> (RHBZ#1378022).
+    
+    Since libvirt 2.0.0, these two new <listen/> types have been
+    supported: https://libvirt.org/formatdomain.html#elementsGraphics
+    
+    This change just copies that configuration over from the source to the
+    destination if the destination is also libvirt.
+    
+    Since we previously used 'LNone' to mean "no parseable <listen/>
+    element" I also had to change previous uses of 'LNone' to 'LNoListen',
+    so we can use 'LNone' to mean "<listen type='none'>".
+    
+    Thanks: Ming Xie.
+    (cherry picked from commit a4adf48915c0e3e7f4e8b7bbdbb5ac622da1ac58)
+
+commit f0509831bcc8f748845bc04eec8d64e5cc0ffe4b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Sep 19 18:39:14 2016 +0200
+
+    mllib: expose disk decrypt functionalities
+    
+    Expose via Common_utils the C functions & variables (part of guestfish)
+    that handle decryption of LUKS partitions, and the additional command
+    line arguments to tune the way they work.  This way it will be easy to
+    provide (basic) crypto support also in OCaml-based tools.
+    
+    Related to: RHBZ#1362649
+    
+    (cherry picked from commit 5281e08802c47b3fd6a945d17d7d6ee3b428b896)
+
+commit 07018d7d24bfc3af8298372c749fceaba0e58d3c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Sep 19 14:48:19 2016 +0200
+
+    fish: move disk decryption helpers in own file
+    
+    This way it is easier to use them outside the rest of the code in
+    guestfish for inspection & mount.
+    
+    Just code motion, no behaviour changes.
+    
+    (cherry picked from commit 0920b805fda02729d5204d2ab2cbfa192ba6570f)
+
+commit bda526f831a577fca951e2606995840b9e49f7e7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 19 12:53:35 2016 +0100
+
+    p2v: Add C<...> around XTerm button string.
+    
+    Thanks: Pino Toscano.
+    
+    Fixes commit 2e9d0588818a1b24ca617057a6a51f198fe6505d.
+    
+    (cherry picked from commit 21a201051dd42c5433a68a036461dc3d53c16fe1)
+
+commit de6fd29b42437ffdf82186826cff33e3147f465e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 19 12:31:47 2016 +0100
+
+    p2v: Update virt-p2v docs to describe XTerm button (RHBZ#1377081).
+    
+    Thanks: Tingting Zheng.
+    
+    Fixes commit bf434bdb3523b7629d50144f35a6bccc05bf94e6.
+    
+    (cherry picked from commit 2e9d0588818a1b24ca617057a6a51f198fe6505d)
+
+commit c30548342bd9704a30860949370074b59b7c21d1
+Author: Matteo Cafasso <noxdafox@gmail.com>
+Date:   Sat Sep 17 00:04:23 2016 +0300
+
+    filesystem_walk: fixed root inode listing
+    
+    With the current implementation, the root inode of the given partition
+    is ignored.
+    
+    The root inode is now reported. Its name will be a single dot '.'
+    reproducing the TSK API.
+    
+    Signed-off-by: Matteo Cafasso <noxdafox@gmail.com>
+    (cherry picked from commit 011f29f50679cad50e6dd79e622e0d63441e9552)
+
+commit 4be20015c93bdb5ca1bf700a28af298691b0c49b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 15 16:03:58 2016 +0100
+
+    filearch: Return 'i386' instead of 'i486' (as documented).
+    
+    And some incidental code refactoring.
+    
+    (cherry picked from commit 59999f055b68eb3bb7633a634927cdc5b3760561)
+
+commit cc89e77bef40ca22eafd2e2f01fb617c76492c86
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 15 16:02:47 2016 +0100
+
+    filearch: Add architectures missing from the documentation.
+    
+    Updates commit 68d9b04735f45e10e807353b00238ac7603f0e4d
+    and commit 33d2b4a7341830efeddb1f258ac77f67a8004d30.
+    
+    Cherry picked from commit 7907abcdc0404f792d2113358432376ed4995051
+    and updated to remove references to RISC-V (because new feature).
+
+commit 415f9bca531142e5086358ec3da23fba67c81e12
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 15 15:57:48 2016 +0100
+
+    filearch: Sort architectures into alphabetical order in documentation.
+    
+    (cherry picked from commit 536338ee9393eaa8c599da302e45815ed2770127)
+
+commit 13e6b643e9b5cb0a87bc34bfe52c8c31b63664d8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Sep 15 13:46:25 2016 +0200
+
+    v2v: -o libvirt: always write pool names (RHBZ#1141631)
+    
+    When creating the XML for the new guest, always put the name of the pool
+    containing the disks, even when -os specified a pool UUID: libvirt does
+    not handle pool UUIDs for storage, but only names.
+    
+    (cherry picked from commit 775e9cbd2a53c095518152c7a2a19f4044f0c91b)
+
+commit 9bec86df8618a511d3026ab8c9cb5c917b8166eb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 14 09:59:12 2016 +0200
+
+    v2v: -o glance: log glance client version in verbose mode
+    
+    When running in verbose mode for debugging, run `glance --version` to
+    print the version of the glance client.  This helps when dealing with
+    failures, or making its output actionable.
+    
+    (cherry picked from commit f4ca4de207f33847871a95e686997476b82ec1af)
+
+commit 6a2feda07f64a9240b25990dc5c3f074edd0066c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 14 09:56:04 2016 +0200
+
+    v2v: -i libvirtxml: tweak warning message
+    
+    Use a placeholder for the type of disk, so the message becomes exactly
+    like another warning message used already in this function.
+    
+    (cherry picked from commit 04fe77c5199059a76f16875d6d2b495936ba7b82)
+
+commit 047c86b8759a6291e75fd46eb7317ab9147e2d31
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Sep 13 15:30:52 2016 +0200
+
+    v2v: -o glance: set all properties during creation (RHBZ#1374405)
+    
+    The glance client v1.0.0 defaults to the Image v2 API: this means that
+    an image can be referenced only by its UUID, and not anymore by the name
+    as well (which does not need to be unique).  This caused our glance
+    invocation to set the properties for the newly created image to fail,
+    since we are using the name as identifier.
+    
+    Instead of first creating the image and then setting all the properties
+    for it, set all the properties when creating the image: other than being
+    simpler, it also avoid parsing the output of the 'glance image-create'
+    command for the UUID ('id') of the image.
+    
+    (cherry picked from commit 1497a9f722f9a3c4c75282fb19578573e3cc89db)
+
+commit 8a3756e9f2c4bd59a8d0daa5acea40fedf32b2e4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 12 14:55:43 2016 +0100
+
+    perl: Guestfs.c file is not translatable, don't include it in po/POTFILES.
+    
+    Reported by Nikos Skalkotos
+    https://aur.archlinux.org/packages/libguestfs/
+    
+    (cherry picked from commit 5714439d944d904296f3995da3ca272cb8a953ba)
+
+commit fae1300f4d3a2bb8545455cb8f172e64cf744a4b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 9 16:37:24 2016 +0100
+
+    v2v: linux: Use /etc/modprobe.conf.local if it exists.
+    
+    On SUSE (only) there is /etc/modprobe.conf which is generated from a
+    /usr/share file.  Local changes are meant to be added to
+    /etc/modprobe.conf.local.
+    
+    (cherry picked from commit 089f54b0d32c9f99adb1e21337bd8a30b4537c27)
+
+commit 380087c3ffab45c012872f53b9d0adda15601bf9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 9 16:29:52 2016 +0100
+
+    v2v: linux: Avoid recursive functions.
+    
+    Just code motion.
+    
+    (cherry picked from commit 0e1b1ccfb22e6215d34a11c9db3ae78641edfa25)
+
+commit 8a5b4c4dc5a24ac29b3b9b71d45bb2ac0ec33fe7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 9 17:06:33 2016 +0100
+
+    v2v: linux: Don't use duck typing in interface of Linux_kernels.
+    
+    On reflection we want the precise bootloaders type, not some other
+    object that happens to implement a #list_kernels method.
+    
+    Fixes commit 2d7fa1db6a21ac5a3ea3e166af8c20b40c16427a.
+    
+    (cherry picked from commit 15661d8760c8867cc01f38f3c9a4db8e7e3a310e)
+
+commit 1ea6fa7aa72d6b92b9a69e484bc0020deac0087a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 9 15:53:27 2016 +0100
+
+    v2v: linux: Move kernel detection to a separate module.
+    
+    Create a new module [Linux_kernels] which does all kernel detection,
+    and also provides a place to define the kernel_info data structure.
+    
+    This is essentially just code motion.
+    
+    (cherry picked from commit 2d7fa1db6a21ac5a3ea3e166af8c20b40c16427a)
+
+commit f59e350866cf15a54c35bcff574f4bff32557dc8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 9 15:36:45 2016 +0100
+
+    v2v: utils: Move external functions together.
+    
+    Just a small code movement.
+    
+    (cherry picked from commit 171bc5374ede26cde5366d0cc985959fd3e7542c)
+
+commit 9f3b9c405d607021022b566655f63acf0e64a234
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 9 15:20:20 2016 +0100
+
+    v2v: Move xpath* functions to new module Xpath_helpers.
+    
+    Just code motion.
+    
+    (cherry picked from commit b7a8247b5adbd285d310ba8a8a46d961b69ba8be)
+
+commit 23a0171f7bfe0e6a81f3145b4af39998ce0fa1d4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 9 15:13:24 2016 +0100
+
+    v2v: Split up 'amend_source' function.
+    
+    Just code motion.
+    
+    (cherry picked from commit 1ec78f34d868da680f742c7ee404fa08ddb79bae)
+
+commit a61c6f72056b42ef4006bcc8a039b0124c6899eb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 9 14:56:11 2016 +0100
+
+    v2v: -i ova: Derive the name from the OVA filename.
+    
+    If the guest has no <Name> element in the OVF, previously we chose
+    "default" as the name.  This changes that so it uses a name derived
+    from the basename of the OVA file instead.
+    
+    For example:
+    
+      virt-v2v -i ova /path/to/myguest.ova [...]
+    
+    would use "myguest" as the name (assuming no <Name> was present).
+    
+    Modifies the behaviour of
+    commit 1ae4252c93c685cb8561b55c1231502b37212b5a.
+    
+    (cherry picked from commit 98619f9c26076d034574b8822dfcc6799741ed96)
+
+commit 3567544a0dab36e6f494a9c87088663f86396bcd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 9 14:45:05 2016 +0100
+
+    v2v: -i disk: Move code that creates name from disk to separate module.
+    
+    Simple code motion.
+    
+    (cherry picked from commit 312379c8a61cd4a16aa7c80c1adda3081e601d43)
+
+commit d20a010193b2e864e522a54711aa7302ef5eace2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 9 14:42:05 2016 +0200
+
+    tests: do not assume '.' is in Perl's @INC
+    
+    Upstream Perl is going to remove '.' from @INC (the include path for
+    modules) by default for the next major release (= 5.26) [1], as measure
+    to fix security issues.  Debian already started backporting the fixes
+    for this [2], thus behaving this way in current Sid installations.
+    
+    Since the affected Perl sources are only the local daemon testing
+    scripts, a simple fix is to force the 'requires' for the local
+    captive-daemon.pm module to start from the current directory: this way
+    there is no need to manually augment @INC, and only our local module is
+    loaded automatically.
+    
+    [1] https://rt.perl.org/Public/Bug/Display.html?id=127810
+    [2] https://lists.debian.org/debian-devel-announce/2016/08/msg00013.html
+    
+    (cherry picked from commit 8335af37fa22710b396e47429447bc66c21d451b)
+
+commit 4f2329833c38f62069adca972622ea1f472dbe62
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 9 08:59:46 2016 +0100
+
+    daemon: Use reply_with_error instead of *_perror for setfiles command.
+    
+    Fixes commit 9d205f1c284a69390907120ca44f5c723fecc244.
+    
+    (cherry picked from commit 839fe4997b72d24d0bec84f7a6706b76f73ebde7)
+
+commit 4693129005589f7d1b2ee0f14f934b074a61a446
+Author: Shahar Havivi <shaharh@redhat.com>
+Date:   Thu Sep 8 09:53:37 2016 +0300
+
+    virt-v2v: Support for ova exported from AWS (RHBZ#1371843).
+    
+    1. AWS the name tag is not mandatory - using default as a name
+    2. AWD doesn't prefix 'ovf:' as prefix to disk path
+    
+    There is an open bug for oVirt:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1371843
+    
+    Signed-off-by: Shahar Havivi <shaharh@redhat.com>
+    (cherry picked from commit 1ae4252c93c685cb8561b55c1231502b37212b5a)
+
+commit 4e9a347422db17bab866cc358f48eb72e97ec70e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 7 19:21:09 2016 +0200
+
+    daemon: drop program_name definition
+    
+    It was previously needed by the 'error' module of gnulib; recent
+    versions are able to get the name of the current program on their own.
+    
+    (cherry picked from commit 12c605f8fa15e35751c8f8cb5246200b1b5b8c11)
+
+commit 4fdb63a6cf771be4892cce02def4519e0fb171a8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 7 19:20:21 2016 +0200
+
+    Use the getprogname gnulib module
+    
+    Make use of the recently added 'getprogname' module in gnulib: replace
+    our guestfs_int_program_name with the getprogname() provided by the
+    module, since it does the same thing, and in a portable way.
+    As consequence of the above, use gnulib in a couple of tests that use
+    getprogname().
+    
+    Since guestfs_int_program_name is gone, drop the configure checks
+    associated with it.
+    
+    (cherry picked from commit eea210dbf7d781bc253f927977868dbc6776f20d)
+
+commit 7cb08a90e3df8157d547ab8d55ad2544943919a0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 7 17:21:27 2016 +0200
+
+    Update gnulib to latest
+    
+    (cherry picked from commit 1f65143a4295260f820028b2e6f373a77f497b3c)
+
+commit ea0d51fc3101dc905f801ecfb3f9a490b10eba1b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Sep 7 19:06:55 2016 +0200
+
+    tests: make test-noexec-stack.pl work in non-English locales
+    
+    Set C as language when running the script, as the output of readelf is
+    parsed: this way the parsing works also when the system locale is not
+    English.
+    
+    (cherry picked from commit 03032e2419a67a2b993f103fdcef884c2ce0d1d6)
+
+commit d0ede78848bd4e93e6ea06ddda8e62335940b5e4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 22:25:50 2016 +0100
+
+    erlang: Split up large Erlang extension into smaller C files.
+    
+    Reduce build times in this directory from about 10s to about 2s.
+    
+    (cherry picked from commit c4b7b5d6156627c0d0c2af1f7f45f0832cebd769)
+
+commit 59f06873bf48d11052fab058808e898fe0b86bd1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 22:25:50 2016 +0100
+
+    java: Split up large Java extension into smaller C files.
+    
+    (cherry picked from commit 76eee79a65efcd4ff1daf5e0b9937779bf7f13eb)
+
+commit e1195f3885c7c34510cdfb0d6a51a1fd583854c9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 20:51:04 2016 +0100
+
+    python: Split up large Python extension into smaller C files.
+    
+    Reduces build time in this directory from 11s to 3s.
+    
+    (cherry picked from commit 63db9ae81fa44ae7cfb53e7447214e87ec8b7811)
+
+commit f648a137b206d2394e3497bc72760942266af86d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 18:48:16 2016 +0100
+
+    build: Check generated files are included in the tarball.
+    
+    When running 'make maintainer-check-extra-dist', check also that all
+    generated files are included in the tarball.  This is done so that end
+    users will not need OCaml to compile from tarball releases.
+    
+    (cherry picked from commit d95f1d7102d6613a49f35ea0fbc6d524448380bf)
+
+commit 4f9a81e87bcd74ad8540a39c5ec85ea9e3f97c64
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 16:42:05 2016 +0100
+
+    ruby: Split up large Ruby extension into smaller C files.
+    
+    (cherry picked from commit 20aa0f6496cba9fdc7f34a397007f26fc3dd43d3)
+
+commit af77020fe4cebe5df9dccbc250f6c03ed1d22711
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 16:00:37 2016 +0100
+
+    daemon: Split up very large daemon/stubs.c file.
+    
+    (cherry picked from commit 20f190617aafcddd08f99c0abec4fef90426ec9e)
+
+commit 75fcf433f24cbcaf35d66ce58e905bd97370415b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 15:05:44 2016 +0100
+
+    fish: Split up the very large fish/cmds.c file.
+    
+    Make parallel compiles faster in this directory (about 8s down to 3s).
+    
+    (cherry picked from commit a749b5d93aa7f27793a5c939c985df82df406492)
+
+commit 02973906116f271330ef622d1b9626418a599f58
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 13:44:46 2016 +0100
+
+    generator: Generalize the code used to split actions across files.
+    
+    Previously we used an awkward hack to split up the large src/actions.c
+    into smaller files (which can benefit from being compiled in
+    parallel).  This commit generalizes that code, so that we pass a
+    subsetted actions list to certain generator functions.
+    
+    The output of the generator is identical after this commit and the
+    previous commit, except for the UUID encoded into tests/c-api/tests.c
+    since that is derived from the MD5 hash of generator/actions.ml.
+    
+    (cherry picked from commit 4730f4a91815d9de33119f6d27dedb7ab38464ba)
+
+commit 528be96ccc85ff39428c20bd00af7d732af06ba9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 13:40:25 2016 +0100
+
+    generator: Move all actions into a single list and add filter functions.
+    
+    This mostly mechanical change moves all of the libguestfs API
+    lists of functions into a struct in the Actions module.
+    
+    It also adds filter functions to be used elsewhere to get
+    subsets of these functions.
+    
+    Original code         Replacement
+    
+    all_functions         actions
+    
+    daemon_functions      actions |> daemon_functions
+    non_daemon_functions  actions |> non_daemon_functions
+    external_functions    actions |> external_functions
+    internal_functions    actions |> internal_functions
+    documented_functions  actions |> documented_functions
+    fish_functions        actions |> fish_functions
+    
+    *_functions_sorted    ... replacement as above ... |> sort
+    
+    (cherry picked from commit f8978239e37a0af0f33bfafce7145df58937e59d)
+
+commit 7398e36826b3c1e239774f478787257687f4a094
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 14:38:02 2016 +0100
+
+    generator: Add |> (revapply) operator for compat with OCaml < 4.01.
+    
+    (cherry picked from commit 71a95becbd09e740e90eb90ecbfd639fcac3a674)
+
+commit 6ea19ee2dcfdf3f9143020e4edca241e6a8bc9d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 1 13:27:48 2016 +0100
+
+    customize: Update "unassigned-hostname" etc in Debian/Ubuntu /etc/hosts (RHBZ#1372269).
+    
+    Commit ab2df2e6598d421067d600f89a3d225162424d9b attempted to rewrite
+    /etc/hosts if it contained the old hostname.
+    
+    However this wasn't done reliably for a couple of reasons:
+    
+    (1) Certain Debian/Ubuntu /etc/hostname contains
+    "localhost.localdomain" but still has "unassigned-hostname" or
+    "unassigned-hostname.unassigned-domain" in /etc/hosts.
+    
+    (2) Even if (1) doesn't apply, you still need to split out the
+    hostname and domainname parts and deal with them separately.
+    
+    (cherry picked from commit cbb70f1deee861e71081349ee20bf8fe0601a615)
+
+commit 4229f7e838883c2393e82cfbec103649ff1c0708
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 31 18:04:39 2016 +0200
+
+    build: improve distro check
+    
+    Use /etc/os-release as first option, translating the distro name to the
+    current identifier used.  The other options (the release files) are left
+    as following checks, avoiding them if any matches.
+    
+    (cherry picked from commit e6d9c1b32866c14c7c744890e04286d91d609c19)
+
+commit 8c297d7768eadb67c8594bba4bf91a6553e446a0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 12:20:03 2016 +0100
+
+    v2v: Don't remove Processor and Intelppm nodes (RHBZ#1372668).
+    
+    Don't remove the Processor and Intelppm nodes since that just breaks
+    the device driver.
+    
+    The only remaining node being removed by the original code was
+    "rhelscsi" (the xenpv-win driver).  I changed this so that instead of
+    deleting the whole node, it simply disables that driver.  If you look
+    at RHBZ#737600, it's not even clear that deleting nodes was the right
+    fix for anything.  I also renamed the function.
+    
+    Reviewed-by: Roman Kagan <rkagan@virtuozzo.com>
+    Signed-off-by: Richard W.M. Jones <rjones@redhat.com>
+    (cherry picked from commit 56e566af38c893e30f4dec1e079a9fc31eaf5104)
+
+commit e1138158808dba040b53383f33ab576abda312ee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 2 10:30:20 2016 +0100
+
+    build: In silent rules, differentiate between .cmi and ocamlc.
+    
+    Although we happen to use 'ocamlc' to compile .mli files to .cmi,
+    it is used in a different mode from bytecode compilation.
+    
+    (cherry picked from commit 97cbddac12b060f946d175714d6f6917188ef6e6)
+
+commit 21f62fe77da88436804ba379f14c7f63f94c8cf4
+Author: Roman Kagan <rkagan@virtuozzo.com>
+Date:   Tue Aug 9 16:11:10 2016 +0300
+
+    v2v:windows: factor out getting CurrentControlSet
+    
+    It will be used in new code in a followup patch.
+    
+    Signed-off-by: Roman Kagan <rkagan@virtuozzo.com>
+    Reviewed-by: "Richard W.M. Jones" <rjones@redhat.com>
+    (cherry picked from commit 5eb9ea489e5eb05b5a26f15bb31a1ef7a39793ec)
+
 commit 94374d2ceee3e95418d0e36fc88e39d06c150f10
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Sep 1 09:12:10 2016 +0100

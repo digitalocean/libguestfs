@@ -78,17 +78,17 @@ the name of the guest to create and the number of virtual CPUs to give it.
 
 When virt-p2v starts up in GUI mode, the first dialog looks like this:
 
- ┌────────────────────────────────────────────────────────┐
- │                      virt-p2v                          │
- │                                                        │
- │ Conversion server: [_______________________] : [22___] │
- │                                                        │
- │         User name: [root_____________________________] │
- │                                                        │
- │          Password: [_________________________________] │
- │                                                        │
- │  SSH Identity URL: [_________________________________] │
- │                                                        │
+ ┌─────────────────────────────────────────────────────────────┐
+ │                           virt-p2v                          │
+ │                                                             │
+ │ Conversion server: [____________________________] : [22___] │
+ │                                                             │
+ │         User name: [root__________________________________] │
+ │                                                             │
+ │          Password: [______________________________________] │
+ │                                                             │
+ │  SSH Identity URL: [______________________________________] │
+ │                                                             │
 
 In the fields above, you must enter the details of the conversion server:
 the hostname, SSH port number, remote user name, and either the password or
@@ -98,9 +98,9 @@ date version of virt-v2v.
 Normally you must log in to the conversion server as root, but if you check
 the following box:
 
- │                                                        │
- │                    [ ] Use sudo when running virt-v2v  │
- │                                                        │
+ │                                                             │
+ │                    [ ] Use sudo when running virt-v2v       │
+ │                                                             │
 
 then you can log in as another user, and virt-p2v will use the L<sudo(8)>
 command to elevate privileges to root.  Note that sudo must not require a
@@ -112,12 +112,12 @@ manual page for details.
 
 At the bottom of the dialog are these buttons:
 
- │                                                        │
- │                [ Test connection ]                     │
- │                                                        │
- │ [ Configure network ] [ About virt-p2v  ] [ Next     ] │
- │                                                        │
- └────────────────────────────────────────────────────────┘
+ │                                                             │
+ │                     [ Test connection ]                     │
+ │                                                             │
+ │ [ Configure network ] [ XTerm ] [ About virt-p2v ] [ Next ] │
+ │                                                             │
+ └─────────────────────────────────────────────────────────────┘
 
 You must press the C<Test connection> button first to test the SSH
 connection to the conversion server.  If that is successful (ie. you have
@@ -128,6 +128,9 @@ move to the next dialog.
 You can use the C<Configure network> button if you need to assign a static
 IP address to the physical machine, or use Wifi, bonding or other network
 features.
+
+The C<XTerm> button opens a shell which can be used for diagnostics, manual
+network configuration, and so on.
 
 =head2 DISK AND NETWORK CONFIGURATION DIALOG
 

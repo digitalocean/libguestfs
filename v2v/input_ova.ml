@@ -23,6 +23,8 @@ open Common_utils
 
 open Types
 open Utils
+open Xpath_helpers
+open Name_from_disk
 
 class input_ova ova =
   let tmpdir =
@@ -102,6 +104,19 @@ object
     (* Exploded path must be absolute (RHBZ#1155121). *)
     let exploded = absolute_path exploded in
 
+    (* If virt-v2v is running as root, and the backend is libvirt, then
+     * we have to chmod the directory to 0755 and files to 0644
+     * so it is readable by qemu.qemu.  This is libvirt bug RHBZ#890291.
+     *)
+    if Unix.geteuid () = 0 then (
+      let libguestfs_backend = (open_guestfs ())#get_backend () in
+      if libguestfs_backend = "libvirt" then (
+        warning (f_"making OVA directory public readable to work around libvirt bug https://bugzilla.redhat.com/1045069");
+        let cmd = [ "chmod"; "-R"; "go=u,go-w"; exploded ] in
+        ignore (run_command cmd)
+      )
+    );
+
     (* Find files in [dir] ending with [ext]. *)
     let find_files dir ext =
       let rec loop = function
@@ -131,29 +146,28 @@ object
 
     (* Read any .mf (manifest) files and verify sha1. *)
     let mf = find_files exploded ".mf" in
-    let rex = Str.regexp "SHA1(\\(.*\\))=\\([0-9a-fA-F]+\\)\r?" in
+    let rex = Str.regexp "\\(SHA1\\|SHA256\\)(\\(.*\\))= \\([0-9a-fA-F]+\\)\r?" in
     List.iter (
       fun mf ->
+        debug "processing manifest %s" mf;
         let mf_folder = Filename.dirname mf in
         let chan = open_in mf in
         let rec loop () =
           let line = input_line chan in
           if Str.string_match rex line 0 then (
-            let disk = Str.matched_group 1 line in
-            let expected = Str.matched_group 2 line in
-            let cmd = sprintf "sha1sum %s" (quote (mf_folder // disk)) in
-            let out = external_command cmd in
-            match out with
-            | [] ->
-              error (f_"no output from sha1sum command, see previous errors")
-            | [line] ->
-              let actual, _ = String.split " " line in
-              if actual <> expected then
-                error (f_"checksum of disk %s does not match manifest %s (actual sha1(%s) = %s, expected sha1 (%s) = %s)")
-                  disk mf disk actual disk expected;
-              debug "sha1 of %s matches expected checksum %s" disk expected
-            | _::_ -> error (f_"cannot parse output of sha1sum command")
+            let mode = Str.matched_group 1 line in
+            let disk = Str.matched_group 2 line in
+            let expected = Str.matched_group 3 line in
+            let csum = Checksums.of_string mode expected in
+            try Checksums.verify_checksum csum (mf_folder // disk)
+            with Checksums.Mismatched_checksum (_, actual) ->
+              error (f_"checksum of disk %s does not match manifest %s (actual %s(%s) = %s, expected %s(%s) = %s)")
+                disk mf mode disk actual mode disk expected;
           )
+          else
+            warning (f_"unable to parse line from manifest file: %S") line
+          ;
+          loop ()
         in
         (try loop () with End_of_file -> ());
         close_in chan
@@ -185,7 +199,8 @@ object
     let name =
       match xpath_string "/ovf:Envelope/ovf:VirtualSystem/ovf:Name/text()" with
       | None | Some "" ->
-        error (f_"could not parse ovf:Name from OVF document")
+        warning (f_"could not parse ovf:Name from OVF document");
+        name_from_disk ova
       | Some name -> name in
 
     (* Search for memory. *)
@@ -245,10 +260,10 @@ object
 
         Xml.xpathctx_set_current_context xpathctx n;
         let file_id = xpath_string_default "rasd:HostResource/text()" "" in
-        let rex = Str.regexp "^ovf:/disk/\\(.*\\)" in
+        let rex = Str.regexp "^\\(ovf:\\)?/disk/\\(.*\\)" in
         if Str.string_match rex file_id 0 then (
           (* Chase the references through to the actual file name. *)
-          let file_id = Str.matched_group 1 file_id in
+          let file_id = Str.matched_group 2 file_id in
           let expr = sprintf "/ovf:Envelope/ovf:DiskSection/ovf:Disk[@ovf:diskId='%s']/@ovf:fileRef" file_id in
           let file_ref =
             match xpath_string expr with

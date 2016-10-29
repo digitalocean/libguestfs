@@ -189,6 +189,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module getopt-posix:
   # Code from module getopt-posix-tests:
   # Code from module getpagesize:
+  # Code from module getprogname:
   # Code from module gettext-h:
   # Code from module gettime:
   # Code from module gettimeofday:
@@ -299,7 +300,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module pread-tests:
   # Code from module priv-set:
   # Code from module priv-set-tests:
-  # Code from module progname:
   # Code from module ptsname_r:
   # Code from module ptsname_r-tests:
   # Code from module putenv:
@@ -726,6 +726,10 @@ AC_SUBST([LTALLOCA])
     GNULIB_GL_UNISTD_H_GETOPT=1
   fi
   AC_SUBST([GNULIB_GL_UNISTD_H_GETOPT])
+  gl_FUNC_GETPROGNAME
+  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
+  AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
+  AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
   gl_GETTIME
@@ -1292,8 +1296,6 @@ changequote([, ])dnl
   fi
   gl_UNISTD_MODULE_INDICATOR([pipe])
   gl_PRIV_SET
-  AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
-  AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
   AC_CHECK_DECLS_ONCE([alarm])
   gl_FUNC_PUTENV
   if test $REPLACE_PUTENV = 1; then
@@ -1577,6 +1579,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/filenamecat.h
   lib/filevercmp.c
   lib/filevercmp.h
+  lib/flexmember.h
   lib/float+.h
   lib/float.c
   lib/float.in.h
@@ -1611,6 +1614,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getopt.in.h
   lib/getopt1.c
   lib/getopt_int.h
+  lib/getprogname.c
+  lib/getprogname.h
   lib/gettext.h
   lib/gettime.c
   lib/gettimeofday.c
@@ -1865,6 +1870,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/getlogin_r.m4
   m4/getopt.m4
   m4/getpagesize.m4
+  m4/getprogname.m4
   m4/gettime.m4
   m4/gettimeofday.m4
   m4/glibc21.m4
@@ -2314,8 +2320,6 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/pipe.c
   tests=lib/priv-set.c
   tests=lib/priv-set.h
-  tests=lib/progname.c
-  tests=lib/progname.h
   tests=lib/putenv.c
   tests=lib/rmdir.c
   tests=lib/root-uid.h

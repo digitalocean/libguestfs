@@ -186,9 +186,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -313,6 +314,7 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = ../fish/virt_rescue-config.$(OBJEXT) \
+	../fish/virt_rescue-decrypt.$(OBJEXT) \
 	../fish/virt_rescue-display-options.$(OBJEXT) \
 	../fish/virt_rescue-domain.$(OBJEXT) \
 	../fish/virt_rescue-inspect.$(OBJEXT) \
@@ -648,6 +650,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1780,6 +1784,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -1803,6 +1810,7 @@ EXTRA_DIST = \
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/decrypt.c \
 	../fish/display-options.h \
 	../fish/display-options.c \
 	../fish/domain.c \
@@ -1938,6 +1946,8 @@ clean-binPROGRAMS:
 	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
 ../fish/virt_rescue-config.$(OBJEXT): ../fish/$(am__dirstamp) \
 	../fish/$(DEPDIR)/$(am__dirstamp)
+../fish/virt_rescue-decrypt.$(OBJEXT): ../fish/$(am__dirstamp) \
+	../fish/$(DEPDIR)/$(am__dirstamp)
 ../fish/virt_rescue-display-options.$(OBJEXT):  \
 	../fish/$(am__dirstamp) ../fish/$(DEPDIR)/$(am__dirstamp)
 ../fish/virt_rescue-domain.$(OBJEXT): ../fish/$(am__dirstamp) \
@@ -1963,6 +1973,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-config.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-decrypt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-display-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/virt_rescue-inspect.Po@am__quote@
@@ -2008,6 +2019,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/virt_rescue-config.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
+
+../fish/virt_rescue-decrypt.o: ../fish/decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-decrypt.o -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-decrypt.Tpo -c -o ../fish/virt_rescue-decrypt.o `test -f '../fish/decrypt.c' || echo '$(srcdir)/'`../fish/decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-decrypt.Tpo ../fish/$(DEPDIR)/virt_rescue-decrypt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/decrypt.c' object='../fish/virt_rescue-decrypt.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-decrypt.o `test -f '../fish/decrypt.c' || echo '$(srcdir)/'`../fish/decrypt.c
+
+../fish/virt_rescue-decrypt.obj: ../fish/decrypt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-decrypt.obj -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-decrypt.Tpo -c -o ../fish/virt_rescue-decrypt.obj `if test -f '../fish/decrypt.c'; then $(CYGPATH_W) '../fish/decrypt.c'; else $(CYGPATH_W) '$(srcdir)/../fish/decrypt.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/virt_rescue-decrypt.Tpo ../fish/$(DEPDIR)/virt_rescue-decrypt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/decrypt.c' object='../fish/virt_rescue-decrypt.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -c -o ../fish/virt_rescue-decrypt.obj `if test -f '../fish/decrypt.c'; then $(CYGPATH_W) '../fish/decrypt.c'; else $(CYGPATH_W) '$(srcdir)/../fish/decrypt.c'; fi`
 
 ../fish/virt_rescue-display-options.o: ../fish/display-options.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_rescue_CPPFLAGS) $(CPPFLAGS) $(virt_rescue_CFLAGS) $(CFLAGS) -MT ../fish/virt_rescue-display-options.o -MD -MP -MF ../fish/$(DEPDIR)/virt_rescue-display-options.Tpo -c -o ../fish/virt_rescue-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
@@ -2578,7 +2603,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
@@ -2596,7 +2621,7 @@ stamp-virt-rescue.pod: virt-rescue.pod
 	touch $@
 
 check-valgrind:
-	$(MAKE) TESTS="test-virt-rescue-suggest.sh" VG="$(top_builddir)/run @VG@" check
+	$(MAKE) TESTS="test-virt-rescue-suggest.sh" VG="@VG@" check
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

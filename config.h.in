@@ -553,6 +553,9 @@
 /* Define to 1 if you have the `completion_matches' function. */
 #undef HAVE_COMPLETION_MATCHES
 
+/* D-Bus found at compile time. */
+#undef HAVE_DBUS
+
 /* Define if the GNU dcgettext() function is already present or preinstalled.
    */
 #undef HAVE_DCGETTEXT
@@ -832,6 +835,9 @@
 /* Define to 1 if you have the 'geteuid' function. */
 #undef HAVE_GETEUID
 
+/* Define to 1 if you have the 'getexecname' function. */
+#undef HAVE_GETEXECNAME
+
 /* Define to 1 if you have the 'getgid' function. */
 #undef HAVE_GETGID
 
@@ -856,7 +862,7 @@
 /* Define to 1 if you have the `getppriv' function. */
 #undef HAVE_GETPPRIV
 
-/* Define to 1 if you have the `getprogname' function. */
+/* Define to 1 if you have the 'getprogname' function. */
 #undef HAVE_GETPROGNAME
 
 /* Define to 1 if you have the 'getpwnam_r' function. */

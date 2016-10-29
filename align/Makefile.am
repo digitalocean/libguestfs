@@ -31,17 +31,7 @@ SHARED_SOURCE_FILES = \
 	../df/estimate-max-threads.c \
 	../df/estimate-max-threads.h \
 	../df/parallel.c \
-	../df/parallel.h \
-	../fish/config.c \
-	../fish/display-options.h \
-	../fish/display-options.c \
-	../fish/domain.c \
-	../fish/inspect.c \
-	../fish/keys.c \
-	../fish/options.h \
-	../fish/options.c \
-	../fish/uri.h \
-	../fish/uri.c
+	../df/parallel.h
 
 virt_alignment_scan_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -58,14 +48,13 @@ virt_alignment_scan_CPPFLAGS = \
 virt_alignment_scan_CFLAGS = \
 	-pthread \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(LIBCONFIG_CFLAGS) \
 	$(LIBXML2_CFLAGS) \
 	$(LIBVIRT_CFLAGS)
 
 virt_alignment_scan_LDADD = \
-	$(LIBCONFIG_LIBS) \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/fish/libfishcommon.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -101,4 +90,4 @@ TESTS += \
 endif
 
 check-valgrind:
-	$(MAKE) VG="$(top_builddir)/run @VG@" check
+	$(MAKE) VG="@VG@" check

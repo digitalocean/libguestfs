@@ -205,9 +205,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -361,9 +362,18 @@ LTLIBRARIES = $(jnilib_LTLIBRARIES)
 @HAVE_JAVA_TRUE@libguestfs_jni_la_DEPENDENCIES =  \
 @HAVE_JAVA_TRUE@	$(top_builddir)/src/libguestfs.la
 am__libguestfs_jni_la_SOURCES_DIST =  \
-	com_redhat_et_libguestfs_GuestFS.h \
-	com_redhat_et_libguestfs_GuestFS.c
-@HAVE_JAVA_TRUE@am_libguestfs_jni_la_OBJECTS = libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo
+	com_redhat_et_libguestfs_GuestFS.h actions-0.c actions-1.c \
+	actions-2.c actions-3.c actions-4.c actions-5.c actions-6.c \
+	handle.c
+@HAVE_JAVA_TRUE@am_libguestfs_jni_la_OBJECTS =  \
+@HAVE_JAVA_TRUE@	libguestfs_jni_la-actions-0.lo \
+@HAVE_JAVA_TRUE@	libguestfs_jni_la-actions-1.lo \
+@HAVE_JAVA_TRUE@	libguestfs_jni_la-actions-2.lo \
+@HAVE_JAVA_TRUE@	libguestfs_jni_la-actions-3.lo \
+@HAVE_JAVA_TRUE@	libguestfs_jni_la-actions-4.lo \
+@HAVE_JAVA_TRUE@	libguestfs_jni_la-actions-5.lo \
+@HAVE_JAVA_TRUE@	libguestfs_jni_la-actions-6.lo \
+@HAVE_JAVA_TRUE@	libguestfs_jni_la-handle.lo
 libguestfs_jni_la_OBJECTS = $(am_libguestfs_jni_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -659,6 +669,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1793,6 +1805,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -1812,7 +1827,13 @@ java_prefix = com/redhat/et/libguestfs
 generator_built = \
 	Makefile.inc \
 	$(java_built_sources) \
-	com_redhat_et_libguestfs_GuestFS.c \
+	actions-0.c \
+	actions-1.c \
+	actions-2.c \
+	actions-3.c \
+	actions-4.c \
+	actions-5.c \
+	actions-6.c \
 	$(srcdir)/Bindtests.java
 
 java_built_sources = \
@@ -1886,7 +1907,14 @@ EXTRA_DIST = \
 @HAVE_JAVA_TRUE@jnilibdir = $(JNI_INSTALL_DIR)
 @HAVE_JAVA_TRUE@libguestfs_jni_la_SOURCES = \
 @HAVE_JAVA_TRUE@	com_redhat_et_libguestfs_GuestFS.h \
-@HAVE_JAVA_TRUE@	com_redhat_et_libguestfs_GuestFS.c
+@HAVE_JAVA_TRUE@	actions-0.c \
+@HAVE_JAVA_TRUE@	actions-1.c \
+@HAVE_JAVA_TRUE@	actions-2.c \
+@HAVE_JAVA_TRUE@	actions-3.c \
+@HAVE_JAVA_TRUE@	actions-4.c \
+@HAVE_JAVA_TRUE@	actions-5.c \
+@HAVE_JAVA_TRUE@	actions-6.c \
+@HAVE_JAVA_TRUE@	handle.c
 
 @HAVE_JAVA_TRUE@libguestfs_jni_la_CPPFLAGS = \
 @HAVE_JAVA_TRUE@	-DGUESTFS_PRIVATE=1 \
@@ -1987,7 +2015,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_jni_la-actions-0.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_jni_la-actions-1.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_jni_la-actions-2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_jni_la-actions-3.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_jni_la-actions-4.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_jni_la-actions-5.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_jni_la-actions-6.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_jni_la-handle.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -2013,12 +2048,61 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo: com_redhat_et_libguestfs_GuestFS.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.Tpo -c -o libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo `test -f 'com_redhat_et_libguestfs_GuestFS.c' || echo '$(srcdir)/'`com_redhat_et_libguestfs_GuestFS.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.Tpo $(DEPDIR)/libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='com_redhat_et_libguestfs_GuestFS.c' object='libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo' libtool=yes @AMDEPBACKSLASH@
+libguestfs_jni_la-actions-0.lo: actions-0.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-actions-0.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-actions-0.Tpo -c -o libguestfs_jni_la-actions-0.lo `test -f 'actions-0.c' || echo '$(srcdir)/'`actions-0.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_jni_la-actions-0.Tpo $(DEPDIR)/libguestfs_jni_la-actions-0.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-0.c' object='libguestfs_jni_la-actions-0.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo `test -f 'com_redhat_et_libguestfs_GuestFS.c' || echo '$(srcdir)/'`com_redhat_et_libguestfs_GuestFS.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-actions-0.lo `test -f 'actions-0.c' || echo '$(srcdir)/'`actions-0.c
+
+libguestfs_jni_la-actions-1.lo: actions-1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-actions-1.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-actions-1.Tpo -c -o libguestfs_jni_la-actions-1.lo `test -f 'actions-1.c' || echo '$(srcdir)/'`actions-1.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_jni_la-actions-1.Tpo $(DEPDIR)/libguestfs_jni_la-actions-1.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-1.c' object='libguestfs_jni_la-actions-1.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-actions-1.lo `test -f 'actions-1.c' || echo '$(srcdir)/'`actions-1.c
+
+libguestfs_jni_la-actions-2.lo: actions-2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-actions-2.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-actions-2.Tpo -c -o libguestfs_jni_la-actions-2.lo `test -f 'actions-2.c' || echo '$(srcdir)/'`actions-2.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_jni_la-actions-2.Tpo $(DEPDIR)/libguestfs_jni_la-actions-2.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-2.c' object='libguestfs_jni_la-actions-2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-actions-2.lo `test -f 'actions-2.c' || echo '$(srcdir)/'`actions-2.c
+
+libguestfs_jni_la-actions-3.lo: actions-3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-actions-3.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-actions-3.Tpo -c -o libguestfs_jni_la-actions-3.lo `test -f 'actions-3.c' || echo '$(srcdir)/'`actions-3.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_jni_la-actions-3.Tpo $(DEPDIR)/libguestfs_jni_la-actions-3.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-3.c' object='libguestfs_jni_la-actions-3.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-actions-3.lo `test -f 'actions-3.c' || echo '$(srcdir)/'`actions-3.c
+
+libguestfs_jni_la-actions-4.lo: actions-4.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-actions-4.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-actions-4.Tpo -c -o libguestfs_jni_la-actions-4.lo `test -f 'actions-4.c' || echo '$(srcdir)/'`actions-4.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_jni_la-actions-4.Tpo $(DEPDIR)/libguestfs_jni_la-actions-4.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-4.c' object='libguestfs_jni_la-actions-4.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-actions-4.lo `test -f 'actions-4.c' || echo '$(srcdir)/'`actions-4.c
+
+libguestfs_jni_la-actions-5.lo: actions-5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-actions-5.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-actions-5.Tpo -c -o libguestfs_jni_la-actions-5.lo `test -f 'actions-5.c' || echo '$(srcdir)/'`actions-5.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_jni_la-actions-5.Tpo $(DEPDIR)/libguestfs_jni_la-actions-5.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-5.c' object='libguestfs_jni_la-actions-5.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-actions-5.lo `test -f 'actions-5.c' || echo '$(srcdir)/'`actions-5.c
+
+libguestfs_jni_la-actions-6.lo: actions-6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-actions-6.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-actions-6.Tpo -c -o libguestfs_jni_la-actions-6.lo `test -f 'actions-6.c' || echo '$(srcdir)/'`actions-6.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_jni_la-actions-6.Tpo $(DEPDIR)/libguestfs_jni_la-actions-6.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='actions-6.c' object='libguestfs_jni_la-actions-6.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-actions-6.lo `test -f 'actions-6.c' || echo '$(srcdir)/'`actions-6.c
+
+libguestfs_jni_la-handle.lo: handle.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-handle.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-handle.Tpo -c -o libguestfs_jni_la-handle.lo `test -f 'handle.c' || echo '$(srcdir)/'`handle.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_jni_la-handle.Tpo $(DEPDIR)/libguestfs_jni_la-handle.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='handle.c' object='libguestfs_jni_la-handle.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-handle.lo `test -f 'handle.c' || echo '$(srcdir)/'`handle.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2467,7 +2551,7 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:

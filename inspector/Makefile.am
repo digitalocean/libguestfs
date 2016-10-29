@@ -52,24 +52,10 @@ dist_doc_DATA = \
 
 bin_PROGRAMS = virt-inspector
 
-SHARED_SOURCE_FILES = \
-	../fish/config.c \
-	../fish/display-options.h \
-	../fish/display-options.c \
-	../fish/domain.c \
-	../fish/inspect.c \
-	../fish/keys.c \
-	../fish/options.h \
-	../fish/options.c \
-	../fish/uri.h \
-	../fish/uri.c
-
 virt_inspector_SOURCES = \
-	$(SHARED_SOURCE_FILES) \
 	inspector.c
 
 virt_inspector_CPPFLAGS = \
-	-DCOMPILING_VIRT_INSPECTOR=1 \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
@@ -78,13 +64,12 @@ virt_inspector_CPPFLAGS = \
 
 virt_inspector_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(LIBXML2_CFLAGS) \
-	$(LIBCONFIG_CFLAGS)
+	$(LIBXML2_CFLAGS)
 
 virt_inspector_LDADD = \
-	$(LIBCONFIG_LIBS) \
 	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/fish/libfishcommon.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -119,7 +104,7 @@ TESTS += test-xmllint.sh
 endif
 
 check-valgrind:
-	$(MAKE) TESTS="test-virt-inspector.sh" VG="$(top_builddir)/run @VG@" check
+	$(MAKE) TESTS="test-virt-inspector.sh" VG="@VG@" check
 
 check-valgrind-local-guests:
 	for g in $(GUESTS); do \

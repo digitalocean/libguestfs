@@ -54,6 +54,20 @@ let perror msg = function
   | exn ->
       eprintf "%s: %s\n" msg (Printexc.to_string exn)
 
+(* In some directories the actions are split across this many C
+ * files.  You can increase this number in order to reduce the number
+ * of lines in each file (hence making compilation faster), but you
+ * also have to modify .../Makefile.am.
+ *)
+let nr_actions_files = 7
+let actions_subsets =
+  let h i { name = name } = i = Hashtbl.hash name mod nr_actions_files in
+  Array.init nr_actions_files (fun i -> List.filter (h i) actions)
+let output_to_subset fs f =
+  for i = 0 to nr_actions_files-1 do
+    ksprintf (fun filename -> output_to filename (f actions_subsets.(i))) fs i
+  done
+
 (* Main program. *)
 let () =
   let lock_fd =
@@ -103,20 +117,21 @@ Run it from the top source directory using the command
   output_to "src/structs-print.c" generate_client_structs_print_c;
   output_to "src/structs-print.h" generate_client_structs_print_h;
   output_to "src/actions-variants.c" generate_client_actions_variants;
-
-  for i = 0 to nr_actions_files-1 do
-    let filename = sprintf "src/actions-%d.c" i in
-    output_to filename (generate_client_actions i)
-  done;
-
+  output_to_subset "src/actions-%d.c" generate_client_actions;
   output_to "daemon/actions.h" generate_daemon_actions_h;
-  output_to "daemon/stubs.c" generate_daemon_actions;
+  output_to "daemon/stubs.h" generate_daemon_stubs_h;
+  output_to_subset "daemon/stubs-%d.c" generate_daemon_stubs;
+  output_to "daemon/dispatch.c" generate_daemon_dispatch;
   output_to "daemon/names.c" generate_daemon_names;
   output_to "daemon/optgroups.c" generate_daemon_optgroups_c;
   output_to "daemon/optgroups.h" generate_daemon_optgroups_h;
+  output_to "daemon/lvm-tokenization.c" generate_daemon_lvm_tokenization;
   output_to "tests/c-api/tests.c" generate_c_api_tests;
   output_to "fish/cmds-gperf.gperf" generate_fish_cmds_gperf;
   output_to "fish/cmds.c" generate_fish_cmds;
+  output_to_subset "fish/entries-%d.c" generate_fish_cmd_entries;
+  output_to_subset "fish/run-%d.c" generate_fish_run_cmds;
+  output_to "fish/run.h" generate_fish_run_header;
   output_to "fish/completion.c" generate_fish_completion;
   output_to "fish/event-names.c" generate_fish_event_names;
   output_to "fish/fish-cmds.h" generate_fish_cmds_h;
@@ -134,10 +149,15 @@ Run it from the top source directory using the command
   output_to "perl/lib/Sys/Guestfs.xs" generate_perl_xs;
   output_to "perl/lib/Sys/Guestfs.pm" generate_perl_pm;
   output_to "perl/bindtests.pl" generate_perl_bindtests;
-  output_to "python/guestfs-py.c" generate_python_c;
+  output_to "python/actions.h" generate_python_actions_h;
+  output_to_subset "python/actions-%d.c" generate_python_actions;
+  output_to "python/module.c" generate_python_module;
+  output_to "python/structs.c" generate_python_structs;
   output_to "python/guestfs.py" generate_python_py;
   output_to "python/bindtests.py" generate_python_bindtests;
-  output_to "ruby/ext/guestfs/_guestfs.c" generate_ruby_c;
+  output_to "ruby/ext/guestfs/actions.h" generate_ruby_h;
+  output_to_subset "ruby/ext/guestfs/actions-%d.c" generate_ruby_c;
+  output_to "ruby/ext/guestfs/module.c" generate_ruby_module;
   output_to "ruby/bindtests.rb" generate_ruby_bindtests;
   output_to "java/com/redhat/et/libguestfs/GuestFS.java" generate_java_java;
 
@@ -154,7 +174,7 @@ Run it from the top source directory using the command
     "java/com/redhat/et/libguestfs/*.java";
 
   output_to "java/Makefile.inc" generate_java_makefile_inc;
-  output_to "java/com_redhat_et_libguestfs_GuestFS.c" generate_java_c;
+  output_to_subset "java/actions-%d.c" generate_java_c;
   output_to "java/com/redhat/et/libguestfs/.gitignore" generate_java_gitignore;
   output_to "java/Bindtests.java" generate_java_bindtests;
   output_to "haskell/Guestfs.hs" generate_haskell_hs;
@@ -164,7 +184,10 @@ Run it from the top source directory using the command
   output_to "php/extension/guestfs_php.c" generate_php_c;
   output_to "php/extension/tests/guestfs_090_bindtests.phpt" generate_php_bindtests;
   output_to "erlang/guestfs.erl" generate_erlang_erl;
-  output_to "erlang/erl-guestfs.c" generate_erlang_c;
+  output_to "erlang/actions.h" generate_erlang_actions_h;
+  output_to_subset "erlang/actions-%d.c" generate_erlang_actions;
+  output_to "erlang/dispatch.c" generate_erlang_dispatch;
+  output_to "erlang/structs.c" generate_erlang_structs;
   output_to ~perm:0o555 "erlang/bindtests.erl" generate_erlang_bindtests;
   output_to "lua/lua-guestfs.c" generate_lua_c;
   output_to "lua/bindtests.lua" generate_lua_bindtests;
@@ -200,7 +223,7 @@ Run it from the top source directory using the command
       output_to filename
         (generate_gobject_optargs_source short name optargs f)
     | { style = _, _, [] } -> ()
-  ) external_functions_sorted;
+  ) (actions |> external_functions |> sort);
   delete_except_generated "gobject/include/guestfs-gobject/optargs-*.h";
   delete_except_generated "gobject/src/optargs-*.c";
 

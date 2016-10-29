@@ -13085,26 +13085,28 @@ guestfs_session_file_architecture (<em class="parameter"><code><a class="link" h
 <p>This detects the architecture of the binary filename, and returns it if
 known.</p>
 <p>Currently defined architectures are:</p>
+<p>"aarch64"
+64 bit ARM.</p>
+<p>"arm"
+32 bit ARM.</p>
 <p>"i386"
 This string is returned for all 32 bit i386, i486, i586, i686
 binaries irrespective of the precise processor requirements of the
 binary.</p>
-<p>"x86_64"
-64 bit x86-64.</p>
-<p>"sparc"
-32 bit SPARC.</p>
-<p>"sparc64"
-64 bit SPARC V9 and above.</p>
 <p>"ia64"
 Intel Itanium.</p>
 <p>"ppc"
 32 bit Power PC.</p>
 <p>"ppc64"
-64 bit Power PC.</p>
-<p>"arm"
-32 bit ARM.</p>
-<p>"aarch64"
-64 bit ARM.</p>
+64 bit Power PC (big endian).</p>
+<p>"ppc64le"
+64 bit Power PC (little endian).</p>
+<p>"sparc"
+32 bit SPARC.</p>
+<p>"sparc64"
+64 bit SPARC V9 and above.</p>
+<p>"x86_64"
+64 bit x86-64.</p>
 <p>Libguestfs may return other architecture strings in future.</p>
 <p>The function works on at least the following types of files:</p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
@@ -13278,9 +13280,8 @@ guestfs_session_filesystem_walk (<em class="parameter"><code><a class="link" hre
 in order to return a list of all the files and directories stored
 within.</p>
 <p>It is not necessary to mount the disk partition to run this command.</p>
-<p>All entries in the filesystem are returned, excluding "." and "..". This
-function can list deleted or unaccessible files. The entries are *not*
-sorted.</p>
+<p>All entries in the filesystem are returned. This function can list
+deleted or unaccessible files. The entries are *not* sorted.</p>
 <p>The <em class="parameter"><code>tsk_dirent</code></em>
  structure contains the following fields.</p>
 <p>'tsk_inode'

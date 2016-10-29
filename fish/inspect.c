@@ -33,12 +33,12 @@
 #include <libintl.h>
 
 #include "c-ctype.h"
+#include "getprogname.h"
 
 #include "guestfs.h"
 
 /* These definitions ensure we get all extern definitions from the header. */
 #define COMPILING_GUESTFISH 1
-#define COMPILING_VIRT_INSPECTOR 1
 #include "options.h"
 
 /* Global that saves the root device between inspect_mount and
@@ -93,7 +93,7 @@ inspect_mount_handle (guestfs_h *g)
 	       "If using other virt tools, this disk image won't work\n"
 	       "with these tools.  Use the guestfish equivalent commands\n"
 	       "(see the virt tool manual page).\n"),
-             guestfs_int_program_name);
+             getprogname ());
     guestfs_int_free_string_list (roots);
     exit (EXIT_FAILURE);
   }
@@ -114,7 +114,7 @@ inspect_mount_handle (guestfs_h *g)
 	       "If using other virt tools, multi-boot operating systems won't work\n"
 	       "with these tools.  Use the guestfish equivalent commands\n"
 	       "(see the virt tool manual page).\n"),
-             guestfs_int_program_name);
+             getprogname ());
     guestfs_int_free_string_list (roots);
     exit (EXIT_FAILURE);
   }
@@ -163,7 +163,7 @@ inspect_mount_root (guestfs_h *g, const char *root)
 
   if (mount_errors)
     fprintf (stderr, _("%s: some filesystems could not be mounted (ignored)\n"),
-             guestfs_int_program_name);
+             getprogname ());
 }
 
 /**
@@ -199,73 +199,5 @@ print_inspect_prompt (void)
 
     printf (_("%s mounted on %s\n"),
             dev ? dev : mountpoints[i+1], mountpoints[i]);
-  }
-}
-
-/**
- * Make a LUKS map name from the partition name,
- * eg. C<"/dev/vda2" =E<gt> "luksvda2">
- */
-static void
-make_mapname (const char *device, char *mapname, size_t len)
-{
-  size_t i = 0;
-
-  if (len < 5)
-    abort ();
-  strcpy (mapname, "luks");
-  mapname += 4;
-  len -= 4;
-
-  if (STRPREFIX (device, "/dev/"))
-    i = 5;
-
-  for (; device[i] != '\0' && len >= 1; ++i) {
-    if (c_isalnum (device[i])) {
-      *mapname++ = device[i];
-      len--;
-    }
-  }
-
-  *mapname = '\0';
-}
-
-/**
- * Simple implementation of decryption: look for any C<crypto_LUKS>
- * partitions and decrypt them, then rescan for VGs.  This only works
- * for Fedora whole-disk encryption.  WIP to make this work for other
- * encryption schemes.
- */
-void
-inspect_do_decrypt (guestfs_h *g)
-{
-  CLEANUP_FREE_STRING_LIST char **partitions = guestfs_list_partitions (g);
-  if (partitions == NULL)
-    exit (EXIT_FAILURE);
-
-  int need_rescan = 0;
-  size_t i;
-  for (i = 0; partitions[i] != NULL; ++i) {
-    CLEANUP_FREE char *type = guestfs_vfs_type (g, partitions[i]);
-    if (type && STREQ (type, "crypto_LUKS")) {
-      char mapname[32];
-      make_mapname (partitions[i], mapname, sizeof mapname);
-
-      CLEANUP_FREE char *key = read_key (partitions[i]);
-      /* XXX Should we call guestfs_luks_open_ro if readonly flag
-       * is set?  This might break 'mount_ro'.
-       */
-      if (guestfs_luks_open (g, partitions[i], key, mapname) == -1)
-        exit (EXIT_FAILURE);
-
-      need_rescan = 1;
-    }
-  }
-
-  if (need_rescan) {
-    if (guestfs_vgscan (g) == -1)
-      exit (EXIT_FAILURE);
-    if (guestfs_vg_activate_all (g, 1) == -1)
-      exit (EXIT_FAILURE);
   }
 }

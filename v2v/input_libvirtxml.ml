@@ -23,6 +23,7 @@ open Common_utils
 
 open Types
 open Utils
+open Xpath_helpers
 
 type parsed_disk = {
   p_source_disk : source_disk;
@@ -95,24 +96,31 @@ let parse_libvirt_xml ?conn xml =
         let nr_nodes = Xml.xpathobj_nr_nodes obj in
         if nr_nodes < 1 then (
           match xpath_string "@listen" with
-          | None -> LNone | Some a -> LAddress a
+          | None -> LNoListen | Some a -> LAddress a
         ) else (
           (* Use only the first <listen> configuration. *)
           match xpath_string "listen[1]/@type" with
-          | None -> LNone
+          | None -> LNoListen
           | Some "address" ->
             (match xpath_string "listen[1]/@address" with
-            | None -> LNone
+            | None -> LNoListen
             | Some a -> LAddress a
             )
           | Some "network" ->
             (match xpath_string "listen[1]/@network" with
-            | None -> LNone
+            | None -> LNoListen
             | Some n -> LNetwork n
             )
+          | Some "socket" ->
+            (match xpath_string "listen[1]/@socket" with
+            | None -> LNoListen
+            | Some n -> LSocket n
+            )
+          | Some "none" ->
+            LNone
           | Some t ->
             warning (f_"<listen type='%s'> in the input libvirt XML was ignored") t;
-            LNone
+            LNoListen
         ) in
       let port =
         match xpath_string "@autoport" with
@@ -256,7 +264,7 @@ let parse_libvirt_xml ?conn xml =
                 xpath_string "source/host/@name",
                 xpath_int "source/host/@port") with
         | None, _, _ ->
-          warning (f_"<disk type=network> was ignored")
+          warning (f_"<disk type='%s'> was ignored") "network"
         | Some "nbd", Some ("localhost" as host), Some port when port > 0 ->
           (* virt-p2v: Generate a qemu nbd URL. *)
           let path = sprintf "nbd:%s:%d" host port in
@@ -272,7 +280,7 @@ let parse_libvirt_xml ?conn xml =
           let xml = Domainxml.vol_dumpxml ?conn pool vol in
           let doc = Xml.parse_memory xml in
           let xpathctx = Xml.xpath_new_context doc in
-          let xpath_string = Utils.xpath_string xpathctx in
+          let xpath_string = Xpath_helpers.xpath_string xpathctx in
 
           (* Use the format specified in the volume itself. *)
           let format = xpath_string "/volume/target/format/@type" in

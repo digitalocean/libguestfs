@@ -145,7 +145,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-libexec_PROGRAMS = virt-p2v$(EXEEXT)
+noinst_PROGRAMS = virt-p2v$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@am__append_1 = \
 @ENABLE_APPLIANCE_TRUE@	test-virt-p2v.sh \
 @ENABLE_APPLIANCE_TRUE@	$(SLOW_TESTS)
@@ -187,9 +187,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
@@ -311,21 +312,20 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = virt-p2v-make-disk virt-p2v-make-kickstart \
 	virt-p2v-make-kiwi
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(bindir)" \
-	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(virtp2vdatadir)"
-PROGRAMS = $(libexec_PROGRAMS)
+PROGRAMS = $(noinst_PROGRAMS)
 am_virt_p2v_OBJECTS = virt_p2v-about-authors.$(OBJEXT) \
 	virt_p2v-about-license.$(OBJEXT) virt_p2v-config.$(OBJEXT) \
 	virt_p2v-conversion.$(OBJEXT) virt_p2v-gui.$(OBJEXT) \
-	virt_p2v-kernel.$(OBJEXT) virt_p2v-kernel-cmdline.$(OBJEXT) \
-	virt_p2v-main.$(OBJEXT) virt_p2v-miniexpect.$(OBJEXT) \
-	virt_p2v-ssh.$(OBJEXT) virt_p2v-utils.$(OBJEXT) \
-	virt_p2v-whole-file.$(OBJEXT)
+	virt_p2v-inhibit.$(OBJEXT) virt_p2v-kernel.$(OBJEXT) \
+	virt_p2v-kernel-cmdline.$(OBJEXT) virt_p2v-main.$(OBJEXT) \
+	virt_p2v-miniexpect.$(OBJEXT) virt_p2v-ssh.$(OBJEXT) \
+	virt_p2v-utils.$(OBJEXT) virt_p2v-whole-file.$(OBJEXT)
 virt_p2v_OBJECTS = $(am_virt_p2v_OBJECTS)
 am__DEPENDENCIES_1 =
 virt_p2v_DEPENDENCIES = $(top_builddir)/src/libutils.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -360,6 +360,8 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
+	"$(DESTDIR)$(virtp2vdatadir)" "$(DESTDIR)$(virtp2vlibdir)"
 SCRIPTS = $(bin_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -405,7 +407,7 @@ am__can_run_installinfo = \
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man_MANS)
-DATA = $(noinst_DATA) $(virtp2vdata_DATA)
+DATA = $(noinst_DATA) $(virtp2vdata_DATA) $(virtp2vlib_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -651,6 +653,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
+DBUS_CFLAGS = @DBUS_CFLAGS@
+DBUS_LIBS = @DBUS_LIBS@
 DB_DUMP = @DB_DUMP@
 DB_LOAD = @DB_LOAD@
 DEFS = @DEFS@
@@ -1772,7 +1776,7 @@ CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
 	stamp-test-virt-p2v-pxe-kernel \
 	test-virt-p2v-pxe.authorized_keys test-virt-p2v-pxe.img \
 	test-virt-p2v-pxe.vmlinuz test-virt-p2v-pxe.initramfs \
-	test-virt-p2v-pxe.sshd_config virt-p2v.img
+	test-virt-p2v-pxe.sshd_config virt-p2v.img virt-p2v.xz
 
 # Files that should be universally removed by 'make distclean'.
 DISTCLEANFILES = .depend stamp-*
@@ -1791,6 +1795,9 @@ LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 guestfs_am_v_ocamlc = $(guestfs_am_v_ocamlc_@AM_V@)
 guestfs_am_v_ocamlc_ = $(guestfs_am_v_ocamlc_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlc_0 = @echo "  OCAMLC  " $@;
+guestfs_am_v_ocamlcmi = $(guestfs_am_v_ocamlcmi_@AM_V@)
+guestfs_am_v_ocamlcmi_ = $(guestfs_am_v_ocamlcmi_@AM_DEFAULT_V@)
+guestfs_am_v_ocamlcmi_0 = @echo "  OCAMLCMI" $@;
 guestfs_am_v_ocamlopt = $(guestfs_am_v_ocamlopt_@AM_V@)
 guestfs_am_v_ocamlopt_ = $(guestfs_am_v_ocamlopt_@AM_DEFAULT_V@)
 guestfs_am_v_ocamlopt_0 = @echo "  OCAMLOPT" $@;
@@ -1812,7 +1819,7 @@ EXTRA_DIST = \
 	issue \
 	kiwi-config.sh \
 	kiwi-config.xml.in \
-	launch-virt-p2v.in \
+	launch-virt-p2v \
 	p2v.ks.in \
 	p2v.service \
 	test-virt-p2v-docs.sh \
@@ -1828,6 +1835,16 @@ EXTRA_DIST = \
 	virt-p2v-make-kiwi.pod
 
 
+# Although virt-p2v is a regular binary, it is not usually installed
+# in /usr/bin since it only functions when contained in an ISO or PXE
+# image which is used to boot the physical machine (since otherwise
+# virt-p2v would not be able to get a consistent snapshot of the
+# physical disks).  Also we don't want the naked binary to appear on
+# the host, which would cause various Gtk dependencies to be pulled
+# in, so it must be compressed.
+virtp2vlibdir = $(libdir)/virt-p2v
+virtp2vlib_DATA = virt-p2v.xz
+
 # Note that miniexpect comes from here:
 # http://git.annexia.org/?p=miniexpect.git;a=summary
 virt_p2v_SOURCES = \
@@ -1836,6 +1853,7 @@ virt_p2v_SOURCES = \
 	config.c \
 	conversion.c \
 	gui.c \
+	inhibit.c \
 	kernel.c \
 	kernel-cmdline.c \
 	main.c \
@@ -1856,13 +1874,15 @@ virt_p2v_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(PCRE_CFLAGS) \
 	$(LIBXML2_CFLAGS) \
-	$(GTK_CFLAGS)
+	$(GTK_CFLAGS) \
+	$(DBUS_CFLAGS)
 
 virt_p2v_LDADD = \
 	$(top_builddir)/src/libutils.la \
 	$(PCRE_LIBS) \
 	$(LIBXML2_LIBS) \
 	$(GTK_LIBS) \
+	$(DBUS_LIBS) \
 	../gnulib/lib/libgnu.la
 
 
@@ -1951,49 +1971,9 @@ virt-p2v-make-kickstart: $(top_builddir)/config.status $(srcdir)/virt-p2v-make-k
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 virt-p2v-make-kiwi: $(top_builddir)/config.status $(srcdir)/virt-p2v-make-kiwi.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-install-libexecPROGRAMS: $(libexec_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	@list='$(libexec_PROGRAMS)'; test -n "$(libexecdir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(libexecdir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(libexecdir)" || exit 1; \
-	fi; \
-	for p in $$list; do echo "$$p $$p"; done | \
-	sed 's/$(EXEEXT)$$//' | \
-	while read p p1; do if test -f $$p \
-	 || test -f $$p1 \
-	  ; then echo "$$p"; echo "$$p"; else :; fi; \
-	done | \
-	sed -e 'p;s,.*/,,;n;h' \
-	    -e 's|.*|.|' \
-	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
-	sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
-	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
-	    else { print "f", $$3 "/" $$4, $$1; } } \
-	  END { for (d in files) print "f", d, files[d] }' | \
-	while read type dir files; do \
-	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	    test -z "$$files" || { \
-	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(libexecdir)$$dir'"; \
-	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(libexecdir)$$dir" || exit $$?; \
-	    } \
-	; done
 
-uninstall-libexecPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(libexec_PROGRAMS)'; test -n "$(libexecdir)" || list=; \
-	files=`for p in $$list; do echo "$$p"; done | \
-	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
-	      -e 's/$$/$(EXEEXT)/' \
-	`; \
-	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(libexecdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(libexecdir)" && rm -f $$files
-
-clean-libexecPROGRAMS:
-	@list='$(libexec_PROGRAMS)'; test -n "$$list" || exit 0; \
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
 	echo " rm -f" $$list; \
 	rm -f $$list || exit $$?; \
 	test -n "$(EXEEXT)" || exit 0; \
@@ -2051,6 +2031,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-conversion.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-gui.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-inhibit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-kernel-cmdline.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-kernel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-main.Po@am__quote@
@@ -2152,6 +2133,20 @@ virt_p2v-gui.obj: gui.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gui.c' object='virt_p2v-gui.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-gui.obj `if test -f 'gui.c'; then $(CYGPATH_W) 'gui.c'; else $(CYGPATH_W) '$(srcdir)/gui.c'; fi`
+
+virt_p2v-inhibit.o: inhibit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-inhibit.o -MD -MP -MF $(DEPDIR)/virt_p2v-inhibit.Tpo -c -o virt_p2v-inhibit.o `test -f 'inhibit.c' || echo '$(srcdir)/'`inhibit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-inhibit.Tpo $(DEPDIR)/virt_p2v-inhibit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='inhibit.c' object='virt_p2v-inhibit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-inhibit.o `test -f 'inhibit.c' || echo '$(srcdir)/'`inhibit.c
+
+virt_p2v-inhibit.obj: inhibit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-inhibit.obj -MD -MP -MF $(DEPDIR)/virt_p2v-inhibit.Tpo -c -o virt_p2v-inhibit.obj `if test -f 'inhibit.c'; then $(CYGPATH_W) 'inhibit.c'; else $(CYGPATH_W) '$(srcdir)/inhibit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-inhibit.Tpo $(DEPDIR)/virt_p2v-inhibit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='inhibit.c' object='virt_p2v-inhibit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-inhibit.obj `if test -f 'inhibit.c'; then $(CYGPATH_W) 'inhibit.c'; else $(CYGPATH_W) '$(srcdir)/inhibit.c'; fi`
 
 virt_p2v-kernel.o: kernel.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-kernel.o -MD -MP -MF $(DEPDIR)/virt_p2v-kernel.Tpo -c -o virt_p2v-kernel.o `test -f 'kernel.c' || echo '$(srcdir)/'`kernel.c
@@ -2320,6 +2315,27 @@ uninstall-virtp2vdataDATA:
 	@list='$(virtp2vdata_DATA)'; test -n "$(virtp2vdatadir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(virtp2vdatadir)'; $(am__uninstall_files_from_dir)
+install-virtp2vlibDATA: $(virtp2vlib_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(virtp2vlib_DATA)'; test -n "$(virtp2vlibdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(virtp2vlibdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(virtp2vlibdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(virtp2vlibdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(virtp2vlibdir)" || exit $$?; \
+	done
+
+uninstall-virtp2vlibDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(virtp2vlib_DATA)'; test -n "$(virtp2vlibdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(virtp2vlibdir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -2592,7 +2608,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(virtp2vdatadir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(virtp2vdatadir)" "$(DESTDIR)$(virtp2vlibdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -2632,7 +2648,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libexecPROGRAMS clean-libtool \
+clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -2653,13 +2669,14 @@ info: info-am
 
 info-am:
 
-install-data-am: install-man install-virtp2vdataDATA
+install-data-am: install-man install-virtp2vdataDATA \
+	install-virtp2vlibDATA
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binSCRIPTS install-libexecPROGRAMS
+install-exec-am: install-binSCRIPTS
 
 install-html: install-html-am
 
@@ -2699,30 +2716,29 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binSCRIPTS uninstall-libexecPROGRAMS \
-	uninstall-man uninstall-virtp2vdataDATA
+uninstall-am: uninstall-binSCRIPTS uninstall-man \
+	uninstall-virtp2vdataDATA uninstall-virtp2vlibDATA
 
 uninstall-man: uninstall-man1
 
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-libexecPROGRAMS clean-libtool \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binSCRIPTS install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am \
-	install-libexecPROGRAMS install-man install-man1 install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	install-virtp2vdataDATA installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am recheck tags tags-am \
-	uninstall uninstall-am uninstall-binSCRIPTS \
-	uninstall-libexecPROGRAMS uninstall-man uninstall-man1 \
-	uninstall-virtp2vdataDATA
+	clean-generic clean-libtool clean-noinstPROGRAMS cscopelist-am \
+	ctags ctags-am distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-binSCRIPTS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-man1 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip install-virtp2vdataDATA install-virtp2vlibDATA \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	recheck tags tags-am uninstall uninstall-am \
+	uninstall-binSCRIPTS uninstall-man uninstall-man1 \
+	uninstall-virtp2vdataDATA uninstall-virtp2vlibDATA
 
 .PRECIOUS: Makefile
 
@@ -2752,22 +2768,20 @@ $(top_builddir)/generator/generator:
 	fi
 
 .mli.cmi:
-	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 .ml.cmo:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
+virt-p2v.xz: virt-p2v
+	rm -f $@ $@-t
+	xz --best --keep --stdout $< > $@-t
+	mv $@-t $@
+
 $(dependencies_files): dependencies.m4
 	define=`echo $@ | $(SED) 's/dependencies.//;y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`; \
 	m4 -D$$define=1 -DGTK_VERSION=$(GTK_VERSION) $< > $@-t
-	mv $@-t $@
-
-# Deal with stupid autotools libexecdir-not-expandable crap.
-launch-virt-p2v: launch-virt-p2v.in
-	rm -f $@ $@-t
-	$(SED) 's,@''libexecdir@,$(libexecdir),g' < $< > $@-t
-	chmod 0555 $@-t
 	mv $@-t $@
 
 virt-p2v.1 $(top_builddir)/website/virt-p2v.1.html: stamp-virt-p2v.pod

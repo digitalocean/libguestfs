@@ -44,7 +44,6 @@ SOURCES_MLI = \
 	cache.mli \
 	cmdline.mli \
 	downloader.mli \
-	checksums.mli \
 	index.mli \
 	index_parser.mli \
 	ini_reader.mli \
@@ -61,7 +60,6 @@ SOURCES_ML = \
 	utils.ml \
 	pxzcat.ml \
 	setlocale.ml \
-	checksums.ml \
 	index.ml \
 	ini_reader.ml \
 	yajl.ml \
@@ -253,7 +251,7 @@ TESTS += yajl_tests
 endif
 
 check-valgrind:
-	$(MAKE) VG="$(top_builddir)/run @VG@" check
+	$(MAKE) VG="@VG@" check
 
 SLOW_TESTS = test-virt-builder-planner.sh
 
