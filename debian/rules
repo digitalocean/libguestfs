@@ -111,10 +111,8 @@ override_dh_auto_build:
 
 override_dh_auto_test:
 ifneq "" "$(findstring $(DEB_HOST_ARCH),$(QUICKCHECK_ARCHITECTURES))"
-	echo TMPDIR=$$TMPDIR
-	mkdir -p $(CURDIR)/debian/build-default/tmp
-	TMPDIR=$(CURDIR)/debian/build-default/tmp \
-		make -C $(CURDIR)/debian/build-default quickcheck
+	printenv
+	make -C $(CURDIR)/debian/build-default quickcheck
 endif
 
 override_dh_auto_install:
