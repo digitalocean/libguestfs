@@ -112,7 +112,7 @@ override_dh_auto_build:
 override_dh_auto_test:
 ifneq "" "$(findstring $(DEB_HOST_ARCH),$(QUICKCHECK_ARCHITECTURES))"
 	printenv
-	make -C $(CURDIR)/debian/build-default quickcheck
+	unset XDG_RUNTIME_DIR; make -C $(CURDIR)/debian/build-default quickcheck
 endif
 
 override_dh_auto_install:
