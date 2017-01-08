@@ -7,3 +7,4 @@
 0007-docs-Fix-out-of-tree-builds.patch
 0008-po-Don-t-fail-installation-if-parts-of-translated-do.patch
 0009-run.in-Quote-contents-of-VAR-substitutions.patch
+0010-Add-ldmtool-to-appliance.patch
