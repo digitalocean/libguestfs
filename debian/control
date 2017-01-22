@@ -45,7 +45,7 @@ Build-Depends: debhelper (>= 9),
   golang-go [i386 amd64 armel armhf arm64 ppc64el],
   dh-php, php-all-dev | php5-dev,
 # for appliance
-  linux-image-versatile [armel],
+  linux-image-marvell [armel] | linux-image-versatile [armel],
   linux-image-armmp [armhf],
   linux-image-arm64 [arm64],
   linux-image-4kc-malta [mips mipsel] | linux-image-5kc-malta [mips mipsel mips64 mips64el],
