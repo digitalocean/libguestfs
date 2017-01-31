@@ -806,8 +806,8 @@ L<virt-p2v-make-disk(1)> I<--arch> option.
 
 =head1 関連項目
 
-L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-hacking(3)>,
-L<guestfs-internals(3)>, L<guestfs-performance(1)>,
+L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-hacking(1)>,
+L<guestfs-internals(1)>, L<guestfs-performance(1)>,
 L<guestfs-release-notes(1)>, L<guestfs-testing(1)>,
 L<libguestfs-test-tool(1)>, L<libguestfs-make-fixed-appliance(1)>,
 L<http://libguestfs.org/>.

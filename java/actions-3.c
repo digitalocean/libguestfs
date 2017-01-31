@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -139,7 +139,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1defnode  (JNIEnv *env, jobject obj,
   (*env)->SetIntField (env, jr, fl, r->i);
   fl = (*env)->GetFieldID (env, cl, "b", "I");
   (*env)->SetIntField (env, jr, fl, r->b);
-  free (r);
+  guestfs_free_int_bool (r);
   return jr;
 
  ret_error:
@@ -370,7 +370,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1balance_1status  (JNIEnv *env, jo
   (*env)->SetLongField (env, jr, fl, r->btrfsbalance_considered);
   fl = (*env)->GetFieldID (env, cl, "btrfsbalance_left", "J");
   (*env)->SetLongField (env, jr, fl, r->btrfsbalance_left);
-  free (r);
+  guestfs_free_btrfsbalance (r);
   return jr;
 
  ret_error:
@@ -1942,7 +1942,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstatns  (JNIEnv *env, jobject obj, jlon
   (*env)->SetLongField (env, jr, fl, r->st_spare5);
   fl = (*env)->GetFieldID (env, cl, "st_spare6", "J");
   (*env)->SetLongField (env, jr, fl, r->st_spare6);
-  free (r);
+  guestfs_free_statns (r);
   return jr;
 
  ret_error:
@@ -2716,7 +2716,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1statvfs  (JNIEnv *env, jobject obj, jlon
   (*env)->SetLongField (env, jr, fl, r->flag);
   fl = (*env)->GetFieldID (env, cl, "namemax", "J");
   (*env)->SetLongField (env, jr, fl, r->namemax);
-  free (r);
+  guestfs_free_statvfs (r);
   return jr;
 
  ret_error:
@@ -2997,7 +2997,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1version  (JNIEnv *env, jobject obj, jlon
   (*env)->SetLongField (env, jr, fl, r->release);
   fl = (*env)->GetFieldID (env, cl, "extra", "Ljava/lang/String;");
   (*env)->SetObjectField (env, jr, fl, (*env)->NewStringUTF (env, r->extra));
-  free (r);
+  guestfs_free_version (r);
   return jr;
 
  ret_error:

@@ -199,7 +199,7 @@ parse_environment (guestfs_h *g,
   if (str) {
     b = guestfs_int_is_true (str);
     if (b == -1) {
-      error (g, _("%s=%s: non-boolean value"), "LIBGUESTFS_TRACE", str);
+      error (g, _("%s=%s: non-boolean value"), "LIBGUESTFS_DEBUG", str);
       return -1;
     }
     guestfs_set_verbose (g, b);
@@ -218,7 +218,7 @@ parse_environment (guestfs_h *g,
   }
 
   str = do_getenv (data, "TMPDIR");
-  if (guestfs_int_set_env_tmpdir (g, str) == -1)
+  if (guestfs_int_set_env_tmpdir (g, "TMPDIR", str) == -1)
     return -1;
 
   str = do_getenv (data, "LIBGUESTFS_PATH");
@@ -277,7 +277,7 @@ parse_environment (guestfs_h *g,
   }
 
   str = do_getenv (data, "XDG_RUNTIME_DIR");
-  if (guestfs_int_set_env_runtimedir (g, str) == -1)
+  if (guestfs_int_set_env_runtimedir (g, "XDG_RUNTIME_DIR", str) == -1)
     return -1;
 
   return 0;

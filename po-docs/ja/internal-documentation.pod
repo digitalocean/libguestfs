@@ -1324,6 +1324,14 @@ Implementation of L<guestfs(3)/guestfs_wait_ready>.  You had to call this
 function after launch in versions E<le> 1.0.70, but it is now an (almost)
 no-op.
 
+=head4 Function C<src/launch.c:valid_term>
+
+ static bool
+ valid_term (const char *term)
+
+Check that the $TERM environment variable is reasonable before we pass it
+through to the appliance.
+
 =head4 Function C<src/launch.c:guestfs_int_appliance_command_line>
 
  char *
@@ -1823,11 +1831,16 @@ Handle temporary directories.
 =head4 Function C<src/tmpdirs.c:set_abs_path>
 
  static int
- set_abs_path (guestfs_h *g, const char *tmpdir, char **tmpdir_ret)
+ set_abs_path (guestfs_h *g, const char *ctxstr,
+               const char *tmpdir, char **tmpdir_ret)
 
 We need to make all tmpdir paths absolute because lots of places in the code
 assume this.  Do it at the time we set the path or read the environment
 variable (L<https://bugzilla.redhat.com/882417>).
+
+The C<ctxstr> parameter is a string displayed in error messages giving the
+context of the operation (eg. name of environment variable being used, or
+API function being called).
 
 =head4 Function C<src/tmpdirs.c:guestfs_impl_get_tmpdir>
 

@@ -1,3 +1,415 @@
+commit 554abd2dae8f681b1833de88f42069cac1c9589c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 29 13:35:57 2017 +0000
+
+    Version 1.34.4.
+
+commit 42f6560430d4ec7f689c1a4166374b5a039d41de
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jan 29 13:33:16 2017 +0000
+
+    po: Really ignore perl/lib/Sys/Guestfs.c (RHBZ#1417444).
+    
+    Incorrect grep expression meant this file was not being ignored
+    before.
+    
+    Thanks: Marius Cirsta
+    (cherry picked from commit c9a51b2fd27b269f5250904040667282ffaaebbb)
+
+commit e1b5e589bda2676529c761f4ff282165dc458a7b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jan 28 13:23:40 2017 +0000
+
+    fish: Handle changed type of 'len' parameter in gperf 3.1 (RHBZ#1416941).
+    
+    Commit 004de6cf45cfe66ca166cbdcb1c3125a2a81eb31 was not sufficient to
+    solve this problem.  We are also using gperf in guestfish.  Rewrite
+    the code in the same way to avoid having to prototype the hash
+    function.
+    
+    (cherry picked from commit 48d4117789e92489b9a3c6f3456b0770b3fdb290)
+
+commit 5ff39881966393089299b596efbdaa2f982871f0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 26 21:22:48 2017 +0000
+
+    errnostring: Handle changed type of 'len' parameter in gperf 3.1 (RHBZ#1416941).
+    
+    The prototype of the hash function changed in gperf 3.1:
+    
+    * The 'len' parameter of the hash function and of the lookup function is now
+      of type 'size_t' instead of 'unsigned int'. This makes it safe to call these
+      functions with strings of length > 4 GB, on 64-bit machines.
+    
+    This commit moves the guestfs_int_string_to_errno function into the
+    third (functions) section of the gperf file so it is able to use the
+    lookup function without needing a prototype.
+    
+    Thanks: Marius Cirsta
+    (cherry picked from commit 004de6cf45cfe66ca166cbdcb1c3125a2a81eb31)
+
+commit d7e5c540e7e0f4d860be89973195b31dbc453b6d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 18 12:19:01 2017 +0000
+
+    lib: uefi: Don't call access(NULL) if no UEFI debug file exists.
+    
+    Bug found by valgrind on aarch64:
+    
+    ==21350== Syscall param faccessat(pathname) points to unaddressable byte(s)
+    ==21350==    at 0x4F05274: access (access.c:29)
+    ==21350==    by 0x4954DC3: guestfs_int_get_uefi (appliance-uefi.c:90)
+    ==21350==    by 0x49752D7: launch_libvirt (launch-libvirt.c:413)
+    ==21350==    by 0x496FD83: guestfs_impl_launch (launch.c:98)
+    ==21350==    by 0x4902003: guestfs_launch (actions-3.c:145)
+    [...]
+    ==21350==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+    
+    (cherry picked from commit faff6f23ff958c4fbb66603349d7a984361a2818)
+
+commit 04431b769cad4925105e517a99deca8956aabacb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 3 17:41:16 2017 +0100
+
+    appliance: add ldmtools/libldm packages on more distros (RHBZ#1409023)
+    
+    Add them also for Debian and Mageia, where libldm is shipped, and
+    adjust the comment on the RedHat line.
+    
+    (cherry picked from commit e86b36a31c1be9fdf80893a2bc702c40de05ee76)
+
+commit b61635db075acc584eafefca5af47ba720593078
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Dec 18 20:08:32 2016 +0000
+
+    launch: Validate $TERM before passing it through to the kernel command line.
+    
+    Make sure it is reasonable before we pass it through to the kernel
+    command line.  I don't believe this is exploitable, but it might cause
+    obscure bugs.
+    
+    (cherry picked from commit f7bd9bd37fa08f1965ec85e305dc9441352644ff)
+
+commit fc52fb6f8d03baa1cb5c08d84577c2c9d4f8c9fb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Dec 18 20:04:05 2016 +0000
+
+    launch: Rationalize how we construct the Linux kernel command line.
+    
+    This is just code refactoring.
+    
+    (cherry picked from commit f94cfde5e7fc33387c3679be1609a21468a98754)
+
+commit 2c69858da9f76c6391d20644ef4882b3ce770f28
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Dec 18 19:27:20 2016 +0000
+
+    appliance: Disable EDD (edd=off) (RHBZ#1404287).
+    
+    EDD (https://en.wikipedia.org/wiki/Enhanced_Disk_Drive) is a BIOS INT 13h
+    subcall for communicating the extended size of the boot disk over 8GB
+    to the OS.  Since libguestfs doesn't use a boot disk, and the
+    appliance disk is limited to 4GB, and we use virtio-scsi, this is all
+    useless.
+    
+    EDD is also broken currently on RHEL 7.3, see:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1404287
+    
+    Also the EDD probing takes significant extra time (about 80ms on my
+    laptop), and using edd=off reduces this time although doesn't entirely
+    eliminate it.
+    
+    (cherry picked from commit 764fd3fcc629ff91582ec8549ff80c240ba8393b)
+
+commit ebb6c638901f0986d6954ced29f27c53d4482a36
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Dec 14 16:35:44 2016 +0000
+
+    v2v: Add a comment about why virt-v2v needs the network.
+    
+    Only to run unconfigure_vmware ().
+    
+    (cherry picked from commit f87ec46558b7319468c5913367c6eeca13d73bd9)
+
+commit f490f8638a90611166e177a7cd15567735bb4148
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Dec 14 17:09:32 2016 +0100
+
+    tests: drop expected-failing btrfs_subvolume_show test
+    
+    One of the tests for btrfs_subvolume_show tries to invoke it on the
+    toplevel subvolume, expecting its failure (since btrfs-progs used to not
+    be able to list that).  However, since v4.8.3 btrfs-progs can do that
+    (even if the data returned for that subvolume is limited/incomplete),
+    and thus this test fails because the API does not fail anymore.
+    
+    Since we can consider that functionality working (for some kind of it),
+    then drop this test.
+    
+    (cherry picked from commit 401e58cba811c43d8a1191713e84121513d1b94f)
+
+commit 019e0e573f9e37edfea398a105f5d081d99d86d3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Dec 12 18:18:37 2016 +0100
+
+    v2v: tests: avoid '..' in member names for tar
+    
+    Very recent versions of tar (most probably as a consequence of
+    CVE-2016-6321) may refuse archive members with '..', like the relative
+    paths to upper level directories.
+    
+    Since these are just tests, simply copy the files in the temporary
+    directories where tar (or zip as well) is run, so all the files are in
+    the same directory.
+    
+    (cherry picked from commit 3ed0a7a57d8e7ccbfa8e2a644ee88a210f5bb359)
+
+commit 0f90592557c61953828784967ae0f541531ba720
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Dec 12 14:02:35 2016 +0100
+
+    perl: fix memory leak in RStruct actions
+    
+    The return value struct was freed using a simple free() instead of the
+    own cleanup function of each struct: this meant dynamically allocated
+    values (such as strings) were leaked.
+    
+    Use the proper cleanup functions instead.
+    
+    (cherry picked from commit 99834b85b214a72aa6a00d6b4b0aa8a0f8e591ff)
+
+commit 0530b93cc246dfc7d73c1b246d41544bff6aae96
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Dec 12 13:57:46 2016 +0100
+
+    java: fix memory leak in RStruct actions
+    
+    The return value struct was freed using a simple free() instead of the
+    own cleanup function of each struct: this meant dynamically allocated
+    values (such as strings) were leaked.
+    
+    Use the proper cleanup functions instead.
+    
+    (cherry picked from commit 9089b9eaa2ac62ef0729e278ddd20be56be45df7)
+
+commit 445e229479f75278414b126ce78262fe1966b02c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 8 13:24:11 2016 +0000
+
+    v2v: Fix ambiguous and probably incorrect pattern match (warning 57).
+    
+    See:
+    http://caml.inria.fr/pub/docs/manual-ocaml/comp.html#ss%3Awarn57
+    
+    I believe the code as written previously was incorrect.  However we
+    are lucky because if neither clause matches then it will fall through
+    to displaying an error message, allowing the user to correct the
+    problem.
+    
+    (cherry picked from commit 24d14e1d26e81ba858ae9a92ca86888d30f2f46e)
+
+commit 79d431912415714abc6aa48244452ed440024ca8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 8 13:17:22 2016 +0000
+
+    Remove most instances of OCaml warning 52.
+    
+    See:
+    http://caml.inria.fr/pub/docs/manual-ocaml/comp.html#s:comp-warnings
+    (cherry picked from commit c540676f5eafacef5b5e245a2614e6d7d74b50d6)
+
+commit d18dc32747d0a3ecf633b9436f51db7104b71944
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 8 12:58:51 2016 +0000
+
+    customize: Remove Customize_utils module.
+    
+    After the previous commit this module is empty, so remove it.
+    
+    (cherry picked from commit 63ff96ccda6a0d27e8874d0bb0356c42deb3eff3)
+
+commit ecf4e7d8b0a471789c9465a79b156bdd0cfc0162
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 8 12:49:38 2016 +0000
+
+    mllib: Add quote function to Common_utils module.
+    
+    Remove multiple places where we let quote = Filename.quote
+    
+    (cherry picked from commit 07fb30b1618310e5a944a947499c4d121d8bd3d8)
+
+commit 68e28ebeffc2aa479dcf4e315e23cf7610b6f167
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 15 15:03:45 2016 +0100
+
+    libvirt: un-duplicate XPath code
+    
+    Move the checks for empty xmlXPathObjectPtr, and for extracting the
+    result string out of it, to a new helper functions.
+    
+    This is just code motion, there should be no behaviour changes.
+    
+    (cherry picked from commit bef838202b533aa008e62af3f78e0c4654b7c5e9)
+
+commit bbd11084442400a9a939714b748944d1ffaabbb9
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Dec 6 18:04:38 2016 +0100
+
+    appliance: mount also /dev/pts
+    
+    Tools could require the use of pseudo-terminals, so make sure we have
+    /dev/pts available in the appliance.  The "command" API already
+    bind-mounts it when running commands, so this is the only bit needed.
+    
+    (cherry picked from commit b01416121f59d48566a0ce6d2cf98a39772424d3)
+
+commit 826a11d3af70a7066e702c95b6dfb92350775c7e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Dec 1 15:58:10 2016 +0100
+
+    environment: fix error message for LIBGUESTFS_DEBUG failure
+    
+    Properly mention LIBGUESTFS_DEBUG as environment variable when it
+    cannot be parsed as boolean.
+    
+    (cherry picked from commit 8462b1ea32e125cbeb8690afd3064a3f35864ec9)
+
+commit fd7ae424884c9a3c781e18f07a0352a2189118b9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Dec 1 12:48:49 2016 +0000
+
+    v2v: Remove bogus backslash in test.
+    
+    (cherry picked from commit c2f53304474427fdd61019d7492c782b12afa7cf)
+
+commit 3289a7b3238e9675590f76958e60028fdf296a16
+Author: Cédric Bosdonnat <cbosdonnat@suse.com>
+Date:   Wed Nov 30 17:49:20 2016 +0100
+
+    packagelist: add initviocons package on SUSE
+    
+    initviocons package provides tools to resize the terminal. Having it
+    in the appliance will allow SUSE users to have proper line wrapping
+    in their terminal when using virt-rescue.
+    
+    (cherry picked from commit cd78fa4c881c56cbf09b33165741a164a2ef4242)
+
+commit 74d31c0aef93faf05cb2e7352179af100f62e7f5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 24 09:53:10 2016 +0000
+
+    fish: Fix small typos in virt-copy-in and virt-copy-out man pages (RHBZ#1398070).
+    
+    Thanks: Xianghua Chen
+    (cherry picked from commit bad1059bc4869c2dea6a27cf640dfbdacbd4d2a4)
+
+commit b3506c78937942bbddb68ffe593211f56ec96993
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Nov 13 18:31:52 2016 +0000
+
+    docs: Fix man pages references to incorrect section numbers.
+    
+    (cherry picked from commit 6d805f3b33001dc7d46fc50b6a144a6b42f9d436)
+
+commit b1bda32a7eae60cd0802f6b5f77b237598181e55
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Nov 13 18:27:45 2016 +0000
+
+    Fix HACKING file in top level directory.
+    
+    (cherry picked from commit fc73cdc0146db71963ec50a7f88f5af0a97de9e7)
+
+commit 0b810100ec52a0179046e3eae699f297bec9c2f9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 10 11:39:04 2016 +0000
+
+    installcheck: p2v: Make virt-p2v binary executable after uncompressing it.
+    
+    Fixes commit 415238853010a7b88f796c65ea77532845724dd0
+    and commit face52f62e5731cc33183d5995a13b04f7f6a4c2.
+    
+    (cherry picked from commit cf0967542fc60fbab8a8818d2c6dc88e1894a1a4)
+
+commit 9e97e556470ab8c032c1a1478c1d568355b88998
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Nov 9 17:53:48 2016 +0000
+
+    installcheck: p2v: Fix tests of virt-p2v.
+    
+    Fixes commit face52f62e5731cc33183d5995a13b04f7f6a4c2.
+    
+    (cherry picked from commit 415238853010a7b88f796c65ea77532845724dd0)
+
+commit 679762bb4536c646473be44a129b1f326b3625c4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Nov 2 09:41:20 2016 +0100
+
+    v2v: add "colours-option" to machine readable sample output (RHBZ#1390876)
+    
+    (cherry picked from commit 086be00aca450f94494b53234523d03e908b5d99)
+
+commit 8e30371c936ea954080de534d5a700b99292b605
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 1 13:58:40 2016 +0000
+
+    v2v: glance: Set hw_video_model property to qxl|cirrus (RHBZ#1374651).
+    
+    Thanks: Vladik Romanovsky, Ming Xie.
+    (cherry picked from commit 0acdc837363f81d7bac21b7221b139ec00b9d6e8)
+
+commit 23ced5d7b16e10c31c7ba46cc4b75469fb22ad3c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 1 18:15:25 2016 +0100
+
+    v2v: update again URL with glance metadata
+    
+    Finally got the (hopefully stable) right URL for them.
+    
+    (cherry picked from commit 1c51773b0985f0a3c2e15f2f6a3435f8b8715f01)
+
+commit b3e21f577d07f8920508a53387188f12d80ec070
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 31 08:47:15 2016 +0000
+
+    handle: Improve error messaging if XDG_RUNTIME_DIR path does not exist.
+    
+    If an environment variable such as XDG_RUNTIME_DIR or one of the
+    tmpdirs or cachedir is set to a non-existent directory, improve the
+    error message that the user will see so that (where possible) it
+    includes the environment variable or API call.
+    
+    This is still not bullet-proof because it's hard to display the
+    environment variable if it is LIBGUESTFS_TMPDIR or
+    LIBGUESTFS_CACHEDIR, but the main problem is with XDG_RUNTIME_DIR
+    (because of systemd bugs).
+    
+    Thanks: Hilko Bengen for identifying the bug.
+    (cherry picked from commit c7ce5e47faa9d0dc893975023097624ab8ad49fd)
+
+commit 830d22e12586d158a3e9333f9acb82be9c44cbf4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Oct 31 13:08:40 2016 +0100
+
+    docs: fix link to guestfs-golang(3)
+    
+    (cherry picked from commit a8b206234c9a90e48d5d58b31c88b19fd695c1b4)
+
+commit 8fa265035ac59a7562a0e55e9a4ccbd2f5c77206
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Thu Oct 27 18:46:01 2016 +0200
+
+    run.in: Quote contents of @VAR@ substitutions
+    
+    (cherry picked from commit eecb1d81777219113f7e5434829aca6f93a92b9a)
+
+commit 092bbd0b2a8581f284ea109e10f437de663fae70
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 21 12:30:07 2016 +0100
+
+    FAQ: Document how to switch kernel and qemu.
+    
+    (cherry picked from commit 7822d4dccba29a8ac35217b293d2049db4312d08)
+
 commit 83cde6758f86c54af9b06e1d5fffe5f18971a99b
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Oct 27 13:06:46 2016 +0100

@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -691,7 +691,7 @@ PREINIT:
       PUSHs (sv_2mortal (newSVnv (r->i)));
       PUSHs (sv_2mortal (newSVpv ("b", 0)));
       PUSHs (sv_2mortal (newSVnv (r->b)));
-      free (r);
+      guestfs_free_int_bool (r);
 
 SV *
 aug_defvar (g, name, expr)
@@ -1165,7 +1165,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVull (r->btrfsbalance_considered)));
       PUSHs (sv_2mortal (newSVpv ("btrfsbalance_left", 0)));
       PUSHs (sv_2mortal (my_newSVull (r->btrfsbalance_left)));
-      free (r);
+      guestfs_free_btrfsbalance (r);
 
 void
 btrfs_device_add (g, devices, fs)
@@ -1588,7 +1588,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_corrected_errors)));
       PUSHs (sv_2mortal (newSVpv ("btrfsscrub_last_physical", 0)));
       PUSHs (sv_2mortal (my_newSVull (r->btrfsscrub_last_physical)));
-      free (r);
+      guestfs_free_btrfsscrub (r);
 
 void
 btrfs_set_seeding (g, device, seeding)
@@ -5449,7 +5449,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->pv_mda_count)));
       PUSHs (sv_2mortal (newSVpv ("pv_mda_free", 0)));
       PUSHs (sv_2mortal (my_newSVull (r->pv_mda_free)));
-      free (r);
+      guestfs_free_lvm_pv (r);
 
 void
 internal_test_rstructerr (g)
@@ -5489,7 +5489,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->pv_mda_count)));
       PUSHs (sv_2mortal (newSVpv ("pv_mda_free", 0)));
       PUSHs (sv_2mortal (my_newSVull (r->pv_mda_free)));
-      free (r);
+      guestfs_free_lvm_pv (r);
 
 void
 internal_test_rstructlist (g, val)
@@ -5944,7 +5944,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->iso_volume_expiration_t)));
       PUSHs (sv_2mortal (newSVpv ("iso_volume_effective_t", 0)));
       PUSHs (sv_2mortal (my_newSVll (r->iso_volume_effective_t)));
-      free (r);
+      guestfs_free_isoinfo (r);
 
 void
 isoinfo_device (g, device)
@@ -5991,7 +5991,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->iso_volume_expiration_t)));
       PUSHs (sv_2mortal (newSVpv ("iso_volume_effective_t", 0)));
       PUSHs (sv_2mortal (my_newSVll (r->iso_volume_effective_t)));
-      free (r);
+      guestfs_free_isoinfo (r);
 
 void
 journal_close (g)
@@ -6666,7 +6666,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->mtime)));
       PUSHs (sv_2mortal (newSVpv ("ctime", 0)));
       PUSHs (sv_2mortal (my_newSVll (r->ctime)));
-      free (r);
+      guestfs_free_stat (r);
 
 void
 lstatlist (g, path, names)
@@ -6757,7 +6757,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->st_spare5)));
       PUSHs (sv_2mortal (newSVpv ("st_spare6", 0)));
       PUSHs (sv_2mortal (my_newSVll (r->st_spare6)));
-      free (r);
+      guestfs_free_statns (r);
 
 void
 lstatnslist (g, path, names)
@@ -9833,7 +9833,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->mtime)));
       PUSHs (sv_2mortal (newSVpv ("ctime", 0)));
       PUSHs (sv_2mortal (my_newSVll (r->ctime)));
-      free (r);
+      guestfs_free_stat (r);
 
 void
 statns (g, path)
@@ -9890,7 +9890,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->st_spare5)));
       PUSHs (sv_2mortal (newSVpv ("st_spare6", 0)));
       PUSHs (sv_2mortal (my_newSVll (r->st_spare6)));
-      free (r);
+      guestfs_free_statns (r);
 
 void
 statvfs (g, path)
@@ -9925,7 +9925,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->flag)));
       PUSHs (sv_2mortal (newSVpv ("namemax", 0)));
       PUSHs (sv_2mortal (my_newSVll (r->namemax)));
-      free (r);
+      guestfs_free_statvfs (r);
 
 void
 strings (g, path)
@@ -10582,7 +10582,7 @@ PREINIT:
       PUSHs (sv_2mortal (newSVpv (r->uts_version, 0)));
       PUSHs (sv_2mortal (newSVpv ("uts_machine", 0)));
       PUSHs (sv_2mortal (newSVpv (r->uts_machine, 0)));
-      free (r);
+      guestfs_free_utsname (r);
 
 void
 version (g)
@@ -10602,7 +10602,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVll (r->release)));
       PUSHs (sv_2mortal (newSVpv ("extra", 0)));
       PUSHs (sv_2mortal (newSVpv (r->extra, 0)));
-      free (r);
+      guestfs_free_version (r);
 
 SV *
 vfs_label (g, mountable)
@@ -11157,7 +11157,7 @@ PREINIT:
       PUSHs (sv_2mortal (my_newSVull (r->xfs_rtblocks)));
       PUSHs (sv_2mortal (newSVpv ("xfs_rtextents", 0)));
       PUSHs (sv_2mortal (my_newSVull (r->xfs_rtextents)));
-      free (r);
+      guestfs_free_xfsinfo (r);
 
 SV *
 xfs_repair (g, device, ...)

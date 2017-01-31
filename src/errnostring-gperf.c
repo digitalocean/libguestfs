@@ -878,3 +878,16 @@ guestfs_int_string_to_errno_lookup (register const char *str, register unsigned 
     }
   return 0;
 }
+#line 569 "errnostring-gperf.gperf"
+
+
+int
+guestfs_int_string_to_errno (const char *errnostr)
+{
+  const struct errnostring_entry *v =
+    guestfs_int_string_to_errno_lookup (errnostr, strlen (errnostr));
+  if (v /* not necessary to check v->name != NULL here */)
+    return v->errnum;
+  else
+    return EINVAL;
+}

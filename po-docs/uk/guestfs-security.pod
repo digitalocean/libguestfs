@@ -338,7 +338,7 @@ fixed (or ask your Linux distro to do the same).
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfs(3)>, L<guestfs-internals(3)>, L<guestfs-release-notes(1)>,
+L<guestfs(3)>, L<guestfs-internals(1)>, L<guestfs-release-notes(1)>,
 L<guestfs-testing(1)>, L<http://libguestfs.org/>.
 
 =head1 АВТОРИ

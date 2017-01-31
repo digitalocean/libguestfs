@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -440,15 +440,4 @@ guestfs_int_errno_to_string (int errnum)
     return "EINVAL";
   else
     return errno_to_string[errnum];
-}
-
-int
-guestfs_int_string_to_errno (const char *errnostr)
-{
-  const struct errnostring_entry *v =
-    guestfs_int_string_to_errno_lookup (errnostr, strlen (errnostr));
-  if (v /* not necessary to check v->name != NULL here */)
-    return v->errnum;
-  else
-    return EINVAL;
 }
