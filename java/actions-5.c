@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1333,7 +1333,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1isoinfo_1device  (JNIEnv *env, jobject o
   (*env)->SetLongField (env, jr, fl, r->iso_volume_expiration_t);
   fl = (*env)->GetFieldID (env, cl, "iso_volume_effective_t", "J");
   (*env)->SetLongField (env, jr, fl, r->iso_volume_effective_t);
-  free (r);
+  guestfs_free_isoinfo (r);
   return jr;
 
  ret_error:
@@ -2499,7 +2499,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1stat  (JNIEnv *env, jobject obj, jlong j
   (*env)->SetLongField (env, jr, fl, r->mtime);
   fl = (*env)->GetFieldID (env, cl, "ctime", "J");
   (*env)->SetLongField (env, jr, fl, r->ctime);
-  free (r);
+  guestfs_free_stat (r);
   return jr;
 
  ret_error:
@@ -2899,7 +2899,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1xfs_1info  (JNIEnv *env, jobject obj, jl
   (*env)->SetLongField (env, jr, fl, r->xfs_rtblocks);
   fl = (*env)->GetFieldID (env, cl, "xfs_rtextents", "J");
   (*env)->SetLongField (env, jr, fl, r->xfs_rtextents);
-  free (r);
+  guestfs_free_xfsinfo (r);
   return jr;
 
  ret_error:

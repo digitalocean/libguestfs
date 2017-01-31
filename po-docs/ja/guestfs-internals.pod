@@ -384,7 +384,7 @@ over, and use that to run libguestfs.
 
 =head1 関連項目
 
-L<guestfs(3)>, L<guestfs-hacking(3)>, L<guestfs-examples(3)>,
+L<guestfs(3)>, L<guestfs-hacking(1)>, L<guestfs-examples(3)>,
 L<libguestfs-test-tool(1)>, L<libguestfs-make-fixed-appliance(1)>,
 L<http://libguestfs.org/>.
 

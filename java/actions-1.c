@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1889,7 +1889,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstat  (JNIEnv *env, jobject obj, jlong 
   (*env)->SetLongField (env, jr, fl, r->mtime);
   fl = (*env)->GetFieldID (env, cl, "ctime", "J");
   (*env)->SetLongField (env, jr, fl, r->ctime);
-  free (r);
+  guestfs_free_stat (r);
   return jr;
 
  ret_error:

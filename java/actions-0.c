@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1290,7 +1290,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstructerr  (JNIEnv *env
   (*env)->SetLongField (env, jr, fl, r->pv_mda_count);
   fl = (*env)->GetFieldID (env, cl, "pv_mda_free", "J");
   (*env)->SetLongField (env, jr, fl, r->pv_mda_free);
-  free (r);
+  guestfs_free_lvm_pv (r);
   return jr;
 
  ret_error:

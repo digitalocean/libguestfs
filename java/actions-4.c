@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -386,7 +386,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1status  (JNIEnv *env, jobj
   (*env)->SetLongField (env, jr, fl, r->btrfsscrub_corrected_errors);
   fl = (*env)->GetFieldID (env, cl, "btrfsscrub_last_physical", "J");
   (*env)->SetLongField (env, jr, fl, r->btrfsscrub_last_physical);
-  free (r);
+  guestfs_free_btrfsscrub (r);
   return jr;
 
  ret_error:

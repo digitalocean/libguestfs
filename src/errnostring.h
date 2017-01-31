@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,8 +42,7 @@ extern const char *guestfs_int_errno_to_string (int errnum);
  */
 extern int guestfs_int_string_to_errno (const char *errnostr);
 
-/* Private structure and function used by the perfect hash implementation. */
+/* Private structure used by the perfect hash implementation. */
 struct errnostring_entry { char *name; int errnum; };
-extern const struct errnostring_entry *guestfs_int_string_to_errno_lookup (register const char *str, register unsigned int len);
 
 #endif /* GUESTFS_ERRNOSTRING_H_ */

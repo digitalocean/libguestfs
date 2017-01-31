@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1180,44 +1180,3 @@ list_commands (void)
   printf ("    %s\n",          _("Use -h <cmd> / help <cmd> to show detailed help for a command."));
 }
 
-int
-display_command (const char *cmd)
-{
-  const struct command_table *ct;
-
-  ct = lookup_fish_command (cmd, strlen (cmd));
-  if (ct) {
-    fputs (ct->entry->help, stdout);
-    return 0;
-  }
-  else
-    return display_builtin_command (cmd);
-}
-
-int
-run_action (const char *cmd, size_t argc, char *argv[])
-{
-  const struct command_table *ct;
-  int ret = -1;
-
-  ct = lookup_fish_command (cmd, strlen (cmd));
-  if (ct) {
-    ret = ct->entry->run (cmd, argc, argv);
-    /* run function may return magic value -2 (RUN_WRONG_ARGS) to indicate
-     * that this function should print the command synopsis.
-     */
-    if (ret == RUN_WRONG_ARGS) {
-      fprintf (stderr, _("error: incorrect number of arguments\n"));
-      if (ct->entry->synopsis)
-        fprintf (stderr, _("usage: %s\n"), ct->entry->synopsis);
-      fprintf (stderr, _("type 'help %s' for more help on %s\n"), cmd, cmd);
-      ret = -1;
-    }
-  }
-  else {
-    fprintf (stderr, _("%s: unknown command\n"), cmd);
-    if (command_num == 1)
-      extended_help_message ();
-  }
-  return ret;
-}

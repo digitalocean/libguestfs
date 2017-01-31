@@ -157,6 +157,7 @@ end
 exception Executable_not_found of string (* executable *)
 
 let (//) = Filename.concat
+let quote = Filename.quote
 
 let ( +^ ) = Int64.add
 let ( -^ ) = Int64.sub
@@ -641,7 +642,7 @@ let compare_version v1 v2 =
           let rest = Str.matched_group 2 str in
           let n =
             try `Number (int_of_string n)
-            with Failure "int_of_string" -> `String n in
+            with Failure _ -> `String n in
           n, rest
         )
         else if Str.string_match rex_letters str 0 then

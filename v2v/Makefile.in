@@ -1993,7 +1993,6 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	$(LIBVIRT_CFLAGS)
 
 @HAVE_OCAML_TRUE@BOBJECTS = \
-@HAVE_OCAML_TRUE@	$(top_builddir)/customize/customize_utils.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/firstboot.cmo \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize/SELinux_relabel.cmo \
 @HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo)
