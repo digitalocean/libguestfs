@@ -336,7 +336,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1command_1lines  (JNIEnv *env, jobject ob
   jstring jstr;
   char **r;
   size_t arguments_len;
-  char **arguments;
+  CLEANUP_FREE char **arguments = NULL;
   size_t i;
 
   arguments_len = (*env)->GetArrayLength (env, jarguments);
@@ -357,7 +357,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1command_1lines  (JNIEnv *env, jobject ob
     jobject o = (*env)->GetObjectArrayElement (env, jarguments, i);
     (*env)->ReleaseStringUTFChars (env, o, arguments[i]);
   }
-  free (arguments);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
@@ -1075,7 +1074,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1list_1applications  (JNIEnv *en
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  struct guestfs_application_list *r;
+  CLEANUP_FREE_APPLICATION_LIST struct guestfs_application_list *r = NULL;
   const char *root;
   size_t i;
 
@@ -1146,7 +1145,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1list_1applications  (JNIEnv *en
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
-  guestfs_free_application_list (r);
   return jr;
 
  ret_error:
@@ -1245,7 +1243,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstructerr  (JNIEnv *env
   jobject jr;
   jclass cl;
   jfieldID fl;
-  struct guestfs_lvm_pv *r;
+  CLEANUP_FREE_LVM_PV struct guestfs_lvm_pv *r = NULL;
 
 
   r = guestfs_internal_test_rstructerr (g);
@@ -1290,7 +1288,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstructerr  (JNIEnv *env
   (*env)->SetLongField (env, jr, fl, r->pv_mda_count);
   fl = (*env)->GetFieldID (env, cl, "pv_mda_free", "J");
   (*env)->SetLongField (env, jr, fl, r->pv_mda_free);
-  guestfs_free_lvm_pv (r);
   return jr;
 
  ret_error:
@@ -1306,7 +1303,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1journal_1get  (JNIEnv *env, jobject obj,
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  struct guestfs_xattr_list *r;
+  CLEANUP_FREE_XATTR_LIST struct guestfs_xattr_list *r = NULL;
   size_t i;
 
 
@@ -1331,7 +1328,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1journal_1get  (JNIEnv *env, jobject obj,
                              "Ljava/lang/String;");
     {
       size_t len = r->val[i].attrval_len;
-      CLEANUP_FREE char *s = malloc (len);
+      CLEANUP_FREE char *s = malloc (len + 1);
       if (s == NULL) {
         throw_out_of_memory (env, "malloc");
         goto ret_error;
@@ -1345,7 +1342,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1journal_1get  (JNIEnv *env, jobject obj,
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
-  guestfs_free_xattr_list (r);
   return jr;
 
  ret_error:
@@ -1556,10 +1552,10 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstatnslist  (JNIEnv *env, jobject obj, 
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  struct guestfs_statns_list *r;
+  CLEANUP_FREE_STATNS_LIST struct guestfs_statns_list *r = NULL;
   const char *path;
   size_t names_len;
-  char **names;
+  CLEANUP_FREE char **names = NULL;
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
@@ -1582,7 +1578,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstatnslist  (JNIEnv *env, jobject obj, 
     jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
     (*env)->ReleaseStringUTFChars (env, o, names[i]);
   }
-  free (names);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
@@ -1664,7 +1659,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstatnslist  (JNIEnv *env, jobject obj, 
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
-  guestfs_free_statns_list (r);
   return jr;
 
  ret_error:
@@ -1750,7 +1744,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkfs_1btrfs  (JNIEnv *env, jobject obj, 
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   size_t devices_len;
-  char **devices;
+  CLEANUP_FREE char **devices = NULL;
   struct guestfs_mkfs_btrfs_argv optargs_s;
   const struct guestfs_mkfs_btrfs_argv *optargs = &optargs_s;
   size_t i;
@@ -1783,7 +1777,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkfs_1btrfs  (JNIEnv *env, jobject obj, 
     jobject o = (*env)->GetObjectArrayElement (env, jdevices, i);
     (*env)->ReleaseStringUTFChars (env, o, devices[i]);
   }
-  free (devices);
   (*env)->ReleaseStringUTFChars (env, jdatatype, optargs_s.datatype);
   (*env)->ReleaseStringUTFChars (env, jlabel, optargs_s.label);
   (*env)->ReleaseStringUTFChars (env, jmetadata, optargs_s.metadata);

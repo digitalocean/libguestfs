@@ -7531,8 +7531,8 @@ Set the program name.  This is an informative string which the
 main program may optionally set in the handle.
 
 When the handle is created, the program name in the handle is
-set to the basename from C<argv[0]>.  If that was not possible,
-it is set to the empty string (but never C<NULL>).
+set to the basename from C<argv[0]>.  The program name can never
+be C<NULL>.
 
 =item $g->set_qemu ($hv);
 

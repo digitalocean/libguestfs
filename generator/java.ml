@@ -684,13 +684,15 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
            pr "  jobject jr;\n";
            pr "  jclass cl;\n";
            pr "  jfieldID fl;\n";
-           pr "  struct guestfs_%s *r;\n" typ
+           pr "  CLEANUP_FREE_%s struct guestfs_%s *r = NULL;\n"
+             (String.uppercase typ) typ
        | RStructList (_, typ) ->
            pr "  jobjectArray jr;\n";
            pr "  jclass cl;\n";
            pr "  jfieldID fl;\n";
            pr "  jobject jfl;\n";
-           pr "  struct guestfs_%s_list *r;\n" typ
+           pr "  CLEANUP_FREE_%s_LIST struct guestfs_%s_list *r = NULL;\n"
+             (String.uppercase typ) typ
        | RBufferOut _ ->
            pr "  jstring jr;\n";
            pr "  char *r;\n";
@@ -713,7 +715,7 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
             pr "  size_t %s_size;\n" n
         | StringList n | DeviceList n | FilenameList n ->
             pr "  size_t %s_len;\n" n;
-            pr "  char **%s;\n" n
+            pr "  CLEANUP_FREE char **%s = NULL;\n" n
         | Bool n
         | Int n ->
             pr "  int %s;\n" n
@@ -732,7 +734,7 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
           | OBool _ | OInt _ | OInt64 _ | OString _ -> ()
           | OStringList n ->
             pr "  size_t %s_len;\n" n;
-            pr "  char **%s;\n" n
+            pr "  CLEANUP_FREE char **%s = NULL;\n" n
         ) optargs
       );
 
@@ -855,7 +857,6 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
               n;
             pr "    (*env)->ReleaseStringUTFChars (env, o, %s[i]);\n" n;
             pr "  }\n";
-            pr "  free (%s);\n" n
         | Bool _
         | Int _
         | Int64 _
@@ -873,7 +874,6 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
               n;
             pr "    (*env)->ReleaseStringUTFChars (env, o, optargs_s.%s[i]);\n" n;
             pr "  }\n";
-            pr "  free (%s);\n" n
       ) optargs;
 
       pr "\n";
@@ -998,7 +998,6 @@ and generate_java_struct_return typ jtyp cols =
         pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"C\");\n" name;
         pr "  (*env)->SetCharField (env, jr, fl, r->%s);\n" name;
   ) cols;
-  pr "  guestfs_free_%s (r);\n" typ;
   pr "  return jr;\n"
 
 and generate_java_struct_list_return typ jtyp cols =
@@ -1036,7 +1035,7 @@ and generate_java_struct_list_return typ jtyp cols =
       | FBuffer ->
         pr "    {\n";
         pr "      size_t len = r->val[i].%s_len;\n" name;
-        pr "      CLEANUP_FREE char *s = malloc (len);\n";
+        pr "      CLEANUP_FREE char *s = malloc (len + 1);\n";
         pr "      if (s == NULL) {\n";
         pr "        throw_out_of_memory (env, \"malloc\");\n";
         pr "        goto ret_error;\n";
@@ -1059,7 +1058,6 @@ and generate_java_struct_list_return typ jtyp cols =
   pr "    (*env)->SetObjectArrayElement (env, jr, i, jfl);\n";
   pr "  }\n";
   pr "\n";
-  pr "  guestfs_free_%s_list (r);\n" typ;
   pr "  return jr;\n"
 
 and generate_java_makefile_inc () =

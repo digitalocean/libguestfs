@@ -1,4 +1,4 @@
-/* Copyright (C) 1991-2016 Free Software Foundation, Inc.
+/* Copyright (C) 1991-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -222,10 +222,6 @@ convert_dirent64 (const struct dirent64 *source)
 # endif
 #endif
 
-#if ! defined __builtin_expect && __GNUC__ < 3
-# define __builtin_expect(expr, expected) (expr)
-#endif
-
 #ifndef __glibc_unlikely
 # define __glibc_unlikely(expr) __builtin_expect (expr, 0)
 #endif
@@ -250,10 +246,6 @@ convert_dirent64 (const struct dirent64 *source)
     ((void) (buf), (void) (len), (void) (newlen), (void) (avar), (void *) 0)
 #endif
 
-#ifndef __has_builtin
-# define __has_builtin(x) 0
-#endif
-
 /* Set *R = A + B.  Return true if the answer is mathematically
    incorrect due to overflow; in this case, *R is the low order
    bits of the correct answer..  */
@@ -261,7 +253,7 @@ convert_dirent64 (const struct dirent64 *source)
 static bool
 size_add_wrapv (size_t a, size_t b, size_t *r)
 {
-#if 5 <= __GNUC__ || __has_builtin (__builtin_add_overflow)
+#if 5 <= __GNUC__
   return __builtin_add_overflow (a, b, r);
 #else
   *r = a + b;
@@ -713,12 +705,12 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
               if (success)
                 {
                   struct passwd *p;
+                  char *malloc_pwtmpbuf = NULL;
+                  char *pwtmpbuf;
 #   if defined HAVE_GETPWNAM_R || defined _LIBC
                   long int pwbuflenmax = GETPW_R_SIZE_MAX ();
                   size_t pwbuflen = pwbuflenmax;
-                  char *pwtmpbuf;
                   struct passwd pwbuf;
-                  char *malloc_pwtmpbuf = NULL;
                   int save = errno;
 
 #    ifndef _LIBC
@@ -927,11 +919,11 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
           /* Look up specific user's home directory.  */
           {
             struct passwd *p;
+            char *malloc_pwtmpbuf = NULL;
 #  if defined HAVE_GETPWNAM_R || defined _LIBC
             long int buflenmax = GETPW_R_SIZE_MAX ();
             size_t buflen = buflenmax;
             char *pwtmpbuf;
-            char *malloc_pwtmpbuf = NULL;
             struct passwd pwbuf;
             int save = errno;
 

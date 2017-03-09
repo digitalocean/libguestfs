@@ -66,6 +66,7 @@ hash-pjw
 human
 iconv
 ignore-value
+intprops
 lock
 maintainer-makefile
 manywarnings
@@ -74,6 +75,7 @@ mkdtemp
 mkstemps
 netdb
 netinet_in
+nonblocking
 openat
 perror
 pipe2
@@ -91,6 +93,7 @@ strerror
 strndup
 symlinkat
 sys_select
+sys_types
 sys_wait
 vasprintf
 vc-list-files

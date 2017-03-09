@@ -1,5 +1,5 @@
 /* Program name management.
-   Copyright (C) 2016 Free Software Foundation, Inc.
+   Copyright (C) 2016-2017 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,8 +23,10 @@
 extern "C" {
 #endif
 
+/* Return the base name of the executing program.
+   On native Windows this will usually end in ".exe" or ".EXE". */
 #ifndef HAVE_GETPROGNAME
-extern const char *getprogname (void)
+extern char const *getprogname (void)
 # ifdef HAVE_DECL_PROGRAM_INVOCATION_NAME
   _GL_ATTRIBUTE_PURE
 # endif

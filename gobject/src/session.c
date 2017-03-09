@@ -24669,8 +24669,7 @@ guestfs_session_set_pgroup (GuestfsSession *session, gboolean pgroup, GError **e
  * program may optionally set in the handle.
  * 
  * When the handle is created, the program name in the handle is set to the
- * basename from "argv[0]". If that was not possible, it is set to the
- * empty string (but never @NULL).
+ * basename from "argv[0]". The program name can never be @NULL.
  * 
  * Returns: true on success, false on error
  * Since: 1.21.29
