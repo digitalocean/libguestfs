@@ -3785,9 +3785,8 @@ guestfs_int_ruby_set_memsize (VALUE gv, VALUE memsizev)
  * which the main program may optionally set in the handle.
  * 
  * When the handle is created, the program name in the
- * handle is set to the basename from "argv[0]". If that
- * was not possible, it is set to the empty string (but
- * never "NULL").
+ * handle is set to the basename from "argv[0]". The
+ * program name can never be "NULL".
  *
  *
  * [Since] Added in version 1.21.29.

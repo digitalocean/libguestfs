@@ -9069,9 +9069,8 @@ class GuestFS(object):
         which the main program may optionally set in the handle.
 
         When the handle is created, the program name in the
-        handle is set to the basename from "argv[0]". If that
-        was not possible, it is set to the empty string (but
-        never "NULL").
+        handle is set to the basename from "argv[0]". The
+        program name can never be "NULL".
         """
         self._check_not_closed()
         r = libguestfsmod.set_program(self._o, program)

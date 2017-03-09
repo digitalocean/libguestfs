@@ -18110,9 +18110,8 @@ public class GuestFS {
    * which the main program may optionally set in the handle.
    * </p><p>
    * When the handle is created, the program name in the
-   * handle is set to the basename from "argv[0]". If that
-   * was not possible, it is set to the empty string (but
-   * never "NULL").
+   * handle is set to the basename from "argv[0]". The
+   * program name can never be "NULL".
    * </p>
    * @since 1.21.29
    * @throws LibGuestFSException If there is a libguestfs error.

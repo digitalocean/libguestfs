@@ -1,4 +1,4 @@
-/* Copyright (C) 1991-1992, 1995-1998, 2000-2001, 2004-2007, 2009-2016 Free
+/* Copyright (C) 1991-1992, 1995-1998, 2000-2001, 2004-2007, 2009-2017 Free
    Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -158,7 +158,7 @@ typedef struct
   } glob64_t;
 #endif
 
-#if __USE_FILE_OFFSET64 && __GNUC__ < 2 && !defined __GLOB_GNULIB
+#if defined __USE_FILE_OFFSET64 && __GNUC__ < 2 && !defined __GLOB_GNULIB
 # define glob glob64
 # define globfree globfree64
 #endif

@@ -1,5 +1,5 @@
 /* Test of command line argument processing.
-   Copyright (C) 2009-2016 Free Software Foundation, Inc.
+   Copyright (C) 2009-2017 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -16,36 +16,13 @@
 
 /* Written by Bruno Haible <bruno@clisp.org>, 2009.  */
 
-#include <config.h>
-
-/* None of the files accessed by this test are large, so disable the
-   ftell link warning if we are not using the gnulib ftell module.  */
-#define _GL_NO_LARGE_FILES
-
-#if GNULIB_TEST_GETOPT_GNU
-# include <getopt.h>
-
-# ifndef __getopt_argv_const
-#  define __getopt_argv_const const
-# endif
-# include "signature.h"
-SIGNATURE_CHECK (getopt_long, int, (int, char *__getopt_argv_const *,
-                                    char const *, struct option const *,
-                                    int *));
-SIGNATURE_CHECK (getopt_long_only, int, (int, char *__getopt_argv_const *,
-                                         char const *, struct option const *,
-                                         int *));
-
-#endif
-
-#include <unistd.h>
-
 #include "signature.h"
 SIGNATURE_CHECK (getopt, int, (int, char * const[], char const *));
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /* This test intentionally remaps stderr.  So, we arrange to have fd 10
    (outside the range of interesting fd's during the test) set up to
@@ -58,7 +35,7 @@ SIGNATURE_CHECK (getopt, int, (int, char * const[], char const *));
 static FILE *myerr;
 
 #include "test-getopt.h"
-#if GNULIB_TEST_GETOPT_GNU
+#if TEST_GETOPT_GNU
 # include "test-getopt_long.h"
 #endif
 
@@ -71,7 +48,7 @@ main (void)
       || (myerr = fdopen (BACKUP_STDERR_FILENO, "w")) == NULL)
     return 2;
 
-  ASSERT (freopen ("test-getopt.tmp", "w", stderr) == stderr);
+  ASSERT (freopen (TEST_GETOPT_TMP_NAME, "w", stderr) == stderr);
 
   /* These default values are required by POSIX.  */
   ASSERT (optind == 1);
@@ -80,20 +57,20 @@ main (void)
   setenv ("POSIXLY_CORRECT", "1", 1);
   test_getopt ();
 
-#if GNULIB_TEST_GETOPT_GNU
+#if TEST_GETOPT_GNU
   test_getopt_long_posix ();
 #endif
 
   unsetenv ("POSIXLY_CORRECT");
   test_getopt ();
 
-#if GNULIB_TEST_GETOPT_GNU
+#if TEST_GETOPT_GNU
   test_getopt_long ();
   test_getopt_long_only ();
 #endif
 
   ASSERT (fclose (stderr) == 0);
-  ASSERT (remove ("test-getopt.tmp") == 0);
+  ASSERT (remove (TEST_GETOPT_TMP_NAME) == 0);
 
   return 0;
 }

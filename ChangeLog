@@ -1,3 +1,503 @@
+commit a0b0cf6bc057505308aa23c1dc9972d7d38e11d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 8 10:21:07 2017 +0000
+
+    java: Use String.uppercase instead of uppercase_ascii.
+    
+    Older OCaml doesn't have String.uppercase_ascii, and because this
+    stable branch of libguestfs doesn't use Common_utils in the generator
+    subdirectory we cannot easily use our replacement.
+    
+    Fixes commit bac25e0bfd481e5a7c2a73e88ad2df253e5f1f08.
+
+commit de8dd041e2e60e3c492685e5240e15e27a17e4ae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 7 19:35:11 2017 +0000
+
+    Version 1.34.5.
+
+commit 3c31a722e88e618d24caad2515ef949aa74621a5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 7 10:50:25 2017 +0000
+
+    docs: Document vulnerabilities in icoutils wrestool affecting libguestfs.
+    
+    (cherry picked from commit 9f447837ae14651d06228ff77ae9196e258ca3f3)
+    (cherry picked from commit b69421590f78fbec7f5c88da14a156739ef19a1d)
+
+commit d9dfc1531c7a98fd25902e60386413d3d9a407da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 6 18:11:29 2017 +0000
+
+    v2v: -o local: Check that UEFI firmware is installed before conversion (RHBZ#1429506).
+    
+    Avoids a lengthy conversion followed by failure if we discover at the
+    end that OVMF is not installed.
+    
+    This also changes the order of the methods in -o libvirt and -o qemu
+    so that it matches the order in the class interface, and also
+    logically makes more sense.
+    
+    Thanks: Christopher Brown
+    (cherry picked from commit a05e0fc0e8ffa2638e66ed1d71d41c470eadc4d7)
+    (cherry picked from commit 5059b7c5871aa4861d625041847465e21c2ec4f5)
+
+commit 57b203a803d32a79fe0f4fecbf32f4685626ea43
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 6 16:07:04 2017 +0000
+
+    v2v: Fix typo in previous commit (RHBZ#1374232).
+    
+    Fixes commit 25772a8123a1a800caf3472fb79c8eb3b4a074f3.
+    
+    (cherry picked from commit c6d8d68a4643794128c1d617bc83fc22438cc7c5)
+    (cherry picked from commit ecd4d5b873da97b2e77746881c4c6542c1657e8e)
+
+commit ed825a51522f0675fc3f5255f5cc707709be0091
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 6 10:42:03 2017 +0000
+
+    v2v: Fix invalid regexp in file_contexts file (RHBZ#1374232).
+    
+    Instead of just documenting this bug, fix it in the file_contexts
+    file.
+    
+    Replaces commit ad3c8fe7f49c4991e1aa536856a1a408f55d5409.
+    
+    (cherry picked from commit 25772a8123a1a800caf3472fb79c8eb3b4a074f3)
+    (cherry picked from commit 3a2e64c9feab090b1d35605303f4544901b47201)
+
+commit e4824616d19d400dcfccf762e687e06d5853c835
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 6 14:23:55 2017 +0100
+
+    lib: qemu: improve handling of FILE*
+    
+    Create own blocks for all the parts dealing with FILE*: this way there
+    is no need to recycle the same FILE* variable for all the operations,
+    and have each block its own variable automatically cleaned up.
+    
+    This also fixes a potential undefined behaviour on error: POSIX says
+    that after a call fclose(), a FILE* cannot be used anymore, not even
+    on fclose() failure. The previous behaviour for fclose == -1 was to jump
+    to the error label, which would then try to call fclose() again (since
+    the FILE* pointer was still non-null).
+    
+    (cherry picked from commit d36940992ed81053fdbf8117ce6da30a8fef2a0f)
+    (cherry picked from commit dd9fde4f6fcc7363c61704fdb6bb6cb023dcb8ed)
+
+commit bac25e0bfd481e5a7c2a73e88ad2df253e5f1f08
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 6 13:25:48 2017 +0100
+
+    java: use cleanup handlers for structs (lists) as return values
+    
+    Filling some of their fields may cause the flow to skip to throw the
+    "out of memory" exception, and return immediately.  To avoid leaking the
+    struct, or struct list, from the C implementation, use a cleanup handler
+    so there is no need to manually clean it up.
+    
+    (cherry picked from commit 18ee68ad1240b84739b603ee03e53b552f904e8c)
+    (cherry picked from commit f2e5424b66934425eac0041394d7782d47b1bc7d)
+
+commit 6eddd05078d7e410a355b1f5e5d57747cde8ec38
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 6 11:38:37 2017 +0100
+
+    daemon: btrfs: check end_stringsbuf return values everywhere
+    
+    Make sure to check the return value of end_stringsbuf everywhere, as
+    that would generate invalid string lists.
+    
+    (cherry picked from commit c5fa352087dc4ebc5270ca2ee47487cf9a44d827)
+    (cherry picked from commit ec3b1125a7537f26e4d27c2bc82991f3e9220ec3)
+
+commit 36dbab881cae0b54bb1890b4bfa464d657e7a74a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 3 14:16:22 2017 +0000
+
+    Use gnulib set_cloexec_flag in a few places.
+    
+    (cherry picked from commit e5474df1acdb0a8eaeb50886c928e0c2ec4ebad7)
+    (cherry picked from commit 39f82bfefb9ad4838eb8276b20213c914ea5b728)
+
+commit 436b5417cd6602ed00504f46d03ad72ded10127c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 3 14:08:36 2017 +0000
+
+    Use gnulib set_nonblocking_flag function instead of fcntl.
+    
+    The previous code:
+    
+      fcntl (fd, F_SETFL, O_NONBLOCK)
+    
+    was technically incorrect, because it would have reset any
+    other flags on the file descriptor.
+    
+    Thanks: Eric Blake
+    (cherry picked from commit 58d6becc8af28babca0d52cef05eb8826231ae35)
+    (cherry picked from commit c4e4f630937e1c1cd1861ee78f504bd1d51e1528)
+
+commit f598c3a1727a90b9e353dff2eb5e5897f5c3fd07
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 3 13:50:46 2017 +0100
+
+    java: do not try to malloc 0 elements in get_all_event_callbacks
+    
+    In case there are no event handlers registered with the handle,
+    get_all_event_callbacks will count 0 elements, trying to malloc a buffer
+    of that size.  POSIX says that this can result in either a null pointer,
+    or an unusable pointer.
+    
+    Short-circuit get_all_event_callbacks to allocate nothing when there are
+    no events, making sure to use its results only when there were events.
+    
+    (cherry picked from commit c6543875aea501dd1c1db1873276526f3eca494f)
+    (cherry picked from commit 5755eed6d790832f1fd7fab62bd0426e1af27f5f)
+
+commit 8afa265387041c100892515171c5d7c7d147abe4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 3 13:48:25 2017 +0100
+
+    ruby: do not try to malloc 0 elements in get_all_event_callbacks
+    
+    In case there are no event handlers registered with the handle,
+    get_all_event_callbacks will count 0 elements, trying to malloc a buffer
+    of that size.  POSIX says that this can result in either a null pointer,
+    or an unusable pointer.
+    
+    Short-circuit get_all_event_callbacks to allocate nothing when there are
+    no events, making sure to use its results only when there were events.
+    
+    (cherry picked from commit 4fc85f27c492e8e97b46083a2bcb11c81846f5a0)
+    (cherry picked from commit 43ef692c449b3b3463f6ee9e0272420f4df22399)
+
+commit 598fe2b29fae86cd0359f9c5a62a65dcd3ea21d2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 3 13:47:48 2017 +0100
+
+    python: do not try to malloc 0 elements in get_all_event_callbacks
+    
+    In case there are no event handlers registered with the handle,
+    get_all_event_callbacks will count 0 elements, trying to malloc a buffer
+    of that size.  POSIX says that this can result in either a null pointer,
+    or an unusable pointer.
+    
+    Short-circuit get_all_event_callbacks to allocate nothing when there are
+    no events, making sure to use its results only when there were events.
+    
+    (cherry picked from commit b890fd2900310c9e4f0781aa3427a3bb114788b1)
+    (cherry picked from commit 63e9cd5536f0d92cb93a01c5ecac764e9c591ca5)
+
+commit 70b745209f44c38bbd6b4a74e73e9df3e852c8a8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 3 13:40:17 2017 +0100
+
+    ocaml: do not try to malloc 0 elements in get_all_event_callbacks
+    
+    In case there are no event handlers registered with the handle,
+    get_all_event_callbacks will count 0 elements, trying to malloc a buffer
+    of that size.  POSIX says that this can result in either a null pointer,
+    or an unusable pointer.
+    
+    Short-circuit get_all_event_callbacks to allocate nothing when there are
+    no events, making sure to use its results only when there were events.
+    
+    (cherry picked from commit 64e1101631778b4167218adc93101a1587215f02)
+    (cherry picked from commit 4208be6f9762540e7d53a88462b19bc221cf0da5)
+
+commit 7ca8214cf8a0617334ddc84317ccb5f91ac43c14
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 3 11:00:37 2017 +0100
+
+    fish: fully init the msghdr buffers
+    
+    This way no fields (msg_flags in particular) remain uninitialized.
+    
+    (cherry picked from commit be82ba38df31730a2910aeb962bbafa29851f920)
+    (cherry picked from commit 6a3741e8ca884b4a8f1687a1897b4a3d82098d7e)
+
+commit 32ac85e05bde89b9e2c2c0700bba0d07ed476f06
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 3 10:39:10 2017 +0100
+
+    java: fix possible memory leak on error
+    
+    Use CLEANUP_FREE to properly dispose the temporary array used for
+    StringList, DeviceList, FilenameList, and OStringList parameters: this
+    way, an early return (jumping to the ret_error label) will not forget
+    cleaning them up.
+    
+    (cherry picked from commit bd55fa553f16aca12d5c882be26e528f35752ae8)
+    (cherry picked from commit c702acbc1f1c02b9932d2570455045faf7510401)
+
+commit 3e99879829fc12547c6a0915dd8c81c1bd76a1d3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 2 17:42:10 2017 +0100
+
+    daemon: tsk: properly use GUESTFS_MAX_CHUNK_SIZE
+    
+    Pass to fread the size of the buffer allocated, so it can be filled
+    completely. This is even faster than reading only 4/8 bytes each
+    iteration.
+    
+    (cherry picked from commit 9aef2c7e3a5b9d6dd35378082357d96c921e78c1)
+    (cherry picked from commit b610f82d7bfc9eedcecd311761140fcdc1baf2c1)
+
+commit 8a410fedde457f16e80023832288d855494320cd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 2 17:32:58 2017 +0100
+
+    java: fix invalid memory access for FBuffer in struct lists
+    
+    When convering FBuffer fields of structs in each element of the return
+    list, make sure to allocate enough buffer to hold also the trailing null
+    character.
+    
+    (cherry picked from commit c9df2d44cd4301b6522cd26d8791093033c4a340)
+    (cherry picked from commit 79d5e0c37a3a6bbba9626040d5359f9bc4fb815c)
+
+commit 4331d4fcc84050b5d271574ccda097bb5ca93766
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 2 17:30:16 2017 +0100
+
+    java: link libguestfs_jni against libutils
+    
+    The JNI library uses CLEANUP_FREE macros, whose functions are built in
+    the internal libutils.  Currently, trying to use functions that use
+    CLEANUP_FREE variables will cause the java execution to stop with a
+    symbol lookup error (for guestfs_int_cleanup_free).
+    
+    (cherry picked from commit eeacc86a106471ecf0bf061e1951284fdb262107)
+    (cherry picked from commit a4a6f69835620db8c10b3294f9296421990a62e6)
+
+commit 0a464ac83cbf251369ce8ecf501e72c805f82599
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 2 11:35:38 2017 +0000
+
+    erlang: Rename 'message' to something less generic.
+    
+    It's not possible to define an action which takes a parameter called
+    'message' because the Erlang bindings use that as the name of an
+    internal variable.  Solve this by renaming the Erlang internal
+    variable.
+    
+    Fixes commit 84763d7fca3668c62ee3fe53d0e00a5a672f687b.
+    
+    (cherry picked from commit 843d61c2d405f011853e4f33d3e3306d3d1ca6d3)
+    (cherry picked from commit 5bd55b59faca465a5923d7bd6e8d4ab579530a12)
+
+commit b44fb1fede369aa3919763a6f9da2e5524a43855
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 1 11:36:26 2017 +0000
+
+    Use AC_HEADER_MAJOR to find definitions of major, minor, makedev.
+    
+    Note this requires either the following fix in autoconf:
+    
+    http://git.savannah.gnu.org/cgit/autoconf.git/commit/?id=e17a30e98
+    
+    OR gnulib sys_types module plus gnulib
+    commit a512e041120e9012e69afa2f5c3adc196ec4999a (any gnulib more
+    recent than Sep 2016) which corrects the AC_HEADER_MAJOR macro in a
+    similar way.
+    
+    (cherry picked from commit 7a26804569703166a30bbc545986218ede03de04)
+    (cherry picked from commit 3836d61dc83466afe500ad9e5563eab074a0e9b1)
+
+commit 84a3151fadcc07ef42f0b700494d8cc0195771dd
+Author: Dawid Zamirski <dzamirski@datto.com>
+Date:   Thu Mar 2 17:44:40 2017 -0500
+
+    parted: add more udev_settle calls.
+    
+    add udev_settle calls to print_partition_table and
+    sgdisk_info_extract_field because the inspect-os calls
+    guestfs_part_get_parttype and guestfs_part_get_gpt_guid for all
+    parition devices found and this causes intermittent with opening block
+    devices that are certainly present yet RESOLVE_DEVICE macro would fail
+    wiht ENOENT.
+    
+    (cherry picked from commit 4fd6c3ad6e04f6b8133439094c9bcb403c03ca03)
+    (cherry picked from commit b074c09475467f5c5c5620078ba1e3a100091e84)
+
+commit dcb256a646124e98f47efe692e109281c1e5ddbb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 1 15:07:00 2017 +0000
+
+    ruby: Simplify and fix regression test.
+    
+    This test failed on ppc64le with:
+    
+      Failure:
+        </wrong argument type Fixnum \(expected Array\)/> was expected to be =~
+        <"wrong argument type Integer (expected Array)">.
+    
+    In addition the test generated a warning:
+    
+      tc_800_rhbz507346.rb:29: warning: ambiguous first argument; put parentheses or a space even after `/' operator
+    
+    This commit fixes both of these and also makes it simpler and faster
+    by not bothering to launch the appliance.
+    
+    Fixes commit 227b1eea90713d190a9cf5463af106af0b4eee2c.
+    
+    (cherry picked from commit 9fbdea695b70918b37dd42310bf6ba5a5240c67f)
+    (cherry picked from commit c1dd33e612067c5581416168daad99876666eed6)
+
+commit 17c31eac3cd52dcee1483de16d1aacd67f0a8e17
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 23 13:33:48 2017 +0000
+
+    tests: regressions: Ignore SIGPIPE in test.
+    
+    The test tests/regressions/rhbz914931.c works by causing the daemon to
+    segfault while writing to it.
+    
+    For reasons unknown, when configured --without-libvirt, this causes
+    the test to fail receiving SIGPIPE (exit code 141).  We can prevent
+    this by installing a signal handler to ignore SIGPIPE, so the signal
+    is converted to EPIPE which the code handles properly.
+    
+    (cherry picked from commit a7bd49924445d11fe1843db659e61ca6fb2bb5cf)
+
+commit 2d30305243aba60bdf7b8d38d0c54b79c88aa0a6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Feb 20 20:09:30 2017 +0000
+
+    p2v: Fix slow test to pass LIBGUESTFS_PATH & LIBGUESTFS_CACHEDIR to virt-v2v.
+    
+    Adding a new optional parameter to hivex_open in
+    commit 1f99251223ccee252ee1259bc2bdb9b64e3df96b reveals a subtle bug
+    in the virt-p2v slow test.
+    
+    Because we didn't pass LIBGUESTFS_PATH through to the instance of
+    virt-v2v, it was running with the new binary and library code, but
+    with the installed appliance (or would have failed if libguestfs
+    wasn't installed on the host when running the test).  In particular
+    this bug was revealed when the new virt-v2v binary passed the
+    GUESTFS_HIVEX_OPEN_UNSAFE flag to the guestfs_hivex_open call, which
+    the (old, installed) daemon did not recognize and rejected with an
+    error.
+    
+    For the same reason we also have to pass in LIBGUESTFS_CACHEDIR to
+    make sure that supermin doesn't reuse the cached appliance from
+    /var/tmp.
+    
+    (cherry picked from commit 08e7506abacee23d635bd37fc9586be3cad9099f)
+
+commit afb5f9880a35ec0a077b16aa6f6312945f076a5e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 16 14:06:18 2017 +0000
+
+    v2v: Document conversion failure with RHEL 6.2 (RHBZ#1374232).
+    
+    (cherry picked from commit ad3c8fe7f49c4991e1aa536856a1a408f55d5409)
+
+commit 3b716f2285719028aee0f771332ce08d515947ab
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 15 14:24:14 2017 +0000
+
+    docs/C_SOURCE_FILES, po/POTFILES: Remove duplicate files.
+    
+    Because v2v/test-harness is a subdirectory of v2v, and because both
+    paths are listed in $(DIST_SUBDIRS), using find $(DIST_SUBDIRS) will
+    list files in v2v/test-harness twice.  (This probably happens in other
+    directories too, but I noticed it here.)  The easiest fix for this is
+    simply to use 'sort -u' to remove the duplicates.
+    
+    (cherry picked from commit e46b07ca1bef6c63d742e67f731a6244d75eda6d)
+
+commit 81b2faba4bac802e5d68e97bf1195691401b0b14
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 15 13:44:27 2017 +0000
+
+    Update gnulib to latest.
+    
+    (cherry picked from commit 6dcfd85623e9a0dedcae3e9c3ea88af526dc2391)
+
+commit 4585b8822c0516cccc08af717ee7359e04478f3a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 14 14:52:53 2017 +0000
+
+    GCC 7: Allocate sufficient space for sprintf output.
+    
+    GCC 7.0.1 can determine if there is likely to be sufficient space in
+    the output buffer when using sprintf/snprintf, based on the format
+    string.
+    
+    The errors were all either of this form:
+    
+    bindtests.c:717:29: error: '%zu' directive output may be truncated writing between 1 and 19 bytes into a region of size 16 [-Werror=format-truncation=]
+         snprintf (strs[i], 16, "%zu", i);
+                                 ^~~
+    bindtests.c:717:28: note: directive argument in the range [0, 2305843009213693951]
+         snprintf (strs[i], 16, "%zu", i);
+                                 ^~~~~
+    
+    or this form:
+    
+    sync.c: In function 'fsync_devices':
+    sync.c:108:50: error: '%s' directive output may be truncated writing up to 255 bytes into a region of size 251 [-Werror=format-truncation=]
+           snprintf (dev_path, sizeof dev_path, "/dev/%s", d->d_name);
+                                                      ^~
+    
+    Fixed by converting these into dynamic allocation, or making the
+    output buffer larger, whichever was easier.
+    
+    There is a gnulib macro we can use to make this simpler for integers.
+    It requires a new gnulib module (intprops), but it turns out that we
+    were already pulling that in through dependencies, so the change to
+    bootstrap is a no-op.  (thanks: Dan Berrange)
+    
+    (cherry picked from commit a75076f271680122a17614e4721be48e9251b21c)
+
+commit 634b2d62abf0df74992f2f43ecb7b1282caa67e8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Feb 14 14:51:39 2017 +0000
+
+    GCC 7: Add __attribute__((noreturn)) to some usage functions which call exit.
+    
+    This happens with GCC 7.0.1.  The errors were all of the form:
+    
+    qemu-speed-test.c: In function 'main':
+    qemu-speed-test.c:153:7: error: this statement may fall through [-Werror=implicit-fallthrough=]
+           usage (EXIT_SUCCESS);
+           ^~~~~~~~~~~~~~~~~~~~
+    qemu-speed-test.c:155:5: note: here
+         default:
+         ^~~~~~~
+    
+    (cherry picked from commit 0b3a5a0b00bf3f677d570281c0fcf06a54bdeca3)
+
+commit 14753d0f62ba4e20bd391214828a33b15e3eb5cc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 3 15:08:52 2017 +0000
+
+    lib: g->program is now never the empty string.
+    
+    The getprogname module either sets g->program to a string derived from
+    argv[0] or fails at compile time.
+    
+    Fixes commit eea210dbf7d781bc253f927977868dbc6776f20d.
+    
+    (cherry picked from commit 10a5567dc785cb0b840fcc4fdf2c0b9480857492)
+
+commit 4bd9b4090d899823ef217fdd3894ed3e63a36280
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 1 13:36:07 2017 +0000
+
+    v2v: Further increase memory allocated to the appliance (RHBZ#1418283).
+    
+    In commit 08f82f2e3d6975b72340dd59f438862e152a15ef we increased the
+    memory size to 800MB (on x86) so that the semodule command would work.
+    
+    However it has been discovered that another SELinux command takes
+    large amounts of RAM (setfiles during the SELinux relabel step).
+    Therefore increase the memory size again, this time to 2000MB.
+    
+    (cherry picked from commit 2b5173712ba07e3e89926c82a236390a4ea6626a)
+
 commit 554abd2dae8f681b1833de88f42069cac1c9589c
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sun Jan 29 13:35:57 2017 +0000

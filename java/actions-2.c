@@ -65,7 +65,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
   struct guestfs_add_drive_opts_argv optargs_s;
   const struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
   size_t server_len;
-  char **server;
+  CLEANUP_FREE char **server = NULL;
   size_t i;
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
@@ -107,7 +107,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
     jobject o = (*env)->GetObjectArrayElement (env, jserver, i);
     (*env)->ReleaseStringUTFChars (env, o, optargs_s.server[i]);
   }
-  free (server);
   (*env)->ReleaseStringUTFChars (env, jusername, optargs_s.username);
   (*env)->ReleaseStringUTFChars (env, jsecret, optargs_s.secret);
   (*env)->ReleaseStringUTFChars (env, jcachemode, optargs_s.cachemode);
@@ -452,7 +451,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1command  (JNIEnv *env, jobject obj, jlon
   jstring jr;
   char *r;
   size_t arguments_len;
-  char **arguments;
+  CLEANUP_FREE char **arguments = NULL;
   size_t i;
 
   arguments_len = (*env)->GetArrayLength (env, jarguments);
@@ -473,7 +472,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1command  (JNIEnv *env, jobject obj, jlon
     jobject o = (*env)->GetObjectArrayElement (env, jarguments, i);
     (*env)->ReleaseStringUTFChars (env, o, arguments[i]);
   }
-  free (arguments);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
@@ -559,7 +557,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1debug  (JNIEnv *env, jobject obj, jlong 
   char *r;
   const char *subcmd;
   size_t extraargs_len;
-  char **extraargs;
+  CLEANUP_FREE char **extraargs = NULL;
   size_t i;
 
   subcmd = (*env)->GetStringUTFChars (env, jsubcmd, NULL);
@@ -582,7 +580,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1debug  (JNIEnv *env, jobject obj, jlong 
     jobject o = (*env)->GetObjectArrayElement (env, jextraargs, i);
     (*env)->ReleaseStringUTFChars (env, o, extraargs[i]);
   }
-  free (extraargs);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
@@ -1273,7 +1270,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1scan_1devices  (JNIEnv *env, jo
   jstring jstr;
   char **r;
   size_t devices_len;
-  char **devices;
+  CLEANUP_FREE char **devices = NULL;
   size_t i;
 
   devices_len = (*env)->GetArrayLength (env, jdevices);
@@ -1294,7 +1291,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1scan_1devices  (JNIEnv *env, jo
     jobject o = (*env)->GetObjectArrayElement (env, jdevices, i);
     (*env)->ReleaseStringUTFChars (env, o, devices[i]);
   }
-  free (devices);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
@@ -1537,7 +1533,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1list  (JNIEnv *env, jobject obj, j
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  struct guestfs_partition_list *r;
+  CLEANUP_FREE_PARTITION_LIST struct guestfs_partition_list *r = NULL;
   const char *device;
   size_t i;
 
@@ -1573,7 +1569,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1list  (JNIEnv *env, jobject obj, j
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
-  guestfs_free_partition_list (r);
   return jr;
 
  ret_error:
@@ -1697,7 +1692,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1pvs_1full  (JNIEnv *env, jobject obj, jl
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  struct guestfs_lvm_pv_list *r;
+  CLEANUP_FREE_LVM_PV_LIST struct guestfs_lvm_pv_list *r = NULL;
   size_t i;
 
 
@@ -1770,7 +1765,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1pvs_1full  (JNIEnv *env, jobject obj, jl
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
-  guestfs_free_lvm_pv_list (r);
   return jr;
 
  ret_error:
@@ -1817,7 +1811,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1readdir  (JNIEnv *env, jobject obj, jlon
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  struct guestfs_dirent_list *r;
+  CLEANUP_FREE_DIRENT_LIST struct guestfs_dirent_list *r = NULL;
   const char *dir;
   size_t i;
 
@@ -1851,7 +1845,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1readdir  (JNIEnv *env, jobject obj, jlon
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
-  guestfs_free_dirent_list (r);
   return jr;
 
  ret_error:
@@ -2004,7 +1997,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1set_1libvirt_1supported_1credentials  (J
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   size_t creds_len;
-  char **creds;
+  CLEANUP_FREE char **creds = NULL;
   size_t i;
 
   creds_len = (*env)->GetArrayLength (env, jcreds);
@@ -2025,7 +2018,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1set_1libvirt_1supported_1credentials  (J
     jobject o = (*env)->GetObjectArrayElement (env, jcreds, i);
     (*env)->ReleaseStringUTFChars (env, o, creds[i]);
   }
-  free (creds);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -2147,7 +2139,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1statns  (JNIEnv *env, jobject obj, jlong
   jobject jr;
   jclass cl;
   jfieldID fl;
-  struct guestfs_statns *r;
+  CLEANUP_FREE_STATNS struct guestfs_statns *r = NULL;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
@@ -2206,7 +2198,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1statns  (JNIEnv *env, jobject obj, jlong
   (*env)->SetLongField (env, jr, fl, r->st_spare5);
   fl = (*env)->GetFieldID (env, cl, "st_spare6", "J");
   (*env)->SetLongField (env, jr, fl, r->st_spare6);
-  guestfs_free_statns (r);
   return jr;
 
  ret_error:
@@ -2322,7 +2313,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1utsname  (JNIEnv *env, jobject obj, jlon
   jobject jr;
   jclass cl;
   jfieldID fl;
-  struct guestfs_utsname *r;
+  CLEANUP_FREE_UTSNAME struct guestfs_utsname *r = NULL;
 
 
   r = guestfs_utsname (g);
@@ -2342,7 +2333,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1utsname  (JNIEnv *env, jobject obj, jlon
   (*env)->SetObjectField (env, jr, fl, (*env)->NewStringUTF (env, r->uts_version));
   fl = (*env)->GetFieldID (env, cl, "uts_machine", "Ljava/lang/String;");
   (*env)->SetObjectField (env, jr, fl, (*env)->NewStringUTF (env, r->uts_machine));
-  guestfs_free_utsname (r);
   return jr;
 
  ret_error:

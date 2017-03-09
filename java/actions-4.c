@@ -341,7 +341,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1status  (JNIEnv *env, jobj
   jobject jr;
   jclass cl;
   jfieldID fl;
-  struct guestfs_btrfsscrub *r;
+  CLEANUP_FREE_BTRFSSCRUB struct guestfs_btrfsscrub *r = NULL;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
@@ -386,7 +386,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1status  (JNIEnv *env, jobj
   (*env)->SetLongField (env, jr, fl, r->btrfsscrub_corrected_errors);
   fl = (*env)->GetFieldID (env, cl, "btrfsscrub_last_physical", "J");
   (*env)->SetLongField (env, jr, fl, r->btrfsscrub_last_physical);
-  guestfs_free_btrfsscrub (r);
   return jr;
 
  ret_error:
@@ -878,7 +877,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1children  (JNIEnv *env, job
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  struct guestfs_hivex_node_list *r;
+  CLEANUP_FREE_HIVEX_NODE_LIST struct guestfs_hivex_node_list *r = NULL;
   int64_t nodeh;
   size_t i;
 
@@ -904,7 +903,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1children  (JNIEnv *env, job
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
-  guestfs_free_hivex_node_list (r);
   return jr;
 
  ret_error:
@@ -1214,7 +1212,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattrs  (JNIEnv *env, jobject obj, j
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  struct guestfs_xattr_list *r;
+  CLEANUP_FREE_XATTR_LIST struct guestfs_xattr_list *r = NULL;
   const char *path;
   size_t i;
 
@@ -1242,7 +1240,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattrs  (JNIEnv *env, jobject obj, j
                              "Ljava/lang/String;");
     {
       size_t len = r->val[i].attrval_len;
-      CLEANUP_FREE char *s = malloc (len);
+      CLEANUP_FREE char *s = malloc (len + 1);
       if (s == NULL) {
         throw_out_of_memory (env, "malloc");
         goto ret_error;
@@ -1256,7 +1254,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattrs  (JNIEnv *env, jobject obj, j
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
-  guestfs_free_xattr_list (r);
   return jr;
 
  ret_error:
@@ -1855,7 +1852,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1readlinklist  (JNIEnv *env, jobject obj,
   char **r;
   const char *path;
   size_t names_len;
-  char **names;
+  CLEANUP_FREE char **names = NULL;
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
@@ -1878,7 +1875,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1readlinklist  (JNIEnv *env, jobject obj,
     jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
     (*env)->ReleaseStringUTFChars (env, o, names[i]);
   }
-  free (names);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
