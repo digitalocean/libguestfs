@@ -1,0 +1,23 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Thu, 20 Jul 2017 23:30:28 +0200
+Subject: Fix /sbin/reboot requirements
+
+---
+ appliance/packagelist.in | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/appliance/packagelist.in b/appliance/packagelist.in
+index 98b1f8d..c3d1fb2 100644
+--- a/appliance/packagelist.in
++++ b/appliance/packagelist.in
+@@ -91,8 +91,8 @@ dnl iproute has been renamed to iproute2
+   ntfs-3g
+   openssh-client
+   reiserfsprogs
+-  sysvinit                  dnl for /sbin/reboot
+-  systemd                   dnl alternative for /sbin/reboot
++  sysvinit-core             dnl for /sbin/reboot
++  systemd-sysv              dnl alternative for /sbin/reboot
+   ufsutils
+   vim-tiny
+   xz-utils

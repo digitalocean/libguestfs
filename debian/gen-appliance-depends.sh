@@ -7,7 +7,7 @@ pkglist_to_deps() {
     sed -e 's,^iproute2\?,iproute2 | iproute,' \
         -e 's,^\(gfs-tools\|gfs2-tools\|gfs2-utils\),gfs2-utils | gfs2-tools | gfs-tools,' \
         -e 's,^\(kmod\|module-init-tools\),kmod | module-init-tools,' \
-        -e 's,^\(systemd\|sysvinit\),systemd | sysvinit,' \
+        -e 's,^\(systemd-sysv\|sysvinit-core\),systemd-sysv | sysvinit-core,' \
         -e 's,^\(libsystemd-[a-z1-9-]*0\),libsystemd0 | \1,' \
         -e '/^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|libc-bin\|sed\|tar\|util\-linux\)$/d' \
         | tr '\n' ','
