@@ -1,3 +1,12 @@
+libguestfs (1:1.34.6-5) unstable; urgency=medium
+
+  * Adjust dependencies because *fdisk will be split out of util-linux
+    into its own package (Closes: #872101)
+  * Bump Debhelper compat level, Standards-Version
+  * Adjust Vcs-* headers
+
+ -- Hilko Bengen <bengen@debian.org>  Mon, 14 Aug 2017 22:32:14 +0200
+
 libguestfs (1:1.34.6-4) unstable; urgency=medium
 
   * Fix i386 kernel build dependency (Closes: #869504)
