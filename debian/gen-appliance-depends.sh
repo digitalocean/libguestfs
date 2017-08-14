@@ -9,7 +9,8 @@ pkglist_to_deps() {
         -e 's,^\(kmod\|module-init-tools\),kmod | module-init-tools,' \
         -e 's,^\(systemd-sysv\|sysvinit-core\),systemd-sysv | sysvinit-core,' \
         -e 's,^\(libsystemd-[a-z1-9-]*0\),libsystemd0 | \1,' \
-        -e '/^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|libc-bin\|sed\|tar\|util\-linux\)$/d' \
+        -e 's,^\(util-linux\|fdisk\),fdisk | util-linux (<< 2.29.2),' \
+        -e '/^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|libc-bin\|sed\|tar\)$/d' \
         | tr '\n' ','
     echo
 }
