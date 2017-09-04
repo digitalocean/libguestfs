@@ -1,3 +1,9 @@
+libguestfs (1:1.34.6-7) unstable; urgency=medium
+
+  * Add missing build-dependencies
+
+ -- Hilko Bengen <bengen@debian.org>  Mon, 04 Sep 2017 22:07:15 +0200
+
 libguestfs (1:1.34.6-6) unstable; urgency=medium
 
   * Fix qemu binary to be used on sparc64
