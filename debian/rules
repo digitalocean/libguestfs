@@ -18,7 +18,11 @@ BUILDS         := $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 		  default
 
 QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
-		    | sed -r -e 's,i[456]86,i386,;s,sparc,sparc64,;s,powerpc(64.*)?,ppc64,;s,arm.*,arm,')
+		    | sed -r \
+			-e 's,i[456]86,i386,' \
+			-e 's,sparc.*,sparc64,' \
+			-e 's,powerpc(64.*)?,ppc64,' \
+			-e 's,arm.*,arm,')
 
 # Run "make quickcheck only on these architectures
 QUICKCHECK_ARCHITECTURES := i386 amd64
