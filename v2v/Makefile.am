@@ -53,6 +53,7 @@ SOURCES_MLI = \
 	output_rhv.mli \
 	output_vdsm.mli \
 	OVF.mli \
+	parse_ovf_from_ova.mli \
 	parse_libvirt_xml.mli \
 	qemu_command.mli \
 	target_bus_assignment.mli \
@@ -73,6 +74,7 @@ SOURCES_ML = \
 	DOM.ml \
 	changeuid.ml \
 	OVF.ml \
+	parse_ovf_from_ova.ml \
 	linux.ml \
 	windows.ml \
 	windows_virtio.ml \
@@ -303,7 +305,8 @@ TESTS += \
 	test-v2v-on-option.sh \
 	test-v2v-print-source.sh \
 	test-v2v-sound.sh \
-	$(SLOW_TESTS)
+	$(SLOW_TESTS) \
+	$(ROOT_TESTS)
 endif
 endif ENABLE_APPLIANCE
 
@@ -330,6 +333,12 @@ SLOW_TESTS = \
 
 check-slow:
 	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
+
+ROOT_TESTS = \
+	test-v2v-i-ova-as-root.sh
+
+check-root:
+	$(MAKE) check TESTS="$(ROOT_TESTS)"
 
 # A selection of real guests that test-v2v-conversion-of.sh will
 # try to convert.  This is only used by 'make check-slow'.
@@ -374,6 +383,8 @@ EXTRA_DIST += \
 	test-v2v-floppy.sh \
 	test-v2v-floppy.xml \
 	test-v2v-i-disk.sh \
+	test-v2v-i-ova-as-root.ovf \
+	test-v2v-i-ova-as-root.sh \
 	test-v2v-i-ova-bad-sha1.sh \
 	test-v2v-i-ova-bad-sha256.sh \
 	test-v2v-i-ova-checksums.ovf \
@@ -416,7 +427,9 @@ EXTRA_DIST += \
 	test-v2v-oa-option.sh \
 	test-v2v-of-option.sh \
 	test-v2v-on-option.sh \
+	test-v2v-print-source.expected \
 	test-v2v-print-source.sh \
+	test-v2v-print-source.xml \
 	test-v2v-conversion-of.sh \
 	test-v2v-sound.sh \
 	test-v2v-sound.xml \

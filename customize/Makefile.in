@@ -2018,7 +2018,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	test-firstboot-debian-6.sh \
 @HAVE_OCAML_TRUE@	test-firstboot-debian-7.sh \
 @HAVE_OCAML_TRUE@	test-firstboot-debian-8.sh \
-@HAVE_OCAML_TRUE@	test-firstboot-fedora-24.sh \
+@HAVE_OCAML_TRUE@	test-firstboot-fedora-25.sh \
 @HAVE_OCAML_TRUE@	test-firstboot-ubuntu-10.04.sh \
 @HAVE_OCAML_TRUE@	test-firstboot-ubuntu-12.04.sh \
 @HAVE_OCAML_TRUE@	test-firstboot-ubuntu-14.04.sh \
@@ -2029,7 +2029,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	test-password-debian-6.sh \
 @HAVE_OCAML_TRUE@	test-password-debian-7.sh \
 @HAVE_OCAML_TRUE@	test-password-debian-8.sh \
-@HAVE_OCAML_TRUE@	test-password-fedora-24.sh \
+@HAVE_OCAML_TRUE@	test-password-fedora-25.sh \
 @HAVE_OCAML_TRUE@	test-password-rhel-3.9.sh \
 @HAVE_OCAML_TRUE@	test-password-rhel-4.9.sh \
 @HAVE_OCAML_TRUE@	test-password-rhel-5.11.sh \
@@ -2048,7 +2048,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	test-settings-debian-6.sh \
 @HAVE_OCAML_TRUE@	test-settings-debian-7.sh \
 @HAVE_OCAML_TRUE@	test-settings-debian-8.sh \
-@HAVE_OCAML_TRUE@	test-settings-fedora-24.sh \
+@HAVE_OCAML_TRUE@	test-settings-fedora-25.sh \
 @HAVE_OCAML_TRUE@	test-settings-ubuntu-10.04.sh \
 @HAVE_OCAML_TRUE@	test-settings-ubuntu-12.04.sh \
 @HAVE_OCAML_TRUE@	test-settings-ubuntu-14.04.sh \
@@ -2542,9 +2542,9 @@ test-firstboot-debian-8.sh.log: test-firstboot-debian-8.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-firstboot-fedora-24.sh.log: test-firstboot-fedora-24.sh
-	@p='test-firstboot-fedora-24.sh'; \
-	b='test-firstboot-fedora-24.sh'; \
+test-firstboot-fedora-25.sh.log: test-firstboot-fedora-25.sh
+	@p='test-firstboot-fedora-25.sh'; \
+	b='test-firstboot-fedora-25.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2605,9 +2605,9 @@ test-password-debian-8.sh.log: test-password-debian-8.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-password-fedora-24.sh.log: test-password-fedora-24.sh
-	@p='test-password-fedora-24.sh'; \
-	b='test-password-fedora-24.sh'; \
+test-password-fedora-25.sh.log: test-password-fedora-25.sh
+	@p='test-password-fedora-25.sh'; \
+	b='test-password-fedora-25.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2724,9 +2724,9 @@ test-settings-debian-8.sh.log: test-settings-debian-8.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-settings-fedora-24.sh.log: test-settings-fedora-24.sh
-	@p='test-settings-fedora-24.sh'; \
-	b='test-settings-fedora-24.sh'; \
+test-settings-fedora-25.sh.log: test-settings-fedora-25.sh
+	@p='test-settings-fedora-25.sh'; \
+	b='test-settings-fedora-25.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

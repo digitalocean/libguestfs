@@ -327,6 +327,42 @@
    fun:file_apprentice
 }
 
+# Gtk
+{
+   gtk_leak
+   Memcheck:Leak
+   ...
+   fun:gtk_init_check
+}
+
+{
+   gtk_leak_2
+   Memcheck:Leak
+   ...
+   fun:gdk_display_manager_get
+}
+
+{
+   gtk_leak_3
+   Memcheck:Leak
+   ...
+   fun:_gdk_x11_screen_new
+}
+
+{
+   glib_leak_1
+   Memcheck:Leak
+   ...
+   fun:g_type_register_static
+}
+
+{
+   glib_leak_2
+   Memcheck:Leak
+   ...
+   fun:g_type_class_ref
+}
+
 # Perl
 # note: Perl leaks memory by design, this just suppresses them.
 {

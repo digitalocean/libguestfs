@@ -218,6 +218,7 @@ run-virt-p2v-in-a-vm: virt-p2v.img $(PHYSICAL_MACHINE)
 	  -device rtl8139,netdev=net1 \
 	  -netdev user,id=net2 \
 	  -device e1000,netdev=net2 \
+	  $(QEMU_OPTIONS) \
 	  &
 
 run-virt-p2v-non-gui-conversion: stamp-test-virt-p2v-pxe-data-files
@@ -249,6 +250,9 @@ TESTS += \
 	test-virt-p2v-nbdkit.sh \
 	$(SLOW_TESTS)
 endif ENABLE_APPLIANCE
+
+check-valgrind:
+	make VG="@VG@" check
 
 SLOW_TESTS = \
 	test-virt-p2v-pxe.sh

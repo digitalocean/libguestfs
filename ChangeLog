@@ -1,3 +1,673 @@
+commit 272154fb4b03251317d2afdb8c7ced5195cb9942
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 24 12:03:30 2017 +0000
+
+    Version 1.36.3.
+
+commit 484a41abddcc22dede2c4be9a39386065f0870c0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 24 11:19:27 2017 +0000
+
+    tests: v2v: -i ova: Fix test for reordered XML.
+    
+    Commit 8e617b792f9c7cc8131ba59c0b0a9c545356778d reversed the order in
+    which the <features> and <os> sections appear in the XML.
+    
+    (cherry picked from commit 0782da088b4bf8666ac33fcfdb7bce31570bd7ad)
+
+commit 934a9acad8aa92454ab7e2e5ffb0de4a02510aaf
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 24 11:04:14 2017 +0100
+
+    inspect: get a more common size icon for ALT Linux guests (RHBZ#1433937)
+    
+    A 64px icon does not exists everywhere, so just use a 48px one.
+    
+    Updates commit bc54e0d605682385f460c6e90ba87c5a48f8077e and
+    commit 9928296c1ca8df5bd8f108ed00039adc6468cac3.
+    
+    Thanks to: Xiang Hua Chen.
+    
+    (cherry picked from commit 439b9189f0e2834c97ada3af0b0d959d394726ea)
+
+commit 9ef20bf813a2d57f44779cf635daf530d68da09a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 24 08:59:53 2017 +0000
+
+    bash: Implement tab completion for virt-win-reg (RHBZ#1367738).
+    
+    This only implements long and short options.
+    
+    Thanks: Ming Xie.
+    (cherry picked from commit 5acd69ed6cf2d186b0ee7a83d1a80f9cdc54abf5)
+
+commit 1679d58eec411fc69e342a3774cf70be6726e593
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 22 15:44:18 2017 +0000
+
+    v2v: xen: Require direct backend when doing Xen conversions over SSH.
+    
+    Unfortunately libvirt has another bug related to the qemu
+    ssh driver, as described here:
+    
+      https://bugzilla.redhat.com/show_bug.cgi?id=1434651#c3
+    
+    (The libvirt bug is https://bugzilla.redhat.com/1140166)
+    
+    Until this bug is fixed we have to require the direct backend to be
+    used for xen+ssh conversions.
+    
+    This partially reverts commit ecbf09385033ba0acf14e914927ec81ad20a5308.
+    
+    (cherry picked from commit 7cf85ace19231085e514b980bd13b7976e21a242)
+
+commit 70750a1c41efa429b837dfb2dd950a9b9062bce4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 22 17:10:42 2017 +0100
+
+    inspect: improve detection of Mageia install discs
+    
+    Check for a "product.id" file in an architecture-specific subdirectory
+    of the main partition, and use its data to improve the data on the
+    media.
+    
+    Only Mageia as distribution name is recognized there, since most
+    probably this file will not be available on other distros.
+    
+    (cherry picked from commit 46d5a26ddc58dc2ec5aa76e1d08a96b5556c5859)
+
+commit 3076bd19b21bffff51093840e8be2730485ddbce
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 22 10:30:12 2017 +0000
+
+    bash: Add a bash completion script for virt-v2v-copy-to-local (RHBZ#1367738).
+    
+    Thanks: Ming Xie
+    (cherry picked from commit 2f25d23ac85bbc341459da03da6cfa6d85dae8dc)
+
+commit 66b83a10c67e9adf23a0097c131c6746c1ec6532
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 21 17:19:52 2017 +0000
+
+    p2v: gui: Change mnemonics so 's' is not used twice (RHBZ#1379289).
+    
+    Change mnemonics so 's' is not used twice:
+    
+      Start Conversion: 's' -> 'c'
+      Output Connection: 'c' -> 'o'
+      Output Storage: continues to use 's'
+    
+    Thanks: Ming Xie.
+    (cherry picked from commit 9d6b1ec28811255ec4447e3f67eb508f0b6f8396)
+
+commit 3a7857fe82d9b2e6d439a71cfedf40e6da99dc89
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 21 13:12:09 2017 +0000
+
+    p2v: Allow setting QEMU_OPTIONS when testing qemu in a VM.
+    
+    Also document both QEMU and QEMU_OPTIONS in guestfs-hacking(1).
+    
+    (cherry picked from commit cecf1ea135fa286c1616e1438f57fb7796909498)
+
+commit fd8f9caa6c4a30e0c4c198d744b2a0587df500c0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 20 16:54:51 2017 +0000
+
+    daemon: selinux: Add setfiles -m option to suppress extra excludes (RHBZ#1433577).
+    
+    (cherry picked from commit fc0abf2354e38394c5e930b01221fcdfe05797b8)
+
+commit 852d7378aac22bb075685294544efd3178bc9bb7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 20 15:02:33 2017 +0000
+
+    v2v: inspect source: Don't tell people twice to run virt-v2v -v -x (RHBZ#1167623).
+    
+    There were two related bugs in the virt-v2v error messages when source
+    inspection failed.
+    
+    Firstly it would print the message about running 'virt-v2v -v -x' twice:
+    
+      virt-v2v: error: inspection could not detect the source guest (or physical
+      machine).
+    
+      Assuming that you are running virt-v2v/virt-p2v on a source which is
+      supported (and not, for example, a blank disk), then this should not
+      happen.  You should run 'virt-v2v -v -x ... >& log' and attach the complete
+      log to a new bug report (see http://libguestfs.org).
+    
+      No root device found in this operating system image.
+    
+      If reporting bugs, run virt-v2v with debugging enabled and include the
+      complete output:
+    
+        virt-v2v -v -x [...]
+    
+    And secondly it would tell you to run virt-v2v -v -x even if you were
+    running with verbose messages.
+    
+    Further fix for https://bugzilla.redhat.com/show_bug.cgi?id=1167623
+    which updates commit ab7197476de1cb3c8727caf4da429f6293ca4227.
+    
+    Thanks: Kun Wei.
+    (cherry picked from commit 84d791cda138f03fd7f1d14b6d358261e624348f)
+
+commit 736e35e72a1c4382ea64b7a749b59d6fab643633
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 20 13:45:56 2017 +0100
+
+    inspect: get a better icon for ALT Linux guests (RHBZ#1433937)
+    
+    Use a 64px icon which is in the menu-icons-default package, hopefully
+    part of the default installation of any flavour.
+    
+    Updates commit 9928296c1ca8df5bd8f108ed00039adc6468cac3.
+    
+    Thanks to: Xiang Hua Chen.
+    
+    (cherry picked from commit bc54e0d605682385f460c6e90ba87c5a48f8077e)
+
+commit 63c55b49c1cac55258b6acac26ac039e6e0351cb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 20 10:46:58 2017 +0000
+
+    customize: slow-tests: Test Fedora 25 instead of Fedora 24.
+    
+    Just an update so we're testing the latest available version of Fedora.
+    
+    (cherry picked from commit 0b5e3b1196c8def229b9c81fa7f1d87b80257eb0)
+
+commit 0c9373575aa05f2cf6264648a2337c1fb0f226bb
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 17 17:57:40 2017 +0100
+
+    p2v: virt-p2v-make-disk: prevent daemons to run on Debian
+    
+    On Debian systems, usually daemons are run automatically after their
+    installations; since we are upgrading the template, and installing
+    packages such as openssh, network-manager, etc, this may cause few
+    daemon to stay running during the virt-builder execution, causing it to
+    fail when shutting down (since e.g. /sysroot/dev would be in use).
+    
+    As workaround, use a temporary policy-rc.d policy layer [1]: give an
+    error code so no daemon is ever started at any point of package upgrades
+    and installation.  The script is removed at the very end of the
+    building, so the final image will spawn daemons just fine when booted.
+    
+    [1] https://people.debian.org/~hmh/invokerc.d-policyrc.d-specification.txt
+    
+    (cherry picked from commit fdd3dd7a7fd1d8d7feaf505b34f81d4b537e0832)
+
+commit 56d75dc2d20b1ed52fe83cd70741844ff00acc5e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 17 17:51:54 2017 +0100
+
+    p2v: virt-p2v-make-disk: fix systemd paths
+    
+    Usually systemd is configured with prefix=/, so units are in
+    /lib/systemd.  On a system with UsrMove, such as Fedora/RHEL7, /lib is
+    a symlink to /usr/lib, so both /lib/systemd and /usr/lib/systemd work;
+    OTOH, on non-UsrMove systems, such as Debian, the two paths are
+    different locations, and thus trying to edit system files as
+    /usr/lib/systemd/etc will fail.
+    
+    As solution, just reference /lib/systemd for systemd files.
+    
+    (cherry picked from commit 99818be41025828bffc6c3eec8724b43a9bf5a7f)
+
+commit b76650a3076804991639e5b8cfaa100f69d6b562
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 17 17:48:49 2017 +0100
+
+    p2v: remove network-manager-applet Debian dependency
+    
+    On Debian, network-manager-gnome contains nm-applet, which is what
+    launch-virt-p2v spawns.  network-manager-gnome is already in the list of
+    packages for Debian, while network-manager-applet does not exist.
+    
+    (cherry picked from commit 6913630004accc4ef0609ae39ca302087df7bcbf)
+
+commit 99c10492598625c3a11bbdea3f07bbaa2307b100
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 17 17:43:42 2017 +0100
+
+    p2v: fix Gtk dependencies on Debian
+    
+    On Debian, the names of the packages containing the Gtk 2 and 3
+    libraries have different patterns, and thus just the name will not work
+    for Gtk 3.
+    
+    Apply a bit of m4 to use a different package name on Gtk 2 and other
+    versions.  It can be easily adapted to new models in future Gtk 4+,
+    should the naming pattern change from Gtk 3.
+    
+    (cherry picked from commit 80029641b45a11af3232f7e0ee62b4962e130bd0)
+
+commit 4a6f57af5ec3f288aac3dbc6aa3db697d8841a45
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 17 16:18:57 2017 +0100
+
+    btrfs_filesystem_show: work with another old btrfs version
+    
+    An old version of btrfs-progs (3.17 in this case) has a different
+    version string, so adapt our filtering to include this line as well.
+    
+    Related to/updates commit 839ae5bcd537b3dc4f13bbea6fe40091ebc2b7f0.
+    
+    (cherry picked from commit 12bfb3c6319b10b379d5deb1f5e163462f0aca41)
+
+commit d50df2516113d65c076f5645b24fdef1d31680bd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 18 18:31:10 2017 +0000
+
+    tests: Add further valgrind suppressions for glib and gtk3.
+    
+    (cherry picked from commit 2e93f72297f6ec3522747896ba0493a520ac1e1d)
+
+commit ec6b68fdf606e04a1eb7805e371acbb555235717
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 18 10:11:13 2017 +0000
+
+    test-data: Use another name for boot and root MD devices.
+    
+    mdadm 4.0 no longer lets you create devices called literally "boot" or
+    "root", giving a very obscure error message:
+    
+    https://bugzilla.redhat.com/show_bug.cgi?id=1433575
+    
+    Work around this by calling them something else.
+    
+    (cherry picked from commit 327caa1f084acca6fba288781c99002b6a71aff7)
+
+commit 8a2dae62c09b839f373bbb5b698068c902e5eae2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 17 15:20:57 2017 +0000
+
+    v2v: Add new test-v2v-print-source.* files to EXTRA_DIST.
+    
+    Fixes commit 12a3b735f92727c15fd5bc5c492ad90a29002174.
+    
+    (cherry picked from commit 589261d99f01eb2004b4e13949dd12b8b575c9ea)
+
+commit 1da1296ef4fc5e779c8c69299e53b16554497e3c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 17 13:39:56 2017 +0100
+
+    p2v: un-duplicate common dependencies
+    
+    Move all the dependencies with the same name in all the distributions to
+    a single list at the end.
+    
+    There should be no change to the package list used to build the p2v ISO.
+    
+    (cherry picked from commit df29936cf8bbf2b9e3f58167cf69129e3c851fb6)
+
+commit c3366917bd24e7d0739e666b28938e34a47690a4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 17 11:11:45 2017 +0000
+
+    v2v: -o glance: Build properties list imperatively.
+    
+    No change, just refactoring.
+    
+    (cherry picked from commit c5fe98dde4df26283dbdaf0d66139e9120701b09)
+
+commit ee3ff29f9cef12d10efbc24859401242715a215e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 16 17:37:41 2017 +0000
+
+    v2v: -o libvirt: Refactor creation of XML body.
+    
+    Just refactoring, no change in semantics.
+    
+    (cherry picked from commit 8e617b792f9c7cc8131ba59c0b0a9c545356778d)
+
+commit 35786a060a81d527fdb4f22748f031ec0362d079
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 16 17:59:42 2017 +0000
+
+    tests: v2v: Rearrange test-v2v-print-source.
+    
+    This rearranges the input files for the test of virt-v2v
+    --print-source, but does not change its semantics.
+    
+    (cherry picked from commit 12a3b735f92727c15fd5bc5c492ad90a29002174)
+
+commit f1558fbbe63aa021ba62b9ceafe371a5fecb098a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 16 21:46:14 2017 +0000
+
+    p2v: Enable check-valgrind in this directory.
+    
+    A couple of valgrind suppressions are required to work around memory
+    leaks in Gtk.
+    
+    (cherry picked from commit a73f4599046326bced5281def13775cb98a05cfe)
+
+commit cf4ab4db16ce94aefc98f70b8411196ff0a70269
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 16 21:55:54 2017 +0000
+
+    p2v: Free config struct before exit.
+    
+    Memory leak found by valgrind.
+    
+    (cherry picked from commit 9170513c8a8895d66b36c5bdd0baa12001afa7ee)
+
+commit 43f855588acec8d5c3ebbbca570a91aacbab33b1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 16 12:10:21 2017 +0000
+
+    p2v: Add awk as a dependency.
+    
+    The code to parse /proc/cpuinfo runs awk, but it was not included as a
+    specific dependency so the parsing code might silently fail.
+    
+    (cherry picked from commit 9bba13b9cff0332730923eb297ad80b6e3be9bd4)
+
+commit df026c5ff177e0e8c965e636776a702bd7309b82
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 16 09:58:09 2017 +0000
+
+    lib: direct: Don't ever use -no-kvm-pit-reinjection.
+    
+    On qemu 1.1.2:
+    
+      qemu-system-x86_64: -no-kvm-pit-reinjection: invalid option
+    
+    Thanks: John Sucaet.
+    (cherry picked from commit c0a8afb3e6d0ce96c5062265b35813f7812686bd)
+
+commit ab074aeaa59ef60075876bb33f532cba067d7d08
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 16 18:01:37 2017 +0100
+
+    dib: avoid using Unix.O_CLOEXEC
+    
+    It looks like Unix.O_CLOEXEC does not exist in OCaml < 4, so resort to
+    manually using Unix.set_close_on_exec on the filedesc after opening it.
+    
+    Thanks to: John Sucaet and Richard W.M. Jones.
+    
+    (cherry picked from commit ece9c35e58a3ba18ac9bed955251482bb774ab97)
+
+commit 26bb7577c3434ddc7ac55fefef5dc978de75e616
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 15 16:45:41 2017 +0100
+
+    generator: open Common_utils where needed
+    
+    This makes it possible to use the operators from Common_utils that do
+    not exist in older OCaml versions (e.g. < 4.00).
+    
+    Thanks to: John Sucaet.
+    
+    (cherry picked from commit 509adede7b4ba5d419efc7f6483f3d9d99d27233)
+
+commit c31d1885f05c9778b8b382a1cd33e90eaf150ef8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 15 11:07:43 2017 +0100
+
+    v2v: linux: accept 'scd' devices in fstab
+    
+    Avoid warnings for another kind of SCSI CD-ROMs in fstab, like it is
+    done already for other CD devices.
+    
+    (cherry picked from commit 2f22f2c46981490b8dfdb3bcb6efdf46a916e415)
+
+commit 0c8b6a1588f5fd035355ab7008b75c47f5fb820a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Mar 14 14:43:53 2017 +0100
+
+    v2v: bootloaders: look for device.map also in /boot/grub (Grub2)
+    
+    On Debian-based systems, Grub2 is in /boot/grub (as already known after
+    commit 03b9f2b967c4c61a5acda6a3802317be109d213e), so make sure
+    device.map is changed even in this situation.
+    
+    (cherry picked from commit da4757fd157a60c7ba4a224b40ccf49a1d0c38a4)
+
+commit 4e48b622a1ad9bcd9bceb82985bba3af380bf579
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Mar 14 14:40:08 2017 +0100
+
+    v2v: OVF: add Debian and Ubuntu osinfo variants
+    
+    Unfortunately, there are very few osinfo types available for Debian and
+    Ubuntu, so make sure to use them only when the version is enough, and
+    use the higher version available also for any following version.
+    
+    (cherry picked from commit 4e5f011508dd0c3ae0ee80d144a9728489370786)
+
+commit 84dfa249152a7d20373f2d19c902695485d04f87
+Author: Yann E. MORIN <yann.morin.1998@free.fr>
+Date:   Mon Mar 13 23:42:37 2017 +0100
+
+    configure: fix check for attribute cleanup
+    
+    In cross-compilation, it is not possible to run tests, so the configure
+    aborts when checking for attribute cleanup.
+    
+    The comment above the test hints at why we would need to do an actual
+    run test rather than a compile test: gcc only warns on unrecognised
+    attributes.
+    
+    But warnings can be turned into error with -Werror.
+    
+    Change the AC_RUN_IFELSE into an AC_COMPILE_IFELSE test that runs with
+    -Werror set. Save the CFLAGS before adding -Werror, and restore them
+    after the test.
+    
+    Signed-off-by: "Yann E. MORIN" <yann.morin.1998@free.fr>
+    (cherry picked from commit 0d023e7f3d9d86a1ecb48140337266da5381300b)
+
+commit f147e4d6e368e5fd31bd3ed6f12dd206423b39a8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 10 13:13:10 2017 +0000
+
+    v2v: Add a root test for access to root-only-readable OVAs (RHBZ#1430680).
+    
+    (cherry picked from commit ebb0d32395ee90af862d7fed33891174a3599091)
+
+commit 5bcb6f4ecc76e14e3ecac8fa771db5e4b18fb85b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 10 13:02:54 2017 +0000
+
+    tests: Add infrastructure for running certain tests as root.
+    
+    '[sudo] make check-root' is analogous to 'make check-slow'.
+    
+    (cherry picked from commit 80d3e0548316bb7ec5ea957bafb94163ad6a8c21)
+
+commit f8b2790400fcb462b3240426ec4e26f279f794da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 13 12:20:41 2017 +0000
+
+    v2v: chmod original OVA file if running as root (RHBZ#1430680).
+    
+    In the case where we are going to read the disk directly from the OVA
+    file (partial = true), we will create a qcow2 image backed by the OVA.
+    If running as root, libvirt will run qemu as a non-root user (because
+    of no qemu:///session support for root, which is a libvirt bug).  qemu
+    will not be able to read the backing file and thus will fail.
+    
+    To work around this problem, chmod the backing (OVA) file.
+    
+    This isn't a complete fix since (eg) the OVA might be located in a
+    directory which isn't accessible by root, but there's only so much we
+    can do here until libvirt is fixed.
+    
+    Thanks: Kun Wei.
+    (cherry picked from commit 542eb560bd8c7b24d4628837730d636713d02f56)
+
+commit 392eda2f1eb5e7bf6a572f1f616a67f612277ba0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 13 14:21:56 2017 +0000
+
+    v2v: -i ova: Use full path for backing file.
+    
+    Works around a libvirt bug:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1431652
+    
+    (cherry picked from commit 91b5fb3641c91ff4e4778879d4bc866089923c28)
+
+commit 82fccc2820e9f9f0cd684f2676437a65b873230e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Mar 12 19:47:38 2017 +0000
+
+    v2v: -i ova: Factor out the OVF parsing into a separate module.
+    
+    Mixing the XML parsing with the other functions of this module made it
+    very hard to understand.  Splitting the XML parsing into another
+    module simplifies the flow considerably.
+    
+    This is just code refactoring and should not affect the semantics.
+    
+    (cherry picked from commit f34636700ae2f9b0762e00fd5a386a8d5733b660)
+
+commit 727d76d279a9f64d696cfb62cee4a96ec03d7c49
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 10 14:58:15 2017 +0000
+
+    v2v: -i ova: Hoist utility functions to the top of the file.
+    
+    These functions obscure the true flow of the code, so hoist
+    them out of the source () method to the top of the file.
+    
+    No change, just refactoring.
+    
+    (cherry picked from commit 57949e68538341f41504d76c808280bf59987d75)
+
+commit 21bf7e3162e027177e68bdf1bd356e9c3466c6f8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Mar 13 09:46:36 2017 +0100
+
+    v2v: support no socket for <listen type='socket'>
+    
+    Support also a "socket" listen type with no explicitly specified socket
+    (which will be generated by libvirt).
+    
+    Updates commit a4adf48915c0e3e7f4e8b7bbdbb5ac622da1ac58.
+    
+    Related to: RHBZ#1378022
+    
+    (cherry picked from commit b1975468391261b91258d420dafea5fe4076e4c2)
+
+commit 9d743720ac19b34ffd18b13ed897bbab3d7c3f35
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 10 14:31:01 2017 +0100
+
+    appliance: run systemd-tmpfiles also for /var/run
+    
+    Commit a6330e9d3af0f5286f1d53d909fd868387b67f69 enabled /run for
+    systemd-tmpfiles: while this works fine in most of the cases, there are
+    few tmpfiles configurations that still references /var/run instead of
+    /run.  As result, include also /var/run in the systemd-tmpfiles
+    execution.
+    
+    (cherry picked from commit e48c17b10d8f3bf6b6766ceca478f4ad0aaac744)
+
+commit 4d34aed1bbdac7fb743649a08b200a423b4fdfb5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 10 13:54:30 2017 +0100
+
+    daemon: fix memory leak in xfs implementation of vfs_minimum_size
+    
+    Use the proper cleanup handler for deleting the guestfs_int_xfsinfo
+    struct (so the string fields are deleted too).
+    
+    Fixes commit f5caa421d1bb826559ec7a6d98c1a6b6b1f0a629.
+    
+    (cherry picked from commit 31fb6e20418e8f1b0647c92af0464f2009e9a997)
+
+commit d66fbe189dcec1c5d63cf5b447934fd39256705c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 10 13:50:24 2017 +0100
+
+    daemon: generate cleanup handlers for structs
+    
+    This way it is possible to cleanup properly structs in the daemon, when
+    using them within other daemon functions.
+    
+    (cherry picked from commit 32f0f9b032db592b50c4a4b0da29ef0de0478633)
+
+commit 70e7db2a1392b938f50f5d121028e7b2511351b7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 10 14:01:42 2017 +0000
+
+    v2v: Refactor some command line error messages.
+    
+    This change (mostly) has no effect, except I changed the content of
+    two error messages to make them consistent with the others.
+    
+    (cherry picked from commit e3782a361136748c617e664415ace10f95778faa)
+
+commit 175722ab41974d782de8340875af0ee71b5a8da5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 10 13:47:13 2017 +0000
+
+    v2v: -o null: Force output format to be raw sparse.
+    
+    When converting and throwing away the output (-o null), the input
+    format should not really matter.  However it does currently matter for
+    a couple of reasons:
+    
+    (1) If the input is not raw or qcow2, then you'll get the error below
+    because virt-v2v wants to write the same output format as input format
+    but only allows raw or qcow2 as output formats:
+    
+      virt-v2v: error: output format should be 'raw' or 'qcow2'.
+    
+    (2) If you use -o null -oa preallocated then a non-sparse temporary
+    disk is created before being deleted, but that just wastes disk space
+    for no reason.
+    
+    Therefore this change
+    
+    (i) prevents '-o null -oa preallocated' from being specified on the
+    command line,
+    
+    (ii) prevents '-o null -of <anything>',
+    
+    (iii) forces the output (temporary file) to be raw sparse.
+    
+    (cherry picked from commit 09b061378776b656b7d3ef1e63a490de011aa6c7)
+
+commit 59052ee85fcb1451a12b7cef016cd00bf10b3d01
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 10 14:13:28 2017 +0000
+
+    v2v: -i ova: Avoid long line in file.
+    
+    Just a whitespace change.
+    
+    (cherry picked from commit 9bde1526445369044ccf730fff366a05c5eb6ee3)
+
+commit c5dfd14cb26d7d6ac62e7878f46f5eb0926af868
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 8 13:13:36 2017 +0100
+
+    v2v: fix skip check in test-v2v-o-libvirt.sh
+    
+    This test needs windows.img, not fedora.img.  This way, the test is
+    properly skipped when NTFS support is not available.
+    
+    Fixes commit a1b3d8d04b65298dd13c44a057a4e2b650ebc59e.
+    
+    (cherry picked from commit de7d6df4be415a3883cf6fa90f7ab3b622d66f82)
+
+commit 458a7b06243b8310cf7190a2237c1a7c5e067123
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 8 09:45:08 2017 +0100
+
+    dib: actually generate SHA256 checksums (RHBZ#1430184)
+    
+    diskimage-builder generates MD5, and SHA256 checksums when using
+    --checksum, so stick to that list for compatibility reasons.
+    
+    (cherry picked from commit ba52e0a217e3d78c9a0e4d51240674e832a22619)
+
 commit 0b793550d430cd8135c177f74dec13341c731b6d
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Mar 7 18:43:02 2017 +0000
@@ -84127,7 +84797,7 @@ Date:   Sat Aug 15 18:02:08 2009 +0100
     uuid program.  Uses this for tests.
 
 commit 801e7d8418927e4308b8cb0a079015bbc9212d5e
-Merge: 322ff98 fee26ee
+Merge: 322ff984a fee26ee23
 Author: Jim Meyering <meyering@redhat.com>
 Date:   Fri Aug 14 22:05:39 2009 +0200
 
@@ -85893,7 +86563,7 @@ Date:   Fri Jul 17 17:40:30 2009 +0100
     Version 1.0.62.
 
 commit 8ae10a31ab249994783e3cbcb0b8ee4b2fc591a0
-Merge: b993f75 9e90b24
+Merge: b993f75d5 9e90b24c7
 Author: Richard Jones <rjones@trick.home.annexia.org>
 Date:   Fri Jul 17 16:33:30 2009 +0100
 
@@ -86625,7 +87295,7 @@ Date:   Tue Jul 7 17:32:34 2009 +0100
     RHEL 5: for (int i = ...) is not permitted with this old version of GCC.
 
 commit 157035503b509385084cafac8e5c5fa0afa2fef7
-Merge: 6fb57e4 d5532e9
+Merge: 6fb57e430 d5532e9ad
 Author: Richard Jones <rjones@centos5x32.home.annexia.org>
 Date:   Tue Jul 7 16:55:51 2009 +0100
 
@@ -86842,7 +87512,7 @@ Date:   Fri Jul 3 10:47:10 2009 +0100
     (Issue reported by Guido Gunther).
 
 commit 6fb57e430c8daa06d8d938ac02a104c8aadbbda5
-Merge: b7e094f ee4c49f
+Merge: b7e094fa1 ee4c49fad
 Author: Richard Jones <rjones@centos5x32.home.annexia.org>
 Date:   Fri Jul 3 00:22:14 2009 +0100
 
@@ -87338,7 +88008,7 @@ Date:   Mon Jun 29 17:33:08 2009 +0100
     Remove generated files in make clean.
 
 commit 128f822e16bb96677c75b88125e18f48d7ccedaf
-Merge: 103fb55 ad47510
+Merge: 103fb55e6 ad475104e
 Author: Matthew Booth <mbooth@redhat.com>
 Date:   Mon Jun 29 16:27:05 2009 +0100
 
@@ -87571,7 +88241,7 @@ Date:   Sun Jun 28 13:34:11 2009 +0200
     Haskell bindings: Int and Int64 return types.
 
 commit 9414a730d2c8f4a5efffe9396fbbb2a5d10c15c0
-Merge: 05273da 66f728d
+Merge: 05273da88 66f728d4f
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Sun Jun 28 13:28:30 2009 +0200
 
@@ -87706,7 +88376,7 @@ Date:   Wed Jun 24 12:15:57 2009 +0100
     Quote command line arguments to virt-inspector.
 
 commit b91d47063c729246c65c41f827bcb1dc927529c0
-Merge: e1c62f6 5e332cc
+Merge: e1c62f633 5e332cc6c
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Jun 24 11:55:57 2009 +0100
 
@@ -88129,7 +88799,7 @@ Date:   Thu Jun 11 16:57:29 2009 +0100
     More TODO-list suggestions and a summary of PPC situation.
 
 commit b7e094fa14b306fe776b9b2695cf82fa32d4923f
-Merge: 32857b6 ccc1d21
+Merge: 32857b6c1 ccc1d2160
 Author: Richard Jones <rjones@centos5x32.home.annexia.org>
 Date:   Wed Jun 10 15:46:41 2009 +0100
 
@@ -88148,7 +88818,7 @@ Date:   Wed Jun 10 15:31:29 2009 +0100
     Remove obsolete comment from generator.
 
 commit 32857b6c1686c94b3c69c88307b137997f74f23d
-Merge: ba85a1c 179778a
+Merge: ba85a1cf6 179778ade
 Author: Richard Jones <rjones@centos5x32.home.annexia.org>
 Date:   Wed Jun 10 15:34:36 2009 +0100
 
@@ -88167,7 +88837,7 @@ Date:   Wed Jun 10 15:31:13 2009 +0100
     Specify type of squashfs filesystem.
 
 commit ba85a1cf6275fe008ca379e2da6698ad8eb1d845
-Merge: 908aaf4 9cd8ec1
+Merge: 908aaf4bb 9cd8ec1f5
 Author: Richard Jones <rjones@centos5x32.home.annexia.org>
 Date:   Wed Jun 10 15:10:03 2009 +0100
 
@@ -88180,7 +88850,7 @@ Date:   Wed Jun 10 15:06:44 2009 +0100
     Allow HFS+, UFS and XFS filesystems (add to kmod whitelist).
 
 commit 908aaf4bb0727831377547a64a4f680dafb6b221
-Merge: 8224bfd dc3b5a7
+Merge: 8224bfd00 dc3b5a7a5
 Author: Richard Jones <rjones@centos5x32.home.annexia.org>
 Date:   Wed Jun 10 14:32:59 2009 +0100
 
@@ -88193,7 +88863,7 @@ Date:   Wed Jun 10 14:29:41 2009 +0100
     CentOS fix: Skip checksum test if no squashfs module.
 
 commit 8224bfd0020ee9e2cb6c58c8d1b8eeba3028e943
-Merge: edbb821 ff211d0
+Merge: edbb821cb ff211d06e
 Author: Richard Jones <rjones@centos5x32.home.annexia.org>
 Date:   Wed Jun 10 14:23:15 2009 +0100
 
@@ -89201,7 +89871,7 @@ Date:   Fri May 8 08:44:34 2009 +0100
     Change memory calculation to choose a generous amount of memory.
 
 commit d50dbf2d7cda1edc18d5249dae051cd58e65b99a
-Merge: f78de84 b99a342
+Merge: f78de8479 b99a342f3
 Author: Richard Jones <rjones@redhat.com>
 Date:   Fri May 8 08:40:49 2009 +0100
 
@@ -89322,7 +89992,7 @@ Date:   Wed May 6 20:46:17 2009 +0100
     Added TODO item.
 
 commit 65dab4f7f761c8ec0a2040956ffdbb14423503d2
-Merge: 2c273b9 8f19940
+Merge: 2c273b92c 8f199409a
 Author: Richard Jones <rjones@redhat.com>
 Date:   Wed May 6 17:55:46 2009 +0100
 
@@ -89683,7 +90353,7 @@ Date:   Thu Apr 30 13:02:29 2009 +0100
     Rename tune2fs.c -> ext2.c
 
 commit f666990c2f6d94beee4f21c0e52e582eee68b054
-Merge: 141f019 1507d23
+Merge: 141f01934 1507d230a
 Author: Richard Jones <rjones@redhat.com>
 Date:   Tue Apr 28 22:44:59 2009 +0100
 
@@ -90074,7 +90744,7 @@ Date:   Thu Apr 23 10:54:27 2009 +0100
     Configure script tests for Perl modules.
 
 commit cf13c86a2c6fd56c07d7a92bcd28f99598c6a259
-Merge: 54ca2f1 dd98434
+Merge: 54ca2f1f8 dd98434c1
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Apr 23 10:32:31 2009 +0100
 
@@ -90431,7 +91101,7 @@ Date:   Sat Apr 18 15:31:53 2009 +0100
        fiddling around with internal structures.
 
 commit ad1d84a142169baaed293de71fb9430178d9f999
-Merge: 1765330 8a4cdce
+Merge: 1765330e0 8a4cdcef2
 Author: Richard Jones <rjones@redhat.com>
 Date:   Sat Apr 18 13:27:06 2009 +0100
 
@@ -90444,7 +91114,7 @@ Date:   Sat Apr 18 13:17:12 2009 +0100
     Rewrite of main loop impl, start of FileIn/FileOut support.
 
 commit 8a4cdcef21770cb19368a3f9d5cff3df3c01f833
-Merge: 0206f0e 92804de
+Merge: 0206f0ead 92804dec7
 Author: Richard Jones <rjones@redhat.com>
 Date:   Sat Apr 18 10:16:34 2009 +0100
 

@@ -365,18 +365,18 @@ am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
 	guestfsd-sleep.$(OBJEXT) guestfsd-sleuthkit.$(OBJEXT) \
 	guestfsd-squashfs.$(OBJEXT) guestfsd-stat.$(OBJEXT) \
 	guestfsd-statvfs.$(OBJEXT) guestfsd-strings.$(OBJEXT) \
-	guestfsd-stubs-0.$(OBJEXT) guestfsd-stubs-1.$(OBJEXT) \
-	guestfsd-stubs-2.$(OBJEXT) guestfsd-stubs-3.$(OBJEXT) \
-	guestfsd-stubs-4.$(OBJEXT) guestfsd-stubs-5.$(OBJEXT) \
-	guestfsd-stubs-6.$(OBJEXT) guestfsd-swap.$(OBJEXT) \
-	guestfsd-sync.$(OBJEXT) guestfsd-syslinux.$(OBJEXT) \
-	guestfsd-tar.$(OBJEXT) guestfsd-tsk.$(OBJEXT) \
-	guestfsd-truncate.$(OBJEXT) guestfsd-umask.$(OBJEXT) \
-	guestfsd-upload.$(OBJEXT) guestfsd-utimens.$(OBJEXT) \
-	guestfsd-utsname.$(OBJEXT) guestfsd-uuids.$(OBJEXT) \
-	guestfsd-wc.$(OBJEXT) guestfsd-xattr.$(OBJEXT) \
-	guestfsd-xfs.$(OBJEXT) guestfsd-zero.$(OBJEXT) \
-	guestfsd-zerofree.$(OBJEXT)
+	guestfsd-structs-cleanups.$(OBJEXT) guestfsd-stubs-0.$(OBJEXT) \
+	guestfsd-stubs-1.$(OBJEXT) guestfsd-stubs-2.$(OBJEXT) \
+	guestfsd-stubs-3.$(OBJEXT) guestfsd-stubs-4.$(OBJEXT) \
+	guestfsd-stubs-5.$(OBJEXT) guestfsd-stubs-6.$(OBJEXT) \
+	guestfsd-swap.$(OBJEXT) guestfsd-sync.$(OBJEXT) \
+	guestfsd-syslinux.$(OBJEXT) guestfsd-tar.$(OBJEXT) \
+	guestfsd-tsk.$(OBJEXT) guestfsd-truncate.$(OBJEXT) \
+	guestfsd-umask.$(OBJEXT) guestfsd-upload.$(OBJEXT) \
+	guestfsd-utimens.$(OBJEXT) guestfsd-utsname.$(OBJEXT) \
+	guestfsd-uuids.$(OBJEXT) guestfsd-wc.$(OBJEXT) \
+	guestfsd-xattr.$(OBJEXT) guestfsd-xfs.$(OBJEXT) \
+	guestfsd-zero.$(OBJEXT) guestfsd-zerofree.$(OBJEXT)
 guestfsd_OBJECTS = $(am_guestfsd_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfsd_DEPENDENCIES = ../common/errnostring/liberrnostring.la \
@@ -1737,6 +1737,8 @@ generator_built = \
 	dispatch.c \
 	names.c \
 	lvm-tokenization.c \
+	structs-cleanups.c \
+	structs-cleanups.h \
 	stubs-0.c \
 	stubs-1.c \
 	stubs-2.c \
@@ -1851,6 +1853,8 @@ guestfsd_SOURCES = \
 	stat.c \
 	statvfs.c \
 	strings.c \
+	structs-cleanups.c \
+	structs-cleanups.h \
 	stubs-0.c \
 	stubs-1.c \
 	stubs-2.c \
@@ -2118,6 +2122,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-statvfs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-strings.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-structs-cleanups.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-0.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-2.Po@am__quote@
@@ -3439,6 +3444,20 @@ guestfsd-strings.obj: strings.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='strings.c' object='guestfsd-strings.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-strings.obj `if test -f 'strings.c'; then $(CYGPATH_W) 'strings.c'; else $(CYGPATH_W) '$(srcdir)/strings.c'; fi`
+
+guestfsd-structs-cleanups.o: structs-cleanups.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-structs-cleanups.o -MD -MP -MF $(DEPDIR)/guestfsd-structs-cleanups.Tpo -c -o guestfsd-structs-cleanups.o `test -f 'structs-cleanups.c' || echo '$(srcdir)/'`structs-cleanups.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-structs-cleanups.Tpo $(DEPDIR)/guestfsd-structs-cleanups.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs-cleanups.c' object='guestfsd-structs-cleanups.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-structs-cleanups.o `test -f 'structs-cleanups.c' || echo '$(srcdir)/'`structs-cleanups.c
+
+guestfsd-structs-cleanups.obj: structs-cleanups.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-structs-cleanups.obj -MD -MP -MF $(DEPDIR)/guestfsd-structs-cleanups.Tpo -c -o guestfsd-structs-cleanups.obj `if test -f 'structs-cleanups.c'; then $(CYGPATH_W) 'structs-cleanups.c'; else $(CYGPATH_W) '$(srcdir)/structs-cleanups.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-structs-cleanups.Tpo $(DEPDIR)/guestfsd-structs-cleanups.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs-cleanups.c' object='guestfsd-structs-cleanups.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-structs-cleanups.obj `if test -f 'structs-cleanups.c'; then $(CYGPATH_W) 'structs-cleanups.c'; else $(CYGPATH_W) '$(srcdir)/structs-cleanups.c'; fi`
 
 guestfsd-stubs-0.o: stubs-0.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-0.o -MD -MP -MF $(DEPDIR)/guestfsd-stubs-0.Tpo -c -o guestfsd-stubs-0.o `test -f 'stubs-0.c' || echo '$(srcdir)/'`stubs-0.c

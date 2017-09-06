@@ -188,7 +188,8 @@ host_triplet = @host@
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-on-option.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-print-source.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-sound.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(SLOW_TESTS)
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(SLOW_TESTS) \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(ROOT_TESTS)
 
 @HAVE_OCAML_TRUE@am__append_6 = \
 @HAVE_OCAML_TRUE@	windows.vmdk
@@ -209,6 +210,8 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	test-v2v-floppy.sh \
 @HAVE_OCAML_TRUE@	test-v2v-floppy.xml \
 @HAVE_OCAML_TRUE@	test-v2v-i-disk.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-as-root.ovf \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-as-root.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-bad-sha1.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-bad-sha256.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-checksums.ovf \
@@ -251,7 +254,9 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	test-v2v-oa-option.sh \
 @HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
 @HAVE_OCAML_TRUE@	test-v2v-on-option.sh \
+@HAVE_OCAML_TRUE@	test-v2v-print-source.expected \
 @HAVE_OCAML_TRUE@	test-v2v-print-source.sh \
+@HAVE_OCAML_TRUE@	test-v2v-print-source.xml \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of.sh \
 @HAVE_OCAML_TRUE@	test-v2v-sound.sh \
 @HAVE_OCAML_TRUE@	test-v2v-sound.xml \
@@ -2005,6 +2010,7 @@ SOURCES_MLI = \
 	output_rhv.mli \
 	output_vdsm.mli \
 	OVF.mli \
+	parse_ovf_from_ova.mli \
 	parse_libvirt_xml.mli \
 	qemu_command.mli \
 	target_bus_assignment.mli \
@@ -2025,6 +2031,7 @@ SOURCES_ML = \
 	DOM.ml \
 	changeuid.ml \
 	OVF.ml \
+	parse_ovf_from_ova.ml \
 	linux.ml \
 	windows.ml \
 	windows_virtio.ml \
@@ -2173,6 +2180,9 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@SLOW_TESTS = \
 @HAVE_OCAML_TRUE@	$(real_guests_scripts) \
 @HAVE_OCAML_TRUE@	test-v2v-trim.sh
+
+@HAVE_OCAML_TRUE@ROOT_TESTS = \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-as-root.sh
 
 
 # A selection of real guests that test-v2v-conversion-of.sh will
@@ -3050,6 +3060,13 @@ test-v2v-trim.sh.log: test-v2v-trim.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-i-ova-as-root.sh.log: test-v2v-i-ova-as-root.sh
+	@p='test-v2v-i-ova-as-root.sh'; \
+	b='test-v2v-i-ova-as-root.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -3320,6 +3337,9 @@ export TEST_FUNCTIONS := \
 
 @HAVE_OCAML_TRUE@check-slow:
 @HAVE_OCAML_TRUE@	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
+
+@HAVE_OCAML_TRUE@check-root:
+@HAVE_OCAML_TRUE@	$(MAKE) check TESTS="$(ROOT_TESTS)"
 
 @HAVE_OCAML_TRUE@test-v2v-conversion-of-%.sh:
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t

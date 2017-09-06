@@ -1786,7 +1786,8 @@ scripts = \
 	guestmount \
 	virt-alignment-scan \
 	virt-rescue \
-	virt-v2v
+	virt-v2v \
+	virt-v2v-copy-to-local
 
 
 # Some of the scripts are simply symbolic links.
@@ -1815,7 +1816,8 @@ symlinks = \
 	virt-sysprep \
 	virt-tail \
 	virt-tar-in \
-	virt-tar-out
+	virt-tar-out \
+	virt-win-reg
 
 
 # Note: Don't distribute the symbolic links, only the real files.
@@ -2119,8 +2121,8 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-@HAVE_BASH_COMPLETION_FALSE@install-data-local:
 @HAVE_BASH_COMPLETION_FALSE@clean-local:
+@HAVE_BASH_COMPLETION_FALSE@install-data-local:
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-local mostlyclean-am
@@ -2257,11 +2259,17 @@ export TEST_FUNCTIONS := \
 	abs_top_srcdir="$(abs_top_srcdir)" \
 	abs_top_builddir="$(abs_top_builddir)"
 
-# Any tool that has --short-options and --long-options is handled by
-# this common script.  However this script cannot deal with commands
-# that use --ro/--rw (eg. virt-rescue), nor commands that have lots of
-# exceptions (eg. guestfish).  Those tools have to be handled
-# individually.
+# Any tool that has --short-options and --long-options only is handled
+# by this common script.
+virt-win-reg:
+	rm -f $@
+	$(LN_S) virt-v2v-copy-to-local $@
+
+# Any tool that has --short-options and --long-options and a few
+# common options like -d is handled by this common script.  However
+# this script cannot deal with commands that use --ro/--rw
+# (eg. virt-rescue), nor commands that have lots of exceptions
+# (eg. guestfish).  Those tools have to be handled individually.
 guestunmount \
 virt-builder virt-cat virt-customize virt-df virt-dib virt-diff \
 virt-edit virt-filesystems virt-format virt-get-kernel virt-inspector \

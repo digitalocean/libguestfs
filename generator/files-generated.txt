@@ -18,6 +18,8 @@ daemon/lvm-tokenization.c
 daemon/names.c
 daemon/optgroups.c
 daemon/optgroups.h
+daemon/structs-cleanups.c
+daemon/structs-cleanups.h
 daemon/stubs-0.c
 daemon/stubs-1.c
 daemon/stubs-2.c

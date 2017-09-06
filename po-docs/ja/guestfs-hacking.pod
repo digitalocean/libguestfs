@@ -652,9 +652,43 @@ Add a rule to the F<Makefile.am>:
 
 =back
 
+=item C<sudo make check-root>
+
+Runs some tests which require root privileges.  These are supposed to be
+safe, but take care.  You have to run this as root (eg. using L<sudo(8)>
+explicitly).
+
+To mark a test as requiring root:
+
+=over 4
+
+=item *
+
+Add it to the list of C<TESTS> in the F<Makefile.am>, just like a normal
+test.
+
+=item *
+
+Modify the test so it checks if euid == 0, and if I<not> set it skips
+(ie. returns with exit code 77).  If using C<$TEST_FUNCTIONS>, you can call
+the function C<root_test> for this.
+
+=item *
+
+Add a variable C<ROOT_TESTS> to the F<Makefile.am> listing the root tests.
+
+=item *
+
+Add a rule to the F<Makefile.am>:
+
+ check-root:
+   $(MAKE) check TESTS="$(ROOT_TESTS)"
+
+=back
+
 =item C<make check-all>
 
-Equivalent to running all C<make check*> rules.
+Equivalent to running all C<make check*> rules except C<check-root>.
 
 =item C<make check-release>
 
@@ -905,7 +939,8 @@ To do that, do:
 
 This also runs qemu with the "physical machine" disk (which you can set by
 setting C<PHYSICAL_MACHINE>), a virtual CD, and a variety of network cards
-for testing.
+for testing.  You can change the qemu binary and add extra qemu options by
+setting C<QEMU> and/or C<QEMU_OPTIONS> on the make commandline.
 
 A third way to run virt-p2v simulates fairly accurately the program being
 downloaded over PXE and then doing an automatic conversion of the source

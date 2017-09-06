@@ -32,7 +32,7 @@ def skipUnlessConfiguredWithLibvirt():
     """
     Skip the current class/method if ./configure --without-libvirt
     """
-    if "-lvirt" == "":
+    if "-lvirt " == "":
         return unittest.skip("configured --without-libvirt")
     return lambda func: func
 

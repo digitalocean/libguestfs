@@ -2934,6 +2934,7 @@ run-virt-p2v-in-a-vm: virt-p2v.img $(PHYSICAL_MACHINE)
 	  -device rtl8139,netdev=net1 \
 	  -netdev user,id=net2 \
 	  -device e1000,netdev=net2 \
+	  $(QEMU_OPTIONS) \
 	  &
 
 run-virt-p2v-non-gui-conversion: stamp-test-virt-p2v-pxe-data-files
@@ -2950,6 +2951,9 @@ virt-p2v.img: \
 	    virt-p2v \
 	    virt-p2v-make-disk
 	$(top_builddir)/run virt-p2v-make-disk -o $@
+
+check-valgrind:
+	make VG="@VG@" check
 
 check-slow: stamp-test-virt-p2v-pxe-data-files
 	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
