@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -343,13 +343,13 @@ am__v_AR_1 =
 libguestfsocaml_a_AR = $(AR) $(ARFLAGS)
 libguestfsocaml_a_LIBADD =
 am__libguestfsocaml_a_SOURCES_DIST = guestfs-c.c guestfs-c-actions.c \
-	guestfs-c-errnos.c ../src/utils.c
+	guestfs-c-errnos.c ../common/utils/utils.c
 am__dirstamp = $(am__leading_dot)dirstamp
 @HAVE_OCAML_TRUE@am_libguestfsocaml_a_OBJECTS =  \
 @HAVE_OCAML_TRUE@	libguestfsocaml_a-guestfs-c.$(OBJEXT) \
 @HAVE_OCAML_TRUE@	libguestfsocaml_a-guestfs-c-actions.$(OBJEXT) \
 @HAVE_OCAML_TRUE@	libguestfsocaml_a-guestfs-c-errnos.$(OBJEXT) \
-@HAVE_OCAML_TRUE@	../src/libguestfsocaml_a-utils.$(OBJEXT)
+@HAVE_OCAML_TRUE@	../common/utils/libguestfsocaml_a-utils.$(OBJEXT)
 libguestfsocaml_a_OBJECTS = $(am_libguestfsocaml_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -1894,7 +1894,8 @@ EXTRA_DIST = \
 @HAVE_OCAML_TRUE@libguestfsocaml_a_CPPFLAGS = \
 @HAVE_OCAML_TRUE@	-DGUESTFS_PRIVATE=1 \
 @HAVE_OCAML_TRUE@	-I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I../gnulib/lib
 
 @HAVE_OCAML_TRUE@libguestfsocaml_a_CFLAGS = \
@@ -1905,7 +1906,7 @@ EXTRA_DIST = \
 @HAVE_OCAML_TRUE@	guestfs-c.c \
 @HAVE_OCAML_TRUE@	guestfs-c-actions.c \
 @HAVE_OCAML_TRUE@	guestfs-c-errnos.c \
-@HAVE_OCAML_TRUE@	../src/utils.c
+@HAVE_OCAML_TRUE@	../common/utils/utils.c
 
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @HAVE_OCAML_TRUE@LOG_COMPILER = $(VG)
@@ -1982,14 +1983,15 @@ META: $(top_builddir)/config.status $(srcdir)/META.in
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-../src/$(am__dirstamp):
-	@$(MKDIR_P) ../src
-	@: > ../src/$(am__dirstamp)
-../src/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../src/$(DEPDIR)
-	@: > ../src/$(DEPDIR)/$(am__dirstamp)
-../src/libguestfsocaml_a-utils.$(OBJEXT): ../src/$(am__dirstamp) \
-	../src/$(DEPDIR)/$(am__dirstamp)
+../common/utils/$(am__dirstamp):
+	@$(MKDIR_P) ../common/utils
+	@: > ../common/utils/$(am__dirstamp)
+../common/utils/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../common/utils/$(DEPDIR)
+	@: > ../common/utils/$(DEPDIR)/$(am__dirstamp)
+../common/utils/libguestfsocaml_a-utils.$(OBJEXT):  \
+	../common/utils/$(am__dirstamp) \
+	../common/utils/$(DEPDIR)/$(am__dirstamp)
 
 libguestfsocaml.a: $(libguestfsocaml_a_OBJECTS) $(libguestfsocaml_a_DEPENDENCIES) $(EXTRA_libguestfsocaml_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libguestfsocaml.a
@@ -1998,12 +2000,12 @@ libguestfsocaml.a: $(libguestfsocaml_a_OBJECTS) $(libguestfsocaml_a_DEPENDENCIES
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../src/*.$(OBJEXT)
+	-rm -f ../common/utils/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libguestfsocaml_a-utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../common/utils/$(DEPDIR)/libguestfsocaml_a-utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfsocaml_a-guestfs-c-actions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfsocaml_a-guestfs-c-errnos.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfsocaml_a-guestfs-c.Po@am__quote@
@@ -2074,19 +2076,19 @@ libguestfsocaml_a-guestfs-c-errnos.obj: guestfs-c-errnos.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o libguestfsocaml_a-guestfs-c-errnos.obj `if test -f 'guestfs-c-errnos.c'; then $(CYGPATH_W) 'guestfs-c-errnos.c'; else $(CYGPATH_W) '$(srcdir)/guestfs-c-errnos.c'; fi`
 
-../src/libguestfsocaml_a-utils.o: ../src/utils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT ../src/libguestfsocaml_a-utils.o -MD -MP -MF ../src/$(DEPDIR)/libguestfsocaml_a-utils.Tpo -c -o ../src/libguestfsocaml_a-utils.o `test -f '../src/utils.c' || echo '$(srcdir)/'`../src/utils.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libguestfsocaml_a-utils.Tpo ../src/$(DEPDIR)/libguestfsocaml_a-utils.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../src/utils.c' object='../src/libguestfsocaml_a-utils.o' libtool=no @AMDEPBACKSLASH@
+../common/utils/libguestfsocaml_a-utils.o: ../common/utils/utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT ../common/utils/libguestfsocaml_a-utils.o -MD -MP -MF ../common/utils/$(DEPDIR)/libguestfsocaml_a-utils.Tpo -c -o ../common/utils/libguestfsocaml_a-utils.o `test -f '../common/utils/utils.c' || echo '$(srcdir)/'`../common/utils/utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../common/utils/$(DEPDIR)/libguestfsocaml_a-utils.Tpo ../common/utils/$(DEPDIR)/libguestfsocaml_a-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../common/utils/utils.c' object='../common/utils/libguestfsocaml_a-utils.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o ../src/libguestfsocaml_a-utils.o `test -f '../src/utils.c' || echo '$(srcdir)/'`../src/utils.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o ../common/utils/libguestfsocaml_a-utils.o `test -f '../common/utils/utils.c' || echo '$(srcdir)/'`../common/utils/utils.c
 
-../src/libguestfsocaml_a-utils.obj: ../src/utils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT ../src/libguestfsocaml_a-utils.obj -MD -MP -MF ../src/$(DEPDIR)/libguestfsocaml_a-utils.Tpo -c -o ../src/libguestfsocaml_a-utils.obj `if test -f '../src/utils.c'; then $(CYGPATH_W) '../src/utils.c'; else $(CYGPATH_W) '$(srcdir)/../src/utils.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libguestfsocaml_a-utils.Tpo ../src/$(DEPDIR)/libguestfsocaml_a-utils.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../src/utils.c' object='../src/libguestfsocaml_a-utils.obj' libtool=no @AMDEPBACKSLASH@
+../common/utils/libguestfsocaml_a-utils.obj: ../common/utils/utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT ../common/utils/libguestfsocaml_a-utils.obj -MD -MP -MF ../common/utils/$(DEPDIR)/libguestfsocaml_a-utils.Tpo -c -o ../common/utils/libguestfsocaml_a-utils.obj `if test -f '../common/utils/utils.c'; then $(CYGPATH_W) '../common/utils/utils.c'; else $(CYGPATH_W) '$(srcdir)/../common/utils/utils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../common/utils/$(DEPDIR)/libguestfsocaml_a-utils.Tpo ../common/utils/$(DEPDIR)/libguestfsocaml_a-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../common/utils/utils.c' object='../common/utils/libguestfsocaml_a-utils.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o ../src/libguestfsocaml_a-utils.obj `if test -f '../src/utils.c'; then $(CYGPATH_W) '../src/utils.c'; else $(CYGPATH_W) '$(srcdir)/../src/utils.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfsocaml_a_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o ../common/utils/libguestfsocaml_a-utils.obj `if test -f '../common/utils/utils.c'; then $(CYGPATH_W) '../common/utils/utils.c'; else $(CYGPATH_W) '$(srcdir)/../common/utils/utils.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2557,8 +2559,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../src/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../src/$(am__dirstamp)
+	-rm -f ../common/utils/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../common/utils/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2573,7 +2575,7 @@ clean-am: clean-generic clean-libtool clean-local \
 	clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../src/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ../common/utils/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2620,7 +2622,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../src/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ../common/utils/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -2690,6 +2692,27 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
+
 @HAVE_OCAML_TRUE@mlguestfs.cma mlguestfs.cmxa: stamp-mlguestfs
 
 @HAVE_OCAML_TRUE@stamp-mlguestfs: libguestfsocaml.a $(guestfs_cmm)
@@ -2697,12 +2720,12 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	  $(libguestfsocaml_a_OBJECTS) guestfs.cmo \
 @HAVE_OCAML_TRUE@	  $(LDFLAGS) \
 @HAVE_OCAML_TRUE@	  $(LTLIBINTL) \
-@HAVE_OCAML_TRUE@	  -L$(top_builddir)/src/.libs -lguestfs
+@HAVE_OCAML_TRUE@	  -L../lib/.libs -lguestfs
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) -o mlguestfs \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  $(libguestfsocaml_a_OBJECTS) guestfs.cmx \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  $(LDFLAGS) \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  $(LTLIBINTL) \
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -L$(top_builddir)/src/.libs -lguestfs
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	  -L../lib/.libs -lguestfs
 @HAVE_OCAML_TRUE@	touch $@
 
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@html/index.html: $(srcdir)/guestfs.mli $(srcdir)/guestfs.ml
@@ -2712,11 +2735,11 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@	rm -rf html/*
 
 @HAVE_OCAML_TRUE@%.bc: %.cmo mlguestfs.cma
-@HAVE_OCAML_TRUE@	$(guestfs_am_v_ocamlc)$(top_builddir)/libtool -dlopen $(top_builddir)/src/.libs/libguestfs.la --mode=execute \
+@HAVE_OCAML_TRUE@	$(guestfs_am_v_ocamlc)$(top_builddir)/libtool -dlopen $(top_builddir)/lib/.libs/libguestfs.la --mode=execute \
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -I . -package unix -linkpkg mlguestfs.cma $< -o $@
 
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@%.opt: %.cmx mlguestfs.cmxa
-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/lib/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="@VG@" TESTS="$(test_progs_all)" check

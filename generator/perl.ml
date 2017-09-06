@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 open Printf
 
+open Common_utils
 open Types
 open Utils
 open Pr
@@ -55,7 +56,7 @@ let rec generate_perl_xs () =
 #endif
 
 #include <guestfs.h>
-#include \"guestfs-internal-frontend.h\"
+#include \"guestfs-internal-all.h\"
 
 static SV *
 my_newSVll(long long val) {
@@ -419,20 +420,20 @@ PREINIT:
       (match ret with
        | RErr ->
            pr " PPCODE:\n";
-       | RInt n
-       | RBool n ->
+       | RInt _
+       | RBool _ ->
            pr "   CODE:\n";
-       | RInt64 n ->
+       | RInt64 _ ->
            pr "   CODE:\n";
-       | RConstString n ->
+       | RConstString _ ->
            pr "   CODE:\n";
-       | RConstOptString n ->
+       | RConstOptString _ ->
            pr "   CODE:\n";
-       | RString n ->
+       | RString _ ->
            pr "   CODE:\n";
-       | RStringList n | RHashtable n ->
+       | RStringList _ | RHashtable _ ->
            pr " PPCODE:\n";
-       | RBufferOut n ->
+       | RBufferOut _ ->
            pr "   CODE:\n";
        | RStruct _
        | RStructList _ ->
@@ -455,7 +456,7 @@ PREINIT:
         List.iter (
           fun argt ->
             let n = name_of_optargt argt in
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "if (STREQ (this_arg, \"%s\")) {\n" n;
             (match argt with
              | OBool _
@@ -524,40 +525,40 @@ PREINIT:
        | RErr ->
            pr "      if (r == -1)\n";
            pr "        croak (\"%%s\", guestfs_last_error (g));\n";
-       | RInt n
-       | RBool n ->
+       | RInt _
+       | RBool _ ->
            pr "      if (r == -1)\n";
            pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      RETVAL = newSViv (r);\n";
            pr " OUTPUT:\n";
            pr "      RETVAL\n"
-       | RInt64 n ->
+       | RInt64 _ ->
            pr "      if (r == -1)\n";
            pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      RETVAL = my_newSVll (r);\n";
            pr " OUTPUT:\n";
            pr "      RETVAL\n"
-       | RConstString n ->
+       | RConstString _ ->
            pr "      if (r == NULL)\n";
            pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      RETVAL = newSVpv (r, 0);\n";
            pr " OUTPUT:\n";
            pr "      RETVAL\n"
-       | RConstOptString n ->
+       | RConstOptString _ ->
            pr "      if (r == NULL)\n";
            pr "        RETVAL = &PL_sv_undef;\n";
            pr "      else\n";
            pr "        RETVAL = newSVpv (r, 0);\n";
            pr " OUTPUT:\n";
            pr "      RETVAL\n"
-       | RString n ->
+       | RString _ ->
            pr "      if (r == NULL)\n";
            pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      RETVAL = newSVpv (r, 0);\n";
            pr "      free (r);\n";
            pr " OUTPUT:\n";
            pr "      RETVAL\n"
-       | RStringList n | RHashtable n ->
+       | RStringList _ | RHashtable _ ->
            pr "      if (r == NULL)\n";
            pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      for (n = 0; r[n] != NULL; ++n) /**/;\n";
@@ -567,13 +568,13 @@ PREINIT:
            pr "        free (r[i]);\n";
            pr "      }\n";
            pr "      free (r);\n";
-       | RStruct (n, typ) ->
+       | RStruct (_, typ) ->
            let cols = cols_of_struct typ in
-           generate_perl_struct_code typ cols name style n
-       | RStructList (n, typ) ->
+           generate_perl_struct_code typ cols name style
+       | RStructList (_, typ) ->
            let cols = cols_of_struct typ in
-           generate_perl_struct_list_code typ cols name style n
-       | RBufferOut n ->
+           generate_perl_struct_list_code typ cols name style
+       | RBufferOut _ ->
            pr "      if (r == NULL)\n";
            pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      RETVAL = newSVpvn (r, size);\n";
@@ -585,7 +586,7 @@ PREINIT:
       pr "\n"
   ) (actions |> external_functions |> sort)
 
-and generate_perl_struct_list_code typ cols name style n =
+and generate_perl_struct_list_code typ cols name style =
   pr "      if (r == NULL)\n";
   pr "        croak (\"%%s\", guestfs_last_error (g));\n";
   pr "      EXTEND (SP, r->len);\n";
@@ -622,7 +623,7 @@ and generate_perl_struct_list_code typ cols name style n =
   pr "      }\n";
   pr "      guestfs_free_%s_list (r);\n" typ
 
-and generate_perl_struct_code typ cols name style n =
+and generate_perl_struct_code typ cols name style =
   pr "      if (r == NULL)\n";
   pr "        croak (\"%%s\", guestfs_last_error (g));\n";
   pr "      EXTEND (SP, 2 * %d);\n" (List.length cols);
@@ -663,6 +664,8 @@ and generate_perl_pm () =
   generate_header HashStyle LGPLv2plus;
 
   pr "\
+=encoding utf8
+
 =pod
 
 =head1 NAME
@@ -787,14 +790,14 @@ when the final reference is cleaned up is OK).
 
   List.iter (
     fun (name, bitmask) ->
-      pr "=item $Sys::Guestfs::EVENT_%s\n" (String.uppercase name);
+      pr "=item $Sys::Guestfs::EVENT_%s\n" (String.uppercase_ascii name);
       pr "\n";
       pr "See L<guestfs(3)/GUESTFS_EVENT_%s>.\n"
-        (String.uppercase name);
+        (String.uppercase_ascii name);
       pr "\n";
       pr "=cut\n";
       pr "\n";
-      pr "our $EVENT_%s = 0x%x;\n" (String.uppercase name) bitmask;
+      pr "our $EVENT_%s = 0x%x;\n" (String.uppercase_ascii name) bitmask;
       pr "\n"
   ) events;
 
@@ -888,7 +891,7 @@ errnos:
   List.iter (
     fun ({ name = name; style = style;
            longdesc = longdesc; non_c_aliases = non_c_aliases } as f) ->
-      let longdesc = replace_str longdesc "C<guestfs_" "C<$g-E<gt>" in
+      let longdesc = String.replace longdesc "C<guestfs_" "C<$g-E<gt>" in
       pr "=item ";
       generate_perl_prototype name style;
       pr "\n\n";

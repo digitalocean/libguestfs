@@ -100,7 +100,7 @@ more, read L<guestfs(3)/LIBGUESTFS VERSION NUMBERS>.
 
 =head2 Як допомогти проектові?
 
-=head2 What mailing lists or chat rooms are available?
+=head2 Якими списками листування або кімнатами спілкування можна скористатися?
 
 If you are a S<Red Hat> customer using Red Hat Enterprise Linux, please
 contact S<Red Hat Support>: L<http://redhat.com/support>
@@ -159,9 +159,9 @@ If, after using this, you still don't understand the failure, contact us
 фіксованого розгортання або розгортання у застарілому стилі за адресою
 LIBGUESTFS_PATH
 
-=head2 febootstrap-supermin-helper: ext2: parent directory not found
+=head2 febootstrap-supermin-helper: ext2: не знайдено батьківського каталогу
 
-=head2 supermin-helper: ext2: parent directory not found
+=head2 supermin-helper: ext2: не знайдено батьківського каталогу
 
 [This issue is fixed permanently in libguestfs E<ge> 1.26.]
 
@@ -196,7 +196,7 @@ Switch to the direct backend:
 
 =item *
 
-Don't run libguestfs as root.
+Не запускайте libguestfs від імені користувача root.
 
 =item *
 
@@ -444,9 +444,10 @@ L<guestfs-internals(1)/FIXED APPLIANCE>.
 For pre-compiled appliances, see also:
 L<http://libguestfs.org/download/binaries/appliance/>.
 
-Patches to port supermin to more Linux distros are welcome.
+Ми будемо раді надісланим вами латкам для портування supermin на інші
+дистрибутиви Linux.
 
-=head2 How can I add support for sVirt?
+=head2 Як додати підтримку для sVirt?
 
 B<Note for Fedora/RHEL users:> This configuration is the default starting
 with S<Fedora 18> and S<RHEL 7>.  If you find any problems, please let us
@@ -464,7 +465,7 @@ preferred), libguestfs E<ge> 1.20, and the SELinux policies from recent
 Fedora.  If you are not running S<Fedora 18+>, you will need to make changes
 to your SELinux policy - contact us on the mailing list.
 
-Once you have the requirements, do:
+Щойно усі вимоги буде задоволено, зробіть наступне:
 
  ./configure --with-default-backend=libvirt       # libguestfs >= 1.22
  ./configure --with-default-attach-method=libvirt # libguestfs <= 1.20
@@ -513,7 +514,7 @@ C<libguestfs-xfs> as a separate subpackage for processing XFS disk images.
 We encourage downstream packagers to start splitting the base libguestfs
 package into smaller subpackages.
 
-=head2 Errors during launch on Fedora E<ge> 18, RHEL E<ge> 7
+=head2 Помилки під час запуску на Fedora E<ge> 18, RHEL E<ge> 7
 
 In Fedora E<ge> 18 and RHEL E<ge> 7, libguestfs uses libvirt to manage the
 appliance.  Previously (and upstream) libguestfs runs qemu directly:
@@ -521,7 +522,7 @@ appliance.  Previously (and upstream) libguestfs runs qemu directly:
  ┌──────────────────────────────────┐
  │ libguestfs                       │
  ├────────────────┬─────────────────┤
- │ direct backend │ libvirt backend │
+ │ безп. модуль │ модуль libvirt │
  └────────────────┴─────────────────┘
         ↓                  ↓
     ┌───────┐         ┌──────────┐
@@ -545,7 +546,7 @@ to the direct backend by setting this environment variable:
 
  export LIBGUESTFS_BACKEND=direct
 
-before running any libguestfs program or virt tool.
+до запуску будь-яких інструментів libguestfs або virt.
 
 =head2 How can I switch to a fixed / prebuilt appliance?
 
@@ -575,7 +576,7 @@ By far the most important thing you can do is to install and properly
 configure Squid.  Note that the default configuration that ships with Squid
 is rubbish, so configuring it is not optional.
 
-A very good place to start with Squid configuration is here:
+Чудові початкові поради щодо налаштовування Squid можна знайти тут:
 L<https://fedoraproject.org/wiki/Extras/MockTricks#Using_Squid_to_Speed_Up_Mock_package_downloads>
 
 Make sure Squid is running, and that the environment variables
@@ -590,7 +591,7 @@ Hilko Bengen suggests using "approx" which is a Debian archive proxy
 (L<http://packages.debian.org/approx>).  This tool is documented on Debian
 in the approx(8) manual page.
 
-=head1 SPEED, DISK SPACE USED BY LIBGUESTFS
+=head1 ШВИДКІСТЬ, МІСЦЕ НА ДИСКУ, ЯКЕ ЗАЙНЯТО LIBGUESTFS
 
 B<Note:> Most of the information in this section has moved:
 L<guestfs-performance(1)>.
@@ -603,7 +604,7 @@ allocations while you are writing. The solution is to use a fully allocated
 format instead, ie. non-sparse raw, or qcow2 with the
 C<preallocation=metadata> option.
 
-=head2 Libguestfs uses too much disk space!
+=head2 Libguestfs займає надто багато місця на диску!
 
 libguestfs caches a large-ish appliance in:
 
@@ -666,12 +667,12 @@ place.  Use:
 
 But first you should read L<virt-sparsify(1)/IN-PLACE SPARSIFICATION>.
 
-=head1 PROBLEMS OPENING DISK IMAGES
+=head1 ПРОБЛЕМИ З ВІДКРИТТЯМ ОБРАЗІВ ДИСКІВ
 
-=head2 Remote libvirt guests cannot be opened.
+=head2 Неможливо відкрити віддалені гостьові системи libvirt.
 
-Opening remote libvirt guests is not supported at this time.  For example
-this won't work:
+Підтримки відкриття віддалених гостьових систем libvirt у поточній версії не
+передбачено. Наприклад, така команда не працюватиме:
 
  guestfish -c qemu://remote/system -d Guest
 
@@ -684,7 +685,7 @@ export.  For example if you decided to use NBD:
 Other possibilities include ssh (if qemu is recent enough), NFS or iSCSI.
 See L<guestfs(3)/REMOTE STORAGE>.
 
-=head2 How can I open this strange disk source?
+=head2 Як відкрити якесь дивне дискове джерело?
 
 You have a disk image located inside another system that requires access via
 a library / HTTP / REST / proprietary API, or is compressed or archived in
@@ -726,8 +727,8 @@ L<guestfs(3)/REMOTE STORAGE>.
 
 =item 2.
 
-Use VMware's proprietary vdiskmanager tool to convert the image to raw
-format.
+Скористайтеся пропрієтарною програмою vdiskmanager з VMware для перетворення
+образу у простий (raw) формат.
 
 =item 3.
 
@@ -736,7 +737,8 @@ an NBD source.  This should allow you to read and write the VMDK file.
 
 =back
 
-=head2 UFS disks (as used by BSD) cannot be opened.
+=head2 Не передбачено можливості відкриття дисків UFS (у форматі, що
+використовується BSD).
 
 The UFS filesystem format has many variants, and these are not
 self-identifying.  The Linux kernel has to be told which variant of UFS it
@@ -773,7 +775,7 @@ question marks.
 
 =back
 
-This is a design flaw of the GNU/Linux system.
+Це конструктивна проблема системи GNU/Linux.
 
 VFAT stores long filenames as UTF-16 characters.  When opening or returning
 filenames, the Linux kernel has to translate these to some form of 8 bit
@@ -790,7 +792,7 @@ From guestfish, use:
 
  ><fs> параметри_монтування utf8 /dev/sda1 /
 
-or on the guestfish command line:
+або у командному рядку guestfish:
 
  guestfish [...] -m /dev/sda1:/:utf8
 
@@ -828,7 +830,7 @@ filesystem.
 
 =head2 Cannot open Windows guests which use NTFS.
 
-You see errors like:
+Ви бачите такі повідомлення про помилки:
 
  mount: unknown filesystem type 'ntfs'
 
@@ -901,7 +903,7 @@ programs).
 
 =head1 ДІАГНОСТИКА LIBGUESTFS
 
-=head2 Help, it's not working!
+=head2 Допоможіть! Не працює!
 
 If no libguestfs program seems to work at all, run the program below and
 paste the B<complete, unedited> output into an email to C<libguestfs> @
@@ -916,15 +918,16 @@ checklist, in an email to C<libguestfs> @ C<redhat.com>:
 
 =item 1.
 
-What are you trying to do?
+Що саме ви намагаєтеся зробити?
 
 =item 2.
 
-What exact command(s) did you run?
+Які саме команди було віддано вами?
 
 =item 3.
 
-What was the precise error or output of these commands?
+Як саме виглядало повідомлення про помилку або результат виконання ваших
+команд?
 
 =item 4.
 
@@ -991,7 +994,8 @@ For best results, call these functions as early as possible, just after
 creating the guestfs handle if you can, and definitely before calling
 launch.
 
-=head2 How do I capture debug output and put it into my logging system?
+=head2 Як перехопити діагностичні повідомлення і спрямувати їх до системи ведення
+журналу?
 
 Use the event API.  For examples, see: L<guestfs(3)/SETTING CALLBACKS TO
 HANDLE EVENTS> and the F<examples/debug-logging.c> program in the libguestfs
@@ -1008,7 +1012,7 @@ Enable debugging and look at the full output.  If you cannot work out what
 is going on, file a bug report, including the I<complete> output of
 L<libguestfs-test-tool(1)>.
 
-=head2 Debugging libvirt
+=head2 Діагностування libvirt
 
 If you are using the libvirt backend, and libvirt is failing, then you can
 enable debugging by editing F</etc/libvirt/libvirtd.conf>.
@@ -1397,5 +1401,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2012–2016
+Copyright (C) 2012-2017 Red Hat Inc.
 

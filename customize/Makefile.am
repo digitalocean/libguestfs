@@ -1,5 +1,5 @@
 # virt-customize
-# Copyright (C) 2014-2016 Red Hat Inc.
+# Copyright (C) 2014-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	customize_main.ml \
 	test-firstboot.sh \
+	test-password.pl \
+	test-settings.sh \
 	test-virt-customize.sh \
 	test-virt-customize-docs.sh \
 	virt-customize.pod
@@ -33,6 +35,7 @@ generator_built = \
 	customize-synopsis.pod
 
 SOURCES_MLI = \
+	append_line.mli \
 	crypt.mli \
 	customize_cmdline.mli \
 	customize_run.mli \
@@ -49,6 +52,7 @@ SOURCES_MLI = \
 
 # This list must be in dependency order.
 SOURCES_ML = \
+	append_line.ml \
 	crypt.ml \
 	firstboot.ml \
 	hostname.ml \
@@ -64,8 +68,8 @@ SOURCES_ML = \
 	customize_run.ml
 
 SOURCES_C = \
-	../fish/file-edit.c \
-	../fish/file-edit.h \
+	../common/edit/file-edit.c \
+	../common/edit/file-edit.h \
 	crypt-c.c \
 	perl_edit-c.c
 
@@ -92,8 +96,9 @@ libcustomize_a_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 	-I$(shell $(OCAMLC) -where) \
-	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/fish
+	-I$(top_srcdir)/common/utils \
+	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/common/edit
 libcustomize_a_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(LIBVIRT_CFLAGS) \
@@ -109,12 +114,13 @@ else
 OBJECTS = $(XOBJECTS)
 endif
 
-# -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
+# -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 OCAMLPACKAGES = \
 	-package str,unix \
-	-I $(top_builddir)/src/.libs \
+	-I $(top_builddir)/common/utils/.libs \
+	-I $(top_builddir)/lib/.libs \
 	-I $(top_builddir)/gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
 	-I $(top_builddir)/mllib \
@@ -199,10 +205,12 @@ endif
 check-valgrind:
 	$(MAKE) VG="@VG@" check
 
-# Slow tests of firstboot functionality in real guests.
+# Slow tests of virt-customize functionality in real guests.
 
 SLOW_TESTS = \
-	$(firstboot_test_scripts)
+	$(firstboot_test_scripts) \
+	$(password_test_scripts) \
+	$(settings_test_scripts)
 
 check-slow:
 	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
@@ -215,7 +223,7 @@ firstboot_test_scripts := \
 	test-firstboot-debian-6.sh \
 	test-firstboot-debian-7.sh \
 	test-firstboot-debian-8.sh \
-	test-firstboot-fedora-24.sh \
+	test-firstboot-fedora-25.sh \
 	test-firstboot-ubuntu-10.04.sh \
 	test-firstboot-ubuntu-12.04.sh \
 	test-firstboot-ubuntu-14.04.sh \
@@ -226,13 +234,64 @@ firstboot_test_scripts := \
 test-firstboot-%.sh:
 	rm -f $@ $@-t
 	f=`echo "$@" | $(SED) 's/test-firstboot-\(.*\).sh/\1/'`; \
-	echo 'exec $$srcdir/test-firstboot.sh' "$$f" > $@-t
+	echo 'script=$@ exec $$srcdir/test-firstboot.sh' "$$f" > $@-t
+	chmod 0755 $@-t
+	mv $@-t $@
+
+password_test_scripts := \
+	test-password-centos-7.2.sh \
+	test-password-debian-6.sh \
+	test-password-debian-7.sh \
+	test-password-debian-8.sh \
+	test-password-fedora-25.sh \
+	test-password-rhel-3.9.sh \
+	test-password-rhel-4.9.sh \
+	test-password-rhel-5.11.sh \
+	test-password-rhel-6.9.sh \
+	test-password-rhel-7.2.sh \
+	test-password-ubuntu-10.04.sh \
+	test-password-ubuntu-12.04.sh \
+	test-password-ubuntu-14.04.sh \
+	test-password-ubuntu-16.04.sh
+
+test-password-%.sh:
+	rm -f $@ $@-t
+	f=`echo "$@" | $(SED) 's/test-password-\(.*\).sh/\1/'`; \
+	echo 'script=$@ exec $$srcdir/test-password.pl' "$$f" > $@-t
+	chmod 0755 $@-t
+	mv $@-t $@
+
+settings_test_scripts := \
+	test-settings-rhel-4.9.sh \
+	test-settings-rhel-5.11.sh \
+	test-settings-rhel-6.8.sh \
+	test-settings-rhel-7.2.sh \
+	test-settings-debian-6.sh \
+	test-settings-debian-7.sh \
+	test-settings-debian-8.sh \
+	test-settings-fedora-25.sh \
+	test-settings-ubuntu-10.04.sh \
+	test-settings-ubuntu-12.04.sh \
+	test-settings-ubuntu-14.04.sh \
+	test-settings-ubuntu-16.04.sh
+# Since firstboot is broken, we cannot test settings in RHEL 3:
+#	test-settings-rhel-3.9.sh
+
+test-settings-%.sh:
+	rm -f $@ $@-t
+	f=`echo "$@" | $(SED) 's/test-settings-\(.*\).sh/\1/'`; \
+	echo 'script=$@ exec $$srcdir/test-settings.sh' "$$f" > $@-t
 	chmod 0755 $@-t
 	mv $@-t $@
 
 CLEANFILES += \
 	$(firstboot_test_scripts) \
-	firstboot-*.img
+	$(password_test_scripts) \
+	$(settings_test_scripts) \
+	firstboot-*.img \
+	password-*.img \
+	password-*.log \
+	settings-*.img
 
 # Dependencies.
 depend: .depend

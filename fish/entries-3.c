@@ -939,7 +939,7 @@ struct command_entry hivex_open_cmd_entry = {
           "    hivex-open - open a Windows Registry hive file\n"
           "\n"
           "SYNOPSIS\n"
-          "     hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false]\n"
+          "     hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false] [unsafe:true|false]\n"
           "\n"
           "DESCRIPTION\n"
           "    Open the Windows Registry hive file named filename. If there was any\n"
@@ -949,7 +949,7 @@ struct command_entry hivex_open_cmd_entry = {
           "    This is a wrapper around the hivex(3) call of the same name.\n"
           "\n"
           "",
-  .synopsis = "hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false]",
+  .synopsis = "hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false] [unsafe:true|false]",
   .run = run_hivex_open
 };
 

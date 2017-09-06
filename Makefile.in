@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -147,7 +147,7 @@ host_triplet = @host@
 @ENABLE_APPLIANCE_TRUE@	tests/syslinux tests/journal \
 @ENABLE_APPLIANCE_TRUE@	tests/relative-paths tests/gdisk \
 @ENABLE_APPLIANCE_TRUE@	tests/regressions tests/tsk
-@HAVE_P2V_TRUE@am__append_5 = p2v
+@HAVE_P2V_TRUE@am__append_5 = common/miniexpect p2v
 
 # Language bindings.
 @HAVE_PERL_TRUE@am__append_6 = perl perl/examples
@@ -167,7 +167,7 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@am__append_17 = \
 @HAVE_OCAML_TRUE@	mllib \
 @HAVE_OCAML_TRUE@	customize \
-@HAVE_OCAML_TRUE@	builder builder/website \
+@HAVE_OCAML_TRUE@	builder builder/templates \
 @HAVE_OCAML_TRUE@	get-kernel \
 @HAVE_OCAML_TRUE@	resize \
 @HAVE_OCAML_TRUE@	sparsify \
@@ -365,7 +365,8 @@ CONFIG_CLEAN_FILES = installcheck.sh php/extension/php-for-tests.sh \
 	builder/test-config/virt-builder/repos.d/test-index.conf \
 	builder/test-simplestreams/virt-builder/repos.d/cirros.conf \
 	builder/test-website/virt-builder/repos.d/libguestfs.conf \
-	ruby/ext/guestfs/extconf.rb website/index.html
+	python/t/tests_helper.py ruby/ext/guestfs/extconf.rb \
+	website/index.html
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -425,7 +426,8 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = generator tests/qemu test-data gnulib/lib gnulib/tests \
-	src docs examples po daemon tests/daemon appliance tests/c-api \
+	common/errnostring common/protocol common/utils lib docs \
+	examples po daemon tests/daemon appliance tests/c-api \
 	tests/tmpdirs tests/protocol tests/events tests/parallel \
 	tests/create tests/disks tests/discard tests/mountable \
 	tests/network tests/lvm tests/luks tests/md tests/selinux \
@@ -433,15 +435,17 @@ DIST_SUBDIRS = generator tests/qemu test-data gnulib/lib gnulib/tests \
 	tests/xml tests/mount-local tests/9p tests/rsync tests/bigdirs \
 	tests/disk-labels tests/hotplug tests/nbd tests/http \
 	tests/syslinux tests/journal tests/relative-paths tests/gdisk \
-	tests/regressions tests/tsk test-tool fish align cat diff df \
-	edit format inspector make-fs rescue p2v bash perl \
-	perl/examples ocaml ocaml/examples python python/examples ruby \
-	ruby/examples java java/examples haskell php erlang \
-	erlang/examples lua lua/examples gobject golang \
-	golang/examples csharp mllib customize builder builder/website \
-	get-kernel resize sparsify sysprep v2v v2v/test-harness dib \
-	tools fuse utils/boot-analysis utils/boot-benchmark \
-	utils/qemu-boot utils/qemu-speed-test po-docs
+	tests/regressions tests/tsk common/edit common/options \
+	common/parallel common/progress common/visit common/windows \
+	test-tool fish align cat diff df edit format inspector make-fs \
+	rescue common/miniexpect p2v bash perl perl/examples ocaml \
+	ocaml/examples python python/examples ruby ruby/examples java \
+	java/examples haskell php erlang erlang/examples lua \
+	lua/examples gobject golang golang/examples csharp mllib \
+	customize builder builder/templates get-kernel resize sparsify \
+	sysprep v2v v2v/test-harness dib tools fuse \
+	utils/boot-analysis utils/boot-benchmark utils/qemu-boot \
+	utils/qemu-speed-test po-docs
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/installcheck.sh.in $(srcdir)/pick-guests.pl.in \
 	$(srcdir)/podwrapper.pl.in $(srcdir)/run.in \
@@ -458,13 +462,13 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/builder/test-website/virt-builder/repos.d/libguestfs.conf.in \
 	$(top_srcdir)/common-rules.mk \
 	$(top_srcdir)/php/extension/php-for-tests.sh.in \
+	$(top_srcdir)/python/t/tests_helper.py.in \
 	$(top_srcdir)/ruby/ext/guestfs/extconf.rb.in \
 	$(top_srcdir)/website/index.html.in AUTHORS COPYING \
 	COPYING.LIB ChangeLog README TODO build-aux/ar-lib \
 	build-aux/compile build-aux/config.guess \
-	build-aux/config.rpath build-aux/config.sub build-aux/depcomp \
-	build-aux/install-sh build-aux/ltmain.sh build-aux/missing \
-	build-aux/ylwrap
+	build-aux/config.rpath build-aux/config.sub \
+	build-aux/install-sh build-aux/ltmain.sh build-aux/missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1729,6 +1733,8 @@ ACLOCAL_AMFLAGS = -I m4
 
 # Basic source for the library.
 
+# Common code used by the tools.
+
 # libguestfs-test-tool
 
 # Guestfish.
@@ -1739,16 +1745,19 @@ ACLOCAL_AMFLAGS = -I m4
 
 # Unconditional because nothing is built yet.
 SUBDIRS = generator $(am__append_1) test-data gnulib/lib \
-	$(am__append_2) src docs examples po $(am__append_3) \
-	$(am__append_4) test-tool fish align cat diff df edit format \
-	inspector make-fs rescue $(am__append_5) bash $(am__append_6) \
-	$(am__append_7) $(am__append_8) $(am__append_9) \
-	$(am__append_10) $(am__append_11) $(am__append_12) \
-	$(am__append_13) $(am__append_14) $(am__append_15) \
-	$(am__append_16) csharp $(am__append_17) $(am__append_18) \
-	$(am__append_19) $(am__append_20) $(am__append_21) \
-	$(am__append_22) utils/boot-benchmark utils/qemu-boot \
-	utils/qemu-speed-test $(am__append_23)
+	$(am__append_2) common/errnostring common/protocol \
+	common/utils lib docs examples po $(am__append_3) \
+	$(am__append_4) common/edit common/options common/parallel \
+	common/progress common/visit common/windows test-tool fish \
+	align cat diff df edit format inspector make-fs rescue \
+	$(am__append_5) bash $(am__append_6) $(am__append_7) \
+	$(am__append_8) $(am__append_9) $(am__append_10) \
+	$(am__append_11) $(am__append_12) $(am__append_13) \
+	$(am__append_14) $(am__append_15) $(am__append_16) csharp \
+	$(am__append_17) $(am__append_18) $(am__append_19) \
+	$(am__append_20) $(am__append_21) $(am__append_22) \
+	utils/boot-benchmark utils/qemu-boot utils/qemu-speed-test \
+	$(am__append_23)
 EXTRA_DIST = \
 	BUGS HACKING TODO \
 	.gitignore \
@@ -1771,6 +1780,11 @@ EXTRA_DIST = \
 	contrib/intro/vmm-icons-t.png \
 	contrib/intro/vmm-icons.png \
 	contrib/intro/win7.xml \
+	contrib/p2v/aux-scripts/do-build.sh \
+	contrib/p2v/build-p2v-iso.sh \
+	contrib/p2v/patches/0001-RHEL-5-ONLY-DISABLE-AUTOMATIC-REMOTE-PORT-ALLOCATION.patch \
+	contrib/p2v/patches/0002-RHEL-5-ONLY-QEMU-NBD-1.4-HAS-NO-f-OPTION.patch \
+	contrib/p2v/test-p2v-iso.sh \
 	contrib/README \
 	contrib/visualize-alignment/.gitignore \
 	contrib/visualize-alignment/guestfish-add-mount.qtr \
@@ -1791,6 +1805,7 @@ EXTRA_DIST = \
 	ocaml-link.sh \
 	podcheck.pl \
 	tests/automake2junit.ml \
+	tests/test-functions.sh \
 	tmp/.gitignore \
 	update-bugs.sh \
 	utils/README \
@@ -1799,6 +1814,9 @@ EXTRA_DIST = \
 	website/communicate.png \
 	website/documentation.png \
 	website/download.png \
+	website/download/builder/README \
+	website/download/builder/index \
+	website/download/builder/index.asc \
 	website/draft.png \
 	website/draft.svg \
 	website/easytoread.css \
@@ -1813,14 +1831,12 @@ EXTRA_DIST = \
 	zanata.xml \
 	zanata-pull.sh
 
-
-# XXX Eventually move builder/website under website/ top level directory.
+WEBSITESDIR = $(HOME)/d/websites
 BUILDERFILES = \
-	builder/website/README \
-	builder/website/index \
-	builder/website/index.asc
+	website/download/builder/README \
+	website/download/builder/index \
+	website/download/builder/index.asc
 
-WEBSITEDIR = $(HOME)/d/websites/libguestfs
 
 # NB. podwrapper is an internal tool, so the man page mustn't be installed.
 # It should be noinst_MANS but that doesn't work.
@@ -1910,6 +1926,8 @@ builder/test-config/virt-builder/repos.d/test-index.conf: $(top_builddir)/config
 builder/test-simplestreams/virt-builder/repos.d/cirros.conf: $(top_builddir)/config.status $(top_srcdir)/builder/test-simplestreams/virt-builder/repos.d/cirros.conf.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 builder/test-website/virt-builder/repos.d/libguestfs.conf: $(top_builddir)/config.status $(top_srcdir)/builder/test-website/virt-builder/repos.d/libguestfs.conf.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+python/t/tests_helper.py: $(top_builddir)/config.status $(top_srcdir)/python/t/tests_helper.py.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 ruby/ext/guestfs/extconf.rb: $(top_builddir)/config.status $(top_srcdir)/ruby/ext/guestfs/extconf.rb.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -2359,8 +2377,8 @@ website/TODO.txt: TODO
 	cp $< $@
 
 maintainer-upload-website:
-	cp website/*.{css,html,png,svg,txt} $(WEBSITEDIR)/
-	cp $(BUILDERFILES) $(WEBSITEDIR)/download/builder/
+	cp website/*.{css,html,png,svg,txt} $(WEBSITESDIR)/libguestfs/
+	cp $(BUILDERFILES) $(WEBSITESDIR)/libguestfs-builder/
 
 # When doing 'make dist' update a few files automatically.
 #
@@ -2422,6 +2440,7 @@ po/POTFILES-ml: configure.ac
 	rm -f $@ $@-t
 	cd $(srcdir); \
 	find builder customize dib get-kernel mllib resize sparsify sysprep v2v -name '*.ml' | \
+	grep -v '^builder/templates/' | \
 	LC_ALL=C sort > $@-t
 	mv $@-t $@
 
@@ -2558,6 +2577,20 @@ check-slow: build-test-guests
 	done; \
 	exit $$(( $$errors ? 1 : 0 ))
 
+check-root: build-test-guests
+	@if test "$$(id -u)" -ne 0; then \
+	  echo "***"; \
+	  echo "*** error: You must run 'check-root' as root."; \
+	  echo "***"; \
+	  exit 1; \
+	fi
+	@errors=0; \
+	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	  echo $(MAKE) -C `dirname $$f` $@; \
+	  $(MAKE) -C `dirname $$f` $@ || (( errors++ )); \
+	done; \
+	exit $$(( $$errors ? 1 : 0 ))
+
 build-test-guests:
 	$(MAKE) -C test-data/phony-guests check
 
@@ -2631,8 +2664,9 @@ help:
 	@echo "make check-with-upstream-qemu     Test using upstream qemu."
 	@echo "make check-with-upstream-libvirt  Test using upstream libvirt."
 	@echo "make check-slow                   Slow/long-running tests."
+	@echo "sudo make check-root              Tests which must be run as root."
 	@echo
-	@echo "make check-all                    Runs all 'check*' rules."
+	@echo "make check-all                    Runs all 'check*' rules except check-root."
 	@echo "make check-release                Runs 'check*' rules required for release."
 	@echo
 	@echo "make installcheck                 Test installed libguestfs packages."

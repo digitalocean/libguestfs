@@ -1021,6 +1021,70 @@ guestfs_int_ruby_download_offset (VALUE gv, VALUE remotefilenamev, VALUE filenam
 
 /*
  * call-seq:
+ *   g.find_inode(device, inode) -> list
+ *
+ * search the entries associated to the given inode
+ *
+ * Searches all the entries associated with the given
+ * inode.
+ * 
+ * For each entry, a "tsk_dirent" structure is returned.
+ * See "filesystem_walk" for more information about
+ * "tsk_dirent" structures.
+ *
+ *
+ * [Since] Added in version 1.35.6.
+ *
+ * [Feature] This function depends on the feature +libtsk+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_find_inode}[http://libguestfs.org/guestfs.3.html#guestfs_find_inode].
+ */
+VALUE
+guestfs_int_ruby_find_inode (VALUE gv, VALUE devicev, VALUE inodev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "find_inode");
+
+  const char *device = StringValueCStr (devicev);
+  long long inode = NUM2LL (inodev);
+
+  struct guestfs_tsk_dirent_list *r;
+
+  r = guestfs_find_inode (g, device, inode);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("tsk_inode"), ULL2NUM (r->val[i].tsk_inode));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_type"), ULL2NUM (r->val[i].tsk_type));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_size"), LL2NUM (r->val[i].tsk_size));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_name"), rb_str_new2 (r->val[i].tsk_name));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_flags"), UINT2NUM (r->val[i].tsk_flags));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_atime_sec"), LL2NUM (r->val[i].tsk_atime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_atime_nsec"), LL2NUM (r->val[i].tsk_atime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_mtime_sec"), LL2NUM (r->val[i].tsk_mtime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_mtime_nsec"), LL2NUM (r->val[i].tsk_mtime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_ctime_sec"), LL2NUM (r->val[i].tsk_ctime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_ctime_nsec"), LL2NUM (r->val[i].tsk_ctime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_crtime_sec"), LL2NUM (r->val[i].tsk_crtime_sec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_crtime_nsec"), LL2NUM (r->val[i].tsk_crtime_nsec));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_nlink"), LL2NUM (r->val[i].tsk_nlink));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_link"), rb_str_new2 (r->val[i].tsk_link));
+    rb_hash_aset (hv, rb_str_new2 ("tsk_spare1"), LL2NUM (r->val[i].tsk_spare1));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_tsk_dirent_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.findfs_uuid(uuid) -> string
  *
  * find a filesystem by UUID

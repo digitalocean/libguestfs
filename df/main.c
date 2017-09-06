@@ -55,6 +55,8 @@ int keys_from_stdin = 0;
 int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 0;
+int in_guestfish = 0;
+int in_virt_rescue = 0;
 
 int csv = 0;                    /* --csv */
 int human = 0;                  /* --human-readable|-h */
@@ -276,7 +278,7 @@ main (int argc, char *argv[])
     CLEANUP_FREE char *name = NULL;
 
     /* Add domains/drives from the command line (for a single guest). */
-    add_drives (drvs, 'a');
+    add_drives (drvs);
 
     if (guestfs_launch (g) == -1)
       exit (EXIT_FAILURE);
@@ -349,6 +351,10 @@ single_drive_display_name (struct drv *drvs)
     if (name == NULL)
       error (EXIT_FAILURE, errno, "strdup");
     break;
+
+  case drv_N:
+  case drv_scratch:
+    abort (); /* Only used in guestfish or virt-rescue. */
   }
 
   if (!name)

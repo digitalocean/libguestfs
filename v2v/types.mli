@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,7 +142,7 @@ and s_display_listen =
   | LNoListen                      (** No parseable <listen/> element. *)
   | LAddress of string             (** Listen address. *)
   | LNetwork of string             (** Listen network. *)
-  | LSocket of string              (** Listen Unix domain socket. *)
+  | LSocket of string option       (** Listen Unix domain socket. *)
   | LNone                          (** <listen type='none'> *)
 
 (** Video adapter model. *)
@@ -230,6 +230,10 @@ type inspect = {
   i_firmware : i_firmware;
     (** The list of EFI system partitions for the guest with UEFI,
         otherwise the BIOS identifier. *)
+  i_windows_systemroot : string;
+  i_windows_software_hive : string;
+  i_windows_system_hive : string;
+  i_windows_current_control_set : string;
 }
 (** Inspection information. *)
 
@@ -366,6 +370,13 @@ class virtual output : object
   (** Called in order to create disks on the target.  The method has the
       same signature as Guestfs#disk_create. *)
   method keep_serial_console : bool
-  (** Whether this output supports serial consoles (RHEV does not). *)
+  (** Whether this output supports serial consoles (RHV does not). *)
+  method install_rhev_apt : bool
+  (** If [rhev-apt.exe] should be installed (only for RHV). *)
 end
 (** Encapsulates all [-o], etc output arguments as an object. *)
+
+type output_settings = < keep_serial_console : bool;
+                         install_rhev_apt : bool >
+(** This is a subtype of {!output} containing only the settings
+    which have an influence over conversion modules. *)

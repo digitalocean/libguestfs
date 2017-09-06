@@ -133,6 +133,7 @@ ifelse(SUSE,1,
   dnl It seems no other augeas package depends on it.
   augeas-lenses
   btrfsprogs
+  cdrkit-cdrtools-compat
   cryptsetup
   dhcpcd
   dhcp-client
@@ -151,6 +152,7 @@ ifelse(SUSE,1,
   ntfsprogs
   ntfs-3g
   reiserfs
+  squashfs
   systemd
   vim
   xz
@@ -253,6 +255,7 @@ rsync
 scrub
 sed
 sleuthkit
+squashfs-tools
 strace
 syslinux
 tar
@@ -290,6 +293,11 @@ curl
 kpartx
 dnl (virt-dib) tools optionally used for elements
 debootstrap
+
+dnl exFAT is not usually available in free software repos
+exfat-fuse
+exfat-utils
+fuse-exfat
 
 dnl Define this by doing: ./configure --with-extra-packages="..."
 EXTRA_PACKAGES

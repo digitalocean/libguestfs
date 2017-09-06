@@ -321,6 +321,63 @@ run_aug_match (const char *cmd, size_t argc, char *argv[])
 }
 
 int
+run_aug_transform (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *lens;
+  const char *file;
+  struct guestfs_aug_transform_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_aug_transform_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  lens = argv[i++];
+  file = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "remove:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   getprogname (), &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.remove = 0; break;
+        default: optargs_s.remove = 1;
+      }
+      this_mask = GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK;
+      this_arg = "remove";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_aug_transform_argv (g, lens, file, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+int
 run_btrfs_qgroup_create (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -1195,6 +1252,29 @@ run_inspect_get_product_variant (const char *cmd, size_t argc, char *argv[])
   }
   root = argv[i++];
   r = guestfs_inspect_get_product_variant (g, root);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+int
+run_inspect_get_windows_software_hive (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  char *r;
+  const char *root;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  root = argv[i++];
+  r = guestfs_inspect_get_windows_software_hive (g, root);
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);

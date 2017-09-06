@@ -1034,9 +1034,6 @@
 /* liblzma found at compile time. */
 #undef HAVE_LIBLZMA
 
-/* libmagic found at compile time. */
-#undef HAVE_LIBMAGIC
-
 /* Define to 1 if you have the `portablexdr' library (-lportablexdr). */
 #undef HAVE_LIBPORTABLEXDR
 

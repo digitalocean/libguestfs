@@ -36,6 +36,8 @@ type ops = {
   flags : flags;
 }
 and op = [
+  | `AppendLine of string * string
+      (* --append-line FILE:LINE *)
   | `Chmod of string * string
       (* --chmod PERMISSIONS:FILE *)
   | `CommandsFromFile of string
@@ -154,6 +156,17 @@ let rec argspec () =
   in
 
   let rec argspec = [
+    (
+      [ L"append-line" ],
+      Getopt.String (
+        s_"FILE:LINE",
+        fun s ->
+          let p = split_string_pair "append-line" s in
+          push_front (`AppendLine p) ops
+      ),
+      s_"Append line(s) to the file"
+    ),
+    Some "FILE:LINE", "Append a single line of text to the C<FILE>.  If the file does not already\nend with a newline, then one is added before the appended\nline.  Also a newline is added to the end of the C<LINE> string\nautomatically.\n\nFor example (assuming ordinary shell quoting) this command:\n\n --append-line '/etc/hosts:10.0.0.1 foo'\n\nwill add either C<10.0.0.1 foo\226\143\142> or C<\226\143\14210.0.0.1 foo\226\143\142> to\nthe file, the latter only if the existing file does not\nalready end with a newline.\n\nC<\226\143\142> represents a newline character, which is guessed by\nlooking at the existing content of the file, so this command\ndoes the right thing for files using Unix or Windows line endings.\nIt also works for empty or non-existent files.\n\nTo insert several lines, use the same option several times:\n\n --append-line '/etc/hosts:10.0.0.1 foo'\n --append-line '/etc/hosts:10.0.0.2 bar'\n\nTo insert a blank line before the appended line, do:\n\n --append-line '/etc/hosts:'\n --append-line '/etc/hosts:10.0.0.1 foo'";
     (
       [ L"chmod" ],
       Getopt.String (

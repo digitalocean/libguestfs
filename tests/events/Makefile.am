@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2013-2016 Red Hat Inc.
+# Copyright (C) 2013-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,13 +34,14 @@ check_PROGRAMS += test-libvirt-auth-callbacks
 test_libvirt_auth_callbacks_SOURCES = test-libvirt-auth-callbacks.c
 test_libvirt_auth_callbacks_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-	-I$(top_srcdir)/src -I$(top_builddir)/src
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib
 test_libvirt_auth_callbacks_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(LIBVIRT_CFLAGS)
 test_libvirt_auth_callbacks_LDADD = \
-        $(top_builddir)/src/libutils.la \
-        $(top_builddir)/src/libguestfs.la \
+        $(top_builddir)/common/utils/libutils.la \
+        $(top_builddir)/lib/libguestfs.la \
         $(LIBVIRT_LIBS) \
         $(LIBXML2_LIBS) \
         $(LTLIBINTL) \

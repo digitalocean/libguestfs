@@ -1,5 +1,5 @@
 /* guestmount - mount guests using libguestfs and FUSE
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,8 @@ int inspector = 0;
 int keys_from_stdin = 0;
 int echo_keys = 0;
 const char *libvirt_uri;
+int in_guestfish = 0;
+int in_virt_rescue = 0;
 
 static void __attribute__((noreturn))
 fuse_help (void)
@@ -103,7 +105,7 @@ usage (int status)
   else {
     printf (_("%s: FUSE module for libguestfs\n"
               "%s lets you mount a virtual machine filesystem\n"
-              "Copyright (C) 2009-2016 Red Hat Inc.\n"
+              "Copyright (C) 2009-2017 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] mountpoint\n"
               "Options:\n"
@@ -358,7 +360,7 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
 
   /* Do the guest drives and mountpoints. */
-  add_drives (drvs, 'a');
+  add_drives (drvs);
   if (guestfs_launch (g) == -1)
     exit (EXIT_FAILURE);
   if (inspector)

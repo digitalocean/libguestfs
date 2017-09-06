@@ -1,5 +1,5 @@
 /* virt-edit
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,8 @@ int keys_from_stdin = 0;
 int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 1;
+int in_guestfish = 0;
+int in_virt_rescue = 0;
 
 static const char *backup_extension = NULL;
 static const char *perl_expr = NULL;
@@ -67,7 +69,7 @@ usage (int status)
              getprogname ());
   else {
     printf (_("%s: Edit a file in a virtual machine\n"
-              "Copyright (C) 2009-2016 Red Hat Inc.\n"
+              "Copyright (C) 2009-2017 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] -d domname file [file ...]\n"
               "  %s [--options] -a disk.img [-a disk.img ...] file [file ...]\n"
@@ -99,9 +101,6 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
-
-  /* We use random(3) below. */
-  srandom (time (NULL));
 
   enum { HELP_OPTION = CHAR_MAX + 1 };
 
@@ -262,7 +261,7 @@ main (int argc, char *argv[])
   }
 
   /* Add drives. */
-  add_drives (drvs, 'a');
+  add_drives (drvs);
 
   if (guestfs_launch (g) == -1)
     exit (EXIT_FAILURE);

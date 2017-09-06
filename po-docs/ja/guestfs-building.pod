@@ -176,7 +176,7 @@ Various core features will be disabled if hivex is not available.
 
 =item libmagic
 
-Optional.  This is the library used by the L<file(1)> command.
+I<Required>.  This is the library used by the L<file(1)> command.
 
 =item libvirt E<ge> 0.10.2
 
@@ -252,7 +252,13 @@ Optional.  Used only for testing.
 
 =item qemu-nbd
 
-Optional.  Used for testing, and by virt-p2v.
+=item nbdkit
+
+Optional.  qemu-nbd is used for testing.
+
+L<virt-p2v(1)> requires either qemu-nbd or nbdkit, but these only need to be
+present on the virt-p2v ISO, they do not need to be installed at compile
+time.
 
 =item uml_mkcow
 
@@ -262,7 +268,7 @@ Optional.  For the L<UML backend|guestfs(3)/BACKEND>.
 
 Optional.  Used by virt-builder for downloads.
 
-=item gpg
+=item GNU Privacy Guard (GnuPG, gpg) v1 or v2
 
 Optional.  Used by virt-builder for checking digital signatures.
 
@@ -818,5 +824,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2016 Red Hat Inc.
+Copyright (C) 2009-2017 Red Hat Inc.
 

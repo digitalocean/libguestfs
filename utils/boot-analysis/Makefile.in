@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2011-2016 Red Hat Inc.
+# Copyright (C) 2011-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -322,8 +322,8 @@ am_boot_analysis_OBJECTS = boot_analysis-boot-analysis.$(OBJEXT) \
 	boot_analysis-boot-analysis-utils.$(OBJEXT)
 boot_analysis_OBJECTS = $(am_boot_analysis_OBJECTS)
 am__DEPENDENCIES_1 =
-boot_analysis_DEPENDENCIES = $(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+boot_analysis_DEPENDENCIES = $(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(top_builddir)/gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -1648,7 +1648,8 @@ boot_analysis_SOURCES = \
 
 boot_analysis_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-	-I$(top_srcdir)/src -I$(top_builddir)/src
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib
 
 boot_analysis_CFLAGS = \
 	-pthread \
@@ -1656,8 +1657,8 @@ boot_analysis_CFLAGS = \
 	$(PCRE_CFLAGS)
 
 boot_analysis_LDADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(PCRE_LIBS) \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
@@ -2037,6 +2038,27 @@ $(top_builddir)/generator/generator:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 boot-analysis.1: boot-analysis.pod
 	$(PODWRAPPER) \

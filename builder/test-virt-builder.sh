@@ -16,18 +16,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-export LANG=C
 set -e
 
-abs_builddir=$(pwd)
+$TEST_FUNCTIONS
+skip_if_skipped
 
 export XDG_CONFIG_HOME=
 export XDG_CONFIG_DIRS="$abs_builddir/test-config"
-
-if [ -n "$SKIP_TEST_VIRT_BUILDER_SH" ]; then
-    echo "$0: skipping test because environment variable is set."
-    exit 77
-fi
 
 if [ ! -f fedora.xz ]; then
     echo "$0: test skipped because there is no fedora.xz in the build directory"
@@ -55,7 +50,10 @@ rm -f $output
 # Note we cannot test --install, --run since the phony Fedora doesn't
 # have a real OS inside just some configuration files.  Just about
 # every other option is fair game.
-$VG virt-builder phony-fedora \
+#
+# Don't use $VG here, because libtool (expanded from $VG) chokes
+# on the multi-line parameters. (RHBZ#1420301)
+virt-builder phony-fedora \
     -v --no-cache --no-check-signature $no_network \
     -o $output --size 2G --format $format \
     --arch x86_64 \
@@ -70,6 +68,19 @@ $VG virt-builder phony-fedora \
     --delete /Makefile \
     --link /etc/foo/bar/baz/foo:/foo \
     --link /etc/foo/bar/baz/foo:/foo1:/foo2:/foo3 \
+    --append-line '/etc/append1:hello' \
+    --append-line '/etc/append2:line1' \
+    --append-line '/etc/append2:line2' \
+    --write '/etc/append3:line1' \
+    --append-line '/etc/append3:line2' \
+    --write '/etc/append4:line1
+' \
+    --append-line '/etc/append4:line2' \
+    --touch /etc/append5 \
+    --append-line '/etc/append5:line1' \
+    --write '/etc/append6:
+' \
+    --append-line '/etc/append6:line2' \
     --firstboot Makefile --firstboot-command 'echo "hello"' \
     --firstboot-install "minicom,inkscape"
 
@@ -97,6 +108,24 @@ echo -----
 # Password
 is-file /etc/shadow
 cat /etc/shadow | sed -r '/^root:/!d;s,^(root:\\\$6\\\$).*,\\1,g'
+
+echo -----
+# Line appending
+# Note that the guestfish 'cat' command appends a newline
+echo append1:
+cat /etc/append1
+echo append2:
+cat /etc/append2
+echo append3:
+cat /etc/append3
+echo append4:
+cat /etc/append4
+echo append5:
+cat /etc/append5
+echo append6:
+cat /etc/append6
+
+echo -----
 EOF
 
 if [ "$(cat test-virt-builder.out)" != "true
@@ -113,7 +142,31 @@ true
 /usr/share/zoneinfo/Europe/London
 -----
 true
-root:\$6\$" ]; then
+root:\$6\$
+-----
+append1:
+hello
+
+append2:
+line1
+line2
+
+append3:
+line1
+line2
+
+append4:
+line1
+line2
+
+append5:
+line1
+
+append6:
+
+line2
+
+-----" ]; then
     echo "$0: unexpected output:"
     cat test-virt-builder.out
     exit 1

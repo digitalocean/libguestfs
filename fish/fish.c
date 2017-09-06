@@ -1,5 +1,5 @@
 /* guestfish - guest filesystem shell
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,6 +105,8 @@ int progress_bars = 0;
 int is_interactive = 0;
 const char *input_file = NULL;
 int input_lineno = 0;
+int in_guestfish = 1;
+int in_virt_rescue = 0;
 
 static void __attribute__((noreturn))
 usage (int status)
@@ -115,7 +117,7 @@ usage (int status)
   else {
     printf (_("%s: guest filesystem shell\n"
               "%s lets you edit virtual machine filesystems\n"
-              "Copyright (C) 2009-2016 Red Hat Inc.\n"
+              "Copyright (C) 2009-2017 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] cmd [: cmd : cmd ...]\n"
               "Options:\n"
@@ -177,9 +179,6 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
-
-  /* We use random(3) in edit.c. */
-  srandom (time (NULL));
 
   parse_config ();
 
@@ -361,7 +360,6 @@ main (int argc, char *argv[])
       if (!drv)
         error (EXIT_FAILURE, errno, "calloc");
       drv->type = drv_N;
-      drv->nr_drives = -1;
       p = strchr (optarg, '=');
       if (p != NULL) {
         *p = '\0';
@@ -465,7 +463,7 @@ main (int argc, char *argv[])
   CHECK_OPTION_format_consumed;
 
   /* If we've got drives to add, add them now. */
-  add_drives (drvs, 'a');
+  add_drives (drvs);
 
   /* If we've got mountpoints or prepared drives or -i option, we must
    * launch the guest and mount them.
@@ -585,8 +583,13 @@ prepare_drives (struct drv *drv)
 {
   if (drv) {
     prepare_drives (drv->next);
-    if (drv->type == drv_N)
-      prepare_drive (drv->N.filename, drv->N.data, drv->device);
+    if (drv->type == drv_N) {
+      char device[64];
+
+      strcpy (device, "/dev/sd");
+      guestfs_int_drive_name (drv->drive_index, &device[7]);
+      prepare_drive (drv->N.filename, drv->N.data, device);
+    }
   }
 }
 

@@ -9,10 +9,12 @@ GuestfsSession
 
 </para>
 
+
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
 
 <!-- ##### SECTION Stability_Level ##### -->
 
@@ -462,6 +464,19 @@ GuestfsSession
 @base: 
 @sub: 
 @val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_aug_transform ##### -->
+<para>
+
+</para>
+
+@session: 
+@lens: 
+@file: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -1962,6 +1977,19 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_find_inode ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@inode: 
+@cancellable: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_findfs_label ##### -->
 <para>
 
@@ -2922,6 +2950,28 @@ GuestfsSession
 
 
 <!-- ##### FUNCTION guestfs_session_inspect_get_windows_current_control_set ##### -->
+<para>
+
+</para>
+
+@session: 
+@root: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_inspect_get_windows_software_hive ##### -->
+<para>
+
+</para>
+
+@session: 
+@root: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_inspect_get_windows_system_hive ##### -->
 <para>
 
 </para>
@@ -4565,6 +4615,20 @@ GuestfsSession
 @devmajor: 
 @devminor: 
 @path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_mksquashfs ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@filename: 
+@optargs: 
+@cancellable: 
 @err: 
 @Returns: 
 

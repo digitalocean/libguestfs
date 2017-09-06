@@ -66,6 +66,8 @@ int keys_from_stdin = 0;
 int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 0;
+int in_guestfish = 0;
+int in_virt_rescue = 0;
 
 static int quiet = 0;           /* --quiet */
 static int uuid = 0;            /* --uuid */
@@ -234,7 +236,7 @@ main (int argc, char *argv[])
       error (EXIT_FAILURE, 0, _("--uuid option cannot be used with -a or -d"));
 
     /* Add domains/drives from the command line (for a single guest). */
-    add_drives (drvs, 'a');
+    add_drives (drvs);
 
     if (guestfs_launch (g) == -1)
       exit (EXIT_FAILURE);

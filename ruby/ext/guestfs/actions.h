@@ -38,7 +38,7 @@
 #endif
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-internal-frontend.h" /* Only for POINTER_NOT_IMPLEMENTED */
 
 #include "extconf.h"
 
@@ -95,6 +95,7 @@ extern VALUE guestfs_int_ruby_aug_rm (VALUE gv, VALUE augpathv);
 extern VALUE guestfs_int_ruby_aug_save (VALUE gv);
 extern VALUE guestfs_int_ruby_aug_set (VALUE gv, VALUE augpathv, VALUE valv);
 extern VALUE guestfs_int_ruby_aug_setm (VALUE gv, VALUE basev, VALUE subv, VALUE valv);
+extern VALUE guestfs_int_ruby_aug_transform (int argc, VALUE *argv, VALUE gv);
 extern VALUE guestfs_int_ruby_available (VALUE gv, VALUE groupsv);
 extern VALUE guestfs_int_ruby_available_all_groups (VALUE gv);
 extern VALUE guestfs_int_ruby_base64_in (VALUE gv, VALUE base64filev, VALUE filenamev);
@@ -222,6 +223,7 @@ extern VALUE guestfs_int_ruby_fill_dir (VALUE gv, VALUE dirv, VALUE nrv);
 extern VALUE guestfs_int_ruby_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv);
 extern VALUE guestfs_int_ruby_find (VALUE gv, VALUE directoryv);
 extern VALUE guestfs_int_ruby_find0 (VALUE gv, VALUE directoryv, VALUE filesv);
+extern VALUE guestfs_int_ruby_find_inode (VALUE gv, VALUE devicev, VALUE inodev);
 extern VALUE guestfs_int_ruby_findfs_label (VALUE gv, VALUE labelv);
 extern VALUE guestfs_int_ruby_findfs_uuid (VALUE gv, VALUE uuidv);
 extern VALUE guestfs_int_ruby_fsck (VALUE gv, VALUE fstypev, VALUE devicev);
@@ -312,6 +314,8 @@ extern VALUE guestfs_int_ruby_inspect_get_product_variant (VALUE gv, VALUE rootv
 extern VALUE guestfs_int_ruby_inspect_get_roots (VALUE gv);
 extern VALUE guestfs_int_ruby_inspect_get_type (VALUE gv, VALUE rootv);
 extern VALUE guestfs_int_ruby_inspect_get_windows_current_control_set (VALUE gv, VALUE rootv);
+extern VALUE guestfs_int_ruby_inspect_get_windows_software_hive (VALUE gv, VALUE rootv);
+extern VALUE guestfs_int_ruby_inspect_get_windows_system_hive (VALUE gv, VALUE rootv);
 extern VALUE guestfs_int_ruby_inspect_get_windows_systemroot (VALUE gv, VALUE rootv);
 extern VALUE guestfs_int_ruby_inspect_is_live (VALUE gv, VALUE rootv);
 extern VALUE guestfs_int_ruby_inspect_is_multipart (VALUE gv, VALUE rootv);
@@ -456,6 +460,7 @@ extern VALUE guestfs_int_ruby_mkmountpoint (VALUE gv, VALUE exemptpathv);
 extern VALUE guestfs_int_ruby_mknod (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv);
 extern VALUE guestfs_int_ruby_mknod_b (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv);
 extern VALUE guestfs_int_ruby_mknod_c (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv, VALUE pathv);
+extern VALUE guestfs_int_ruby_mksquashfs (int argc, VALUE *argv, VALUE gv);
 extern VALUE guestfs_int_ruby_mkswap (int argc, VALUE *argv, VALUE gv);
 extern VALUE guestfs_int_ruby_mkswap_L (VALUE gv, VALUE labelv, VALUE devicev);
 extern VALUE guestfs_int_ruby_mkswap_U (VALUE gv, VALUE uuidv, VALUE devicev);

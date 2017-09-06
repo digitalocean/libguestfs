@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-builder tool
-# Copyright (C) 2013-2016 Red Hat Inc.
+# Copyright (C) 2013-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -152,7 +152,8 @@ bin_PROGRAMS = $(am__EXEEXT_1) virt-index-validate$(EXEEXT)
 # Manual pages and HTML files for the website.
 @HAVE_OCAML_TRUE@am__append_4 = virt-builder.1
 @HAVE_OCAML_TRUE@am__append_5 = $(top_builddir)/website/virt-builder.1.html
-@HAVE_OCAML_TRUE@am__append_6 = *.qcow2 *.xz
+@HAVE_OCAML_TRUE@am__append_6 = *.qcow2 *.xz $(console_test_scripts) \
+@HAVE_OCAML_TRUE@	console-*.img console-*.out
 @HAVE_OCAML_TRUE@TESTS = test-virt-builder-docs.sh \
 @HAVE_OCAML_TRUE@	test-virt-builder-list.sh \
 @HAVE_OCAML_TRUE@	test-virt-index-validate.sh $(SLOW_TESTS) \
@@ -1911,6 +1912,7 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	libguestfs.gpg \
 	opensuse.gpg \
+	test-console.sh \
 	test-index \
 	test-simplestreams/streams/v1/index.json \
 	test-simplestreams/streams/v1/net.cirros-cloud_released_download.json \
@@ -1982,7 +1984,8 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 @HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/utils \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
 
 @HAVE_OCAML_TRUE@virt_builder_CFLAGS = \
@@ -1997,11 +2000,12 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 @HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
-# -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
+# -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
-@HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/common/utils/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/gnulib/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib -I \
@@ -2063,7 +2067,30 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) $(OCAMLLINKFLAGS) \
 @HAVE_OCAML_TRUE@	  $(yajl_tests_THEOBJECTS) -o $@
 
-@HAVE_OCAML_TRUE@SLOW_TESTS = test-virt-builder-planner.sh
+
+# Slow tests.
+@HAVE_OCAML_TRUE@SLOW_TESTS = \
+@HAVE_OCAML_TRUE@	$(console_test_scripts) \
+@HAVE_OCAML_TRUE@	test-virt-builder-planner.sh
+
+
+# Test that the supplied guests boot with a serial console.
+#
+# Note that in future we might decide to make the serial console a
+# feature, eg. `virt-builder --add-serial-console' or `virt-builder
+# --remove-serial-console', so don't assume that having these tests
+# means that a serial console is a requirement.
+@HAVE_OCAML_TRUE@console_test_scripts := \
+@HAVE_OCAML_TRUE@	test-console-centos-7.2.sh \
+@HAVE_OCAML_TRUE@	test-console-rhel-6.8.sh \
+@HAVE_OCAML_TRUE@	test-console-rhel-7.2.sh \
+@HAVE_OCAML_TRUE@	test-console-debian-7.sh \
+@HAVE_OCAML_TRUE@	test-console-debian-8.sh \
+@HAVE_OCAML_TRUE@	test-console-fedora-24.sh \
+@HAVE_OCAML_TRUE@	test-console-ubuntu-12.04.sh \
+@HAVE_OCAML_TRUE@	test-console-ubuntu-14.04.sh \
+@HAVE_OCAML_TRUE@	test-console-ubuntu-16.04.sh
+
 
 # virt-builder's default repository
 repoconfdir = $(sysconfdir)/xdg/virt-builder/repos.d
@@ -2082,7 +2109,8 @@ virt_index_validate_CPPFLAGS = \
 	-I. \
 	-I$(top_builddir) \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-	-I$(top_srcdir)/src
+	-I$(top_srcdir)/common/utils \
+	-I$(top_srcdir)/lib
 
 virt_index_validate_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
@@ -2705,6 +2733,69 @@ test-virt-index-validate.sh.log: test-virt-index-validate.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-console-centos-7.2.sh.log: test-console-centos-7.2.sh
+	@p='test-console-centos-7.2.sh'; \
+	b='test-console-centos-7.2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-console-rhel-6.8.sh.log: test-console-rhel-6.8.sh
+	@p='test-console-rhel-6.8.sh'; \
+	b='test-console-rhel-6.8.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-console-rhel-7.2.sh.log: test-console-rhel-7.2.sh
+	@p='test-console-rhel-7.2.sh'; \
+	b='test-console-rhel-7.2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-console-debian-7.sh.log: test-console-debian-7.sh
+	@p='test-console-debian-7.sh'; \
+	b='test-console-debian-7.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-console-debian-8.sh.log: test-console-debian-8.sh
+	@p='test-console-debian-8.sh'; \
+	b='test-console-debian-8.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-console-fedora-24.sh.log: test-console-fedora-24.sh
+	@p='test-console-fedora-24.sh'; \
+	b='test-console-fedora-24.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-console-ubuntu-12.04.sh.log: test-console-ubuntu-12.04.sh
+	@p='test-console-ubuntu-12.04.sh'; \
+	b='test-console-ubuntu-12.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-console-ubuntu-14.04.sh.log: test-console-ubuntu-14.04.sh
+	@p='test-console-ubuntu-14.04.sh'; \
+	b='test-console-ubuntu-14.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-console-ubuntu-16.04.sh.log: test-console-ubuntu-16.04.sh
+	@p='test-console-ubuntu-16.04.sh'; \
+	b='test-console-ubuntu-16.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-virt-builder-planner.sh.log: test-virt-builder-planner.sh
 	@p='test-virt-builder-planner.sh'; \
 	b='test-virt-builder-planner.sh'; \
@@ -2957,6 +3048,27 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
+
 @HAVE_OCAML_TRUE@virt-builder.1 $(top_builddir)/website/virt-builder.1.html: stamp-virt-builder.pod
 
 @HAVE_OCAML_TRUE@stamp-virt-builder.pod: virt-builder.pod $(top_srcdir)/customize/customize-synopsis.pod $(top_srcdir)/customize/customize-options.pod
@@ -2992,6 +3104,13 @@ $(top_builddir)/generator/generator:
 
 @HAVE_OCAML_TRUE@check-slow:
 @HAVE_OCAML_TRUE@	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
+
+@HAVE_OCAML_TRUE@test-console-%.sh:
+@HAVE_OCAML_TRUE@	rm -f $@ $@-t
+@HAVE_OCAML_TRUE@	f=`echo "$@" | $(SED) 's/test-console-\(.*\).sh/\1/'`; \
+@HAVE_OCAML_TRUE@	echo 'script=$@ exec $$srcdir/test-console.sh' "$$f" > $@-t
+@HAVE_OCAML_TRUE@	chmod 0755 $@-t
+@HAVE_OCAML_TRUE@	mv $@-t $@
 
 # Dependencies.
 @HAVE_OCAML_TRUE@depend: .depend

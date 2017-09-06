@@ -189,7 +189,7 @@ starts up.
 
 =back
 
-=head1 ADDING EXTRA PACKAGES
+=head1 ДОДАВАННЯ ДОДАТКОВИХ ПАКУНКІВ
 
 You can install extra packages using the I<--install> option.  This can be
 useful for making a more fully-featured virt-p2v disk with extra tools for
@@ -327,5 +327,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

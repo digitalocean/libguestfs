@@ -1,5 +1,5 @@
 /* virt-make-fs
- * Copyright (C) 2010-2016 Red Hat Inc.
+ * Copyright (C) 2010-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,8 @@ const char *libvirt_uri;
 int live;
 int read_only;
 int verbose;
+int in_guestfish = 0;
+int in_virt_rescue = 0;
 
 static const char *format = "raw", *label = NULL,
   *partition = NULL, *size_str = NULL, *type = "ext2";
@@ -78,7 +80,7 @@ usage (int status)
              getprogname ());
   else {
     printf (_("%s: make a filesystem from a tar archive or files\n"
-              "Copyright (C) 2010-2016 Red Hat Inc.\n"
+              "Copyright (C) 2010-2017 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] input.tar output.img\n"
               "  %s [--options] input.tar.gz output.img\n"

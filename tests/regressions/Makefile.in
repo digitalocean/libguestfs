@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -329,7 +329,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am_rhbz1055452_OBJECTS = rhbz1055452-rhbz1055452.$(OBJEXT)
 rhbz1055452_OBJECTS = $(am_rhbz1055452_OBJECTS)
-rhbz1055452_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
+rhbz1055452_DEPENDENCIES = $(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -339,13 +340,15 @@ rhbz1055452_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_rhbz501893_OBJECTS = rhbz501893-rhbz501893.$(OBJEXT)
 rhbz501893_OBJECTS = $(am_rhbz501893_OBJECTS)
-rhbz501893_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
+rhbz501893_DEPENDENCIES = $(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la
 rhbz501893_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rhbz501893_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_rhbz790721_OBJECTS = rhbz790721-rhbz790721.$(OBJEXT)
 rhbz790721_OBJECTS = $(am_rhbz790721_OBJECTS)
-rhbz790721_DEPENDENCIES = $(top_builddir)/src/libguestfs.la \
+rhbz790721_DEPENDENCIES = $(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 rhbz790721_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rhbz790721_CFLAGS) \
@@ -353,15 +356,16 @@ rhbz790721_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 am_rhbz914931_OBJECTS = rhbz914931-rhbz914931.$(OBJEXT)
 rhbz914931_OBJECTS = $(am_rhbz914931_OBJECTS)
 am__DEPENDENCIES_1 =
-rhbz914931_DEPENDENCIES = $(top_builddir)/src/libutils.la \
-	$(am__DEPENDENCIES_1) $(top_builddir)/src/libguestfs.la \
+rhbz914931_DEPENDENCIES = $(top_builddir)/common/utils/libutils.la \
+	$(am__DEPENDENCIES_1) $(top_builddir)/lib/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 rhbz914931_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rhbz914931_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_test_big_heap_OBJECTS = test_big_heap-test-big-heap.$(OBJEXT)
 test_big_heap_OBJECTS = $(am_test_big_heap_OBJECTS)
-test_big_heap_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
+test_big_heap_DEPENDENCIES = $(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la
 test_big_heap_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(test_big_heap_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -1916,36 +1920,41 @@ tests_not_run = \
 	rhbz727178.sh
 
 TESTS_ENVIRONMENT = \
-	NOEXEC_CHECK="$(top_builddir)/src/.libs/libguestfs.so $(top_builddir)/daemon/guestfsd" \
+	NOEXEC_CHECK="$(top_builddir)/lib/.libs/libguestfs.so $(top_builddir)/daemon/guestfsd" \
 	$(top_builddir)/run --test
 
 rhbz501893_SOURCES = rhbz501893.c
 rhbz501893_CPPFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib
 
 rhbz501893_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 rhbz501893_LDADD = \
-	$(top_builddir)/src/libguestfs.la
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la
 
 rhbz790721_SOURCES = rhbz790721.c
 rhbz790721_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-	-I$(top_srcdir)/src -I$(top_builddir)/src
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib
 
 rhbz790721_CFLAGS = \
 	-pthread \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 rhbz790721_LDADD = \
-	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
 rhbz914931_SOURCES = rhbz914931.c
 rhbz914931_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 	-DGUESTFS_PRIVATE=1
 
 rhbz914931_CFLAGS = \
@@ -1953,31 +1962,35 @@ rhbz914931_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 rhbz914931_LDADD = \
-	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/common/utils/libutils.la \
 	$(LTLIBINTL) \
-	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
 rhbz1055452_SOURCES = rhbz1055452.c
 rhbz1055452_CPPFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib
 
 rhbz1055452_CFLAGS = \
 	-pthread \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 rhbz1055452_LDADD = \
-	$(top_builddir)/src/libguestfs.la
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la
 
 test_big_heap_SOURCES = test-big-heap.c
 test_big_heap_CPPFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib
 
 test_big_heap_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 test_big_heap_LDADD = \
-	$(top_builddir)/src/libguestfs.la
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la
 
 SLOW_TESTS = \
 	rhbz909624.sh
@@ -2774,6 +2787,27 @@ $(top_builddir)/generator/generator:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 check-slow:
 	$(MAKE) check TESTS="$(CHECK_SLOW)" SLOW=1

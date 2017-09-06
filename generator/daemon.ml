@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 open Printf
 
+open Common_utils
 open Types
 open Utils
 open Pr
@@ -49,13 +50,13 @@ let generate_daemon_actions_h () =
     | { name = shortname; style = _, _, (_::_ as optargs) } ->
         iteri (
           fun i arg ->
-            let uc_shortname = String.uppercase shortname in
+            let uc_shortname = String.uppercase_ascii shortname in
             let n = name_of_optargt arg in
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "#define GUESTFS_%s_%s_BITMASK (UINT64_C(1)<<%d)\n"
               uc_shortname uc_n i
         ) optargs
-  ) (actions |> daemon_functions);
+  ) (actions |> daemon_functions |> sort);
 
   List.iter (
     fun { name = name; style = ret, args, optargs } ->
@@ -67,7 +68,7 @@ let generate_daemon_actions_h () =
       generate_prototype
         ~single_line:true ~newline:true ~in_daemon:true ~prefix:"do_"
         name style;
-  ) (actions |> daemon_functions);
+  ) (actions |> daemon_functions |> sort);
 
   pr "\n";
   pr "#endif /* GUESTFSD_ACTIONS_H */\n"
@@ -79,120 +80,12 @@ let generate_daemon_stubs_h () =
 #ifndef GUESTFSD_STUBS_H
 #define GUESTFSD_STUBS_H
 
-/* Some macros to make resolving devices easier.  These used to
- * be available in daemon.h but now they are only used by stubs.
- */
-
-/* All functions that need an argument that is a device or partition name
- * must call this macro.  It checks that the device exists and does
- * device name translation (described in the guestfs(3) manpage).
- * Note that the \"path\" argument may be modified.
- *
- * NB. Cannot be used for FileIn functions.
- */
-#define RESOLVE_DEVICE(path,path_out,cancel_stmt,fail_stmt)             \\
-  do {									\\
-    if (STRNEQLEN ((path), \"/dev/\", 5)) {				\\
-      cancel_stmt;                                                      \\
-      reply_with_error (\"%%s: %%s: expecting a device name\", __func__, (path)); \\
-      fail_stmt;							\\
-    }									\\
-    if (is_root_device (path)) {                                        \\
-      cancel_stmt;                                                      \\
-      reply_with_error (\"%%s: %%s: device not found\", __func__, path);    \\
-      fail_stmt;                                                        \\
-    }                                                                   \\
-    (path_out) = device_name_translation ((path));                      \\
-    if ((path_out) == NULL) {                                           \\
-      const int err = errno;                                            \\
-      cancel_stmt;                                                      \\
-      errno = err;                                                      \\
-      reply_with_perror (\"%%s: %%s\", __func__, path);                     \\
-      fail_stmt;							\\
-    }                                                                   \\
-  } while (0)
-
-/* All functions that take a mountable argument must call this macro.
- * It parses the mountable into a mountable_t, ensures any
- * underlying device exists, and does device name translation
- * (described in the guestfs(3) manpage).
- *
- * Note that the \"string\" argument may be modified.
- */
-#define RESOLVE_MOUNTABLE(string,mountable,cancel_stmt,fail_stmt)       \\
-  do {                                                                  \\
-    if (STRPREFIX ((string), \"btrfsvol:\")) {                            \\
-      if (parse_btrfsvol ((string) + strlen (\"btrfsvol:\"), &(mountable)) == -1)\\
-      {                                                                 \\
-        cancel_stmt;                                                    \\
-        reply_with_error (\"%%s: %%s: expecting a btrfs volume\",           \\
-                          __func__, (string));                          \\
-        fail_stmt;                                                      \\
-      }                                                                 \\
-    }                                                                   \\
-    else {                                                              \\
-      (mountable).type = MOUNTABLE_DEVICE;                              \\
-      (mountable).device = NULL;                                        \\
-      (mountable).volume = NULL;                                        \\
-      RESOLVE_DEVICE ((string), (mountable).device, cancel_stmt, fail_stmt); \\
-    }                                                                   \\
-  } while (0)
-
-/* Helper for functions which need either an absolute path in the
- * mounted filesystem, OR a /dev/ device which exists.
- *
- * NB. Cannot be used for FileIn functions.
- *
- * NB #2: Functions which mix filenames and device paths should be
- * avoided, and existing functions should be deprecated.  This is
- * because we intend in future to make device parameters a distinct
- * type from filenames.
- */
-#define REQUIRE_ROOT_OR_RESOLVE_DEVICE(path,path_out,cancel_stmt,fail_stmt) \\
-  do {									\\
-    if (STREQLEN ((path), \"/dev/\", 5))                                  \\
-      RESOLVE_DEVICE ((path), (path_out), cancel_stmt, fail_stmt);      \\
-    else {								\\
-      NEED_ROOT (cancel_stmt, fail_stmt);                               \\
-      ABS_PATH ((path), cancel_stmt, fail_stmt);                        \\
-      (path_out) = strdup ((path));                                     \\
-      if ((path_out) == NULL) {                                         \\
-        cancel_stmt;                                                    \\
-        reply_with_perror (\"strdup\");                                   \\
-        fail_stmt;                                                      \\
-      }                                                                 \\
-    }									\\
-  } while (0)
-
-/* Helper for functions which need either an absolute path in the
- * mounted filesystem, OR a valid mountable description.
- */
-#define REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE(string, mountable,            \\
-                                          cancel_stmt, fail_stmt)       \\
-  do {                                                                  \\
-    if (STRPREFIX ((string), \"/dev/\") || (string)[0] != '/') {\\
-      RESOLVE_MOUNTABLE (string, mountable, cancel_stmt, fail_stmt);    \\
-    }                                                                   \\
-    else {                                                              \\
-      NEED_ROOT (cancel_stmt, fail_stmt);                               \\
-      /* NB: It's a path, not a device. */                              \\
-      (mountable).type = MOUNTABLE_PATH;                                \\
-      (mountable).device = strdup ((string));                           \\
-      (mountable).volume = NULL;                                        \\
-      if ((mountable).device == NULL) {                                 \\
-        cancel_stmt;                                                    \\
-        reply_with_perror (\"strdup\");                                   \\
-        fail_stmt;                                                      \\
-      }                                                                 \\
-    }                                                                   \\
-  } while (0)                                                           \\
-
 ";
 
   List.iter (
     fun { name = name } ->
       pr "extern void %s_stub (XDR *xdr_in);\n" name;
-  ) (actions |> daemon_functions);
+  ) (actions |> daemon_functions |> sort);
 
   pr "\n";
   pr "#endif /* GUESTFSD_STUBS_H */\n"
@@ -206,6 +99,7 @@ let generate_daemon_stubs actions () =
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
@@ -218,12 +112,40 @@ let generate_daemon_stubs actions () =
 #include \"actions.h\"
 #include \"optgroups.h\"
 #include \"stubs.h\"
+#include \"stubs-macros.h\"
 
 ";
 
   List.iter (
     fun { name = name; style = ret, args, optargs; optional = optional } ->
       (* Generate server-side stubs. *)
+      let uc_name = String.uppercase_ascii name in
+
+      let args_passed_to_daemon = args @ args_of_optargs optargs in
+      let args_passed_to_daemon =
+        List.filter (function FileIn _ | FileOut _ -> false | _ -> true)
+          args_passed_to_daemon in
+
+      if args_passed_to_daemon <> [] then (
+        pr "#ifdef HAVE_ATTRIBUTE_CLEANUP\n";
+        pr "\n";
+        pr "#define CLEANUP_XDR_FREE_%s_ARGS \\\n" uc_name;
+        pr "    __attribute__((cleanup(cleanup_xdr_free_%s_args)))\n" name;
+        pr "\n";
+        pr "static void\n";
+        pr "cleanup_xdr_free_%s_args (struct guestfs_%s_args *argsp)\n"
+           name name;
+        pr "{\n";
+        pr "  xdr_free ((xdrproc_t) xdr_guestfs_%s_args, (char *) argsp);\n"
+           name;
+        pr "}\n";
+        pr "\n";
+        pr "#else /* !HAVE_ATTRIBUTE_CLEANUP */\n";
+        pr "#define CLEANUP_XDR_FREE_%s_ARGS\n" uc_name;
+        pr "#endif /* !HAVE_ATTRIBUTE_CLEANUP */\n";
+        pr "\n"
+      );
+
       pr "void\n";
       pr "%s_stub (XDR *xdr_in)\n" name;
       pr "{\n";
@@ -233,21 +155,19 @@ let generate_daemon_stubs actions () =
        | RBool _ -> pr "  int r;\n"
        | RConstString _ | RConstOptString _ ->
            failwithf "RConstString|RConstOptString cannot be used by daemon functions"
-       | RString _ -> pr "  char *r;\n"
-       | RStringList _ | RHashtable _ -> pr "  char **r;\n"
-       | RStruct (_, typ) -> pr "  guestfs_int_%s *r;\n" typ
-       | RStructList (_, typ) -> pr "  guestfs_int_%s_list *r;\n" typ
+       | RString _ -> pr "  CLEANUP_FREE char *r = NULL;\n"
+       | RStringList _ | RHashtable _ -> pr "  CLEANUP_FREE_STRING_LIST char **r = NULL;\n"
+       | RStruct (_, typ) -> pr "  CLEANUP_FREE guestfs_int_%s *r = NULL;\n" typ
+       | RStructList (_, typ) -> pr "  CLEANUP_FREE guestfs_int_%s_list *r = NULL;\n" typ
        | RBufferOut _ ->
            pr "  size_t size = 1;\n";
-           pr "  char *r;\n"
+           pr "  CLEANUP_FREE char *r = NULL;\n"
       );
 
-      let args_passed_to_daemon = args @ args_of_optargs optargs in
-      let args_passed_to_daemon =
-        List.filter (function FileIn _ | FileOut _ -> false | _ -> true)
-          args_passed_to_daemon in
       if args_passed_to_daemon <> [] then (
-        pr "  struct guestfs_%s_args args;\n" name;
+        pr "  CLEANUP_XDR_FREE_%s_ARGS struct guestfs_%s_args args;\n"
+           uc_name name;
+        pr "  memset (&args, 0, sizeof args);\n";
         List.iter (
           function
           | Device n | Dev_or_Path n ->
@@ -283,7 +203,7 @@ let generate_daemon_stubs actions () =
         if is_filein then
           pr "    cancel_receive ();\n";
         pr "    reply_with_unavailable_feature (\"%s\");\n" group;
-        pr "    goto done_no_free;\n";
+        pr "    return;\n";
         pr "  }\n";
         pr "\n"
       | None -> ()
@@ -301,27 +221,25 @@ let generate_daemon_stubs actions () =
         if is_filein then
           pr "    cancel_receive ();\n";
         pr "    reply_with_error (\"unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)\");\n";
-        pr "    goto done_no_free;\n";
+        pr "    return;\n";
         pr "  }\n";
       ) else (
         pr "  if (optargs_bitmask != 0) {\n";
         if is_filein then
           pr "    cancel_receive ();\n";
         pr "    reply_with_error (\"header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments\");\n";
-        pr "    goto done_no_free;\n";
+        pr "    return;\n";
         pr "  }\n";
       );
       pr "\n";
 
       (* Decode arguments. *)
       if args_passed_to_daemon <> [] then (
-        pr "  memset (&args, 0, sizeof args);\n";
-        pr "\n";
         pr "  if (!xdr_guestfs_%s_args (xdr_in, &args)) {\n" name;
         if is_filein then
           pr "    cancel_receive ();\n";
         pr "    reply_with_error (\"daemon failed to decode procedure arguments\");\n";
-        pr "    goto done;\n";
+        pr "    return;\n";
         pr "  }\n";
         let pr_args n =
           pr "  %s = args.%s;\n" n n
@@ -330,20 +248,17 @@ let generate_daemon_stubs actions () =
           function
           | Pathname n ->
               pr_args n;
-              pr "  ABS_PATH (%s, %s, goto done);\n"
-                n (if is_filein then "cancel_receive ()" else "");
+              pr "  ABS_PATH (%s, %b, return);\n" n is_filein;
           | Device n ->
-              pr "  RESOLVE_DEVICE (args.%s, %s, %s, goto done);\n"
-                n n (if is_filein then "cancel_receive ()" else "");
+              pr "  RESOLVE_DEVICE (args.%s, %s, %b);\n" n n is_filein;
           | Mountable n ->
-              pr "  RESOLVE_MOUNTABLE (args.%s, %s, %s, goto done);\n"
-                n n (if is_filein then "cancel_receive ()" else "");
+              pr "  RESOLVE_MOUNTABLE (args.%s, %s, %b);\n" n n is_filein;
           | Dev_or_Path n ->
-              pr "  REQUIRE_ROOT_OR_RESOLVE_DEVICE (args.%s, %s, %s, goto done);\n"
-                n n (if is_filein then "cancel_receive ()" else "");
+              pr "  REQUIRE_ROOT_OR_RESOLVE_DEVICE (args.%s, %s, %b);\n"
+                n n is_filein;
           | Mountable_or_Path n ->
-              pr "  REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE (args.%s, %s, %s, goto done);\n"
-                n n (if is_filein then "cancel_receive ()" else "");
+              pr "  REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE (args.%s, %s, %b);\n"
+                n n is_filein;
           | String n | Key n | GUID n -> pr_args n
           | OptString n -> pr "  %s = args.%s ? *args.%s : NULL;\n" n n n
           | StringList n | FilenameList n as arg ->
@@ -357,7 +272,7 @@ let generate_daemon_stubs actions () =
                 pr "        cancel_receive ();\n";
               pr "        reply_with_error (\"%%s: '%%s' is not a file name\", __func__, args.%s.%s_val[i]);\n"
                 n n;
-              pr "        goto done;\n";
+              pr "        return;\n";
               pr "      }\n";
               pr "    }\n";
               pr "  }\n"
@@ -370,7 +285,7 @@ let generate_daemon_stubs actions () =
             if is_filein then
               pr "    cancel_receive ();\n";
             pr "    reply_with_perror (\"realloc\");\n";
-            pr "    goto done;\n";
+            pr "    return;\n";
             pr "  }\n";
             pr "  %s[args.%s.%s_len] = NULL;\n" n n n;
             pr "  args.%s.%s_val = %s;\n" n n n
@@ -382,9 +297,8 @@ let generate_daemon_stubs actions () =
             pr "  {\n";
             pr "    size_t i;\n";
             pr "    for (i = 0; i < args.%s.%s_len; ++i)\n" n n;
-            pr "      RESOLVE_DEVICE (args.%s.%s_val[i], %s[i],\n" n n n;
-            pr "                      %s, goto done);\n"
-              (if is_filein then "cancel_receive ()" else "");
+            pr "      RESOLVE_DEVICE (args.%s.%s_val[i], %s[i], %b);\n"
+               n n n is_filein;
             pr "    %s[i] = NULL;\n" n;
             pr "  }\n"
           | Bool n -> pr "  %s = args.%s;\n" n n
@@ -402,8 +316,7 @@ let generate_daemon_stubs actions () =
       if List.exists (function Pathname _ -> true | _ -> false) args then (
         (* Emit NEED_ROOT just once, even when there are two or
            more Pathname args *)
-        pr "  NEED_ROOT (%s, goto done);\n"
-          (if is_filein then "cancel_receive ()" else "");
+        pr "  NEED_ROOT (%b, return);\n" is_filein
       );
 
       (* Don't want to call the impl with any FileIn or FileOut
@@ -430,7 +343,7 @@ let generate_daemon_stubs actions () =
              | (`ErrorIsMinusOne | `ErrorIsNULL) as e -> e in
            pr "  if (r == %s)\n" (string_of_errcode errcode);
            pr "    /* do_%s has already called reply_with_error */\n" name;
-           pr "    goto done;\n";
+           pr "    return;\n";
            pr "\n"
        | RBufferOut _ ->
            pr "  /* size == 0 && r == NULL could be a non-error case (just\n";
@@ -438,7 +351,7 @@ let generate_daemon_stubs actions () =
            pr "   */\n";
            pr "  if (size == 1 && r == NULL)\n";
            pr "    /* do_%s has already called reply_with_error */\n" name;
-           pr "    goto done;\n";
+           pr "    return;\n";
            pr "\n"
       );
 
@@ -463,19 +376,16 @@ let generate_daemon_stubs actions () =
             pr "  struct guestfs_%s_ret ret;\n" name;
             pr "  ret.%s = r;\n" n;
             pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
-              name;
-            pr "  free (r);\n"
+              name
         | RStringList n | RHashtable n ->
             pr "  struct guestfs_%s_ret ret;\n" name;
             pr "  ret.%s.%s_len = count_strings (r);\n" n n;
             pr "  ret.%s.%s_val = r;\n" n n;
             pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
-              name;
-            pr "  free_strings (r);\n"
+              name
         | RStruct (n, _) ->
             pr "  struct guestfs_%s_ret ret;\n" name;
             pr "  ret.%s = *r;\n" n;
-            pr "  free (r);\n";
             pr "  reply ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
               name;
             pr "  xdr_free ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
@@ -483,7 +393,6 @@ let generate_daemon_stubs actions () =
         | RStructList (n, _) ->
             pr "  struct guestfs_%s_ret ret;\n" name;
             pr "  ret.%s = *r;\n" n;
-            pr "  free (r);\n";
             pr "  reply ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
               name;
             pr "  xdr_free ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
@@ -493,22 +402,10 @@ let generate_daemon_stubs actions () =
             pr "  ret.%s.%s_val = r;\n" n n;
             pr "  ret.%s.%s_len = size;\n" n n;
             pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
-              name;
-            pr "  free (r);\n"
+              name
       );
-
-      (* Free the args. *)
-      pr "done:\n";
-      (match args_passed_to_daemon with
-       | [] -> ()
-       | _ ->
-           pr "  xdr_free ((xdrproc_t) xdr_guestfs_%s_args, (char *) &args);\n"
-             name
-      );
-      pr "done_no_free:\n";
-      pr "  return;\n";
       pr "}\n\n";
-  ) (actions |> daemon_functions)
+  ) (actions |> daemon_functions |> sort)
 
 let generate_daemon_dispatch () =
   generate_header CStyle GPLv2plus;
@@ -541,10 +438,10 @@ let generate_daemon_dispatch () =
 
   List.iter (
     fun { name = name } ->
-      pr "    case GUESTFS_PROC_%s:\n" (String.uppercase name);
+      pr "    case GUESTFS_PROC_%s:\n" (String.uppercase_ascii name);
       pr "      %s_stub (xdr_in);\n" name;
       pr "      break;\n"
-  ) (actions |> daemon_functions);
+  ) (actions |> daemon_functions |> sort);
 
   pr "    default:\n";
   pr "      reply_with_error (\"dispatch_incoming_message: unknown procedure number %%d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory\", proc_nr);\n";
@@ -758,7 +655,7 @@ let generate_daemon_names () =
     | { name = name; proc_nr = Some proc_nr } ->
       pr "  [%d] = \"%s\",\n" proc_nr name
     | { proc_nr = None } -> assert false
-  ) (actions |> daemon_functions);
+  ) (actions |> daemon_functions |> sort);
   pr "};\n"
 
 (* Generate the optional groups for the daemon to implement
@@ -819,7 +716,8 @@ let generate_daemon_optgroups_h () =
 ";
   List.iter (
     fun (group, fns) ->
-      pr "#define OPTGROUP_%s_NOT_AVAILABLE \\\n" (String.uppercase group);
+      pr "#define OPTGROUP_%s_NOT_AVAILABLE \\\n"
+         (String.uppercase_ascii group);
       List.iter (
         fun { name = name; style = ret, args, optargs } ->
           let style = ret, args @ args_of_optargs optargs, [] in
@@ -838,3 +736,104 @@ let generate_daemon_optgroups_h () =
   ) optgroups;
 
   pr "#endif /* GUESTFSD_OPTGROUPS_H */\n"
+
+(* Generate structs-cleanups.c file. *)
+and generate_daemon_structs_cleanups_c () =
+  generate_header CStyle GPLv2plus;
+
+  pr "\
+#include <config.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include \"daemon.h\"
+#include \"guestfs_protocol.h\"
+
+";
+
+  pr "/* Cleanup functions used by CLEANUP_* macros.  Do not call\n";
+  pr " * these functions directly.\n";
+  pr " */\n";
+  pr "\n";
+
+  List.iter (
+    fun { s_name = typ; s_cols = cols } ->
+      pr "void\n";
+      pr "cleanup_free_int_%s (void *ptr)\n" typ;
+      pr "{\n";
+      pr "  struct guestfs_int_%s *x = (* (struct guestfs_int_%s **) ptr);\n" typ typ;
+      pr "\n";
+      pr "  if (x) {\n";
+      pr "    xdr_free ((xdrproc_t) xdr_guestfs_int_%s, (char *) x);\n" typ;
+      pr "    free (x);\n";
+      pr "  }\n";
+      pr "}\n";
+      pr "\n";
+
+      pr "void\n";
+      pr "cleanup_free_int_%s_list (void *ptr)\n" typ;
+      pr "{\n";
+      pr "  struct guestfs_int_%s_list *x = (* (struct guestfs_int_%s_list **) ptr);\n"
+        typ typ;
+      pr "\n";
+      pr "  if (x) {\n";
+      pr "    xdr_free ((xdrproc_t) xdr_guestfs_int_%s_list, (char *) x);\n"
+        typ;
+      pr "    free (x);\n";
+      pr "  }\n";
+      pr "}\n";
+      pr "\n";
+
+  ) structs
+
+(* Generate structs-cleanups.h file. *)
+and generate_daemon_structs_cleanups_h () =
+  generate_header CStyle GPLv2plus;
+
+  pr "\
+/* These CLEANUP_* macros automatically free the struct or struct list
+ * pointed to by the local variable at the end of the current scope.
+ */
+
+#ifndef GUESTFS_DAEMON_STRUCTS_CLEANUPS_H_
+#define GUESTFS_DAEMON_STRUCTS_CLEANUPS_H_
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+";
+
+  List.iter (
+    fun { s_name = name } ->
+      pr "#define CLEANUP_FREE_%s \\\n" (String.uppercase_ascii name);
+      pr "  __attribute__((cleanup(cleanup_free_int_%s)))\n" name;
+      pr "#define CLEANUP_FREE_%s_LIST \\\n" (String.uppercase_ascii name);
+      pr "  __attribute__((cleanup(cleanup_free_int_%s_list)))\n" name
+  ) structs;
+
+  pr "#else /* !HAVE_ATTRIBUTE_CLEANUP */\n";
+
+  List.iter (
+    fun { s_name = name } ->
+      pr "#define CLEANUP_FREE_%s\n" (String.uppercase_ascii name);
+      pr "#define CLEANUP_FREE_%s_LIST\n" (String.uppercase_ascii name)
+  ) structs;
+
+  pr "\
+#endif /* !HAVE_ATTRIBUTE_CLEANUP */
+
+/* These functions are used internally by the CLEANUP_* macros.
+ * Don't call them directly.
+ */
+
+";
+
+  List.iter (
+    fun { s_name = name } ->
+      pr "extern void cleanup_free_int_%s (void *ptr);\n"
+        name;
+      pr "extern void cleanup_free_int_%s_list (void *ptr);\n"
+        name
+  ) structs;
+
+  pr "\n";
+  pr "#endif /* GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_ */\n"

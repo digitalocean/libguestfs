@@ -22,19 +22,11 @@ unset CDPATH
 export LANG=C
 set -e
 
-if [ -n "$SKIP_TEST_V2V_I_OVA_SUBFOLDERS_SH" ]; then
-    echo "$0: test skipped because environment variable is set"
-    exit 77
-fi
+$TEST_FUNCTIONS
+skip_if_skipped
+skip_if_backend uml
 
-if [ "$(guestfish get-backend)" = "uml" ]; then
-    echo "$0: test skipped because UML backend does not support network"
-    exit 77
-fi
-
-export VIRT_TOOLS_DATA_DIR="$srcdir/../test-data/fake-virt-tools"
-
-. $srcdir/../test-data/guestfs-hashsums.sh
+export VIRT_TOOLS_DATA_DIR="$top_srcdir/test-data/fake-virt-tools"
 
 d=test-v2v-i-ova-subfolders.d
 rm -rf $d
@@ -44,7 +36,7 @@ cp test-v2v-i-ova-subfolders.ovf $d/subfolder/
 
 pushd $d/subfolder
 
-truncate -s 10k disk1.vmdk
+guestfish disk-create disk1.vmdk raw 10K
 sha=`do_sha1 disk1.vmdk`
 echo -e "SHA1(disk1.vmdk)= $sha\r" > disk1.mf
 
@@ -56,10 +48,20 @@ popd
 # normalize the output.
 $VG virt-v2v --debug-gc --quiet \
     -i ova $d/test.ova \
-    --print-source |
-sed 's,[^ \t]*\(subfolder/disk.*\.vmdk\),\1,' > $d/source
+    --print-source > $d/source
 
 # Check the parsed source is what we expect.
-diff -u test-v2v-i-ova-subfolders.expected $d/source
+if grep -sq json: $d/source ; then
+    # Normalize the output.
+    # Remove directory prefix.
+    # Exact offset will vary because of tar.
+    sed -i -e "s,\"[^\"]*/$d/,\"," \
+           -e "s|\"offset\": [0-9]*,|\"offset\": x,|" $d/source
+    diff -u test-v2v-i-ova-subfolders.expected2 $d/source
+else
+    # normalize the output
+    sed -i -e 's,[^ \t]*\(subfolder/disk.*\.vmdk\),\1,' $d/source
+    diff -u test-v2v-i-ova-subfolders.expected $d/source
+fi
 
 rm -rf $d

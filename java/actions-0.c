@@ -252,6 +252,38 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1match  (JNIEnv *env, jobject obj, j
 
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1transform  (JNIEnv *env, jobject obj, jlong jg, jstring jlens, jstring jfile, jlong joptargs_bitmask, jboolean jremove)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *lens;
+  const char *file;
+  struct guestfs_aug_transform_argv optargs_s;
+  const struct guestfs_aug_transform_argv *optargs = &optargs_s;
+
+  lens = (*env)->GetStringUTFChars (env, jlens, NULL);
+  file = (*env)->GetStringUTFChars (env, jfile, NULL);
+
+  optargs_s.remove = jremove;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_aug_transform_argv (g, lens, file, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jlens, lens);
+  (*env)->ReleaseStringUTFChars (env, jfile, file);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  return;
+
+ ret_error:
+  return;
+}
+
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1qgroup_1create  (JNIEnv *env, jobject obj, jlong jg, jstring jqgroupid, jstring jsubvolume)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
@@ -1050,6 +1082,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1product_1variant  (JNIEnv 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
 
   r = guestfs_inspect_get_product_variant (g, root);
+
+  (*env)->ReleaseStringUTFChars (env, jroot, root);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  jr = (*env)->NewStringUTF (env, r);
+  free (r);
+  return jr;
+
+ ret_error:
+  return NULL;
+}
+
+
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1windows_1software_1hive  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jstring jr;
+  char *r;
+  const char *root;
+
+  root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
+  r = guestfs_inspect_get_windows_software_hive (g, root);
 
   (*env)->ReleaseStringUTFChars (env, jroot, root);
 

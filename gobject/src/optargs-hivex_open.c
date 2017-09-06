@@ -41,6 +41,7 @@ struct _GuestfsHivexOpenPrivate {
   GuestfsTristate verbose;
   GuestfsTristate debug;
   GuestfsTristate write;
+  GuestfsTristate unsafe;
 };
 
 G_DEFINE_TYPE (GuestfsHivexOpen, guestfs_hivex_open, G_TYPE_OBJECT);
@@ -49,7 +50,8 @@ enum {
   PROP_GUESTFS_HIVEX_OPEN_PROP0,
   PROP_GUESTFS_HIVEX_OPEN_VERBOSE,
   PROP_GUESTFS_HIVEX_OPEN_DEBUG,
-  PROP_GUESTFS_HIVEX_OPEN_WRITE
+  PROP_GUESTFS_HIVEX_OPEN_WRITE,
+  PROP_GUESTFS_HIVEX_OPEN_UNSAFE
 };
 
 static void
@@ -69,6 +71,10 @@ guestfs_hivex_open_set_property(GObject *object, guint property_id, const GValue
 
     case PROP_GUESTFS_HIVEX_OPEN_WRITE:
       priv->write = g_value_get_enum (value);
+      break;
+
+    case PROP_GUESTFS_HIVEX_OPEN_UNSAFE:
+      priv->unsafe = g_value_get_enum (value);
       break;
 
     default:
@@ -94,6 +100,10 @@ guestfs_hivex_open_get_property(GObject *object, guint property_id, GValue *valu
 
     case PROP_GUESTFS_HIVEX_OPEN_WRITE:
       g_value_set_enum (value, priv->write);
+      break;
+
+    case PROP_GUESTFS_HIVEX_OPEN_UNSAFE:
+      g_value_set_enum (value, priv->unsafe);
       break;
 
     default:
@@ -160,6 +170,23 @@ guestfs_hivex_open_class_init (GuestfsHivexOpenClass *klass)
     g_param_spec_enum (
       "write",
       "write",
+      "A boolean.",
+      GUESTFS_TYPE_TRISTATE, GUESTFS_TRISTATE_NONE,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsHivexOpen:unsafe:
+   *
+   * A boolean.
+   */
+  g_object_class_install_property (
+    object_class,
+    PROP_GUESTFS_HIVEX_OPEN_UNSAFE,
+    g_param_spec_enum (
+      "unsafe",
+      "unsafe",
       "A boolean.",
       GUESTFS_TYPE_TRISTATE, GUESTFS_TRISTATE_NONE,
       G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS

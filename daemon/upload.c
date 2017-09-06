@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#include "ignore-value.h"
 
 #include "guestfs_protocol.h"
 #include "daemon.h"
@@ -68,7 +70,7 @@ upload (const char *filename, int flags, int64_t offset)
   if (!is_dev) CHROOT_OUT;
   if (data.fd == -1) {
     err = errno;
-    r = cancel_receive ();
+    ignore_value (cancel_receive ());
     errno = err;
     reply_with_perror ("%s", filename);
     return -1;
@@ -77,17 +79,17 @@ upload (const char *filename, int flags, int64_t offset)
   if (offset) {
     if (lseek (data.fd, offset, SEEK_SET) == -1) {
       err = errno;
-      r = cancel_receive ();
+      ignore_value (cancel_receive ());
       errno = err;
       reply_with_perror ("lseek: %s", filename);
       return -1;
     }
   }
 
-  r = receive_file (write_cb, &data.fd);
+  r = receive_file (write_cb, &data);
   if (r == -1) {		/* write error */
     err = errno;
-    r = cancel_receive ();
+    ignore_value (cancel_receive ());
     errno = err;
     reply_with_error ("write error: %s", filename);
     close (data.fd);

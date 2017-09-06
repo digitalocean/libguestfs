@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ SUBDIRS += gnulib/tests
 endif
 
 # Basic source for the library.
-SUBDIRS += src docs examples po
+SUBDIRS += common/errnostring common/protocol common/utils
+SUBDIRS += lib docs examples po
 
 # The daemon and the appliance.
 if ENABLE_DAEMON
@@ -87,6 +88,14 @@ SUBDIRS += tests/regressions
 SUBDIRS += tests/tsk
 endif
 
+# Common code used by the tools.
+SUBDIRS += common/edit
+SUBDIRS += common/options
+SUBDIRS += common/parallel
+SUBDIRS += common/progress
+SUBDIRS += common/visit
+SUBDIRS += common/windows
+
 # libguestfs-test-tool
 SUBDIRS += test-tool
 
@@ -96,7 +105,7 @@ SUBDIRS += fish
 # virt-tools in C.
 SUBDIRS += align cat diff df edit format inspector make-fs rescue
 if HAVE_P2V
-SUBDIRS += p2v
+SUBDIRS += common/miniexpect p2v
 endif
 
 # bash-completion
@@ -146,7 +155,7 @@ if HAVE_OCAML
 SUBDIRS += \
 	mllib \
 	customize \
-	builder builder/website \
+	builder builder/templates \
 	get-kernel \
 	resize \
 	sparsify \
@@ -206,6 +215,11 @@ EXTRA_DIST = \
 	contrib/intro/vmm-icons-t.png \
 	contrib/intro/vmm-icons.png \
 	contrib/intro/win7.xml \
+	contrib/p2v/aux-scripts/do-build.sh \
+	contrib/p2v/build-p2v-iso.sh \
+	contrib/p2v/patches/0001-RHEL-5-ONLY-DISABLE-AUTOMATIC-REMOTE-PORT-ALLOCATION.patch \
+	contrib/p2v/patches/0002-RHEL-5-ONLY-QEMU-NBD-1.4-HAS-NO-f-OPTION.patch \
+	contrib/p2v/test-p2v-iso.sh \
 	contrib/README \
 	contrib/visualize-alignment/.gitignore \
 	contrib/visualize-alignment/guestfish-add-mount.qtr \
@@ -226,6 +240,7 @@ EXTRA_DIST = \
 	ocaml-link.sh \
 	podcheck.pl \
 	tests/automake2junit.ml \
+	tests/test-functions.sh \
 	tmp/.gitignore \
 	update-bugs.sh \
 	utils/README \
@@ -234,6 +249,9 @@ EXTRA_DIST = \
 	website/communicate.png \
 	website/documentation.png \
 	website/download.png \
+	website/download/builder/README \
+	website/download/builder/index \
+	website/download/builder/index.asc \
 	website/draft.png \
 	website/draft.svg \
 	website/easytoread.css \
@@ -248,13 +266,12 @@ EXTRA_DIST = \
 	zanata.xml \
 	zanata-pull.sh
 
-# XXX Eventually move builder/website under website/ top level directory.
-BUILDERFILES = \
-	builder/website/README \
-	builder/website/index \
-	builder/website/index.asc
+WEBSITESDIR = $(HOME)/d/websites
 
-WEBSITEDIR = $(HOME)/d/websites/libguestfs
+BUILDERFILES = \
+	website/download/builder/README \
+	website/download/builder/index \
+	website/download/builder/index.asc
 
 noinst_DATA = \
 	website/index.html \
@@ -268,8 +285,8 @@ website/TODO.txt: TODO
 	cp $< $@
 
 maintainer-upload-website:
-	cp website/*.{css,html,png,svg,txt} $(WEBSITEDIR)/
-	cp $(BUILDERFILES) $(WEBSITEDIR)/download/builder/
+	cp website/*.{css,html,png,svg,txt} $(WEBSITESDIR)/libguestfs/
+	cp $(BUILDERFILES) $(WEBSITESDIR)/libguestfs-builder/
 
 # When doing 'make dist' update a few files automatically.
 #
@@ -331,6 +348,7 @@ po/POTFILES-ml: configure.ac
 	rm -f $@ $@-t
 	cd $(srcdir); \
 	find builder customize dib get-kernel mllib resize sparsify sysprep v2v -name '*.ml' | \
+	grep -v '^builder/templates/' | \
 	LC_ALL=C sort > $@-t
 	mv $@-t $@
 
@@ -499,6 +517,20 @@ check-slow: build-test-guests
 	done; \
 	exit $$(( $$errors ? 1 : 0 ))
 
+check-root: build-test-guests
+	@if test "$$(id -u)" -ne 0; then \
+	  echo "***"; \
+	  echo "*** error: You must run 'check-root' as root."; \
+	  echo "***"; \
+	  exit 1; \
+	fi
+	@errors=0; \
+	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	  echo $(MAKE) -C `dirname $$f` $@; \
+	  $(MAKE) -C `dirname $$f` $@ || (( errors++ )); \
+	done; \
+	exit $$(( $$errors ? 1 : 0 ))
+
 build-test-guests:
 	$(MAKE) -C test-data/phony-guests check
 
@@ -572,8 +604,9 @@ help:
 	@echo "make check-with-upstream-qemu     Test using upstream qemu."
 	@echo "make check-with-upstream-libvirt  Test using upstream libvirt."
 	@echo "make check-slow                   Slow/long-running tests."
+	@echo "sudo make check-root              Tests which must be run as root."
 	@echo
-	@echo "make check-all                    Runs all 'check*' rules."
+	@echo "make check-all                    Runs all 'check*' rules except check-root."
 	@echo "make check-release                Runs 'check*' rules required for release."
 	@echo
 	@echo "make installcheck                 Test installed libguestfs packages."

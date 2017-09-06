@@ -1237,6 +1237,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1icon  (JNIEnv *env, jobjec
 }
 
 
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1windows_1system_1hive  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jstring jr;
+  char *r;
+  const char *root;
+
+  root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
+  r = guestfs_inspect_get_windows_system_hive (g, root);
+
+  (*env)->ReleaseStringUTFChars (env, jroot, root);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  jr = (*env)->NewStringUTF (env, r);
+  free (r);
+  return jr;
+
+ ret_error:
+  return NULL;
+}
+
+
 JNIEXPORT jboolean JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1netinst  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {

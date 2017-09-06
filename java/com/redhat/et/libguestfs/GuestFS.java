@@ -1683,6 +1683,54 @@ public class GuestFS {
 
   /**
    * <p>
+   * add/remove an Augeas lens transformation
+   * </p><p>
+   * Add an Augeas transformation for the specified "lens" so
+   * it can handle "file".
+   * </p><p>
+   * If "remove" is true ("false" by default), then the
+   * transformation is removed.
+   * </p><p>
+   * Optional arguments are supplied in the final
+   * Map&lt;String,Object&gt; parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * </p>
+   * @since 1.35.2
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void aug_transform (String lens, String file, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("aug_transform: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean remove = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("remove");
+    if (_optobj != null) {
+      remove = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    _aug_transform (g, lens, file, _optargs_bitmask, remove);
+  }
+
+  public void aug_transform (String lens, String file)
+    throws LibGuestFSException
+  {
+    aug_transform (lens, file, null);
+  }
+
+  private native void _aug_transform (long g, String lens, String file, long _optargs_bitmask, boolean remove)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * test availability of some parts of the API
    * </p><p>
    * This command is used to check the availability of some
@@ -2124,7 +2172,7 @@ public class GuestFS {
    * "blocksize" option of "g.mkfs".
    * </p>
    * @since 1.9.3
-   * @deprecated In new code, use {@link #mkfs} instead
+   * @deprecated There is no documented replacement
    * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void blockdev_setbsz (String device, int blocksize)
@@ -2719,8 +2767,7 @@ public class GuestFS {
    * <p>
    * limit the size of a subvolume
    * </p><p>
-   * Limit the size of a subvolume which's path is
-   * "subvolume". "size" can have suffix of G, M, or K.
+   * Limit the size of the subvolume with path "subvolume".
    * </p><p>
    * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>
@@ -5686,6 +5733,17 @@ public class GuestFS {
    * "ppc64le"
    * 64 bit Power PC (little endian).
    * </p><p>
+   * "riscv32"
+   * "riscv64"
+   * "riscv128"
+   * RISC-V 32-, 64- or 128-bit variants.
+   * </p><p>
+   * "s390"
+   * 31 bit IBM S/390.
+   * </p><p>
+   * "s390x"
+   * 64 bit IBM S/390.
+   * </p><p>
    * "sparc"
    * 32 bit SPARC.
    * </p><p>
@@ -6084,6 +6142,34 @@ public class GuestFS {
   }
 
   private native void _find0 (long g, String directory, String files)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * search the entries associated to the given inode
+   * </p><p>
+   * Searches all the entries associated with the given
+   * inode.
+   * </p><p>
+   * For each entry, a "tsk_dirent" structure is returned.
+   * See "filesystem_walk" for more information about
+   * "tsk_dirent" structures.
+   * </p><p>
+   * This function depends on the feature "libtsk".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.35.6
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public TSKDirent[] find_inode (String device, long inode)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("find_inode: handle is closed");
+
+    return _find_inode (g, device, inode);
+  }
+
+  private native TSKDirent[] _find_inode (long g, String device, long inode)
     throws LibGuestFSException;
 
   /**
@@ -7947,8 +8033,16 @@ public class GuestFS {
       write = ((Boolean) _optobj).booleanValue();
       _optargs_bitmask |= 4L;
     }
+    boolean unsafe = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("unsafe");
+    if (_optobj != null) {
+      unsafe = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
 
-    _hivex_open (g, filename, _optargs_bitmask, verbose, debug, write);
+    _hivex_open (g, filename, _optargs_bitmask, verbose, debug, write, unsafe);
   }
 
   public void hivex_open (String filename)
@@ -7957,7 +8051,7 @@ public class GuestFS {
     hivex_open (filename, null);
   }
 
-  private native void _hivex_open (long g, String filename, long _optargs_bitmask, boolean verbose, boolean debug, boolean write)
+  private native void _hivex_open (long g, String filename, long _optargs_bitmask, boolean verbose, boolean debug, boolean write, boolean unsafe)
     throws LibGuestFSException;
 
   /**
@@ -9146,6 +9240,70 @@ public class GuestFS {
   }
 
   private native String _inspect_get_windows_current_control_set (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * get the path of the Windows software hive
+   * </p><p>
+   * This returns the path to the hive (binary Windows
+   * Registry file) corresponding to HKLM\SOFTWARE.
+   * </p><p>
+   * This call assumes that the guest is Windows and that the
+   * guest has a software hive file with the right name. If
+   * this is not the case then an error is returned. This
+   * call does not check that the hive is a valid Windows
+   * Registry hive.
+   * </p><p>
+   * You can use "g.hivex_open" to read or write to the hive.
+   * </p><p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * </p>
+   * @since 1.35.26
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public String inspect_get_windows_software_hive (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_windows_software_hive: handle is closed");
+
+    return _inspect_get_windows_software_hive (g, root);
+  }
+
+  private native String _inspect_get_windows_software_hive (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * get the path of the Windows system hive
+   * </p><p>
+   * This returns the path to the hive (binary Windows
+   * Registry file) corresponding to HKLM\SYSTEM.
+   * </p><p>
+   * This call assumes that the guest is Windows and that the
+   * guest has a system hive file with the right name. If
+   * this is not the case then an error is returned. This
+   * call does not check that the hive is a valid Windows
+   * Registry hive.
+   * </p><p>
+   * You can use "g.hivex_open" to read or write to the hive.
+   * </p><p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * </p>
+   * @since 1.35.26
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public String inspect_get_windows_system_hive (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_windows_system_hive: handle is closed");
+
+    return _inspect_get_windows_system_hive (g, root);
+  }
+
+  private native String _inspect_get_windows_system_hive (long g, String root)
     throws LibGuestFSException;
 
   /**
@@ -14348,6 +14506,76 @@ public class GuestFS {
 
   /**
    * <p>
+   * create a squashfs filesystem
+   * </p><p>
+   * Create a squashfs filesystem for the specified "path".
+   * </p><p>
+   * The optional "compress" flag controls compression. If
+   * not given, then the output compressed using "gzip".
+   * Otherwise one of the following strings may be given to
+   * select the compression type of the squashfs: "gzip",
+   * "lzma", "lzo", "lz4", "xz".
+   * </p><p>
+   * The other optional arguments are:
+   * </p><p>
+   * "excludes"
+   * A list of wildcards. Files are excluded if they
+   * match any of the wildcards.
+   * </p><p>
+   * Please note that this API may fail when used to compress
+   * directories with large files, such as the resulting
+   * squashfs will be over 3GB big.
+   * </p><p>
+   * Optional arguments are supplied in the final
+   * Map&lt;String,Object&gt; parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * </p><p>
+   * This function depends on the feature "squashfs".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.35.25
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void mksquashfs (String path, String filename, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mksquashfs: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String compress = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("compress");
+    if (_optobj != null) {
+      compress = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+    String[] excludes = new String[]{};
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("excludes");
+    if (_optobj != null) {
+      excludes = ((String[]) _optobj);
+      _optargs_bitmask |= 2L;
+    }
+
+    _mksquashfs (g, path, filename, _optargs_bitmask, compress, excludes);
+  }
+
+  public void mksquashfs (String path, String filename)
+    throws LibGuestFSException
+  {
+    mksquashfs (path, filename, null);
+  }
+
+  private native void _mksquashfs (long g, String path, String filename, long _optargs_bitmask, String compress, String[] excludes)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * create a swap partition
    * </p><p>
    * Create a Linux swap partition on "device".
@@ -17896,6 +18124,9 @@ public class GuestFS {
    * </p><p>
    * fat The label is limited to 11 bytes.
    * </p><p>
+   * swap
+   * The label is limited to 16 bytes.
+   * </p><p>
    * If there is no support for changing the label for the
    * type of the specified filesystem, set_label will fail
    * and set errno as ENOTSUP.
@@ -20749,7 +20980,7 @@ public class GuestFS {
    * compatibility with older versions of the API.
    * </p>
    * @since 0.3
-   * @deprecated In new code, use {@link #launch} instead
+   * @deprecated There is no documented replacement
    * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void wait_ready ()

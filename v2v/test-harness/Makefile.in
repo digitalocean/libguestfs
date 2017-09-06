@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-v2v test harness
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 # that test virt-v2v end-to-end.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -328,9 +328,8 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libv2vth_a_AR = $(AR) $(ARFLAGS)
 libv2vth_a_LIBADD =
-am__libv2vth_a_SOURCES_DIST = ../xml-c.c
-am__dirstamp = $(am__leading_dot)dirstamp
-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@am_libv2vth_a_OBJECTS = ../libv2vth_a-xml-c.$(OBJEXT)
+am__libv2vth_a_SOURCES_DIST = dummy.c
+@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@am_libv2vth_a_OBJECTS = libv2vth_a-dummy.$(OBJEXT)
 libv2vth_a_OBJECTS = $(am_libv2vth_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -1683,12 +1682,13 @@ SOURCES_ML = \
 	v2v_test_harness.ml
 
 
-# -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
+# -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@OCAMLPACKAGES = \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-package str,unix,libvirt \
-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/src/.libs \
+@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/common/utils/.libs \
+@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/lib/.libs \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/gnulib/lib/.libs \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/ocaml \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/mllib \
@@ -1696,7 +1696,6 @@ SOURCES_ML = \
 
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@BOBJECTS = \
-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(top_builddir)/v2v/xml.cmo \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo) \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(libv2vth_a_OBJECTS)
 
@@ -1714,7 +1713,8 @@ SOURCES_ML = \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@libv2vth_a_CPPFLAGS = \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-DGUESTFS_PRIVATE=1 \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
 
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@libv2vth_a_CFLAGS = \
@@ -1723,7 +1723,7 @@ SOURCES_ML = \
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-fPIC
 
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@libv2vth_a_SOURCES = \
-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	../xml-c.c
+@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	dummy.c
 
 
 # Run ocamlfind to perform the install.  ocamlfind refuses to install
@@ -1776,14 +1776,6 @@ META: $(top_builddir)/config.status $(srcdir)/META.in
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-../$(am__dirstamp):
-	@$(MKDIR_P) ..
-	@: > ../$(am__dirstamp)
-../$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../$(DEPDIR)
-	@: > ../$(DEPDIR)/$(am__dirstamp)
-../libv2vth_a-xml-c.$(OBJEXT): ../$(am__dirstamp) \
-	../$(DEPDIR)/$(am__dirstamp)
 
 libv2vth.a: $(libv2vth_a_OBJECTS) $(libv2vth_a_DEPENDENCIES) $(EXTRA_libv2vth_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libv2vth.a
@@ -1792,12 +1784,11 @@ libv2vth.a: $(libv2vth_a_OBJECTS) $(libv2vth_a_DEPENDENCIES) $(EXTRA_libv2vth_a_
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@../$(DEPDIR)/libv2vth_a-xml-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libv2vth_a-dummy.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1823,19 +1814,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-../libv2vth_a-xml-c.o: ../xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -MT ../libv2vth_a-xml-c.o -MD -MP -MF ../$(DEPDIR)/libv2vth_a-xml-c.Tpo -c -o ../libv2vth_a-xml-c.o `test -f '../xml-c.c' || echo '$(srcdir)/'`../xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../$(DEPDIR)/libv2vth_a-xml-c.Tpo ../$(DEPDIR)/libv2vth_a-xml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../xml-c.c' object='../libv2vth_a-xml-c.o' libtool=no @AMDEPBACKSLASH@
+libv2vth_a-dummy.o: dummy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -MT libv2vth_a-dummy.o -MD -MP -MF $(DEPDIR)/libv2vth_a-dummy.Tpo -c -o libv2vth_a-dummy.o `test -f 'dummy.c' || echo '$(srcdir)/'`dummy.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libv2vth_a-dummy.Tpo $(DEPDIR)/libv2vth_a-dummy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dummy.c' object='libv2vth_a-dummy.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -c -o ../libv2vth_a-xml-c.o `test -f '../xml-c.c' || echo '$(srcdir)/'`../xml-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -c -o libv2vth_a-dummy.o `test -f 'dummy.c' || echo '$(srcdir)/'`dummy.c
 
-../libv2vth_a-xml-c.obj: ../xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -MT ../libv2vth_a-xml-c.obj -MD -MP -MF ../$(DEPDIR)/libv2vth_a-xml-c.Tpo -c -o ../libv2vth_a-xml-c.obj `if test -f '../xml-c.c'; then $(CYGPATH_W) '../xml-c.c'; else $(CYGPATH_W) '$(srcdir)/../xml-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../$(DEPDIR)/libv2vth_a-xml-c.Tpo ../$(DEPDIR)/libv2vth_a-xml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../xml-c.c' object='../libv2vth_a-xml-c.obj' libtool=no @AMDEPBACKSLASH@
+libv2vth_a-dummy.obj: dummy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -MT libv2vth_a-dummy.obj -MD -MP -MF $(DEPDIR)/libv2vth_a-dummy.Tpo -c -o libv2vth_a-dummy.obj `if test -f 'dummy.c'; then $(CYGPATH_W) 'dummy.c'; else $(CYGPATH_W) '$(srcdir)/dummy.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libv2vth_a-dummy.Tpo $(DEPDIR)/libv2vth_a-dummy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dummy.c' object='libv2vth_a-dummy.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -c -o ../libv2vth_a-xml-c.obj `if test -f '../xml-c.c'; then $(CYGPATH_W) '../xml-c.c'; else $(CYGPATH_W) '$(srcdir)/../xml-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -c -o libv2vth_a-dummy.obj `if test -f 'dummy.c'; then $(CYGPATH_W) 'dummy.c'; else $(CYGPATH_W) '$(srcdir)/dummy.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2002,8 +1993,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2017,7 +2006,7 @@ clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2064,7 +2053,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -2135,6 +2124,27 @@ $(top_builddir)/generator/generator:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@v2v_test_harness.cma: $(BOBJECTS)
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) $^ -o v2v_test_harness $(LIBXML2_LIBS)

@@ -129,7 +129,7 @@ The general structure of all libguestfs-using programs looks like this:
  /* Synchronize the disk.  This is the opposite of guestfs_launch. */
  guestfs_shutdown (g);
  
- /* Close and free the handle 'g'. */
+ /* Закрити і звільнити дескриптор «g». */
  guestfs_close (g);
 
 The code above doesn't include any error checking.  In real code you should
@@ -352,7 +352,7 @@ To copy part of a file (offset and size) use L</guestfs_copy_file_to_file>.
 Скористайтеся L</guestfs_copy_file_to_device>,
 L</guestfs_copy_device_to_file> або L</guestfs_copy_device_to_device>.
 
-Example: duplicate the contents of an LV:
+Приклад: дублювання вмісту логічного тому:
 
  guestfs_copy_device_to_device (g,
          "/dev/VG/Original", "/dev/VG/Copy",
@@ -418,7 +418,7 @@ Although libguestfs is primarily an API for manipulating files inside guest
 images, we also provide some limited facilities for running commands inside
 guests.
 
-There are many limitations to this:
+Існує багато обмежень щодо цього:
 
 =over 4
 
@@ -587,7 +587,7 @@ on it, deactivate the volume groups by calling C<guestfs_vg_activate (g, 0,
 L</guestfs_luks_close> on the F</dev/mapper/mapname> device (I<not> the
 underlying encrypted block device).
 
-=head2 MOUNT LOCAL
+=head2 ЛОКАЛЬНЕ МОНТУВАННЯ
 
 In libguestfs E<ge> 1.18, it is possible to mount the libguestfs filesystem
 on a local directory and access it using ordinary POSIX calls and programs.
@@ -669,7 +669,7 @@ any disks.
 
 =head3 CEPH
 
-Libguestfs can access Ceph (librbd/RBD) disks.
+Libguestfs може отримувати доступ до дисків Ceph (librbd/RBD).
 
 To do this, set the optional C<protocol> and C<server> parameters of
 L</guestfs_add_drive_opts> like this:
@@ -713,7 +713,7 @@ L</guestfs_add_drive_opts>.
 
 =head3 GLUSTER
 
-Libguestfs can access Gluster disks.
+Libguestfs може отримувати доступ до дисків Gluster.
 
 To do this, set the optional C<protocol> and C<server> parameters of
 L</guestfs_add_drive_opts> like this:
@@ -3373,8 +3373,9 @@ L<virt-customize(1)>, L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>,
 L<virt-filesystems(1)>, L<virt-format(1)>, L<virt-inspector(1)>,
 L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-log(1)>,
 L<virt-ls(1)>, L<virt-make-fs(1)>, L<virt-p2v(1)>, L<virt-rescue(1)>,
-L<virt-resize(1)>, L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tar(1)>,
-L<virt-tar-in(1)>, L<virt-tar-out(1)>, L<virt-v2v(1)>, L<virt-win-reg(1)>.
+L<virt-resize(1)>, L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tail(1)>,
+L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>, L<virt-v2v(1)>,
+L<virt-win-reg(1)>.
 
 Other libguestfs topics: L<guestfs-building(1)>, L<guestfs-faq(1)>,
 L<guestfs-hacking(1)>, L<guestfs-internals(1)>, L<guestfs-performance(1)>,
@@ -3395,5 +3396,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

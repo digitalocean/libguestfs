@@ -7,7 +7,7 @@ virt-rescue - Run a rescue shell on a virtual machine
 
  virt-rescue [--параметри] -d назва_домену
 
- virt-rescue [--options] -a disk.img [-a disk.img ...]
+ virt-rescue [--параметри] -a диск.img [-a диск.img ...]
 
  virt-rescue --suggest (-d назва_домену | -a диск.img ...)
 
@@ -15,7 +15,7 @@ virt-rescue - Run a rescue shell on a virtual machine
 
  virt-rescue [--параметри] назва_домену
 
- virt-rescue [--options] disk.img [disk.img ...]
+ virt-rescue [--параметри] диск.img [диск.img ...]
 
 =head1 ОПИС
 
@@ -107,9 +107,9 @@ make scripted changes to guests, use L<guestfish(1)>.
 
 Показати коротку довідку.
 
-=item B<-a> FILE
+=item B<-a> ФАЙЛ
 
-=item B<--add> FILE
+=item B<--add> ФАЙЛ
 
 Add C<FILE> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -411,5 +411,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

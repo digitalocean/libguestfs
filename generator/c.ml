@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 open Printf
 
+open Common_utils
 open Types
 open Utils
 open Pr
@@ -102,7 +103,7 @@ let rec generate_prototype ?(extern = true) ?(static = false)
       else (
         let namelen = String.length prefix + String.length name +
                       String.length suffix + 2 in
-        pr ",\n%s%s" indent (spaces namelen)
+        pr ",\n%s%s" indent (String.spaces namelen)
       )
     );
     comma := true
@@ -230,7 +231,8 @@ and generate_actions_pod_entry ({ c_name = c_name;
     List.iter (
       fun argt ->
         let n = name_of_optargt argt in
-        pr " GUESTFS_%s_%s, " (String.uppercase c_name) (String.uppercase n);
+        pr " GUESTFS_%s_%s, " (String.uppercase_ascii c_name)
+           (String.uppercase_ascii n);
         match argt with
         | OBool n -> pr "int %s,\n" n
         | OInt n -> pr "int %s,\n" n
@@ -443,11 +445,14 @@ extern \"C\" {
 #endif
 
 /* Define GUESTFS_WARN_DEPRECATED=1 to warn about deprecated API functions. */
-#define GUESTFS_DEPRECATED_BY(s)
+#define GUESTFS_DEPRECATED_NO_REPLACEMENT
+#define GUESTFS_DEPRECATED_REPLACED_BY(s)
 #if GUESTFS_WARN_DEPRECATED
 #  if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40500 /* gcc >= 4.5 */
-#    undef GUESTFS_DEPRECATED_BY
-#    define GUESTFS_DEPRECATED_BY(s) __attribute__((__deprecated__(\"change the program to use guestfs_\" s \" instead of this deprecated function\")))
+#    undef GUESTFS_DEPRECATED_NO_REPLACEMENT
+#    undef GUESTFS_DEPRECATED_REPLACED_BY
+#    define GUESTFS_DEPRECATED_NO_REPLACEMENT __attribute__((__deprecated__))
+#    define GUESTFS_DEPRECATED_REPLACED_BY(s) __attribute__((__deprecated__(\"change the program to use guestfs_\" s \" instead of this deprecated function\")))
 #  endif
 #endif /* GUESTFS_WARN_DEPRECATED */
 
@@ -508,7 +513,7 @@ extern GUESTFS_DLL_PUBLIC guestfs_abort_cb guestfs_get_out_of_memory_handler (gu
   List.iter (
     fun (name, bitmask) ->
       pr "#define GUESTFS_EVENT_%-16s 0x%04x\n"
-        (String.uppercase name) bitmask
+        (String.uppercase_ascii name) bitmask
   ) events;
   pr "#define GUESTFS_EVENT_%-16s 0x%04x\n" "ALL" all_events_bitmask;
   pr "\n";
@@ -560,17 +565,17 @@ typedef void (*guestfs_progress_cb) (guestfs_h *g, void *opaque, int proc_nr, in
 #endif
 
 extern GUESTFS_DLL_PUBLIC void guestfs_set_log_message_callback (guestfs_h *g, guestfs_log_message_cb cb, void *opaque)
-  GUESTFS_DEPRECATED_BY(\"set_event_callback\");
+  GUESTFS_DEPRECATED_REPLACED_BY(\"set_event_callback\");
 extern GUESTFS_DLL_PUBLIC void guestfs_set_subprocess_quit_callback (guestfs_h *g, guestfs_subprocess_quit_cb cb, void *opaque)
-  GUESTFS_DEPRECATED_BY(\"set_event_callback\");
+  GUESTFS_DEPRECATED_REPLACED_BY(\"set_event_callback\");
 extern GUESTFS_DLL_PUBLIC void guestfs_set_launch_done_callback (guestfs_h *g, guestfs_launch_done_cb cb, void *opaque)
-  GUESTFS_DEPRECATED_BY(\"set_event_callback\");
+  GUESTFS_DEPRECATED_REPLACED_BY(\"set_event_callback\");
 #define GUESTFS_HAVE_SET_CLOSE_CALLBACK 1
 extern GUESTFS_DLL_PUBLIC void guestfs_set_close_callback (guestfs_h *g, guestfs_close_cb cb, void *opaque)
-  GUESTFS_DEPRECATED_BY(\"set_event_callback\");
+  GUESTFS_DEPRECATED_REPLACED_BY(\"set_event_callback\");
 #define GUESTFS_HAVE_SET_PROGRESS_CALLBACK 1
 extern GUESTFS_DLL_PUBLIC void guestfs_set_progress_callback (guestfs_h *g, guestfs_progress_cb cb, void *opaque)
-  GUESTFS_DEPRECATED_BY(\"set_event_callback\");
+  GUESTFS_DEPRECATED_REPLACED_BY(\"set_event_callback\");
 
 /* Private data area. */
 #define GUESTFS_HAVE_SET_PRIVATE 1
@@ -601,7 +606,7 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
   (* Public structures. *)
   let generate_all_structs = List.iter (
     fun { s_name = typ; s_cols = cols } ->
-      pr "#define GUESTFS_HAVE_STRUCT_%s 1\n" (String.uppercase typ);
+      pr "#define GUESTFS_HAVE_STRUCT_%s 1\n" (String.uppercase_ascii typ);
       pr "\n";
       pr "struct guestfs_%s {\n" typ;
       List.iter (
@@ -645,14 +650,14 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
   let generate_action_header { name = shortname;
                                style = ret, args, optargs as style;
                                deprecated_by = deprecated_by } =
-    pr "#define GUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
+    pr "#define GUESTFS_HAVE_%s 1\n" (String.uppercase_ascii shortname);
 
     if optargs <> [] then (
       iteri (
         fun i argt ->
-          let uc_shortname = String.uppercase shortname in
+          let uc_shortname = String.uppercase_ascii shortname in
           let n = name_of_optargt argt in
-          let uc_n = String.uppercase n in
+          let uc_n = String.uppercase_ascii n in
           pr "#define GUESTFS_%s_%s %d\n" uc_shortname uc_n i;
       ) optargs;
     );
@@ -660,8 +665,12 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
     generate_prototype ~single_line:true ~semicolon:false ~dll_public:true
       ~handle:"g" ~prefix:"guestfs_" shortname style;
     (match deprecated_by with
-    | Some fn -> pr "\n  GUESTFS_DEPRECATED_BY (%S);\n" fn
-    | None -> pr ";\n"
+    | Not_deprecated ->
+       pr ";\n"
+    | Replaced_by fn ->
+       pr "\n  GUESTFS_DEPRECATED_REPLACED_BY (%S);\n" fn
+    | Deprecated_no_replacement ->
+       pr "\n  GUESTFS_DEPRECATED_NO_REPLACEMENT;\n"
     );
 
     if optargs <> [] then (
@@ -682,9 +691,9 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
             | OInt64 n -> "int64_t "
             | OString n -> "const char *"
             | OStringList n -> "char *const *" in
-          let uc_shortname = String.uppercase shortname in
+          let uc_shortname = String.uppercase_ascii shortname in
           let n = name_of_optargt argt in
-          let uc_n = String.uppercase n in
+          let uc_n = String.uppercase_ascii n in
           pr "# define GUESTFS_%s_%s_BITMASK (UINT64_C(1)<<%d)\n" uc_shortname uc_n i;
           pr "  %s%s;\n" c_type n
       ) optargs;
@@ -759,7 +768,7 @@ pr "\
 
   List.iter (
     fun { name = shortname } ->
-      pr "#define LIBGUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
+      pr "#define LIBGUESTFS_HAVE_%s 1\n" (String.uppercase_ascii shortname);
   ) public_functions_sorted;
 
   pr "
@@ -785,7 +794,7 @@ and generate_internal_actions_h () =
       generate_prototype ~single_line:true ~newline:true ~handle:"g"
         ~prefix:"guestfs_impl_" ~optarg_proto:Argv
         c_name style
-  ) (actions |> non_daemon_functions);
+  ) (actions |> non_daemon_functions |> sort);
 
   pr "\n";
   pr "#endif /* GUESTFS_INTERNAL_ACTIONS_H_ */\n"
@@ -810,9 +819,9 @@ and generate_internal_frontend_cleanups_h () =
 
   List.iter (
     fun { s_name = name } ->
-      pr "#define CLEANUP_FREE_%s \\\n" (String.uppercase name);
+      pr "#define CLEANUP_FREE_%s \\\n" (String.uppercase_ascii name);
       pr "  __attribute__((cleanup(guestfs_int_cleanup_free_%s)))\n" name;
-      pr "#define CLEANUP_FREE_%s_LIST \\\n" (String.uppercase name);
+      pr "#define CLEANUP_FREE_%s_LIST \\\n" (String.uppercase_ascii name);
       pr "  __attribute__((cleanup(guestfs_int_cleanup_free_%s_list)))\n" name
   ) structs;
 
@@ -820,8 +829,8 @@ and generate_internal_frontend_cleanups_h () =
 
   List.iter (
     fun { s_name = name } ->
-      pr "#define CLEANUP_FREE_%s\n" (String.uppercase name);
-      pr "#define CLEANUP_FREE_%s_LIST\n" (String.uppercase name)
+      pr "#define CLEANUP_FREE_%s\n" (String.uppercase_ascii name);
+      pr "#define CLEANUP_FREE_%s_LIST\n" (String.uppercase_ascii name)
   ) structs;
 
   pr "\
@@ -1409,7 +1418,7 @@ and generate_client_actions actions () =
       function
       | OString n ->
           pr "  if ((optargs->bitmask & GUESTFS_%s_%s_BITMASK) &&\n"
-            (String.uppercase c_name) (String.uppercase n);
+            (String.uppercase_ascii c_name) (String.uppercase_ascii n);
           pr "      optargs->%s == NULL) {\n" n;
           pr "    error (g, \"%%s: %%s: optional parameter cannot be NULL\",\n";
           pr "           \"%s\", \"%s\");\n" c_name n;
@@ -1423,7 +1432,7 @@ and generate_client_actions actions () =
 
       | OStringList n ->
           pr "  if ((optargs->bitmask & GUESTFS_%s_%s_BITMASK) &&\n"
-            (String.uppercase c_name) (String.uppercase n);
+            (String.uppercase_ascii c_name) (String.uppercase_ascii n);
           pr "      optargs->%s == NULL) {\n" n;
           pr "    error (g, \"%%s: %%s: optional list cannot be NULL\",\n";
           pr "           \"%s\", \"%s\");\n" c_name n;
@@ -1587,7 +1596,7 @@ and generate_client_actions actions () =
       fun argt ->
         let n = name_of_optargt argt in
         pr "    if (optargs->bitmask & GUESTFS_%s_%s_BITMASK) {\n"
-          (String.uppercase c_name) (String.uppercase n);
+          (String.uppercase_ascii c_name) (String.uppercase_ascii n);
         (match argt with
          | OString n ->
              pr "      fprintf (trace_buffer.fp, \" \\\"%%s:%%s\\\"\", \"%s\", optargs->%s);\n" n n
@@ -1614,7 +1623,7 @@ and generate_client_actions actions () =
   in
 
   let trace_return ?(indent = 2) name (ret, _, _) rv =
-    let indent = spaces indent in
+    let indent = String.spaces indent in
 
     pr "%sif (trace_flag) {\n" indent;
 
@@ -1679,7 +1688,7 @@ and generate_client_actions actions () =
   in
 
   let trace_return_error ?(indent = 2) name (ret, _, _) errcode =
-    let indent = spaces indent in
+    let indent = String.spaces indent in
 
     pr "%sif (trace_flag)\n" indent;
 
@@ -1775,7 +1784,7 @@ and generate_client_actions actions () =
       generate_non_daemon_wrapper f
     | { wrapper = false } ->
       () (* no wrapper *)
-  ) (actions |> non_daemon_functions);
+  ) (actions |> non_daemon_functions |> sort);
 
   (* Client-side stubs for each function. *)
   let generate_daemon_stub { name = name; c_name = c_name;
@@ -1876,7 +1885,7 @@ and generate_client_actions actions () =
     (* Send the main header and arguments. *)
     if args_passed_to_daemon = [] && optargs = [] then (
       pr "  serial = guestfs_int_send (g, GUESTFS_PROC_%s, progress_hint, 0,\n"
-        (String.uppercase name);
+         (String.uppercase_ascii name);
       pr "                             NULL, NULL);\n"
     ) else (
       List.iter (
@@ -1913,7 +1922,7 @@ and generate_client_actions actions () =
         fun argt ->
           let n = name_of_optargt argt in
           pr "  if (optargs->bitmask & GUESTFS_%s_%s_BITMASK) {\n"
-            (String.uppercase c_name) (String.uppercase n);
+            (String.uppercase_ascii c_name) (String.uppercase_ascii n);
           (match argt with
           | OBool n
           | OInt n
@@ -1938,7 +1947,7 @@ and generate_client_actions actions () =
       ) optargs;
 
       pr "  serial = guestfs_int_send (g, GUESTFS_PROC_%s,\n"
-        (String.uppercase name);
+        (String.uppercase_ascii name);
       pr "                             progress_hint, %s,\n"
         (if optargs <> [] then "optargs->bitmask" else "0");
       pr "                             (xdrproc_t) xdr_guestfs_%s_args, (char *) &args);\n"
@@ -1989,7 +1998,7 @@ and generate_client_actions actions () =
     pr "\n";
 
     pr "  if (guestfs_int_check_reply_header (g, &hdr, GUESTFS_PROC_%s, serial) == -1) {\n"
-      (String.uppercase name);
+      (String.uppercase_ascii name);
     trace_return_error ~indent:4 name style errcode;
     pr "    return %s;\n" (string_of_errcode errcode);
     pr "  }\n";
@@ -2073,7 +2082,7 @@ and generate_client_actions actions () =
   List.iter (
     fun f ->
       generate_daemon_stub f
-  ) (actions |> daemon_functions)
+  ) (actions |> daemon_functions |> sort)
 
 (* Functions which have optional arguments have two or three
  * generated variants.
@@ -2160,7 +2169,7 @@ and generate_client_actions_variants () =
       fun argt ->
         let n = name_of_optargt argt in
         pr "    case GUESTFS_%s_%s:\n"
-          (String.uppercase c_name) (String.uppercase n);
+          (String.uppercase_ascii c_name) (String.uppercase_ascii n);
         pr "      optargs_s.%s = va_arg (args, " n;
         (match argt with
         | OBool _ | OInt _ -> pr "int"
@@ -2273,7 +2282,8 @@ guestfs_event_to_string (uint64_t event)
 
   List.iter (
     fun name ->
-      pr "  if ((event & GUESTFS_EVENT_%s) != 0) {\n" (String.uppercase name);
+      pr "  if ((event & GUESTFS_EVENT_%s) != 0) {\n"
+         (String.uppercase_ascii name);
       pr "    strcpy (&ret[len], \"%s,\");\n" name;
       pr "    len += %d + 1;\n" (String.length name);
       pr "  }\n";
@@ -2364,4 +2374,4 @@ and generate_linker_script () =
   pr "};\n"
 
 and generate_max_proc_nr () =
-  pr "%d\n" max_proc_nr
+  pr "%d\n" Proc_nr.max_proc_nr

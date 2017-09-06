@@ -1,0 +1,351 @@
+=begin comment
+
+libguestfs generated file
+ WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+          generator/c.ml
+          and from the code in the generator/ subdirectory.
+ ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
+
+ Copyright (C) 2009-2017 Red Hat Inc.
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+=end comment
+
+=over 4
+
+=item B<acl>
+
+The following functions:
+L</guestfs_acl_delete_def_file>
+L</guestfs_acl_get_file>
+L</guestfs_acl_set_file>
+
+=item B<blkdiscard>
+
+The following functions:
+L</guestfs_blkdiscard>
+
+=item B<blkdiscardzeroes>
+
+The following functions:
+L</guestfs_blkdiscardzeroes>
+
+=item B<btrfs>
+
+The following functions:
+L</guestfs_btrfs_balance_cancel>
+L</guestfs_btrfs_balance_pause>
+L</guestfs_btrfs_balance_resume>
+L</guestfs_btrfs_balance_status>
+L</guestfs_btrfs_device_add>
+L</guestfs_btrfs_device_delete>
+L</guestfs_btrfs_filesystem_balance>
+L</guestfs_btrfs_filesystem_defragment>
+L</guestfs_btrfs_filesystem_resize>
+L</guestfs_btrfs_filesystem_show>
+L</guestfs_btrfs_filesystem_sync>
+L</guestfs_btrfs_fsck>
+L</guestfs_btrfs_image>
+L</guestfs_btrfs_qgroup_assign>
+L</guestfs_btrfs_qgroup_create>
+L</guestfs_btrfs_qgroup_destroy>
+L</guestfs_btrfs_qgroup_limit>
+L</guestfs_btrfs_qgroup_remove>
+L</guestfs_btrfs_qgroup_show>
+L</guestfs_btrfs_quota_enable>
+L</guestfs_btrfs_quota_rescan>
+L</guestfs_btrfs_replace>
+L</guestfs_btrfs_rescue_chunk_recover>
+L</guestfs_btrfs_rescue_super_recover>
+L</guestfs_btrfs_scrub_cancel>
+L</guestfs_btrfs_scrub_resume>
+L</guestfs_btrfs_scrub_start>
+L</guestfs_btrfs_scrub_status>
+L</guestfs_btrfs_set_seeding>
+L</guestfs_btrfs_subvolume_create>
+L</guestfs_btrfs_subvolume_delete>
+L</guestfs_btrfs_subvolume_get_default>
+L</guestfs_btrfs_subvolume_list>
+L</guestfs_btrfs_subvolume_set_default>
+L</guestfs_btrfs_subvolume_show>
+L</guestfs_btrfs_subvolume_snapshot>
+L</guestfs_btrfstune_enable_extended_inode_refs>
+L</guestfs_btrfstune_enable_skinny_metadata_extent_refs>
+L</guestfs_btrfstune_seeding>
+L</guestfs_mkfs_btrfs>
+
+=item B<extlinux>
+
+The following functions:
+L</guestfs_extlinux>
+
+=item B<fstrim>
+
+The following functions:
+L</guestfs_fstrim>
+
+=item B<gdisk>
+
+The following functions:
+L</guestfs_part_expand_gpt>
+L</guestfs_part_get_disk_guid>
+L</guestfs_part_get_gpt_guid>
+L</guestfs_part_get_gpt_type>
+L</guestfs_part_set_disk_guid>
+L</guestfs_part_set_disk_guid_random>
+L</guestfs_part_set_gpt_guid>
+L</guestfs_part_set_gpt_type>
+
+=item B<grub>
+
+The following functions:
+L</guestfs_grub_install>
+
+=item B<hivex>
+
+The following functions:
+L</guestfs_hivex_close>
+L</guestfs_hivex_commit>
+L</guestfs_hivex_node_add_child>
+L</guestfs_hivex_node_children>
+L</guestfs_hivex_node_delete_child>
+L</guestfs_hivex_node_get_child>
+L</guestfs_hivex_node_get_value>
+L</guestfs_hivex_node_name>
+L</guestfs_hivex_node_parent>
+L</guestfs_hivex_node_set_value>
+L</guestfs_hivex_node_values>
+L</guestfs_hivex_open>
+L</guestfs_hivex_root>
+L</guestfs_hivex_value_key>
+L</guestfs_hivex_value_type>
+L</guestfs_hivex_value_value>
+
+=item B<inotify>
+
+The following functions:
+L</guestfs_inotify_add_watch>
+L</guestfs_inotify_close>
+L</guestfs_inotify_files>
+L</guestfs_inotify_init>
+L</guestfs_inotify_read>
+L</guestfs_inotify_rm_watch>
+
+=item B<journal>
+
+The following functions:
+L</guestfs_internal_journal_get>
+L</guestfs_journal_close>
+L</guestfs_journal_get_data_threshold>
+L</guestfs_journal_get_realtime_usec>
+L</guestfs_journal_next>
+L</guestfs_journal_open>
+L</guestfs_journal_set_data_threshold>
+L</guestfs_journal_skip>
+
+=item B<ldm>
+
+The following functions:
+L</guestfs_ldmtool_create_all>
+L</guestfs_ldmtool_diskgroup_disks>
+L</guestfs_ldmtool_diskgroup_name>
+L</guestfs_ldmtool_diskgroup_volumes>
+L</guestfs_ldmtool_remove_all>
+L</guestfs_ldmtool_scan>
+L</guestfs_ldmtool_scan_devices>
+L</guestfs_ldmtool_volume_hint>
+L</guestfs_ldmtool_volume_partitions>
+L</guestfs_ldmtool_volume_type>
+L</guestfs_list_ldm_partitions>
+L</guestfs_list_ldm_volumes>
+
+=item B<libtsk>
+
+The following functions:
+L</guestfs_internal_filesystem_walk>
+L</guestfs_internal_find_inode>
+
+=item B<linuxcaps>
+
+The following functions:
+L</guestfs_cap_get_file>
+L</guestfs_cap_set_file>
+
+=item B<linuxfsuuid>
+
+The following functions:
+L</guestfs_mke2fs_JU>
+L</guestfs_mke2journal_U>
+L</guestfs_mkswap_U>
+L</guestfs_swapoff_uuid>
+L</guestfs_swapon_uuid>
+
+=item B<linuxmodules>
+
+The following functions:
+L</guestfs_modprobe>
+
+=item B<linuxxattrs>
+
+The following functions:
+L</guestfs_getxattr>
+L</guestfs_getxattrs>
+L</guestfs_internal_lxattrlist>
+L</guestfs_lgetxattr>
+L</guestfs_lgetxattrs>
+L</guestfs_lremovexattr>
+L</guestfs_lsetxattr>
+L</guestfs_removexattr>
+L</guestfs_setxattr>
+
+=item B<luks>
+
+The following functions:
+L</guestfs_luks_add_key>
+L</guestfs_luks_close>
+L</guestfs_luks_format>
+L</guestfs_luks_format_cipher>
+L</guestfs_luks_kill_slot>
+L</guestfs_luks_open>
+L</guestfs_luks_open_ro>
+
+=item B<lvm2>
+
+The following functions:
+L</guestfs_lvcreate>
+L</guestfs_lvcreate_free>
+L</guestfs_lvm_remove_all>
+L</guestfs_lvm_set_filter>
+L</guestfs_lvremove>
+L</guestfs_lvresize>
+L</guestfs_lvresize_free>
+L</guestfs_lvs>
+L</guestfs_lvs_full>
+L</guestfs_pvchange_uuid>
+L</guestfs_pvchange_uuid_all>
+L</guestfs_pvcreate>
+L</guestfs_pvremove>
+L</guestfs_pvresize>
+L</guestfs_pvresize_size>
+L</guestfs_pvs>
+L</guestfs_pvs_full>
+L</guestfs_vg_activate>
+L</guestfs_vg_activate_all>
+L</guestfs_vgchange_uuid>
+L</guestfs_vgchange_uuid_all>
+L</guestfs_vgcreate>
+L</guestfs_vgmeta>
+L</guestfs_vgremove>
+L</guestfs_vgs>
+L</guestfs_vgs_full>
+
+=item B<mdadm>
+
+The following functions:
+L</guestfs_md_create>
+L</guestfs_md_detail>
+L</guestfs_md_stat>
+L</guestfs_md_stop>
+
+=item B<mknod>
+
+The following functions:
+L</guestfs_mkfifo>
+L</guestfs_mknod>
+L</guestfs_mknod_b>
+L</guestfs_mknod_c>
+
+=item B<ntfs3g>
+
+The following functions:
+L</guestfs_ntfs_3g_probe>
+L</guestfs_ntfsclone_in>
+L</guestfs_ntfsclone_out>
+L</guestfs_ntfsfix>
+
+=item B<ntfsprogs>
+
+The following functions:
+L</guestfs_ntfsresize>
+L</guestfs_ntfsresize_size>
+
+=item B<rsync>
+
+The following functions:
+L</guestfs_rsync>
+L</guestfs_rsync_in>
+L</guestfs_rsync_out>
+
+=item B<scrub>
+
+The following functions:
+L</guestfs_scrub_device>
+L</guestfs_scrub_file>
+L</guestfs_scrub_freespace>
+
+=item B<selinux>
+
+The following functions:
+L</guestfs_getcon>
+L</guestfs_setcon>
+
+=item B<selinuxrelabel>
+
+The following functions:
+L</guestfs_selinux_relabel>
+
+=item B<sleuthkit>
+
+The following functions:
+L</guestfs_download_blocks>
+L</guestfs_download_inode>
+
+=item B<squashfs>
+
+The following functions:
+L</guestfs_mksquashfs>
+
+=item B<syslinux>
+
+The following functions:
+L</guestfs_syslinux>
+
+=item B<wipefs>
+
+The following functions:
+L</guestfs_wipefs>
+
+=item B<xfs>
+
+The following functions:
+L</guestfs_xfs_admin>
+L</guestfs_xfs_growfs>
+L</guestfs_xfs_info>
+L</guestfs_xfs_repair>
+
+=item B<xz>
+
+The following functions:
+L</guestfs_txz_in>
+L</guestfs_txz_out>
+
+=item B<zerofree>
+
+The following functions:
+L</guestfs_zerofree>
+
+=back
+

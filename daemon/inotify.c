@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ do_inotify_init (int max_events)
 {
   FILE *fp;
 
-  NEED_ROOT (, return -1);
+  NEED_ROOT (0, return -1);
 
   if (max_events < 0) {
     reply_with_error ("max_events < 0");

@@ -77,9 +77,9 @@ I<--format=..>.
 
 Додати віддалений диск. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
-=item B<-b> EXTENSION
+=item B<-b> СУФІКС
 
-=item B<--backup> EXTENSION
+=item B<--backup> СУФІКС
 
 Create a backup of the original file I<in the guest disk image>.  The backup
 has the original filename with C<extension> added.
@@ -101,9 +101,9 @@ write:
 Якщо вказати блокові пристрої гостьових систем безпосередньо, libvirt не
 буде використовуватися взагалі.
 
-=item B<-d> GUEST
+=item B<-d> ГІСТЬ
 
-=item B<--domain> GUEST
+=item B<--domain> ГІСТЬ
 
 Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
 використовувати замість назв.
@@ -389,5 +389,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

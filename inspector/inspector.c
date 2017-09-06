@@ -53,6 +53,8 @@ int keys_from_stdin = 0;
 int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 1;
+int in_guestfish = 0;
+int in_virt_rescue = 0;
 static const char *xpath = NULL;
 static int inspect_apps = 1;
 static int inspect_icon = 1;
@@ -269,7 +271,7 @@ main (int argc, char *argv[])
   /* Add drives, inspect and mount.  Note that inspector is always true,
    * and there is no -m option.
    */
-  add_drives (drvs, 'a');
+  add_drives (drvs);
 
   if (guestfs_launch (g) == -1)
     exit (EXIT_FAILURE);

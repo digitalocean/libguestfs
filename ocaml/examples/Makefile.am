@@ -1,5 +1,5 @@
 # libguestfs OCaml examples
-# Copyright (C) 2010-2016 Red Hat Inc.
+# Copyright (C) 2010-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ if HAVE_OCAML
 
 noinst_SCRIPTS = create_disk debug_logging inspect_vm
 
-OCAMLFINDFLAGS = -cclib -L$(top_builddir)/src/.libs
+OCAMLFINDFLAGS = -cclib -L$(top_builddir)/lib/.libs
 
 if HAVE_OCAMLOPT
 create_disk: create_disk.ml

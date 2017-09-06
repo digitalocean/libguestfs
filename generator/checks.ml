@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,11 @@
 
 (* Please read generator/README first. *)
 
+open Common_utils
 open Types
 open Utils
 open Actions
+open Fish_commands
 
 (* Check function names etc. for consistency. *)
 let () =
@@ -155,7 +157,7 @@ let () =
   (* Check short descriptions. *)
   List.iter (
     fun { name = name; shortdesc = shortdesc } ->
-      if shortdesc.[0] <> Char.lowercase shortdesc.[0] then
+      if shortdesc.[0] <> Char.lowercase_ascii shortdesc.[0] then
         failwithf "short description of %s should begin with lowercase." name;
       let c = shortdesc.[String.length shortdesc-1] in
       if c = '\n' || c = '.' then
@@ -167,29 +169,9 @@ let () =
     fun { name = name; longdesc = longdesc } ->
       if longdesc.[String.length longdesc-1] = '\n' then
         failwithf "long description of %s should not end with \\n." name;
-      if longdesc.[0] <> Char.uppercase longdesc.[0] then
+      if longdesc.[0] <> Char.uppercase_ascii longdesc.[0] then
         failwithf "long description of %s should begin with uppercase." name
   ) (actions @ fish_commands);
-
-  (* Check proc_nrs don't overlap. *)
-  let proc_nrs =
-    List.map (
-      function
-      | { name = name; proc_nr = Some proc_nr } -> (name, proc_nr)
-      | _ -> assert false
-    ) (actions |> daemon_functions) in
-  let proc_nrs =
-    List.sort (fun (_,nr1) (_,nr2) -> compare nr1 nr2) proc_nrs in
-  let rec loop = function
-    | [] -> ()
-    | [_] -> ()
-    | (name1,nr1) :: ((name2,nr2) :: _ as rest) when nr1 < nr2 ->
-        loop rest
-    | (name1,nr1) :: (name2,nr2) :: _ ->
-        failwithf "%s and %s have conflicting procedure numbers (%d, %d)"
-          name1 name2 nr1 nr2
-  in
-  loop proc_nrs;
 
   (* Check flags. *)
   List.iter (
@@ -202,7 +184,7 @@ let () =
             failwithf "%s: guestfish alias %s should not contain '_'" name n
       ) f.fish_alias;
       (match f.deprecated_by with
-      | Some n ->
+      | Replaced_by n ->
         (* 'n' must be a cross-ref to the name of another action. *)
         if not (List.exists (
           function
@@ -210,7 +192,7 @@ let () =
           | _ -> false
         ) actions) then
           failwithf "%s: deprecated_by flag must be cross-reference to another action" name
-      | None -> ()
+      | Not_deprecated | Deprecated_no_replacement -> ()
       );
       (match f.optional with
       | Some n ->

@@ -122,6 +122,7 @@ L</guestfs_list_ldm_partitions> L</guestfs_list_ldm_volumes>
 =item B<libtsk>
 
 The following functions: L</guestfs_internal_filesystem_walk>
+L</guestfs_internal_find_inode>
 
 =item B<linuxcaps>
 
@@ -201,6 +202,10 @@ The following functions: L</guestfs_selinux_relabel>
 
 The following functions: L</guestfs_download_blocks>
 L</guestfs_download_inode>
+
+=item B<squashfs>
+
+The following functions: L</guestfs_mksquashfs>
 
 =item B<syslinux>
 

@@ -18,33 +18,18 @@
 
 # Test virt-p2v in non-GUI mode.
 
-unset CDPATH
-export LANG=C
 set -e
 
-if [ -n "$SKIP_TEST_VIRT_P2V_SH" ]; then
-    echo "$0: test skipped because environment variable is set"
-    exit 77
-fi
+$TEST_FUNCTIONS
+skip_if_skipped
+skip_if_backend uml
+skip_unless_phony_guest windows.img
+skip_unless_phony_guest blank-part.img
 
-if [ "$(guestfish get-backend)" = "uml" ]; then
-    echo "$0: test skipped because UML backend does not support network"
-    exit 77
-fi
+f1="$abs_top_builddir/test-data/phony-guests/windows.img"
+f2="$abs_top_builddir/test-data/phony-guests/blank-part.img"
 
-guestsdir="$(cd ../test-data/phony-guests && pwd)"
-f1="$guestsdir/windows.img"
-if ! test -f $f1 || ! test -s $f1; then
-    echo "$0: test skipped because phony Windows image was not created"
-    exit 77
-fi
-f2="$guestsdir/blank-part.img"
-if ! test -f $f2 || ! test -s $f2; then
-    echo "$0: test skipped because blank-part.img was not created"
-    exit 77
-fi
-
-export VIRT_TOOLS_DATA_DIR="$srcdir/../test-data/fake-virt-tools"
+export VIRT_TOOLS_DATA_DIR="$top_srcdir/test-data/fake-virt-tools"
 
 d=test-virt-p2v.d
 rm -rf $d
@@ -64,7 +49,7 @@ export PATH=$d:$PATH
 # The Linux kernel command line.
 cmdline="p2v.server=localhost p2v.name=windows p2v.disks=$f1,$f2 p2v.o=local p2v.os=$(pwd)/$d p2v.network=em1:wired,other p2v.post="
 
-virt-p2v --cmdline="$cmdline"
+$VG virt-p2v --cmdline="$cmdline"
 
 # Test the libvirt XML metadata and a disk was created.
 test -f $d/windows.xml

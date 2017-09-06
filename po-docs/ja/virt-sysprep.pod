@@ -144,6 +144,13 @@ some guest types.
 
 See L</OPERATIONS> below for a list and an explanation of each operation.
 
+=item B<--echo-keys>
+
+When prompting for keys and passphrases, virt-sysprep normally turns echoing
+off so you cannot see what you are typing.  If you are not worried about
+Tempest attacks and there is no one else in the room you can specify this
+flag to see what you are typing.
+
 =item B<--format> raw|qcow2|..
 
 =item B<--format> auto
@@ -166,6 +173,11 @@ auto-detection for F<another.img>.
 
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
+
+=item B<--keys-from-stdin>
+
+Read key or passphrase parameters from stdin.  The default is to try to read
+passphrases from the user by opening F</dev/tty>.
 
 =item B<--list-operations>
 
@@ -575,7 +587,7 @@ Wanlong Gao, Fujitsu Ltd.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2011-2016 Red Hat Inc.
+Copyright (C) 2011-2017 Red Hat Inc.
 
 Copyright (C) 2012 Fujitsu Ltd.
 

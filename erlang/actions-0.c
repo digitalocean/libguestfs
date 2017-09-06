@@ -194,6 +194,38 @@ run_aug_match (ETERM *args_tuple)
 }
 
 ETERM *
+run_aug_transform (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *lens = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_aug_transform_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_aug_transform_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "remove")) {
+      optargs_s.bitmask |= GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK;
+      optargs_s.remove = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("aug_transform", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_aug_transform_argv (g, lens, file, optargs);
+  if (r == -1)
+    return make_error ("aug_transform");
+
+  return erl_mk_atom ("ok");
+}
+
+ETERM *
 run_btrfs_qgroup_create (ETERM *args_tuple)
 {
   CLEANUP_FREE char *qgroupid = erl_iolist_to_string (ARG (0));
@@ -666,6 +698,21 @@ run_inspect_get_product_variant (ETERM *args_tuple)
   r = guestfs_inspect_get_product_variant (g, root);
   if (r == NULL)
     return make_error ("inspect_get_product_variant");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+ETERM *
+run_inspect_get_windows_software_hive (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_inspect_get_windows_software_hive (g, root);
+  if (r == NULL)
+    return make_error ("inspect_get_windows_software_hive");
 
   ETERM *rt = erl_mk_string (r);
   free (r);

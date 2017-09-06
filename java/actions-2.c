@@ -1425,6 +1425,58 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkfifo  (JNIEnv *env, jobject obj, jlong
 
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1mksquashfs  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jstring jfilename, jlong joptargs_bitmask, jstring jcompress, jobjectArray jexcludes)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *path;
+  const char *filename;
+  struct guestfs_mksquashfs_argv optargs_s;
+  const struct guestfs_mksquashfs_argv *optargs = &optargs_s;
+  size_t excludes_len;
+  CLEANUP_FREE char **excludes = NULL;
+  size_t i;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+  filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
+
+  optargs_s.compress = (*env)->GetStringUTFChars (env, jcompress, NULL);
+  excludes_len = (*env)->GetArrayLength (env, jexcludes);
+  excludes = malloc (sizeof (char *) * (excludes_len+1));
+  if (excludes == NULL) {
+    throw_out_of_memory (env, "malloc");
+    goto ret_error;
+  }
+  for (i = 0; i < excludes_len; ++i) {
+    jobject o = (*env)->GetObjectArrayElement (env, jexcludes, i);
+    excludes[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
+  }
+  excludes[excludes_len] = NULL;
+  optargs_s.excludes = excludes;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_mksquashfs_argv (g, path, filename, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+  (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+  (*env)->ReleaseStringUTFChars (env, jcompress, optargs_s.compress);
+  for (i = 0; i < excludes_len; ++i) {
+    jobject o = (*env)->GetObjectArrayElement (env, jexcludes, i);
+    (*env)->ReleaseStringUTFChars (env, o, optargs_s.excludes[i]);
+  }
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  return;
+
+ ret_error:
+  return;
+}
+
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1modprobe  (JNIEnv *env, jobject obj, jlong jg, jstring jmodulename)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;

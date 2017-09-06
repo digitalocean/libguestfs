@@ -51,6 +51,8 @@ int keys_from_stdin = 0;
 int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 0;
+int in_guestfish = 0;
+int in_virt_rescue = 1;
 
 static void __attribute__((noreturn))
 usage (int status)
@@ -60,7 +62,7 @@ usage (int status)
              getprogname ());
   else {
     printf (_("%s: Run a rescue shell on a virtual machine\n"
-              "Copyright (C) 2009-2016 Red Hat Inc.\n"
+              "Copyright (C) 2009-2017 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] -d domname\n"
               "  %s [--options] -a disk.img [-a disk.img ...]\n"
@@ -337,7 +339,7 @@ main (int argc, char *argv[])
   }
 
   /* Add drives. */
-  add_drives (drvs, 'a');
+  add_drives (drvs);
 
   /* Free up data structures, no longer needed after this point. */
   free_drives (drvs);
@@ -381,7 +383,7 @@ do_suggestion (struct drv *drvs)
   read_only = 1;
 
   /* Add drives. */
-  add_drives (drvs, 'a');
+  add_drives (drvs);
 
   /* Free up data structures, no longer needed after this point. */
   free_drives (drvs);
@@ -522,7 +524,6 @@ add_scratch_disk (struct drv **drvs)
   if (!drv)
     error (EXIT_FAILURE, errno, "calloc");
   drv->type = drv_scratch;
-  drv->nr_drives = -1;
   drv->scratch.size = INT64_C (10737418240);
   drv->next = *drvs;
   *drvs = drv;

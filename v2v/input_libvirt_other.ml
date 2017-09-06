@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ open Common_utils
 
 open Types
 open Utils
+open Parse_libvirt_xml
 
 (* Libvirt < 2.1.0 did not support the "json:" pseudo-URLs that
  * we use as backingfiles, when accessing Xen over SSH or vCenter
@@ -34,11 +35,9 @@ open Utils
  * See also RHBZ#1134878.
  *)
 let error_if_libvirt_does_not_support_json_backingfile () =
-  let libguestfs_backend = (open_guestfs ())#get_backend () in
-  if libguestfs_backend = "libvirt" then (
-    if Domainxml.libvirt_get_version () < (2, 1, 0) then
-      error (f_"because of libvirt bug https://bugzilla.redhat.com/1134878 you must EITHER upgrade to libvirt >= 2.1.0 OR set this environment variable:\n\nexport LIBGUESTFS_BACKEND=direct\n\nand then rerun the virt-v2v command.")
-  )
+  if backend_is_libvirt () &&
+       Libvirt_utils.libvirt_get_version () < (2, 1, 0) then
+    error (f_"because of libvirt bug https://bugzilla.redhat.com/1134878 you must EITHER upgrade to libvirt >= 2.1.0 OR set this environment variable:\n\nexport LIBGUESTFS_BACKEND=direct\n\nand then rerun the virt-v2v command.")
 
 (* xen+ssh URLs use the SSH driver in CURL.  Currently this requires
  * ssh-agent authentication.  Give a clear error if this hasn't been
@@ -75,12 +74,10 @@ object
     (* Get the libvirt XML.  This also checks (as a side-effect)
      * that the domain is not running.  (RHBZ#1138586)
      *)
-    let xml = Domainxml.dumpxml ?password ?conn:libvirt_uri guest in
+    let xml = Libvirt_utils.dumpxml ?password ?conn:libvirt_uri guest in
 
-    let source, disks =
-      Input_libvirtxml.parse_libvirt_xml ?conn:libvirt_uri xml in
-    let disks =
-      List.map (fun { Input_libvirtxml.p_source_disk = disk } -> disk) disks in
+    let source, disks = parse_libvirt_xml ?conn:libvirt_uri xml in
+    let disks = List.map (fun { p_source_disk = disk } -> disk) disks in
     { source with s_disks = disks }
 end
 

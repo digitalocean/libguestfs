@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ AM_CONDITIONAL([HAVE_OCAMLDOC],
 
 dnl OCaml is required if we need to run the generator.
 AS_IF([test "x$OCAMLC" = "xno" || test "x$OCAMLFIND" = "xno"],[
-    AS_IF([! test -f $srcdir/src/guestfs_protocol.x],[
+    AS_IF([! test -f $srcdir/common/protocol/guestfs_protocol.x],[
         AC_MSG_FAILURE([OCaml compiler and findlib is required to build from git.
 If you don't have OCaml available, you should build from a tarball from
 http://libguestfs.org/download])
@@ -120,6 +120,7 @@ AS_IF([test "x$have_Bytes_module" = "xno"],[
 include String
 let of_string = String.copy
 let to_string = String.copy
+let sub_string = String.sub
 EOF
     ln -s ../generator/bytes.ml mllib/bytes.ml
     OCAML_GENERATOR_BYTES_COMPAT_CMO='$(top_builddir)/generator/bytes.cmo'

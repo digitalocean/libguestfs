@@ -67,6 +67,8 @@ int keys_from_stdin = 0;
 int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 1;
+int in_guestfish = 0;
+int in_virt_rescue = 0;
 
 static int atime = 0;
 static int csv = 0;
@@ -104,7 +106,7 @@ usage (int status)
              getprogname ());
   else {
     printf (_("%s: list differences between virtual machines\n"
-              "Copyright (C) 2010-2016 Red Hat Inc.\n"
+              "Copyright (C) 2010-2017 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] -d domain1 -D domain2\n"
               "  %s [--options] -a disk1.img -A disk2.img [-a|-A ...]\n"
@@ -360,7 +362,7 @@ main (int argc, char *argv[])
   unsigned errors = 0;
 
   /* Mount up first guest. */
-  add_drives (drvs, 'a');
+  add_drives (drvs);
 
   if (guestfs_launch (g) == -1)
     exit (EXIT_FAILURE);
@@ -371,7 +373,7 @@ main (int argc, char *argv[])
     errors++;
 
   /* Mount up second guest. */
-  add_drives_handle (g2, drvs2, 'a');
+  add_drives_handle (g2, drvs2, 0);
 
   if (guestfs_launch (g2) == -1)
     exit (EXIT_FAILURE);

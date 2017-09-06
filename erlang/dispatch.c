@@ -102,6 +102,8 @@ dispatch (ETERM *args_tuple)
     return run_aug_set (args_tuple);
   else if (atom_equals (fun, "aug_setm"))
     return run_aug_setm (args_tuple);
+  else if (atom_equals (fun, "aug_transform"))
+    return run_aug_transform (args_tuple);
   else if (atom_equals (fun, "available"))
     return run_available (args_tuple);
   else if (atom_equals (fun, "available_all_groups"))
@@ -356,6 +358,8 @@ dispatch (ETERM *args_tuple)
     return run_find (args_tuple);
   else if (atom_equals (fun, "find0"))
     return run_find0 (args_tuple);
+  else if (atom_equals (fun, "find_inode"))
+    return run_find_inode (args_tuple);
   else if (atom_equals (fun, "findfs_label"))
     return run_findfs_label (args_tuple);
   else if (atom_equals (fun, "findfs_uuid"))
@@ -536,6 +540,10 @@ dispatch (ETERM *args_tuple)
     return run_inspect_get_type (args_tuple);
   else if (atom_equals (fun, "inspect_get_windows_current_control_set"))
     return run_inspect_get_windows_current_control_set (args_tuple);
+  else if (atom_equals (fun, "inspect_get_windows_software_hive"))
+    return run_inspect_get_windows_software_hive (args_tuple);
+  else if (atom_equals (fun, "inspect_get_windows_system_hive"))
+    return run_inspect_get_windows_system_hive (args_tuple);
   else if (atom_equals (fun, "inspect_get_windows_systemroot"))
     return run_inspect_get_windows_systemroot (args_tuple);
   else if (atom_equals (fun, "inspect_is_live"))
@@ -824,6 +832,8 @@ dispatch (ETERM *args_tuple)
     return run_mknod_b (args_tuple);
   else if (atom_equals (fun, "mknod_c"))
     return run_mknod_c (args_tuple);
+  else if (atom_equals (fun, "mksquashfs"))
+    return run_mksquashfs (args_tuple);
   else if (atom_equals (fun, "mkswap"))
     return run_mkswap (args_tuple);
   else if (atom_equals (fun, "mkswap_L"))

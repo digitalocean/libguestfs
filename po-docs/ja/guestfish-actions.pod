@@ -685,6 +685,18 @@ C<base> nodes are modified.
 
 This returns the number of nodes modified.
 
+=head2 aug-transform
+
+ aug-transform lens file [remove:true|false]
+
+Add an Augeas transformation for the specified C<lens> so it can handle
+C<file>.
+
+If C<remove> is true (C<false> by default), then the transformation is
+removed.
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
 =head2 available
 
  available 'groups ...'
@@ -917,7 +929,8 @@ blockdev.  B<Do not use it.>
 If you need to set the filesystem block size, use the C<blocksize> option of
 L</mkfs>.
 
-I<This function is deprecated.> In new code, use the L</mkfs> call instead.
+I<This function is deprecated.> There is no replacement.  Consult the API
+documentation in L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1130,8 +1143,7 @@ L</feature-available>.
 
  btrfs-qgroup-limit subvolume size
 
-Limit the size of a subvolume which's path is C<subvolume>. C<size> can have
-suffix of G, M, or K.
+Limit the size of the subvolume with path C<subvolume>.
 
 This command depends on the feature C<btrfs>.  See also
 L</feature-available>.
@@ -2337,6 +2349,22 @@ Intel Itanium.
 
 64 bit Power PC (little endian).
 
+=item "riscv32"
+
+=item "riscv64"
+
+=item "riscv128"
+
+RISC-V 32-, 64- or 128-bit variants.
+
+=item "s390"
+
+31 bit IBM S/390.
+
+=item "s390x"
+
+64 bit IBM S/390.
+
 =item "sparc"
 
 32 ビット SPARC.
@@ -2666,6 +2694,18 @@ L<find(1)> option I<-print0>.
 =back
 
 標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
+
+=head2 find-inode
+
+ find-inode device inode
+
+Searches all the entries associated with the given inode.
+
+For each entry, a C<tsk_dirent> structure is returned.  See
+C<filesystem_walk> for more information about C<tsk_dirent> structures.
+
+This command depends on the feature C<libtsk>.  See also
+L</feature-available>.
 
 =head2 findfs-label
 
@@ -3491,7 +3531,7 @@ L</feature-available>.
 
 =head2 hivex-open
 
- hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false]
+ hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false] [unsafe:true|false]
 
 Open the Windows Registry hive file named F<filename>.  If there was any
 previous hivex handle associated with this guestfs session, then it is
@@ -4202,6 +4242,38 @@ libguestfs の将来のバージョンは、ここに他の文字列を返す可
 C<ControlSet001> のようなレジストリキーの名前です。
 
 この呼び出しは、仮想マシンが Windows であり、レジストリが検査により確認できることを仮定しています。該当しない場合、エラーが返されます。
+
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
+
+=head2 inspect-get-windows-software-hive
+
+ inspect-get-windows-software-hive root
+
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SOFTWARE.
+
+This call assumes that the guest is Windows and that the guest has a
+software hive file with the right name.  If this is not the case then an
+error is returned.  This call does not check that the hive is a valid
+Windows Registry hive.
+
+You can use L</hivex-open> to read or write to the hive.
+
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
+
+=head2 inspect-get-windows-system-hive
+
+ inspect-get-windows-system-hive root
+
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SYSTEM.
+
+This call assumes that the guest is Windows and that the guest has a system
+hive file with the right name.  If this is not the case then an error is
+returned.  This call does not check that the hive is a valid Windows
+Registry hive.
+
+You can use L</hivex-open> to read or write to the hive.
 
 詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
@@ -6002,6 +6074,37 @@ Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
 This command depends on the feature C<mknod>.  See also
 L</feature-available>.
 
+=head2 mksquashfs
+
+ mksquashfs path (filename|-) [compress:..] [excludes:..]
+
+Create a squashfs filesystem for the specified C<path>.
+
+The optional C<compress> flag controls compression.  If not given, then the
+output compressed using C<gzip>.  Otherwise one of the following strings may
+be given to select the compression type of the squashfs: C<gzip>, C<lzma>,
+C<lzo>, C<lz4>, C<xz>.
+
+The other optional arguments are:
+
+=over 4
+
+=item C<excludes>
+
+A list of wildcards.  Files are excluded if they match any of the wildcards.
+
+=back
+
+Please note that this API may fail when used to compress directories with
+large files, such as the resulting squashfs will be over 3GB big.
+
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
+This command depends on the feature C<squashfs>.  See also
+L</feature-available>.
+
 =head2 mkswap
 
 =head2 mkswap-opts
@@ -7590,6 +7693,10 @@ label.
 =item fat
 
 The label is limited to 11 bytes.
+
+=item swap
+
+The label is limited to 16 bytes.
 
 =back
 

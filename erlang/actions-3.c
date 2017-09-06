@@ -763,6 +763,11 @@ run_hivex_open (ETERM *args_tuple)
       optargs_s.write = get_bool (hd_value);
     }
     else
+    if (atom_equals (hd_name, "unsafe")) {
+      optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK;
+      optargs_s.unsafe = get_bool (hd_value);
+    }
+    else
       return unknown_optarg ("hivex_open", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }

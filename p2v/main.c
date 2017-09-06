@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,6 @@ char **all_interfaces;
 int is_iso_environment = 0;
 int feature_colours_option = 0;
 int force_colour = 0;
-
 static const char *test_disk = NULL;
 
 static void udevadm_settle (void);
@@ -78,6 +77,7 @@ static const struct option long_options[] = {
   { "colour", 0, 0, 0 },
   { "colours", 0, 0, 0 },
   { "iso", 0, 0, 0 },
+  { "nbd", 1, 0, 0 },
   { "long-options", 0, 0, 0 },
   { "short-options", 0, 0, 0 },
   { "test-disk", 1, 0, 0 },
@@ -94,7 +94,7 @@ usage (int status)
              getprogname ());
   else {
     printf (_("%s: Convert a physical machine to use KVM\n"
-              "Copyright (C) 2009-2016 Red Hat Inc.\n"
+              "Copyright (C) 2009-2017 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options]\n"
               "Options:\n"
@@ -102,6 +102,7 @@ usage (int status)
               " --cmdline=CMDLINE       Used to debug command line parsing\n"
               " --colors|--colours      Use ANSI colour sequences even if not tty\n"
               " --iso                   Running in the ISO environment\n"
+              " --nbd=qemu-nbd,nbdkit   Search order for NBD servers\n"
               " --test-disk=DISK.IMG    For testing, use disk as /dev/sda\n"
               "  -v|--verbose           Verbose messages\n"
               "  -V|--version           Display version and exit\n"
@@ -149,6 +150,9 @@ main (int argc, char *argv[])
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
 
+  /* We may use random(3) in this program. */
+  srandom (time (NULL) + getpid ());
+
   /* There is some raciness between slow devices being discovered by
    * the kernel and udev and virt-p2v running.  This is a partial
    * workaround, but a real fix involves handling hotplug events
@@ -182,6 +186,9 @@ main (int argc, char *argv[])
       }
       else if (STREQ (long_options[option_index].name, "iso")) {
         is_iso_environment = 1;
+      }
+      else if (STREQ (long_options[option_index].name, "nbd")) {
+        set_nbd_option (optarg); /* in nbd.c */
       }
       else if (STREQ (long_options[option_index].name, "test-disk")) {
         if (test_disk != NULL)
@@ -222,6 +229,8 @@ main (int argc, char *argv[])
     usage (EXIT_FAILURE);
   }
 
+  test_nbd_servers ();
+
   set_config_defaults (config);
 
   /* Parse /proc/cmdline (if it exists) or use the --cmdline parameter
@@ -252,6 +261,7 @@ main (int argc, char *argv[])
   }
 
   guestfs_int_free_string_list (cmdline);
+  free_config (config);
 
   exit (EXIT_SUCCESS);
 }

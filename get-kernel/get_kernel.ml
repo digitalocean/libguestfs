@@ -1,5 +1,5 @@
 (* virt-get-kernel
- * Copyright (C) 2013-2016 Red Hat Inc.
+ * Copyright (C) 2013-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ A short summary of the options is given below.  For detailed help please
 read the man page virt-get-kernel(1).
 ")
       prog in
-  let opthandle = create_standard_options argspec usage_msg in
+  let opthandle = create_standard_options argspec ~key_opts:true usage_msg in
   Getopt.parse opthandle;
 
   (* Machine-readable mode?  Print out some facts about what
@@ -173,6 +173,9 @@ let main () =
   let g = open_guestfs () in
   add g;
   g#launch ();
+
+  (* Decrypt the disks. *)
+  inspect_decrypt g;
 
   let roots = g#inspect_os () in
   if Array.length roots = 0 then

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ open Common_utils
 open Types
 open Xml
 open Utils
-open Input_libvirtxml
+open Parse_libvirt_xml
 open Input_libvirt_other
 
 open Printf
@@ -38,13 +38,16 @@ object
     debug "input_libvirt_xen_ssh: source: scheme %s server %s"
           scheme server;
 
+    if backend_is_libvirt () then (
+      error (f_"because of libvirt bug https://bugzilla.redhat.com/1140166 you must set this environment variable:\n\nexport LIBGUESTFS_BACKEND=direct\n\nand then rerun the virt-v2v command.")
+    );
     error_if_libvirt_does_not_support_json_backingfile ();
     error_if_no_ssh_agent ();
 
     (* Get the libvirt XML.  This also checks (as a side-effect)
      * that the domain is not running.  (RHBZ#1138586)
      *)
-    let xml = Domainxml.dumpxml ?password ?conn:libvirt_uri guest in
+    let xml = Libvirt_utils.dumpxml ?password ?conn:libvirt_uri guest in
     let source, disks = parse_libvirt_xml ?conn:libvirt_uri xml in
 
     (* Map the <source/> filename (which is relative to the remote

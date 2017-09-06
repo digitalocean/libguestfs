@@ -63,6 +63,7 @@ struct optgroup optgroups[] = {
   { "selinux", optgroup_selinux_available },
   { "selinuxrelabel", optgroup_selinuxrelabel_available },
   { "sleuthkit", optgroup_sleuthkit_available },
+  { "squashfs", optgroup_squashfs_available },
   { "syslinux", optgroup_syslinux_available },
   { "wipefs", optgroup_wipefs_available },
   { "xfs", optgroup_xfs_available },

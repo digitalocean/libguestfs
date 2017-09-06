@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,14 +105,34 @@ and get_ostype = function
       i_arch = "ppc64" | "ppc64le" } ->
     "sles_11_ppc64"
 
+   (* Only Debian 7 is available, so use it for any 7+ version. *)
+  | { i_type = "linux"; i_distro = "debian"; i_major_version = v }
+      when v >= 7 ->
+    "debian_7"
+
+   (* Only Ubuntu 12.04 to 14.04 are available, so use them starting
+    * from 12.04, and 14.04 for anything after it.
+    *)
+  | { i_type = "linux"; i_distro = "ubuntu"; i_major_version = v;
+      i_arch = "ppc64" | "ppc64le" } when v >= 14 ->
+    "ubuntu_14_04_ppc64"
+
+  | { i_type = "linux"; i_distro = "ubuntu"; i_major_version = v }
+      when v >= 14 ->
+    "ubuntu_14_04"
+
+  | { i_type = "linux"; i_distro = "ubuntu"; i_major_version = maj;
+      i_minor_version = min } when maj >= 12 ->
+    sprintf "ubuntu_%d_%02d" maj min
+
   | { i_type = "linux" } -> "OtherLinux"
 
   | { i_type = "windows"; i_major_version = 5; i_minor_version = 1 } ->
-    "WindowsXP" (* no architecture differentiation of XP on RHEV *)
+    "WindowsXP" (* no architecture differentiation of XP on RHV *)
 
   | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
       i_product_name = product } when String.find product "XP" >= 0 ->
-    "WindowsXP" (* no architecture differentiation of XP on RHEV *)
+    "WindowsXP" (* no architecture differentiation of XP on RHV *)
 
   | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
       i_arch = "i386" } ->
@@ -174,8 +194,12 @@ and get_ostype = function
     "windows_10"
 
   | { i_type = "windows"; i_major_version = 10; i_minor_version = 0;
-      i_arch = "x86_64" } ->
+      i_arch = "x86_64"; i_product_variant = "Client" } ->
     "windows_10x64"
+
+  | { i_type = "windows"; i_major_version = 10; i_minor_version = 0;
+      i_arch = "x86_64" } ->
+    "windows_2016x64"
 
   | { i_type = typ; i_distro = distro;
       i_major_version = major; i_minor_version = minor; i_arch = arch;
@@ -206,7 +230,7 @@ let origin_of_source_hypervisor = function
 (* Generate the .meta file associated with each volume. *)
 let create_meta_files output_alloc sd_uuid image_uuids targets =
   (* Note: Upper case in the .meta, mixed case in the OVF. *)
-  let output_alloc_for_rhev =
+  let output_alloc_for_rhv =
     match output_alloc with
     | Sparse -> "SPARSE"
     | Preallocated -> "PREALLOCATED" in
@@ -220,12 +244,12 @@ let create_meta_files output_alloc sd_uuid image_uuids targets =
             ov.ov_virtual_size;
         ov.ov_virtual_size /^ 512L in
 
-      let format_for_rhev =
+      let format_for_rhv =
         match t.target_format with
         | "raw" -> "RAW"
         | "qcow2" -> "COW"
         | _ ->
-          error (f_"RHEV does not support the output format '%s', only raw or qcow2") t.target_format in
+          error (f_"RHV does not support the output format '%s', only raw or qcow2") t.target_format in
 
       let buf = Buffer.create 256 in
       let bpf fs = bprintf buf fs in
@@ -239,8 +263,8 @@ let create_meta_files output_alloc sd_uuid image_uuids targets =
       bpf "LEGALITY=LEGAL\n";
       bpf "POOL_UUID=\n";
       bpf "SIZE=%Ld\n" size_in_sectors;
-      bpf "FORMAT=%s\n" format_for_rhev;
-      bpf "TYPE=%s\n" output_alloc_for_rhev;
+      bpf "FORMAT=%s\n" format_for_rhv;
+      bpf "TYPE=%s\n" output_alloc_for_rhv;
       bpf "DESCRIPTION=%s\n" (String.replace generated_by "=" "_");
       bpf "EOF\n";
       Buffer.contents buf
@@ -329,7 +353,7 @@ let rec create_ovf source targets guestcaps inspect
             e "rasd:ResourceType" [] [PCData "23"];
             e "rasd:UsbPolicy" [] [PCData "Disabled"];
           ];
-          (* We always add a qxl device when outputting to RHEV.
+          (* We always add a qxl device when outputting to RHV.
            * See RHBZ#1213701 and RHBZ#1211231 for the reasoning
            * behind that.
            *)
@@ -366,7 +390,7 @@ let rec create_ovf source targets guestcaps inspect
    *)
   (match source with
   | { s_display = Some { s_password = Some _ } } ->
-    warning (f_"This guest required a password for connection to its display, but this is not supported by RHEV.  Therefore the converted guest's display will not require a separate password to connect.");
+    warning (f_"This guest required a password for connection to its display, but this is not supported by RHV.  Therefore the converted guest's display will not require a separate password to connect.");
     | _ -> ());
 
   if verbose () then (
@@ -408,7 +432,7 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
       let fileref = sprintf "%s/%s" image_uuid vol_uuid in
 
       (* ovf:size and ovf:actual_size fields are integer GBs.  If you
-       * use floating point numbers then RHEV will fail to parse them.
+       * use floating point numbers then RHV will fail to parse them.
        * In case the size is just below a gigabyte boundary, round up.
        *)
       let bytes_to_gb b =
@@ -425,15 +449,15 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
         | None, Some estimated_size -> Some (bytes_to_gb estimated_size), true
         | None, None -> None, false in
 
-      let format_for_rhev =
+      let format_for_rhv =
         match t.target_format with
         | "raw" -> "RAW"
         | "qcow2" -> "COW"
         | _ ->
-          error (f_"RHEV does not support the output format '%s', only raw or qcow2") t.target_format in
+          error (f_"RHV does not support the output format '%s', only raw or qcow2") t.target_format in
 
       (* Note: Upper case in the .meta, mixed case in the OVF. *)
-      let output_alloc_for_rhev =
+      let output_alloc_for_rhv =
         match output_alloc with
         | Sparse -> "Sparse"
         | Preallocated -> "Preallocated" in
@@ -456,8 +480,8 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
           "ovf:fileRef", fileref;
           "ovf:parentRef", "";
           "ovf:vm_snapshot_id", uuidgen ();
-          "ovf:volume-format", format_for_rhev;
-          "ovf:volume-type", output_alloc_for_rhev;
+          "ovf:volume-format", format_for_rhv;
+          "ovf:volume-type", output_alloc_for_rhv;
           "ovf:format", "http://en.wikipedia.org/wiki/Byte"; (* wtf? *)
           "ovf:disk-interface",
           (match guestcaps.gcaps_block_bus with

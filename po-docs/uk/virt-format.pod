@@ -115,7 +115,7 @@ Create no filesystem.  This is the default.
 диска. Таким чином можна уникнути можливих проблем з захистом для
 сформованих зловмисниками гостьових систем (CVE-2010-3851).
 
-=item B<--label=>LABEL
+=item B<--label=>МІТКА
 
 Set the filesystem label.
 

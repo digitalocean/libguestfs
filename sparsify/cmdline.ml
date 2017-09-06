@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2016 Red Hat Inc.
+ * Copyright (C) 2011-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ A short summary of the options is given below.  For detailed help please
 read the man page virt-sparsify(1).
 ")
       prog in
-  let opthandle = create_standard_options argspec ~anon_fun usage_msg in
+  let opthandle = create_standard_options argspec ~anon_fun ~key_opts:true usage_msg in
   Getopt.parse opthandle;
 
   (* Dereference the rest of the args. *)

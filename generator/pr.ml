@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 open Unix
 open Printf
 
+open Common_utils
 open Utils
 
 (* Output channel, 'pr' prints to this. *)
@@ -39,7 +40,7 @@ let fileshash = Hashtbl.create 13
 let pr fs =
   ksprintf
     (fun str ->
-       let i = count_chars '\n' str in
+       let i = String.count_chars '\n' str in
        lines := !lines + i;
        output_string !chan str
     ) fs

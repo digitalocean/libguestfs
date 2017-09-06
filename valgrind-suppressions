@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -325,6 +325,42 @@
    Memcheck:Leak
    ...
    fun:file_apprentice
+}
+
+# Gtk
+{
+   gtk_leak
+   Memcheck:Leak
+   ...
+   fun:gtk_init_check
+}
+
+{
+   gtk_leak_2
+   Memcheck:Leak
+   ...
+   fun:gdk_display_manager_get
+}
+
+{
+   gtk_leak_3
+   Memcheck:Leak
+   ...
+   fun:_gdk_x11_screen_new
+}
+
+{
+   glib_leak_1
+   Memcheck:Leak
+   ...
+   fun:g_type_register_static
+}
+
+{
+   glib_leak_2
+   Memcheck:Leak
+   ...
+   fun:g_type_class_ref
 }
 
 # Perl

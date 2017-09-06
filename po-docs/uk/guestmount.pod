@@ -152,9 +152,9 @@ program.
 
 =over 4
 
-=item B<-a> IMAGE
+=item B<-a> ОБРАЗ
 
-=item B<--add> IMAGE
+=item B<--add> ОБРАЗ
 
 Add a block device or virtual machine image.
 
@@ -175,15 +175,15 @@ I<--format=..>.
 When used in conjunction with the I<-d> option, this specifies the libvirt
 URI to use.  The default is to use the default libvirt connection.
 
-=item B<-d> LIBVIRT-DOMAIN
+=item B<-d> ДОМЕН_LIBVIRT
 
-=item B<--domain> LIBVIRT-DOMAIN
+=item B<--domain> ДОМЕН_LIBVIRT
 
 Add disks from the named libvirt domain.  If the I<--ro> option is also
 used, then any libvirt domain can be used.  However in write mode, only
 libvirt domains which are shut down can be named here.
 
-Domain UUIDs can be used instead of names.
+Замість назв можна використовувати UUID доменів.
 
 =item B<--dir-cache-timeout> N
 
@@ -338,7 +338,7 @@ appearing through FUSE.  Use of this option can confuse some software.
 
 =back
 
-=item B<--pid-file> FILENAME
+=item B<--pid-file> НАЗВА_ФАЙЛА
 
 Write the PID of the guestmount worker process to C<filename>.
 
@@ -429,5 +429,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

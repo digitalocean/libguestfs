@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -342,6 +342,11 @@ type visibility =
 
 type version = int * int * int
 
+type deprecated_by =
+  | Not_deprecated                (* function not deprecated *)
+  | Replaced_by of string         (* replaced by another function *)
+  | Deprecated_no_replacement     (* deprecated with no replacement *)
+
 (* Type of an action as declared in Actions module. *)
 type action = {
   name : string;                  (* name, not including "guestfs_" *)
@@ -358,7 +363,7 @@ type action = {
   fish_alias : string list;       (* alias(es) for this cmd in guestfish *)
   fish_output : fish_output_t option; (* how to display output in guestfish *)
   visibility: visibility;         (* The visbility of function *)
-  deprecated_by : string option;  (* function is deprecated, use .. instead *)
+  deprecated_by : deprecated_by;  (* function is deprecated *)
   optional : string option;       (* function is part of an optional group *)
   progress : bool;                (* function can generate progress messages *)
   camel_name : string;            (* Pretty camel case name of
@@ -396,6 +401,23 @@ type action = {
   non_c_aliases : string list;    (* back-compat aliases that have to be
                                      generated for this function *)
 }
+
+(* Default settings for all action fields.  So we copy and override
+ * the action struct by writing '{ defaults with name = ... }'.
+ *)
+let defaults = { name = "";
+                 added = (-1,-1,-1);
+                 style = RErr, [], []; proc_nr = None;
+                 tests = []; test_excuse = "";
+                 shortdesc = ""; longdesc = "";
+                 protocol_limit_warning = false; fish_alias = [];
+                 fish_output = None; visibility = VPublic;
+                 deprecated_by = Not_deprecated; optional = None;
+                 progress = false; camel_name = "";
+                 cancellable = false; config_only = false;
+                 once_had_no_optargs = false; blocking = true; wrapper = true;
+                 c_name = ""; c_function = ""; c_optarg_prefix = "";
+                 non_c_aliases = [] }
 
 (* Field types for structures. *)
 type field =

@@ -41,15 +41,16 @@ libluaguestfs_la_SOURCES = lua-guestfs.c
 
 libluaguestfs_la_CPPFLAGS = \
 	-DGUESTFS_PRIVATE=1 \
-	-I$(top_srcdir)/src -I$(top_builddir)/src
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib
 
 libluaguestfs_la_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(LUA_CFLAGS)
 
 libluaguestfs_la_LIBADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	../gnulib/lib/libgnu.la

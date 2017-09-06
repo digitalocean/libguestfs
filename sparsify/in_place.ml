@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2016 Red Hat Inc.
+ * Copyright (C) 2011-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,9 @@ let run disk format ignores machine_readable zeroes =
    *)
   if not (g#feature_available [|"fstrim"|]) then
     error ~exit_code:3 (f_"discard/trim is not supported");
+
+  (* Decrypt the disks. *)
+  inspect_decrypt g;
 
   (* Discard non-ignored filesystems that we are able to mount, and
    * selected swap partitions.

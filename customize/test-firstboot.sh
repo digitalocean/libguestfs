@@ -21,22 +21,15 @@
 # NB. 'test-firstboot.sh' runs the tests, but the various tests are
 # run via the 'test-firstboot-GUESTNAME.sh' wrappers.
 
-export LANG=C
 set -e
 
-if [ -z "$SLOW" ]; then
-    echo "$0: use 'make check-slow' to run this test"
-    exit 77
-fi
-
-if [ -n "$SKIP_TEST_FIRSTBOOT_SH" ]; then
-    echo "$0: test skipped because environment variable is set."
-    exit 77
-fi
+$TEST_FUNCTIONS
+slow_test
+skip_if_skipped "$script"
 
 guestname="$1"
 if [ -z "$guestname" ]; then
-    echo "$0: guestname parameter not set, don't run this test directly."
+    echo "$script: guestname parameter not set, don't run this test directly."
     exit 1
 fi
 
@@ -45,23 +38,14 @@ rm -f "$disk"
 
 # If the guest doesn't exist in virt-builder, skip.  This is because
 # we test some RHEL guests which most users won't have access to.
-if ! virt-builder -l "$guestname" >/dev/null 2>&1; then
-    echo "$0: test skipped because \"$guestname\" not known to virt-builder."
-    exit 77
-fi
+skip_unless_virt_builder_guest "$guestname"
 
 # We can only run the tests on x86_64.
-if [ "$(uname -m)" != "x86_64" ]; then
-    echo "$0: test skipped because !x86_64."
-    exit 77
-fi
+skip_unless_arch x86_64
 
 # Check qemu is installed.
 qemu=qemu-system-x86_64
-if ! $qemu -help >/dev/null 2>&1; then
-    echo "$0: test skipped because $qemu not found."
-    exit 77
-fi
+skip_unless $qemu -help
 
 # Some guests need special virt-builder parameters.
 # See virt-builder --notes "$guestname"

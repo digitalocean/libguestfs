@@ -1,5 +1,5 @@
 (* virt-builder
- * Copyright (C) 2013-2016 Red Hat Inc.
+ * Copyright (C) 2013-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,13 @@ let parse_cmdline () =
   let add_fingerprint arg = push_front arg fingerprints in
 
   let format = ref "" in
-  let gpg = ref "gpg" in
+  let gpg =
+    try which "gpg2"
+    with Executable_not_found _ ->
+         try which "gpg"
+         with Executable_not_found _ ->
+              "" in
+  let gpg = ref gpg in
 
   let list_format = ref List_entries.Short in
   let list_set_long () = list_format := List_entries.Long in

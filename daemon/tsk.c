@@ -44,10 +44,11 @@ enum tsk_dirent_flags {
 
 static int open_filesystem (const char *, TSK_IMG_INFO **, TSK_FS_INFO **);
 static TSK_WALK_RET_ENUM fswalk_callback (TSK_FS_FILE *, const char *, void *);
+static TSK_WALK_RET_ENUM findino_callback (TSK_FS_FILE *, const char *, void *);
+static int send_dirent_info (TSK_FS_FILE *, const char *);
 static char file_type (TSK_FS_FILE *);
 static int file_flags (TSK_FS_FILE *fsfile);
 static void file_metadata (TSK_FS_META *, guestfs_int_tsk_dirent *);
-static int send_dirent_info (guestfs_int_tsk_dirent *);
 static void reply_with_tsk_error (const char *);
 static int entry_is_dot (TSK_FS_FILE *);
 
@@ -68,6 +69,35 @@ do_internal_filesystem_walk (const mountable_t *mountable)
   reply (NULL, NULL);  /* Reply message. */
 
   ret = tsk_fs_dir_walk (fs, fs->root_inum, flags, fswalk_callback, NULL);
+  if (ret == 0)
+    ret = send_file_end (0);  /* File transfer end. */
+  else
+    send_file_end (1);  /* Cancel file transfer. */
+
+  fs->close (fs);
+  img->close (img);
+
+  return ret;
+}
+
+int
+do_internal_find_inode (const mountable_t *mountable, int64_t inode)
+{
+  int ret = -1;
+  TSK_FS_INFO *fs = NULL;
+  TSK_IMG_INFO *img = NULL;  /* Used internally by tsk_fs_dir_walk */
+  const int flags =
+    TSK_FS_DIR_WALK_FLAG_ALLOC | TSK_FS_DIR_WALK_FLAG_UNALLOC |
+    TSK_FS_DIR_WALK_FLAG_RECURSE | TSK_FS_DIR_WALK_FLAG_NOORPHAN;
+
+  ret = open_filesystem (mountable->device, &img, &fs);
+  if (ret < 0)
+    return ret;
+
+  reply (NULL, NULL);  /* Reply message. */
+
+  ret = tsk_fs_dir_walk (fs, fs->root_inum, flags,
+                         findino_callback, (void *) &inode);
   if (ret == 0)
     ret = send_file_end (0);  /* File transfer end. */
   else
@@ -104,28 +134,65 @@ open_filesystem (const char *device, TSK_IMG_INFO **img, TSK_FS_INFO **fs)
 }
 
 /* Filesystem walk callback, it gets called on every FS node.
- * Parse the node, encode it into an XDR structure and send it to the appliance.
+ * Parse the node, encode it into an XDR structure and send it to the library.
  * Return TSK_WALK_CONT on success, TSK_WALK_ERROR on error.
  */
 static TSK_WALK_RET_ENUM
 fswalk_callback (TSK_FS_FILE *fsfile, const char *path, void *data)
 {
   int ret = 0;
-  CLEANUP_FREE char *fname = NULL;
-  struct guestfs_int_tsk_dirent dirent;
 
   if (entry_is_dot (fsfile))
     return TSK_WALK_CONT;
+
+  ret = send_dirent_info (fsfile, path);
+
+  return (ret == 0) ? TSK_WALK_CONT : TSK_WALK_ERROR;
+}
+
+/* Find inode, it gets called on every FS node.
+ * If the FS node address is the given one, parse it,
+ * encode it into an XDR structure and send it to the library.
+ * Return TSK_WALK_CONT on success, TSK_WALK_ERROR on error.
+ */
+static TSK_WALK_RET_ENUM
+findino_callback (TSK_FS_FILE *fsfile, const char *path, void *data)
+{
+  int ret = 0;
+  uint64_t *inode = (uint64_t *) data;
+
+  if (*inode != fsfile->name->meta_addr)
+    return TSK_WALK_CONT;
+
+  if (entry_is_dot (fsfile))
+    return TSK_WALK_CONT;
+
+  ret = send_dirent_info (fsfile, path);
+
+  return (ret == 0) ? TSK_WALK_CONT : TSK_WALK_ERROR;
+}
+
+/* Extract the information from the entry, serialize and send it out.
+ * Return 0 on success, -1 on error.
+ */
+static int
+send_dirent_info (TSK_FS_FILE *fsfile, const char *path)
+{
+  XDR xdr;
+  int ret = 0;
+  size_t len = 0;
+  struct guestfs_int_tsk_dirent dirent;
+  CLEANUP_FREE char *buf = NULL, *fname = NULL;
+
+  /* Set dirent fields */
+  memset (&dirent, 0, sizeof dirent);
 
   /* Build the full relative path of the entry */
   ret = asprintf (&fname, "%s%s", path, fsfile->name->name);
   if (ret < 0) {
     perror ("asprintf");
-    return TSK_WALK_ERROR;
+    return -1;
   }
-
-  /* Set dirent fields */
-  memset (&dirent, 0, sizeof dirent);
 
   dirent.tsk_inode = fsfile->name->meta_addr;
   dirent.tsk_type = file_type (fsfile);
@@ -134,10 +201,27 @@ fswalk_callback (TSK_FS_FILE *fsfile, const char *path, void *data)
 
   file_metadata (fsfile->meta, &dirent);
 
-  ret = send_dirent_info (&dirent);
-  ret = (ret == 0) ? TSK_WALK_CONT : TSK_WALK_ERROR;
+  /* Serialize tsk_dirent struct. */
+  buf = malloc (GUESTFS_MAX_CHUNK_SIZE);
+  if (buf == NULL) {
+    perror ("malloc");
+    return -1;
+  }
 
-  return ret;
+  xdrmem_create (&xdr, buf, GUESTFS_MAX_CHUNK_SIZE, XDR_ENCODE);
+
+  ret = xdr_guestfs_int_tsk_dirent (&xdr, &dirent);
+  if (ret == 0) {
+    perror ("xdr_guestfs_int_tsk_dirent");
+    return -1;
+  }
+
+  len = xdr_getpos (&xdr);
+
+  xdr_destroy (&xdr);
+
+  /* Send serialised tsk_dirent out. */
+  return send_file_write (buf, len);
 }
 
 /* Inspect fsfile to identify its type. */
@@ -219,39 +303,6 @@ file_metadata (TSK_FS_META *fsmeta, guestfs_int_tsk_dirent *dirent)
     /* tsk_link never changes */
     dirent->tsk_link = (char *) "";
   }
-}
-
-/* Serialise dirent into XDR stream and send it to the appliance.
- * Return 0 on success, -1 on error.
- */
-static int
-send_dirent_info (guestfs_int_tsk_dirent *dirent)
-{
-  XDR xdr;
-  int ret = 0;
-  size_t len = 0;
-  CLEANUP_FREE char *buf = NULL;
-
-  buf = malloc (GUESTFS_MAX_CHUNK_SIZE);
-  if (buf == NULL) {
-    perror ("malloc");
-    return -1;
-  }
-
-  /* Serialise tsk_dirent struct. */
-  xdrmem_create (&xdr, buf, GUESTFS_MAX_CHUNK_SIZE, XDR_ENCODE);
-
-  ret = xdr_guestfs_int_tsk_dirent (&xdr, dirent);
-  if (ret == 0) {
-    perror ("xdr_guestfs_int_tsk_dirent");
-    return -1;
-  }
-  len = xdr_getpos (&xdr);
-
-  xdr_destroy (&xdr);
-
-  /* Send serialised tsk_dirent out. */
-  return send_file_write (buf, len);
 }
 
 /* Parse TSK error and send it to the appliance. */

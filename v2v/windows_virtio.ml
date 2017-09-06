@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,12 +34,14 @@ let virtio_win =
       Guestfs_config.datadir // "virtio-win"
 
 let scsi_class_guid = "{4D36E97B-E325-11CE-BFC1-08002BE10318}"
-let viostor_pciid = "VEN_1AF4&DEV_1001&SUBSYS_00021AF4&REV_00"
-let vioscsi_pciid = "VEN_1AF4&DEV_1004&SUBSYS_00081AF4&REV_00"
+let viostor_legacy_pciid = "VEN_1AF4&DEV_1001&SUBSYS_00021AF4&REV_00"
+let viostor_modern_pciid = "VEN_1AF4&DEV_1042&SUBSYS_11001AF4&REV_01"
+let vioscsi_legacy_pciid = "VEN_1AF4&DEV_1004&SUBSYS_00081AF4&REV_00"
+let vioscsi_modern_pciid = "VEN_1AF4&DEV_1048&SUBSYS_11001AF4&REV_01"
 
-let rec install_drivers g inspect systemroot root current_cs rcaps =
+let rec install_drivers ((g, _) as reg) inspect rcaps =
   (* Copy the virtio drivers to the guest. *)
-  let driverdir = sprintf "%s/Drivers/VirtIO" systemroot in
+  let driverdir = sprintf "%s/Drivers/VirtIO" inspect.i_windows_systemroot in
   g#mkdir_p driverdir;
 
   if not (copy_drivers g inspect driverdir) then (
@@ -98,22 +100,24 @@ let rec install_drivers g inspect systemroot root current_cs rcaps =
         (* Block driver needs tweaks to allow booting; the rest is set up by PnP
          * manager *)
         let source = driverdir // (driver_name ^ ".sys") in
-        let target = sprintf "%s/system32/drivers/%s.sys" systemroot driver_name in
+        let target = sprintf "%s/system32/drivers/%s.sys"
+                             inspect.i_windows_systemroot driver_name in
         let target = g#case_sensitive_path target in
         g#cp source target;
-        add_guestor_to_registry g root current_cs driver_name
-                                viostor_pciid;
+        add_guestor_to_registry reg inspect driver_name viostor_legacy_pciid;
+        add_guestor_to_registry reg inspect driver_name viostor_modern_pciid;
         Virtio_blk
 
       | Some Virtio_SCSI, _, true ->
         (* Block driver needs tweaks to allow booting; the rest is set up by PnP
          * manager *)
         let source = driverdir // "vioscsi.sys" in
-        let target = sprintf "%s/system32/drivers/vioscsi.sys" systemroot in
+        let target = sprintf "%s/system32/drivers/vioscsi.sys"
+                             inspect.i_windows_systemroot in
         let target = g#case_sensitive_path target in
         g#cp source target;
-        add_guestor_to_registry g root current_cs "vioscsi"
-                                vioscsi_pciid;
+        add_guestor_to_registry reg inspect "vioscsi" vioscsi_legacy_pciid;
+        add_guestor_to_registry reg inspect "vioscsi" vioscsi_modern_pciid;
         Virtio_SCSI
 
       | Some IDE, _, _ ->
@@ -168,18 +172,18 @@ let rec install_drivers g inspect systemroot root current_cs rcaps =
     (block, net, video)
   )
 
-and add_guestor_to_registry g root current_cs drv_name drv_pciid =
+and add_guestor_to_registry ((g, root) as reg) inspect drv_name drv_pciid =
   let ddb_node = g#hivex_node_get_child root "DriverDatabase" in
 
   let regedits =
     if ddb_node = 0L then
-      cdb_regedits current_cs drv_name drv_pciid
+      cdb_regedits inspect drv_name drv_pciid
     else
-      ddb_regedits current_cs drv_name drv_pciid in
+      ddb_regedits inspect drv_name drv_pciid in
 
   let drv_sys_path = sprintf "system32\\drivers\\%s.sys" drv_name in
   let common_regedits = [
-      [ current_cs; "Services"; drv_name ],
+      [ inspect.i_windows_current_control_set; "Services"; drv_name ],
       [ "Type", REG_DWORD 0x1_l;
         "Start", REG_DWORD 0x0_l;
         "Group", REG_SZ "SCSI miniport";
@@ -187,21 +191,22 @@ and add_guestor_to_registry g root current_cs drv_name drv_pciid =
         "ImagePath", REG_EXPAND_SZ drv_sys_path ];
   ] in
 
-  reg_import g root (regedits @ common_regedits)
+  reg_import reg (regedits @ common_regedits)
 
-and cdb_regedits current_cs drv_name drv_pciid =
+and cdb_regedits inspect drv_name drv_pciid =
   (* See http://rwmj.wordpress.com/2010/04/30/tip-install-a-device-driver-in-a-windows-vm/
    * NB: All these edits are in the HKLM\SYSTEM hive.  No other
    * hive may be modified here.
    *)
   [
-    [ current_cs; "Control"; "CriticalDeviceDatabase";
+    [ inspect.i_windows_current_control_set;
+      "Control"; "CriticalDeviceDatabase";
       "PCI#" ^ drv_pciid ],
     [ "Service", REG_SZ drv_name;
       "ClassGUID", REG_SZ scsi_class_guid ];
   ]
 
-and ddb_regedits current_cs drv_name drv_pciid =
+and ddb_regedits inspect drv_name drv_pciid =
   (* Windows >= 8 doesn't use the CriticalDeviceDatabase.  Instead
    * one must add keys into the DriverDatabase.
    *)
@@ -218,6 +223,13 @@ and ddb_regedits current_cs drv_name drv_pciid =
 
     [ "DriverDatabase"; "DeviceIds"; "PCI"; drv_pciid ],
     [ drv_inf, REG_BINARY "\x01\xff\x00\x00" ];
+
+    [ "DriverDatabase"; "DriverPackages"; drv_inf_label ],
+    [ "Version", REG_BINARY ("\x00\xff\x09\x00\x00\x00\x00\x00" ^
+                             "\x7b\xe9\x36\x4d\x25\xe3\xce\x11" ^
+                             "\xbf\xc1\x08\x00\x2b\xe1\x03\x18" ^
+                             (String.make 24 '\x00')) ];
+    (* Version is necessary for Windows-Kernel-Pnp in w10/w2k16 *)
 
     [ "DriverDatabase"; "DriverPackages"; drv_inf_label;
       "Configurations"; drv_config ],

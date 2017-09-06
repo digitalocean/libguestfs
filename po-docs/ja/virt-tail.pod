@@ -1,0 +1,233 @@
+
+=head1 名前
+
+virt-tail - Follow (tail) files in a virtual machine
+
+=head1 書式
+
+ virt-tail [--options] -d domname file [file ...]
+
+ virt-tail [--options] -a disk.img [-a disk.img ...] file [file ...]
+
+=head1 説明
+
+C<virt-tail> is a command line tool to follow (tail) the contents of C<file>
+where C<file> exists in the named virtual machine (or disk image).  It is
+similar to the ordinary command S<C<tail -f>>.
+
+Multiple filenames can be given, in which case each is followed separately.
+Each filename must be a full path, starting at the root directory (starting
+with '/').
+
+The command keeps running until:
+
+=over 4
+
+=item *
+
+The user presses the ^C or an interrupt signal is received.
+
+=item *
+
+None of the listed files was found in the guest, or they all get deleted.
+
+=item *
+
+There is an unrecoverable error.
+
+=back
+
+=head1 例
+
+Follow F</var/log/messages> inside a virtual machine called C<mydomain>:
+
+ virt-tail -d mydomain /var/log/messages
+
+=head1 オプション
+
+=over 4
+
+=item B<--help>
+
+簡単なヘルプを表示します。
+
+=item B<-a> file
+
+=item B<--add> file
+
+Add I<file> which should be a disk image from a virtual machine.  If the
+virtual machine has multiple block devices, you must supply all of them with
+separate I<-a> options.
+
+ディスクイメージの形式は自動検知されます。 これを上書きして強制的に特定の形式を使用する場合、 I<--format=..> オプションを使用します。
+
+=item B<-a URI>
+
+=item B<--add URI>
+
+リモートディスクを追加します。 L<guestfish(1)/リモートストレージの追加> 参照。
+
+=item B<-c> URI
+
+=item B<--connect> URI
+
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
+
+ゲストのブロックデバイスを直接指定していると（(I<-a>)）、libvirt は何も使用されません。
+
+=item B<-d> guest
+
+=item B<--domain> guest
+
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  名前の代わりに仮想マシンの UUID を使用できます。
+
+=item B<--echo-keys>
+
+When prompting for keys and passphrases, virt-tail normally turns echoing
+off so you cannot see what you are typing.  If you are not worried about
+Tempest attacks and there is no one else in the room you can specify this
+flag to see what you are typing.
+
+=item B<-f>
+
+=item B<--follow>
+
+This option is ignored.  virt-tail always behaves like S<L<tail(1)> I<-f>>.
+You don't need to specify the I<-f> option.
+
+=item B<--format=raw|qcow2|..>
+
+=item B<--format>
+
+I<-a> オプションは標準状態でディスクイメージの形式を自動検知します。 これを使用することにより、コマンドラインで後続の I<-a>
+オプションのディスク形式を強制的に指定できます。 引数なしで I<--format> を使用することにより、 後続の I<-a>
+オプションに対して自動検知に戻せます。
+
+例:
+
+ virt-tail --format=raw -a disk.img file
+
+forces raw format (no auto-detection) for F<disk.img>.
+
+ virt-tail --format=raw -a disk.img --format -a another.img file
+
+forces raw format (no auto-detection) for F<disk.img> and reverts to
+auto-detection for F<another.img>.
+
+仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
+これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
+
+=item B<--keys-from-stdin>
+
+Read key or passphrase parameters from stdin.  The default is to try to read
+passphrases from the user by opening F</dev/tty>.
+
+=item B<-m> dev[:mountpoint[:options[:fstype]]]
+
+=item B<--mount> dev[:mountpoint[:options[:fstype]]]
+
+指定されたマウントポイントにある、 名前付きパーティションまたは論理ボリュームをマウントします。
+
+If the mountpoint is omitted, it defaults to F</>.
+
+Specifying any mountpoint disables the inspection of the guest and the mount
+of its root and all of its mountpoints, so make sure to mount all the
+mountpoints needed to work with the filenames given as arguments.
+
+仮想マシンのディスクイメージに含まれるファイルシステムが不明な場合、 guestfish をこのオプションなしで実行することもできます。
+そうすると、利用可能なパーティション、ファイルシステム、 論理ボリューム (LVM) の一覧が表示されます (L</list-partitions>,
+L</list-filesystems>, L</lvs> コマンド参照)。 または、 L<virt-filesystems(1)>
+コマンドを使用することもできます。
+
+マウントパラメーターの三番目の (ほとんど使用されない) 項目は、 バックエンドのファイルシステムをマウントするために使用される
+マウントオプションの一覧です。 これが指定されていない場合、 マウントオプションは空文字列または C<ro> (I<--ro>
+フラグが使用されている場合) になります。
+
+ -m /dev/sda1:/:acl,user_xattr
+
+このフラグを使用することは、 C<mount-options> コマンドを使用することと同等です。
+
+パラメーターの四番目の項目は使用するファイルシステムドライバー (C<ext3> や C<ntfs> など) です。 これはほとんど必要ありません。
+しかし、複数のドライバーがファイルシステムに対して有効である場合 (例: C<ext2> と C<ext3>)、 または libguestfs
+がファイルシステムを誤検知している場合、 これは有用です。
+
+=item B<-v>
+
+=item B<--verbose>
+
+デバッグ用の冗長なメッセージを有効にします。
+
+=item B<-V>
+
+=item B<--version>
+
+バージョン番号を表示して、終了します。
+
+=item B<-x>
+
+libguestfs API 呼び出しのトレースを有効にします。
+
+=back
+
+=head1 LOG FILES
+
+To list out the log files from guests, see the related tool L<virt-log(1)>.
+It understands binary log formats such as the systemd journal.
+
+=head1 Windows のパス
+
+C<virt-tail> has a limited ability to understand Windows drive letters and
+paths (eg. F<E:\foo\bar.txt>).
+
+仮想マシンが Windows を実行している場合に限り:
+
+=over 4
+
+=item *
+
+Drive letter prefixes like C<C:> are resolved against the Windows Registry
+to the correct filesystem.
+
+=item *
+
+Any backslash (C<\>) characters in the path are replaced with forward
+slashes so that libguestfs can process it.
+
+=item *
+
+The path is resolved case insensitively to locate the file that should be
+displayed.
+
+=back
+
+There are some known shortcomings:
+
+=over 4
+
+=item *
+
+Some NTFS symbolic links may not be followed correctly.
+
+=item *
+
+NTFS junction points that cross filesystems are not followed.
+
+=back
+
+=head1 終了ステータス
+
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
+
+=head1 関連項目
+
+L<guestfs(3)>, L<guestfish(1)>, L<virt-copy-out(1)>, L<virt-cat(1)>,
+L<virt-log(1)>, L<virt-tar-out(1)>, L<tail(1)>, L<http://libguestfs.org/>.
+
+=head1 著者
+
+Richard W.M. Jones L<http://people.redhat.com/~rjones/>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2016 Red Hat Inc.
+

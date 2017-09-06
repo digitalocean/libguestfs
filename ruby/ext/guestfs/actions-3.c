@@ -2023,6 +2023,11 @@ guestfs_int_ruby_hivex_open (int argc, VALUE *argv, VALUE gv)
     optargs_s.write = RTEST (v);
     optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
   }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("unsafe")));
+  if (v != Qnil) {
+    optargs_s.unsafe = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK;
+  }
 
   int r;
 

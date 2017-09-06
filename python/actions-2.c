@@ -2091,6 +2091,75 @@ guestfs_int_py_mkfifo (PyObject *self, PyObject *args)
 }
 #endif
 
+#ifdef GUESTFS_HAVE_MKSQUASHFS
+PyObject *
+guestfs_int_py_mksquashfs (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_mksquashfs_argv optargs_s;
+  struct guestfs_mksquashfs_argv *optargs = &optargs_s;
+  int r;
+  const char *path;
+  const char *filename;
+  PyObject *py_compress;
+  PyObject *py_excludes;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OssOO:guestfs_mksquashfs",
+                         &py_g, &path, &filename, &py_compress, &py_excludes))
+    goto out;
+  g = get_handle (py_g);
+
+#ifdef GUESTFS_MKSQUASHFS_COMPRESS_BITMASK
+  if (py_compress != Py_None) {
+    optargs_s.bitmask |= GUESTFS_MKSQUASHFS_COMPRESS_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.compress = PyString_AsString (py_compress);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_compress);
+    optargs_s.compress = PyBytes_AS_STRING (bytes);
+#endif
+  }
+#endif
+#ifdef GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK
+  if (py_excludes != Py_None) {
+    optargs_s.bitmask |= GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK;
+    optargs_s.excludes = guestfs_int_py_get_string_list (py_excludes);
+    if (!optargs_s.excludes) goto out;
+  }
+#endif
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_mksquashfs_argv (g, path, filename, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+  PyErr_Clear ();
+ out:
+#ifdef GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK
+  if (py_excludes != Py_None && (optargs_s.bitmask & GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK) != 0)
+    free ((char **) optargs_s.excludes);
+#endif
+  return py_r;
+}
+#endif
+
 #ifdef GUESTFS_HAVE_MODPROBE
 PyObject *
 guestfs_int_py_modprobe (PyObject *self, PyObject *args)

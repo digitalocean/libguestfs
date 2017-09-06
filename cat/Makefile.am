@@ -1,5 +1,5 @@
-# libguestfs virt-cat, virt-filesystems, virt-log and virt-ls.
-# Copyright (C) 2010-2016 Red Hat Inc.
+# libguestfs virt-cat, virt-filesystems, virt-log, virt-ls and virt-tail.
+# Copyright (C) 2010-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,23 +26,22 @@ EXTRA_DIST = \
 	test-virt-log.sh \
 	virt-log.pod \
 	test-virt-ls.sh \
-	virt-ls.pod
+	virt-ls.pod \
+	test-virt-tail.sh \
+	virt-tail.pod
 
-bin_PROGRAMS = virt-cat virt-filesystems virt-log virt-ls
-
-SHARED_SOURCE_FILES = \
-	../fish/windows.h \
-	../fish/windows.c
+bin_PROGRAMS = virt-cat virt-filesystems virt-log virt-ls virt-tail
 
 virt_cat_SOURCES = \
-	$(SHARED_SOURCE_FILES) \
 	cat.c
 
 virt_cat_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	-I$(top_srcdir)/fish \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
+	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 virt_cat_CFLAGS = \
@@ -50,23 +49,25 @@ virt_cat_CFLAGS = \
 	$(LIBXML2_CFLAGS)
 
 virt_cat_LDADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/fish/libfishcommon.la \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/windows/libwindows.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
 	../gnulib/lib/libgnu.la
 
 virt_filesystems_SOURCES = \
-	$(SHARED_SOURCE_FILES) \
 	filesystems.c
 
 virt_filesystems_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	-I$(top_srcdir)/fish \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
+	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 virt_filesystems_CFLAGS = \
@@ -74,23 +75,25 @@ virt_filesystems_CFLAGS = \
 	$(LIBXML2_CFLAGS)
 
 virt_filesystems_LDADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/fish/libfishcommon.la \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/windows/libwindows.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
 	../gnulib/lib/libgnu.la
 
 virt_log_SOURCES = \
-	$(SHARED_SOURCE_FILES) \
 	log.c
 
 virt_log_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	-I$(top_srcdir)/fish \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
+	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 virt_log_CFLAGS = \
@@ -98,25 +101,25 @@ virt_log_CFLAGS = \
 	$(LIBXML2_CFLAGS)
 
 virt_log_LDADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/fish/libfishcommon.la \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
 	../gnulib/lib/libgnu.la
 
 virt_ls_SOURCES = \
-	$(SHARED_SOURCE_FILES) \
-	ls.c \
-	visit.c \
-	visit.h
+	ls.c
 
 virt_ls_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	-I$(top_srcdir)/fish \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/visit \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
+	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 virt_ls_CFLAGS = \
@@ -124,22 +127,50 @@ virt_ls_CFLAGS = \
 	$(LIBXML2_CFLAGS)
 
 virt_ls_LDADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/fish/libfishcommon.la \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/visit/libvisit.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
+	$(LIBXML2_LIBS) \
+	$(LIBVIRT_LIBS) \
+	$(LTLIBINTL) \
+	../gnulib/lib/libgnu.la
+
+virt_tail_SOURCES = \
+	tail.c
+
+virt_tail_CPPFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
+	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
+	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+
+virt_tail_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(LIBXML2_CFLAGS)
+
+virt_tail_LDADD = \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/windows/libwindows.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
 	../gnulib/lib/libgnu.la
 
 # Manual pages and HTML files for the website.
-man_MANS = virt-cat.1 virt-filesystems.1 virt-log.1 virt-ls.1
+man_MANS = virt-cat.1 virt-filesystems.1 virt-log.1 virt-ls.1 virt-tail.1
 
 noinst_DATA = \
 	$(top_builddir)/website/virt-cat.1.html \
 	$(top_builddir)/website/virt-filesystems.1.html \
 	$(top_builddir)/website/virt-log.1.html \
-	$(top_builddir)/website/virt-ls.1.html
+	$(top_builddir)/website/virt-ls.1.html \
+	$(top_builddir)/website/virt-tail.1.html
 
 virt-cat.1 $(top_builddir)/website/virt-cat.1.html: stamp-virt-cat.pod
 
@@ -185,6 +216,17 @@ stamp-virt-ls.pod: virt-ls.pod
 	  $<
 	touch $@
 
+virt-tail.1 $(top_builddir)/website/virt-tail.1.html: stamp-virt-tail.pod
+
+stamp-virt-tail.pod: virt-tail.pod
+	$(PODWRAPPER) \
+	  --man virt-tail.1 \
+	  --html $(top_builddir)/website/virt-tail.1.html \
+	  --license GPLv2+ \
+	  --warning safe \
+	  $<
+	touch $@
+
 # Tests.
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
@@ -197,7 +239,8 @@ TESTS += \
 	test-virt-cat.sh \
 	test-virt-filesystems.sh \
 	test-virt-log.sh \
-	test-virt-ls.sh
+	test-virt-ls.sh \
+	test-virt-tail.sh
 endif ENABLE_APPLIANCE
 
 check-valgrind:

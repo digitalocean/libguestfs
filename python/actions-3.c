@@ -1750,11 +1750,12 @@ guestfs_int_py_hivex_open (PyObject *self, PyObject *args)
   PyObject *py_verbose;
   PyObject *py_debug;
   PyObject *py_write;
+  PyObject *py_unsafe;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OsOOO:guestfs_hivex_open",
-                         &py_g, &filename, &py_verbose, &py_debug, &py_write))
+  if (!PyArg_ParseTuple (args, (char *) "OsOOOO:guestfs_hivex_open",
+                         &py_g, &filename, &py_verbose, &py_debug, &py_write, &py_unsafe))
     goto out;
   g = get_handle (py_g);
 
@@ -1776,6 +1777,13 @@ guestfs_int_py_hivex_open (PyObject *self, PyObject *args)
   if (py_write != Py_None) {
     optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
     optargs_s.write = PyLong_AsLong (py_write);
+    if (PyErr_Occurred ()) goto out;
+  }
+#endif
+#ifdef GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK
+  if (py_unsafe != Py_None) {
+    optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK;
+    optargs_s.unsafe = PyLong_AsLong (py_unsafe);
     if (PyErr_Occurred ()) goto out;
   }
 #endif

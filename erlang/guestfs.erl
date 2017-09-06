@@ -52,6 +52,7 @@
 -export([aug_save/1]).
 -export([aug_set/3]).
 -export([aug_setm/4]).
+-export([aug_transform/3, aug_transform/4]).
 -export([available/2]).
 -export([available_all_groups/1]).
 -export([base64_in/3]).
@@ -181,6 +182,7 @@
 -export([fill_pattern/4]).
 -export([find/2]).
 -export([find0/3]).
+-export([find_inode/3]).
 -export([findfs_label/2]).
 -export([findfs_uuid/2]).
 -export([fsck/3]).
@@ -273,6 +275,8 @@
 -export([inspect_get_roots/1]).
 -export([inspect_get_type/2]).
 -export([inspect_get_windows_current_control_set/2]).
+-export([inspect_get_windows_software_hive/2]).
+-export([inspect_get_windows_system_hive/2]).
 -export([inspect_get_windows_systemroot/2]).
 -export([inspect_is_live/2]).
 -export([inspect_is_multipart/2]).
@@ -424,6 +428,7 @@
 -export([mknod/5]).
 -export([mknod_b/5]).
 -export([mknod_c/5]).
+-export([mksquashfs/3, mksquashfs/4]).
 -export([mkswap/2, mkswap/3]).
 -export([mkswap_opts/2, mkswap_opts/3]).
 -export([mkswap_L/3]).
@@ -773,6 +778,11 @@ aug_set(G, Augpath, Val) ->
 
 aug_setm(G, Base, Sub, Val) ->
   call_port(G, {aug_setm, Base, Sub, Val}).
+
+aug_transform(G, Lens, File, Optargs) ->
+  call_port(G, {aug_transform, Lens, File, Optargs}).
+aug_transform(G, Lens, File) ->
+  aug_transform(G, Lens, File, []).
 
 available(G, Groups) ->
   call_port(G, {available, Groups}).
@@ -1197,6 +1207,9 @@ find(G, Directory) ->
 find0(G, Directory, Files) ->
   call_port(G, {find0, Directory, Files}).
 
+find_inode(G, Device, Inode) ->
+  call_port(G, {find_inode, Device, Inode}).
+
 findfs_label(G, Label) ->
   call_port(G, {findfs_label, Label}).
 
@@ -1484,6 +1497,12 @@ inspect_get_type(G, Root) ->
 
 inspect_get_windows_current_control_set(G, Root) ->
   call_port(G, {inspect_get_windows_current_control_set, Root}).
+
+inspect_get_windows_software_hive(G, Root) ->
+  call_port(G, {inspect_get_windows_software_hive, Root}).
+
+inspect_get_windows_system_hive(G, Root) ->
+  call_port(G, {inspect_get_windows_system_hive, Root}).
 
 inspect_get_windows_systemroot(G, Root) ->
   call_port(G, {inspect_get_windows_systemroot, Root}).
@@ -1970,6 +1989,11 @@ mknod_b(G, Mode, Devmajor, Devminor, Path) ->
 
 mknod_c(G, Mode, Devmajor, Devminor, Path) ->
   call_port(G, {mknod_c, Mode, Devmajor, Devminor, Path}).
+
+mksquashfs(G, Path, Filename, Optargs) ->
+  call_port(G, {mksquashfs, Path, Filename, Optargs}).
+mksquashfs(G, Path, Filename) ->
+  mksquashfs(G, Path, Filename, []).
 
 mkswap(G, Device, Optargs) ->
   call_port(G, {mkswap, Device, Optargs}).

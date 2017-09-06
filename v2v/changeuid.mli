@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
 
 (** Functions for making files and directories as another user.
 
-    [-o rhev] output mode has to write files as UID:GID 36:36,
-    otherwise RHEV cannot read them.  Because the files are located on
+    [-o rhv] output mode has to write files as UID:GID 36:36,
+    otherwise RHV cannot read them.  Because the files are located on
     NFS (and hence might be root-squashed) we also cannot chown the
     files.  We cannot setuid the whole process to 36:36 because it
     needs to do other root things like mounting and unmounting the NFS

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 val create_meta_files : Types.output_allocation -> string -> string list -> Types.target list -> string list
 (** Create the .meta file associated with each target.
 
-    Note this does not write them, since output_rhev has to do a
+    Note this does not write them, since output_rhv has to do a
     permissions dance when writing files.  Instead the contents of each
     file is returned (one per target), and they must be written to
     [target_file ^ ".meta"]. *)

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +16,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-(* Convert various RPM-based Linux enterprise distros.  This module
- * handles:
+(* Convert various Linux distros.  This module handles:
  *
  * - RHEL and derivatives like CentOS and ScientificLinux
  * - SUSE
- * - OpenSUSE and Fedora (not enterprisey, but similar enough to RHEL/SUSE)
+ * - OpenSUSE and Fedora (similar enough to RHEL/SUSE)
+ * - Debian and derivatives like Ubuntu and Linux Mint
  *)
 
 (* < mdbooth> It's all in there for a reason :/ *)
@@ -38,13 +38,13 @@ open Linux_kernels
 module G = Guestfs
 
 (* The conversion function. *)
-let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
+let rec convert (g : G.guestfs) inspect source output rcaps =
   (*----------------------------------------------------------------------*)
   (* Inspect the guest first.  We already did some basic inspection in
    * the common v2v.ml code, but that has to deal with generic guests
    * (anything common to Linux and Windows).  Here we do more detailed
    * inspection which can make the assumption that we are dealing with
-   * an Enterprise Linux guest using RPM.
+   * a Linux guest using RPM or Debian packages.
    *)
 
   (* Basic inspection data available as local variables. *)
@@ -56,9 +56,10 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
     | "rhel" | "centos" | "scientificlinux" | "redhat-based"
     | "oraclelinux" -> `RHEL_family
     | "sles" | "suse-based" | "opensuse" -> `SUSE_family
+    | "debian" | "ubuntu" | "linuxmint" -> `Debian_family
     | _ -> assert false in
 
-  assert (inspect.i_package_format = "rpm");
+  assert (inspect.i_package_format = "rpm" || inspect.i_package_format = "deb");
 
   (* We use Augeas for inspection and conversion, so initialize it early. *)
   Linux.augeas_init g;
@@ -396,17 +397,18 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
 
     (* Check a non-Xen kernel exists. *)
     let only_xen_kernels = List.for_all (
-      fun { ki_is_xen_kernel = is_xen_kernel } -> is_xen_kernel
+      fun { ki_is_xen_pv_only_kernel = pv_only } -> pv_only
     ) bootloader_kernels in
     if only_xen_kernels then
       error (f_"only Xen kernels are installed in this guest.\n\nRead the %s(1) manual, section \"XEN PARAVIRTUALIZED GUESTS\", to see what to do.") prog;
 
     (* Enable the best non-Xen kernel, where "best" means the one with
-     * the highest version which supports virtio.
+     * the highest version, preferring non-debug kernels which support
+     * virtio.
      *)
     let best_kernel =
       let compare_best_kernels k1 k2 =
-        let i = compare k1.ki_supports_virtio k2.ki_supports_virtio in
+        let i = compare k1.ki_supports_virtio_net k2.ki_supports_virtio_net in
         if i <> 0 then i
         else (
           let i = compare_app2_versions k1.ki_app k2.ki_app in
@@ -416,15 +418,20 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
         )
       in
       let kernels = bootloader_kernels in
-      let kernels = List.filter (fun { ki_is_xen_kernel = is_xen_kernel } -> not is_xen_kernel) kernels in
+      let kernels =
+        List.filter (fun { ki_is_xen_pv_only_kernel = pv_only } -> not pv_only)
+                    kernels in
       let kernels = List.sort compare_best_kernels kernels in
       let kernels = List.rev kernels (* so best is first *) in
       List.hd kernels in
-    if best_kernel <> List.hd bootloader_kernels then
-      bootloader#set_default_kernel best_kernel.ki_vmlinuz;
-
-    (* Does the best/bootable kernel support virtio? *)
-    let virtio = best_kernel.ki_supports_virtio in
+    if verbose () then (
+      eprintf "best kernel for this guest:\n";
+      print_kernel_info stderr "\t" best_kernel
+    );
+    if best_kernel <> List.hd bootloader_kernels then (
+      debug "best kernel is not the bootloader default, setting bootloader default ...";
+      bootloader#set_default_kernel best_kernel.ki_vmlinuz
+    );
 
     (* Update /etc/sysconfig/kernel DEFAULTKERNEL (RHBZ#1176801). *)
     if g#is_file ~followsymlinks:true "/etc/sysconfig/kernel" then (
@@ -437,7 +444,7 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
       )
     );
 
-    best_kernel, virtio
+    best_kernel
 
   (* Even though the kernel was already installed (this version of
    * virt-v2v does not install new kernels), it could have an
@@ -448,9 +455,9 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
     match kernel.ki_initrd with
     | None -> ()
     | Some initrd ->
-      let virtio = kernel.ki_supports_virtio in
+      (* Enable the basic virtio modules in the kernel. *)
       let modules =
-        if virtio then
+        let modules =
           (* The order of modules here is deliberately the same as the
            * order specified in the postinstall script of kmod-virtio in
            * RHEL3. The reason is that the probing order determines the
@@ -459,9 +466,11 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
            *)
           List.filter (fun m -> List.mem m kernel.ki_modules)
                       [ "virtio"; "virtio_ring"; "virtio_blk";
-                        "virtio_scsi"; "virtio_net"; "virtio_pci" ]
+                        "virtio_scsi"; "virtio_net"; "virtio_pci" ] in
+        if modules <> [] then modules
         else
-          [ "sym53c8xx" (* XXX why not "ide"? *) ] in
+          (* Fallback copied from old virt-v2v.  XXX Why not "ide"? *)
+          [ "sym53c8xx" ] in
 
       (* Move the old initrd file out of the way.  Note that dracut/mkinitrd
        * will refuse to overwrite an old file so we have to do this.
@@ -489,6 +498,15 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
         ignore (g#command (Array.of_list args))
       in
 
+      let run_update_initramfs_command () =
+        let args =
+          "/usr/sbin/update-initramfs"  ::
+            (if verbose () then [ "-v" ] else [])
+          @ [ "-c"; "-k"; mkinitrd_kv ]
+        in
+        ignore (g#command (Array.of_list args))
+      in
+
       if g#is_file ~followsymlinks:true "/sbin/dracut" then
         run_dracut_command "/sbin/dracut"
       else if g#is_file ~followsymlinks:true "/usr/bin/dracut" then
@@ -496,11 +514,37 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
       else if family = `SUSE_family
            && g#is_file ~followsymlinks:true "/sbin/mkinitrd" then (
         ignore (
-          g#command [| "/sbin/mkinitrd";
+          g#command [| "/usr/bin/env";
+                       "rootdev=" ^ inspect.i_root;
+                       "/sbin/mkinitrd";
                        "-m"; String.concat " " modules;
                        "-i"; initrd;
-                       "-k"; kernel.ki_vmlinuz |]
+                       "-k"; kernel.ki_vmlinuz;
+                       "-d"; inspect.i_root |]
         )
+      )
+      else if family = `Debian_family then (
+        if not (g#is_file ~followsymlinks:true "/usr/sbin/update-initramfs") then
+          error (f_"unable to rebuild initrd (%s) because update-initramfs was not found in the guest")
+            initrd;
+
+        if List.length modules > 0 then (
+          (* The modules to add to initrd are defined in:
+          *     /etc/initramfs-tools/modules
+          * File format is same as modules(5).
+          *)
+          let path = "/files/etc/initramfs-tools/modules" in
+          g#aug_transform "modules" "/etc/initramfs-tools/modules";
+          Linux.augeas_reload g;
+          g#aug_set (sprintf "%s/#comment[last()+1]" path)
+            "The following modules were added by virt-v2v";
+          List.iter (
+            fun m -> g#aug_clear (sprintf "%s/%s" path m)
+          ) modules;
+          g#aug_save ();
+        );
+
+        run_update_initramfs_command ()
       )
       else if g#is_file ~followsymlinks:true "/sbin/mkinitrd" then (
         let module_args = List.map (sprintf "--with=%s") modules in
@@ -889,6 +933,7 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
           if not (String.is_prefix device "md") &&
              not (String.is_prefix device "fd") &&
              not (String.is_prefix device "sr") &&
+             not (String.is_prefix device "scd") &&
              device <> "cdrom" then
             warning (f_"%s references unknown device \"%s\".  You may have to fix this entry manually after conversion.")
               path device;
@@ -970,9 +1015,9 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
   unconfigure_kudzu ();
   unconfigure_prltools ();
 
-  let kernel, virtio = configure_kernel () in
+  let kernel = configure_kernel () in
 
-  if keep_serial_console then (
+  if output#keep_serial_console then (
     configure_console ();
     bootloader#configure_console ();
   ) else (
@@ -989,12 +1034,12 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
 
   let block_type =
     match rcaps.rcaps_block_bus with
-    | None -> if virtio then Virtio_blk else IDE
+    | None -> if kernel.ki_supports_virtio_blk then Virtio_blk else IDE
     | Some block_type -> block_type in
 
   let net_type =
     match rcaps.rcaps_net_bus with
-    | None -> if virtio then Virtio_net else E1000
+    | None -> if kernel.ki_supports_virtio_net then Virtio_net else E1000
     | Some net_type -> net_type in
 
   configure_display_driver video;
@@ -1022,6 +1067,8 @@ let () =
                        | "rhel" | "centos" | "scientificlinux" | "redhat-based"
                        | "oraclelinux"
                        | "sles" | "suse-based" | "opensuse") } -> true
+    | { i_type = "linux";
+        i_distro = ("debian" | "ubuntu" | "linuxmint") } -> true
     | _ -> false
   in
-  Modules_list.register_convert_module matching "enterprise-linux" convert
+  Modules_list.register_convert_module matching "linux" convert

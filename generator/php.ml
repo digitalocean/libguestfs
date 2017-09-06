@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 open Printf
 
+open Common_utils
 open Types
 open Utils
 open Pr
@@ -89,7 +90,7 @@ and generate_php_c () =
 #include <php_guestfs_php.h>
 
 #include \"guestfs.h\"
-#include \"guestfs-internal-frontend.h\"
+#include \"guestfs-internal-frontend.h\" /* Only for POINTER_NOT_IMPLEMENTED */
 
 static int res_guestfs_h;
 
@@ -436,25 +437,25 @@ PHP_FUNCTION (guestfs_last_error)
         List.iter (
           function
           | OBool n ->
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "  if (optargs_t_%s != (zend_bool)-1) {\n" n;
             pr "    optargs_s.%s = optargs_t_%s;\n" n n;
             pr "    optargs_s.bitmask |= %s_%s_BITMASK;\n" c_optarg_prefix uc_n;
             pr "  }\n"
           | OInt n | OInt64 n ->
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "  if (optargs_t_%s != -1) {\n" n;
             pr "    optargs_s.%s = optargs_t_%s;\n" n n;
             pr "    optargs_s.bitmask |= %s_%s_BITMASK;\n" c_optarg_prefix uc_n;
             pr "  }\n"
           | OString n ->
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "  if (optargs_t_%s != NULL) {\n" n;
             pr "    optargs_s.%s = optargs_t_%s;\n" n n;
             pr "    optargs_s.bitmask |= %s_%s_BITMASK;\n" c_optarg_prefix uc_n;
             pr "  }\n"
           | OStringList n ->
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "  /* We've seen PHP give us a *long* here when we asked for an array, so\n";
             pr "   * positively check that it gave us an array, otherwise ignore it.\n";
             pr "   */\n";
@@ -514,7 +515,7 @@ PHP_FUNCTION (guestfs_last_error)
         function
         | OBool n | OInt n | OInt64 n | OString n -> ()
         | OStringList n ->
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "  if ((optargs_s.bitmask & %s_%s_BITMASK) != 0)\n"
               c_optarg_prefix uc_n;
             pr "    guestfs_efree_stringlist ((char **) optargs_s.%s);\n" n;

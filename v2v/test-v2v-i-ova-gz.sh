@@ -22,19 +22,11 @@ unset CDPATH
 export LANG=C
 set -e
 
-if [ -n "$SKIP_TEST_V2V_I_OVA_GZ_SH" ]; then
-    echo "$0: test skipped because environment variable is set"
-    exit 77
-fi
+$TEST_FUNCTIONS
+skip_if_skipped
+skip_if_backend uml
 
-if [ "$(guestfish get-backend)" = "uml" ]; then
-    echo "$0: test skipped because UML backend does not support network"
-    exit 77
-fi
-
-export VIRT_TOOLS_DATA_DIR="$srcdir/../test-data/fake-virt-tools"
-
-. $srcdir/../test-data/guestfs-hashsums.sh
+export VIRT_TOOLS_DATA_DIR="$top_srcdir/test-data/fake-virt-tools"
 
 d=test-v2v-i-ova-gz.d
 rm -rf $d
@@ -42,7 +34,7 @@ mkdir $d
 
 pushd $d
 
-truncate -s 10k disk1.vmdk
+guestfish disk-create disk1.vmdk raw 10K
 gzip disk1.vmdk
 sha=`do_sha1 disk1.vmdk.gz`
 echo -e "SHA1(disk1.vmdk.gz)= $sha\r" > disk1.mf

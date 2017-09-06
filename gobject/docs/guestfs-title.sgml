@@ -37,6 +37,7 @@
   <xi:include href="xml/optargs-add_drive.xml"/>
   <xi:include href="xml/optargs-add_drive_scratch.xml"/>
   <xi:include href="xml/optargs-add_libvirt_dom.xml"/>
+  <xi:include href="xml/optargs-aug_transform.xml"/>
   <xi:include href="xml/optargs-btrfs_filesystem_defragment.xml"/>
   <xi:include href="xml/optargs-btrfs_filesystem_resize.xml"/>
   <xi:include href="xml/optargs-btrfs_fsck.xml"/>
@@ -72,6 +73,7 @@
   <xi:include href="xml/optargs-mke2fs.xml"/>
   <xi:include href="xml/optargs-mkfs.xml"/>
   <xi:include href="xml/optargs-mkfs_btrfs.xml"/>
+  <xi:include href="xml/optargs-mksquashfs.xml"/>
   <xi:include href="xml/optargs-mkswap.xml"/>
   <xi:include href="xml/optargs-mktemp.xml"/>
   <xi:include href="xml/optargs-mount_9p.xml"/>

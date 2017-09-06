@@ -1,5 +1,5 @@
 # libguestfs test images
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,22 +32,19 @@ CLEANFILES += $(files)
 
 # Blank disk images in various sizes and formats.
 blank-disk-1s.raw:
-	rm -f $@
-	truncate -s 512 $@
+	qemu-img create -f raw $@ 512
 
 blank-disk-1s.qcow2:
 	qemu-img create -f qcow2 -o preallocation=metadata $@ 512
 
 blank-disk-1K.raw:
-	rm -f $@
-	truncate -s 1K $@
+	qemu-img create -f raw $@ 1K
 
 blank-disk-1K.qcow2:
 	qemu-img create -f qcow2 -o preallocation=metadata $@ 1K
 
 blank-disk-1M.raw:
-	rm -f $@
-	truncate -s 1M $@
+	qemu-img create -f raw $@ 1M
 
 blank-disk-1M.qcow2:
 	qemu-img create -f qcow2 -o preallocation=metadata $@ 1M

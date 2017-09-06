@@ -898,6 +898,45 @@ guestfs_int_py_download_offset (PyObject *self, PyObject *args)
 }
 #endif
 
+#ifdef GUESTFS_HAVE_FIND_INODE
+PyObject *
+guestfs_int_py_find_inode (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_tsk_dirent_list *r;
+  const char *device;
+  long long inode;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsL:guestfs_find_inode",
+                         &py_g, &device, &inode))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_find_inode (g, device, inode);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = guestfs_int_py_put_tsk_dirent_list (r);
+  guestfs_free_tsk_dirent_list (r);
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+#endif
+
 #ifdef GUESTFS_HAVE_FINDFS_UUID
 PyObject *
 guestfs_int_py_findfs_uuid (PyObject *self, PyObject *args)

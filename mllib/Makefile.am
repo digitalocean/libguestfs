@@ -1,5 +1,5 @@
 # libguestfs OCaml tools common code
-# Copyright (C) 2011-2016 Red Hat Inc.
+# Copyright (C) 2011-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,24 +24,25 @@ EXTRA_DIST = \
 	common_utils_tests.ml \
 	getopt_tests.ml \
 	JSON_tests.ml \
+	visit_tests.ml \
 	test-getopt.sh
 
 SOURCES_MLI = \
+	xml.mli \
+	xpath_helpers.mli \
 	checksums.mli \
+	unix_utils.mli \
 	common_utils.mli \
 	curl.mli \
-	dev_t.mli \
-	exit.mli \
-	fsync.mli \
 	getopt.mli \
 	JSON.mli \
-	mkdtemp.mli \
 	planner.mli \
 	progress.mli \
 	regedit.mli \
-	StatVFS.mli \
+	registry.mli \
 	stringMap.mli \
-	URI.mli
+	URI.mli \
+	visit.mli
 
 SOURCES_ML = \
 	guestfs_config.ml \
@@ -50,34 +51,33 @@ SOURCES_ML = \
 	stringMap.ml \
 	common_gettext.ml \
 	getopt.ml \
-	dev_t.ml \
+	unix_utils.ml \
 	common_utils.ml \
-	fsync.ml \
 	progress.ml \
 	URI.ml \
-	mkdtemp.ml \
+	visit.ml \
 	planner.ml \
+	registry.ml \
 	regedit.ml \
-	StatVFS.ml \
 	JSON.ml \
 	curl.ml \
-	exit.ml \
-	checksums.ml
+	checksums.ml \
+	xml.ml \
+	xpath_helpers.ml
 
 SOURCES_C = \
-	../fish/decrypt.c \
-	../fish/keys.c \
-	../fish/progress.c \
-	../fish/uri.c \
+	../common/visit/visit.c \
+	../common/options/decrypt.c \
+	../common/options/keys.c \
+	../common/options/uri.c \
+	../common/progress/progress.c \
 	common_utils-c.c \
-	dev_t-c.c \
-	exit-c.c \
-	fsync-c.c \
 	getopt-c.c \
-	mkdtemp-c.c \
 	progress-c.c \
-	statvfs-c.c \
-	uri-c.c
+	unix_utils-c.c \
+	uri-c.c \
+	visit-c.c \
+	xml-c.c
 
 if HAVE_OCAML
 
@@ -102,8 +102,11 @@ libmllib_a_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 	-I$(shell $(OCAMLC) -where) \
-	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/fish
+	-I$(top_srcdir)/common/utils \
+	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/common/visit \
+	-I$(top_srcdir)/common/options \
+	-I$(top_srcdir)/common/progress
 libmllib_a_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) \
@@ -112,12 +115,13 @@ libmllib_a_CFLAGS = \
 BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
-# -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
+# -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 OCAMLPACKAGES = \
 	-package str,unix \
-	-I $(top_builddir)/src/.libs \
+	-I $(top_builddir)/common/utils/.libs \
+	-I $(top_builddir)/lib/.libs \
 	-I $(top_builddir)/gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
 	-I $(builddir)
@@ -166,7 +170,7 @@ common_utils_tests_CPPFLAGS = \
 	-I. \
 	-I$(top_builddir) \
 	-I$(shell $(OCAMLC) -where) \
-	-I$(top_srcdir)/src
+	-I$(top_srcdir)/lib
 common_utils_tests_BOBJECTS = common_utils_tests.cmo
 common_utils_tests_XOBJECTS = $(common_utils_tests_BOBJECTS:.cmo=.cmx)
 
@@ -175,13 +179,17 @@ getopt_tests_CPPFLAGS = \
 	-I. \
 	-I$(top_builddir) \
 	-I$(shell $(OCAMLC) -where) \
-	-I$(top_srcdir)/src
+	-I$(top_srcdir)/lib
 getopt_tests_BOBJECTS = getopt_tests.cmo
 getopt_tests_XOBJECTS = $(getopt_tests_BOBJECTS:.cmo=.cmx)
 
 JSON_tests_SOURCES = dummy.c
 JSON_tests_BOBJECTS = JSON_tests.cmo
 JSON_tests_XOBJECTS = $(JSON_tests_BOBJECTS:.cmo=.cmx)
+
+visit_tests_SOURCES = dummy.c
+visit_tests_BOBJECTS = visit_tests.cmo
+visit_tests_XOBJECTS = $(visit_tests_BOBJECTS:.cmo=.cmx)
 
 # Can't call the following as <test>_OBJECTS because automake gets confused.
 if !HAVE_OCAMLOPT
@@ -202,6 +210,9 @@ getopt_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 
 JSON_tests_THEOBJECTS = $(JSON_tests_XOBJECTS)
 JSON_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+
+visit_tests_THEOBJECTS = $(visit_tests_XOBJECTS)
+visit_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 endif
 
 OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
@@ -236,6 +247,16 @@ JSON_tests_LINK = \
 	  $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
 	  $(JSON_tests_THEOBJECTS) -o $@
 
+visit_tests_DEPENDENCIES = \
+	$(visit_tests_THEOBJECTS) \
+	$(MLLIB_CMA) \
+	$(top_srcdir)/ocaml-link.sh
+visit_tests_LINK = \
+	$(top_srcdir)/ocaml-link.sh -cclib '-lutils $(LIBXML2_LIBS) -lgnu' -- \
+	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLLINKFLAGS) \
+	  $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) \
+	  $(visit_tests_THEOBJECTS) -o $@
+
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 TESTS = \
@@ -246,6 +267,11 @@ check_PROGRAMS = \
 if HAVE_OCAML_PKG_OUNIT
 check_PROGRAMS += common_utils_tests JSON_tests
 TESTS += common_utils_tests JSON_tests
+endif
+
+if ENABLE_APPLIANCE
+check_PROGRAMS += visit_tests
+TESTS += visit_tests
 endif
 
 check-valgrind:

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2010-2016 Red Hat Inc.
+# Copyright (C) 2010-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,12 +21,36 @@ include $(top_srcdir)/subdir-rules.mk
 sources = \
 	actions.ml \
 	actions.mli \
+	actions_augeas.ml \
+	actions_augeas.mli \
+	actions_core.ml \
+	actions_core.mli \
+	actions_core_deprecated.ml \
+	actions_core_deprecated.mli \
+	actions_debug.ml \
+	actions_debug.mli \
+	actions_hivex.ml \
+	actions_hivex.mli \
+	actions_inspection.ml \
+	actions_inspection.mli \
+	actions_inspection_deprecated.ml \
+	actions_inspection_deprecated.mli \
+	actions_internal_tests.ml \
+	actions_internal_tests.mli \
+	actions_properties.ml \
+	actions_properties.mli \
+	actions_properties_deprecated.ml \
+	actions_properties_deprecated.mli \
+	actions_tsk.ml \
+	actions_tsk.mli \
 	bindtests.ml \
 	bindtests.mli \
 	c.ml \
 	c.mli \
 	checks.ml \
 	checks.mli \
+	common_utils.ml \
+	common_utils.mli \
 	csharp.ml \
 	csharp.mli \
 	customize.ml \
@@ -43,10 +67,13 @@ sources = \
 	events.mli \
 	fish.ml \
 	fish.mli \
-	gobject.ml \
-	gobject.mli \
+	fish_commands.ml \
+	fish_commands.mli \
+	GObject.ml \
+	GObject.mli \
 	golang.ml \
 	golang.mli \
+	guestfs_config.ml \
 	haskell.ml \
 	haskell.mli \
 	java.ml \
@@ -54,8 +81,8 @@ sources = \
 	lua.ml \
 	lua.mli \
 	main.ml \
-	ocaml.ml \
-	ocaml.mli \
+	OCaml.ml \
+	OCaml.mli \
 	optgroups.ml \
 	optgroups.mli \
 	perl.ml \
@@ -66,6 +93,8 @@ sources = \
 	pr.mli \
 	prepopts.ml \
 	prepopts.mli \
+	proc_nr.ml \
+	proc_nr.mli \
 	python.ml \
 	python.mli \
 	ruby.ml \
@@ -75,20 +104,35 @@ sources = \
 	tests_c_api.ml \
 	tests_c_api.mli \
 	types.ml \
-	uefi.ml \
-	uefi.mli \
+	UEFI.ml \
+	UEFI.mli \
 	utils.ml \
 	utils.mli \
-	xdr.ml \
-	xdr.mli
+	XDR.ml \
+	XDR.mli
 
 # In build dependency order.
 objects = \
 	$(OCAML_GENERATOR_BYTES_COMPAT_CMO) \
+	guestfs_config.cmo \
+	common_utils.cmo \
 	types.cmo \
 	utils.cmo \
+	proc_nr.cmo \
+	actions_augeas.cmo \
+	actions_core.cmo \
+	actions_core_deprecated.cmo \
+	actions_debug.cmo \
+	actions_hivex.cmo \
+	actions_inspection.cmo \
+	actions_inspection_deprecated.cmo \
+	actions_internal_tests.cmo \
+	actions_properties.cmo \
+	actions_properties_deprecated.cmo \
+	actions_tsk.cmo \
 	actions.cmo \
 	structs.cmo \
+	fish_commands.cmo \
 	optgroups.cmo \
 	prepopts.cmo \
 	events.cmo \
@@ -96,11 +140,11 @@ objects = \
 	docstrings.cmo \
 	checks.cmo \
 	c.cmo \
-	xdr.cmo \
+	XDR.cmo \
 	daemon.cmo \
 	tests_c_api.cmo \
 	fish.cmo \
-	ocaml.cmo \
+	OCaml.cmo \
 	perl.cmo \
 	python.cmo \
 	ruby.cmo \
@@ -110,12 +154,12 @@ objects = \
 	php.cmo \
 	erlang.cmo \
 	lua.cmo \
-	gobject.cmo \
+	GObject.cmo \
 	golang.cmo \
 	bindtests.cmo \
 	errnostring.cmo \
 	customize.cmo \
-	uefi.cmo \
+	UEFI.cmo \
 	main.cmo
 
 EXTRA_DIST = $(sources) files-generated.txt
@@ -133,7 +177,7 @@ generator: $(objects)
 # Dependencies.
 depend: .depend
 
-.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
+.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml) common_utils.ml common_utils.mli guestfs_config.ml
 	rm -f $@ $@-t
 	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
 	  $(SED) 's/ *$$//' | \
@@ -173,6 +217,22 @@ stamp-generator: generator
 	mkdir -p $(top_srcdir)/gobject/include/guestfs-gobject
 	cd $(top_srcdir) && $(abs_builddir)/generator
 	touch $@
+
+# We share common_utils.ml{,i} with the mllib directory.  However we
+# have to remove functions which depend on any modules which are not
+# part of the OCaml stdlib.
+common_utils.ml: $(top_srcdir)/mllib/common_utils.ml
+	rm -f $@ $@-t
+	echo '(* This file is generated from mllib/common_utils.ml *)' > $@-t
+	sed -n '/^(\*<stdlib>\*)$$/,/^(\*<\/stdlib>\*)$$/p' $< >> $@-t
+	mv $@-t $@
+common_utils.mli: $(top_srcdir)/mllib/common_utils.mli
+	rm -f $@ $@-t
+	echo '(* This file is generated from mllib/common_utils.mli *)' > $@-t
+	sed -n '/^(\*<stdlib>\*)$$/,/^(\*<\/stdlib>\*)$$/p' $< >> $@-t
+	mv $@-t $@
+guestfs_config.ml: ../mllib/guestfs_config.ml
+	cp $< $@
 
 CLEANFILES += $(noinst_DATA) $(noinst_PROGRAM)
 

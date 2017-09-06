@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs test images
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1815,24 +1815,42 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
+
 # Blank disk images in various sizes and formats.
 blank-disk-1s.raw:
-	rm -f $@
-	truncate -s 512 $@
+	qemu-img create -f raw $@ 512
 
 blank-disk-1s.qcow2:
 	qemu-img create -f qcow2 -o preallocation=metadata $@ 512
 
 blank-disk-1K.raw:
-	rm -f $@
-	truncate -s 1K $@
+	qemu-img create -f raw $@ 1K
 
 blank-disk-1K.qcow2:
 	qemu-img create -f qcow2 -o preallocation=metadata $@ 1K
 
 blank-disk-1M.raw:
-	rm -f $@
-	truncate -s 1M $@
+	qemu-img create -f raw $@ 1M
 
 blank-disk-1M.qcow2:
 	qemu-img create -f qcow2 -o preallocation=metadata $@ 1M

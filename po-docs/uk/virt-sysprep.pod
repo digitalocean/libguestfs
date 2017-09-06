@@ -151,6 +151,13 @@ version of virt-sysprep.
 
 See L</OPERATIONS> below for a list and an explanation of each operation.
 
+=item B<--echo-keys>
+
+When prompting for keys and passphrases, virt-sysprep normally turns echoing
+off so you cannot see what you are typing.  If you are not worried about
+Tempest attacks and there is no one else in the room you can specify this
+flag to see what you are typing.
+
 =item B<--format> raw|qcow2|..
 
 =item B<--format> auto
@@ -177,6 +184,11 @@ See L</OPERATIONS> below for a list and an explanation of each operation.
 форматі, вам слід скористатися цим параметром для визначення формату
 диска. Таким чином можна уникнути можливих проблем з захистом для
 сформованих зловмисниками гостьових систем (CVE-2010-3851).
+
+=item B<--keys-from-stdin>
+
+Read key or passphrase parameters from stdin.  The default is to try to read
+passphrases from the user by opening F</dev/tty>.
 
 =item B<--list-operations>
 
@@ -549,8 +561,9 @@ This program returns 0 on success, or 1 if there was an error.
 This can point to the directory containing data files used for Windows
 firstboot installation.
 
-Normally you do not need to set this.  If not set, a compiled-in default
-will be used (something like F</usr/share/virt-tools>).
+Зазвичай, потреби у встановленні власного значення немає. Якщо значення не
+встановлено, буде використано вбудоване типове значення (щось схоже на
+F</usr/share/virt-tools>).
 
 Цей каталог може містити такі файли:
 
@@ -592,7 +605,7 @@ Wanlong Gao, Fujitsu Ltd.
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2011–2016
+Copyright (C) 2011-2017 Red Hat Inc.
 
 Авторські права належать Fujitsu Ltd., 2012
 

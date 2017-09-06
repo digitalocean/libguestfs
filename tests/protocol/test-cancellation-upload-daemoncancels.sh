@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,6 +21,9 @@
 # This is pretty easy - we just upload a too-large source file.
 
 set -e
+
+$TEST_FUNCTIONS
+skip_if_skipped
 
 guestfish \
     -N test-cancellation-upload-daemoncancels.img=fs:ext2:10M \

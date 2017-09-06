@@ -18,8 +18,9 @@
 
 open Printf
 
-open Sysprep_operation
 open Common_gettext.Gettext
+open Sysprep_operation
+open Utils
 
 module G = Guestfs
 
@@ -76,6 +77,7 @@ let globs = List.sort compare [
   "/root/anaconda-ks.cfg";
   "/root/anaconda-post.log";
   "/root/initial-setup-ks.cfg";
+  "/root/original-ks.cfg";
   "/var/log/anaconda.syslog";
   "/var/log/anaconda/*";
 
@@ -130,7 +132,7 @@ let globs = List.sort compare [
   (* log files of ConsoleKit *)
   "/var/log/ConsoleKit/*";
 ]
-let globs_as_pod = String.concat "\n" (List.map ((^) " ") globs)
+let globs_as_pod = pod_of_list globs
 
 let logfiles_perform (g : Guestfs.guestfs) root side_effects =
   let typ = g#inspect_get_type root in

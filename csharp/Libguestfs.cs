@@ -823,6 +823,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_aug_transform_argv (IntPtr h, [In] string lens, [In] string file, void *);
+
+    /// <summary>
+    /// add/remove an Augeas lens transformation
+    /// </summary>
+    public void aug_transform (string lens, string file)
+    {
+      int r;
+      r = guestfs_aug_transform_argv (_handle, lens, file, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_available (IntPtr h, [In] string[] groups);
 
     /// <summary>
@@ -2666,6 +2680,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern _tsk_dirent[] guestfs_find_inode (IntPtr h, [In] string device, long inode);
+
+    /// <summary>
+    /// search the entries associated to the given inode
+    /// </summary>
+    public _tsk_dirent[] find_inode (string device, long inode)
+    {
+      _tsk_dirent[] r;
+      r = guestfs_find_inode (_handle, device, inode);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_findfs_label (IntPtr h, [In] string label);
 
     /// <summary>
@@ -4016,6 +4045,36 @@ namespace Guestfs
     {
       string r;
       r = guestfs_inspect_get_windows_current_control_set (_handle, root);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_inspect_get_windows_software_hive (IntPtr h, [In] string root);
+
+    /// <summary>
+    /// get the path of the Windows software hive
+    /// </summary>
+    public string inspect_get_windows_software_hive (string root)
+    {
+      string r;
+      r = guestfs_inspect_get_windows_software_hive (_handle, root);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_inspect_get_windows_system_hive (IntPtr h, [In] string root);
+
+    /// <summary>
+    /// get the path of the Windows system hive
+    /// </summary>
+    public string inspect_get_windows_system_hive (string root)
+    {
+      string r;
+      r = guestfs_inspect_get_windows_system_hive (_handle, root);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -6169,6 +6228,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_mknod_c (_handle, mode, devmajor, devminor, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_mksquashfs_argv (IntPtr h, [In] string path, [In] string filename, void *);
+
+    /// <summary>
+    /// create a squashfs filesystem
+    /// </summary>
+    public void mksquashfs (string path, string filename)
+    {
+      int r;
+      r = guestfs_mksquashfs_argv (_handle, path, filename, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

@@ -1,28 +1,57 @@
 
+=item B<--append-line> FILE:LINE (see C<customize> below)
+
+Append a single line of text to the C<FILE>.  If the file does not already
+end with a newline, then one is added before the appended line.  Also a
+newline is added to the end of the C<LINE> string automatically.
+
+For example (assuming ordinary shell quoting) this command:
+
+ --append-line '/etc/hosts:10.0.0.1 foo'
+
+will add either C<10.0.0.1 foo⏎> or C<⏎10.0.0.1 foo⏎> to the file, the
+latter only if the existing file does not already end with a newline.
+
+C<⏎> represents a newline character, which is guessed by looking at the
+existing content of the file, so this command does the right thing for files
+using Unix or Windows line endings.  It also works for empty or non-existent
+files.
+
+To insert several lines, use the same option several times:
+
+ --append-line '/etc/hosts:10.0.0.1 foo'
+ --append-line '/etc/hosts:10.0.0.2 bar'
+
+To insert a blank line before the appended line, do:
+
+ --append-line '/etc/hosts:'
+ --append-line '/etc/hosts:10.0.0.1 foo'
+
 =item B<--chmod> PERMISSIONS:FILE (see C<customize> below)
 
-Change the permissions of C<FILE> to C<PERMISSIONS>.
+Змінити права доступу до файла C<ФАЙЛ> на C<ПРАВА_ДОСТУПУ>.
 
-I<Note>: C<PERMISSIONS> by default would be decimal, unless you prefix it
-with C<0> to get octal, ie. use C<0700> not C<700>.
+I<Зауваження>: типово C<ПРАВА_ДОСТУПУ> записуються у десятковому форматі,
+якщо ви не додасте початковий C<0> , щоб вказати вісімкове число, тобто
+скористаєтеся C<0700>, а не C<700>.
 
 =item B<--commands-from-file> FILENAME (see C<customize> below)
 
-Read the customize commands from a file, one (and its arguments)  each line.
+Прочитати команди налаштовування з файла, по одній (разом із аргументами) на
+рядок.
 
-Each line contains a single customization command and its arguments, for
-example:
+Кожен рядок містить команду налаштовування та її аргументи, наприклад:
 
- delete /some/file
- install some-package
- password some-user:password:its-new-password
+ delete /якийсь/файл
+ install якийсь_пакунок
+ password якийсь-користувач:password:його-новий-пароль
 
 Empty lines are ignored, and lines starting with C<#> are comments and are
 ignored as well.  Furthermore, arguments can be spread across multiple
 lines, by adding a C<\> (continuation character) at the of a line, for
 example
 
- edit /some/file:\
+ edit /якийсь/файл:\
    s/^OPT=.*/OPT=ok/
 
 The commands are handled in the same order as they are in the file, as if
@@ -43,8 +72,8 @@ them in the directory C<REMOTEDIR> (which must exist).
 
 =item B<--delete> PATH (see C<customize> below)
 
-Delete a file from the guest.  Or delete a directory (and all its contents,
-recursively).
+Вилучити файл з гостьової системи. Або вилучити каталог (і увесь його вміст,
+рекурсивно).
 
 You can use shell glob characters in the specified path.  Be careful to
 escape glob characters from the host shell, if that is required.  For

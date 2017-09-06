@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -402,6 +402,9 @@ int
 is_root_device (const char *device)
 {
   struct stat statbuf;
+
+  udev_settle_file (device);
+
   if (stat (device, &statbuf) == -1) {
     perror (device);
     return 0;
@@ -1213,20 +1216,34 @@ random_name (char *template)
  * fussed if it fails.
  */
 void
-udev_settle (void)
+udev_settle_file (const char *file)
 {
-  char cmd[80];
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  CLEANUP_FREE char *err = NULL;
+  size_t i = 0;
   int r;
 
-  snprintf (cmd, sizeof cmd, "%s%s settle",
-            str_udevadm, verbose ? " --debug" : "");
+  ADD_ARG (argv, i, str_udevadm);
   if (verbose)
-    printf ("%s\n", cmd);
-  r = system (cmd);
+    ADD_ARG (argv, i, "--debug");
+
+  ADD_ARG (argv, i, "settle");
+  if (file) {
+    ADD_ARG (argv, i, "-E");
+    ADD_ARG (argv, i, file);
+  }
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (NULL, &err, argv);
   if (r == -1)
-    perror ("system");
-  else if (!WIFEXITED (r) || WEXITSTATUS (r) != 0)
-    fprintf (stderr, "warning: udevadm command failed\n");
+    fprintf (stderr, "udevadm settle: %s\n", err);
+}
+
+void
+udev_settle (void)
+{
+  udev_settle_file (NULL);
 }
 
 char *
@@ -1245,6 +1262,68 @@ get_random_uuid (void)
   /* caller free */
   return out;
 
+}
+
+/**
+ * Turn list C<excludes> into a temporary file, and return a string
+ * containing the temporary file name.  Caller must unlink the file
+ * and free the string.
+ *
+ * C<function> is the function that invoked this helper, and it is
+ * used mainly for errors/debugging.
+ */
+char *
+make_exclude_from_file (const char *function, char *const *excludes)
+{
+  size_t i;
+  int fd;
+  char template[] = "/tmp/excludesXXXXXX";
+  char *ret;
+
+  fd = mkstemp (template);
+  if (fd == -1) {
+    reply_with_perror ("mkstemp");
+    return NULL;
+  }
+
+  for (i = 0; excludes[i] != NULL; ++i) {
+    if (strchr (excludes[i], '\n')) {
+      reply_with_error ("%s: excludes file patterns cannot contain \\n character",
+                        function);
+      goto error;
+    }
+
+    if (xwrite (fd, excludes[i], strlen (excludes[i])) == -1 ||
+        xwrite (fd, "\n", 1) == -1) {
+      reply_with_perror ("write");
+      goto error;
+    }
+
+    if (verbose)
+      fprintf (stderr, "%s: adding excludes pattern '%s'\n",
+               function, excludes[i]);
+  }
+
+  if (close (fd) == -1) {
+    reply_with_perror ("close");
+    fd = -1;
+    goto error;
+  }
+  fd = -1;
+
+  ret = strdup (template);
+  if (ret == NULL) {
+    reply_with_perror ("strdup");
+    goto error;
+  }
+
+  return ret;
+
+ error:
+  if (fd >= 0)
+    close (fd);
+  unlink (template);
+  return NULL;
 }
 
 void

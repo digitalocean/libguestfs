@@ -39,7 +39,7 @@
 #endif
 
 #include <guestfs.h>
-#include "guestfs-internal-frontend.h"
+#include "guestfs-internal-all.h"
 
 static SV *
 my_newSVll(long long val) {
@@ -874,6 +874,39 @@ PREINIT:
       RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
+
+void
+aug_transform (g, lens, file, ...)
+      guestfs_h *g;
+      char *lens;
+      char *file;
+PREINIT:
+      int r;
+      struct guestfs_aug_transform_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_aug_transform_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "remove")) {
+          optargs_s.remove = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_aug_transform_argv (g, lens, file, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
 
 void
 available (g, groups)
@@ -3107,6 +3140,42 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
+void
+find_inode (g, device, inode)
+      guestfs_h *g;
+      char *device;
+      int64_t inode;
+PREINIT:
+      struct guestfs_tsk_dirent_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_find_inode (g, device, inode);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "tsk_inode", 9, my_newSVull (r->val[i].tsk_inode), 0);
+        (void) hv_store (hv, "tsk_type", 8, newSVpv (&r->val[i].tsk_type, 1), 0);
+        (void) hv_store (hv, "tsk_size", 8, my_newSVll (r->val[i].tsk_size), 0);
+        (void) hv_store (hv, "tsk_name", 8, newSVpv (r->val[i].tsk_name, 0), 0);
+        (void) hv_store (hv, "tsk_flags", 9, newSVnv (r->val[i].tsk_flags), 0);
+        (void) hv_store (hv, "tsk_atime_sec", 13, my_newSVll (r->val[i].tsk_atime_sec), 0);
+        (void) hv_store (hv, "tsk_atime_nsec", 14, my_newSVll (r->val[i].tsk_atime_nsec), 0);
+        (void) hv_store (hv, "tsk_mtime_sec", 13, my_newSVll (r->val[i].tsk_mtime_sec), 0);
+        (void) hv_store (hv, "tsk_mtime_nsec", 14, my_newSVll (r->val[i].tsk_mtime_nsec), 0);
+        (void) hv_store (hv, "tsk_ctime_sec", 13, my_newSVll (r->val[i].tsk_ctime_sec), 0);
+        (void) hv_store (hv, "tsk_ctime_nsec", 14, my_newSVll (r->val[i].tsk_ctime_nsec), 0);
+        (void) hv_store (hv, "tsk_crtime_sec", 14, my_newSVll (r->val[i].tsk_crtime_sec), 0);
+        (void) hv_store (hv, "tsk_crtime_nsec", 15, my_newSVll (r->val[i].tsk_crtime_nsec), 0);
+        (void) hv_store (hv, "tsk_nlink", 9, my_newSVll (r->val[i].tsk_nlink), 0);
+        (void) hv_store (hv, "tsk_link", 8, newSVpv (r->val[i].tsk_link, 0), 0);
+        (void) hv_store (hv, "tsk_spare1", 10, my_newSVll (r->val[i].tsk_spare1), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_tsk_dirent_list (r);
+
 SV *
 findfs_label (g, label)
       guestfs_h *g;
@@ -4087,6 +4156,10 @@ PREINIT:
           optargs_s.write = SvIV (ST (items_i+1));
           this_mask = GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
         }
+        else if (STREQ (this_arg, "unsafe")) {
+          optargs_s.unsafe = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -4581,6 +4654,36 @@ PREINIT:
       char *r;
    CODE:
       r = guestfs_inspect_get_windows_current_control_set (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_windows_software_hive (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_windows_software_hive (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_windows_system_hive (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_windows_system_hive (g, root);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -7723,6 +7826,64 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_mknod_c (g, mode, devmajor, devminor, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+mksquashfs (g, path, filename, ...)
+      guestfs_h *g;
+      char *path;
+      char *filename;
+PREINIT:
+      int r;
+      struct guestfs_mksquashfs_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_mksquashfs_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "compress")) {
+          optargs_s.compress = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKSQUASHFS_COMPRESS_BITMASK;
+        }
+        else if (STREQ (this_arg, "excludes")) {
+          size_t i, len;
+          char **r;
+          SV *arg;
+          AV *av;
+          SV **svp;
+
+          arg = ST (items_i+1);
+          if (!SvROK (arg) || SvTYPE (SvRV (arg)) != SVt_PVAV)
+            croak ("array reference expected for '%s' argument", "excludes");
+          av = (AV *) SvRV (ST (items_i+1));
+
+          /* Note av_len returns index of final element. */
+          len = av_len (av) + 1;
+
+          r = malloc ((len+1) * sizeof (char *));
+          if (r == NULL) croak ("malloc: %m");
+          for (i = 0; i < len; ++i) {
+            svp = av_fetch (av, i, 0);
+            r[i] = SvPV_nolen (*svp);
+          }
+          r[i] = NULL;
+          optargs_s.excludes = r;
+          this_mask = GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_mksquashfs_argv (g, path, filename, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 

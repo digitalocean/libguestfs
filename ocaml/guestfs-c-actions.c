@@ -36,7 +36,8 @@
 #include <caml/mlvalues.h>
 #include <caml/signals.h>
 
-#include "guestfs.h"
+#include <guestfs.h>
+#include "guestfs-internal-frontend.h"
 
 #include "guestfs-c.h"
 
@@ -2278,6 +2279,49 @@ guestfs_int_ocaml_aug_setm (value gv, value basev, value subv, value valv)
     guestfs_int_ocaml_raise_error (g, "aug_setm");
 
   rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val aug_transform : t -> ?remove:bool -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_aug_transform (value gv, value removev, value lensv, value filev);
+
+value
+guestfs_int_ocaml_aug_transform (value gv, value removev, value lensv, value filev)
+{
+  CAMLparam4 (gv, removev, lensv, filev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("aug_transform");
+
+  char *lens;
+  lens = strdup (String_val (lensv));
+  if (lens == NULL) caml_raise_out_of_memory ();
+  char *file;
+  file = strdup (String_val (filev));
+  if (file == NULL) caml_raise_out_of_memory ();
+  struct guestfs_aug_transform_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_aug_transform_argv *optargs = &optargs_s;
+  if (removev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK;
+    optargs_s.remove = Bool_val (Field (removev, 0));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_aug_transform_argv (g, lens, file, optargs);
+  caml_leave_blocking_section ();
+  free (lens);
+  free (file);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "aug_transform");
+
+  rv = Val_unit;
   CAMLreturn (rv);
 }
 
@@ -7011,6 +7055,41 @@ guestfs_int_ocaml_find0 (value gv, value directoryv, value filesv)
 }
 
 /* Automatically generated wrapper for function
+ * val find_inode : t -> string -> int64 -> tsk_dirent array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_find_inode (value gv, value devicev, value inodev);
+
+value
+guestfs_int_ocaml_find_inode (value gv, value devicev, value inodev)
+{
+  CAMLparam3 (gv, devicev, inodev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("find_inode");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  int64_t inode = Int64_val (inodev);
+  struct guestfs_tsk_dirent_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_find_inode (g, device, inode);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "find_inode");
+
+  rv = copy_tsk_dirent_list (r);
+  guestfs_free_tsk_dirent_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val findfs_label : t -> string -> string
  */
 
@@ -8896,16 +8975,17 @@ guestfs_int_ocaml_hivex_node_values (value gv, value nodehv)
 }
 
 /* Automatically generated wrapper for function
- * val hivex_open : t -> ?verbose:bool -> ?debug:bool -> ?write:bool -> string -> unit
+ * val hivex_open : t -> ?verbose:bool -> ?debug:bool -> ?write:bool -> ?unsafe:bool -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value guestfs_int_ocaml_hivex_open (value gv, value verbosev, value debugv, value writev, value filenamev);
+value guestfs_int_ocaml_hivex_open (value gv, value verbosev, value debugv, value writev, value unsafev, value filenamev);
 
 value
-guestfs_int_ocaml_hivex_open (value gv, value verbosev, value debugv, value writev, value filenamev)
+guestfs_int_ocaml_hivex_open (value gv, value verbosev, value debugv, value writev, value unsafev, value filenamev)
 {
-  CAMLparam5 (gv, verbosev, debugv, writev, filenamev);
+  CAMLparam5 (gv, verbosev, debugv, writev, unsafev);
+  CAMLxparam1 (filenamev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -8929,6 +9009,10 @@ guestfs_int_ocaml_hivex_open (value gv, value verbosev, value debugv, value writ
     optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
     optargs_s.write = Bool_val (Field (writev, 0));
   }
+  if (unsafev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK;
+    optargs_s.unsafe = Bool_val (Field (unsafev, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
@@ -8940,6 +9024,15 @@ guestfs_int_ocaml_hivex_open (value gv, value verbosev, value debugv, value writ
 
   rv = Val_unit;
   CAMLreturn (rv);
+}
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_hivex_open_byte (value *argv, int argn);
+
+value
+guestfs_int_ocaml_hivex_open_byte (value *argv, int argn ATTRIBUTE_UNUSED)
+{
+  return guestfs_int_ocaml_hivex_open (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
 }
 
 /* Automatically generated wrapper for function
@@ -9943,6 +10036,74 @@ guestfs_int_ocaml_inspect_get_windows_current_control_set (value gv, value rootv
   free (root);
   if (r == NULL)
     guestfs_int_ocaml_raise_error (g, "inspect_get_windows_current_control_set");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val inspect_get_windows_software_hive : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_inspect_get_windows_software_hive (value gv, value rootv);
+
+value
+guestfs_int_ocaml_inspect_get_windows_software_hive (value gv, value rootv)
+{
+  CAMLparam2 (gv, rootv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("inspect_get_windows_software_hive");
+
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_inspect_get_windows_software_hive (g, root);
+  caml_leave_blocking_section ();
+  free (root);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "inspect_get_windows_software_hive");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val inspect_get_windows_system_hive : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_inspect_get_windows_system_hive (value gv, value rootv);
+
+value
+guestfs_int_ocaml_inspect_get_windows_system_hive (value gv, value rootv)
+{
+  CAMLparam2 (gv, rootv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("inspect_get_windows_system_hive");
+
+  char *root;
+  root = strdup (String_val (rootv));
+  if (root == NULL) caml_raise_out_of_memory ();
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_inspect_get_windows_system_hive (g, root);
+  caml_leave_blocking_section ();
+  free (root);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "inspect_get_windows_system_hive");
 
   rv = caml_copy_string (r);
   free (r);
@@ -15429,6 +15590,58 @@ guestfs_int_ocaml_mknod_c (value gv, value modev, value devmajorv, value devmino
   free (path);
   if (r == -1)
     guestfs_int_ocaml_raise_error (g, "mknod_c");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mksquashfs : t -> ?compress:string -> ?excludes:string array -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_mksquashfs (value gv, value compressv, value excludesv, value pathv, value filenamev);
+
+value
+guestfs_int_ocaml_mksquashfs (value gv, value compressv, value excludesv, value pathv, value filenamev)
+{
+  CAMLparam5 (gv, compressv, excludesv, pathv, filenamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("mksquashfs");
+
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  struct guestfs_mksquashfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mksquashfs_argv *optargs = &optargs_s;
+  if (compressv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_MKSQUASHFS_COMPRESS_BITMASK;
+    optargs_s.compress = strdup (String_val (Field (compressv, 0)));
+    if (optargs_s.compress == NULL) caml_raise_out_of_memory ();
+  }
+  if (excludesv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK;
+    optargs_s.excludes = guestfs_int_ocaml_strings_val (g, Field (excludesv, 0));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mksquashfs_argv (g, path, filename, optargs);
+  caml_leave_blocking_section ();
+  free (path);
+  free (filename);
+  if (compressv != Val_int (0))
+    free ((char *) optargs_s.compress);
+  if (excludesv != Val_int (0))
+    guestfs_int_free_string_list ((char **) optargs_s.excludes);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "mksquashfs");
 
   rv = Val_unit;
   CAMLreturn (rv);

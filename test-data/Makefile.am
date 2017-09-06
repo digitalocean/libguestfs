@@ -1,5 +1,5 @@
 # libguestfs test images
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,9 +26,6 @@ SUBDIRS += fake-virtio-win fake-virt-tools
 SUBDIRS += files
 SUBDIRS += .
 
-EXTRA_DIST = \
-        guestfs-hashsums.sh
-
 # Build an ISO containing various files from the subdirectories, which
 # is used by tests/c-api and a few guestfish tests and regression
 # tests.
@@ -41,6 +38,8 @@ image_files = \
 	$(srcdir)/binaries/bin-mipsel-dynamic \
 	$(srcdir)/binaries/bin-ppc64-dynamic \
 	$(srcdir)/binaries/bin-ppc64le-dynamic \
+	$(srcdir)/binaries/bin-riscv64-dynamic \
+	$(srcdir)/binaries/bin-s390x-dynamic \
 	$(srcdir)/binaries/bin-sparc-dynamic \
 	$(srcdir)/binaries/bin-win32.exe \
 	$(srcdir)/binaries/bin-win64.exe \
@@ -52,6 +51,8 @@ image_files = \
 	$(srcdir)/binaries/lib-mipsel.so \
 	$(srcdir)/binaries/lib-ppc64.so \
 	$(srcdir)/binaries/lib-ppc64le.so \
+	$(srcdir)/binaries/lib-riscv64.so \
+	$(srcdir)/binaries/lib-s390x.so \
 	$(srcdir)/binaries/lib-sparc.so \
 	$(srcdir)/binaries/lib-win32.dll \
 	$(srcdir)/binaries/lib-win64.dll \

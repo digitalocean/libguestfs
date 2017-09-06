@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2011-2016 Red Hat Inc.
+# Copyright (C) 2011-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -316,14 +316,13 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am__dirstamp = $(am__leading_dot)dirstamp
-am_qemu_boot_OBJECTS =  \
-	../../df/qemu_boot-estimate-max-threads.$(OBJEXT) \
-	qemu_boot-qemu-boot.$(OBJEXT)
+am_qemu_boot_OBJECTS = qemu_boot-qemu-boot.$(OBJEXT)
 qemu_boot_OBJECTS = $(am_qemu_boot_OBJECTS)
 am__DEPENDENCIES_1 =
-qemu_boot_DEPENDENCIES = $(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+qemu_boot_DEPENDENCIES =  \
+	$(top_builddir)/common/parallel/libparallel.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(top_builddir)/gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -1638,13 +1637,13 @@ guestfs_am_v_jar = $(guestfs_am_v_jar_@AM_V@)
 guestfs_am_v_jar_ = $(guestfs_am_v_jar_@AM_DEFAULT_V@)
 guestfs_am_v_jar_0 = @echo "  JAR     " $@;
 qemu_boot_SOURCES = \
-	../../df/estimate-max-threads.c \
-	../../df/estimate-max-threads.h \
 	qemu-boot.c
 
 qemu_boot_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/parallel -I$(top_builddir)/common/parallel \
 	-I$(top_srcdir)/df
 
 qemu_boot_CFLAGS = \
@@ -1652,8 +1651,9 @@ qemu_boot_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 qemu_boot_LDADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/common/parallel/libparallel.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -1702,14 +1702,6 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-../../df/$(am__dirstamp):
-	@$(MKDIR_P) ../../df
-	@: > ../../df/$(am__dirstamp)
-../../df/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../../df/$(DEPDIR)
-	@: > ../../df/$(DEPDIR)/$(am__dirstamp)
-../../df/qemu_boot-estimate-max-threads.$(OBJEXT):  \
-	../../df/$(am__dirstamp) ../../df/$(DEPDIR)/$(am__dirstamp)
 
 qemu-boot$(EXEEXT): $(qemu_boot_OBJECTS) $(qemu_boot_DEPENDENCIES) $(EXTRA_qemu_boot_DEPENDENCIES) 
 	@rm -f qemu-boot$(EXEEXT)
@@ -1717,12 +1709,10 @@ qemu-boot$(EXEEXT): $(qemu_boot_OBJECTS) $(qemu_boot_DEPENDENCIES) $(EXTRA_qemu_
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../../df/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qemu_boot-qemu-boot.Po@am__quote@
 
 .c.o:
@@ -1748,20 +1738,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
-
-../../df/qemu_boot-estimate-max-threads.o: ../../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -MT ../../df/qemu_boot-estimate-max-threads.o -MD -MP -MF ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Tpo -c -o ../../df/qemu_boot-estimate-max-threads.o `test -f '../../df/estimate-max-threads.c' || echo '$(srcdir)/'`../../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Tpo ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../df/estimate-max-threads.c' object='../../df/qemu_boot-estimate-max-threads.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -c -o ../../df/qemu_boot-estimate-max-threads.o `test -f '../../df/estimate-max-threads.c' || echo '$(srcdir)/'`../../df/estimate-max-threads.c
-
-../../df/qemu_boot-estimate-max-threads.obj: ../../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -MT ../../df/qemu_boot-estimate-max-threads.obj -MD -MP -MF ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Tpo -c -o ../../df/qemu_boot-estimate-max-threads.obj `if test -f '../../df/estimate-max-threads.c'; then $(CYGPATH_W) '../../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../../df/estimate-max-threads.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Tpo ../../df/$(DEPDIR)/qemu_boot-estimate-max-threads.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../df/estimate-max-threads.c' object='../../df/qemu_boot-estimate-max-threads.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -c -o ../../df/qemu_boot-estimate-max-threads.obj `if test -f '../../df/estimate-max-threads.c'; then $(CYGPATH_W) '../../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../../df/estimate-max-threads.c'; fi`
 
 qemu_boot-qemu-boot.o: qemu-boot.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(qemu_boot_CPPFLAGS) $(CPPFLAGS) $(qemu_boot_CFLAGS) $(CFLAGS) -MT qemu_boot-qemu-boot.o -MD -MP -MF $(DEPDIR)/qemu_boot-qemu-boot.Tpo -c -o qemu_boot-qemu-boot.o `test -f 'qemu-boot.c' || echo '$(srcdir)/'`qemu-boot.c
@@ -1896,8 +1872,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../../df/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../../df/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -1909,7 +1883,7 @@ clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
 	mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../../df/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1955,7 +1929,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../../df/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -2023,6 +1997,27 @@ $(top_builddir)/generator/generator:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

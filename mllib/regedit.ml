@@ -32,45 +32,9 @@ and regtype =
 | REG_DWORD of int32
 | REG_MULTI_SZ of string list
 
-(* Take a 7 bit ASCII string and encode it as UTF16LE. *)
-let encode_utf16le str =
-  let len = String.length str in
-  let copy = Bytes.make (len*2) '\000' in
-  for i = 0 to len-1 do
-    Bytes.unsafe_set copy (i*2) (String.unsafe_get str i)
-  done;
-  Bytes.to_string copy
-
-(* Take a UTF16LE string and decode it to UTF-8.  Actually this
- * fails if the string is not 7 bit ASCII.  XXX Use iconv here.
- *)
-let decode_utf16le str =
-  let len = String.length str in
-  if len mod 2 <> 0 then
-    error (f_"decode_utf16le: Windows string does not appear to be in UTF16-LE encoding.  This could be a bug in %s.") prog;
-  let copy = Bytes.create (len/2) in
-  for i = 0 to (len/2)-1 do
-    let cl = String.unsafe_get str (i*2) in
-    let ch = String.unsafe_get str ((i*2)+1) in
-    if ch != '\000' || Char.code cl >= 127 then
-      error (f_"decode_utf16le: Windows UTF16-LE string contains non-7-bit characters.  This is a bug in %s, please report it.") prog;
-    Bytes.unsafe_set copy i cl
-  done;
-  Bytes.to_string copy
-
-let rec import_key (g : Guestfs.guestfs) root (path, values) =
+let rec import_key ((g, root) : Registry.t) (path, values) =
   (* Create the path starting at the root node. *)
-  let node =
-    let rec loop parent = function
-      | [] -> parent
-      | x :: xs ->
-        let node =
-          match g#hivex_node_get_child parent x with
-          | 0L -> g#hivex_node_add_child parent x (* not found, create *)
-          | node -> node in
-        loop node xs
-    in
-    loop root path in
+  let node = Registry.create_path (g, root) path in
 
   (* Delete any existing values in this node. *)
   (* g#hivex_node_set_values ...
@@ -91,9 +55,9 @@ and import_value g node = function
    * bytes at the end of string fields.
    *)
   | key, REG_SZ s ->
-    g#hivex_node_set_value node key 1L (encode_utf16le s ^ "\000\000")
+    g#hivex_node_set_value node key 1L (Registry.encode_utf16le s ^ "\000\000")
   | key, REG_EXPAND_SZ s ->
-    g#hivex_node_set_value node key 2L (encode_utf16le s ^ "\000\000")
+    g#hivex_node_set_value node key 2L (Registry.encode_utf16le s ^ "\000\000")
   | key, REG_BINARY bin ->
     g#hivex_node_set_value node key 3L bin
   | key, REG_DWORD dw ->
@@ -102,8 +66,8 @@ and import_value g node = function
     (* http://blogs.msdn.com/oldnewthing/archive/2009/10/08/9904646.aspx *)
     List.iter (fun s -> assert (s <> "")) ss;
     let ss = ss @ [""] in
-    let ss = List.map (fun s -> encode_utf16le s ^ "\000\000") ss in
+    let ss = List.map (fun s -> Registry.encode_utf16le s ^ "\000\000") ss in
     let ss = String.concat "" ss in
     g#hivex_node_set_value node key 7L ss
 
-let reg_import g root = List.iter (import_key g root)
+let reg_import reg = List.iter (import_key reg)

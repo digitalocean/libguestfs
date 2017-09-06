@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-sysprep tool
-# Copyright (C) 2012-2016 Red Hat Inc.
+# Copyright (C) 2012-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -148,6 +148,7 @@ host_triplet = @host@
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_2 = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep-backup-files.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep-passwords.sh
 
 @ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@@HAVE_OCAML_TRUE@am__append_3 = \
@@ -1851,6 +1852,7 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	script1.sh script2.sh script3.sh script4.sh \
 	test-virt-sysprep.sh \
+	test-virt-sysprep-backup-files.sh \
 	test-virt-sysprep-docs.sh \
 	test-virt-sysprep-passwords.sh \
 	test-virt-sysprep-script.sh \
@@ -1860,6 +1862,7 @@ EXTRA_DIST = \
 # Filenames sysprep_operation_<name>.ml in alphabetical order.
 operations = \
 	abrt_data \
+	backup_files \
 	bash_history \
 	blkid_tab \
 	ca_certificates \
@@ -1882,6 +1885,7 @@ operations = \
 	pacct_log \
 	package_manager_cache \
 	pam_data \
+	passwd_backups \
 	puppet_data_log \
 	rh_subscription_manager \
 	rhn_systemid \
@@ -1898,9 +1902,11 @@ operations = \
 	utmp yum_uuid
 
 SOURCES_MLI = \
-	sysprep_operation.mli
+	sysprep_operation.mli \
+	utils.mli
 
 SOURCES_ML = \
+	utils.ml \
 	sysprep_operation.ml \
 	$(patsubst %,sysprep_operation_%.ml,$(operations)) \
 	main.ml
@@ -1914,7 +1920,8 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	-I$(top_builddir) \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 @HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/utils \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
 
 @HAVE_OCAML_TRUE@virt_sysprep_CFLAGS = \
@@ -1924,11 +1931,12 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 @HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
-# -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
+# -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
-@HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/common/utils/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/gnulib/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib -I \
@@ -1963,9 +1971,6 @@ SOURCES_C = \
 
 # Tests.
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = \
-@HAVE_OCAML_TRUE@	abs_builddir=$(abs_builddir) \
-@HAVE_OCAML_TRUE@	abs_srcdir=$(abs_srcdir) \
-@HAVE_OCAML_TRUE@	PATH=$(abs_top_builddir)/fuse:$(PATH) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/run --test
 
 @HAVE_OCAML_TRUE@TESTS = test-virt-sysprep-docs.sh $(am__append_2) \
@@ -2360,6 +2365,13 @@ test-virt-sysprep.sh.log: test-virt-sysprep.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-virt-sysprep-backup-files.sh.log: test-virt-sysprep-backup-files.sh
+	@p='test-virt-sysprep-backup-files.sh'; \
+	b='test-virt-sysprep-backup-files.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-virt-sysprep-passwords.sh.log: test-virt-sysprep-passwords.sh
 	@p='test-virt-sysprep-passwords.sh'; \
 	b='test-virt-sysprep-passwords.sh'; \
@@ -2585,6 +2597,27 @@ $(top_builddir)/generator/generator:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 @HAVE_OCAML_TRUE@virt-sysprep.1 $(top_builddir)/website/virt-sysprep.1.html: stamp-virt-sysprep.pod
 

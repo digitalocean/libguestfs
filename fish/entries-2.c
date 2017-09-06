@@ -402,8 +402,7 @@ struct command_entry btrfs_qgroup_limit_cmd_entry = {
           "     btrfs-qgroup-limit subvolume size\n"
           "\n"
           "DESCRIPTION\n"
-          "    Limit the size of a subvolume which's path is \"subvolume\". \"size\" can\n"
-          "    have suffix of G, M, or K.\n"
+          "    Limit the size of the subvolume with path \"subvolume\".\n"
           "\n"
           "",
   .synopsis = "btrfs-qgroup-limit subvolume size",
@@ -665,6 +664,17 @@ struct command_entry file_architecture_cmd_entry = {
           "\n"
           "    \"ppc64le\"\n"
           "        64 bit Power PC (little endian).\n"
+          "\n"
+          "    \"riscv32\"\n"
+          "    \"riscv64\"\n"
+          "    \"riscv128\"\n"
+          "        RISC-V 32-, 64- or 128-bit variants.\n"
+          "\n"
+          "    \"s390\"\n"
+          "        31 bit IBM S/390.\n"
+          "\n"
+          "    \"s390x\"\n"
+          "        64 bit IBM S/390.\n"
           "\n"
           "    \"sparc\"\n"
           "        32 bit SPARC.\n"
@@ -1266,6 +1276,36 @@ struct command_entry mkfifo_cmd_entry = {
           "",
   .synopsis = "mkfifo mode path",
   .run = run_mkfifo
+};
+
+struct command_entry mksquashfs_cmd_entry = {
+  .name = "mksquashfs",
+  .help = "NAME\n"
+          "    mksquashfs - create a squashfs filesystem\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     mksquashfs path filename [compress:..] [excludes:..]\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Create a squashfs filesystem for the specified \"path\".\n"
+          "\n"
+          "    The optional \"compress\" flag controls compression. If not given, then\n"
+          "    the output compressed using \"gzip\". Otherwise one of the following\n"
+          "    strings may be given to select the compression type of the squashfs:\n"
+          "    \"gzip\", \"lzma\", \"lzo\", \"lz4\", \"xz\".\n"
+          "\n"
+          "    The other optional arguments are:\n"
+          "\n"
+          "    \"excludes\"\n"
+          "        A list of wildcards. Files are excluded if they match any of the\n"
+          "        wildcards.\n"
+          "\n"
+          "    Please note that this API may fail when used to compress directories\n"
+          "    with large files, such as the resulting squashfs will be over 3GB big.\n"
+          "\n"
+          "",
+  .synopsis = "mksquashfs path filename [compress:..] [excludes:..]",
+  .run = run_mksquashfs
 };
 
 struct command_entry modprobe_cmd_entry = {

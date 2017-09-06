@@ -22,7 +22,8 @@
 
 set -e
 
-. $srcdir/../../test-data/guestfs-hashsums.sh
+$TEST_FUNCTIONS
+skip_if_skipped
 
 rm -f liveness1.img
 

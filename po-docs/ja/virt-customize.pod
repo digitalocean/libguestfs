@@ -102,6 +102,13 @@ libvirt を使用していると、指定された I<URI> に接続します。 
 Perform a read-only "dry run" on the guest.  This runs the sysprep
 operation, but throws away any changes to the disk at the end.
 
+=item B<--echo-keys>
+
+When prompting for keys and passphrases, virt-customize normally turns
+echoing off so you cannot see what you are typing.  If you are not worried
+about Tempest attacks and there is no one else in the room you can specify
+this flag to see what you are typing.
+
 =item B<--format> raw|qcow2|..
 
 =item B<--format> auto
@@ -124,6 +131,11 @@ auto-detection for F<another.img>.
 
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
+
+=item B<--keys-from-stdin>
+
+Read key or passphrase parameters from stdin.  The default is to try to read
+passphrases from the user by opening F</dev/tty>.
 
 =item B<-m> MB
 
@@ -276,5 +288,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2011-2016 Red Hat Inc.
+Copyright (C) 2011-2017 Red Hat Inc.
 

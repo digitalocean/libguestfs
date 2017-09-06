@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,15 +47,12 @@ val sort : Types.action list -> Types.action list
 (** Sort the functions alphabetically by name
     (see also {!Utils.action_compare}). *)
 
+val find : string -> Types.action
+(** Find an action by name.  If it doesn't exist, this fails with an
+    error. *)
+
 val is_documented : Types.action -> bool
 (** Returns true if function should be documented, false otherwise. *)
 
 val test_functions : Types.action list
 (** Internal test functions used to test the language bindings. *)
-
-val fish_commands : Types.action list
-(** Non-API meta-commands available only in guestfish. *)
-
-val max_proc_nr : int
-(** The largest procedure number used (also saved in [src/MAX_PROC_NR] and
-    used as the minor version number of the shared library). *)

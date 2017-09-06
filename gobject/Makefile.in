@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -375,7 +375,7 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(girdir)" \
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libguestfs_gobject_1_0_la_DEPENDENCIES =  \
-	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+	$(top_builddir)/lib/libguestfs.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = src/libguestfs_gobject_1_0_la-session.lo \
@@ -409,6 +409,7 @@ am__objects_1 = src/libguestfs_gobject_1_0_la-session.lo \
 	src/libguestfs_gobject_1_0_la-optargs-add_drive.lo \
 	src/libguestfs_gobject_1_0_la-optargs-add_drive_scratch.lo \
 	src/libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.lo \
+	src/libguestfs_gobject_1_0_la-optargs-aug_transform.lo \
 	src/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.lo \
 	src/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo \
 	src/libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo \
@@ -444,6 +445,7 @@ am__objects_1 = src/libguestfs_gobject_1_0_la-session.lo \
 	src/libguestfs_gobject_1_0_la-optargs-mke2fs.lo \
 	src/libguestfs_gobject_1_0_la-optargs-mkfs.lo \
 	src/libguestfs_gobject_1_0_la-optargs-mkfs_btrfs.lo \
+	src/libguestfs_gobject_1_0_la-optargs-mksquashfs.lo \
 	src/libguestfs_gobject_1_0_la-optargs-mkswap.lo \
 	src/libguestfs_gobject_1_0_la-optargs-mktemp.lo \
 	src/libguestfs_gobject_1_0_la-optargs-mount_9p.lo \
@@ -2039,6 +2041,7 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-add_drive.h \
   include/guestfs-gobject/optargs-add_drive_scratch.h \
   include/guestfs-gobject/optargs-add_libvirt_dom.h \
+  include/guestfs-gobject/optargs-aug_transform.h \
   include/guestfs-gobject/optargs-btrfs_filesystem_defragment.h \
   include/guestfs-gobject/optargs-btrfs_filesystem_resize.h \
   include/guestfs-gobject/optargs-btrfs_fsck.h \
@@ -2074,6 +2077,7 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-mke2fs.h \
   include/guestfs-gobject/optargs-mkfs.h \
   include/guestfs-gobject/optargs-mkfs_btrfs.h \
+  include/guestfs-gobject/optargs-mksquashfs.h \
   include/guestfs-gobject/optargs-mkswap.h \
   include/guestfs-gobject/optargs-mktemp.h \
   include/guestfs-gobject/optargs-mount_9p.h \
@@ -2129,6 +2133,7 @@ guestfs_gobject_sources = \
   src/optargs-add_drive.c \
   src/optargs-add_drive_scratch.c \
   src/optargs-add_libvirt_dom.c \
+  src/optargs-aug_transform.c \
   src/optargs-btrfs_filesystem_defragment.c \
   src/optargs-btrfs_filesystem_resize.c \
   src/optargs-btrfs_fsck.c \
@@ -2164,6 +2169,7 @@ guestfs_gobject_sources = \
   src/optargs-mke2fs.c \
   src/optargs-mkfs.c \
   src/optargs-mkfs_btrfs.c \
+  src/optargs-mksquashfs.c \
   src/optargs-mkswap.c \
   src/optargs-mktemp.c \
   src/optargs-mount_9p.c \
@@ -2209,12 +2215,12 @@ lib_LTLIBRARIES = $(libname)
 libguestfs_gobject_1_0_ladir = $(includedir)/guestfs-gobject
 libguestfs_gobject_1_0_la_HEADERS = $(guestfs_gobject_headers)
 libguestfs_gobject_1_0_la_SOURCES = $(guestfs_gobject_sources)
-libguestfs_gobject_1_0_la_CFLAGS = -I$(top_srcdir)/src -I$(srcdir)/include \
+libguestfs_gobject_1_0_la_CFLAGS = -I$(top_srcdir)/lib -I$(srcdir)/include \
                                    -DGUESTFS_PRIVATE=1 \
                                    $(GOBJECT_CFLAGS)
 
-libguestfs_gobject_1_0_la_LDFLAGS = $(LDFLAGS) -L$(top_builddir)/src
-libguestfs_gobject_1_0_la_LIBADD = $(top_builddir)/src/libguestfs.la $(GOBJECT_LIBS) $(GIO_LIBS)
+libguestfs_gobject_1_0_la_LDFLAGS = $(LDFLAGS) -L$(top_builddir)/lib
+libguestfs_gobject_1_0_la_LIBADD = $(top_builddir)/lib/libguestfs.la $(GOBJECT_LIBS) $(GIO_LIBS)
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libguestfs-gobject-1.0.pc
 INTROSPECTION_GIRS = $(am__append_1)
@@ -2226,7 +2232,7 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 
 @HAVE_INTROSPECTION_TRUE@Guestfs_1_0_gir_INCLUDES = GObject-2.0 Gio-2.0
 @HAVE_INTROSPECTION_TRUE@Guestfs_1_0_gir_CFLAGS = $(INCLUDES) -I$(srcdir)/include
-@HAVE_INTROSPECTION_TRUE@Guestfs_1_0_gir_LIBS = $(libname) $(top_builddir)/src/libguestfs.la
+@HAVE_INTROSPECTION_TRUE@Guestfs_1_0_gir_LIBS = $(libname) $(top_builddir)/lib/libguestfs.la
 @HAVE_INTROSPECTION_TRUE@Guestfs_1_0_gir_FILES = $(patsubst %,$(srcdir)/%,$(introspection_sources))
 @HAVE_INTROSPECTION_TRUE@girdir = $(datadir)/gir-1.0
 @HAVE_INTROSPECTION_TRUE@gir_DATA = $(INTROSPECTION_GIRS)
@@ -2375,6 +2381,8 @@ src/libguestfs_gobject_1_0_la-optargs-add_drive_scratch.lo:  \
 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.lo:  \
 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/libguestfs_gobject_1_0_la-optargs-aug_transform.lo:  \
+	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.lo:  \
 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo:  \
@@ -2445,6 +2453,8 @@ src/libguestfs_gobject_1_0_la-optargs-mkfs.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-mkfs_btrfs.lo:  \
 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/libguestfs_gobject_1_0_la-optargs-mksquashfs.lo:  \
+	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-mkswap.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-mktemp.lo: src/$(am__dirstamp) \
@@ -2505,6 +2515,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive_scratch.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-aug_transform.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_fsck.Plo@am__quote@
@@ -2540,6 +2551,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mke2fs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs_btrfs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mksquashfs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkswap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mktemp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mount_9p.Plo@am__quote@
@@ -2831,6 +2843,13 @@ src/libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.lo: src/optargs-add_libvir
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-optargs-add_libvirt_dom.lo `test -f 'src/optargs-add_libvirt_dom.c' || echo '$(srcdir)/'`src/optargs-add_libvirt_dom.c
 
+src/libguestfs_gobject_1_0_la-optargs-aug_transform.lo: src/optargs-aug_transform.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-aug_transform.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-aug_transform.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-aug_transform.lo `test -f 'src/optargs-aug_transform.c' || echo '$(srcdir)/'`src/optargs-aug_transform.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-aug_transform.Tpo src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-aug_transform.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-aug_transform.c' object='src/libguestfs_gobject_1_0_la-optargs-aug_transform.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-optargs-aug_transform.lo `test -f 'src/optargs-aug_transform.c' || echo '$(srcdir)/'`src/optargs-aug_transform.c
+
 src/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.lo: src/optargs-btrfs_filesystem_defragment.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.lo `test -f 'src/optargs-btrfs_filesystem_defragment.c' || echo '$(srcdir)/'`src/optargs-btrfs_filesystem_defragment.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.Tpo src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_defragment.Plo
@@ -3075,6 +3094,13 @@ src/libguestfs_gobject_1_0_la-optargs-mkfs_btrfs.lo: src/optargs-mkfs_btrfs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-mkfs_btrfs.c' object='src/libguestfs_gobject_1_0_la-optargs-mkfs_btrfs.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-optargs-mkfs_btrfs.lo `test -f 'src/optargs-mkfs_btrfs.c' || echo '$(srcdir)/'`src/optargs-mkfs_btrfs.c
+
+src/libguestfs_gobject_1_0_la-optargs-mksquashfs.lo: src/optargs-mksquashfs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-mksquashfs.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mksquashfs.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-mksquashfs.lo `test -f 'src/optargs-mksquashfs.c' || echo '$(srcdir)/'`src/optargs-mksquashfs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mksquashfs.Tpo src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mksquashfs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-mksquashfs.c' object='src/libguestfs_gobject_1_0_la-optargs-mksquashfs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-optargs-mksquashfs.lo `test -f 'src/optargs-mksquashfs.c' || echo '$(srcdir)/'`src/optargs-mksquashfs.c
 
 src/libguestfs_gobject_1_0_la-optargs-mkswap.lo: src/optargs-mkswap.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-mkswap.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkswap.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-mkswap.lo `test -f 'src/optargs-mkswap.c' || echo '$(srcdir)/'`src/optargs-mkswap.c
@@ -3833,6 +3859,27 @@ $(top_builddir)/generator/generator:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 # All the headers except <guestfs-gobject.h> should be installed
 # in the subdirectory.

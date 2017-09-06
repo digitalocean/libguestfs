@@ -189,6 +189,13 @@ For fine-tuning the output format, see: I<--compress>, I<-o>.
 
 You cannot use this option and I<--in-place> together.
 
+=item B<--echo-keys>
+
+When prompting for keys and passphrases, virt-sparsify normally turns
+echoing off so you cannot see what you are typing.  If you are not worried
+about Tempest attacks and there is no one else in the room you can specify
+this flag to see what you are typing.
+
 =item B<--format> raw
 
 =item B<--format> qcow2
@@ -219,6 +226,11 @@ group name without the F</dev/> prefix, eg. I<--ignore vg_foo>
 
 Do in-place sparsification instead of copying sparsification.  See
 L</IN-PLACE SPARSIFICATION> below.
+
+=item B<--keys-from-stdin>
+
+Read key or passphrase parameters from stdin.  The default is to try to read
+passphrases from the user by opening F</dev/tty>.
 
 =item B<--machine-readable>
 
@@ -345,8 +357,8 @@ virt-sparsify binary.  Typical output looks like this:
  ntfs
  btrfs
 
-A list of features is printed, one per line, and the program exits with
-status 0.
+Виводиться список можливостей, по одній на рядок, і програма завершує роботу
+зі станом 0.
 
 Secondly use the option in conjunction with other options to make the
 regular program output more machine friendly.
@@ -441,5 +453,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2011–2016
+Copyright (C) 2011-2017 Red Hat Inc.
 

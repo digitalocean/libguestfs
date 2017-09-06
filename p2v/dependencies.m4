@@ -29,23 +29,12 @@ ifelse(REDHAT,1,
   dnl Run as external programs by the p2v binary.
   /usr/bin/ssh
   /usr/bin/qemu-nbd
-  curl
-  ethtool
-  util-linux
-  xterm
+  which
 
   dnl Generally useful tools to use within xterm
-  less
   vim-minimal
 
-  dnl The hwdata package contains PCI IDs, used by virt-p2v to display
-  dnl network vendor information (RHBZ#855059).
-  hwdata
-
   dnl Useful disk and diagnostic utilities.
-  pciutils
-  hdparm
-  smartmontools
   iscsi-initiator-utils
 
   dnl X11 environment
@@ -73,20 +62,12 @@ ifelse(REDHAT,1,
 ifelse(DEBIAN,1,
   libpcre3
   libxml2
-  libgtk`'GTK_VERSION`'.0-0
+  ifelse(GTK_VERSION,2,libgtk`'GTK_VERSION`'.0-0,libgtk-`'GTK_VERSION`'-0)
   libdbus-1-3
   openssh-client
   qemu-utils
-  curl
-  ethtool
-  util-linux
-  xterm
-  less
+  debianutils
   vim-tiny
-  hwdata
-  pciutils
-  hdparm
-  smartmontools
   open-iscsi
   xorg
   xserver-xorg-video-all
@@ -94,7 +75,6 @@ ifelse(DEBIAN,1,
   metacity
   network-manager
   network-manager-gnome
-  network-manager-applet
   dbus-x11
   net-tools
 )
@@ -106,16 +86,8 @@ ifelse(ARCHLINUX,1,
   dbus
   openssh
   qemu
-  curl
-  ethtool
-  util-linux
-  xterm
-  less
+  which
   vim-tiny
-  hwdata
-  pciutils
-  hdparm
-  smartmontools
   open-iscsi
   xorg-xinit
   xorg-server
@@ -136,16 +108,8 @@ ifelse(SUSE,1,
   libdbus-1-3
   qemu-tools
   openssh
-  curl
-  ethtool
-  util-linux
-  xterm
-  less
+  dnl /usr/bin/which is in util-linux on SUSE
   vim
-  hwdata
-  pciutils
-  hdparm
-  smartmontools
   open-iscsi
   xinit
   xorg-x11-server
@@ -159,3 +123,24 @@ ifelse(SUSE,1,
   libyui-qt
   SuSEfirewall2
 )
+
+dnl Run as external programs by the p2v binary.
+curl
+ethtool
+gawk
+lsscsi
+pciutils
+usbutils
+util-linux
+xterm
+
+dnl Generally useful tools to use within xterm
+less
+
+dnl The hwdata package contains PCI IDs, used by virt-p2v to display
+dnl network vendor information (RHBZ#855059).
+hwdata
+
+dnl Useful disk and diagnostic utilities.
+hdparm
+smartmontools

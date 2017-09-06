@@ -22,7 +22,8 @@
 
 set -e
 
-. $srcdir/../../test-data/guestfs-hashsums.sh
+$TEST_FUNCTIONS
+skip_if_skipped
 
 # UML backend doesn't support qcow2 format.
 supports_qcow2=yes

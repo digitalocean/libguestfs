@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -264,7 +264,7 @@ do_lvs (void)
     r = command (&out, &err,
                  str_lvm, "lvs",
                  "-o", "vg_name,lv_name",
-                 "-S", "lv_role=public && lv_skip_activation!=1",
+                 "-S", "lv_role=public && lv_skip_activation!=yes",
                  "--noheadings",
                  "--separator", "/", NULL);
     if (r == -1) {
@@ -625,6 +625,7 @@ do_pvresize_size (const char *device, int64_t size)
 
   r = command (NULL, &err,
                str_lvm, "pvresize",
+               "--yes",
                "--setphysicalvolumesize", buf,
                device, NULL);
   if (r == -1) {

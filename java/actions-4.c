@@ -626,6 +626,97 @@ Java_com_redhat_et_libguestfs_GuestFS__1download_1offset  (JNIEnv *env, jobject 
 }
 
 
+JNIEXPORT jobjectArray JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1find_1inode  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jlong jinode)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jobjectArray jr;
+  jclass cl;
+  jfieldID fl;
+  jobject jfl;
+  CLEANUP_FREE_TSK_DIRENT_LIST struct guestfs_tsk_dirent_list *r = NULL;
+  const char *device;
+  int64_t inode;
+  size_t i;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  inode = jinode;
+
+  r = guestfs_find_inode (g, device, inode);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  cl = (*env)->FindClass (env, "com/redhat/et/libguestfs/TSKDirent");
+  jr = (*env)->NewObjectArray (env, r->len, cl, NULL);
+
+  for (i = 0; i < r->len; ++i) {
+    jfl = (*env)->AllocObject (env, cl);
+
+    fl = (*env)->GetFieldID (env, cl, "tsk_inode",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_inode);
+    fl = (*env)->GetFieldID (env, cl, "tsk_type",
+                             "C");
+    (*env)->SetCharField (env, jfl, fl, r->val[i].tsk_type);
+    fl = (*env)->GetFieldID (env, cl, "tsk_size",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_size);
+    fl = (*env)->GetFieldID (env, cl, "tsk_name",
+                             "Ljava/lang/String;");
+    (*env)->SetObjectField (env, jfl, fl,
+                            (*env)->NewStringUTF (env, r->val[i].tsk_name));
+    fl = (*env)->GetFieldID (env, cl, "tsk_flags",
+                             "I");
+    (*env)->SetIntField (env, jfl, fl, r->val[i].tsk_flags);
+    fl = (*env)->GetFieldID (env, cl, "tsk_atime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_atime_sec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_atime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_atime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_mtime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_mtime_sec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_mtime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_mtime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_ctime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_ctime_sec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_ctime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_ctime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_crtime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_crtime_sec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_crtime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_crtime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_nlink",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_nlink);
+    fl = (*env)->GetFieldID (env, cl, "tsk_link",
+                             "Ljava/lang/String;");
+    (*env)->SetObjectField (env, jfl, fl,
+                            (*env)->NewStringUTF (env, r->val[i].tsk_link));
+    fl = (*env)->GetFieldID (env, cl, "tsk_spare1",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_spare1);
+
+    (*env)->SetObjectArrayElement (env, jr, i, jfl);
+  }
+
+  return jr;
+
+ ret_error:
+  return NULL;
+}
+
+
 JNIEXPORT jstring JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1findfs_1uuid  (JNIEnv *env, jobject obj, jlong jg, jstring juuid)
 {

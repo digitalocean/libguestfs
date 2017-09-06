@@ -683,8 +683,7 @@ guestfs_int_ruby_btrfs_balance_cancel (VALUE gv, VALUE pathv)
  *
  * limit the size of a subvolume
  *
- * Limit the size of a subvolume which's path is
- * "subvolume". "size" can have suffix of G, M, or K.
+ * Limit the size of the subvolume with path "subvolume".
  *
  *
  * [Since] Added in version 1.29.17.
@@ -1228,6 +1227,17 @@ guestfs_int_ruby_egrep (VALUE gv, VALUE regexv, VALUE pathv)
  * 
  * "ppc64le"
  * 64 bit Power PC (little endian).
+ * 
+ * "riscv32"
+ * "riscv64"
+ * "riscv128"
+ * RISC-V 32-, 64- or 128-bit variants.
+ * 
+ * "s390"
+ * 31 bit IBM S/390.
+ * 
+ * "s390x"
+ * 64 bit IBM S/390.
  * 
  * "sparc"
  * 32 bit SPARC.
@@ -2522,6 +2532,97 @@ guestfs_int_ruby_mkfifo (VALUE gv, VALUE modev, VALUE pathv)
   int r;
 
   r = guestfs_mkfifo (g, mode, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.mksquashfs(path, filename, {optargs...}) -> nil
+ *
+ * create a squashfs filesystem
+ *
+ * Create a squashfs filesystem for the specified "path".
+ * 
+ * The optional "compress" flag controls compression. If
+ * not given, then the output compressed using "gzip".
+ * Otherwise one of the following strings may be given to
+ * select the compression type of the squashfs: "gzip",
+ * "lzma", "lzo", "lz4", "xz".
+ * 
+ * The other optional arguments are:
+ * 
+ * "excludes"
+ * A list of wildcards. Files are excluded if they
+ * match any of the wildcards.
+ * 
+ * Please note that this API may fail when used to compress
+ * directories with large files, such as the resulting
+ * squashfs will be over 3GB big.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * [Since] Added in version 1.35.25.
+ *
+ * [Feature] This function depends on the feature +squashfs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_mksquashfs}[http://libguestfs.org/guestfs.3.html#guestfs_mksquashfs].
+ */
+VALUE
+guestfs_int_ruby_mksquashfs (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mksquashfs");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE pathv = argv[0];
+  volatile VALUE filenamev = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
+  const char *path = StringValueCStr (pathv);
+  const char *filename = StringValueCStr (filenamev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_mksquashfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mksquashfs_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("compress")));
+  if (v != Qnil) {
+    optargs_s.compress = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKSQUASHFS_COMPRESS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("excludes")));
+  if (v != Qnil) {
+  Check_Type (v, T_ARRAY);
+  {
+    size_t i, len;
+    char **r;
+
+    len = RARRAY_LEN (v);
+    r = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE sv = rb_ary_entry (v, i);
+      r[i] = StringValueCStr (sv);
+    }
+    r[len] = NULL;
+    optargs_s.excludes = r;
+  }
+    optargs_s.bitmask |= GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_mksquashfs_argv (g, path, filename, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 

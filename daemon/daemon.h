@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include "guestfs-internal-all.h"
 
 #include "cleanups.h"
+#include "structs-cleanups.h"
 #include "command.h"
 
 /* Mountables */
@@ -141,11 +142,15 @@ extern int parse_btrfsvol (const char *desc, mountable_t *mountable);
 
 extern int prog_exists (const char *prog);
 
+extern void udev_settle_file (const char *file);
+
 extern void udev_settle (void);
 
 extern int random_name (char *template);
 
 extern char *get_random_uuid (void);
+
+extern char *make_exclude_from_file (const char *function, char *const *excludes);
 
 extern int asprintf_nowarn (char **strp, const char *fmt, ...);
 
@@ -254,6 +259,7 @@ extern int64_t ntfs_minimum_size (const char *device);
 
 /*-- in swap.c --*/
 extern int swap_set_uuid (const char *device, const char *uuid);
+extern int swap_set_label (const char *device, const char *label);
 
 /* ordinary daemon functions use these to indicate errors
  * NB: you don't need to prefix the string with the current command,
@@ -321,56 +327,22 @@ extern void pulse_mode_cancel (void);
  */
 extern void notify_progress_no_ratelimit (uint64_t position, uint64_t total, const struct timeval *now);
 
-/* Return true iff the buffer is all zero bytes.
- *
- * Note that gcc is smart enough to optimize this properly:
- * http://stackoverflow.com/questions/1493936/faster-means-of-checking-for-an-empty-buffer-in-c/1493989#1493989
- */
-static inline int
-is_zero (const char *buffer, size_t size)
-{
-  size_t i;
-
-  for (i = 0; i < size; ++i) {
-    if (buffer[i] != 0)
-      return 0;
-  }
-
-  return 1;
-}
-
-/* Helper for building up short lists of arguments.  Your code has to
- * define MAX_ARGS to a suitable value.
- */
-#define ADD_ARG(argv,i,v)                                               \
-  do {                                                                  \
-    if ((i) >= MAX_ARGS) {                                              \
-      fprintf (stderr, "%s: %d: internal error: exceeded MAX_ARGS (%zu) when constructing the command line\n", __FILE__, __LINE__, (size_t) MAX_ARGS); \
-      abort ();                                                         \
-    }                                                                   \
-    (argv)[(i)++] = (v);                                                \
-  } while (0)
-
-/* Helper for functions that need a root filesystem mounted.
- * NB. Cannot be used for FileIn functions.
- */
-#define NEED_ROOT(cancel_stmt,fail_stmt)                                \
+/* Helper for functions that need a root filesystem mounted. */
+#define NEED_ROOT(is_filein,fail_stmt)                                  \
   do {									\
     if (!is_root_mounted ()) {						\
-      cancel_stmt;                                                      \
+      if (is_filein) cancel_receive ();                                 \
       reply_with_error ("%s: you must call 'mount' first to mount the root filesystem", __func__); \
       fail_stmt;							\
     }									\
   }									\
   while (0)
 
-/* Helper for functions that need an argument ("path") that is absolute.
- * NB. Cannot be used for FileIn functions.
- */
-#define ABS_PATH(path,cancel_stmt,fail_stmt)                            \
+/* Helper for functions that need an argument ("path") that is absolute. */
+#define ABS_PATH(path,is_filein,fail_stmt)                              \
   do {									\
     if ((path)[0] != '/') {						\
-      cancel_stmt;                                                      \
+      if (is_filein) cancel_receive ();                                 \
       reply_with_error ("%s: path must start with a / character", __func__); \
       fail_stmt;							\
     }									\

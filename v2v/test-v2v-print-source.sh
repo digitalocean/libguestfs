@@ -18,30 +18,18 @@
 
 # Test --print-source option.
 
-unset CDPATH
-export LANG=C
 set -e
 
-if [ -n "$SKIP_TEST_V2V_PRINT_SOURCE_SH" ]; then
-    echo "$0: test skipped because environment variable is set"
-    exit 77
-fi
-
-abs_top_builddir="$(cd ..; pwd)"
-libvirt_uri="test://$abs_top_builddir/test-data/phony-guests/guests.xml"
-
-f=../test-data/phony-guests/windows.img
-if ! test -f $f || ! test -s $f; then
-    echo "$0: test skipped because phony Windows image was not created"
-    exit 77
-fi
+$TEST_FUNCTIONS
+skip_if_skipped
+skip_unless_phony_guest windows.img
 
 d=test-v2v-print-source.d
 rm -rf $d
 mkdir $d
 
 $VG virt-v2v --debug-gc \
-    -i libvirt -ic "$libvirt_uri" windows \
+    -i libvirtxml test-v2v-print-source.xml \
     -o local -os $d \
     --print-source > $d/output
 
@@ -49,27 +37,10 @@ mv $d/output $d/output.orig
 < $d/output.orig \
 grep -v 'Opening the source' |
 grep -v 'Source guest information' |
-sed -e 's,/.*/,/,' |
+sed -e 's,/.*/windows.img,windows.img,' |
 grep -v '^$' \
 > $d/output
 
-if [ "$(cat $d/output)" != "    source name: windows
-hypervisor type: test
-         memory: 1073741824 (bytes)
-       nr vCPUs: 1
-   CPU features: 
-       firmware: unknown
-        display: 
-          video: qxl
-          sound: 
-disks:
-	/windows.img (raw) [virtio-blk]
-removable media:
-NICs:
-	Network \"default\" mac: 00:11:22:33:44:55 [virtio]" ]; then
-    echo "$0: unexpected output from test:"
-    cat $d/output.orig
-    exit 1
-fi
+diff -u test-v2v-print-source.expected $d/output
 
 rm -r $d

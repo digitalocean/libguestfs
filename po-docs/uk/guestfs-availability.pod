@@ -120,7 +120,8 @@ L</guestfs_list_ldm_volumes>
 
 =item B<libtsk>
 
-Такі функції: L</guestfs_internal_filesystem_walk>
+The following functions: L</guestfs_internal_filesystem_walk>
+L</guestfs_internal_find_inode>
 
 =item B<linuxcaps>
 
@@ -194,12 +195,15 @@ L</guestfs_scrub_freespace>
 
 =item B<selinuxrelabel>
 
-The following functions: L</guestfs_selinux_relabel>
+Такі функції: L</guestfs_selinux_relabel>
 
 =item B<sleuthkit>
 
-The following functions: L</guestfs_download_blocks>
-L</guestfs_download_inode>
+Такі функції: L</guestfs_download_blocks>
+
+=item B<squashfs>
+
+The following functions: L</guestfs_mksquashfs>
 
 =item B<syslinux>
 

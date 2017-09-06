@@ -59,6 +59,8 @@ int keys_from_stdin = 0;
 int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 1;
+int in_guestfish = 0;
+int in_virt_rescue = 0;
 
 static int csv = 0;
 static int human = 0;
@@ -357,7 +359,7 @@ main (int argc, char *argv[])
   }
 
   /* Add drives, inspect and mount. */
-  add_drives (drvs, 'a');
+  add_drives (drvs);
 
   if (guestfs_launch (g) == -1)
     exit (EXIT_FAILURE);

@@ -33,6 +33,7 @@ let current_arch () =
   | arch -> arch
 
 let output_filename image_name = function
+  | "squashfs" -> image_name ^ ".squash"
   | fmt -> image_name ^ "." ^ fmt
 
 let log_filename () =
@@ -72,7 +73,7 @@ let digit_prefix_compare a b =
   let split_prefix str =
     let len = String.length str in
     let digits =
-      try string_index_fn (fun x -> not (isdigit x)) str
+      try string_index_fn (fun x -> not (Char.isdigit x)) str
       with Not_found -> len in
     match digits with
     | 0 -> "", str

@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -69,7 +69,6 @@
 
 # 'common-rules.mk' should be included in every Makefile.am.
 # cf. 'subdir-rules.mk'
-
 
 
 VPATH = @srcdir@
@@ -318,21 +317,6 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-AM_V_AR = $(am__v_AR_@AM_V@)
-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
-am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 = 
-liberrnostring_a_AR = $(AR) $(ARFLAGS)
-liberrnostring_a_LIBADD =
-am_liberrnostring_a_OBJECTS =  \
-	liberrnostring_a-errnostring-gperf.$(OBJEXT) \
-	liberrnostring_a-errnostring.$(OBJEXT)
-liberrnostring_a_OBJECTS = $(am_liberrnostring_a_OBJECTS)
-libprotocol_a_AR = $(AR) $(ARFLAGS)
-libprotocol_a_LIBADD =
-am_libprotocol_a_OBJECTS = libprotocol_a-guestfs_protocol.$(OBJEXT)
-libprotocol_a_OBJECTS = $(am_libprotocol_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(man8dir)"
 PROGRAMS = $(noinst_PROGRAMS) $(sbin_PROGRAMS)
 am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
@@ -379,8 +363,9 @@ am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
 	guestfsd-selinux.$(OBJEXT) guestfsd-selinux-relabel.$(OBJEXT) \
 	guestfsd-sfdisk.$(OBJEXT) guestfsd-sh.$(OBJEXT) \
 	guestfsd-sleep.$(OBJEXT) guestfsd-sleuthkit.$(OBJEXT) \
-	guestfsd-stat.$(OBJEXT) guestfsd-statvfs.$(OBJEXT) \
-	guestfsd-strings.$(OBJEXT) guestfsd-stubs-0.$(OBJEXT) \
+	guestfsd-squashfs.$(OBJEXT) guestfsd-stat.$(OBJEXT) \
+	guestfsd-statvfs.$(OBJEXT) guestfsd-strings.$(OBJEXT) \
+	guestfsd-structs-cleanups.$(OBJEXT) guestfsd-stubs-0.$(OBJEXT) \
 	guestfsd-stubs-1.$(OBJEXT) guestfsd-stubs-2.$(OBJEXT) \
 	guestfsd-stubs-3.$(OBJEXT) guestfsd-stubs-4.$(OBJEXT) \
 	guestfsd-stubs-5.$(OBJEXT) guestfsd-stubs-6.$(OBJEXT) \
@@ -394,11 +379,11 @@ am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
 	guestfsd-zero.$(OBJEXT) guestfsd-zerofree.$(OBJEXT)
 guestfsd_OBJECTS = $(am_guestfsd_OBJECTS)
 am__DEPENDENCIES_1 =
-guestfsd_DEPENDENCIES = liberrnostring.a libprotocol.a \
+guestfsd_DEPENDENCIES = ../common/errnostring/liberrnostring.la \
+	../common/protocol/libprotocol.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) \
 	$(top_builddir)/gnulib/lib/.libs/libgnu.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -446,10 +431,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(liberrnostring_a_SOURCES) $(libprotocol_a_SOURCES) \
-	$(guestfsd_SOURCES)
-DIST_SOURCES = $(liberrnostring_a_SOURCES) $(libprotocol_a_SOURCES) \
-	$(guestfsd_SOURCES)
+SOURCES = $(guestfsd_SOURCES)
+DIST_SOURCES = $(guestfsd_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1754,46 +1737,27 @@ generator_built = \
 	dispatch.c \
 	names.c \
 	lvm-tokenization.c \
+	structs-cleanups.c \
+	structs-cleanups.h \
 	stubs-0.c \
 	stubs-1.c \
 	stubs-2.c \
 	stubs-3.c \
 	stubs-4.c \
 	stubs-5.c \
-	stubs-6.c
-
-shared_with_library = \
-	guestfs_protocol.c \
-	guestfs_protocol.h \
-	errnostring-gperf.gperf \
-	errnostring.c \
-	errnostring.h
+	stubs-6.c \
+	stubs.h
 
 BUILT_SOURCES = \
-	$(generator_built) \
-	$(shared_with_library) \
-	errnostring-gperf.c
+	$(generator_built)
 
 EXTRA_DIST = \
 	$(BUILT_SOURCES) \
 	guestfsd.pod
 
-
-# Build the errnostring perfect hash code.  The generated code has lots
-# of warnings so we must compile it in a separate mini-library.
-noinst_LIBRARIES = libprotocol.a liberrnostring.a
-
-# This convenience library is solely to compile its generated sources with
-# custom flags.
-libprotocol_a_SOURCES = guestfs_protocol.c guestfs_protocol.h
-libprotocol_a_CFLAGS = -Wall -Wno-unused -fno-strict-aliasing
-liberrnostring_a_SOURCES = \
-	errnostring-gperf.c \
-	errnostring.h \
-	errnostring.c
-
-liberrnostring_a_CFLAGS = 
 guestfsd_SOURCES = \
+	../common/errnostring/errnostring.h \
+	../common/protocol/guestfs_protocol.h \
 	9p.c \
 	acl.c \
 	actions.h \
@@ -1886,9 +1850,12 @@ guestfsd_SOURCES = \
 	sh.c \
 	sleep.c \
 	sleuthkit.c \
+	squashfs.c \
 	stat.c \
 	statvfs.c \
 	strings.c \
+	structs-cleanups.c \
+	structs-cleanups.h \
 	stubs-0.c \
 	stubs-1.c \
 	stubs-2.c \
@@ -1897,6 +1864,7 @@ guestfsd_SOURCES = \
 	stubs-5.c \
 	stubs-6.c \
 	stubs.h \
+	stubs-macros.h \
 	swap.c \
 	sync.c \
 	syslinux.c \
@@ -1915,8 +1883,8 @@ guestfsd_SOURCES = \
 	zerofree.c
 
 guestfsd_LDADD = \
-	liberrnostring.a \
-	libprotocol.a \
+	../common/errnostring/liberrnostring.la \
+	../common/protocol/libprotocol.la \
 	$(ACL_LIBS) \
 	$(CAP_LIBS) \
 	$(YAJL_LIBS) \
@@ -1938,8 +1906,12 @@ guestfsd_LDADD = \
 guestfsd_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/gnulib/lib \
-	-I$(top_srcdir)/src \
-	-I$(top_builddir)/src
+	-I$(top_srcdir)/lib \
+	-I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/errnostring \
+	-I$(top_builddir)/common/errnostring \
+	-I$(top_srcdir)/common/protocol \
+	-I$(top_builddir)/common/protocol
 
 guestfsd_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
@@ -1992,19 +1964,6 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-
-liberrnostring.a: $(liberrnostring_a_OBJECTS) $(liberrnostring_a_DEPENDENCIES) $(EXTRA_liberrnostring_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f liberrnostring.a
-	$(AM_V_AR)$(liberrnostring_a_AR) liberrnostring.a $(liberrnostring_a_OBJECTS) $(liberrnostring_a_LIBADD)
-	$(AM_V_at)$(RANLIB) liberrnostring.a
-
-libprotocol.a: $(libprotocol_a_OBJECTS) $(libprotocol_a_DEPENDENCIES) $(EXTRA_libprotocol_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libprotocol.a
-	$(AM_V_AR)$(libprotocol_a_AR) libprotocol.a $(libprotocol_a_OBJECTS) $(libprotocol_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libprotocol.a
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
@@ -2161,9 +2120,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-sh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-sleep.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-sleuthkit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-squashfs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-statvfs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-strings.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-structs-cleanups.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-0.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-2.Po@am__quote@
@@ -2187,9 +2148,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-xfs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-zero.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-zerofree.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liberrnostring_a-errnostring-gperf.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liberrnostring_a-errnostring.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libprotocol_a-guestfs_protocol.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -2214,48 +2172,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
-
-liberrnostring_a-errnostring-gperf.o: errnostring-gperf.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -MT liberrnostring_a-errnostring-gperf.o -MD -MP -MF $(DEPDIR)/liberrnostring_a-errnostring-gperf.Tpo -c -o liberrnostring_a-errnostring-gperf.o `test -f 'errnostring-gperf.c' || echo '$(srcdir)/'`errnostring-gperf.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liberrnostring_a-errnostring-gperf.Tpo $(DEPDIR)/liberrnostring_a-errnostring-gperf.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errnostring-gperf.c' object='liberrnostring_a-errnostring-gperf.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -c -o liberrnostring_a-errnostring-gperf.o `test -f 'errnostring-gperf.c' || echo '$(srcdir)/'`errnostring-gperf.c
-
-liberrnostring_a-errnostring-gperf.obj: errnostring-gperf.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -MT liberrnostring_a-errnostring-gperf.obj -MD -MP -MF $(DEPDIR)/liberrnostring_a-errnostring-gperf.Tpo -c -o liberrnostring_a-errnostring-gperf.obj `if test -f 'errnostring-gperf.c'; then $(CYGPATH_W) 'errnostring-gperf.c'; else $(CYGPATH_W) '$(srcdir)/errnostring-gperf.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liberrnostring_a-errnostring-gperf.Tpo $(DEPDIR)/liberrnostring_a-errnostring-gperf.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errnostring-gperf.c' object='liberrnostring_a-errnostring-gperf.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -c -o liberrnostring_a-errnostring-gperf.obj `if test -f 'errnostring-gperf.c'; then $(CYGPATH_W) 'errnostring-gperf.c'; else $(CYGPATH_W) '$(srcdir)/errnostring-gperf.c'; fi`
-
-liberrnostring_a-errnostring.o: errnostring.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -MT liberrnostring_a-errnostring.o -MD -MP -MF $(DEPDIR)/liberrnostring_a-errnostring.Tpo -c -o liberrnostring_a-errnostring.o `test -f 'errnostring.c' || echo '$(srcdir)/'`errnostring.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liberrnostring_a-errnostring.Tpo $(DEPDIR)/liberrnostring_a-errnostring.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errnostring.c' object='liberrnostring_a-errnostring.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -c -o liberrnostring_a-errnostring.o `test -f 'errnostring.c' || echo '$(srcdir)/'`errnostring.c
-
-liberrnostring_a-errnostring.obj: errnostring.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -MT liberrnostring_a-errnostring.obj -MD -MP -MF $(DEPDIR)/liberrnostring_a-errnostring.Tpo -c -o liberrnostring_a-errnostring.obj `if test -f 'errnostring.c'; then $(CYGPATH_W) 'errnostring.c'; else $(CYGPATH_W) '$(srcdir)/errnostring.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liberrnostring_a-errnostring.Tpo $(DEPDIR)/liberrnostring_a-errnostring.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errnostring.c' object='liberrnostring_a-errnostring.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -c -o liberrnostring_a-errnostring.obj `if test -f 'errnostring.c'; then $(CYGPATH_W) 'errnostring.c'; else $(CYGPATH_W) '$(srcdir)/errnostring.c'; fi`
-
-libprotocol_a-guestfs_protocol.o: guestfs_protocol.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libprotocol_a_CFLAGS) $(CFLAGS) -MT libprotocol_a-guestfs_protocol.o -MD -MP -MF $(DEPDIR)/libprotocol_a-guestfs_protocol.Tpo -c -o libprotocol_a-guestfs_protocol.o `test -f 'guestfs_protocol.c' || echo '$(srcdir)/'`guestfs_protocol.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libprotocol_a-guestfs_protocol.Tpo $(DEPDIR)/libprotocol_a-guestfs_protocol.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='guestfs_protocol.c' object='libprotocol_a-guestfs_protocol.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libprotocol_a_CFLAGS) $(CFLAGS) -c -o libprotocol_a-guestfs_protocol.o `test -f 'guestfs_protocol.c' || echo '$(srcdir)/'`guestfs_protocol.c
-
-libprotocol_a-guestfs_protocol.obj: guestfs_protocol.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libprotocol_a_CFLAGS) $(CFLAGS) -MT libprotocol_a-guestfs_protocol.obj -MD -MP -MF $(DEPDIR)/libprotocol_a-guestfs_protocol.Tpo -c -o libprotocol_a-guestfs_protocol.obj `if test -f 'guestfs_protocol.c'; then $(CYGPATH_W) 'guestfs_protocol.c'; else $(CYGPATH_W) '$(srcdir)/guestfs_protocol.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libprotocol_a-guestfs_protocol.Tpo $(DEPDIR)/libprotocol_a-guestfs_protocol.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='guestfs_protocol.c' object='libprotocol_a-guestfs_protocol.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libprotocol_a_CFLAGS) $(CFLAGS) -c -o libprotocol_a-guestfs_protocol.obj `if test -f 'guestfs_protocol.c'; then $(CYGPATH_W) 'guestfs_protocol.c'; else $(CYGPATH_W) '$(srcdir)/guestfs_protocol.c'; fi`
 
 guestfsd-9p.o: 9p.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-9p.o -MD -MP -MF $(DEPDIR)/guestfsd-9p.Tpo -c -o guestfsd-9p.o `test -f '9p.c' || echo '$(srcdir)/'`9p.c
@@ -3475,6 +3391,20 @@ guestfsd-sleuthkit.obj: sleuthkit.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-sleuthkit.obj `if test -f 'sleuthkit.c'; then $(CYGPATH_W) 'sleuthkit.c'; else $(CYGPATH_W) '$(srcdir)/sleuthkit.c'; fi`
 
+guestfsd-squashfs.o: squashfs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-squashfs.o -MD -MP -MF $(DEPDIR)/guestfsd-squashfs.Tpo -c -o guestfsd-squashfs.o `test -f 'squashfs.c' || echo '$(srcdir)/'`squashfs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-squashfs.Tpo $(DEPDIR)/guestfsd-squashfs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='squashfs.c' object='guestfsd-squashfs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-squashfs.o `test -f 'squashfs.c' || echo '$(srcdir)/'`squashfs.c
+
+guestfsd-squashfs.obj: squashfs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-squashfs.obj -MD -MP -MF $(DEPDIR)/guestfsd-squashfs.Tpo -c -o guestfsd-squashfs.obj `if test -f 'squashfs.c'; then $(CYGPATH_W) 'squashfs.c'; else $(CYGPATH_W) '$(srcdir)/squashfs.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-squashfs.Tpo $(DEPDIR)/guestfsd-squashfs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='squashfs.c' object='guestfsd-squashfs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-squashfs.obj `if test -f 'squashfs.c'; then $(CYGPATH_W) 'squashfs.c'; else $(CYGPATH_W) '$(srcdir)/squashfs.c'; fi`
+
 guestfsd-stat.o: stat.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stat.o -MD -MP -MF $(DEPDIR)/guestfsd-stat.Tpo -c -o guestfsd-stat.o `test -f 'stat.c' || echo '$(srcdir)/'`stat.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-stat.Tpo $(DEPDIR)/guestfsd-stat.Po
@@ -3516,6 +3446,20 @@ guestfsd-strings.obj: strings.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='strings.c' object='guestfsd-strings.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-strings.obj `if test -f 'strings.c'; then $(CYGPATH_W) 'strings.c'; else $(CYGPATH_W) '$(srcdir)/strings.c'; fi`
+
+guestfsd-structs-cleanups.o: structs-cleanups.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-structs-cleanups.o -MD -MP -MF $(DEPDIR)/guestfsd-structs-cleanups.Tpo -c -o guestfsd-structs-cleanups.o `test -f 'structs-cleanups.c' || echo '$(srcdir)/'`structs-cleanups.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-structs-cleanups.Tpo $(DEPDIR)/guestfsd-structs-cleanups.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs-cleanups.c' object='guestfsd-structs-cleanups.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-structs-cleanups.o `test -f 'structs-cleanups.c' || echo '$(srcdir)/'`structs-cleanups.c
+
+guestfsd-structs-cleanups.obj: structs-cleanups.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-structs-cleanups.obj -MD -MP -MF $(DEPDIR)/guestfsd-structs-cleanups.Tpo -c -o guestfsd-structs-cleanups.obj `if test -f 'structs-cleanups.c'; then $(CYGPATH_W) 'structs-cleanups.c'; else $(CYGPATH_W) '$(srcdir)/structs-cleanups.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-structs-cleanups.Tpo $(DEPDIR)/guestfsd-structs-cleanups.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='structs-cleanups.c' object='guestfsd-structs-cleanups.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-structs-cleanups.obj `if test -f 'structs-cleanups.c'; then $(CYGPATH_W) 'structs-cleanups.c'; else $(CYGPATH_W) '$(srcdir)/structs-cleanups.c'; fi`
 
 guestfsd-stubs-0.o: stubs-0.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-stubs-0.o -MD -MP -MF $(DEPDIR)/guestfsd-stubs-0.Tpo -c -o guestfsd-stubs-0.o `test -f 'stubs-0.c' || echo '$(srcdir)/'`stubs-0.c
@@ -3973,7 +3917,7 @@ distdir: $(DISTFILES)
 check-am: all-am
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(MANS) $(DATA)
+all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
 installdirs:
 	for dir in "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(man8dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -4014,8 +3958,8 @@ maintainer-clean-generic:
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
-	clean-noinstPROGRAMS clean-sbinPROGRAMS mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
+	clean-sbinPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -4088,15 +4032,15 @@ uninstall-man: uninstall-man8
 .MAKE: all check install install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLIBRARIES clean-noinstPROGRAMS \
-	clean-sbinPROGRAMS cscopelist-am ctags ctags-am distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-man8 install-pdf install-pdf-am install-ps \
-	install-ps-am install-sbinPROGRAMS install-strip installcheck \
+	clean-libtool clean-noinstPROGRAMS clean-sbinPROGRAMS \
+	cscopelist-am ctags ctags-am distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-man8 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-sbinPROGRAMS install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
@@ -4137,19 +4081,26 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
-$(shared_with_library): %: $(top_srcdir)/src/%
-	rm -f $@
-	ln $< $@
-
-$(top_builddir)/src/guestfs_protocol.c: force
-	$(MAKE) -C $(top_builddir)/src guestfs_protocol.c
-$(top_builddir)/src/guestfs_protocol.h: force
-	$(MAKE) -C $(top_builddir)/src guestfs_protocol.h
-
-errnostring-gperf.c: errnostring-gperf.gperf
-	rm -f $@
-	$(GPERF) -t $< > $@-t
-	mv $@-t $@
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 guestfsd.8 $(top_builddir)/website/guestfsd.8.html: stamp-guestfsd.pod
 

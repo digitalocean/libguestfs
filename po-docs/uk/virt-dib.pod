@@ -21,29 +21,30 @@ L<https://wiki.openstack.org/wiki/TripleO>.
 
 =head1 ПРИКЛАДИ
 
-=head2 Build simple images of distributions
+=head2 Збирання простих образів дистрибутивів
 
  virt-dib \
-   -B /path/to/diskimage-builder/lib \
-   -p /path/to/diskimage-builder/elements \
+   -B /шлях/до/diskimage-builder/lib \
+   -p /шлях/до/diskimage-builder/elements \
    --envvar DIB_RELEASE=jessie \
    --name debian-jessie \
    debian vm
 
-This builds a Debian Jessie (8.x) disk image, suitable for running as
-virtual machine, saved as F<debian-jessie.qcow2>.
+Ця команда збирає образ диска Debian Jessie (8.x), який є придатним для
+запуску у форматі віртуальної машини, який буде збережено як
+F<debian-jessie.qcow2>.
 
-=head2 Build ramdisks
+=head2 Збирання дисків у пам’яті
 
  virt-dib \
-   -B /path/to/diskimage-builder/lib \
-   -p /path/to/diskimage-builder/elements \
+   -B /шлях/до/diskimage-builder/lib \
+   -p /шлях/до/diskimage-builder/elements \
    --ramdisk \
    --name ramdisk \
    ubuntu deploy-ironic
 
-This builds a ramdisk for the Ironic OpenStack component based on the Ubuntu
-distribution.
+Ця команда збирає диск у пам’яті для компонента Ironic OpenStack на основі
+дистрибутива Ubuntu.
 
 =head1 ПАРАМЕТРИ
 
@@ -65,12 +66,18 @@ not make use of the library directory.
 
 =item B<--arch> АРХІТЕКТУРА
 
-Use the specified architecture for the output image.  The default value is
-the same as the host running virt-dib.
+Використовувати для образу-результату вказану архітектуру. Типовим є
+значення, яке збігається зі значенням архітектури для основної системи, на
+якій запущено virt-dib.
 
-Right now this option does nothing more than setting the C<ARCH> environment
-variable for the elements, and it's up to them to produce an image for the
-requested architecture.
+У поточній версії цей параметр виконує лише встановлення змінної середовища
+C<ARCH> для елементів, а елементи вже створюють образ для потрібної
+користувачу архітектури.
+
+=item B<--checksum>
+
+Generate checksum files for the generated image.  The supported checksums
+are MD5, and SHA256.
 
 =item B<--colors>
 
@@ -99,8 +106,8 @@ that case.
 
 =item B<--drive> ДИСК
 
-Add the specified disk to be used as helper drive where to cache files of
-the elements, like disk images, distribution packages, etc.
+Додати вказаний диск як допоміжний, такий, де зберігатимуться файли кешу
+елементів, зокрема образи дисків, пакунки дистрибутива тощо.
 
 Див. L</ДОПОМІЖНИЙ ДИСК>.
 
@@ -122,27 +129,28 @@ This option is used only if I<--drive> is specified.
 
 =item B<--element-path> ШЛЯХ
 
-Add a new path with elements.  Paths are used in the same order as the I<-p>
-parameters appear, so a path specified first is looked first, and so on.
+Додати новий шлях з елементами. Шляхи використовуватимуться у тому самому
+порядку, у якому з’являються параметри I<-p>, отже, пошук за шляхом,
+вказаним першим, відбуватиметься спочатку.
 
 Obviously, it is recommended to add the path to the own elements of
 C<diskimage-builder>, as most of the other elements will rely on them.
 
 =item B<--extra-packages> ПАКУНОК,...
 
-Install additional packages in the image being built.
+Встановити додаткові пакунки у образ, який збиратиметься.
 
 This relies on the C<install-packages> binary provided by the package
 management elements.
 
-This option can be specified multiple times, each time with multiple
-packages separated by comma.
+Цей параметр може бути використано декілька разів, декілька пакунків у
+аргументах слід відокремлювати комами.
 
 =item B<--envvar> ЗМІННА
 
 =item B<--envvar> ЗМІННА=ЗНАЧЕННЯ
 
-Carry or set an environment variable for the elements.
+Передати або встановити змінну середовища для елементів.
 
 See L</ENVIRONMENT VARIABLES> below for more information on the interaction
 and usage of environment variables.
@@ -153,8 +161,8 @@ and usage of environment variables.
 
 =item B<--envvar> ЗМІННА
 
-Carry the environment variable C<VARIABLE>. If it is not set, nothing is
-exported to the elements.
+Передати змінну середовища C<ЗМІННА>. Якщо змінну не встановлено, до
+елементів нічого не експортуватиметься.
 
 =item B<--envvar> ЗМІННА=ЗНАЧЕННЯ
 
@@ -173,7 +181,8 @@ the environment where virt-dib runs.
 
 =item B<--exclude-script> СКРИПТ
 
-Ignore any element script named C<SCRIPT>, whichever element it is in.
+Ігнорувати будь-який скрипт елемента із назвою C<СКРИПТ>, байдуже, до якого
+елемента він належатиме.
 
 This can be useful in case some script does not run well with virt-dib, for
 example when they really need C<diskimage-builder>'s environment.
@@ -198,15 +207,24 @@ B<docker>.
 
 =item C<qcow2> (типово увімкнено)
 
-qcow2 QEMU.
+QEMU's qcow2.  This output format requires the C<qemu-img> tool.
 
 =item C<raw>
 
 Формат даних диска без обробки.
 
+=item C<squashfs>
+
+An squashfs filesystem, compressed with XZ.  This output format requires the
+C<squashfs> feature; see also L<guestfs(3)/AVAILABILITY>.
+
 =item C<tar>
 
 Архів без стискання.
+
+=item C<tgz>
+
+A tarball compressed with gzip.
 
 =item C<vhd>
 
@@ -232,9 +250,9 @@ C<ext4>.
 Set the path in the host where cache the resources used by the elements of
 the C<extra-data.d> phase.  The default is F<~/.cache/image-create>.
 
-Please note that most of the resources fetched after C<extra-data> will be
-cached in the helper drive specified with I<--drive>; see also L</HELPER
-DRIVE>.
+Please note that most of the resources fetched in phases other than
+C<extra-data.d> will be cached in the helper drive specified with
+I<--drive>; see also L</HELPER DRIVE>.
 
 =item B<--install-type> ТИП
 
@@ -261,7 +279,8 @@ find that the virt-dib execution runs out of memory.
 =item B<--mkfs-options> C<РЯДОК ПАРАМЕТРІВ>
 
 Add the specified options to L<mkfs(1)>, to be able to fine-tune the root
-filesystem creation.  Note that this is not possible to override the
+filesystem creation; the options are passed to the driver of L<mfks(1)>, and
+not to L<mfks(1)> itself.  Note that I<--fs-type> is used to to change the
 filesystem type.
 
 You should use I<--mkfs-options> at most once.  To pass multiple options,
@@ -290,7 +309,7 @@ If you use I<--no-network>, then the environment variable C<DIB_OFFLINE> is
 set to C<1>, signaling the elements that they should use only cached
 resources when available.  Note also that, unlike with C<diskimage-builder>
 where elements may still be able to access to the network even with
-C<DIB_OFFLINE=>, under virt-dib network will be fully unaccessible.
+C<DIB_OFFLINE=>, under virt-dib network will not be accessible at all.
 
 =item B<--name> НАЗВА
 
@@ -303,7 +322,7 @@ directory:
 
 =item F<$NAME.ext>
 
-For each output format, a disk image named after the outout image with the
+For each output format, a file named after the output image with the
 extension depending on the format; for example: F<$NAME.qcow2>,
 F<$NAME.raw>, etc.
 
@@ -315,6 +334,13 @@ A directory containing any files created by the elements, for example
 F<dib-manifests> directory (created by the C<manifests> element), ramdisks
 and kernels in ramdisk mode, and so on.
 
+=item F<$NAME.ext.checksum>
+
+When I<--checksum> is specified, there will be files for each supported
+checksum type; for example: F<$NAME.ext.md5>, F<$NAME.ext.sha256>, etc.
+
+Not applicable in ramdisk mode, see L</RAMDISK BUILDING>.
+
 =back
 
 =item B<--no-delete-on-failure>
@@ -322,8 +348,8 @@ and kernels in ramdisk mode, and so on.
 Don't delete the output files on failure to build.  You can use this to
 debug failures to run scripts.
 
-The default is to delete the output file if virt-dib fails (or, for example,
-some script that it runs fails).
+The default is to delete the output files if virt-dib fails (or, for
+example, some script that it runs fails).
 
 =item B<-q>
 
@@ -344,7 +370,7 @@ options, separate them with commas, eg:
 
 =item B<--ramdisk>
 
-Set the ramdisk building mode.
+Встановити режим збирання диска у пам’яті.
 
 Див. L</ЗБИРАННЯ ДИСКА У ПАМ'ЯТІ>.
 
@@ -357,7 +383,7 @@ default is C<ramdisk>.
 
 =item B<--root-label> МІТКА
 
-Set the label for the root filesystem in the created image.
+Встановити мітку для кореневої файлової системи у створеному образі.
 
 Please note that some filesystems have different restrictions on the length
 of their labels; for example, on C<ext2/3/4> filesystems labels cannot be
@@ -375,12 +401,12 @@ common names such as C<32G> (32 gigabytes) etc.  The default size is C<5G>.
 To specify size in bytes, the number must be followed by the lowercase
 letter I<b>, eg: S<C<--size 10737418240b>>.
 
-See also L<virt-resize(1)> for resizing partitions of an existing disk
-image.
+Див. також L<virt-resize(1)> щодо зміни розмірів розділів на наявному образі
+диска.
 
 =item B<--skip-base>
 
-Skip the inclusion of the C<base> element.
+Пропустити включення елемента C<base>.
 
 =item B<--smp> N
 
@@ -411,8 +437,8 @@ Do not compress resulting qcow2 images.  The default is to compress them.
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
 Unlike with C<diskimage-builder>, the environment of the host is B<not>
-inherited in the appliance when running most of the elements (i.e. all the
-ones different than C<extra-data.d>).
+inherited in the appliance when running most of the elements (i.e. all
+except the ones in the C<extra-data.d> phase).
 
 To set environment for the elements being run, it is necessary to tell
 virt-dib to use them, with the option I<--envvar>.  Such option allows to
@@ -422,12 +448,12 @@ is the preferred way to pass environment variables to the elements.
 To recap: if you want the environment variable C<MYVAR> (and its content) to
 be available to the elements, you can do either
 
- export MYVAR   # whichever is its value
+ export MYVAR   # яким би не було її значення
  virt-dib ... --envvar MYVAR ...
 
 або
 
- virt-dib ... --envvar MYVAR=value_of_it ...
+ virt-dib ... --envvar MYVAR=її_значення ...
 
 =head1 ДОПОМІЖНИЙ ДИСК
 
@@ -445,7 +471,7 @@ Currently this disk is either required to have a single partition on it, or
 the first partition on it will be used.  A disk with the latter
 configuration can be easily created with L<guestfish(1)> like the following:
 
- guestfish -N filename.img=fs:ext4:10G
+ guestfish -N filename.img=fs:ext4:10G exit
 
 The above will create a disk image called F<filename.img>, 10G big, with a
 single partition of type ext4; see L<guestfish(1)/PREPARED DISK IMAGES>.
@@ -479,7 +505,7 @@ the various tools.
 =item F</virt-dib-*.log>
 
 These are the logs of the elements being run within the libguestfs
-appliance, which means all the hooks except C<extra-data.d>.
+appliance, which means all the phases except C<extra-data.d>.
 
 =back
 
@@ -528,7 +554,7 @@ location used as temporary location, for example:
 Because of virt-dib runs most of the elements in its own appliance, all the
 tools and libraries used by elements running outside the guest (typically
 C<root.d>, C<block-device.d>, and C<cleanup.d>)  need to be present in the
-appliance as well.  In case they are not, scripts will fail mostly with a
+appliance as well.  In case they are not, scripts will fail typically with a
 C<command not found> error.
 
 For tools and libraries packaged by the distribution, the easy solution is
@@ -538,7 +564,8 @@ doable by e.g. creating a new file with the additional packages:
  # echo wget > /usr/lib64/guestfs/supermin.d/dib-my-extra
 
 The actual path to the F<supermin.d> directory depends on the distribution;
-additional files can list more packages, each in its own line.
+additional files can list more packages, each in its own line.  For more
+details, see L<supermin(1)>.
 
 =head1 COMPARISON WITH DISKIMAGE-BUILDER
 
@@ -561,7 +588,9 @@ in C<diskimage-builder>, while some have different names:
  -o IMAGENAME                  --name IMAGENAME
  -p PACKAGE(S)                 --extra-packages PACKAGE(S)
  -t FORMAT(S)                  --formats FORMAT(S)
- -x                            --debug N
+ -x                            --debug 1
+ -x -x                         --debug 2
+ -x -x [-x ...]                --debug 3/4/etc
 
 =item 
 
@@ -623,8 +652,11 @@ Typical output looks like this:
  output:raw
  output:vhd
 
-A list of features is printed, one per line, and the program exits with
-status 0.
+Виводиться список можливостей, по одній на рядок, і програма завершує роботу
+зі станом 0.
+
+The C<output:> features refer to the output formats (I<--formats> command
+line option) supported by this binary.
 
 =head1 ТЕСТУВАННЯ
 

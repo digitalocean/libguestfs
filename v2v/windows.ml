@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,33 +46,3 @@ and check_app { Guestfs.app2_name = name;
 
 and (=~) str rex =
   try ignore (Str.search_forward rex str 0); true with Not_found -> false
-
-let with_hive_readonly (g : Guestfs.guestfs) hive_filename f =
-  let verbose = verbose () in
-  g#hivex_open ~write:false ~verbose (* ~debug:verbose *) hive_filename;
-  protect ~f:(
-    fun () ->
-      let root = g#hivex_root () in
-      f root
-  ) ~finally:g#hivex_close
-
-let with_hive_write (g : Guestfs.guestfs) hive_filename f =
-  let verbose = verbose () in
-  g#hivex_open ~write:true ~verbose (* ~debug:verbose *) hive_filename;
-  protect ~f:(
-    fun () ->
-      let root = g#hivex_root () in
-      let ret = f root in
-      g#hivex_commit None;
-      ret
-  ) ~finally:g#hivex_close
-
-(* Find the given node in the current hive, relative to the starting
- * point.  Returns [None] if the node is not found.
- *)
-let rec get_node (g : Guestfs.guestfs) node = function
-  | [] -> Some node
-  | x :: xs ->
-     let node = g#hivex_node_get_child node x in
-     if node = 0L then None
-     else get_node g node xs

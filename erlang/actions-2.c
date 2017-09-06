@@ -912,6 +912,47 @@ run_mkfifo (ETERM *args_tuple)
 }
 
 ETERM *
+run_mksquashfs (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_mksquashfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mksquashfs_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "compress")) {
+      optargs_s.bitmask |= GUESTFS_MKSQUASHFS_COMPRESS_BITMASK;
+      optargs_s.compress = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "excludes")) {
+      optargs_s.bitmask |= GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK;
+      optargs_s.excludes = get_string_list (hd_value);
+    }
+    else
+      return unknown_optarg ("mksquashfs", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_mksquashfs_argv (g, path, filename, optargs);
+  if ((optargs_s.bitmask & GUESTFS_MKSQUASHFS_COMPRESS_BITMASK))
+    free ((char *) optargs_s.compress);
+  if ((optargs_s.bitmask & GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK))
+    guestfs_int_free_string_list ((char **) optargs_s.excludes);
+  if (r == -1)
+    return make_error ("mksquashfs");
+
+  return erl_mk_atom ("ok");
+}
+
+ETERM *
 run_modprobe (ETERM *args_tuple)
 {
   CLEANUP_FREE char *modulename = erl_iolist_to_string (ARG (0));

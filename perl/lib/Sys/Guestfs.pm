@@ -20,6 +20,8 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+=encoding utf8
+
 =pod
 
 =head1 NAME
@@ -978,6 +980,14 @@ in which case the C<base> nodes are modified.
 
 This returns the number of nodes modified.
 
+=item $g->aug_transform ($lens, $file [, remove => $remove]);
+
+Add an Augeas transformation for the specified C<lens> so it can
+handle C<file>.
+
+If C<remove> is true (C<false> by default), then the transformation
+is removed.
+
 =item $g->available (\@groups);
 
 This command is used to check the availability of some
@@ -1191,7 +1201,8 @@ If you need to set the filesystem block size, use the
 C<blocksize> option of C<$g-E<gt>mkfs>.
 
 I<This function is deprecated.>
-In new code, use the L</mkfs> call instead.
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -1355,8 +1366,7 @@ C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_qgroup_limit ($subvolume, $size);
 
-Limit the size of a subvolume which's path is C<subvolume>. C<size>
-can have suffix of G, M, or K. 
+Limit the size of the subvolume with path C<subvolume>.
 
 This function depends on the feature C<btrfs>.  See also
 C<$g-E<gt>feature-available>.
@@ -2474,6 +2484,22 @@ Intel Itanium.
 
 64 bit Power PC (little endian).
 
+=item "riscv32"
+
+=item "riscv64"
+
+=item "riscv128"
+
+RISC-V 32-, 64- or 128-bit variants.
+
+=item "s390"
+
+31 bit IBM S/390.
+
+=item "s390x"
+
+64 bit IBM S/390.
+
 =item "sparc"
 
 32 bit SPARC.
@@ -2800,6 +2826,16 @@ by C<\0> characters.  See L<find(1)> option I<-print0>.
 The result list is not sorted.
 
 =back
+
+=item @dirents = $g->find_inode ($device, $inode);
+
+Searches all the entries associated with the given inode.
+
+For each entry, a C<tsk_dirent> structure is returned.
+See C<filesystem_walk> for more information about C<tsk_dirent> structures.
+
+This function depends on the feature C<libtsk>.  See also
+C<$g-E<gt>feature-available>.
 
 =item $device = $g->findfs_label ($label);
 
@@ -3561,7 +3597,7 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 This function depends on the feature C<hivex>.  See also
 C<$g-E<gt>feature-available>.
 
-=item $g->hivex_open ($filename [, verbose => $verbose] [, debug => $debug] [, write => $write]);
+=item $g->hivex_open ($filename [, verbose => $verbose] [, debug => $debug] [, write => $write] [, unsafe => $unsafe]);
 
 Open the Windows Registry hive file named F<filename>.
 If there was any previous hivex handle associated with this
@@ -4257,6 +4293,34 @@ The CurrentControlSet is a registry key name such as C<ControlSet001>.
 This call assumes that the guest is Windows and that the
 Registry could be examined by inspection.  If this is not
 the case then an error is returned.
+
+Please read L<guestfs(3)/INSPECTION> for more details.
+
+=item $path = $g->inspect_get_windows_software_hive ($root);
+
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SOFTWARE.
+
+This call assumes that the guest is Windows and that the guest
+has a software hive file with the right name.  If this is not the
+case then an error is returned.  This call does not check that the
+hive is a valid Windows Registry hive.
+
+You can use C<$g-E<gt>hivex_open> to read or write to the hive.
+
+Please read L<guestfs(3)/INSPECTION> for more details.
+
+=item $path = $g->inspect_get_windows_system_hive ($root);
+
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SYSTEM.
+
+This call assumes that the guest is Windows and that the guest
+has a system hive file with the right name.  If this is not the
+case then an error is returned.  This call does not check that the
+hive is a valid Windows Registry hive.
+
+You can use C<$g-E<gt>hivex_open> to read or write to the hive.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 
@@ -6003,6 +6067,32 @@ The mode actually set is affected by the umask.
 This function depends on the feature C<mknod>.  See also
 C<$g-E<gt>feature-available>.
 
+=item $g->mksquashfs ($path, $filename [, compress => $compress] [, excludes => $excludes]);
+
+Create a squashfs filesystem for the specified C<path>.
+
+The optional C<compress> flag controls compression.  If not given,
+then the output compressed using C<gzip>.  Otherwise one
+of the following strings may be given to select the compression
+type of the squashfs: C<gzip>, C<lzma>, C<lzo>, C<lz4>, C<xz>.
+
+The other optional arguments are:
+
+=over 4
+
+=item C<excludes>
+
+A list of wildcards.  Files are excluded if they match any of the
+wildcards.
+
+=back
+
+Please note that this API may fail when used to compress directories
+with large files, such as the resulting squashfs will be over 3GB big.
+
+This function depends on the feature C<squashfs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->mkswap ($device [, label => $label] [, uuid => $uuid]);
 
 Create a Linux swap partition on C<device>.
@@ -7429,6 +7519,10 @@ when trying to set the label.
 
 The label is limited to 11 bytes.
 
+=item swap
+
+The label is limited to 16 bytes.
+
 =back
 
 If there is no support for changing the label
@@ -8630,7 +8724,8 @@ remove them, unless you want to retain compatibility with older
 versions of the API.
 
 I<This function is deprecated.>
-In new code, use the L</launch> call instead.
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -9188,6 +9283,18 @@ use vars qw(%guestfs_introspection);
     ],
     name => "aug_setm",
     description => "set multiple Augeas nodes",
+  },
+  "aug_transform" => {
+    ret => 'void',
+    args => [
+      [ 'lens', 'string', 0 ],
+      [ 'file', 'string', 1 ],
+    ],
+    optargs => {
+      remove => [ 'remove', 'bool', 0 ],
+    },
+    name => "aug_transform",
+    description => "add/remove an Augeas lens transformation",
   },
   "available" => {
     ret => 'void',
@@ -10352,6 +10459,15 @@ use vars qw(%guestfs_introspection);
     name => "find0",
     description => "find all files and directories, returning NUL-separated list",
   },
+  "find_inode" => {
+    ret => 'struct tsk_dirent list',
+    args => [
+      [ 'device', 'string(mountable)', 0 ],
+      [ 'inode', 'int64', 1 ],
+    ],
+    name => "find_inode",
+    description => "search the entries associated to the given inode",
+  },
   "findfs_label" => {
     ret => 'string',
     args => [
@@ -10831,6 +10947,7 @@ use vars qw(%guestfs_introspection);
       verbose => [ 'verbose', 'bool', 0 ],
       debug => [ 'debug', 'bool', 1 ],
       write => [ 'write', 'bool', 2 ],
+      unsafe => [ 'unsafe', 'bool', 3 ],
     },
     name => "hivex_open",
     description => "open a Windows Registry hive file",
@@ -11075,6 +11192,22 @@ use vars qw(%guestfs_introspection);
     ],
     name => "inspect_get_windows_current_control_set",
     description => "get Windows CurrentControlSet of inspected operating system",
+  },
+  "inspect_get_windows_software_hive" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(mountable)', 0 ],
+    ],
+    name => "inspect_get_windows_software_hive",
+    description => "get the path of the Windows software hive",
+  },
+  "inspect_get_windows_system_hive" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(mountable)', 0 ],
+    ],
+    name => "inspect_get_windows_system_hive",
+    description => "get the path of the Windows system hive",
   },
   "inspect_get_windows_systemroot" => {
     ret => 'string',
@@ -12416,6 +12549,19 @@ use vars qw(%guestfs_introspection);
     ],
     name => "mknod_c",
     description => "make char device node",
+  },
+  "mksquashfs" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'filename', 'string(filename)', 1 ],
+    ],
+    optargs => {
+      compress => [ 'compress', 'string', 0 ],
+      excludes => [ 'excludes', 'string list', 1 ],
+    },
+    name => "mksquashfs",
+    description => "create a squashfs filesystem",
   },
   "mkswap" => {
     ret => 'void',

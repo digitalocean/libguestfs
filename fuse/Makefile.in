@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -330,20 +330,18 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__guestmount_SOURCES_DIST = ../fish/config.c guestmount.c
-am__dirstamp = $(am__leading_dot)dirstamp
-@HAVE_FUSE_TRUE@am__objects_1 = ../fish/guestmount-config.$(OBJEXT)
-@HAVE_FUSE_TRUE@am_guestmount_OBJECTS = $(am__objects_1) \
+am__guestmount_SOURCES_DIST = guestmount.c
+@HAVE_FUSE_TRUE@am_guestmount_OBJECTS =  \
 @HAVE_FUSE_TRUE@	guestmount-guestmount.$(OBJEXT)
 guestmount_OBJECTS = $(am_guestmount_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_FUSE_TRUE@guestmount_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-@HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/fish/libfishcommon.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/options/liboptions.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-@HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
+@HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+@HAVE_FUSE_TRUE@	../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -351,14 +349,14 @@ am__v_lt_1 =
 guestmount_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(guestmount_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am__guestunmount_SOURCES_DIST = ../fish/display-options.c \
-	../fish/display-options.h guestunmount.c
-@HAVE_FUSE_TRUE@am_guestunmount_OBJECTS = ../fish/guestunmount-display-options.$(OBJEXT) \
+am__guestunmount_SOURCES_DIST = guestunmount.c
+@HAVE_FUSE_TRUE@am_guestunmount_OBJECTS =  \
 @HAVE_FUSE_TRUE@	guestunmount-guestunmount.$(OBJEXT)
 guestunmount_OBJECTS = $(am_guestunmount_OBJECTS)
 @HAVE_FUSE_TRUE@guestunmount_DEPENDENCIES =  \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/options/liboptions.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 guestunmount_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -368,8 +366,8 @@ am__test_fuse_SOURCES_DIST = test-fuse.c
 @HAVE_FUSE_TRUE@am_test_fuse_OBJECTS = test_fuse-test-fuse.$(OBJEXT)
 test_fuse_OBJECTS = $(am_test_fuse_OBJECTS)
 @HAVE_FUSE_TRUE@test_fuse_DEPENDENCIES =  \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 test_fuse_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -379,8 +377,8 @@ am__test_guestmount_fd_SOURCES_DIST = test-guestmount-fd.c
 @HAVE_FUSE_TRUE@am_test_guestmount_fd_OBJECTS = test_guestmount_fd-test-guestmount-fd.$(OBJEXT)
 test_guestmount_fd_OBJECTS = $(am_test_guestmount_fd_OBJECTS)
 @HAVE_FUSE_TRUE@test_guestmount_fd_DEPENDENCIES =  \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 test_guestmount_fd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
@@ -391,8 +389,8 @@ am__test_guestunmount_fd_SOURCES_DIST = test-guestunmount-fd.c
 @HAVE_FUSE_TRUE@am_test_guestunmount_fd_OBJECTS = test_guestunmount_fd-test-guestunmount-fd.$(OBJEXT)
 test_guestunmount_fd_OBJECTS = $(am_test_guestunmount_fd_OBJECTS)
 @HAVE_FUSE_TRUE@test_guestunmount_fd_DEPENDENCIES =  \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 test_guestunmount_fd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
@@ -1928,36 +1926,30 @@ EXTRA_DIST = \
 	test-guestunmount-not-mounted.sh
 
 
-# These source files (all related to option parsing) are shared
-# between guestfish and guestmount.
-@HAVE_FUSE_TRUE@SHARED_SOURCE_FILES = \
-@HAVE_FUSE_TRUE@	../fish/config.c
-
-
 # guestmount
 @HAVE_FUSE_TRUE@guestmount_SOURCES = \
-@HAVE_FUSE_TRUE@	$(SHARED_SOURCE_FILES) \
 @HAVE_FUSE_TRUE@	guestmount.c
 
 @HAVE_FUSE_TRUE@guestmount_CPPFLAGS = \
 @HAVE_FUSE_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
 @HAVE_FUSE_TRUE@	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
 @HAVE_FUSE_TRUE@	-I$(top_srcdir)/fish \
 @HAVE_FUSE_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 @HAVE_FUSE_TRUE@guestmount_CFLAGS = \
 @HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_FUSE_TRUE@	$(LIBCONFIG_CFLAGS) \
 @HAVE_FUSE_TRUE@	$(LIBXML2_CFLAGS) \
 @HAVE_FUSE_TRUE@	$(FUSE_CFLAGS)
 
 @HAVE_FUSE_TRUE@guestmount_LDADD = \
 @HAVE_FUSE_TRUE@	$(FUSE_LIBS) \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/options/liboptions.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(LIBCONFIG_LIBS) \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/fish/libfishcommon.la \
 @HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
 @HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_FUSE_TRUE@	$(LTLIBINTL) \
@@ -1966,13 +1958,13 @@ EXTRA_DIST = \
 
 # guestunmount
 @HAVE_FUSE_TRUE@guestunmount_SOURCES = \
-@HAVE_FUSE_TRUE@	../fish/display-options.c \
-@HAVE_FUSE_TRUE@	../fish/display-options.h \
 @HAVE_FUSE_TRUE@	guestunmount.c
 
 @HAVE_FUSE_TRUE@guestunmount_CPPFLAGS = \
 @HAVE_FUSE_TRUE@	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
 @HAVE_FUSE_TRUE@	-I$(top_srcdir)/fish \
 @HAVE_FUSE_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
@@ -1980,8 +1972,9 @@ EXTRA_DIST = \
 @HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 @HAVE_FUSE_TRUE@guestunmount_LDADD = \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/options/liboptions.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
 @HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_FUSE_TRUE@	$(LTLIBINTL) \
@@ -2005,15 +1998,16 @@ EXTRA_DIST = \
 @HAVE_FUSE_TRUE@	test-fuse.c
 
 @HAVE_FUSE_TRUE@test_fuse_CPPFLAGS = \
-@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 @HAVE_FUSE_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 @HAVE_FUSE_TRUE@test_fuse_CFLAGS = \
 @HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 @HAVE_FUSE_TRUE@test_fuse_LDADD = \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
 @HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_FUSE_TRUE@	$(ACL_LIBS) \
@@ -2023,15 +2017,16 @@ EXTRA_DIST = \
 @HAVE_FUSE_TRUE@	test-guestmount-fd.c
 
 @HAVE_FUSE_TRUE@test_guestmount_fd_CPPFLAGS = \
-@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 @HAVE_FUSE_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 @HAVE_FUSE_TRUE@test_guestmount_fd_CFLAGS = \
 @HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 @HAVE_FUSE_TRUE@test_guestmount_fd_LDADD = \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
 @HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_FUSE_TRUE@	$(LTLIBINTL) \
@@ -2041,15 +2036,16 @@ EXTRA_DIST = \
 @HAVE_FUSE_TRUE@	test-guestunmount-fd.c
 
 @HAVE_FUSE_TRUE@test_guestunmount_fd_CPPFLAGS = \
-@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 @HAVE_FUSE_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 @HAVE_FUSE_TRUE@test_guestunmount_fd_CFLAGS = \
 @HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 @HAVE_FUSE_TRUE@test_guestunmount_fd_LDADD = \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
 @HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_FUSE_TRUE@	$(LTLIBINTL) \
@@ -2147,20 +2143,10 @@ clean-checkPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-../fish/$(am__dirstamp):
-	@$(MKDIR_P) ../fish
-	@: > ../fish/$(am__dirstamp)
-../fish/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../fish/$(DEPDIR)
-	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/guestmount-config.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
 
 guestmount$(EXEEXT): $(guestmount_OBJECTS) $(guestmount_DEPENDENCIES) $(EXTRA_guestmount_DEPENDENCIES) 
 	@rm -f guestmount$(EXEEXT)
 	$(AM_V_CCLD)$(guestmount_LINK) $(guestmount_OBJECTS) $(guestmount_LDADD) $(LIBS)
-../fish/guestunmount-display-options.$(OBJEXT):  \
-	../fish/$(am__dirstamp) ../fish/$(DEPDIR)/$(am__dirstamp)
 
 guestunmount$(EXEEXT): $(guestunmount_OBJECTS) $(guestunmount_DEPENDENCIES) $(EXTRA_guestunmount_DEPENDENCIES) 
 	@rm -f guestunmount$(EXEEXT)
@@ -2180,13 +2166,10 @@ test-guestunmount-fd$(EXEEXT): $(test_guestunmount_fd_OBJECTS) $(test_guestunmou
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../fish/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/guestmount-config.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/guestunmount-display-options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-guestmount.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestunmount-guestunmount.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_fuse-test-fuse.Po@am__quote@
@@ -2217,20 +2200,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-../fish/guestmount-config.o: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-config.o -MD -MP -MF ../fish/$(DEPDIR)/guestmount-config.Tpo -c -o ../fish/guestmount-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-config.Tpo ../fish/$(DEPDIR)/guestmount-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/guestmount-config.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
-
-../fish/guestmount-config.obj: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT ../fish/guestmount-config.obj -MD -MP -MF ../fish/$(DEPDIR)/guestmount-config.Tpo -c -o ../fish/guestmount-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestmount-config.Tpo ../fish/$(DEPDIR)/guestmount-config.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='../fish/guestmount-config.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestmount-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
-
 guestmount-guestmount.o: guestmount.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -MT guestmount-guestmount.o -MD -MP -MF $(DEPDIR)/guestmount-guestmount.Tpo -c -o guestmount-guestmount.o `test -f 'guestmount.c' || echo '$(srcdir)/'`guestmount.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestmount-guestmount.Tpo $(DEPDIR)/guestmount-guestmount.Po
@@ -2244,20 +2213,6 @@ guestmount-guestmount.obj: guestmount.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='guestmount.c' object='guestmount-guestmount.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o guestmount-guestmount.obj `if test -f 'guestmount.c'; then $(CYGPATH_W) 'guestmount.c'; else $(CYGPATH_W) '$(srcdir)/guestmount.c'; fi`
-
-../fish/guestunmount-display-options.o: ../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestunmount_CPPFLAGS) $(CPPFLAGS) $(guestunmount_CFLAGS) $(CFLAGS) -MT ../fish/guestunmount-display-options.o -MD -MP -MF ../fish/$(DEPDIR)/guestunmount-display-options.Tpo -c -o ../fish/guestunmount-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestunmount-display-options.Tpo ../fish/$(DEPDIR)/guestunmount-display-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/display-options.c' object='../fish/guestunmount-display-options.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestunmount_CPPFLAGS) $(CPPFLAGS) $(guestunmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestunmount-display-options.o `test -f '../fish/display-options.c' || echo '$(srcdir)/'`../fish/display-options.c
-
-../fish/guestunmount-display-options.obj: ../fish/display-options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestunmount_CPPFLAGS) $(CPPFLAGS) $(guestunmount_CFLAGS) $(CFLAGS) -MT ../fish/guestunmount-display-options.obj -MD -MP -MF ../fish/$(DEPDIR)/guestunmount-display-options.Tpo -c -o ../fish/guestunmount-display-options.obj `if test -f '../fish/display-options.c'; then $(CYGPATH_W) '../fish/display-options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/display-options.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/guestunmount-display-options.Tpo ../fish/$(DEPDIR)/guestunmount-display-options.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/display-options.c' object='../fish/guestunmount-display-options.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestunmount_CPPFLAGS) $(CPPFLAGS) $(guestunmount_CFLAGS) $(CFLAGS) -c -o ../fish/guestunmount-display-options.obj `if test -f '../fish/display-options.c'; then $(CYGPATH_W) '../fish/display-options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/display-options.c'; fi`
 
 guestunmount-guestunmount.o: guestunmount.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestunmount_CPPFLAGS) $(CPPFLAGS) $(guestunmount_CFLAGS) $(CFLAGS) -MT guestunmount-guestunmount.o -MD -MP -MF $(DEPDIR)/guestunmount-guestunmount.Tpo -c -o guestunmount-guestunmount.o `test -f 'guestunmount.c' || echo '$(srcdir)/'`guestunmount.c
@@ -2683,8 +2638,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../fish/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2696,7 +2649,7 @@ clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
 	clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2742,7 +2695,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -2814,6 +2767,27 @@ $(top_builddir)/generator/generator:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 @HAVE_FUSE_TRUE@guestmount.1 $(top_builddir)/website/guestmount.1.html: stamp-guestmount.pod
 

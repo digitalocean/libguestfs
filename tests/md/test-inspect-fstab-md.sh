@@ -19,18 +19,17 @@
 # Test the handling of MD devices specified in /etc/fstab
 
 set -e
-export LANG=C
 
-if [ -n "$SKIP_TEST_INSPECT_FSTAB_MD_SH" ]; then
-    echo "$0: test skipped because environment variable is set."
-    exit 77
-fi
+$TEST_FUNCTIONS
+skip_if_skipped
+skip_unless_phony_guest fedora-md1.img
+skip_unless_phony_guest fedora-md2.img
 
 rm -f inspect-fstab-md-{1,2}.img inspect-fstab-md.fstab inspect-fstab-md.output
 
 # First, test the regular fedora image, which specifies /boot as /dev/md0
-cp ../../test-data/phony-guests/fedora-md1.img inspect-fstab-md-1.img
-cp ../../test-data/phony-guests/fedora-md2.img inspect-fstab-md-2.img
+cp $top_builddir/test-data/phony-guests/fedora-md1.img inspect-fstab-md-1.img
+cp $top_builddir/test-data/phony-guests/fedora-md2.img inspect-fstab-md-2.img
 
 guestfish -i --format=raw -a inspect-fstab-md-1.img --format=raw -a inspect-fstab-md-2.img <<'EOF' | sort > inspect-fstab-md.output
   exists /boot/grub/grub.conf
@@ -41,10 +40,10 @@ if [ "$(cat inspect-fstab-md.output)" != "true" ]; then
     exit 1
 fi
 
-# Test inspection when /boot is specfied as /dev/md/boot
+# Test inspection when /boot is specfied as /dev/md/bootdev
 cat <<'EOF' > inspect-fstab-md.fstab
 /dev/VG/Root / ext2 default 0 0
-/dev/md/boot /boot ext2 default 0 0
+/dev/md/bootdev /boot ext2 default 0 0
 EOF
 
 guestfish --format=raw -a inspect-fstab-md-1.img --format=raw -a inspect-fstab-md-2.img <<'EOF'
@@ -58,7 +57,7 @@ guestfish -i --format=raw -a inspect-fstab-md-1.img --format=raw -a inspect-fsta
 EOF
 
 if [ "$(cat inspect-fstab-md.output)" != "true" ]; then
-    echo "$0: error: /boot not correctly mounted (/dev/md/boot)"
+    echo "$0: error: /boot not correctly mounted (/dev/md/bootdev)"
     cat inspect-fstab-md.output
     exit 1
 fi

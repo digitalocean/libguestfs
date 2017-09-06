@@ -1255,7 +1255,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1hivex_1close  (JNIEnv *env, jobject obj,
 
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1hivex_1open  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jverbose, jboolean jdebug, jboolean jwrite)
+Java_com_redhat_et_libguestfs_GuestFS__1hivex_1open  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jverbose, jboolean jdebug, jboolean jwrite, jboolean junsafe)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -1268,6 +1268,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1hivex_1open  (JNIEnv *env, jobject obj, 
   optargs_s.verbose = jverbose;
   optargs_s.debug = jdebug;
   optargs_s.write = jwrite;
+  optargs_s.unsafe = junsafe;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_hivex_open_argv (g, filename, optargs);

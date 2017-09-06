@@ -29,6 +29,8 @@ type ops = {
   flags : flags;
 }
 and op = [
+  | `AppendLine of string * string
+      (* --append-line FILE:LINE *)
   | `Chmod of string * string
       (* --chmod PERMISSIONS:FILE *)
   | `CommandsFromFile of string

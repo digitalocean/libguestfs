@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -146,8 +146,10 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = virt-df$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@am__append_1 = \
-@ENABLE_APPLIANCE_TRUE@	test-virt-df.sh \
-@ENABLE_APPLIANCE_TRUE@	test-virt-df-guests.sh
+@ENABLE_APPLIANCE_TRUE@	test-virt-df.sh
+
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@am__append_2 = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@	test-virt-df-guests.sh
 
 subdir = df
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -322,14 +324,14 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_virt_df_OBJECTS = virt_df-domains.$(OBJEXT) virt_df-df.$(OBJEXT) \
-	virt_df-estimate-max-threads.$(OBJEXT) virt_df-main.$(OBJEXT) \
-	virt_df-output.$(OBJEXT) virt_df-parallel.$(OBJEXT)
+am_virt_df_OBJECTS = virt_df-df.$(OBJEXT) virt_df-main.$(OBJEXT) \
+	virt_df-output.$(OBJEXT)
 virt_df_OBJECTS = $(am_virt_df_OBJECTS)
 am__DEPENDENCIES_1 =
-virt_df_DEPENDENCIES = $(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/fish/libfishcommon.la $(am__DEPENDENCIES_1) \
+virt_df_DEPENDENCIES = $(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/parallel/libparallel.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -1861,21 +1863,17 @@ EXTRA_DIST = \
 
 virt_df_SOURCES = \
 	virt-df.h \
-	domains.c \
-	domains.h \
 	df.c \
-	estimate-max-threads.c \
-	estimate-max-threads.h \
 	main.c \
-	output.c \
-	parallel.c \
-	parallel.h
+	output.c
 
 virt_df_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	-I$(top_srcdir)/fish \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
+	-I$(top_srcdir)/common/parallel -I$(top_builddir)/common/parallel \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 virt_df_CFLAGS = \
@@ -1885,9 +1883,10 @@ virt_df_CFLAGS = \
 	$(LIBVIRT_CFLAGS)
 
 virt_df_LDADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/fish/libfishcommon.la \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/parallel/libparallel.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -1901,7 +1900,7 @@ noinst_DATA = $(top_builddir)/website/virt-df.1.html
 
 # Tests.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
-TESTS = test-virt-df-docs.sh $(am__append_1)
+TESTS = test-virt-df-docs.sh $(am__append_1) $(am__append_2)
 all: all-am
 
 .SUFFIXES:
@@ -1997,11 +1996,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_df-df.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_df-domains.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_df-estimate-max-threads.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_df-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_df-output.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_df-parallel.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -2027,20 +2023,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-virt_df-domains.o: domains.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domains.o -MD -MP -MF $(DEPDIR)/virt_df-domains.Tpo -c -o virt_df-domains.o `test -f 'domains.c' || echo '$(srcdir)/'`domains.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-domains.Tpo $(DEPDIR)/virt_df-domains.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domains.c' object='virt_df-domains.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-domains.o `test -f 'domains.c' || echo '$(srcdir)/'`domains.c
-
-virt_df-domains.obj: domains.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domains.obj -MD -MP -MF $(DEPDIR)/virt_df-domains.Tpo -c -o virt_df-domains.obj `if test -f 'domains.c'; then $(CYGPATH_W) 'domains.c'; else $(CYGPATH_W) '$(srcdir)/domains.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-domains.Tpo $(DEPDIR)/virt_df-domains.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domains.c' object='virt_df-domains.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-domains.obj `if test -f 'domains.c'; then $(CYGPATH_W) 'domains.c'; else $(CYGPATH_W) '$(srcdir)/domains.c'; fi`
-
 virt_df-df.o: df.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-df.o -MD -MP -MF $(DEPDIR)/virt_df-df.Tpo -c -o virt_df-df.o `test -f 'df.c' || echo '$(srcdir)/'`df.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-df.Tpo $(DEPDIR)/virt_df-df.Po
@@ -2054,20 +2036,6 @@ virt_df-df.obj: df.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='df.c' object='virt_df-df.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-df.obj `if test -f 'df.c'; then $(CYGPATH_W) 'df.c'; else $(CYGPATH_W) '$(srcdir)/df.c'; fi`
-
-virt_df-estimate-max-threads.o: estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-estimate-max-threads.o -MD -MP -MF $(DEPDIR)/virt_df-estimate-max-threads.Tpo -c -o virt_df-estimate-max-threads.o `test -f 'estimate-max-threads.c' || echo '$(srcdir)/'`estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-estimate-max-threads.Tpo $(DEPDIR)/virt_df-estimate-max-threads.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='estimate-max-threads.c' object='virt_df-estimate-max-threads.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-estimate-max-threads.o `test -f 'estimate-max-threads.c' || echo '$(srcdir)/'`estimate-max-threads.c
-
-virt_df-estimate-max-threads.obj: estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-estimate-max-threads.obj -MD -MP -MF $(DEPDIR)/virt_df-estimate-max-threads.Tpo -c -o virt_df-estimate-max-threads.obj `if test -f 'estimate-max-threads.c'; then $(CYGPATH_W) 'estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/estimate-max-threads.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-estimate-max-threads.Tpo $(DEPDIR)/virt_df-estimate-max-threads.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='estimate-max-threads.c' object='virt_df-estimate-max-threads.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-estimate-max-threads.obj `if test -f 'estimate-max-threads.c'; then $(CYGPATH_W) 'estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/estimate-max-threads.c'; fi`
 
 virt_df-main.o: main.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-main.o -MD -MP -MF $(DEPDIR)/virt_df-main.Tpo -c -o virt_df-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
@@ -2096,20 +2064,6 @@ virt_df-output.obj: output.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='output.c' object='virt_df-output.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-output.obj `if test -f 'output.c'; then $(CYGPATH_W) 'output.c'; else $(CYGPATH_W) '$(srcdir)/output.c'; fi`
-
-virt_df-parallel.o: parallel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-parallel.o -MD -MP -MF $(DEPDIR)/virt_df-parallel.Tpo -c -o virt_df-parallel.o `test -f 'parallel.c' || echo '$(srcdir)/'`parallel.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-parallel.Tpo $(DEPDIR)/virt_df-parallel.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parallel.c' object='virt_df-parallel.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-parallel.o `test -f 'parallel.c' || echo '$(srcdir)/'`parallel.c
-
-virt_df-parallel.obj: parallel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-parallel.obj -MD -MP -MF $(DEPDIR)/virt_df-parallel.Tpo -c -o virt_df-parallel.obj `if test -f 'parallel.c'; then $(CYGPATH_W) 'parallel.c'; else $(CYGPATH_W) '$(srcdir)/parallel.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-parallel.Tpo $(DEPDIR)/virt_df-parallel.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parallel.c' object='virt_df-parallel.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-parallel.obj `if test -f 'parallel.c'; then $(CYGPATH_W) 'parallel.c'; else $(CYGPATH_W) '$(srcdir)/parallel.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2585,6 +2539,27 @@ $(top_builddir)/generator/generator:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 virt-df.1 $(top_builddir)/website/virt-df.1.html: stamp-virt-df.pod
 

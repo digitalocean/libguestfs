@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "guestfs_protocol.h"
 #include "daemon.h"
@@ -58,6 +59,7 @@ do_mkswap (const char *device, const char *label, const char *uuid)
   ADD_ARG (argv, i, "-f");
 
   if (optargs_bitmask & GUESTFS_MKSWAP_LABEL_BITMASK) {
+    assert (label != NULL); /* suppress a warning with -O3 */
     if (strlen (label) > SWAP_LABEL_MAX) {
       reply_with_error ("%s: Linux swap labels are limited to %d bytes",
                         label, SWAP_LABEL_MAX);
@@ -232,6 +234,27 @@ swap_set_uuid (const char *device, const char *uuid)
   CLEANUP_FREE char *err = NULL;
 
   r = command (NULL, &err, str_swaplabel, "-U", uuid, device, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+swap_set_label (const char *device, const char *label)
+{
+  int r;
+  CLEANUP_FREE char *err = NULL;
+
+  if (strlen (label) > SWAP_LABEL_MAX) {
+    reply_with_error ("%s: Linux swap labels are limited to %d bytes",
+                      label, SWAP_LABEL_MAX);
+    return -1;
+  }
+
+  r = command (NULL, &err, str_swaplabel, "-L", label, device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     return -1;

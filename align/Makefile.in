@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -146,8 +146,10 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = virt-alignment-scan$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@am__append_1 = \
-@ENABLE_APPLIANCE_TRUE@	test-virt-alignment-scan.sh \
-@ENABLE_APPLIANCE_TRUE@	test-virt-alignment-scan-guests.sh
+@ENABLE_APPLIANCE_TRUE@	test-virt-alignment-scan.sh
+
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@am__append_2 = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@	test-virt-alignment-scan-guests.sh
 
 subdir = align
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -322,17 +324,14 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__dirstamp = $(am__leading_dot)dirstamp
-am__objects_1 = ../df/virt_alignment_scan-domains.$(OBJEXT) \
-	../df/virt_alignment_scan-estimate-max-threads.$(OBJEXT) \
-	../df/virt_alignment_scan-parallel.$(OBJEXT)
-am_virt_alignment_scan_OBJECTS = $(am__objects_1) \
-	virt_alignment_scan-scan.$(OBJEXT)
+am_virt_alignment_scan_OBJECTS = virt_alignment_scan-scan.$(OBJEXT)
 virt_alignment_scan_OBJECTS = $(am_virt_alignment_scan_OBJECTS)
 am__DEPENDENCIES_1 =
-virt_alignment_scan_DEPENDENCIES = $(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/fish/libfishcommon.la $(am__DEPENDENCIES_1) \
+virt_alignment_scan_DEPENDENCIES =  \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/parallel/libparallel.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -1861,23 +1860,15 @@ EXTRA_DIST = \
 	test-virt-alignment-scan-guests.sh \
 	virt-alignment-scan.pod
 
-SHARED_SOURCE_FILES = \
-	../df/domains.c \
-	../df/domains.h \
-	../df/estimate-max-threads.c \
-	../df/estimate-max-threads.h \
-	../df/parallel.c \
-	../df/parallel.h
-
 virt_alignment_scan_SOURCES = \
-	$(SHARED_SOURCE_FILES) \
 	scan.c
 
 virt_alignment_scan_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	-I$(top_srcdir)/df \
-	-I$(top_srcdir)/fish \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
+	-I$(top_srcdir)/common/parallel -I$(top_builddir)/common/parallel \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
 
@@ -1888,9 +1879,10 @@ virt_alignment_scan_CFLAGS = \
 	$(LIBVIRT_CFLAGS)
 
 virt_alignment_scan_LDADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/fish/libfishcommon.la \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/parallel/libparallel.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \
@@ -1904,7 +1896,8 @@ noinst_DATA = $(top_builddir)/website/virt-alignment-scan.1.html
 
 # Tests.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
-TESTS = test-virt-alignment-scan-docs.sh $(am__append_1)
+TESTS = test-virt-alignment-scan-docs.sh $(am__append_1) \
+	$(am__append_2)
 all: all-am
 
 .SUFFIXES:
@@ -1988,18 +1981,6 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-../df/$(am__dirstamp):
-	@$(MKDIR_P) ../df
-	@: > ../df/$(am__dirstamp)
-../df/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../df/$(DEPDIR)
-	@: > ../df/$(DEPDIR)/$(am__dirstamp)
-../df/virt_alignment_scan-domains.$(OBJEXT): ../df/$(am__dirstamp) \
-	../df/$(DEPDIR)/$(am__dirstamp)
-../df/virt_alignment_scan-estimate-max-threads.$(OBJEXT):  \
-	../df/$(am__dirstamp) ../df/$(DEPDIR)/$(am__dirstamp)
-../df/virt_alignment_scan-parallel.$(OBJEXT): ../df/$(am__dirstamp) \
-	../df/$(DEPDIR)/$(am__dirstamp)
 
 virt-alignment-scan$(EXEEXT): $(virt_alignment_scan_OBJECTS) $(virt_alignment_scan_DEPENDENCIES) $(EXTRA_virt_alignment_scan_DEPENDENCIES) 
 	@rm -f virt-alignment-scan$(EXEEXT)
@@ -2007,14 +1988,10 @@ virt-alignment-scan$(EXEEXT): $(virt_alignment_scan_OBJECTS) $(virt_alignment_sc
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../df/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@../df/$(DEPDIR)/virt_alignment_scan-domains.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../df/$(DEPDIR)/virt_alignment_scan-estimate-max-threads.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../df/$(DEPDIR)/virt_alignment_scan-parallel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-scan.Po@am__quote@
 
 .c.o:
@@ -2040,48 +2017,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
-
-../df/virt_alignment_scan-domains.o: ../df/domains.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../df/virt_alignment_scan-domains.o -MD -MP -MF ../df/$(DEPDIR)/virt_alignment_scan-domains.Tpo -c -o ../df/virt_alignment_scan-domains.o `test -f '../df/domains.c' || echo '$(srcdir)/'`../df/domains.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../df/$(DEPDIR)/virt_alignment_scan-domains.Tpo ../df/$(DEPDIR)/virt_alignment_scan-domains.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/domains.c' object='../df/virt_alignment_scan-domains.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../df/virt_alignment_scan-domains.o `test -f '../df/domains.c' || echo '$(srcdir)/'`../df/domains.c
-
-../df/virt_alignment_scan-domains.obj: ../df/domains.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../df/virt_alignment_scan-domains.obj -MD -MP -MF ../df/$(DEPDIR)/virt_alignment_scan-domains.Tpo -c -o ../df/virt_alignment_scan-domains.obj `if test -f '../df/domains.c'; then $(CYGPATH_W) '../df/domains.c'; else $(CYGPATH_W) '$(srcdir)/../df/domains.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../df/$(DEPDIR)/virt_alignment_scan-domains.Tpo ../df/$(DEPDIR)/virt_alignment_scan-domains.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/domains.c' object='../df/virt_alignment_scan-domains.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../df/virt_alignment_scan-domains.obj `if test -f '../df/domains.c'; then $(CYGPATH_W) '../df/domains.c'; else $(CYGPATH_W) '$(srcdir)/../df/domains.c'; fi`
-
-../df/virt_alignment_scan-estimate-max-threads.o: ../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../df/virt_alignment_scan-estimate-max-threads.o -MD -MP -MF ../df/$(DEPDIR)/virt_alignment_scan-estimate-max-threads.Tpo -c -o ../df/virt_alignment_scan-estimate-max-threads.o `test -f '../df/estimate-max-threads.c' || echo '$(srcdir)/'`../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../df/$(DEPDIR)/virt_alignment_scan-estimate-max-threads.Tpo ../df/$(DEPDIR)/virt_alignment_scan-estimate-max-threads.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/estimate-max-threads.c' object='../df/virt_alignment_scan-estimate-max-threads.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../df/virt_alignment_scan-estimate-max-threads.o `test -f '../df/estimate-max-threads.c' || echo '$(srcdir)/'`../df/estimate-max-threads.c
-
-../df/virt_alignment_scan-estimate-max-threads.obj: ../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../df/virt_alignment_scan-estimate-max-threads.obj -MD -MP -MF ../df/$(DEPDIR)/virt_alignment_scan-estimate-max-threads.Tpo -c -o ../df/virt_alignment_scan-estimate-max-threads.obj `if test -f '../df/estimate-max-threads.c'; then $(CYGPATH_W) '../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../df/estimate-max-threads.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../df/$(DEPDIR)/virt_alignment_scan-estimate-max-threads.Tpo ../df/$(DEPDIR)/virt_alignment_scan-estimate-max-threads.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/estimate-max-threads.c' object='../df/virt_alignment_scan-estimate-max-threads.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../df/virt_alignment_scan-estimate-max-threads.obj `if test -f '../df/estimate-max-threads.c'; then $(CYGPATH_W) '../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../df/estimate-max-threads.c'; fi`
-
-../df/virt_alignment_scan-parallel.o: ../df/parallel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../df/virt_alignment_scan-parallel.o -MD -MP -MF ../df/$(DEPDIR)/virt_alignment_scan-parallel.Tpo -c -o ../df/virt_alignment_scan-parallel.o `test -f '../df/parallel.c' || echo '$(srcdir)/'`../df/parallel.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../df/$(DEPDIR)/virt_alignment_scan-parallel.Tpo ../df/$(DEPDIR)/virt_alignment_scan-parallel.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/parallel.c' object='../df/virt_alignment_scan-parallel.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../df/virt_alignment_scan-parallel.o `test -f '../df/parallel.c' || echo '$(srcdir)/'`../df/parallel.c
-
-../df/virt_alignment_scan-parallel.obj: ../df/parallel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT ../df/virt_alignment_scan-parallel.obj -MD -MP -MF ../df/$(DEPDIR)/virt_alignment_scan-parallel.Tpo -c -o ../df/virt_alignment_scan-parallel.obj `if test -f '../df/parallel.c'; then $(CYGPATH_W) '../df/parallel.c'; else $(CYGPATH_W) '$(srcdir)/../df/parallel.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../df/$(DEPDIR)/virt_alignment_scan-parallel.Tpo ../df/$(DEPDIR)/virt_alignment_scan-parallel.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/parallel.c' object='../df/virt_alignment_scan-parallel.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o ../df/virt_alignment_scan-parallel.obj `if test -f '../df/parallel.c'; then $(CYGPATH_W) '../df/parallel.c'; else $(CYGPATH_W) '$(srcdir)/../df/parallel.c'; fi`
 
 virt_alignment_scan-scan.o: scan.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-scan.o -MD -MP -MF $(DEPDIR)/virt_alignment_scan-scan.Tpo -c -o virt_alignment_scan-scan.o `test -f 'scan.c' || echo '$(srcdir)/'`scan.c
@@ -2443,8 +2378,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../df/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../df/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2455,7 +2388,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../df/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2501,7 +2434,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../df/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -2573,6 +2506,27 @@ $(top_builddir)/generator/generator:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 virt-alignment-scan.1 $(top_builddir)/website/virt-alignment-scan.1.html: stamp-virt-alignment-scan.pod
 

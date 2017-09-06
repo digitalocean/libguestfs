@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1611,6 +1611,12 @@ EXTRA_DIST = \
 @HAVE_GNU_GETTEXT_TRUE@	--directory=$(top_srcdir)
 
 
+# For explanation, see
+# http://mingw-users.1079350.n2.nabble.com/Getting-rid-of-xgettext-s-quot-CHARSET-quot-warning-td5620533.html
+@HAVE_GNU_GETTEXT_TRUE@FIX_CHARSET = \
+@HAVE_GNU_GETTEXT_TRUE@	$(SED) -i 's|text/plain; charset=CHARSET|text/plain; charset=utf-8|g'
+
+
 # Install.
 # Cannot use 'localedir' since this conflicts with autoconf.
 @HAVE_GNU_GETTEXT_TRUE@langinstdir = $(datadir)/locale
@@ -1849,6 +1855,27 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
+
 @HAVE_GNU_GETTEXT_TRUE@dist-hook:
 @HAVE_GNU_GETTEXT_TRUE@	$(MAKE) update-po
 @HAVE_GNU_GETTEXT_TRUE@	cp *.po *.gmo $(distdir)/
@@ -1864,8 +1891,11 @@ $(top_builddir)/generator/generator:
 @HAVE_GNU_GETTEXT_TRUE@	rm -f $@-t
 @HAVE_GNU_GETTEXT_TRUE@	touch $@-t
 @HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	$(OCAML_GETTEXT) --action extract --extract-pot $@-t $(POTFILES_ML)
+@HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	 \
+@HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	$(FIX_CHARSET) $@-t
 @HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) \
 @HAVE_GNU_GETTEXT_TRUE@	  --files-from=$(abs_srcdir)/POTFILES
+@HAVE_GNU_GETTEXT_TRUE@	$(FIX_CHARSET) $@-t
 @HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) --language=Perl \
 @HAVE_GNU_GETTEXT_TRUE@	  --files-from=$(abs_srcdir)/POTFILES-pl
 @HAVE_GNU_GETTEXT_TRUE@	mv $@-t $@

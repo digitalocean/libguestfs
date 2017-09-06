@@ -68,7 +68,8 @@ hivex_finalize (void)
 
 /* Takes optional arguments, consult optargs_bitmask. */
 int
-do_hivex_open (const char *filename, int verbose, int debug, int write)
+do_hivex_open (const char *filename,
+               int verbose, int debug, int write, int unsafe)
 {
   CLEANUP_FREE char *buf = NULL;
   int flags = 0;
@@ -96,6 +97,12 @@ do_hivex_open (const char *filename, int verbose, int debug, int write)
     if (write)
       flags |= HIVEX_OPEN_WRITE;
   }
+#ifdef HIVEX_OPEN_UNSAFE
+  if (optargs_bitmask & GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK) {
+    if (unsafe)
+      flags |= HIVEX_OPEN_UNSAFE;
+  }
+#endif
 
   h = hivex_open (buf, flags);
   if (!h) {
@@ -342,8 +349,8 @@ do_hivex_commit (const char *filename)
     /* There is no "OptPathname" in the generator, so we have
      * to do the pathname checks explicitly here.  RHBZ#981683
      */
-    ABS_PATH (filename, , return -1);
-    NEED_ROOT (, return -1);
+    ABS_PATH (filename, 0, return -1);
+    NEED_ROOT (0, return -1);
 
     buf = sysroot_path (filename);
     if (!buf) {

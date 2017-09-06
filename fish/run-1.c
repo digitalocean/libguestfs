@@ -1468,6 +1468,29 @@ run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
 }
 
 int
+run_inspect_get_windows_system_hive (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  char *r;
+  const char *root;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  root = argv[i++];
+  r = guestfs_inspect_get_windows_system_hive (g, root);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+int
 run_inspect_is_netinst (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;

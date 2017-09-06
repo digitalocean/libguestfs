@@ -27,6 +27,8 @@
 #include "actions.h"
 #include "optgroups.h"
 
+#include "ignore-value.h"
+
 GUESTFSD_EXT_CMD(str_setfiles, setfiles);
 
 #define MAX_ARGS 64
@@ -35,6 +37,20 @@ int
 optgroup_selinuxrelabel_available (void)
 {
   return prog_exists (str_setfiles);
+}
+
+static int
+setfiles_has_m_option (void)
+{
+  static int flag = -1;
+  CLEANUP_FREE char *err = NULL;
+
+  if (flag == -1) {
+    ignore_value (command (NULL, &err, str_setfiles, "-m", NULL));
+    flag = err && strstr (err, /* "invalid option -- " */ "'m'") == NULL;
+  }
+
+  return flag;
 }
 
 /* Takes optional arguments, consult optargs_bitmask. */
@@ -64,6 +80,12 @@ do_selinux_relabel (const char *specfile, const char *path,
   if (!(optargs_bitmask & GUESTFS_SELINUX_RELABEL_FORCE_BITMASK))
     force = 0;
 
+  /* If setfiles takes an excessively long time to run (but still
+   * completes) then removing .../contexts/files/file_contexts.bin
+   * appears to help.  If you find any such cases, please add
+   * observations to the bug report:
+   * https://bugzilla.redhat.com/show_bug.cgi?id=1396297
+   */
   ADD_ARG (argv, i, str_setfiles);
   if (force)
     ADD_ARG (argv, i, "-F");
@@ -76,6 +98,13 @@ do_selinux_relabel (const char *specfile, const char *path,
   ADD_ARG (argv, i, "-e"); ADD_ARG (argv, i, s_proc);
   ADD_ARG (argv, i, "-e"); ADD_ARG (argv, i, s_selinux);
   ADD_ARG (argv, i, "-e"); ADD_ARG (argv, i, s_sys);
+
+  /* You have to use the -m option (where available) otherwise
+   * setfiles puts all the mountpoints on the excludes list for no
+   * useful reason (RHBZ#1433577).
+   */
+  if (setfiles_has_m_option ())
+    ADD_ARG (argv, i, "-m");
 
   /* Relabelling in a chroot. */
   if (STRNEQ (sysroot, "/")) {

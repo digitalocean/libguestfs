@@ -410,6 +410,22 @@ run_download_offset (ETERM *args_tuple)
 }
 
 ETERM *
+run_find_inode (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int64_t inode = get_int64 (ARG (1));
+  struct guestfs_tsk_dirent_list *r;
+
+  r = guestfs_find_inode (g, device, inode);
+  if (r == NULL)
+    return make_error ("find_inode");
+
+  ETERM *rt = make_tsk_dirent_list (r);
+  guestfs_free_tsk_dirent_list (r);
+  return rt;
+}
+
+ETERM *
 run_findfs_uuid (ETERM *args_tuple)
 {
   CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (0));

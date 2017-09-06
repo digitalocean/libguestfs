@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,13 +16,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-export LANG=C
 set -e
 
-if [ "$(guestfish get-backend)" = "uml" ]; then
-    echo "$0: skipping test because uml backend does not support qcow2"
-    exit 77
-fi
+$TEST_FUNCTIONS
+skip_if_skipped
+# UML backend does not support qcow2.
+skip_if_backend uml
 
 rm -f test.qcow2
 

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ open Common_utils
 
 open Types
 open Utils
+open Create_libvirt_xml
 
 class output_local dir = object
   inherit output
@@ -58,8 +59,8 @@ class output_local dir = object
       | _ -> [] in
 
     let doc =
-      Output_libvirt.create_libvirt_xml source target_buses
-        guestcaps target_features target_firmware in
+      create_libvirt_xml source target_buses
+                         guestcaps target_features target_firmware in
 
     let name = source.s_name in
     let file = dir // name ^ ".xml" in

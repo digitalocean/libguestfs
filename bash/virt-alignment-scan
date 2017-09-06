@@ -1,5 +1,5 @@
 # virt-tools bash completion script -*- shell-script -*-
-# Copyright (C) 2010-2016 Red Hat Inc.
+# Copyright (C) 2010-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -204,3 +204,9 @@ _virt_sysprep ()
     _guestfs_virttools "virt-sysprep" 0
 } &&
 complete -o default -F _virt_sysprep virt-sysprep
+
+_virt_tail ()
+{
+    _guestfs_virttools "virt-tail" 1
+} &&
+complete -o default -F _virt_tail virt-tail

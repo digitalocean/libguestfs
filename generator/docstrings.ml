@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 open Unix
 open Printf
 
+open Common_utils
 open Types
 open Utils
 open Pr
@@ -38,10 +39,11 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>."
 
 let deprecation_notice ?(prefix = "") ?(replace_underscores = false) =
   function
-  | { deprecated_by = None } -> None
-  | { deprecated_by = Some alt } ->
+  | { deprecated_by = Not_deprecated } -> None
+
+  | { deprecated_by = Replaced_by alt } ->
     let alt =
-      if replace_underscores then replace_char alt '_' '-' else alt in
+      if replace_underscores then String.replace_char alt '_' '-' else alt in
     let txt =
       sprintf "I<This function is deprecated.>
 In new code, use the L</%s%s> call instead.
@@ -50,6 +52,15 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions." prefix alt in
     Some txt
+
+  | { deprecated_by = Deprecated_no_replacement } ->
+     Some "I<This function is deprecated.>
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions."
 
 let version_added = function
   | { added = (0, 0, release) } -> Some (sprintf "0.%d" release)

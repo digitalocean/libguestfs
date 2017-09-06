@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GuestfsHivexOpen: Libguestfs GObject Bindings Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="GuestfsGrep.html" title="GuestfsGrep">
@@ -62,6 +62,11 @@
 <tr>
 <td class="property_type"><a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></td>
 <td class="property_name"><a class="link" href="GuestfsHivexOpen.html#GuestfsHivexOpen--debug" title="The “debug” property">debug</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type"><a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></td>
+<td class="property_name"><a class="link" href="GuestfsHivexOpen.html#GuestfsHivexOpen--unsafe" title="The “unsafe” property">unsafe</a></td>
 <td class="property_flags">Read / Write / Construct</td>
 </tr>
 <tr>
@@ -158,6 +163,14 @@ guestfs_hivex_open_new (<em class="parameter"><code><span class="type">void</spa
 <div class="refsect2">
 <a name="GuestfsHivexOpen--debug"></a><h3>The <code class="literal">“debug”</code> property</h3>
 <pre class="programlisting">  “debug”                    <a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></pre>
+<p>A boolean.</p>
+<p>Flags: Read / Write / Construct</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsHivexOpen--unsafe"></a><h3>The <code class="literal">“unsafe”</code> property</h3>
+<pre class="programlisting">  “unsafe”                   <a class="link" href="guestfs-GuestfsTristate.html#GuestfsTristate" title="enum GuestfsTristate"><span class="type">GuestfsTristate</span></a></pre>
 <p>A boolean.</p>
 <p>Flags: Read / Write / Construct</p>
 <p>Default value: GUESTFS_TRISTATE_NONE</p>

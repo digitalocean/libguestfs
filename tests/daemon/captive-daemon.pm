@@ -30,12 +30,12 @@ $| = 1;
 # Filled in by autoconf.
 my %var;
 $var{top_builddir} = "../..";
-$var{abs_top_srcdir} = "/home/rjones/d/libguestfs-1.34";
-$var{abs_top_builddir} = "/home/rjones/d/libguestfs-1.34";
+$var{abs_top_srcdir} = "/tmp/goaljobstmp89f7775aa47260029167a99e16c66979/libguestfs";
+$var{abs_top_builddir} = "/tmp/goaljobstmp89f7775aa47260029167a99e16c66979/libguestfs";
 $var{VALGRIND} = "valgrind";
 
 # Now we have to substitute the above variables into this one:
-my $VG = '$(VALGRIND) --vgdb=no --log-file=$(abs_top_builddir)/tmp/valgrind-%q{T}-%p.log --leak-check=full --error-exitcode=119 --suppressions=$(abs_top_srcdir)/valgrind-suppressions --trace-children=no --child-silent-after-fork=yes --run-libc-freeres=no';
+my $VG = 'libtool --mode=execute $(VALGRIND) --vgdb=no --log-file=$(abs_top_builddir)/tmp/valgrind-%q{T}-%p.log --leak-check=full --error-exitcode=119 --suppressions=$(abs_top_srcdir)/valgrind-suppressions --trace-children=no --child-silent-after-fork=yes --run-libc-freeres=no';
 $VG =~ s/\$\(([A-Za-z_]+)\)/ $var{"$1"} /ge;
 
 # Refuse to run if the user is trying to run tests as root.  There's

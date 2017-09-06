@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -317,18 +317,16 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @HAVE_FUSE_TRUE@am__EXEEXT_1 = test-parallel-mount-local$(EXEEXT)
 am__test_parallel_mount_local_SOURCES_DIST =  \
-	test-parallel-mount-local.c ../../df/estimate-max-threads.c \
-	../../df/estimate-max-threads.h
-am__dirstamp = $(am__leading_dot)dirstamp
-@HAVE_FUSE_TRUE@am_test_parallel_mount_local_OBJECTS = test_parallel_mount_local-test-parallel-mount-local.$(OBJEXT) \
-@HAVE_FUSE_TRUE@	../../df/test_parallel_mount_local-estimate-max-threads.$(OBJEXT)
+	test-parallel-mount-local.c
+@HAVE_FUSE_TRUE@am_test_parallel_mount_local_OBJECTS = test_parallel_mount_local-test-parallel-mount-local.$(OBJEXT)
 test_parallel_mount_local_OBJECTS =  \
 	$(am_test_parallel_mount_local_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_FUSE_TRUE@test_parallel_mount_local_DEPENDENCIES =  \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/parallel/libparallel.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(top_builddir)/gnulib/lib/libgnu.la
@@ -1851,14 +1849,14 @@ guestfs_am_v_jar_0 = @echo "  JAR     " $@;
 @HAVE_FUSE_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @HAVE_FUSE_TRUE@LOG_COMPILER = $(VG)
 @HAVE_FUSE_TRUE@test_parallel_mount_local_SOURCES = \
-@HAVE_FUSE_TRUE@	test-parallel-mount-local.c \
-@HAVE_FUSE_TRUE@	../../df/estimate-max-threads.c \
-@HAVE_FUSE_TRUE@	../../df/estimate-max-threads.h
+@HAVE_FUSE_TRUE@	test-parallel-mount-local.c
 
 @HAVE_FUSE_TRUE@test_parallel_mount_local_CPPFLAGS = \
 @HAVE_FUSE_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
 @HAVE_FUSE_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/common/parallel -I$(top_builddir)/common/parallel \
 @HAVE_FUSE_TRUE@	-I$(top_srcdir)/df
 
 @HAVE_FUSE_TRUE@test_parallel_mount_local_CFLAGS = \
@@ -1868,8 +1866,9 @@ guestfs_am_v_jar_0 = @echo "  JAR     " $@;
 
 @HAVE_FUSE_TRUE@test_parallel_mount_local_LDADD = \
 @HAVE_FUSE_TRUE@	$(FUSE_LIBS) \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/parallel/libparallel.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/common/utils/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/lib/libguestfs.la \
 @HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
 @HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_FUSE_TRUE@	$(LTLIBINTL) \
@@ -1918,14 +1917,6 @@ clean-checkPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-../../df/$(am__dirstamp):
-	@$(MKDIR_P) ../../df
-	@: > ../../df/$(am__dirstamp)
-../../df/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../../df/$(DEPDIR)
-	@: > ../../df/$(DEPDIR)/$(am__dirstamp)
-../../df/test_parallel_mount_local-estimate-max-threads.$(OBJEXT):  \
-	../../df/$(am__dirstamp) ../../df/$(DEPDIR)/$(am__dirstamp)
 
 test-parallel-mount-local$(EXEEXT): $(test_parallel_mount_local_OBJECTS) $(test_parallel_mount_local_DEPENDENCIES) $(EXTRA_test_parallel_mount_local_DEPENDENCIES) 
 	@rm -f test-parallel-mount-local$(EXEEXT)
@@ -1933,12 +1924,10 @@ test-parallel-mount-local$(EXEEXT): $(test_parallel_mount_local_OBJECTS) $(test_
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../../df/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@../../df/$(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_parallel_mount_local-test-parallel-mount-local.Po@am__quote@
 
 .c.o:
@@ -1978,20 +1967,6 @@ test_parallel_mount_local-test-parallel-mount-local.obj: test-parallel-mount-loc
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-parallel-mount-local.c' object='test_parallel_mount_local-test-parallel-mount-local.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_mount_local_CPPFLAGS) $(CPPFLAGS) $(test_parallel_mount_local_CFLAGS) $(CFLAGS) -c -o test_parallel_mount_local-test-parallel-mount-local.obj `if test -f 'test-parallel-mount-local.c'; then $(CYGPATH_W) 'test-parallel-mount-local.c'; else $(CYGPATH_W) '$(srcdir)/test-parallel-mount-local.c'; fi`
-
-../../df/test_parallel_mount_local-estimate-max-threads.o: ../../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_mount_local_CPPFLAGS) $(CPPFLAGS) $(test_parallel_mount_local_CFLAGS) $(CFLAGS) -MT ../../df/test_parallel_mount_local-estimate-max-threads.o -MD -MP -MF ../../df/$(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Tpo -c -o ../../df/test_parallel_mount_local-estimate-max-threads.o `test -f '../../df/estimate-max-threads.c' || echo '$(srcdir)/'`../../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../../df/$(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Tpo ../../df/$(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../df/estimate-max-threads.c' object='../../df/test_parallel_mount_local-estimate-max-threads.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_mount_local_CPPFLAGS) $(CPPFLAGS) $(test_parallel_mount_local_CFLAGS) $(CFLAGS) -c -o ../../df/test_parallel_mount_local-estimate-max-threads.o `test -f '../../df/estimate-max-threads.c' || echo '$(srcdir)/'`../../df/estimate-max-threads.c
-
-../../df/test_parallel_mount_local-estimate-max-threads.obj: ../../df/estimate-max-threads.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_mount_local_CPPFLAGS) $(CPPFLAGS) $(test_parallel_mount_local_CFLAGS) $(CFLAGS) -MT ../../df/test_parallel_mount_local-estimate-max-threads.obj -MD -MP -MF ../../df/$(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Tpo -c -o ../../df/test_parallel_mount_local-estimate-max-threads.obj `if test -f '../../df/estimate-max-threads.c'; then $(CYGPATH_W) '../../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../../df/estimate-max-threads.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../../df/$(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Tpo ../../df/$(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../df/estimate-max-threads.c' object='../../df/test_parallel_mount_local-estimate-max-threads.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_mount_local_CPPFLAGS) $(CPPFLAGS) $(test_parallel_mount_local_CFLAGS) $(CFLAGS) -c -o ../../df/test_parallel_mount_local-estimate-max-threads.obj `if test -f '../../df/estimate-max-threads.c'; then $(CYGPATH_W) '../../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../../df/estimate-max-threads.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2280,8 +2255,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../../df/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../../df/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2293,7 +2266,7 @@ clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
 	mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../../df/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2339,7 +2312,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../../df/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -2407,6 +2380,27 @@ $(top_builddir)/generator/generator:
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
 
 @HAVE_FUSE_TRUE@check-valgrind:
 @HAVE_FUSE_TRUE@	$(MAKE) VG="@VG@" check

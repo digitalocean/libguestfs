@@ -51,6 +51,18 @@ static const char xstrtol_suffixes[] = "0kKMGTPEZY";
 
 
 static void
+print_tsk_dirent_list (struct guestfs_tsk_dirent_list *tsk_dirents)
+{
+  size_t i;
+
+  for (i = 0; i < tsk_dirents->len; ++i) {
+    printf ("[%zu] = {\n", i);
+    guestfs_int_print_tsk_dirent_indent (&tsk_dirents->val[i], stdout, "\n", "  ");
+    printf ("}\n");
+  }
+}
+
+static void
 print_xattr_list (struct guestfs_xattr_list *xattrs)
 {
   size_t i;
@@ -710,6 +722,44 @@ run_download_offset (const char *cmd, size_t argc, char *argv[])
  out_filename:
   free (remotefilename);
  out_remotefilename:
+ out_noargs:
+  return ret;
+}
+
+int
+run_find_inode (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  struct guestfs_tsk_dirent_list *r;
+  const char *device;
+  int64_t inode;
+  size_t i = 0;
+
+  if (argc != 2) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "inode", "xstrtoll", xerr);
+      goto out_inode;
+    }
+    inode = r;
+  }
+  r = guestfs_find_inode (g, device, inode);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_tsk_dirent_list (r);
+  guestfs_free_tsk_dirent_list (r);
+ out:
+ out_inode:
  out_noargs:
   return ret;
 }

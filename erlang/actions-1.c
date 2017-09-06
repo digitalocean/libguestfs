@@ -741,6 +741,21 @@ run_inspect_get_icon (ETERM *args_tuple)
 }
 
 ETERM *
+run_inspect_get_windows_system_hive (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_inspect_get_windows_system_hive (g, root);
+  if (r == NULL)
+    return make_error ("inspect_get_windows_system_hive");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+ETERM *
 run_inspect_is_netinst (ETERM *args_tuple)
 {
   CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));

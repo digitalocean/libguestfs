@@ -1195,6 +1195,39 @@ guestfs_int_lua_aug_setm (lua_State *L)
 }
 
 static int
+guestfs_int_lua_aug_transform (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *lens;
+  const char *file;
+  struct guestfs_aug_transform_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_aug_transform_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "aug_transform");
+
+  lens = luaL_checkstring (L, 2);
+  file = luaL_checkstring (L, 3);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 4) == LUA_TTABLE) {
+    OPTARG_IF_SET (4, "remove",
+      optargs_s.bitmask |= GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK;
+      optargs_s.remove = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_aug_transform_argv (g, lens, file, optargs);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_int_lua_available (lua_State *L)
 {
   int r;
@@ -4367,6 +4400,31 @@ guestfs_int_lua_find0 (lua_State *L)
 }
 
 static int
+guestfs_int_lua_find_inode (lua_State *L)
+{
+  struct guestfs_tsk_dirent_list *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int64_t inode;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "find_inode");
+
+  device = luaL_checkstring (L, 2);
+  inode = get_int64 (L, 3);
+
+  r = guestfs_find_inode (g, device, inode);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_tsk_dirent_list (L, r);
+  guestfs_free_tsk_dirent_list (r);
+  return 1;
+}
+
+static int
 guestfs_int_lua_findfs_label (lua_State *L)
 {
   char *r;
@@ -5734,6 +5792,10 @@ guestfs_int_lua_hivex_open (lua_State *L)
       optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
       optargs_s.write = lua_toboolean (L, -1);
     );
+    OPTARG_IF_SET (3, "unsafe",
+      optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK;
+      optargs_s.unsafe = lua_toboolean (L, -1);
+    );
   }
 
   r = guestfs_hivex_open_argv (g, filename, optargs);
@@ -6425,6 +6487,52 @@ guestfs_int_lua_inspect_get_windows_current_control_set (lua_State *L)
   root = luaL_checkstring (L, 2);
 
   r = guestfs_inspect_get_windows_current_control_set (g, root);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
+guestfs_int_lua_inspect_get_windows_software_hive (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *root;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_windows_software_hive");
+
+  root = luaL_checkstring (L, 2);
+
+  r = guestfs_inspect_get_windows_software_hive (g, root);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
+guestfs_int_lua_inspect_get_windows_system_hive (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *root;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "inspect_get_windows_system_hive");
+
+  root = luaL_checkstring (L, 2);
+
+  r = guestfs_inspect_get_windows_system_hive (g, root);
   if (r == NULL)
     return last_error (L, g);
 
@@ -10263,6 +10371,44 @@ guestfs_int_lua_mknod_c (lua_State *L)
   path = luaL_checkstring (L, 5);
 
   r = guestfs_mknod_c (g, mode, devmajor, devminor, path);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_int_lua_mksquashfs (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+  const char *filename;
+  struct guestfs_mksquashfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mksquashfs_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "mksquashfs");
+
+  path = luaL_checkstring (L, 2);
+  filename = luaL_checkstring (L, 3);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 4) == LUA_TTABLE) {
+    OPTARG_IF_SET (4, "compress",
+      optargs_s.bitmask |= GUESTFS_MKSQUASHFS_COMPRESS_BITMASK;
+      optargs_s.compress = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (4, "excludes",
+      optargs_s.bitmask |= GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK;
+      optargs_s.excludes = get_string_list (L, -1);
+    );
+  }
+
+  r = guestfs_mksquashfs_argv (g, path, filename, optargs);
+  free ((char *) optargs_s.excludes);
   if (r == -1)
     return last_error (L, g);
 
@@ -16804,6 +16950,7 @@ static luaL_Reg methods[] = {
   { "aug_save", guestfs_int_lua_aug_save },
   { "aug_set", guestfs_int_lua_aug_set },
   { "aug_setm", guestfs_int_lua_aug_setm },
+  { "aug_transform", guestfs_int_lua_aug_transform },
   { "available", guestfs_int_lua_available },
   { "available_all_groups", guestfs_int_lua_available_all_groups },
   { "base64_in", guestfs_int_lua_base64_in },
@@ -16931,6 +17078,7 @@ static luaL_Reg methods[] = {
   { "fill_pattern", guestfs_int_lua_fill_pattern },
   { "find", guestfs_int_lua_find },
   { "find0", guestfs_int_lua_find0 },
+  { "find_inode", guestfs_int_lua_find_inode },
   { "findfs_label", guestfs_int_lua_findfs_label },
   { "findfs_uuid", guestfs_int_lua_findfs_uuid },
   { "fsck", guestfs_int_lua_fsck },
@@ -17021,6 +17169,8 @@ static luaL_Reg methods[] = {
   { "inspect_get_roots", guestfs_int_lua_inspect_get_roots },
   { "inspect_get_type", guestfs_int_lua_inspect_get_type },
   { "inspect_get_windows_current_control_set", guestfs_int_lua_inspect_get_windows_current_control_set },
+  { "inspect_get_windows_software_hive", guestfs_int_lua_inspect_get_windows_software_hive },
+  { "inspect_get_windows_system_hive", guestfs_int_lua_inspect_get_windows_system_hive },
   { "inspect_get_windows_systemroot", guestfs_int_lua_inspect_get_windows_systemroot },
   { "inspect_is_live", guestfs_int_lua_inspect_is_live },
   { "inspect_is_multipart", guestfs_int_lua_inspect_is_multipart },
@@ -17165,6 +17315,7 @@ static luaL_Reg methods[] = {
   { "mknod", guestfs_int_lua_mknod },
   { "mknod_b", guestfs_int_lua_mknod_b },
   { "mknod_c", guestfs_int_lua_mknod_c },
+  { "mksquashfs", guestfs_int_lua_mksquashfs },
   { "mkswap", guestfs_int_lua_mkswap },
   { "mkswap_L", guestfs_int_lua_mkswap_L },
   { "mkswap_U", guestfs_int_lua_mkswap_U },

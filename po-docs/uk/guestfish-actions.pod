@@ -695,6 +695,19 @@ C<base> nodes are modified.
 
 This returns the number of nodes modified.
 
+=head2 aug-transform
+
+ aug-transform lens file [remove:true|false]
+
+Add an Augeas transformation for the specified C<lens> so it can handle
+C<file>.
+
+If C<remove> is true (C<false> by default), then the transformation is
+removed.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 available
 
  available 'groups ...'
@@ -929,7 +942,8 @@ blockdev.  B<Do not use it.>
 If you need to set the filesystem block size, use the C<blocksize> option of
 L</mkfs>.
 
-I<This function is deprecated.> In new code, use the L</mkfs> call instead.
+I<This function is deprecated.> There is no replacement.  Consult the API
+documentation in L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -955,7 +969,8 @@ Set readahead (in 512-byte sectors) for the device.
 
  blockdev-setrw пристрій
 
-Sets the block device named C<device> to read-write.
+Встановлює для блокового пристрою із назвою C<пристрій> режим
+читання-запису.
 
 Використовується програма L<blockdev(8)>.
 
@@ -1072,7 +1087,7 @@ L</feature-available>.
 
 =head2 btrfs-filesystem-show
 
- btrfs-filesystem-show device
+ btrfs-filesystem-show пристрій
 
 Show all the devices where the filesystems in C<device> is spanned over.
 
@@ -1093,10 +1108,10 @@ L</feature-available>.
 
 =head2 btrfs-fsck
 
- btrfs-fsck device [superblock:N] [repair:true|false]
+ btrfs-fsck пристрій [superblock:N] [repair:true|false]
 
-Used to check a btrfs filesystem, C<device> is the device file where the
-filesystem is stored.
+Використовується для перевірки файлової системи btrfs, C<пристрій> — файл
+пристрою, у якому зберігається файлова система.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
@@ -1149,8 +1164,7 @@ L</feature-available>.
 
  btrfs-qgroup-limit subvolume size
 
-Limit the size of a subvolume which's path is C<subvolume>. C<size> can have
-suffix of G, M, or K.
+Limit the size of the subvolume with path C<subvolume>.
 
 This command depends on the feature C<btrfs>.  See also
 L</feature-available>.
@@ -1364,7 +1378,7 @@ L</feature-available>.
 
 =head2 btrfstune-enable-extended-inode-refs
 
- btrfstune-enable-extended-inode-refs device
+ btrfstune-enable-extended-inode-refs пристрій
 
 This will Enable extended inode refs.
 
@@ -1373,7 +1387,7 @@ L</feature-available>.
 
 =head2 btrfstune-enable-skinny-metadata-extent-refs
 
- btrfstune-enable-skinny-metadata-extent-refs device
+ btrfstune-enable-skinny-metadata-extent-refs пристрій
 
 This enable skinny metadata extent refs.
 
@@ -1382,7 +1396,7 @@ L</feature-available>.
 
 =head2 btrfstune-seeding
 
- btrfstune-seeding device true|false
+ btrfstune-seeding пристрій true|false
 
 Enable seeding of a btrfs device, this will force a fs readonly so that you
 can use it to build other filesystems.
@@ -1528,31 +1542,31 @@ C<cksum> command.
 
 =item C<md5>
 
-Compute the MD5 hash (using the C<md5sum> program).
+Обчислити хеш-суму MD5 (за допомогою програми C<md5sum>).
 
 =item C<sha1>
 
-Compute the SHA1 hash (using the C<sha1sum> program).
+Обчислити хеш-суму SHA1 (за допомогою програми C<sha1sum>).
 
 =item C<sha224>
 
-Compute the SHA224 hash (using the C<sha224sum> program).
+Обчислити хеш-суму SHA224 (за допомогою програми C<sha224sum>).
 
 =item C<sha256>
 
-Compute the SHA256 hash (using the C<sha256sum> program).
+Обчислити хеш-суму SHA256 (за допомогою програми C<sha256sum>).
 
 =item C<sha384>
 
-Compute the SHA384 hash (using the C<sha384sum> program).
+Обчислити хеш-суму SHA384 (за допомогою програми C<sha384sum>).
 
 =item C<sha512>
 
-Compute the SHA512 hash (using the C<sha512sum> program).
+Обчислити хеш-суму SHA512 (за допомогою програми C<sha512sum>).
 
 =back
 
-The checksum is returned as a printable string.
+Контрольна сума повертається у форматі рядка, придатного до друку (ASCII)
 
 To get the checksum for a device, use L</checksum-device>.
 
@@ -1583,8 +1597,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 chmod
 
- chmod mode path
-
+ chmod режим шлях
 Change the mode (permissions) of C<path> to C<mode>.  Only numeric modes are
 supported.
 
@@ -1596,7 +1609,7 @@ The mode actually set is affected by the umask.
 
 =head2 chown
 
- chown owner group path
+ chown власник група шлях
 
 Change the file owner to C<owner> and group to C<group>.
 
@@ -1836,15 +1849,15 @@ destination filename or destination directory.
 
  cp-a джерело призначення
 
-This copies a file or directory from C<src> to C<dest> recursively using the
-C<cp -a> command.
+Копіює файл або каталог з C<джерела> до C<призначення> рекурсивно з
+використанням команди C<cp -a>.
 
 =head2 cp-r
 
  cp-r джерело призначення
 
-This copies a file or directory from C<src> to C<dest> recursively using the
-C<cp -rP> command.
+Копіює файл або каталог з C<джерела> до C<призначення> рекурсивно з
+використанням команди C<cp -rP>.
 
 Most users should use L</cp-a> instead.  This command is useful when you
 don't want to preserve permissions, because the target filesystem does not
@@ -1867,11 +1880,11 @@ following formats are currently permitted:
 New (SVR4) portable format.  This format happens to be compatible with the
 cpio-like format used by the Linux kernel for initramfs.
 
-This is the default format.
+Цей формат є типовим.
 
 =item C<crc>
 
-New (SVR4) portable format with a checksum.
+Новий портативний формат (SVR4) із контрольною сумою.
 
 =back
 
@@ -1915,7 +1928,8 @@ string returned from L</list-devices>.
 
  df
 
-This command runs the C<df> command to report disk space used.
+Ця команда запускає програму C<df> для отримання даних щодо використаного
+місця на диску.
 
 This command is mostly useful for interactive sessions.  It is I<not>
 intended that you try to parse the output string.  Use L</statvfs> from
@@ -1925,8 +1939,8 @@ programs.
 
  df-h
 
-This command runs the C<df -h> command to report disk space used in
-human-readable format.
+Ця команда запускає програму C<df -h> для отримання даних щодо використаного
+місця на диску у зручному для читання форматі.
 
 This command is mostly useful for interactive sessions.  It is I<not>
 intended that you try to parse the output string.  Use L</statvfs> from
@@ -1948,7 +1962,7 @@ C<backingformat> to describe the format of C<backingfile>.
 If F<filename> refers to a block device, then the device is formatted.  The
 C<size> is ignored since block devices have an intrinsic size.
 
-The other optional parameters are:
+Іншими необов’язковими параметрами є:
 
 =over 4
 
@@ -1995,22 +2009,23 @@ circumstances.  See L<guestfs(3)/CVE-2010-3851>.
 
 =head2 disk-has-backing-file
 
- disk-has-backing-file filename
+ disk-has-backing-file назва_файла
 
-Detect and return whether the disk image F<filename> has a backing file.
+Визначає і повідомляє, чи є у образу диска F<назва_файла> файл резервної
+копії.
 
-Note that detecting disk features can be insecure under some circumstances.
-See L<guestfs(3)/CVE-2010-3851>.
+Зауважте, що визначення можливостей диска може, за певних обставин,
+зашкодити захисту системи. Див. L<guestfs(3)/CVE-2010-3851>.
 
 =head2 disk-virtual-size
 
  disk-virtual-size назва файла
 
-Detect and return the virtual size in bytes of the disk image called
-F<filename>.
+Визначає і повідомляє віртуальний розмір у байтах образу диска із назвою
+F<назва_файла>.
 
-Note that detecting disk features can be insecure under some circumstances.
-See L<guestfs(3)/CVE-2010-3851>.
+Зауважте, що визначення можливостей диска може, за певних обставин,
+зашкодити захисту системи. Див. L<guestfs(3)/CVE-2010-3851>.
 
 =head2 dmesg
 
@@ -2288,7 +2303,7 @@ commands which create a file in the host and attach it as a device.
 
 =head2 feature-available
 
- feature-available 'groups ...'
+ feature-available 'групи ...'
 
 This is the same as L</available>, but unlike that call it returns a simple
 true/false boolean result, instead of throwing an exception if a feature is
@@ -2348,8 +2363,8 @@ is not guaranteed by the ABI.
 
  file-architecture назва_файла
 
-This detects the architecture of the binary F<filename>, and returns it if
-known.
+Визначає архітектуру виконуваного файла F<назва_файла> і повертає її
+значення, якщо воно визначене у програмі.
 
 Архітектурами, визначеними у поточній версії є:
 
@@ -2384,6 +2399,22 @@ Intel Itanium.
 =item "ppc64le"
 
 64 bit Power PC (little endian).
+
+=item "riscv32"
+
+=item "riscv64"
+
+=item "riscv128"
+
+RISC-V 32-, 64- or 128-bit variants.
+
+=item "s390"
+
+31 bit IBM S/390.
+
+=item "s390x"
+
+64 bit IBM S/390.
 
 =item "sparc"
 
@@ -2439,13 +2470,13 @@ some non-x86 Linux vmlinuz kernels
 
 =back
 
-What it can't do currently:
+Що не можна зробити у поточній версії:
 
 =over 4
 
 =item *
 
-static libraries (libfoo.a)
+статичні бібліотеки (libfoo.a)
 
 =item *
 
@@ -2474,7 +2505,7 @@ L</blockdev-getsize64>.
 
 =head2 filesystem-available
 
- filesystem-available filesystem
+ filesystem-available файлова_система
 
 Check whether libguestfs supports the named filesystem.  The argument
 C<filesystem> is a filesystem name, such as C<ext3>.
@@ -2491,7 +2522,7 @@ mkfs.E<lt>I<fs>E<gt> tool.
 
 =head2 filesystem-walk
 
- filesystem-walk device
+ filesystem-walk пристрій
 
 Walk through the internal structures of a disk partition (eg. F</dev/sda1>)
 in order to return a list of all the files and directories stored within.
@@ -2520,7 +2551,7 @@ File size in bytes. It migh be C<-1> if the node has been deleted.
 
 =item 'tsk_name'
 
-The file path relative to its directory.
+Шлях до файла відносно його каталогу.
 
 =item 'tsk_flags'
 
@@ -2646,7 +2677,7 @@ L</fill-pattern>.
 
 =head2 fill-dir
 
- fill-dir dir nr
+ fill-dir каталог число
 
 This function, useful for testing filesystems, creates C<nr> empty files in
 the directory C<dir> with names C<00000000> through C<nr-1> (ie. each file
@@ -2716,6 +2747,18 @@ L<find(1)> option I<-print0>.
 =back
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+=head2 find-inode
+
+ find-inode device inode
+
+Searches all the entries associated with the given inode.
+
+For each entry, a C<tsk_dirent> structure is returned.  See
+C<filesystem_walk> for more information about C<tsk_dirent> structures.
+
+This command depends on the feature C<libtsk>.  See also
+L</feature-available>.
 
 =head2 findfs-label
 
@@ -2838,7 +2881,7 @@ This handle property was previously called the "attach method".
 
 =head2 get-backend-setting
 
- get-backend-setting name
+ get-backend-setting назва
 
 Find a backend setting string which is either C<"name"> or begins with
 C<"name=">.  If C<"name">, this returns the string C<"1">.  If C<"name=">,
@@ -2853,7 +2896,7 @@ L</last-errno>) will be C<ESRCH> in this case.
 
  get-backend-settings
 
-Return the current backend settings.
+Повертає поточні параметри модуля.
 
 This call returns all backend settings strings.  If you want to find a
 single backend setting, see L</get-backend-setting>.
@@ -2914,11 +2957,11 @@ The file is not a candidate for backup (see L<dump(8)>).
 
 =item 'E'
 
-The file has compression errors.
+Файл стиснуто з помилками.
 
 =item 'e'
 
-The file is using extents.
+Файл використовує розширення.
 
 =item 'h'
 
@@ -3025,7 +3068,7 @@ these functions.
 
  get-hv
 
-Return the current hypervisor binary.
+Повертає назву виконуваного файла поточного гіпервізора.
 
 This is always non-NULL.  If it wasn't set already, then this will return
 the default qemu binary name.
@@ -3038,7 +3081,7 @@ Get the handle identifier.  See L</set-identifier>.
 
 =head2 get-libvirt-requested-credential-challenge
 
- get-libvirt-requested-credential-challenge index
+ get-libvirt-requested-credential-challenge індекс
 
 Get the challenge (provided by libvirt) for the C<index>'th requested
 credential.  If libvirt did not provide a challenge, this returns the empty
@@ -3048,7 +3091,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
 =head2 get-libvirt-requested-credential-defresult
 
- get-libvirt-requested-credential-defresult index
+ get-libvirt-requested-credential-defresult індекс
 
 Get the default result (provided by libvirt) for the C<index>'th requested
 credential.  If libvirt did not provide a default result, this returns the
@@ -3270,7 +3313,7 @@ L</feature-available>.
 
 =head2 glob-expand-opts
 
- glob-expand pattern [directoryslash:true|false]
+ glob-expand шаблон [directoryslash:true|false]
 
 This command searches for all the pathnames matching C<pattern> according to
 the wildcard expansion rules used by the shell.
@@ -3550,7 +3593,7 @@ L</feature-available>.
 
 =head2 hivex-open
 
- hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false]
+ hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false] [unsafe:true|false]
 
 Open the Windows Registry hive file named F<filename>.  If there was any
 previous hivex handle associated with this guestfs session, then it is
@@ -4273,6 +4316,38 @@ CurrentControlSet is a registry key name such as C<ControlSet001>.
 
 This call assumes that the guest is Windows and that the Registry could be
 examined by inspection.  If this is not the case then an error is returned.
+
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
+
+=head2 inspect-get-windows-software-hive
+
+ inspect-get-windows-software-hive root
+
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SOFTWARE.
+
+This call assumes that the guest is Windows and that the guest has a
+software hive file with the right name.  If this is not the case then an
+error is returned.  This call does not check that the hive is a valid
+Windows Registry hive.
+
+You can use L</hivex-open> to read or write to the hive.
+
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
+
+=head2 inspect-get-windows-system-hive
+
+ inspect-get-windows-system-hive root
+
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SYSTEM.
+
+This call assumes that the guest is Windows and that the guest has a system
+hive file with the right name.  If this is not the case then an error is
+returned.  This call does not check that the hive is a valid Windows
+Registry hive.
+
+You can use L</hivex-open> to read or write to the hive.
 
 З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
@@ -5034,7 +5109,7 @@ returned.
 
  list-devices
 
-List all the block devices.
+Вивести список усіх блокових пристроїв.
 
 The full block device names are returned, eg. F</dev/sda>.
 
@@ -6108,6 +6183,38 @@ Unlike with L</mknod>, C<mode> B<must> contain only permissions bits.
 The mode actually set is affected by the umask.
 
 This command depends on the feature C<mknod>.  See also
+L</feature-available>.
+
+=head2 mksquashfs
+
+ mksquashfs path (filename|-) [compress:..] [excludes:..]
+
+Create a squashfs filesystem for the specified C<path>.
+
+The optional C<compress> flag controls compression.  If not given, then the
+output compressed using C<gzip>.  Otherwise one of the following strings may
+be given to select the compression type of the squashfs: C<gzip>, C<lzma>,
+C<lzo>, C<lz4>, C<xz>.
+
+The other optional arguments are:
+
+=over 4
+
+=item C<excludes>
+
+A list of wildcards.  Files are excluded if they match any of the wildcards.
+
+=back
+
+Please note that this API may fail when used to compress directories with
+large files, such as the resulting squashfs will be over 3GB big.
+
+Use C<-> instead of a filename to read/write from stdin/stdout.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+This command depends on the feature C<squashfs>.  See also
 L</feature-available>.
 
 =head2 mkswap
@@ -7727,6 +7834,10 @@ label.
 
 The label is limited to 11 bytes.
 
+=item swap
+
+The label is limited to 16 bytes.
+
 =back
 
 If there is no support for changing the label for the type of the specified
@@ -8705,7 +8816,7 @@ even if you specify C<0777>.
 
 Див. також L</get-umask>, L<umask(2)>, L</mknod>, L</mkdir>.
 
-This call returns the previous umask.
+Цей виклик повертає попередню umask.
 
 =head2 umount
 
@@ -8727,16 +8838,16 @@ ARGUMENTS>.
 
  umount-all
 
-This unmounts all mounted filesystems.
+Демонтує усі змонтовані файлові системи.
 
-Some internal mounts are not unmounted by this call.
+Деякі із внутрішніх монтувань не демонтуються цим викликом.
 
 =head2 umount-local
 
  umount-local [retry:true|false]
 
-If libguestfs is exporting the filesystem on a local mountpoint, then this
-unmounts it.
+Якщо libguestfs експортує файлову систему на локальну точку монтування, цей
+виклик демонтує її.
 
 See L<guestfs(3)/MOUNT LOCAL> for full documentation.
 
@@ -8779,7 +8890,8 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
  user-cancel
 
-This function cancels the current upload or download operation.
+За допомогою цієї функції можна скасувати поточну дію із отримання або
+вивантаження даних.
 
 Unlike most other libguestfs calls, this function is signal safe and thread
 safe.  You can call it from a signal handler or from another thread, without
@@ -8808,7 +8920,7 @@ with a cancel button, wire up the cancel button to call this function.
 
  utimens path atsecs atnsecs mtsecs mtnsecs
 
-This command sets the timestamps of a file with nanosecond precision.
+Ця команда встановлює часову позначку для файла з точністю до наносекунди.
 
 C<atsecs, atnsecs> are the last access time (atime) in secs and nanoseconds
 from the epoch.
@@ -8836,7 +8948,7 @@ structure is defined by the API.
 
  version
 
-Return the libguestfs version number that the program is linked against.
+Повертає номер версії libguestfs, з якою скомпоновано програму.
 
 Note that because of dynamic linking this is not necessarily the version of
 libguestfs that you compiled against.  You can compile the program, and then
@@ -8853,7 +8965,7 @@ C<minor> and C<release>) are numbers and correspond to the usual version
 triplet.  The fourth element (C<extra>) is a string and is normally empty,
 but may be used for distro-specific information.
 
-To construct the original version string: C<$major.$minor.$release$extra>
+Для побудови початкового рядка версії: C<$major.$minor.$release$extra>
 
 Див також: L<guestfs(3)/LIBGUESTFS VERSION NUMBERS>.
 
@@ -8882,7 +8994,7 @@ size for filesystem shrinking.
 If getting minimum size of specified filesystem is not supported, this will
 fail and set errno as ENOTSUP.
 
-See also L<ntfsresize(8)>, L<resize2fs(8)>, L<btrfs(8)>, L<xfs_info(8)>.
+Див. також L<ntfsresize(8)>, L<resize2fs(8)>, L<btrfs(8)>, L<xfs_info(8)>.
 
 =head2 vfs-type
 
@@ -8905,7 +9017,7 @@ This returns the filesystem UUID of the filesystem on C<mountable>.
 
 If the filesystem does not have a UUID, this returns the empty string.
 
-To find a filesystem from the UUID, use L</findfs-uuid>.
+Для визначення файлової системи за UUID скористайтеся L</findfs-uuid>.
 
 =head2 vg-activate
 
@@ -8914,7 +9026,7 @@ To find a filesystem from the UUID, use L</findfs-uuid>.
 This command activates or (if C<activate> is false) deactivates all logical
 volumes in the listed volume groups C<volgroups>.
 
-This command is the same as running C<vgchange -a y|n volgroups...>
+Ця команда дає ті самі результати, що і C<vgchange -a y|n групи томів...>
 
 Note that if C<volgroups> is an empty list then B<all> volume groups are
 activated or deactivated.
@@ -8929,7 +9041,7 @@ L</feature-available>.
 This command activates or (if C<activate> is false) deactivates all logical
 volumes in all volume groups.
 
-This command is the same as running C<vgchange -a y|n>
+Ця команда дає ті самі результати, що і C<vgchange -a y|n>
 
 This command depends on the feature C<lvm2>.  See also
 L</feature-available>.
@@ -8938,7 +9050,7 @@ L</feature-available>.
 
  vgchange-uuid vg
 
-Generate a new random UUID for the volume group C<vg>.
+Створити новий випадковий UUID для групи томів C<vg>.
 
 This command depends on the feature C<lvm2>.  See also
 L</feature-available>.

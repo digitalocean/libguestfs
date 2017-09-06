@@ -207,7 +207,7 @@ guestfs_int_ruby_blockdev_getro (VALUE gv, VALUE devicev)
  *
  * [Since] Added in version 1.9.3.
  *
- * [Deprecated] In new code, use rdoc-ref:mkfs instead.
+ * [Deprecated] There is no documented replacement
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_blockdev_setbsz}[http://libguestfs.org/guestfs.3.html#guestfs_blockdev_setbsz].
@@ -2801,6 +2801,9 @@ guestfs_int_ruby_set_e2generation (VALUE gv, VALUE filev, VALUE generationv)
  * 
  * fat The label is limited to 11 bytes.
  * 
+ * swap
+ * The label is limited to 16 bytes.
+ * 
  * If there is no support for changing the label for the
  * type of the specified filesystem, set_label will fail
  * and set errno as ENOTSUP.
@@ -3305,7 +3308,7 @@ guestfs_int_ruby_vgcreate (VALUE gv, VALUE volgroupv, VALUE physvolsv)
  *
  * [Since] Added in version 0.3.
  *
- * [Deprecated] In new code, use rdoc-ref:launch instead.
+ * [Deprecated] There is no documented replacement
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_wait_ready}[http://libguestfs.org/guestfs.3.html#guestfs_wait_ready].

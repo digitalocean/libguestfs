@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,20 +19,20 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [34])
-m4_define([libguestfs_release], [6])
+m4_define([libguestfs_minor],   [36])
+m4_define([libguestfs_release], [5])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 
 dnl The date that the above version was released.  This is used in
 dnl the website 'index.html' file.
-AC_SUBST([RELEASE_DATE], [2016-03-08])
+AC_SUBST([RELEASE_DATE], [2017-05-19])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_REQUIRE_AUX_FILE([guestfs-test-driver])
 
 dnl Initialize automake.
-AM_INIT_AUTOMAKE(foreign subdir-objects) dnl NB: Do not [quote] this parameter.
+AM_INIT_AUTOMAKE(foreign subdir-objects tar-pax) dnl NB: Do not [quote] this parameter.
 
 m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes]) # make --enable-silent-rules the default.
@@ -151,6 +151,8 @@ AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
 AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
+AC_CONFIG_FILES([inspector/test-virt-inspector.sh],
+                [chmod +x,-w inspector/test-virt-inspector.sh])
 AC_CONFIG_FILES([installcheck.sh],
                 [chmod +x,-w installcheck.sh])
 AC_CONFIG_FILES([p2v/virt-p2v-make-disk],
@@ -175,11 +177,21 @@ AC_CONFIG_FILES([Makefile
                  builder/Makefile
                  builder/libguestfs.conf
                  builder/opensuse.conf
+                 builder/templates/Makefile
                  builder/test-config/virt-builder/repos.d/test-index.conf
                  builder/test-simplestreams/virt-builder/repos.d/cirros.conf
                  builder/test-website/virt-builder/repos.d/libguestfs.conf
-                 builder/website/Makefile
                  cat/Makefile
+                 common/errnostring/Makefile
+                 common/edit/Makefile
+                 common/miniexpect/Makefile
+                 common/options/Makefile
+                 common/parallel/Makefile
+                 common/progress/Makefile
+                 common/protocol/Makefile
+                 common/utils/Makefile
+                 common/visit/Makefile
+                 common/windows/Makefile
                  csharp/Makefile
                  customize/Makefile
                  daemon/Makefile
@@ -208,6 +220,8 @@ AC_CONFIG_FILES([Makefile
                  inspector/Makefile
                  java/Makefile
                  java/examples/Makefile
+                 lib/Makefile
+                 lib/libguestfs.pc
                  lua/Makefile
                  lua/examples/Makefile
                  make-fs/Makefile
@@ -228,6 +242,7 @@ AC_CONFIG_FILES([Makefile
                  python/Makefile
                  python/examples/Makefile
                  python/setup.py
+                 python/t/tests_helper.py
                  rescue/Makefile
                  resize/Makefile
                  ruby/Makefile
@@ -235,8 +250,6 @@ AC_CONFIG_FILES([Makefile
                  ruby/examples/Makefile
                  ruby/ext/guestfs/extconf.rb
                  sparsify/Makefile
-                 src/Makefile
-                 src/libguestfs.pc
                  sysprep/Makefile
                  test-data/Makefile
                  test-data/binaries/Makefile
