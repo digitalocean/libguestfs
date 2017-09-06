@@ -729,7 +729,7 @@ val blockdev_rereadpt : t -> string -> unit
 val blockdev_setbsz : t -> string -> int -> unit
 (** set blocksize of block device
 
-    @deprecated Use {!mkfs} instead
+    @deprecated There is no documented replacement
 
     @since 1.9.3
  *)
@@ -4457,7 +4457,7 @@ val vguuid : t -> string -> string
 val wait_ready : t -> unit
 (** wait until the hypervisor launches (no op)
 
-    @deprecated Use {!launch} instead
+    @deprecated There is no documented replacement
 
     @since 0.3
  *)
@@ -4889,7 +4889,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method blockdev_setbsz : string -> int -> unit
   (** set blocksize of block device
 
-    @deprecated Use {!mkfs} instead
+    @deprecated There is no documented replacement
 
     @since 1.9.3
    *)
@@ -8060,7 +8060,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method wait_ready : unit -> unit
   (** wait until the hypervisor launches (no op)
 
-    @deprecated Use {!launch} instead
+    @deprecated There is no documented replacement
 
     @since 0.3
    *)

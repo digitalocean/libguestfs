@@ -1199,7 +1199,8 @@ If you need to set the filesystem block size, use the
 C<blocksize> option of C<$g-E<gt>mkfs>.
 
 I<This function is deprecated.>
-In new code, use the L</mkfs> call instead.
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -8722,7 +8723,8 @@ remove them, unless you want to retain compatibility with older
 versions of the API.
 
 I<This function is deprecated.>
-In new code, use the L</launch> call instead.
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems

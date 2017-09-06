@@ -1195,8 +1195,9 @@ class GuestFS(object):
         If you need to set the filesystem block size, use the
         "blocksize" option of "g.mkfs".
 
-        *This function is deprecated.* In new code, use the
-        "mkfs" call instead.
+        *This function is deprecated.* There is no replacement.
+        Consult the API documentation in guestfs(3) for further
+        information.
 
         Deprecated functions will not be removed from the API,
         but the fact that they are deprecated indicates that
@@ -10555,8 +10556,9 @@ class GuestFS(object):
         can just remove them, unless you want to retain
         compatibility with older versions of the API.
 
-        *This function is deprecated.* In new code, use the
-        "launch" call instead.
+        *This function is deprecated.* There is no replacement.
+        Consult the API documentation in guestfs(3) for further
+        information.
 
         Deprecated functions will not be removed from the API,
         but the fact that they are deprecated indicates that

@@ -41,7 +41,7 @@ instead of erl_interface.
 #include "actions.h"
 
 ETERM *
-run_acl_get_file (ETERM *message)
+run_acl_get_file (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *acltype = erl_iolist_to_string (ARG (1));
@@ -57,7 +57,7 @@ run_acl_get_file (ETERM *message)
 }
 
 ETERM *
-run_aug_close (ETERM *message)
+run_aug_close (ETERM *args_tuple)
 {
   int r;
 
@@ -69,7 +69,7 @@ run_aug_close (ETERM *message)
 }
 
 ETERM *
-run_aug_defnode (ETERM *message)
+run_aug_defnode (ETERM *args_tuple)
 {
   CLEANUP_FREE char *name = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *expr = erl_iolist_to_string (ARG (1));
@@ -86,7 +86,7 @@ run_aug_defnode (ETERM *message)
 }
 
 ETERM *
-run_aug_get (ETERM *message)
+run_aug_get (ETERM *args_tuple)
 {
   CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
   char *r;
@@ -101,7 +101,7 @@ run_aug_get (ETERM *message)
 }
 
 ETERM *
-run_aug_save (ETERM *message)
+run_aug_save (ETERM *args_tuple)
 {
   int r;
 
@@ -113,7 +113,7 @@ run_aug_save (ETERM *message)
 }
 
 ETERM *
-run_aug_setm (ETERM *message)
+run_aug_setm (ETERM *args_tuple)
 {
   CLEANUP_FREE char *base = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *sub;
@@ -132,7 +132,7 @@ run_aug_setm (ETERM *message)
 }
 
 ETERM *
-run_available (ETERM *message)
+run_available (ETERM *args_tuple)
 {
   CLEANUP_FREE_STRING_LIST char **groups = get_string_list (ARG (0));
   int r;
@@ -145,7 +145,7 @@ run_available (ETERM *message)
 }
 
 ETERM *
-run_blkdiscard (ETERM *message)
+run_blkdiscard (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
@@ -158,7 +158,7 @@ run_blkdiscard (ETERM *message)
 }
 
 ETERM *
-run_blockdev_getsz (ETERM *message)
+run_blockdev_getsz (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int64_t r;
@@ -171,7 +171,7 @@ run_blockdev_getsz (ETERM *message)
 }
 
 ETERM *
-run_blockdev_setro (ETERM *message)
+run_blockdev_setro (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
@@ -184,7 +184,7 @@ run_blockdev_setro (ETERM *message)
 }
 
 ETERM *
-run_btrfs_balance_status (ETERM *message)
+run_btrfs_balance_status (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   struct guestfs_btrfsbalance *r;
@@ -199,7 +199,7 @@ run_btrfs_balance_status (ETERM *message)
 }
 
 ETERM *
-run_btrfs_device_delete (ETERM *message)
+run_btrfs_device_delete (ETERM *args_tuple)
 {
   CLEANUP_FREE_STRING_LIST char **devices = get_string_list (ARG (0));
   CLEANUP_FREE char *fs = erl_iolist_to_string (ARG (1));
@@ -213,7 +213,7 @@ run_btrfs_device_delete (ETERM *message)
 }
 
 ETERM *
-run_btrfs_filesystem_defragment (ETERM *message)
+run_btrfs_filesystem_defragment (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
 
@@ -251,7 +251,7 @@ run_btrfs_filesystem_defragment (ETERM *message)
 }
 
 ETERM *
-run_btrfs_filesystem_resize (ETERM *message)
+run_btrfs_filesystem_resize (ETERM *args_tuple)
 {
   CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (0));
 
@@ -282,7 +282,7 @@ run_btrfs_filesystem_resize (ETERM *message)
 }
 
 ETERM *
-run_btrfs_filesystem_sync (ETERM *message)
+run_btrfs_filesystem_sync (ETERM *args_tuple)
 {
   CLEANUP_FREE char *fs = erl_iolist_to_string (ARG (0));
   int r;
@@ -295,7 +295,7 @@ run_btrfs_filesystem_sync (ETERM *message)
 }
 
 ETERM *
-run_btrfs_image (ETERM *message)
+run_btrfs_image (ETERM *args_tuple)
 {
   CLEANUP_FREE_STRING_LIST char **source = get_string_list (ARG (0));
   CLEANUP_FREE char *image = erl_iolist_to_string (ARG (1));
@@ -327,7 +327,7 @@ run_btrfs_image (ETERM *message)
 }
 
 ETERM *
-run_btrfs_qgroup_destroy (ETERM *message)
+run_btrfs_qgroup_destroy (ETERM *args_tuple)
 {
   CLEANUP_FREE char *qgroupid = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *subvolume = erl_iolist_to_string (ARG (1));
@@ -341,7 +341,7 @@ run_btrfs_qgroup_destroy (ETERM *message)
 }
 
 ETERM *
-run_btrfs_subvolume_delete (ETERM *message)
+run_btrfs_subvolume_delete (ETERM *args_tuple)
 {
   CLEANUP_FREE char *subvolume = erl_iolist_to_string (ARG (0));
   int r;
@@ -354,7 +354,7 @@ run_btrfs_subvolume_delete (ETERM *message)
 }
 
 ETERM *
-run_btrfs_subvolume_list (ETERM *message)
+run_btrfs_subvolume_list (ETERM *args_tuple)
 {
   CLEANUP_FREE char *fs = erl_iolist_to_string (ARG (0));
   struct guestfs_btrfssubvolume_list *r;
@@ -369,7 +369,7 @@ run_btrfs_subvolume_list (ETERM *message)
 }
 
 ETERM *
-run_btrfstune_enable_skinny_metadata_extent_refs (ETERM *message)
+run_btrfstune_enable_skinny_metadata_extent_refs (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
@@ -382,7 +382,7 @@ run_btrfstune_enable_skinny_metadata_extent_refs (ETERM *message)
 }
 
 ETERM *
-run_cap_get_file (ETERM *message)
+run_cap_get_file (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char *r;
@@ -397,7 +397,7 @@ run_cap_get_file (ETERM *message)
 }
 
 ETERM *
-run_checksum (ETERM *message)
+run_checksum (ETERM *args_tuple)
 {
   CLEANUP_FREE char *csumtype = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
@@ -413,7 +413,7 @@ run_checksum (ETERM *message)
 }
 
 ETERM *
-run_chmod (ETERM *message)
+run_chmod (ETERM *args_tuple)
 {
   int mode = get_int (ARG (0));
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
@@ -427,7 +427,7 @@ run_chmod (ETERM *message)
 }
 
 ETERM *
-run_copy_out (ETERM *message)
+run_copy_out (ETERM *args_tuple)
 {
   CLEANUP_FREE char *remotepath = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *localdir = erl_iolist_to_string (ARG (1));
@@ -441,7 +441,7 @@ run_copy_out (ETERM *message)
 }
 
 ETERM *
-run_disk_create (ETERM *message)
+run_disk_create (ETERM *args_tuple)
 {
   CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *format = erl_iolist_to_string (ARG (1));
@@ -502,7 +502,7 @@ run_disk_create (ETERM *message)
 }
 
 ETERM *
-run_dmesg (ETERM *message)
+run_dmesg (ETERM *args_tuple)
 {
   char *r;
 
@@ -516,7 +516,7 @@ run_dmesg (ETERM *message)
 }
 
 ETERM *
-run_download_blocks (ETERM *message)
+run_download_blocks (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int64_t start = get_int64 (ARG (1));
@@ -550,7 +550,7 @@ run_download_blocks (ETERM *message)
 }
 
 ETERM *
-run_du (ETERM *message)
+run_du (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int64_t r;
@@ -563,7 +563,7 @@ run_du (ETERM *message)
 }
 
 ETERM *
-run_e2fsck_f (ETERM *message)
+run_e2fsck_f (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
@@ -576,7 +576,7 @@ run_e2fsck_f (ETERM *message)
 }
 
 ETERM *
-run_echo_daemon (ETERM *message)
+run_echo_daemon (ETERM *args_tuple)
 {
   CLEANUP_FREE_STRING_LIST char **words = get_string_list (ARG (0));
   char *r;
@@ -591,7 +591,7 @@ run_echo_daemon (ETERM *message)
 }
 
 ETERM *
-run_equal (ETERM *message)
+run_equal (ETERM *args_tuple)
 {
   CLEANUP_FREE char *file1 = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *file2 = erl_iolist_to_string (ARG (1));
@@ -605,7 +605,7 @@ run_equal (ETERM *message)
 }
 
 ETERM *
-run_fgrepi (ETERM *message)
+run_fgrepi (ETERM *args_tuple)
 {
   CLEANUP_FREE char *pattern = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
@@ -622,7 +622,7 @@ run_fgrepi (ETERM *message)
 }
 
 ETERM *
-run_get_backend_setting (ETERM *message)
+run_get_backend_setting (ETERM *args_tuple)
 {
   CLEANUP_FREE char *name = erl_iolist_to_string (ARG (0));
   char *r;
@@ -637,7 +637,7 @@ run_get_backend_setting (ETERM *message)
 }
 
 ETERM *
-run_get_backend_settings (ETERM *message)
+run_get_backend_settings (ETERM *args_tuple)
 {
   char **r;
 
@@ -652,7 +652,7 @@ run_get_backend_settings (ETERM *message)
 }
 
 ETERM *
-run_get_e2label (ETERM *message)
+run_get_e2label (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char *r;
@@ -667,7 +667,7 @@ run_get_e2label (ETERM *message)
 }
 
 ETERM *
-run_get_recovery_proc (ETERM *message)
+run_get_recovery_proc (ETERM *args_tuple)
 {
   int r;
 
@@ -679,7 +679,7 @@ run_get_recovery_proc (ETERM *message)
 }
 
 ETERM *
-run_get_tmpdir (ETERM *message)
+run_get_tmpdir (ETERM *args_tuple)
 {
   char *r;
 
@@ -693,7 +693,7 @@ run_get_tmpdir (ETERM *message)
 }
 
 ETERM *
-run_getcon (ETERM *message)
+run_getcon (ETERM *args_tuple)
 {
   char *r;
 
@@ -707,7 +707,7 @@ run_getcon (ETERM *message)
 }
 
 ETERM *
-run_getxattr (ETERM *message)
+run_getxattr (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *name = erl_iolist_to_string (ARG (1));
@@ -724,7 +724,7 @@ run_getxattr (ETERM *message)
 }
 
 ETERM *
-run_hivex_close (ETERM *message)
+run_hivex_close (ETERM *args_tuple)
 {
   int r;
 
@@ -736,7 +736,7 @@ run_hivex_close (ETERM *message)
 }
 
 ETERM *
-run_hivex_open (ETERM *message)
+run_hivex_open (ETERM *args_tuple)
 {
   CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
 
@@ -782,7 +782,7 @@ run_hivex_open (ETERM *message)
 }
 
 ETERM *
-run_hivex_value_utf8 (ETERM *message)
+run_hivex_value_utf8 (ETERM *args_tuple)
 {
   int64_t valueh = get_int64 (ARG (0));
   char *r;
@@ -797,7 +797,7 @@ run_hivex_value_utf8 (ETERM *message)
 }
 
 ETERM *
-run_inotify_add_watch (ETERM *message)
+run_inotify_add_watch (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int mask = get_int (ARG (1));
@@ -811,7 +811,7 @@ run_inotify_add_watch (ETERM *message)
 }
 
 ETERM *
-run_inotify_init (ETERM *message)
+run_inotify_init (ETERM *args_tuple)
 {
   int maxevents = get_int (ARG (0));
   int r;
@@ -824,7 +824,7 @@ run_inotify_init (ETERM *message)
 }
 
 ETERM *
-run_inspect_get_type (ETERM *message)
+run_inspect_get_type (ETERM *args_tuple)
 {
   CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
@@ -839,7 +839,7 @@ run_inspect_get_type (ETERM *message)
 }
 
 ETERM *
-run_inspect_is_live (ETERM *message)
+run_inspect_is_live (ETERM *args_tuple)
 {
   CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   int r;
@@ -852,7 +852,7 @@ run_inspect_is_live (ETERM *message)
 }
 
 ETERM *
-run_internal_exit (ETERM *message)
+run_internal_exit (ETERM *args_tuple)
 {
   int r;
 
@@ -864,7 +864,7 @@ run_internal_exit (ETERM *message)
 }
 
 ETERM *
-run_internal_test_only_optargs (ETERM *message)
+run_internal_test_only_optargs (ETERM *args_tuple)
 {
 
   struct guestfs_internal_test_only_optargs_argv optargs_s = { .bitmask = 0 };
@@ -894,7 +894,7 @@ run_internal_test_only_optargs (ETERM *message)
 }
 
 ETERM *
-run_internal_test_rconststringerr (ETERM *message)
+run_internal_test_rconststringerr (ETERM *args_tuple)
 {
   const char *r;
 
@@ -906,7 +906,7 @@ run_internal_test_rconststringerr (ETERM *message)
 }
 
 ETERM *
-run_is_dir (ETERM *message)
+run_is_dir (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
 
@@ -937,7 +937,7 @@ run_is_dir (ETERM *message)
 }
 
 ETERM *
-run_is_file (ETERM *message)
+run_is_file (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
 
@@ -968,7 +968,7 @@ run_is_file (ETERM *message)
 }
 
 ETERM *
-run_is_whole_device (ETERM *message)
+run_is_whole_device (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
@@ -981,7 +981,7 @@ run_is_whole_device (ETERM *message)
 }
 
 ETERM *
-run_is_zero_device (ETERM *message)
+run_is_zero_device (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
@@ -994,7 +994,7 @@ run_is_zero_device (ETERM *message)
 }
 
 ETERM *
-run_journal_get_realtime_usec (ETERM *message)
+run_journal_get_realtime_usec (ETERM *args_tuple)
 {
   int64_t r;
 
@@ -1006,7 +1006,7 @@ run_journal_get_realtime_usec (ETERM *message)
 }
 
 ETERM *
-run_journal_set_data_threshold (ETERM *message)
+run_journal_set_data_threshold (ETERM *args_tuple)
 {
   int64_t threshold = get_int64 (ARG (0));
   int r;
@@ -1019,7 +1019,7 @@ run_journal_set_data_threshold (ETERM *message)
 }
 
 ETERM *
-run_launch (ETERM *message)
+run_launch (ETERM *args_tuple)
 {
   int r;
 
@@ -1031,7 +1031,7 @@ run_launch (ETERM *message)
 }
 
 ETERM *
-run_ldmtool_remove_all (ETERM *message)
+run_ldmtool_remove_all (ETERM *args_tuple)
 {
   int r;
 
@@ -1043,7 +1043,7 @@ run_ldmtool_remove_all (ETERM *message)
 }
 
 ETERM *
-run_ldmtool_volume_hint (ETERM *message)
+run_ldmtool_volume_hint (ETERM *args_tuple)
 {
   CLEANUP_FREE char *diskgroup = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *volume = erl_iolist_to_string (ARG (1));
@@ -1059,7 +1059,7 @@ run_ldmtool_volume_hint (ETERM *message)
 }
 
 ETERM *
-run_ldmtool_volume_type (ETERM *message)
+run_ldmtool_volume_type (ETERM *args_tuple)
 {
   CLEANUP_FREE char *diskgroup = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *volume = erl_iolist_to_string (ARG (1));
@@ -1075,7 +1075,7 @@ run_ldmtool_volume_type (ETERM *message)
 }
 
 ETERM *
-run_list_devices (ETERM *message)
+run_list_devices (ETERM *args_tuple)
 {
   char **r;
 
@@ -1090,7 +1090,7 @@ run_list_devices (ETERM *message)
 }
 
 ETERM *
-run_list_filesystems (ETERM *message)
+run_list_filesystems (ETERM *args_tuple)
 {
   char **r;
 
@@ -1104,7 +1104,7 @@ run_list_filesystems (ETERM *message)
 }
 
 ETERM *
-run_ls (ETERM *message)
+run_ls (ETERM *args_tuple)
 {
   CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
   char **r;
@@ -1120,7 +1120,7 @@ run_ls (ETERM *message)
 }
 
 ETERM *
-run_ls0 (ETERM *message)
+run_ls0 (ETERM *args_tuple)
 {
   CLEANUP_FREE char *dir = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *filenames = erl_iolist_to_string (ARG (1));
@@ -1134,7 +1134,7 @@ run_ls0 (ETERM *message)
 }
 
 ETERM *
-run_lstatns (ETERM *message)
+run_lstatns (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   struct guestfs_statns *r;
@@ -1149,7 +1149,7 @@ run_lstatns (ETERM *message)
 }
 
 ETERM *
-run_lxattrlist (ETERM *message)
+run_lxattrlist (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE_STRING_LIST char **names = get_string_list (ARG (1));
@@ -1165,7 +1165,7 @@ run_lxattrlist (ETERM *message)
 }
 
 ETERM *
-run_mkdir_mode (ETERM *message)
+run_mkdir_mode (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int mode = get_int (ARG (1));
@@ -1179,7 +1179,7 @@ run_mkdir_mode (ETERM *message)
 }
 
 ETERM *
-run_mkdir_p (ETERM *message)
+run_mkdir_p (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
@@ -1192,7 +1192,7 @@ run_mkdir_p (ETERM *message)
 }
 
 ETERM *
-run_mke2fs (ETERM *message)
+run_mke2fs (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
@@ -1422,7 +1422,7 @@ run_mke2fs (ETERM *message)
 }
 
 ETERM *
-run_mke2fs_JL (ETERM *message)
+run_mke2fs_JL (ETERM *args_tuple)
 {
   CLEANUP_FREE char *fstype = erl_iolist_to_string (ARG (0));
   int blocksize = get_int (ARG (1));
@@ -1438,7 +1438,7 @@ run_mke2fs_JL (ETERM *message)
 }
 
 ETERM *
-run_mke2fs_JU (ETERM *message)
+run_mke2fs_JU (ETERM *args_tuple)
 {
   CLEANUP_FREE char *fstype = erl_iolist_to_string (ARG (0));
   int blocksize = get_int (ARG (1));
@@ -1454,7 +1454,7 @@ run_mke2fs_JU (ETERM *message)
 }
 
 ETERM *
-run_mke2journal (ETERM *message)
+run_mke2journal (ETERM *args_tuple)
 {
   int blocksize = get_int (ARG (0));
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
@@ -1468,7 +1468,7 @@ run_mke2journal (ETERM *message)
 }
 
 ETERM *
-run_mknod_b (ETERM *message)
+run_mknod_b (ETERM *args_tuple)
 {
   int mode = get_int (ARG (0));
   int devmajor = get_int (ARG (1));
@@ -1484,7 +1484,7 @@ run_mknod_b (ETERM *message)
 }
 
 ETERM *
-run_mount_local (ETERM *message)
+run_mount_local (ETERM *args_tuple)
 {
   CLEANUP_FREE char *localmountpoint = erl_iolist_to_string (ARG (0));
 
@@ -1532,7 +1532,7 @@ run_mount_local (ETERM *message)
 }
 
 ETERM *
-run_ntfsresize_size (ETERM *message)
+run_ntfsresize_size (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int64_t size = get_int64 (ARG (1));
@@ -1546,7 +1546,7 @@ run_ntfsresize_size (ETERM *message)
 }
 
 ETERM *
-run_part_del (ETERM *message)
+run_part_del (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
@@ -1560,7 +1560,7 @@ run_part_del (ETERM *message)
 }
 
 ETERM *
-run_part_get_gpt_type (ETERM *message)
+run_part_get_gpt_type (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
@@ -1576,7 +1576,7 @@ run_part_get_gpt_type (ETERM *message)
 }
 
 ETERM *
-run_ping_daemon (ETERM *message)
+run_ping_daemon (ETERM *args_tuple)
 {
   int r;
 
@@ -1588,7 +1588,7 @@ run_ping_daemon (ETERM *message)
 }
 
 ETERM *
-run_remove_drive (ETERM *message)
+run_remove_drive (ETERM *args_tuple)
 {
   CLEANUP_FREE char *label = erl_iolist_to_string (ARG (0));
   int r;
@@ -1601,7 +1601,7 @@ run_remove_drive (ETERM *message)
 }
 
 ETERM *
-run_rm (ETERM *message)
+run_rm (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
@@ -1614,7 +1614,7 @@ run_rm (ETERM *message)
 }
 
 ETERM *
-run_rmdir (ETERM *message)
+run_rmdir (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
@@ -1627,7 +1627,7 @@ run_rmdir (ETERM *message)
 }
 
 ETERM *
-run_rsync (ETERM *message)
+run_rsync (ETERM *args_tuple)
 {
   CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
@@ -1664,7 +1664,7 @@ run_rsync (ETERM *message)
 }
 
 ETERM *
-run_set_backend_settings (ETERM *message)
+run_set_backend_settings (ETERM *args_tuple)
 {
   CLEANUP_FREE_STRING_LIST char **settings = get_string_list (ARG (0));
   int r;
@@ -1677,7 +1677,7 @@ run_set_backend_settings (ETERM *message)
 }
 
 ETERM *
-run_set_hv (ETERM *message)
+run_set_hv (ETERM *args_tuple)
 {
   CLEANUP_FREE char *hv = erl_iolist_to_string (ARG (0));
   int r;
@@ -1690,7 +1690,7 @@ run_set_hv (ETERM *message)
 }
 
 ETERM *
-run_set_qemu (ETERM *message)
+run_set_qemu (ETERM *args_tuple)
 {
   CLEANUP_FREE char *hv;
   if (atom_equals (ARG (0), "undefined"))
@@ -1707,7 +1707,7 @@ run_set_qemu (ETERM *message)
 }
 
 ETERM *
-run_set_recovery_proc (ETERM *message)
+run_set_recovery_proc (ETERM *args_tuple)
 {
   int recoveryproc = get_bool (ARG (0));
   int r;
@@ -1720,7 +1720,7 @@ run_set_recovery_proc (ETERM *message)
 }
 
 ETERM *
-run_set_uuid (ETERM *message)
+run_set_uuid (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (1));
@@ -1734,7 +1734,7 @@ run_set_uuid (ETERM *message)
 }
 
 ETERM *
-run_setcon (ETERM *message)
+run_setcon (ETERM *args_tuple)
 {
   CLEANUP_FREE char *context = erl_iolist_to_string (ARG (0));
   int r;
@@ -1747,7 +1747,7 @@ run_setcon (ETERM *message)
 }
 
 ETERM *
-run_statvfs (ETERM *message)
+run_statvfs (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   struct guestfs_statvfs *r;
@@ -1762,7 +1762,7 @@ run_statvfs (ETERM *message)
 }
 
 ETERM *
-run_strings (ETERM *message)
+run_strings (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char **r;
@@ -1778,7 +1778,7 @@ run_strings (ETERM *message)
 }
 
 ETERM *
-run_swapoff_label (ETERM *message)
+run_swapoff_label (ETERM *args_tuple)
 {
   CLEANUP_FREE char *label = erl_iolist_to_string (ARG (0));
   int r;
@@ -1791,7 +1791,7 @@ run_swapoff_label (ETERM *message)
 }
 
 ETERM *
-run_swapoff_uuid (ETERM *message)
+run_swapoff_uuid (ETERM *args_tuple)
 {
   CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (0));
   int r;
@@ -1804,7 +1804,7 @@ run_swapoff_uuid (ETERM *message)
 }
 
 ETERM *
-run_tar_in (ETERM *message)
+run_tar_in (ETERM *args_tuple)
 {
   CLEANUP_FREE char *tarfile = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (1));
@@ -1853,7 +1853,7 @@ run_tar_in (ETERM *message)
 }
 
 ETERM *
-run_truncate (ETERM *message)
+run_truncate (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
@@ -1866,7 +1866,7 @@ run_truncate (ETERM *message)
 }
 
 ETERM *
-run_tune2fs (ETERM *message)
+run_tune2fs (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
@@ -1946,7 +1946,7 @@ run_tune2fs (ETERM *message)
 }
 
 ETERM *
-run_upload (ETERM *message)
+run_upload (ETERM *args_tuple)
 {
   CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *remotefilename = erl_iolist_to_string (ARG (1));
@@ -1960,7 +1960,7 @@ run_upload (ETERM *message)
 }
 
 ETERM *
-run_utimens (ETERM *message)
+run_utimens (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int64_t atsecs = get_int64 (ARG (1));
@@ -1977,7 +1977,7 @@ run_utimens (ETERM *message)
 }
 
 ETERM *
-run_version (ETERM *message)
+run_version (ETERM *args_tuple)
 {
   struct guestfs_version *r;
 
@@ -1991,7 +1991,7 @@ run_version (ETERM *message)
 }
 
 ETERM *
-run_vfs_minimum_size (ETERM *message)
+run_vfs_minimum_size (ETERM *args_tuple)
 {
   CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
   int64_t r;
@@ -2004,7 +2004,7 @@ run_vfs_minimum_size (ETERM *message)
 }
 
 ETERM *
-run_vfs_uuid (ETERM *message)
+run_vfs_uuid (ETERM *args_tuple)
 {
   CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
   char *r;
@@ -2019,7 +2019,7 @@ run_vfs_uuid (ETERM *message)
 }
 
 ETERM *
-run_vgs (ETERM *message)
+run_vgs (ETERM *args_tuple)
 {
   char **r;
 
@@ -2034,7 +2034,7 @@ run_vgs (ETERM *message)
 }
 
 ETERM *
-run_write_file (ETERM *message)
+run_write_file (ETERM *args_tuple)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *content = erl_iolist_to_string (ARG (1));
@@ -2049,7 +2049,7 @@ run_write_file (ETERM *message)
 }
 
 ETERM *
-run_zero (ETERM *message)
+run_zero (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
@@ -2062,7 +2062,7 @@ run_zero (ETERM *message)
 }
 
 ETERM *
-run_zerofree (ETERM *message)
+run_zerofree (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
@@ -2075,7 +2075,7 @@ run_zerofree (ETERM *message)
 }
 
 ETERM *
-run_zgrepi (ETERM *message)
+run_zgrepi (ETERM *args_tuple)
 {
   CLEANUP_FREE char *regex = erl_iolist_to_string (ARG (0));
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));

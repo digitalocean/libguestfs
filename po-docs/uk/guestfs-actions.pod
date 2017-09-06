@@ -1421,8 +1421,8 @@ and C<guestfs_blockdev_getsize64> for the more useful I<size in bytes>.
                           const char *device,
                           int blocksize);
 
-I<This function is deprecated.> In new code, use the L</guestfs_mkfs> call
-instead.
+I<This function is deprecated.> There is no replacement.  Consult the API
+documentation in L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -15001,8 +15001,8 @@ the returned string after use>.
  int
  guestfs_wait_ready (guestfs_h *g);
 
-I<This function is deprecated.> In new code, use the L</guestfs_launch> call
-instead.
+I<This function is deprecated.> There is no replacement.  Consult the API
+documentation in L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of

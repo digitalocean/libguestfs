@@ -2172,7 +2172,7 @@ public class GuestFS {
    * "blocksize" option of "g.mkfs".
    * </p>
    * @since 1.9.3
-   * @deprecated In new code, use {@link #mkfs} instead
+   * @deprecated There is no documented replacement
    * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void blockdev_setbsz (String device, int blocksize)
@@ -20981,7 +20981,7 @@ public class GuestFS {
    * compatibility with older versions of the API.
    * </p>
    * @since 0.3
-   * @deprecated In new code, use {@link #launch} instead
+   * @deprecated There is no documented replacement
    * @throws LibGuestFSException If there is a libguestfs error.
    */
   @Deprecated public void wait_ready ()

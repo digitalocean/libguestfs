@@ -2753,7 +2753,7 @@ guestfs_session_blockdev_rereadpt (GuestfsSession *session, const gchar *device,
  * of guestfs_session_mkfs().
  * 
  * Returns: true on success, false on error
- * Deprecated: In new code, use guestfs_session_mkfs() instead
+ * Deprecated: There is no documented replacement
  * Since: 1.9.3
  */
 gboolean
@@ -28614,7 +28614,7 @@ guestfs_session_vguuid (GuestfsSession *session, const gchar *vgname, GError **e
  * API.
  * 
  * Returns: true on success, false on error
- * Deprecated: In new code, use guestfs_session_launch() instead
+ * Deprecated: There is no documented replacement
  * Since: 0.3
  */
 gboolean

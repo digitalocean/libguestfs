@@ -1470,7 +1470,8 @@ This function returns 0 on success or -1 on error.
                           int blocksize);
 
 I<This function is deprecated.>
-In new code, use the L</guestfs_mkfs> call instead.
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -15405,7 +15406,8 @@ I<The caller must free the returned string after use>.
  guestfs_wait_ready (guestfs_h *g);
 
 I<This function is deprecated.>
-In new code, use the L</guestfs_launch> call instead.
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems

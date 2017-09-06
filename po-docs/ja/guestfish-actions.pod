@@ -929,7 +929,8 @@ blockdev.  B<Do not use it.>
 If you need to set the filesystem block size, use the C<blocksize> option of
 L</mkfs>.
 
-I<This function is deprecated.> In new code, use the L</mkfs> call instead.
+I<This function is deprecated.> There is no replacement.  Consult the API
+documentation in L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of

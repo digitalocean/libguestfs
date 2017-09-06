@@ -8,7 +8,7 @@ virt-v2v - перетворення гостьової системи для в�
  virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi vmware_guest
 
  virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi vmware_guest \
-   -o rhv -os rhv.nfs:/export_domain --network rhvm
+   -o rhv -os rhv.nfs:/export_domain --network ovirtmgmt
 
  virt-v2v -i libvirtxml guest-domain.xml -o local -os /var/tmp
 
@@ -102,10 +102,10 @@ to a RHV-M Export Storage Domain which is located remotely (over NFS) at
 C<rhv.nfs:/export_domain>.  If you are unclear about the location of the
 Export Storage Domain you should check the settings on your RHV-M management
 console.  Guest network interface(s) are connected to the target network
-called C<rhvm>.
+called C<ovirtmgmt>.
 
  virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi vmware_guest \
-   -o rhv -os rhv.nfs:/export_domain --network rhvm
+   -o rhv -os rhv.nfs:/export_domain --network ovirtmgmt
 
 In this case the host running virt-v2v acts as a B<conversion server>.
 
@@ -768,16 +768,6 @@ the guest will finish relabelling and reboot, or you can install
 policycoreutils E<ge> 1.18.1-4.13 before starting the v2v conversion.  See
 also L<https://bugzilla.redhat.com/show_bug.cgi?id=244636>
 
-=head1 RHEL 6
-
-=head2 RHEL 6.2 fails with "libguestfs error: selinux_relabel: : Success"
-
-Conversion of a RHEL 6.2 (exactly) guest will fail because the
-C</etc/selinux/targeted/contexts/files> file within the guest contains a
-corrupt regular expression.  This was fixed in later versions of RHEL 6, so
-you will need to update to any version E<ge> 6.3 before performing the
-conversion.  See also L<https://bugzilla.redhat.com/show_bug.cgi?id=1374232>
-
 =head1 DEBIAN AND UBUNTU
 
 =head2 "warning: could not determine a way to update the configuration of Grub2"
@@ -944,13 +934,13 @@ This is typical of a libvirt guest: It has a single network interface
 connected to a network called C<default>.
 
 To map a specific network to a target network, for example C<default> on the
-source to C<rhvm> on the target, use:
+source to C<ovirtmgmt> on the target, use:
 
- virt-v2v [...] --network default:rhvm
+ virt-v2v [...] --network default:ovirtmgmt
 
 To map every network to a target network, use:
 
- virt-v2v [...] --network rhvm
+ virt-v2v [...] --network ovirtmgmt
 
 Bridges are handled in the same way, but you have to use the I<--bridge>
 option instead.  For example:

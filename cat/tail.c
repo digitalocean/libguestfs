@@ -309,7 +309,7 @@ do_tail (int argc, char *argv[], /* list of files in the guest */
       CLEANUP_FREE_STATNS struct guestfs_statns *stat = NULL;
 
       if (windows) {
-        filename = windows_path (g, root, filename, 1 /* readonly */);
+        filename = windows_path (g, root, argv[i], 1 /* readonly */);
         if (filename == NULL)
           return -1; /* windows_path printed an error */
       }
@@ -495,7 +495,10 @@ reopen_handle (void)
 
   guestfs_set_verbose (g2, guestfs_get_verbose (g));
   guestfs_set_trace (g2, guestfs_get_trace (g));
-  guestfs_set_pgroup (g2, guestfs_get_pgroup (g));
+  if (guestfs_set_pgroup (g2, guestfs_get_pgroup (g)) == -1) {
+    perror ("guestfs_set_pgroup");
+    return -1;
+  }
 
   guestfs_close (g);
   g = g2;

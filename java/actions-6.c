@@ -789,7 +789,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1values  (JNIEnv *env, jobje
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  struct guestfs_hivex_value_list *r;
+  CLEANUP_FREE_HIVEX_VALUE_LIST struct guestfs_hivex_value_list *r = NULL;
   int64_t nodeh;
   size_t i;
 
@@ -815,7 +815,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1values  (JNIEnv *env, jobje
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
-  guestfs_free_hivex_value_list (r);
   return jr;
 
  ret_error:
@@ -831,7 +830,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inotify_1read  (JNIEnv *env, jobject obj
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  struct guestfs_inotify_event_list *r;
+  CLEANUP_FREE_INOTIFY_EVENT_LIST struct guestfs_inotify_event_list *r = NULL;
   size_t i;
 
 
@@ -865,7 +864,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1inotify_1read  (JNIEnv *env, jobject obj
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
-  guestfs_free_inotify_event_list (r);
   return jr;
 
  ret_error:
@@ -1042,7 +1040,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstruct  (JNIEnv *env, j
   jobject jr;
   jclass cl;
   jfieldID fl;
-  struct guestfs_lvm_pv *r;
+  CLEANUP_FREE_LVM_PV struct guestfs_lvm_pv *r = NULL;
   const char *val;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
@@ -1090,7 +1088,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstruct  (JNIEnv *env, j
   (*env)->SetLongField (env, jr, fl, r->pv_mda_count);
   fl = (*env)->GetFieldID (env, cl, "pv_mda_free", "J");
   (*env)->SetLongField (env, jr, fl, r->pv_mda_free);
-  guestfs_free_lvm_pv (r);
   return jr;
 
  ret_error:
@@ -1105,7 +1102,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1isoinfo  (JNIEnv *env, jobject obj, jlon
   jobject jr;
   jclass cl;
   jfieldID fl;
-  struct guestfs_isoinfo *r;
+  CLEANUP_FREE_ISOINFO struct guestfs_isoinfo *r = NULL;
   const char *isofile;
 
   isofile = (*env)->GetStringUTFChars (env, jisofile, NULL);
@@ -1154,7 +1151,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1isoinfo  (JNIEnv *env, jobject obj, jlon
   (*env)->SetLongField (env, jr, fl, r->iso_volume_expiration_t);
   fl = (*env)->GetFieldID (env, cl, "iso_volume_effective_t", "J");
   (*env)->SetLongField (env, jr, fl, r->iso_volume_effective_t);
-  guestfs_free_isoinfo (r);
   return jr;
 
  ret_error:
@@ -2142,7 +2138,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1tar_1out  (JNIEnv *env, jobject obj, jlo
   struct guestfs_tar_out_opts_argv optargs_s;
   const struct guestfs_tar_out_opts_argv *optargs = &optargs_s;
   size_t excludes_len;
-  char **excludes;
+  CLEANUP_FREE char **excludes = NULL;
   size_t i;
 
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
@@ -2176,7 +2172,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1tar_1out  (JNIEnv *env, jobject obj, jlo
     jobject o = (*env)->GetObjectArrayElement (env, jexcludes, i);
     (*env)->ReleaseStringUTFChars (env, o, optargs_s.excludes[i]);
   }
-  free (excludes);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -2223,7 +2218,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1vgcreate  (JNIEnv *env, jobject obj, jlo
   int r;
   const char *volgroup;
   size_t physvols_len;
-  char **physvols;
+  CLEANUP_FREE char **physvols = NULL;
   size_t i;
 
   volgroup = (*env)->GetStringUTFChars (env, jvolgroup, NULL);
@@ -2246,7 +2241,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1vgcreate  (JNIEnv *env, jobject obj, jlo
     jobject o = (*env)->GetObjectArrayElement (env, jphysvols, i);
     (*env)->ReleaseStringUTFChars (env, o, physvols[i]);
   }
-  free (physvols);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

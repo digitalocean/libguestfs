@@ -1406,7 +1406,8 @@ C<device> のパーティションテーブルを再読み込みします。
                           const char *device,
                           int blocksize);
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</guestfs_mkfs> を使用してください。
+I<This function is deprecated.> There is no replacement.  Consult the API
+documentation in L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -14778,7 +14779,8 @@ volumes, volume groups and logical volumes.
  int
  guestfs_wait_ready (guestfs_h *g);
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</guestfs_launch> を使用してください。
+I<This function is deprecated.> There is no replacement.  Consult the API
+documentation in L<guestfs(3)> for further information.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of

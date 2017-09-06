@@ -124,6 +124,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module exitfail:
   # Code from module extensions:
   # Code from module extern-inline:
+  # Code from module fatal-signal:
   # Code from module fchdir:
   # Code from module fchdir-tests:
   # Code from module fcntl:
@@ -193,6 +194,10 @@ AC_DEFUN([gl_EARLY],
   # Code from module getpagesize:
   # Code from module getprogname:
   # Code from module getprogname-tests:
+  # Code from module getsockname:
+  # Code from module getsockname-tests:
+  # Code from module getsockopt:
+  # Code from module getsockopt-tests:
   # Code from module gettext-h:
   # Code from module gettime:
   # Code from module gettimeofday:
@@ -287,6 +292,10 @@ AC_DEFUN([gl_EARLY],
   # Code from module netinet_in:
   # Code from module netinet_in-tests:
   # Code from module nocrash:
+  # Code from module nonblocking:
+  # Code from module nonblocking-pipe-tests:
+  # Code from module nonblocking-socket-tests:
+  # Code from module nonblocking-tests:
   # Code from module open:
   # Code from module open-tests:
   # Code from module openat:
@@ -304,6 +313,21 @@ AC_DEFUN([gl_EARLY],
   # Code from module pipe-posix-tests:
   # Code from module pipe2:
   # Code from module pipe2-tests:
+  # Code from module posix_spawn-internal:
+  # Code from module posix_spawn_file_actions_addclose:
+  # Code from module posix_spawn_file_actions_addclose-tests:
+  # Code from module posix_spawn_file_actions_adddup2:
+  # Code from module posix_spawn_file_actions_adddup2-tests:
+  # Code from module posix_spawn_file_actions_addopen:
+  # Code from module posix_spawn_file_actions_addopen-tests:
+  # Code from module posix_spawn_file_actions_destroy:
+  # Code from module posix_spawn_file_actions_init:
+  # Code from module posix_spawnattr_destroy:
+  # Code from module posix_spawnattr_init:
+  # Code from module posix_spawnattr_setflags:
+  # Code from module posix_spawnattr_setsigmask:
+  # Code from module posix_spawnp:
+  # Code from module posix_spawnp-tests:
   # Code from module pread:
   # Code from module pread-tests:
   # Code from module priv-set:
@@ -337,6 +361,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module safe-write:
   # Code from module same-inode:
   # Code from module save-cwd:
+  # Code from module sched:
+  # Code from module sched-tests:
   # Code from module secure_getenv:
   # Code from module select:
   # Code from module select-tests:
@@ -367,6 +393,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module sockets:
   # Code from module sockets-tests:
   # Code from module socklen:
+  # Code from module spawn:
+  # Code from module spawn-tests:
   # Code from module ssize_t:
   # Code from module stat:
   # Code from module stat-tests:
@@ -473,6 +501,10 @@ AC_DEFUN([gl_EARLY],
   # Code from module vc-list-files-tests:
   # Code from module verify:
   # Code from module verify-tests:
+  # Code from module vsnprintf:
+  # Code from module vsnprintf-tests:
+  # Code from module wait-process:
+  # Code from module waitpid:
   # Code from module warnings:
   # Code from module wchar:
   # Code from module wchar-tests:
@@ -776,6 +808,11 @@ AC_SUBST([LTALLOCA])
   fi
   gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
   gl_INTTYPES_INCOMPLETE
+  gl_FUNC_IOCTL
+  if test $HAVE_IOCTL = 0 || test $REPLACE_IOCTL = 1; then
+    AC_LIBOBJ([ioctl])
+  fi
+  gl_SYS_IOCTL_MODULE_INDICATOR([ioctl])
   gl_FUNC_ISATTY
   if test $REPLACE_ISATTY = 1; then
     AC_LIBOBJ([isatty])
@@ -887,6 +924,17 @@ AC_SUBST([LTALLOCA])
   gl_HEADER_NETDB
   gl_HEADER_NETINET_IN
   AC_PROG_MKDIR_P
+  gl_NONBLOCKING_IO
+  gl_FCNTL_MODULE_INDICATOR([nonblocking])
+  dnl Define the C macro GNULIB_NONBLOCKING to 1.
+  gl_MODULE_INDICATOR([nonblocking])
+  dnl Define the substituted variable GNULIB_STDIO_H_NONBLOCKING to 1.
+  AC_REQUIRE([gl_STDIO_H_DEFAULTS])
+  AC_REQUIRE([gl_ASM_SYMBOL_PREFIX])
+  GNULIB_STDIO_H_NONBLOCKING=1
+  dnl Define the substituted variable GNULIB_UNISTD_H_NONBLOCKING to 1.
+  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])
+  GNULIB_UNISTD_H_NONBLOCKING=1
   gl_FUNC_OPEN
   if test $REPLACE_OPEN = 1; then
     AC_LIBOBJ([open])
@@ -1106,6 +1154,8 @@ AC_SUBST([LTALLOCA])
     AC_LIBOBJ([symlinkat])
   fi
   gl_UNISTD_MODULE_INDICATOR([symlinkat])
+  gl_SYS_IOCTL_H
+  AC_PROG_MKDIR_P
   gl_HEADER_SYS_SELECT
   AC_PROG_MKDIR_P
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
@@ -1222,6 +1272,7 @@ changequote([, ])dnl
   gt_LOCALE_FR
   gt_LOCALE_TR_UTF8
   gl_CTYPE_H
+  gl_FATAL_SIGNAL
   gl_MODULE_INDICATOR([fd-safer-flag])
   gl_FUNC_FDOPEN
   if test $REPLACE_FDOPEN = 1; then
@@ -1242,6 +1293,16 @@ changequote([, ])dnl
     AC_LIBOBJ([getpagesize])
   fi
   gl_UNISTD_MODULE_INDICATOR([getpagesize])
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([getsockname])
+  fi
+  gl_SYS_SOCKET_MODULE_INDICATOR([getsockname])
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([getsockopt])
+  fi
+  gl_SYS_SOCKET_MODULE_INDICATOR([getsockopt])
   AC_C_BIGENDIAN
   gl_FUNC_INET_PTON
   if test $HAVE_INET_PTON = 0 || test $REPLACE_INET_NTOP = 1; then
@@ -1252,11 +1313,6 @@ changequote([, ])dnl
   AC_C_BIGENDIAN
   gl_INTTOSTR
   gl_INTTYPES_H
-  gl_FUNC_IOCTL
-  if test $HAVE_IOCTL = 0 || test $REPLACE_IOCTL = 1; then
-    AC_LIBOBJ([ioctl])
-  fi
-  gl_SYS_IOCTL_MODULE_INDICATOR([ioctl])
   gl_FUNC_ISBLANK
   if test $HAVE_ISBLANK = 0; then
     AC_LIBOBJ([isblank])
@@ -1309,6 +1365,66 @@ changequote([, ])dnl
     AC_LIBOBJ([pipe])
   fi
   gl_UNISTD_MODULE_INDICATOR([pipe])
+  gl_FUNC_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = 1; then
+    AC_LIBOBJ([spawn_faction_addclose])
+  fi
+  gl_SPAWN_MODULE_INDICATOR([posix_spawn_file_actions_addclose])
+  gl_FUNC_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = 1; then
+    AC_LIBOBJ([spawn_faction_adddup2])
+  fi
+  gl_SPAWN_MODULE_INDICATOR([posix_spawn_file_actions_adddup2])
+  gl_FUNC_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = 1; then
+    AC_LIBOBJ([spawn_faction_addopen])
+  fi
+  gl_SPAWN_MODULE_INDICATOR([posix_spawn_file_actions_addopen])
+  gl_POSIX_SPAWN
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN = 1; then
+    AC_LIBOBJ([spawn_faction_destroy])
+  fi
+  gl_SPAWN_MODULE_INDICATOR([posix_spawn_file_actions_destroy])
+  gl_POSIX_SPAWN
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN = 1; then
+    AC_LIBOBJ([spawn_faction_init])
+  fi
+  gl_SPAWN_MODULE_INDICATOR([posix_spawn_file_actions_init])
+  gl_POSIX_SPAWN
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN = 1; then
+    AC_LIBOBJ([spawnattr_destroy])
+  fi
+  gl_SPAWN_MODULE_INDICATOR([posix_spawnattr_destroy])
+  gl_POSIX_SPAWN
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN = 1; then
+    AC_LIBOBJ([spawnattr_init])
+  fi
+  gl_SPAWN_MODULE_INDICATOR([posix_spawnattr_init])
+  gl_POSIX_SPAWN
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN = 1; then
+    AC_LIBOBJ([spawnattr_setflags])
+  fi
+  gl_SPAWN_MODULE_INDICATOR([posix_spawnattr_setflags])
+  gl_POSIX_SPAWN
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN = 1; then
+    AC_LIBOBJ([spawnattr_setsigmask])
+  fi
+  gl_SPAWN_MODULE_INDICATOR([posix_spawnattr_setsigmask])
+  gl_POSIX_SPAWN
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN = 1; then
+    AC_LIBOBJ([spawnp])
+    AC_LIBOBJ([spawni])
+    gl_PREREQ_POSIX_SPAWN_INTERNAL
+  fi
+  gl_SPAWN_MODULE_INDICATOR([posix_spawnp])
+  AC_EGREP_CPP([notposix], [[
+  #if defined _MSC_VER || defined __MINGW32__
+    notposix
+  #endif
+    ]],
+    [posix_spawn_ported=no],
+    [posix_spawn_ported=yes])
+  AM_CONDITIONAL([POSIX_SPAWN_PORTED], [test $posix_spawn_ported = yes])
   gl_PRIV_SET
   AC_CHECK_DECLS_ONCE([alarm])
   gl_FUNC_PUTENV
@@ -1331,6 +1447,7 @@ changequote([, ])dnl
     AC_LIBOBJ([rmdir])
   fi
   gl_UNISTD_MODULE_INDICATOR([rmdir])
+  gl_SCHED_H
   AC_CHECK_HEADERS_ONCE([sys/wait.h])
   gl_FUNC_SETLOCALE
   if test $REPLACE_SETLOCALE = 1; then
@@ -1360,6 +1477,7 @@ changequote([, ])dnl
   fi
   gl_SIGNAL_MODULE_INDICATOR([sigprocmask])
   AC_CHECK_DECLS_ONCE([alarm])
+  gl_SPAWN_H
   gl_MODULE_INDICATOR([statat]) dnl for lib/openat.h
   AC_REQUIRE([gt_TYPE_WCHAR_T])
   AC_REQUIRE([gt_TYPE_WINT_T])
@@ -1367,8 +1485,6 @@ changequote([, ])dnl
   gl_FUNC_MMAP_ANON
   AC_CHECK_HEADERS_ONCE([sys/mman.h])
   AC_CHECK_FUNCS_ONCE([mprotect])
-  gl_SYS_IOCTL_H
-  AC_PROG_MKDIR_P
   AC_CHECK_FUNCS_ONCE([shutdown])
   gl_THREAD
   gl_FUNC_UNLINK
@@ -1396,6 +1512,14 @@ changequote([, ])dnl
   gl_UTIMECMP
   abs_aux_dir=`cd "$ac_aux_dir"; pwd`
   AC_SUBST([abs_aux_dir])
+  gl_FUNC_VSNPRINTF
+  gl_STDIO_MODULE_INDICATOR([vsnprintf])
+  gl_WAIT_PROCESS
+  gl_FUNC_WAITPID
+  if test $HAVE_WAITPID = 0; then
+    AC_LIBOBJ([waitpid])
+  fi
+  gl_SYS_WAIT_MODULE_INDICATOR([waitpid])
   gl_FUNC_WCRTOMB
   if test $HAVE_WCRTOMB = 0 || test $REPLACE_WCRTOMB = 1; then
     AC_LIBOBJ([wcrtomb])
@@ -1658,6 +1782,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/inet_ntop.c
   lib/intprops.h
   lib/inttypes.in.h
+  lib/ioctl.c
   lib/isatty.c
   lib/itold.c
   lib/limits.in.h
@@ -1690,6 +1815,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/msvc-nothrow.h
   lib/netdb.in.h
   lib/netinet_in.in.h
+  lib/nonblocking.c
+  lib/nonblocking.h
   lib/open-safer.c
   lib/open.c
   lib/openat-die.c
@@ -1752,6 +1879,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stddef.in.h
   lib/stdint.in.h
   lib/stdio-impl.h
+  lib/stdio-read.c
+  lib/stdio-write.c
   lib/stdio.in.h
   lib/stdlib.in.h
   lib/str-two-way.h
@@ -1777,6 +1906,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/strtoumax.c
   lib/symlink.c
   lib/symlinkat.c
+  lib/sys_ioctl.in.h
   lib/sys_select.in.h
   lib/sys_socket.c
   lib/sys_socket.in.h
@@ -1829,6 +1959,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/accept4.m4
   m4/alloca.m4
   m4/arpa_inet_h.m4
+  m4/asm-underscore.m4
   m4/base64.m4
   m4/btowc.m4
   m4/builtin-expect.m4
@@ -1860,6 +1991,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/exponentd.m4
   m4/extensions.m4
   m4/extern-inline.m4
+  m4/fatal-signal.m4
   m4/fchdir.m4
   m4/fcntl-o.m4
   m4/fcntl-safer.m4
@@ -1961,6 +2093,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/netdb_h.m4
   m4/netinet_in_h.m4
   m4/nocrash.m4
+  m4/nonblocking.m4
   m4/off_t.m4
   m4/onceonly.m4
   m4/open.m4
@@ -1970,6 +2103,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/perror.m4
   m4/pipe.m4
   m4/pipe2.m4
+  m4/posix_spawn.m4
   m4/pread.m4
   m4/printf.m4
   m4/priv-set.m4
@@ -1991,11 +2125,13 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/safe-read.m4
   m4/safe-write.m4
   m4/save-cwd.m4
+  m4/sched_h.m4
   m4/secure_getenv.m4
   m4/select.m4
   m4/servent.m4
   m4/setenv.m4
   m4/setlocale.m4
+  m4/sig_atomic_t.m4
   m4/sigaction.m4
   m4/signal_h.m4
   m4/signalblocking.m4
@@ -2006,6 +2142,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sockets.m4
   m4/socklen.m4
   m4/sockpfaf.m4
+  m4/spawn_h.m4
   m4/ssize_t.m4
   m4/stat-time.m4
   m4/stat.m4
@@ -2056,6 +2193,9 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/utimes.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
+  m4/vsnprintf.m4
+  m4/wait-process.m4
+  m4/waitpid.m4
   m4/warn-on-use.m4
   m4/warnings.m4
   m4/wchar_h.m4
@@ -2076,6 +2216,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/macros.h
   tests/nap.h
   tests/signature.h
+  tests/socket-client.h
+  tests/socket-server.h
   tests/test-accept.c
   tests/test-accept4.c
   tests/test-alloca-opt.c
@@ -2154,6 +2296,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-getopt.h
   tests/test-getopt_long.h
   tests/test-getprogname.c
+  tests/test-getsockname.c
+  tests/test-getsockopt.c
   tests/test-gettimeofday.c
   tests/test-glob.c
   tests/test-hash.c
@@ -2207,6 +2351,18 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-nanosleep.c
   tests/test-netdb.c
   tests/test-netinet_in.c
+  tests/test-nonblocking-misc.h
+  tests/test-nonblocking-pipe-child.c
+  tests/test-nonblocking-pipe-main.c
+  tests/test-nonblocking-pipe.h
+  tests/test-nonblocking-pipe.sh
+  tests/test-nonblocking-reader.h
+  tests/test-nonblocking-socket-child.c
+  tests/test-nonblocking-socket-main.c
+  tests/test-nonblocking-socket.h
+  tests/test-nonblocking-socket.sh
+  tests/test-nonblocking-writer.h
+  tests/test-nonblocking.c
   tests/test-open.c
   tests/test-open.h
   tests/test-openat-safer.c
@@ -2217,6 +2373,13 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-perror2.c
   tests/test-pipe.c
   tests/test-pipe2.c
+  tests/test-posix_spawn1.c
+  tests/test-posix_spawn1.in.sh
+  tests/test-posix_spawn2.c
+  tests/test-posix_spawn2.in.sh
+  tests/test-posix_spawn_file_actions_addclose.c
+  tests/test-posix_spawn_file_actions_adddup2.c
+  tests/test-posix_spawn_file_actions_addopen.c
   tests/test-pread.c
   tests/test-pread.sh
   tests/test-priv-set.c
@@ -2233,6 +2396,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-rmdir.c
   tests/test-rmdir.h
   tests/test-rwlock1.c
+  tests/test-sched.c
   tests/test-select-fd.c
   tests/test-select-in.sh
   tests/test-select-out.sh
@@ -2251,6 +2415,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-sleep.c
   tests/test-snprintf.c
   tests/test-sockets.c
+  tests/test-spawn.c
   tests/test-stat-time.c
   tests/test-stat.c
   tests/test-stat.h
@@ -2301,6 +2466,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-vc-list-files-git.sh
   tests/test-verify.c
   tests/test-verify.sh
+  tests/test-vsnprintf.c
   tests/test-wchar.c
   tests/test-wcrtomb-w32-1.sh
   tests/test-wcrtomb-w32-2.sh
@@ -2331,11 +2497,15 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/ctype.in.h
   tests=lib/dtotimespec.c
   tests=lib/dup-safer-flag.c
+  tests=lib/fatal-signal.c
+  tests=lib/fatal-signal.h
   tests=lib/fd-safer-flag.c
   tests=lib/fdopen.c
   tests=lib/fpucw.h
   tests=lib/ftruncate.c
   tests=lib/getpagesize.c
+  tests=lib/getsockname.c
+  tests=lib/getsockopt.c
   tests=lib/glthread/thread.c
   tests=lib/glthread/thread.h
   tests=lib/glthread/yield.h
@@ -2343,7 +2513,6 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/inet_pton.c
   tests=lib/inttostr.c
   tests=lib/inttostr.h
-  tests=lib/ioctl.c
   tests=lib/isblank.c
   tests=lib/langinfo.in.h
   tests=lib/listen.c
@@ -2359,14 +2528,27 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/putenv.c
   tests=lib/rmdir.c
   tests=lib/root-uid.h
+  tests=lib/sched.in.h
   tests=lib/setlocale.c
   tests=lib/setsockopt.c
   tests=lib/sig-handler.c
   tests=lib/sig-handler.h
   tests=lib/sigaction.c
   tests=lib/sigprocmask.c
+  tests=lib/spawn.in.h
+  tests=lib/spawn_faction_addclose.c
+  tests=lib/spawn_faction_adddup2.c
+  tests=lib/spawn_faction_addopen.c
+  tests=lib/spawn_faction_destroy.c
+  tests=lib/spawn_faction_init.c
+  tests=lib/spawn_int.h
+  tests=lib/spawnattr_destroy.c
+  tests=lib/spawnattr_init.c
+  tests=lib/spawnattr_setflags.c
+  tests=lib/spawnattr_setsigmask.c
+  tests=lib/spawni.c
+  tests=lib/spawnp.c
   tests=lib/statat.c
-  tests=lib/sys_ioctl.in.h
   tests=lib/timespec-add.c
   tests=lib/timespec-sub.c
   tests=lib/uinttostr.c
@@ -2379,7 +2561,11 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/usleep.c
   tests=lib/utimecmp.c
   tests=lib/utimecmp.h
+  tests=lib/vsnprintf.c
   tests=lib/w32sock.h
+  tests=lib/wait-process.c
+  tests=lib/wait-process.h
+  tests=lib/waitpid.c
   tests=lib/wcrtomb.c
   tests=lib/wctob.c
   tests=lib/wctomb-impl.h
