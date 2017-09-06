@@ -7,7 +7,7 @@ Subject: Make php buildable with builddir != srcdir
  1 file changed, 5 insertions(+), 14 deletions(-)
 
 diff --git a/php/Makefile.am b/php/Makefile.am
-index 4db7d84..4cdbb63 100644
+index a974cdf..de8f20d 100644
 --- a/php/Makefile.am
 +++ b/php/Makefile.am
 @@ -36,26 +36,16 @@ php_DATA = guestfs_php.ini
@@ -17,9 +17,9 @@ index 4db7d84..4cdbb63 100644
 -all: check-builddir-equals-srcdir extension/config.h
 +all: extension/config.h
  	$(MAKE) -C extension \
- 	  EXTRA_INCLUDES="-I$(abs_srcdir)/../src" \
--	  EXTRA_LDFLAGS="-L$(abs_srcdir)/../src/.libs -lguestfs" \
-+	  EXTRA_LDFLAGS="-L$(abs_builddir)/../src/.libs -lguestfs" \
+ 	  EXTRA_INCLUDES="-I$(abs_srcdir)/../common/utils -I$(abs_srcdir)/../lib" \
+-	  EXTRA_LDFLAGS="-L$(abs_srcdir)/../lib/.libs -lguestfs" \
++	  EXTRA_LDFLAGS="-L$(abs_builddir)/../lib/.libs -lguestfs" \
  	  EXTRA_CFLAGS="-DGUESTFS_PRIVATE=1" \
  	  all
  

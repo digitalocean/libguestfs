@@ -7,7 +7,7 @@ Subject: docs: Fix out-of-tree builds
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/docs/Makefile.am b/docs/Makefile.am
-index b67735b..3d1190f 100644
+index ca28ef9..958d358 100644
 --- a/docs/Makefile.am
 +++ b/docs/Makefile.am
 @@ -93,7 +93,7 @@ source_files := $(shell cat $(srcdir)/C_SOURCE_FILES)

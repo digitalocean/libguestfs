@@ -8,7 +8,7 @@ Subject: po: Don't fail installation if parts of translated documentation are
  1 file changed, 6 insertions(+), 9 deletions(-)
 
 diff --git a/po/Makefile.am b/po/Makefile.am
-index 135f97a..b39f14c 100644
+index 460d491..98d1d7b 100644
 --- a/po/Makefile.am
 +++ b/po/Makefile.am
 @@ -25,9 +25,9 @@ MSGID_BUGS_ADDRESS = https://bugzilla.redhat.com/enter_bug.cgi?component=libgues
@@ -32,17 +32,18 @@ index 135f97a..b39f14c 100644
 -	--directory=$(top_srcdir)
 +	--msgid-bugs-address="$(MSGID_BUGS_ADDRESS)"
  
- $(DOMAIN).pot: Makefile POTFILES $(POTFILES) POTFILES-pl $(POTFILES_PL) POTFILES-ml $(POTFILES_ML)
- 	rm -f $@-t
-@@ -72,10 +71,8 @@ $(DOMAIN).pot: Makefile POTFILES $(POTFILES) POTFILES-pl $(POTFILES_PL) POTFILES
- if HAVE_OCAML_GETTEXT
- 	$(OCAML_GETTEXT) --action extract --extract-pot $@-t $(POTFILES_ML)
+ # For explanation, see
+ # http://mingw-users.1079350.n2.nabble.com/Getting-rid-of-xgettext-s-quot-CHARSET-quot-warning-td5620533.html
+@@ -79,11 +78,9 @@ if HAVE_OCAML_GETTEXT
+ 	 \
+ 	$(FIX_CHARSET) $@-t
  endif
 -	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) \
 -	  --files-from=$(abs_srcdir)/POTFILES
++	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) $(POTFILES)
+ 	$(FIX_CHARSET) $@-t
 -	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) --language=Perl \
 -	  --files-from=$(abs_srcdir)/POTFILES-pl
-+	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) $(POTFILES)
 +	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) --language=Perl $(POTFILES_PL)
  	mv $@-t $@
  
