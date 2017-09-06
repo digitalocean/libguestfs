@@ -246,6 +246,27 @@ val protect : f:(unit -> 'a) -> finally:(unit -> unit) -> 'a
 val failwithf : ('a, unit, string, 'b) format4 -> 'a
 (** Like [failwith] but supports printf-like arguments. *)
 
+exception Executable_not_found of string (* executable *)
+(** Exception thrown by [which] when the specified executable is not found
+    in [$PATH]. *)
+
+val which : string -> string
+(** Return the full path of the specified executable from [$PATH].
+
+    Throw [Executable_not_found] if not available. *)
+
+val prog : string
+(** The program name (derived from {!Sys.executable_name}). *)
+
+val set_quiet : unit -> unit
+val quiet : unit -> bool
+val set_trace : unit -> unit
+val trace : unit -> bool
+val set_verbose : unit -> unit
+val verbose : unit -> bool
+(** Stores the quiet ([--quiet]), trace ([-x]) and verbose ([-v]) flags
+    in global variables. *)
+
 (*</stdlib>*)
 (*<stdlib>*)
 
@@ -309,7 +330,7 @@ val last_part_of : string -> char -> string option
 
 val read_first_line_from_file : string -> string
 (** Read only the first line (i.e. until the first newline character)
-    of a file. *)
+    of a file.  If the file is empty this returns an empty string. *)
 
 val is_regular_file : string -> bool
 (** Checks whether the file is a regular file. *)

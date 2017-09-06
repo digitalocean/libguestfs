@@ -6,9 +6,9 @@ guestfs-python - Python から libguestfs を使用する方法
 =head1 書式
 
  import guestfs
- g = guestfs.GuestFS (python_return_dict=True)
- g.add_drive_opts ("disk.img", format="raw", readonly=1)
- g.launch ()
+ g = guestfs.GuestFS(python_return_dict=True)
+ g.add_drive_opts("disk.img", format="raw", readonly=1)
+ g.launch()
 
 =head1 説明
 
@@ -21,7 +21,7 @@ you also need to read L<guestfs(3)>.
 
 All new code should construct the handle using:
 
- g = guestfs.GuestFS (python_return_dict=True)
+ g = guestfs.GuestFS(python_return_dict=True)
 
 This indicates that your program wants to receive Python dicts for methods
 in the API that return hashtables.
@@ -39,7 +39,7 @@ Type:
 
  $ python
  >>> import guestfs
- >>> help (guestfs)
+ >>> help(guestfs)
 
 =head2 USING PYTHON BINDINGS IN A VIRTUALENV
 

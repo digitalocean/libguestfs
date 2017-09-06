@@ -1,3 +1,215 @@
+commit b617cb558119646ab720b2d41fe11cd5ba61a5a3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 22 10:21:55 2017 +0100
+
+    Version 1.36.5.
+
+commit dca732d3b66a85718674a5499eb56b8ccb1b4ef3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 21 22:23:12 2017 +0100
+
+    maintainer: New layout of libguestfs website.
+    
+    (cherry picked from commit 13cc6faedb28c8889430181e997f65d139430225)
+
+commit 73e26fad43fe6ce31b932fdeccdc3099fde76bcd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 21 17:13:29 2017 +0100
+
+    mllib: Handle empty files correctly in read_first_line_from_file.
+    
+    The OCaml function ‘input_line’ throws an End_of_file exception if the
+    end of the file is read before any other input, ie. if the file here
+    is zero length.  Return an empty string instead.
+    
+    This can produce peculiar errors such as:
+    
+    $ virt-customize ... --root-password file:/dev/null
+    libguestfs: uncaught OCaml exception in getopt callback: End_of_file
+    
+    (cherry picked from commit 68a88a6b0e6127c40ba1a5fcc346f0184ed67af2)
+
+commit 47cf44600646be857048bd655cb440d8d7844e4c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jun 21 16:34:05 2017 +0200
+
+    resize: make sure the input disk is read-only
+    
+    Fixes commit 8a2b0738d1b79f288b14fc35294567430d10b7ec.
+    
+    (cherry picked from commit 1ca2a8b7ba41d7e4baf1aec5d65ace3b66f2dc37)
+
+commit 0016ba79d80b87242b52c8570417b803f60ef4c8
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jun 21 13:46:58 2017 +0200
+
+    python: PEP 8: remove extra spaces in example lines
+    
+    Remove (before opening round bracket) whitespaces in the documentation
+    of the Python binding, according to the PEP 8 specification.
+    
+    This is just code reformatting, with no behaviour changes; no content
+    changed beside whitespaces, so "git diff -w" gives an empty diff.
+    
+    (cherry picked from commit 713243b3cbe8b4dc8d9ee050ba9d04260f26dab6)
+
+commit ba33ee1343d274de283cf3974b7b9d4142767700
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 19 14:47:20 2017 +0100
+
+    gitignore: Remove a few unused patterns from this file.
+    
+    (cherry picked from commit 19498b199d7f75e27875018438b11c6e0d9cefc4)
+
+commit 1d0bafe79a5e6b4a313a9d20365236b8e14b2470
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 13 08:49:05 2017 +0100
+
+    lib: direct, uml: Refactor unblocking SIGTERM code.
+    
+    A small refactoring of
+    commit 1f1cd11cf0f5a6652c1571fd01a4cce2c7e411ae.
+    
+    (cherry picked from commit db8fdfd8d61873b2c5129870014b4af6d2ad6602)
+
+commit 91935a05d8ab08dfdd7e344eeeb61b3bb4755614
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 13 08:42:29 2017 +0100
+
+    lib: Move close_file_descriptors into guestfs-internal.h.
+    
+    This macro is only used by the library, so move it to
+    lib/guestfs-internal.h.
+    
+    (cherry picked from commit 92995c55644a8be9333660e9be4d0013a92629cc)
+
+commit c0baa96a43d51c20944513fbb575dbc136b17242
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 12 13:15:34 2017 +0100
+
+    daemon: lvm: Pass --yes option to force pvresize (RHBZ#1460577).
+    
+    LVM2 >= 2.02.171 requires the ‘--yes’ option to force pvresize to work
+    in various circumstances, eg. reducing the size of an existing PV.
+    
+    Pass this flag unconditionally.
+    
+    Note this does NOT break earlier versions which just ignore this flag.
+    
+    (cherry picked from commit 8a98fe91b889f666c8160f4c23af220247b4b8f3)
+
+commit df9ab03b1e8ffd8e4e2fdb7f27de25681d0d742c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Jun 10 18:30:05 2017 +0100
+
+    lib: direct, uml: Unblock SIGTERM in the hypervisor and recovery processes (RHBZ#1460338).
+    
+    If SIGTERM is blocked in the main program, then it ends up still being
+    blocked in the subprocess after we fork.  This means that we cannot
+    kill qemu by sending SIGTERM to it.  This commit fixes the problem by
+    unblocking SIGTERM unconditionally after fork.
+    
+    Thanks: wtfuzz on IRC for reporting and analysis.
+    (cherry picked from commit 1f1cd11cf0f5a6652c1571fd01a4cce2c7e411ae)
+
+commit a316b0066afce6eb6bf221d9dfa7110e673476d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 8 08:16:04 2017 +0100
+
+    lib: create: Allow any [[:alnum:]]+ string as a backingfmt parameter (RHBZ#1459979).
+    
+    If you use the libguestfs tools which open disk images read-only
+    (eg. virt-df), with formats such as 'vdi', then you will see an error:
+    
+      error: invalid value for backingformat parameter 'vdi'
+    
+    This is because opening a disk image read-only will try to create a
+    qcow2 file with the original image as a backing file.  However the
+    list of permitted backing formats was very restrictive and did not
+    include 'vdi' (nor many other uncommon formats).
+    
+    Instead of using a whitelist for backing formats, just validate that
+    the string is alphanumeric and short.
+    
+    Thanks: Mike Goodwin for reporting the bug.
+    (cherry picked from commit 5856323e6f35bffd5105b138754bc5e554b2e900)
+
+commit 308feddd938a5011f2abdadbe4f4312a1d5c66b8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 9 12:54:41 2017 +0100
+
+    daemon: ldm: Use CLEANUP_FREE on list of static strings.
+    
+    This likely causes a double-free in the ‘ldmtool_scan_devices’ API.
+    
+    (cherry picked from commit 0b8556695f6190614521f14a7fdfc00fe8897d5a)
+
+commit b0cb74bf92d94b29185b925a5ef17d8566f89168
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jun 4 09:27:52 2017 +0100
+
+    builder: Add cirros-0.3.5.
+    
+    (cherry picked from commit ab1620b8d0386ea038d7f10de0c324333cb4d01a)
+
+commit dd70b225e7874b1f2625315a612a0b782f45d205
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jun 4 09:35:01 2017 +0100
+
+    builder: templates: Ensure a stable sort when creating index file.
+    
+    (cherry picked from commit d606edfba400b2a3ceb5f311b0bf4ec84bf1eb44)
+
+commit bf70b6b9365b002ef610590581c61f383c78d0f0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Jun 1 18:03:37 2017 +0200
+
+    v2v: tell v2v the real root device to mkinitrd
+    
+    Complementary fix of commit 2d25872df3619a3077006ad0f91c029602db6780.
+    On SLES 11 SP4 with kdump enabled mkinitrd calls mkdumprd which calls
+    mkinitrd, but mkdumprd doesn't have any clue of the root device.
+    
+    Call mkinitrd with rootdev environment variable to tell them all
+    what device to use as root.
+    
+    Tested-By: Cédric Bosdonnat <cbosdonnat@suse.com>
+    (cherry picked from commit 76eeb0afc9b2d7f5ca1edc95af2156b03c934682)
+
+commit 7def64e59796bf45adeb3dfa7600fe75d60ba61a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 25 12:16:53 2017 +0100
+
+    mllib: Export which in "stdlib mode".
+    
+    As with the previous commit, this was already being compiled in, but
+    not exported, so there's no substantive change here.
+    
+    (cherry picked from commit 8c89299d8abac79516f7668bbe61304da6490420)
+
+commit e55c9ebea43a934b5aaf7d5e5e55f5c363ef4bd7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed May 24 15:46:52 2017 +0100
+
+    mllib: Export prog, quiet, trace, verbose in "stdlib mode".
+    
+    These were already included in the .ml implementation file, but just
+    weren't being exported in the interface, so there's no real change
+    here.  It just allows these functions to be used.
+    
+    (cherry picked from commit 5e49e3ff538fc3a238887dfb3447d18ec7384507)
+
+commit 55fcd8b36dc541fecea3e5bd49664d78481f5536
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue May 30 12:50:10 2017 +0200
+
+    btrfs_replace: fix position of subcommand options
+    
+    btrfs-progs 4.11 is more strict with option parsing, so subcommand
+    options must appear now before the subcommand arguments.
+    
+    (cherry picked from commit 2c41f001de4625b786e3b1a7f69057514b34da3d)
+
 commit d5a26d4ec9cec1eecb04f810e7a60c65e8ca5552
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri May 19 11:44:36 2017 +0100

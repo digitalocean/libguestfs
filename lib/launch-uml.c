@@ -323,6 +323,9 @@ launch_uml (guestfs_h *g, void *datav, const char *arg)
       close_file_descriptors (fd > 2 && fd != dsv[1]);
     }
 
+    /* RHBZ#1460338. */
+    guestfs_int_unblock_sigterm ();
+
     /* Dump the command line (after setting up stderr above). */
     if (g->verbose)
       print_vmlinux_command_line (g, cmdline.argv);
@@ -368,6 +371,9 @@ launch_uml (guestfs_h *g, void *datav, const char *arg)
        * hold open (eg) pipes from the parent process.
        */
       close_file_descriptors (1);
+
+      /* RHBZ#1460338 */
+      guestfs_int_unblock_sigterm ();
 
       /* It would be nice to be able to put this in the same process
        * group as vmlinux (ie. setpgid (0, vmlinux_pid)).  However

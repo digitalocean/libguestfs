@@ -575,6 +575,20 @@ APIs for creating empty disks.
 
 Mostly this consists of wrappers around the L<qemu-img(1)> program.
 
+=head4 Function C<lib/create.c:disk_create_qcow2>
+
+ #define VALID_FORMAT(format) \
+   guestfs_int_string_is_valid ((format), 1, 16, \
+                                VALID_FLAG_ALPHA|VALID_FLAG_DIGIT, "")
+ 
+ static int
+ disk_create_qcow2 (guestfs_h *g, const char *orig_filename, int64_t size,
+                    const char *backingfile,
+                    const struct guestfs_disk_create_argv *optargs)
+
+Check for valid backing format.  Allow any C<^[[:alnum]]+$> (in C locale),
+but limit the length to something reasonable.
+
 =head3 File F<lib/drives.c>
 
 Drives added are stored in an array in the handle.  Code here manages that
@@ -1387,6 +1401,15 @@ Compute C<y - x> and return the result in milliseconds.
 
 Approximately the same as this code:
 L<http://www.mpp.mpg.de/~huber/util/timevaldiff.c>
+
+=head4 Function C<lib/launch.c:guestfs_int_unblock_sigterm>
+
+ void
+ guestfs_int_unblock_sigterm (void)
+
+Unblock the C<SIGTERM> signal.  Call this after L<fork(2)> so that the
+parent process can send C<SIGTERM> to the child process in case C<SIGTERM>
+is blocked.  See L<https://bugzilla.redhat.com/1460338>.
 
 =head4 Function C<lib/launch.c:guestfs_impl_max_disks>
 
