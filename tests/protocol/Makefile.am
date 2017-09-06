@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -41,15 +41,18 @@ TESTS = \
 check_PROGRAMS = test-error-messages
 
 test_error_messages_SOURCES = \
+	../../common/protocol/guestfs_protocol.h \
 	test-error-messages.c
 test_error_messages_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-	-I$(top_srcdir)/src -I$(top_builddir)/src
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/common/protocol -I$(top_builddir)/common/protocol \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib
 test_error_messages_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 test_error_messages_LDADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(top_builddir)/gnulib/lib/libgnu.la

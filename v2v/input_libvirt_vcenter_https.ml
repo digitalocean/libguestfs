@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,12 @@
 
 open Common_gettext.Gettext
 open Common_utils
+open Unix_utils.Env
 
 open Types
 open Utils
 open Xpath_helpers
-open Input_libvirtxml
+open Parse_libvirt_xml
 open Input_libvirt_other
 
 open Printf
@@ -48,10 +49,22 @@ object
 
     error_if_libvirt_does_not_support_json_backingfile ();
 
+    (* Remove proxy environment variables so curl doesn't try to use
+     * them.  Libvirt doesn't use the proxy anyway, and using a proxy
+     * is generally a bad idea because vCenter is slow enough as it is
+     * without putting another device in the way (RHBZ#1354507).
+     *)
+    unsetenv "https_proxy";
+    unsetenv "all_proxy";
+    unsetenv "no_proxy";
+    unsetenv "HTTPS_PROXY";
+    unsetenv "ALL_PROXY";
+    unsetenv "NO_PROXY";
+
     (* Get the libvirt XML.  This also checks (as a side-effect)
      * that the domain is not running.  (RHBZ#1138586)
      *)
-    let xml = Domainxml.dumpxml ?password ?conn:libvirt_uri guest in
+    let xml = Libvirt_utils.dumpxml ?password ?conn:libvirt_uri guest in
     let source, disks = parse_libvirt_xml ?conn:libvirt_uri xml in
 
     (* Find the <vmware:datacenterpath> element from the XML, if it

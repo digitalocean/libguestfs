@@ -51,6 +51,8 @@ int keys_from_stdin = 0;
 int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 0;
+int in_guestfish = 0;
+int in_virt_rescue = 1;
 
 static void __attribute__((noreturn))
 usage (int status)
@@ -60,7 +62,7 @@ usage (int status)
              getprogname ());
   else {
     printf (_("%s: Run a rescue shell on a virtual machine\n"
-              "Copyright (C) 2009-2016 Red Hat Inc.\n"
+              "Copyright (C) 2009-2017 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] -d domname\n"
               "  %s [--options] -a disk.img [-a disk.img ...]\n"

@@ -32,7 +32,11 @@ ifelse(REDHAT,1,
   curl
   ethtool
   util-linux
+  which
   xterm
+  pciutils
+  lsscsi
+  usbutils
 
   dnl Generally useful tools to use within xterm
   less
@@ -43,7 +47,6 @@ ifelse(REDHAT,1,
   hwdata
 
   dnl Useful disk and diagnostic utilities.
-  pciutils
   hdparm
   smartmontools
   iscsi-initiator-utils
@@ -80,11 +83,14 @@ ifelse(DEBIAN,1,
   curl
   ethtool
   util-linux
+  debianutils
   xterm
+  pciutils
+  lsscsi
+  usbutils
   less
   vim-tiny
   hwdata
-  pciutils
   hdparm
   smartmontools
   open-iscsi
@@ -109,11 +115,14 @@ ifelse(ARCHLINUX,1,
   curl
   ethtool
   util-linux
+  which
   xterm
+  pciutils
+  lsscsi
+  usbutils
   less
   vim-tiny
   hwdata
-  pciutils
   hdparm
   smartmontools
   open-iscsi
@@ -139,11 +148,14 @@ ifelse(SUSE,1,
   curl
   ethtool
   util-linux
+  dnl /usr/bin/which is in util-linux on SUSE
   xterm
+  pciutils
+  lsscsi
+  usbutils
   less
   vim
   hwdata
-  pciutils
   hdparm
   smartmontools
   open-iscsi

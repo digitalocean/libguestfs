@@ -181,18 +181,20 @@ passphrases from the user by opening F</dev/tty>.
 
 =item B<--time-days>
 
-Display time fields as days before now (negative if in the future).
+Показувати поля часу у форматі днів до поточного (від’ємні значення для днів
+у майбутньому).
 
-Note that C<0> in output means "up to 1 day before now", or that the age of
-the file is between 0 and 86399 seconds.
+Зауважте, що C<0> у виведених даних означає «менше 1 одного дня до поточного
+моменту» або «вік файла — від 0 до 86399 секунд».
 
 =item B<--time-relative>
 
-Display time fields as seconds before now (negative if in the future).
+Показувати поля часу у форматі секунд до поточного моменту (від’ємні
+значення для часу у майбутньому).
 
 =item B<--time-t>
 
-Display time fields as seconds since the Unix epoch.
+Показувати поля часу у форматі секунд з моменту початку епохи UNIX.
 
 =item B<--uids>
 
@@ -260,5 +262,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

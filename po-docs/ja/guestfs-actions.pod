@@ -1042,6 +1042,54 @@ This returns the number of nodes modified.
 
 (Added in 1.23.14)
 
+=head2 guestfs_aug_transform
+
+ int
+ guestfs_aug_transform (guestfs_h *g,
+                        const char *lens,
+                        const char *file,
+                        ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_AUG_TRANSFORM_REMOVE, int remove,
+
+Add an Augeas transformation for the specified C<lens> so it can handle
+C<file>.
+
+If C<remove> is true (C<false> by default), then the transformation is
+removed.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.35.2)
+
+=head2 guestfs_aug_transform_va
+
+ int
+ guestfs_aug_transform_va (guestfs_h *g,
+                           const char *lens,
+                           const char *file,
+                           va_list args);
+
+This is the "va_list variant" of L</guestfs_aug_transform>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
+
+=head2 guestfs_aug_transform_argv
+
+ int
+ guestfs_aug_transform_argv (guestfs_h *g,
+                             const char *lens,
+                             const char *file,
+                             const struct guestfs_aug_transform_argv *optargs);
+
+This is the "argv variant" of L</guestfs_aug_transform>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
+
 =head2 guestfs_available
 
  int
@@ -4071,6 +4119,22 @@ Intel Itanium.
 
 64 bit Power PC (little endian).
 
+=item "riscv32"
+
+=item "riscv64"
+
+=item "riscv128"
+
+RISC-V 32-, 64- or 128-bit variants.
+
+=item "s390"
+
+31 bit IBM S/390.
+
+=item "s390x"
+
+64 bit IBM S/390.
+
 =item "sparc"
 
 32 ビット SPARC.
@@ -4478,6 +4542,32 @@ L<find(1)> option I<-print0>.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.0.74 において追加)
+
+=head2 guestfs_find_inode
+
+ struct guestfs_tsk_dirent_list *
+ guestfs_find_inode (guestfs_h *g,
+                     const char *device,
+                     int64_t inode);
+
+Searches all the entries associated with the given inode.
+
+For each entry, a C<tsk_dirent> structure is returned.  See
+C<filesystem_walk> for more information about C<tsk_dirent> structures.
+
+This function returns a C<struct guestfs_tsk_dirent_list *>, or NULL if
+there was an error.  I<The caller must call C<guestfs_free_tsk_dirent_list>
+after use>.
+
+This long-running command can generate progress notification messages so
+that the caller can display a progress bar or indicator.  To receive these
+messages, the caller must register a progress event callback.  See
+L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
+
+This function depends on the feature C<libtsk>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.35.6)
 
 =head2 guestfs_findfs_label
 
@@ -5800,6 +5890,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_HIVEX_OPEN_VERBOSE, int verbose,
  GUESTFS_HIVEX_OPEN_DEBUG, int debug,
  GUESTFS_HIVEX_OPEN_WRITE, int write,
+ GUESTFS_HIVEX_OPEN_UNSAFE, int unsafe,
 
 Open the Windows Registry hive file named F<filename>.  If there was any
 previous hivex handle associated with this guestfs session, then it is
@@ -6773,6 +6864,50 @@ C<ControlSet001> のようなレジストリキーの名前です。
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
 (1.9.17 において追加)
+
+=head2 guestfs_inspect_get_windows_software_hive
+
+ char *
+ guestfs_inspect_get_windows_software_hive (guestfs_h *g,
+                                            const char *root);
+
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SOFTWARE.
+
+This call assumes that the guest is Windows and that the guest has a
+software hive file with the right name.  If this is not the case then an
+error is returned.  This call does not check that the hive is a valid
+Windows Registry hive.
+
+You can use C<guestfs_hivex_open> to read or write to the hive.
+
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
+
+この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
+(Added in 1.35.26)
+
+=head2 guestfs_inspect_get_windows_system_hive
+
+ char *
+ guestfs_inspect_get_windows_system_hive (guestfs_h *g,
+                                          const char *root);
+
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SYSTEM.
+
+This call assumes that the guest is Windows and that the guest has a system
+hive file with the right name.  If this is not the case then an error is
+returned.  This call does not check that the hive is a valid Windows
+Registry hive.
+
+You can use C<guestfs_hivex_open> to read or write to the hive.
+
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
+
+この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
+(Added in 1.35.26)
 
 =head2 guestfs_inspect_get_windows_systemroot
 
@@ -9829,6 +9964,72 @@ L</guestfs_feature_available>.
 
 (1.0.55 において追加)
 
+=head2 guestfs_mksquashfs
+
+ int
+ guestfs_mksquashfs (guestfs_h *g,
+                     const char *path,
+                     const char *filename,
+                     ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_MKSQUASHFS_COMPRESS, const char *compress,
+ GUESTFS_MKSQUASHFS_EXCLUDES, char *const *excludes,
+
+Create a squashfs filesystem for the specified C<path>.
+
+The optional C<compress> flag controls compression.  If not given, then the
+output compressed using C<gzip>.  Otherwise one of the following strings may
+be given to select the compression type of the squashfs: C<gzip>, C<lzma>,
+C<lzo>, C<lz4>, C<xz>.
+
+The other optional arguments are:
+
+=over 4
+
+=item C<excludes>
+
+A list of wildcards.  Files are excluded if they match any of the wildcards.
+
+=back
+
+Please note that this API may fail when used to compress directories with
+large files, such as the resulting squashfs will be over 3GB big.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+This function depends on the feature C<squashfs>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.35.25)
+
+=head2 guestfs_mksquashfs_va
+
+ int
+ guestfs_mksquashfs_va (guestfs_h *g,
+                        const char *path,
+                        const char *filename,
+                        va_list args);
+
+This is the "va_list variant" of L</guestfs_mksquashfs>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
+
+=head2 guestfs_mksquashfs_argv
+
+ int
+ guestfs_mksquashfs_argv (guestfs_h *g,
+                          const char *path,
+                          const char *filename,
+                          const struct guestfs_mksquashfs_argv *optargs);
+
+This is the "argv variant" of L</guestfs_mksquashfs>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
+
 =head2 guestfs_mkswap
 
  int
@@ -12518,6 +12719,10 @@ label.
 =item fat
 
 The label is limited to 11 bytes.
+
+=item swap
+
+The label is limited to 16 bytes.
 
 =back
 

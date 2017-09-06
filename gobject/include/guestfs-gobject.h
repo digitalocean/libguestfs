@@ -52,6 +52,7 @@
 #include <guestfs-gobject/optargs-add_drive.h>
 #include <guestfs-gobject/optargs-add_drive_scratch.h>
 #include <guestfs-gobject/optargs-add_libvirt_dom.h>
+#include <guestfs-gobject/optargs-aug_transform.h>
 #include <guestfs-gobject/optargs-btrfs_filesystem_defragment.h>
 #include <guestfs-gobject/optargs-btrfs_filesystem_resize.h>
 #include <guestfs-gobject/optargs-btrfs_fsck.h>
@@ -87,6 +88,7 @@
 #include <guestfs-gobject/optargs-mke2fs.h>
 #include <guestfs-gobject/optargs-mkfs.h>
 #include <guestfs-gobject/optargs-mkfs_btrfs.h>
+#include <guestfs-gobject/optargs-mksquashfs.h>
 #include <guestfs-gobject/optargs-mkswap.h>
 #include <guestfs-gobject/optargs-mktemp.h>
 #include <guestfs-gobject/optargs-mount_9p.h>

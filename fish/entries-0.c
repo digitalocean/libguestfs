@@ -215,6 +215,26 @@ struct command_entry aug_match_cmd_entry = {
   .run = run_aug_match
 };
 
+struct command_entry aug_transform_cmd_entry = {
+  .name = "aug-transform",
+  .help = "NAME\n"
+          "    aug-transform - add/remove an Augeas lens transformation\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     aug-transform lens file [remove:true|false]\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Add an Augeas transformation for the specified \"lens\" so it can handle\n"
+          "    \"file\".\n"
+          "\n"
+          "    If \"remove\" is true (\"false\" by default), then the transformation is\n"
+          "    removed.\n"
+          "\n"
+          "",
+  .synopsis = "aug-transform lens file [remove:true|false]",
+  .run = run_aug_transform
+};
+
 struct command_entry btrfs_qgroup_create_cmd_entry = {
   .name = "btrfs-qgroup-create",
   .help = "NAME\n"
@@ -953,6 +973,33 @@ struct command_entry inspect_get_product_variant_cmd_entry = {
           "",
   .synopsis = "inspect-get-product-variant root",
   .run = run_inspect_get_product_variant
+};
+
+struct command_entry inspect_get_windows_software_hive_cmd_entry = {
+  .name = "inspect-get-windows-software-hive",
+  .help = "NAME\n"
+          "    inspect-get-windows-software-hive - get the path of the Windows software\n"
+          "    hive\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     inspect-get-windows-software-hive root\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    This returns the path to the hive (binary Windows Registry file)\n"
+          "    corresponding to HKLM\\SOFTWARE.\n"
+          "\n"
+          "    This call assumes that the guest is Windows and that the guest has a\n"
+          "    software hive file with the right name. If this is not the case then an\n"
+          "    error is returned. This call does not check that the hive is a valid\n"
+          "    Windows Registry hive.\n"
+          "\n"
+          "    You can use \"hivex_open\" to read or write to the hive.\n"
+          "\n"
+          "    Please read \"INSPECTION\" in guestfs(3) for more details.\n"
+          "\n"
+          "",
+  .synopsis = "inspect-get-windows-software-hive root",
+  .run = run_inspect_get_windows_software_hive
 };
 
 struct command_entry inspect_list_applications_cmd_entry = {

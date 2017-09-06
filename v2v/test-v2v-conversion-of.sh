@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs virt-v2v test script
-# Copyright (C) 2014-2016 Red Hat Inc.
+# Copyright (C) 2014-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,23 +18,16 @@
 
 # Test virt-v2v on real guests.
 
-unset CDPATH
-export LANG=C
 set -e
 
-if [ -z "$SLOW" ]; then
-    echo "$0: use 'make check-slow' to run this test"
-    exit 77
-fi
-
-if [ -n "$SKIP_TEST_V2V_CONVERSION_OF_SH" ]; then
-    echo "$0: test skipped because environment variable is set"
-    exit 77
-fi
+$TEST_FUNCTIONS
+slow_test
+skip_if_skipped "$script"
+skip_unless_arch x86_64
 
 guestname="$1"
 if [ -z "$guestname" ]; then
-    echo "$0: guestname parameter not set, don't run this test directly."
+    echo "$script: guestname parameter not set, don't run this test directly."
     exit 1
 fi
 
@@ -48,13 +41,7 @@ mkdir "$os"
 # If the guest doesn't exist in virt-builder, skip.  This is because
 # we test some RHEL guests which most users won't have access to.
 if ! virt-builder -l "$guestname" >/dev/null 2>&1; then
-    echo "$0: test skipped because \"$guestname\" not known to virt-builder."
-    exit 77
-fi
-
-# We can only run the tests on x86_64.
-if [ "$(uname -m)" != "x86_64" ]; then
-    echo "$0: test skipped because !x86_64."
+    echo "$script: test skipped because \"$guestname\" not known to virt-builder."
     exit 77
 fi
 
@@ -103,7 +90,7 @@ size_before="$(du $disk | awk '{print $1}')"
 size_after="$(du $os/$guestname-sda | awk '{print $1}')"
 diff="$(( 100 * size_after / size_before ))"
 if test $diff -lt 50; then
-    echo "$0: disk image may have been corrupted or truncated"
+    echo "$script: disk image may have been corrupted or truncated"
     echo "size_before=$size_before size_after=$size_after diff=$diff"
     ls -l "$disk" "$os/$guestname-sda"
     exit 1

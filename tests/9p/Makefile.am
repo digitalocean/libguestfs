@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,5 +21,5 @@ EXTRA_DIST = $(TESTS)
 
 TESTS = test-9p.sh
 
-TESTS_ENVIRONMENT = abs_srcdir=$(abs_srcdir) \
+TESTS_ENVIRONMENT = \
 	$(top_builddir)/run --test

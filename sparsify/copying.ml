@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2016 Red Hat Inc.
+ * Copyright (C) 2011-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ open Printf
 
 open Common_utils
 open Common_gettext.Gettext
+open Unix_utils
 
 open Utils
 open Cmdline
@@ -181,6 +182,9 @@ You can ignore this warning or change it to a hard failure using the
     g#launch ();
 
     g in
+
+  (* Decrypt the disks. *)
+  inspect_decrypt g;
 
   (* Modify SIGINT handler (set first above) to cancel the handle. *)
   let do_sigint _ =

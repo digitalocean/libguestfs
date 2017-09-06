@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ type kernel_info = {
   ki_supports_virtio : bool;       (** Kernel has virtio drivers? *)
   ki_is_xen_kernel : bool;         (** Is a Xen paravirt kernel? *)
   ki_is_debug : bool;              (** Is debug kernel? *)
+  ki_config_file : string option;  (** Path of config file, if found. *)
 }
 (** Kernel information. *)
 

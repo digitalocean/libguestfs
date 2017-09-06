@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 open Printf
 
+open Common_utils
 open Types
 open Utils
 open Pr
@@ -49,13 +50,13 @@ let generate_daemon_actions_h () =
     | { name = shortname; style = _, _, (_::_ as optargs) } ->
         iteri (
           fun i arg ->
-            let uc_shortname = String.uppercase shortname in
+            let uc_shortname = String.uppercase_ascii shortname in
             let n = name_of_optargt arg in
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "#define GUESTFS_%s_%s_BITMASK (UINT64_C(1)<<%d)\n"
               uc_shortname uc_n i
         ) optargs
-  ) (actions |> daemon_functions);
+  ) (actions |> daemon_functions |> sort);
 
   List.iter (
     fun { name = name; style = ret, args, optargs } ->
@@ -67,7 +68,7 @@ let generate_daemon_actions_h () =
       generate_prototype
         ~single_line:true ~newline:true ~in_daemon:true ~prefix:"do_"
         name style;
-  ) (actions |> daemon_functions);
+  ) (actions |> daemon_functions |> sort);
 
   pr "\n";
   pr "#endif /* GUESTFSD_ACTIONS_H */\n"
@@ -192,7 +193,7 @@ let generate_daemon_stubs_h () =
   List.iter (
     fun { name = name } ->
       pr "extern void %s_stub (XDR *xdr_in);\n" name;
-  ) (actions |> daemon_functions);
+  ) (actions |> daemon_functions |> sort);
 
   pr "\n";
   pr "#endif /* GUESTFSD_STUBS_H */\n"
@@ -508,7 +509,7 @@ let generate_daemon_stubs actions () =
       pr "done_no_free:\n";
       pr "  return;\n";
       pr "}\n\n";
-  ) (actions |> daemon_functions)
+  ) (actions |> daemon_functions |> sort)
 
 let generate_daemon_dispatch () =
   generate_header CStyle GPLv2plus;
@@ -541,10 +542,10 @@ let generate_daemon_dispatch () =
 
   List.iter (
     fun { name = name } ->
-      pr "    case GUESTFS_PROC_%s:\n" (String.uppercase name);
+      pr "    case GUESTFS_PROC_%s:\n" (String.uppercase_ascii name);
       pr "      %s_stub (xdr_in);\n" name;
       pr "      break;\n"
-  ) (actions |> daemon_functions);
+  ) (actions |> daemon_functions |> sort);
 
   pr "    default:\n";
   pr "      reply_with_error (\"dispatch_incoming_message: unknown procedure number %%d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory\", proc_nr);\n";
@@ -758,7 +759,7 @@ let generate_daemon_names () =
     | { name = name; proc_nr = Some proc_nr } ->
       pr "  [%d] = \"%s\",\n" proc_nr name
     | { proc_nr = None } -> assert false
-  ) (actions |> daemon_functions);
+  ) (actions |> daemon_functions |> sort);
   pr "};\n"
 
 (* Generate the optional groups for the daemon to implement
@@ -819,7 +820,8 @@ let generate_daemon_optgroups_h () =
 ";
   List.iter (
     fun (group, fns) ->
-      pr "#define OPTGROUP_%s_NOT_AVAILABLE \\\n" (String.uppercase group);
+      pr "#define OPTGROUP_%s_NOT_AVAILABLE \\\n"
+         (String.uppercase_ascii group);
       List.iter (
         fun { name = name; style = ret, args, optargs } ->
           let style = ret, args @ args_of_optargs optargs, [] in

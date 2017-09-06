@@ -1,5 +1,6 @@
 # libguestfs Python bindings
-# Copyright (C) 2016 Red Hat Inc.
+# Copyright (C) 2016-2017 Red Hat Inc.
+# python/t/tests_helper.py.  Generated from tests_helper.py.in by configure.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,6 +27,14 @@ if sys.version_info >= (3, 0):
 else:
     int_type = long
 
+
+def skipUnlessConfiguredWithLibvirt():
+    """
+    Skip the current class/method if ./configure --without-libvirt
+    """
+    if "-lvirt" == "":
+        return unittest.skip("configured --without-libvirt")
+    return lambda func: func
 
 def skipUnlessLibvirtHasCPointer():
     """

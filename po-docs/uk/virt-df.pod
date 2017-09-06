@@ -53,7 +53,8 @@ output human-readable:
  F14x64:/dev/sda1                 484M      66M       393M   14%
  F14x64:/dev/vg_f13x64/lv_root    7.4G     3.4G       4.0G   46%
 
-Show disk usage for a disk image file called F<test.img>:
+Показати дані щодо використання диска у файлі образу диска з назвою
+F<test.img>:
 
  $ virt-df -a test1.img
  Filesystem                  1K-blocks     Used  Available  Use%
@@ -64,7 +65,7 @@ plus sign (C<+>) is displayed for each additional disk.  B<Note: Do not do
 this with unrelated guest disks.>
 
  $ virt-df -a Win7x32TwoDisks-a -a Win7x32TwoDisks-b 
- Filesystem                   1K-blocks    Used  Available  Use%
+ Файлова система              1K-блоків    Вик.   Доступно %Вик.
  Win7x32TwoDisks-a+:/dev/sda1    102396   24712      77684   25%
  Win7x32TwoDisks-a+:/dev/sda2  12478460 7403416    5075044   60%
  Win7x32TwoDisks-a+:/dev/sdb1    521212   55728     465484   11%
@@ -77,9 +78,9 @@ this with unrelated guest disks.>
 
 Показати коротку довідку.
 
-=item B<-a> FILE
+=item B<-a> ФАЙЛ
 
-=item B<--add> FILE
+=item B<--add> ФАЙЛ
 
 Add C<FILE> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -269,5 +270,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

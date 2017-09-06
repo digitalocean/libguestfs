@@ -33,6 +33,7 @@
       <sub name="GuestfsAddDrive" link="GuestfsAddDrive.html"/>
       <sub name="GuestfsAddDriveScratch" link="GuestfsAddDriveScratch.html"/>
       <sub name="GuestfsAddLibvirtDom" link="GuestfsAddLibvirtDom.html"/>
+      <sub name="GuestfsAugTransform" link="GuestfsAugTransform.html"/>
       <sub name="GuestfsBTRFSFilesystemDefragment" link="GuestfsBTRFSFilesystemDefragment.html"/>
       <sub name="GuestfsBTRFSFilesystemResize" link="GuestfsBTRFSFilesystemResize.html"/>
       <sub name="GuestfsBtrfsFsck" link="GuestfsBtrfsFsck.html"/>
@@ -68,6 +69,7 @@
       <sub name="GuestfsMke2fs" link="GuestfsMke2fs.html"/>
       <sub name="GuestfsMkfs" link="GuestfsMkfs.html"/>
       <sub name="GuestfsMkfsBtrfs" link="GuestfsMkfsBtrfs.html"/>
+      <sub name="GuestfsMksquashfs" link="GuestfsMksquashfs.html"/>
       <sub name="GuestfsMkswap" link="GuestfsMkswap.html"/>
       <sub name="GuestfsMktemp" link="GuestfsMktemp.html"/>
       <sub name="GuestfsMount9P" link="GuestfsMount9P.html"/>
@@ -126,6 +128,7 @@
     <keyword type="function" name="guestfs_session_aug_save ()" link="GuestfsSession.html#guestfs-session-aug-save" since="0.7"/>
     <keyword type="function" name="guestfs_session_aug_set ()" link="GuestfsSession.html#guestfs-session-aug-set" since="0.7"/>
     <keyword type="function" name="guestfs_session_aug_setm ()" link="GuestfsSession.html#guestfs-session-aug-setm" since="1.23.14"/>
+    <keyword type="function" name="guestfs_session_aug_transform ()" link="GuestfsSession.html#guestfs-session-aug-transform" since="1.35.2"/>
     <keyword type="function" name="guestfs_session_available ()" link="GuestfsSession.html#guestfs-session-available" since="1.0.80"/>
     <keyword type="function" name="guestfs_session_available_all_groups ()" link="GuestfsSession.html#guestfs-session-available-all-groups" since="1.3.15"/>
     <keyword type="function" name="guestfs_session_base64_in ()" link="GuestfsSession.html#guestfs-session-base64-in" since="1.3.5"/>
@@ -253,6 +256,7 @@
     <keyword type="function" name="guestfs_session_fill_pattern ()" link="GuestfsSession.html#guestfs-session-fill-pattern" since="1.3.12"/>
     <keyword type="function" name="guestfs_session_find ()" link="GuestfsSession.html#guestfs-session-find" since="1.0.27"/>
     <keyword type="function" name="guestfs_session_find0 ()" link="GuestfsSession.html#guestfs-session-find0" since="1.0.74"/>
+    <keyword type="function" name="guestfs_session_find_inode ()" link="GuestfsSession.html#guestfs-session-find-inode" since="1.35.6"/>
     <keyword type="function" name="guestfs_session_findfs_label ()" link="GuestfsSession.html#guestfs-session-findfs-label" since="1.5.3"/>
     <keyword type="function" name="guestfs_session_findfs_uuid ()" link="GuestfsSession.html#guestfs-session-findfs-uuid" since="1.5.3"/>
     <keyword type="function" name="guestfs_session_fsck ()" link="GuestfsSession.html#guestfs-session-fsck" since="1.0.16"/>
@@ -342,6 +346,8 @@
     <keyword type="function" name="guestfs_session_inspect_get_product_variant ()" link="GuestfsSession.html#guestfs-session-inspect-get-product-variant" since="1.9.13"/>
     <keyword type="function" name="guestfs_session_inspect_get_roots ()" link="GuestfsSession.html#guestfs-session-inspect-get-roots" since="1.7.3"/>
     <keyword type="function" name="guestfs_session_inspect_get_windows_current_control_set ()" link="GuestfsSession.html#guestfs-session-inspect-get-windows-current-control-set" since="1.9.17"/>
+    <keyword type="function" name="guestfs_session_inspect_get_windows_software_hive ()" link="GuestfsSession.html#guestfs-session-inspect-get-windows-software-hive" since="1.35.26"/>
+    <keyword type="function" name="guestfs_session_inspect_get_windows_system_hive ()" link="GuestfsSession.html#guestfs-session-inspect-get-windows-system-hive" since="1.35.26"/>
     <keyword type="function" name="guestfs_session_inspect_get_windows_systemroot ()" link="GuestfsSession.html#guestfs-session-inspect-get-windows-systemroot" since="1.5.25"/>
     <keyword type="function" name="guestfs_session_inspect_is_live ()" link="GuestfsSession.html#guestfs-session-inspect-is-live" since="1.9.4"/>
     <keyword type="function" name="guestfs_session_inspect_is_multipart ()" link="GuestfsSession.html#guestfs-session-inspect-is-multipart" since="1.9.4"/>
@@ -486,6 +492,7 @@
     <keyword type="function" name="guestfs_session_mknod ()" link="GuestfsSession.html#guestfs-session-mknod" since="1.0.55"/>
     <keyword type="function" name="guestfs_session_mknod_b ()" link="GuestfsSession.html#guestfs-session-mknod-b" since="1.0.55"/>
     <keyword type="function" name="guestfs_session_mknod_c ()" link="GuestfsSession.html#guestfs-session-mknod-c" since="1.0.55"/>
+    <keyword type="function" name="guestfs_session_mksquashfs ()" link="GuestfsSession.html#guestfs-session-mksquashfs" since="1.35.25"/>
     <keyword type="function" name="guestfs_session_mkswap ()" link="GuestfsSession.html#guestfs-session-mkswap" since="1.0.55"/>
     <keyword type="function" name="guestfs_session_mkswap_L ()" link="GuestfsSession.html#guestfs-session-mkswap-L" deprecated="In new code, use guestfs_session_mkswap() instead" since="1.0.55"/>
     <keyword type="function" name="guestfs_session_mkswap_U ()" link="GuestfsSession.html#guestfs-session-mkswap-U" deprecated="In new code, use guestfs_session_mkswap() instead" since="1.0.55"/>
@@ -780,6 +787,10 @@
     <keyword type="property" name="The “live” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--live"/>
     <keyword type="property" name="The “readonly” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--readonly"/>
     <keyword type="property" name="The “readonlydisk” property" link="GuestfsAddLibvirtDom.html#GuestfsAddLibvirtDom--readonlydisk"/>
+    <keyword type="function" name="guestfs_aug_transform_new ()" link="GuestfsAugTransform.html#guestfs-aug-transform-new"/>
+    <keyword type="struct" name="struct GuestfsAugTransform" link="GuestfsAugTransform.html#GuestfsAugTransform-struct"/>
+    <keyword type="struct" name="struct GuestfsAugTransformClass" link="GuestfsAugTransform.html#GuestfsAugTransformClass"/>
+    <keyword type="property" name="The “remove” property" link="GuestfsAugTransform.html#GuestfsAugTransform--remove"/>
     <keyword type="function" name="guestfs_btrfs_filesystem_defragment_new ()" link="GuestfsBTRFSFilesystemDefragment.html#guestfs-btrfs-filesystem-defragment-new"/>
     <keyword type="struct" name="struct GuestfsBTRFSFilesystemDefragment" link="GuestfsBTRFSFilesystemDefragment.html#GuestfsBTRFSFilesystemDefragment-struct"/>
     <keyword type="struct" name="struct GuestfsBTRFSFilesystemDefragmentClass" link="GuestfsBTRFSFilesystemDefragment.html#GuestfsBTRFSFilesystemDefragmentClass"/>
@@ -896,6 +907,7 @@
     <keyword type="struct" name="struct GuestfsHivexOpen" link="GuestfsHivexOpen.html#GuestfsHivexOpen-struct"/>
     <keyword type="struct" name="struct GuestfsHivexOpenClass" link="GuestfsHivexOpen.html#GuestfsHivexOpenClass"/>
     <keyword type="property" name="The “debug” property" link="GuestfsHivexOpen.html#GuestfsHivexOpen--debug"/>
+    <keyword type="property" name="The “unsafe” property" link="GuestfsHivexOpen.html#GuestfsHivexOpen--unsafe"/>
     <keyword type="property" name="The “verbose” property" link="GuestfsHivexOpen.html#GuestfsHivexOpen--verbose"/>
     <keyword type="property" name="The “write” property" link="GuestfsHivexOpen.html#GuestfsHivexOpen--write"/>
     <keyword type="function" name="guestfs_inspect_get_icon_new ()" link="GuestfsInspectGetIcon.html#guestfs-inspect-get-icon-new"/>
@@ -1078,6 +1090,10 @@
     <keyword type="property" name="The “metadata” property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--metadata"/>
     <keyword type="property" name="The “nodesize” property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--nodesize"/>
     <keyword type="property" name="The “sectorsize” property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--sectorsize"/>
+    <keyword type="function" name="guestfs_mksquashfs_new ()" link="GuestfsMksquashfs.html#guestfs-mksquashfs-new"/>
+    <keyword type="struct" name="struct GuestfsMksquashfs" link="GuestfsMksquashfs.html#GuestfsMksquashfs-struct"/>
+    <keyword type="struct" name="struct GuestfsMksquashfsClass" link="GuestfsMksquashfs.html#GuestfsMksquashfsClass"/>
+    <keyword type="property" name="The “compress” property" link="GuestfsMksquashfs.html#GuestfsMksquashfs--compress"/>
     <keyword type="function" name="guestfs_mkswap_new ()" link="GuestfsMkswap.html#guestfs-mkswap-new"/>
     <keyword type="struct" name="struct GuestfsMkswap" link="GuestfsMkswap.html#GuestfsMkswap-struct"/>
     <keyword type="struct" name="struct GuestfsMkswapClass" link="GuestfsMkswap.html#GuestfsMkswapClass"/>

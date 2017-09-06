@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,10 +52,3 @@ val is_documented : Types.action -> bool
 
 val test_functions : Types.action list
 (** Internal test functions used to test the language bindings. *)
-
-val fish_commands : Types.action list
-(** Non-API meta-commands available only in guestfish. *)
-
-val max_proc_nr : int
-(** The largest procedure number used (also saved in [src/MAX_PROC_NR] and
-    used as the minor version number of the shared library). *)

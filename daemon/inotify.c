@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,6 @@
 #ifdef HAVE_SYS_INOTIFY_H
 #include <sys/inotify.h>
 #endif
-
-#include "cloexec.h"
-#include "nonblocking.h"
 
 #include "guestfs_protocol.h"
 #include "daemon.h"
@@ -115,14 +112,14 @@ do_inotify_init (int max_events)
     reply_with_perror ("inotify_init");
     return -1;
   }
-  if (set_nonblocking_flag (inotify_fd, 1) == -1) {
-    reply_with_perror ("set_nonblocking_flag");
+  if (fcntl (inotify_fd, F_SETFL, O_NONBLOCK) == -1) {
+    reply_with_perror ("fcntl: O_NONBLOCK");
     close (inotify_fd);
     inotify_fd = -1;
     return -1;
   }
-  if (set_cloexec_flag (inotify_fd, 1) == -1) {
-    reply_with_perror ("set_cloexec_flag");
+  if (fcntl (inotify_fd, F_SETFD, FD_CLOEXEC) == -1) {
+    reply_with_perror ("fcntl: FD_CLOEXEC");
     close (inotify_fd);
     inotify_fd = -1;
     return -1;

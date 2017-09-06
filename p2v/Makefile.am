@@ -1,5 +1,5 @@
 # libguestfs virt-p2v
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -69,20 +69,19 @@ virt-p2v.xz: virt-p2v
 
 noinst_PROGRAMS = virt-p2v
 
-# Note that miniexpect comes from here:
-# http://git.annexia.org/?p=miniexpect.git;a=summary
 virt_p2v_SOURCES = \
 	about-authors.c \
 	about-license.c \
 	config.c \
 	conversion.c \
 	gui.c \
+	gui-gtk2-compat.h \
+	gui-gtk3-compat.h \
 	inhibit.c \
 	kernel.c \
 	kernel-cmdline.c \
 	main.c \
-	miniexpect.c \
-	miniexpect.h \
+	nbd.c \
 	p2v.h \
 	ssh.c \
 	utils.c \
@@ -90,7 +89,9 @@ virt_p2v_SOURCES = \
 
 virt_p2v_CPPFLAGS = \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/miniexpect -I$(top_builddir)/common/miniexpect \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 virt_p2v_CFLAGS = \
@@ -102,7 +103,8 @@ virt_p2v_CFLAGS = \
 	$(DBUS_CFLAGS)
 
 virt_p2v_LDADD = \
-	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/common/miniexpect/libminiexpect.la \
 	$(PCRE_LIBS) \
 	$(LIBXML2_LIBS) \
 	$(GTK_LIBS) \
@@ -244,6 +246,7 @@ TESTS = \
 if ENABLE_APPLIANCE
 TESTS += \
 	test-virt-p2v.sh \
+	test-virt-p2v-nbdkit.sh \
 	$(SLOW_TESTS)
 endif ENABLE_APPLIANCE
 
@@ -299,7 +302,7 @@ test-virt-p2v-pxe.sshd_config: test-virt-p2v-pxe.sshd_config.in
 
 test-virt-p2v-pxe.authorized_keys: test-virt-p2v-pxe.id_rsa.pub $(top_builddir)/run
 	rm -f $@ $@-t
-	$(top_builddir)/run sh -c 'echo -n environment=\"PATH=$$PATH\",environment=\"LD_LIBRARY_PATH=$(abs_top_builddir)/src/.libs\",environment=\"LIBGUESTFS_PATH=$(abs_top_builddir)/appliance\",environment=\"LIBGUESTFS_CACHEDIR=$(abs_top_builddir)/tmp\"\ ' > $@-t
+	$(top_builddir)/run sh -c 'echo -n environment=\"PATH=$$PATH\",environment=\"LD_LIBRARY_PATH=$(abs_top_builddir)/lib/.libs\",environment=\"LIBGUESTFS_PATH=$(abs_top_builddir)/appliance\",environment=\"LIBGUESTFS_CACHEDIR=$(abs_top_builddir)/tmp\"\ ' > $@-t
 	cat $< >> $@-t
 	mv $@-t $@
 

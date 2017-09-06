@@ -11,9 +11,8 @@ virt-p2v - Convert a physical machine to use KVM
 =head1 DESCRIPTION
 
 Virt-p2v converts a physical machine to run virtualized on KVM,
-managed by libvirt, OpenStack, oVirt, Red Hat Enterprise
-Virtualisation (RHEV), or one of the other targets supported by
-L<virt-v2v(1)>.
+managed by libvirt, OpenStack, oVirt, Red Hat Virtualisation (RHV), or
+one of the other targets supported by L<virt-v2v(1)>.
 
 Normally you don't run the virt-p2v program directly.  Instead you
 have to boot the physical machine using the bootable CD-ROM, ISO or
@@ -394,13 +393,13 @@ interfaces to the target C<default> network.
 You give a comma-separated list of C<interface:target> pairs, plus
 optionally a default target.  For example:
 
- p2v.network=em1:rhevm
+ p2v.network=em1:rhvm
 
-maps interface C<em1> to target network C<rhevm>.
+maps interface C<em1> to target network C<rhvm>.
 
- p2v.network=em1:rhevm,em2:management,other
+ p2v.network=em1:rhvm,em2:management,other
 
-maps interface C<em1> to C<rhevm>, and C<em2> to C<management>, and
+maps interface C<em1> to C<rhvm>, and C<em2> to C<management>, and
 any other interface that is found to C<other>.
 
 =item B<p2v.o=[libvirt|local|...]>
@@ -569,6 +568,44 @@ L<virt-p2v-make-disk(1)/ADDING AN SSH IDENTITY>
 
 L<virt-p2v-make-kickstart(1)/ADDING AN SSH IDENTITY>
 
+=head1 COMMON PROBLEMS
+
+=head2 Timeouts
+
+As described below (see L</HOW VIRT-P2V WORKS>) virt-p2v makes several
+long-lived ssh connections to the conversion server.  If these
+connections time out then virt-p2v will fail.
+
+To test if a timeout might be causing problems, open an XTerm on the
+virt-p2v machine, C<ssh root@I<conversion-server>>, and leave it for
+at least an hour.  If the session disconnects without you doing
+anything, then there is a timeout which you should turn off.
+
+Timeouts happen because:
+
+=over 4
+
+=item C<TIMEOUT> or C<TMOUT> environment variable
+
+Check if one of these environment variables is set in the root shell
+on the conversion server.
+
+=item sshd C<ClientAlive*> setting
+
+Check for C<ClientAlive*> settings in C</etc/ssh/sshd_config> on the
+conversion server.
+
+=item Firewall or NAT settings
+
+Check if there is a firewall or NAT box between virt-p2v and the
+conversion server, and if this firewall drops idle connections after a
+too-short time.
+
+virt-p2v E<ge> 1.36 attempts to work around firewall timeouts by
+sending ssh keepalive messages every 5 minutes.
+
+=back
+
 =head1 OPTIONS
 
 =over 4
@@ -597,6 +634,36 @@ This flag is passed to virt-p2v when it is launched inside the
 virt-p2v ISO environment, ie. when it is running on a real physical
 machine (and thus not when testing).  It enables various dangerous
 features such as the Reboot button.
+
+=item B<--nbd=server[,server...]>
+
+Select which NBD server is used.  By default the following servers are
+checked and the first one found is used:
+I<--nbd=qemu-nbd,qemu-nbd-no-sa,nbdkit,nbdkit-no-sa>
+
+=over 4
+
+=item B<qemu-nbd>
+
+Use qemu-nbd.
+
+=item B<qemu-nbd-no-sa>
+
+Use qemu-nbd, but disable socket activation.
+
+=item B<nbdkit>
+
+Use nbdkit with the file plugin (see: L<nbdkit-file-plugin(1)>).
+
+=item B<nbdkit-no-sa>
+
+Use nbdkit, but disable socket activation
+
+=back
+
+The C<*-no-sa> variants allow virt-p2v to fall back to older versions
+of qemu-nbd and nbdkit which did not support
+L<socket activation|http://0pointer.de/blog/projects/socket-activation.html>.
 
 =item B<--test-disk=/PATH/TO/DISK.IMG>
 
@@ -663,6 +730,25 @@ The dmesg output from the physical machine.  Useful for detecting
 problems such as missing device drivers or firmware on the virt-p2v
 ISO.
 
+=item F<environment>
+
+I<(before conversion)>
+
+The content of the environment where L<virt-v2v(1)> will run.
+
+=item F<lscpu>
+
+=item F<lspci>
+
+=item F<lsscsi>
+
+=item F<lsusb>
+
+I<(before conversion)>
+
+The output of the corresponding commands (ie L<lscpu(1)> etc) on the
+physical machine.  Useful for debugging novel hardware configurations.
+
 =item F<name>
 
 I<(before conversion)>
@@ -713,11 +799,15 @@ interest only, do not attempt to run this script yourself.
 =back
 
 Before conversion actually begins, virt-p2v then makes one or more
-further ssh connections to the server for data transfer.  The transfer
-protocol used currently is NBD (Network Block Device), which is
-proxied over ssh.  The server is L<qemu-nbd(1)>.  There is one ssh
-connection per physical hard disk on the source machine (the common
-case — a single hard disk — is shown below):
+further ssh connections to the server for data transfer.
+
+The transfer protocol used currently is NBD (Network Block Device),
+which is proxied over ssh.  The NBD server is L<qemu-nbd(1)> by
+default but others can be selected using the I<--nbd> command line
+option.
+
+There is one ssh connection per physical hard disk on the source
+machine (the common case — a single hard disk — is shown below):
 
  ┌──────────────┐                      ┌─────────────────┐
  │ virt-p2v     │                      │ virt-v2v        │
@@ -736,9 +826,9 @@ server and terminates on the conversion server, in fact NBD requests
 flow in the opposite direction.  This is because the reverse port
 forward feature of ssh (C<ssh -R>) is used to open a port on the
 loopback interface of the conversion server which is proxied back by
-ssh to the qemu-nbd server running on the physical machine.  The
-effect is that virt-v2v via libguestfs can open nbd connections which
-directly read the hard disk(s) of the physical server.
+ssh to the NBD server running on the physical machine.  The effect is
+that virt-v2v via libguestfs can open nbd connections which directly
+read the hard disk(s) of the physical server.
 
 Two layers of protection are used to ensure that there are no writes
 to the hard disks: Firstly, the qemu-nbd I<-r> (readonly) option is
@@ -765,6 +855,7 @@ L<virt-p2v-make-kickstart(1)>,
 L<virt-p2v-make-kiwi(1)>,
 L<virt-v2v(1)>,
 L<qemu-nbd(1)>,
+L<nbdkit(1)>, L<nbdkit-file-plugin(1)>,
 L<ssh(1)>,
 L<sshd(8)>,
 L<sshd_config(5)>,
@@ -786,4 +877,4 @@ Tingting Zheng
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2016 Red Hat Inc.
+Copyright (C) 2009-2017 Red Hat Inc.

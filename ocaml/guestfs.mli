@@ -632,6 +632,12 @@ val aug_setm : t -> string -> string option -> string -> int
     @since 1.23.14
  *)
 
+val aug_transform : t -> ?remove:bool -> string -> string -> unit
+(** add/remove an Augeas lens transformation
+
+    @since 1.35.2
+ *)
+
 val available : t -> string array -> unit
 (** test availability of some parts of the API
 
@@ -1516,6 +1522,14 @@ val find0 : t -> string -> string -> unit
     @since 1.0.74
  *)
 
+val find_inode : t -> string -> int64 -> tsk_dirent array
+(** search the entries associated to the given inode
+
+    This function depends on the feature "libtsk".  See also {!feature_available}.
+
+    @since 1.35.6
+ *)
+
 val findfs_label : t -> string -> string
 (** find a filesystem by label
 
@@ -1928,7 +1942,7 @@ val hivex_node_values : t -> int64 -> hivex_value array
     @since 1.19.35
  *)
 
-val hivex_open : t -> ?verbose:bool -> ?debug:bool -> ?write:bool -> string -> unit
+val hivex_open : t -> ?verbose:bool -> ?debug:bool -> ?write:bool -> ?unsafe:bool -> string -> unit
 (** open a Windows Registry hive file
 
     This function depends on the feature "hivex".  See also {!feature_available}.
@@ -2136,6 +2150,18 @@ val inspect_get_windows_current_control_set : t -> string -> string
 (** get Windows CurrentControlSet of inspected operating system
 
     @since 1.9.17
+ *)
+
+val inspect_get_windows_software_hive : t -> string -> string
+(** get the path of the Windows software hive
+
+    @since 1.35.26
+ *)
+
+val inspect_get_windows_system_hive : t -> string -> string
+(** get the path of the Windows system hive
+
+    @since 1.35.26
  *)
 
 val inspect_get_windows_systemroot : t -> string -> string
@@ -3114,6 +3140,14 @@ val mknod_c : t -> int -> int -> int -> string -> unit
     This function depends on the feature "mknod".  See also {!feature_available}.
 
     @since 1.0.55
+ *)
+
+val mksquashfs : t -> ?compress:string -> ?excludes:string array -> string -> string -> unit
+(** create a squashfs filesystem
+
+    This function depends on the feature "squashfs".  See also {!feature_available}.
+
+    @since 1.35.25
  *)
 
 val mkswap : t -> ?label:string -> ?uuid:string -> string -> unit
@@ -4773,6 +4807,11 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.23.14
    *)
+  method aug_transform : ?remove:bool -> string -> string -> unit
+  (** add/remove an Augeas lens transformation
+
+    @since 1.35.2
+   *)
   method available : string array -> unit
   (** test availability of some parts of the API
 
@@ -5528,6 +5567,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.0.74
    *)
+  method find_inode : string -> int64 -> tsk_dirent array
+  (** search the entries associated to the given inode
+
+    This function depends on the feature "libtsk".  See also {!feature_available}.
+
+    @since 1.35.6
+   *)
   method findfs_label : string -> string
   (** find a filesystem by label
 
@@ -5879,7 +5925,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.19.35
    *)
-  method hivex_open : ?verbose:bool -> ?debug:bool -> ?write:bool -> string -> unit
+  method hivex_open : ?verbose:bool -> ?debug:bool -> ?write:bool -> ?unsafe:bool -> string -> unit
   (** open a Windows Registry hive file
 
     This function depends on the feature "hivex".  See also {!feature_available}.
@@ -6057,6 +6103,16 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   (** get Windows CurrentControlSet of inspected operating system
 
     @since 1.9.17
+   *)
+  method inspect_get_windows_software_hive : string -> string
+  (** get the path of the Windows software hive
+
+    @since 1.35.26
+   *)
+  method inspect_get_windows_system_hive : string -> string
+  (** get the path of the Windows system hive
+
+    @since 1.35.26
    *)
   method inspect_get_windows_systemroot : string -> string
   (** get Windows systemroot of inspected operating system
@@ -6884,6 +6940,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
     This function depends on the feature "mknod".  See also {!feature_available}.
 
     @since 1.0.55
+   *)
+  method mksquashfs : ?compress:string -> ?excludes:string array -> string -> string -> unit
+  (** create a squashfs filesystem
+
+    This function depends on the feature "squashfs".  See also {!feature_available}.
+
+    @since 1.35.25
    *)
   method mkswap : ?label:string -> ?uuid:string -> string -> unit
   (** create a swap partition

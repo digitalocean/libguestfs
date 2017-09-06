@@ -191,7 +191,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1device_1add  (JNIEnv *env, jobjec
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   size_t devices_len;
-  CLEANUP_FREE char **devices = NULL;
+  char **devices;
   const char *fs;
   size_t i;
 
@@ -214,6 +214,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1device_1add  (JNIEnv *env, jobjec
     jobject o = (*env)->GetObjectArrayElement (env, jdevices, i);
     (*env)->ReleaseStringUTFChars (env, o, devices[i]);
   }
+  free (devices);
   (*env)->ReleaseStringUTFChars (env, jfs, fs);
 
   if (r == -1) {
@@ -634,7 +635,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1feature_1available  (JNIEnv *env, jobjec
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   size_t groups_len;
-  CLEANUP_FREE char **groups = NULL;
+  char **groups;
   size_t i;
 
   groups_len = (*env)->GetArrayLength (env, jgroups);
@@ -655,6 +656,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1feature_1available  (JNIEnv *env, jobjec
     jobject o = (*env)->GetObjectArrayElement (env, jgroups, i);
     (*env)->ReleaseStringUTFChars (env, o, groups[i]);
   }
+  free (groups);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -988,7 +990,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1internal_1test  (JNIEnv *env, jobject ob
   const char *str;
   const char *optstr;
   size_t strlist_len;
-  CLEANUP_FREE char **strlist = NULL;
+  char **strlist;
   int b;
   int integer;
   int64_t integer64;
@@ -999,7 +1001,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1internal_1test  (JNIEnv *env, jobject ob
   struct guestfs_internal_test_argv optargs_s;
   const struct guestfs_internal_test_argv *optargs = &optargs_s;
   size_t ostringlist_len;
-  CLEANUP_FREE char **ostringlist = NULL;
+  char **ostringlist;
   size_t i;
 
   str = (*env)->GetStringUTFChars (env, jstr, NULL);
@@ -1050,6 +1052,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1internal_1test  (JNIEnv *env, jobject ob
     jobject o = (*env)->GetObjectArrayElement (env, jstrlist, i);
     (*env)->ReleaseStringUTFChars (env, o, strlist[i]);
   }
+  free (strlist);
   (*env)->ReleaseStringUTFChars (env, jfilein, filein);
   (*env)->ReleaseStringUTFChars (env, jfileout, fileout);
   (*env)->ReleaseByteArrayElements (env, jbufferin, (jbyte *) bufferin, 0);
@@ -1058,6 +1061,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1internal_1test  (JNIEnv *env, jobject ob
     jobject o = (*env)->GetObjectArrayElement (env, jostringlist, i);
     (*env)->ReleaseStringUTFChars (env, o, optargs_s.ostringlist[i]);
   }
+  free (ostringlist);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -1280,7 +1284,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1isoinfo_1device  (JNIEnv *env, jobject o
   jobject jr;
   jclass cl;
   jfieldID fl;
-  CLEANUP_FREE_ISOINFO struct guestfs_isoinfo *r = NULL;
+  struct guestfs_isoinfo *r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
@@ -1329,6 +1333,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1isoinfo_1device  (JNIEnv *env, jobject o
   (*env)->SetLongField (env, jr, fl, r->iso_volume_expiration_t);
   fl = (*env)->GetFieldID (env, cl, "iso_volume_effective_t", "J");
   (*env)->SetLongField (env, jr, fl, r->iso_volume_effective_t);
+  guestfs_free_isoinfo (r);
   return jr;
 
  ret_error:
@@ -1644,7 +1649,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvm_1set_1filter  (JNIEnv *env, jobject 
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   size_t devices_len;
-  CLEANUP_FREE char **devices = NULL;
+  char **devices;
   size_t i;
 
   devices_len = (*env)->GetArrayLength (env, jdevices);
@@ -1665,6 +1670,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvm_1set_1filter  (JNIEnv *env, jobject 
     jobject o = (*env)->GetObjectArrayElement (env, jdevices, i);
     (*env)->ReleaseStringUTFChars (env, o, devices[i]);
   }
+  free (devices);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -1685,7 +1691,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvs_1full  (JNIEnv *env, jobject obj, jl
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  CLEANUP_FREE_LVM_LV_LIST struct guestfs_lvm_lv_list *r = NULL;
+  struct guestfs_lvm_lv_list *r;
   size_t i;
 
 
@@ -1767,6 +1773,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvs_1full  (JNIEnv *env, jobject obj, jl
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
+  guestfs_free_lvm_lv_list (r);
   return jr;
 
  ret_error:
@@ -1782,7 +1789,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1md_1stat  (JNIEnv *env, jobject obj, jlo
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  CLEANUP_FREE_MDSTAT_LIST struct guestfs_mdstat_list *r = NULL;
+  struct guestfs_mdstat_list *r;
   const char *md;
   size_t i;
 
@@ -1817,6 +1824,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1md_1stat  (JNIEnv *env, jobject obj, jlo
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
+  guestfs_free_mdstat_list (r);
   return jr;
 
  ret_error:
@@ -2008,7 +2016,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1parse_1environment_1list  (JNIEnv *env, 
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   size_t environment_len;
-  CLEANUP_FREE char **environment = NULL;
+  char **environment;
   size_t i;
 
   environment_len = (*env)->GetArrayLength (env, jenvironment);
@@ -2029,6 +2037,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1parse_1environment_1list  (JNIEnv *env, 
     jobject o = (*env)->GetObjectArrayElement (env, jenvironment, i);
     (*env)->ReleaseStringUTFChars (env, o, environment[i]);
   }
+  free (environment);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -2325,7 +2334,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk  (JNIEnv *env, jobject obj, jlong
   int heads;
   int sectors;
   size_t lines_len;
-  CLEANUP_FREE char **lines = NULL;
+  char **lines;
   size_t i;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
@@ -2351,6 +2360,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk  (JNIEnv *env, jobject obj, jlong
     jobject o = (*env)->GetObjectArrayElement (env, jlines, i);
     (*env)->ReleaseStringUTFChars (env, o, lines[i]);
   }
+  free (lines);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -2370,7 +2380,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdiskM  (JNIEnv *env, jobject obj, jlon
   int r;
   const char *device;
   size_t lines_len;
-  CLEANUP_FREE char **lines = NULL;
+  char **lines;
   size_t i;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
@@ -2393,6 +2403,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdiskM  (JNIEnv *env, jobject obj, jlon
     jobject o = (*env)->GetObjectArrayElement (env, jlines, i);
     (*env)->ReleaseStringUTFChars (env, o, lines[i]);
   }
+  free (lines);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -2447,7 +2458,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1stat  (JNIEnv *env, jobject obj, jlong j
   jobject jr;
   jclass cl;
   jfieldID fl;
-  CLEANUP_FREE_STAT struct guestfs_stat *r = NULL;
+  struct guestfs_stat *r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
@@ -2488,6 +2499,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1stat  (JNIEnv *env, jobject obj, jlong j
   (*env)->SetLongField (env, jr, fl, r->mtime);
   fl = (*env)->GetFieldID (env, cl, "ctime", "J");
   (*env)->SetLongField (env, jr, fl, r->ctime);
+  guestfs_free_stat (r);
   return jr;
 
  ret_error:
@@ -2822,7 +2834,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1xfs_1info  (JNIEnv *env, jobject obj, jl
   jobject jr;
   jclass cl;
   jfieldID fl;
-  CLEANUP_FREE_XFSINFO struct guestfs_xfsinfo *r = NULL;
+  struct guestfs_xfsinfo *r;
   const char *pathordevice;
 
   pathordevice = (*env)->GetStringUTFChars (env, jpathordevice, NULL);
@@ -2887,6 +2899,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1xfs_1info  (JNIEnv *env, jobject obj, jl
   (*env)->SetLongField (env, jr, fl, r->xfs_rtblocks);
   fl = (*env)->GetFieldID (env, cl, "xfs_rtextents", "J");
   (*env)->SetLongField (env, jr, fl, r->xfs_rtextents);
+  guestfs_free_xfsinfo (r);
   return jr;
 
  ret_error:

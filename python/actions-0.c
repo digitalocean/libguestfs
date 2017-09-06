@@ -351,6 +351,58 @@ guestfs_int_py_aug_match (PyObject *self, PyObject *args)
 }
 #endif
 
+#ifdef GUESTFS_HAVE_AUG_TRANSFORM
+PyObject *
+guestfs_int_py_aug_transform (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_aug_transform_argv optargs_s;
+  struct guestfs_aug_transform_argv *optargs = &optargs_s;
+  int r;
+  const char *lens;
+  const char *file;
+  PyObject *py_remove;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OssO:guestfs_aug_transform",
+                         &py_g, &lens, &file, &py_remove))
+    goto out;
+  g = get_handle (py_g);
+
+#ifdef GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK
+  if (py_remove != Py_None) {
+    optargs_s.bitmask |= GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK;
+    optargs_s.remove = PyLong_AsLong (py_remove);
+    if (PyErr_Occurred ()) goto out;
+  }
+#endif
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_aug_transform_argv (g, lens, file, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+#endif
+
 #ifdef GUESTFS_HAVE_BTRFS_QGROUP_CREATE
 PyObject *
 guestfs_int_py_btrfs_qgroup_create (PyObject *self, PyObject *args)
@@ -1509,6 +1561,49 @@ guestfs_int_py_inspect_get_product_variant (PyObject *self, PyObject *args)
     py_save = PyEval_SaveThread ();
 
   r = guestfs_inspect_get_product_variant (g, root);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+  if (py_r == NULL) goto out;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+#endif
+
+#ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SOFTWARE_HIVE
+PyObject *
+guestfs_int_py_inspect_get_windows_software_hive (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+  const char *root;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_inspect_get_windows_software_hive",
+                         &py_g, &root))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_inspect_get_windows_software_hive (g, root);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);

@@ -2280,8 +2280,7 @@ do_btrfs_filesystem_show (const char *device)
     }
   }
 
-  if (end_stringsbuf (&ret) == -1)
-    return NULL;
+  end_stringsbuf (&ret);
 
   return take_stringsbuf (&ret);
 }

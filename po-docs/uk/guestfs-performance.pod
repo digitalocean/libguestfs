@@ -605,5 +605,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2012–2016
+Copyright (C) 2012-2017 Red Hat Inc.
 

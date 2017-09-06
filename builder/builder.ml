@@ -1,5 +1,5 @@
 (* virt-builder
- * Copyright (C) 2013-2016 Red Hat Inc.
+ * Copyright (C) 2013-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ open Common_gettext.Gettext
 module G = Guestfs
 
 open Common_utils
+open Unix_utils
 open Password
 open Planner
 open Utils

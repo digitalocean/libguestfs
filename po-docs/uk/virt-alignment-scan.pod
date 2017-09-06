@@ -218,34 +218,37 @@ C<кількість_потоків> за допомогою параметра 
 
 =head1 РЕКОМЕНДОВАНЕ ВИРІВНЮВАННЯ
 
-Operating systems older than Windows 2008 and Linux before ca.2010 place the
-first sector of the first partition at sector 63, with a 512 byte sector
-size.  This happens because of a historical accident.  Drives have to report
-a cylinder / head / sector (CHS) geometry to the BIOS.  The geometry is
-completely meaningless on modern drives, but it happens that the geometry
-reported always has 63 sectors per track.  The operating system therefore
-places the first partition at the start of the second "track", at sector 63.
+Операційні системи, старіші за Windows 2008, та Linux до приблизно 2010 року
+розташовують перший сектор на першому розділі у секторі 63 і використовують
+розмір сектору у 512 байтів. Причини суто історичні. Драйвери мають
+повідомити дані щодо геометрії (циліндр / голівка / сектор або CHS) до
+BIOS. Ця геометрія є повністю непотрібною на сучасних дисках, але, так
+трапляється, що повідомлені драйвером дані вказують на те, що у доріжці 63
+сектори. Тому операційна система розташовує перший розділ на початку другої
+«доріжки» у секторі 63.
 
-When the guest OS is virtualized, the host operating system and hypervisor
-may prefer accesses aligned to one of:
+Якщо гостьову операційну систему віртуалізовано, основна операційна система
+і гіпервізор можуть надавати перевагу доступу, вирівняному за одним з таких
+значень:
 
 =over 4
 
 =item * 512 байти
 
-if the host OS uses local storage directly on hard drive partitions, and the
-hard drive has 512 byte physical sectors.
+якщо основна операційна система використовує локальне сховище даних
+безпосередньо на розділах твердого диска, а на твердому диску розмір
+фізичних секторів дорівнює 512 байтам.
 
 =item * 4 кілобайтів
 
-for local storage on new hard drives with 4Kbyte physical sectors; for
-file-backed storage on filesystems with 4Kbyte block size; or for some types
-of network-attached storage.
+для локальних сховищ даних на нових твердих дисках із фізичними секторами у
+4 кілобайти; для файлових сховищ даних на файлових системах із розміром
+блоку у 4 кілобайти; або для деяких типів мережевих сховищ даних.
 
 =item * 64 кілобайтів
 
-for high-end network-attached storage.  This is the optimal block size for
-some NetApp hardware.
+для висококласних сховищ даних, з’єднаних із мережею. Оптимальний розмір
+блоку для апаратного забезпечення NetApp.
 
 =item * 1 мегабайт
 
@@ -253,8 +256,8 @@ some NetApp hardware.
 
 =back
 
-Partitions which are not aligned correctly to the underlying storage cause
-extra I/O.  For example:
+Розділи, які не вирівняно належним чином щодо основного сховища даних,
+можуть спричиняти зайві помилки введення-виведення. Приклад:
 
                        розділ#63
                        ┌──────────────────────────┬ ─ ─ ─ ─
@@ -265,15 +268,18 @@ extra I/O.  For example:
     │                         │                         │
   ─ ┴─────────────────────────┴─────────────────────────┴ ─ ─
 
-In this example, each time a 4K guest block is read, two blocks on the host
-must be accessed (so twice as much I/O is done).  When a 4K guest block is
-written, two host blocks must first be read, the old and new data combined,
-and the two blocks written back (4x I/O).
+У цьому прикладі під час кожного читання блоку у 4 кілобайти гостьової
+системи має бути отримати доступ до двох блоків основної системи (отже,
+здійснено удвічі більший обмін даними введення-виведення). Якщо у гостьовій
+системі записується блок у 4 кілобайти, у основній системі має бути
+прочитано два блоки, старі і нові дані має бути поєднано, і має бути
+записано назад два блоки (учетверо більший обмін даними введення-виведення).
 
-=head2 LINUX HOST BLOCK AND I/O SIZE
+=head2 БЛОК ОСНОВНОЇ СИСТЕМИ LINUX І РОЗМІР ВВЕДЕННЯ-ВИВЕДЕННЯ
 
-New versions of the Linux kernel expose the physical and logical block size,
-and minimum and recommended I/O size.
+У нових версіях ядра Linux можна регулювати розміри фізичних і логічних
+блоків, а такожж мінімальний і рекомендований розмір блоку
+введення-виведення.
 
 Для типового жорсткого диска з 512-байтовими секторами:
 
@@ -312,46 +318,50 @@ and minimum and recommended I/O size.
  $ cat /sys/block/sdc/queue/optimal_io_size
  65536
 
-The NetApp allows 512 byte accesses (but they will be very inefficient),
-prefers a minimum 4K I/O size, but the optimal I/O size is 64K.
+NetApp дозволяє доступ до блоків у 512 байтів (хоча такий доступ буде дуже
+неефективним), надає перевагу мінімальному блоку введення-виведення у 4 кБ,
+але оптимальним розміром блоку введення-виведення є 64 кБ.
 
 Щоб дізнатися більше про призначення цих чисел, ознайомтеся зі сторінкою
 L<http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Storage_Administration_Guide/newstorage-iolimits.html>
 
-[Thanks to Matt Booth for providing 4K drive data.  Thanks to Mike Snitzer
-for providing NetApp data and additional information.]
+[Дякуємо Matt Booth за надання даних щодо дисків з блоками у 4 кБ. Дякуємо
+Mike Snitzer за надання даних щодо NetApp та додаткову інформацію.]
 
 =head2 ВИРІВНЮВАННЯ РОЗДІЛІВ НА ПОЗНАЧКИ 1 МБ
 
-Microsoft picked 1 MB as the default alignment for all partitions starting
-with Windows 2008 Server, and Linux has followed this.
+Microsoft вибрано 1 МБ як типове вирівнювання для усіх розділів, починаючи з
+Windows 2008 Server. У Linux також почали використовувати таке вирівнювання.
 
-Assuming 512 byte sectors in the guest, you will now see the first partition
-starting at sector 2048, and subsequent partitions (if any)  will start at a
-multiple of 2048 sectors.
+Припускаючи у гостьовій системі сектори у 512 байтів, маємо перший розділ,
+що починається з сектора 2048 і наступні розділи (якщо такі є) будуть
+починатися з сектора, номер якого кратний до 2048.
 
-1 MB alignment is compatible with all current alignment requirements (4K,
-64K) and provides room for future growth in physical block sizes.
+Вирівнювання за 1 МБ є сумісним із усіма поточними варіантами вирівнювання
+(4 кБ, 64 кБ) і надає простір для подальшого зростання розмірів фізичних
+блоків.
 
 =head2 ВСТАНОВЛЕННЯ ВИРІВНЮВАННЯ
 
-L<virt-resize(1)> can change the alignment of the partitions of some
-guests.  Currently it can fully align all the partitions of all Windows
-guests, and it will fix the bootloader where necessary.  For Linux guests,
-it can align the second and subsequent partitions, so the majority of OS
-accesses except at boot will be aligned.
+L<virt-resize(1)> може змінювати вирівнювання розділів деяких гостьових
+систем. У поточній версії програма здатна повністю вирівняти усі розділи
+усіх гостьових систем Windows і виправити завантажувач, де це потрібно. Для
+гостьових систем Linux програма може вирівняти другий і наступні розділи,
+щоб більшість доступів операційної системи, окрім часу завантаження, було
+вирівняно належним чином.
 
-Another way to correct partition alignment problems is to reinstall your
-guest operating systems.  If you install operating systems from templates,
-ensure these have correct partition alignment too.
+Іншим способом виправлення проблем, пов’язаних із вирівнюванням розділів, є
+перевстановлення ваших гостьових операційних систем. Якщо ви встановлюєте
+операційні системи з шаблонів, вам також варто переконатися, що із
+вирівнюванням розділів усе гаразд.
 
 Для старіших версій Windows корисні відомості можна знайти у цьому документі
 NetApp: L<http://media.netapp.com/documents/tr-3747.pdf>
 
-For Red Hat Enterprise Linux E<le> 5, use a Kickstart script that contains
-an explicit C<%pre> section that creates aligned partitions using
-L<parted(8)>.  Do not use the Kickstart C<part> command.  The NetApp
-document above contains an example.
+Для Red Hat Enterprise Linux E<le> 5 слід використовувати скрипт Kickstart,
+який містить явний розділ C<%pre> для створення вирівняних розділів диска за
+допомогою L<parted(8)>. Не використовуйте команду Kickstart C<part>. У
+наведеному вище документі NetApp міститься приклад.
 
 =head1 СТАН ВИХОДУ
 

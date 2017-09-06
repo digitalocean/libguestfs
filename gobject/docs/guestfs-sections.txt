@@ -67,6 +67,23 @@ guestfs_add_libvirt_dom_get_type
 </SECTION>
 
 <SECTION>
+<FILE>optargs-aug_transform</FILE>
+<TITLE>GuestfsAugTransform</TITLE>
+GuestfsAugTransform
+GuestfsAugTransformClass
+guestfs_aug_transform_new
+<SUBSECTION Standard>
+GUESTFS_AUG_TRANSFORM
+GUESTFS_AUG_TRANSFORM_CLASS
+GUESTFS_AUG_TRANSFORM_GET_CLASS
+GUESTFS_IS_AUG_TRANSFORM
+GUESTFS_IS_AUG_TRANSFORM_CLASS
+GUESTFS_TYPE_AUG_TRANSFORM
+GuestfsAugTransformPrivate
+guestfs_aug_transform_get_type
+</SECTION>
+
+<SECTION>
 <FILE>optargs-btrfs_filesystem_defragment</FILE>
 <TITLE>GuestfsBTRFSFilesystemDefragment</TITLE>
 GuestfsBTRFSFilesystemDefragment
@@ -662,6 +679,23 @@ guestfs_mkfs_btrfs_get_type
 </SECTION>
 
 <SECTION>
+<FILE>optargs-mksquashfs</FILE>
+<TITLE>GuestfsMksquashfs</TITLE>
+GuestfsMksquashfs
+GuestfsMksquashfsClass
+guestfs_mksquashfs_new
+<SUBSECTION Standard>
+GUESTFS_IS_MKSQUASHFS
+GUESTFS_IS_MKSQUASHFS_CLASS
+GUESTFS_MKSQUASHFS
+GUESTFS_MKSQUASHFS_CLASS
+GUESTFS_MKSQUASHFS_GET_CLASS
+GUESTFS_TYPE_MKSQUASHFS
+GuestfsMksquashfsPrivate
+guestfs_mksquashfs_get_type
+</SECTION>
+
+<SECTION>
 <FILE>optargs-mkswap</FILE>
 <TITLE>GuestfsMkswap</TITLE>
 GuestfsMkswap
@@ -1071,6 +1105,7 @@ guestfs_session_aug_rm
 guestfs_session_aug_save
 guestfs_session_aug_set
 guestfs_session_aug_setm
+guestfs_session_aug_transform
 guestfs_session_available
 guestfs_session_available_all_groups
 guestfs_session_base64_in
@@ -1198,6 +1233,7 @@ guestfs_session_fill_dir
 guestfs_session_fill_pattern
 guestfs_session_find
 guestfs_session_find0
+guestfs_session_find_inode
 guestfs_session_findfs_label
 guestfs_session_findfs_uuid
 guestfs_session_fsck
@@ -1287,6 +1323,8 @@ guestfs_session_inspect_get_product_name
 guestfs_session_inspect_get_product_variant
 guestfs_session_inspect_get_roots
 guestfs_session_inspect_get_windows_current_control_set
+guestfs_session_inspect_get_windows_software_hive
+guestfs_session_inspect_get_windows_system_hive
 guestfs_session_inspect_get_windows_systemroot
 guestfs_session_inspect_is_live
 guestfs_session_inspect_is_multipart
@@ -1431,6 +1469,7 @@ guestfs_session_mkmountpoint
 guestfs_session_mknod
 guestfs_session_mknod_b
 guestfs_session_mknod_c
+guestfs_session_mksquashfs
 guestfs_session_mkswap
 guestfs_session_mkswap_L
 guestfs_session_mkswap_U

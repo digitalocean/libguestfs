@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2013-2016 Red Hat Inc.
+# Copyright (C) 2013-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@ symlinks = \
 	virt-resize \
 	virt-sparsify \
 	virt-sysprep \
+	virt-tail \
 	virt-tar-in \
 	virt-tar-out
 
@@ -70,7 +71,8 @@ virt-builder virt-cat virt-customize virt-df virt-dib virt-diff \
 virt-edit virt-filesystems virt-format virt-get-kernel virt-inspector \
 virt-log virt-ls \
 virt-p2v-make-disk virt-p2v-make-kickstart virt-p2v-make-kiwi \
-virt-resize virt-sparsify virt-sysprep:
+virt-resize virt-sparsify virt-sysprep \
+virt-tail:
 	rm -f $@
 	$(LN_S) virt-alignment-scan $@
 

@@ -1,5 +1,5 @@
 # libguestfs Ruby bindings -*- ruby -*-
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,10 +20,12 @@ require File::join(File::dirname(__FILE__), 'test_helper')
 class Test800RHBZ507346 < MiniTest::Unit::TestCase
   def test_800_rhbz507346
     g = Guestfs::Guestfs.new()
+    g.add_drive_scratch(10*1024*1024)
+    g.launch()
+
     exception = assert_raises TypeError do
-      g.parse_environment_list(1)
+        g.command(1)
     end
-    assert_match(/wrong argument type .* \(expected Array\)/,
-                 exception.message)
+    assert_match /wrong argument type Fixnum \(expected Array\)/, exception.message
   end
 end

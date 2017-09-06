@@ -2067,6 +2067,61 @@ guestfs_session_aug_setm (GuestfsSession *session, const gchar *base, const gcha
 }
 
 /**
+ * guestfs_session_aug_transform:
+ * @session: (transfer none): A GuestfsSession object
+ * @lens: (transfer none) (type utf8):
+ * @file: (transfer none) (type utf8):
+ * @optargs: (transfer none) (allow-none): a GuestfsAugTransform containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * add/remove an Augeas lens transformation
+ *
+ * Add an Augeas transformation for the specified @lens so it can handle
+ * @file.
+ * 
+ * If @remove is true (@false by default), then the transformation is
+ * removed.
+ * 
+ * Returns: true on success, false on error
+ * Since: 1.35.2
+ */
+gboolean
+guestfs_session_aug_transform (GuestfsSession *session, const gchar *lens, const gchar *file, GuestfsAugTransform *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_transform");
+    return FALSE;
+  }
+
+  struct guestfs_aug_transform_argv argv;
+  struct guestfs_aug_transform_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue remove_v = {0, };
+    g_value_init (&remove_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "remove", &remove_v);
+    GuestfsTristate remove = g_value_get_enum (&remove_v);
+    if (remove != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK;
+      argv.remove = remove;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_aug_transform_argv (g, lens, file, argvp);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_available:
  * @session: (transfer none): A GuestfsSession object
  * @groups: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
@@ -7572,6 +7627,17 @@ guestfs_session_file (GuestfsSession *session, const gchar *path, GError **err)
  * "ppc64le"
  * 64 bit Power PC (little endian).
  * 
+ * "riscv32"
+ * "riscv64"
+ * "riscv128"
+ * RISC-V 32-, 64- or 128-bit variants.
+ * 
+ * "s390"
+ * 31 bit IBM S/390.
+ * 
+ * "s390x"
+ * 64 bit IBM S/390.
+ * 
  * "sparc"
  * 32 bit SPARC.
  * 
@@ -8114,6 +8180,82 @@ guestfs_session_find0 (GuestfsSession *session, const gchar *directory, const gc
   }
 
   return TRUE;
+}
+
+/**
+ * guestfs_session_find_inode:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @inode: (type gint64):
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * search the entries associated to the given inode
+ *
+ * Searches all the entries associated with the given inode.
+ * 
+ * For each entry, a @tsk_dirent structure is returned. See
+ * @filesystem_walk for more information about @tsk_dirent structures.
+ * 
+ * This function depends on the feature "libtsk".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsTSKDirent): an array of TSKDirent objects, or NULL on error
+ * Since: 1.35.6
+ */
+GuestfsTSKDirent **
+guestfs_session_find_inode (GuestfsSession *session, const gchar *device, gint64 inode, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return NULL;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "find_inode");
+    return NULL;
+  }
+
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect (cancellable,
+                               G_CALLBACK (cancelled_handler),
+                               g, NULL);
+  }
+
+  struct guestfs_tsk_dirent_list *ret = guestfs_find_inode (g, device, inode);
+  g_cancellable_disconnect (cancellable, id);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  GuestfsTSKDirent **l = g_malloc (sizeof (GuestfsTSKDirent*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0 (GuestfsTSKDirent);
+    l[i]->tsk_inode = ret->val[i].tsk_inode;
+    l[i]->tsk_type = ret->val[i].tsk_type;
+    l[i]->tsk_size = ret->val[i].tsk_size;
+    if (ret->val[i].tsk_name) l[i]->tsk_name = g_strdup (ret->val[i].tsk_name);
+    l[i]->tsk_flags = ret->val[i].tsk_flags;
+    l[i]->tsk_atime_sec = ret->val[i].tsk_atime_sec;
+    l[i]->tsk_atime_nsec = ret->val[i].tsk_atime_nsec;
+    l[i]->tsk_mtime_sec = ret->val[i].tsk_mtime_sec;
+    l[i]->tsk_mtime_nsec = ret->val[i].tsk_mtime_nsec;
+    l[i]->tsk_ctime_sec = ret->val[i].tsk_ctime_sec;
+    l[i]->tsk_ctime_nsec = ret->val[i].tsk_ctime_nsec;
+    l[i]->tsk_crtime_sec = ret->val[i].tsk_crtime_sec;
+    l[i]->tsk_crtime_nsec = ret->val[i].tsk_crtime_nsec;
+    l[i]->tsk_nlink = ret->val[i].tsk_nlink;
+    if (ret->val[i].tsk_link) l[i]->tsk_link = g_strdup (ret->val[i].tsk_link);
+    l[i]->tsk_spare1 = ret->val[i].tsk_spare1;
+  }
+  guestfs_free_tsk_dirent_list (ret);
+  l[i] = NULL;
+  return l;
 }
 
 /**
@@ -10586,6 +10728,14 @@ guestfs_session_hivex_open (GuestfsSession *session, const gchar *filename, Gues
       argv.bitmask |= GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
       argv.write = write;
     }
+    GValue unsafe_v = {0, };
+    g_value_init (&unsafe_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property (G_OBJECT (optargs), "unsafe", &unsafe_v);
+    GuestfsTristate unsafe = g_value_get_enum (&unsafe_v);
+    if (unsafe != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK;
+      argv.unsafe = unsafe;
+    }
     argvp = &argv;
   }
   int ret = guestfs_hivex_open_argv (g, filename, argvp);
@@ -12099,6 +12249,92 @@ guestfs_session_inspect_get_windows_current_control_set (GuestfsSession *session
   }
 
   char *ret = guestfs_inspect_get_windows_current_control_set (g, root);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_inspect_get_windows_software_hive:
+ * @session: (transfer none): A GuestfsSession object
+ * @root: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the path of the Windows software hive
+ *
+ * This returns the path to the hive (binary Windows Registry file)
+ * corresponding to HKLM\SOFTWARE.
+ * 
+ * This call assumes that the guest is Windows and that the guest has a
+ * software hive file with the right name. If this is not the case then an
+ * error is returned. This call does not check that the hive is a valid
+ * Windows Registry hive.
+ * 
+ * You can use guestfs_session_hivex_open() to read or write to the hive.
+ * 
+ * Please read "INSPECTION" in guestfs(3) for more details.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.35.26
+ */
+gchar *
+guestfs_session_inspect_get_windows_software_hive (GuestfsSession *session, const gchar *root, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_windows_software_hive");
+    return NULL;
+  }
+
+  char *ret = guestfs_inspect_get_windows_software_hive (g, root);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_inspect_get_windows_system_hive:
+ * @session: (transfer none): A GuestfsSession object
+ * @root: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the path of the Windows system hive
+ *
+ * This returns the path to the hive (binary Windows Registry file)
+ * corresponding to HKLM\SYSTEM.
+ * 
+ * This call assumes that the guest is Windows and that the guest has a
+ * system hive file with the right name. If this is not the case then an
+ * error is returned. This call does not check that the hive is a valid
+ * Windows Registry hive.
+ * 
+ * You can use guestfs_session_hivex_open() to read or write to the hive.
+ * 
+ * Please read "INSPECTION" in guestfs(3) for more details.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.35.26
+ */
+gchar *
+guestfs_session_inspect_get_windows_system_hive (GuestfsSession *session, const gchar *root, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_windows_system_hive");
+    return NULL;
+  }
+
+  char *ret = guestfs_inspect_get_windows_system_hive (g, root);
   if (ret == NULL) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return NULL;
@@ -19607,6 +19843,87 @@ guestfs_session_mknod_c (GuestfsSession *session, gint32 mode, gint32 devmajor, 
 }
 
 /**
+ * guestfs_session_mksquashfs:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @filename: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsMksquashfs containing optional arguments
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * create a squashfs filesystem
+ *
+ * Create a squashfs filesystem for the specified @path.
+ * 
+ * The optional @compress flag controls compression. If not given, then the
+ * output compressed using @gzip. Otherwise one of the following strings
+ * may be given to select the compression type of the squashfs: @gzip,
+ * @lzma, @lzo, @lz4, @xz.
+ * 
+ * The other optional arguments are:
+ * 
+ * @excludes
+ * A list of wildcards. Files are excluded if they match any of the
+ * wildcards.
+ * 
+ * Please note that this API may fail when used to compress directories
+ * with large files, such as the resulting squashfs will be over 3GB big.
+ * 
+ * This function depends on the feature "squashfs".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.35.25
+ */
+gboolean
+guestfs_session_mksquashfs (GuestfsSession *session, const gchar *path, const gchar *filename, GuestfsMksquashfs *optargs, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return FALSE;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mksquashfs");
+    return FALSE;
+  }
+
+  struct guestfs_mksquashfs_argv argv;
+  struct guestfs_mksquashfs_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue compress_v = {0, };
+    g_value_init (&compress_v, G_TYPE_STRING);
+    g_object_get_property (G_OBJECT (optargs), "compress", &compress_v);
+    const gchar *compress = g_value_get_string (&compress_v);
+    if (compress != NULL) {
+      argv.bitmask |= GUESTFS_MKSQUASHFS_COMPRESS_BITMASK;
+      argv.compress = compress;
+    }
+    argvp = &argv;
+  }
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect (cancellable,
+                               G_CALLBACK (cancelled_handler),
+                               g, NULL);
+  }
+
+  int ret = guestfs_mksquashfs_argv (g, path, filename, argvp);
+  g_cancellable_disconnect (cancellable, id);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_mkswap:
  * @session: (transfer none): A GuestfsSession object
  * @device: (transfer none) (type filename):
@@ -24377,6 +24694,9 @@ guestfs_session_set_identifier (GuestfsSession *session, const gchar *identifier
  * trying to set the label.
  * 
  * fat The label is limited to 11 bytes.
+ * 
+ * swap
+ * The label is limited to 16 bytes.
  * 
  * If there is no support for changing the label for the type of the
  * specified filesystem, set_label will fail and set errno as ENOTSUP.

@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,13 @@
  * Note that the other major dialog (C<"Configure network ...">) is
  * handled entirely by NetworkManager's L<nm-connection-editor(1)>
  * program and has nothing to do with this code.
+ *
+ * This file is written in a kind of "pseudo-Gtk" which is backwards
+ * compatible from Gtk 2.10 (RHEL 5) through at least Gtk 3.22.  This
+ * is done using a few macros to implement old C<gtk_*> functions or
+ * map them to newer functions.  Supporting ancient Gtk is important
+ * because we want to provide a virt-p2v binary that can run on very
+ * old kernels, to support 32 bit and proprietary SCSI drivers.
  */
 
 #include <config.h>
@@ -80,110 +87,16 @@
 
 #include "p2v.h"
 
+/* See note about "pseudo-Gtk" above. */
+#include "gui-gtk2-compat.h"
+#include "gui-gtk3-compat.h"
+
 /* Maximum vCPUs and guest memory that we will allow users to set.
  * These limits come from
  * https://access.redhat.com/articles/rhel-kvm-limits
  */
 #define MAX_SUPPORTED_VCPUS 160
 #define MAX_SUPPORTED_MEMORY_MB (UINT64_C (4000 * 1024))
-
-/* Backwards compatibility for some deprecated functions in Gtk 3. */
-#if GTK_CHECK_VERSION(3,2,0)   /* gtk >= 3.2 */
-#define hbox_new(box, homogeneous, spacing)                    \
-  do {                                                         \
-    (box) = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, spacing); \
-    if (homogeneous)                                           \
-      gtk_box_set_homogeneous (GTK_BOX (box), TRUE);           \
-  } while (0)
-#define vbox_new(box, homogeneous, spacing)                    \
-  do {                                                         \
-    (box) = gtk_box_new (GTK_ORIENTATION_VERTICAL, spacing);   \
-    if (homogeneous)                                           \
-      gtk_box_set_homogeneous (GTK_BOX (box), TRUE);           \
-  } while (0)
-#else /* gtk < 3.2 */
-#define hbox_new(box, homogeneous, spacing)             \
-  (box) = gtk_hbox_new ((homogeneous), (spacing))
-#define vbox_new(box, homogeneous, spacing)             \
-  (box) = gtk_vbox_new ((homogeneous), (spacing))
-#endif
-
-#if GTK_CHECK_VERSION(3,4,0)   /* gtk >= 3.4 */
-/* GtkGrid is sufficiently similar to GtkTable that we can just
- * redefine these functions.
- */
-#define table_new(grid, rows, columns)          \
-  (grid) = gtk_grid_new ()
-#define table_attach(grid, child, left, right, top, bottom, xoptions, yoptions, xpadding, ypadding) \
-  do {                                                                  \
-    if (((xoptions) & GTK_EXPAND) != 0)                                 \
-      gtk_widget_set_hexpand ((child), TRUE);                           \
-    if (((xoptions) & GTK_FILL) != 0)                                   \
-      gtk_widget_set_halign ((child), GTK_ALIGN_FILL);                  \
-    if (((yoptions) & GTK_EXPAND) != 0)                                 \
-      gtk_widget_set_vexpand ((child), TRUE);                           \
-    if (((yoptions) & GTK_FILL) != 0)                                   \
-      gtk_widget_set_valign ((child), GTK_ALIGN_FILL);                  \
-    set_padding ((child), (xpadding), (ypadding));                      \
-    gtk_grid_attach (GTK_GRID (grid), (child),                          \
-                     (left), (top), (right)-(left), (bottom)-(top));    \
-  } while (0)
-#else
-#define table_new(table, rows, columns)                 \
-  (table) = gtk_table_new ((rows), (columns), FALSE)
-#define table_attach(table, child, left, right,top, bottom, xoptions, yoptions, xpadding, ypadding) \
-  gtk_table_attach (GTK_TABLE (table), (child),                         \
-                    (left), (right), (top), (bottom),                   \
-                    (xoptions), (yoptions), (xpadding), (ypadding))
-#endif
-
-#if GTK_CHECK_VERSION(3,8,0)   /* gtk >= 3.8 */
-#define scrolled_window_add_with_viewport(container, child)     \
-  gtk_container_add (GTK_CONTAINER (container), child)
-#else
-#define scrolled_window_add_with_viewport(container, child)             \
-  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (container), child)
-#endif
-
-#if GTK_CHECK_VERSION(3,10,0)   /* gtk >= 3.10 */
-#undef GTK_STOCK_DIALOG_WARNING
-#define GTK_STOCK_DIALOG_WARNING "dialog-warning"
-#define gtk_image_new_from_stock gtk_image_new_from_icon_name
-#endif
-
-#if GTK_CHECK_VERSION(3,14,0)   /* gtk >= 3.14 */
-#define set_padding(widget, xpad, ypad)                               \
-  do {                                                                \
-    if ((xpad) != 0) {                                                \
-      gtk_widget_set_margin_start ((widget), (xpad));                 \
-      gtk_widget_set_margin_end ((widget), (xpad));                   \
-    }                                                                 \
-    if ((ypad) != 0) {                                                \
-      gtk_widget_set_margin_top ((widget), (ypad));                   \
-      gtk_widget_set_margin_bottom ((widget), (ypad));                \
-    }                                                                 \
-  } while (0)
-#define set_alignment(widget, xalign, yalign)                   \
-  do {                                                          \
-    if ((xalign) == 0.)                                         \
-      gtk_widget_set_halign ((widget), GTK_ALIGN_START);        \
-    else if ((xalign) == 1.)                                    \
-      gtk_widget_set_halign ((widget), GTK_ALIGN_END);          \
-    else                                                        \
-      gtk_widget_set_halign ((widget), GTK_ALIGN_CENTER);       \
-    if ((yalign) == 0.)                                         \
-      gtk_widget_set_valign ((widget), GTK_ALIGN_START);        \
-    else if ((xalign) == 1.)                                    \
-      gtk_widget_set_valign ((widget), GTK_ALIGN_END);          \
-    else                                                        \
-      gtk_widget_set_valign ((widget), GTK_ALIGN_CENTER);       \
-  } while (0)
-#else  /* gtk < 3.14 */
-#define set_padding(widget, xpad, ypad)                 \
-  gtk_misc_set_padding(GTK_MISC(widget),(xpad),(ypad))
-#define set_alignment(widget, xalign, yalign)                   \
-  gtk_misc_set_alignment(GTK_MISC(widget),(xalign),(yalign))
-#endif
 
 static void create_connection_dialog (struct config *);
 static void create_conversion_dialog (struct config *);
@@ -198,7 +111,11 @@ static void set_info_label (void);
 static GtkWidget *conn_dlg,
   *server_entry, *port_entry,
   *username_entry, *password_entry, *identity_entry, *sudo_button,
-  *spinner_hbox, *spinner, *spinner_message, *next_button;
+  *spinner_hbox,
+#ifdef GTK_SPINNER
+  *spinner,
+#endif
+  *spinner_message, *next_button;
 
 /* The conversion dialog. */
 static GtkWidget *conv_dlg,
@@ -358,8 +275,10 @@ create_connection_dialog (struct config *config)
   gtk_box_pack_start (GTK_BOX (test_hbox), test, TRUE, FALSE, 0);
 
   hbox_new (spinner_hbox, FALSE, 10);
+#ifdef GTK_SPINNER
   spinner = gtk_spinner_new ();
   gtk_box_pack_start (GTK_BOX (spinner_hbox), spinner, FALSE, FALSE, 0);
+#endif
   spinner_message = gtk_label_new (NULL);
   gtk_label_set_line_wrap (GTK_LABEL (spinner_message), TRUE);
   set_padding (spinner_message, 10, 10);
@@ -504,7 +423,9 @@ test_connection_clicked (GtkWidget *w, gpointer data)
 
   gtk_label_set_text (GTK_LABEL (spinner_message), "");
   gtk_widget_show_all (spinner_hbox);
+#ifdef GTK_SPINNER
   gtk_widget_hide (spinner);
+#endif
 
   /* Get the fields from the various widgets. */
   free (config->server);
@@ -600,8 +521,10 @@ start_spinner (gpointer user_data)
 {
   gtk_label_set_text (GTK_LABEL (spinner_message),
                       _("Testing the connection to the conversion server ..."));
+#ifdef GTK_SPINNER
   gtk_widget_show (spinner);
   gtk_spinner_start (GTK_SPINNER (spinner));
+#endif
   return FALSE;
 }
 
@@ -612,8 +535,10 @@ start_spinner (gpointer user_data)
 static gboolean
 stop_spinner (gpointer user_data)
 {
+#ifdef GTK_SPINNER
   gtk_spinner_stop (GTK_SPINNER (spinner));
   gtk_widget_hide (spinner);
+#endif
   return FALSE;
 }
 
@@ -690,7 +615,7 @@ about_button_clicked (GtkWidget *w, gpointer data)
   gtk_show_about_dialog (GTK_WINDOW (conn_dlg),
                          "program-name", getprogname (),
                          "version", PACKAGE_VERSION_FULL " (" host_cpu ")",
-                         "copyright", "\u00A9 2009-2016 Red Hat Inc.",
+                         "copyright", "\u00A9 2009-2017 Red Hat Inc.",
                          "comments",
                            _("Virtualize a physical machine to run on KVM"),
                          "license", gplv2plus,
@@ -855,7 +780,7 @@ create_conversion_dialog (struct config *config)
   set_alignment (o_label, 1., 0.5);
   o_combo = gtk_combo_box_text_new ();
   gtk_label_set_mnemonic_widget (GTK_LABEL (o_label), o_combo);
-  gtk_widget_set_tooltip_markup (o_combo, _("<b>libvirt</b> means send the converted guest to libvirt-managed KVM on the conversion server.  <b>local</b> means put it in a directory on the conversion server.  <b>rhev</b> means write it to RHEV-M/oVirt.  <b>glance</b> means write it to OpenStack Glance.  See the virt-v2v(1) manual page for more information about output options."));
+  gtk_widget_set_tooltip_markup (o_combo, _("<b>libvirt</b> means send the converted guest to libvirt-managed KVM on the conversion server.  <b>local</b> means put it in a directory on the conversion server.  <b>rhv</b> means write it to RHV-M/oVirt.  <b>glance</b> means write it to OpenStack Glance.  See the virt-v2v(1) manual page for more information about output options."));
   repopulate_output_combo (config);
   table_attach (output_tbl, o_combo,
                 1, 2, 0, 1, GTK_FILL, GTK_FILL, 1, 1);
@@ -878,7 +803,7 @@ create_conversion_dialog (struct config *config)
   set_alignment (os_label, 1., 0.5);
   os_entry = gtk_entry_new ();
   gtk_label_set_mnemonic_widget (GTK_LABEL (os_label), os_entry);
-  gtk_widget_set_tooltip_markup (os_entry, _("For <b>local</b>, put the directory name on the conversion server.  For <b>rhev</b>, put the Export Storage Domain (server:/mountpoint).  For others, leave this field blank."));
+  gtk_widget_set_tooltip_markup (os_entry, _("For <b>local</b>, put the directory name on the conversion server.  For <b>rhv</b>, put the Export Storage Domain (server:/mountpoint).  For others, leave this field blank."));
   if (config->output_storage != NULL)
     gtk_entry_set_text (GTK_ENTRY (os_entry), config->output_storage);
   table_attach (output_tbl, os_entry,
@@ -1077,6 +1002,7 @@ repopulate_output_combo (struct config *config)
   if (output_drivers == NULL) {
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (o_combo), "libvirt");
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (o_combo), "local");
+    /* Use rhev instead of rhv here so we can work with old virt-v2v. */
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (o_combo), "rhev");
     if (output == NULL || STREQ (output, "libvirt"))
       gtk_combo_box_set_active (GTK_COMBO_BOX (o_combo), 0);

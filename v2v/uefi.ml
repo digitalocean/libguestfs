@@ -40,11 +40,6 @@ let uefi_aarch64_firmware = [
     vars = "/usr/share/edk2/aarch64/vars-template-pflash.raw";
     flags = [];
   };
-  { code = "/usr/share/edk2.git/aarch64/QEMU_EFI-pflash.raw";
-    code_debug = None;
-    vars = "/usr/share/edk2.git/aarch64/vars-template-pflash.raw";
-    flags = [];
-  };
 ]
 
 let uefi_i386_firmware = [
@@ -69,11 +64,6 @@ let uefi_x86_64_firmware = [
   { code = "/usr/share/edk2/ovmf/OVMF_CODE.fd";
     code_debug = None;
     vars = "/usr/share/edk2/ovmf/OVMF_VARS.fd";
-    flags = [];
-  };
-  { code = "/usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd";
-    code_debug = None;
-    vars = "/usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd";
     flags = [];
   };
   { code = "/usr/share/qemu/ovmf-x86_64-code.bin";

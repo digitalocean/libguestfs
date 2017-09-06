@@ -111,7 +111,7 @@ Another way to edit F</boot/grub/grub.conf> interactively is:
 
 =head2 Як інтерпретатор скриптів
 
-Create a 100MB disk containing an ext2-formatted partition:
+Створити диск у 100 МБ, що міститиме розділ у форматі ext2:
 
  #!/usr/bin/guestfish -f
  sparse test1.img 100M
@@ -119,20 +119,20 @@ Create a 100MB disk containing an ext2-formatted partition:
  part-disk /dev/sda mbr
  mkfs ext2 /dev/sda1
 
-=head2 Start with a prepared disk
+=head2 Розпочати з приготованого диска
 
-An alternate way to create a 100MB disk called F<test1.img> containing a
-single ext2-formatted partition:
+Альтернативний спосіб створення диска у 100 МБ із назвою F<test1.img>, що
+міститиме один розділ у форматі ext2:
 
  guestfish -N fs
 
-To list what is available do:
+Щоб отримати список доступних варіантів, віддайте таку команду:
 
  guestfish -N help | less
 
 =head2 Віддалені диски
 
-Access a remote disk using ssh:
+Доступ до віддаленого диска за допомогою ssh:
 
  guestfish -a ssh://example.com/path/to/disk.img
 
@@ -149,25 +149,25 @@ Access a remote disk using ssh:
 
 =item B<--help>
 
-Displays general help on options.
+Вивести загальну довідку щодо параметрів.
 
 =item B<-h>
 
 =item B<--cmd-help>
 
-Lists all available guestfish commands.
+Вивести список усіх доступних команд guestfish.
 
-=item B<-h> CMD
+=item B<-h> КОМАНДА
 
-=item B<--cmd-help> CMD
+=item B<--cmd-help> КОМАНДА
 
-Displays detailed help on a single command C<cmd>.
+Показати докладну довідку щодо певної команди.
 
-=item B<-a> IMAGE
+=item B<-a> ОБРАЗ
 
-=item B<--add> IMAGE
+=item B<--add> ОБРАЗ
 
-Add a block device or virtual machine image to the shell.
+Додати блоковий пристрій або образ віртуальної машини до командної оболонки.
 
 Формат образу диска визначається автоматично. Щоб перевизначити його і
 примусово використати певний формат, скористайтеся параметром
@@ -195,15 +195,15 @@ URI to use.  The default is to use the default libvirt connection.
 If using the I<--listen> option and a csh-like shell, use this option.  See
 section L</REMOTE CONTROL AND CSH> below.
 
-=item B<-d> LIBVIRT-DOMAIN
+=item B<-d> ДОМЕН_LIBVIRT
 
-=item B<--domain> LIBVIRT-DOMAIN
+=item B<--domain> ДОМЕН_LIBVIRT
 
 Add disks from the named libvirt domain.  If the I<--ro> option is also
 used, then any libvirt domain can be used.  However in write mode, only
 libvirt domains which are shut down can be named here.
 
-Domain UUIDs can be used instead of names.
+Замість назв можна використовувати UUID доменів.
 
 Using this flag is mostly equivalent to using the C<add-domain> command,
 with C<readonly:true> if the I<--ro> flag was given, and with C<format:...>
@@ -216,9 +216,9 @@ off so you cannot see what you are typing.  If you are not worried about
 Tempest attacks and there is no one else in the room you can specify this
 flag to see what you are typing.
 
-=item B<-f> FILE
+=item B<-f> ФАЙЛ
 
-=item B<--file> FILE
+=item B<--file> ФАЙЛ
 
 Read commands from C<FILE>.  To write pure guestfish scripts, use:
 
@@ -260,7 +260,7 @@ Using L<virt-inspector(1)> code, inspect the disks looking for an operating
 system and mount filesystems as they would be mounted on the real virtual
 machine.
 
-Typical usage is either:
+Типові варіанти використання:
 
  guestfish -d myguest -i
 
@@ -373,14 +373,15 @@ doesn't give an error.
 
 =item B<--progress-bars>
 
-Enable progress bars, even when guestfish is used non-interactively.
+Увімкнути смужки поступу, навіть якщо guestfish використовується не у
+інтерактивному режимі.
 
 Progress bars are enabled by default when guestfish is used as an
 interactive shell.
 
 =item B<--no-progress-bars>
 
-Disable progress bars.
+Вимкнути смужки поступу.
 
 =item B<--remote>
 
@@ -414,14 +415,14 @@ This option is provided for backwards compatibility and does nothing.
 
 =item B<--verbose>
 
-Enable very verbose messages.  This is particularly useful if you find a
-bug.
+Увімкнути виведення дуже докладних повідомлень. Корисно, якщо ви намагаєтеся
+усунути якусь ваду.
 
 =item B<-V>
 
 =item B<--version>
 
-Display the guestfish / libguestfs version number and exit.
+Вивести дані щодо версії guestfish / libguestfs і завершити роботу.
 
 =item B<-w>
 
@@ -434,13 +435,14 @@ mounts are done read-write.
 
 =item B<-x>
 
-Echo each command before executing it.
+Виводити усі команди перед виконанням.
 
 =back
 
-=head1 COMMANDS ON COMMAND LINE
+=head1 КОМАНДИ У КОМАНДНОМУ РЯДКУ
 
-Any additional (non-option) arguments are treated as commands to execute.
+Усі додаткові аргументи (не пов’язані із параметрами команди) вважатимуться
+командами, які слід виконати.
 
 Commands to execute should be separated by a colon (C<:>), where the colon
 is a separate parameter.  Thus:
@@ -455,7 +457,7 @@ In either command line mode or non-interactive shell, the first command that
 gives an error causes the whole shell to exit.  In interactive mode (with a
 prompt) if a command fails, you can continue to enter commands.
 
-=head1 USING launch (OR run)
+=head1 КОРИСТУВАННЯ launch (АБО run)
 
 As with L<guestfs(3)>, you must first configure your guest by adding disks,
 then launch it, then mount any disks you need, and finally issue
@@ -1576,8 +1578,8 @@ L<virt-customize(1)>, L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>,
 L<virt-filesystems(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-log(1)>, L<virt-ls(1)>,
 L<virt-make-fs(1)>, L<virt-p2v(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
-L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>, L<virt-v2v(1)>, L<virt-win-reg(1)>,
+L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tail(1)>, L<virt-tar(1)>,
+L<virt-tar-in(1)>, L<virt-tar-out(1)>, L<virt-v2v(1)>, L<virt-win-reg(1)>,
 L<libguestfs-tools.conf(5)>, L<display(1)>, L<hexedit(1)>, L<supermin(1)>.
 
 =head1 АВТОРИ
@@ -1586,5 +1588,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

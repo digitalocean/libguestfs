@@ -1334,7 +1334,7 @@ run_hivex_open (const char *cmd, size_t argc, char *argv[])
   struct guestfs_hivex_open_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 4) {
+  if (argc < 1 || argc > 5) {
     ret = RUN_WRONG_ARGS;
     goto out_noargs;
   }
@@ -1383,6 +1383,19 @@ run_hivex_open (const char *cmd, size_t argc, char *argv[])
       }
       this_mask = GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
       this_arg = "write";
+    }
+    else if (STRPREFIX (argv[i], "unsafe:")) {
+      switch (guestfs_int_is_true (&argv[i][7])) {
+        case -1:
+          fprintf (stderr,
+                   _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+                   getprogname (), &argv[i][7]);
+          goto out;
+        case 0:  optargs_s.unsafe = 0; break;
+        default: optargs_s.unsafe = 1;
+      }
+      this_mask = GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK;
+      this_arg = "unsafe";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),

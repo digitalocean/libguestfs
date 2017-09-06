@@ -17,9 +17,10 @@ virtual machine (or disk image).
 This tool understands and displays both plain text log files
 (eg. F</var/log/messages>) and binary formats such as the systemd journal.
 
-To display other types of files, use L<virt-cat(1)>.  To copy files out of a
-virtual machine, use L<virt-copy-out(1)>.  To display the contents of the
-Windows Registry, use L<virt-win-reg(1)>.
+To display other types of files, use L<virt-cat(1)>.  To follow (tail)  text
+log files, use L<virt-tail(1)>.  To copy files out of a virtual machine, use
+L<virt-copy-out(1)>.  To display the contents of the Windows Registry, use
+L<virt-win-reg(1)>.
 
 =head1 ПРИКЛАДИ
 
@@ -139,7 +140,8 @@ passphrases from the user by opening F</dev/tty>.
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-copy-out(1)>,
-L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<http://libguestfs.org/>.
+L<virt-tail(1)>, L<virt-tar-out(1)>, L<virt-win-reg(1)>,
+L<http://libguestfs.org/>.
 
 =head1 АВТОР
 
@@ -147,5 +149,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2010–2016
+Copyright (C) 2010-2017 Red Hat Inc.
 

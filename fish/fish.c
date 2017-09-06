@@ -1,5 +1,5 @@
 /* guestfish - guest filesystem shell
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,6 +105,8 @@ int progress_bars = 0;
 int is_interactive = 0;
 const char *input_file = NULL;
 int input_lineno = 0;
+int in_guestfish = 1;
+int in_virt_rescue = 0;
 
 static void __attribute__((noreturn))
 usage (int status)
@@ -115,7 +117,7 @@ usage (int status)
   else {
     printf (_("%s: guest filesystem shell\n"
               "%s lets you edit virtual machine filesystems\n"
-              "Copyright (C) 2009-2016 Red Hat Inc.\n"
+              "Copyright (C) 2009-2017 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] cmd [: cmd : cmd ...]\n"
               "Options:\n"
@@ -177,9 +179,6 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
-
-  /* We use random(3) in edit.c. */
-  srandom (time (NULL));
 
   parse_config ();
 

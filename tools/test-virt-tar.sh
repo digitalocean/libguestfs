@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,11 +16,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-export LANG=C
 set -e
 
+$TEST_FUNCTIONS
+skip_if_skipped
+skip_unless_phony_guest fedora.img
+
 # Read out the test directory using virt-tar.
-$srcdir/virt-tar -x ../test-data/phony-guests/fedora.img /bin test.tar
+$srcdir/virt-tar -x \
+                 $top_builddir/test-data/phony-guests/fedora.img /bin \
+                 test.tar
 
 if [ "$(tar tf test.tar | sort)" != "./
 ./ls

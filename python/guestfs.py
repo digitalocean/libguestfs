@@ -934,6 +934,17 @@ class GuestFS(object):
         r = libguestfsmod.aug_setm(self._o, base, sub, val)
         return r
 
+    def aug_transform(self, lens, file, remove=None):
+        """Add an Augeas transformation for the specified "lens" so
+        it can handle "file".
+
+        If "remove" is true ("false" by default), then the
+        transformation is removed.
+        """
+        self._check_not_closed()
+        r = libguestfsmod.aug_transform(self._o, lens, file, remove)
+        return r
+
     def available(self, groups):
         """This command is used to check the availability of some
         groups of functionality in the appliance, which not all
@@ -2839,6 +2850,17 @@ class GuestFS(object):
         "ppc64le"
         64 bit Power PC (little endian).
 
+        "riscv32"
+        "riscv64"
+        "riscv128"
+        RISC-V 32-, 64- or 128-bit variants.
+
+        "s390"
+        31 bit IBM S/390.
+
+        "s390x"
+        64 bit IBM S/390.
+
         "sparc"
         32 bit SPARC.
 
@@ -3120,6 +3142,24 @@ class GuestFS(object):
         """
         self._check_not_closed()
         r = libguestfsmod.find0(self._o, directory, files)
+        return r
+
+    def find_inode(self, device, inode):
+        """Searches all the entries associated with the given
+        inode.
+
+        For each entry, a "tsk_dirent" structure is returned.
+        See "filesystem_walk" for more information about
+        "tsk_dirent" structures.
+
+        This function returns a list of tsk_dirents. Each
+        tsk_dirent is represented as a dictionary.
+
+        This function depends on the feature "libtsk". See also
+        "g.feature-available".
+        """
+        self._check_not_closed()
+        r = libguestfsmod.find_inode(self._o, device, inode)
         return r
 
     def findfs_label(self, label):
@@ -4062,7 +4102,8 @@ class GuestFS(object):
         r = libguestfsmod.hivex_node_values(self._o, nodeh)
         return r
 
-    def hivex_open(self, filename, verbose=None, debug=None, write=None):
+    def hivex_open(self, filename, verbose=None, debug=None, write=None,
+                   unsafe=None):
         """Open the Windows Registry hive file named filename. If
         there was any previous hivex handle associated with this
         guestfs session, then it is closed.
@@ -4074,7 +4115,8 @@ class GuestFS(object):
         "g.feature-available".
         """
         self._check_not_closed()
-        r = libguestfsmod.hivex_open(self._o, filename, verbose, debug, write)
+        r = libguestfsmod.hivex_open(self._o, filename, verbose, debug, write,
+                                     unsafe)
         return r
 
     def hivex_root(self):
@@ -4839,6 +4881,42 @@ class GuestFS(object):
         self._check_not_closed()
         r = libguestfsmod.inspect_get_windows_current_control_set(self._o,
                                                                   root)
+        return r
+
+    def inspect_get_windows_software_hive(self, root):
+        """This returns the path to the hive (binary Windows
+        Registry file) corresponding to HKLM\\SOFTWARE.
+
+        This call assumes that the guest is Windows and that the
+        guest has a software hive file with the right name. If
+        this is not the case then an error is returned. This
+        call does not check that the hive is a valid Windows
+        Registry hive.
+
+        You can use "g.hivex_open" to read or write to the hive.
+
+        Please read "INSPECTION" in guestfs(3) for more details.
+        """
+        self._check_not_closed()
+        r = libguestfsmod.inspect_get_windows_software_hive(self._o, root)
+        return r
+
+    def inspect_get_windows_system_hive(self, root):
+        """This returns the path to the hive (binary Windows
+        Registry file) corresponding to HKLM\\SYSTEM.
+
+        This call assumes that the guest is Windows and that the
+        guest has a system hive file with the right name. If
+        this is not the case then an error is returned. This
+        call does not check that the hive is a valid Windows
+        Registry hive.
+
+        You can use "g.hivex_open" to read or write to the hive.
+
+        Please read "INSPECTION" in guestfs(3) for more details.
+        """
+        self._check_not_closed()
+        r = libguestfsmod.inspect_get_windows_system_hive(self._o, root)
         return r
 
     def inspect_get_windows_systemroot(self, root):
@@ -7191,6 +7269,33 @@ class GuestFS(object):
         r = libguestfsmod.mknod_c(self._o, mode, devmajor, devminor, path)
         return r
 
+    def mksquashfs(self, path, filename, compress=None, excludes=None):
+        """Create a squashfs filesystem for the specified "path".
+
+        The optional "compress" flag controls compression. If
+        not given, then the output compressed using "gzip".
+        Otherwise one of the following strings may be given to
+        select the compression type of the squashfs: "gzip",
+        "lzma", "lzo", "lz4", "xz".
+
+        The other optional arguments are:
+
+        "excludes"
+        A list of wildcards. Files are excluded if they
+        match any of the wildcards.
+
+        Please note that this API may fail when used to compress
+        directories with large files, such as the resulting
+        squashfs will be over 3GB big.
+
+        This function depends on the feature "squashfs". See
+        also "g.feature-available".
+        """
+        self._check_not_closed()
+        r = libguestfsmod.mksquashfs(self._o, path, filename, compress,
+                                     excludes)
+        return r
+
     def mkswap(self, device, label=None, uuid=None):
         """Create a Linux swap partition on "device".
 
@@ -8950,6 +9055,9 @@ class GuestFS(object):
         trying to set the label.
 
         fat The label is limited to 11 bytes.
+
+        swap
+        The label is limited to 16 bytes.
 
         If there is no support for changing the label for the
         type of the specified filesystem, set_label will fail

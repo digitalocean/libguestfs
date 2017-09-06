@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs virt-v2v test script
-# Copyright (C) 2014 Red Hat Inc.
+# Copyright (C) 2014-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,30 +18,18 @@
 
 # Test -o vdsm options --vdsm-*-uuid
 
-unset CDPATH
-export LANG=C
 set -e
+set -x
 
-if [ -n "$SKIP_TEST_V2V_O_VDSM_OPTIONS_SH" ]; then
-    echo "$0: test skipped because environment variable is set"
-    exit 77
-fi
+$TEST_FUNCTIONS
+skip_if_skipped
+skip_if_backend uml
+skip_unless_phony_guest windows.img
 
-if [ "$(guestfish get-backend)" = "uml" ]; then
-    echo "$0: test skipped because UML backend does not support network"
-    exit 77
-fi
-
-abs_top_builddir="$(cd ..; pwd)"
 libvirt_uri="test://$abs_top_builddir/test-data/phony-guests/guests.xml"
+f=$top_builddir/test-data/phony-guests/windows.img
 
-f=../test-data/phony-guests/windows.img
-if ! test -f $f || ! test -s $f; then
-    echo "$0: test skipped because phony Windows image was not created"
-    exit 77
-fi
-
-export VIRT_TOOLS_DATA_DIR="$srcdir/../test-data/fake-virt-tools"
+export VIRT_TOOLS_DATA_DIR="$top_srcdir/test-data/fake-virt-tools"
 
 d=test-v2v-o-vdsm-options.d
 rm -rf $d
@@ -61,10 +49,12 @@ mkdir $d/12345678-1234-1234-1234-123456789abc/master/vms/VM
 $VG virt-v2v --debug-gc \
     -i libvirt -ic "$libvirt_uri" windows \
     -o vdsm -os $d/12345678-1234-1234-1234-123456789abc \
+    -of qcow2 \
     --vdsm-image-uuid IMAGE \
     --vdsm-vol-uuid VOL \
     --vdsm-vm-uuid VM \
-    --vdsm-ovf-output $d/12345678-1234-1234-1234-123456789abc/master/vms/VM
+    --vdsm-ovf-output $d/12345678-1234-1234-1234-123456789abc/master/vms/VM \
+    --vdsm-compat=1.1
 
 # Test the OVF metadata was created.
 test -f $d/12345678-1234-1234-1234-123456789abc/master/vms/VM/VM.ovf
@@ -76,6 +66,10 @@ test -f VOL.meta
 
 # Test the disk file was created.
 test -f VOL
+
+# Test that a qcow2 file with compat=1.1 was generated.
+test "$(guestfish disk-format VOL)" = "qcow2"
+qemu-img info VOL | grep 'compat: 1.1'
 
 popd
 

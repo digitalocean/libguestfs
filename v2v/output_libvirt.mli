@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,3 @@ val output_libvirt : string option -> string -> Types.output
 (** [output_libvirt oc output_pool] creates and returns a new
     {!Types.output} object specialized for writing output to
     libvirt. *)
-
-val create_libvirt_xml : ?pool:string -> Types.source -> Types.target_buses -> Types.guestcaps -> string list -> Types.target_firmware -> DOM.doc
-(** This is called from {!Output_local} to generate the libvirt XML. *)

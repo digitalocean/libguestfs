@@ -149,6 +149,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_aug_set, 2);
   rb_define_method (c_guestfs, "aug_setm",
                     guestfs_int_ruby_aug_setm, 3);
+  rb_define_method (c_guestfs, "aug_transform",
+                    guestfs_int_ruby_aug_transform, -1);
   rb_define_method (c_guestfs, "available",
                     guestfs_int_ruby_available, 1);
   rb_define_method (c_guestfs, "available_all_groups",
@@ -407,6 +409,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_find, 1);
   rb_define_method (c_guestfs, "find0",
                     guestfs_int_ruby_find0, 2);
+  rb_define_method (c_guestfs, "find_inode",
+                    guestfs_int_ruby_find_inode, 2);
   rb_define_method (c_guestfs, "findfs_label",
                     guestfs_int_ruby_findfs_label, 1);
   rb_define_method (c_guestfs, "findfs_uuid",
@@ -591,6 +595,10 @@ Init__guestfs (void)
                     guestfs_int_ruby_inspect_get_type, 1);
   rb_define_method (c_guestfs, "inspect_get_windows_current_control_set",
                     guestfs_int_ruby_inspect_get_windows_current_control_set, 1);
+  rb_define_method (c_guestfs, "inspect_get_windows_software_hive",
+                    guestfs_int_ruby_inspect_get_windows_software_hive, 1);
+  rb_define_method (c_guestfs, "inspect_get_windows_system_hive",
+                    guestfs_int_ruby_inspect_get_windows_system_hive, 1);
   rb_define_method (c_guestfs, "inspect_get_windows_systemroot",
                     guestfs_int_ruby_inspect_get_windows_systemroot, 1);
   rb_define_method (c_guestfs, "inspect_is_live",
@@ -893,6 +901,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_mknod_b, 4);
   rb_define_method (c_guestfs, "mknod_c",
                     guestfs_int_ruby_mknod_c, 4);
+  rb_define_method (c_guestfs, "mksquashfs",
+                    guestfs_int_ruby_mksquashfs, -1);
   rb_define_method (c_guestfs, "mkswap",
                     guestfs_int_ruby_mkswap, -1);
   rb_define_method (c_guestfs, "mkswap_opts",

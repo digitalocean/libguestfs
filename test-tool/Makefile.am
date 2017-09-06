@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,8 @@ man_MANS = libguestfs-test-tool.1
 libguestfs_test_tool_SOURCES = test-tool.c
 
 libguestfs_test_tool_CPPFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
@@ -35,8 +36,8 @@ libguestfs_test_tool_CFLAGS = \
 	$(LIBXML2_CFLAGS)
 
 libguestfs_test_tool_LDADD = \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LTLIBINTL) \
 	$(top_builddir)/gnulib/lib/libgnu.la

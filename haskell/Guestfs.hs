@@ -229,6 +229,8 @@ module Guestfs (
   inspect_get_roots,
   inspect_get_type,
   inspect_get_windows_current_control_set,
+  inspect_get_windows_software_hive,
+  inspect_get_windows_system_hive,
   inspect_get_windows_systemroot,
   inspect_is_live,
   inspect_is_multipart,
@@ -3022,6 +3024,30 @@ foreign import ccall unsafe "guestfs.h guestfs_inspect_get_windows_current_contr
 inspect_get_windows_current_control_set :: GuestfsH -> String -> IO String
 inspect_get_windows_current_control_set h root = do
   r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_windows_current_control_set p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_windows_software_hive" c_inspect_get_windows_software_hive
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_windows_software_hive :: GuestfsH -> String -> IO String
+inspect_get_windows_software_hive h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_windows_software_hive p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_windows_system_hive" c_inspect_get_windows_system_hive
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_windows_system_hive :: GuestfsH -> String -> IO String
+inspect_get_windows_system_hive h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_windows_system_hive p root)
   if (r == nullPtr)
     then do
       err <- last_error h

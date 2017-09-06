@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsMksquashfs
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsMksquashfs ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsMksquashfs:compress ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsMksquashfsClass ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION guestfs_mksquashfs_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

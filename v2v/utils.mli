@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,3 +50,17 @@ val du : string -> int64
 
     This can raise either [Failure] or [Invalid_argument] in case
     of errors. *)
+
+val qemu_img_supports_offset_and_size : unit -> bool
+(** Return true iff [qemu-img] supports the ["offset"] and ["size"]
+    parameters to open a subset of a file. *)
+
+val backend_is_libvirt : unit -> bool
+(** Return true iff the current backend is libvirt. *)
+
+val find_file_in_tar : string -> string -> int64 * int64
+(** [find_file_in_tar tar filename] looks up file in [tar] archive and returns
+    a tuple containing at which byte it starts and how long the file is.
+
+    Function raises [Not_found] if there is no such file inside [tar] and
+    [Failure] if there is any error parsing the tar output. *)

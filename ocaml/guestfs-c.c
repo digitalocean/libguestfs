@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -75,7 +75,7 @@ guestfs_finalize (value gv)
      * user deletes events in one of the callbacks that we are
      * about to invoke, resulting in a double-free.  XXX
      */
-    size_t len;
+    size_t len, i;
     value **roots = get_all_event_callbacks (g, &len);
 
     /* Close the handle: this could invoke callbacks from the list
@@ -85,14 +85,11 @@ guestfs_finalize (value gv)
     guestfs_close (g);
 
     /* Now unregister the global roots. */
-    if (len > 0) {
-      size_t i;
-      for (i = 0; i < len; ++i) {
-        caml_remove_generational_global_root (roots[i]);
-        free (roots[i]);
-      }
-      free (roots);
+    for (i = 0; i < len; ++i) {
+      caml_remove_generational_global_root (roots[i]);
+      free (roots[i]);
     }
+    free (roots);
   }
 }
 
@@ -312,10 +309,6 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
       (*len_rtn)++;
     root = guestfs_next_private (g, &key);
   }
-
-  /* No events, so no need to allocate anything. */
-  if (*len_rtn == 0)
-    return NULL;
 
   /* Copy them into the return array. */
   r = malloc (sizeof (value *) * (*len_rtn));

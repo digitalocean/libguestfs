@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2010-2016 Red Hat Inc.
+# Copyright (C) 2010-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,8 +20,10 @@
 # copied from the original Perl tool virt-make-fs, on the basis that
 # the new C tool should be able to pass the same tests.
 
-export LANG=C
 set -e
+
+$TEST_FUNCTIONS
+skip_if_skipped
 
 # Check which filesystems are supported by the appliance.
 eval $(

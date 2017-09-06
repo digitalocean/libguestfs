@@ -78,7 +78,7 @@ this is C<g.add_drive> which can be called in one of two ways:
 
  g.add_drive ("disk.img");
 
-or with optional arguments:
+або за допомогою додаткових аргументів:
 
  Map<String, Object> optargs =
    new HashMap<String, Object>() {
@@ -105,9 +105,9 @@ When creating the handle you can also pass a map of optional parameters:
  };
  GuestFS g = new GuestFS (optargs);
 
-For more information, see L<guestfs(3)/guestfs_create_flags>.
+Докладніший опис можна знайти тут: L<guestfs(3)/guestfs_create_flags>.
 
-=head1 COMPILING AND RUNNING
+=head1 ЗБИРАННЯ І ЗАПУСК
 
 Libguestfs for Java is a Java Native Interface (JNI) extension, supplied in
 three parts:

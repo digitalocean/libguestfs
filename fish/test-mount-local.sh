@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2012-2016 Red Hat Inc.
+# Copyright (C) 2012-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,18 +18,9 @@
 
 # Test guestfish mount-local / mount-local-run commands.
 
-if [ -n "$SKIP_TEST_MOUNT_LOCAL_SH" ]; then
-    echo "$0: skipping test because SKIP_TEST_MOUNT_LOCAL_SH is set."
-    exit 77
-fi
-
-# Skip if no FUSE.
-
-test -w /dev/fuse || {
-    echo "$0: Skipping this test"
-    echo "  because /dev/fuse is missing or not writable by the current user."
-    exit 77
-}
+$TEST_FUNCTIONS
+skip_if_skipped
+skip_unless_fuse
 
 set -e
 

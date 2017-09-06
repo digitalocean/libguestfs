@@ -1891,6 +1891,40 @@ func (g *Guestfs) Aug_setm (base string, sub *string, val string) (int, *Guestfs
     return int (r), nil
 }
 
+/* Struct carrying optional arguments for Aug_transform */
+type OptargsAug_transform struct {
+    /* Remove field is ignored unless Remove_is_set == true */
+    Remove_is_set bool
+    Remove bool
+}
+
+/* aug_transform : add/remove an Augeas lens transformation */
+func (g *Guestfs) Aug_transform (lens string, file string, optargs *OptargsAug_transform) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("aug_transform")
+    }
+
+    c_lens := C.CString (lens)
+    defer C.free (unsafe.Pointer (c_lens))
+
+    c_file := C.CString (file)
+    defer C.free (unsafe.Pointer (c_file))
+    c_optargs := C.struct_guestfs_aug_transform_argv{}
+    if optargs != nil {
+        if optargs.Remove_is_set {
+            c_optargs.bitmask |= C.GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK
+            if optargs.Remove { c_optargs.remove = 1 } else { c_optargs.remove = 0}
+        }
+    }
+
+    r := C.guestfs_aug_transform_argv (g.g, c_lens, c_file, &c_optargs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "aug_transform")
+    }
+    return nil
+}
+
 /* available : test availability of some parts of the API */
 func (g *Guestfs) Available (groups []string) *GuestfsError {
     if g.g == nil {
@@ -4660,6 +4694,24 @@ func (g *Guestfs) Find0 (directory string, files string) *GuestfsError {
     return nil
 }
 
+/* find_inode : search the entries associated to the given inode */
+func (g *Guestfs) Find_inode (device string, inode int64) (*[]TSKDirent, *GuestfsError) {
+    if g.g == nil {
+        return nil, closed_handle_error ("find_inode")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_find_inode (g.g, c_device, C.int64_t (inode))
+
+    if r == nil {
+        return nil, get_error_from_handle (g, "find_inode")
+    }
+    defer C.guestfs_free_tsk_dirent_list (r)
+    return return_TSKDirent_list (r), nil
+}
+
 /* findfs_label : find a filesystem by label */
 func (g *Guestfs) Findfs_label (label string) (string, *GuestfsError) {
     if g.g == nil {
@@ -5701,6 +5753,9 @@ type OptargsHivex_open struct {
     /* Write field is ignored unless Write_is_set == true */
     Write_is_set bool
     Write bool
+    /* Unsafe field is ignored unless Unsafe_is_set == true */
+    Unsafe_is_set bool
+    Unsafe bool
 }
 
 /* hivex_open : open a Windows Registry hive file */
@@ -5724,6 +5779,10 @@ func (g *Guestfs) Hivex_open (filename string, optargs *OptargsHivex_open) *Gues
         if optargs.Write_is_set {
             c_optargs.bitmask |= C.GUESTFS_HIVEX_OPEN_WRITE_BITMASK
             if optargs.Write { c_optargs.write = 1 } else { c_optargs.write = 0}
+        }
+        if optargs.Unsafe_is_set {
+            c_optargs.bitmask |= C.GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK
+            if optargs.Unsafe { c_optargs.unsafe = 1 } else { c_optargs.unsafe = 0}
         }
     }
 
@@ -6259,6 +6318,42 @@ func (g *Guestfs) Inspect_get_windows_current_control_set (root string) (string,
 
     if r == nil {
         return "", get_error_from_handle (g, "inspect_get_windows_current_control_set")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
+/* inspect_get_windows_software_hive : get the path of the Windows software hive */
+func (g *Guestfs) Inspect_get_windows_software_hive (root string) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("inspect_get_windows_software_hive")
+    }
+
+    c_root := C.CString (root)
+    defer C.free (unsafe.Pointer (c_root))
+
+    r := C.guestfs_inspect_get_windows_software_hive (g.g, c_root)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "inspect_get_windows_software_hive")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
+/* inspect_get_windows_system_hive : get the path of the Windows system hive */
+func (g *Guestfs) Inspect_get_windows_system_hive (root string) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("inspect_get_windows_system_hive")
+    }
+
+    c_root := C.CString (root)
+    defer C.free (unsafe.Pointer (c_root))
+
+    r := C.guestfs_inspect_get_windows_system_hive (g.g, c_root)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "inspect_get_windows_system_hive")
     }
     defer C.free (unsafe.Pointer (r))
     return C.GoString (r), nil
@@ -9797,6 +9892,49 @@ func (g *Guestfs) Mknod_c (mode int, devmajor int, devminor int, path string) *G
 
     if r == -1 {
         return get_error_from_handle (g, "mknod_c")
+    }
+    return nil
+}
+
+/* Struct carrying optional arguments for Mksquashfs */
+type OptargsMksquashfs struct {
+    /* Compress field is ignored unless Compress_is_set == true */
+    Compress_is_set bool
+    Compress string
+    /* Excludes field is ignored unless Excludes_is_set == true */
+    Excludes_is_set bool
+    Excludes []string
+}
+
+/* mksquashfs : create a squashfs filesystem */
+func (g *Guestfs) Mksquashfs (path string, filename string, optargs *OptargsMksquashfs) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("mksquashfs")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    c_filename := C.CString (filename)
+    defer C.free (unsafe.Pointer (c_filename))
+    c_optargs := C.struct_guestfs_mksquashfs_argv{}
+    if optargs != nil {
+        if optargs.Compress_is_set {
+            c_optargs.bitmask |= C.GUESTFS_MKSQUASHFS_COMPRESS_BITMASK
+            c_optargs.compress = C.CString (optargs.Compress)
+            defer C.free (unsafe.Pointer (c_optargs.compress))
+        }
+        if optargs.Excludes_is_set {
+            c_optargs.bitmask |= C.GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK
+            c_optargs.excludes = arg_string_list (optargs.Excludes)
+            defer free_string_list (c_optargs.excludes)
+        }
+    }
+
+    r := C.guestfs_mksquashfs_argv (g.g, c_path, c_filename, &c_optargs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "mksquashfs")
     }
     return nil
 }

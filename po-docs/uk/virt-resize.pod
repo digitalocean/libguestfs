@@ -118,9 +118,9 @@ Or use L<virsh(1)> vol-create-as to create a libvirt storage volume:
 
 =item 5. Зміна розміру
 
-virt-resize takes two mandatory parameters, the input disk (eg. device,
-file, or a URI to a remote disk) and the output disk.  The output disk is
-the one created in the previous step.
+virt-resize takes two mandatory parameters, the input disk and the output
+disk (both can be e.g. a device, a file, or a URI to a remote disk).  The
+output disk is the one created in the previous step.
 
  # virt-resize indisk outdisk
 
@@ -228,7 +228,7 @@ output container that you provide.  Thus to create qcow2 output, use:
 
  qemu-img create -f qcow2 -o preallocation=metadata outdisk [size]
 
-instead of the truncate command.
+замість команди truncate.
 
 Similarly, to get non-sparse raw output use:
 
@@ -332,11 +332,11 @@ ANSI colour sequences are disabled unless you use this option.
 
 =item B<--debug>
 
-(Deprecated: use I<-v> option instead)
+(Застарілий: використовуйте замість нього I<-v>)
 
 Увімкнути показ діагностичних повідомлень.
 
-=item B<--delete> PART
+=item B<--delete> РОЗДІЛ
 
 Delete the named partition.  It would be more accurate to describe this as
 "don't copy it over", since virt-resize doesn't do in-place changes and the
@@ -348,7 +348,7 @@ come after to be I<renumbered>, which can easily make your guest unbootable.
 
 Цей параметр можна вказувати декілька разів.
 
-=item B<--expand> PART
+=item B<--expand> РОЗДІЛ
 
 Expand the named partition so it uses up all extra space (space left over
 after any other resize changes that you request have been done).
@@ -389,6 +389,14 @@ Btrfs filesystems, if libguestfs was compiled with support for btrfs.
 
 XFS filesystems, if libguestfs was compiled with support for XFS.
 
+=item *
+
+Linux swap partitions.
+
+Please note that libguestfs I<destroys> the existing swap content by
+recreating it with C<mkswap>, so this should not be used when the guest is
+suspended.
+
 =back
 
 Note that you cannot use I<--expand> and I<--shrink> together.
@@ -404,7 +412,7 @@ the format is always specified.
 Note that this option I<does not> affect the output format.  See L</QCOW2
 AND NON-SPARSE RAW FORMATS>.
 
-=item B<--ignore> PART
+=item B<--ignore> РОЗДІЛ
 
 Ignore the named partition.  Effectively this means the partition is
 allocated on the destination disk, but the content is not copied across from
@@ -413,7 +421,7 @@ bytes).
 
 Цей параметр можна вказувати декілька разів.
 
-=item B<--LV-expand> LOGVOL
+=item B<--LV-expand> ЛОГІЧНИЙ_ТОМ
 
 This takes the logical volume and, as a final step, expands it to fill all
 the space available in its volume group.  A typical usage, assuming a Linux
@@ -506,7 +514,7 @@ NON-SPARSE RAW FORMATS>.
 
 Не виводити даних резюме.
 
-=item B<--resize> PART=SIZE
+=item B<--resize> РОЗДІЛ=РОЗМІР
 
 Resize the named partition (expanding or shrinking it) so that it has the
 given size.
@@ -539,7 +547,7 @@ I<--resize-force>).
 
 Цей параметр можна вказувати декілька разів.
 
-=item B<--resize-force> PART=SIZE
+=item B<--resize-force> РОЗДІЛ=РОЗМІР
 
 This is the same as I<--resize> except that it will let you decrease the
 size of any partition.  Generally this means you will lose any data which
@@ -625,8 +633,8 @@ virt-resize binary.  Typical output looks like this:
  ntfs
  btrfs
 
-A list of features is printed, one per line, and the program exits with
-status 0.
+Виводиться список можливостей, по одній на рядок, і програма завершує роботу
+зі станом 0.
 
 Secondly use the option in conjunction with other options to make the
 regular program output more machine friendly.

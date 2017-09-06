@@ -167,8 +167,8 @@ I<1> if there was an error.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
-For the full list of environment variables which may affect libguestfs,
-please see the L<guestfs(3)> manual page.
+Повний список змінних середовища, які можуть вплинути на роботу libguestfs,
+можна знайти на сторінці підручника L<guestfs(3)>.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -180,5 +180,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

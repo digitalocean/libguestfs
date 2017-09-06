@@ -341,7 +341,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1status  (JNIEnv *env, jobj
   jobject jr;
   jclass cl;
   jfieldID fl;
-  CLEANUP_FREE_BTRFSSCRUB struct guestfs_btrfsscrub *r = NULL;
+  struct guestfs_btrfsscrub *r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
@@ -386,6 +386,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1scrub_1status  (JNIEnv *env, jobj
   (*env)->SetLongField (env, jr, fl, r->btrfsscrub_corrected_errors);
   fl = (*env)->GetFieldID (env, cl, "btrfsscrub_last_physical", "J");
   (*env)->SetLongField (env, jr, fl, r->btrfsscrub_last_physical);
+  guestfs_free_btrfsscrub (r);
   return jr;
 
  ret_error:
@@ -623,6 +624,98 @@ Java_com_redhat_et_libguestfs_GuestFS__1download_1offset  (JNIEnv *env, jobject 
 
  ret_error:
   return;
+}
+
+
+JNIEXPORT jobjectArray JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1find_1inode  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jlong jinode)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jobjectArray jr;
+  jclass cl;
+  jfieldID fl;
+  jobject jfl;
+  struct guestfs_tsk_dirent_list *r;
+  const char *device;
+  int64_t inode;
+  size_t i;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  inode = jinode;
+
+  r = guestfs_find_inode (g, device, inode);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  cl = (*env)->FindClass (env, "com/redhat/et/libguestfs/TSKDirent");
+  jr = (*env)->NewObjectArray (env, r->len, cl, NULL);
+
+  for (i = 0; i < r->len; ++i) {
+    jfl = (*env)->AllocObject (env, cl);
+
+    fl = (*env)->GetFieldID (env, cl, "tsk_inode",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_inode);
+    fl = (*env)->GetFieldID (env, cl, "tsk_type",
+                             "C");
+    (*env)->SetCharField (env, jfl, fl, r->val[i].tsk_type);
+    fl = (*env)->GetFieldID (env, cl, "tsk_size",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_size);
+    fl = (*env)->GetFieldID (env, cl, "tsk_name",
+                             "Ljava/lang/String;");
+    (*env)->SetObjectField (env, jfl, fl,
+                            (*env)->NewStringUTF (env, r->val[i].tsk_name));
+    fl = (*env)->GetFieldID (env, cl, "tsk_flags",
+                             "I");
+    (*env)->SetIntField (env, jfl, fl, r->val[i].tsk_flags);
+    fl = (*env)->GetFieldID (env, cl, "tsk_atime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_atime_sec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_atime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_atime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_mtime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_mtime_sec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_mtime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_mtime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_ctime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_ctime_sec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_ctime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_ctime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_crtime_sec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_crtime_sec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_crtime_nsec",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_crtime_nsec);
+    fl = (*env)->GetFieldID (env, cl, "tsk_nlink",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_nlink);
+    fl = (*env)->GetFieldID (env, cl, "tsk_link",
+                             "Ljava/lang/String;");
+    (*env)->SetObjectField (env, jfl, fl,
+                            (*env)->NewStringUTF (env, r->val[i].tsk_link));
+    fl = (*env)->GetFieldID (env, cl, "tsk_spare1",
+                             "J");
+    (*env)->SetLongField (env, jfl, fl, r->val[i].tsk_spare1);
+
+    (*env)->SetObjectArrayElement (env, jr, i, jfl);
+  }
+
+  guestfs_free_tsk_dirent_list (r);
+  return jr;
+
+ ret_error:
+  return NULL;
 }
 
 
@@ -877,7 +970,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1children  (JNIEnv *env, job
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  CLEANUP_FREE_HIVEX_NODE_LIST struct guestfs_hivex_node_list *r = NULL;
+  struct guestfs_hivex_node_list *r;
   int64_t nodeh;
   size_t i;
 
@@ -903,6 +996,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1children  (JNIEnv *env, job
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
+  guestfs_free_hivex_node_list (r);
   return jr;
 
  ret_error:
@@ -1212,7 +1306,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattrs  (JNIEnv *env, jobject obj, j
   jclass cl;
   jfieldID fl;
   jobject jfl;
-  CLEANUP_FREE_XATTR_LIST struct guestfs_xattr_list *r = NULL;
+  struct guestfs_xattr_list *r;
   const char *path;
   size_t i;
 
@@ -1240,7 +1334,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattrs  (JNIEnv *env, jobject obj, j
                              "Ljava/lang/String;");
     {
       size_t len = r->val[i].attrval_len;
-      CLEANUP_FREE char *s = malloc (len + 1);
+      CLEANUP_FREE char *s = malloc (len);
       if (s == NULL) {
         throw_out_of_memory (env, "malloc");
         goto ret_error;
@@ -1254,6 +1348,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattrs  (JNIEnv *env, jobject obj, j
     (*env)->SetObjectArrayElement (env, jr, i, jfl);
   }
 
+  guestfs_free_xattr_list (r);
   return jr;
 
  ret_error:
@@ -1852,7 +1947,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1readlinklist  (JNIEnv *env, jobject obj,
   char **r;
   const char *path;
   size_t names_len;
-  CLEANUP_FREE char **names = NULL;
+  char **names;
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
@@ -1875,6 +1970,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1readlinklist  (JNIEnv *env, jobject obj,
     jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
     (*env)->ReleaseStringUTFChars (env, o, names[i]);
   }
+  free (names);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));

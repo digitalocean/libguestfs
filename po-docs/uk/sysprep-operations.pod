@@ -5,6 +5,51 @@
 
 Вилучити автоматично створені ABRT дані щодо аварії у C</var/spool/abrt/>.
 
+=head2 B<backup-files> *
+
+Remove editor backup files from the guest.
+
+The following files are removed from anywhere in the guest filesystem:
+
+=over 4
+
+=item ·
+
+*.bak
+
+=item ·
+
+*~
+
+=back
+
+On Linux and Unix operating systems, only the following filesystems will be
+examined:
+
+=over 4
+
+=item ·
+
+/etc
+
+=item ·
+
+/root
+
+=item ·
+
+/srv
+
+=item ·
+
+/tmp
+
+=item ·
+
+/var
+
+=back
+
 =head2 B<bash-history> *
 
 Вилучити журнал команд bash у гостьовій системі.
@@ -101,75 +146,289 @@ UUID, наприклад C</etc/fstab> або завантажувач. Вмик
 
 У Linux вилучено такі файли:
 
- /etc/Pegasus/*.cnf
- /etc/Pegasus/*.crt
- /etc/Pegasus/*.csr
- /etc/Pegasus/*.pem
- /etc/Pegasus/*.srl
- /root/anaconda-ks.cfg
- /root/anaconda-post.log
- /root/initial-setup-ks.cfg
- /root/install.log
- /root/install.log.syslog
- /var/cache/fontconfig/*
- /var/cache/gdm/*
- /var/cache/man/*
- /var/lib/AccountService/users/*
- /var/lib/fprint/*
- /var/lib/logrotate.status
- /var/log/*.log*
- /var/log/BackupPC/LOG
- /var/log/ConsoleKit/*
- /var/log/anaconda.syslog
- /var/log/anaconda/*
- /var/log/apache2/*_log
- /var/log/apache2/*_log-*
- /var/log/apt/*
- /var/log/aptitude*
- /var/log/audit/*
- /var/log/btmp*
- /var/log/ceph/*.log
- /var/log/chrony/*.log
- /var/log/cron*
- /var/log/cups/*_log*
- /var/log/debug*
- /var/log/dmesg*
- /var/log/exim4/*
- /var/log/faillog*
- /var/log/firewalld*
- /var/log/gdm/*
- /var/log/glusterfs/*glusterd.vol.log
- /var/log/glusterfs/glusterfs.log
- /var/log/grubby*
- /var/log/httpd/*log
- /var/log/installer/*
- /var/log/jetty/jetty-console.log
- /var/log/journal/*
- /var/log/lastlog*
- /var/log/libvirt/libvirtd.log
- /var/log/libvirt/libxl/*.log
- /var/log/libvirt/lxc/*.log
- /var/log/libvirt/qemu/*.log
- /var/log/libvirt/uml/*.log
- /var/log/lightdm/*
- /var/log/mail/*
- /var/log/maillog*
- /var/log/messages*
- /var/log/ntp
- /var/log/ntpstats/*
- /var/log/ppp/connect-errors
- /var/log/rhsm/*
- /var/log/sa/*
- /var/log/secure*
- /var/log/setroubleshoot/*.log
- /var/log/spooler*
- /var/log/squid/*.log
- /var/log/syslog*
- /var/log/tallylog*
- /var/log/tuned/tuned.log
- /var/log/wtmp*
- /var/log/xferlog*
- /var/named/data/named.run
+=over 4
+
+=item ·
+
+/etc/Pegasus/*.cnf
+
+=item ·
+
+/etc/Pegasus/*.crt
+
+=item ·
+
+/etc/Pegasus/*.csr
+
+=item ·
+
+/etc/Pegasus/*.pem
+
+=item ·
+
+/etc/Pegasus/*.srl
+
+=item ·
+
+/root/anaconda-ks.cfg
+
+=item ·
+
+/root/anaconda-post.log
+
+=item ·
+
+/root/initial-setup-ks.cfg
+
+=item ·
+
+/root/install.log
+
+=item ·
+
+/root/install.log.syslog
+
+=item ·
+
+/root/original-ks.cfg
+
+=item ·
+
+/var/cache/fontconfig/*
+
+=item ·
+
+/var/cache/gdm/*
+
+=item ·
+
+/var/cache/man/*
+
+=item ·
+
+/var/lib/AccountService/users/*
+
+=item ·
+
+/var/lib/fprint/*
+
+=item ·
+
+/var/lib/logrotate.status
+
+=item ·
+
+/var/log/*.log*
+
+=item ·
+
+/var/log/BackupPC/LOG
+
+=item ·
+
+/var/log/ConsoleKit/*
+
+=item ·
+
+/var/log/anaconda.syslog
+
+=item ·
+
+/var/log/anaconda/*
+
+=item ·
+
+/var/log/apache2/*_log
+
+=item ·
+
+/var/log/apache2/*_log-*
+
+=item ·
+
+/var/log/apt/*
+
+=item ·
+
+/var/log/aptitude*
+
+=item ·
+
+/var/log/audit/*
+
+=item ·
+
+/var/log/btmp*
+
+=item ·
+
+/var/log/ceph/*.log
+
+=item ·
+
+/var/log/chrony/*.log
+
+=item ·
+
+/var/log/cron*
+
+=item ·
+
+/var/log/cups/*_log*
+
+=item ·
+
+/var/log/debug*
+
+=item ·
+
+/var/log/dmesg*
+
+=item ·
+
+/var/log/exim4/*
+
+=item ·
+
+/var/log/faillog*
+
+=item ·
+
+/var/log/firewalld*
+
+=item ·
+
+/var/log/gdm/*
+
+=item ·
+
+/var/log/glusterfs/*glusterd.vol.log
+
+=item ·
+
+/var/log/glusterfs/glusterfs.log
+
+=item ·
+
+/var/log/grubby*
+
+=item ·
+
+/var/log/httpd/*log
+
+=item ·
+
+/var/log/installer/*
+
+=item ·
+
+/var/log/jetty/jetty-console.log
+
+=item ·
+
+/var/log/journal/*
+
+=item ·
+
+/var/log/lastlog*
+
+=item ·
+
+/var/log/libvirt/libvirtd.log
+
+=item ·
+
+/var/log/libvirt/libxl/*.log
+
+=item ·
+
+/var/log/libvirt/lxc/*.log
+
+=item ·
+
+/var/log/libvirt/qemu/*.log
+
+=item ·
+
+/var/log/libvirt/uml/*.log
+
+=item ·
+
+/var/log/lightdm/*
+
+=item ·
+
+/var/log/mail/*
+
+=item ·
+
+/var/log/maillog*
+
+=item ·
+
+/var/log/messages*
+
+=item ·
+
+/var/log/ntp
+
+=item ·
+
+/var/log/ntpstats/*
+
+=item ·
+
+/var/log/ppp/connect-errors
+
+=item ·
+
+/var/log/rhsm/*
+
+=item ·
+
+/var/log/sa/*
+
+=item ·
+
+/var/log/secure*
+
+=item ·
+
+/var/log/setroubleshoot/*.log
+
+=item ·
+
+/var/log/spooler*
+
+=item ·
+
+/var/log/squid/*.log
+
+=item ·
+
+/var/log/syslog*
+
+=item ·
+
+/var/log/tallylog*
+
+=item ·
+
+/var/log/tuned/tuned.log
+
+=item ·
+
+/var/log/wtmp*
+
+=item ·
+
+/var/log/xferlog*
+
+=item ·
+
+/var/named/data/named.run
+
+=back
 
 =head2 B<lvm-uuids> *
 
@@ -218,6 +477,40 @@ UUID, наприклад C</etc/fstab> або завантажувач. Вмик
 =head2 B<pam-data> *
 
 Вилучити дані PAM у гостьовій системі.
+
+=head2 B<passwd-backups> *
+
+Remove /etc/passwd- and similar backup files.
+
+У Linux вилучено такі файли:
+
+=over 4
+
+=item ·
+
+/etc/group-
+
+=item ·
+
+/etc/gshadow-
+
+=item ·
+
+/etc/passwd-
+
+=item ·
+
+/etc/shadow-
+
+=item ·
+
+/etc/subgid-
+
+=item ·
+
+/etc/subuid-
+
+=back
 
 =head2 B<puppet-data-log> *
 

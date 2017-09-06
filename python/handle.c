@@ -1,5 +1,5 @@
 /* libguestfs python bindings
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,7 +71,7 @@ guestfs_int_py_close (PyObject *self, PyObject *args)
   PyThreadState *py_save = NULL;
   PyObject *py_g;
   guestfs_h *g;
-  size_t len;
+  size_t i, len;
   PyObject **callbacks;
 
   if (!PyArg_ParseTuple (args, (char *) "O:guestfs_close", &py_g))
@@ -81,14 +81,9 @@ guestfs_int_py_close (PyObject *self, PyObject *args)
   /* As in the OCaml bindings, there is a hard to solve case where the
    * caller can delete a callback from within the callback, resulting
    * in a double-free here.  XXX
-   *
-   * Take care of the result of get_all_event_callbacks: NULL can be
-   * both an error (and some PyErr_* was called), and no events.
-   * 'len' is specifically 0 only in the latter case, so filter that
-   * out.
    */
   callbacks = get_all_event_callbacks (g, &len);
-  if (len != 0 && callbacks == NULL)
+  if (callbacks == NULL)
     return NULL;
 
   if (PyEval_ThreadsInitialized ())
@@ -97,12 +92,9 @@ guestfs_int_py_close (PyObject *self, PyObject *args)
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
 
-  if (len > 0) {
-    size_t i;
-    for (i = 0; i < len; ++i)
-      Py_XDECREF (callbacks[i]);
-    free (callbacks);
-  }
+  for (i = 0; i < len; ++i)
+    Py_XDECREF (callbacks[i]);
+  free (callbacks);
 
   Py_INCREF (Py_None);
   return Py_None;
@@ -267,10 +259,6 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
       (*len_rtn)++;
     cb = guestfs_next_private (g, &key);
   }
-
-  /* No events, so no need to allocate anything. */
-  if (*len_rtn == 0)
-    return NULL;
 
   /* Copy them into the return array. */
   r = malloc (sizeof (PyObject *) * (*len_rtn));

@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs virt-inspector test script
-# Copyright (C) 2012-2016 Red Hat Inc.
+# Copyright (C) 2012-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,15 +16,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-export LANG=C
 set -e
 set -x
 
-# Allow this test to be skipped.
-if [ -n "$SKIP_TEST_VIRT_INSPECTOR_SH" ]; then
-    echo "$0: skipping test because SKIP_TEST_VIRT_INSPECTOR_SH is set."
-    exit 77
-fi
+$TEST_FUNCTIONS
+skip_if_skipped
 
 # ntfs-3g can't set UUIDs right now, so ignore just that <uuid>.
 diff_ignore="-I <uuid>[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]</uuid>"

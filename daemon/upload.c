@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ upload (const char *filename, int flags, int64_t offset)
     }
   }
 
-  r = receive_file (write_cb, &data.fd);
+  r = receive_file (write_cb, &data);
   if (r == -1) {		/* write error */
     err = errno;
     r = cancel_receive ();

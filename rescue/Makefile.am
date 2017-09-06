@@ -1,5 +1,5 @@
 # libguestfs virt-rescue
-# Copyright (C) 2010-2016 Red Hat Inc.
+# Copyright (C) 2010-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,40 +25,27 @@ EXTRA_DIST = \
 
 bin_PROGRAMS = virt-rescue
 
-SHARED_SOURCE_FILES = \
-	../fish/config.c \
-	../fish/decrypt.c \
-	../fish/display-options.h \
-	../fish/display-options.c \
-	../fish/domain.c \
-	../fish/inspect.c \
-	../fish/keys.c \
-	../fish/options.h \
-	../fish/options.c \
-	../fish/uri.h \
-	../fish/uri.c
-
 virt_rescue_SOURCES = \
-	$(SHARED_SOURCE_FILES) \
 	rescue.c
 
 virt_rescue_CPPFLAGS = \
-	-DCOMPILING_VIRT_RESCUE=1 \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
 	-I$(top_srcdir)/fish \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 virt_rescue_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(LIBCONFIG_CFLAGS) \
 	$(LIBXML2_CFLAGS)
 
 virt_rescue_LDADD = \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBCONFIG_LIBS) \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \

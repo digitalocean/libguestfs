@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ open Printf
 
 open Common_gettext.Gettext
 open Common_utils
+open Unix_utils
 
 open Types
 open Utils
@@ -68,7 +69,7 @@ object
     (* See #supported_firmware above. *)
     assert (target_firmware = TargetBIOS);
 
-    (* The first disk, assumed to be the system, will be called
+    (* The first disk, assumed to be the system disk, will be called
      * "guestname".  Subsequent disks, assumed to be data disks,
      * will be called "guestname-disk2" etc.  The manual strongly
      * hints you should import the data disks to Cinder.

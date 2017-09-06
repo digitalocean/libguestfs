@@ -1,5 +1,5 @@
 # libguestfs virt-edit
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,21 +24,17 @@ EXTRA_DIST = \
 
 bin_PROGRAMS = virt-edit
 
-SHARED_SOURCE_FILES = \
-	../fish/file-edit.h \
-	../fish/file-edit.c \
-	../fish/windows.h \
-	../fish/windows.c
-
 virt_edit_SOURCES = \
-	$(SHARED_SOURCE_FILES) \
 	edit.c
 
 virt_edit_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	-I$(top_srcdir)/fish \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/edit -I$(top_builddir)/common/edit \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
+	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 virt_edit_CFLAGS = \
@@ -46,9 +42,11 @@ virt_edit_CFLAGS = \
 	$(LIBXML2_CFLAGS)
 
 virt_edit_LDADD = \
-	$(top_builddir)/src/libutils.la \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/fish/libfishcommon.la \
+	$(top_builddir)/common/edit/libedit.la \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/windows/libwindows.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
 	$(LTLIBINTL) \

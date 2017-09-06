@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,8 +18,6 @@
 
 #ifndef GUESTFS_OCAML_C_H
 #define GUESTFS_OCAML_C_H
-
-#include "guestfs-internal-frontend.h"
 
 #define Guestfs_val(v) (*((guestfs_h **)Data_custom_val(v)))
 extern void guestfs_int_ocaml_raise_error (guestfs_h *g, const char *func)

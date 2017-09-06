@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,10 +125,17 @@ extern int inhibit_power_saving (void);
 
 /* ssh.c */
 extern int test_connection (struct config *);
-extern mexp_h *open_data_connection (struct config *, int *local_port, int *remote_port);
+extern mexp_h *open_data_connection (struct config *, const char *local_ipaddr, int local_port, int *remote_port);
 extern mexp_h *start_remote_connection (struct config *, const char *remote_dir);
 extern const char *get_ssh_error (void);
 extern int scp_file (struct config *config, const char *localfile, const char *remotefile);
+
+/* nbd.c */
+extern void set_nbd_option (const char *opt);
+extern void test_nbd_servers (void);
+extern pid_t start_nbd_server (const char **ipaddr, int *port, const char *device);
+extern int wait_for_nbd_server_to_start (const char *ipaddr, int port);
+const char *get_nbd_error (void);
 
 /* utils.c */
 extern uint64_t get_blockdev_size (const char *dev);

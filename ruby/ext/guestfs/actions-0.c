@@ -404,6 +404,65 @@ guestfs_int_ruby_aug_match (VALUE gv, VALUE augpathv)
 
 /*
  * call-seq:
+ *   g.aug_transform(lens, file, {optargs...}) -> nil
+ *
+ * add/remove an Augeas lens transformation
+ *
+ * Add an Augeas transformation for the specified "lens" so
+ * it can handle "file".
+ * 
+ * If "remove" is true ("false" by default), then the
+ * transformation is removed.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * [Since] Added in version 1.35.2.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_aug_transform}[http://libguestfs.org/guestfs.3.html#guestfs_aug_transform].
+ */
+VALUE
+guestfs_int_ruby_aug_transform (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "aug_transform");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE lensv = argv[0];
+  volatile VALUE filev = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
+  const char *lens = StringValueCStr (lensv);
+  const char *file = StringValueCStr (filev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_aug_transform_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_aug_transform_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("remove")));
+  if (v != Qnil) {
+    optargs_s.remove = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_aug_transform_argv (g, lens, file, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.btrfs_qgroup_create(qgroupid, subvolume) -> nil
  *
  * create a subvolume quota group
@@ -1827,6 +1886,52 @@ guestfs_int_ruby_inspect_get_product_variant (VALUE gv, VALUE rootv)
   char *r;
 
   r = guestfs_inspect_get_product_variant (g, root);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.inspect_get_windows_software_hive(root) -> string
+ *
+ * get the path of the Windows software hive
+ *
+ * This returns the path to the hive (binary Windows
+ * Registry file) corresponding to HKLM\SOFTWARE.
+ * 
+ * This call assumes that the guest is Windows and that the
+ * guest has a software hive file with the right name. If
+ * this is not the case then an error is returned. This
+ * call does not check that the hive is a valid Windows
+ * Registry hive.
+ * 
+ * You can use "g.hivex_open" to read or write to the hive.
+ * 
+ * Please read "INSPECTION" in guestfs(3) for more details.
+ *
+ *
+ * [Since] Added in version 1.35.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_windows_software_hive}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_windows_software_hive].
+ */
+VALUE
+guestfs_int_ruby_inspect_get_windows_software_hive (VALUE gv, VALUE rootv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "inspect_get_windows_software_hive");
+
+  const char *root = StringValueCStr (rootv);
+
+  char *r;
+
+  r = guestfs_inspect_get_windows_software_hive (g, root);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 

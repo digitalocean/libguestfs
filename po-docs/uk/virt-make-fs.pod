@@ -23,7 +23,7 @@ useful if you want to attach these filesystems to existing virtual machines
 To create blank disks, use L<virt-format(1)>.  To create complex layouts,
 use L<guestfish(1)>.
 
-Basic usage is:
+Базовий варіант використання:
 
  virt-make-fs вхідні_дані вихідний.образ
 
@@ -122,7 +122,7 @@ to build another image from scratch.
 
 =item B<--floppy>
 
-Create a virtual floppy disk.
+Створити віртуальну дискету.
 
 Currently this preselects the size (1440K), partition type (MBR) and
 filesystem type (VFAT).  In future it may also choose the geometry.
@@ -155,31 +155,31 @@ filesystems containing precisely the free space requested.  (It is much more
 expensive and time-consuming to produce a filesystem which has precisely the
 desired free space).
 
-=item B<--format=>FMT
+=item B<--format=>ФОРМАТ
 
-=item B<-F> FMT
+=item B<-F> ФОРМАТ
 
-Choose the output disk image format.
+Вибрати формат образу диска-результату.
 
 The default is C<raw> (raw sparse disk image).
 
-=item B<--type=>FS
+=item B<--type=>ФС
 
-=item B<-t> FS
+=item B<-t> ФС
 
-Choose the output filesystem type.
+Вибрати тип файлової системи для виведення даних.
 
 Типовим значенням є C<ext2>.
 
 Any filesystem which is supported read-write by libguestfs can be used here.
 
-=item B<--label=>LABEL
+=item B<--label=>МІТКА
 
 Set the filesystem label.
 
 =item B<--partition>
 
-=item B<--partition=>PARTTYPE
+=item B<--partition=>ТИП РОЗДІЛУ
 
 If specified, this flag adds an MBR partition table to the output disk
 image.
@@ -219,5 +219,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2010–2016
+Copyright (C) 2010-2017 Red Hat Inc.
 

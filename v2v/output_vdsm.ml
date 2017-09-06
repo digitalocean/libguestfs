@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ type vdsm_params = {
   vol_uuids : string list;
   vm_uuid : string;
   ovf_output : string;
+  compat : string;
 }
 
 class output_vdsm os vdsm_params output_alloc =
@@ -37,20 +38,26 @@ object
   inherit output
 
   method as_options =
-    sprintf "-o vdsm -os %s%s%s --vdsm-vm-uuid %s --vdsm-ovf-output %s" os
+    sprintf "-o vdsm -os %s%s%s --vdsm-vm-uuid %s --vdsm-ovf-output %s%s" os
       (String.concat ""
          (List.map (sprintf " --vdsm-image-uuid %s") vdsm_params.image_uuids))
       (String.concat ""
          (List.map (sprintf " --vdsm-vol-uuid %s") vdsm_params.vol_uuids))
       vdsm_params.vm_uuid
       vdsm_params.ovf_output
+      (match vdsm_params.compat with
+       | "0.10" -> "" (* currently this is the default, so don't print it *)
+       | s -> sprintf " --vdsm-compat=%s" s)
 
   method supported_firmware = [ TargetBIOS ]
 
-  (* RHEV doesn't support serial consoles.  This causes the conversion
+  (* RHV doesn't support serial consoles.  This causes the conversion
    * step to remove it.
    *)
   method keep_serial_console = false
+
+  (* rhev-apt.exe will be installed (if available). *)
+  method install_rhev_apt = true
 
   (* Data Domain mountpoint. *)
   val mutable dd_mp = ""
@@ -60,7 +67,7 @@ object
    * name of the target files that eventually get written by the main
    * code.
    *
-   * 'os' is the output storage domain (-os /rhev/data/<data center>/<data domain>)
+   * 'os' is the output storage domain (-os /rhv/data/<data center>/<data domain>)
    * this is already mounted path.
    *
    * Note it's good to fail here (early) if there are any problems, since
@@ -148,9 +155,10 @@ object
     ?clustersize path format size =
     let g = open_guestfs ~identifier:"vdsm_disk_create" () in
     (* For qcow2, override v2v-supplied compat option, because RHEL 6
-     * nodes cannot handle qcow2 v3 (RHBZ#1145582).
+     * nodes cannot handle qcow2 v3 (RHBZ#1145582, RHBZ#1400205).
      *)
-    let compat = if format <> "qcow2" then compat else Some "0.10" in
+    let compat =
+      if format <> "qcow2" then compat else Some vdsm_params.compat in
     g#disk_create ?backingfile ?backingformat ?preallocation ?compat
       ?clustersize path format size
 

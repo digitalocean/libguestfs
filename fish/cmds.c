@@ -528,6 +528,7 @@ list_commands (void)
   printf ("%-20s %s\n", "aug-save", _("write all pending Augeas changes to disk"));
   printf ("%-20s %s\n", "aug-set", _("set Augeas path to value"));
   printf ("%-20s %s\n", "aug-setm", _("set multiple Augeas nodes"));
+  printf ("%-20s %s\n", "aug-transform", _("add/remove an Augeas lens transformation"));
   printf ("%-20s ", "autosync");
   printf (_("alias for '%s'"), "set-autosync");
   putchar ('\n');
@@ -681,6 +682,7 @@ list_commands (void)
   printf ("%-20s %s\n", "fill-pattern", _("fill a file with a repeating pattern of bytes"));
   printf ("%-20s %s\n", "find", _("find all files and directories"));
   printf ("%-20s %s\n", "find0", _("find all files and directories, returning NUL-separated list"));
+  printf ("%-20s %s\n", "find-inode", _("search the entries associated to the given inode"));
   printf ("%-20s %s\n", "findfs-label", _("find a filesystem by label"));
   printf ("%-20s %s\n", "findfs-uuid", _("find a filesystem by UUID"));
   printf ("%-20s %s\n", "fsck", _("run the filesystem checker"));
@@ -781,6 +783,8 @@ list_commands (void)
   printf ("%-20s %s\n", "inspect-get-roots", _("return list of operating systems found by last inspection"));
   printf ("%-20s %s\n", "inspect-get-type", _("get type of inspected operating system"));
   printf ("%-20s %s\n", "inspect-get-windows-current-control-set", _("get Windows CurrentControlSet of inspected operating system"));
+  printf ("%-20s %s\n", "inspect-get-windows-software-hive", _("get the path of the Windows software hive"));
+  printf ("%-20s %s\n", "inspect-get-windows-system-hive", _("get the path of the Windows system hive"));
   printf ("%-20s %s\n", "inspect-get-windows-systemroot", _("get Windows systemroot of inspected operating system"));
   printf ("%-20s %s\n", "inspect-is-live", _("get live flag for install disk"));
   printf ("%-20s %s\n", "inspect-is-multipart", _("get multipart flag for install disk"));
@@ -907,6 +911,7 @@ list_commands (void)
   printf ("%-20s %s\n", "mknod", _("make block, character or FIFO devices"));
   printf ("%-20s %s\n", "mknod-b", _("make block device node"));
   printf ("%-20s %s\n", "mknod-c", _("make char device node"));
+  printf ("%-20s %s\n", "mksquashfs", _("create a squashfs filesystem"));
   printf ("%-20s %s\n", "mkswap", _("create a swap partition"));
   printf ("%-20s %s\n", "mkswap-L", _("create a swap partition with a label"));
   printf ("%-20s %s\n", "mkswap-U", _("create a swap partition with an explicit UUID"));

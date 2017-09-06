@@ -490,6 +490,25 @@ struct command_entry download_offset_cmd_entry = {
   .run = run_download_offset
 };
 
+struct command_entry find_inode_cmd_entry = {
+  .name = "find-inode",
+  .help = "NAME\n"
+          "    find-inode - search the entries associated to the given inode\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     find-inode device inode\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Searches all the entries associated with the given inode.\n"
+          "\n"
+          "    For each entry, a \"tsk_dirent\" structure is returned. See\n"
+          "    \"filesystem_walk\" for more information about \"tsk_dirent\" structures.\n"
+          "\n"
+          "",
+  .synopsis = "find-inode device inode",
+  .run = run_find_inode
+};
+
 struct command_entry findfs_uuid_cmd_entry = {
   .name = "findfs-uuid",
   .help = "NAME\n"

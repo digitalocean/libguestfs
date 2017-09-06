@@ -6,6 +6,8 @@
 ../cat/virt-filesystems.pod
 ../cat/virt-log.pod
 ../cat/virt-ls.pod
+../cat/virt-tail.pod
+../common/miniexpect/miniexpect.pod
 ../customize/customize-options.pod
 ../customize/customize-synopsis.pod
 ../customize/virt-customize.pod
@@ -42,6 +44,10 @@
 ../golang/examples/guestfs-golang.pod
 ../inspector/virt-inspector.pod
 ../java/examples/guestfs-java.pod
+../lib/guestfs-actions.pod
+../lib/guestfs-availability.pod
+../lib/guestfs-structs.pod
+../lib/guestfs.pod
 ../lua/examples/guestfs-lua.pod
 ../make-fs/virt-make-fs.pod
 ../ocaml/examples/guestfs-ocaml.pod
@@ -55,10 +61,6 @@
 ../resize/virt-resize.pod
 ../ruby/examples/guestfs-ruby.pod
 ../sparsify/virt-sparsify.pod
-../src/guestfs-actions.pod
-../src/guestfs-availability.pod
-../src/guestfs-structs.pod
-../src/guestfs.pod
 ../sysprep/sysprep-extra-options.pod
 ../sysprep/sysprep-operations.pod
 ../sysprep/virt-sysprep.pod

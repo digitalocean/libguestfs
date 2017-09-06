@@ -1606,6 +1606,70 @@ run_mkfifo (const char *cmd, size_t argc, char *argv[])
 }
 
 int
+run_mksquashfs (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *path;
+  char *filename;
+  struct guestfs_mksquashfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mksquashfs_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 4) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  filename = file_out (argv[i++]);
+  if (filename == NULL) goto out_filename;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "compress:")) {
+      optargs_s.compress = &argv[i][9];
+      this_mask = GUESTFS_MKSQUASHFS_COMPRESS_BITMASK;
+      this_arg = "compress";
+    }
+    else if (STRPREFIX (argv[i], "excludes:")) {
+      optargs_s.excludes = parse_string_list (&argv[i][9]);
+      if (optargs_s.excludes == NULL) goto out;
+      this_mask = GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK;
+      this_arg = "excludes";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_mksquashfs_argv (g, path, filename, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  if ((optargs_s.bitmask & GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK) &&
+      optargs_s.excludes != NULL)
+    guestfs_int_free_string_list ((char **) optargs_s.excludes);
+  free (filename);
+ out_filename:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+int
 run_modprobe (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;

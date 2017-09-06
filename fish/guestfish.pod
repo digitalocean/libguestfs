@@ -1623,6 +1623,7 @@ L<virt-rescue(1)>,
 L<virt-resize(1)>,
 L<virt-sparsify(1)>,
 L<virt-sysprep(1)>,
+L<virt-tail(1)>,
 L<virt-tar(1)>,
 L<virt-tar-in(1)>,
 L<virt-tar-out(1)>,
@@ -1639,4 +1640,4 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2016 Red Hat Inc.
+Copyright (C) 2009-2017 Red Hat Inc.

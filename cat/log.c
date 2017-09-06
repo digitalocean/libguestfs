@@ -1,5 +1,5 @@
 /* virt-log
- * Copyright (C) 2010-2016 Red Hat Inc.
+ * Copyright (C) 2010-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,8 @@ int keys_from_stdin = 0;
 int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 1;
+int in_guestfish = 0;
+int in_virt_rescue = 0;
 
 #define JOURNAL_DIR "/var/log/journal"
 
@@ -67,7 +69,7 @@ usage (int status)
              getprogname ());
   else {
     printf (_("%s: display log files in a virtual machine\n"
-              "Copyright (C) 2010-2016 Red Hat Inc.\n"
+              "Copyright (C) 2010-2017 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] -d domname\n"
               "  %s [--options] -a disk.img [-a disk.img ...]\n"

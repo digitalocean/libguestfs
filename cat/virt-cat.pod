@@ -202,6 +202,8 @@ To list out the log files from guests, see the related tool
 L<virt-log(1)>.  It understands binary log formats such as the systemd
 journal.
 
+To follow (tail) text log files, use L<virt-tail(1)>.
+
 =head1 WINDOWS PATHS
 
 C<virt-cat> has a limited ability to understand Windows drive letters
@@ -277,6 +279,7 @@ L<guestfish(1)>,
 L<virt-copy-out(1)>,
 L<virt-edit(1)>,
 L<virt-log(1)>,
+L<virt-tail(1)>,
 L<virt-tar-out(1)>,
 L<http://libguestfs.org/>.
 

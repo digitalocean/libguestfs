@@ -175,5 +175,5 @@ Cédric Bosdonnat
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2016 SUSE Ltd.
+Авторські права належать SUSE Ltd., 2016
 

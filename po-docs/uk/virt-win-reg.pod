@@ -359,8 +359,9 @@ Paths and value names are case-insensitive.
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<hivex(3)>, L<hivexsh(1)>, L<hivexregedit(1)>, L<guestfs(3)>,
-L<guestfish(1)>, L<virt-cat(1)>, L<Sys::Guestfs(3)>, L<Win::Hivex(3)>,
-L<Win::Hivex::Regedit(3)>, L<Sys::Virt(3)>, L<http://libguestfs.org/>.
+L<guestfish(1)>, L<virt-cat(1)>, L<virt-tail(1)>, L<Sys::Guestfs(3)>,
+L<Win::Hivex(3)>, L<Win::Hivex::Regedit(3)>, L<Sys::Virt(3)>,
+L<http://libguestfs.org/>.
 
 =head1 АВТОР
 

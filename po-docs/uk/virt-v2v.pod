@@ -1,14 +1,14 @@
 
 =head1 НАЗВА
 
-virt-v2v - Convert a guest to use KVM
+virt-v2v - перетворення гостьової системи для використання KVM
 
 =head1 КОРОТКИЙ ОПИС
 
  virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi vmware_guest
 
  virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi vmware_guest \
-   -o rhev -os rhev.nfs:/export_domain --network rhevm
+   -o rhv -os rhv.nfs:/export_domain --network rhvm
 
  virt-v2v -i libvirtxml guest-domain.xml -o local -os /var/tmp
 
@@ -23,7 +23,7 @@ virt-v2v - Convert a guest to use KVM
 Virt-v2v converts guests from a foreign hypervisor to run on KVM.  It can
 read Linux and Windows guests running on VMware, Xen, Hyper-V and some other
 hypervisors, and convert them to KVM managed by libvirt, OpenStack, oVirt,
-Red Hat Enterprise Virtualisation (RHEV) or several other targets.
+Red Hat Virtualisation (RHV) or several other targets.
 
 There is also a companion front-end called L<virt-p2v(1)> which comes as an
 ISO, CD or PXE image that can be booted on physical machines to virtualize
@@ -32,7 +32,7 @@ those machines (physical to virtual, or p2v).
 This manual page documents the rewritten virt-v2v included in libguestfs
 E<ge> 1.28.
 
-=head1 INPUT AND OUTPUT MODES
+=head1 РЕЖИМИ ВВЕДЕННЯ І ВИВЕДЕННЯ
 
                           ┌────────────┐  ┌─────────▶ -o null
  -i disk ────────────┐    │            │ ─┘┌───────▶ -o local
@@ -42,7 +42,7 @@ E<ge> 1.28.
  Xen ───▶│ -i libvirt ──▶ │            │     │  (default) │
  ... ───▶│  (default) │   │            │ ──┐ └────────────┘
          └────────────┘   │            │ ─┐└──────▶ -o glance
- -i libvirtxml ─────────▶ │            │ ┐└─────────▶ -o rhev
+ -i libvirtxml ─────────▶ │            │ ┐└─────────▶ -o rhv
                           └────────────┘ └──────────▶ -o vdsm
 
 Virt-v2v has a number of possible input and output modes, selected using the
@@ -73,8 +73,8 @@ configuration file (mainly for testing).
 I<-o qemu> writes to a local disk image with a shell script for booting the
 guest directly in qemu (mainly for testing).
 
-I<-o rhev> is used to write to a RHEV-M / oVirt target.  I<-o vdsm> is only
-used when virt-v2v runs under VDSM control.
+I<-o rhv> is used to write to a RHV / oVirt target.  I<-o vdsm> is only used
+when virt-v2v runs under VDSM control.
 
 I<--in-place> instructs virt-v2v to customize the guest OS in the input
 virtual machine, instead of creating a new VM in the target hypervisor.
@@ -95,23 +95,23 @@ F</var/lib/libvirt/images>.
 
 For more information see L</INPUT FROM VMWARE VCENTER SERVER> below.
 
-=head2 Convert from VMware to RHEV-M/oVirt
+=head2 Convert from VMware to RHV/oVirt
 
 This is the same as the previous example, except you want to send the guest
-to a RHEV-M Export Storage Domain which is located remotely (over NFS) at
-C<rhev.nfs:/export_domain>.  If you are unclear about the location of the
-Export Storage Domain you should check the settings on your RHEV-M
-management console.  Guest network interface(s) are connected to the target
-network called C<rhevm>.
+to a RHV-M Export Storage Domain which is located remotely (over NFS) at
+C<rhv.nfs:/export_domain>.  If you are unclear about the location of the
+Export Storage Domain you should check the settings on your RHV-M management
+console.  Guest network interface(s) are connected to the target network
+called C<rhvm>.
 
  virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi vmware_guest \
-   -o rhev -os rhev.nfs:/export_domain --network rhevm
+   -o rhv -os rhv.nfs:/export_domain --network rhvm
 
 In this case the host running virt-v2v acts as a B<conversion server>.
 
-Note that after conversion, the guest will appear in the RHEV-M Export
-Storage Domain, from where you will need to import it using the RHEV-M user
-interface.  (See L</OUTPUT TO RHEV>).
+Note that after conversion, the guest will appear in the RHV-M Export
+Storage Domain, from where you will need to import it using the RHV-M user
+interface.  (See L</OUTPUT TO RHV>).
 
 =head2 Convert disk image to OpenStack glance
 
@@ -120,7 +120,7 @@ on OpenStack (only KVM-based OpenStack is supported), you can do:
 
  virt-v2v -i disk disk.img -o glance
 
-See L</OUTPUT TO GLANCE> below.
+Див. L</ВИВЕДЕННЯ ДО GLANCE> нижче.
 
 =head2 Перетворити образ диска на образ диска
 
@@ -179,15 +179,15 @@ L<virt-p2v(1)> on Hyper-V.
 Only disk images exported from supported hypervisors, and using container
 formats supported by qemu.
 
-=item Physical machines
+=item Фізичні машини
 
 За допомогою інструмента L<virt-p2v(1)>.
 
 =back
 
-=head2 Hypervisors (Output)
+=head2 Гіпервізори (виведення)
 
-QEMU and KVM only.
+Лише QEMU і KVM.
 
 =head2 Virtualization management systems (Output)
 
@@ -195,7 +195,7 @@ QEMU and KVM only.
 
 =item OpenStack Glance
 
-=item Red Hat Enterprise Virtualization (RHEV) 2.2 and up
+=item Red Hat Virtualization (RHV) 4.1 and up
 
 =item Локальна libvirt
 
@@ -219,16 +219,20 @@ And hence L<virsh(1)>, L<virt-manager(1)>, and similar tools.
 
 =item Fedora
 
-=item SLES 10 and up
+=item SLES 10 і новіші версії
 
-=item OpenSUSE 10 and up
+=item OpenSUSE 10 і новіші версії
 
-=item Windows XP to Windows 8.1 / Windows Server 2012 R2
+=item Debian 6 and up
+
+=item Ubuntu 10.04, 12.04, 14.04, 16.04, and up
+
+=item від Windows XP до Windows 8.1 / Windows Server 2012 R2
 
 We use Windows internal version numbers, see
 L<https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions>
 
-Currently NT 5.2 to NT 6.3 are supported.
+У поточній версії передбачено підтримку версій від NT 5.2 до NT 6.3.
 
 See L</WINDOWS> below for additional notes on converting Windows guests.
 
@@ -266,7 +270,7 @@ Write a compressed output file.  This is only allowed if the output format
 is qcow2 (see I<-of> below), and is equivalent to the I<-c> option of
 L<qemu-img(1)>.
 
-=item B<--dcpath> Folder/Datacenter
+=item B<--dcpath> Тека/Датацентр
 
 B<NB:> You don't need to use this parameter if you have S<libvirt E<ge>
 1.2.20>.
@@ -347,9 +351,9 @@ This mode is meant for integration with other toolsets, which take the
 responsibility of converting the VM configuration, providing for rollback in
 case of errors, transforming the storage, etc.
 
-See L</IN PLACE CONVERSION> below.
+Див. L</ПЕРЕТВОРЕННЯ НА МІСЦІ> нижче.
 
-Conflicts with all I<-o *> options.
+Конфліктує з усіма параметрами I<-o *>.
 
 =item B<--machine-readable>
 
@@ -404,7 +408,7 @@ is uploaded to Glance.  See L</OUTPUT TO GLANCE> below.
 
 =item B<-o> B<libvirt>
 
-Set the output method to I<libvirt>.  This is the default.
+Встановити метод виведення I<libvirt>. Цей метод є типовим.
 
 In this mode, the converted guest is created as a libvirt guest.  You may
 also specify a libvirt connection URI (see I<-oc>).
@@ -438,7 +442,7 @@ but the results are thrown away and no metadata is written.
 
 =item B<-o> B<ovirt>
 
-Це те саме, що і I<-o rhev>.
+This is the same as I<-o rhv>.
 
 =item B<-o> B<qemu>
 
@@ -453,22 +457,26 @@ which boots the guest under qemu immediately.
 
 =item B<-o> B<rhev>
 
-Встановити метод виведення до I<rhev>.
+This is the same as I<-o rhv>.
 
-The converted guest is written to a RHEV Export Storage Domain.  The I<-os>
+=item B<-o> B<rhv>
+
+Set the output method to I<rhv>.
+
+The converted guest is written to a RHV Export Storage Domain.  The I<-os>
 parameter must also be used to specify the location of the Export Storage
-Domain.  Note this does not actually import the guest into RHEV.  You have
-to do that manually later using the UI.
+Domain.  Note this does not actually import the guest into RHV.  You have to
+do that manually later using the UI.
 
-Див. L</ВИВЕДЕННЯ ДО RHEV> нижче.
+See L</OUTPUT TO RHV> below.
 
 =item B<-o> B<vdsm>
 
 Встановити метод виведення до I<vdsm>.
 
-This mode is similar to I<-o rhev>, but the full path to the data domain
-must be given:
-F</rhev/data-center/E<lt>data-center-uuidE<gt>/E<lt>data-domain-uuidE<gt>>.
+This mode is similar to I<-o rhv>, but the full path to the data domain must
+be given:
+F</rhv/data-center/E<lt>data-center-uuidE<gt>/E<lt>data-domain-uuidE<gt>>.
 This mode is only used when virt-v2v runs under VDSM control.
 
 =item B<-oa> B<sparse>
@@ -506,10 +514,10 @@ pool-list>>) or pool UUID.
 For I<-o local> and I<-o qemu>, this is a directory name.  The directory
 must exist.
 
-For I<-o rhev>, this can be an NFS path of the Export Storage Domain of the
+For I<-o rhv>, this can be an NFS path of the Export Storage Domain of the
 form C<E<lt>hostE<gt>:E<lt>pathE<gt>>, eg:
 
- rhev-storage.example.com:/rhev/export
+ rhv-storage.example.com:/rhv/export
 
 The NFS export must be mountable and writable by the user and host running
 virt-v2v, since the virt-v2v program has to actually mount it when it runs.
@@ -588,6 +596,24 @@ operating system from the first VirtIO disk.  Specifically, F</boot> must be
 on the first VirtIO disk, and it cannot chainload an OS which is not in the
 first VirtIO disk.
 
+=item B<--vdsm-compat=0.10>
+
+=item B<--vdsm-compat=1.1>
+
+If I<-o vdsm> and the output format is qcow2, then we add the qcow2
+I<compat=0.10> option to the output file for compatibility with RHEL 6 (see
+L<https://bugzilla.redhat.com/1145582>).
+
+If I<--vdsm-compat=1.1> is used then modern qcow2 (I<compat=1.1>)  files are
+generated instead.
+
+Currently I<--vdsm-compat=0.10> is the default, but this will change to
+I<--vdsm-compat=1.1> in a future version of virt-v2v (when we can assume
+that everyone is using a modern version of qemu).
+
+B<Note this option only affects I<-o vdsm> output>.  All other output modes
+(including I<-o rhv>) generate modern qcow2 I<compat=1.1> files, always.
+
 =item B<--vdsm-image-uuid> UUID
 
 =item B<--vdsm-vol-uuid> UUID
@@ -596,7 +622,7 @@ first VirtIO disk.
 
 =item B<--vdsm-ovf-output>
 
-Normally the RHEV output mode chooses random UUIDs for the target guest.
+Normally the RHV output mode chooses random UUIDs for the target guest.
 However VDSM needs to control the UUIDs and passes these parameters when
 virt-v2v runs under VDSM control.  The parameters control:
 
@@ -716,6 +742,10 @@ installed I<before> conversion, by consulting the table below.
  
  OpenSUSE 10    ядро >= 2.6.25.5-1.1
 
+ Debian 6+      All versions support virtio
+
+ Ubuntu 10.04+  All versions support virtio
+
  Windows        Drivers are installed from the directory pointed to by
                 "VIRTIO_WIN" environment variable
                 (/usr/share/virtio-win by default) if present
@@ -737,6 +767,27 @@ indication of this).  You can either hit the C<[Return]> key, at which point
 the guest will finish relabelling and reboot, or you can install
 policycoreutils E<ge> 1.18.1-4.13 before starting the v2v conversion.  See
 also L<https://bugzilla.redhat.com/show_bug.cgi?id=244636>
+
+=head1 RHEL 6
+
+=head2 RHEL 6.2 fails with "libguestfs error: selinux_relabel: : Success"
+
+Conversion of a RHEL 6.2 (exactly) guest will fail because the
+C</etc/selinux/targeted/contexts/files> file within the guest contains a
+corrupt regular expression.  This was fixed in later versions of RHEL 6, so
+you will need to update to any version E<ge> 6.3 before performing the
+conversion.  See also L<https://bugzilla.redhat.com/show_bug.cgi?id=1374232>
+
+=head1 DEBIAN AND UBUNTU
+
+=head2 "warning: could not determine a way to update the configuration of Grub2"
+
+Currently, virt-v2v has no way to set the default kernel in Debian and
+Ubuntu guests using GRUB 2 as bootloader.  This means that virt-v2v will not
+change the default kernel used for booting, even in case it is not the best
+kernel available on the guest.  A recommended procedure is, before using
+virt-v2v, to check that the boot kernel is the best kernel available in the
+guest (for example by making sure the guest is up-to-date).
 
 =head1 WINDOWS
 
@@ -863,7 +914,7 @@ On RHEL E<ge> 7.3, only qemu-kvm-rhev (not qemu-kvm) is supported.
 
 Підтримки не передбачено.
 
-=item UEFI on RHEV
+=item UEFI on RHV
 
 Підтримки не передбачено.
 
@@ -893,13 +944,13 @@ This is typical of a libvirt guest: It has a single network interface
 connected to a network called C<default>.
 
 To map a specific network to a target network, for example C<default> on the
-source to C<rhevm> on the target, use:
+source to C<rhvm> on the target, use:
 
- virt-v2v [...] --network default:rhevm
+ virt-v2v [...] --network default:rhvm
 
 To map every network to a target network, use:
 
- virt-v2v [...] --network rhevm
+ virt-v2v [...] --network rhvm
 
 Bridges are handled in the same way, but you have to use the I<--bridge>
 option instead.  For example:
@@ -1120,18 +1171,9 @@ the guest.  However vCenter connects to the hypervisor and forwards the
 information, so if you have a firewall between vCenter and its hypervisors
 you may need to open additional ports (consult VMware documentation).
 
-=head3 vCenter: Proxy settings
-
-To copy the disks, virt-v2v uses L<libcurl(3)>.  The Curl library obeys the
-proxy environment variables, in particular C<https_proxy>, C<all_proxy> and
-C<no_proxy> (C<HTTPS_PROXY>, C<ALL_PROXY> and C<NO_PROXY> can also be used,
-but the lowercase named environment variables take precedence).
-
-If these environment variables are set then copying may happen via the
-proxy, and so a different set of ports may need to be opened in the
-firewall.
-
-The port 5480 connection never uses a proxy.
+The proxy environment variables (C<https_proxy>, C<all_proxy>, C<no_proxy>,
+C<HTTPS_PROXY>, C<ALL_PROXY> and C<NO_PROXY>) are B<ignored> when doing
+vCenter conversions.
 
 =head1 INPUT FROM VMWARE OVA
 
@@ -1424,34 +1466,34 @@ Define the final guest in libvirt:
 
 =back
 
-=head1 OUTPUT TO RHEV
+=head1 OUTPUT TO RHV
 
-This section only applies to the I<-o rhev> output mode.  If you use
-virt-v2v from the RHEV-M user interface, then behind the scenes the import
-is managed by VDSM using the I<-o vdsm> output mode (which end users should
-not try to use directly).
+This section only applies to the I<-o rhv> output mode.  If you use virt-v2v
+from the RHV-M user interface, then behind the scenes the import is managed
+by VDSM using the I<-o vdsm> output mode (which end users should not try to
+use directly).
 
-You have to specify I<-o rhev> and an I<-os> option that points to the
-RHEV-M Export Storage Domain.  You can either specify the NFS server and
-mountpoint, eg. S<C<-os rhev-storage:/rhev/export>>, or you can mount that
+You have to specify I<-o rhv> and an I<-os> option that points to the RHV-M
+Export Storage Domain.  You can either specify the NFS server and
+mountpoint, eg. S<C<-os rhv-storage:/rhv/export>>, or you can mount that
 first and point to the directory where it is mounted, eg. S<C<-os
 /tmp/mnt>>.  Be careful not to point to the Data Storage Domain by accident
 as that will not work.
 
 On successful completion virt-v2v will have written the new guest to the
 Export Storage Domain, but it will not yet be ready to run.  It must be
-imported into RHEV using the UI before it can be used.
+imported into RHV using the UI before it can be used.
 
-In RHEV E<ge> 2.2 this is done from the Storage tab.  Select the export
+In RHV E<ge> 2.2 this is done from the Storage tab.  Select the export
 domain the guest was written to.  A pane will appear underneath the storage
 domain list displaying several tabs, one of which is "VM Import".  The
 converted guest will be listed here.  Select the appropriate guest an click
-"Import".  See the RHEV documentation for additional details.
+"Import".  See the RHV documentation for additional details.
 
 If you export several guests, then you can import them all at the same time
 through the UI.
 
-=head1 OUTPUT TO GLANCE
+=head1 ВИВЕДЕННЯ ДО GLANCE
 
 To output to OpenStack Glance, use the I<-o glance> option.
 
@@ -1471,7 +1513,7 @@ Glance image upload doesn't appear to correctly handle sparseness.  For this
 reason, using qcow2 will be faster and use less space on the Glance server.
 Use the virt-v2v S<I<-of qcow2>> option.
 
-=head2 Glance and multiple disks
+=head2 Glance і робота з декількома дисками
 
 If the guest has a single disk, then the name of the disk in Glance will be
 the name of the guest.  You can control this using the I<-on> option.
@@ -1484,7 +1526,7 @@ data disks will be called C<I<guestname>-disk2>, C<I<guestname>-disk3> etc.
 It may be best to leave the system disk in Glance, and import the data disks
 to Cinder (see next section).
 
-=head2 Importing disks into Cinder
+=head2 Імпортування дисків до Cinder
 
 Since most virt-v2v guests are "pets", Glance is perhaps not the best place
 to store them.  There is no way for virt-v2v to upload directly to Cinder
@@ -1506,11 +1548,11 @@ Create (through some other means) a new volume / LUN in your Cinder backing
 store.  Migrate the guest to this volume (using I<-o local>).  Then ask
 Cinder to take over management of the volume using:
 
- cinder manage <VOLUMEREF>
+ cinder manage <ПОСИЛАННЯ НА ТОМ>
 
 =back
 
-=head1 RESOURCE REQUIREMENTS
+=head1 ВИМОГИ ЩОДО РЕСУРСІВ
 
 =head2 Мережа
 
@@ -1564,7 +1606,7 @@ Copying from VMware vCenter is currently quite slow, but we believe this to
 be an issue with VMware.  Ensuring the VMware ESXi hypervisor and vCenter
 are running on fast hardware with plenty of memory should alleviate this.
 
-=head2 Compute power and RAM
+=head2 Обчислювальні потужності і обсяг оперативної пам’яті
 
 Virt-v2v is not especially compute or RAM intensive.  If you are running
 many parallel conversions, then you may consider allocating one CPU core and
@@ -1607,14 +1649,13 @@ L<virt-customize(1)>.
 
 =head2 Перетворення гостьової системи Windows
 
-When converting a Windows guests, the conversion process is split into two
-stages:
+Процес перетворення гостьових систем Windows поділено на два етапи:
 
 =over 
 
 =item 1
 
-Offline conversion.
+Автономне перетворення.
 
 =item 2
 
@@ -1632,7 +1673,7 @@ guest from subsequently booting correctly.
 
 =head1 FREE SPACE FOR CONVERSION
 
-=head2 Free space in the guest
+=head2 Вільне місце у гостьовій системі
 
 Virt-v2v checks there is sufficient free space in the guest filesystem to
 perform the conversion.  Currently it checks:
@@ -1663,7 +1704,7 @@ temporary overlays (except in I<--in-place> mode).  To find out which
 directory this is, use:
 
  $ df -h "`guestfish get-cachedir`"
- Filesystem        Size  Used Avail Use% Mounted on
+ Ф. система        Розм   Вик  Дост Вик% змонтований на
  /dev/mapper/root   50G   40G  6.8G  86% /
 
 and look under the C<Avail> column.  Virt-v2v will refuse to do the
@@ -1681,7 +1722,7 @@ root or a special user:
 
 =item Mounting the Export Storage Domain
 
-When using I<-o rhev -os server:/esd> virt-v2v has to have sufficient
+When using I<-o rhv -os server:/esd> virt-v2v has to have sufficient
 privileges to NFS mount the Export Storage Domain from C<server>.
 
 You can avoid needing root here by mounting it yourself before running
@@ -1690,11 +1731,11 @@ next S<section ...>
 
 =item Writing to the Export Storage Domain as 36:36
 
-RHEV-M cannot read files and directories from the Export Storage Domain
+RHV-M cannot read files and directories from the Export Storage Domain
 unless they have UID:GID 36:36.  You will see VM import problems if the
 UID:GID is not correct.
 
-When you run virt-v2v I<-o rhev> as root, virt-v2v attempts to create files
+When you run virt-v2v I<-o rhv> as root, virt-v2v attempts to create files
 and directories with the correct ownership.  If you run virt-v2v as
 non-root, it will probably still work, but you will need to manually change
 ownership after virt-v2v has finished.
@@ -1717,18 +1758,18 @@ authentication environment variables.  Consult the Glance documentation.
 
 =back
 
-=head1 DEBUGGING RHEV-M IMPORT FAILURES
+=head1 DEBUGGING RHV-M IMPORT FAILURES
 
-When you export to the RHEV-M Export Storage Domain, and then import that
-guest through the RHEV-M UI, you may encounter an import failure.
-Diagnosing these failures is infuriatingly difficult as the UI generally
-hides the true reason for the failure.
+When you export to the RHV-M Export Storage Domain, and then import that
+guest through the RHV-M UI, you may encounter an import failure.  Diagnosing
+these failures is infuriatingly difficult as the UI generally hides the true
+reason for the failure.
 
-There are two log files of interest.  The first is stored on the RHEV-M
+There are two log files of interest.  The first is stored on the RHV-M
 server itself, and is called F</var/log/ovirt-engine/engine.log>
 
 The second file, which is the most useful, is found on the SPM host (SPM
-stands for "Storage Pool Manager").  This is a RHEV node that is elected to
+stands for "Storage Pool Manager").  This is a RHV node that is elected to
 do all metadata modifications in the data center, such as image or snapshot
 creation.  You can find out which host is the current SPM from the "Hosts"
 tab "Spm Status" column.  Once you have located the SPM, log into it and
@@ -1771,7 +1812,7 @@ instead.
    </devices>
  </domain>
 
-=head1 IN PLACE CONVERSION
+=head1 ПЕРЕТВОРЕННЯ НА МІСЦІ
 
 It is also possible to use virt-v2v in scenarios where a foreign VM has
 already been imported into a KVM-based hypervisor, but still needs
@@ -1815,11 +1856,11 @@ binary.  Typical output looks like this:
  [...]
  output:local
  [...]
- convert:enterprise-linux
+ convert:linux
  convert:windows
 
-A list of features is printed, one per line, and the program exits with
-status 0.
+Виводиться список можливостей, по одній на рядок, і програма завершує роботу
+зі станом 0.
 
 The C<input:> and C<output:> features refer to I<-i> and I<-o> (input and
 output mode) options supported by this binary.  The C<convert:> features
@@ -1885,8 +1926,9 @@ See the L</Disk space> section above.
 This can point to the directory containing data files used for Windows
 conversion.
 
-Normally you do not need to set this.  If not set, a compiled-in default
-will be used (something like F</usr/share/virt-tools>).
+Зазвичай, потреби у встановленні власного значення немає. Якщо значення не
+встановлено, буде використано вбудоване типове значення (щось схоже на
+F</usr/share/virt-tools>).
 
 Цей каталог може містити такі файли:
 
@@ -1911,14 +1953,13 @@ the I<--firstboot> or I<--firstboot-command> options with Windows guests.
 
 (Необов’язково)
 
-The RHEV Application Provisioning Tool (RHEV APT).  If this file is present,
+The RHV Application Provisioning Tool (RHEV APT).  If this file is present,
 then RHEV APT will be installed in the Windows guest during conversion.
 This tool is a guest agent which ensures that the virtio drivers remain up
-to date when the guest is running on Red Hat Enterprise Virtualization
-(RHEV).
+to date when the guest is running on Red Hat Virtualization (RHV).
 
-This file comes from Red Hat Enterprise Virtualization (RHEV), and is not
-distributed with virt-v2v.
+This file comes from Red Hat Virtualization (RHV), and is not distributed
+with virt-v2v.
 
 =back
 
@@ -1950,14 +1991,13 @@ followed by running C<virt-v2v -i libvirtxml> to perform the conversion.
 
 Variously called C<engine-image-uploader>, C<ovirt-image-uploader> or
 C<rhevm-image-uploader>, this tool allows you to copy a guest from one oVirt
-or RHEV Export Storage Domain to another.  It only permits importing a guest
-that was previously exported from another oVirt/RHEV instance.
+or RHV Export Storage Domain to another.  It only permits importing a guest
+that was previously exported from another oVirt/RHV instance.
 
 =item L<import-to-ovirt.pl|http://git.annexia.org/?p=import-to-ovirt.git>
 
 This script can be used to import guests that already run on KVM to oVirt or
-RHEV.  For more information, see this blog posting by the author of
-virt-v2v:
+RHV.  For more information, see this blog posting by the author of virt-v2v:
 
 L<https://rwmj.wordpress.com/2015/09/18/importing-kvm-guests-to-ovirt-or-rhev/#content>
 
@@ -1988,5 +2028,5 @@ Tingting Zheng
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

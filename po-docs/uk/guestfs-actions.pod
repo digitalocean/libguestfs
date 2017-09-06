@@ -1054,6 +1054,54 @@ This returns the number of nodes modified.
 
 (Додано у 1.23.14)
 
+=head2 guestfs_aug_transform
+
+ int
+ guestfs_aug_transform (guestfs_h *g,
+                        const char *lens,
+                        const char *file,
+                        ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_AUG_TRANSFORM_REMOVE, int remove,
+
+Add an Augeas transformation for the specified C<lens> so it can handle
+C<file>.
+
+If C<remove> is true (C<false> by default), then the transformation is
+removed.
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.35.2)
+
+=head2 guestfs_aug_transform_va
+
+ int
+ guestfs_aug_transform_va (guestfs_h *g,
+                           const char *lens,
+                           const char *file,
+                           va_list args);
+
+This is the "va_list variant" of L</guestfs_aug_transform>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_aug_transform_argv
+
+ int
+ guestfs_aug_transform_argv (guestfs_h *g,
+                             const char *lens,
+                             const char *file,
+                             const struct guestfs_aug_transform_argv *optargs);
+
+This is the "argv variant" of L</guestfs_aug_transform>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_available
 
  int
@@ -1425,7 +1473,8 @@ Set readahead (in 512-byte sectors) for the device.
  guestfs_blockdev_setrw (guestfs_h *g,
                          const char *device);
 
-Sets the block device named C<device> to read-write.
+Встановлює для блокового пристрою із назвою C<пристрій> режим
+читання-запису.
 
 Використовується програма L<blockdev(8)>.
 
@@ -1702,8 +1751,8 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_BTRFS_FSCK_SUPERBLOCK, int64_t superblock,
  GUESTFS_BTRFS_FSCK_REPAIR, int repair,
 
-Used to check a btrfs filesystem, C<device> is the device file where the
-filesystem is stored.
+Використовується для перевірки файлової системи btrfs, C<пристрій> — файл
+пристрою, у якому зберігається файлова система.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -2495,31 +2544,31 @@ C<cksum> command.
 
 =item C<md5>
 
-Compute the MD5 hash (using the C<md5sum> program).
+Обчислити хеш-суму MD5 (за допомогою програми C<md5sum>).
 
 =item C<sha1>
 
-Compute the SHA1 hash (using the C<sha1sum> program).
+Обчислити хеш-суму SHA1 (за допомогою програми C<sha1sum>).
 
 =item C<sha224>
 
-Compute the SHA224 hash (using the C<sha224sum> program).
+Обчислити хеш-суму SHA224 (за допомогою програми C<sha224sum>).
 
 =item C<sha256>
 
-Compute the SHA256 hash (using the C<sha256sum> program).
+Обчислити хеш-суму SHA256 (за допомогою програми C<sha256sum>).
 
 =item C<sha384>
 
-Compute the SHA384 hash (using the C<sha384sum> program).
+Обчислити хеш-суму SHA384 (за допомогою програми C<sha384sum>).
 
 =item C<sha512>
 
-Compute the SHA512 hash (using the C<sha512sum> program).
+Обчислити хеш-суму SHA512 (за допомогою програми C<sha512sum>).
 
 =back
 
-The checksum is returned as a printable string.
+Контрольна сума повертається у форматі рядка, придатного до друку (ASCII)
 
 Щоб отримати контрольну суму пристрою, скористайтеся
 C<guestfs_checksum_device>.
@@ -3156,7 +3205,7 @@ C<guestfs_copy_out> copies remote files or directories recursively out of
 the disk image, placing them on the host disk in a local directory called
 C<localdir> (which must exist).
 
-To download to the current directory, use C<.> as in:
+Щоб отримати поточний каталог, скористайтеся C<.>, ось так:
 
  C<guestfs_copy_out> /home .
 
@@ -3217,8 +3266,8 @@ destination filename or destination directory.
                const char *src,
                const char *dest);
 
-This copies a file or directory from C<src> to C<dest> recursively using the
-C<cp -a> command.
+Копіює файл або каталог з C<джерела> до C<призначення> рекурсивно з
+використанням команди C<cp -a>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -3231,8 +3280,8 @@ C<cp -a> command.
                const char *src,
                const char *dest);
 
-This copies a file or directory from C<src> to C<dest> recursively using the
-C<cp -rP> command.
+Копіює файл або каталог з C<джерела> до C<призначення> рекурсивно з
+використанням команди C<cp -rP>.
 
 Most users should use C<guestfs_cp_a> instead.  This command is useful when
 you don't want to preserve permissions, because the target filesystem does
@@ -3269,11 +3318,11 @@ following formats are currently permitted:
 New (SVR4) portable format.  This format happens to be compatible with the
 cpio-like format used by the Linux kernel for initramfs.
 
-This is the default format.
+Цей формат є типовим.
 
 =item C<crc>
 
-New (SVR4) portable format with a checksum.
+Новий портативний формат (SVR4) із контрольною сумою.
 
 =back
 
@@ -3354,7 +3403,8 @@ string returned from C<guestfs_list_devices>.
  char *
  guestfs_df (guestfs_h *g);
 
-This command runs the C<df> command to report disk space used.
+Ця команда запускає програму C<df> для отримання даних щодо використаного
+місця на диску.
 
 This command is mostly useful for interactive sessions.  It is I<not>
 intended that you try to parse the output string.  Use C<guestfs_statvfs>
@@ -3370,8 +3420,8 @@ the returned string after use>.
  char *
  guestfs_df_h (guestfs_h *g);
 
-This command runs the C<df -h> command to report disk space used in
-human-readable format.
+Ця команда запускає програму C<df -h> для отримання даних щодо використаного
+місця на диску у зручному для читання форматі.
 
 This command is mostly useful for interactive sessions.  It is I<not>
 intended that you try to parse the output string.  Use C<guestfs_statvfs>
@@ -3413,7 +3463,7 @@ C<backingformat> to describe the format of C<backingfile>.
 If F<filename> refers to a block device, then the device is formatted.  The
 C<size> is ignored since block devices have an intrinsic size.
 
-The other optional parameters are:
+Іншими необов’язковими параметрами є:
 
 =over 4
 
@@ -3498,10 +3548,11 @@ the returned string after use>.
  guestfs_disk_has_backing_file (guestfs_h *g,
                                 const char *filename);
 
-Detect and return whether the disk image F<filename> has a backing file.
+Визначає і повідомляє, чи є у образу диска F<назва_файла> файл резервної
+копії.
 
-Note that detecting disk features can be insecure under some circumstances.
-See L<guestfs(3)/CVE-2010-3851>.
+Зауважте, що визначення можливостей диска може, за певних обставин,
+зашкодити захисту системи. Див. L<guestfs(3)/CVE-2010-3851>.
 
 This function returns a C truth value on success or -1 on error.
 
@@ -3513,11 +3564,11 @@ This function returns a C truth value on success or -1 on error.
  guestfs_disk_virtual_size (guestfs_h *g,
                             const char *filename);
 
-Detect and return the virtual size in bytes of the disk image called
-F<filename>.
+Визначає і повідомляє віртуальний розмір у байтах образу диска із назвою
+F<назва_файла>.
 
-Note that detecting disk features can be insecure under some circumstances.
-See L<guestfs(3)/CVE-2010-3851>.
+Зауважте, що визначення можливостей диска може, за певних обставин,
+зашкодити захисту системи. Див. L<guestfs(3)/CVE-2010-3851>.
 
 У разі помилки цією функцією буде повернуто -1.
 
@@ -3604,7 +3655,7 @@ L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 This function depends on the feature C<sleuthkit>.  See also
 L</guestfs_feature_available>.
 
-(Added in 1.33.45)
+(Додано у 1.33.45)
 
 =head2 guestfs_download_blocks_va
 
@@ -3616,7 +3667,7 @@ L</guestfs_feature_available>.
                              const char *filename,
                              va_list args);
 
-This is the "va_list variant" of L</guestfs_download_blocks>.
+Це «варіант з va_list» L</guestfs_download_blocks>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -3630,7 +3681,7 @@ This is the "va_list variant" of L</guestfs_download_blocks>.
                                const char *filename,
                                const struct guestfs_download_blocks_argv *optargs);
 
-This is the "argv variant" of L</guestfs_download_blocks>.
+Це «варіант з argv» L</guestfs_download_blocks>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -4093,8 +4144,8 @@ the returned string after use>.
  guestfs_file_architecture (guestfs_h *g,
                             const char *filename);
 
-This detects the architecture of the binary F<filename>, and returns it if
-known.
+Визначає архітектуру виконуваного файла F<назва_файла> і повертає її
+значення, якщо воно визначене у програмі.
 
 Архітектурами, визначеними у поточній версії є:
 
@@ -4129,6 +4180,22 @@ Intel Itanium.
 =item "ppc64le"
 
 64 bit Power PC (little endian).
+
+=item "riscv32"
+
+=item "riscv64"
+
+=item "riscv128"
+
+RISC-V 32-, 64- or 128-bit variants.
+
+=item "s390"
+
+31 bit IBM S/390.
+
+=item "s390x"
+
+64 bit IBM S/390.
 
 =item "sparc"
 
@@ -4184,13 +4251,13 @@ some non-x86 Linux vmlinuz kernels
 
 =back
 
-What it can't do currently:
+Що не можна зробити у поточній версії:
 
 =over 4
 
 =item *
 
-static libraries (libfoo.a)
+статичні бібліотеки (libfoo.a)
 
 =item *
 
@@ -4285,7 +4352,7 @@ File size in bytes. It migh be C<-1> if the node has been deleted.
 
 =item 'tsk_name'
 
-The file path relative to its directory.
+Шлях до файла відносно його каталогу.
 
 =item 'tsk_flags'
 
@@ -4540,6 +4607,32 @@ L<find(1)> option I<-print0>.
 
 (Додано у 1.0.74)
 
+=head2 guestfs_find_inode
+
+ struct guestfs_tsk_dirent_list *
+ guestfs_find_inode (guestfs_h *g,
+                     const char *device,
+                     int64_t inode);
+
+Searches all the entries associated with the given inode.
+
+For each entry, a C<tsk_dirent> structure is returned.  See
+C<filesystem_walk> for more information about C<tsk_dirent> structures.
+
+This function returns a C<struct guestfs_tsk_dirent_list *>, or NULL if
+there was an error.  I<The caller must call C<guestfs_free_tsk_dirent_list>
+after use>.
+
+This long-running command can generate progress notification messages so
+that the caller can display a progress bar or indicator.  To receive these
+messages, the caller must register a progress event callback.  See
+L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
+
+This function depends on the feature C<libtsk>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.35.6)
+
 =head2 guestfs_findfs_label
 
  char *
@@ -4764,7 +4857,7 @@ the returned string after use>.
  char **
  guestfs_get_backend_settings (guestfs_h *g);
 
-Return the current backend settings.
+Повертає поточні параметри модуля.
 
 This call returns all backend settings strings.  If you want to find a
 single backend setting, see C<guestfs_get_backend_setting>.
@@ -4844,11 +4937,11 @@ The file is not a candidate for backup (see L<dump(8)>).
 
 =item 'E'
 
-The file has compression errors.
+Файл стиснуто з помилками.
 
 =item 'e'
 
-The file is using extents.
+Файл використовує розширення.
 
 =item 'h'
 
@@ -4982,7 +5075,7 @@ the returned string after use>.
  char *
  guestfs_get_hv (guestfs_h *g);
 
-Return the current hypervisor binary.
+Повертає назву виконуваного файла поточного гіпервізора.
 
 This is always non-NULL.  If it wasn't set already, then this will return
 the default qemu binary name.
@@ -5890,6 +5983,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_HIVEX_OPEN_VERBOSE, int verbose,
  GUESTFS_HIVEX_OPEN_DEBUG, int debug,
  GUESTFS_HIVEX_OPEN_WRITE, int write,
+ GUESTFS_HIVEX_OPEN_UNSAFE, int unsafe,
 
 Open the Windows Registry hive file named F<filename>.  If there was any
 previous hivex handle associated with this guestfs session, then it is
@@ -6883,6 +6977,52 @@ This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
 (Додано у 1.9.17)
+
+=head2 guestfs_inspect_get_windows_software_hive
+
+ char *
+ guestfs_inspect_get_windows_software_hive (guestfs_h *g,
+                                            const char *root);
+
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SOFTWARE.
+
+This call assumes that the guest is Windows and that the guest has a
+software hive file with the right name.  If this is not the case then an
+error is returned.  This call does not check that the hive is a valid
+Windows Registry hive.
+
+You can use C<guestfs_hivex_open> to read or write to the hive.
+
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
+
+This function returns a string, or NULL on error.  I<The caller must free
+the returned string after use>.
+
+(Added in 1.35.26)
+
+=head2 guestfs_inspect_get_windows_system_hive
+
+ char *
+ guestfs_inspect_get_windows_system_hive (guestfs_h *g,
+                                          const char *root);
+
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SYSTEM.
+
+This call assumes that the guest is Windows and that the guest has a system
+hive file with the right name.  If this is not the case then an error is
+returned.  This call does not check that the hive is a valid Windows
+Registry hive.
+
+You can use C<guestfs_hivex_open> to read or write to the hive.
+
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
+
+This function returns a string, or NULL on error.  I<The caller must free
+the returned string after use>.
+
+(Added in 1.35.26)
 
 =head2 guestfs_inspect_get_windows_systemroot
 
@@ -8223,7 +8363,7 @@ strings and the array after use>.
  char **
  guestfs_list_devices (guestfs_h *g);
 
-List all the block devices.
+Вивести список усіх блокових пристроїв.
 
 The full block device names are returned, eg. F</dev/sda>.
 
@@ -9980,6 +10120,72 @@ This function depends on the feature C<mknod>.  See also
 L</guestfs_feature_available>.
 
 (Додано у 1.0.55)
+
+=head2 guestfs_mksquashfs
+
+ int
+ guestfs_mksquashfs (guestfs_h *g,
+                     const char *path,
+                     const char *filename,
+                     ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_MKSQUASHFS_COMPRESS, const char *compress,
+ GUESTFS_MKSQUASHFS_EXCLUDES, char *const *excludes,
+
+Create a squashfs filesystem for the specified C<path>.
+
+The optional C<compress> flag controls compression.  If not given, then the
+output compressed using C<gzip>.  Otherwise one of the following strings may
+be given to select the compression type of the squashfs: C<gzip>, C<lzma>,
+C<lzo>, C<lz4>, C<xz>.
+
+The other optional arguments are:
+
+=over 4
+
+=item C<excludes>
+
+A list of wildcards.  Files are excluded if they match any of the wildcards.
+
+=back
+
+Please note that this API may fail when used to compress directories with
+large files, such as the resulting squashfs will be over 3GB big.
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+This function depends on the feature C<squashfs>.  See also
+L</guestfs_feature_available>.
+
+(Added in 1.35.25)
+
+=head2 guestfs_mksquashfs_va
+
+ int
+ guestfs_mksquashfs_va (guestfs_h *g,
+                        const char *path,
+                        const char *filename,
+                        va_list args);
+
+This is the "va_list variant" of L</guestfs_mksquashfs>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_mksquashfs_argv
+
+ int
+ guestfs_mksquashfs_argv (guestfs_h *g,
+                          const char *path,
+                          const char *filename,
+                          const struct guestfs_mksquashfs_argv *optargs);
+
+This is the "argv variant" of L</guestfs_mksquashfs>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_mkswap
 
@@ -12298,7 +12504,7 @@ file context is changed.
 This function depends on the feature C<selinuxrelabel>.  See also
 L</guestfs_feature_available>.
 
-(Added in 1.33.43)
+(Додано у 1.33.43)
 
 =head2 guestfs_selinux_relabel_va
 
@@ -12308,7 +12514,7 @@ L</guestfs_feature_available>.
                              const char *path,
                              va_list args);
 
-This is the "va_list variant" of L</guestfs_selinux_relabel>.
+Це «варіант з va_list» L</guestfs_selinux_relabel>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -12320,7 +12526,7 @@ This is the "va_list variant" of L</guestfs_selinux_relabel>.
                                const char *path,
                                const struct guestfs_selinux_relabel_argv *optargs);
 
-This is the "argv variant" of L</guestfs_selinux_relabel>.
+Це «варіант з argv» L</guestfs_selinux_relabel>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -12700,6 +12906,10 @@ label.
 =item fat
 
 The label is limited to 11 bytes.
+
+=item swap
+
+The label is limited to 16 bytes.
 
 =back
 
@@ -14187,7 +14397,7 @@ even if you specify C<0777>.
 Див. також C<guestfs_get_umask>, L<umask(2)>, C<guestfs_mknod>,
 C<guestfs_mkdir>.
 
-This call returns the previous umask.
+Цей виклик повертає попередню umask.
 
 У разі помилки цією функцією буде повернуто -1.
 
@@ -14255,9 +14465,9 @@ by its mountpoint (path) or the device which contains the filesystem.
  int
  guestfs_umount_all (guestfs_h *g);
 
-This unmounts all mounted filesystems.
+Демонтує усі змонтовані файлові системи.
 
-Some internal mounts are not unmounted by this call.
+Деякі із внутрішніх монтувань не демонтуються цим викликом.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -14275,8 +14485,8 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
  GUESTFS_UMOUNT_LOCAL_RETRY, int retry,
 
-If libguestfs is exporting the filesystem on a local mountpoint, then this
-unmounts it.
+Якщо libguestfs експортує файлову систему на локальну точку монтування, цей
+виклик демонтує її.
 
 See L<guestfs(3)/MOUNT LOCAL> for full documentation.
 
@@ -14362,7 +14572,8 @@ L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
  int
  guestfs_user_cancel (guestfs_h *g);
 
-This function cancels the current upload or download operation.
+За допомогою цієї функції можна скасувати поточну дію із отримання або
+вивантаження даних.
 
 Unlike most other libguestfs calls, this function is signal safe and thread
 safe.  You can call it from a signal handler or from another thread, without
@@ -14401,7 +14612,7 @@ with a cancel button, wire up the cancel button to call this function.
                   int64_t mtsecs,
                   int64_t mtnsecs);
 
-This command sets the timestamps of a file with nanosecond precision.
+Ця команда встановлює часову позначку для файла з точністю до наносекунди.
 
 C<atsecs, atnsecs> are the last access time (atime) in secs and nanoseconds
 from the epoch.
@@ -14440,7 +14651,7 @@ error.  I<The caller must call C<guestfs_free_utsname> after use>.
  struct guestfs_version *
  guestfs_version (guestfs_h *g);
 
-Return the libguestfs version number that the program is linked against.
+Повертає номер версії libguestfs, з якою скомпоновано програму.
 
 Note that because of dynamic linking this is not necessarily the version of
 libguestfs that you compiled against.  You can compile the program, and then
@@ -14457,7 +14668,7 @@ C<minor> and C<release>) are numbers and correspond to the usual version
 triplet.  The fourth element (C<extra>) is a string and is normally empty,
 but may be used for distro-specific information.
 
-To construct the original version string: C<$major.$minor.$release$extra>
+Для побудови початкового рядка версії: C<$major.$minor.$release$extra>
 
 Див також: L<guestfs(3)/LIBGUESTFS VERSION NUMBERS>.
 
@@ -14501,7 +14712,7 @@ size for filesystem shrinking.
 If getting minimum size of specified filesystem is not supported, this will
 fail and set errno as ENOTSUP.
 
-See also L<ntfsresize(8)>, L<resize2fs(8)>, L<btrfs(8)>, L<xfs_info(8)>.
+Див. також L<ntfsresize(8)>, L<resize2fs(8)>, L<btrfs(8)>, L<xfs_info(8)>.
 
 У разі помилки цією функцією буде повернуто -1.
 
@@ -14553,7 +14764,7 @@ the returned string after use>.
 This command activates or (if C<activate> is false) deactivates all logical
 volumes in the listed volume groups C<volgroups>.
 
-This command is the same as running C<vgchange -a y|n volgroups...>
+Ця команда дає ті самі результати, що і C<vgchange -a y|n групи томів...>
 
 Note that if C<volgroups> is an empty list then B<all> volume groups are
 activated or deactivated.
@@ -14574,7 +14785,7 @@ L</guestfs_feature_available>.
 This command activates or (if C<activate> is false) deactivates all logical
 volumes in all volume groups.
 
-This command is the same as running C<vgchange -a y|n>
+Ця команда дає ті самі результати, що і C<vgchange -a y|n>
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -14589,7 +14800,7 @@ L</guestfs_feature_available>.
  guestfs_vgchange_uuid (guestfs_h *g,
                         const char *vg);
 
-Generate a new random UUID for the volume group C<vg>.
+Створити новий випадковий UUID для групи томів C<vg>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 

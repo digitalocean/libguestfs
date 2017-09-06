@@ -1,5 +1,5 @@
 # libguestfs Python bindings
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -67,14 +67,15 @@ libguestfsmod_la_SOURCES = \
 libguestfsmod_la_CPPFLAGS = \
 	-DGUESTFS_PRIVATE=1 \
 	$(PYTHON_CFLAGS) \
-	-I$(top_srcdir)/src -I$(top_builddir)/src
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib
 
 libguestfsmod_la_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 libguestfsmod_la_LIBADD = \
-	$(top_builddir)/src/libutils_la-utils.lo \
-	$(top_builddir)/src/libguestfs.la
+	$(top_builddir)/common/utils/libutils_la-utils.lo \
+	$(top_builddir)/lib/libguestfs.la
 
 libguestfsmod_la_LDFLAGS = -avoid-version -shared -module -shrext $(PYTHON_EXT_SUFFIX)
 
@@ -95,6 +96,7 @@ setup-install: setup.py stamp-extra-files
 # Python's crappy MANIFEST file cannot graft single files, so we have
 # to hard-link any extra files we need into the local directory.
 stamp-extra-files: \
+	  c-ctype.h \
 	  config.h \
 	  guestfs-internal-all.h \
 	  guestfs-internal-frontend-cleanups.h \
@@ -106,20 +108,23 @@ stamp-extra-files: \
 config.h:
 	ln ../config.h $@
 
+c-ctype.h:
+	ln $(top_srcdir)/gnulib/lib/c-ctype.h $@
+
 ignore-value.h:
 	ln $(top_srcdir)/gnulib/lib/ignore-value.h $@
 
 guestfs-internal-all.h:
-	ln $(top_srcdir)/src/guestfs-internal-all.h $@
+	ln $(top_srcdir)/lib/guestfs-internal-all.h $@
 
 guestfs-internal-frontend-cleanups.h:
-	ln $(top_srcdir)/src/guestfs-internal-frontend-cleanups.h $@
+	ln $(top_srcdir)/common/utils/guestfs-internal-frontend-cleanups.h $@
 
 guestfs-internal-frontend.h:
-	ln $(top_srcdir)/src/guestfs-internal-frontend.h $@
+	ln $(top_srcdir)/common/utils/guestfs-internal-frontend.h $@
 
 utils.c:
-	ln $(top_srcdir)/src/utils.c $@
+	ln $(top_srcdir)/common/utils/utils.c $@
 
 # Tests.
 
@@ -138,6 +143,7 @@ CLEANFILES += \
 	*.pyc \
 	examples/*~ examples/*.pyc \
 	t/*~ t/*.pyc \
+	c-ctype.h \
 	config.h \
 	guestfs-internal-all.h \
 	guestfs-internal-frontend-cleanups.h \

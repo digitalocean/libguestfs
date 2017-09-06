@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,51 +37,19 @@ module G = Guestfs
  * time the Windows VM is booted on KVM.
  *)
 
-let convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
-  (* Get the data directory. *)
-  let virt_tools_data_dir =
-    try Sys.getenv "VIRT_TOOLS_DATA_DIR"
-    with Not_found -> Guestfs_config.datadir // "virt-tools" in
-
-  (* Check if either RHEV-APT or VMDP exists.  This is optional. *)
-  let tools = [`RhevApt, "rhev-apt.exe"; `VmdpExe, "vmdp.exe"] in
-  let installer =
-    try
-      let t, tool = List.find (
-        fun (_, tool) -> Sys.file_exists (virt_tools_data_dir // tool)
-      ) tools in
-      Some (t, virt_tools_data_dir // tool)
-    with Not_found -> (
-      warning (f_"Neither rhev-apt.exe nor vmdp.exe can be found.  Unable to install one of them.");
-      None
-    ) in
-
-  (* Get the Windows %systemroot%. *)
-  let systemroot = g#inspect_get_windows_systemroot inspect.i_root in
-
-  (* Get the software and system hive files. *)
-  let software_hive_filename =
-    let filename = sprintf "%s/system32/config/software" systemroot in
-    let filename = g#case_sensitive_path filename in
-    filename in
-
-  let system_hive_filename =
-    let filename = sprintf "%s/system32/config/system" systemroot in
-    let filename = g#case_sensitive_path filename in
-    filename in
-
+let convert (g : G.guestfs) inspect source output rcaps =
   (*----------------------------------------------------------------------*)
   (* Inspect the Windows guest. *)
 
   (* If the Windows guest appears to be using group policy. *)
   let has_group_policy =
-    Windows.with_hive_readonly g software_hive_filename
-      (fun root ->
+    Registry.with_hive_readonly g inspect.i_windows_software_hive
+      (fun reg ->
        try
          let path = ["Microsoft"; "Windows"; "CurrentVersion";
                      "Group Policy"; "History"]  in
          let node =
-           match Windows.get_node g root path with
+           match Registry.get_node reg path with
            | None -> raise Not_found
            | Some node -> node in
          let children = g#hivex_node_children node in
@@ -101,7 +69,8 @@ let convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
           *)
          let is_gpo_guid name =
            let len = String.length name in
-           len > 3 && name.[0] = '{' && isxdigit name.[1] && name.[len-1] = '}'
+           len > 3 && name.[0] = '{' &&
+             Char.isxdigit name.[1] && name.[len-1] = '}'
          in
          List.exists is_gpo_guid children
        with
@@ -117,13 +86,13 @@ let convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
   let xenpv_uninst =
     let xenpvreg = "Red Hat Paravirtualized Xen Drivers for Windows(R)" in
 
-    Windows.with_hive_readonly g software_hive_filename
-      (fun root ->
+    Registry.with_hive_readonly g inspect.i_windows_software_hive
+      (fun reg ->
        try
          let path = ["Microsoft"; "Windows"; "CurrentVersion"; "Uninstall";
                      xenpvreg] in
          let node =
-           match Windows.get_node g root path with
+           match Registry.get_node reg path with
            | None -> raise Not_found
            | Some node -> node in
          let uninstkey = "UninstallString" in
@@ -134,7 +103,7 @@ let convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
            raise Not_found
          );
          let data = g#hivex_value_value valueh in
-         let data = Regedit.decode_utf16le data in
+         let data = Registry.decode_utf16le data in
 
          (* The uninstall program will be uninst.exe.  This is a wrapper
           * around _uninst.exe which prompts the user.  As we don't want
@@ -158,12 +127,12 @@ let convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
   let prltools_uninsts =
     let uninsts = ref [] in
 
-    Windows.with_hive_readonly g software_hive_filename
-      (fun root ->
+    Registry.with_hive_readonly g inspect.i_windows_software_hive
+      (fun reg ->
        try
          let path = ["Microsoft"; "Windows"; "CurrentVersion"; "Uninstall"] in
          let node =
-           match Windows.get_node g root path with
+           match Registry.get_node reg path with
            | None -> raise Not_found
            | Some node -> node in
          let uninstnodes = g#hivex_node_children node in
@@ -210,24 +179,112 @@ let convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
   (*----------------------------------------------------------------------*)
   (* Perform the conversion of the Windows guest. *)
 
-  (* Find the 'Current' ControlSet. *)
-  let get_current_cs root =
-    let select = g#hivex_node_get_child root "Select" in
-    let valueh = g#hivex_node_get_value select "Current" in
-    let value = int_of_le32 (g#hivex_value_value valueh) in
-    sprintf "ControlSet%03Ld" value in
-
   let rec configure_firstboot () =
-    (match installer with
-     | None -> ()
-     | Some (`RhevApt, tool_path) -> configure_rhev_apt tool_path
-     | Some (`VmdpExe, tool_path) -> configure_vmdp tool_path
+    (* Note that pnp_wait.exe must be the first firstboot script as it
+     * suppresses PnP for all following scripts.
+     *)
+    let tool_path = virt_tools_data_dir () // "pnp_wait.exe" in
+    if Sys.file_exists tool_path then
+      configure_wait_pnp tool_path
+    else
+      warning (f_"%s is missing.  Firstboot scripts may conflict with PnP.")
+              tool_path;
+
+    (* Install RHEV-APT only if appropriate for the output hypervisor. *)
+    if output#install_rhev_apt then (
+      let tool_path = virt_tools_data_dir () // "rhev-apt.exe" in
+      if Sys.file_exists tool_path then
+        configure_rhev_apt tool_path
+      else
+        warning (f_"%s is missing, but the output hypervisor is oVirt or RHV.  Installing RHEV-APT in the guest would mean the guest is automatically updated with new drivers etc.  You may wish to install RHEV-APT manually after conversion.")
+                tool_path
     );
+
+    (* Install VMDP unconditionally, if available, but don't
+     * warn about it if not.
+     *)
+    let tool_path = virt_tools_data_dir () // "vmdp.exe" in
+    if Sys.file_exists tool_path then
+      configure_vmdp tool_path;
+
     unconfigure_xenpv ();
     unconfigure_prltools ()
 
+  (* [set_reg_val_dword_1 path name] creates a registry key
+   * called [name = dword:1] in the registry [path].
+   * Intermediate nodes are created along the path if required.
+   *
+   * It returns the old value, if there was one, else [None].
+   *)
+  and set_reg_val_dword_1 ((g, root) as reg) path name =
+    let node = Registry.create_path reg path in
+    let valueh = g#hivex_node_get_value node name in
+    let value =
+      match valueh with
+      | 0L -> None
+      | _ -> Some (int_of_le32 (g#hivex_value_value valueh)) in
+    g#hivex_node_set_value node name 4_L (le32_of_int 1_L);
+    value
+
+  and reg_restore key name value =
+    let strkey = String.concat "\\" key in
+    match value with
+    | Some value -> sprintf "\
+reg add \"%s\" /v %s /t REG_DWORD /d %Ld /f" strkey name value
+    | None -> sprintf "\
+reg delete \"%s\" /v %s /f" strkey name
+
+  and configure_wait_pnp tool_path =
+    (* Prevent destructive interactions of firstboot with PnP. *)
+
+    (* Suppress "New Hardware Wizard" until PnP settles (see
+     * https://support.microsoft.com/en-us/kb/938596) and restore it
+     * afterwards.
+     *)
+    let reg_restore_str =
+      match inspect.i_major_version, inspect.i_minor_version with
+      (* WinXP 32bit *)
+      | 5, 1 ->
+         let key_path = ["Policies"; "Microsoft"; "Windows"; "DeviceInstall";
+                         "Settings"] in
+         let name = "SuppressNewHWUI" in
+         let value =
+           Registry.with_hive_write g inspect.i_windows_software_hive (
+             fun reg -> set_reg_val_dword_1 reg key_path name
+         ) in
+         reg_restore ("HKLM\\Software" :: key_path) name value
+
+      (* WinXP 64bit / Win2k3 *)
+      | 5, 2 ->
+         let key_path = ["Services"; "PlugPlay"; "Parameters"] in
+         let name = "SuppressUI" in
+         let value =
+           Registry.with_hive_write g inspect.i_windows_system_hive (
+             fun reg ->
+               let path = inspect.i_windows_current_control_set :: key_path in
+               set_reg_val_dword_1 reg path name
+           ) in
+         reg_restore ("HKLM\\SYSTEM\\CurrentControlSet" :: key_path) name
+                     value
+
+      (* any later Windows *)
+      | _ -> "" in
+
+    let pnp_wait_path = "/Program Files/Guestfs/Firstboot/pnp_wait.exe" in
+
+    let fb_script = sprintf "\
+@echo off
+
+echo Wait for PnP to complete
+\"%s\" >\"%%~dpn0.log\" 2>&1
+%s" (String.replace_char pnp_wait_path '/' '\\') reg_restore_str in
+
+    Firstboot.add_firstboot_script g inspect.i_root "wait pnp" fb_script;
+    (* add_firstboot_script has created the path already. *)
+    g#upload tool_path (g#case_sensitive_path pnp_wait_path)
+
   and configure_rhev_apt tool_path =
-    (* Configure RHEV-APT (the RHEV guest agent).  However if it doesn't
+    (* Configure RHEV-APT (the RHV guest agent).  However if it doesn't
      * exist just warn about it and continue.
      *)
     g#upload tool_path "/rhev-apt.exe"; (* XXX *)
@@ -305,22 +362,20 @@ if errorlevel 3010 exit /b 0
     ) prltools_uninsts
   in
 
-  let rec update_system_hive root =
+  let rec update_system_hive reg =
     (* Update the SYSTEM hive.  When this function is called the hive has
      * already been opened as a hivex handle inside guestfs.
      *)
-    let current_cs = get_current_cs root in
-    debug "current ControlSet is %s" current_cs;
+    disable_xenpv_win_drivers reg;
+    disable_prl_drivers reg;
+    disable_autoreboot reg;
+    Windows_virtio.install_drivers reg inspect rcaps
 
-    disable_xenpv_win_drivers root current_cs;
-    disable_prl_drivers root current_cs;
-    disable_autoreboot root current_cs;
-    Windows_virtio.install_drivers g inspect systemroot
-                                   root current_cs rcaps
-
-  and disable_xenpv_win_drivers root current_cs =
+  and disable_xenpv_win_drivers reg =
     (* Disable xenpv-win service (RHBZ#809273). *)
-    let services = Windows.get_node g root [current_cs; "Services"] in
+    let services =
+      Registry.get_node reg
+                        [inspect.i_windows_current_control_set; "Services"] in
 
     match services with
     | None -> ()
@@ -329,9 +384,11 @@ if errorlevel 3010 exit /b 0
        if node <> 0L then
          g#hivex_node_set_value node "Start" 4_L (le32_of_int 4_L)
 
-  and disable_prl_drivers root current_cs =
+  and disable_prl_drivers reg =
     (* Prevent Parallels drivers from loading at boot. *)
-    let services = Windows.get_node g root [current_cs; "Services"] in
+    let services =
+      Registry.get_node reg
+                        [inspect.i_windows_current_control_set; "Services"] in
     let prl_svcs = [ "prl_boot"; "prl_dd"; "prl_eth5"; "prl_fs"; "prl_memdev";
                      "prl_mouf"; "prl_pv32"; "prl_pv64"; "prl_scsi";
                      "prl_sound"; "prl_strg"; "prl_tg"; "prl_time";
@@ -353,8 +410,9 @@ if errorlevel 3010 exit /b 0
     (* perfrom the equivalent of DelReg from prl_strg.inf:
      * HKLM, System\CurrentControlSet\Control\Class\{4d36e967-e325-11ce-bfc1-08002be10318}, LowerFilters, 0x00018002, prl_strg
      *)
-    let strg_cls = Windows.get_node g root
-                        [current_cs; "Control"; "Class";
+    let strg_cls = Registry.get_node reg
+                        [inspect.i_windows_current_control_set;
+                         "Control"; "Class";
                          "{4d36e967-e325-11ce-bfc1-08002be10318}"] in
     match strg_cls with
     | None -> ()
@@ -363,29 +421,30 @@ if errorlevel 3010 exit /b 0
         let valueh = g#hivex_node_get_value strg_cls lfkey in
         if valueh <> 0L then (
           let data = g#hivex_value_value valueh in
-          let filters = String.nsplit "\000" (Regedit.decode_utf16le data) in
+          let filters = String.nsplit "\000" (Registry.decode_utf16le data) in
           let filters = List.filter (
             fun x -> x <> "prl_strg" && x <> ""
           ) filters in
           let filters = List.map (
-            fun x -> Regedit.encode_utf16le x ^ "\000\000"
+            fun x -> Registry.encode_utf16le x ^ "\000\000"
           ) (filters @ [""]) in
           let data = String.concat "" filters in
           g#hivex_node_set_value strg_cls lfkey 7_L data
         )
 
-  and disable_autoreboot root current_cs =
+  and disable_autoreboot reg =
     (* If the guest reboots after a crash, it's hard to see the original
      * error (eg. the infamous 0x0000007B).  Turn off autoreboot.
      *)
     let crash_control =
-      Windows.get_node g root [current_cs; "Control"; "CrashControl"] in
+      Registry.get_node reg [inspect.i_windows_current_control_set;
+                             "Control"; "CrashControl"] in
     match crash_control with
     | None -> ()
     | Some crash_control ->
        g#hivex_node_set_value crash_control "AutoReboot" 4_L (le32_of_int 0_L)
 
-  and update_software_hive root =
+  and update_software_hive reg =
     (* Update the SOFTWARE hive.  When this function is called the
      * hive has already been opened as a hivex handle inside
      * guestfs.
@@ -396,10 +455,10 @@ if errorlevel 3010 exit /b 0
      * path to this key.
      *)
     let node =
-      Windows.get_node g root ["Microsoft"; "Windows"; "CurrentVersion"] in
+      Registry.get_node reg ["Microsoft"; "Windows"; "CurrentVersion"] in
     match node with
     | Some node ->
-       let append = Regedit.encode_utf16le ";%SystemRoot%\\Drivers\\VirtIO" in
+       let append = Registry.encode_utf16le ";%SystemRoot%\\Drivers\\VirtIO" in
        let values = Array.to_list (g#hivex_node_values node) in
        let rec loop = function
          | [] -> () (* DevicePath not found -- ignore this case *)
@@ -501,19 +560,19 @@ if errorlevel 3010 exit /b 0
     let fix_win_uefi_bcd esp_path =
       try
         let bcd_path = "/EFI/Microsoft/Boot/BCD" in
-        Windows.with_hive_write g (esp_path ^ bcd_path) (
+        Registry.with_hive_write g (esp_path ^ bcd_path) (
           (* Remove the 'graphicsmodedisabled' key in BCD *)
-          fun root ->
+          fun reg ->
           let path = ["Objects"; "{9dea862c-5cdd-4e70-acc1-f32b344d4795}";
                       "Elements"; "23000003"] in
           let boot_mgr_default_link =
-            match Windows.get_node g root path with
+            match Registry.get_node reg path with
             | None -> raise Not_found
             | Some node -> node in
           let current_boot_entry = g#hivex_value_utf8 (
             g#hivex_node_get_value boot_mgr_default_link "Element") in
           let path = ["Objects"; current_boot_entry; "Elements"; "16000046"] in
-          match Windows.get_node g root path with
+          match Registry.get_node reg path with
           | None -> raise Not_found
           | Some graphics_mode_disabled ->
             g#hivex_node_delete_child graphics_mode_disabled
@@ -542,10 +601,12 @@ if errorlevel 3010 exit /b 0
 
   (* Open the system hive for writes and update it. *)
   let block_driver, net_driver, video_driver =
-    Windows.with_hive_write g system_hive_filename update_system_hive in
+    Registry.with_hive_write g inspect.i_windows_system_hive
+                             update_system_hive in
 
   (* Open the software hive for writes and update it. *)
-  Windows.with_hive_write g software_hive_filename update_software_hive;
+  Registry.with_hive_write g inspect.i_windows_software_hive
+                           update_software_hive;
 
   fix_ntfs_heads ();
 

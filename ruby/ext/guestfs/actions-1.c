@@ -1937,6 +1937,52 @@ guestfs_int_ruby_inspect_get_icon (int argc, VALUE *argv, VALUE gv)
 
 /*
  * call-seq:
+ *   g.inspect_get_windows_system_hive(root) -> string
+ *
+ * get the path of the Windows system hive
+ *
+ * This returns the path to the hive (binary Windows
+ * Registry file) corresponding to HKLM\SYSTEM.
+ * 
+ * This call assumes that the guest is Windows and that the
+ * guest has a system hive file with the right name. If
+ * this is not the case then an error is returned. This
+ * call does not check that the hive is a valid Windows
+ * Registry hive.
+ * 
+ * You can use "g.hivex_open" to read or write to the hive.
+ * 
+ * Please read "INSPECTION" in guestfs(3) for more details.
+ *
+ *
+ * [Since] Added in version 1.35.26.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_windows_system_hive}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_windows_system_hive].
+ */
+VALUE
+guestfs_int_ruby_inspect_get_windows_system_hive (VALUE gv, VALUE rootv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "inspect_get_windows_system_hive");
+
+  const char *root = StringValueCStr (rootv);
+
+  char *r;
+
+  r = guestfs_inspect_get_windows_system_hive (g, root);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.inspect_is_netinst(root) -> [True|False]
  *
  * get netinst (network installer) flag for install disk

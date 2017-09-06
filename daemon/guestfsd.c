@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1245,6 +1245,68 @@ get_random_uuid (void)
   /* caller free */
   return out;
 
+}
+
+/**
+ * Turn list C<excludes> into a temporary file, and return a string
+ * containing the temporary file name.  Caller must unlink the file
+ * and free the string.
+ *
+ * C<function> is the function that invoked this helper, and it is
+ * used mainly for errors/debugging.
+ */
+char *
+make_exclude_from_file (const char *function, char *const *excludes)
+{
+  size_t i;
+  int fd;
+  char template[] = "/tmp/excludesXXXXXX";
+  char *ret;
+
+  fd = mkstemp (template);
+  if (fd == -1) {
+    reply_with_perror ("mkstemp");
+    return NULL;
+  }
+
+  for (i = 0; excludes[i] != NULL; ++i) {
+    if (strchr (excludes[i], '\n')) {
+      reply_with_error ("%s: excludes file patterns cannot contain \\n character",
+                        function);
+      goto error;
+    }
+
+    if (xwrite (fd, excludes[i], strlen (excludes[i])) == -1 ||
+        xwrite (fd, "\n", 1) == -1) {
+      reply_with_perror ("write");
+      goto error;
+    }
+
+    if (verbose)
+      fprintf (stderr, "%s: adding excludes pattern '%s'\n",
+               function, excludes[i]);
+  }
+
+  if (close (fd) == -1) {
+    reply_with_perror ("close");
+    fd = -1;
+    goto error;
+  }
+  fd = -1;
+
+  ret = strdup (template);
+  if (ret == NULL) {
+    reply_with_perror ("strdup");
+    goto error;
+  }
+
+  return ret;
+
+ error:
+  if (fd >= 0)
+    close (fd);
+  unlink (template);
+  return NULL;
 }
 
 void

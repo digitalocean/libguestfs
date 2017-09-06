@@ -43,8 +43,7 @@ cleanly prepared, digitally signed OS templates and customizes them.  This
 approach is used because it is much faster, but if you need to do fresh
 installs you may want to look at L<virt-install(1)> and L<oz-install(1)>.
 
-The easiest way to get started is by looking at the examples in the next
-section.
+Найпростіше буде розпочати з прикладів з наступного розділу.
 
 =head1 ПРИКЛАДИ
 
@@ -56,8 +55,8 @@ will list out the operating systems available to install.  A selection of
 freely redistributable OSes is available as standard.  You can add your own
 too (see below).
 
-After choosing a guest from the list, you may want to see if there are any
-installation notes:
+Після вибору гостьової системи зі списку може виникнути потреба у
+ознайомленні із нотатками щодо встановлення:
 
  virt-builder --notes fedora-20
 
@@ -73,12 +72,12 @@ etc.).
 
 Потреби у запуску цієї програми від імені root I<немає>.
 
-The first time this runs it has to download the template over the network,
-but this gets cached (see L</CACHING>).
+Першого разу доведеться отримати шаблон мережею, а наступні операції може
+бути кешовано (див. L</КЕШУВАННЯ>).
 
-The name of the output file is derived from the template name, so above it
-will be F<fedora-20.img>.  You can change the output filename using the
-I<-o> option:
+Назву файла результатів буде визначено на основі назви шаблона, отже для
+наведеного вище прикладу буде F<fedora-20.img>.  Змінити назву файла
+результатів можна за допомогою параметра I<-o>:
 
  virt-builder fedora-20 -o mydisk.img
 
@@ -87,7 +86,8 @@ I<-o> option:
 
  virt-builder fedora-20 --format qcow2
 
-As above, but write the output in qcow2 format to F<fedora-20.qcow2>.
+Те саме, що і вище, але із записом результатів у форматі qcow2 до
+F<fedora-20.qcow2>.
 
  virt-builder fedora-20 --size 20G
 
@@ -105,10 +105,11 @@ is copied to the output (automatically, using L<virt-resize(1)>).
 Створити образ Fedora 20. Пароль root буде визначено за файлом
 F</tmp/rootpw>.
 
-Note if you I<don't> set I<--root-password> then the guest is given a
-I<random> root password.
+Зауважте, що якщо ви I<не встановите> I<--root-password>, гостьовій системі
+буде надано I<випадковий> пароль адміністратора root.
 
-You can also create user accounts.  See L</USERS AND PASSWORDS> below.
+Крім того, ви можете створювати облікові записи
+користувачів. Див. L</КОРИСТУВАЧІ І ПАРОЛІ> нижче.
 
 =head2 Встановити назву вузла
 
@@ -118,13 +119,13 @@ You can also create user accounts.  See L</USERS AND PASSWORDS> below.
 
 =head2 Встановлення програмного забезпечення
 
-To install packages from the ordinary (guest) software repository (eg. yum
-or apt):
+Встановлення пакунків зі звичайного (гостьового) сховища (наприклад, за
+допомогою yum або apt):
 
  virt-builder fedora-20 --install "inkscape,@Xfce Desktop"
 
-(In Fedora, C<@> is used to install groups of packages.  On Debian you would
-install a meta-package instead.)
+(У Fedora C<@> використовується для встановлення груп пакунків. У Debian вам
+доведеться встановлювати відповідний метапакунок.)
 
 Для оновлення основних пакунків до останньої версії виконайте такі дії:
 
@@ -157,8 +158,8 @@ I<--edit> to edit files.  I<--upload> to upload files.
 
  virt-builder fedora-20 --firstboot-command 'yum -y update'
 
-which makes the L<yum(8)> C<update> command run once the first time the
-guest boots.
+у результаті команду L<yum(8)> C<update> буде один раз виконано під час
+першого завантаження гостьової системи.
 
 або
 
@@ -261,8 +262,9 @@ parameters, for example to disable https certificate checks:
 Don't delete the output file on failure to build.  You can use this to debug
 failures to run scripts.  See L</DEBUGGING BUILDS> for ways to debug images.
 
-The default is to delete the output file if virt-builder fails (or, for
-example, some script that it runs fails).
+Типовою є поведінка, коли файл результатів буде вилучено, якщо станеться
+помилка у virt-builder (або, наприклад, помилка у одному зі скриптів, які
+запускає ця програма).
 
 =item B<--fingerprint> 'AAAA BBBB ...'
 
@@ -298,8 +300,8 @@ built using virt-builder).
 The kernel and initramfs are written to the current directory, unless you
 also specify the I<--output> C<outputdir> B<directory> name.
 
-The format of the disk image is automatically detected unless you specify it
-by using the I<--format> option.
+Формат образу диска буде визначено автоматично, якщо ви не вкажете його за
+допомогою параметра I<--format>.
 
 In the case where the guest contains multiple kernels, the one with the
 highest version number is chosen.  To extract arbitrary kernels from the
@@ -318,32 +320,32 @@ directory:
 
 =item B<--list> [версія-ОС]
 
-=item B<--list> B<--list-format> format [os-version]
+=item B<--list> B<--list-format> формат [версія ОС]
 
-=item B<--list> B<--long> [os-version]
+=item B<--list> B<--long> [версія ОС]
 
-List all the available templates if no guest is specified, or only for the
-specified one.
+Вивести усі доступні шаблони, якщо не вказано гостьової системи, або вивести
+шаблони лише для вказаної гостьової системи.
 
-It is possible to choose with I<--list-format> the output format for the
-list templates:
+Ви можете вибрати формат виведення за допомогою параметра I<--list-format>
+для шаблонів списку:
 
 =over 4
 
 =item B<short>
 
-The default format, prints only the template identifier and, next to it, its
-short description.
+Типовий формат: виводиться лише ідентифікатор шаблона і, поряд з ним, його
+короткий опис.
 
 =item B<long>
 
-Prints a textual list with the details of the available sources, followed by
-the details of the available templates.
+Виводить тестовий список із даними щодо доступних джерел і список даних щодо
+доступних шаблонів після нього.
 
 =item B<json>
 
-Prints a JSON object with the details of the available sources and the
-details of the available templates.
+Вивести об’єкт JSON із подробицями щодо доступних джерел та подробиці щодо
+доступних шаблонів.
 
 The C<version> key in the main object represents the "compatibility
 version", and it is bumped every time the resulting JSON output is
@@ -393,20 +395,21 @@ This does not affect whether the guest can access the network once it has
 been booted, because that is controlled by your hypervisor or cloud
 environment and has nothing to do with virt-builder.
 
-Generally speaking you should I<not> use I<--no-network>.  But here are some
-reasons why you might want to:
+Загалом кажучи, вам I<не варто> використовувати I<--no-network>. Але ось
+декілька випадків, коли у вас може виникнути потреба у використанні цього
+параметра:
 
 =over 4
 
 =item 1.
 
-Because the libguestfs backend that you are using doesn't support the
-network.  (See: L<guestfs(3)/BACKEND>).
+У модулі обробки libguestfs, яким ви користуєтеся, не передбачено підтримки
+мережі.  (Див. L<guestfs(3)/BACKEND>).
 
 =item 2.
 
-Any software you need to install comes from an attached ISO, so you don't
-need the network.
+Усе програмне забезпечення, яке ви маєте намір встановити, походить з
+долученого образу ISO, отже потреби у мережі немає.
 
 =item 3.
 
@@ -416,15 +419,17 @@ the source of the operating system templates.  (See L</SECURITY> below).
 
 =item 4.
 
-You don't have a host network (eg. in secure/restricted environments).
+Ви не хочете користуватися мережею основної системи (наприклад, через
+захищеність або обмеженість середовища у ній).
 
 =back
 
 =item B<--no-sync>
 
-Do not sync the output file on exit.
+Не синхронізувати файл виведення під час завершення роботи.
 
-Virt-builder fsync's the output file or disk image when it exits.
+Virt-builder виконує синхронізацію fsync файла результатів або образу диска,
+якщо такий існує.
 
 The reason is that qemu/KVM's default caching mode is C<none> or
 C<directsync>, both of which bypass the host page cache.  Therefore these
@@ -438,8 +443,8 @@ avoid this unnecessary sync and gain considerable extra performance.
 
 =item B<--notes> версія-ОС
 
-List any notes associated with this guest, then exit (this does not do the
-install).
+Показує список нотаток, пов’язаних із гостьовою системою, потім завершує
+роботу (встановлення не виконується).
 
 =item B<-o> назва_файла
 
@@ -449,10 +454,11 @@ Write the output to F<filename>.  If you don't specify this option, then the
 output filename is generated by taking the C<os-version> string and adding
 C<.img> (for raw format) or C<.qcow2> (for qcow2 format).
 
-Note that the output filename could be a device, partition or logical
-volume.
+Зауважте, що назвою файла виведення результатів може бути пристрій, розділ
+або логічний том.
 
-When used with I<--get-kernel>, this option specifies the output directory.
+Якщо використовується з I<--get-kernel>, цей параметр задає каталог
+виведення даних.
 
 =item B<--print-cache>
 
@@ -469,7 +475,7 @@ When used with I<--get-kernel>, this option specifies the output directory.
 Select the size of the output disk, where the size can be specified using
 common names such as C<32G> (32 gigabytes) etc.
 
-Virt-builder will resize filesystems inside the disk image automatically.
+Virt-builder змінить розміри файлових систем у образі диска автоматично.
 
 If the size is not specified, then one of two things happens.  If the output
 is a file, then the size is the same as the template.  If the output is a
@@ -799,7 +805,7 @@ If specified, the C<SELECTOR> can be in one of the following formats:
 
 =item B<--ssh-inject> КОРИСТУВАЧ:file:НАЗВА_ФАЙЛА
 
-Read the ssh key from F<FILENAME>.  F<FILENAME> is usually a I<.pub> file.
+Прочитати ключ ssh з файла F<НАЗВА ФАЙЛА>. Файлом зазвичай є файл I<.pub>.
 
 =item B<--ssh-inject> USER:string:KEY_STRING
 
@@ -1127,8 +1133,8 @@ following:
  uri=http://libguestfs.org/download/builder/index.asc
  gpgkey=file:///etc/xdg/virt-builder/repos.d/libguestfs.gpg
 
-The part in square brackets is the repository identifier, which is used as
-unique identifier.
+Частина у квадратних дужках є ідентифікатором сховища, який використовується
+як унікальний ідентифікатор.
 
 Можуть з’явитися такі поля:
 
@@ -1136,7 +1142,7 @@ unique identifier.
 
 =item C<uri=АДРЕСА>
 
-The URI of the index file which this repository refers to.
+Адреса файла покажчика, на який посилається це сховище.
 
 Це поле слід заповнити.
 
@@ -1209,7 +1215,7 @@ information in this index file.
 
 The templates hosted on libguestfs.org were created using shell scripts,
 kickstart files and preseed files which can be found in the libguestfs
-source tree, in C<builder/website>.
+source tree, in C<builder/templates>.
 
 =head3 Налаштовування доступу до сховища
 
@@ -1235,7 +1241,7 @@ speaking this is optional, but if your index and template files are not
 signed then virt-builder users will have to use the I<--no-check-signature>
 flag every time they use virt-builder.)
 
-To create a key, see the GPG manual
+Інструкцію зі створення ключа можна знайти у підручнику з GPG:
 L<http://www.gnupg.org/gph/en/manual.html>.
 
 Експортувати ваш відкрити ключ GPG:
@@ -1247,7 +1253,7 @@ L<http://www.gnupg.org/gph/en/manual.html>.
 There are many ways to create the templates.  For example you could clone
 existing guests (see L<virt-sysprep(1)>), or you could install a guest by
 hand (L<virt-install(1)>).  To see how the templates were created for
-virt-builder, look at the scripts in C<builder/website>
+virt-builder, look at the scripts in C<builder/templates>
 
 For best results when compressing the templates, use the following xz
 options (see L<nbdkit-xz-plugin(1)> for further explanation):
@@ -1315,7 +1321,7 @@ field is required.
 
 =item C<file=ШЛЯХ>
 
-The path (relative to the index) of the xz-compressed template.
+Шлях (відносно покажчика) стисненого xz шаблона.
 
 Note that absolute paths or URIs are B<not> permitted here.  This is because
 virt-builder has a "same origin" policy for templates so they cannot come
@@ -1332,7 +1338,7 @@ Note that absolute paths or URIs are B<not> permitted here.  This is because
 virt-builder has a "same origin" policy for templates so they cannot come
 from other servers.
 
-The file can be created as follows:
+Файл можна створити такою командою:
 
  gpg --detach-sign --armor -o disk.xz.sig disk.xz
 
@@ -1420,7 +1426,7 @@ not on an LV, don't use this option.
 Any notes that go with this image, especially notes describing what packages
 are in the image, how the image was prepared, and licensing information.
 
-This information is shown in the I<--notes> and I<--list> I<--long> modes.
+Ці дані буде виведено у режимах I<--notes> і I<--list> I<--long>.
 
 You can use multi-line notes here by indenting each new line with at least
 one character of whitespace (even on blank lines):
@@ -1446,7 +1452,7 @@ index instead of updating the same image (see the C<revision> field).
 
 =back
 
-=head3 Running virt-builder against multiple sources
+=head3 Запуск virt-builder для декількох джерел одночасно
 
 It is possible to use multiple sources with virt-builder.  The recommended
 way is to deploy I<.conf> files pointing to the index files. Another way is
@@ -1468,7 +1474,7 @@ between each source and each fingerprint:
 In the case where you provide 1 fingerprint, the same fingerprint is used
 for all sources.
 
-You C<must> provide at least 1 fingerprint.
+Вам C<слід> надати принаймні 1 відбиток.
 
 =head3 Ліцензування шаблонів
 
@@ -1476,7 +1482,7 @@ You should be aware of the licensing of images that you distribute.  For
 open source guests, provide a link to the source code in the C<notes> field
 and comply with other requirements (eg. around trademarks).
 
-=head3 Formal specification of the index file
+=head3 Формальна специфікація файла покажчика
 
 The index file format has a formal specification defined by the flex scanner
 and bison parser used to parse the file.  This can be found in the following
@@ -1491,7 +1497,7 @@ file to ensure it is correct.
 Note that the parser and tool can work on either the signed or unsigned
 index file (ie. F<index> or F<index.asc>).
 
-The index is always encoded in UTF-8.
+Кодуванням покажчика завжди є UTF-8.
 
 =head2 КЕШУВАННЯ
 
@@ -1508,18 +1514,18 @@ guests are currently cached, by doing:
 
  virt-builder --print-cache
 
-The cache can be deleted if you want to save space by doing:
+Кеш можна вилучити з метою економії місця на диску такою командою:
 
  virt-builder --delete-cache
 
-You can download all (current) templates to the local cache by doing:
+Ви можете отримати усі (поточні) шаблони до локального кешу командою:
 
  virt-builder --cache-all-templates
 
-To disable the template cache, use I<--no-cache>.
+Щоб вимкнути кешування шаблонів, скористайтеся параметром I<--no-cache>.
 
-Only templates are cached.  The index and detached digital signatures are
-not cached.
+Кешуванню підлягають лише шаблони. Для покажчика та цифрових підписів
+кешування не використовується.
 
 =head3 Кешування пакунків
 
@@ -1559,7 +1565,7 @@ line.  You have to do this using I<--run-command> instead of I<--install>.
    --run-command 'yum -y update' \
    --run-command 'yum -y install pkg1 pkg2 ...'
 
-=head4 Using a local mirror with Debian
+=head4 Використання локального дзеркала з Debian
 
 Assuming that you are using C<apt-proxy> to mirror the repository, you
 should create a new F<sources.list> file to point to your proxy (see
@@ -1666,27 +1672,28 @@ varies according to which Linux distro you are trying to install.
 
 =head3 Користування I<--no-sync>
 
-Use I<--no-sync>.  However read the caveats in the L</OPTIONS> section
-above, since this can cause disk corruption if not used correctly.
+Скористайтеся I<--no-sync>.  Втім, ознайомтеся із можливими проблемами,
+описаними у розділі L</ПАРАМЕТРИ> вище, оскільки це може призвести до
+пошкодження даних на диску, якщо використовувати неправильно.
 
 =head3 Пропускання virt-resize
 
-Virt-builder can skip the virt-resize step under certain conditions.  This
-makes virt-builder much faster.  The conditions are:
+За певних умов virt-builder може пропускати крок virt-resize. Це значно
+пришвидшує роботу virt-builder. Умови пропускання є такими:
 
 =over 4
 
 =item *
 
-the output must be a regular file (not a block device), B<and>
+дані слід виводити до звичайного файла (не на блоковий пристрій), B<і>
 
 =item *
 
-the user did B<not> use the I<--size> option, B<and>
+користувачем B<не> використано параметр I<--size>, B<і>
 
 =item *
 
-the output format is the same as the template format (usually raw).
+формат виведення є тим самим, що і формат шаблона (зазвичай raw).
 
 =back
 
@@ -1702,14 +1709,14 @@ You can use virt-builder with the User-Mode Linux (UML) backend.  This may
 be faster when running virt-builder inside a virtual machine (eg. in the
 cloud).
 
-To enable the UML backend, read the instructions in L<guestfs(3)/USER-MODE
-LINUX BACKEND>.
+Щоб увімкунути модуль UML, ознайомтеся із настановами у розділі
+L<guestfs(3)/USER-MODE LINUX BACKEND>.
 
-Currently you have to use the I<--no-network> option.  This should be fixed
-in a future version.
+У поточній версії вам слід користуватися параметром I<--no-network>. Це буде
+виправлено у майбутній версії.
 
-The qcow2 output format is not supported by UML.  You can only create
-raw-format guests.
+Підтримки формату виведення результатів qcow2 у UML не передбачено. Ви
+можете створювати гостьові системи лише у форматі raw.
 
 =head2 SELINUX
 
@@ -1726,7 +1733,7 @@ possible strategies it can use to ensure correct labelling:
 This runs L<setfiles(8)> just before finalizing the guest, which sets
 SELinux labels correctly in the disk image.
 
-This is the recommended method.
+Це рекомендований метод.
 
 =item I<--touch> F</.autorelabel>
 
@@ -1750,8 +1757,9 @@ The I<--machine-readable> option can be used to make the output more machine
 friendly, which is useful when calling virt-builder from other programs,
 GUIs etc.
 
-Use the option on its own to query the capabilities of the virt-builder
-binary.  Typical output looks like this:
+Скористайтеся цим параметром окремо, щоб опитати систему щодо можливостей
+виконуваного файла virt-builder.  Типово виведені дані виглядатимуть якось
+так:
 
  $ virt-builder --machine-readable
  virt-builder
@@ -1761,8 +1769,8 @@ binary.  Typical output looks like this:
  json-list
  pxzcat
 
-A list of features is printed, one per line, and the program exits with
-status 0.
+Виводиться список можливостей, по одній на рядок, і програма завершує роботу
+зі станом 0.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
@@ -1777,8 +1785,8 @@ L<guestfs(3)/ENVIRONMENT VARIABLES>.
 
 =item C<no_proxy>
 
-Set the proxy for downloads.  These environment variables (and more)  are
-actually interpreted by L<curl(1)>, not virt-builder.
+Встановити проксі-сервер для отримання даних. Ці змінні середовища (та інші)
+насправді обробляються L<curl(1)>, а не virt-builder.
 
 =item C<HOME>
 
@@ -1790,8 +1798,9 @@ actually interpreted by L<curl(1)>, not virt-builder.
 This can point to the directory containing data files used for Windows
 firstboot installation.
 
-Normally you do not need to set this.  If not set, a compiled-in default
-will be used (something like F</usr/share/virt-tools>).
+Зазвичай, потреби у встановленні власного значення немає. Якщо значення не
+встановлено, буде використано вбудоване типове значення (щось схоже на
+F</usr/share/virt-tools>).
 
 Цей каталог може містити такі файли:
 

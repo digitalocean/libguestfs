@@ -53,6 +53,7 @@ guestfs_gobject_headers= \
   include/guestfs-gobject/optargs-add_drive.h \
   include/guestfs-gobject/optargs-add_drive_scratch.h \
   include/guestfs-gobject/optargs-add_libvirt_dom.h \
+  include/guestfs-gobject/optargs-aug_transform.h \
   include/guestfs-gobject/optargs-btrfs_filesystem_defragment.h \
   include/guestfs-gobject/optargs-btrfs_filesystem_resize.h \
   include/guestfs-gobject/optargs-btrfs_fsck.h \
@@ -88,6 +89,7 @@ guestfs_gobject_headers= \
   include/guestfs-gobject/optargs-mke2fs.h \
   include/guestfs-gobject/optargs-mkfs.h \
   include/guestfs-gobject/optargs-mkfs_btrfs.h \
+  include/guestfs-gobject/optargs-mksquashfs.h \
   include/guestfs-gobject/optargs-mkswap.h \
   include/guestfs-gobject/optargs-mktemp.h \
   include/guestfs-gobject/optargs-mount_9p.h \
@@ -143,6 +145,7 @@ guestfs_gobject_sources= \
   src/optargs-add_drive.c \
   src/optargs-add_drive_scratch.c \
   src/optargs-add_libvirt_dom.c \
+  src/optargs-aug_transform.c \
   src/optargs-btrfs_filesystem_defragment.c \
   src/optargs-btrfs_filesystem_resize.c \
   src/optargs-btrfs_fsck.c \
@@ -178,6 +181,7 @@ guestfs_gobject_sources= \
   src/optargs-mke2fs.c \
   src/optargs-mkfs.c \
   src/optargs-mkfs_btrfs.c \
+  src/optargs-mksquashfs.c \
   src/optargs-mkswap.c \
   src/optargs-mktemp.c \
   src/optargs-mount_9p.c \

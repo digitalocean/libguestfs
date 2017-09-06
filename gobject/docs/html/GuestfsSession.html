@@ -278,6 +278,14 @@
 <span class="returnvalue">gboolean</span>
 </td>
 <td class="function_name">
+<a class="link" href="GuestfsSession.html#guestfs-session-aug-transform" title="guestfs_session_aug_transform ()">guestfs_session_aug_transform</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
 <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()">guestfs_session_available</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
@@ -1291,6 +1299,14 @@
 </tr>
 <tr>
 <td class="function_type">
+<a class="link" href="GuestfsTSKDirent.html" title="GuestfsTSKDirent"><span class="returnvalue">GuestfsTSKDirent</span></a> **
+</td>
+<td class="function_name">
+<a class="link" href="GuestfsSession.html#guestfs-session-find-inode" title="guestfs_session_find_inode ()">guestfs_session_find_inode</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
 <span class="returnvalue">gchar</span> *
 </td>
 <td class="function_name">
@@ -1994,6 +2010,22 @@
 </td>
 <td class="function_name">
 <a class="link" href="GuestfsSession.html#guestfs-session-inspect-get-windows-current-control-set" title="guestfs_session_inspect_get_windows_current_control_set ()">guestfs_session_inspect_get_windows_current_control_set</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="GuestfsSession.html#guestfs-session-inspect-get-windows-software-hive" title="guestfs_session_inspect_get_windows_software_hive ()">guestfs_session_inspect_get_windows_software_hive</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="GuestfsSession.html#guestfs-session-inspect-get-windows-system-hive" title="guestfs_session_inspect_get_windows_system_hive ()">guestfs_session_inspect_get_windows_system_hive</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -3142,6 +3174,14 @@
 </td>
 <td class="function_name">
 <a class="link" href="GuestfsSession.html#guestfs-session-mknod-c" title="guestfs_session_mknod_c ()">guestfs_session_mknod_c</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="GuestfsSession.html#guestfs-session-mksquashfs" title="guestfs_session_mksquashfs ()">guestfs_session_mksquashfs</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -6718,6 +6758,67 @@ nodes are modified.</p>
 <p> the returned value, or -1 on error</p>
 </div>
 <p class="since">Since: 1.23.14</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-aug-transform"></a><h3>guestfs_session_aug_transform ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+guestfs_session_aug_transform (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                               <em class="parameter"><code>const <span class="type">gchar</span> *lens</code></em>,
+                               <em class="parameter"><code>const <span class="type">gchar</span> *file</code></em>,
+                               <em class="parameter"><code><a class="link" href="GuestfsAugTransform.html" title="GuestfsAugTransform"><span class="type">GuestfsAugTransform</span></a> *optargs</code></em>,
+                               <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>add/remove an Augeas lens transformation</p>
+<p>Add an Augeas transformation for the specified <em class="parameter"><code>lens</code></em>
+ so it can handle
+<em class="parameter"><code>file</code></em>
+.</p>
+<p>If <em class="parameter"><code>remove</code></em>
+ is true (<em class="parameter"><code>false</code></em>
+ by default), then the transformation is
+removed.</p>
+<div class="refsect3">
+<a name="guestfs-session-aug-transform.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>lens</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>optargs</p></td>
+<td class="parameter_description"><p> a GuestfsAugTransform containing optional arguments. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="guestfs-session-aug-transform.returns"></a><h4>Returns</h4>
+<p> true on success, false on error</p>
+</div>
+<p class="since">Since: 1.35.2</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -13101,6 +13202,14 @@ Intel Itanium.</p>
 64 bit Power PC (big endian).</p>
 <p>"ppc64le"
 64 bit Power PC (little endian).</p>
+<p>"riscv32"
+"riscv64"
+"riscv128"
+RISC-V 32-, 64- or 128-bit variants.</p>
+<p>"s390"
+31 bit IBM S/390.</p>
+<p>"s390x"
+64 bit IBM S/390.</p>
 <p>"sparc"
 32 bit SPARC.</p>
 <p>"sparc64"
@@ -13687,6 +13796,68 @@ See find(1) option *-print0*.</p></li>
 <p> true on success, false on error</p>
 </div>
 <p class="since">Since: 1.0.74</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-find-inode"></a><h3>guestfs_session_find_inode ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsTSKDirent.html" title="GuestfsTSKDirent"><span class="returnvalue">GuestfsTSKDirent</span></a> **
+guestfs_session_find_inode (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                            <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                            <em class="parameter"><code><span class="type">gint64</span> inode</code></em>,
+                            <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
+                            <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>search the entries associated to the given inode</p>
+<p>Searches all the entries associated with the given inode.</p>
+<p>For each entry, a <em class="parameter"><code>tsk_dirent</code></em>
+ structure is returned. See
+<em class="parameter"><code>filesystem_walk</code></em>
+ for more information about <em class="parameter"><code>tsk_dirent</code></em>
+ structures.</p>
+<p>This function depends on the feature "libtsk".
+See also <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a>.</p>
+<div class="refsect3">
+<a name="guestfs-session-find-inode.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>device</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>inode</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> gint64]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>cancellable</p></td>
+<td class="parameter_description"><p>A GCancellable object</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="guestfs-session-find-inode.returns"></a><h4>Returns</h4>
+<p> an array of TSKDirent objects, or NULL on error. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GuestfsTSKDirent]</span></p>
+</div>
+<p class="since">Since: 1.35.6</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -18149,6 +18320,108 @@ returned.</p>
 <p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
 </div>
 <p class="since">Since: 1.9.17</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-inspect-get-windows-software-hive"></a><h3>guestfs_session_inspect_get_windows_software_hive ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> *
+guestfs_session_inspect_get_windows_software_hive
+                               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *root</code></em>,
+                                <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>get the path of the Windows software hive</p>
+<p>This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SOFTWARE.</p>
+<p>This call assumes that the guest is Windows and that the guest has a
+software hive file with the right name. If this is not the case then an
+error is returned. This call does not check that the hive is a valid
+Windows Registry hive.</p>
+<p>You can use <a class="link" href="GuestfsSession.html#guestfs-session-hivex-open" title="guestfs_session_hivex_open ()"><code class="function">guestfs_session_hivex_open()</code></a> to read or write to the hive.</p>
+<p>Please read "INSPECTION" in guestfs(3) for more details.</p>
+<div class="refsect3">
+<a name="guestfs-session-inspect-get-windows-software-hive.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>root</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="guestfs-session-inspect-get-windows-software-hive.returns"></a><h4>Returns</h4>
+<p> the returned string, or NULL on error. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+<p class="since">Since: 1.35.26</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-inspect-get-windows-system-hive"></a><h3>guestfs_session_inspect_get_windows_system_hive ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> *
+guestfs_session_inspect_get_windows_system_hive
+                               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *root</code></em>,
+                                <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>get the path of the Windows system hive</p>
+<p>This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\SYSTEM.</p>
+<p>This call assumes that the guest is Windows and that the guest has a
+system hive file with the right name. If this is not the case then an
+error is returned. This call does not check that the hive is a valid
+Windows Registry hive.</p>
+<p>You can use <a class="link" href="GuestfsSession.html#guestfs-session-hivex-open" title="guestfs_session_hivex_open ()"><code class="function">guestfs_session_hivex_open()</code></a> to read or write to the hive.</p>
+<p>Please read "INSPECTION" in guestfs(3) for more details.</p>
+<div class="refsect3">
+<a name="guestfs-session-inspect-get-windows-system-hive.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>root</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="guestfs-session-inspect-get-windows-system-hive.returns"></a><h4>Returns</h4>
+<p> the returned string, or NULL on error. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+<p class="since">Since: 1.35.26</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -25718,6 +25991,87 @@ See also <a class="link" href="GuestfsSession.html#guestfs-session-feature-avail
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-mksquashfs"></a><h3>guestfs_session_mksquashfs ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+guestfs_session_mksquashfs (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                            <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
+                            <em class="parameter"><code>const <span class="type">gchar</span> *filename</code></em>,
+                            <em class="parameter"><code><a class="link" href="GuestfsMksquashfs.html" title="GuestfsMksquashfs"><span class="type">GuestfsMksquashfs</span></a> *optargs</code></em>,
+                            <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
+                            <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>create a squashfs filesystem</p>
+<p>Create a squashfs filesystem for the specified <em class="parameter"><code>path</code></em>
+.</p>
+<p>The optional <em class="parameter"><code>compress</code></em>
+ flag controls compression. If not given, then the
+output compressed using <em class="parameter"><code>gzip</code></em>
+. Otherwise one of the following strings
+may be given to select the compression type of the squashfs: <em class="parameter"><code>gzip</code></em>
+,
+<em class="parameter"><code>lzma</code></em>
+, <em class="parameter"><code>lzo</code></em>
+, <em class="parameter"><code>lz4</code></em>
+, <em class="parameter"><code>xz</code></em>
+.</p>
+<p>The other optional arguments are:</p>
+<p><em class="parameter"><code>excludes</code></em>
+
+A list of wildcards. Files are excluded if they match any of the
+wildcards.</p>
+<p>Please note that this API may fail when used to compress directories
+with large files, such as the resulting squashfs will be over 3GB big.</p>
+<p>This function depends on the feature "squashfs".
+See also <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a>.</p>
+<div class="refsect3">
+<a name="guestfs-session-mksquashfs.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>session</p></td>
+<td class="parameter_description"><p> A GuestfsSession object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>path</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>filename</p></td>
+<td class="parameter_description"><p>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>optargs</p></td>
+<td class="parameter_description"><p> a GuestfsMksquashfs containing optional arguments. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>cancellable</p></td>
+<td class="parameter_description"><p>A GCancellable object</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>err</p></td>
+<td class="parameter_description"><p>A GError object to receive any generated errors</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="guestfs-session-mksquashfs.returns"></a><h4>Returns</h4>
+<p> true on success, false on error</p>
+</div>
+<p class="since">Since: 1.35.25</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-mkswap"></a><h3>guestfs_session_mkswap ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>
 guestfs_session_mkswap (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -31441,6 +31795,8 @@ allowed. Setting the label on a btrfs subvolume will set the label
 on its parent filesystem. The filesystem must not be mounted when
 trying to set the label.</p>
 <p>fat The label is limited to 11 bytes.</p>
+<p>swap
+The label is limited to 16 bytes.</p>
 <p>If there is no support for changing the label for the type of the
 specified filesystem, set_label will fail and set errno as ENOTSUP.</p>
 <p>To read the label on a filesystem, call <a class="link" href="GuestfsSession.html#guestfs-session-vfs-label" title="guestfs_session_vfs_label ()"><code class="function">guestfs_session_vfs_label()</code></a>.</p>

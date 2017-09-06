@@ -938,6 +938,33 @@ struct command_entry inspect_get_icon_cmd_entry = {
   .run = run_inspect_get_icon
 };
 
+struct command_entry inspect_get_windows_system_hive_cmd_entry = {
+  .name = "inspect-get-windows-system-hive",
+  .help = "NAME\n"
+          "    inspect-get-windows-system-hive - get the path of the Windows system\n"
+          "    hive\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     inspect-get-windows-system-hive root\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    This returns the path to the hive (binary Windows Registry file)\n"
+          "    corresponding to HKLM\\SYSTEM.\n"
+          "\n"
+          "    This call assumes that the guest is Windows and that the guest has a\n"
+          "    system hive file with the right name. If this is not the case then an\n"
+          "    error is returned. This call does not check that the hive is a valid\n"
+          "    Windows Registry hive.\n"
+          "\n"
+          "    You can use \"hivex_open\" to read or write to the hive.\n"
+          "\n"
+          "    Please read \"INSPECTION\" in guestfs(3) for more details.\n"
+          "\n"
+          "",
+  .synopsis = "inspect-get-windows-system-hive root",
+  .run = run_inspect_get_windows_system_hive
+};
+
 struct command_entry inspect_is_netinst_cmd_entry = {
   .name = "inspect-is-netinst",
   .help = "NAME\n"

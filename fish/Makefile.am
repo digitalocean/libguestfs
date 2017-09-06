@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -67,51 +67,8 @@ EXTRA_DIST = \
 	virt-tar-in.pod \
 	virt-tar-out.pod
 
-# These source files (mostly related to option parsing) are shared
-# between guestfish, guestmount and some other virt tools.  Keep a
-# convenient list here just so we know which ones are shared.  These
-# files must not include other guestfish files.
-FISHCOMMON_SOURCE_FILES = \
-	decrypt.c \
-	display-options.h \
-	display-options.c \
-	domain.c \
-	inspect.c \
-	keys.c \
-	options.h \
-	options.c \
-	uri.h \
-	uri.c
-
-SHARED_SOURCE_FILES = \
-	$(FISHCOMMON_SOURCE_FILES) \
-	config.c \
-	progress.h \
-	progress.c
-
-# libfishcommon.la contains guestfish code which is used in other
-# C tools.  Note this convenience static library is *not* used in
-# guestfish, as the sources are built with extra defines
-# (e.g. -DCOMPILING_GUESTFISH) in that case.
-libfishcommon_la_SOURCES = \
-	$(FISHCOMMON_SOURCE_FILES)
-libfishcommon_la_CPPFLAGS = \
-	-DGUESTFS_WARN_DEPRECATED=1 \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	-I$(top_srcdir)/fish -I$(top_builddir)/fish \
-	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
-libfishcommon_la_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(LIBXML2_CFLAGS)
-libfishcommon_la_LIBADD = \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/src/libutils.la \
-	$(LIBXML2_LIBS) \
-	$(LTLIBINTL)
-
 guestfish_SOURCES = \
 	$(generator_built) \
-	$(SHARED_SOURCE_FILES) \
 	alloc.c \
 	cmds-gperf.h \
 	copy.c \
@@ -120,8 +77,6 @@ guestfish_SOURCES = \
 	echo.c \
 	edit.c \
 	events.c \
-	file-edit.c \
-	file-edit.h \
 	fish.c \
 	fish.h \
 	glob.c \
@@ -152,11 +107,12 @@ librc_protocol_la_CFLAGS = -Wall -Wno-unused -fno-strict-aliasing
 # lots of warnings so we must compile it in a separate mini-library.
 libcmds_la_SOURCES = cmds-gperf.c
 libcmds_la_CPPFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 libcmds_la_CFLAGS =
 libcmds_la_LIBADD = \
-	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/common/utils/libutils.la \
 	$(LTLIBINTL)
 
 cmds-gperf.c: cmds-gperf.gperf
@@ -165,10 +121,13 @@ cmds-gperf.c: cmds-gperf.gperf
 	mv $@-t $@
 
 guestfish_CPPFLAGS = \
-	-DCOMPILING_GUESTFISH=1 \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/edit -I$(top_builddir)/common/edit \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
+	-I$(top_srcdir)/common/progress -I$(top_builddir)/common/progress \
 	-I$(top_srcdir)/fish -I$(top_builddir)/fish \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
@@ -178,17 +137,20 @@ guestfish_CFLAGS = \
 	$(LIBXML2_CFLAGS)
 
 guestfish_LDADD = \
+	$(top_builddir)/common/edit/libedit.la \
+	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/progress/libprogress.la \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
+	$(LIBXML2_LIBS) \
 	$(LIBCONFIG_LIBS) \
 	$(LIBREADLINE) \
 	$(LIBTINFO_LIBS) \
-	$(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/src/libutils.la \
-	$(LIBXML2_LIBS) \
 	$(LTLIBINTL) \
 	-lm
 
 # Make guestfish use the convenience libraries.
-noinst_LTLIBRARIES = libcmds.la librc_protocol.la libfishcommon.la
+noinst_LTLIBRARIES = libcmds.la librc_protocol.la
 guestfish_LDADD += libcmds.la librc_protocol.la ../gnulib/lib/libgnu.la
 
 if HAVE_RPCGEN
@@ -315,14 +277,18 @@ TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 TESTS = \
 	test-a.sh \
-	test-add-domain.sh \
 	test-add-uri.sh \
-	test-d.sh \
 	test-docs.sh \
 	test-escapes.sh \
 	test-events.sh \
 	test-invalid-params.sh \
 	test-tilde.sh
+
+if HAVE_LIBVIRT
+TESTS += \
+	test-add-domain.sh \
+	test-d.sh
+endif
 
 if ENABLE_APPLIANCE
 TESTS += \

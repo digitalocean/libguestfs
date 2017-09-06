@@ -41,7 +41,7 @@
 #include <php_guestfs_php.h>
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-internal-frontend.h" /* Only for POINTER_NOT_IMPLEMENTED */
 
 static int res_guestfs_h;
 
@@ -174,6 +174,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_aug_save, NULL)
   PHP_FE (guestfs_aug_set, NULL)
   PHP_FE (guestfs_aug_setm, NULL)
+  PHP_FE (guestfs_aug_transform, NULL)
   PHP_FE (guestfs_available, NULL)
   PHP_FE (guestfs_available_all_groups, NULL)
   PHP_FE (guestfs_base64_in, NULL)
@@ -301,6 +302,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_fill_pattern, NULL)
   PHP_FE (guestfs_find, NULL)
   PHP_FE (guestfs_find0, NULL)
+  PHP_FE (guestfs_find_inode, NULL)
   PHP_FE (guestfs_findfs_label, NULL)
   PHP_FE (guestfs_findfs_uuid, NULL)
   PHP_FE (guestfs_fsck, NULL)
@@ -391,6 +393,8 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_inspect_get_roots, NULL)
   PHP_FE (guestfs_inspect_get_type, NULL)
   PHP_FE (guestfs_inspect_get_windows_current_control_set, NULL)
+  PHP_FE (guestfs_inspect_get_windows_software_hive, NULL)
+  PHP_FE (guestfs_inspect_get_windows_system_hive, NULL)
   PHP_FE (guestfs_inspect_get_windows_systemroot, NULL)
   PHP_FE (guestfs_inspect_is_live, NULL)
   PHP_FE (guestfs_inspect_is_multipart, NULL)
@@ -535,6 +539,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_mknod, NULL)
   PHP_FE (guestfs_mknod_b, NULL)
   PHP_FE (guestfs_mknod_c, NULL)
+  PHP_FE (guestfs_mksquashfs, NULL)
   PHP_FE (guestfs_mkswap, NULL)
   PHP_FE (guestfs_mkswap_L, NULL)
   PHP_FE (guestfs_mkswap_U, NULL)
@@ -1971,6 +1976,54 @@ PHP_FUNCTION (guestfs_aug_setm)
   }
 
   RETURN_LONG (r);
+}
+
+PHP_FUNCTION (guestfs_aug_transform)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *lens;
+  guestfs_string_length lens_size;
+  char *file;
+  guestfs_string_length file_size;
+  struct guestfs_aug_transform_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_aug_transform_argv *optargs = &optargs_s;
+  zend_bool optargs_t_remove = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|b",
+        &z_g, &lens, &lens_size, &file, &file_size, &optargs_t_remove) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (lens) != lens_size) {
+    fprintf (stderr, "libguestfs: aug_transform: parameter 'lens' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (file) != file_size) {
+    fprintf (stderr, "libguestfs: aug_transform: parameter 'file' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_remove != (zend_bool)-1) {
+    optargs_s.remove = optargs_t_remove;
+    optargs_s.bitmask |= GUESTFS_AUG_TRANSFORM_REMOVE_BITMASK;
+  }
+
+  int r;
+  r = guestfs_aug_transform_argv (g, lens, file, optargs);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
 }
 
 PHP_FUNCTION (guestfs_available)
@@ -6948,6 +7001,69 @@ PHP_FUNCTION (guestfs_find0)
   RETURN_TRUE;
 }
 
+PHP_FUNCTION (guestfs_find_inode)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  guestfs_string_length device_size;
+  long inode;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsl",
+        &z_g, &device, &device_size, &inode) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: find_inode: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  struct guestfs_tsk_dirent_list *r;
+  r = guestfs_find_inode (g, device, inode);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  array_init (return_value);
+  size_t c = 0;
+  for (c = 0; c < r->len; ++c) {
+#if ZEND_MODULE_API_NO >= 20151012
+    zval elem;
+    zval *z_elem = &elem;
+#else
+    zval *z_elem;
+    ALLOC_INIT_ZVAL (z_elem);
+#endif
+    array_init (z_elem);
+    add_assoc_long (z_elem, "tsk_inode", r->val[c].tsk_inode);
+    guestfs_add_assoc_stringl (z_elem, "tsk_type", &r->val[c].tsk_type, 1, 1);
+    add_assoc_long (z_elem, "tsk_size", r->val[c].tsk_size);
+    guestfs_add_assoc_string (z_elem, "tsk_name", r->val[c].tsk_name, 1);
+    add_assoc_long (z_elem, "tsk_flags", r->val[c].tsk_flags);
+    add_assoc_long (z_elem, "tsk_atime_sec", r->val[c].tsk_atime_sec);
+    add_assoc_long (z_elem, "tsk_atime_nsec", r->val[c].tsk_atime_nsec);
+    add_assoc_long (z_elem, "tsk_mtime_sec", r->val[c].tsk_mtime_sec);
+    add_assoc_long (z_elem, "tsk_mtime_nsec", r->val[c].tsk_mtime_nsec);
+    add_assoc_long (z_elem, "tsk_ctime_sec", r->val[c].tsk_ctime_sec);
+    add_assoc_long (z_elem, "tsk_ctime_nsec", r->val[c].tsk_ctime_nsec);
+    add_assoc_long (z_elem, "tsk_crtime_sec", r->val[c].tsk_crtime_sec);
+    add_assoc_long (z_elem, "tsk_crtime_nsec", r->val[c].tsk_crtime_nsec);
+    add_assoc_long (z_elem, "tsk_nlink", r->val[c].tsk_nlink);
+    guestfs_add_assoc_string (z_elem, "tsk_link", r->val[c].tsk_link, 1);
+    add_assoc_long (z_elem, "tsk_spare1", r->val[c].tsk_spare1);
+    add_next_index_zval (return_value, z_elem);
+  }
+  guestfs_free_tsk_dirent_list (r);
+}
+
 PHP_FUNCTION (guestfs_findfs_label)
 {
   zval *z_g;
@@ -8876,9 +8992,10 @@ PHP_FUNCTION (guestfs_hivex_open)
   zend_bool optargs_t_verbose = -1;
   zend_bool optargs_t_debug = -1;
   zend_bool optargs_t_write = -1;
+  zend_bool optargs_t_unsafe = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bbb",
-        &z_g, &filename, &filename_size, &optargs_t_verbose, &optargs_t_debug, &optargs_t_write) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bbbb",
+        &z_g, &filename, &filename_size, &optargs_t_verbose, &optargs_t_debug, &optargs_t_write, &optargs_t_unsafe) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -8904,6 +9021,10 @@ PHP_FUNCTION (guestfs_hivex_open)
   if (optargs_t_write != (zend_bool)-1) {
     optargs_s.write = optargs_t_write;
     optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
+  }
+  if (optargs_t_unsafe != (zend_bool)-1) {
+    optargs_s.unsafe = optargs_t_unsafe;
+    optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_UNSAFE_BITMASK;
   }
 
   int r;
@@ -9934,6 +10055,76 @@ PHP_FUNCTION (guestfs_inspect_get_windows_current_control_set)
 
   char *r;
   r = guestfs_inspect_get_windows_current_control_set (g, root);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrdup (r);
+  free (r);
+  GUESTFS_RETURN_STRING (r_copy, 0);
+}
+
+PHP_FUNCTION (guestfs_inspect_get_windows_software_hive)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *root;
+  guestfs_string_length root_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &root, &root_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (root) != root_size) {
+    fprintf (stderr, "libguestfs: inspect_get_windows_software_hive: parameter 'root' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  char *r;
+  r = guestfs_inspect_get_windows_software_hive (g, root);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrdup (r);
+  free (r);
+  GUESTFS_RETURN_STRING (r_copy, 0);
+}
+
+PHP_FUNCTION (guestfs_inspect_get_windows_system_hive)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *root;
+  guestfs_string_length root_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &root, &root_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (root) != root_size) {
+    fprintf (stderr, "libguestfs: inspect_get_windows_system_hive: parameter 'root' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  char *r;
+  r = guestfs_inspect_get_windows_system_hive (g, root);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -15936,6 +16127,66 @@ PHP_FUNCTION (guestfs_mknod_c)
 
   int r;
   r = guestfs_mknod_c (g, mode, devmajor, devminor, path);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_mksquashfs)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *path;
+  guestfs_string_length path_size;
+  char *filename;
+  guestfs_string_length filename_size;
+  struct guestfs_mksquashfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mksquashfs_argv *optargs = &optargs_s;
+  char *optargs_t_compress = NULL;
+  guestfs_string_length optargs_t_compress_size = -1;
+  zval *optargs_t_excludes = NULL;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|sa!",
+        &z_g, &path, &path_size, &filename, &filename_size, &optargs_t_compress, &optargs_t_compress_size, &optargs_t_excludes) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (path) != path_size) {
+    fprintf (stderr, "libguestfs: mksquashfs: parameter 'path' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (filename) != filename_size) {
+    fprintf (stderr, "libguestfs: mksquashfs: parameter 'filename' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_compress != NULL) {
+    optargs_s.compress = optargs_t_compress;
+    optargs_s.bitmask |= GUESTFS_MKSQUASHFS_COMPRESS_BITMASK;
+  }
+  /* We've seen PHP give us a *long* here when we asked for an array, so
+   * positively check that it gave us an array, otherwise ignore it.
+   */
+  if (optargs_t_excludes != NULL && Z_TYPE_P (optargs_t_excludes) == IS_ARRAY) {
+    optargs_s.excludes = get_stringlist (optargs_t_excludes);
+    optargs_s.bitmask |= GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK;
+  }
+
+  int r;
+  r = guestfs_mksquashfs_argv (g, path, filename, optargs);
+
+  if ((optargs_s.bitmask & GUESTFS_MKSQUASHFS_EXCLUDES_BITMASK) != 0)
+    guestfs_efree_stringlist ((char **) optargs_s.excludes);
 
   if (r == -1) {
     RETURN_FALSE;

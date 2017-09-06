@@ -9,10 +9,12 @@ GuestfsHivexOpen
 
 </para>
 
+
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
 
 <!-- ##### SECTION Stability_Level ##### -->
 
@@ -27,6 +29,11 @@ GuestfsHivexOpen
 
 
 <!-- ##### ARG GuestfsHivexOpen:debug ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsHivexOpen:unsafe ##### -->
 <para>
 
 </para>

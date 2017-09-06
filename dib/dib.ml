@@ -18,6 +18,7 @@
 
 open Common_gettext.Gettext
 open Common_utils
+open Unix_utils
 
 open Cmdline
 open Utils
@@ -26,6 +27,10 @@ open Elements
 open Printf
 
 module G = Guestfs
+
+let checksums = [ "md5"; "sha512" ]
+and tool_of_checksum csum =
+  csum ^ "sum"
 
 let exclude_elements elements = function
   | [] ->
@@ -68,15 +73,18 @@ let envvars_string l =
   String.concat "\n" l
 
 let prepare_external ~envvars ~dib_args ~dib_vars ~out_name ~root_label
-  ~rootfs_uuid ~image_cache ~arch ~network ~debug ~fs_type
-  destdir libdir hooksdir fakebindir all_elements element_paths =
+  ~rootfs_uuid ~image_cache ~arch ~network ~debug ~fs_type ~checksum
+  destdir libdir fakebindir all_elements element_paths =
   let network_string = if network then "" else "1" in
+  let checksum_string = if checksum then "1" else "" in
 
   let run_extra = sprintf "\
 #!/bin/bash
 set -e
 %s
 mount_dir=$1
+shift
+hooks_dir=$1
 shift
 target_dir=$1
 shift
@@ -97,7 +105,7 @@ export DIB_IMAGE_ROOT_FS_UUID=%s
 export DIB_IMAGE_CACHE=\"%s\"
 export _LIB=%s
 export ARCH=%s
-export TMP_HOOKS_PATH=%s
+export TMP_HOOKS_PATH=\"$hooks_dir\"
 export DIB_ARGS=\"%s\"
 export IMAGE_ELEMENT=\"%s\"
 export ELEMENTS_PATH=\"%s\"
@@ -106,6 +114,7 @@ export TMPDIR=\"${TMP_MOUNT_PATH}/tmp\"
 export TMP_DIR=\"${TMPDIR}\"
 export DIB_DEBUG_TRACE=%d
 export FS_TYPE=%s
+export DIB_CHECKSUM=%s
 
 ENVIRONMENT_D_DIR=$target_dir/../environment.d
 
@@ -117,6 +126,8 @@ if [ -d $ENVIRONMENT_D_DIR ] ; then
         source $env_file
     done
 fi
+
+source $_LIB/die
 
 $target_dir/$script
 "
@@ -130,19 +141,20 @@ $target_dir/$script
     image_cache
     (quote libdir)
     arch
-    (quote hooksdir)
     dib_args
     (String.concat " " (StringSet.elements all_elements))
     (String.concat ":" element_paths)
     (quote dib_vars)
     debug
-    fs_type in
+    fs_type
+    checksum_string in
   write_script (destdir // "run-part-extra.sh") run_extra
 
 let prepare_aux ~envvars ~dib_args ~dib_vars ~log_file ~out_name ~rootfs_uuid
   ~arch ~network ~root_label ~install_type ~debug ~extra_packages ~fs_type
-  destdir all_elements =
+  ~checksum destdir all_elements =
   let network_string = if network then "" else "1" in
+  let checksum_string = if checksum then "1" else "" in
 
   let script_run_part = sprintf "\
 #!/bin/bash
@@ -165,8 +177,8 @@ shift
 %s
 
 # system variables
-export HOME=$mysysroot/tmp/aux/perm/home
-export PATH=$mysysroot/tmp/aux/hooks/bin:$PATH
+export HOME=$mysysroot/tmp/in_target.aux/perm/home
+export PATH=$mysysroot/tmp/in_target.aux/hooks/bin:$PATH
 export TMP=$mysysroot/tmp
 export TMPDIR=$TMP
 export TMP_DIR=$TMP
@@ -179,24 +191,26 @@ export IMAGE_NAME=\"%s\"
 export DIB_IMAGE_ROOT_FS_UUID=%s
 export DIB_IMAGE_CACHE=$HOME/.cache/image-create
 export DIB_ROOT_LABEL=\"%s\"
-export _LIB=$mysysroot/tmp/aux/lib
-export _PREFIX=$mysysroot/tmp/aux/elements
+export _LIB=$mysysroot/tmp/in_target.aux/lib
+export _PREFIX=$mysysroot/tmp/in_target.aux/elements
 export ARCH=%s
-export TMP_HOOKS_PATH=$mysysroot/tmp/aux/hooks
+export TMP_HOOKS_PATH=$mysysroot/tmp/in_target.aux/hooks
 export DIB_ARGS=\"%s\"
-export DIB_MANIFEST_SAVE_DIR=\"$mysysroot/tmp/aux/out/${IMAGE_NAME}.d\"
+export DIB_MANIFEST_SAVE_DIR=\"$mysysroot/tmp/in_target.aux/out/${IMAGE_NAME}.d\"
 export IMAGE_BLOCK_DEVICE=$blockdev
 export IMAGE_ELEMENT=\"%s\"
 export DIB_ENV=%s
 export DIB_DEBUG_TRACE=%d
 export DIB_NO_TMPFS=1
 export FS_TYPE=%s
+export DIB_CHECKSUM=%s
 
-export TMP_BUILD_DIR=$mysysroot/tmp/aux
-export TMP_IMAGE_DIR=$mysysroot/tmp/aux
+export TMP_BUILD_DIR=$mysysroot/tmp/in_target.aux
+export TMP_IMAGE_DIR=$mysysroot/tmp/in_target.aux
 
 if [ -n \"$mysysroot\" ]; then
-  export PATH=$mysysroot/tmp/aux/fake-bin:$PATH
+  export PATH=$mysysroot/tmp/in_target.aux/fake-bin:$PATH
+  source $_LIB/die
 else
   export PATH=\"$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"
 fi
@@ -229,7 +243,8 @@ $target_dir/$script
     (String.concat " " (StringSet.elements all_elements))
     (quote dib_vars)
     debug
-    fs_type in
+    fs_type
+    checksum_string in
   write_script (destdir // "run-part.sh") script_run_part;
   let script_run_and_log = "\
 #!/bin/bash
@@ -279,7 +294,7 @@ if [ -n \"$user\" ]; then
 fi
 
 if [ -z \"$preserve_env\" ]; then
-  for envvar in `env | grep '^\\w' | cut -d= -f1`; do
+  for envvar in `awk 'BEGIN{for (i in ENVIRON) {print i}}'`; do
     case \"$envvar\" in
       PATH | USER | USERNAME | HOSTNAME | TERM | LANG | HOME | SHELL | LOGNAME ) ;;
       BASH_FUNC_* ) unset -f $envvar ;;
@@ -287,6 +302,11 @@ if [ -z \"$preserve_env\" ]; then
     esac
   done
 fi
+# TMPDIR needs to be unset, regardless of -E
+unset TMPDIR
+# ... and do that also to the other \"TMPDIR\"-like variables
+unset TMP
+unset TMP_DIR
 
 cmd=$1
 shift
@@ -357,7 +377,7 @@ let timed_run fn =
 
 let run_parts ~debug ~sysroot ~blockdev ~log_file ?(new_wd = "")
   (g : Guestfs.guestfs) hook_name scripts =
-  let hook_dir = "/tmp/aux/hooks/" ^ hook_name in
+  let hook_dir = "/tmp/in_target.aux/hooks/" ^ hook_name in
   let scripts = List.sort digit_prefix_compare scripts in
   let outbuf = Buffer.create 16384 in
   let timings = Hashtbl.create 13 in
@@ -374,11 +394,11 @@ let run_parts ~debug ~sysroot ~blockdev ~log_file ?(new_wd = "")
         let outstr =
           match sysroot with
           | In ->
-            g#sh (sprintf "/tmp/aux/run-and-log.sh '%s' '' '' '%s' '%s' '%s' '%s'" log_file blockdev hook_dir new_wd x)
+            g#sh (sprintf "/tmp/in_target.aux/run-and-log.sh '%s' '' '' '%s' '%s' '%s' '%s'" log_file blockdev hook_dir new_wd x)
           | Out ->
-            g#debug "sh" [| "/sysroot/tmp/aux/run-and-log.sh"; "/sysroot" ^ log_file; "/sysroot"; "/sysroot"; blockdev; "/sysroot" ^ hook_dir; new_wd; x |]
+            g#debug "sh" [| "/sysroot/tmp/in_target.aux/run-and-log.sh"; "/sysroot" ^ log_file; "/sysroot"; "/sysroot"; blockdev; "/sysroot" ^ hook_dir; new_wd; x |]
           | Subroot ->
-            g#debug "sh" [| "/sysroot/tmp/aux/run-and-log.sh"; "/sysroot" ^ log_file; "/sysroot/subroot"; "/sysroot"; blockdev; "/sysroot" ^ hook_dir; new_wd; x |] in
+            g#debug "sh" [| "/sysroot/tmp/in_target.aux/run-and-log.sh"; "/sysroot" ^ log_file; "/sysroot/subroot"; "/sysroot"; blockdev; "/sysroot" ^ hook_dir; new_wd; x |] in
         out := outstr;
         Buffer.add_string outbuf outstr in
       let delta_t = timed_run run in
@@ -394,10 +414,14 @@ let run_parts ~debug ~sysroot ~blockdev ~log_file ?(new_wd = "")
   flush_all ();
   Buffer.contents outbuf
 
-let run_parts_host ~debug (g : Guestfs.guestfs) hooks_dir hook_name base_mount_dir scripts run_script =
-  let hook_dir = hooks_dir // hook_name in
+let run_parts_host ~debug (g : Guestfs.guestfs) hook_name base_mount_dir scripts run_script =
   let scripts = List.sort digit_prefix_compare scripts in
   let mount_dir = base_mount_dir // hook_name in
+  (* Point to the in-guest hooks, so that changes there can affect
+   * other phases.
+   *)
+  let hooks_dir = mount_dir // "tmp" // "in_target.aux" // "hooks" in
+  let hook_dir = hooks_dir // hook_name in
   do_mkdir mount_dir;
 
   let rec fork_and_run () =
@@ -415,7 +439,7 @@ let run_parts_host ~debug (g : Guestfs.guestfs) hooks_dir hook_name base_mount_d
     let rec loop = function
       | x :: xs ->
         message (f_"Running: %s/%s") hook_name x;
-        let cmd = [ run_script; mount_dir; hook_dir; x ] in
+        let cmd = [ run_script; mount_dir; hooks_dir; hook_dir; x ] in
         let retcode = ref 0 in
         let run () =
           retcode := run_command cmd in
@@ -456,7 +480,7 @@ let run_install_packages ~debug ~blockdev ~log_file
   let pkgs_string = String.concat " " packages in
   message (f_"Installing: %s") pkgs_string;
   g#write_append log_file (sprintf "Installing %s...\n" pkgs_string);
-  let out = g#sh (sprintf "/tmp/aux/run-and-log.sh '%s' '' '' '%s' '/tmp/aux' '' 'install-packages.sh'" log_file blockdev) in
+  let out = g#sh (sprintf "/tmp/in_target.aux/run-and-log.sh '%s' '' '' '%s' '/tmp/in_target.aux' '' 'install-packages.sh'" log_file blockdev) in
   let out = ensure_trailing_newline out in
   if debug >= 1 then (
     printf "%s%!" out;
@@ -464,6 +488,9 @@ let run_install_packages ~debug ~blockdev ~log_file
   );
   flush_all ();
   out
+
+(* Finalize the list of output formats. *)
+let () = Output_format.bake ()
 
 let main () =
   let cmdline = parse_cmdline () in
@@ -478,22 +505,16 @@ let main () =
 
   (* Check for required tools. *)
   require_tool "uuidgen";
-  if List.mem "docker" cmdline.formats then (
-    require_tool "docker";
-    if cmdline.docker_target = None then
-      error (f_"docker: a target was not specified, use '--docker-target'");
-  );
-  if List.mem "qcow2" cmdline.formats then
-    require_tool "qemu-img";
-  if List.mem "vhd" cmdline.formats then
-    require_tool "vhd-util";
+  Output_format.check_formats_prerequisites cmdline.formats;
+  if cmdline.checksum then
+    List.iter (fun x -> require_tool (tool_of_checksum x)) checksums;
 
   let image_basename = Filename.basename cmdline.image_name in
   let image_basename_d = image_basename ^ ".d" in
 
   let tmpdir = Mkdtemp.temp_dir "dib." "" in
   rmdir_on_exit tmpdir;
-  let auxtmpdir = tmpdir // "aux" in
+  let auxtmpdir = tmpdir // "in_target.aux" in
   do_mkdir auxtmpdir;
   let hookstmpdir = auxtmpdir // "hooks" in
   do_mkdir (hookstmpdir // "environment.d");    (* Just like d-i-b does. *)
@@ -561,7 +582,7 @@ let main () =
    *)
   let final_hooks = load_hooks ~debug hookstmpdir in
 
-  let log_file = "/tmp/aux/perm/" ^ (log_filename ()) in
+  let log_file = "/tmp/in_target.aux/perm/" ^ (log_filename ()) in
 
   let arch =
     match cmdline.arch with
@@ -588,27 +609,22 @@ let main () =
 
   let rootfs_uuid = uuidgen () in
 
-  let formats_img, formats_archive = List.partition (
-    function
-    | "qcow2" | "raw" | "vhd" -> true
-    | _ -> false
-  ) cmdline.formats in
-  let formats_img_nonraw = List.filter ((<>) "raw") formats_img in
-
   prepare_aux ~envvars ~dib_args ~dib_vars ~log_file ~out_name:image_basename
               ~rootfs_uuid ~arch ~network:cmdline.network ~root_label
               ~install_type:cmdline.install_type ~debug
               ~extra_packages:cmdline.extra_packages
               ~fs_type:cmdline.fs_type
+              ~checksum:cmdline.checksum
               auxtmpdir all_elements;
 
   let delete_output_file = ref cmdline.delete_on_failure in
   let delete_file () =
     if !delete_output_file then (
+      let filenames = Output_format.get_filenames cmdline.formats cmdline.image_name in
       List.iter (
-        fun fmt ->
-          try Unix.unlink (output_filename cmdline.image_name fmt) with _ -> ()
-      ) cmdline.formats
+        fun fn ->
+          try Unix.unlink fn with _ -> ()
+      ) filenames
     )
   in
   at_exit delete_file;
@@ -617,13 +633,31 @@ let main () =
                    ~root_label ~rootfs_uuid ~image_cache ~arch
                    ~network:cmdline.network ~debug
                    ~fs_type:cmdline.fs_type
-                   tmpdir cmdline.basepath hookstmpdir
+                   ~checksum:cmdline.checksum
+                   tmpdir cmdline.basepath
                    (auxtmpdir // "fake-bin")
                    all_elements cmdline.element_paths;
 
   let run_hook ~blockdev ~sysroot ?(new_wd = "") (g : Guestfs.guestfs) hook =
     try
-      let scripts = Hashtbl.find final_hooks hook in
+      let scripts =
+        (* Sadly, scripts (especially in root.d and extra-data.d)
+         * can add (by copying or symlinking) new scripts for other
+         * phases, which would be ignored if we were using the lists
+         * collected after composing the tree of hooks.
+         * As result, when running in-chroot hooks, re-read the list
+         * of scripts actually available for each hook.
+         *)
+        match hook with
+        | "pre-install.d" | "install.d" | "post-install.d" | "finalise.d" ->
+          let scripts_path = "/tmp/in_target.aux/hooks/" ^ hook in
+          (* Cleanly handle cases when the phase directory does not exist. *)
+          if g#is_dir ~followsymlinks:true scripts_path then
+            load_scripts g scripts_path
+          else
+            raise Not_found
+        | _ ->
+          Hashtbl.find final_hooks hook in
       if debug >= 1 then (
         printf "Running hooks for %s...\n%!" hook;
       );
@@ -659,7 +693,7 @@ let main () =
       (* If "raw" is among the selected outputs, use it as main backing
        * disk, otherwise create a temporary disk.
        *)
-      if not is_ramdisk_build && List.mem "raw" formats_img then
+      if not is_ramdisk_build && Output_format.set_mem "raw" cmdline.formats then
         cmdline.image_name
       else
         Filename.temp_file ~temp_dir:tmpdir "image." "" in
@@ -680,7 +714,9 @@ let main () =
 
     g#launch ();
 
-    (* Prepare the /aux partition. *)
+    Output_format.check_formats_appliance_prerequisites cmdline.formats g;
+
+    (* Prepare the /in_target.aux partition. *)
     g#mkfs "ext2" "/dev/sdb";
     g#mount "/dev/sdb" "/";
 
@@ -688,7 +724,7 @@ let main () =
     copy_in g cmdline.basepath "/lib";
     g#umount "/";
 
-    (* Prepare the /aux/perm partition. *)
+    (* Prepare the /in_target.aux/perm partition. *)
     let drive_partition =
       match cmdline.drive with
       | None ->
@@ -711,9 +747,9 @@ let main () =
     g, fn, fmt, drive_partition in
 
   let mount_aux () =
-    g#mkmountpoint "/tmp/aux";
-    g#mount "/dev/sdb" "/tmp/aux";
-    g#mount drive_partition "/tmp/aux/perm" in
+    g#mkmountpoint "/tmp/in_target.aux";
+    g#mount "/dev/sdb" "/tmp/in_target.aux";
+    g#mount drive_partition "/tmp/in_target.aux/perm" in
 
   (* Small kludge: try to umount all first: if that fails, use lsof and fuser
    * to find out what might have caused the failure, run udevadm to try
@@ -773,7 +809,7 @@ let main () =
       if debug >= 1 then (
         printf "Running hooks for %s...\n%!" hook;
       );
-      run_parts_host ~debug g hookstmpdir hook tmpdir scripts
+      run_parts_host ~debug g hook tmpdir scripts
         (tmpdir // "run-part-extra.sh")
     with Not_found -> () in
 
@@ -789,6 +825,7 @@ let main () =
     | None -> []
     | Some o -> [ o ] in
   let mkfs_options =
+    [ "-t"; cmdline.fs_type ] @
     (match cmdline.fs_type with
     | "ext4" ->
       (* Very conservative to handle images being resized a lot
@@ -797,7 +834,7 @@ let main () =
        *)
       [ "-i"; "4096"; "-J"; "size=64" ]
     | _ -> []
-    ) @ mkfs_options @ [ "-t"; cmdline.fs_type; blockdev ] in
+    ) @ mkfs_options @ [ blockdev ] in
   ignore (g#debug "sh" (Array.of_list ([ "mkfs" ] @ mkfs_options)));
   g#set_label blockdev root_label;
   if String.is_prefix cmdline.fs_type "ext" then
@@ -810,8 +847,8 @@ let main () =
   run_hook_subroot "root.d";
 
   g#sync ();
-  g#umount "/tmp/aux/perm";
-  g#umount "/tmp/aux";
+  g#umount "/tmp/in_target.aux/perm";
+  g#umount "/tmp/in_target.aux";
   g#rm_rf "/tmp";
   let subroot_items =
     let l = Array.to_list (g#ls "/subroot") in
@@ -825,7 +862,7 @@ let main () =
   (* Check /tmp exists already. *)
   ignore (g#is_dir "/tmp");
   mount_aux ();
-  g#ln_s "aux/hooks" "/tmp/in_target.d";
+  g#ln_s "in_target.aux/hooks" "/tmp/in_target.d";
 
   run_hook_host "extra-data.d";
 
@@ -844,14 +881,14 @@ let main () =
   checked_umount_all ();
   flush_all ();
   g#mount blockdev "/";
-  (* Check /tmp/aux still exists. *)
-  ignore (g#is_dir "/tmp/aux");
-  g#mount "/dev/sdb" "/tmp/aux";
-  g#mount drive_partition "/tmp/aux/perm";
+  (* Check /tmp/in_target.aux still exists. *)
+  ignore (g#is_dir "/tmp/in_target.aux");
+  g#mount "/dev/sdb" "/tmp/in_target.aux";
+  g#mount drive_partition "/tmp/in_target.aux/perm";
 
   run_hook_in "finalise.d";
 
-  let out_dir = "/tmp/aux/out/" ^ image_basename_d in
+  let out_dir = "/tmp/in_target.aux/out/" ^ image_basename_d in
 
   run_hook_out ~new_wd:out_dir "cleanup.d";
 
@@ -871,29 +908,17 @@ let main () =
   flush_all ();
   g#mount blockdev "/";
   Array.iter (fun x -> g#rm_rf ("/tmp/" ^ x)) (g#ls "/tmp");
+  (* Truncate /var/log files in preparation for first boot. *)
+  truncate_recursive g "/var/log";
+  let non_log fn =
+    not (String.is_suffix fn ".log")
+  in
+  (* Remove root logs. *)
+  rm_rf_only_files g ~filter:non_log "/root";
 
   flush_all ();
 
-  List.iter (
-    fun fmt ->
-      let fn = output_filename cmdline.image_name fmt in
-      match fmt with
-      | "tar" ->
-        message (f_"Compressing the image as tar");
-        g#tar_out ~excludes:[| "./sys/*"; "./proc/*" |] "/" fn
-      | "docker" ->
-        let docker_target =
-          match cmdline.docker_target with
-          | None -> assert false (* checked earlier *)
-          | Some t -> t in
-        message (f_"Importing the image to docker as '%s'") docker_target;
-        let dockertmp =
-          Filename.temp_file ~temp_dir:tmpdir "docker." ".tar" in
-        g#tar_out ~excludes:[| "./sys/*"; "./proc/*" |] "/" dockertmp;
-        let cmd = [ "sudo"; "docker"; "import"; dockertmp; docker_target ] in
-        if run_command cmd <> 0 then exit 1
-      | _ as fmt -> error "unhandled format: %s" fmt
-  ) formats_archive;
+  Output_format.run_formats_on_filesystem cmdline.formats g cmdline.image_name tmpdir;
 
   message (f_"Umounting the disks");
 
@@ -910,33 +935,54 @@ let main () =
   flush_all ();
 
   (* Don't produce images as output when doing a ramdisk build. *)
-  if not is_ramdisk_build then (
+  if not is_ramdisk_build then
+    Output_format.run_formats_on_file cmdline.formats cmdline.image_name (tmpdisk, tmpdiskfmt) tmpdir;
+
+  if not is_ramdisk_build && cmdline.checksum then (
+    let file_flags = [ Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC; Unix.O_CLOEXEC; ] in
+    let filenames = Output_format.get_filenames cmdline.formats cmdline.image_name in
     List.iter (
-      fun fmt ->
-        let fn = output_filename cmdline.image_name fmt in
-        message (f_"Converting to %s") fmt;
-        match fmt with
-        | "qcow2" ->
-          let cmd = [ "qemu-img"; "convert" ] @
-            (if cmdline.compressed then [ "-c" ] else []) @
-            [ "-f"; tmpdiskfmt; tmpdisk; "-O"; fmt ] @
-            (match cmdline.qemu_img_options with
-            | None -> []
-            | Some opt -> [ "-o"; opt ]) @
-            [ qemu_input_filename fn ] in
-          if run_command cmd <> 0 then exit 1;
-        | "vhd" ->
-          let fn_intermediate = Filename.temp_file ~temp_dir:tmpdir "vhd-intermediate." "" in
-          let cmd = [ "vhd-util"; "convert"; "-s"; "0"; "-t"; "1";
-                      "-i"; tmpdisk; "-o"; fn_intermediate ] in
-          if run_command cmd <> 0 then exit 1;
-          let cmd = [ "vhd-util"; "convert"; "-s"; "1"; "-t"; "2";
-                      "-i"; fn_intermediate; "-o"; fn ] in
-          if run_command cmd <> 0 then exit 1;
-          if not (Sys.file_exists fn) then
-            error (f_"VHD output not produced, most probably vhd-util is old or not patched for 'convert'")
-        | _ as fmt -> error "unhandled format: %s" fmt
-    ) formats_img_nonraw;
+      fun fn ->
+        message (f_"Generating checksums for %s") fn;
+        let pids =
+          List.map (
+            fun csum ->
+              let csum_fn = fn ^ "." ^ csum in
+              let csum_tool = tool_of_checksum csum in
+              let outfd = Unix.openfile csum_fn file_flags 0o640 in
+              let args = [| csum_tool; fn; |] in
+              Common_utils.debug "%s" (stringify_args (Array.to_list args));
+              let pid = Unix.create_process csum_tool args Unix.stdin
+                          outfd Unix.stderr in
+              (pid, csum_tool, outfd)
+          ) checksums in
+        let pids = ref pids in
+        while !pids <> [] do
+          let pid, stat = Unix.waitpid [] 0 in
+          let matching_pair, new_pids =
+            List.partition (
+              fun (p, tool, outfd) ->
+                pid = p
+            ) !pids in
+          if matching_pair <> [] then (
+            let matching_pair = List.hd matching_pair in
+            let _, csum_tool, outfd = matching_pair in
+            Unix.close outfd;
+            pids := new_pids;
+            match stat with
+            | Unix.WEXITED 0 -> ()
+            | Unix.WEXITED i ->
+              error (f_"external command '%s' exited with error %d")
+                csum_tool i
+            | Unix.WSIGNALED i ->
+              error (f_"external command '%s' killed by signal %d")
+                csum_tool i
+            | Unix.WSTOPPED i ->
+              error (f_"external command '%s' stopped by signal %d")
+                csum_tool i
+          );
+        done;
+    ) filenames;
   );
 
   message (f_"Done")

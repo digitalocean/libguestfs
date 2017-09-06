@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,10 @@ and register_output_module name = push_front name output_modules
 let input_modules () = List.sort compare !input_modules
 and output_modules () = List.sort compare !output_modules
 
+type inspection_fn = Types.inspect -> bool
+
 type conversion_fn =
-  keep_serial_console:bool ->
-  Guestfs.guestfs -> Types.inspect -> Types.source ->
+  Guestfs.guestfs -> Types.inspect -> Types.source -> Types.output_settings ->
   Types.requested_guestcaps -> Types.guestcaps
 
 let convert_modules = ref []

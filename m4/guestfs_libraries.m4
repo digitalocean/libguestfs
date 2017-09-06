@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -81,9 +81,6 @@ AC_CHECK_FUNCS([\
     sigaction \
     statvfs \
     sync])
-
-dnl Which header file defines major, minor, makedev.
-AC_HEADER_MAJOR
 
 dnl Check for UNIX_PATH_MAX, creating a custom one if not available.
 AC_MSG_CHECKING([for UNIX_PATH_MAX])
@@ -233,13 +230,14 @@ PKG_CHECK_MODULES([PCRE], [libpcre])
 dnl Check for Augeas >= 1.0.0 (required).
 PKG_CHECK_MODULES([AUGEAS],[augeas >= 1.0.0])
 
-dnl libmagic (highly recommended)
+dnl libmagic (required)
 AC_CHECK_LIB([magic],[magic_file],[
     AC_CHECK_HEADER([magic.h],[
         AC_SUBST([MAGIC_LIBS], ["-lmagic"])
-        AC_DEFINE([HAVE_LIBMAGIC],[1],[libmagic found at compile time.])
     ], [])
-],[AC_MSG_WARN([libmagic not found, some core features will be disabled])])
+],[])
+AS_IF([test -z "$MAGIC_LIBS"],
+    [AC_MSG_ERROR([libmagic (part of the "file" command) is required])])
 
 dnl libvirt (highly recommended)
 AC_ARG_WITH([libvirt],[
@@ -285,5 +283,5 @@ AC_DEFINE_UNQUOTED([PATH_SEPARATOR],["$PATH_SEPARATOR"],
                    [Character that separates path elements in search paths])
 
 dnl Library versioning.
-MAX_PROC_NR=`cat $srcdir/src/MAX_PROC_NR`
+MAX_PROC_NR=`cat $srcdir/lib/MAX_PROC_NR`
 AC_SUBST(MAX_PROC_NR)

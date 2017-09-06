@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs virt-v2v test script
-# Copyright (C) 2014-2016 Red Hat Inc.
+# Copyright (C) 2014-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,35 +18,17 @@
 
 # Test -i ova option with ova file compressed in different ways
 
-unset CDPATH
-export LANG=C
 set -e
 
-formats="tar zip tar-gz tar-xz"
+$TEST_FUNCTIONS
+skip_if_skipped
+skip_if_backend uml
+skip_unless zip --version
+skip_unless unzip --help
 
-if [ -n "$SKIP_TEST_V2V_I_OVA_FORMATS_SH" ]; then
-    echo "$0: test skipped because environment variable is set"
-    exit 77
-fi
+formats="zip tar-gz tar-xz"
 
-if ! zip --version >/dev/null 2>&1; then
-    echo "$0: test skipped because 'zip' utility is not available"
-    exit 77
-fi
-
-if ! unzip --help >/dev/null 2>&1; then
-    echo "$0: test skipped because 'unzip' utility is not available"
-    exit 77
-fi
-
-if [ "$(guestfish get-backend)" = "uml" ]; then
-    echo "$0: test skipped because UML backend does not support network"
-    exit 77
-fi
-
-export VIRT_TOOLS_DATA_DIR="$srcdir/../test-data/fake-virt-tools"
-
-. $srcdir/../test-data/guestfs-hashsums.sh
+export VIRT_TOOLS_DATA_DIR="$top_srcdir/test-data/fake-virt-tools"
 
 d=test-v2v-i-ova-formats.d
 rm -rf $d
@@ -56,16 +38,13 @@ pushd $d
 
 # Create a phony OVA.  This is only a test of source parsing, not
 # conversion, so the contents of the disks doesn't matter.
-truncate -s 10k disk1.vmdk
+guestfish disk-create disk1.vmdk raw 10K
 sha=`do_sha1 disk1.vmdk`
 echo -e "SHA1(disk1.vmdk)= $sha\r" > disk1.mf
 cp ../test-v2v-i-ova-formats.ovf .
 
 for format in $formats; do
     case "$format" in
-        tar)
-            tar -cf test-$format.ova test-v2v-i-ova-formats.ovf disk1.vmdk disk1.mf
-            ;;
         zip)
             zip -r test test-v2v-i-ova-formats.ovf disk1.vmdk disk1.mf
             mv test.zip test-$format.ova

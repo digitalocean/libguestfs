@@ -17,7 +17,7 @@ C<virt-v2v-copy-to-local> copies a guest from a remote hypervisor to the
 local machine, in preparation for conversion by L<virt-v2v(1)>.  Note this
 tool alone B<does not> do the virt-v2v conversion.
 
-=head2 When to use this tool
+=head2 Умови використання цієї програми
 
 This tool is not usually necessary, but there are a few special cases (see
 list below) where you might need it.
@@ -48,7 +48,7 @@ from where virt-v2v will be able to access it.
 
 =back
 
-=head2 How this tool works
+=head2 Як працює ця програма
 
 This tool uses libvirt to get the libvirt XML (metadata) of the remote
 guest, essentially equivalent to running C<virsh dumpxml guest>.
@@ -66,7 +66,7 @@ F<guest-disk1>, F<guest-disk2> and so on.
 
 After copying the guest locally, you can convert it using:
 
- virt-v2v -i libvirtxml guest.xml [-o options ...]
+ virt-v2v -i libvirtxml гість.xml [-o параметри ...]
 
 Virt-v2v finds the local copies of the disks by looking in the XML.
 
@@ -143,5 +143,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2016
+Copyright (C) 2009-2017 Red Hat Inc.
 

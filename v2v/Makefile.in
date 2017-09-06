@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-v2v tool
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -147,44 +147,50 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@bin_PROGRAMS = virt-v2v$(EXEEXT) \
 @HAVE_OCAML_TRUE@	virt-v2v-copy-to-local$(EXEEXT)
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
-@HAVE_OCAML_TRUE@TESTS = test-v2v-docs.sh test-v2v-i-ova-formats.sh \
+@HAVE_OCAML_TRUE@TESTS = test-v2v-docs.sh test-v2v-i-ova-tar.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-formats.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-gz.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-subfolders.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh \
-@HAVE_OCAML_TRUE@	test-v2v-copy-to-local.sh \
 @HAVE_OCAML_TRUE@	test-v2v-bad-networks-and-bridges.sh \
-@HAVE_OCAML_TRUE@	$(am__EXEEXT_1) $(am__append_3)
-@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_2 = v2v_unit_tests
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_3 = \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-cdrom.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-floppy.sh \
+@HAVE_OCAML_TRUE@	$(am__append_2) $(am__EXEEXT_1) \
+@HAVE_OCAML_TRUE@	$(am__append_4) $(am__append_5)
+@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@am__append_2 = \
+@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-copy-to-local.sh
+
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = v2v_unit_tests
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_4 = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-i-ova.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-i-disk.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-in-place.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-machine-readable.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-networks-and-bridges.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-no-copy.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-glance.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-libvirt.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-null.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-qemu.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-rhev.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-vdsm-options.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-oa-option.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-on-option.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-print-source.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-sound.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-virtio-win-iso.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-windows-conversion.sh \
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	$(SLOW_TESTS)
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-v2v-windows-conversion.sh
 
-@HAVE_OCAML_TRUE@am__append_4 = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@am__append_5 = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-cdrom.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-floppy.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-in-place.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-networks-and-bridges.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-no-copy.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-glance.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-libvirt.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-null.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-qemu.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-rhv.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-vdsm-options.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-oa-option.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-on-option.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-print-source.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-sound.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(SLOW_TESTS)
+
+@HAVE_OCAML_TRUE@am__append_6 = \
 @HAVE_OCAML_TRUE@	$(real_guests_scripts) \
 @HAVE_OCAML_TRUE@	real-*.img \
 @HAVE_OCAML_TRUE@	real-*.xml
 
-@HAVE_OCAML_TRUE@am__append_5 = \
+@HAVE_OCAML_TRUE@am__append_7 = \
 @HAVE_OCAML_TRUE@	test-v2v-bad-networks-and-bridges.sh \
 @HAVE_OCAML_TRUE@	test-v2v-cdrom.expected \
 @HAVE_OCAML_TRUE@	test-v2v-cdrom.sh \
@@ -202,9 +208,15 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-gz.ovf \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-gz.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-subfolders.expected \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-subfolders.expected2 \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-subfolders.ovf \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-subfolders.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-tar.expected \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-tar.expected2 \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-tar.ovf \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-tar.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.expected \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.expected2 \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.ovf \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova.ovf \
@@ -220,7 +232,7 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	test-v2v-o-libvirt.sh \
 @HAVE_OCAML_TRUE@	test-v2v-o-null.sh \
 @HAVE_OCAML_TRUE@	test-v2v-o-qemu.sh \
-@HAVE_OCAML_TRUE@	test-v2v-o-rhev.sh \
+@HAVE_OCAML_TRUE@	test-v2v-o-rhv.sh \
 @HAVE_OCAML_TRUE@	test-v2v-o-vdsm-options.sh \
 @HAVE_OCAML_TRUE@	test-v2v-oa-option.sh \
 @HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
@@ -234,14 +246,13 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	test-v2v-windows-conversion.sh
 
 @HAVE_OCAML_TRUE@check_PROGRAMS = $(am__EXEEXT_1)
-@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_6 = v2v_unit_tests
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_8 = v2v_unit_tests
 subdir = v2v
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/m4/accept4.m4 $(top_srcdir)/m4/alloca.m4 \
-	$(top_srcdir)/m4/arpa_inet_h.m4 \
-	$(top_srcdir)/m4/asm-underscore.m4 $(top_srcdir)/m4/base64.m4 \
+	$(top_srcdir)/m4/arpa_inet_h.m4 $(top_srcdir)/m4/base64.m4 \
 	$(top_srcdir)/m4/btowc.m4 $(top_srcdir)/m4/builtin-expect.m4 \
 	$(top_srcdir)/m4/byteswap.m4 $(top_srcdir)/m4/chdir-long.m4 \
 	$(top_srcdir)/m4/clock_time.m4 \
@@ -257,8 +268,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/environ.m4 \
 	$(top_srcdir)/m4/errno_h.m4 $(top_srcdir)/m4/error.m4 \
 	$(top_srcdir)/m4/exponentd.m4 $(top_srcdir)/m4/extensions.m4 \
-	$(top_srcdir)/m4/extern-inline.m4 \
-	$(top_srcdir)/m4/fatal-signal.m4 $(top_srcdir)/m4/fchdir.m4 \
+	$(top_srcdir)/m4/extern-inline.m4 $(top_srcdir)/m4/fchdir.m4 \
 	$(top_srcdir)/m4/fcntl-o.m4 $(top_srcdir)/m4/fcntl-safer.m4 \
 	$(top_srcdir)/m4/fcntl.m4 $(top_srcdir)/m4/fcntl_h.m4 \
 	$(top_srcdir)/m4/fdopen.m4 $(top_srcdir)/m4/fdopendir.m4 \
@@ -316,12 +326,11 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
 	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
-	$(top_srcdir)/m4/nonblocking.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
-	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
-	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
-	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/posix_spawn.m4 \
+	$(top_srcdir)/m4/ocaml.m4 $(top_srcdir)/m4/off_t.m4 \
+	$(top_srcdir)/m4/onceonly.m4 $(top_srcdir)/m4/open.m4 \
+	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
+	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
+	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
 	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
 	$(top_srcdir)/m4/priv-set.m4 \
 	$(top_srcdir)/m4/pthread_rwlock_rdlock.m4 \
@@ -333,28 +342,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
 	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
 	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/sched_h.m4 \
-	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sig_atomic_t.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
 	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
 	$(top_srcdir)/m4/sockets.m4 $(top_srcdir)/m4/socklen.m4 \
-	$(top_srcdir)/m4/sockpfaf.m4 $(top_srcdir)/m4/spawn_h.m4 \
-	$(top_srcdir)/m4/ssize_t.m4 $(top_srcdir)/m4/stat-time.m4 \
-	$(top_srcdir)/m4/stat.m4 $(top_srcdir)/m4/stdalign.m4 \
-	$(top_srcdir)/m4/stdarg.m4 $(top_srcdir)/m4/stdbool.m4 \
-	$(top_srcdir)/m4/stddef_h.m4 $(top_srcdir)/m4/stdint.m4 \
-	$(top_srcdir)/m4/stdint_h.m4 $(top_srcdir)/m4/stdio_h.m4 \
-	$(top_srcdir)/m4/stdlib_h.m4 $(top_srcdir)/m4/strchrnul.m4 \
-	$(top_srcdir)/m4/strdup.m4 $(top_srcdir)/m4/strerror.m4 \
-	$(top_srcdir)/m4/strerror_r.m4 $(top_srcdir)/m4/string_h.m4 \
-	$(top_srcdir)/m4/strndup.m4 $(top_srcdir)/m4/strnlen.m4 \
-	$(top_srcdir)/m4/strtoll.m4 $(top_srcdir)/m4/strtoull.m4 \
-	$(top_srcdir)/m4/strtoumax.m4 $(top_srcdir)/m4/symlink.m4 \
-	$(top_srcdir)/m4/symlinkat.m4 $(top_srcdir)/m4/sys_ioctl_h.m4 \
+	$(top_srcdir)/m4/sockpfaf.m4 $(top_srcdir)/m4/ssize_t.m4 \
+	$(top_srcdir)/m4/stat-time.m4 $(top_srcdir)/m4/stat.m4 \
+	$(top_srcdir)/m4/stdalign.m4 $(top_srcdir)/m4/stdarg.m4 \
+	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/m4/stddef_h.m4 \
+	$(top_srcdir)/m4/stdint.m4 $(top_srcdir)/m4/stdint_h.m4 \
+	$(top_srcdir)/m4/stdio_h.m4 $(top_srcdir)/m4/stdlib_h.m4 \
+	$(top_srcdir)/m4/strchrnul.m4 $(top_srcdir)/m4/strdup.m4 \
+	$(top_srcdir)/m4/strerror.m4 $(top_srcdir)/m4/strerror_r.m4 \
+	$(top_srcdir)/m4/string_h.m4 $(top_srcdir)/m4/strndup.m4 \
+	$(top_srcdir)/m4/strnlen.m4 $(top_srcdir)/m4/strtoll.m4 \
+	$(top_srcdir)/m4/strtoull.m4 $(top_srcdir)/m4/strtoumax.m4 \
+	$(top_srcdir)/m4/symlink.m4 $(top_srcdir)/m4/symlinkat.m4 \
+	$(top_srcdir)/m4/sys_ioctl_h.m4 \
 	$(top_srcdir)/m4/sys_select_h.m4 \
 	$(top_srcdir)/m4/sys_socket_h.m4 \
 	$(top_srcdir)/m4/sys_stat_h.m4 $(top_srcdir)/m4/sys_time_h.m4 \
@@ -369,16 +377,15 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/utimbuf.m4 $(top_srcdir)/m4/utimecmp.m4 \
 	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
 	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
-	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
-	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
-	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
-	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
-	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
-	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
-	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
-	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs_progs.m4 \
+	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
+	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
+	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
+	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
+	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
+	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
+	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
+	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
+	$(top_srcdir)/m4/guestfs_progs.m4 \
 	$(top_srcdir)/m4/guestfs_c.m4 \
 	$(top_srcdir)/m4/guestfs_libraries.m4 \
 	$(top_srcdir)/m4/guestfs_fuse.m4 \
@@ -409,26 +416,22 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_1 = v2v_unit_tests$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
-am__v2v_unit_tests_SOURCES_DIST = domainxml-c.c utils-c.c xml-c.c
-am__objects_1 = v2v_unit_tests-domainxml-c.$(OBJEXT) \
-	v2v_unit_tests-utils-c.$(OBJEXT) \
-	v2v_unit_tests-xml-c.$(OBJEXT)
+am__v2v_unit_tests_SOURCES_DIST = libvirt_utils-c.c utils-c.c
+am__objects_1 = v2v_unit_tests-libvirt_utils-c.$(OBJEXT) \
+	v2v_unit_tests-utils-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am__objects_2 = $(am__objects_1)
 @HAVE_OCAML_TRUE@am_v2v_unit_tests_OBJECTS = $(am__objects_2)
 v2v_unit_tests_OBJECTS = $(am_v2v_unit_tests_OBJECTS)
 v2v_unit_tests_LDADD = $(LDADD)
-am__virt_v2v_SOURCES_DIST = domainxml-c.c utils-c.c xml-c.c
-am__objects_3 = virt_v2v-domainxml-c.$(OBJEXT) \
-	virt_v2v-utils-c.$(OBJEXT) virt_v2v-xml-c.$(OBJEXT)
+am__virt_v2v_SOURCES_DIST = libvirt_utils-c.c utils-c.c
+am__objects_3 = virt_v2v-libvirt_utils-c.$(OBJEXT) \
+	virt_v2v-utils-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_virt_v2v_OBJECTS = $(am__objects_3)
 virt_v2v_OBJECTS = $(am_virt_v2v_OBJECTS)
 virt_v2v_LDADD = $(LDADD)
-am__virt_v2v_copy_to_local_SOURCES_DIST = domainxml-c.c utils-c.c \
-	xml-c.c
-@HAVE_OCAML_TRUE@am_virt_v2v_copy_to_local_OBJECTS =  \
-@HAVE_OCAML_TRUE@	virt_v2v_copy_to_local-domainxml-c.$(OBJEXT) \
-@HAVE_OCAML_TRUE@	virt_v2v_copy_to_local-utils-c.$(OBJEXT) \
-@HAVE_OCAML_TRUE@	virt_v2v_copy_to_local-xml-c.$(OBJEXT)
+am__virt_v2v_copy_to_local_SOURCES_DIST = libvirt_utils-c.c utils-c.c
+@HAVE_OCAML_TRUE@am_virt_v2v_copy_to_local_OBJECTS = virt_v2v_copy_to_local-libvirt_utils-c.$(OBJEXT) \
+@HAVE_OCAML_TRUE@	virt_v2v_copy_to_local-utils-c.$(OBJEXT)
 virt_v2v_copy_to_local_OBJECTS = $(am_virt_v2v_copy_to_local_OBJECTS)
 virt_v2v_copy_to_local_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -721,7 +724,6 @@ AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 APPLE_UNIVERSAL_BUILD = @APPLE_UNIVERSAL_BUILD@
 AR = @AR@
 ARFLAGS = @ARFLAGS@
-ASM_SYMBOL_PREFIX = @ASM_SYMBOL_PREFIX@
 AUGEAS_CFLAGS = @AUGEAS_CFLAGS@
 AUGEAS_LIBS = @AUGEAS_LIBS@
 AUTOCONF = @AUTOCONF@
@@ -949,27 +951,6 @@ GNULIB_PIPE = @GNULIB_PIPE@
 GNULIB_PIPE2 = @GNULIB_PIPE2@
 GNULIB_POPEN = @GNULIB_POPEN@
 GNULIB_POSIX_OPENPT = @GNULIB_POSIX_OPENPT@
-GNULIB_POSIX_SPAWN = @GNULIB_POSIX_SPAWN@
-GNULIB_POSIX_SPAWNATTR_DESTROY = @GNULIB_POSIX_SPAWNATTR_DESTROY@
-GNULIB_POSIX_SPAWNATTR_GETFLAGS = @GNULIB_POSIX_SPAWNATTR_GETFLAGS@
-GNULIB_POSIX_SPAWNATTR_GETPGROUP = @GNULIB_POSIX_SPAWNATTR_GETPGROUP@
-GNULIB_POSIX_SPAWNATTR_GETSCHEDPARAM = @GNULIB_POSIX_SPAWNATTR_GETSCHEDPARAM@
-GNULIB_POSIX_SPAWNATTR_GETSCHEDPOLICY = @GNULIB_POSIX_SPAWNATTR_GETSCHEDPOLICY@
-GNULIB_POSIX_SPAWNATTR_GETSIGDEFAULT = @GNULIB_POSIX_SPAWNATTR_GETSIGDEFAULT@
-GNULIB_POSIX_SPAWNATTR_GETSIGMASK = @GNULIB_POSIX_SPAWNATTR_GETSIGMASK@
-GNULIB_POSIX_SPAWNATTR_INIT = @GNULIB_POSIX_SPAWNATTR_INIT@
-GNULIB_POSIX_SPAWNATTR_SETFLAGS = @GNULIB_POSIX_SPAWNATTR_SETFLAGS@
-GNULIB_POSIX_SPAWNATTR_SETPGROUP = @GNULIB_POSIX_SPAWNATTR_SETPGROUP@
-GNULIB_POSIX_SPAWNATTR_SETSCHEDPARAM = @GNULIB_POSIX_SPAWNATTR_SETSCHEDPARAM@
-GNULIB_POSIX_SPAWNATTR_SETSCHEDPOLICY = @GNULIB_POSIX_SPAWNATTR_SETSCHEDPOLICY@
-GNULIB_POSIX_SPAWNATTR_SETSIGDEFAULT = @GNULIB_POSIX_SPAWNATTR_SETSIGDEFAULT@
-GNULIB_POSIX_SPAWNATTR_SETSIGMASK = @GNULIB_POSIX_SPAWNATTR_SETSIGMASK@
-GNULIB_POSIX_SPAWNP = @GNULIB_POSIX_SPAWNP@
-GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
-GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
-GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
-GNULIB_POSIX_SPAWN_FILE_ACTIONS_DESTROY = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_DESTROY@
-GNULIB_POSIX_SPAWN_FILE_ACTIONS_INIT = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_INIT@
 GNULIB_PREAD = @GNULIB_PREAD@
 GNULIB_PRINTF = @GNULIB_PRINTF@
 GNULIB_PRINTF_POSIX = @GNULIB_PRINTF_POSIX@
@@ -1259,9 +1240,6 @@ HAVE_PIPE2 = @HAVE_PIPE2@
 HAVE_POPEN = @HAVE_POPEN@
 HAVE_POSIX_OPENPT = @HAVE_POSIX_OPENPT@
 HAVE_POSIX_SIGNALBLOCKING = @HAVE_POSIX_SIGNALBLOCKING@
-HAVE_POSIX_SPAWN = @HAVE_POSIX_SPAWN@
-HAVE_POSIX_SPAWNATTR_T = @HAVE_POSIX_SPAWNATTR_T@
-HAVE_POSIX_SPAWN_FILE_ACTIONS_T = @HAVE_POSIX_SPAWN_FILE_ACTIONS_T@
 HAVE_PREAD = @HAVE_PREAD@
 HAVE_PSELECT = @HAVE_PSELECT@
 HAVE_PTHREAD_SIGMASK = @HAVE_PTHREAD_SIGMASK@
@@ -1283,7 +1261,6 @@ HAVE_REWINDDIR = @HAVE_REWINDDIR@
 HAVE_RPMATCH = @HAVE_RPMATCH@
 HAVE_SA_FAMILY_T = @HAVE_SA_FAMILY_T@
 HAVE_SCANDIR = @HAVE_SCANDIR@
-HAVE_SCHED_H = @HAVE_SCHED_H@
 HAVE_SECURE_GETENV = @HAVE_SECURE_GETENV@
 HAVE_SETENV = @HAVE_SETENV@
 HAVE_SETHOSTNAME = @HAVE_SETHOSTNAME@
@@ -1295,7 +1272,6 @@ HAVE_SIGNED_WCHAR_T = @HAVE_SIGNED_WCHAR_T@
 HAVE_SIGNED_WINT_T = @HAVE_SIGNED_WINT_T@
 HAVE_SIGSET_T = @HAVE_SIGSET_T@
 HAVE_SLEEP = @HAVE_SLEEP@
-HAVE_SPAWN_H = @HAVE_SPAWN_H@
 HAVE_STDINT_H = @HAVE_STDINT_H@
 HAVE_STPCPY = @HAVE_STPCPY@
 HAVE_STPNCPY = @HAVE_STPNCPY@
@@ -1309,7 +1285,6 @@ HAVE_STRTOLL = @HAVE_STRTOLL@
 HAVE_STRTOULL = @HAVE_STRTOULL@
 HAVE_STRUCT_ADDRINFO = @HAVE_STRUCT_ADDRINFO@
 HAVE_STRUCT_RANDOM_DATA = @HAVE_STRUCT_RANDOM_DATA@
-HAVE_STRUCT_SCHED_PARAM = @HAVE_STRUCT_SCHED_PARAM@
 HAVE_STRUCT_SIGACTION_SA_SIGACTION = @HAVE_STRUCT_SIGACTION_SA_SIGACTION@
 HAVE_STRUCT_SOCKADDR_STORAGE = @HAVE_STRUCT_SOCKADDR_STORAGE@
 HAVE_STRUCT_SOCKADDR_STORAGE_SS_FAMILY = @HAVE_STRUCT_SOCKADDR_STORAGE_SS_FAMILY@
@@ -1447,7 +1422,6 @@ LIBXML2_LIBS = @LIBXML2_LIBS@
 LIB_CLOCK_GETTIME = @LIB_CLOCK_GETTIME@
 LIB_GETLOGIN = @LIB_GETLOGIN@
 LIB_NANOSLEEP = @LIB_NANOSLEEP@
-LIB_POSIX_SPAWN = @LIB_POSIX_SPAWN@
 LIB_SELECT = @LIB_SELECT@
 LIMITS_H = @LIMITS_H@
 LIPO = @LIPO@
@@ -1495,9 +1469,7 @@ NEXT_AS_FIRST_DIRECTIVE_LIMITS_H = @NEXT_AS_FIRST_DIRECTIVE_LIMITS_H@
 NEXT_AS_FIRST_DIRECTIVE_LOCALE_H = @NEXT_AS_FIRST_DIRECTIVE_LOCALE_H@
 NEXT_AS_FIRST_DIRECTIVE_NETDB_H = @NEXT_AS_FIRST_DIRECTIVE_NETDB_H@
 NEXT_AS_FIRST_DIRECTIVE_NETINET_IN_H = @NEXT_AS_FIRST_DIRECTIVE_NETINET_IN_H@
-NEXT_AS_FIRST_DIRECTIVE_SCHED_H = @NEXT_AS_FIRST_DIRECTIVE_SCHED_H@
 NEXT_AS_FIRST_DIRECTIVE_SIGNAL_H = @NEXT_AS_FIRST_DIRECTIVE_SIGNAL_H@
-NEXT_AS_FIRST_DIRECTIVE_SPAWN_H = @NEXT_AS_FIRST_DIRECTIVE_SPAWN_H@
 NEXT_AS_FIRST_DIRECTIVE_STDARG_H = @NEXT_AS_FIRST_DIRECTIVE_STDARG_H@
 NEXT_AS_FIRST_DIRECTIVE_STDDEF_H = @NEXT_AS_FIRST_DIRECTIVE_STDDEF_H@
 NEXT_AS_FIRST_DIRECTIVE_STDINT_H = @NEXT_AS_FIRST_DIRECTIVE_STDINT_H@
@@ -1528,9 +1500,7 @@ NEXT_LIMITS_H = @NEXT_LIMITS_H@
 NEXT_LOCALE_H = @NEXT_LOCALE_H@
 NEXT_NETDB_H = @NEXT_NETDB_H@
 NEXT_NETINET_IN_H = @NEXT_NETINET_IN_H@
-NEXT_SCHED_H = @NEXT_SCHED_H@
 NEXT_SIGNAL_H = @NEXT_SIGNAL_H@
-NEXT_SPAWN_H = @NEXT_SPAWN_H@
 NEXT_STDARG_H = @NEXT_STDARG_H@
 NEXT_STDDEF_H = @NEXT_STDDEF_H@
 NEXT_STDINT_H = @NEXT_STDINT_H@
@@ -1696,10 +1666,6 @@ REPLACE_OPENAT = @REPLACE_OPENAT@
 REPLACE_OPENDIR = @REPLACE_OPENDIR@
 REPLACE_PERROR = @REPLACE_PERROR@
 REPLACE_POPEN = @REPLACE_POPEN@
-REPLACE_POSIX_SPAWN = @REPLACE_POSIX_SPAWN@
-REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
-REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
-REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
 REPLACE_PREAD = @REPLACE_PREAD@
 REPLACE_PRINTF = @REPLACE_PRINTF@
 REPLACE_PSELECT = @REPLACE_PSELECT@
@@ -1773,7 +1739,6 @@ REPLACE_WCWIDTH = @REPLACE_WCWIDTH@
 REPLACE_WRITE = @REPLACE_WRITE@
 RPCGEN = @RPCGEN@
 RUBY = @RUBY@
-SCHED_H = @SCHED_H@
 SD_JOURNAL_CFLAGS = @SD_JOURNAL_CFLAGS@
 SD_JOURNAL_LIBS = @SD_JOURNAL_LIBS@
 SED = @SED@
@@ -1914,7 +1879,7 @@ top_srcdir = @top_srcdir@
 # Bindtests temporary files used in many language bindings.
 CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
 	dll*.so *.a *.annot oUnit-*.cache oUnit-*.log *.1 *.3 *.5 *.8 \
-	stamp-*.pod bindtests.tmp $(am__append_4)
+	stamp-*.pod bindtests.tmp $(am__append_6)
 
 # Files that should be universally removed by 'make distclean'.
 DISTCLEANFILES = .depend stamp-*
@@ -1953,14 +1918,14 @@ guestfs_am_v_jar_ = $(guestfs_am_v_jar_@AM_DEFAULT_V@)
 guestfs_am_v_jar_0 = @echo "  JAR     " $@;
 EXTRA_DIST = $(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	copy_to_local.ml v2v_unit_tests.ml virt-v2v.pod \
-	virt-v2v-copy-to-local.pod $(am__append_5)
+	virt-v2v-copy-to-local.pod $(am__append_7)
 SOURCES_MLI = \
 	changeuid.mli \
 	cmdline.mli \
 	convert_linux.mli \
 	convert_windows.mli \
+	create_libvirt_xml.mli \
 	DOM.mli \
-	domainxml.mli \
 	input_disk.mli \
 	input_libvirt.mli \
 	input_libvirt_other.mli \
@@ -1969,6 +1934,7 @@ SOURCES_MLI = \
 	input_libvirtxml.mli \
 	input_ova.mli \
 	inspect_source.mli \
+	libvirt_utils.mli \
 	linux.mli \
 	linux_bootloaders.mli \
 	linux_kernels.mli \
@@ -1979,28 +1945,26 @@ SOURCES_MLI = \
 	output_local.mli \
 	output_null.mli \
 	output_qemu.mli \
-	output_rhev.mli \
+	output_rhv.mli \
 	output_vdsm.mli \
 	OVF.mli \
+	parse_libvirt_xml.mli \
+	qemu_command.mli \
 	target_bus_assignment.mli \
 	types.mli \
 	uefi.mli \
 	utils.mli \
 	vCenter.mli \
 	windows.mli \
-	windows_virtio.mli \
-	xml.mli \
-	xpath_helpers.mli
+	windows_virtio.mli
 
 SOURCES_ML = \
 	types.ml \
-	xml.ml \
-	xpath_helpers.ml \
 	uefi.ml \
 	utils.ml \
 	name_from_disk.ml \
 	vCenter.ml \
-	domainxml.ml \
+	libvirt_utils.ml \
 	DOM.ml \
 	changeuid.ml \
 	OVF.ml \
@@ -2009,6 +1973,9 @@ SOURCES_ML = \
 	windows_virtio.ml \
 	modules_list.ml \
 	input_disk.ml \
+	parse_libvirt_xml.ml \
+	create_libvirt_xml.ml \
+	qemu_command.ml \
 	input_libvirtxml.ml \
 	input_libvirt_other.ml \
 	input_libvirt_vcenter_https.ml \
@@ -2024,7 +1991,7 @@ SOURCES_ML = \
 	output_libvirt.ml \
 	output_local.ml \
 	output_qemu.ml \
-	output_rhev.ml \
+	output_rhv.ml \
 	output_vdsm.ml \
 	inspect_source.ml \
 	target_bus_assignment.ml \
@@ -2032,20 +1999,19 @@ SOURCES_ML = \
 	v2v.ml
 
 SOURCES_C = \
-	domainxml-c.c \
-	utils-c.c \
-	xml-c.c
+	libvirt_utils-c.c \
+	utils-c.c
 
 @HAVE_OCAML_TRUE@virt_v2v_SOURCES = $(SOURCES_C)
 @HAVE_OCAML_TRUE@virt_v2v_CPPFLAGS = \
 @HAVE_OCAML_TRUE@	-I. \
 @HAVE_OCAML_TRUE@	-I$(top_builddir) \
 @HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/utils \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib
 
 @HAVE_OCAML_TRUE@virt_v2v_CFLAGS = \
 @HAVE_OCAML_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_OCAML_TRUE@	$(LIBXML2_CFLAGS) \
 @HAVE_OCAML_TRUE@	$(LIBVIRT_CFLAGS)
 
 @HAVE_OCAML_TRUE@BOBJECTS = \
@@ -2055,11 +2021,12 @@ SOURCES_C = \
 
 @HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
-# -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
+# -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
-@HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/common/utils/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/gnulib/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib -I \
@@ -2082,28 +2049,25 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	  $(OBJECTS) -o $@
 
 @HAVE_OCAML_TRUE@virt_v2v_copy_to_local_SOURCES = \
-@HAVE_OCAML_TRUE@	domainxml-c.c \
-@HAVE_OCAML_TRUE@	utils-c.c \
-@HAVE_OCAML_TRUE@	xml-c.c
+@HAVE_OCAML_TRUE@	libvirt_utils-c.c \
+@HAVE_OCAML_TRUE@	utils-c.c
 
 @HAVE_OCAML_TRUE@virt_v2v_copy_to_local_CPPFLAGS = \
 @HAVE_OCAML_TRUE@	-I. \
 @HAVE_OCAML_TRUE@	-I$(top_builddir) \
 @HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/utils \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib
 
 @HAVE_OCAML_TRUE@virt_v2v_copy_to_local_CFLAGS = \
 @HAVE_OCAML_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_OCAML_TRUE@	$(LIBXML2_CFLAGS) \
 @HAVE_OCAML_TRUE@	$(LIBVIRT_CFLAGS)
 
 @HAVE_OCAML_TRUE@COPY_TO_LOCAL_BOBJECTS = \
-@HAVE_OCAML_TRUE@	xml.cmo \
-@HAVE_OCAML_TRUE@	xpath_helpers.cmo \
 @HAVE_OCAML_TRUE@	uefi.cmo \
 @HAVE_OCAML_TRUE@	utils.cmo \
+@HAVE_OCAML_TRUE@	libvirt_utils.cmo \
 @HAVE_OCAML_TRUE@	vCenter.cmo \
-@HAVE_OCAML_TRUE@	domainxml.cmo \
 @HAVE_OCAML_TRUE@	copy_to_local.cmo
 
 @HAVE_OCAML_TRUE@COPY_TO_LOCAL_XOBJECTS = $(COPY_TO_LOCAL_BOBJECTS:.cmo=.cmx)
@@ -2156,16 +2120,22 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@real_guests_scripts = \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of-centos-6.sh \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of-centos-7.0.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-debian-6.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-debian-7.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-debian-8.sh \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of-fedora-20.sh \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of-fedora-23.sh \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of-rhel-5.10.sh \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of-rhel-6.8.sh \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of-rhel-7.0.sh \
-@HAVE_OCAML_TRUE@	test-v2v-conversion-of-rhel-7.2.sh
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-rhel-7.2.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-ubuntu-10.04.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-ubuntu-12.04.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-ubuntu-14.04.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-ubuntu-16.04.sh
 
 @HAVE_OCAML_TRUE@v2v_unit_tests_BOBJECTS = \
 @HAVE_OCAML_TRUE@	types.cmo \
-@HAVE_OCAML_TRUE@	xml.cmo \
 @HAVE_OCAML_TRUE@	uefi.cmo \
 @HAVE_OCAML_TRUE@	utils.cmo \
 @HAVE_OCAML_TRUE@	DOM.cmo \
@@ -2306,15 +2276,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-domainxml-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-libvirt_utils-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-utils-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v2v_unit_tests-xml-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-domainxml-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-libvirt_utils-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-utils-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v-xml-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v_copy_to_local-domainxml-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v_copy_to_local-libvirt_utils-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v_copy_to_local-utils-c.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_v2v_copy_to_local-xml-c.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -2340,19 +2307,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-v2v_unit_tests-domainxml-c.o: domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-domainxml-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-domainxml-c.Tpo -c -o v2v_unit_tests-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-domainxml-c.Tpo $(DEPDIR)/v2v_unit_tests-domainxml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='v2v_unit_tests-domainxml-c.o' libtool=no @AMDEPBACKSLASH@
+v2v_unit_tests-libvirt_utils-c.o: libvirt_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-libvirt_utils-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-libvirt_utils-c.Tpo -c -o v2v_unit_tests-libvirt_utils-c.o `test -f 'libvirt_utils-c.c' || echo '$(srcdir)/'`libvirt_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-libvirt_utils-c.Tpo $(DEPDIR)/v2v_unit_tests-libvirt_utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt_utils-c.c' object='v2v_unit_tests-libvirt_utils-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-libvirt_utils-c.o `test -f 'libvirt_utils-c.c' || echo '$(srcdir)/'`libvirt_utils-c.c
 
-v2v_unit_tests-domainxml-c.obj: domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-domainxml-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-domainxml-c.Tpo -c -o v2v_unit_tests-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-domainxml-c.Tpo $(DEPDIR)/v2v_unit_tests-domainxml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='v2v_unit_tests-domainxml-c.obj' libtool=no @AMDEPBACKSLASH@
+v2v_unit_tests-libvirt_utils-c.obj: libvirt_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-libvirt_utils-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-libvirt_utils-c.Tpo -c -o v2v_unit_tests-libvirt_utils-c.obj `if test -f 'libvirt_utils-c.c'; then $(CYGPATH_W) 'libvirt_utils-c.c'; else $(CYGPATH_W) '$(srcdir)/libvirt_utils-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-libvirt_utils-c.Tpo $(DEPDIR)/v2v_unit_tests-libvirt_utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt_utils-c.c' object='v2v_unit_tests-libvirt_utils-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-libvirt_utils-c.obj `if test -f 'libvirt_utils-c.c'; then $(CYGPATH_W) 'libvirt_utils-c.c'; else $(CYGPATH_W) '$(srcdir)/libvirt_utils-c.c'; fi`
 
 v2v_unit_tests-utils-c.o: utils-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-utils-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-utils-c.Tpo -c -o v2v_unit_tests-utils-c.o `test -f 'utils-c.c' || echo '$(srcdir)/'`utils-c.c
@@ -2368,33 +2335,19 @@ v2v_unit_tests-utils-c.obj: utils-c.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-utils-c.obj `if test -f 'utils-c.c'; then $(CYGPATH_W) 'utils-c.c'; else $(CYGPATH_W) '$(srcdir)/utils-c.c'; fi`
 
-v2v_unit_tests-xml-c.o: xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-xml-c.o -MD -MP -MF $(DEPDIR)/v2v_unit_tests-xml-c.Tpo -c -o v2v_unit_tests-xml-c.o `test -f 'xml-c.c' || echo '$(srcdir)/'`xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-xml-c.Tpo $(DEPDIR)/v2v_unit_tests-xml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml-c.c' object='v2v_unit_tests-xml-c.o' libtool=no @AMDEPBACKSLASH@
+virt_v2v-libvirt_utils-c.o: libvirt_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-libvirt_utils-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-libvirt_utils-c.Tpo -c -o virt_v2v-libvirt_utils-c.o `test -f 'libvirt_utils-c.c' || echo '$(srcdir)/'`libvirt_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-libvirt_utils-c.Tpo $(DEPDIR)/virt_v2v-libvirt_utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt_utils-c.c' object='virt_v2v-libvirt_utils-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-xml-c.o `test -f 'xml-c.c' || echo '$(srcdir)/'`xml-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-libvirt_utils-c.o `test -f 'libvirt_utils-c.c' || echo '$(srcdir)/'`libvirt_utils-c.c
 
-v2v_unit_tests-xml-c.obj: xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -MT v2v_unit_tests-xml-c.obj -MD -MP -MF $(DEPDIR)/v2v_unit_tests-xml-c.Tpo -c -o v2v_unit_tests-xml-c.obj `if test -f 'xml-c.c'; then $(CYGPATH_W) 'xml-c.c'; else $(CYGPATH_W) '$(srcdir)/xml-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/v2v_unit_tests-xml-c.Tpo $(DEPDIR)/v2v_unit_tests-xml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml-c.c' object='v2v_unit_tests-xml-c.obj' libtool=no @AMDEPBACKSLASH@
+virt_v2v-libvirt_utils-c.obj: libvirt_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-libvirt_utils-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-libvirt_utils-c.Tpo -c -o virt_v2v-libvirt_utils-c.obj `if test -f 'libvirt_utils-c.c'; then $(CYGPATH_W) 'libvirt_utils-c.c'; else $(CYGPATH_W) '$(srcdir)/libvirt_utils-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-libvirt_utils-c.Tpo $(DEPDIR)/virt_v2v-libvirt_utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt_utils-c.c' object='virt_v2v-libvirt_utils-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(v2v_unit_tests_CPPFLAGS) $(CPPFLAGS) $(v2v_unit_tests_CFLAGS) $(CFLAGS) -c -o v2v_unit_tests-xml-c.obj `if test -f 'xml-c.c'; then $(CYGPATH_W) 'xml-c.c'; else $(CYGPATH_W) '$(srcdir)/xml-c.c'; fi`
-
-virt_v2v-domainxml-c.o: domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-domainxml-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-domainxml-c.Tpo -c -o virt_v2v-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-domainxml-c.Tpo $(DEPDIR)/virt_v2v-domainxml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='virt_v2v-domainxml-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
-
-virt_v2v-domainxml-c.obj: domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-domainxml-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-domainxml-c.Tpo -c -o virt_v2v-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-domainxml-c.Tpo $(DEPDIR)/virt_v2v-domainxml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='virt_v2v-domainxml-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-libvirt_utils-c.obj `if test -f 'libvirt_utils-c.c'; then $(CYGPATH_W) 'libvirt_utils-c.c'; else $(CYGPATH_W) '$(srcdir)/libvirt_utils-c.c'; fi`
 
 virt_v2v-utils-c.o: utils-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-utils-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-utils-c.Tpo -c -o virt_v2v-utils-c.o `test -f 'utils-c.c' || echo '$(srcdir)/'`utils-c.c
@@ -2410,33 +2363,19 @@ virt_v2v-utils-c.obj: utils-c.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-utils-c.obj `if test -f 'utils-c.c'; then $(CYGPATH_W) 'utils-c.c'; else $(CYGPATH_W) '$(srcdir)/utils-c.c'; fi`
 
-virt_v2v-xml-c.o: xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-xml-c.o -MD -MP -MF $(DEPDIR)/virt_v2v-xml-c.Tpo -c -o virt_v2v-xml-c.o `test -f 'xml-c.c' || echo '$(srcdir)/'`xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-xml-c.Tpo $(DEPDIR)/virt_v2v-xml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml-c.c' object='virt_v2v-xml-c.o' libtool=no @AMDEPBACKSLASH@
+virt_v2v_copy_to_local-libvirt_utils-c.o: libvirt_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -MT virt_v2v_copy_to_local-libvirt_utils-c.o -MD -MP -MF $(DEPDIR)/virt_v2v_copy_to_local-libvirt_utils-c.Tpo -c -o virt_v2v_copy_to_local-libvirt_utils-c.o `test -f 'libvirt_utils-c.c' || echo '$(srcdir)/'`libvirt_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v_copy_to_local-libvirt_utils-c.Tpo $(DEPDIR)/virt_v2v_copy_to_local-libvirt_utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt_utils-c.c' object='virt_v2v_copy_to_local-libvirt_utils-c.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-xml-c.o `test -f 'xml-c.c' || echo '$(srcdir)/'`xml-c.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -c -o virt_v2v_copy_to_local-libvirt_utils-c.o `test -f 'libvirt_utils-c.c' || echo '$(srcdir)/'`libvirt_utils-c.c
 
-virt_v2v-xml-c.obj: xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -MT virt_v2v-xml-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v-xml-c.Tpo -c -o virt_v2v-xml-c.obj `if test -f 'xml-c.c'; then $(CYGPATH_W) 'xml-c.c'; else $(CYGPATH_W) '$(srcdir)/xml-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v-xml-c.Tpo $(DEPDIR)/virt_v2v-xml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml-c.c' object='virt_v2v-xml-c.obj' libtool=no @AMDEPBACKSLASH@
+virt_v2v_copy_to_local-libvirt_utils-c.obj: libvirt_utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -MT virt_v2v_copy_to_local-libvirt_utils-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v_copy_to_local-libvirt_utils-c.Tpo -c -o virt_v2v_copy_to_local-libvirt_utils-c.obj `if test -f 'libvirt_utils-c.c'; then $(CYGPATH_W) 'libvirt_utils-c.c'; else $(CYGPATH_W) '$(srcdir)/libvirt_utils-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v_copy_to_local-libvirt_utils-c.Tpo $(DEPDIR)/virt_v2v_copy_to_local-libvirt_utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt_utils-c.c' object='virt_v2v_copy_to_local-libvirt_utils-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_CFLAGS) $(CFLAGS) -c -o virt_v2v-xml-c.obj `if test -f 'xml-c.c'; then $(CYGPATH_W) 'xml-c.c'; else $(CYGPATH_W) '$(srcdir)/xml-c.c'; fi`
-
-virt_v2v_copy_to_local-domainxml-c.o: domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -MT virt_v2v_copy_to_local-domainxml-c.o -MD -MP -MF $(DEPDIR)/virt_v2v_copy_to_local-domainxml-c.Tpo -c -o virt_v2v_copy_to_local-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v_copy_to_local-domainxml-c.Tpo $(DEPDIR)/virt_v2v_copy_to_local-domainxml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='virt_v2v_copy_to_local-domainxml-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -c -o virt_v2v_copy_to_local-domainxml-c.o `test -f 'domainxml-c.c' || echo '$(srcdir)/'`domainxml-c.c
-
-virt_v2v_copy_to_local-domainxml-c.obj: domainxml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -MT virt_v2v_copy_to_local-domainxml-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v_copy_to_local-domainxml-c.Tpo -c -o virt_v2v_copy_to_local-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v_copy_to_local-domainxml-c.Tpo $(DEPDIR)/virt_v2v_copy_to_local-domainxml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domainxml-c.c' object='virt_v2v_copy_to_local-domainxml-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -c -o virt_v2v_copy_to_local-domainxml-c.obj `if test -f 'domainxml-c.c'; then $(CYGPATH_W) 'domainxml-c.c'; else $(CYGPATH_W) '$(srcdir)/domainxml-c.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -c -o virt_v2v_copy_to_local-libvirt_utils-c.obj `if test -f 'libvirt_utils-c.c'; then $(CYGPATH_W) 'libvirt_utils-c.c'; else $(CYGPATH_W) '$(srcdir)/libvirt_utils-c.c'; fi`
 
 virt_v2v_copy_to_local-utils-c.o: utils-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -MT virt_v2v_copy_to_local-utils-c.o -MD -MP -MF $(DEPDIR)/virt_v2v_copy_to_local-utils-c.Tpo -c -o virt_v2v_copy_to_local-utils-c.o `test -f 'utils-c.c' || echo '$(srcdir)/'`utils-c.c
@@ -2451,20 +2390,6 @@ virt_v2v_copy_to_local-utils-c.obj: utils-c.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils-c.c' object='virt_v2v_copy_to_local-utils-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -c -o virt_v2v_copy_to_local-utils-c.obj `if test -f 'utils-c.c'; then $(CYGPATH_W) 'utils-c.c'; else $(CYGPATH_W) '$(srcdir)/utils-c.c'; fi`
-
-virt_v2v_copy_to_local-xml-c.o: xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -MT virt_v2v_copy_to_local-xml-c.o -MD -MP -MF $(DEPDIR)/virt_v2v_copy_to_local-xml-c.Tpo -c -o virt_v2v_copy_to_local-xml-c.o `test -f 'xml-c.c' || echo '$(srcdir)/'`xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v_copy_to_local-xml-c.Tpo $(DEPDIR)/virt_v2v_copy_to_local-xml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml-c.c' object='virt_v2v_copy_to_local-xml-c.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -c -o virt_v2v_copy_to_local-xml-c.o `test -f 'xml-c.c' || echo '$(srcdir)/'`xml-c.c
-
-virt_v2v_copy_to_local-xml-c.obj: xml-c.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -MT virt_v2v_copy_to_local-xml-c.obj -MD -MP -MF $(DEPDIR)/virt_v2v_copy_to_local-xml-c.Tpo -c -o virt_v2v_copy_to_local-xml-c.obj `if test -f 'xml-c.c'; then $(CYGPATH_W) 'xml-c.c'; else $(CYGPATH_W) '$(srcdir)/xml-c.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_v2v_copy_to_local-xml-c.Tpo $(DEPDIR)/virt_v2v_copy_to_local-xml-c.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xml-c.c' object='virt_v2v_copy_to_local-xml-c.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_v2v_copy_to_local_CPPFLAGS) $(CPPFLAGS) $(virt_v2v_copy_to_local_CFLAGS) $(CFLAGS) -c -o virt_v2v_copy_to_local-xml-c.obj `if test -f 'xml-c.c'; then $(CYGPATH_W) 'xml-c.c'; else $(CYGPATH_W) '$(srcdir)/xml-c.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2715,6 +2640,13 @@ test-v2v-docs.sh.log: test-v2v-docs.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-i-ova-tar.sh.log: test-v2v-i-ova-tar.sh
+	@p='test-v2v-i-ova-tar.sh'; \
+	b='test-v2v-i-ova-tar.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-v2v-i-ova-formats.sh.log: test-v2v-i-ova-formats.sh
 	@p='test-v2v-i-ova-formats.sh'; \
 	b='test-v2v-i-ova-formats.sh'; \
@@ -2743,13 +2675,6 @@ test-v2v-i-ova-two-disks.sh.log: test-v2v-i-ova-two-disks.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-v2v-copy-to-local.sh.log: test-v2v-copy-to-local.sh
-	@p='test-v2v-copy-to-local.sh'; \
-	b='test-v2v-copy-to-local.sh'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-v2v-bad-networks-and-bridges.sh.log: test-v2v-bad-networks-and-bridges.sh
 	@p='test-v2v-bad-networks-and-bridges.sh'; \
 	b='test-v2v-bad-networks-and-bridges.sh'; \
@@ -2757,23 +2682,16 @@ test-v2v-bad-networks-and-bridges.sh.log: test-v2v-bad-networks-and-bridges.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-copy-to-local.sh.log: test-v2v-copy-to-local.sh
+	@p='test-v2v-copy-to-local.sh'; \
+	b='test-v2v-copy-to-local.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 v2v_unit_tests.log: v2v_unit_tests$(EXEEXT)
 	@p='v2v_unit_tests$(EXEEXT)'; \
 	b='v2v_unit_tests'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-v2v-cdrom.sh.log: test-v2v-cdrom.sh
-	@p='test-v2v-cdrom.sh'; \
-	b='test-v2v-cdrom.sh'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-v2v-floppy.sh.log: test-v2v-floppy.sh
-	@p='test-v2v-floppy.sh'; \
-	b='test-v2v-floppy.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2792,16 +2710,44 @@ test-v2v-i-disk.sh.log: test-v2v-i-disk.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-v2v-in-place.sh.log: test-v2v-in-place.sh
-	@p='test-v2v-in-place.sh'; \
-	b='test-v2v-in-place.sh'; \
+test-v2v-machine-readable.sh.log: test-v2v-machine-readable.sh
+	@p='test-v2v-machine-readable.sh'; \
+	b='test-v2v-machine-readable.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-v2v-machine-readable.sh.log: test-v2v-machine-readable.sh
-	@p='test-v2v-machine-readable.sh'; \
-	b='test-v2v-machine-readable.sh'; \
+test-v2v-virtio-win-iso.sh.log: test-v2v-virtio-win-iso.sh
+	@p='test-v2v-virtio-win-iso.sh'; \
+	b='test-v2v-virtio-win-iso.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-windows-conversion.sh.log: test-v2v-windows-conversion.sh
+	@p='test-v2v-windows-conversion.sh'; \
+	b='test-v2v-windows-conversion.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-cdrom.sh.log: test-v2v-cdrom.sh
+	@p='test-v2v-cdrom.sh'; \
+	b='test-v2v-cdrom.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-floppy.sh.log: test-v2v-floppy.sh
+	@p='test-v2v-floppy.sh'; \
+	b='test-v2v-floppy.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-in-place.sh.log: test-v2v-in-place.sh
+	@p='test-v2v-in-place.sh'; \
+	b='test-v2v-in-place.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2848,9 +2794,9 @@ test-v2v-o-qemu.sh.log: test-v2v-o-qemu.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-v2v-o-rhev.sh.log: test-v2v-o-rhev.sh
-	@p='test-v2v-o-rhev.sh'; \
-	b='test-v2v-o-rhev.sh'; \
+test-v2v-o-rhv.sh.log: test-v2v-o-rhv.sh
+	@p='test-v2v-o-rhv.sh'; \
+	b='test-v2v-o-rhv.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2897,20 +2843,6 @@ test-v2v-sound.sh.log: test-v2v-sound.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-v2v-virtio-win-iso.sh.log: test-v2v-virtio-win-iso.sh
-	@p='test-v2v-virtio-win-iso.sh'; \
-	b='test-v2v-virtio-win-iso.sh'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test-v2v-windows-conversion.sh.log: test-v2v-windows-conversion.sh
-	@p='test-v2v-windows-conversion.sh'; \
-	b='test-v2v-windows-conversion.sh'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-v2v-conversion-of-centos-6.sh.log: test-v2v-conversion-of-centos-6.sh
 	@p='test-v2v-conversion-of-centos-6.sh'; \
 	b='test-v2v-conversion-of-centos-6.sh'; \
@@ -2921,6 +2853,27 @@ test-v2v-conversion-of-centos-6.sh.log: test-v2v-conversion-of-centos-6.sh
 test-v2v-conversion-of-centos-7.0.sh.log: test-v2v-conversion-of-centos-7.0.sh
 	@p='test-v2v-conversion-of-centos-7.0.sh'; \
 	b='test-v2v-conversion-of-centos-7.0.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-debian-6.sh.log: test-v2v-conversion-of-debian-6.sh
+	@p='test-v2v-conversion-of-debian-6.sh'; \
+	b='test-v2v-conversion-of-debian-6.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-debian-7.sh.log: test-v2v-conversion-of-debian-7.sh
+	@p='test-v2v-conversion-of-debian-7.sh'; \
+	b='test-v2v-conversion-of-debian-7.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-debian-8.sh.log: test-v2v-conversion-of-debian-8.sh
+	@p='test-v2v-conversion-of-debian-8.sh'; \
+	b='test-v2v-conversion-of-debian-8.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2963,6 +2916,34 @@ test-v2v-conversion-of-rhel-7.0.sh.log: test-v2v-conversion-of-rhel-7.0.sh
 test-v2v-conversion-of-rhel-7.2.sh.log: test-v2v-conversion-of-rhel-7.2.sh
 	@p='test-v2v-conversion-of-rhel-7.2.sh'; \
 	b='test-v2v-conversion-of-rhel-7.2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-ubuntu-10.04.sh.log: test-v2v-conversion-of-ubuntu-10.04.sh
+	@p='test-v2v-conversion-of-ubuntu-10.04.sh'; \
+	b='test-v2v-conversion-of-ubuntu-10.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-ubuntu-12.04.sh.log: test-v2v-conversion-of-ubuntu-12.04.sh
+	@p='test-v2v-conversion-of-ubuntu-12.04.sh'; \
+	b='test-v2v-conversion-of-ubuntu-12.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-ubuntu-14.04.sh.log: test-v2v-conversion-of-ubuntu-14.04.sh
+	@p='test-v2v-conversion-of-ubuntu-14.04.sh'; \
+	b='test-v2v-conversion-of-ubuntu-14.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-ubuntu-16.04.sh.log: test-v2v-conversion-of-ubuntu-16.04.sh
+	@p='test-v2v-conversion-of-ubuntu-16.04.sh'; \
+	b='test-v2v-conversion-of-ubuntu-16.04.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -3188,6 +3169,27 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
+
 @HAVE_OCAML_TRUE@virt-v2v.1 $(top_builddir)/website/virt-v2v.1.html: stamp-virt-v2v.pod
 
 @HAVE_OCAML_TRUE@stamp-virt-v2v.pod: virt-v2v.pod
@@ -3219,7 +3221,7 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@test-v2v-conversion-of-%.sh:
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
 @HAVE_OCAML_TRUE@	f=`echo "$@" | $(SED) 's/test-v2v-conversion-of-\(.*\).sh/\1/'`; \
-@HAVE_OCAML_TRUE@	echo 'exec $$srcdir/test-v2v-conversion-of.sh' "$$f" > $@-t
+@HAVE_OCAML_TRUE@	echo 'script=$@ exec $$srcdir/test-v2v-conversion-of.sh' "$$f" > $@-t
 @HAVE_OCAML_TRUE@	chmod 0755 $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@v2v_unit_tests.cmo: OCAMLPACKAGES += -package oUnit

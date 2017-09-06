@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2011-2016 Red Hat Inc.
+ * Copyright (C) 2011-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,10 @@ let inspect_defaults = {
   i_major_version = 0; i_minor_version = 0;
   i_root = ""; i_package_format = ""; i_package_management = "";
   i_product_name = ""; i_product_variant = ""; i_mountpoints = [];
-  i_apps = []; i_apps_map = StringMap.empty; i_firmware = I_BIOS
+  i_apps = []; i_apps_map = StringMap.empty; i_firmware = I_BIOS;
+  i_windows_systemroot = "";
+  i_windows_software_hive = ""; i_windows_system_hive = "";
+  i_windows_current_control_set = "";
 }
 
 let test_get_ostype ctx =
@@ -778,6 +781,12 @@ let test_shell_unquote ctx =
   assert_equal ~printer "i`" (Utils.shell_unquote "\"i\\`\"");
   assert_equal ~printer "j\"" (Utils.shell_unquote "\"j\\\"\"")
 
+let test_qemu_img_supports ctx =
+  (* No assertion here, we don't know if qemu-img supports the
+   * feature, so just run the code and make sure it doesn't crash.
+   *)
+  ignore (Utils.qemu_img_supports_offset_and_size ())
+
 (* Suites declaration. *)
 let suite =
   "virt-v2v" >:::
@@ -788,6 +797,7 @@ let suite =
       "Windows_virtio.virtio_iso_path_matches_guest_os" >::
         test_virtio_iso_path_matches_guest_os;
       "Utils.shell_unquote" >:: test_shell_unquote;
+      "Utils.qemu_img_supports" >:: test_qemu_img_supports;
     ]
 
 let () =

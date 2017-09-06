@@ -125,6 +125,9 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_AUG_SETM
   { (char *) "aug_setm", guestfs_int_py_aug_setm, METH_VARARGS, NULL },
 #endif
+#ifdef GUESTFS_HAVE_AUG_TRANSFORM
+  { (char *) "aug_transform", guestfs_int_py_aug_transform, METH_VARARGS, NULL },
+#endif
 #ifdef GUESTFS_HAVE_AVAILABLE
   { (char *) "available", guestfs_int_py_available, METH_VARARGS, NULL },
 #endif
@@ -506,6 +509,9 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_FIND0
   { (char *) "find0", guestfs_int_py_find0, METH_VARARGS, NULL },
 #endif
+#ifdef GUESTFS_HAVE_FIND_INODE
+  { (char *) "find_inode", guestfs_int_py_find_inode, METH_VARARGS, NULL },
+#endif
 #ifdef GUESTFS_HAVE_FINDFS_LABEL
   { (char *) "findfs_label", guestfs_int_py_findfs_label, METH_VARARGS, NULL },
 #endif
@@ -775,6 +781,12 @@ static PyMethodDef methods[] = {
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_CURRENT_CONTROL_SET
   { (char *) "inspect_get_windows_current_control_set", guestfs_int_py_inspect_get_windows_current_control_set, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SOFTWARE_HIVE
+  { (char *) "inspect_get_windows_software_hive", guestfs_int_py_inspect_get_windows_software_hive, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SYSTEM_HIVE
+  { (char *) "inspect_get_windows_system_hive", guestfs_int_py_inspect_get_windows_system_hive, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SYSTEMROOT
   { (char *) "inspect_get_windows_systemroot", guestfs_int_py_inspect_get_windows_systemroot, METH_VARARGS, NULL },
@@ -1207,6 +1219,9 @@ static PyMethodDef methods[] = {
 #endif
 #ifdef GUESTFS_HAVE_MKNOD_C
   { (char *) "mknod_c", guestfs_int_py_mknod_c, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_MKSQUASHFS
+  { (char *) "mksquashfs", guestfs_int_py_mksquashfs, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_MKSWAP_OPTS
   { (char *) "mkswap", guestfs_int_py_mkswap, METH_VARARGS, NULL },

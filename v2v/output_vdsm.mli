@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ type vdsm_params = {
   vol_uuids : string list;            (* --vdsm-vol-uuid (multiple) *)
   vm_uuid : string;                   (* --vdsm-vm-uuid *)
   ovf_output : string;                (* --vdsm-ovf-output *)
+  compat : string;                    (* --vdsm-compat=0.10|1.1 *)
 }
 (** Miscellaneous extra command line parameters used by VDSM. *)
 

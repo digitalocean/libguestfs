@@ -3299,8 +3299,9 @@ L<virt-customize(1)>, L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>,
 L<virt-filesystems(1)>, L<virt-format(1)>, L<virt-inspector(1)>,
 L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-log(1)>,
 L<virt-ls(1)>, L<virt-make-fs(1)>, L<virt-p2v(1)>, L<virt-rescue(1)>,
-L<virt-resize(1)>, L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tar(1)>,
-L<virt-tar-in(1)>, L<virt-tar-out(1)>, L<virt-v2v(1)>, L<virt-win-reg(1)>.
+L<virt-resize(1)>, L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tail(1)>,
+L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>, L<virt-v2v(1)>,
+L<virt-win-reg(1)>.
 
 Other libguestfs topics: L<guestfs-building(1)>, L<guestfs-faq(1)>,
 L<guestfs-hacking(1)>, L<guestfs-internals(1)>, L<guestfs-performance(1)>,
@@ -3321,5 +3322,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2016 Red Hat Inc.
+Copyright (C) 2009-2017 Red Hat Inc.
 

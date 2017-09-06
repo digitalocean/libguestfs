@@ -283,6 +283,9 @@ extern PyObject *guestfs_int_py_aug_set (PyObject *self, PyObject *args);
 #ifdef GUESTFS_HAVE_AUG_SETM
 extern PyObject *guestfs_int_py_aug_setm (PyObject *self, PyObject *args);
 #endif
+#ifdef GUESTFS_HAVE_AUG_TRANSFORM
+extern PyObject *guestfs_int_py_aug_transform (PyObject *self, PyObject *args);
+#endif
 #ifdef GUESTFS_HAVE_AVAILABLE
 extern PyObject *guestfs_int_py_available (PyObject *self, PyObject *args);
 #endif
@@ -664,6 +667,9 @@ extern PyObject *guestfs_int_py_find (PyObject *self, PyObject *args);
 #ifdef GUESTFS_HAVE_FIND0
 extern PyObject *guestfs_int_py_find0 (PyObject *self, PyObject *args);
 #endif
+#ifdef GUESTFS_HAVE_FIND_INODE
+extern PyObject *guestfs_int_py_find_inode (PyObject *self, PyObject *args);
+#endif
 #ifdef GUESTFS_HAVE_FINDFS_LABEL
 extern PyObject *guestfs_int_py_findfs_label (PyObject *self, PyObject *args);
 #endif
@@ -933,6 +939,12 @@ extern PyObject *guestfs_int_py_inspect_get_type (PyObject *self, PyObject *args
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_CURRENT_CONTROL_SET
 extern PyObject *guestfs_int_py_inspect_get_windows_current_control_set (PyObject *self, PyObject *args);
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SOFTWARE_HIVE
+extern PyObject *guestfs_int_py_inspect_get_windows_software_hive (PyObject *self, PyObject *args);
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SYSTEM_HIVE
+extern PyObject *guestfs_int_py_inspect_get_windows_system_hive (PyObject *self, PyObject *args);
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SYSTEMROOT
 extern PyObject *guestfs_int_py_inspect_get_windows_systemroot (PyObject *self, PyObject *args);
@@ -1365,6 +1377,9 @@ extern PyObject *guestfs_int_py_mknod_b (PyObject *self, PyObject *args);
 #endif
 #ifdef GUESTFS_HAVE_MKNOD_C
 extern PyObject *guestfs_int_py_mknod_c (PyObject *self, PyObject *args);
+#endif
+#ifdef GUESTFS_HAVE_MKSQUASHFS
+extern PyObject *guestfs_int_py_mksquashfs (PyObject *self, PyObject *args);
 #endif
 #ifdef GUESTFS_HAVE_MKSWAP_OPTS
 extern PyObject *guestfs_int_py_mkswap (PyObject *self, PyObject *args);

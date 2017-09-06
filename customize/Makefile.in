@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # virt-customize
-# Copyright (C) 2014-2016 Red Hat Inc.
+# Copyright (C) 2014-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -153,15 +153,19 @@ host_triplet = @host@
 
 @HAVE_OCAML_TRUE@am__append_3 = \
 @HAVE_OCAML_TRUE@	$(firstboot_test_scripts) \
-@HAVE_OCAML_TRUE@	firstboot-*.img
+@HAVE_OCAML_TRUE@	$(password_test_scripts) \
+@HAVE_OCAML_TRUE@	$(settings_test_scripts) \
+@HAVE_OCAML_TRUE@	firstboot-*.img \
+@HAVE_OCAML_TRUE@	password-*.img \
+@HAVE_OCAML_TRUE@	password-*.log \
+@HAVE_OCAML_TRUE@	settings-*.img
 
 subdir = customize
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/absolute-header.m4 \
 	$(top_srcdir)/m4/accept4.m4 $(top_srcdir)/m4/alloca.m4 \
-	$(top_srcdir)/m4/arpa_inet_h.m4 \
-	$(top_srcdir)/m4/asm-underscore.m4 $(top_srcdir)/m4/base64.m4 \
+	$(top_srcdir)/m4/arpa_inet_h.m4 $(top_srcdir)/m4/base64.m4 \
 	$(top_srcdir)/m4/btowc.m4 $(top_srcdir)/m4/builtin-expect.m4 \
 	$(top_srcdir)/m4/byteswap.m4 $(top_srcdir)/m4/chdir-long.m4 \
 	$(top_srcdir)/m4/clock_time.m4 \
@@ -177,8 +181,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/environ.m4 \
 	$(top_srcdir)/m4/errno_h.m4 $(top_srcdir)/m4/error.m4 \
 	$(top_srcdir)/m4/exponentd.m4 $(top_srcdir)/m4/extensions.m4 \
-	$(top_srcdir)/m4/extern-inline.m4 \
-	$(top_srcdir)/m4/fatal-signal.m4 $(top_srcdir)/m4/fchdir.m4 \
+	$(top_srcdir)/m4/extern-inline.m4 $(top_srcdir)/m4/fchdir.m4 \
 	$(top_srcdir)/m4/fcntl-o.m4 $(top_srcdir)/m4/fcntl-safer.m4 \
 	$(top_srcdir)/m4/fcntl.m4 $(top_srcdir)/m4/fcntl_h.m4 \
 	$(top_srcdir)/m4/fdopen.m4 $(top_srcdir)/m4/fdopendir.m4 \
@@ -236,12 +239,11 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
 	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
-	$(top_srcdir)/m4/nonblocking.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
-	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
-	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
-	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/posix_spawn.m4 \
+	$(top_srcdir)/m4/ocaml.m4 $(top_srcdir)/m4/off_t.m4 \
+	$(top_srcdir)/m4/onceonly.m4 $(top_srcdir)/m4/open.m4 \
+	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
+	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
+	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
 	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
 	$(top_srcdir)/m4/priv-set.m4 \
 	$(top_srcdir)/m4/pthread_rwlock_rdlock.m4 \
@@ -253,28 +255,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
 	$(top_srcdir)/m4/rewinddir.m4 $(top_srcdir)/m4/rmdir.m4 \
 	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/sched_h.m4 \
-	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/sig_atomic_t.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
 	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
 	$(top_srcdir)/m4/sockets.m4 $(top_srcdir)/m4/socklen.m4 \
-	$(top_srcdir)/m4/sockpfaf.m4 $(top_srcdir)/m4/spawn_h.m4 \
-	$(top_srcdir)/m4/ssize_t.m4 $(top_srcdir)/m4/stat-time.m4 \
-	$(top_srcdir)/m4/stat.m4 $(top_srcdir)/m4/stdalign.m4 \
-	$(top_srcdir)/m4/stdarg.m4 $(top_srcdir)/m4/stdbool.m4 \
-	$(top_srcdir)/m4/stddef_h.m4 $(top_srcdir)/m4/stdint.m4 \
-	$(top_srcdir)/m4/stdint_h.m4 $(top_srcdir)/m4/stdio_h.m4 \
-	$(top_srcdir)/m4/stdlib_h.m4 $(top_srcdir)/m4/strchrnul.m4 \
-	$(top_srcdir)/m4/strdup.m4 $(top_srcdir)/m4/strerror.m4 \
-	$(top_srcdir)/m4/strerror_r.m4 $(top_srcdir)/m4/string_h.m4 \
-	$(top_srcdir)/m4/strndup.m4 $(top_srcdir)/m4/strnlen.m4 \
-	$(top_srcdir)/m4/strtoll.m4 $(top_srcdir)/m4/strtoull.m4 \
-	$(top_srcdir)/m4/strtoumax.m4 $(top_srcdir)/m4/symlink.m4 \
-	$(top_srcdir)/m4/symlinkat.m4 $(top_srcdir)/m4/sys_ioctl_h.m4 \
+	$(top_srcdir)/m4/sockpfaf.m4 $(top_srcdir)/m4/ssize_t.m4 \
+	$(top_srcdir)/m4/stat-time.m4 $(top_srcdir)/m4/stat.m4 \
+	$(top_srcdir)/m4/stdalign.m4 $(top_srcdir)/m4/stdarg.m4 \
+	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/m4/stddef_h.m4 \
+	$(top_srcdir)/m4/stdint.m4 $(top_srcdir)/m4/stdint_h.m4 \
+	$(top_srcdir)/m4/stdio_h.m4 $(top_srcdir)/m4/stdlib_h.m4 \
+	$(top_srcdir)/m4/strchrnul.m4 $(top_srcdir)/m4/strdup.m4 \
+	$(top_srcdir)/m4/strerror.m4 $(top_srcdir)/m4/strerror_r.m4 \
+	$(top_srcdir)/m4/string_h.m4 $(top_srcdir)/m4/strndup.m4 \
+	$(top_srcdir)/m4/strnlen.m4 $(top_srcdir)/m4/strtoll.m4 \
+	$(top_srcdir)/m4/strtoull.m4 $(top_srcdir)/m4/strtoumax.m4 \
+	$(top_srcdir)/m4/symlink.m4 $(top_srcdir)/m4/symlinkat.m4 \
+	$(top_srcdir)/m4/sys_ioctl_h.m4 \
 	$(top_srcdir)/m4/sys_select_h.m4 \
 	$(top_srcdir)/m4/sys_socket_h.m4 \
 	$(top_srcdir)/m4/sys_stat_h.m4 $(top_srcdir)/m4/sys_time_h.m4 \
@@ -289,16 +290,15 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/utimbuf.m4 $(top_srcdir)/m4/utimecmp.m4 \
 	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
 	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
-	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
-	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
-	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
-	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
-	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
-	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
-	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
-	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs_progs.m4 \
+	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
+	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
+	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
+	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
+	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
+	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
+	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
+	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
+	$(top_srcdir)/m4/guestfs_progs.m4 \
 	$(top_srcdir)/m4/guestfs_c.m4 \
 	$(top_srcdir)/m4/guestfs_libraries.m4 \
 	$(top_srcdir)/m4/guestfs_fuse.m4 \
@@ -333,10 +333,10 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libcustomize_a_AR = $(AR) $(ARFLAGS)
 libcustomize_a_LIBADD =
-am__libcustomize_a_SOURCES_DIST = ../fish/file-edit.c \
-	../fish/file-edit.h crypt-c.c perl_edit-c.c
+am__libcustomize_a_SOURCES_DIST = ../common/edit/file-edit.c \
+	../common/edit/file-edit.h crypt-c.c perl_edit-c.c
 am__dirstamp = $(am__leading_dot)dirstamp
-am__objects_1 = ../fish/libcustomize_a-file-edit.$(OBJEXT) \
+am__objects_1 = ../common/edit/libcustomize_a-file-edit.$(OBJEXT) \
 	libcustomize_a-crypt-c.$(OBJEXT) \
 	libcustomize_a-perl_edit-c.$(OBJEXT)
 @HAVE_OCAML_TRUE@am_libcustomize_a_OBJECTS = $(am__objects_1)
@@ -634,7 +634,6 @@ AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 APPLE_UNIVERSAL_BUILD = @APPLE_UNIVERSAL_BUILD@
 AR = @AR@
 ARFLAGS = @ARFLAGS@
-ASM_SYMBOL_PREFIX = @ASM_SYMBOL_PREFIX@
 AUGEAS_CFLAGS = @AUGEAS_CFLAGS@
 AUGEAS_LIBS = @AUGEAS_LIBS@
 AUTOCONF = @AUTOCONF@
@@ -862,27 +861,6 @@ GNULIB_PIPE = @GNULIB_PIPE@
 GNULIB_PIPE2 = @GNULIB_PIPE2@
 GNULIB_POPEN = @GNULIB_POPEN@
 GNULIB_POSIX_OPENPT = @GNULIB_POSIX_OPENPT@
-GNULIB_POSIX_SPAWN = @GNULIB_POSIX_SPAWN@
-GNULIB_POSIX_SPAWNATTR_DESTROY = @GNULIB_POSIX_SPAWNATTR_DESTROY@
-GNULIB_POSIX_SPAWNATTR_GETFLAGS = @GNULIB_POSIX_SPAWNATTR_GETFLAGS@
-GNULIB_POSIX_SPAWNATTR_GETPGROUP = @GNULIB_POSIX_SPAWNATTR_GETPGROUP@
-GNULIB_POSIX_SPAWNATTR_GETSCHEDPARAM = @GNULIB_POSIX_SPAWNATTR_GETSCHEDPARAM@
-GNULIB_POSIX_SPAWNATTR_GETSCHEDPOLICY = @GNULIB_POSIX_SPAWNATTR_GETSCHEDPOLICY@
-GNULIB_POSIX_SPAWNATTR_GETSIGDEFAULT = @GNULIB_POSIX_SPAWNATTR_GETSIGDEFAULT@
-GNULIB_POSIX_SPAWNATTR_GETSIGMASK = @GNULIB_POSIX_SPAWNATTR_GETSIGMASK@
-GNULIB_POSIX_SPAWNATTR_INIT = @GNULIB_POSIX_SPAWNATTR_INIT@
-GNULIB_POSIX_SPAWNATTR_SETFLAGS = @GNULIB_POSIX_SPAWNATTR_SETFLAGS@
-GNULIB_POSIX_SPAWNATTR_SETPGROUP = @GNULIB_POSIX_SPAWNATTR_SETPGROUP@
-GNULIB_POSIX_SPAWNATTR_SETSCHEDPARAM = @GNULIB_POSIX_SPAWNATTR_SETSCHEDPARAM@
-GNULIB_POSIX_SPAWNATTR_SETSCHEDPOLICY = @GNULIB_POSIX_SPAWNATTR_SETSCHEDPOLICY@
-GNULIB_POSIX_SPAWNATTR_SETSIGDEFAULT = @GNULIB_POSIX_SPAWNATTR_SETSIGDEFAULT@
-GNULIB_POSIX_SPAWNATTR_SETSIGMASK = @GNULIB_POSIX_SPAWNATTR_SETSIGMASK@
-GNULIB_POSIX_SPAWNP = @GNULIB_POSIX_SPAWNP@
-GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
-GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
-GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
-GNULIB_POSIX_SPAWN_FILE_ACTIONS_DESTROY = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_DESTROY@
-GNULIB_POSIX_SPAWN_FILE_ACTIONS_INIT = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_INIT@
 GNULIB_PREAD = @GNULIB_PREAD@
 GNULIB_PRINTF = @GNULIB_PRINTF@
 GNULIB_PRINTF_POSIX = @GNULIB_PRINTF_POSIX@
@@ -1172,9 +1150,6 @@ HAVE_PIPE2 = @HAVE_PIPE2@
 HAVE_POPEN = @HAVE_POPEN@
 HAVE_POSIX_OPENPT = @HAVE_POSIX_OPENPT@
 HAVE_POSIX_SIGNALBLOCKING = @HAVE_POSIX_SIGNALBLOCKING@
-HAVE_POSIX_SPAWN = @HAVE_POSIX_SPAWN@
-HAVE_POSIX_SPAWNATTR_T = @HAVE_POSIX_SPAWNATTR_T@
-HAVE_POSIX_SPAWN_FILE_ACTIONS_T = @HAVE_POSIX_SPAWN_FILE_ACTIONS_T@
 HAVE_PREAD = @HAVE_PREAD@
 HAVE_PSELECT = @HAVE_PSELECT@
 HAVE_PTHREAD_SIGMASK = @HAVE_PTHREAD_SIGMASK@
@@ -1196,7 +1171,6 @@ HAVE_REWINDDIR = @HAVE_REWINDDIR@
 HAVE_RPMATCH = @HAVE_RPMATCH@
 HAVE_SA_FAMILY_T = @HAVE_SA_FAMILY_T@
 HAVE_SCANDIR = @HAVE_SCANDIR@
-HAVE_SCHED_H = @HAVE_SCHED_H@
 HAVE_SECURE_GETENV = @HAVE_SECURE_GETENV@
 HAVE_SETENV = @HAVE_SETENV@
 HAVE_SETHOSTNAME = @HAVE_SETHOSTNAME@
@@ -1208,7 +1182,6 @@ HAVE_SIGNED_WCHAR_T = @HAVE_SIGNED_WCHAR_T@
 HAVE_SIGNED_WINT_T = @HAVE_SIGNED_WINT_T@
 HAVE_SIGSET_T = @HAVE_SIGSET_T@
 HAVE_SLEEP = @HAVE_SLEEP@
-HAVE_SPAWN_H = @HAVE_SPAWN_H@
 HAVE_STDINT_H = @HAVE_STDINT_H@
 HAVE_STPCPY = @HAVE_STPCPY@
 HAVE_STPNCPY = @HAVE_STPNCPY@
@@ -1222,7 +1195,6 @@ HAVE_STRTOLL = @HAVE_STRTOLL@
 HAVE_STRTOULL = @HAVE_STRTOULL@
 HAVE_STRUCT_ADDRINFO = @HAVE_STRUCT_ADDRINFO@
 HAVE_STRUCT_RANDOM_DATA = @HAVE_STRUCT_RANDOM_DATA@
-HAVE_STRUCT_SCHED_PARAM = @HAVE_STRUCT_SCHED_PARAM@
 HAVE_STRUCT_SIGACTION_SA_SIGACTION = @HAVE_STRUCT_SIGACTION_SA_SIGACTION@
 HAVE_STRUCT_SOCKADDR_STORAGE = @HAVE_STRUCT_SOCKADDR_STORAGE@
 HAVE_STRUCT_SOCKADDR_STORAGE_SS_FAMILY = @HAVE_STRUCT_SOCKADDR_STORAGE_SS_FAMILY@
@@ -1360,7 +1332,6 @@ LIBXML2_LIBS = @LIBXML2_LIBS@
 LIB_CLOCK_GETTIME = @LIB_CLOCK_GETTIME@
 LIB_GETLOGIN = @LIB_GETLOGIN@
 LIB_NANOSLEEP = @LIB_NANOSLEEP@
-LIB_POSIX_SPAWN = @LIB_POSIX_SPAWN@
 LIB_SELECT = @LIB_SELECT@
 LIMITS_H = @LIMITS_H@
 LIPO = @LIPO@
@@ -1408,9 +1379,7 @@ NEXT_AS_FIRST_DIRECTIVE_LIMITS_H = @NEXT_AS_FIRST_DIRECTIVE_LIMITS_H@
 NEXT_AS_FIRST_DIRECTIVE_LOCALE_H = @NEXT_AS_FIRST_DIRECTIVE_LOCALE_H@
 NEXT_AS_FIRST_DIRECTIVE_NETDB_H = @NEXT_AS_FIRST_DIRECTIVE_NETDB_H@
 NEXT_AS_FIRST_DIRECTIVE_NETINET_IN_H = @NEXT_AS_FIRST_DIRECTIVE_NETINET_IN_H@
-NEXT_AS_FIRST_DIRECTIVE_SCHED_H = @NEXT_AS_FIRST_DIRECTIVE_SCHED_H@
 NEXT_AS_FIRST_DIRECTIVE_SIGNAL_H = @NEXT_AS_FIRST_DIRECTIVE_SIGNAL_H@
-NEXT_AS_FIRST_DIRECTIVE_SPAWN_H = @NEXT_AS_FIRST_DIRECTIVE_SPAWN_H@
 NEXT_AS_FIRST_DIRECTIVE_STDARG_H = @NEXT_AS_FIRST_DIRECTIVE_STDARG_H@
 NEXT_AS_FIRST_DIRECTIVE_STDDEF_H = @NEXT_AS_FIRST_DIRECTIVE_STDDEF_H@
 NEXT_AS_FIRST_DIRECTIVE_STDINT_H = @NEXT_AS_FIRST_DIRECTIVE_STDINT_H@
@@ -1441,9 +1410,7 @@ NEXT_LIMITS_H = @NEXT_LIMITS_H@
 NEXT_LOCALE_H = @NEXT_LOCALE_H@
 NEXT_NETDB_H = @NEXT_NETDB_H@
 NEXT_NETINET_IN_H = @NEXT_NETINET_IN_H@
-NEXT_SCHED_H = @NEXT_SCHED_H@
 NEXT_SIGNAL_H = @NEXT_SIGNAL_H@
-NEXT_SPAWN_H = @NEXT_SPAWN_H@
 NEXT_STDARG_H = @NEXT_STDARG_H@
 NEXT_STDDEF_H = @NEXT_STDDEF_H@
 NEXT_STDINT_H = @NEXT_STDINT_H@
@@ -1609,10 +1576,6 @@ REPLACE_OPENAT = @REPLACE_OPENAT@
 REPLACE_OPENDIR = @REPLACE_OPENDIR@
 REPLACE_PERROR = @REPLACE_PERROR@
 REPLACE_POPEN = @REPLACE_POPEN@
-REPLACE_POSIX_SPAWN = @REPLACE_POSIX_SPAWN@
-REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
-REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
-REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
 REPLACE_PREAD = @REPLACE_PREAD@
 REPLACE_PRINTF = @REPLACE_PRINTF@
 REPLACE_PSELECT = @REPLACE_PSELECT@
@@ -1686,7 +1649,6 @@ REPLACE_WCWIDTH = @REPLACE_WCWIDTH@
 REPLACE_WRITE = @REPLACE_WRITE@
 RPCGEN = @RPCGEN@
 RUBY = @RUBY@
-SCHED_H = @SCHED_H@
 SD_JOURNAL_CFLAGS = @SD_JOURNAL_CFLAGS@
 SD_JOURNAL_LIBS = @SD_JOURNAL_LIBS@
 SED = @SED@
@@ -1869,6 +1831,8 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	customize_main.ml \
 	test-firstboot.sh \
+	test-password.pl \
+	test-settings.sh \
 	test-virt-customize.sh \
 	test-virt-customize-docs.sh \
 	virt-customize.pod
@@ -1880,6 +1844,7 @@ generator_built = \
 	customize-synopsis.pod
 
 SOURCES_MLI = \
+	append_line.mli \
 	crypt.mli \
 	customize_cmdline.mli \
 	customize_run.mli \
@@ -1897,6 +1862,7 @@ SOURCES_MLI = \
 
 # This list must be in dependency order.
 SOURCES_ML = \
+	append_line.ml \
 	crypt.ml \
 	firstboot.ml \
 	hostname.ml \
@@ -1912,8 +1878,8 @@ SOURCES_ML = \
 	customize_run.ml
 
 SOURCES_C = \
-	../fish/file-edit.c \
-	../fish/file-edit.h \
+	../common/edit/file-edit.c \
+	../common/edit/file-edit.h \
 	crypt-c.c \
 	perl_edit-c.c
 
@@ -1934,8 +1900,9 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	-I$(top_builddir) \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 @HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/utils \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/edit
 
 @HAVE_OCAML_TRUE@libcustomize_a_CFLAGS = \
 @HAVE_OCAML_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
@@ -1948,11 +1915,12 @@ SOURCES_C = \
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(BOBJECTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(XOBJECTS)
 
-# -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
+# -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
-@HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/common/utils/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/gnulib/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/mllib -I $(builddir) \
@@ -1993,9 +1961,11 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @HAVE_OCAML_TRUE@TESTS = test-virt-customize-docs.sh $(am__append_2)
 
-# Slow tests of firstboot functionality in real guests.
+# Slow tests of virt-customize functionality in real guests.
 @HAVE_OCAML_TRUE@SLOW_TESTS = \
-@HAVE_OCAML_TRUE@	$(firstboot_test_scripts)
+@HAVE_OCAML_TRUE@	$(firstboot_test_scripts) \
+@HAVE_OCAML_TRUE@	$(password_test_scripts) \
+@HAVE_OCAML_TRUE@	$(settings_test_scripts)
 
 @HAVE_OCAML_TRUE@firstboot_test_scripts := \
 @HAVE_OCAML_TRUE@	test-firstboot-rhel-4.9.sh \
@@ -2010,6 +1980,36 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	test-firstboot-ubuntu-12.04.sh \
 @HAVE_OCAML_TRUE@	test-firstboot-ubuntu-14.04.sh \
 @HAVE_OCAML_TRUE@	test-firstboot-ubuntu-16.04.sh
+
+@HAVE_OCAML_TRUE@password_test_scripts := \
+@HAVE_OCAML_TRUE@	test-password-centos-7.2.sh \
+@HAVE_OCAML_TRUE@	test-password-debian-6.sh \
+@HAVE_OCAML_TRUE@	test-password-debian-7.sh \
+@HAVE_OCAML_TRUE@	test-password-debian-8.sh \
+@HAVE_OCAML_TRUE@	test-password-fedora-24.sh \
+@HAVE_OCAML_TRUE@	test-password-rhel-3.9.sh \
+@HAVE_OCAML_TRUE@	test-password-rhel-4.9.sh \
+@HAVE_OCAML_TRUE@	test-password-rhel-5.11.sh \
+@HAVE_OCAML_TRUE@	test-password-rhel-6.9.sh \
+@HAVE_OCAML_TRUE@	test-password-rhel-7.2.sh \
+@HAVE_OCAML_TRUE@	test-password-ubuntu-10.04.sh \
+@HAVE_OCAML_TRUE@	test-password-ubuntu-12.04.sh \
+@HAVE_OCAML_TRUE@	test-password-ubuntu-14.04.sh \
+@HAVE_OCAML_TRUE@	test-password-ubuntu-16.04.sh
+
+@HAVE_OCAML_TRUE@settings_test_scripts := \
+@HAVE_OCAML_TRUE@	test-settings-rhel-4.9.sh \
+@HAVE_OCAML_TRUE@	test-settings-rhel-5.11.sh \
+@HAVE_OCAML_TRUE@	test-settings-rhel-6.8.sh \
+@HAVE_OCAML_TRUE@	test-settings-rhel-7.2.sh \
+@HAVE_OCAML_TRUE@	test-settings-debian-6.sh \
+@HAVE_OCAML_TRUE@	test-settings-debian-7.sh \
+@HAVE_OCAML_TRUE@	test-settings-debian-8.sh \
+@HAVE_OCAML_TRUE@	test-settings-fedora-24.sh \
+@HAVE_OCAML_TRUE@	test-settings-ubuntu-10.04.sh \
+@HAVE_OCAML_TRUE@	test-settings-ubuntu-12.04.sh \
+@HAVE_OCAML_TRUE@	test-settings-ubuntu-14.04.sh \
+@HAVE_OCAML_TRUE@	test-settings-ubuntu-16.04.sh
 
 all: all-am
 
@@ -2048,14 +2048,15 @@ $(am__aclocal_m4_deps):
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-../fish/$(am__dirstamp):
-	@$(MKDIR_P) ../fish
-	@: > ../fish/$(am__dirstamp)
-../fish/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../fish/$(DEPDIR)
-	@: > ../fish/$(DEPDIR)/$(am__dirstamp)
-../fish/libcustomize_a-file-edit.$(OBJEXT): ../fish/$(am__dirstamp) \
-	../fish/$(DEPDIR)/$(am__dirstamp)
+../common/edit/$(am__dirstamp):
+	@$(MKDIR_P) ../common/edit
+	@: > ../common/edit/$(am__dirstamp)
+../common/edit/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../common/edit/$(DEPDIR)
+	@: > ../common/edit/$(DEPDIR)/$(am__dirstamp)
+../common/edit/libcustomize_a-file-edit.$(OBJEXT):  \
+	../common/edit/$(am__dirstamp) \
+	../common/edit/$(DEPDIR)/$(am__dirstamp)
 
 libcustomize.a: $(libcustomize_a_OBJECTS) $(libcustomize_a_DEPENDENCIES) $(EXTRA_libcustomize_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libcustomize.a
@@ -2117,12 +2118,12 @@ virt-customize$(EXEEXT): $(virt_customize_OBJECTS) $(virt_customize_DEPENDENCIES
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../fish/*.$(OBJEXT)
+	-rm -f ../common/edit/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@../fish/$(DEPDIR)/libcustomize_a-file-edit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../common/edit/$(DEPDIR)/libcustomize_a-file-edit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcustomize_a-crypt-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcustomize_a-perl_edit-c.Po@am__quote@
@@ -2151,19 +2152,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-../fish/libcustomize_a-file-edit.o: ../fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcustomize_a_CPPFLAGS) $(CPPFLAGS) $(libcustomize_a_CFLAGS) $(CFLAGS) -MT ../fish/libcustomize_a-file-edit.o -MD -MP -MF ../fish/$(DEPDIR)/libcustomize_a-file-edit.Tpo -c -o ../fish/libcustomize_a-file-edit.o `test -f '../fish/file-edit.c' || echo '$(srcdir)/'`../fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/libcustomize_a-file-edit.Tpo ../fish/$(DEPDIR)/libcustomize_a-file-edit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/file-edit.c' object='../fish/libcustomize_a-file-edit.o' libtool=no @AMDEPBACKSLASH@
+../common/edit/libcustomize_a-file-edit.o: ../common/edit/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcustomize_a_CPPFLAGS) $(CPPFLAGS) $(libcustomize_a_CFLAGS) $(CFLAGS) -MT ../common/edit/libcustomize_a-file-edit.o -MD -MP -MF ../common/edit/$(DEPDIR)/libcustomize_a-file-edit.Tpo -c -o ../common/edit/libcustomize_a-file-edit.o `test -f '../common/edit/file-edit.c' || echo '$(srcdir)/'`../common/edit/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../common/edit/$(DEPDIR)/libcustomize_a-file-edit.Tpo ../common/edit/$(DEPDIR)/libcustomize_a-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../common/edit/file-edit.c' object='../common/edit/libcustomize_a-file-edit.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcustomize_a_CPPFLAGS) $(CPPFLAGS) $(libcustomize_a_CFLAGS) $(CFLAGS) -c -o ../fish/libcustomize_a-file-edit.o `test -f '../fish/file-edit.c' || echo '$(srcdir)/'`../fish/file-edit.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcustomize_a_CPPFLAGS) $(CPPFLAGS) $(libcustomize_a_CFLAGS) $(CFLAGS) -c -o ../common/edit/libcustomize_a-file-edit.o `test -f '../common/edit/file-edit.c' || echo '$(srcdir)/'`../common/edit/file-edit.c
 
-../fish/libcustomize_a-file-edit.obj: ../fish/file-edit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcustomize_a_CPPFLAGS) $(CPPFLAGS) $(libcustomize_a_CFLAGS) $(CFLAGS) -MT ../fish/libcustomize_a-file-edit.obj -MD -MP -MF ../fish/$(DEPDIR)/libcustomize_a-file-edit.Tpo -c -o ../fish/libcustomize_a-file-edit.obj `if test -f '../fish/file-edit.c'; then $(CYGPATH_W) '../fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../fish/file-edit.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../fish/$(DEPDIR)/libcustomize_a-file-edit.Tpo ../fish/$(DEPDIR)/libcustomize_a-file-edit.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/file-edit.c' object='../fish/libcustomize_a-file-edit.obj' libtool=no @AMDEPBACKSLASH@
+../common/edit/libcustomize_a-file-edit.obj: ../common/edit/file-edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcustomize_a_CPPFLAGS) $(CPPFLAGS) $(libcustomize_a_CFLAGS) $(CFLAGS) -MT ../common/edit/libcustomize_a-file-edit.obj -MD -MP -MF ../common/edit/$(DEPDIR)/libcustomize_a-file-edit.Tpo -c -o ../common/edit/libcustomize_a-file-edit.obj `if test -f '../common/edit/file-edit.c'; then $(CYGPATH_W) '../common/edit/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../common/edit/file-edit.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../common/edit/$(DEPDIR)/libcustomize_a-file-edit.Tpo ../common/edit/$(DEPDIR)/libcustomize_a-file-edit.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../common/edit/file-edit.c' object='../common/edit/libcustomize_a-file-edit.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcustomize_a_CPPFLAGS) $(CPPFLAGS) $(libcustomize_a_CFLAGS) $(CFLAGS) -c -o ../fish/libcustomize_a-file-edit.obj `if test -f '../fish/file-edit.c'; then $(CYGPATH_W) '../fish/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../fish/file-edit.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcustomize_a_CPPFLAGS) $(CPPFLAGS) $(libcustomize_a_CFLAGS) $(CFLAGS) -c -o ../common/edit/libcustomize_a-file-edit.obj `if test -f '../common/edit/file-edit.c'; then $(CYGPATH_W) '../common/edit/file-edit.c'; else $(CYGPATH_W) '$(srcdir)/../common/edit/file-edit.c'; fi`
 
 libcustomize_a-crypt-c.o: crypt-c.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libcustomize_a_CPPFLAGS) $(CPPFLAGS) $(libcustomize_a_CFLAGS) $(CFLAGS) -MT libcustomize_a-crypt-c.o -MD -MP -MF $(DEPDIR)/libcustomize_a-crypt-c.Tpo -c -o libcustomize_a-crypt-c.o `test -f 'crypt-c.c' || echo '$(srcdir)/'`crypt-c.c
@@ -2533,6 +2534,188 @@ test-firstboot-ubuntu-16.04.sh.log: test-firstboot-ubuntu-16.04.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-centos-7.2.sh.log: test-password-centos-7.2.sh
+	@p='test-password-centos-7.2.sh'; \
+	b='test-password-centos-7.2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-debian-6.sh.log: test-password-debian-6.sh
+	@p='test-password-debian-6.sh'; \
+	b='test-password-debian-6.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-debian-7.sh.log: test-password-debian-7.sh
+	@p='test-password-debian-7.sh'; \
+	b='test-password-debian-7.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-debian-8.sh.log: test-password-debian-8.sh
+	@p='test-password-debian-8.sh'; \
+	b='test-password-debian-8.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-fedora-24.sh.log: test-password-fedora-24.sh
+	@p='test-password-fedora-24.sh'; \
+	b='test-password-fedora-24.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-rhel-3.9.sh.log: test-password-rhel-3.9.sh
+	@p='test-password-rhel-3.9.sh'; \
+	b='test-password-rhel-3.9.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-rhel-4.9.sh.log: test-password-rhel-4.9.sh
+	@p='test-password-rhel-4.9.sh'; \
+	b='test-password-rhel-4.9.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-rhel-5.11.sh.log: test-password-rhel-5.11.sh
+	@p='test-password-rhel-5.11.sh'; \
+	b='test-password-rhel-5.11.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-rhel-6.9.sh.log: test-password-rhel-6.9.sh
+	@p='test-password-rhel-6.9.sh'; \
+	b='test-password-rhel-6.9.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-rhel-7.2.sh.log: test-password-rhel-7.2.sh
+	@p='test-password-rhel-7.2.sh'; \
+	b='test-password-rhel-7.2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-ubuntu-10.04.sh.log: test-password-ubuntu-10.04.sh
+	@p='test-password-ubuntu-10.04.sh'; \
+	b='test-password-ubuntu-10.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-ubuntu-12.04.sh.log: test-password-ubuntu-12.04.sh
+	@p='test-password-ubuntu-12.04.sh'; \
+	b='test-password-ubuntu-12.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-ubuntu-14.04.sh.log: test-password-ubuntu-14.04.sh
+	@p='test-password-ubuntu-14.04.sh'; \
+	b='test-password-ubuntu-14.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-password-ubuntu-16.04.sh.log: test-password-ubuntu-16.04.sh
+	@p='test-password-ubuntu-16.04.sh'; \
+	b='test-password-ubuntu-16.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-rhel-4.9.sh.log: test-settings-rhel-4.9.sh
+	@p='test-settings-rhel-4.9.sh'; \
+	b='test-settings-rhel-4.9.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-rhel-5.11.sh.log: test-settings-rhel-5.11.sh
+	@p='test-settings-rhel-5.11.sh'; \
+	b='test-settings-rhel-5.11.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-rhel-6.8.sh.log: test-settings-rhel-6.8.sh
+	@p='test-settings-rhel-6.8.sh'; \
+	b='test-settings-rhel-6.8.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-rhel-7.2.sh.log: test-settings-rhel-7.2.sh
+	@p='test-settings-rhel-7.2.sh'; \
+	b='test-settings-rhel-7.2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-debian-6.sh.log: test-settings-debian-6.sh
+	@p='test-settings-debian-6.sh'; \
+	b='test-settings-debian-6.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-debian-7.sh.log: test-settings-debian-7.sh
+	@p='test-settings-debian-7.sh'; \
+	b='test-settings-debian-7.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-debian-8.sh.log: test-settings-debian-8.sh
+	@p='test-settings-debian-8.sh'; \
+	b='test-settings-debian-8.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-fedora-24.sh.log: test-settings-fedora-24.sh
+	@p='test-settings-fedora-24.sh'; \
+	b='test-settings-fedora-24.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-ubuntu-10.04.sh.log: test-settings-ubuntu-10.04.sh
+	@p='test-settings-ubuntu-10.04.sh'; \
+	b='test-settings-ubuntu-10.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-ubuntu-12.04.sh.log: test-settings-ubuntu-12.04.sh
+	@p='test-settings-ubuntu-12.04.sh'; \
+	b='test-settings-ubuntu-12.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-ubuntu-14.04.sh.log: test-settings-ubuntu-14.04.sh
+	@p='test-settings-ubuntu-14.04.sh'; \
+	b='test-settings-ubuntu-14.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-settings-ubuntu-16.04.sh.log: test-settings-ubuntu-16.04.sh
+	@p='test-settings-ubuntu-16.04.sh'; \
+	b='test-settings-ubuntu-16.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -2616,8 +2799,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../fish/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../fish/$(am__dirstamp)
+	-rm -f ../common/edit/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../common/edit/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -2629,7 +2812,7 @@ clean-am: clean-binPROGRAMS clean-generic clean-libtool \
 	clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ../common/edit/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -2675,7 +2858,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../fish/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ../common/edit/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -2748,6 +2931,27 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAMLOPT_TRUE@.ml.cmx:
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"
+
 @HAVE_OCAML_TRUE@$(CUSTOMIZE_CMA): $(OBJECTS) libcustomize.a
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) mklib $(OCAMLPACKAGES) \
 @HAVE_OCAML_TRUE@	    $(OBJECTS) $(libcustomize_a_OBJECTS) -o customize
@@ -2776,7 +2980,23 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@test-firstboot-%.sh:
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
 @HAVE_OCAML_TRUE@	f=`echo "$@" | $(SED) 's/test-firstboot-\(.*\).sh/\1/'`; \
-@HAVE_OCAML_TRUE@	echo 'exec $$srcdir/test-firstboot.sh' "$$f" > $@-t
+@HAVE_OCAML_TRUE@	echo 'script=$@ exec $$srcdir/test-firstboot.sh' "$$f" > $@-t
+@HAVE_OCAML_TRUE@	chmod 0755 $@-t
+@HAVE_OCAML_TRUE@	mv $@-t $@
+
+@HAVE_OCAML_TRUE@test-password-%.sh:
+@HAVE_OCAML_TRUE@	rm -f $@ $@-t
+@HAVE_OCAML_TRUE@	f=`echo "$@" | $(SED) 's/test-password-\(.*\).sh/\1/'`; \
+@HAVE_OCAML_TRUE@	echo 'script=$@ exec $$srcdir/test-password.pl' "$$f" > $@-t
+@HAVE_OCAML_TRUE@	chmod 0755 $@-t
+@HAVE_OCAML_TRUE@	mv $@-t $@
+# Since firstboot is broken, we cannot test settings in RHEL 3:
+#	test-settings-rhel-3.9.sh
+
+@HAVE_OCAML_TRUE@test-settings-%.sh:
+@HAVE_OCAML_TRUE@	rm -f $@ $@-t
+@HAVE_OCAML_TRUE@	f=`echo "$@" | $(SED) 's/test-settings-\(.*\).sh/\1/'`; \
+@HAVE_OCAML_TRUE@	echo 'script=$@ exec $$srcdir/test-settings.sh' "$$f" > $@-t
 @HAVE_OCAML_TRUE@	chmod 0755 $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 

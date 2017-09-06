@@ -1648,6 +1648,49 @@ guestfs_int_py_inspect_get_icon (PyObject *self, PyObject *args)
 }
 #endif
 
+#ifdef GUESTFS_HAVE_INSPECT_GET_WINDOWS_SYSTEM_HIVE
+PyObject *
+guestfs_int_py_inspect_get_windows_system_hive (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+  const char *root;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_inspect_get_windows_system_hive",
+                         &py_g, &root))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_inspect_get_windows_system_hive (g, root);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+  if (py_r == NULL) goto out;
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+#endif
+
 #ifdef GUESTFS_HAVE_INSPECT_IS_NETINST
 PyObject *
 guestfs_int_py_inspect_is_netinst (PyObject *self, PyObject *args)

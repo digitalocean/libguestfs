@@ -52,6 +52,7 @@ extern int optgroup_scrub_available (void);
 extern int optgroup_selinux_available (void);
 extern int optgroup_selinuxrelabel_available (void);
 extern int optgroup_sleuthkit_available (void);
+extern int optgroup_squashfs_available (void);
 extern int optgroup_syslinux_available (void);
 extern int optgroup_wipefs_available (void);
 extern int optgroup_xfs_available (void);
@@ -158,7 +159,7 @@ extern int optgroup_zerofree_available (void);
   int64_t __attribute__((noreturn)) do_hivex_node_parent (int64_t nodeh) { abort (); } \
   int __attribute__((noreturn)) do_hivex_node_set_value (int64_t nodeh, const char *key, int64_t t, const char *val, size_t val_size) { abort (); } \
   guestfs_int_hivex_value_list *__attribute__((noreturn)) do_hivex_node_values (int64_t nodeh) { abort (); } \
-  int __attribute__((noreturn)) do_hivex_open (const char *filename, int verbose, int debug, int write) { abort (); } \
+  int __attribute__((noreturn)) do_hivex_open (const char *filename, int verbose, int debug, int write, int unsafe) { abort (); } \
   int64_t __attribute__((noreturn)) do_hivex_root (void) { abort (); } \
   char *__attribute__((noreturn)) do_hivex_value_key (int64_t valueh) { abort (); } \
   int64_t __attribute__((noreturn)) do_hivex_value_type (int64_t valueh) { abort (); } \
@@ -202,6 +203,7 @@ extern int optgroup_zerofree_available (void);
 
 #define OPTGROUP_LIBTSK_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_internal_filesystem_walk (const mountable_t *device) { abort (); } \
+  int __attribute__((noreturn)) do_internal_find_inode (const mountable_t *device, int64_t inode) { abort (); } \
   int optgroup_libtsk_available (void) { return 0; }
 
 #define OPTGROUP_LINUXCAPS_NOT_AVAILABLE \
@@ -323,6 +325,10 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_download_blocks (const mountable_t *device, int64_t start, int64_t stop, int unallocated) { abort (); } \
   int __attribute__((noreturn)) do_download_inode (const mountable_t *device, int64_t inode) { abort (); } \
   int optgroup_sleuthkit_available (void) { return 0; }
+
+#define OPTGROUP_SQUASHFS_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_mksquashfs (const char *path, const char *compress, char *const *excludes) { abort (); } \
+  int optgroup_squashfs_available (void) { return 0; }
 
 #define OPTGROUP_SYSLINUX_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_syslinux (const char *device, const char *directory) { abort (); } \

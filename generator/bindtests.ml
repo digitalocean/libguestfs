@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 open Printf
 
+open Common_utils
 open Types
 open Utils
 open Pr
@@ -178,7 +179,7 @@ fill_lvm_pv (guestfs_h *g, struct guestfs_lvm_pv *pv, size_t i)
       let check_optarg n printf_args =
         pr "  fprintf (fp, \"%s: \");\n" n;
         pr "  if (optargs->bitmask & %s_%s_BITMASK) {\n" c_optarg_prefix
-          (String.uppercase n);
+          (String.uppercase_ascii n);
         pr "    fprintf (fp, %s);\n" printf_args;
         pr "  } else {\n";
         pr "    fprintf (fp, \"unset\\n\");\n";
@@ -202,7 +203,7 @@ fill_lvm_pv (guestfs_h *g, struct guestfs_lvm_pv *pv, size_t i)
         | OStringList n ->
           pr "  fprintf (fp, \"%s: \");\n" n;
           pr "  if (optargs->bitmask & %s_%s_BITMASK) {\n" c_optarg_prefix
-            (String.uppercase n);
+            (String.uppercase_ascii n);
           pr "    print_strings (g, optargs->%s);\n" n;
           pr "  } else {\n";
           pr "    fprintf (fp, \"unset\\n\");\n";
@@ -585,7 +586,7 @@ public class Bindtests {
         | CallBool b -> string_of_bool b
         | CallBuffer s ->
             "new byte[] { " ^ String.concat "," (
-              map_chars (fun c -> string_of_int (Char.code c)) s
+              String.map_chars (fun c -> string_of_int (Char.code c)) s
             ) ^ " }"
       ) args
     )
@@ -847,7 +848,7 @@ and generate_golang_bindtests () =
   generate_lang_bindtests (
     fun f args optargs ->
 
-      pr "    if err := g.%s (" (String.capitalize f);
+      pr "    if err := g.%s (" (String.capitalize_ascii f);
 
       let needs_comma = ref false in
       List.iter (
@@ -871,13 +872,13 @@ and generate_golang_bindtests () =
               | c -> sprintf "'%c'" c
             in
             pr "[]byte{%s}"
-              (String.concat ", " (List.map quote_char (explode s)))
+              (String.concat ", " (List.map quote_char (String.explode s)))
       ) args;
       if !needs_comma then pr ", ";
       (match optargs with
       | None -> pr "nil"
       | Some optargs ->
-        pr "&guestfs.Optargs%s{" (String.capitalize f);
+        pr "&guestfs.Optargs%s{" (String.capitalize_ascii f);
         needs_comma := false;
         List.iter (
           fun optarg ->
@@ -885,19 +886,19 @@ and generate_golang_bindtests () =
             needs_comma := true;
             match optarg with
             | CallOBool (n, v) ->
-              let n = String.capitalize n in
+              let n = String.capitalize_ascii n in
               pr "%s_is_set: true, %s: %b" n n v
             | CallOInt (n, v) ->
-              let n = String.capitalize n in
+              let n = String.capitalize_ascii n in
               pr "%s_is_set: true, %s: %d" n n v
             | CallOInt64 (n, v) ->
-              let n = String.capitalize n in
+              let n = String.capitalize_ascii n in
               pr "%s_is_set: true, %s: %Ld" n n v
             | CallOString (n, v) ->
-              let n = String.capitalize n in
+              let n = String.capitalize_ascii n in
               pr "%s_is_set: true, %s: \"%s\"" n n v
             | CallOStringList (n, xs) ->
-              let n = String.capitalize n in
+              let n = String.capitalize_ascii n in
               pr "%s_is_set: true, %s: []string{%s}"
                 n n (String.concat ", " (List.map (sprintf "\"%s\"") xs))
         ) optargs;
@@ -973,7 +974,7 @@ and generate_php_bindtests () =
     let chan = open_in filename in
     let rec loop () =
       let line = input_line chan in
-      (match string_split ":" line with
+      (match String.nsplit ":" line with
       | ("obool"|"oint"|"oint64"|"ostring"|"ostringlist") as x :: _ ->
         pr "%s: unset\n" x
       | _ -> pr "%s\n" line

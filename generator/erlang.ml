@@ -20,6 +20,7 @@
 
 open Printf
 
+open Common_utils
 open Types
 open Utils
 open Pr
@@ -105,7 +106,7 @@ loop(Port) ->
       pr "%s(G" name;
       List.iter (
         fun arg ->
-          pr ", %s" (String.capitalize (name_of_argt arg))
+          pr ", %s" (String.capitalize_ascii (name_of_argt arg))
       ) args;
       if optargs <> [] then
         pr ", Optargs";
@@ -114,7 +115,7 @@ loop(Port) ->
       pr "  call_port(G, {%s" name;
       List.iter (
         fun arg ->
-          pr ", %s" (String.capitalize (name_of_argt arg))
+          pr ", %s" (String.capitalize_ascii (name_of_argt arg))
       ) args;
       if optargs <> [] then
         pr ", Optargs";
@@ -128,14 +129,14 @@ loop(Port) ->
         pr "%s(G" name;
         List.iter (
           fun arg ->
-            pr ", %s" (String.capitalize (name_of_argt arg))
+            pr ", %s" (String.capitalize_ascii (name_of_argt arg))
         ) args;
         pr ") ->\n";
 
         pr "  %s(G" name;
         List.iter (
           fun arg ->
-            pr ", %s" (String.capitalize (name_of_argt arg))
+            pr ", %s" (String.capitalize_ascii (name_of_argt arg))
         ) args;
         pr ", []";
         pr ").\n"
@@ -147,7 +148,7 @@ loop(Port) ->
           pr "%s(G" alias;
           List.iter (
             fun arg ->
-              pr ", %s" (String.capitalize (name_of_argt arg))
+              pr ", %s" (String.capitalize_ascii (name_of_argt arg))
           ) args;
           if optargs <> [] then
             pr ", Optargs";
@@ -156,7 +157,7 @@ loop(Port) ->
           pr "  %s(G" name;
           List.iter (
             fun arg ->
-              pr ", %s" (String.capitalize (name_of_argt arg))
+              pr ", %s" (String.capitalize_ascii (name_of_argt arg))
           ) args;
           if optargs <> [] then
             pr ", Optargs";
@@ -166,14 +167,14 @@ loop(Port) ->
             pr "%s(G" alias;
             List.iter (
               fun arg ->
-                pr ", %s" (String.capitalize (name_of_argt arg))
+                pr ", %s" (String.capitalize_ascii (name_of_argt arg))
             ) args;
             pr ") ->\n";
 
             pr "  %s(G" name;
             List.iter (
               fun arg ->
-                pr ", %s" (String.capitalize (name_of_argt arg))
+                pr ", %s" (String.capitalize_ascii (name_of_argt arg))
             ) args;
             pr ").\n"
           )
@@ -191,7 +192,7 @@ and generate_erlang_actions_h () =
 
 extern guestfs_h *g;
 
-extern ETERM *dispatch (ETERM *args_tuple);
+extern ETERM *dispatch (ETERM *message);
 extern int atom_equals (ETERM *atom, const char *name);
 extern ETERM *make_error (const char *funname);
 extern ETERM *unknown_optarg (const char *funname, ETERM *optargname);
@@ -204,7 +205,7 @@ extern int get_bool (ETERM *term);
 extern int get_int (ETERM *term);
 extern int64_t get_int64 (ETERM *term);
 
-#define ARG(i) (ERL_TUPLE_ELEMENT(args_tuple,(i)+1))
+#define ARG(i) (ERL_TUPLE_ELEMENT(message,(i)+1))
 
 ";
 
@@ -228,7 +229,7 @@ extern int64_t get_int64 (ETERM *term);
 
   List.iter (
     fun { name = name } ->
-      pr "ETERM *run_%s (ETERM *args_tuple);\n" name
+      pr "ETERM *run_%s (ETERM *message);\n" name
   ) (actions |> external_functions |> sort);
 
   pr "\n";
@@ -354,7 +355,7 @@ instead of erl_interface.
           c_function = c_function; c_optarg_prefix = c_optarg_prefix } ->
       pr "\n";
       pr "ETERM *\n";
-      pr "run_%s (ETERM *args_tuple)\n" name;
+      pr "run_%s (ETERM *message)\n" name;
       pr "{\n";
 
       iteri (
@@ -404,7 +405,7 @@ instead of erl_interface.
         List.iter (
           fun argt ->
             let n = name_of_optargt argt in
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "    if (atom_equals (hd_name, \"%s\")) {\n" n;
             pr "      optargs_s.bitmask |= %s_%s_BITMASK;\n"
               c_optarg_prefix uc_n;
@@ -457,12 +458,12 @@ instead of erl_interface.
         function
         | OBool _ | OInt _ | OInt64 _ -> ()
         | OString n ->
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "  if ((optargs_s.bitmask & %s_%s_BITMASK))\n"
               c_optarg_prefix uc_n;
             pr "    free ((char *) optargs_s.%s);\n" n
         | OStringList n ->
-            let uc_n = String.uppercase n in
+            let uc_n = String.uppercase_ascii n in
             pr "  if ((optargs_s.bitmask & %s_%s_BITMASK))\n"
               c_optarg_prefix uc_n;
             pr "    guestfs_int_free_string_list ((char **) optargs_s.%s);\n" n
@@ -545,11 +546,11 @@ instead of erl_interface.
 #include \"actions.h\"
 
 ETERM *
-dispatch (ETERM *args_tuple)
+dispatch (ETERM *message)
 {
   ETERM *fun;
 
-  fun = ERL_TUPLE_ELEMENT (args_tuple, 0);
+  fun = ERL_TUPLE_ELEMENT (message, 0);
 
   /* XXX We should use gperf here. */
   ";
@@ -557,7 +558,7 @@ dispatch (ETERM *args_tuple)
   List.iter (
     fun { name = name; style = ret, args, optargs } ->
       pr "if (atom_equals (fun, \"%s\"))\n" name;
-      pr "    return run_%s (args_tuple);\n" name;
+      pr "    return run_%s (message);\n" name;
       pr "  else ";
   ) (actions |> external_functions |> sort);
 

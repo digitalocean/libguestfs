@@ -32,7 +32,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "cloexec.h"
 #include "ignore-value.h"
 
 #include "guestfs.h"
@@ -78,7 +77,7 @@ main (int argc, char *argv[])
 
   /* Parent continues. */
   close (pipefd[0]);
-  ignore_value (set_cloexec_flag (pipefd[1], 1));
+  ignore_value (fcntl (pipefd[1], F_SETFD, FD_CLOEXEC));
 
   /* Sleep a bit and test that the guestunmount process is still running. */
   sleep (2);

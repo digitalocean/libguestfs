@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -87,3 +87,24 @@ if HAVE_OCAMLOPT
 .ml.cmx:
 	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 endif
+
+# Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
+# set of helper functions for running tests (see
+# tests/test-functions.sh).
+#
+# Notes:
+#
+# (1) This is in fact a single command all on one line.  The variables
+# are evaluated in test-functions.sh.
+#
+# (2) We use absolute paths here and in test-functions.sh so that the
+# test can change directory freely.  But we also include the
+# non-absolute values so they can be used by the test script itself.
+export TEST_FUNCTIONS := \
+	source $(abs_top_srcdir)/tests/test-functions.sh \
+	abs_srcdir="$(abs_srcdir)" \
+	abs_builddir="$(abs_builddir)" \
+	top_srcdir="$(top_srcdir)" \
+	top_builddir="$(top_builddir)" \
+	abs_top_srcdir="$(abs_top_srcdir)" \
+	abs_top_builddir="$(abs_top_builddir)"

@@ -155,6 +155,7 @@ gint32 guestfs_session_aug_rm (GuestfsSession *session, const gchar *augpath, GE
 gboolean guestfs_session_aug_save (GuestfsSession *session, GError **err);
 gboolean guestfs_session_aug_set (GuestfsSession *session, const gchar *augpath, const gchar *val, GError **err);
 gint32 guestfs_session_aug_setm (GuestfsSession *session, const gchar *base, const gchar *sub, const gchar *val, GError **err);
+gboolean guestfs_session_aug_transform (GuestfsSession *session, const gchar *lens, const gchar *file, GuestfsAugTransform *optargs, GError **err);
 gboolean guestfs_session_available (GuestfsSession *session, gchar *const *groups, GError **err);
 gchar **guestfs_session_available_all_groups (GuestfsSession *session, GError **err);
 gboolean guestfs_session_base64_in (GuestfsSession *session, const gchar *base64file, const gchar *filename, GCancellable *cancellable, GError **err);
@@ -282,6 +283,7 @@ gboolean guestfs_session_fill_dir (GuestfsSession *session, const gchar *dir, gi
 gboolean guestfs_session_fill_pattern (GuestfsSession *session, const gchar *pattern, gint32 len, const gchar *path, GError **err);
 gchar **guestfs_session_find (GuestfsSession *session, const gchar *directory, GError **err);
 gboolean guestfs_session_find0 (GuestfsSession *session, const gchar *directory, const gchar *files, GCancellable *cancellable, GError **err);
+GuestfsTSKDirent **guestfs_session_find_inode (GuestfsSession *session, const gchar *device, gint64 inode, GCancellable *cancellable, GError **err);
 gchar *guestfs_session_findfs_label (GuestfsSession *session, const gchar *label, GError **err);
 gchar *guestfs_session_findfs_uuid (GuestfsSession *session, const gchar *uuid, GError **err);
 gint32 guestfs_session_fsck (GuestfsSession *session, const gchar *fstype, const gchar *device, GError **err);
@@ -372,6 +374,8 @@ gchar *guestfs_session_inspect_get_product_variant (GuestfsSession *session, con
 gchar **guestfs_session_inspect_get_roots (GuestfsSession *session, GError **err);
 gchar *guestfs_session_inspect_get_type (GuestfsSession *session, const gchar *root, GError **err);
 gchar *guestfs_session_inspect_get_windows_current_control_set (GuestfsSession *session, const gchar *root, GError **err);
+gchar *guestfs_session_inspect_get_windows_software_hive (GuestfsSession *session, const gchar *root, GError **err);
+gchar *guestfs_session_inspect_get_windows_system_hive (GuestfsSession *session, const gchar *root, GError **err);
 gchar *guestfs_session_inspect_get_windows_systemroot (GuestfsSession *session, const gchar *root, GError **err);
 gint8 guestfs_session_inspect_is_live (GuestfsSession *session, const gchar *root, GError **err);
 gint8 guestfs_session_inspect_is_multipart (GuestfsSession *session, const gchar *root, GError **err);
@@ -516,6 +520,7 @@ gboolean guestfs_session_mkmountpoint (GuestfsSession *session, const gchar *exe
 gboolean guestfs_session_mknod (GuestfsSession *session, gint32 mode, gint32 devmajor, gint32 devminor, const gchar *path, GError **err);
 gboolean guestfs_session_mknod_b (GuestfsSession *session, gint32 mode, gint32 devmajor, gint32 devminor, const gchar *path, GError **err);
 gboolean guestfs_session_mknod_c (GuestfsSession *session, gint32 mode, gint32 devmajor, gint32 devminor, const gchar *path, GError **err);
+gboolean guestfs_session_mksquashfs (GuestfsSession *session, const gchar *path, const gchar *filename, GuestfsMksquashfs *optargs, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_mkswap (GuestfsSession *session, const gchar *device, GuestfsMkswap *optargs, GError **err);
 gboolean guestfs_session_mkswap_L (GuestfsSession *session, const gchar *label, const gchar *device, GError **err);
 gboolean guestfs_session_mkswap_U (GuestfsSession *session, const gchar *uuid, const gchar *device, GError **err);

@@ -1,5 +1,5 @@
 # libguestfs test images
-# Copyright (C) 2009-2016 Red Hat Inc.
+# Copyright (C) 2009-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,5 +25,7 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
+	pnp_wait.exe \
 	rhev-apt.exe \
-	rhsrvany.exe
+	rhsrvany.exe \
+	vmdp.exe

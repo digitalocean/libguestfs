@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +16,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-(* Convert various RPM-based Linux enterprise distros.  This module
- * handles:
+(* Convert various Linux distros.  This module handles:
  *
  * - RHEL and derivatives like CentOS and ScientificLinux
  * - SUSE
- * - OpenSUSE and Fedora (not enterprisey, but similar enough to RHEL/SUSE)
+ * - OpenSUSE and Fedora (similar enough to RHEL/SUSE)
+ * - Debian and derivatives like Ubuntu and Linux Mint
  *)
 
 (* < mdbooth> It's all in there for a reason :/ *)
@@ -38,13 +38,13 @@ open Linux_kernels
 module G = Guestfs
 
 (* The conversion function. *)
-let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
+let rec convert (g : G.guestfs) inspect source output rcaps =
   (*----------------------------------------------------------------------*)
   (* Inspect the guest first.  We already did some basic inspection in
    * the common v2v.ml code, but that has to deal with generic guests
    * (anything common to Linux and Windows).  Here we do more detailed
    * inspection which can make the assumption that we are dealing with
-   * an Enterprise Linux guest using RPM.
+   * a Linux guest using RPM or Debian packages.
    *)
 
   (* Basic inspection data available as local variables. *)
@@ -56,9 +56,10 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
     | "rhel" | "centos" | "scientificlinux" | "redhat-based"
     | "oraclelinux" -> `RHEL_family
     | "sles" | "suse-based" | "opensuse" -> `SUSE_family
+    | "debian" | "ubuntu" | "linuxmint" -> `Debian_family
     | _ -> assert false in
 
-  assert (inspect.i_package_format = "rpm");
+  assert (inspect.i_package_format = "rpm" || inspect.i_package_format = "deb");
 
   (* We use Augeas for inspection and conversion, so initialize it early. *)
   Linux.augeas_init g;
@@ -489,6 +490,15 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
         ignore (g#command (Array.of_list args))
       in
 
+      let run_update_initramfs_command () =
+        let args =
+          "/usr/sbin/update-initramfs"  ::
+            (if verbose () then [ "-v" ] else [])
+          @ [ "-c"; "-k"; mkinitrd_kv ]
+        in
+        ignore (g#command (Array.of_list args))
+      in
+
       if g#is_file ~followsymlinks:true "/sbin/dracut" then
         run_dracut_command "/sbin/dracut"
       else if g#is_file ~followsymlinks:true "/usr/bin/dracut" then
@@ -501,6 +511,29 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
                        "-i"; initrd;
                        "-k"; kernel.ki_vmlinuz |]
         )
+      )
+      else if family = `Debian_family then (
+        if not (g#is_file ~followsymlinks:true "/usr/sbin/update-initramfs") then
+          error (f_"unable to rebuild initrd (%s) because update-initramfs was not found in the guest")
+            initrd;
+
+        if List.length modules > 0 then (
+          (* The modules to add to initrd are defined in:
+          *     /etc/initramfs-tools/modules
+          * File format is same as modules(5).
+          *)
+          let path = "/files/etc/initramfs-tools/modules" in
+          g#aug_transform "modules" "/etc/initramfs-tools/modules";
+          Linux.augeas_reload g;
+          g#aug_set (sprintf "%s/#comment[last()+1]" path)
+            "The following modules were added by virt-v2v";
+          List.iter (
+            fun m -> g#aug_clear (sprintf "%s/%s" path m)
+          ) modules;
+          g#aug_save ();
+        );
+
+        run_update_initramfs_command ()
       )
       else if g#is_file ~followsymlinks:true "/sbin/mkinitrd" then (
         let module_args = List.map (sprintf "--with=%s") modules in
@@ -972,7 +1005,7 @@ let rec convert ~keep_serial_console (g : G.guestfs) inspect source rcaps =
 
   let kernel, virtio = configure_kernel () in
 
-  if keep_serial_console then (
+  if output#keep_serial_console then (
     configure_console ();
     bootloader#configure_console ();
   ) else (
@@ -1022,6 +1055,8 @@ let () =
                        | "rhel" | "centos" | "scientificlinux" | "redhat-based"
                        | "oraclelinux"
                        | "sles" | "suse-based" | "opensuse") } -> true
+    | { i_type = "linux";
+        i_distro = ("debian" | "ubuntu" | "linuxmint") } -> true
     | _ -> false
   in
-  Modules_list.register_convert_module matching "enterprise-linux" convert
+  Modules_list.register_convert_module matching "linux" convert

@@ -1,5 +1,5 @@
 # libguestfs virt-sysprep tool
-# Copyright (C) 2012-2016 Red Hat Inc.
+# Copyright (C) 2012-2017 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	script1.sh script2.sh script3.sh script4.sh \
 	test-virt-sysprep.sh \
+	test-virt-sysprep-backup-files.sh \
 	test-virt-sysprep-docs.sh \
 	test-virt-sysprep-passwords.sh \
 	test-virt-sysprep-script.sh \
@@ -29,6 +30,7 @@ EXTRA_DIST = \
 # Filenames sysprep_operation_<name>.ml in alphabetical order.
 operations = \
 	abrt_data \
+	backup_files \
 	bash_history \
 	blkid_tab \
 	ca_certificates \
@@ -51,6 +53,7 @@ operations = \
 	pacct_log \
 	package_manager_cache \
 	pam_data \
+	passwd_backups \
 	puppet_data_log \
 	rh_subscription_manager \
 	rhn_systemid \
@@ -67,9 +70,11 @@ operations = \
 	utmp yum_uuid
 
 SOURCES_MLI = \
-	sysprep_operation.mli
+	sysprep_operation.mli \
+	utils.mli
 
 SOURCES_ML = \
+	utils.ml \
 	sysprep_operation.ml \
 	$(patsubst %,sysprep_operation_%.ml,$(operations)) \
 	main.ml
@@ -87,7 +92,8 @@ virt_sysprep_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 	-I$(shell $(OCAMLC) -where) \
-	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/common/utils \
+	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/fish
 virt_sysprep_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
@@ -96,12 +102,13 @@ virt_sysprep_CFLAGS = \
 BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
-# -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
+# -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 OCAMLPACKAGES = \
 	-package str,unix \
-	-I $(top_builddir)/src/.libs \
+	-I $(top_builddir)/common/utils/.libs \
+	-I $(top_builddir)/lib/.libs \
 	-I $(top_builddir)/gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
 	-I $(top_builddir)/mllib \
@@ -168,9 +175,6 @@ sysprep-operations.pod: virt-sysprep
 # Tests.
 
 TESTS_ENVIRONMENT = \
-	abs_builddir=$(abs_builddir) \
-	abs_srcdir=$(abs_srcdir) \
-	PATH=$(abs_top_builddir)/fuse:$(PATH) \
 	$(top_builddir)/run --test
 
 TESTS = \
@@ -179,6 +183,7 @@ TESTS = \
 if ENABLE_APPLIANCE
 TESTS += \
 	test-virt-sysprep.sh \
+	test-virt-sysprep-backup-files.sh \
 	test-virt-sysprep-passwords.sh
 
 if HAVE_FUSE

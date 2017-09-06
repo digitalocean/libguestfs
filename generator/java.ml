@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2016 Red Hat Inc.
+ * Copyright (C) 2009-2017 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 open Printf
 
+open Common_utils
 open Types
 open Utils
 open Pr
@@ -156,7 +157,8 @@ public class GuestFS {
       pr "   *\n";
       pr "   * @see #set_event_callback\n";
       pr "   */\n";
-      pr "  public static final long EVENT_%s = 0x%x;\n" (String.uppercase name) bitmask;
+      pr "  public static final long EVENT_%s = 0x%x;\n"
+         (String.uppercase_ascii name) bitmask;
       pr "\n";
   ) events;
 
@@ -259,7 +261,7 @@ public class GuestFS {
       let ret, args, optargs = f.style in
 
       if is_documented f then (
-        let doc = replace_str f.longdesc "C<guestfs_" "C<g." in
+        let doc = String.replace f.longdesc "C<guestfs_" "C<g." in
         let doc =
           if optargs <> [] then
             doc ^ "\n\nOptional arguments are supplied in the final Map<String,Object> parameter, which is a hash of the argument name to its value (cast to Object).  Pass an empty Map or null for no optional arguments."
@@ -625,7 +627,7 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
       );
       pr "JNICALL\n";
       pr "Java_com_redhat_et_libguestfs_GuestFS_";
-      pr "%s" (replace_str ("_" ^ name) "_" "_1");
+      pr "%s" (String.replace ("_" ^ name) "_" "_1");
       pr "  (JNIEnv *env, jobject obj, jlong jg";
       List.iter (
         function
@@ -684,15 +686,13 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
            pr "  jobject jr;\n";
            pr "  jclass cl;\n";
            pr "  jfieldID fl;\n";
-           pr "  CLEANUP_FREE_%s struct guestfs_%s *r = NULL;\n"
-             (String.uppercase typ) typ
+           pr "  struct guestfs_%s *r;\n" typ
        | RStructList (_, typ) ->
            pr "  jobjectArray jr;\n";
            pr "  jclass cl;\n";
            pr "  jfieldID fl;\n";
            pr "  jobject jfl;\n";
-           pr "  CLEANUP_FREE_%s_LIST struct guestfs_%s_list *r = NULL;\n"
-             (String.uppercase typ) typ
+           pr "  struct guestfs_%s_list *r;\n" typ
        | RBufferOut _ ->
            pr "  jstring jr;\n";
            pr "  char *r;\n";
@@ -715,7 +715,7 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
             pr "  size_t %s_size;\n" n
         | StringList n | DeviceList n | FilenameList n ->
             pr "  size_t %s_len;\n" n;
-            pr "  CLEANUP_FREE char **%s = NULL;\n" n
+            pr "  char **%s;\n" n
         | Bool n
         | Int n ->
             pr "  int %s;\n" n
@@ -734,7 +734,7 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
           | OBool _ | OInt _ | OInt64 _ | OString _ -> ()
           | OStringList n ->
             pr "  size_t %s_len;\n" n;
-            pr "  CLEANUP_FREE char **%s = NULL;\n" n
+            pr "  char **%s;\n" n
         ) optargs
       );
 
@@ -857,6 +857,7 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
               n;
             pr "    (*env)->ReleaseStringUTFChars (env, o, %s[i]);\n" n;
             pr "  }\n";
+            pr "  free (%s);\n" n
         | Bool _
         | Int _
         | Int64 _
@@ -874,6 +875,7 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
               n;
             pr "    (*env)->ReleaseStringUTFChars (env, o, optargs_s.%s[i]);\n" n;
             pr "  }\n";
+            pr "  free (%s);\n" n
       ) optargs;
 
       pr "\n";
@@ -998,6 +1000,7 @@ and generate_java_struct_return typ jtyp cols =
         pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"C\");\n" name;
         pr "  (*env)->SetCharField (env, jr, fl, r->%s);\n" name;
   ) cols;
+  pr "  guestfs_free_%s (r);\n" typ;
   pr "  return jr;\n"
 
 and generate_java_struct_list_return typ jtyp cols =
@@ -1035,7 +1038,7 @@ and generate_java_struct_list_return typ jtyp cols =
       | FBuffer ->
         pr "    {\n";
         pr "      size_t len = r->val[i].%s_len;\n" name;
-        pr "      CLEANUP_FREE char *s = malloc (len + 1);\n";
+        pr "      CLEANUP_FREE char *s = malloc (len);\n";
         pr "      if (s == NULL) {\n";
         pr "        throw_out_of_memory (env, \"malloc\");\n";
         pr "        goto ret_error;\n";
@@ -1058,6 +1061,7 @@ and generate_java_struct_list_return typ jtyp cols =
   pr "    (*env)->SetObjectArrayElement (env, jr, i, jfl);\n";
   pr "  }\n";
   pr "\n";
+  pr "  guestfs_free_%s_list (r);\n" typ;
   pr "  return jr;\n"
 
 and generate_java_makefile_inc () =

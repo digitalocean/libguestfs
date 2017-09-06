@@ -67,6 +67,7 @@ extern struct command_entry aug_rm_cmd_entry;
 extern struct command_entry aug_save_cmd_entry;
 extern struct command_entry aug_set_cmd_entry;
 extern struct command_entry aug_setm_cmd_entry;
+extern struct command_entry aug_transform_cmd_entry;
 extern struct command_entry available_cmd_entry;
 extern struct command_entry available_all_groups_cmd_entry;
 extern struct command_entry base64_in_cmd_entry;
@@ -199,6 +200,7 @@ extern struct command_entry fill_dir_cmd_entry;
 extern struct command_entry fill_pattern_cmd_entry;
 extern struct command_entry find_cmd_entry;
 extern struct command_entry find0_cmd_entry;
+extern struct command_entry find_inode_cmd_entry;
 extern struct command_entry findfs_label_cmd_entry;
 extern struct command_entry findfs_uuid_cmd_entry;
 extern struct command_entry fsck_cmd_entry;
@@ -290,6 +292,8 @@ extern struct command_entry inspect_get_product_variant_cmd_entry;
 extern struct command_entry inspect_get_roots_cmd_entry;
 extern struct command_entry inspect_get_type_cmd_entry;
 extern struct command_entry inspect_get_windows_current_control_set_cmd_entry;
+extern struct command_entry inspect_get_windows_software_hive_cmd_entry;
+extern struct command_entry inspect_get_windows_system_hive_cmd_entry;
 extern struct command_entry inspect_get_windows_systemroot_cmd_entry;
 extern struct command_entry inspect_is_live_cmd_entry;
 extern struct command_entry inspect_is_multipart_cmd_entry;
@@ -407,6 +411,7 @@ extern struct command_entry mkmountpoint_cmd_entry;
 extern struct command_entry mknod_cmd_entry;
 extern struct command_entry mknod_b_cmd_entry;
 extern struct command_entry mknod_c_cmd_entry;
+extern struct command_entry mksquashfs_cmd_entry;
 extern struct command_entry mkswap_cmd_entry;
 extern struct command_entry mkswap_L_cmd_entry;
 extern struct command_entry mkswap_U_cmd_entry;
@@ -690,6 +695,8 @@ aug_set, &aug_set_cmd_entry
 aug-set, &aug_set_cmd_entry
 aug_setm, &aug_setm_cmd_entry
 aug-setm, &aug_setm_cmd_entry
+aug_transform, &aug_transform_cmd_entry
+aug-transform, &aug_transform_cmd_entry
 available, &available_cmd_entry
 available_all_groups, &available_all_groups_cmd_entry
 available-all-groups, &available_all_groups_cmd_entry
@@ -923,6 +930,8 @@ fill_pattern, &fill_pattern_cmd_entry
 fill-pattern, &fill_pattern_cmd_entry
 find, &find_cmd_entry
 find0, &find0_cmd_entry
+find_inode, &find_inode_cmd_entry
+find-inode, &find_inode_cmd_entry
 findfs_label, &findfs_label_cmd_entry
 findfs-label, &findfs_label_cmd_entry
 findfs_uuid, &findfs_uuid_cmd_entry
@@ -1097,6 +1106,10 @@ inspect_get_type, &inspect_get_type_cmd_entry
 inspect-get-type, &inspect_get_type_cmd_entry
 inspect_get_windows_current_control_set, &inspect_get_windows_current_control_set_cmd_entry
 inspect-get-windows-current-control-set, &inspect_get_windows_current_control_set_cmd_entry
+inspect_get_windows_software_hive, &inspect_get_windows_software_hive_cmd_entry
+inspect-get-windows-software-hive, &inspect_get_windows_software_hive_cmd_entry
+inspect_get_windows_system_hive, &inspect_get_windows_system_hive_cmd_entry
+inspect-get-windows-system-hive, &inspect_get_windows_system_hive_cmd_entry
 inspect_get_windows_systemroot, &inspect_get_windows_systemroot_cmd_entry
 inspect-get-windows-systemroot, &inspect_get_windows_systemroot_cmd_entry
 inspect_is_live, &inspect_is_live_cmd_entry
@@ -1307,6 +1320,7 @@ mknod_b, &mknod_b_cmd_entry
 mknod-b, &mknod_b_cmd_entry
 mknod_c, &mknod_c_cmd_entry
 mknod-c, &mknod_c_cmd_entry
+mksquashfs, &mksquashfs_cmd_entry
 mkswap, &mkswap_cmd_entry
 mkswap-opts, &mkswap_cmd_entry
 mkswap_L, &mkswap_L_cmd_entry
