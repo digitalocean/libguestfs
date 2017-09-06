@@ -3124,10 +3124,10 @@ be extremely unlikely to exist as long as the RNG is working).
 
 If there is an error, C<-1> is returned.
 
-=head4 Function C<daemon/guestfsd.c:udev_settle>
+=head4 Function C<daemon/guestfsd.c:udev_settle_file>
 
  void
- udev_settle (void)
+ udev_settle_file (const char *file)
 
 LVM and other commands aren't synchronous, especially when udev is
 involved.  eg. You can create or remove some device, but the C</dev> device
@@ -3588,6 +3588,15 @@ Collect data about the system running virt-p2v such as the dmesg output and
 lists of PCI devices.  This is useful for diagnosis when things go wrong.
 
 If any command fails, this is non-fatal.
+
+=head4 Function C<p2v/conversion.c:generate_p2v_version_file>
+
+ static void
+ generate_p2v_version_file (const char *p2v_version_file)
+
+Generate a file containing the version of virt-p2v.
+
+The version of virt-v2v is contained in the conversion log.
 
 =head3 File F<p2v/gui.c>
 

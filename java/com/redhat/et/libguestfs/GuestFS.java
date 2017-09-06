@@ -2767,8 +2767,7 @@ public class GuestFS {
    * <p>
    * limit the size of a subvolume
    * </p><p>
-   * Limit the size of a subvolume which's path is
-   * "subvolume". "size" can have suffix of G, M, or K.
+   * Limit the size of the subvolume with path "subvolume".
    * </p><p>
    * This function depends on the feature "btrfs".  See also {@link #feature_available}.
    * </p>

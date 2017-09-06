@@ -58,14 +58,14 @@ too (see below).
 Після вибору гостьової системи зі списку може виникнути потреба у
 ознайомленні із нотатками щодо встановлення:
 
- virt-builder --notes fedora-20
+ virt-builder --notes fedora-25
 
 =head2 Побудова віртуальної машини
 
- virt-builder fedora-20
+ virt-builder fedora-25
 
-will build a Fedora 20 image for the same architecture as virt-builder (so
-running it from an i386 installation will try to build an i386 image, if
+will build a Fedora 25 image for the same architecture as virt-builder (so
+running it from an i686 installation will try to build an i686 image, if
 available).  This will have all default configuration (minimal size, no user
 accounts, random root password, only the bare minimum installed software,
 etc.).
@@ -75,59 +75,58 @@ etc.).
 Першого разу доведеться отримати шаблон мережею, а наступні операції може
 бути кешовано (див. L</КЕШУВАННЯ>).
 
-Назву файла результатів буде визначено на основі назви шаблона, отже для
-наведеного вище прикладу буде F<fedora-20.img>.  Змінити назву файла
-результатів можна за допомогою параметра I<-o>:
+The name of the output file is derived from the template name, so above it
+will be F<fedora-25.img>.  You can change the output filename using the
+I<-o> option:
 
- virt-builder fedora-20 -o mydisk.img
+ virt-builder fedora-25 -o mydisk.img
 
 Ви також можете скористатися параметром I<-o> для запису на наявні пристрої
 або логічні томи.
 
- virt-builder fedora-20 --format qcow2
+ virt-builder fedora-25 --format qcow2
 
-Те саме, що і вище, але із записом результатів у форматі qcow2 до
-F<fedora-20.qcow2>.
+As above, but write the output in qcow2 format to F<fedora-25.qcow2>.
 
- virt-builder fedora-20 --size 20G
+ virt-builder fedora-25 --size 20G
 
 As above, but the output size will be 20 GB.  The guest OS is resized as it
 is copied to the output (automatically, using L<virt-resize(1)>).
 
- virt-builder fedora-20 --arch i386
+ virt-builder fedora-25 --arch i686
 
-Те саме, що і вище, але із застосуванням шаблону i386, якщо він є доступним.
+As above, but using an i686 template, if available.
 
 =head2 Встановлення пароля root
 
- virt-builder fedora-20 --root-password file:/tmp/rootpw
+ virt-builder fedora-25 --root-password file:/tmp/rootpw
 
-Створити образ Fedora 20. Пароль root буде визначено за файлом
+Create a Fedora 25 image.  The root password is taken from the file
 F</tmp/rootpw>.
 
-Зауважте, що якщо ви I<не встановите> I<--root-password>, гостьовій системі
-буде надано I<випадковий> пароль адміністратора root.
+Note if you I<don't> set I<--root-password> then the guest is given a
+I<random> root password which is printed on stdout.
 
 Крім того, ви можете створювати облікові записи
 користувачів. Див. L</КОРИСТУВАЧІ І ПАРОЛІ> нижче.
 
 =head2 Встановити назву вузла
 
- virt-builder fedora-20 --hostname virt.example.com
+ virt-builder fedora-25 --hostname virt.example.com
 
 Встановити назву вузла C<virt.example.com>.
 
 =head2 Встановлення програмного забезпечення
 
-Встановлення пакунків зі звичайного (гостьового) сховища (наприклад, за
-допомогою yum або apt):
+To install packages from the ordinary (guest) software repository (eg. dnf
+or apt):
 
- virt-builder fedora-20 --install "inkscape,@Xfce Desktop"
+ virt-builder fedora-25 --install "inkscape,@Xfce Desktop"
 
 (У Fedora C<@> використовується для встановлення груп пакунків. У Debian вам
 доведеться встановлювати відповідний метапакунок.)
 
-Для оновлення основних пакунків до останньої версії виконайте такі дії:
+To update the installed packages to the latest version:
 
  virt-builder debian-7 --update
 
@@ -135,7 +134,7 @@ For guests which use SELinux, like Fedora and Red Hat Enterprise Linux, you
 may need to do SELinux relabelling after installing or updating packages
 (see L</SELINUX> below):
 
- virt-builder fedora-20 --update --selinux-relabel
+ virt-builder fedora-25 --update --selinux-relabel
 
 =head2 Налаштовування встановленої системи
 
@@ -148,26 +147,26 @@ I<--edit> to edit files.  I<--upload> to upload files.
 
 Приклад:
 
- cat <<'EOF' > /tmp/yum-update.sh
- yum -y update
+ cat <<'EOF' > /tmp/dnf-update.sh
+ dnf -y --best update
  EOF
  
- virt-builder fedora-20 --firstboot /tmp/yum-update.sh
+ virt-builder fedora-25 --firstboot /tmp/dnf-update.sh
 
 або просто:
 
- virt-builder fedora-20 --firstboot-command 'yum -y update'
+ virt-builder fedora-25 --firstboot-command 'dnf -y --best update'
 
-у результаті команду L<yum(8)> C<update> буде один раз виконано під час
-першого завантаження гостьової системи.
+which makes the L<dnf(8)> C<update> command run once the first time the
+guest boots.
 
 або
 
- virt-builder fedora-20 \
-   --edit '/etc/yum.conf:
+ virt-builder fedora-25 \
+   --edit '/etc/dnf/dnf.conf:
              s/gpgcheck=1/gpgcheck=0/'
 
-which edits F</etc/yum.conf> inside the disk image (during disk image
+which edits F</etc/dnf/dnf.conf> inside the disk image (during disk image
 creation, long before boot).
 
 Ви можете поєднувати ці параметри і додавати декілька параметрів усіх типів.
@@ -297,6 +296,9 @@ This option extracts the kernel and initramfs from a previously built disk
 image called C<IMAGE> (in fact it works for any VM disk image, not just ones
 built using virt-builder).
 
+Note this method is B<deprecated>: there is a separate tool for this,
+L<virt-get-kernel(1)>, which has more options for the file extraction.
+
 The kernel and initramfs are written to the current directory, unless you
 also specify the I<--output> C<outputdir> B<directory> name.
 
@@ -310,9 +312,11 @@ of a guest, see L<virt-copy-out(1)>.
 
 =item B<--gpg> GPG
 
-Specify an alternate L<gpg(1)> (GNU Privacy Guard) binary.  You can also use
-this to add gpg parameters, for example to specify an alternate home
-directory:
+Specify an alternate L<gpg(1)> (GNU Privacy Guard) binary.  By default
+virt-builder looks for either C<gpg2> or C<gpg> in the C<$PATH>.
+
+You can also use this to add gpg parameters, for example to specify an
+alternate home directory:
 
  virt-builder --gpg "gpg --homedir /tmp" [...]
 
@@ -546,15 +550,15 @@ If the guest OS you are installing is similar to the host OS (eg.  both are
 Linux), and if libguestfs supports network connections, then you can use
 I<--install> to install packages like this:
 
- virt-builder fedora-20 --install inkscape
+ virt-builder fedora-25 --install inkscape
 
 This uses the guest's package manager and the host's network connection.
 
 =head3 Оновлення пакунків під час збирання
 
-To update the core set of packages in the template at build time:
+To update the installed packages in the template at build time:
 
- virt-builder fedora-20 --update
+ virt-builder fedora-25 --update
 
 Most of the templates that ship with virt-builder come with a very minimal
 selection of packages (known as a "JEOS" or "Just Enough Operating System"),
@@ -566,7 +570,7 @@ option updates those template packages.
 
 Another option is to install the packages when the guest first boots:
 
- virt-builder fedora-20 --firstboot-install inkscape
+ virt-builder fedora-25 --firstboot-install inkscape
 
 This uses the guest's package manager and the guest's network connection.
 
@@ -586,7 +590,7 @@ L<virt-make-fs(1)>.  For genisoimage, use a command like this:
 
  genisoimage -o extra-packages.iso -R -J -V EXTRA cdcontents/
 
-Create a script that mounts the ISO and sets up the repository.  For yum,
+Create a script that mounts the ISO and sets up the repository.  For dnf,
 create /tmp/install.sh containing:
 
  mkdir /tmp/mount
@@ -599,7 +603,7 @@ create /tmp/install.sh containing:
  enabled=1
  EOF
  
- yum -y install famousdatabase
+ dnf -y install famousdatabase
 
 Для apt створіть файл /tmp/install.sh із таким вмістом:
 
@@ -612,7 +616,7 @@ create /tmp/install.sh containing:
 Use the I<--attach> option to attach the CD / disk image and the I<--run>
 option to run the script:
 
- virt-builder fedora-20 \
+ virt-builder fedora-25 \
    --attach extra-packages.iso \
    --run /tmp/install.sh
 
@@ -689,7 +693,7 @@ Linux distributions.
 
 For distros that use systemd C<localectl>, use a command like this:
 
- virt-builder fedora-20 \
+ virt-builder fedora-25 \
    --firstboot-command 'localectl set-keymap uk'
 
 Докладніший опис можна знайти за посиланнями L<localectl(1)> та
@@ -712,7 +716,7 @@ For Debian-derived distros using F</etc/default/keyboard>, upload or modify
 the keyboard file using the I<--upload>, I<--write> or I<--edit> options.
 For example:
 
- virt-builder debian-7 \
+ virt-builder debian-8 \
    --edit '/etc/default/keyboard: s/^XKBLAYOUT=.*/XKBLAYOUT="gb"/'
 
 Див. L<https://wiki.debian.org/Keyboard>.
@@ -729,9 +733,9 @@ distro-specific, and it is outside the scope of virt-builder to do this.
 
 У цьому розділі наведено приклади для типових дистрибутивів Linux.
 
-=head3 Встановлення японської мови для Fedora 20
+=head3 Setting Japanese in Fedora 25
 
- virt-builder fedora-20 \
+ virt-builder fedora-25 \
    --size 20G \
    --update \
    --install @japanese-support \
@@ -742,7 +746,7 @@ distro-specific, and it is outside the scope of virt-builder to do this.
    --firstboot-command 'localectl set-keymap jp' \
    --firstboot-command 'systemctl isolate graphical.target'
 
-=head3 Встановлення японської мови для Debian 7 (Wheezy)
+=head3 Setting Japanese in Debian 8 (Jessie)
 
 Note that although this enables Japanese in the text console too, it is
 unlikely that you will see properly rendered Japanese there.  However
@@ -750,15 +754,14 @@ Japanese is properly rendered in X applications and terminals.
 
  pkgs=locales,xfce4,\
  ibus,ibus-anthy,\
- ttf-sazanami-gothic,ttf-sazanami-mincho,\
+ fonts-ipafont-gothic,fonts-ipafont-mincho,\
  fonts-takao-mincho,\
  xfonts-intl-japanese,xfonts-intl-japanese-big,\
  iceweasel-l10n-ja,manpages-ja
  
- virt-builder debian-7 \
+ virt-builder debian-8 \
    --size 20G \
    --install $pkgs \
-   --edit '/etc/inittab: s,^#([1-9].*respawn.*/sbin/getty.*),$1,' \
    --edit '/etc/locale.gen: s,^#\s*ja,ja,' \
    --write '/etc/default/locale:LANG="ja_JP.UTF-8"' \
    --run-command "locale-gen"
@@ -773,7 +776,7 @@ in one of the following locations:
 
 =item F</tmp/builder.log>
 
-У Linux, BSD та інших гостьових системах.
+On Linux, BSD, and other non-Windows guests.
 
 =item F<C:\Temp\builder.log>
 
@@ -955,7 +958,7 @@ option.
 
  virt-install --import \
    --name guest --ram 2048 \
-   --disk path=disk.img,format=raw --os-variant fedora20
+   --disk path=disk.img,format=raw --os-variant fedora25
 
 Нотатки:
 
@@ -990,7 +993,7 @@ differently as well.
 
 Import the image into Glance (the OpenStack image store) by doing:
 
- glance image-create --name fedora-20-image --file fedora-20.img \
+ glance image-create --name fedora-25-image --file fedora-25.img \
    --disk-format raw --container-format bare \
    --is-public True
 
@@ -1000,12 +1003,12 @@ should match virt-builder's I<--format> option (or C<raw> if you didn't use
 that option).  The I<--container-format> should always be C<bare> since
 virt-builder doesn't put images into containers.
 
-You can use the S<C<glance image-show I<fedora-20-image>>> command to
+You can use the S<C<glance image-show I<fedora-25-image>>> command to
 display the properties of the image.
 
 To boot up an instance of your image on a Nova compute node, do:
 
- nova boot fedora-20-server --image fedora-20-image \
+ nova boot fedora-25-server --image fedora-25-image \
    --flavor m1.medium
 
 Use S<C<nova flavor-list>> to list possible machine flavors.  Use S<C<nova
@@ -1035,17 +1038,17 @@ configuration at your Puppetmaster, and ensure the agent runs at boot.
 
 A typical virt-builder command would be:
 
- virt-builder fedora-20 \
+ virt-builder fedora-25 \
    --hostname client.example.com \
    --update \
    --install puppet \
-   --edit '/etc/puppet/puppet.conf:
-       s/^\[agent\]/[agent]\n  server = puppetmaster.example.com/' \
+   --append-line '/etc/puppet/puppet.conf:[agent]' \
+   --append-line '/etc/puppet/puppet.conf:server = puppetmaster.example.com/' \
    --run-command 'systemctl enable puppet' \
    --selinux-relabel
 
 The precise instructions vary according to the Linux distro.  For further
-information see: L<http://docs.puppetlabs.com/guides/installation.htm>
+information see: L<https://docs.puppet.com/puppet/latest/install_pre.html>
 
 =head2 ДІАГНОСТИКА ЗБИРАННЯ
 
@@ -1255,6 +1258,10 @@ existing guests (see L<virt-sysprep(1)>), or you could install a guest by
 hand (L<virt-install(1)>).  To see how the templates were created for
 virt-builder, look at the scripts in C<builder/templates>
 
+Virt-builder supports any image format (e.g. raw, qcow2, etc) as template,
+both as-is, and compressed as XZ.  This way, existing images (e.g. cleaned
+using L<virt-sysprep(1)>) can be used as templates.
+
 For best results when compressing the templates, use the following xz
 options (see L<nbdkit-xz-plugin(1)> for further explanation):
 
@@ -1344,8 +1351,8 @@ from other servers.
 
 =item C<checksum[sha512]=7b882fe9b82eb0fef...>
 
-The SHA-512 checksum of the B<compressed> file is checked after it is
-downloaded.  To work out the signature, do:
+The SHA-512 checksum of the file specified in I<file=..> is checked after it
+is downloaded.  To work out the signature, do:
 
  sha512sum disk.xz
 
@@ -1374,9 +1381,9 @@ even if they have a copy in the cache.
 
 =item C<format=qcow2>
 
-Specify the format of the disk image (before it was compressed).  If not
-given, the format is autodetected, but generally it is better to be explicit
-about the intended format.
+Specify the format of the disk image; in case it is compressed, that is the
+format before the compression.  If not given, the format is autodetected,
+but generally it is better to be explicit about the intended format.
 
 Note this is the source format, which is different from the I<--format>
 option (requested output format).  Virt-builder does on-the-fly conversion
@@ -1396,8 +1403,9 @@ option.
 
 =item C<compressed_size=NNN>
 
-The compressed size of the disk image in bytes.  This is just used for
-information (when using I<--list --long>).
+The actual size of the disk image in bytes, i.e. what was specified in
+I<file=..>.  This is just used for information (when using C<long>, and
+C<json> formats of I<--list>).
 
 =item C<expand=/dev/sdaX>
 
@@ -1543,17 +1551,11 @@ To increase both speed and reliability of installing packages, you can set
 up a local mirror of the target distribution, and point the guest package
 manager at that.
 
-Because of the order in which each phase of installation happens, you cannot
-use I<--write> (to point the package manager at a repo)  followed by
-I<--install> (to install from that repo).  The I<--write> and I<--install>
-steps run in the opposite order, regardless of their order on the command
-line.  You have to do this using I<--run-command> instead of I<--install>.
-
 =head4 Використання локального дзеркала з Fedora
 
 Для встановлення гостьової системи Fedora за допомогою локального дзеркала:
 
- virt-builder fedora-20 \
+ virt-builder fedora-25 \
    --edit '/etc/yum.repos.d/fedora.repo:
        s{.*baseurl=.*}{baseurl=http://example.com/mirror/};
        s{.*metalink=.*}{};
@@ -1562,8 +1564,8 @@ line.  You have to do this using I<--run-command> instead of I<--install>.
        s{.*baseurl=.*}{baseurl=http://example.com/mirror-updates/};
        s{.*metalink=.*}{};
    ' \
-   --run-command 'yum -y update' \
-   --run-command 'yum -y install pkg1 pkg2 ...'
+   --run-command 'dnf -y update' \
+   --install 'pkg1,pkg2,...'
 
 =head4 Використання локального дзеркала з Debian
 
@@ -1571,10 +1573,10 @@ Assuming that you are using C<apt-proxy> to mirror the repository, you
 should create a new F<sources.list> file to point to your proxy (see
 L<https://help.ubuntu.com/community/AptProxy>) and then do:
 
- virt-builder debian-7 \
+ virt-builder debian-8 \
    --upload sources.list:/etc/apt/sources.list \
    --run-command 'apt-get -y update' \
-   --run-command 'apt-get -y install pkg1 pkg2 ...'
+   --install 'pkg1,pkg2,...'
 
 =head2 ЦИФРОВІ ПІДПИСИ
 
@@ -1846,9 +1848,9 @@ the I<--firstboot> or I<--firstboot-command> options with Windows guests.
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfs(3)>, L<guestfish(1)>, L<guestmount(1)>, L<virt-copy-out(1)>,
-L<virt-customize(1)>, L<virt-install(1)>, L<virt-rescue(1)>,
-L<virt-resize(1)>, L<virt-sysprep(1)>, L<oz-install(1)>, L<gpg(1)>,
-L<curl(1)>, L<virt-make-fs(1)>, L<genisoimage(1)>,
+L<virt-customize(1)>, L<virt-get-kernel(1)>, L<virt-install(1)>,
+L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sysprep(1)>, L<oz-install(1)>,
+L<gpg(1)>, L<gpg2(1)>, L<curl(1)>, L<virt-make-fs(1)>, L<genisoimage(1)>,
 L<http://libguestfs.org/>.
 
 =head1 АВТОР

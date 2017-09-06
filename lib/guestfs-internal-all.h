@@ -32,6 +32,8 @@
 #ifndef GUESTFS_INTERNAL_ALL_H_
 #define GUESTFS_INTERNAL_ALL_H_
 
+#include <string.h>
+
 /* This is also defined in <guestfs.h>, so don't redefine it. */
 #if defined(__GNUC__) && !defined(GUESTFS_GCC_VERSION)
 # define GUESTFS_GCC_VERSION \
@@ -88,6 +90,26 @@
 #ifdef __APPLE__
 #define xdr_uint32_t xdr_u_int32_t
 #endif
+
+/* Return true iff the buffer is all zero bytes.
+ *
+ * The clever approach here was suggested by Eric Blake.  See:
+ * https://www.redhat.com/archives/libguestfs/2017-April/msg00171.html
+ */
+static inline int
+is_zero (const char *buffer, size_t size)
+{
+  size_t i;
+  const size_t limit = MIN (size, 16);
+
+  for (i = 0; i < limit; ++i)
+    if (buffer[i])
+      return 0;
+  if (size != limit)
+    return !memcmp (buffer, buffer + 16, size - 16);
+
+  return 1;
+}
 
 /* Macro which compiles the regexp once when the program/library is
  * loaded, and frees it when the library is unloaded.

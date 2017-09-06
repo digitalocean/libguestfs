@@ -1,3 +1,769 @@
+commit d5a26d4ec9cec1eecb04f810e7a60c65e8ca5552
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri May 19 11:44:36 2017 +0100
+
+    Version 1.36.4.
+
+commit a4f8cd12f324aed7937e577383f42dc9c50a006d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon May 15 14:41:03 2017 +0200
+
+    v2v: linux: pass the root device when using SUSE's mkinitrd
+    
+    mkinitrd in SLE guests < 12 tries to get the root device by scanning the
+    fstab: this will fail, since v2v already remapped the devices from
+    hd*/sd* to vd* in the guest (including in its fstab).
+    
+    Since we know what is the root device in the appliance, pass it to
+    mkinitrd directly, so it does not have to do guesswork.
+    
+    Thanks to: Cédric Bosdonnat, for reporting the issue, and testing
+    the fix.
+    
+    (cherry picked from commit 2d25872df3619a3077006ad0f91c029602db6780)
+
+commit dd213273f31f7f4df002b2a9e2d1373bf652e726
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon May 15 14:31:56 2017 +0200
+
+    python: PEP 8: add empty line
+    
+    Small update for commit 45e046dac95ce6895af95832def7e40ad786e36f.
+    
+    This is just formatting, no behaviour changes.
+    
+    (cherry picked from commit 00bf11cba8f069d9708eb19b6854e5e82e10b8bd)
+
+commit 6acd29c7d0b148c39d8b6a2dd984417db143a45b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 12 17:03:01 2017 +0200
+
+    daemon: lvm: use 'yes' as boolean for lvm2
+    
+    It looks like older versions of lvm2 (recent enough to have selectors)
+    do not recognize '1' (and '0') as boolean values.  Switch to 'yes',
+    which seems to be supported.
+    
+    Updates commit 7367945647e774aec4b93c3bf13181212d3c6430.
+    
+    (cherry picked from commit 5cbedebdb04ac7e6f4f09b0407655b1629a37eeb)
+
+commit 7c10ba7725eab7c3880c9611f53b6b2936fc2b8a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 8 09:50:17 2017 +0100
+
+    v2v: -i ova: Refactor constructing zcat command.
+    
+    (cherry picked from commit 5e55a9cd4ebb85e1b6905d731f97d5f216d653f2)
+
+commit 124532918fd9920b4359f9c0fb05b48b6627091d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 8 09:40:36 2017 +0100
+
+    v2v: -i ova: Refactor untar function.
+    
+    (cherry picked from commit d2f2c3f4b249accbd73868303870f2bc16e19b17)
+
+commit 428e9d7317ea641ea6afabf86c6df9a350e9cd1b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 8 10:01:47 2017 +0100
+
+    v2v: -i ova: Rearrange functions.
+    
+    No change, just move one function.
+    
+    (cherry picked from commit 6c0d520842d92fcdc022e598025a4e2b4a693b82)
+
+commit 357fd0116f044eb37f5c4fa14549d5f1374f24ac
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 3 15:15:45 2017 +0200
+
+    inspector: validate resulting XML files
+    
+    Run xmllint to validate the XML output files of virt-inspector, so the
+    schema is checked against actual output of virt-inspector.
+    
+    (cherry picked from commit bf1d1d3685ef9188f824eebbffe5c917814fd215)
+
+commit c1d48a9fce3f9c3ec7a076dd6c3161ddd08082a4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 28 09:59:23 2017 +0100
+
+    common/options: Change drv struct to store drive index instead of device name.
+    
+    The device name is only used by guestfish (when using the -N option to
+    prepare drives).  We constructed the device name very naively,
+    basically ‘sprintf ("/dev/sd%c", next_drive)’.
+    
+    This stores the device index instead, and only constructs the device
+    name in guestfish.  Also the device name is constructed properly using
+    guestfs_int_drive_name so it can cope with #drives > 26.
+    
+    As a side effect of this change we can remove the extra parameter of
+    the add_drives macro.
+    
+    Thanks: Pino Toscano
+    (cherry picked from commit 8c9a4bc84f9727236d9a61405cab8e2bd1ef9041)
+
+commit b045636463ac3153fe867a1d02a56bdf218c1bf8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 2 10:57:53 2017 +0100
+
+    v2v: -o rhv: Add Windows 2016 Server type in OVF output (RHBZ#1447202).
+    
+    Thanks: Kun Wei
+    
+    See also:
+    https://github.com/oVirt/ovirt-engine/commit/d233325d7b808e8bae83645ac645dfea9dfe8407
+    
+    (cherry picked from commit d0344f3522c116d3ccba6d52cd100562ee6e1e23)
+
+commit c9a587f9c7ff86dbbd83ffa21dc55418237ffa1e
+Author: Pavel Butsykin <pbutsykin@virtuozzo.com>
+Date:   Fri Apr 28 17:04:15 2017 +0300
+
+    appliance: more reliable check for the supermin appliance
+    
+    At least two control files (packages and base.tar.gz) are necessary for the
+    supermin appliance.
+    
+    Signed-off-by: Pavel Butsykin <pbutsykin@virtuozzo.com>
+    (cherry picked from commit f885fd227cf629a53e90cf61c7a2ccfd7a09ab43)
+
+commit 4d8b68c57a9eb4519d23bb63a977cf0fe31c1087
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 26 16:05:15 2017 +0200
+
+    v2v: -o glance: add property for UEFI firmware (RHBZ#1445659)
+    
+    When converting a guest with UEFI firmware, set the also
+    hw_firmware_type=uefi property for all the disks of the guest, so Nova
+    can properly boot the guest.
+    
+    (cherry picked from commit 7409c9d9d36dc59f3b44824b8fd3b710225531ab)
+
+commit 714271bbeb1839dbefa01f59eb53e44d8b2bf4fe
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 12 17:58:40 2017 +0200
+
+    appliance: add cdrkit-cdrtools-compat on openSUSE
+    
+    It looks like isoinfo is in that package since openSUSE Leap 42.1, so
+    make sure to include it to not break the isoinfo* APIs.
+    
+    (cherry picked from commit 79c5acc13d713a911b4ed857555f68a6bbb8a41c)
+
+commit d1fb02c317e06598074f39b36fe3f813c0083968
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 25 12:49:12 2017 +0100
+
+    generator: python: Omit unused parameter names in match cases.
+    
+    (cherry picked from commit 965d253c7404e98c4a4e30f0633f118eedecbfe1)
+
+commit 8ea761fd984577cac18a61ea58c8ca2da4f83a8e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 25 12:49:12 2017 +0100
+
+    generator: perl: Omit unused parameter names in match cases.
+    
+    (cherry picked from commit 9243910ea23d2acf58047dc71b2cc096e44dd221)
+
+commit 5f9a5fa37ece30b4c0bdf32ef0488b7cad7176f7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 25 12:37:01 2017 +0100
+
+    daemon: Use CLEANUP_* functions to avoid an explicit free in stub functions.
+    
+    (cherry picked from commit 5a1257a886aba5aa21f02adc33b51ddd877786d5)
+
+commit 43f0e303a6bebf8a9bbf7eaf6c8c3d30b5a8d06b
+Author: Matteo Cafasso <noxdafox@gmail.com>
+Date:   Tue Apr 25 00:19:59 2017 +0300
+
+    daemon: ignore unused return value in upload function
+    
+    Signed-off-by: Matteo Cafasso <noxdafox@gmail.com>
+    (cherry picked from commit ffbf1b5605ab02e49622b37b36d3cc04889094de)
+
+commit 7a03dc8741957dd32e92d51d9725bcbdaea7ab4d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 20 15:08:24 2017 +0100
+
+    daemon: stubs.h is generated, so should be listed in generator_built.
+    
+    Fixes commit 20f190617aafcddd08f99c0abec4fef90426ec9e.
+    
+    (cherry picked from commit 99813d11955a85725177a038be26ce25d720c426)
+
+commit e5d497f4936fc51fe161ef1d2fe277edc2260fb1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 20 15:07:23 2017 +0100
+
+    generator: daemon: Move *RESOLVE* macros to an ordinary header file.
+    
+    It's clumsy to define these in the generator, as they are essentially
+    just static text.
+    
+    (cherry picked from commit ca12aaa90c7780a56bddd30c2199ca7b8d664979)
+
+commit c2518c98631512ce8fad9f2d2db156a6d72a7c64
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 20 13:48:58 2017 +0100
+
+    generator: daemon: Replace ‘cancel_stmt’ with ‘is_filein’ flag.
+    
+    In every instance where we used the ‘cancel_stmt’ parameter of
+    these macros:
+    
+      ABS_PATH
+      NEED_ROOT
+    
+    the value was only ever ‘cancel_receive ()’ or empty.  We only use
+    ‘cancel_receive’ for FileIn functions, so replace it with a simple
+    flag for whether the current function is a FileIn function.
+    
+    This also removes some incorrect comments about macros that cannot be
+    used with FileIn functions when in fact they can.
+    
+    (cherry picked from commit 3f3dfe68de9910af2c5dcbac747e4164b0fb02de)
+
+commit 270be5441aa57d922c85bbdbdf8b85dc31f91ec5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 20 13:35:17 2017 +0100
+
+    generator: daemon: Remove fail_stmt parameter from *RESOLVE* macros.
+    
+    As a simple consequence of the previous commit, every instance of the
+    ‘fail_stmt’ parameter to one of the following macros:
+    
+      RESOLVE_DEVICE
+      RESOLVE_MOUNTABLE
+      REQUIRE_ROOT_OR_RESOLVE_DEVICE
+      REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE
+    
+    is now ‘return’ and therefore we can replace it in the macro and drop
+    the parameter completely.
+    
+    (cherry picked from commit 5200e51719624fc675747b14d7e210614fb3ec94)
+
+commit 1b5f74b39a8ed5056de04bfdf3c834e4ee555663
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 20 13:28:04 2017 +0100
+
+    generator: daemon: Remove done label.
+    
+    As a simple consequence of the previous commit, the ‘done’ label can
+    be removed, and any instance of ‘goto done’ can be replaced by
+    ‘return’.
+    
+    (cherry picked from commit 671b1d10a0be604d4975f94ec0cc52f94ffaf20e)
+
+commit 69bab5ff403a36ccdf13b852c7e0cdb9f5b3c58d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 20 13:23:49 2017 +0100
+
+    generator: daemon: Use a cleanup function to free XDR args struct.
+    
+    Previously stubs were generated like this:
+    
+      void
+      fn_stub (XDR *xdr_in)
+      {
+        struct guestfs_fn_args args;
+        ...
+        // on error paths, ‘goto done’
+        ...
+      done:
+        xdr_free ((xdrproc_t) xdr_guestfs_fn_args, (char *) &args);
+      }
+    
+    This replaces the call to xdr_free with a generated cleanup function.
+    
+    (cherry picked from commit 378cb6f818ec401e4fe77b59c955f3c3cb3da274)
+
+commit 6023d750612552fa2df02803ee3ea6f8d02f09a9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 20 13:00:21 2017 +0100
+
+    generator: daemon: Get rid of useless done_no_free label.
+    
+    The generated code had:
+    
+        ...
+      done_no_free:
+        return;
+      }
+    
+    There was no possible code between the label and the return statement,
+    so both the label and the return statement are redundant.  The
+    instances of ‘goto done_no_free’ can simply be replaced by ‘return’.
+    
+    The only small complication is that there is a label just before this
+    which contains some optional code.  So we might have ended up with
+    generated code looking like:
+    
+      done:
+        // if there was no optional code, this would be empty
+      }
+    
+    which provokes a parse error in C.  Therefore I had to add a semicolon
+    after the ‘done:’ label.  This will be removed in a subsequent commit,
+    so it's just to make the current commit bisectable.
+    
+    (cherry picked from commit b2cd4367b1883f68be6beb86da1cfc8d42cadf5b)
+
+commit 93cb3e76f0eed8bc0389d69ac0e92166e2f2682e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 19 17:07:55 2017 +0100
+
+    daemon: Add an assertion to suppress a warning with GCC.
+    
+    swap.c: In function 'do_mkswap_U':
+    swap.c:62:9: error: argument 1 null where non-null expected [-Werror=nonnull]
+         if (strlen (label) > SWAP_LABEL_MAX) {
+             ^~~~~~~~~~~~~~
+    
+    (cherry picked from commit 8b68d00977ae4d2b00f6e26c73bcc877ff54b6d1)
+
+commit b90d2b816b2657894d06f4ed17fb78b73d65c9a0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 19 16:55:16 2017 +0100
+
+    daemon: Remove use of fixed-size stack buffers.
+    
+    GCC 7 complains that the fixed size buffers are not large enough
+    (at least in theory) when using ‘-O3 -mtune=broadwell’.
+    
+    (cherry picked from commit 2de5e317adb925475a5b88cf534a769f4c3bfe59)
+
+commit 5a6faafee7ca3c82a6cff8a2cf75a81193334346
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 19 17:26:03 2017 +0100
+
+    lib: Reimplement is_zero.
+    
+    As suggested by Eric Blake.
+    
+    (cherry picked from commit 067d442cdc906840f1775bae3883c5aee9806458)
+
+commit 6dd40cc225c25ec6bbe9f925ba35946819869677
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 19 14:32:49 2017 +0100
+
+    daemon: Move the useful 'is_zero' function into common code.
+    
+    This is largely a simple refactoring, but it combines another
+    definition of this function from virt-builder which had a slightly
+    different prototype.
+    
+    (cherry picked from commit c0fdeb36c7f86791cb0a77f11bfa9c366f561e82)
+
+commit 09f65b62e08cb0cec2f95aa49c5737838d6ac3ba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 18 12:38:21 2017 +0100
+
+    lib: libvirt: Document virtio-scsi controller/bus/target/unit fields.
+    
+    This adds comments documenting what the fields correspond to in qemu,
+    and the range of each field.
+    
+    (cherry picked from commit 7eb26f03b95277f12f7fff06a4bfb135cb1f776f)
+
+commit a896590a56225982ca10ba220bd09da4f3b65ac9
+Author: Pavel Butsykin <pbutsykin@virtuozzo.com>
+Date:   Thu Apr 13 19:44:07 2017 +0300
+
+    daemon: add udev_settle_file to is_root_device
+    
+    It fixes a fail with ENOENT when device is not yet present after system boot.
+    
+    Signed-off-by: Pavel Butsykin <pbutsykin@virtuozzo.com>
+    (cherry picked from commit 684aa261157bad7aa0409db91d07d84537325673)
+
+commit d2e04db05c1e87f23ff7a737ab1a71292968e4a3
+Author: Pavel Butsykin <pbutsykin@virtuozzo.com>
+Date:   Thu Apr 13 19:44:06 2017 +0300
+
+    daemon: run 'udevadm settle' with --exit-if-exists option
+    
+    Add udev_settle_file() to run 'udevadm settle' with --exit-if-exists option. It
+    will slightly reduce the waiting-time for pending events if we need to wait
+    for events related to a particular device/file.
+    
+    Signed-off-by: Pavel Butsykin <pbutsykin@virtuozzo.com>
+    
+    RWMJ:
+     - Use local variable for MAX_ARGS.
+     - Use commandv instead of commandrv, fix checking of return code.
+    (cherry picked from commit 93664d38d26afb1086fc4a56ef9e6e58dcb1a3ec)
+
+commit 6bf905c305e3fd9b05953669b3fde4d76a9aac4c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 12 23:09:32 2017 +0100
+
+    v2v: windows: Install both legacy and modern virtio keys in the registry (RHBZ#1431579).
+    
+    Thanks: Kun Wei (for finding the bug)
+    Thanks: Ladi Prosek (for diagnosing the problem and proposing the fix)
+    (cherry picked from commit d8e1c4bb474203d71903261fb06fe267c3cce3c7)
+
+commit 0eeb0c38fa2ef292165a17f0b501059264347ffb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 13 00:10:28 2017 +0100
+
+    mllib: Bind %identity C primitive to Common_utils.identity.
+    
+    (cherry picked from commit 9e0781f0969c8290222ac4da5042084c2069fc61)
+
+commit 98bd5a55f5ab470221b165d4818360a597d2264a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 13 10:11:00 2017 +0100
+
+    v2v: -o rhv: Document how to test RHV conversions without RHV.
+    
+    (cherry picked from commit c509abef437d80268911833a8e54cde6d66820e8)
+
+commit fbf330e377f542b4682d14ace54d0cdd5b34625f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 13 09:57:37 2017 +0100
+
+    v2v: -o rhv: Quote parameter to rm -rf.
+    
+    This was safe before, the change just prevents accidental errors.
+    
+    (cherry picked from commit 24a6c5b57c25e0e59697831b55000d6f8e21fd38)
+
+commit e48ce74f77c64036bde55d1dc8b628381e5dd018
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 10 11:29:17 2017 +0200
+
+    builder: various improvements to the documentation
+    
+    - convert the Fedora 20 examples to Fedora 25
+    - convert the yum examples to dnf
+    - convert the Debian 7 examples to Debian 8
+    - mention that --core updates all the installed packages, not "core"
+      ones
+    - convert i386 to i686 for the Fedora 32bit examples
+    - mention that autogenerated root passwords are printed on stdout
+    - mention --get-kernel is deprecated in favour of virt-get-kernel
+    - update URL to the Puppet installation documentation
+    - edit the repository index documentation to make it clearer
+      non-compressed templates are supported
+    - remove old wrong paragraph about customization specified in command
+      line not processed in the same order
+    - use --install instead of --run-command '$pkgmgr install ...'
+    - other minor changes
+    
+    (cherry picked from commit 56c4387b38a3ef48658d303e6d846315512fcacf)
+
+commit c038a6c15c08efafbd0879e5f59bb2dee7aadd7d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 11 08:32:04 2017 +0100
+
+    mllib: Add Char.hexdigit function.
+    
+    Same as the function defined in fish/fish.c.
+    
+    (cherry picked from commit ef261d69ed199cc07474a36c890f63df461b35a7)
+
+commit b87f6c755f384da2d28f94f2d666087e2780ac6f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 11 08:29:47 2017 +0100
+
+    ocaml: Add Bytes.sub_string function to Bytes compat module.
+    
+    This is only used when OCaml < 4.02 (eg. RHEL 7).  For more recent
+    versions the real Bytes.sub_string function is used instead.
+    
+    (cherry picked from commit bb846887de7a252204152c3e6df80d39a5ea33af)
+
+commit 26f304102e00ad56ff3fda0f711fcaff6834318e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 11 14:52:24 2017 +0100
+
+    v2v: -o qemu: Add a comment about ICH9 audio device.
+    
+    Just a comment.
+    
+    (cherry picked from commit aa16d5ca8ed8ea4a9cec4ab6fe578c34bf183c06)
+
+commit 326c850a67411cbb9a1a96f0e5c73dc06968d80a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 11 12:16:51 2017 +0100
+
+    v2v: -o qemu: Fix creation of ICH6 sound device.
+    
+    Fixes commit f6ece2c01a9a1a43d6715103e7dbdda0f09ee862.
+    
+    (cherry picked from commit e562f52c95fe8eefdab778918d152335f56012c6)
+
+commit 73d52ab96f106a7a5f494aee98fa93ccafde6d9d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 6 11:15:22 2017 +0100
+
+    builder: Allow GnuPG v2 or v1 to be used (RHBZ#1438939).
+    
+    All of the GPG commands we run are compatible with either v1 or v2, so
+    this simply involves looking for either gpg2 or gpg binaries at
+    runtime.
+    
+    (cherry picked from commit 069eb3d3df891365b94f5ec4c09ef8a50d7e13c1)
+
+commit f74f055faf61b43d60661b542b40eee984c34cff
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 6 10:24:50 2017 +0100
+
+    v2v: linux: Print best kernel in debug output.
+    
+    After sorting kernels to find the best one, print the best kernel if
+    verbose is enabled.
+    
+    (cherry picked from commit f5ce03c4dafe084111c832fa23353b66a9f8a553)
+
+commit 3b3d11b878a988fee9d5e1d46a36803ab720648f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 5 13:55:28 2017 +0100
+
+    v2v: linux: Replace 'ki_supports_virtio' field.
+    
+    Previously the kernel_info field 'ki_supports_virtio' really meant
+    that the kernel supports virtio-net.  That was used as a proxy to mean
+    the kernel supports virtio in general.
+    
+    This change splits the field so we explicitly test for both virtio-blk
+    and virtio-net drivers, and store the results as separate fields.
+    
+    The patch is straightforward, except for the change to the
+    'rebuild_initrd' function.  Instead of making the module list
+    conditional on whether virtio-net is available and using the old
+    (probably wrong) fallback if it happens to be unavailable, this now
+    tries to enable the common virtio kernel modules (just the ones needed
+    for virtio-blk and virtio-net to work).  The fallback is only used if
+    none of the common virtio modules can be found.
+    
+    This also adds a print_kernel_info function (as the
+    string_of_kernel_info function was unwieldy) and exports it from the
+    module.
+    
+    (cherry picked from commit e6c9c4f69f10fecbf372253f44afe22389ebcb30)
+
+commit 28605ae01e0c1404b2aff10bc6fd39b2f7629597
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 5 13:44:00 2017 +0100
+
+    v2v: linux: Fix Xen PV-only detection.
+    
+    We want to detect if a Linux kernel is Xen PV only ("PV-only").  Such
+    a kernel will not boot on KVM, and if a guest has only PV-only
+    kernels, it will not be able to boot at all on the target.
+    
+    Our previous test was wrong.  It tested whether the xennet.ko module
+    exists.  This module was renamed in more recent kernels (to
+    xen-netfront.ko), so it happened to not detect modern kernels as
+    PV-only, but this was by chance.
+    
+    Modern kernel images can be compiled with Xen PV guest support.  The
+    same image can boot on baremetal, KVM, Xen PV or Xen HVM.  Testing if
+    the xennet (or xen-netfront) module exists is irrelevant to this.
+    
+    This test, which is based on ideas from Laszlo Ersek and
+    
+      https://wiki.xen.org/wiki/Xen_Project_Software_Overview#Guest_Types
+    
+    uses the kernel config test CONFIG_X86_XEN || CONFIG_X86_64_XEN to
+    determine PV-only kernels.
+    
+    Note that these CONFIG flags were never upstream, and existed only in
+    Linux kernels forked by Xen ("XenLinux").  By the time Xen guest
+    support was added upstream, it was implemented using pvops support, so
+    a single image could boot on Xen and non-Xen as described above, and
+    these flags were no longer used.
+    
+    Updates commit 7eb219d1938968c4d6bffda038aaace936f7efbf.
+    
+    Thanks: Laszlo Ersek.
+    (cherry picked from commit 413ebec0392892ca36b86f416f650090ef8825d3)
+
+commit 39eea2c1fd5a6a79b3b6719de32b791ebacc9ec5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 5 13:35:58 2017 +0100
+
+    v2v: linux: Don't return virtio flag from configure_kernel function.
+    
+    This is pure refactoring, no change to functionality.
+    
+    (cherry picked from commit 95f1e83bafafba38c8c745630bce5da3367265b5)
+
+commit a1f15e13a866744b0d34c09627f61f5aabe7d995
+Author: Pavel Butsykin <pbutsykin@virtuozzo.com>
+Date:   Mon Apr 3 19:44:45 2017 +0300
+
+    v2v: windows convert: fix virtio block driver installation for w10/w2k16
+    
+    This patch fixes the problem of the first boot after installation virtio block
+    drivers on Windows 10 / Server 2016. The problem is related to the change in
+    the behavior of Windows-Kernel-Pnp. To fix we need to add a field "Version" to
+    HKLM/SYSTEM/DriverDatabase/DriverPackages/drv_inf_label then Windows-Kernel-Pnp
+    will be able to correctly install the virtio block driver.
+    
+    Signed-off-by: Pavel Butsykin <pbutsykin@virtuozzo.com>
+    (cherry picked from commit cc162b49e6c87bf3535168853dadf10f7610865f)
+
+commit 852143fb97f6c0e91af45103e2134cbd07e6800f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 31 11:47:34 2017 +0100
+
+    po: Fix charset=CHARSET -> charset=utf-8 in pot file.
+    
+    (cherry picked from commit 604be8ced8c11e9096e1cf7efcd2a8fcd4ee75c2)
+
+commit cfd1f6a6b03081420f026131aee72ed08e3d213f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 31 09:51:17 2017 +0100
+
+    perl: Add =encoding to Sys::Guestfs man page.
+    
+    Otherwise the man page cannot contain any non-7-bit-ASCII characters.
+    
+    The test error seen was:
+    
+    Failed test 'POD test for blib/lib/Sys/Guestfs.pm'
+    at /usr/share/perl5/vendor_perl/Test/Pod.pm line 187.
+    Wide character in print at /usr/share/perl5/vendor_perl/Test2/Formatter/TAP.pm line 112.
+    blib/lib/Sys/Guestfs.pm (1811): Non-ASCII character seen before =encoding in 'caller’s'. Assuming UTF-8
+    Looks like you failed 1 test of 1.
+    
+    (cherry picked from commit ee9af92963144b646c8568fdd2f3ae80b2d78490)
+
+commit 9ae1e0e7016069af1dffb7c61a72e3feb7351e56
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 31 09:13:10 2017 +0100
+
+    docs: Fix documentation for btrfs_group_limit API.
+    
+    (cherry picked from commit e0385c6902e2f0a98880f4a3079a7427903f6361)
+
+commit 41a8ba8b2f3426e109c7c194ccf626f34e709cb0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 30 22:11:15 2017 +0100
+
+    v2v: utils: Remove another reference to kraxel's OVMF repo.
+    
+    Updates commit 889386f8c6088e57fd68f2bb6bf85f69ecfc6f6c.
+    
+    (cherry picked from commit 707c60ccb3db91a5eabaa8a1ec994e0058f20efc)
+
+commit 2fdedc6875111b747261bbb31bda011d3b77ca9e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 28 23:03:31 2017 +0100
+
+    p2v, v2v: Ensure the full version is always available in several places.
+    
+    Ensure the full version of virt-v2v and virt-p2v is available in the
+    conversion log file, the only log file that we reliably get from users
+    and customers.  "Full version" means the major, minor, release and
+    extra fields.  The extra field is especially important as it contains
+    the downstream package release in Fedora, RHEL etc.
+    
+    This change saves the virt-p2v version as a comment in the
+    physical.xml file, which is included in full in the conversion log (by
+    virt-v2v).
+    
+    It also ensures that the initial virt-v2v debug message contains the
+    full version number including the 'extra' field.
+    
+      $ cat virt-v2v-conversion-log.txt
+      virt-v2v: libguestfs 1.37.7local,libvirt (x86_64)
+      ...
+      <!-- virt-p2v 1.37.7local,libvirt -->
+    
+    It also adds 'p2v-version' and 'v2v-version' files in the virt-p2v
+    debug directory.  These are strictly superfluous but could be useful
+    for end users.
+    
+      $ cat p2v-version
+      virt-p2v 1.37.7local,libvirt
+      $ cat v2v-version
+      virt-v2v 1.37.7local,libvirt
+    
+    (cherry picked from commit 7cae10f0c11ebde643ec575f7f779aa1e7103d6b)
+
+commit a1851ebd056b956365762c3546797eb9ca42bb08
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 30 12:27:57 2017 +0100
+
+    p2v: Rebuild dependencies.* files if config.status changes.
+    
+    If you switch from ./configure --with-gtk=2 to =3 (or vice versa) the
+    dependencies files don't get rebuilt.  As a result the wrong Gtk
+    libraries can be included in the ISO and virt-p2v won't run.
+    
+    (cherry picked from commit 86a166458c062cc8add8df94fc404d6a67616e14)
+
+commit a0715fd11b372ba25b55daf5ec0f77215419bca9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 30 12:27:39 2017 +0100
+
+    docs: security: Document new CVEs in PCRE which may affect inspection.
+    
+    (cherry picked from commit 8ee74dcc472fda3622adc2a6725856b1f331979c)
+
+commit 41254d5e22ac359bd7210e94a85e4e616aee279c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 29 18:54:49 2017 +0200
+
+    mllib: cast integer pointers to intptr_t as intermediate step
+    
+    This make sure there is no mismatch between the size of the integer
+    value that Int64_val returns, and the size of the guestfs_h pointer.
+    
+    This should fix the warning on 32bit environments (and thus build, when
+    --enable-werror is enabled).
+    
+    (cherry picked from commit c85eb443db07d337a365619bd7b2267e29a8d4da)
+
+commit 61c1a6091868244e4887c6472d349112816f3666
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 29 15:57:40 2017 +0200
+
+    automake2junit.ml: escape text in message of <skipped>
+    
+    Escape XML characters in the logs to use as message for <skipped>, so
+    special characters such as &, ", and < do not make the whole XML
+    invalid.
+    
+    (cherry picked from commit 12c4cc7a6b81c8de87f6500f75f71ff1085ea255)
+
+commit 87c475c3dff6f82940b6ea17255d4214998badb4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 27 17:41:32 2017 +0100
+
+    v2v: In --help output, note that --compressed only applies to -of qcow2.
+    
+    Just a minor documentation change.
+    
+    (cherry picked from commit 5faa917972fc45c75fda10a7235af8cc38a68708)
+
+commit 1507025ff9b1721d2e7daec26e4ab39599d1acd3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 25 12:11:48 2017 +0000
+
+    docs: hacking: Document 'make maintainer-*' targets.
+    
+    (cherry picked from commit 9287e8954df0e38dd461fd413165446b84345a95)
+
+commit 95f17c6e4189bbad6575ad9967e0ae3723286140
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Mar 25 12:03:23 2017 +0000
+
+    docs: hacking: Fix the headings.
+    
+    Just grouping things more logically.
+    
+    (cherry picked from commit ea13da21ead3a67e8957eec7f3fb84123a260801)
+
 commit 272154fb4b03251317d2afdb8c7ced5195cb9942
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Mar 24 12:03:30 2017 +0000

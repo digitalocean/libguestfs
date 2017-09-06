@@ -30,7 +30,8 @@ generator_built = \
 	stubs-3.c \
 	stubs-4.c \
 	stubs-5.c \
-	stubs-6.c
+	stubs-6.c \
+	stubs.h
 
 BUILT_SOURCES = \
 	$(generator_built)
@@ -154,6 +155,7 @@ guestfsd_SOURCES = \
 	stubs-5.c \
 	stubs-6.c \
 	stubs.h \
+	stubs-macros.h \
 	swap.c \
 	sync.c \
 	syslinux.c \

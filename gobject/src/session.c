@@ -3587,8 +3587,7 @@ guestfs_session_btrfs_qgroup_destroy (GuestfsSession *session, const gchar *qgro
  *
  * limit the size of a subvolume
  *
- * Limit the size of a subvolume which's path is @subvolume. @size can have
- * suffix of G, M, or K.
+ * Limit the size of the subvolume with path @subvolume.
  * 
  * This function depends on the feature "btrfs".
  * See also guestfs_session_feature_available().

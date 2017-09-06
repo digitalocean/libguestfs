@@ -683,8 +683,7 @@ guestfs_int_ruby_btrfs_balance_cancel (VALUE gv, VALUE pathv)
  *
  * limit the size of a subvolume
  *
- * Limit the size of a subvolume which's path is
- * "subvolume". "size" can have suffix of G, M, or K.
+ * Limit the size of the subvolume with path "subvolume".
  *
  *
  * [Since] Added in version 1.29.17.

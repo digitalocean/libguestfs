@@ -20,6 +20,8 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+=encoding utf8
+
 =pod
 
 =head1 NAME
@@ -1364,8 +1366,7 @@ C<$g-E<gt>feature-available>.
 
 =item $g->btrfs_qgroup_limit ($subvolume, $size);
 
-Limit the size of a subvolume which's path is C<subvolume>. C<size>
-can have suffix of G, M, or K. 
+Limit the size of the subvolume with path C<subvolume>.
 
 This function depends on the feature C<btrfs>.  See also
 C<$g-E<gt>feature-available>.

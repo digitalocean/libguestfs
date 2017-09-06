@@ -1938,8 +1938,7 @@ L</guestfs_feature_available>.
                              const char *subvolume,
                              int64_t size);
 
-Limit the size of a subvolume which's path is C<subvolume>. C<size>
-can have suffix of G, M, or K. 
+Limit the size of the subvolume with path C<subvolume>.
 
 This function returns 0 on success or -1 on error.
 

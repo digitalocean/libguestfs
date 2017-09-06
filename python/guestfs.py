@@ -1436,8 +1436,7 @@ class GuestFS(object):
         return r
 
     def btrfs_qgroup_limit(self, subvolume, size):
-        """Limit the size of a subvolume which's path is
-        "subvolume". "size" can have suffix of G, M, or K.
+        """Limit the size of the subvolume with path "subvolume".
 
         This function depends on the feature "btrfs". See also
         "g.feature-available".

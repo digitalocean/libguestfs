@@ -20,13 +20,13 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [36])
-m4_define([libguestfs_release], [3])
+m4_define([libguestfs_release], [4])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 
 dnl The date that the above version was released.  This is used in
 dnl the website 'index.html' file.
-AC_SUBST([RELEASE_DATE], [2017-03-07])
+AC_SUBST([RELEASE_DATE], [2017-05-19])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_REQUIRE_AUX_FILE([guestfs-test-driver])
@@ -151,6 +151,8 @@ AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
 AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
+AC_CONFIG_FILES([inspector/test-virt-inspector.sh],
+                [chmod +x,-w inspector/test-virt-inspector.sh])
 AC_CONFIG_FILES([installcheck.sh],
                 [chmod +x,-w installcheck.sh])
 AC_CONFIG_FILES([p2v/virt-p2v-make-disk],

@@ -397,17 +397,18 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
 
     (* Check a non-Xen kernel exists. *)
     let only_xen_kernels = List.for_all (
-      fun { ki_is_xen_kernel = is_xen_kernel } -> is_xen_kernel
+      fun { ki_is_xen_pv_only_kernel = pv_only } -> pv_only
     ) bootloader_kernels in
     if only_xen_kernels then
       error (f_"only Xen kernels are installed in this guest.\n\nRead the %s(1) manual, section \"XEN PARAVIRTUALIZED GUESTS\", to see what to do.") prog;
 
     (* Enable the best non-Xen kernel, where "best" means the one with
-     * the highest version which supports virtio.
+     * the highest version, preferring non-debug kernels which support
+     * virtio.
      *)
     let best_kernel =
       let compare_best_kernels k1 k2 =
-        let i = compare k1.ki_supports_virtio k2.ki_supports_virtio in
+        let i = compare k1.ki_supports_virtio_net k2.ki_supports_virtio_net in
         if i <> 0 then i
         else (
           let i = compare_app2_versions k1.ki_app k2.ki_app in
@@ -417,15 +418,20 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
         )
       in
       let kernels = bootloader_kernels in
-      let kernels = List.filter (fun { ki_is_xen_kernel = is_xen_kernel } -> not is_xen_kernel) kernels in
+      let kernels =
+        List.filter (fun { ki_is_xen_pv_only_kernel = pv_only } -> not pv_only)
+                    kernels in
       let kernels = List.sort compare_best_kernels kernels in
       let kernels = List.rev kernels (* so best is first *) in
       List.hd kernels in
-    if best_kernel <> List.hd bootloader_kernels then
-      bootloader#set_default_kernel best_kernel.ki_vmlinuz;
-
-    (* Does the best/bootable kernel support virtio? *)
-    let virtio = best_kernel.ki_supports_virtio in
+    if verbose () then (
+      eprintf "best kernel for this guest:\n";
+      print_kernel_info stderr "\t" best_kernel
+    );
+    if best_kernel <> List.hd bootloader_kernels then (
+      debug "best kernel is not the bootloader default, setting bootloader default ...";
+      bootloader#set_default_kernel best_kernel.ki_vmlinuz
+    );
 
     (* Update /etc/sysconfig/kernel DEFAULTKERNEL (RHBZ#1176801). *)
     if g#is_file ~followsymlinks:true "/etc/sysconfig/kernel" then (
@@ -438,7 +444,7 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
       )
     );
 
-    best_kernel, virtio
+    best_kernel
 
   (* Even though the kernel was already installed (this version of
    * virt-v2v does not install new kernels), it could have an
@@ -449,9 +455,9 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
     match kernel.ki_initrd with
     | None -> ()
     | Some initrd ->
-      let virtio = kernel.ki_supports_virtio in
+      (* Enable the basic virtio modules in the kernel. *)
       let modules =
-        if virtio then
+        let modules =
           (* The order of modules here is deliberately the same as the
            * order specified in the postinstall script of kmod-virtio in
            * RHEL3. The reason is that the probing order determines the
@@ -460,9 +466,11 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
            *)
           List.filter (fun m -> List.mem m kernel.ki_modules)
                       [ "virtio"; "virtio_ring"; "virtio_blk";
-                        "virtio_scsi"; "virtio_net"; "virtio_pci" ]
+                        "virtio_scsi"; "virtio_net"; "virtio_pci" ] in
+        if modules <> [] then modules
         else
-          [ "sym53c8xx" (* XXX why not "ide"? *) ] in
+          (* Fallback copied from old virt-v2v.  XXX Why not "ide"? *)
+          [ "sym53c8xx" ] in
 
       (* Move the old initrd file out of the way.  Note that dracut/mkinitrd
        * will refuse to overwrite an old file so we have to do this.
@@ -509,7 +517,8 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
           g#command [| "/sbin/mkinitrd";
                        "-m"; String.concat " " modules;
                        "-i"; initrd;
-                       "-k"; kernel.ki_vmlinuz |]
+                       "-k"; kernel.ki_vmlinuz;
+                       "-d"; inspect.i_root |]
         )
       )
       else if family = `Debian_family then (
@@ -1004,7 +1013,7 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
   unconfigure_kudzu ();
   unconfigure_prltools ();
 
-  let kernel, virtio = configure_kernel () in
+  let kernel = configure_kernel () in
 
   if output#keep_serial_console then (
     configure_console ();
@@ -1023,12 +1032,12 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
 
   let block_type =
     match rcaps.rcaps_block_bus with
-    | None -> if virtio then Virtio_blk else IDE
+    | None -> if kernel.ki_supports_virtio_blk then Virtio_blk else IDE
     | Some block_type -> block_type in
 
   let net_type =
     match rcaps.rcaps_net_bus with
-    | None -> if virtio then Virtio_net else E1000
+    | None -> if kernel.ki_supports_virtio_net then Virtio_net else E1000
     | Some net_type -> net_type in
 
   configure_display_driver video;

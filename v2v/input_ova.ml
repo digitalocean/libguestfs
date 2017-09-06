@@ -40,13 +40,25 @@ let libvirt_supports_json_raw_driver () =
   else
     true
 
+let zcat_command_of_format = function
+  | `GZip -> "gzip -c -d"
+  | `XZ -> "xz -c -d"
+
 (* Untar part or all files from tar archive. If [paths] is specified it is
  * a list of paths in the tar archive.
  *)
-let untar ?(format = "") ?paths file outdir =
-  let cmd = [ "tar"; sprintf "-x%sf" format; file; "-C"; outdir ]
-            @ match paths with None -> [] | Some p -> p in
-  if run_command cmd <> 0 then
+let untar ?format ?(paths = []) file outdir =
+  let paths = String.concat " " (List.map quote paths) in
+  let cmd =
+    match format with
+    | None ->
+       sprintf "tar -xf %s -C %s %s"
+               (quote file) (quote outdir) paths
+    | Some ((`GZip|`XZ) as format) ->
+       sprintf "%s %s | tar -xf - -C %s %s"
+               (zcat_command_of_format format) (quote file)
+               (quote outdir) paths in
+  if shell_command cmd <> 0 then
     error (f_"error unpacking %s, see earlier error messages") file
 
 (* Untar only ovf and manifest from the archive *)
@@ -61,25 +73,11 @@ let untar_metadata file outdir =
     ) files in
   untar ~paths:files file outdir
 
-(* Find files in [dir] ending with [ext]. *)
-let find_files dir ext =
-  let rec loop = function
-    | [] -> []
-    | dir :: rest ->
-       let files = Array.to_list (Sys.readdir dir) in
-       let files = List.map (Filename.concat dir) files in
-       let dirs, files = List.partition Sys.is_directory files in
-       let files =
-         List.filter (fun x -> Filename.check_suffix x ext) files in
-       files @ loop (rest @ dirs)
-  in
-  loop [dir]
-
 (* Uncompress the first few bytes of [file] and return it as
- * [(bytes, len)].  [zcat] is the command to use (eg. zcat or xzcat).
+ * [(bytes, len)].
  *)
-let uncompress_head zcat file =
-  let cmd = sprintf "%s %s" zcat (quote file) in
+let uncompress_head format file =
+  let cmd = sprintf "%s %s" (zcat_command_of_format format) (quote file) in
   let chan_out, chan_in, chan_err = Unix.open_process_full cmd [||] in
   let b = Bytes.create 512 in
   let len = input chan_out b 0 (Bytes.length b) in
@@ -93,8 +91,7 @@ let uncompress_head zcat file =
  * type of the uncompressed content (if known).
  *)
 let uncompressed_type format file =
-  let zcat = match format with `GZip -> "zcat" | `XZ -> "xzcat" in
-  let head, headlen = uncompress_head zcat file in
+  let head, headlen = uncompress_head format file in
   let tmpfile, chan =
     Filename.open_temp_file "ova.file." "" in
   output chan head 0 headlen;
@@ -102,6 +99,20 @@ let uncompressed_type format file =
   let ret = detect_file_type tmpfile in
   Sys.remove tmpfile;
   ret
+
+(* Find files in [dir] ending with [ext]. *)
+let find_files dir ext =
+  let rec loop = function
+    | [] -> []
+    | dir :: rest ->
+       let files = Array.to_list (Sys.readdir dir) in
+       let files = List.map (Filename.concat dir) files in
+       let dirs, files = List.partition Sys.is_directory files in
+       let files =
+         List.filter (fun x -> Filename.check_suffix x ext) files in
+       files @ loop (rest @ dirs)
+  in
+  loop [dir]
 
 class input_ova ova =
   let tmpdir =
@@ -151,7 +162,6 @@ object
         | (`GZip|`XZ) as format ->
           (match uncompressed_type format ova with
           | `Tar ->
-             let format = match format with `GZip -> "z" | `XZ -> "J" in
              untar ~format ova tmpdir;
              tmpdir, false
           | `Zip | `GZip | `XZ | `Unknown ->

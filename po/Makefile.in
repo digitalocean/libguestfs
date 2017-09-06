@@ -1611,6 +1611,12 @@ EXTRA_DIST = \
 @HAVE_GNU_GETTEXT_TRUE@	--directory=$(top_srcdir)
 
 
+# For explanation, see
+# http://mingw-users.1079350.n2.nabble.com/Getting-rid-of-xgettext-s-quot-CHARSET-quot-warning-td5620533.html
+@HAVE_GNU_GETTEXT_TRUE@FIX_CHARSET = \
+@HAVE_GNU_GETTEXT_TRUE@	$(SED) -i 's|text/plain; charset=CHARSET|text/plain; charset=utf-8|g'
+
+
 # Install.
 # Cannot use 'localedir' since this conflicts with autoconf.
 @HAVE_GNU_GETTEXT_TRUE@langinstdir = $(datadir)/locale
@@ -1885,8 +1891,11 @@ export TEST_FUNCTIONS := \
 @HAVE_GNU_GETTEXT_TRUE@	rm -f $@-t
 @HAVE_GNU_GETTEXT_TRUE@	touch $@-t
 @HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	$(OCAML_GETTEXT) --action extract --extract-pot $@-t $(POTFILES_ML)
+@HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	 \
+@HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	$(FIX_CHARSET) $@-t
 @HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) \
 @HAVE_GNU_GETTEXT_TRUE@	  --files-from=$(abs_srcdir)/POTFILES
+@HAVE_GNU_GETTEXT_TRUE@	$(FIX_CHARSET) $@-t
 @HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) --language=Perl \
 @HAVE_GNU_GETTEXT_TRUE@	  --files-from=$(abs_srcdir)/POTFILES-pl
 @HAVE_GNU_GETTEXT_TRUE@	mv $@-t $@

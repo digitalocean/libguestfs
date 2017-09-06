@@ -34,8 +34,10 @@ let virtio_win =
       Guestfs_config.datadir // "virtio-win"
 
 let scsi_class_guid = "{4D36E97B-E325-11CE-BFC1-08002BE10318}"
-let viostor_pciid = "VEN_1AF4&DEV_1001&SUBSYS_00021AF4&REV_00"
-let vioscsi_pciid = "VEN_1AF4&DEV_1004&SUBSYS_00081AF4&REV_00"
+let viostor_legacy_pciid = "VEN_1AF4&DEV_1001&SUBSYS_00021AF4&REV_00"
+let viostor_modern_pciid = "VEN_1AF4&DEV_1042&SUBSYS_11001AF4&REV_01"
+let vioscsi_legacy_pciid = "VEN_1AF4&DEV_1004&SUBSYS_00081AF4&REV_00"
+let vioscsi_modern_pciid = "VEN_1AF4&DEV_1048&SUBSYS_11001AF4&REV_01"
 
 let rec install_drivers ((g, _) as reg) inspect rcaps =
   (* Copy the virtio drivers to the guest. *)
@@ -102,7 +104,8 @@ let rec install_drivers ((g, _) as reg) inspect rcaps =
                              inspect.i_windows_systemroot driver_name in
         let target = g#case_sensitive_path target in
         g#cp source target;
-        add_guestor_to_registry reg inspect driver_name viostor_pciid;
+        add_guestor_to_registry reg inspect driver_name viostor_legacy_pciid;
+        add_guestor_to_registry reg inspect driver_name viostor_modern_pciid;
         Virtio_blk
 
       | Some Virtio_SCSI, _, true ->
@@ -113,7 +116,8 @@ let rec install_drivers ((g, _) as reg) inspect rcaps =
                              inspect.i_windows_systemroot in
         let target = g#case_sensitive_path target in
         g#cp source target;
-        add_guestor_to_registry reg inspect "vioscsi" vioscsi_pciid;
+        add_guestor_to_registry reg inspect "vioscsi" vioscsi_legacy_pciid;
+        add_guestor_to_registry reg inspect "vioscsi" vioscsi_modern_pciid;
         Virtio_SCSI
 
       | Some IDE, _, _ ->
@@ -219,6 +223,13 @@ and ddb_regedits inspect drv_name drv_pciid =
 
     [ "DriverDatabase"; "DeviceIds"; "PCI"; drv_pciid ],
     [ drv_inf, REG_BINARY "\x01\xff\x00\x00" ];
+
+    [ "DriverDatabase"; "DriverPackages"; drv_inf_label ],
+    [ "Version", REG_BINARY ("\x00\xff\x09\x00\x00\x00\x00\x00" ^
+                             "\x7b\xe9\x36\x4d\x25\xe3\xce\x11" ^
+                             "\xbf\xc1\x08\x00\x2b\xe1\x03\x18" ^
+                             (String.make 24 '\x00')) ];
+    (* Version is necessary for Windows-Kernel-Pnp in w10/w2k16 *)
 
     [ "DriverDatabase"; "DriverPackages"; drv_inf_label;
       "Configurations"; drv_config ],

@@ -142,6 +142,8 @@ extern int parse_btrfsvol (const char *desc, mountable_t *mountable);
 
 extern int prog_exists (const char *prog);
 
+extern void udev_settle_file (const char *file);
+
 extern void udev_settle (void);
 
 extern int random_name (char *template);
@@ -325,44 +327,22 @@ extern void pulse_mode_cancel (void);
  */
 extern void notify_progress_no_ratelimit (uint64_t position, uint64_t total, const struct timeval *now);
 
-/* Return true iff the buffer is all zero bytes.
- *
- * Note that gcc is smart enough to optimize this properly:
- * http://stackoverflow.com/questions/1493936/faster-means-of-checking-for-an-empty-buffer-in-c/1493989#1493989
- */
-static inline int
-is_zero (const char *buffer, size_t size)
-{
-  size_t i;
-
-  for (i = 0; i < size; ++i) {
-    if (buffer[i] != 0)
-      return 0;
-  }
-
-  return 1;
-}
-
-/* Helper for functions that need a root filesystem mounted.
- * NB. Cannot be used for FileIn functions.
- */
-#define NEED_ROOT(cancel_stmt,fail_stmt)                                \
+/* Helper for functions that need a root filesystem mounted. */
+#define NEED_ROOT(is_filein,fail_stmt)                                  \
   do {									\
     if (!is_root_mounted ()) {						\
-      cancel_stmt;                                                      \
+      if (is_filein) cancel_receive ();                                 \
       reply_with_error ("%s: you must call 'mount' first to mount the root filesystem", __func__); \
       fail_stmt;							\
     }									\
   }									\
   while (0)
 
-/* Helper for functions that need an argument ("path") that is absolute.
- * NB. Cannot be used for FileIn functions.
- */
-#define ABS_PATH(path,cancel_stmt,fail_stmt)                            \
+/* Helper for functions that need an argument ("path") that is absolute. */
+#define ABS_PATH(path,is_filein,fail_stmt)                              \
   do {									\
     if ((path)[0] != '/') {						\
-      cancel_stmt;                                                      \
+      if (is_filein) cancel_receive ();                                 \
       reply_with_error ("%s: path must start with a / character", __func__); \
       fail_stmt;							\
     }									\

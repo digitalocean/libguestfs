@@ -43,6 +43,10 @@ module Char : sig
     (** Return true if the character is a US ASCII 7 bit alphabetic. *)
     val isalnum : char -> bool
     (** Return true if the character is a US ASCII 7 bit alphanumeric. *)
+
+    val hexdigit : char -> int
+    (** Return the value of a hex digit.  If the char is not in
+        the set [[0-9a-fA-F]] then this returns [-1]. *)
 end
 (** Override the Char module from stdlib. *)
 
@@ -137,6 +141,8 @@ val ( /^ ) : int64 -> int64 -> int64
 val ( &^ ) : int64 -> int64 -> int64
 val ( ~^ ) : int64 -> int64
 (** Various int64 operators. *)
+
+external identity : 'a -> 'a = "%identity"
 
 val roundup64 : int64 -> int64 -> int64
 (** [roundup64 i a] returns [i] rounded up to the next multiple of [a]. *)

@@ -319,7 +319,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(dist_doc_DATA) \
 	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = test-xmllint.sh
+CONFIG_CLEAN_FILES = test-xmllint.sh test-virt-inspector.sh
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
 	"$(DESTDIR)$(docdir)"
@@ -608,8 +608,9 @@ TEST_LOGS = $(am__test_logs2:.test.log=.log)
 TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/build-aux/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/test-xmllint.sh.in \
-	$(top_srcdir)/build-aux/depcomp \
+am__DIST_COMMON = $(srcdir)/Makefile.in \
+	$(srcdir)/test-virt-inspector.sh.in \
+	$(srcdir)/test-xmllint.sh.in $(top_srcdir)/build-aux/depcomp \
 	$(top_srcdir)/build-aux/test-driver \
 	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -1951,6 +1952,8 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 test-xmllint.sh: $(top_builddir)/config.status $(srcdir)/test-xmllint.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+test-virt-inspector.sh: $(top_builddir)/config.status $(srcdir)/test-virt-inspector.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)

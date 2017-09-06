@@ -402,8 +402,7 @@ struct command_entry btrfs_qgroup_limit_cmd_entry = {
           "     btrfs-qgroup-limit subvolume size\n"
           "\n"
           "DESCRIPTION\n"
-          "    Limit the size of a subvolume which's path is \"subvolume\". \"size\" can\n"
-          "    have suffix of G, M, or K.\n"
+          "    Limit the size of the subvolume with path \"subvolume\".\n"
           "\n"
           "",
   .synopsis = "btrfs-qgroup-limit subvolume size",

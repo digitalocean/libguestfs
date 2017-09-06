@@ -1201,8 +1201,7 @@ L</feature-available>.
 
  btrfs-qgroup-limit subvolume size
 
-Limit the size of a subvolume which's path is C<subvolume>. C<size>
-can have suffix of G, M, or K. 
+Limit the size of the subvolume with path C<subvolume>.
 
 This command depends on the feature C<btrfs>.   See also
 L</feature-available>.
