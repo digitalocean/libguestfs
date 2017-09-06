@@ -1,21 +1,43 @@
 #!/usr/bin/make -f
 
+# Notes
+# -----
+#
+# - Bindings for all available Ruby, Python, Lua, and PHP versions (as
+#   determined in RUBY_VERSIONS, PYTHON_VERSIONS, LUA_VERSIONS,
+#   PHP_VERSIONS, respectively) are built, using the minimum number of
+#   configure/make/install cycles (BUILD_COUNT, BUILDS). Builds are
+#   performed out-of-tree, in directories debian/build-1,
+#   debian/build-2, etc..
+#
+# - Targets for individual builds are generated in GNU Make on the
+#   fly, by evaluating expansions of the `DH_AUTO_TEMPLATE' variable
+#   multiple times. (See the foreach loop below the variable
+#   definition.) Multiple recipies for the `override_dh_auto_clean'
+#   target as well as multiple prerequisites for the
+#   `override_dh_auto_{configure,build}' targets are defined. Only the
+#   last build contains the full feature set (including FUSE support
+#   and Perl, OCaml, Erlang, and GLib bindings).
+#
+# - Running `debian/rules output_template' can be used to inspect the
+#   targets that have been generated using `DH_AUTO_TEMPLATE'.
+
 # export DH_VERBOSE=1
 include /usr/share/dpkg/architecture.mk
 
-PYTHONS        := $(filter-out python2.5, $(shell pyversions --installed; py3versions --installed))
-PYTHON_DEFAULT := $(shell pyversions --default)
-RUBIES         := $(shell find /usr/bin/ -name 'ruby[12]*' | xargs -n1 readlink -f | xargs -n1 basename)
-RUBY_DEFAULT   := $(shell which ruby | xargs readlink -f | xargs basename)
-LUAS           := $(shell find /usr/bin/ -name 'lua5.?' | xargs -n1 readlink -f | xargs -n1 basename)
-LUA_DEFAULT    := $(shell which lua | xargs readlink -f | xargs basename)
-PHPS           := $(subst -config,,$(shell find /usr/bin -name 'php-config?*' | xargs -n1 basename))
-PHP_DEFAULT    := $(lastword $(sort $(PHPS)))
+PYTHON_VERSIONS := $(shell pyversions --installed; py3versions --installed)
+RUBY_VERSIONS   := $(shell find /usr/bin/ -name 'ruby[12]*' \
+			| xargs -n1 readlink -f | xargs -n1 basename)
+LUA_VERSIONS    := $(shell find /usr/bin/ -name 'lua5.?' \
+			| xargs -n1 readlink -f | xargs -n1 basename)
+PHP_VERSIONS    := $(subst -config,,\
+			$(shell find /usr/bin -name 'php-config?*' \
+				| xargs -n1 basename))
 
-BUILDS         := $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
-		  $(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
-		  $(filter-out $(LUA_DEFAULT), $(LUAS)) \
-		  default
+# Determine the number of builds needed due to script language version
+# variants
+BUILD_COUNT := $(lastword $(sort $(foreach lang,PYTHON RUBY LUA PHP,$(words $($(lang)_VERSIONS)))))
+BUILDS := $(foreach n,$(wordlist 1,$(BUILD_COUNT),1 2 3 4 5 6 7 8 9),$(n))
 
 QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
 		    | sed -r \
@@ -24,107 +46,82 @@ QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
 			-e 's,powerpc(64.*)?,ppc64,' \
 			-e 's,arm.*,arm,')
 
-# Run "make quickcheck only on these architectures
+# Run "make quickcheck" only on these architectures
 QUICKCHECK_ARCHITECTURES := i386 amd64
 
-# Flags for the default build (debian/build-default)
-DEFAULT_CONFIG_FLAGS = \
-	--disable-gnulib-tests     \
-	--with-readline	           \
-	--disable-haskell          \
-	--enable-gtk-doc           \
-	--with-qemu=qemu-system-$(QEMU_CPU) \
-	--with-supermin-extra-options='--use-installed'
+# Template for generating dh_{clean,configure,build,test} overrides.
+# $1 is replaced with the build number.
+define DH_AUTO_TEMPLATE
+override_dh_auto_clean::
+	dh_auto_clean --builddir=$(CURDIR)/debian/build-$1
 
-# Flags for secondary builds for different language bindings (e.g.
-# debian/python-*, debian/lua-*)
-BARE_CONFIG_FLAGS = \
-	$(DEFAULT_CONFIG_FLAGS) \
-	--disable-fuse --disable-php \
-	--disable-ocaml --disable-perl \
-	--disable-erlang --with-java=no \
-	--disable-gobject --without-java
-
-override_dh_auto_clean:
-	set -e; for p in $(BUILDS); do \
-		dh_auto_clean --builddir=$(CURDIR)/debian/build-$$p ; \
-	done
-
-override_dh_auto_configure:
-	# Make sure that the file is generated in builddir from the template.
-	rm -f ruby/ext/guestfs/extconf.rb
-	dh_auto_configure --builddir=$(CURDIR)/debian/build-default \
+$(CURDIR)/debian/build-$1/config.status::
+	dh_auto_configure --builddir=$(CURDIR)/debian/build-$1 \
 		-- \
-		$(DEFAULT_CONFIG_FLAGS) \
-		--enable-install-daemon \
-		--with-java=/usr/lib/jvm/default-java \
-		RUBY=$(RUBY_DEFAULT) \
-		RAKE="$(RUBY_DEFAULT) -S rake" \
-		PYTHON=$(PYTHON_DEFAULT) \
-		LUA=$(LUA_DEFAULT) \
-		PHP=$(PHP_DEFAULT) \
-		PHPIZE=$(subst php,phpize,$(PHP_DEFAULT)) \
-		JNI_INSTALL_DIR='$${libdir}/jni'
+		--disable-gnulib-tests     \
+		--with-readline	           \
+		--disable-haskell          \
+		--enable-gtk-doc           \
+		--with-qemu=qemu-system-$(QEMU_CPU) \
+		--with-supermin-extra-options='--use-installed' \
+		$(if $(findstring $1,$(BUILD_COUNT)),\
+			--enable-install-daemon \
+			--with-java=/usr/lib/jvm/default-java \
+			JNI_INSTALL_DIR='$$$${libdir}/jni' \
+			,\
+			--with-java=no --without-java \
+			--disable-fuse \
+			--disable-ocaml \
+			--disable-perl \
+			--disable-erlang \
+			--disable-gobject) \
+		$(if $(word $1,$(RUBY_VERSIONS)),\
+			RUBY=$(word $1,$(RUBY_VERSIONS)) \
+			RAKE="$(word $1,$(RUBY_VERSIONS)) -S rake" \
+			,\
+			--disable-ruby) \
+		$(if $(word $1,$(PYTHON_VERSIONS)),\
+			PYTHON=$(word $1,$(PYTHON_VERSIONS)) \
+			,\
+			--disable-python) \
+		$(if $(word $1,$(LUA_VERSIONS)),\
+			LUA=$(word $1,$(LUA_VERSIONS)) \
+			,\
+			--disable-lua) \
+		$(if $(word $1,$(PHP_VERSIONS)),\
+			PHP=$(word $1,$(PHP_VERSIONS)) \
+			PHPIZE=$(subst php,phpize,$(word $1,$(PHP_VERSIONS))) \
+			,\
+			--disable-php)
 
-	# (Re)generate files in srcdir.
-	$(MAKE) -C debian/build-default/generator/ generator
-	debian/build-default/generator/generator
+override_dh_auto_configure:: $(CURDIR)/debian/build-$1/config.status
 
-	set -e; for r in $(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
-	; do \
-		dh_auto_configure --builddir=$(CURDIR)/debian/build-ruby$$v \
-			-- \
-			$(BARE_CONFIG_FLAGS) \
-			--disable-lua \
-			--disable-php \
-			--disable-python \
-			RUBY=$$r RAKE="$$r -S rake" ; \
-	done
+$(CURDIR)/debian/build-$1/build-stamp:
+	dh_auto_build --builddir=$(CURDIR)/debian/build-$1 \
+		-- INSTALLDIRS=vendor LD_RUN_PATH=""
+	touch $$@
 
-	set -e; for p in $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
-	; do \
-		dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
-			-- \
-			$(BARE_CONFIG_FLAGS) \
-			--disable-lua \
-			--disable-php \
-			--disable-ruby \
-			PYTHON=$$p ; \
-	done
+override_dh_auto_build:: $(CURDIR)/debian/build-$1/build-stamp
 
-	set -e; for p in $(filter-out $(LUA_DEFAULT), $(LUAS)) \
-	; do \
-		dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
-			-- \
-			$(BARE_CONFIG_FLAGS) \
-			--disable-php \
-			--disable-python \
-			--disable-ruby \
-			LUA=$$p ; \
-	done
+endef
 
-override_dh_strip:
-	dh_strip --dbg-package=libguestfs0-dbg
+$(foreach build,$(BUILDS),$(eval $(call DH_AUTO_TEMPLATE,$(build))))
 
-override_dh_auto_build:
-	set -e; for p in $(BUILDS); do \
-		dh_auto_build --builddir=$(CURDIR)/debian/build-$$p \
-			-- INSTALLDIRS=vendor LD_RUN_PATH="" \
-			   EXTRA_JAVAC_FLAGS+="-source 1.6 -target 1.6" ; \
-	done
+output_template:
+	$(foreach build,$(BUILDS),$(info $(call DH_AUTO_TEMPLATE,$(build))))
 
+# Just run the test on the last build.
 override_dh_auto_test:
 ifneq "" "$(findstring $(DEB_HOST_ARCH),$(QUICKCHECK_ARCHITECTURES))"
 	printenv
-	unset XDG_RUNTIME_DIR; make -C $(CURDIR)/debian/build-default quickcheck
+	unset XDG_RUNTIME_DIR; make -C $(CURDIR)/debian/build-$(BUILD_COUNT) quickcheck
 endif
 
+# Installation needs to happen in order because only the last build
+# contains all features.
 override_dh_auto_install:
-# All build trees contain the library plus guestfish and C virt tools.
-# We assume that the Python version used for building the Python
-# bindings doesn't affect the outcome of those builds.
-	set -e; for p in $(BUILDS); do \
-		dh_auto_install --builddir=$(CURDIR)/debian/build-$$p \
+	for build in $(BUILDS); do \
+		dh_auto_install --builddir=$(CURDIR)/debian/build-$$build \
 			-- INSTALLDIRS=vendor; \
 	done
 

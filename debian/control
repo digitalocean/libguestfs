@@ -347,17 +347,6 @@ Description: guest disk image management system - tools
  virt-filesystems, virt-inspector, virt-ls, virt-make-fs, virt-rescue,
  virt-resize, virt-tar, and virt-win-reg.
 
-Package: libguestfs0-dbg
-Section: debug
-Architecture: linux-any
-Multi-Arch: same
-Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version})
-Description: guest disk image management system - debug symbols
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains the debugging symbols.
-
 Package: python-guestfs
 Section: python
 Architecture: linux-any
