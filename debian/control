@@ -465,7 +465,7 @@ Package: libguestfs-gobject-dev
 Section: libdevel
 Architecture: linux-any
 Multi-Arch: same
-Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${misc:Depends}
+Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), gir1.2-guestfs-1.0 (= ${binary:Version}), ${misc:Depends}
 Conflicts: libguestfs0 (<< 1:1.14.9-1~)
 Description: guest disk image management system - GObject development headers
  The libguestfs library allows accessing and modifying guest disk
