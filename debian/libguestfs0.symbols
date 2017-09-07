@@ -40,6 +40,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_aug_save@Base 1.10
  guestfs_aug_set@Base 1.10
  guestfs_aug_setm@Base 1:1.23.14
+ guestfs_aug_transform@Base 1:1.35.2
+ guestfs_aug_transform_argv@Base 1:1.35.2
+ guestfs_aug_transform_va@Base 1:1.35.2
  guestfs_available@Base 1.10
  guestfs_available_all_groups@Base 1.10
  guestfs_base64_in@Base 1.10
@@ -309,6 +312,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_filesystem_walk@Base 1:1.33.39
  guestfs_fill@Base 1.10
  guestfs_fill_dir@Base 1:1.20
+ guestfs_find_inode@Base 1:1.35.6
  guestfs_fill_pattern@Base 1.10
  guestfs_find0@Base 1.10
  guestfs_find@Base 1.10
@@ -470,6 +474,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_inspect_get_roots@Base 1.10
  guestfs_inspect_get_type@Base 1.10
  guestfs_inspect_get_windows_current_control_set@Base 1.10
+ guestfs_inspect_get_windows_software_hive@Base 1:1.35.36
+ guestfs_inspect_get_windows_system_hive@Base 1:1.35.36
  guestfs_inspect_get_windows_systemroot@Base 1.10
  guestfs_inspect_is_live@Base 1.10
  guestfs_inspect_is_multipart@Base 1.10
@@ -485,6 +491,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  (optional)guestfs_internal_feature_available@Base 1:1.31.25
  (optional)guestfs_internal_exit@Base 1:1.23.30
  (optional)guestfs_internal_filesystem_walk@Base 1:1.33.39
+ (optional)guestfs_internal_find_inode@Base 1:1.35.6
  (optional)guestfs_internal_hot_add_drive@Base 1:1.20
  (optional)guestfs_internal_hot_remove_drive@Base 1:1.20
  (optional)guestfs_internal_hot_remove_drive_precheck@Base 1:1.20
@@ -669,6 +676,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_mknod@Base 1.10
  guestfs_mknod_b@Base 1.10
  guestfs_mknod_c@Base 1.10
+ guestfs_mksquashfs@Base 1:1.35.25
+ guestfs_mksquashfs_argv@Base 1:1.35.25
+ guestfs_mksquashfs_va@Base 1:1.35.25
  guestfs_mkswap@Base 1.10
  guestfs_mkswap_L@Base 1.10
  guestfs_mkswap_U@Base 1.10
