@@ -614,6 +614,9 @@ that everyone is using a modern version of qemu).
 B<Note this option only affects I<-o vdsm> output>.  All other output modes
 (including I<-o rhv>) generate modern qcow2 I<compat=1.1> files, always.
 
+If this option is available, then C<vdsm-compat-option> will appear in the
+I<--machine-readable> output.
+
 =item B<--vdsm-image-uuid> UUID
 
 =item B<--vdsm-vol-uuid> UUID
@@ -1307,6 +1310,13 @@ virt-v2v server to the Xen host.  For example:
 Note that password-interactive and Kerberos access are B<not> supported.
 You B<have> to set up ssh access using ssh-agent and authorized_keys.
 
+With some modern ssh implementations, legacy crypto policies required to
+interoperate with RHEL 5 sshd are disabled.  To enable them you may need to
+run this command on the conversion server (ie. ssh client), but read
+L<update-crypto-policies(8)> first:
+
+ # update-crypto-policies LEGACY
+
 =head2 XEN: TEST LIBVIRT CONNECTION TO REMOTE XEN HOST
 
 Use the L<virsh(1)> command to list the guests on the remote Xen host:
@@ -1775,16 +1785,31 @@ guest through the RHV-M UI, you may encounter an import failure.  Diagnosing
 these failures is infuriatingly difficult as the UI generally hides the true
 reason for the failure.
 
-There are two log files of interest.  The first is stored on the RHV-M
-server itself, and is called F</var/log/ovirt-engine/engine.log>
+There are several log files of interest:
 
-The second file, which is the most useful, is found on the SPM host (SPM
-stands for "Storage Pool Manager").  This is a RHV node that is elected to
-do all metadata modifications in the data center, such as image or snapshot
-creation.  You can find out which host is the current SPM from the "Hosts"
-tab "Spm Status" column.  Once you have located the SPM, log into it and
-grab the file F</var/log/vdsm/vdsm.log> which will contain detailed error
-messages from low-level commands.
+=over 4
+
+=item F</var/log/vdsm/import/>
+
+In oVirt E<ge> 4.1.0, VDSM preserves the virt-v2v log file for 30 days in
+this directory.
+
+This directory is found on the host which performed the conversion.  The
+host can be selected in the import dialog, or can be found under the
+C<Events> tab in oVirt administration.
+
+=item F</var/log/vdsm/vdsm.log>
+
+As above, this file is present on the host which performed the conversion.
+It contains detailed error messages from low-level operations executed by
+VDSM, and is useful if the error was not caused by virt-v2v, but by VDSM.
+
+=item F</var/log/ovirt-engine/engine.log>
+
+This log file is stored on the RHV-M server.  It contains more detail for
+any errors caused by the oVirt GUI.
+
+=back
 
 =head1 МІНІМАЛЬНИЙ XML ДЛЯ ПАРАМЕТРА -i libvirtxml
 
@@ -1862,6 +1887,7 @@ binary.  Typical output looks like this:
  virt-v2v
  libguestfs-rewrite
  colours-option
+ vdsm-compat-option
  input:disk
  [...]
  output:local

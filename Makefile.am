@@ -194,7 +194,7 @@ SUBDIRS += po-docs
 endif
 
 EXTRA_DIST = \
-	BUGS HACKING TODO \
+	BUGS HACKING RELEASES TODO \
 	.gitignore \
 	.lvimrc \
 	.mailmap \
@@ -312,6 +312,7 @@ AUTHORS: configure.ac
 
 BUGS: configure.ac
 	rm -f $@ $@-t
+	unset LC_ALL; \
 	$(top_srcdir)/update-bugs.sh > $@-t
 	mv $@-t $@
 

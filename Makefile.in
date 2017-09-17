@@ -1759,7 +1759,7 @@ SUBDIRS = generator $(am__append_1) test-data gnulib/lib \
 	utils/boot-benchmark utils/qemu-boot utils/qemu-speed-test \
 	$(am__append_23)
 EXTRA_DIST = \
-	BUGS HACKING TODO \
+	BUGS HACKING RELEASES TODO \
 	.gitignore \
 	.lvimrc \
 	.mailmap \
@@ -2404,6 +2404,7 @@ AUTHORS: configure.ac
 
 BUGS: configure.ac
 	rm -f $@ $@-t
+	unset LC_ALL; \
 	$(top_srcdir)/update-bugs.sh > $@-t
 	mv $@-t $@
 

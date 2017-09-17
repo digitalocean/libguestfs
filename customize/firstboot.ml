@@ -79,6 +79,8 @@ then
 fi
 " firstboot_dir firstboot_dir
 
+  let systemd_target = "multi-user.target"
+
   let firstboot_service = sprintf "\
 [Unit]
 Description=libguestfs firstboot service
@@ -93,8 +95,8 @@ StandardOutput=journal+console
 StandardError=inherit
 
 [Install]
-WantedBy=default.target
-" firstboot_dir
+WantedBy=%s
+" firstboot_dir systemd_target
 
   let rec install_service (g : Guestfs.guestfs) root distro major =
     g#mkdir_p firstboot_dir;
@@ -123,8 +125,10 @@ WantedBy=default.target
     g#mkdir_p unitdir;
     let unitfile = sprintf "%s/guestfs-firstboot.service" unitdir in
     g#write unitfile firstboot_service;
-    g#mkdir_p "/etc/systemd/system/default.target.wants";
-    g#ln_sf unitfile "/etc/systemd/system/default.target.wants";
+    g#mkdir_p (sprintf "/etc/systemd/system/%s.wants"
+                       systemd_target);
+    g#ln_sf unitfile (sprintf "/etc/systemd/system/%s.wants"
+                              systemd_target);
 
     (* Try to remove the old firstboot.service files. *)
     let oldunitfile = sprintf "%s/firstboot.service" unitdir in
@@ -141,7 +145,11 @@ WantedBy=default.target
       | csum ->
         warning (f_"firstboot: unknown version for old firstboot.service file %s (md5=%s), it will not be removed")
           oldunitfile csum
-    )
+    );
+    (* And the old default.target.wants/guestfs-firstboot.service from
+     * libguestfs <= 1.37.17.
+     *)
+    g#rm_f "/etc/systemd/system/default.target.wants/guestfs-firstboot.service"
 
   and install_sysvinit_service g root distro major =
     match distro with
