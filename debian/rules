@@ -63,6 +63,8 @@ $(CURDIR)/debian/build-$1/config.status::
 		--disable-haskell          \
 		--enable-gtk-doc           \
 		--with-qemu=qemu-system-$(QEMU_CPU) \
+		$(if $(findstring powerpcspe,DEB_HOST_GNU_CPU,\
+			--with-qemu-options="-M ppce500 -cpu e500v2") \
 		--with-supermin-extra-options='--use-installed' \
 		$(if $(findstring $1,$(BUILD_COUNT)),\
 			--enable-install-daemon \
