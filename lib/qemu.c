@@ -37,6 +37,9 @@
 
 #include <libxml/uri.h>
 
+#include <yajl/yajl_tree.h>
+
+#include "full-write.h"
 #include "ignore-value.h"
 
 #include "guestfs.h"
@@ -44,44 +47,94 @@
 #include "guestfs_protocol.h"
 
 struct qemu_data {
+  int generation;               /* MEMO_GENERATION read from qemu.stat */
+  uint64_t prev_size;           /* Size of qemu binary when cached. */
+  uint64_t prev_mtime;          /* mtime of qemu binary when cached. */
+
   char *qemu_help;              /* Output of qemu -help. */
   char *qemu_devices;           /* Output of qemu -device ? */
+  char *qmp_schema;             /* Output of QMP query-qmp-schema. */
+
+  /* The following fields are derived from the fields above. */
+  struct version qemu_version;  /* Parsed qemu version number. */
+  yajl_val qmp_schema_tree;     /* qmp_schema parsed into a JSON tree */
 
   int virtio_scsi;              /* See function
                                    guestfs_int_qemu_supports_virtio_scsi */
 };
 
-static int test_qemu (guestfs_h *g, struct qemu_data *data, struct version *qemu_version);
+static char *cache_filename (guestfs_h *g, const char *cachedir, const struct stat *, const char *suffix);
+static int test_qemu_help (guestfs_h *g, struct qemu_data *data);
+static int read_cache_qemu_help (guestfs_h *g, struct qemu_data *data, const char *filename);
+static int write_cache_qemu_help (guestfs_h *g, const struct qemu_data *data, const char *filename);
+static int test_qemu_devices (guestfs_h *g, struct qemu_data *data);
+static int read_cache_qemu_devices (guestfs_h *g, struct qemu_data *data, const char *filename);
+static int write_cache_qemu_devices (guestfs_h *g, const struct qemu_data *data, const char *filename);
+static int test_qmp_schema (guestfs_h *g, struct qemu_data *data);
+static int read_cache_qmp_schema (guestfs_h *g, struct qemu_data *data, const char *filename);
+static int write_cache_qmp_schema (guestfs_h *g, const struct qemu_data *data, const char *filename);
+static int read_cache_qemu_stat (guestfs_h *g, struct qemu_data *data, const char *filename);
+static int write_cache_qemu_stat (guestfs_h *g, const struct qemu_data *data, const char *filename);
 static void parse_qemu_version (guestfs_h *g, const char *, struct version *qemu_version);
+static void parse_json (guestfs_h *g, const char *, yajl_val *);
 static void read_all (guestfs_h *g, void *retv, const char *buf, size_t len);
+static int generic_read_cache (guestfs_h *g, const char *filename, char **strp);
+static int generic_write_cache (guestfs_h *g, const char *filename, const char *str);
+static int generic_qmp_test (guestfs_h *g, struct qemu_data *data, const char *qmp_command, char **outp);
 
-/* This is saved in the qemu.stat file, so if we decide to change the
+/* This structure abstracts the data we are reading from qemu and how
+ * we get it.
+ */
+static const struct qemu_fields {
+  const char *name;
+
+  /* Function to perform the test on g->hv.  This must set the correct
+   * data->[field] to non-NULL, or else return an error.
+   */
+  int (*test) (guestfs_h *g, struct qemu_data *data);
+
+  /* Functions to read and write the cache file.
+   * read_cache returns -1 = error, 0 = no cache, 1 = cache data read.
+   * write_cache returns -1 = error, 0 = success.
+   */
+  int (*read_cache) (guestfs_h *g, struct qemu_data *data,
+                     const char *filename);
+  int (*write_cache) (guestfs_h *g, const struct qemu_data *data,
+                      const char *filename);
+} qemu_fields[] = {
+  { "help",
+    test_qemu_help, read_cache_qemu_help, write_cache_qemu_help },
+  { "devices",
+    test_qemu_devices, read_cache_qemu_devices, write_cache_qemu_devices },
+  { "qmp-schema",
+    test_qmp_schema, read_cache_qmp_schema, write_cache_qmp_schema },
+};
+#define NR_FIELDS (sizeof qemu_fields / sizeof qemu_fields[0])
+
+/* This is saved in the qemu-*.stat file, so if we decide to change the
  * test_qemu memoization format/data in future, we should increment
  * this to discard any memoized data cached by previous versions of
  * libguestfs.
  */
-#define MEMO_GENERATION 1
+#define MEMO_GENERATION 2
 
 /**
- * Test qemu binary (or wrapper) runs, and do C<qemu -help> so we know
- * the version of qemu what options this qemu supports, and
- * C<qemu -device ?> so we know what devices are available.
- *
- * The version number of qemu (from the C<-help> output) is saved in
- * C<&qemu_version>.
+ * Test that the qemu binary (or wrapper) runs, and do C<qemu -help>
+ * and other commands so we can find out the version of qemu and what
+ * options this qemu supports.
  *
  * This caches the results in the cachedir so that as long as the qemu
  * binary does not change, calling this is effectively free.
  */
 struct qemu_data *
-guestfs_int_test_qemu (guestfs_h *g, struct version *qemu_version)
+guestfs_int_test_qemu (guestfs_h *g)
 {
-  struct qemu_data *data;
   struct stat statbuf;
-  CLEANUP_FREE char *cachedir = NULL, *qemu_stat_filename = NULL,
-    *qemu_help_filename = NULL, *qemu_devices_filename = NULL;
-  int generation;
-  uint64_t prev_size, prev_mtime;
+  struct qemu_data *data;
+  CLEANUP_FREE char *cachedir = NULL;
+  CLEANUP_FREE char *stat_filename = NULL;
+  int r;
+  size_t i;
 
   if (stat (g->hv, &statbuf) == -1) {
     perrorf (g, "stat: %s", g->hv);
@@ -92,165 +145,245 @@ guestfs_int_test_qemu (guestfs_h *g, struct version *qemu_version)
   if (cachedir == NULL)
     return NULL;
 
-  qemu_stat_filename = safe_asprintf (g, "%s/qemu.stat", cachedir);
-  qemu_help_filename = safe_asprintf (g, "%s/qemu.help", cachedir);
-  qemu_devices_filename = safe_asprintf (g, "%s/qemu.devices", cachedir);
-
   /* Did we previously test the same version of qemu? */
   debug (g, "checking for previously cached test results of %s, in %s",
          g->hv, cachedir);
 
-  {
-    CLEANUP_FCLOSE FILE *fp = NULL;
-    fp = fopen (qemu_stat_filename, "r");
-    if (fp == NULL)
-      goto do_test;
-    if (fscanf (fp, "%d %" SCNu64 " %" SCNu64,
-                &generation, &prev_size, &prev_mtime) != 3) {
-      goto do_test;
-    }
-  }
-
-  if (generation == MEMO_GENERATION &&
-      (uint64_t) statbuf.st_size == prev_size &&
-      (uint64_t) statbuf.st_mtime == prev_mtime) {
-    /* Same binary as before, so read the previously cached qemu -help
-     * and qemu -devices ? output.
-     */
-    if (access (qemu_help_filename, R_OK) == -1 ||
-        access (qemu_devices_filename, R_OK) == -1)
-      goto do_test;
-
-    debug (g, "loading previously cached test results");
-
-    data = safe_calloc (g, 1, sizeof *data);
-
-    if (guestfs_int_read_whole_file (g, qemu_help_filename,
-                                     &data->qemu_help, NULL) == -1) {
-      guestfs_int_free_qemu_data (data);
-      return NULL;
-    }
-
-    parse_qemu_version (g, data->qemu_help, qemu_version);
-
-    if (guestfs_int_read_whole_file (g, qemu_devices_filename,
-                                     &data->qemu_devices, NULL) == -1) {
-      guestfs_int_free_qemu_data (data);
-      return NULL;
-    }
-
-    return data;
-  }
-
- do_test:
   data = safe_calloc (g, 1, sizeof *data);
 
-  if (test_qemu (g, data, qemu_version) == -1) {
-    guestfs_int_free_qemu_data (data);
-    return NULL;
+  stat_filename = cache_filename (g, cachedir, &statbuf, "stat");
+  r = read_cache_qemu_stat (g, data, stat_filename);
+  if (r == -1)
+    goto error;
+  if (r == 0)
+    goto do_test;
+
+  if (data->generation != MEMO_GENERATION ||
+      data->prev_size != (uint64_t) statbuf.st_size ||
+      data->prev_mtime != (uint64_t) statbuf.st_mtime)
+    goto do_test;
+
+  debug (g, "loading previously cached test results");
+
+  for (i = 0; i < NR_FIELDS; ++i) {
+    CLEANUP_FREE char *filename =
+      cache_filename (g, cachedir, &statbuf, qemu_fields[i].name);
+    r = qemu_fields[i].read_cache (g, data, filename);
+    if (r == -1)
+      goto error;
+    if (r == 0) {
+      /* Cache gone, maybe deleted by the tmp cleaner, so we must run
+       * the full tests.  We will have a partially filled qemu_data
+       * structure.  The safest way to deal with that is to free
+       * it and start again.
+       */
+      guestfs_int_free_qemu_data (data);
+      data = safe_calloc (g, 1, sizeof *data);
+      goto do_test;
+    }
+  }
+
+  goto out;
+
+ do_test:
+  for (i = 0; i < NR_FIELDS; ++i) {
+    if (qemu_fields[i].test (g, data) == -1)
+      goto error;
   }
 
   /* Now memoize the qemu output in the cache directory. */
   debug (g, "saving test results");
 
-  {
-    CLEANUP_FCLOSE FILE *fp = NULL;
-    fp = fopen (qemu_help_filename, "w");
-    if (fp == NULL) {
-    help_error:
-      perrorf (g, "%s", qemu_help_filename);
-      guestfs_int_free_qemu_data (data);
-      return NULL;
-    }
-    if (fprintf (fp, "%s", data->qemu_help) == -1)
-      goto help_error;
+  for (i = 0; i < NR_FIELDS; ++i) {
+    CLEANUP_FREE char *filename =
+      cache_filename (g, cachedir, &statbuf, qemu_fields[i].name);
+    if (qemu_fields[i].write_cache (g, data, filename) == -1)
+      goto error;
   }
 
-  {
-    CLEANUP_FCLOSE FILE *fp = NULL;
-    fp = fopen (qemu_devices_filename, "w");
-    if (fp == NULL) {
-    devices_error:
-      perrorf (g, "%s", qemu_devices_filename);
-      guestfs_int_free_qemu_data (data);
-      return NULL;
-    }
-    if (fprintf (fp, "%s", data->qemu_devices) == -1)
-      goto devices_error;
-  }
+  /* Write the qemu.stat file last so that its presence indicates that
+   * the qemu.help and qemu.devices files ought to exist.
+   */
+  data->generation = MEMO_GENERATION;
+  data->prev_size = statbuf.st_size;
+  data->prev_mtime = statbuf.st_mtime;
+  if (write_cache_qemu_stat (g, data, stat_filename) == -1)
+    goto error;
 
-  {
-    /* Write the qemu.stat file last so that its presence indicates that
-     * the qemu.help and qemu.devices files ought to exist.
-     */
-    CLEANUP_FCLOSE FILE *fp = NULL;
-    fp = fopen (qemu_stat_filename, "w");
-    if (fp == NULL) {
-    stat_error:
-      perrorf (g, "%s", qemu_stat_filename);
-      guestfs_int_free_qemu_data (data);
-      return NULL;
-    }
-    /* The path to qemu is stored for information only, it is not
-     * used when we parse the file.
-     */
-    if (fprintf (fp, "%d %" PRIu64 " %" PRIu64 " %s\n",
-                 MEMO_GENERATION,
-                 (uint64_t) statbuf.st_size,
-                 (uint64_t) statbuf.st_mtime,
-                 g->hv) == -1)
-      goto stat_error;
-  }
+ out:
+  /* Derived fields. */
+  parse_qemu_version (g, data->qemu_help, &data->qemu_version);
+  parse_json (g, data->qmp_schema, &data->qmp_schema_tree);
 
   return data;
+
+ error:
+  guestfs_int_free_qemu_data (data);
+  return NULL;
+}
+
+/**
+ * Generate the filenames, for the stat file and the other cache
+ * files.
+ *
+ * By including the size and mtime in the filename we also ensure that
+ * the same user can use multiple versions of qemu without conflicts.
+ */
+static char *
+cache_filename (guestfs_h *g, const char *cachedir,
+                const struct stat *statbuf, const char *suffix)
+{
+  return safe_asprintf (g, "%s/qemu-%" PRIu64 "-%" PRIu64 ".%s",
+                        cachedir,
+                        (uint64_t) statbuf->st_size,
+                        (uint64_t) statbuf->st_mtime,
+                        suffix);
 }
 
 static int
-test_qemu (guestfs_h *g, struct qemu_data *data, struct version *qemu_version)
+test_qemu_help (guestfs_h *g, struct qemu_data *data)
 {
-  CLEANUP_CMD_CLOSE struct command *cmd1 = guestfs_int_new_command (g);
-  CLEANUP_CMD_CLOSE struct command *cmd2 = guestfs_int_new_command (g);
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs_int_new_command (g);
   int r;
 
-  guestfs_int_cmd_add_arg (cmd1, g->hv);
-  guestfs_int_cmd_add_arg (cmd1, "-display");
-  guestfs_int_cmd_add_arg (cmd1, "none");
-  guestfs_int_cmd_add_arg (cmd1, "-help");
-  guestfs_int_cmd_set_stdout_callback (cmd1, read_all, &data->qemu_help,
-				       CMD_STDOUT_FLAG_WHOLE_BUFFER);
-  r = guestfs_int_cmd_run (cmd1);
-  if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
-    goto error;
+  guestfs_int_cmd_add_arg (cmd, g->hv);
+  guestfs_int_cmd_add_arg (cmd, "-display");
+  guestfs_int_cmd_add_arg (cmd, "none");
+  guestfs_int_cmd_add_arg (cmd, "-help");
+  guestfs_int_cmd_set_stdout_callback (cmd, read_all, &data->qemu_help,
+                                       CMD_STDOUT_FLAG_WHOLE_BUFFER);
+  r = guestfs_int_cmd_run (cmd);
+  if (r == -1)
+    return -1;
+  if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
+    guestfs_int_external_command_failed (g, r, g->hv, NULL);
+    return -1;
+  }
+  return 0;
+}
 
-  parse_qemu_version (g, data->qemu_help, qemu_version);
+static int
+read_cache_qemu_help (guestfs_h *g, struct qemu_data *data,
+                      const char *filename)
+{
+  return generic_read_cache (g, filename, &data->qemu_help);
+}
 
-  guestfs_int_cmd_add_arg (cmd2, g->hv);
-  guestfs_int_cmd_add_arg (cmd2, "-display");
-  guestfs_int_cmd_add_arg (cmd2, "none");
-  guestfs_int_cmd_add_arg (cmd2, "-machine");
-  guestfs_int_cmd_add_arg (cmd2,
+static int
+write_cache_qemu_help (guestfs_h *g, const struct qemu_data *data,
+                       const char *filename)
+{
+  return generic_write_cache (g, filename, data->qemu_help);
+}
+
+static int
+test_qemu_devices (guestfs_h *g, struct qemu_data *data)
+{
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs_int_new_command (g);
+  int r;
+
+  guestfs_int_cmd_add_arg (cmd, g->hv);
+  guestfs_int_cmd_add_arg (cmd, "-display");
+  guestfs_int_cmd_add_arg (cmd, "none");
+  guestfs_int_cmd_add_arg (cmd, "-machine");
+  guestfs_int_cmd_add_arg (cmd,
 #ifdef MACHINE_TYPE
                            MACHINE_TYPE ","
 #endif
                            "accel=kvm:tcg");
-  guestfs_int_cmd_add_arg (cmd2, "-device");
-  guestfs_int_cmd_add_arg (cmd2, "?");
-  guestfs_int_cmd_clear_capture_errors (cmd2);
-  guestfs_int_cmd_set_stderr_to_stdout (cmd2);
-  guestfs_int_cmd_set_stdout_callback (cmd2, read_all, &data->qemu_devices,
-				       CMD_STDOUT_FLAG_WHOLE_BUFFER);
-  r = guestfs_int_cmd_run (cmd2);
-  if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
-    goto error;
-
-  return 0;
-
- error:
+  guestfs_int_cmd_add_arg (cmd, "-device");
+  guestfs_int_cmd_add_arg (cmd, "?");
+  guestfs_int_cmd_clear_capture_errors (cmd);
+  guestfs_int_cmd_set_stderr_to_stdout (cmd);
+  guestfs_int_cmd_set_stdout_callback (cmd, read_all, &data->qemu_devices,
+                                       CMD_STDOUT_FLAG_WHOLE_BUFFER);
+  r = guestfs_int_cmd_run (cmd);
   if (r == -1)
     return -1;
+  if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
+    guestfs_int_external_command_failed (g, r, g->hv, NULL);
+    return -1;
+  }
+  return 0;
+}
 
-  guestfs_int_external_command_failed (g, r, g->hv, NULL);
-  return -1;
+static int
+read_cache_qemu_devices (guestfs_h *g, struct qemu_data *data,
+                         const char *filename)
+{
+  return generic_read_cache (g, filename, &data->qemu_devices);
+}
+
+static int
+write_cache_qemu_devices (guestfs_h *g, const struct qemu_data *data,
+                          const char *filename)
+{
+  return generic_write_cache (g, filename, data->qemu_devices);
+}
+
+static int
+test_qmp_schema (guestfs_h *g, struct qemu_data *data)
+{
+  return generic_qmp_test (g, data, "query-qmp-schema", &data->qmp_schema);
+}
+
+static int
+read_cache_qmp_schema (guestfs_h *g, struct qemu_data *data,
+                       const char *filename)
+{
+  return generic_read_cache (g, filename, &data->qmp_schema);
+}
+
+static int
+write_cache_qmp_schema (guestfs_h *g, const struct qemu_data *data,
+                        const char *filename)
+{
+  return generic_write_cache (g, filename, data->qmp_schema);
+}
+
+static int
+read_cache_qemu_stat (guestfs_h *g, struct qemu_data *data,
+                      const char *filename)
+{
+  CLEANUP_FCLOSE FILE *fp = fopen (filename, "r");
+  if (fp == NULL) {
+    if (errno == ENOENT)
+      return 0;                 /* no cache, run the test instead */
+    perrorf (g, "%s", filename);
+    return -1;
+  }
+
+  if (fscanf (fp, "%d %" SCNu64 " %" SCNu64,
+              &data->generation,
+              &data->prev_size,
+              &data->prev_mtime) != 3)
+    return 0;
+
+  return 1;
+}
+
+static int
+write_cache_qemu_stat (guestfs_h *g, const struct qemu_data *data,
+                       const char *filename)
+{
+  CLEANUP_FCLOSE FILE *fp = fopen (filename, "w");
+  if (fp == NULL) {
+    perrorf (g, "%s", filename);
+    return -1;
+  }
+  /* The path to qemu is stored for information only, it is not
+   * used when we parse the file.
+   */
+  if (fprintf (fp, "%d %" PRIu64 " %" PRIu64 " %s\n",
+               data->generation,
+               data->prev_size,
+               data->prev_mtime,
+               g->hv) == -1) {
+    perrorf (g, "%s: write", filename);
+    return -1;
+  }
+
+  return 0;
 }
 
 /**
@@ -268,8 +401,151 @@ parse_qemu_version (guestfs_h *g, const char *qemu_help,
            __func__, g->hv);
     return;
   }
+}
 
-  debug (g, "qemu version %d.%d", qemu_version->v_major, qemu_version->v_minor);
+/**
+ * Parse the json output from QMP.  But don't fail if parsing
+ * is not possible.
+ */
+static void
+parse_json (guestfs_h *g, const char *json, yajl_val *treep)
+{
+  char parse_error[256] = "";
+
+  if (!json)
+    return;
+
+  *treep = yajl_tree_parse (json, parse_error, sizeof parse_error);
+  if (*treep == NULL) {
+    if (strlen (parse_error) > 0)
+      debug (g, "QMP parse error: %s (ignored)", parse_error);
+    else
+      debug (g, "QMP unknown parse error (ignored)");
+  }
+}
+
+/**
+ * Generic functions for reading and writing the cache files, used
+ * where we are just reading and writing plain text strings.
+ */
+static int
+generic_read_cache (guestfs_h *g, const char *filename, char **strp)
+{
+  if (access (filename, R_OK) == -1 && errno == ENOENT)
+    return 0;                   /* no cache, run the test instead */
+  if (guestfs_int_read_whole_file (g, filename, strp, NULL) == -1)
+    return -1;
+  return 1;
+}
+
+static int
+generic_write_cache (guestfs_h *g, const char *filename, const char *str)
+{
+  int fd;
+  size_t len;
+
+  fd = open (filename, O_WRONLY|O_CREAT|O_TRUNC|O_NOCTTY|O_CLOEXEC, 0666);
+  if (fd == -1) {
+    perrorf (g, "%s", filename);
+    return -1;
+  }
+
+  len = strlen (str);
+  if (full_write (fd, str, len) != len) {
+    perrorf (g, "%s: write", filename);
+    close (fd);
+    return -1;
+  }
+
+  if (close (fd) == -1) {
+    perrorf (g, "%s: close", filename);
+    return -1;
+  }
+  return 0;
+}
+
+/**
+ * Run a generic QMP test on the QEMU binary.
+ */
+static int
+generic_qmp_test (guestfs_h *g, struct qemu_data *data,
+                  const char *qmp_command,
+                  char **outp)
+{
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs_int_new_command (g);
+  int r, fd;
+  CLEANUP_FCLOSE FILE *fp = NULL;
+  CLEANUP_FREE char *line = NULL;
+  size_t allocsize = 0;
+  ssize_t len;
+
+  guestfs_int_cmd_add_string_unquoted (cmd, "echo ");
+  /* QMP is modal.  You have to send the qmp_capabilities command first. */
+  guestfs_int_cmd_add_string_unquoted (cmd, "'{ \"execute\": \"qmp_capabilities\" }' ");
+  guestfs_int_cmd_add_string_unquoted (cmd, "'{ \"execute\": \"");
+  guestfs_int_cmd_add_string_unquoted (cmd, qmp_command);
+  guestfs_int_cmd_add_string_unquoted (cmd, "\" }' ");
+  /* Exit QEMU after sending the commands. */
+  guestfs_int_cmd_add_string_unquoted (cmd, "'{ \"execute\": \"quit\" }' ");
+  guestfs_int_cmd_add_string_unquoted (cmd, " | ");
+  guestfs_int_cmd_add_string_quoted (cmd, g->hv);
+  guestfs_int_cmd_add_string_unquoted (cmd, " -display none");
+  guestfs_int_cmd_add_string_unquoted (cmd, " -machine ");
+  guestfs_int_cmd_add_string_quoted (cmd,
+#ifdef MACHINE_TYPE
+                                     MACHINE_TYPE ","
+#endif
+                                     "accel=kvm:tcg");
+  guestfs_int_cmd_add_string_unquoted (cmd, " -qmp stdio");
+  guestfs_int_cmd_clear_capture_errors (cmd);
+
+  fd = guestfs_int_cmd_pipe_run (cmd, "r");
+  if (fd == -1)
+    return -1;
+
+  /* Read the output line by line.  We expect to see:
+   * line 1: {"QMP": {"version": ... } }   # greeting from QMP
+   * line 2: {"return": {}}                # output from qmp_capabilities
+   * line 3: {"return": ... }              # the data from our qmp_command
+   * line 4: {"return": {}}                # output from quit
+   * line 5: {"timestamp": ...}            # shutdown event
+   */
+  fp = fdopen (fd, "r");        /* this will close (fd) at end of scope */
+  if (fp == NULL) {
+    perrorf (g, "fdopen");
+    return -1;
+  }
+  len = getline (&line, &allocsize, fp); /* line 1 */
+  if (len == -1 || strstr (line, "\"QMP\"") == NULL) {
+  parse_failure:
+    debug (g, "did not understand QMP monitor output from %s (ignored)",
+           g->hv);
+    /* QMP tests are optional, don't fail if we cannot parse the
+     * output.  However we MUST return an empty string on non-error
+     * paths.
+     */
+    *outp = safe_strdup (g, "");
+    return 0;
+  }
+  len = getline (&line, &allocsize, fp); /* line 2 */
+  if (len == -1 || strstr (line, "\"return\"") == NULL)
+    goto parse_failure;
+  len = getline (&line, &allocsize, fp); /* line 3 */
+  if (len == -1 || strstr (line, "\"return\"") == NULL)
+    goto parse_failure;
+  *outp = safe_strdup (g, line);
+  /* The other lines we don't care about, so finish parsing here. */
+  ignore_value (getline (&line, &allocsize, fp)); /* line 4 */
+  ignore_value (getline (&line, &allocsize, fp)); /* line 5 */
+
+  r = guestfs_int_cmd_pipe_wait (cmd);
+  /* QMP tests are optional, don't fail if the tests fail. */
+  if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0) {
+    debug (g, "%s wait failed or unexpected exit status (ignored)", g->hv);
+    return 0;
+  }
+
+  return 0;
 }
 
 static void
@@ -278,6 +554,15 @@ read_all (guestfs_h *g, void *retv, const char *buf, size_t len)
   char **ret = retv;
 
   *ret = safe_strndup (g, buf, len);
+}
+
+/**
+ * Return the parsed version of qemu.
+ */
+struct version
+guestfs_int_qemu_version (guestfs_h *g, struct qemu_data *data)
+{
+  return data->qemu_version;
 }
 
 /**
@@ -346,6 +631,74 @@ guestfs_int_qemu_supports_virtio_scsi (guestfs_h *g, struct qemu_data *data,
 
   return data->virtio_scsi == 1;
 }
+
+/* GCC can't work out that the YAJL_IS_<foo> test is sufficient to
+ * ensure that YAJL_GET_<foo> later doesn't return NULL.
+ */
+#pragma GCC diagnostic push
+#if defined(__GNUC__) && __GNUC__ >= 6 /* gcc >= 6 */
+#pragma GCC diagnostic ignored "-Wnull-dereference"
+#endif
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic ignored "-Wnonnull"
+#endif
+
+/**
+ * Test if the qemu binary uses mandatory file locking, added in
+ * QEMU >= 2.10 (but sometimes disabled).
+ */
+int
+guestfs_int_qemu_mandatory_locking (guestfs_h *g,
+                                    const struct qemu_data *data)
+{
+  const char *return_path[] = { "return", NULL };
+  const char *meta_type_path[] = { "meta-type", NULL };
+  const char *members_path[] = { "members", NULL };
+  const char *name_path[] = { "name", NULL };
+  yajl_val schema, v, meta_type, members, m, name;
+  size_t i, j;
+
+  /* If there's no QMP schema, fall back to checking the version. */
+  if (!data->qmp_schema_tree) {
+  fallback:
+    return guestfs_int_version_ge (&data->qemu_version, 2, 10, 0);
+  }
+
+  /* Top element of qmp_schema_tree is the { "return": ... } wrapper.
+   * Extract the schema from the wrapper.  Note the returned ‘schema’
+   * will be an array.
+   */
+  schema = yajl_tree_get (data->qmp_schema_tree, return_path, yajl_t_array);
+  if (schema == NULL)
+    goto fallback;
+  assert (YAJL_IS_ARRAY(schema));
+
+  /* Now look for any member of the array which has:
+   * { "meta-type": "object",
+   *   "members": [ ... { "name": "locking", ... } ... ] ... }
+   */
+  for (i = 0; i < YAJL_GET_ARRAY(schema)->len; ++i) {
+    v = YAJL_GET_ARRAY(schema)->values[i];
+    meta_type = yajl_tree_get (v, meta_type_path, yajl_t_string);
+    if (meta_type && YAJL_IS_STRING (meta_type) &&
+        STREQ (YAJL_GET_STRING (meta_type), "object")) {
+      members = yajl_tree_get (v, members_path, yajl_t_array);
+      if (members) {
+        for (j = 0; j < YAJL_GET_ARRAY(members)->len; ++j) {
+          m = YAJL_GET_ARRAY(members)->values[j];
+          name = yajl_tree_get (m, name_path, yajl_t_string);
+          if (name && YAJL_IS_STRING (name) &&
+              STREQ (YAJL_GET_STRING (name), "locking"))
+            return 1;
+        }
+      }
+    }
+  }
+
+  return 0;
+}
+
+#pragma GCC diagnostic pop
 
 /**
  * Escape a qemu parameter.
@@ -689,6 +1042,8 @@ guestfs_int_free_qemu_data (struct qemu_data *data)
   if (data) {
     free (data->qemu_help);
     free (data->qemu_devices);
+    free (data->qmp_schema);
+    yajl_tree_free (data->qmp_schema_tree);
     free (data);
   }
 }

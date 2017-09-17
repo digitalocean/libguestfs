@@ -54,6 +54,7 @@ struct backend_direct_data {
   pid_t recoverypid;            /* Recovery process PID. */
 
   struct version qemu_version;  /* qemu version (0 if unable to parse). */
+  int qemu_mandatory_locking;   /* qemu >= 2.10 does mandatory locking */
   struct qemu_data *qemu_data;  /* qemu -help output etc. */
 
   char guestfsd_sock[UNIX_PATH_MAX]; /* Path to daemon socket. */
@@ -280,9 +281,16 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 
   /* Get qemu help text and version. */
   if (data->qemu_data == NULL) {
-    data->qemu_data = guestfs_int_test_qemu (g, &data->qemu_version);
+    data->qemu_data = guestfs_int_test_qemu (g);
     if (data->qemu_data == NULL)
       goto cleanup0;
+    data->qemu_version = guestfs_int_qemu_version (g, data->qemu_data);
+    debug (g, "qemu version: %d.%d",
+           data->qemu_version.v_major, data->qemu_version.v_minor);
+    data->qemu_mandatory_locking =
+      guestfs_int_qemu_mandatory_locking (g, data->qemu_data);
+    debug (g, "qemu mandatory locking: %s",
+           data->qemu_mandatory_locking ? "yes" : "no");
   }
 
   /* Using virtio-serial, we need to create a local Unix domain socket
@@ -414,10 +422,12 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   if (guestfs_int_qemu_supports (g, data->qemu_data, "-no-hpet")) {
     ADD_CMDLINE ("-no-hpet");
   }
+#if defined(__i386__) || defined(__x86_64__)
   if (guestfs_int_version_ge (&data->qemu_version, 1, 3, 0)) {
     ADD_CMDLINE ("-global");
     ADD_CMDLINE ("kvm-pit.lost_tick_policy=discard");
   }
+#endif
 
   /* UEFI (firmware) if required. */
   if (guestfs_int_get_uefi (g, &uefi_code, &uefi_vars, &uefi_flags) == -1)
@@ -521,10 +531,11 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
       /* Writable qcow2 overlay on top of read-only drive. */
       escaped_file = guestfs_int_qemu_escape_param (g, drv->overlay);
       param = safe_asprintf
-        (g, "file=%s,cache=unsafe,format=qcow2%s%s,id=hd%zu",
+        (g, "file.file.filename=%s,cache=unsafe,file.driver=qcow2%s%s%s,id=hd%zu",
          escaped_file,
          drv->disk_label ? ",serial=" : "",
          drv->disk_label ? drv->disk_label : "",
+         data->qemu_mandatory_locking ? ",file.backing.file.locking=off" : "",
          i);
     }
 
@@ -1026,9 +1037,16 @@ max_disks_direct (guestfs_h *g, void *datav)
 
   /* Get qemu help text and version. */
   if (data->qemu_data == NULL) {
-    data->qemu_data = guestfs_int_test_qemu (g, &data->qemu_version);
+    data->qemu_data = guestfs_int_test_qemu (g);
     if (data->qemu_data == NULL)
       return -1;
+    data->qemu_version = guestfs_int_qemu_version (g, data->qemu_data);
+    debug (g, "qemu version: %d.%d",
+           data->qemu_version.v_major, data->qemu_version.v_minor);
+    data->qemu_mandatory_locking =
+      guestfs_int_qemu_mandatory_locking (g, data->qemu_data);
+    debug (g, "qemu mandatory locking: %s",
+           data->qemu_mandatory_locking ? "yes" : "no");
   }
 
   if (guestfs_int_qemu_supports_virtio_scsi (g, data->qemu_data,

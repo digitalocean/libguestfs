@@ -579,9 +579,6 @@
 /* Define to 1 if you have the <byteswap.h> header file. */
 #undef HAVE_BYTESWAP_H
 
-/* Define to 1 if you have the <caml/unixsupport.h> header file. */
-#undef HAVE_CAML_UNIXSUPPORT_H
-
 /* Define to 1 if the Linux capabilities library (libcap) is available. */
 #undef HAVE_CAP
 

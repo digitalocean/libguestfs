@@ -1704,17 +1704,25 @@ Functions to handle qemu versions and features.
 =head4 Function C<lib/qemu.c:guestfs_int_test_qemu>
 
  struct qemu_data *
- guestfs_int_test_qemu (guestfs_h *g, struct version *qemu_version)
+ guestfs_int_test_qemu (guestfs_h *g)
 
-Test qemu binary (or wrapper) runs, and do C<qemu -help> so we know the
-version of qemu what options this qemu supports, and C<qemu -device ?> so we
-know what devices are available.
-
-The version number of qemu (from the C<-help> output) is saved in
-C<&qemu_version>.
+Test that the qemu binary (or wrapper) runs, and do C<qemu -help> and other
+commands so we can find out the version of qemu and what options this qemu
+supports.
 
 This caches the results in the cachedir so that as long as the qemu binary
 does not change, calling this is effectively free.
+
+=head4 Function C<lib/qemu.c:cache_filename>
+
+ static char *
+ cache_filename (guestfs_h *g, const char *cachedir,
+                 const struct stat *statbuf, const char *suffix)
+
+Generate the filenames, for the stat file and the other cache files.
+
+By including the size and mtime in the filename we also ensure that the same
+user can use multiple versions of qemu without conflicts.
 
 =head4 Function C<lib/qemu.c:parse_qemu_version>
 
@@ -1724,6 +1732,37 @@ does not change, calling this is effectively free.
 
 Parse the first line of C<qemu_help> into the major and minor version of
 qemu, but don't fail if parsing is not possible.
+
+=head4 Function C<lib/qemu.c:parse_json>
+
+ static void
+ parse_json (guestfs_h *g, const char *json, yajl_val *treep)
+
+Parse the json output from QMP.  But don't fail if parsing is not possible.
+
+=head4 Function C<lib/qemu.c:generic_read_cache>
+
+ static int
+ generic_read_cache (guestfs_h *g, const char *filename, char **strp)
+
+Generic functions for reading and writing the cache files, used where we are
+just reading and writing plain text strings.
+
+=head4 Function C<lib/qemu.c:generic_qmp_test>
+
+ static int
+ generic_qmp_test (guestfs_h *g, struct qemu_data *data,
+                   const char *qmp_command,
+                   char **outp)
+
+Run a generic QMP test on the QEMU binary.
+
+=head4 Function C<lib/qemu.c:guestfs_int_qemu_version>
+
+ struct version
+ guestfs_int_qemu_version (guestfs_h *g, struct qemu_data *data)
+
+Return the parsed version of qemu.
 
 =head4 Function C<lib/qemu.c:guestfs_int_qemu_supports>
 
@@ -1753,6 +1792,15 @@ Test if device is supported by qemu (currently just greps the C<qemu -device
 Test if qemu supports virtio-scsi.
 
 Returns C<1> = use virtio-scsi, or C<0> = use virtio-blk.
+
+=head4 Function C<lib/qemu.c:guestfs_int_qemu_mandatory_locking>
+
+ int
+ guestfs_int_qemu_mandatory_locking (guestfs_h *g,
+                                     const struct qemu_data *data)
+
+Test if the qemu binary uses mandatory file locking, added in QEMU >= 2.10
+(but sometimes disabled).
 
 =head4 Function C<lib/qemu.c:guestfs_int_qemu_escape_param>
 

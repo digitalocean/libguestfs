@@ -869,6 +869,8 @@ extern int guestfs_int_set_backend (guestfs_h *g, const char *method);
 /* inspect.c */
 extern void guestfs_int_free_inspect_info (guestfs_h *g);
 extern char *guestfs_int_download_to_tmp (guestfs_h *g, struct inspect_fs *fs, const char *filename, const char *basename, uint64_t max_size);
+extern int guestfs_int_parse_unsigned_int (guestfs_h *g, const char *str);
+extern int guestfs_int_parse_unsigned_int_ignore_trailing (guestfs_h *g, const char *str);
 extern struct inspect_fs *guestfs_int_search_for_root (guestfs_h *g, const char *root);
 extern int guestfs_int_is_partition (guestfs_h *g, const char *partition);
 
@@ -877,8 +879,6 @@ extern int guestfs_int_is_file_nocase (guestfs_h *g, const char *);
 extern int guestfs_int_is_dir_nocase (guestfs_h *g, const char *);
 extern int guestfs_int_check_for_filesystem_on (guestfs_h *g,
                                               const char *mountable);
-extern int guestfs_int_parse_unsigned_int (guestfs_h *g, const char *str);
-extern int guestfs_int_parse_unsigned_int_ignore_trailing (guestfs_h *g, const char *str);
 extern int guestfs_int_parse_major_minor (guestfs_h *g, struct inspect_fs *fs);
 extern char *guestfs_int_first_line_of_file (guestfs_h *g, const char *filename);
 extern int guestfs_int_first_egrep_of_file (guestfs_h *g, const char *filename, const char *eregex, int iflag, char **ret);
@@ -992,10 +992,12 @@ void guestfs_int_init_unix_backend (void) __attribute__((constructor));
 
 /* qemu.c */
 struct qemu_data;
-extern struct qemu_data *guestfs_int_test_qemu (guestfs_h *g, struct version *qemu_version);
+extern struct qemu_data *guestfs_int_test_qemu (guestfs_h *g);
+extern struct version guestfs_int_qemu_version (guestfs_h *g, struct qemu_data *);
 extern int guestfs_int_qemu_supports (guestfs_h *g, const struct qemu_data *, const char *option);
 extern int guestfs_int_qemu_supports_device (guestfs_h *g, const struct qemu_data *, const char *device_name);
 extern int guestfs_int_qemu_supports_virtio_scsi (guestfs_h *g, struct qemu_data *, const struct version *qemu_version);
+extern int guestfs_int_qemu_mandatory_locking (guestfs_h *g, const struct qemu_data *data);
 extern char *guestfs_int_drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
 extern bool guestfs_int_discard_possible (guestfs_h *g, struct drive *drv, const struct version *qemu_version);
 extern char *guestfs_int_qemu_escape_param (guestfs_h *g, const char *param);

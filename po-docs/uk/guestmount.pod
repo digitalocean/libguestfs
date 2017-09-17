@@ -25,9 +25,10 @@ this works is better explained in the L<guestfish(1)> manual page, or by
 looking at the examples below.
 
 FUSE lets you mount filesystems as non-root.  The mountpoint must be owned
-by you, and the filesystem will not be visible to any other users unless you
-make certain global configuration changes to F</etc/fuse.conf>.  To unmount
-the filesystem, use the L<guestunmount(1)> command.
+by you.  The filesystem will not be visible to any other users unless you
+make configuration changes, see L</NOTES> below.
+
+To unmount the filesystem, use the L<guestunmount(1)> command.
 
 =head1 ПРИКЛАДИ
 
@@ -76,6 +77,8 @@ be able to see it by default.  The fix is to add the FUSE C<allow_other>
 option when mounting:
 
  sudo guestmount [...] -o allow_other /mnt
+
+B<and> to enable this option in F</etc/fuse.conf>.
 
 =head2 Enabling FUSE
 
@@ -307,7 +310,8 @@ of them are a good idea.
 
 =item B<-o> B<allow_other>
 
-Дозволити іншим користувачам переглядати файлову систему.
+Allow other users to see the filesystem.  This option has no effect unless
+you enable it globally in F</etc/fuse.conf>.
 
 =item B<-o> B<attr_timeout=N>
 

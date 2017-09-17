@@ -1,3 +1,656 @@
+commit 8a48c7efd6a2679ae661cff592853da76e114066
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 15 20:51:58 2017 +0100
+
+    Version 1.36.6.
+
+commit 47dc3c64a16873c173f644a405340d5adcdfbb23
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 15 17:48:05 2017 +0200
+
+    lib: qemu: ignore -Wnonnull also for GCC 4.8 and up
+    
+    Versions older than 6 that have -Wnonnull need the flag too.
+    
+    Fixes commit e2773e679ffd7551ab994d486b2bf9a7ce685f85.
+    
+    (cherry picked from commit b06e7aa47df21943369a84ce9af7f674aa1b5518)
+
+commit c182e39a29aee493995334dbef3a2d8eef85a06c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 14 17:17:15 2017 +0100
+
+    lib: qemu: Also suppress -Wnonnull warning in yajl code.
+    
+    Required by gcc-7.1.1.
+    
+    Updates commit 3d2b84231fca14b7e2beeeeab0e852f44dba0c21.
+    
+    (cherry picked from commit e2773e679ffd7551ab994d486b2bf9a7ce685f85)
+
+commit 14e74dabfcb04365c43cf0ae4a5816f9d6952323
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 13 10:06:34 2017 +0100
+
+    tests/qemu: Make the isolation tests more read and write heavy.
+    
+    Do more reading of the backing file data, and more writes to the
+    overlay.
+    
+    (cherry picked from commit 4c474aba9166ef648f20e1600166c8af6ee7c625)
+
+commit 52729fb444ef4044b2c25cb12120dc9601049ed7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 13 09:57:26 2017 +0100
+
+    tests/qemu: Split qemu snapshot isolation into 3 tests.
+    
+    It contained 3 tests before.  It's better to run them in parallel.
+    
+    Just a simple refactoring, no change.
+    
+    (cherry picked from commit 52be0a6c5001a54fbab68beaa6903da8a7fb5b89)
+
+commit 1e3eb4014ab6d64646cecc69c49af585daa7563f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 12 10:48:37 2017 +0100
+
+    launch: direct: Disable qemu locking when opening drives readonly (RHBZ#1417306).
+    
+    (cherry picked from commit 9fe592808ccfd9ed184b88ca9c6cad2e1798dee3)
+
+commit 41166fb7e6777e9454704d9ecdbe54eee439813f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 11 17:38:08 2017 +0100
+
+    lib: qemu: Add accessor to test if qemu does mandatory locking.
+    
+    QEMU >= 2.10 started to do mandatory locking.  This checks the QMP
+    schema to see if we are using that version of qemu.  (Note it is
+    sometimes disabled in downstream builds, and it was also enabled in
+    upstream prereleases with version 2.9.9x, so we cannot just check the
+    version number).
+    
+    (cherry picked from commit 3d2b84231fca14b7e2beeeeab0e852f44dba0c21)
+
+commit 2d75d60368fa391e0c6e09ca80e63c4a37e5aae6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 12 17:56:46 2017 +0100
+
+    lib: qemu: Allow parallel qemu binaries to be used with cache conflicts.
+    
+    Rename the cache files like ‘qemu.stat’ etc so they include the qemu
+    binary "key" (ie. size and mtime) in the name.  This allows a single
+    user to use multiple qemu binaries in parallel without conflicts.
+    
+    (cherry picked from commit bf7d627305418284682cc6020189215a5015dbad)
+
+commit 2bf1c49d22b57c14b1d603b5c6e2ad7334fe6d93
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 11 16:02:46 2017 +0100
+
+    lib: qemu: Run QMP ‘query-qmp-schema’ against the qemu binary.
+    
+    This adds an extra test using QMP (the QEMU Monitor Protocol).  This
+    allows us to get extra information about the qemu binary beyond what
+    is available from the version number or ‘qemu -help’.
+    
+    (cherry picked from commit a22eecbdb1057531195faace657510da4a569829)
+
+commit b1faea6e12578d9eb265e3387a0954b4c1c265a6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 11 15:05:09 2017 +0100
+
+    lib: qemu: Factor out common code for reading and writing cache files.
+    
+    The previous code duplicated a lot of common code for reading and
+    writing the cache file per data field.  This change simply factors out
+    that common code.  This makes it simpler to add new tests in future.
+    
+    This is just refactoring, it should have no effect.
+    
+    (cherry picked from commit ea94f39e465faf9a83ba761e8a24a037b9ea9f86)
+
+commit e915f6752fe60eb27d6804637df8667e9a57644a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 11 12:48:18 2017 +0100
+
+    lib: qemu: Refactor guestfs_int_test_qemu so it doesn't return qemu version.
+    
+    Rather unnecessarily this function returned the parsed qemu version.
+    This complicates further refactoring, so I have changed the function
+    not to return this, and instead there is a separate function you have
+    to call to get the version struct (‘guestfs_int_qemu_version’).
+    
+    Apart from a tiny amount of extra copying this is simply refactoring
+    of the interface between the direct-mode backend and the qemu query
+    functions.
+    
+    For 1.36:
+      Cherry picked from commit 0eb1380ddc9621d678661e831fad502a2830891f
+      and modified in a few places because 1.36 still supports ancient
+      qemu that predated virtio-scsi.
+
+commit 1e20df2171d91e23a842bcffe20343e32f76e575
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 11 16:06:38 2017 +0100
+
+    lib: command: Print command before running it with guestfs_int_cmd_pipe_run.
+    
+    Unlike ordinary guestfs_int_cmd_run, the pipe version did not print
+    the command it was about to run when debugging was enabled.
+    
+    Fixes commit e98bb8692929a037f3452686719504aea31f311d.
+    
+    (cherry picked from commit 410593e48b1b9c471a0fffcc7bf140d7424acb31)
+
+commit 0d19ae7f488e92e77fa9fedeae3de48a138eebdf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 7 09:06:14 2017 +0100
+
+    builder: Fix rhel-7.X Server source baseurl (again).
+    
+    Updates commit 91c950dfba8fff257c382a0499294001b5bbd0ec.
+    
+    (cherry picked from commit def7e10b60f913b858f7d9ecede161b7a507d607)
+
+commit bed820a28312997776ea33bf08c445cc8d87349a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 6 18:16:54 2017 +0100
+
+    builder: Fix rhel-7.X Server source baseurl.
+    
+    Thanks: Jiri Denemark
+    (cherry picked from commit 91c950dfba8fff257c382a0499294001b5bbd0ec)
+
+commit 68ee396b955331aadeec1dd211147394d361c859
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 4 14:58:11 2017 +0100
+
+    v2v: In --machine-readable output, advertize vcenter over HTTPS and Xen over SSH.
+    
+    These have been supported since forever, but it's good to have an
+    indication in the ‘virt-v2v --machine-readable’ output that they are
+    available:
+    
+      $ virt-v2v --machine-readable
+      virt-v2v
+      libguestfs-rewrite
+      vcenter-https
+      xen-ssh
+      colours-option
+      vdsm-compat-option
+      [etc]
+    
+    Thanks: Pino Toscano.
+    (cherry picked from commit e10814397c8ab24405bd201a312632911351acd8)
+
+commit 096c067d7a59db6d1cd13e98f25a6d51583b225c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Sep 1 14:05:38 2017 +0200
+
+    launch: direct: limit kvm-pit.lost_tick_policy to x86
+    
+    This QEMU property is specific to x86/x86_64, so add it only on these
+    architectures.
+    
+    (cherry picked from commit 5b60dd4eff02f48d344bcdad0d4bad4676ca9168)
+
+commit f79b02bec1a1ccd17bbd0a320df75a7247a7fd31
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 30 16:16:16 2017 +0200
+
+    fish: add small documentation bit about format of URIs (RHBZ#1450325)
+    
+    Mention which format URIs follow, with a small example on escaping
+    special characters.
+    
+    (cherry picked from commit 5f43b30a6f469b5feab2ffeb3147f7310f1ba47f)
+
+commit 612a8a759a1eedb6a65fa1d7c916199951e571c0
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 30 13:05:32 2017 +0200
+
+    v2v: warn when the guest has hostdev devices (RHBZ#1472719)
+    
+    virt-v2v obviously cannot convert this kind of devices, since they are
+    specific to the host of the hypervisor.  Thus, emit a warning about the
+    presence of passthrough host devices, so at least this can be noticed
+    when converting a guest.
+    
+    (cherry picked from commit 57d89157911a9d0f6d3da5396c59daecd2d76973)
+
+commit 9a610af170b0eca30238fd670064cf87ea7fce1d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 18 10:34:16 2017 +0200
+
+    resize: handle empty UUIDs for swap partitions (RHBZ#1482737)
+    
+    Avoid passing an empty UUID string to mkswap, which mkswap does not
+    accept (correctly) as new UUID.
+    
+    In addition, print a warning when the UUID of a swap partition changed,
+    since it may require manual fixups in the guest.
+    
+    (cherry picked from commit 6befd1464d9939b9c15373b19296e796bea3d8d5)
+
+commit b6a4efcd22972fb7a8159ad537d115135c821b01
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Aug 12 22:42:18 2017 +0100
+
+    configure: Further split blocks of text in the script output.
+    
+    Commit 0a94cae15bae7cecb725e78e485708694d347612 added useful
+    headings to parts of the configure script.  This refactors
+    the code by adding a common macro (‘HEADING’), and also changes
+    the output so it's clearer at a glance:
+    
+      --- Checking for Haskell ---
+      checking for ghc... (cached) ghc
+    
+      --- Checking for PHP ---
+      checking for php... (cached) php
+      checking for phpize... (cached) phpize
+    
+    (cherry picked from commit 9b01fe60a527636d10e4f2d49dc31b5200e05524)
+
+commit 88265209c9532faed5c40250bf4001f00934f27f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Aug 14 08:59:51 2017 +0100
+
+    v2v: Mention update-crypto-policies in documentation.
+    
+    Modern ssh and RHEL 5 sshd are not always interoperable, requiring
+    enabling legacy crypto policies on the converion server (ssh client).
+    
+    Thanks: Nikos Mavrogiannopoulos, Jakub Jelen.
+    (cherry picked from commit 4e7e73b8796e1f7c13aa19556e03ce2050706eb3)
+
+commit 0312e2eef592612f639fab5ae83593659cf6a26a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 10 15:03:37 2017 +0200
+
+    ruby: fix order of CFLAGS
+    
+    Shuffle the order of the various CFLAGS used when building the Ruby
+    extension: first the flags from manywarnings (gnulib), then libguestfs
+    own CFLAGS, and then -DGUESTFS_PRIVATE=1 (so it is not overridden).
+    
+    This matches also what happens in automake parts, and makes it possible
+    to override any flags from manywarnings also in the Ruby extension.
+    
+    (cherry picked from commit 3050a586225060915e3ddb3122a5aa1ea7f16df8)
+
+commit 487ed4f2672ab599d5e0b547a1439433dcd3853e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Aug 9 17:57:54 2017 +0100
+
+    valgrind: Ignore everything allocated through caml_stat_alloc.
+    
+    As the name suggests, caml_stat* functions are used for allocating
+    static blocks.  The OCaml runtime doesn't bother freeing any of these
+    on exit.  OCaml 4.05 allocates caml_executable_name this way, a newly
+    seen global variable.  We might as well just ignore everything
+    allocated this way.
+    
+    Further information here:
+    
+      https://github.com/ocaml/ocaml/blob/e7cf3b18467d930a33f378dab9bc8482fa35d43b/byterun/caml/memory.h#L66
+    
+    (cherry picked from commit e6e3854b6e0daf509e10e742633d58d26a0f7eec)
+
+commit 4391aa656144435e4a4859b121487dfa0539b28d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 9 14:56:50 2017 +0200
+
+    configure: output paths where java is searched in
+    
+    Output each path where we attempt to find 'java', so it is easier to
+    spot whether the location for the current OS is missing.  This also
+    removes the need to print the location next to the version, since the
+    location was already printed above.
+    
+    (cherry picked from commit b95d9a74bb081b0f2261284638a6023180d02063)
+
+commit 18d32b1950704e7c29697c5422b7195d75447970
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 9 14:54:03 2017 +0200
+
+    configure: visually split the blocks of checks
+    
+    Add sort of "headers" to split most of the logical sections of the
+    configure, so it is easier to get feedback on the progress of configure.
+    
+    (cherry picked from commit 0a94cae15bae7cecb725e78e485708694d347612)
+
+commit bf21ef9dfc5d624be1c3ffd0c5a05e4bce5fa23f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 3 17:03:12 2017 +0100
+
+    tests: discard: Remove dubious use of "/dev/urandom" as a Device parameter.
+    
+    This API docs don't state that this is permitted.
+    
+    (cherry picked from commit 58ecca04327c0e69f8d7ad20bd8d97c50bcdebb8)
+
+commit 9cca3b46387bea74a2f598aca49aa1efb936bfde
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Jul 31 12:09:26 2017 +0200
+
+    gobject: use bash for running the tests
+    
+    Since the introduction of the TEST_FUNCTIONS framework in tests, with
+    commit 2cb0413049f1a185a057c1b82b6642241f80dcdc, using a non-bash shell
+    will not work anymore, since the framework currently relies on bash.
+    
+    Hence, switch the interpreter of these tests to bash, so they can run
+    also on systems where /bin/sh is not bash (e.g. default Ubuntu
+    installations).
+    
+    (cherry picked from commit a903f8912e9c2fbdd9b1898809e4ae64be28c7fc)
+
+commit 8b9d7bb473487af6d5ee9dcc89c5c6fbacc33d82
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 26 15:39:32 2017 +0100
+
+    daemon: Reimplement handling of lvm.conf and filters.
+    
+    LVM is fine with a completely empty configuration file (meaning "all
+    defaults"), so start with one instead of copying the system
+    configuration file.
+    
+    Also this means we can very easily implement lvm_set_filter
+    functionality without using Augeas, since we no longer have to worry
+    about existing filters being present.
+    
+    Thanks: Alasdair Kergon, Zdenek Kabelac.
+    (cherry picked from commit 10cf01419aff4d7913d1a3011ec0f1ba11afe0c9)
+
+commit 80a5dbeeb174811336087300fd5a70b2b044088a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 18 10:59:34 2017 +0100
+
+    v2v: bootloaders: Handle no Bootloader::Tools default section (RHBZ#1472208).
+    
+    In SUSE guests, handle the case where
+    Bootloader::Tools::GetDefaultSection () returns undef.
+    
+    Previously this would return an empty string and cause a bogus error
+    in subsequent code:
+    
+    virt-v2v: error: libguestfs error: statns: statns_stub: path must start
+    with a / character
+    
+    (cherry picked from commit ba41cf1a51694ce4b7f353daae7f2ee1437bd54d)
+
+commit 2f5decb1c6e1fd0c5d328aaf2225de4680abbe7e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 26 16:19:03 2017 +0100
+
+    tests: lvm: Make the lvm_set_filter test easier to understand.
+    
+    No functional change.
+    
+    (cherry picked from commit a20859f563596df83708523539f3314d62263e8e)
+
+commit 062e7c239929d5c40f20804c2fe14df5f27521e8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 27 12:03:25 2017 +0100
+
+    v2v: uefi: Add function to error out unless UEFI firmware is installed.
+    
+    No change, just refactoring.
+    
+    (cherry picked from commit b981ac0a6ebeb5790cf59f4bf90ff725327a701a)
+
+commit fec8446ceb124fe79c5a94785eb259b3b6476d0a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 21 17:27:26 2017 +0100
+
+    common/mlutils: Remove bogus suffix parameter from Mkdtemp.temp_dir.
+    
+    The C function mkdtemp(3) requires that the string ends with 6 'X'
+    characters, so appending a non-empty suffix causes the function to
+    raise EINVAL.
+    
+    Luckily we only ever called this function with the last parameter "".
+    
+    (cherry picked from commit 60408cecd6c315d7247c5e504a0597002f1f5827)
+
+commit 26fa43020b6e6c7a6a71aee18b19e17fb06a300c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 19 15:24:05 2017 +0100
+
+    builder: templates: Calculate revision correctly when existing file has no revision.
+    
+    (cherry picked from commit b62419c05b3a4f715c73696ea7ffd0e06517e4b0)
+
+commit 4efbdd188c32f4cd165dd6f7b4d2e075a4fa67b1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 19 14:50:59 2017 +0100
+
+    builder: templates: Generate plain partition layouts (without LVM).
+    
+    This was a mistake when the original shell scripts were transcribed to
+    make-template.ml (in commit 65a05703858341476b9b2ceea2ef43e6f1447c43).
+    
+    (cherry picked from commit 11a329b1b07d800e4bdb8f40b83e1b78cd6230ca)
+
+commit 1c7b921f9d66fb53eef7a34461a42024947abc40
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 19 14:47:15 2017 +0100
+
+    p2v: make-disk: Add verbose option to dracut in post-install script.
+    
+    The verbose output goes to /tmp/builder.log so it wouldn't normally be
+    seen by the end user, but it's useful for debugging.
+    
+    (cherry picked from commit a2aabffd81060a748eb2cfaedce77312178d8cf2)
+
+commit 8090c547f9996aa83a7e34339ad526cb14d2a257
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 19 11:49:19 2017 +0100
+
+    fuse: Make it clearer that -o allow_other must be enabled in /etc/fuse.conf.
+    
+    It wasn't very clear in the manual before.
+    
+    (cherry picked from commit 5c86c64c7979662b0d74b156e85785a71c02b780)
+
+commit d2ed3738e09da50f06b656f14931cb77fe7933f3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 18 18:40:55 2017 +0100
+
+    build: Require <caml/unixsupport.h>
+    
+    Require <caml/unixsupport.h> (an OCaml header file) and remove
+    alternate defintions of ‘Nothing’ and ‘unix_error’ which are defined
+    in this header file.
+    
+    We require OCaml >= 3.11 which has this header file, so there is no
+    need to test for it or provide alternative definitions.
+    
+    Thanks: Pino Toscano.
+    (cherry picked from commit ffdcb7cfebcac17fcbfde91283fd554ea90bcbf4)
+
+commit f46b48cb3b6f77e13913ae42a65bbf529f719dcf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 17 15:46:29 2017 +0100
+
+    v2v: Set correct root device when rebuilding SUSE kdump initrd.
+    
+    The ‘vmware-uninstall-tools.pl’ script tries to rebuild the initrd.
+    On SUSE, if kdump initrd has been enabled, this would use the wrong
+    root device because ‘mkdumprd’ doesn't know what root device to use.
+    Fix that by setting the ‘rootdev’ environment variable.
+    
+    See also https://bugzilla.redhat.com/1465849 (this is not a fix).
+    
+    (cherry picked from commit 93a2f9d21354807a44b7c71a0ab88a7063d91b87)
+
+commit fc56cb69847a7c092f73d138731a979c3e041ca4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 17 17:10:40 2017 +0100
+
+    lib: Move guestfs_int_parse_unsigned_int* functions.
+    
+    Just code motion, no functional change.
+    
+    (cherry picked from commit 98641e26c8ebf70ded895e0357fbe6755fa75cb7)
+
+commit 702dd5eab53604e31b984c4173a3cf748fe56f86
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 17 15:53:07 2017 +0100
+
+    p2v: make-disk: Install p2v service in multi-user.target instead of default.target.
+    
+    Tested by doing ‘make -C p2v run-virt-p2v-in-a-vm’.
+    
+    (cherry picked from commit 0c98971040954bf6bce0f8a3c15e51ad97335a93)
+
+commit c308b5d936528c128e3fa7133796ca2e09ce73e9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 17 15:49:13 2017 +0100
+
+    customize: firstboot: Remove default.target.wants/guestfs-firstboot.service too.
+    
+    This file could be left over from earlier use of the ‘--firstboot’
+    option.
+    
+    Thanks: Pino Toscano.
+    (cherry picked from commit db5e6bd22136d6d52b934c12dcad55324ad8090a)
+
+commit 5d4680abf9007c8d22ccf11d64dac2042b09a0fd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jul 16 21:44:22 2017 +0100
+
+    customize: firstboot: Install firstboot scripts in multi-user.target (RHBZ#1469655).
+    
+    When the guest uses systemd, install firstboot scripts under
+    ‘multi-user.target’.
+    
+    See this link for details:
+    https://lists.freedesktop.org/archives/systemd-devel/2017-July/039325.html
+    
+    This fixes firstboot on Fedora 26 (and in general with systemd >= 233).
+    
+    Thanks: Lennart Poettering
+    (cherry picked from commit 00c4c5c8f875f4ed252f420d7b77394c1db9751c)
+
+commit 4808d368b66b4cfe5afbf9ebbc45cba8e4632e22
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jul 16 21:41:15 2017 +0100
+
+    customize: firstboot: Factor out the name of the systemd target.
+    
+    Currently we install the firstboot service under systemd target
+    ‘default.target’.  This change simply factors out this name.
+    
+    Note that the name is not factored out in the code which deletes the
+    old ‘/etc/systemd/system/default.target.wants/firstboot.service’ file,
+    since that would have always been installed in the same location.
+    
+    (cherry picked from commit 1286129fac87935da79e54d0ae88ae06e6f99cbb)
+
+commit 3774c5f7337c3a5698e70c81652764d7de9d51b2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jul 16 21:35:12 2017 +0100
+
+    docs: Add info about how the stable tarballs are signed.
+    
+    (cherry picked from commit 981d3c9630baa4054dec72b1c7d0bd0037de9f3b)
+
+commit c8d2efbedb0281a6e55800ca97d67bab213d8065
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 15 17:59:24 2017 +0100
+
+    lib: Move implementation of ‘hivex_value_utf8’ to new file ‘lib/hivex.c’.
+    
+    Just a code movement, no change.
+    
+    (cherry picked from commit f60f8c47cca299aa3763478c1eb596ca6c5deb66)
+
+commit 04282eee576cebe8babb12bf64207b8fd73b2c25
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 29 11:45:25 2017 +0100
+
+    gobject: Use TEST_FUNCTIONS framework in tests.
+    
+    (cherry picked from commit 2cb0413049f1a185a057c1b82b6642241f80dcdc)
+
+commit 4845473818f02979d4f82ed119f9fe80e880b4d2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 7 12:59:10 2017 +0100
+
+    v2v: docs: VDSM location of virt-v2v log file.
+    
+    See this bug for background information:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1350465
+    
+    Thanks: Tomáš Golembiovský, Pino Toscano
+    (cherry picked from commit 77d25587b8bebb96aae66eab4efbc237a176a936)
+
+commit 39d2b9bb82e96ffcf06216874c97e0593ab0d3b8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 29 23:59:15 2017 +0100
+
+    lib: libvirt: Pass copyonread flag through to the libvirt XML (RHBZ#1466563).
+    
+    We were dropping the add_drive copyonread flag when using the libvirt
+    backend.  This resulted in significant performance degradation (2x-3x
+    slower) when running virt-v2v against VMware servers.
+    
+    Thanks: Kun Wei.
+    (cherry picked from commit d96209ef07fef3db0e411648348f1b1dcf384e70)
+
+commit 5dc93e3da25605a8b618bf3adb4c4bd91828aff7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 23 12:01:12 2017 +0100
+
+    configure: Fix the release date so that it's impossible to forget about.
+    
+    Add a RELEASES file which contains the release date for each version
+    of libguestfs.  When a new version is released, the configure script
+    checks that the date has not been omitted from the file.
+    
+    (cherry picked from commit cfab7e122bf78a03b48d5049de3ba4a724825611)
+
+commit b12e07c0c64e0235fb7f1bc2fb613eb6fa1e228f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 22 14:32:26 2017 +0100
+
+    maintainer: Unset LC_ALL before running Python script to list bugs.
+    
+    Gnulib installs two files: ‘GNUmakefile’ and ‘maint.mk’.  The first
+    one runs the second one, and the second one sets LC_ALL=C universally.
+    
+    However this breaks the ‘bugzilla’ script (or Python) because some
+    bugs contain non-ASCII characters in their Summary.  The script prints
+    this error:
+    
+      Traceback (most recent call last):
+        File "/usr/bin/bugzilla", line 1117, in <module>
+          main()
+        File "/usr/bin/bugzilla", line 1112, in main
+          _format_output(bz, opt, buglist)
+        File "/usr/bin/bugzilla", line 702, in _format_output
+          print(format_field_re.sub(bug_field, opt.outputformat))
+      UnicodeEncodeError: 'ascii' codec can't encode characters in position 108-109: ordinal not in range(128)
+    
+    The simplest fix for this is to unset LC_ALL before running the
+    external script, so that the normal locale settings are used.
+    
+    (cherry picked from commit f861c138550a0c99247a6955aa2c594f380867f4)
+
+commit 5f46830d0e0f52362fcf2fe9749137e755d3bb55
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 22 11:52:02 2017 +0100
+
+    v2v: Document vdsm-compat-option in machine-readable output.
+    
+    Thanks: Ming Xie
+    (cherry picked from commit d98b381ef620712cb32b85d2a5acba97b340e92d)
+
 commit b617cb558119646ab720b2d41fe11cd5ba61a5a3
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Jun 22 10:21:55 2017 +0100

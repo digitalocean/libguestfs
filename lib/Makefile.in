@@ -389,9 +389,9 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-events.lo libguestfs_la-file.lo \
 	libguestfs_la-filearch.lo libguestfs_la-fuse.lo \
 	libguestfs_la-guid.lo libguestfs_la-handle.lo \
-	libguestfs_la-info.lo libguestfs_la-inspect.lo \
-	libguestfs_la-inspect-apps.lo libguestfs_la-inspect-fs.lo \
-	libguestfs_la-inspect-fs-cd.lo \
+	libguestfs_la-hivex.lo libguestfs_la-info.lo \
+	libguestfs_la-inspect.lo libguestfs_la-inspect-apps.lo \
+	libguestfs_la-inspect-fs.lo libguestfs_la-inspect-fs-cd.lo \
 	libguestfs_la-inspect-fs-unix.lo \
 	libguestfs_la-inspect-fs-windows.lo \
 	libguestfs_la-inspect-icon.lo libguestfs_la-journal.lo \
@@ -2004,6 +2004,7 @@ libguestfs_la_SOURCES = \
 	fuse.c \
 	guid.c \
 	handle.c \
+	hivex.c \
 	info.c \
 	inspect.c \
 	inspect-apps.c \
@@ -2248,6 +2249,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-fuse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-guid.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-handle.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-hivex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-inspect-apps.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-inspect-fs-cd.Plo@am__quote@
@@ -2525,6 +2527,13 @@ libguestfs_la-handle.lo: handle.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='handle.c' object='libguestfs_la-handle.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-handle.lo `test -f 'handle.c' || echo '$(srcdir)/'`handle.c
+
+libguestfs_la-hivex.lo: hivex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-hivex.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-hivex.Tpo -c -o libguestfs_la-hivex.lo `test -f 'hivex.c' || echo '$(srcdir)/'`hivex.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-hivex.Tpo $(DEPDIR)/libguestfs_la-hivex.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='hivex.c' object='libguestfs_la-hivex.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-hivex.lo `test -f 'hivex.c' || echo '$(srcdir)/'`hivex.c
 
 libguestfs_la-info.lo: info.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-info.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-info.Tpo -c -o libguestfs_la-info.lo `test -f 'info.c' || echo '$(srcdir)/'`info.c
