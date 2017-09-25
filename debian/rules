@@ -27,12 +27,12 @@ include /usr/share/dpkg/architecture.mk
 
 PYTHON_VERSIONS := $(shell pyversions --installed; py3versions --installed)
 RUBY_VERSIONS   := $(shell find /usr/bin/ -name 'ruby[12]*' \
-			| xargs -n1 readlink -f | xargs -n1 basename)
+			| xargs -n1 readlink -f | xargs -r -n1 basename)
 LUA_VERSIONS    := $(shell find /usr/bin/ -name 'lua5.?' \
-			| xargs -n1 readlink -f | xargs -n1 basename)
+			| xargs -n1 readlink -f | xargs -r -n1 basename)
 PHP_VERSIONS    := $(subst -config,,\
 			$(shell find /usr/bin -name 'php-config?*' \
-				| xargs -n1 basename))
+				| xargs -r -n1 basename))
 
 # Determine the number of builds needed due to script language version
 # variants
@@ -62,7 +62,7 @@ $(CURDIR)/debian/build-$1/config.status::
 		--with-readline	           \
 		--disable-haskell          \
 		--with-qemu=qemu-system-$(QEMU_CPU) \
-		$(if $(findstring powerpcspe,DEB_HOST_GNU_CPU,\
+		$(if $(findstring powerpcspe,$(DEB_HOST_GNU_CPU)),\
 			--with-qemu-options="-M ppce500 -cpu e500v2") \
 		--with-supermin-extra-options='--use-installed' \
 		$(if $(findstring $1,$(BUILD_COUNT)),\
