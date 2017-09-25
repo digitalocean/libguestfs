@@ -8,3 +8,4 @@
 0008-po-Don-t-fail-installation-if-parts-of-translated-do.patch
 0009-Fix-sbin-reboot-requirements.patch
 0010-Add-fdisk-to-appliance-list.patch
+0011-Fix-builddir-srcdir-for-determining-release-date.patch

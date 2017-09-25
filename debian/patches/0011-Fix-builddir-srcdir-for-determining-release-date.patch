@@ -1,0 +1,21 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Mon, 25 Sep 2017 20:58:02 +0200
+Subject: Fix builddir != srcdir for determining release date
+
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 540c6a9..c15afed 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -94,7 +94,7 @@ dnl Find the release date for this version.  This is used in
+ dnl the website 'index.html' file.  We have to do this after
+ dnl testing for awk in guestfs_progs.m4 above.
+ AC_MSG_CHECKING([for the release date of $PACKAGE_VERSION])
+-RELEASE_DATE="$(grep ^$PACKAGE_VERSION@<:@@<:@:space:@:>@@:>@ RELEASES | $AWK '{print $2}')"
++RELEASE_DATE="$(grep ^$PACKAGE_VERSION@<:@@<:@:space:@:>@@:>@ ${srcdir}/RELEASES | $AWK '{print $2}')"
+ AS_IF([test "x$RELEASE_DATE" != "x"],[
+     AC_MSG_RESULT([$RELEASE_DATE])
+ ],[
