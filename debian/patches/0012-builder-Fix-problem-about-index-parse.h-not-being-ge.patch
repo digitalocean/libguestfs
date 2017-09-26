@@ -1,0 +1,33 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Tue, 26 Sep 2017 17:54:42 +0200
+Subject: builder: Fix problem about index-parse.h not being generated
+
+If configured with --without-ocaml, the build might fail because the
+fix added in df5bd5741b37da9cf97d7a76ac2805557aa630db was not active.
+According to the automake documentation, it should be enough to set
+BUILT_SOURCES.
+---
+ builder/Makefile.am | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/builder/Makefile.am b/builder/Makefile.am
+index d56b394..98eeba5 100644
+--- a/builder/Makefile.am
++++ b/builder/Makefile.am
+@@ -364,15 +364,7 @@ CLEANFILES += \
+ 	index-parse.h \
+ 	index-scan.c
+ 
+-if HAVE_OCAML
+-# Automake-generated makefile has a rule ".y.c" but lacks a rule ".y.h".
+-index-parse.h: index-parse.y
+-	touch $(srcdir)/index-parse.y
+-	$(MAKE) index-parse.c
+-# Also it doesn't generate dependencies for the C files that include
+-# index-parse.h.
+-index-parser-c.c index-scan.c index-validate.c: index-parse.h
+-endif
++BUILT_SOURCES = index-parse.h
+ 
+ # Apparently there's no clean way with Automake to not have them
+ # in the distribution, so just remove them from the distdir.

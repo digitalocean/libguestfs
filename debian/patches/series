@@ -9,3 +9,4 @@
 0009-Fix-sbin-reboot-requirements.patch
 0010-Add-fdisk-to-appliance-list.patch
 0011-Fix-builddir-srcdir-for-determining-release-date.patch
+0012-builder-Fix-problem-about-index-parse.h-not-being-ge.patch
