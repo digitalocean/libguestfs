@@ -1,3 +1,11 @@
+libguestfs (1:1.36.7-1) unstable; urgency=medium
+
+  * New upstream version 1.36.7
+  * Drop buildsystem patches that have been integrated upstream
+  * Bump Standards-Version
+
+ -- Hilko Bengen <bengen@debian.org>  Wed, 04 Oct 2017 20:49:02 +0200
+
 libguestfs (1:1.36.6-4) unstable; urgency=medium
 
   * Fix --disable-ocaml related FTBFS found on ppc64el autobuilder
