@@ -1300,10 +1300,13 @@ words, they are not part of the L<guestfs(3)> API.
 
  help
  help cmd
+ help -l|--list
 
 Without any parameter, this provides general help.
 
 With a C<cmd> parameter, this displays detailed help for that command.
+
+With I<-l> or I<--list>, this list all commands.
 
 =head2 exit
 

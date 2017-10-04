@@ -1,3 +1,329 @@
+commit 30e5ac13c70835bada1c79d94c7484b4764c17aa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 3 22:17:27 2017 +0100
+
+    Version 1.36.7.
+
+commit 7e6fd642611f386407e5fade896dd6ea09431f71
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 3 18:26:25 2017 +0100
+
+    stable-1.36: Update virt-builder index files from master.
+
+commit 8c9ecaa40a4d69ef2efea9cbfd85a9fc0472a4b3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Oct 1 10:51:37 2017 +0100
+
+    mltools: planner: Documentation and minor refactoring of types and parameters.
+    
+    Just documentation and code refactoring, no functional change.
+    
+    (cherry picked from commit 286a3651667579232fc0e15f8a17144eb9315e3f)
+
+commit e2353a96975f375ecf606fcd5468b5888fd9e7da
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 2 19:56:04 2017 +0100
+
+    v2v: Document that Windows 10 is supported/tested.
+    
+    (cherry picked from commit 638e15f25a2cead4c186cdb03dd91c58b16c16b6)
+
+commit 3ab97e4a2edf56eebb7a5bb380f4f40879ce65d5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 2 19:52:40 2017 +0100
+
+    v2v: Document that Windows Server 2016 is supported/tested.
+    
+    Tested by Kun Wei.
+    
+    (cherry picked from commit d4d166c96b15e8e093db544344ee57dfd792ce06)
+
+commit 765ae5b934dc3d8bbd6c95a99d928a2b0004758f
+Author: Ken Stailey <kstailey@yahoo.com>
+Date:   Sat Sep 30 21:29:22 2017 +0100
+
+    fish: In interactive mode, improve error message for help of unknown command (RHBZ#1497475)
+    
+    (cherry picked from commit fcacda8374f602de53a9f7c2d91cb8654f96ec9c)
+
+commit d2c93e9a4c0cef2ce3d6a26afa46e16d20d75c89
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 25 13:09:03 2017 +0100
+
+    customize: Unconditionally set the machine-id if not set already.
+    
+    systemd defined an /etc/machine-id file which is supposed to contain a
+    unique, unchanging ID for the host.  This file is initially zero-sized
+    and is meant to be set by systemd on the first boot of the system.  In
+    virt-builder Fedora templates, the file is empty.
+    
+    Unfortunately the Fedora kernel %post script requires the machine-id
+    to have been set, else the script exits with an error:
+    
+      Running scriptlet: kernel-core-4.12.13-300.fc26.x86_64        209/209
+      Could not determine your machine ID from /etc/machine-id.
+      Please run 'systemd-machine-id-setup' as root. See man:machine-id(5)
+      warning: %posttrans(kernel-core-4.12.13-300.fc26.x86_64) scriptlet failed, exit status 1
+    
+    This also leaves the kernel package half-installed.  The files are
+    present in the filesystem, but important initialization is not done,
+    in particular the vmlinuz file is not copied into /boot.
+    
+    A simple reproducer for this problem is:
+    
+      $ virt-builder fedora-26 --update
+    
+    which will leave the image with a half-installed kernel.  (Add -v -x
+    to see the error above amongst the debug output).
+    
+    This change makes virt-customize set /etc/machine-id to a random value
+    if the file exists and is zero sized.  This is done unconditionally at
+    the same time as setting the random seed (a similar issue), and before
+    running any customize options such as installing or updating packages.
+    
+    (cherry picked from commit d5ce659e2c136fbcf0a0b9058711765cfae6c210)
+
+commit 58ef1546164a8580b6f7800786ca6587b9cd0fdc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 21 18:41:22 2017 +0100
+
+    generator: Replace use of Str.split with String.nsplit.
+    
+    Faster and equivalent.
+    
+    (cherry picked from commit 7e73fdece46771aa84836d9535f4d4b94de09ec2)
+
+commit 3a26f82bab071d7693e086f853a9846f75e6fe50
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 21 13:32:09 2017 +0100
+
+    v2v: linux: Properly ignore rpm/dpkg-move-aside kernels.
+    
+    The old virt-v2v code ignored boot kernels with names like
+    "/boot/vmlinuz-*.rpmsave".  The transscribed code did not because the
+    Str module requires ‘|’ to be escaped as ‘\|’.
+    
+    This changes the code to use a simpler test.
+    
+    Thanks: Pino Toscano
+    (cherry picked from commit d279d602bee77e469c613ae45e591441f834060e)
+
+commit 02a6a0d4bc47e4847ea0cb36abc142c47585a197
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 21 12:21:28 2017 +0100
+
+    v2v: linux: Fix rewriting of grub2 GRUB_CMDLINE=...resume=<device>...
+    
+    Commit dbe0b69f24421f258da2fb420b58fc1530a9cd03 transscribed the Perl
+    regexp incorrectly so that it only matched the impossible case of
+    ‘resume=/dev/X’ for a single non-whitespace character X.
+    
+    This fixes the regular expression, referencing back to the original
+    Perl code in virt-v2v.
+    
+    (cherry picked from commit 3a4410000e6d0d0b5daea68cdd5d5147326326fb)
+    
+    stable-1.36: Instead of using PCRE, I fixed the Str regexp. - RWMJ
+
+commit 7273ea0fd84c7ecb5a22276e6c13560663e13a92
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 21 11:55:53 2017 +0100
+
+    v2v: linux: Fix uninstallation of kmod-xenpv from /etc/rc.local script.
+    
+    In the original conversion of virt-v2v from Perl
+    (commit 0131d6f666d93dd353c4e4092fd945861646d319), the Perl regular
+    expression was incorrectly transscribed.  ‘\b’ was not converted to
+    ‘\\b’ so the new regexp was looking for an ASCII BEL character, not a
+    word boundary.  Also ‘|’ was used, but Str requires ‘\|’ (ie. "\\|"
+    in the final source).
+    
+    To fix these problems I converted the code to use PCRE, and went back
+    to the original virt-v2v code (virt-v2v.git:
+    lib/Sys/VirtConvert/Converter/Linux.pm) to find out what the Perl
+    regular expression should have been.
+    
+    Note I have also removed ‘.*’ at the beginning and end of the regexp
+    because PCRE regexps are not anchored.
+    
+    (cherry picked from commit 95b0da8f37c83aced070759cb126613d522bd0a6)
+    
+    stable-1.36: Instead of using PCRE, I fixed the Str regexp. - RWMJ
+
+commit fa0774d461a5591af02da0078caf627b37c45bca
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 21 20:47:38 2017 +0100
+
+    common/mlstdutils: Add String.nsplit ?max parameter, and tests.
+    
+    This idea was previously proposed by Tomáš Golembiovský in
+    https://www.redhat.com/archives/libguestfs/2017-January/msg00138.html
+    
+    (cherry picked from commit 8bd5933cc7d8f7048bcb02e51c252fdf097ebfcd)
+
+commit f3d696d4c7c15f861227ed9fd46053b882a309f3
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Tue Sep 26 17:53:32 2017 +0200
+
+    builder: Fix problem about index-parse.h not being generated
+    
+    If configured with --without-ocaml, the build might fail because the
+    fix added in df5bd5741b37da9cf97d7a76ac2805557aa630db was not active.
+    According to the automake documentation, it should be enough to set
+    BUILT_SOURCES.
+    
+    (cherry picked from commit 0b3079ba395b65ff21def435d0ae9dfee5e7a07a)
+
+commit 907836bba8b0b6b67118a1c78f1ad794a159df52
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 25 19:25:20 2017 +0100
+
+    diff: Remove bogus perror when guestfs_* functions return error.
+    
+    Neither guestfs_copy_statns nor guestfs_copy_xattr_list set errno, so
+    it's wrong to call perror(3) here.
+    
+    (cherry picked from commit ecef1708a56f28be38cae1076b4e357174d138b8)
+
+commit fb4c806dc9d5a34b3a466e5e3111fa1c56a1d4ea
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Mon Sep 25 21:29:37 2017 +0200
+
+    Fix determining release date for builddir != srcdir
+    
+    (cherry picked from commit 4bbf8a321f882a61bbefb6846ead780b8783a95e)
+
+commit d979e954a41950a5877aa26be01bbb825c3d9fe1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Sep 24 18:17:47 2017 +0100
+
+    mllib: registry: Make with_hive_readonly, with_hive_write clearer.
+    
+    Tiny refactoring to make the code clearer.
+    
+    (cherry picked from commit 5a2db925ece75e4c4bc9ff3046792a982366ed70)
+
+commit cb48b2cb9af955f8a3294a6520bed49f5efb43f1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 25 14:34:40 2017 +0100
+
+    p2v: test: Send sshd debugging messages to stderr.
+    
+    So that we can see errors/problems in sshd from the test in the
+    ordinary test-suite.log file.
+    
+    (cherry picked from commit deadf7c41578a0a8edf6b68111e1325a41042eb3)
+
+commit 551d961205ea155353df809b47a64ce2e85b143b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 20 17:28:25 2017 +0100
+
+    common/mlstdutils: Remove unused Libdir module.
+    
+    Last used in commit fd63d896445260ce83f88e58c0219606f97dca9e (in 2013).
+    
+    Cherry picked from commit f04561a1fe98ff1ebd58f938a471fa2d60c88d6b.
+    For stable-1.36: Apply same changes in mllib/
+
+commit e1f49a633878ff6010c6b88c71d413bf1e36c570
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 19 12:09:56 2017 +0100
+
+    lib: Use guestfs_int_make_temp_path in a few more places.
+    
+    There were various places in the library where we open coded making
+    temporary filenames.  This uses the utility function instead.
+    
+    (cherry picked from commit 7e974b509c4f650665342761e58de159a2cbe5ad)
+
+commit 34e3d0f56b3a67628f4b88561dec9612d01c8cd8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 19 11:59:35 2017 +0100
+
+    lib: Fix guestfs_int_download_to_tmp.
+    
+    Since commit 65cfecb0f5344ec92d3f0d3c2ec0538b6b2726e2,
+    ‘guestfs_int_download_to_tmp’ was buggy because it did not deal with
+    the case where a guest had multiple roots.  It cached the downloaded
+    file under a single name which was not distinguished by which root we
+    were looking at.  As a result, if you inspected (eg.) the icon on such
+    a guest, then in some circumstances the same icon could be returned
+    for all roots (incorrectly).
+    
+    This changes the function in a few ways:
+    
+     - Don't cache downloaded files.  It wasn't a useful feature of the
+       function in most scenarios.  Instead a new name is generated for
+       every call.
+    
+     - Use guestfs_int_make_temp_path.
+    
+     - Allow an extension to be specified.
+    
+    (cherry picked from commit 0734afd41f4202411e7b9a0120a0d06c954d00ab)
+
+commit 3077348b696cb1cb1a2df5987b26417636b5c3f6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 19 11:57:58 2017 +0100
+
+    lib: Allow an extension to be specified in guestfs_int_make_temp_path.
+    
+    In the function ‘guestfs_int_make_temp_path’, allow an optional
+    extension to be specified.  For example:
+    
+      r = guestfs_int_make_temp_path (g, "ls", "txt");
+    
+    will create paths like ‘<tmpdir>/ls123.txt’.
+    
+    NULL can also be passed for the extension, which means no extension.
+    
+    (cherry picked from commit 0ec0af27c5b31f8e435a942112a1b031ba56fac8)
+
+commit 0be8ece8546b56ae1dfae08351ec230839d16915
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 21 11:51:21 2017 +0100
+
+    v2v: linux: Small fixes to documentation.
+    
+    Also combine the match cases into one statement.
+    
+    No functional change.
+    
+    (cherry picked from commit 9fb5376db45b6b785dae9b10e62f5aaf1fb1ae7c)
+
+commit 446fade6a29417b40b0491fcb0dc2071a00262d6
+Author: Cédric Bosdonnat <cbosdonnat@suse.com>
+Date:   Mon Sep 18 17:53:51 2017 +0200
+
+    builder: remove useless fish dependency
+    
+    (cherry picked from commit 5d323461b4a89f5fdc3571e5484f969d6a96d535)
+
+commit 62be545e982c56b335eeb3072bf196f843b60757
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 18 16:05:35 2017 +0100
+
+    builder: Add centos-7.4 image.
+    
+    Requested by Gal Ben Haim.
+    
+    (cherry picked from commit fe23cee9263e04eae0d89fefab4ad72af0747180)
+
+commit fd4d5f374d54f4e3948e07ede04311f77ce1b45f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jul 17 17:17:29 2017 +0100
+
+    lib: inspect: Remove ‘fs’ parameter from ‘guestfs_int_download_to_tmp’.
+    
+    After we move inspection code to the daemon, the library will no
+    longer have access to ‘struct inspect_fs’, and so we won't be able to
+    prefix downloads with the "root filesystem number".
+    
+    Just remove this prefix (it's internal only).  However it does mean
+    that this function can no longer cache downloaded files.
+    
+    (cherry picked from commit 53ab995cf195ae5afaa1d87475ecbd95028c6f00)
+
 commit 8a48c7efd6a2679ae661cff592853da76e114066
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Sep 15 20:51:58 2017 +0100

@@ -16,13 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-(* Convert various Linux distros.  This module handles:
- *
- * - RHEL and derivatives like CentOS and ScientificLinux
- * - SUSE
- * - OpenSUSE and Fedora (similar enough to RHEL/SUSE)
- * - Debian and derivatives like Ubuntu and Linux Mint
- *)
+(* Convert a Linux guest to run on KVM. *)
 
 (* < mdbooth> It's all in there for a reason :/ *)
 
@@ -119,7 +113,7 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
       (try
          let lines = g#read_lines "/etc/rc.local" in
          let lines = Array.to_list lines in
-         let rex = Str.regexp ".*\\b\\(insmod|modprobe\\)\b.*\\bxen-vbd.*" in
+         let rex = Str.regexp ".*\\b\\(insmod\\|modprobe\\)\\b.*\\bxen-vbd.*" in
          let lines = List.map (
            fun s ->
              if Str.string_match rex s 0 then
@@ -921,7 +915,7 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
       List.flatten (List.map Array.to_list (List.map g#aug_match paths)) in
 
     (* Map device names for each entry. *)
-    let rex_resume = Str.regexp "^\\(.*resume=\\)\\(/dev/[^ ]\\)\\(.*\\)$"
+    let rex_resume = Str.regexp "^\\(.*resume=\\)\\(/dev/[^ ]+\\)\\(.*\\)$"
     and rex_device_cciss_p =
       Str.regexp "^/dev/\\(cciss/c[0-9]+d[0-9]+\\)p\\([0-9]+\\)$"
     and rex_device_cciss =
@@ -1069,11 +1063,10 @@ let () =
   let matching = function
     | { i_type = "linux";
         i_distro = ("fedora"
-                       | "rhel" | "centos" | "scientificlinux" | "redhat-based"
-                       | "oraclelinux"
-                       | "sles" | "suse-based" | "opensuse") } -> true
-    | { i_type = "linux";
-        i_distro = ("debian" | "ubuntu" | "linuxmint") } -> true
+                    | "rhel" | "centos" | "scientificlinux" | "redhat-based"
+                    | "oraclelinux"
+                    | "sles" | "suse-based" | "opensuse"
+                    | "debian" | "ubuntu" | "linuxmint") } -> true
     | _ -> false
   in
   Modules_list.register_convert_module matching "linux" convert
