@@ -101,8 +101,7 @@ virt_builder_CPPFLAGS = \
 	-I$(shell $(OCAMLC) -where) \
 	-I$(top_srcdir)/gnulib/lib \
 	-I$(top_srcdir)/common/utils \
-	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/fish
+	-I$(top_srcdir)/lib
 virt_builder_CFLAGS = \
 	-pthread \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
@@ -364,15 +363,7 @@ CLEANFILES += \
 	index-parse.h \
 	index-scan.c
 
-if HAVE_OCAML
-# Automake-generated makefile has a rule ".y.c" but lacks a rule ".y.h".
-index-parse.h: index-parse.y
-	touch $(srcdir)/index-parse.y
-	$(MAKE) index-parse.c
-# Also it doesn't generate dependencies for the C files that include
-# index-parse.h.
-index-parser-c.c index-scan.c index-validate.c: index-parse.h
-endif
+BUILT_SOURCES = index-parse.h
 
 # Apparently there's no clean way with Automake to not have them
 # in the distribution, so just remove them from the distdir.

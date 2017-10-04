@@ -1294,22 +1294,21 @@ L<http://www.freebsd.org/doc/handbook/disk-organization.html>)
 =head4 Function C<lib/inspect.c:guestfs_int_download_to_tmp>
 
  char *
- guestfs_int_download_to_tmp (guestfs_h *g, struct inspect_fs *fs,
- 			     const char *filename,
- 			     const char *basename, uint64_t max_size)
+ guestfs_int_download_to_tmp (guestfs_h *g, const char *filename,
+                              const char *extension,
+                              uint64_t max_size)
 
-Download a guest file to a local temporary file.  The file is cached in the
-temporary directory, and is not downloaded again.
+Download a guest file to a local temporary file.
 
 The name of the temporary (downloaded) file is returned.  The caller must
 free the pointer, but does I<not> need to delete the temporary file.  It
 will be deleted when the handle is closed.
 
+The name of the temporary file is randomly generated, but an extension can
+be specified using C<extension> (or pass C<NULL> for none).
+
 Refuse to download the guest file if it is larger than C<max_size>.  On this
 and other errors, C<NULL> is returned.
-
-There is actually one cache per C<struct inspect_fs *> in order to handle
-the case of multiple roots.
 
 =head3 File F<lib/launch-direct.c>
 
@@ -1954,7 +1953,8 @@ is used, or during launch.
 =head4 Function C<lib/tmpdirs.c:guestfs_int_make_temp_path>
 
  char *
- guestfs_int_make_temp_path (guestfs_h *g, const char *name)
+ guestfs_int_make_temp_path (guestfs_h *g,
+                             const char *name, const char *extension)
 
 Generate unique temporary paths for temporary files.
 
@@ -3463,8 +3463,8 @@ is the current size of the C<ret> array, which is updated with the new size.
 
 =head4 Функція C<fish/help.c:display_help>
 
- void
- display_help (void)
+ int
+ display_help (const char *cmd, size_t argc, char *argv[])
 
 Команда C<help>.
 

@@ -815,7 +815,7 @@ extern int guestfs_int_set_env_tmpdir (guestfs_h *g, const char *envname, const 
 extern int guestfs_int_set_env_runtimedir (guestfs_h *g, const char *envname, const char *runtimedir);
 extern int guestfs_int_lazy_make_tmpdir (guestfs_h *g);
 extern int guestfs_int_lazy_make_sockdir (guestfs_h *g);
-extern char *guestfs_int_make_temp_path (guestfs_h *g, const char *name);
+extern char *guestfs_int_make_temp_path (guestfs_h *g, const char *name, const char *extension);
 extern char *guestfs_int_lazy_make_supermin_appliance_dir (guestfs_h *g);
 extern void guestfs_int_remove_tmpdir (guestfs_h *g);
 extern void guestfs_int_remove_sockdir (guestfs_h *g);
@@ -868,7 +868,7 @@ extern int guestfs_int_set_backend (guestfs_h *g, const char *method);
 
 /* inspect.c */
 extern void guestfs_int_free_inspect_info (guestfs_h *g);
-extern char *guestfs_int_download_to_tmp (guestfs_h *g, struct inspect_fs *fs, const char *filename, const char *basename, uint64_t max_size);
+extern char *guestfs_int_download_to_tmp (guestfs_h *g, const char *filename, const char *extension, uint64_t max_size);
 extern int guestfs_int_parse_unsigned_int (guestfs_h *g, const char *str);
 extern int guestfs_int_parse_unsigned_int_ignore_trailing (guestfs_h *g, const char *str);
 extern struct inspect_fs *guestfs_int_search_for_root (guestfs_h *g, const char *root);

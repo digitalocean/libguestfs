@@ -1985,8 +1985,7 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/utils \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib \
-@HAVE_OCAML_TRUE@	-I$(top_srcdir)/fish
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib
 
 @HAVE_OCAML_TRUE@virt_builder_CFLAGS = \
 @HAVE_OCAML_TRUE@	-pthread \
@@ -2120,7 +2119,9 @@ virt_index_validate_LDADD = \
 	$(LTLIBINTL) \
 	../gnulib/lib/libgnu.la
 
-all: all-am
+BUILT_SOURCES = index-parse.h
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .cmi .cmo .cmx .l .lo .log .ml .mli .o .obj .test .test$(EXEEXT) .trs .y
@@ -2220,9 +2221,9 @@ clean-checkPROGRAMS:
 virt-builder$(EXEEXT): $(virt_builder_OBJECTS) $(virt_builder_DEPENDENCIES) $(EXTRA_virt_builder_DEPENDENCIES) 
 	@rm -f virt-builder$(EXEEXT)
 	$(AM_V_GEN)$(virt_builder_LINK) $(virt_builder_OBJECTS) $(virt_builder_LDADD) $(LIBS)
-@HAVE_OCAML_FALSE@index-parse.h: index-parse.c
-@HAVE_OCAML_FALSE@	@if test ! -f $@; then rm -f index-parse.c; else :; fi
-@HAVE_OCAML_FALSE@	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) index-parse.c; else :; fi
+index-parse.h: index-parse.c
+	@if test ! -f $@; then rm -f index-parse.c; else :; fi
+	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) index-parse.c; else :; fi
 
 virt-index-validate$(EXEEXT): $(virt_index_validate_OBJECTS) $(virt_index_validate_DEPENDENCIES) $(EXTRA_virt_index_validate_DEPENDENCIES) 
 	@rm -f virt-index-validate$(EXEEXT)
@@ -2875,13 +2876,15 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS) $(check_DATA)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(repoconfdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -2919,6 +2922,7 @@ maintainer-clean-generic:
 	-rm -f index-parse.c
 	-rm -f index-parse.h
 	-rm -f index-scan.c
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
@@ -2994,7 +2998,8 @@ uninstall-am: uninstall-binPROGRAMS uninstall-man \
 
 uninstall-man: uninstall-man1
 
-.MAKE: check-am install-am install-exec-am install-strip
+.MAKE: all check check-am install install-am install-exec-am \
+	install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
 	clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
@@ -3141,14 +3146,6 @@ stamp-virt-index-validate.pod: virt-index-validate.pod
 	  --warning safe \
 	  $<
 	touch $@
-
-# Automake-generated makefile has a rule ".y.c" but lacks a rule ".y.h".
-@HAVE_OCAML_TRUE@index-parse.h: index-parse.y
-@HAVE_OCAML_TRUE@	touch $(srcdir)/index-parse.y
-@HAVE_OCAML_TRUE@	$(MAKE) index-parse.c
-# Also it doesn't generate dependencies for the C files that include
-# index-parse.h.
-@HAVE_OCAML_TRUE@index-parser-c.c index-scan.c index-validate.c: index-parse.h
 
 # Apparently there's no clean way with Automake to not have them
 # in the distribution, so just remove them from the distdir.
