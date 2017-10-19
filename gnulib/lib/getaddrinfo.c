@@ -13,7 +13,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
+   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
 
 /* Don't use __attribute__ __nonnull__ in this compilation unit.  Otherwise gcc
    optimizes away the sa == NULL test below.  */
@@ -54,7 +54,7 @@
 # define PF_UNSPEC 0
 #endif
 
-#if defined _WIN32 || defined __WIN32__
+#if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
 # define WINDOWS_NATIVE
 #endif
 

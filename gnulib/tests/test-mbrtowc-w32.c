@@ -12,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
@@ -325,14 +325,12 @@ test_one_locale (const char *name, int codepage)
         memset (&state, '\0', sizeof (mbstate_t));
         wc = (wchar_t) 0xBADFACE;
         ret = mbrtowc (&wc, "\377", 1, &state); /* 0xFF */
-        ASSERT (ret == (size_t)-1);
-        ASSERT (errno == EILSEQ);
+        ASSERT ((ret == (size_t)-1 && errno == EILSEQ) || ret == (size_t)-2);
 
         memset (&state, '\0', sizeof (mbstate_t));
         wc = (wchar_t) 0xBADFACE;
         ret = mbrtowc (&wc, "\225\377", 2, &state); /* 0x95 0xFF */
-        ASSERT (ret == (size_t)-1);
-        ASSERT (errno == EILSEQ);
+        ASSERT ((ret == (size_t)-1 && errno == EILSEQ) || (ret == 2 && wc == 0x30FB));
       }
       return 0;
 
@@ -397,14 +395,12 @@ test_one_locale (const char *name, int codepage)
         memset (&state, '\0', sizeof (mbstate_t));
         wc = (wchar_t) 0xBADFACE;
         ret = mbrtowc (&wc, "\377", 1, &state); /* 0xFF */
-        ASSERT (ret == (size_t)-1);
-        ASSERT (errno == EILSEQ);
+        ASSERT ((ret == (size_t)-1 && errno == EILSEQ) || ret == (size_t)-2);
 
         memset (&state, '\0', sizeof (mbstate_t));
         wc = (wchar_t) 0xBADFACE;
         ret = mbrtowc (&wc, "\225\377", 2, &state); /* 0x95 0xFF */
-        ASSERT (ret == (size_t)-1);
-        ASSERT (errno == EILSEQ);
+        ASSERT ((ret == (size_t)-1 && errno == EILSEQ) || (ret == 2 && wc == '?'));
       }
       return 0;
 
@@ -469,14 +465,12 @@ test_one_locale (const char *name, int codepage)
         memset (&state, '\0', sizeof (mbstate_t));
         wc = (wchar_t) 0xBADFACE;
         ret = mbrtowc (&wc, "\377", 1, &state); /* 0xFF */
-        ASSERT (ret == (size_t)-1);
-        ASSERT (errno == EILSEQ);
+        ASSERT ((ret == (size_t)-1 && errno == EILSEQ) || ret == (size_t)-2);
 
         memset (&state, '\0', sizeof (mbstate_t));
         wc = (wchar_t) 0xBADFACE;
         ret = mbrtowc (&wc, "\225\377", 2, &state); /* 0x95 0xFF */
-        ASSERT (ret == (size_t)-1);
-        ASSERT (errno == EILSEQ);
+        ASSERT ((ret == (size_t)-1 && errno == EILSEQ) || (ret == 2 && wc == '?'));
       }
       return 0;
 

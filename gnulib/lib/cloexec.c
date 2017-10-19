@@ -1,4 +1,4 @@
-/* closexec.c - set or clear the close-on-exec descriptor flag
+/* cloexec.c - set or clear the close-on-exec descriptor flag
 
    Copyright (C) 1991, 2004-2006, 2009-2017 Free Software Foundation, Inc.
 
@@ -13,7 +13,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
    The code is taken from glibc/manual/llio.texi  */
 

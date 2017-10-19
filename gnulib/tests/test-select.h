@@ -12,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* Written by Paolo Bonzini, 2008.  */
 
@@ -292,8 +292,8 @@ test_bad_fd (select_fn my_select)
   /* On Linux, Mac OS X, *BSD, values of fd like 99 or 399 are discarded
      by the kernel early and therefore do *not* lead to EBADF, as required
      by POSIX.  */
-# if defined __linux__ || (defined __APPLE__ && defined __MACH__) || defined __FreeBSD__ || defined __OpenBSD__ || defined __NetBSD__
-  fd = 16;
+# if defined __linux__ || (defined __APPLE__ && defined __MACH__) || (defined __FreeBSD__ || defined __DragonFly__) || defined __OpenBSD__ || defined __NetBSD__
+  fd = 14;
 # else
   fd = 99;
 # endif

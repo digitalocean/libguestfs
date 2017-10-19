@@ -14,7 +14,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
@@ -57,7 +57,7 @@ safe_rw (int fd, void const *buf, size_t count)
 {
   /* Work around a bug in Tru64 5.1.  Attempting to read more than
      INT_MAX bytes fails with errno == EINVAL.  See
-     <http://lists.gnu.org/archive/html/bug-gnu-utils/2002-04/msg00010.html>.
+     <https://lists.gnu.org/archive/html/bug-gnu-utils/2002-04/msg00010.html>.
      When decreasing COUNT, keep it block-aligned.  */
   enum { BUGGY_READ_MAXIMUM = INT_MAX & ~8191 };
 

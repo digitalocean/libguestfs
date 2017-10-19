@@ -12,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* Written by Bruno Haible <bruno@clisp.org>, 2009.  */
 
@@ -632,6 +632,13 @@ setlocale_unixlike (int category, const char *locale)
   char llCC_buf[64];
   char ll_buf[64];
   char CC_buf[64];
+
+  /* The native Windows implementation of setlocale understands the special
+     locale name "C", but not "POSIX".  Therefore map "POSIX" to "C".  */
+#if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
+  if (locale != NULL && strcmp (locale, "POSIX") == 0)
+    locale = "C";
+#endif
 
   /* First, try setlocale with the original argument unchanged.  */
   result = setlocale (category, locale);

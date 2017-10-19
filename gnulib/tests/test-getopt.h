@@ -12,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* Written by Bruno Haible <bruno@clisp.org>, 2009.  */
 
@@ -66,7 +66,7 @@ getopt_loop (int argc, const char **argv,
           ASSERT (options[0] == ':'
                   || ((options[0] == '-' || options[0] == '+')
                       && options[1] == ':'));
-          /* fall through */
+          FALLTHROUGH;
         case '?':
           *unrecognized = optopt;
           break;
@@ -1367,7 +1367,7 @@ test_getopt (void)
     }
 
   /* Check that 'W' does not dump core:
-     http://sourceware.org/bugzilla/show_bug.cgi?id=12922
+     https://sourceware.org/bugzilla/show_bug.cgi?id=12922
      Technically, POSIX says the presence of ';' in the opt-string
      gives unspecified behavior, so we only test this when GNU compliance
      is desired.  */
