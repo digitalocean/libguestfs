@@ -1,3 +1,24 @@
+commit 5b74dd98a7926191cc085fc36be57f58bd6d80d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 19 10:37:53 2017 +0100
+
+    Version 1.36.10.
+
+commit 33714d582cf1e69fb5550b44c8a104b87e915231
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 19 09:52:44 2017 +0100
+
+    Revert "common/mltools: getopt: Use lowercase_ascii instead of deprecated lowercase."
+    
+    This reverts commit 3a79ebe020633ceb861289c8ff3bc8c5c3f46d8e.
+    
+    Reverted only in stable-1.36 branch, for a few reasons:
+    
+    (1) OCaml < 4.03 doesn't have String.lowercase_ascii.
+    
+    (2) The replacement function in Common_utils cannot be used
+        here because of a circular linking problem.
+
 commit a3fcd4b01aea9a5833b77f35a0dd37d9e81a862f
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Oct 18 19:03:24 2017 +0100
