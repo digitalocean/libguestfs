@@ -1,3 +1,10 @@
+libguestfs (1:1.36.10-1) unstable; urgency=medium
+
+  * New upstream version 1.36.10
+  * Change Priority to optional
+
+ -- Hilko Bengen <bengen@debian.org>  Fri, 20 Oct 2017 21:08:12 +0200
+
 libguestfs (1:1.36.7-2) unstable; urgency=medium
 
   [ Nicholas D Steeves ]
