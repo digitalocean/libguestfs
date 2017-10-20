@@ -12,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* Written by Bruno Haible <bruno@clisp.org>, 2008.  */
 
@@ -75,7 +75,7 @@ main (int argc, char *argv[])
         default:
           if (! (c && 1 < argc && argv[1][0] == '5'))
             break;
-          /* Fall through.  */
+          FALLTHROUGH;
         case '\t': case '\v': case '\f':
         case ' ': case '!': case '"': case '#': case '%':
         case '&': case '\'': case '(': case ')': case '*':

@@ -1,3 +1,259 @@
+commit 5b74dd98a7926191cc085fc36be57f58bd6d80d8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 19 10:37:53 2017 +0100
+
+    Version 1.36.10.
+
+commit 33714d582cf1e69fb5550b44c8a104b87e915231
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 19 09:52:44 2017 +0100
+
+    Revert "common/mltools: getopt: Use lowercase_ascii instead of deprecated lowercase."
+    
+    This reverts commit 3a79ebe020633ceb861289c8ff3bc8c5c3f46d8e.
+    
+    Reverted only in stable-1.36 branch, for a few reasons:
+    
+    (1) OCaml < 4.03 doesn't have String.lowercase_ascii.
+    
+    (2) The replacement function in Common_utils cannot be used
+        here because of a circular linking problem.
+
+commit a3fcd4b01aea9a5833b77f35a0dd37d9e81a862f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 18 19:03:24 2017 +0100
+
+    Version 1.36.9.
+
+commit 04bb9005c3f65bfa00419833e5e4bfb9759da67f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 18 18:07:19 2017 +0100
+
+    python: tests: Allow some tests to be skipped.
+    
+    Currently test820RHBZ912499.py fails with libvirt because libvirt
+    still doesn't work around qemu locking properly.  Allow this test to
+    be skipped on a temporary basis using SKIP_TEST820RHBZ912499_PY=1
+    
+    (cherry picked from commit f3330e144b1704e78c87b3dde8fd104ede84b7ba)
+
+commit a6ddfce437c1d8a233ee443d5171ecac4c1401b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 18 15:28:44 2017 +0100
+
+    Version 1.36.8.
+
+commit ddfba3ffe0acce3f36136635f3934aca1d1437ca
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 18 14:53:43 2017 +0100
+
+    tests: disks: Enhance the test output by naming the test failures.
+    
+    Makes it easier to find which test is failing.
+    
+    (cherry picked from commit 8295e44004f07a94065724c1369f7c7aff824024)
+
+commit 3b72f9eaa8cbe95382b423fab63ec4b515c2c918
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 18 14:52:03 2017 +0100
+
+    tests: disks: Small adjustment for new libvirt iscsi qemu parameter.
+    
+    Latest libvirt (3.8, I think) made a very small adjustment to the
+    format of the generated -drive parameter when using iscsi, from:
+    
+      file=iscsi://1.2.3.4:1234/iqn.2003-01.org.linux-iscsi.fedora,
+    
+    to:
+    
+      file=iscsi://1.2.3.4:1234/iqn.2003-01.org.linux-iscsi.fedora/0,
+    
+    This makes a corresponding change to the test so that both patterns
+    can be recognized.
+    
+    (cherry picked from commit b7f5919aa71a5a9ae8e04a273d6339ac84c62c74)
+
+commit 419d01687947f4c40925ed1c751d010d6517a84e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 18 12:49:31 2017 +0100
+
+    maintainer: Update to latest gnulib.
+    
+    (cherry picked from commit 9f454918cc7ed1688fbfc488d6451a0fcfabea0c)
+
+commit 9e83be6fed53f802b3900d12ec24581714fd548b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 22 15:06:01 2017 +0100
+
+    builder: Allow large variable length arrays.
+    
+    Gnulib added: -Wvla-larger-than=4031, get rid.
+    
+    (cherry picked from commit fbb0cd85820273a8f4ebb41e02e93864cb00d19a)
+
+commit 7439d72254214e7c4a5124bf32156de85a88b3fc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 22 15:05:21 2017 +0100
+
+    build: Force -Wformat-truncation=1.
+    
+    Gnulib changed the default to -Wformat-truncation=2, but GCC 7 gives a
+    bunch of completely incorrect warnings.  Change it back.
+    
+    (cherry picked from commit d5467855e5fea676d0f212c590099a2cf262d374)
+
+commit 1f55adb2b24051557980d9cb74df259dd5bf49f3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 22 14:53:04 2017 +0100
+
+    build: Force -Wimplicit-fallthrough=4.
+    
+    New gnulib uses ‘-Wimplicit-fallthrough=5’ which warns (and hence
+    errors) on every switch statement with an implicit fallthrough.
+    
+    We could use the new GCC attribute here:
+    
+      #ifndef FALLTHROUGH
+      # if __GNUC__ < 7
+      #  define FALLTHROUGH ((void) 0)
+      # else
+      #  define FALLTHROUGH __attribute__ ((__fallthrough__))
+      # endif
+      #endif
+    
+    but instead this changes the level to 4 which allows us to use
+    /*FALLTHROUGH*/ comments (which we are already using) to mark cases
+    where we expect fallthrough.
+    
+    (cherry picked from commit b8600a2a1c100c99ae903309ab07855cd7789f3f)
+
+commit 83cedf7a94b22d35e43d37580f59a7aa21fbb4ee
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Oct 17 14:13:19 2017 +0200
+
+    v2v: -i libvirt: use precheck also for xen+ssh sources
+    
+    Updates commit f87f254b2bcda09713d908451f29512ec4286626.
+    
+    (cherry picked from commit 32adb08efa180f5b3505715258ab64c7ccf88490)
+
+commit 45c3a1ee8a688bbfef2eaf05bca3f43ade7ba4e1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 17 11:23:12 2017 +0100
+
+    v2v: In input and output classes move checks to new precheck () method.
+    
+    Previously we were abusing the ‘input#source ()’ and
+    ‘output#prepare_targets’ methods to perform environmental checks.
+    
+    Small refactoring, no functional change.
+    
+    (cherry picked from commit f87f254b2bcda09713d908451f29512ec4286626)
+
+commit 166d030d8f1a2c897f84d826f3d031abed540fae
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 17 11:18:39 2017 +0100
+
+    v2v: Minor correction to a debugging message.
+    
+    (cherry picked from commit 4852ffdc74e9e7b9b06ac592666500252a4df015)
+
+commit 13455bd3b6f08d2193b9ccd3c4dd9b1923ce7fef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 11 16:14:00 2017 +0100
+
+    common/miniexpect: Synchronize to latest miniexpect.
+    
+    Updated to miniexpect commit eba90008396f05e2c0fa752421793b797383fca7.
+    
+    (cherry picked from commit d60eaf74920635b7757203d66444c1a1b9de3f08)
+
+commit b8158c3946ba96067169641692e63524d54cecc7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 11 12:44:52 2017 +0100
+
+    appliance: Print /etc/resolv.conf in debugging output.
+    
+    (cherry picked from commit 0cc67373741c592e11466380ceafb4844757acc8)
+
+commit 0a49015d9a62cc96060388d525dc7fdfde656991
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 11 17:55:58 2017 +0100
+
+    appliance: Create /dev/shm (RHBZ#1500537).
+    
+    This is required by ansible and probably other applications.
+    
+    Thanks: Nicolas Hicher
+    (cherry picked from commit 4d869035b807d2b6460eab67b2adb495eaea07cd)
+
+commit 9ef1d99e6f40f60cceb0159e9c181223e6646e2c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Oct 11 15:07:33 2017 +0100
+
+    p2v: Test for sudo requiring a password first (RHBZ#1500673).
+    
+    When testing if sudo -n requires a password, we tested for the prompt
+    earlier than testing for the magic sudo message ‘a password is
+    required’.
+    
+    Since the shell will print the prompt just after the sudo message:
+    
+      prompt$ sudo -n virt-v2v --version
+      sudo: a password is required
+      prompt$
+    
+    the prompt nearly always matched and we missed the magic sudo message.
+    (The exception is in the case where we are running everything on
+    localhost where the sudo message could be read in a single call to
+    read(2) without seeing the prompt immediately afterwards.  Even this
+    exception was non-deterministic.)
+    
+    By swapping the priority of the sudo message and prompt we avoid this.
+    
+    Looking at the debug output (enabled by editing common/miniexpect)
+    makes this clearer:
+    
+      DEBUG: writing: sudo -n virt-v2v --version
+      DEBUG: buffer content: sudo: a password is required
+      ESC]0;rjones@hamr:~^G###bphcxtq5###
+    
+    Fixes commit 5b6a8e086264c85fb048c0eadff6c34351663133.
+    
+    Thanks: Ming Xie.
+    (cherry picked from commit 085efc0ff2a975a7604433f70c097aa97081f479)
+
+commit 00d1dd870489fe8365d296cace32e6fef095b84a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Oct 9 21:51:26 2017 +0100
+
+    v2v: Inline call to Linux.augeas_init.
+    
+    Two-line function, only called from one place, so inline it where it
+    is used.
+    
+    (cherry picked from commit 300c7f4eddb4fce675825224c45d8b14d27be22f)
+
+commit 373872b08ef65bd1231e6d6f6c8529862a0363c3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 5 14:39:35 2017 +0100
+
+    lib/inspect-icon.c: Return error if guestfs_int_cmd_run has internal error.
+    
+    This function returns -1 if things like fork(2) fail, so it is right
+    to return an error here.  If the PBMTEXT command fails then that's a
+    NOT_FOUND case.
+    
+    (cherry picked from commit aad2c9413fec935e33fdb2baa04904d8d0394722)
+
+commit 3a79ebe020633ceb861289c8ff3bc8c5c3f46d8e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Oct 3 22:24:52 2017 +0100
+
+    common/mltools: getopt: Use lowercase_ascii instead of deprecated lowercase.
+    
+    (cherry picked from commit 1695a9ef302cb42c92a194f55f4e00454f728022)
+
 commit 30e5ac13c70835bada1c79d94c7484b4764c17aa
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue Oct 3 22:17:27 2017 +0100

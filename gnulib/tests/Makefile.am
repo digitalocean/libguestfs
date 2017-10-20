@@ -13,7 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this file.  If not, see <http://www.gnu.org/licenses/>.
+# along with this file.  If not, see <https://www.gnu.org/licenses/>.
 #
 # As a special exception to the GNU General Public License,
 # this file may be distributed as part of a program that
@@ -30,6 +30,7 @@ XFAIL_TESTS =
 TESTS_ENVIRONMENT =
 noinst_PROGRAMS =
 check_PROGRAMS =
+EXTRA_PROGRAMS =
 noinst_HEADERS =
 noinst_LIBRARIES =
 check_LIBRARIES = libtests.a
@@ -275,17 +276,6 @@ EXTRA_DIST += test-ctype.c
 
 ## end   gnulib module ctype-tests
 
-## begin gnulib module dirent-safer-tests
-
-TESTS += test-dirent-safer
-check_PROGRAMS += test-dirent-safer
-# Link with libintl when needed. dirent-safer uses fdopendir if it is present,
-# and fdopendir indirectly depends on openat-die -> gettext-h.
-test_dirent_safer_LDADD = $(LDADD) $(LIBINTL)
-EXTRA_DIST += test-dirent-safer.c macros.h
-
-## end   gnulib module dirent-safer-tests
-
 ## begin gnulib module dirent-tests
 
 TESTS += test-dirent
@@ -380,12 +370,6 @@ check_PROGRAMS += test-fcntl
 EXTRA_DIST += test-fcntl.c signature.h macros.h
 
 ## end   gnulib module fcntl-tests
-
-## begin gnulib module fd-safer-flag
-
-libtests_a_SOURCES += fd-safer-flag.c dup-safer-flag.c
-
-## end   gnulib module fd-safer-flag
 
 ## begin gnulib module fdopen
 
@@ -1021,7 +1005,7 @@ EXTRA_DIST += test-memchr.c zerosize-ptr.h signature.h macros.h
 TESTS += test-memmem
 check_PROGRAMS += test-memmem
 
-EXTRA_DIST += test-memmem.c zerosize-ptr.h signature.h macros.h
+EXTRA_DIST += test-memmem.c signature.h null-ptr.h zerosize-ptr.h macros.h
 
 ## end   gnulib module memmem-tests
 
@@ -1334,11 +1318,30 @@ EXTRA_DIST += test-priv-set.c macros.h
 
 ## end   gnulib module priv-set-tests
 
+## begin gnulib module pthread_sigmask
+
+
+EXTRA_DIST += pthread_sigmask.c
+
+EXTRA_libtests_a_SOURCES += pthread_sigmask.c
+
+## end   gnulib module pthread_sigmask
+
+## begin gnulib module pthread_sigmask-tests
+
+TESTS += test-pthread_sigmask1 test-pthread_sigmask2
+check_PROGRAMS += test-pthread_sigmask1 test-pthread_sigmask2
+test_pthread_sigmask1_LDADD = $(LDADD) @LIB_PTHREAD_SIGMASK@
+test_pthread_sigmask2_LDADD = $(LDADD) @LIB_PTHREAD_SIGMASK@ @LIBMULTITHREAD@
+EXTRA_DIST += test-pthread_sigmask1.c test-pthread_sigmask2.c signature.h macros.h
+
+## end   gnulib module pthread_sigmask-tests
+
 ## begin gnulib module ptsname_r-tests
 
 TESTS += test-ptsname_r
 check_PROGRAMS += test-ptsname_r
-EXTRA_DIST += test-ptsname_r.c signature.h macros.h
+EXTRA_DIST += test-ptsname_r.c signature.h null-ptr.h macros.h
 
 ## end   gnulib module ptsname_r-tests
 
@@ -1586,81 +1589,48 @@ EXTRA_DIST += test-sleep.c signature.h macros.h
 ## begin gnulib module snippet/_Noreturn
 
 # Because this Makefile snippet defines a variable used by other
-# gnulib Makefile snippets, it must be present in all Makefile.am that
+# gnulib Makefile snippets, it must be present in all makefiles that
 # need it. This is ensured by the applicability 'all' defined above.
 
-_NORETURN_H=$(top_srcdir)/build-aux/snippet/_Noreturn.h
+_NORETURN_H=$(srcdir)/_Noreturn.h
 
-EXTRA_DIST += $(top_srcdir)/build-aux/snippet/_Noreturn.h
+EXTRA_DIST += _Noreturn.h
 
 ## end   gnulib module snippet/_Noreturn
 
 ## begin gnulib module snippet/arg-nonnull
 
-# The BUILT_SOURCES created by this Makefile snippet are not used via #include
-# statements but through direct file reference. Therefore this snippet must be
-# present in all Makefile.am that need it. This is ensured by the applicability
-# 'all' defined above.
+# Because this Makefile snippet defines a variable used by other
+# gnulib Makefile snippets, it must be present in all makefiles that
+# need it. This is ensured by the applicability 'all' defined above.
 
-BUILT_SOURCES += arg-nonnull.h
-# The arg-nonnull.h that gets inserted into generated .h files is the same as
-# build-aux/snippet/arg-nonnull.h, except that it has the copyright header cut
-# off.
-arg-nonnull.h: $(top_srcdir)/build-aux/snippet/arg-nonnull.h
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	sed -n -e '/GL_ARG_NONNULL/,$$p' \
-	  < $(top_srcdir)/build-aux/snippet/arg-nonnull.h \
-	  > $@-t && \
-	mv $@-t $@
-MOSTLYCLEANFILES += arg-nonnull.h arg-nonnull.h-t
+ARG_NONNULL_H=$(srcdir)/arg-nonnull.h
 
-ARG_NONNULL_H=arg-nonnull.h
-
-EXTRA_DIST += $(top_srcdir)/build-aux/snippet/arg-nonnull.h
+EXTRA_DIST += arg-nonnull.h
 
 ## end   gnulib module snippet/arg-nonnull
 
 ## begin gnulib module snippet/c++defs
 
-# The BUILT_SOURCES created by this Makefile snippet are not used via #include
-# statements but through direct file reference. Therefore this snippet must be
-# present in all Makefile.am that need it. This is ensured by the applicability
-# 'all' defined above.
+# Because this Makefile snippet defines a variable used by other
+# gnulib Makefile snippets, it must be present in all makefiles that
+# need it. This is ensured by the applicability 'all' defined above.
 
-BUILT_SOURCES += c++defs.h
-# The c++defs.h that gets inserted into generated .h files is the same as
-# build-aux/snippet/c++defs.h, except that it has the copyright header cut off.
-c++defs.h: $(top_srcdir)/build-aux/snippet/c++defs.h
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	sed -n -e '/_GL_CXXDEFS/,$$p' \
-	  < $(top_srcdir)/build-aux/snippet/c++defs.h \
-	  > $@-t && \
-	mv $@-t $@
-MOSTLYCLEANFILES += c++defs.h c++defs.h-t
+CXXDEFS_H=$(srcdir)/c++defs.h
 
-CXXDEFS_H=c++defs.h
-
-EXTRA_DIST += $(top_srcdir)/build-aux/snippet/c++defs.h
+EXTRA_DIST += c++defs.h
 
 ## end   gnulib module snippet/c++defs
 
 ## begin gnulib module snippet/warn-on-use
 
-BUILT_SOURCES += warn-on-use.h
-# The warn-on-use.h that gets inserted into generated .h files is the same as
-# build-aux/snippet/warn-on-use.h, except that it has the copyright header cut
-# off.
-warn-on-use.h: $(top_srcdir)/build-aux/snippet/warn-on-use.h
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	sed -n -e '/^.ifndef/,$$p' \
-	  < $(top_srcdir)/build-aux/snippet/warn-on-use.h \
-	  > $@-t && \
-	mv $@-t $@
-MOSTLYCLEANFILES += warn-on-use.h warn-on-use.h-t
+# Because this Makefile snippet defines a variable used by other
+# gnulib Makefile snippets, it must be present in all makefiles that
+# need it. This is ensured by the applicability 'all' defined above.
 
-WARN_ON_USE_H=warn-on-use.h
+WARN_ON_USE_H=$(srcdir)/warn-on-use.h
 
-EXTRA_DIST += $(top_srcdir)/build-aux/snippet/warn-on-use.h
+EXTRA_DIST += warn-on-use.h
 
 ## end   gnulib module snippet/warn-on-use
 
@@ -2124,6 +2094,23 @@ EXTRA_DIST += test-usleep.c signature.h macros.h
 
 ## end   gnulib module usleep-tests
 
+## begin gnulib module utime-h-tests
+
+TESTS += test-utime-h
+check_PROGRAMS += test-utime-h
+EXTRA_DIST += test-utime-h.c
+
+## end   gnulib module utime-h-tests
+
+## begin gnulib module utime-tests
+
+TESTS += test-utime
+check_PROGRAMS += test-utime
+test_utime_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) $(LIB_NANOSLEEP) @LIBINTL@
+EXTRA_DIST += test-utime.c nap.h test-utimens-common.h macros.h
+
+## end   gnulib module utime-tests
+
 ## begin gnulib module utimecmp
 
 libtests_a_SOURCES += utimecmp.c
@@ -2173,12 +2160,15 @@ EXTRA_DIST += test-vc-list-files-git.sh test-vc-list-files-cvs.sh
 TESTS_ENVIRONMENT += MAKE='$(MAKE)'
 TESTS += test-verify test-verify.sh
 check_PROGRAMS += test-verify
+# test-verify-try is never built, but test-verify.sh needs a rule to
+# build test-verify-try.o.
+EXTRA_PROGRAMS += test-verify-try
 
-# This test expects compilation of test-verify.c to fail, and
+# This test expects compilation of test-verify-try.c to fail, and
 # each time it fails, the makefile rule does not perform the usual
 #  "mv -f $name.Tpo $name.po, so tell make clean to remove that file.
-MOSTLYCLEANFILES += .deps/test-verify.Tpo
-EXTRA_DIST += test-verify.c test-verify.sh
+MOSTLYCLEANFILES += .deps/test-verify-try.Tpo
+EXTRA_DIST += test-verify.c test-verify-try.c test-verify.sh
 
 ## end   gnulib module verify-tests
 

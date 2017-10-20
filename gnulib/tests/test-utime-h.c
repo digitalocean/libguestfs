@@ -1,6 +1,5 @@
-/* Like dirent.h, but redefine some names to avoid glitches.
-
-   Copyright (C) 2009-2017 Free Software Foundation, Inc.
+/* Test of <utime.h> substitute.
+   Copyright (C) 2017 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,12 +12,21 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-/* Written by Eric Blake.  */
+/* Written by Bruno Haible <bruno@clisp.org>, 2017.  */
 
-#include "dirent-safer.h"
+#include <config.h>
 
-#undef opendir
-#define opendir opendir_safer
-#define GNULIB_defined_opendir 1
+#include <utime.h>
+
+/* Check that 'struct utimbuf' is defined.  */
+struct utimbuf b;
+
+int
+main (void)
+{
+  b.actime = b.modtime = 1493490248; /* 2017-04-29 18:24:08 GMT */
+
+  return 0;
+}

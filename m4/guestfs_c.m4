@@ -48,6 +48,7 @@ nw="$nw -Wtraditional"               # Warns on #elif which we use often
 nw="$nw -Wsystem-headers"            # Don't let system headers trigger warnings
 nw="$nw -Wpadded"                    # Our structs are not padded
 nw="$nw -Wvla"                       # Allow variable length arrays.
+nw="$nw -Wvla-larger-than=4031"
 nw="$nw -Winline"                    # inline functions in Python binding
 nw="$nw -Wshadow"                    # Not useful, as it applies to global vars
 nw="$nw -Wunsafe-loop-optimizations" # just a warning that an optimization
@@ -94,6 +95,13 @@ gl_WARN_ADD([-Wframe-larger-than=5000])
 dnl Warn about large stack frames, including estimates for alloca
 dnl and variable length arrays.
 gl_WARN_ADD([-Wstack-usage=10000])
+
+dnl Warn about implicit fallthrough in case statements, but suppress
+dnl the warning if /*FALLTHROUGH*/ comment is used.
+gl_WARN_ADD([-Wimplicit-fallthrough=4])
+
+dnl GCC level 2 gives incorrect warnings, so use level 1.
+gl_WARN_ADD([-Wformat-truncation=1])
 
 AC_SUBST([WARN_CFLAGS])
 

@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
@@ -26,14 +26,9 @@ SIGNATURE_CHECK (memmem, void *, (void const *, size_t, void const *, size_t));
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "null-ptr.h"
 #include "zerosize-ptr.h"
 #include "macros.h"
-
-static void *
-null_ptr (void)
-{
-  return NULL;
-}
 
 int
 main (int argc, char *argv[])

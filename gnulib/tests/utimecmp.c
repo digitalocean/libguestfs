@@ -13,7 +13,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* Written by Paul Eggert.  */
 
@@ -45,6 +45,10 @@
    no greater than 1 billion.  */
 #if HAVE_UTIMENSAT
 enum { SYSCALL_RESOLUTION = 1 };
+#elif (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+/* On native Windows, file times have 100 ns resolution. See
+   <https://msdn.microsoft.com/en-us/library/ms724284.aspx>  */
+enum { SYSCALL_RESOLUTION = 100 };
 #elif ((HAVE_FUTIMESAT || HAVE_WORKING_UTIMES)                  \
        && (defined HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC             \
            || defined HAVE_STRUCT_STAT_ST_ATIMESPEC_TV_NSEC     \

@@ -13,7 +13,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
@@ -22,7 +22,9 @@
 
 #include <errno.h>
 
-#include "msvc-inval.h"
+#if HAVE_MSVC_INVALID_PARAMETER_HANDLER
+# include "msvc-inval.h"
+#endif
 
 #undef dup
 

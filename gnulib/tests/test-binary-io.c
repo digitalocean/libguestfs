@@ -12,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* Written by Bruno Haible <bruno@clisp.org>, 2005.  */
 
@@ -52,12 +52,6 @@ main (int argc, char *argv[])
     case '1':
       /* Test the set_binary_mode() function.  */
       set_binary_mode (1, O_BINARY);
-      fputs ("Hello\n", stdout);
-      break;
-
-    case '2':
-      /* Test the SET_BINARY macro.  */
-      SET_BINARY (1);
       fputs ("Hello\n", stdout);
       break;
 

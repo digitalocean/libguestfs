@@ -12,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* Written by Bruno Haible <bruno@clisp.org>, 2007.  */
 
@@ -46,7 +46,7 @@ main (int argc, char **argv _GL_UNUSED)
     }
 
   /* mingw ftell is unreliable on text mode input.  */
-  SET_BINARY (0);
+  set_binary_mode (0, O_BINARY);
 
   /* Simple tests.  For each test, make sure ftell and ftello agree.  */
   ASSERT (ftell (stdin) == 0);
