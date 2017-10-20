@@ -1,6 +1,6 @@
 Source: libguestfs
 Section: libs
-Priority: extra
+Priority: optional
 Maintainer: Debian Libvirt Maintainers <pkg-libvirt-maintainers@lists.alioth.debian.org>
 Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>, Hilko Bengen <bengen@debian.org>
 Build-Depends: debhelper (>= 10),
