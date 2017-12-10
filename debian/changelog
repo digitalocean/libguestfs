@@ -1,3 +1,10 @@
+libguestfs (1:1.36.11-1) unstable; urgency=medium
+
+  * New upstream version 1.36.11
+  * Bump Standards-Version
+
+ -- Hilko Bengen <bengen@debian.org>  Sun, 10 Dec 2017 01:44:17 +0100
+
 libguestfs (1:1.36.10-1) unstable; urgency=medium
 
   * New upstream version 1.36.10
