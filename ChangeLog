@@ -1,3 +1,227 @@
+commit ced9ddebabd34a22fc2d0d33dbe9c719dbce22ab
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 16 17:19:18 2017 +0000
+
+    Version 1.36.11.
+
+commit 0fe61fb25167bc72e4c9f36257351267c9229566
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Oct 6 14:20:22 2017 +0100
+
+    lib: command: If command fails, exit with 126 or 127 as defined by POSIX.
+    
+    If running the external command fails in "argv mode" (ie. when
+    not using the shell), then exit with either 126 or 127 as defined
+    by POSIX.
+    
+    This is mostly the same as what bash does, see
+    execute_cmd.c:shell_execve in the bash sources.
+    
+    Note: saving errno around perror(3) if necessary, otherwise you will
+    see different behaviour between verbose and non-verbose mode.  In
+    non-verbose mode, perror(3) tried to print to a closed file
+    descriptor, failing and overwriting errno.  That took some time to
+    debug.
+    
+    (cherry picked from commit f2fe422909d353a5b9383b314aa2cb4ed92c226d)
+
+commit eaaf4ba5b674eca3da155d0a5d37bd4816e1a960
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Nov 5 19:24:33 2017 +0000
+
+    common/mlstdutils: Add with_openfile function.
+    
+    This safe wrapper around Unix.openfile ensures that exceptions
+    escaping cannot leave unclosed files.
+    
+    There are only a few places in the code where this wrapper can be used
+    currently.  There are other occurences of Unix.openfile but they are
+    not suitable for replacement.
+    
+    (cherry picked from commit 3ef6794b098fab61b3ecdd595de0289d32e7c73e)
+
+commit b180e1fd15cab852996d921295e79b8e2be070ec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Nov 5 19:24:33 2017 +0000
+
+    common/mlstdutils: Add with_open_in and with_open_out functions.
+    
+    These safe wrappers around Pervasives.open_in and Pervasives.open_out
+    ensure that exceptions escaping cannot leave unclosed files.
+    
+    (cherry picked from commit 2d1e2d12af11d55b916052e2107edda5d26ffb99)
+
+commit 01a2a07ffb50aeeaa83640e573809dd0412114d9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 14 09:39:11 2017 +0000
+
+    fuse: Don't use errno if libfuse fuse_mount fails.
+    
+    libfuse prints errors on stderr and there seems to be no way to change
+    that.  It doesn't make any attempt to preserve errno either, so
+    printing an error based on errno is wrong.
+    
+    Thanks: Assaf Gordon.
+    (cherry picked from commit a88385add653c4fc2592639d72b638f693798091)
+
+commit 1fb77972163d12c34317ec502351156b4d8dc3da
+Author: Cédric Bosdonnat <cbosdonnat@suse.com>
+Date:   Fri Oct 27 16:08:21 2017 +0200
+
+    mllib: add XPath helper xpath_get_nodes
+    
+    This function will allow more OCaml-ish processing of XPath queries
+    with multiple results.
+    
+    (cherry picked from commit 8a661b1c488f3ec3686ff8d9cf8c46a7c4a8dd77)
+
+commit 2e6ba00f1fc98ecb96c1f55754ad64c2e410cae6
+Author: Cédric Bosdonnat <cbosdonnat@suse.com>
+Date:   Fri Oct 27 16:08:15 2017 +0200
+
+    Ignore builder/*.out and *.img files
+    
+    These ignores are covering test-console-ubuntu-12.04 test data.
+    
+    (cherry picked from commit 628141f302529232a89d32b444259c5114879c38)
+
+commit 82f1e1db4be5eaecc5569548d105cd2d197a2780
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Nov 7 12:12:25 2017 +0100
+
+    v2v: expose 'in-place' as machine-readable feature
+    
+    Even if two years later, expose it for clients, so they can check its
+    availability.
+    
+    Updates commit d0069559a939e47e5f29973ed9a69a13f0b58301.
+    
+    (cherry picked from commit de5e39d7b925d1accd4e3b8bde64d0ee7454d411)
+
+commit 12021bce28020f5a2e08763efd74baba6860f243
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 7 10:03:54 2017 +0000
+
+    podwrapper: nbdkit-* man pages are libguestfs man pages.
+    
+    Don't use the external link for these.
+    
+    Thanks: Ming Xie.
+    (cherry picked from commit 441fa82ee0d878ed63b1c213d8197c1f0ffde2a0)
+
+commit b92f55c48f7f7f2c4507b1b9daa33d29a2040f62
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Nov 3 17:10:02 2017 +0100
+
+    diff: avoid potential null pointer dereference on error
+    
+    If visit_guest() fails, then it returns a null pointer; later on,
+    free_tree() is called unconditionally on the variables, thus
+    dereferencing null pointers.
+    
+    As a solution, make free_tree() behave like free(), i.e. become no-op
+    with null pointers.
+    
+    (cherry picked from commit ca175108c4bea6dc955c5b510354c8de20c658ab)
+
+commit 775f3d428e7a980b0f0f3b020bb14e2e3a4d9de4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Nov 3 16:38:29 2017 +0100
+
+    daemon: btrfs: fix bad handling of a couple of errors
+    
+    Remove two wrong error handling situations in btrfs_balance_status:
+    - if the calloc for 'ret' fails, the 'goto error' would try to
+      dereference the resulting null pointer (to free the items of the
+      return struct); hence, just return null directly, instead of jumping
+      to 'error'
+    - if the strdup() for 'btrfsbalance_status' fails, then the directly
+      return would leak 'ret'
+    
+    (cherry picked from commit b91ec0697d120cc89afdc299b3b848760555a513)
+
+commit 1bc987b1c65727721fc98dc163833a004f94f681
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Nov 3 16:33:09 2017 +0100
+
+    daemon: btrfs: remove dead check
+    
+    In btrfs_subvolume_show, an extra check on 'key' is used in a place
+    where this variable is already checked to be non-null.
+    
+    (cherry picked from commit 8213a572e49437dad14ce11bb88091be7cfcc0cd)
+
+commit e1979a44a95f00b9f2fa23d1cddd7f3f9bb7ef25
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Nov 3 16:29:28 2017 +0100
+
+    daemon: ldm: avoid manual free()
+    
+    When the LDM code was converted to the CLEANUP_* macros, a free()
+    invocation for a CLEANUP_FREE variable was left in the
+    ldmtool_diskgroup_volumes implementation, causing double-free on
+    success.
+    
+    Updates commit 950951c67de61da27dceca8ffb2079031c13e43b.
+    
+    (cherry picked from commit 62c9d5d8ca7d006900eee0293d0dbbb51af6a8c6)
+
+commit 9d974f038c7dd06e934733e520bc9650e419f4b5
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Oct 19 12:05:43 2017 +0100
+
+    v2v: Fix RPM file owned test (RHBZ#1503958).
+    
+    Linux.file_owner is not used by any other function, so remove it.
+    
+    Linux.is_file_owned is only used when removing kmod-xenpv on old RHEL
+    releases, and so is only required to work for RPM.
+    
+    The old file_owner/is_file_owned functions were completely broken for
+    the RPM case.  This replaces them with a simpler, working
+    implementation of is_file_owned only.
+    
+    Thanks: Ming Xie for finding and reporting the original bug.
+    (cherry picked from commit e6bc59a7d46707f5037afc8a73206d2773c3fccd)
+
+commit aa91c667d8e6cc57a0c24cf5454a10ec550ae6b1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 2 12:50:06 2017 +0000
+
+    v2v: Refactor some string_of_* functions.
+    
+    Updates commit 94c83c016516bba9dae0b8c01c9fea9e7159a8b6.
+    
+    (cherry picked from commit 359aa7fef678c0d1c55b355861d4958134d37db1)
+
+commit b5683b63c059454547cbeb3ab13a022bf8e6f9b6
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Nov 2 11:13:42 2017 +0100
+
+    v2v: -i ova: parse MAC address from <rasd:Address> (RHBZ#1506572)
+    
+    Read the MAC address of the network interfaces from the <rasd:Address>
+    tag of the OVF.  This seems to be one of the possible ways used in OVFs.
+    
+    (cherry picked from commit a1b008e2d138a90cbf2147d69d5d2d4d745b03cd)
+
+commit f32e0980e6c6ef8e385063b79de79e546336b6f2
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Nov 1 21:31:33 2017 +0000
+
+    v2v: docs: SSL/TLS certificate problems with vCenter.
+    
+    Thanks: Brett Thurber for diagnosis and testing.
+    (cherry picked from commit 22d5a20ed240b2d0c35a843314782b342fa1d73a)
+
+commit 23bfebef5e149c75c56f07492aa61e97c1eb2c86
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Oct 26 16:09:45 2017 +0200
+
+    builder: ignore spaces after repo identifiers (RHBZ#1506511)
+    
+    (cherry picked from commit 0d4136c69fb00289cba560f2c1e8d9ea69ad76f0)
+
 commit 5b74dd98a7926191cc085fc36be57f58bd6d80d8
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Oct 19 10:37:53 2017 +0100
