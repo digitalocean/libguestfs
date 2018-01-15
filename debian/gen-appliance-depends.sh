@@ -10,7 +10,7 @@ pkglist_to_deps() {
         -e 's,^\(systemd-sysv\|sysvinit-core\),systemd-sysv | sysvinit-core,' \
         -e 's,^\(libsystemd-[a-z1-9-]*0\),libsystemd0 | \1,' \
         -e 's,^\(util-linux\|fdisk\),fdisk | util-linux (<< 2.29.2),' \
-        -e '/^\(bash\|coreutils\|e2fsprogs\|findutils\|grep\|gzip\|libc-bin\|sed\|tar\)$/d' \
+        -e '/^\(bash\|coreutils\|findutils\|grep\|gzip\|libc-bin\|sed\|tar\)$/d' \
         | tr '\n' ','
     echo
 }
