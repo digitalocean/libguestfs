@@ -121,7 +121,7 @@ endif
 # Installation needs to happen in order because only the last build
 # contains all features.
 override_dh_auto_install:
-	for build in $(BUILDS); do \
+	set -e; for build in $(BUILDS); do \
 		dh_auto_install --builddir=$(CURDIR)/debian/build-$$build \
 			-- INSTALLDIRS=vendor; \
 	done
