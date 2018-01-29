@@ -2,5 +2,5 @@ usr/include/guestfs-gobject*
 usr/lib/*-*/libguestfs-gobject-*.a
 usr/lib/*-*/libguestfs-gobject-*.so
 usr/lib/*-*/libguestfs-gobject-*.la
-
+usr/share/man/man3/guestfs-gobject.3*
 usr/share/gir-1.0
