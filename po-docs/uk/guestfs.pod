@@ -1102,7 +1102,9 @@ top of F<csharp/Libguestfs.cs>.
 =item B<GObject>
 
 Experimental GObject bindings (with GObject Introspection support) are
-available.  See the C<gobject> directory in the source.
+available.
+
+See L<guestfs-gobject(3)>.
 
 =item B<Go>
 
@@ -3363,9 +3365,10 @@ L<http://www.freedesktop.org/wiki/Specifications/basedir-spec/>.
 
 Examples written in C: L<guestfs-examples(3)>.
 
-Прив’язки до мов: L<guestfs-erlang(3)>, L<guestfs-golang(3)>,
-L<guestfs-java(3)>, L<guestfs-lua(3)>, L<guestfs-ocaml(3)>,
-L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>.
+Language bindings: L<guestfs-erlang(3)>, L<guestfs-gobject(3)>,
+L<guestfs-golang(3)>, L<guestfs-java(3)>, L<guestfs-lua(3)>,
+L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
+L<guestfs-ruby(3)>.
 
 Tools: L<guestfish(1)>, L<guestmount(1)>, L<virt-alignment-scan(1)>,
 L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,

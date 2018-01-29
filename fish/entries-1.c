@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -474,7 +474,7 @@ struct command_entry filesystem_walk_cmd_entry = {
           "    The \"tsk_dirent\" structure contains the following fields.\n"
           "\n"
           "    'tsk_inode'\n"
-          "        Filesystem reference number of the node. It migh be 0 if the node\n"
+          "        Filesystem reference number of the node. It might be 0 if the node\n"
           "        has been deleted.\n"
           "\n"
           "    'tsk_type'\n"
@@ -482,7 +482,7 @@ struct command_entry filesystem_walk_cmd_entry = {
           "        values.\n"
           "\n"
           "    'tsk_size'\n"
-          "        File size in bytes. It migh be -1 if the node has been deleted.\n"
+          "        File size in bytes. It might be -1 if the node has been deleted.\n"
           "\n"
           "    'tsk_name'\n"
           "        The file path relative to its directory.\n"

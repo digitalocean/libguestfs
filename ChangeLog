@@ -1,3 +1,358 @@
+commit 55de88fba9565e1d8c379dd2a4007f6ca4e19736
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 25 15:14:01 2018 +0000
+
+    Version 1.36.13.
+
+commit 7b846801f2e333f6837fcbaa0094a2a580415a33
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 29 11:57:50 2017 +0100
+
+    gobject: Add outline guestfs-gobject(3) manual page.
+    
+    Since we removed gtk doc, we might as well replace it with a
+    manual page explaining the basics of how to run gjs.
+    
+    (cherry picked from commit f30b2065a202a17dc3beaaa0fe211d74ce8eb942)
+
+commit ea754206d387d233e40a64dd4ba3fad5028fd438
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 29 11:05:24 2017 +0100
+
+    gobject: Remove gtk-doc (RHBZ#1465665).
+    
+    The gobject bindings are adequately covered in the usual manual pages:
+    guestfs(3).  There is no need for separate generation of gtk-doc.
+    Also generating gtk documentation is the slowest part of the build,
+    and the tooling around gtk-doc is broken
+    (https://bugzilla.redhat.com/show_bug.cgi?id=1465665).
+    
+    Note this removes the configure ‘--enable-gtk-doc’ option.  Using this
+    option now gives a warning, but is otherwise ignored:
+    
+      configure: WARNING: unrecognized options: --enable-gtk-doc
+    
+    (cherry picked from commit f5f7f00a465c83351157bcebd0b320e38978ff0a)
+
+commit 86709884555f3b8b4bb239867ebccdb06a2b5f48
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jan 25 13:18:13 2018 +0000
+
+    Version 1.36.12.
+
+commit 65671a7e1ee28f096669e40eba6199ebad0e6799
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 23 11:49:22 2018 +0000
+
+    customize: Use libxcrypt if available to provide crypt(3).
+    
+    glibc 2.27 removes crypt(3) and suggests using libxcrypt.
+    libxcrypt requires <crypt.h> to be included.
+    
+    (cherry picked from commit b0df5f26fec067928896b66089040cf785bcf070)
+
+commit 2a33d3a2fd229e3ca906d4c992c4db46a7cac507
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Dec 15 08:26:29 2017 +0000
+
+    lib/info: Remove /dev/fd hacking and pass a true filename to qemu-img info.
+    
+    It obscures what's really going on and is no longer necessary
+    for the original purpose.
+    
+    This reverts commit d50cb7bbb4cc18f69ea1425e9f5cee9685825f95.
+    
+    See also:
+    
+      https://www.redhat.com/archives/libguestfs/2017-November/thread.html#00226
+      https://www.redhat.com/archives/libguestfs/2017-December/thread.html#00044
+    
+    (cherry picked from commit e4c39688805628524772a7911a54a204e252dff9)
+
+commit b8c43655e1cbd1793054a358beda0d44fdbc72e1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 22 17:00:41 2018 +0000
+
+    lua, perl: Use thread-safe strerror_r instead of strerror (RHBZ#1536763).
+    
+    (cherry picked from commit c3dd3f51a6369394a1f86f367130717c8fb00a29)
+
+commit d45ef8548eb947f2ffd5f8161895d931015e7f74
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 22 17:04:28 2018 +0000
+
+    perl: Free array on error path to avoid leak (RHBZ#1536765).
+    
+    (cherry picked from commit e04aa823d132df494023a199b7dbed08b9dfb490)
+
+commit 8e11aface7a86b7bd70313d9e1b3ac4821086a5f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jan 17 10:11:53 2018 +0000
+
+    launch: direct: Use old-style file= and format= parameters when not disabling locking (RHBZ#1503497).
+    
+    Ancient qemu 1.5 (in RHEL 7) does not understand the
+    file.file.filename= and file.driver= parameters.  Go back to using the
+    old-style file= and format= parameters when we're not trying to set
+    the file.backing.file.locking=off parameter.
+    
+    Fixes commit 9fe592808ccfd9ed184b88ca9c6cad2e1798dee3.
+    
+    Thanks: Yongkui Guo, Václav Kadlčík.
+    (cherry picked from commit a30b51747fc6605f50a9d5d8095fd2b6d1473b1c)
+
+commit 202765efc274612a6f2435557e972389fd707280
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Dec 10 21:12:01 2017 +0000
+
+    configure: Don't define _FORTIFY_SOURCE.
+    
+    We routinely test the upstream code by running everything under
+    valgrind, and in any case _FORTIFY_SOURCE is usually defined by
+    downstream Linux distros and we can leave the optimization vs safety
+    decision to them.
+    
+    See this bug: https://bugs.gentoo.org/640494
+    
+    (cherry picked from commit 49263be47aaa2358a0fb12ee90220137ca260b92)
+
+commit be41eaa463682f77f94497c3fbe489bdbb60d8e1
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 9 11:01:43 2018 +0000
+
+    diff: Set different identifiers on the two handles.
+    
+    This allows us to easily see from trace output (‘virt-diff -x’) which
+    handle is being used for each call.  Otherwise you get meaningless
+    output such as:
+    
+    libguestfs: trace: download "/Windows/WindowsUpdate.log" "/tmp/virtdiffy9m5YW/a"
+    libguestfs: trace: download = 0
+    libguestfs: trace: download "/Windows/WindowsUpdate.log" "/tmp/virtdiffy9m5YW/b"
+    libguestfs: trace: download = 0
+    
+    Thanks: Xiang Hua Chen
+    (cherry picked from commit 0a9a3d62d93f4bc13b3181ab7544571b97c82317)
+
+commit 2d2883b434b7d75363d40bcb095baaf9bd7dc457
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jan 5 15:00:23 2018 +0000
+
+    resize: Clarify example in manual page.
+    
+    Someone following this example started by literally copying "olddisk"
+    to "newdisk", which doesn't work (the target must always be blank).
+    Clarify the wording.
+    
+    (cherry picked from commit ab0a3e0276656965021413194380ae602c05513d)
+
+commit 61f1945697c5c43f0e11561829fa6eac019ab54e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Dec 12 22:21:47 2017 +0000
+
+    df: Handle block sizes smaller than 1024 bytes (RHBZ#1525241).
+    
+    Thanks: Nikolay Ivanets
+    (cherry picked from commit d3afdb6e3edbfe031aac86c14df60c530781ace5)
+
+commit 778ef637164a20719b26534f933b45307dca5367
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Dec 10 09:17:40 2017 +0000
+
+    php: Ignore php/extension/configure.ac
+    
+    Latest php finally renames this (from configure.in).
+    
+    (cherry picked from commit 442653d9cd94fb07a398b0f42b6420c775b29735)
+
+commit 5fb6d7cedf1ae33b1e708952488e5ffb94249b69
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Dec 9 21:32:47 2017 +0000
+
+    configure: If multiple entries in RELEASES file, pick first.
+    
+    Multiple entries matching the grep would corrupt the output Makefile.
+    
+    (cherry picked from commit 62da9d819fdc9224bf01831b7e5591388925e985)
+
+commit ddc8ce80abca7e8c2092482adf070e376b3a0d18
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Nov 21 11:36:59 2017 +0000
+
+    urandom: Use O_CLOEXEC.
+    
+    (cherry picked from commit 7960eb9bc6b5d0a043ee1b9b9eff22285cbd8764)
+
+commit ccb39b9233555ad6f49310f6ebede4f7e90b4e86
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Dec 5 15:36:34 2017 +0100
+
+    lib: libvirt: stop using <shareable/> for appliance disk (RHBZ#1518517)
+    
+    Commit aa9e0057b19e29f76c9a81f9aebeeb1cb5bf1fdb made the libvirt backend
+    use <shareable/> for the disk of the appliance, since at that time all
+    the instances were using the disk directly.
+    OTOH, commit 3ad44c866042919374e2d840502e53da2ed8aef0 switched to
+    overlays for read-only disks, including the appliance, so effectively
+    protecting the appliance.
+    
+    Because of this, the libvirt backend does not need <shareable/> anymore.
+    
+    Thanks to: Daniel Berrange, Richard W.M. Jones,  Peter Krempa.
+    
+    (cherry picked from commit 614f680dc67d98d16eb21a131cc43db24d08b758)
+
+commit 0d04700cb7e2d3f5a39725fdd13669b23c4752b1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Dec 1 14:46:13 2017 +0100
+
+    v2v: bootloaders: handle no default grubby kernel (RHBZ#1519204)
+    
+    When using grubby to get the default kernel of a guest, do not fail
+    with a bogus error like:
+    
+    virt-v2v: error: libguestfs error: statns: statns_stub: path must start
+    with a / character
+    
+    in case there is no default kernel that can be determined (e.g. because
+    of a bogus configuration).
+    
+    (cherry picked from commit 1b2020ba04e3a986a931acce7465d0a99a213ade)
+
+commit c9d8d947da4f3bf1c760d24fdcd1fd501dbaef87
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sat Nov 25 21:01:42 2017 +0000
+
+    bugs-in-changelog.sh: Python bugzilla client -t option changed to -s.
+    
+    (cherry picked from commit af4e3b3d3b8b67720c03b9d46e4f8074b75b1bc3)
+
+commit d6b057ce2822197b6bb1b9b037303592d22d1fb0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Nov 23 18:43:51 2017 +0000
+
+    v2v: Add generator_built and BUILT_SOURCES listing generated files.
+    
+    Fixes commit 0c396650b0018dc3fcd7ca809202ad46ae2c327d.
+    
+    (cherry picked from commit 5eabcdb9fd9194d9d8637a53fac644981b871457)
+
+commit 09bd7229944a0772d572515ccfc32bb7e6512696
+Author: Lars Seipel <ls@slrz.net>
+Date:   Thu Nov 23 06:15:28 2017 +0100
+
+    launch: direct: Omit locking option for non-file disks (RHBZ#1516094)
+    
+    QEMU does not accept options unrecognized by the block driver
+    in use. Disable locking only for read-only disks that are
+    file-backed, as that's the only block driver it is supported
+    with.
+    
+    Signed-off-by: Lars Seipel <ls@slrz.net>
+    (cherry picked from commit 35320dd0edb94d09d231bcded57aa883a5e7c784)
+
+commit 1e47d4c7db302aa7c47697f33018a8b336f9b8c8
+Author: Yuri Chornoivan <yurchor@ukr.net>
+Date:   Wed Nov 22 21:10:59 2017 +0200
+
+    Fix minor typos
+    
+    (cherry picked from commit 1563ba58278bd4b8b94b2e01625fa3592e661515)
+
+commit ee178cc2373e43858e7a5c31a6b5ff714692b68c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 9 12:03:07 2018 +0000
+
+    tests: Further instances of $(RPC_CFLAGS).
+    
+    (cherry picked from commit 04031269f64352d25829791ae69bf4f732d5b1f4)
+
+commit 050c90a7b83426710832619ce7e062c9d746226c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 9 12:12:15 2018 +0000
+
+    common/protocol: Fix indentation of $(RPC_CFLAGS).
+    
+    Fixes commit 946d5bf8d47b3129dbfd8d848ba53ce3be0b6bd8.
+    
+    (cherry picked from commit df7f6b9c9a215071edd48c1a5cb06a90609cbffb)
+
+commit f162564fa569fc42794f7ef28ce06dcac05bc580
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Mar 7 14:47:01 2017 +0000
+
+    appliance: Add libtirpc, optionally used by the daemon.
+    
+    Fixes commit 4bbb1f74901667be4aa8fe0a83662cf16c4c3b0a.
+    
+    (cherry picked from commit dd680e1f8123dacef1517d18d3387db171515d47)
+
+commit 7fe6c6cf4741283d083b687189752a0b16d434e0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jan 9 11:49:47 2018 +0000
+
+    mllib: Add $(RPC_CFLAGS) to CFLAGS.
+    
+    Fixes build of stable-1.36 branch when glibc is no longer compiled
+    with ‘--enable-obsolete-rpc’, as for example on Gentoo, Fedora >= 28 etc.
+    
+    This was not cherry picked from master since no equivalent patch is
+    required there.
+
+commit e6e23c4d77ee15779f833fd4fbe6c574940e85a4
+Author: Martin Kletzander <mkletzan@redhat.com>
+Date:   Sat Nov 18 19:44:02 2017 +0100
+
+    build: Reference RPC_CFLAGS where needed
+    
+    Since glibc-2.26 removed the /usr/include/rpc/rpc.h, it caused problem even
+    though probing for libtirpc has taken place and worked properly.  The problem is
+    that RPC_CFLAGS (usually `-I/usr/include/tirpc` on Linux) was not used in places
+    where it was needed.  So the build failed with messages like the following:
+    
+    In file included from guestfs_protocol.c:6:0:
+    guestfs_protocol.h:9:10: fatal error: rpc/rpc.h: No such file or directory
+     #include <rpc/rpc.h>
+              ^~~~~~~~~~~
+    
+    Signed-off-by: Martin Kletzander <mkletzan@redhat.com>
+    (cherry picked from commit 946d5bf8d47b3129dbfd8d848ba53ce3be0b6bd8)
+
+commit 8b06dc014a2192fd49f36d36585f75494944a9e4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Mar 6 23:04:30 2017 +0000
+
+    lib: Prefer tirpc for XDR, and rationalise how we search for alternatives.
+    
+    glibc in Fedora is currently configured with `--enable-obsolete-rpc',
+    so I guess we can see which way the wind is blowing.
+    
+    (1) This changes our configure script to prefer libtirpc if it is
+    available.
+    
+    If libtirpc is _not_ available then:
+    
+    (a) Headers must be located in <rpc/xdr.h>, or the user must supply
+    the right CFLAGS.
+    
+    (b) XDR functions must be located in one of -lportablexdr, -lrpc,
+    -lxdr, -lnsl or no library at all (ie. -lc), and the user must set
+    LDFLAGS if needed.
+    
+    (2) We no longer add these paths automatically to $(CFLAGS)/$(LIBS).
+    Any part of libguestfs which needs <rpc/*.h> or the xdr_* functions
+    must use $(RPC_CFLAGS)/$(RPC_LIBS) explicitly.
+    
+    (3) Previously Mac OS X had a workaround for the broken 64 bit support
+    in the supplied rpcgen.  This workaround "activates" all the time if
+    you use tirpc, so breaking Linux after the above changes.  tirpc is
+    supported on OS X, so I think it's just better to use that rather than
+    the broken rpcgen.  For that reason I removed the workaround
+    completely.
+    
+    Thanks: Roy Keene
+    (cherry picked from commit 4bbb1f74901667be4aa8fe0a83662cf16c4c3b0a)
+
 commit ced9ddebabd34a22fc2d0d33dbe9c719dbce22ab
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Nov 16 17:19:18 2017 +0000

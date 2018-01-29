@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -105,8 +105,10 @@ XS_unpack_charPtrPtr (SV *arg) {
   for (i = 0; i <= av_len (av); i++) {
     SV **elem = av_fetch (av, i, 0);
 
-    if (!elem || !*elem)
+    if (!elem || !*elem) {
+      free (ret);
       croak ("missing element in list");
+    }
 
     ret[i] = SvPV_nolen (*elem);
   }
@@ -291,7 +293,7 @@ PREINIT:
    CODE:
       str = guestfs_event_to_string (event_bitmask);
       if (str == NULL)
-        croak ("%s", strerror (errno));
+        croak ("%m");
       RETVAL = newSVpv (str, 0);
       free (str);
  OUTPUT:

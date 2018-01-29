@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -970,7 +970,7 @@ guestfs_int_ruby_exists (VALUE gv, VALUE pathv)
  * fields.
  * 
  * 'tsk_inode'
- * Filesystem reference number of the node. It migh be
+ * Filesystem reference number of the node. It might be
  * 0 if the node has been deleted.
  * 
  * 'tsk_type'
@@ -978,7 +978,7 @@ guestfs_int_ruby_exists (VALUE gv, VALUE pathv)
  * detailed list of values.
  * 
  * 'tsk_size'
- * File size in bytes. It migh be -1 if the node has
+ * File size in bytes. It might be -1 if the node has
  * been deleted.
  * 
  * 'tsk_name'

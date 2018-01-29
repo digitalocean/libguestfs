@@ -34,27 +34,20 @@ noinst_LTLIBRARIES = libprotocol.la
 # warnings here.
 libprotocol_la_SOURCES = guestfs_protocol.c  guestfs_protocol.h
 libprotocol_la_CFLAGS = \
-	-Wall -Wno-unused -fno-strict-aliasing $(GCC_VISIBILITY_HIDDEN)
+	-Wall -Wno-unused -fno-strict-aliasing $(GCC_VISIBILITY_HIDDEN) \
+	$(RPC_CFLAGS)
 
 if HAVE_RPCGEN
-RPCGEN_DEFS =
-if HAVE_XDR_U_INT64_T
-RPCGEN_DEFS += -DHAVE_XDR_U_INT64_T=1
-else
-if HAVE_XDR_UINT64_T
-RPCGEN_DEFS += -DHAVE_XDR_UINT64_T=1
-endif
-endif
 
 guestfs_protocol.c: guestfs_protocol.x
 	rm -f $@-t $@-t2
-	$(RPCGEN) $(RPCGEN_DEFS) -c -o $@-t $<
+	$(RPCGEN) -c -o $@-t $<
 	$(SED) 's,\.\./\(\.\./\)*lib,.,' < $@-t > $@-t2
 	rm $@-t
 	mv $@-t2 $@
 
 guestfs_protocol.h: guestfs_protocol.x
 	rm -f $@-t
-	$(RPCGEN) $(RPCGEN_DEFS) -h -o $@-t $<
+	$(RPCGEN) -h -o $@-t $<
 	mv $@-t $@
 endif

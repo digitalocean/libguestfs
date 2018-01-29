@@ -7,7 +7,7 @@ libguestfs generated file
           and from the code in the generator/ subdirectory.
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2017 Red Hat Inc.
+ Copyright (C) 2009-2018 Red Hat Inc.
 
  Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
  змінювати її за умов дотримання GNU General Public License  утому вигляді, що
@@ -4338,7 +4338,7 @@ The C<tsk_dirent> structure contains the following fields.
 
 =item 'tsk_inode'
 
-Filesystem reference number of the node. It migh be C<0> if the node has
+Filesystem reference number of the node. It might be C<0> if the node has
 been deleted.
 
 =item 'tsk_type'
@@ -4347,7 +4347,7 @@ Basic file type information.  See below for a detailed list of values.
 
 =item 'tsk_size'
 
-File size in bytes. It migh be C<-1> if the node has been deleted.
+File size in bytes. It might be C<-1> if the node has been deleted.
 
 =item 'tsk_name'
 

@@ -161,13 +161,6 @@
    MSVC and with C++ compilers. */
 #undef FLEXIBLE_ARRAY_MEMBER
 
-
-/* Enable compile-time and run-time bounds-checking, and some warnings. */
-#if __OPTIMIZE__ && (! defined (_FORTIFY_SOURCE) || _FORTIFY_SOURCE < 2)
-# undef _FORTIFY_SOURCE
-# define _FORTIFY_SOURCE 2
-#endif
-
 /* Define to 1 if the system's ftello function has the Solaris bug. */
 #undef FTELLO_BROKEN_AFTER_SWITCHING_FROM_READ_TO_WRITE
 
@@ -696,6 +689,9 @@
 /* Define to 1 if you have the <crtdefs.h> header file. */
 #undef HAVE_CRTDEFS_H
 
+/* Define to 1 if you have the <crypt.h> header file. */
+#undef HAVE_CRYPT_H
+
 /* D-Bus found at compile time. */
 #undef HAVE_DBUS
 
@@ -1093,9 +1089,6 @@
 
 /* liblzma found at compile time. */
 #undef HAVE_LIBLZMA
-
-/* Define to 1 if you have the `portablexdr' library (-lportablexdr). */
-#undef HAVE_LIBPORTABLEXDR
 
 /* Define if you have libreadline. */
 #undef HAVE_LIBREADLINE
@@ -2500,12 +2493,6 @@
 
 /* Define to 1 if you have the <ws2tcpip.h> header file. */
 #undef HAVE_WS2TCPIP_H
-
-/* Define to 1 if xdr_uint64_t() exists. */
-#undef HAVE_XDR_UINT64_T
-
-/* Define to 1 if xdr_u_int64_t() exists. */
-#undef HAVE_XDR_U_INT64_T
 
 /* Define to 1 if you have the <xlocale.h> header file. */
 #undef HAVE_XLOCALE_H

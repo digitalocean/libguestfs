@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,20 +28,6 @@
  */
 
 %#include <config.h>
-
-/* This has to be defined to get around a limitation in Mac OS X's rpcgen. */
-#if HAVE_XDR_U_INT64_T
-#define uint64_t u_int64_t
-%#if HAVE_XDR_UINT64_T
-%#define xdr_u_int64_t xdr_uint64_t
-%#define u_int64_t uint64_t
-%#endif
-#else
-%#if HAVE_XDR_U_INT64_T
-%#define xdr_uint64_t xdr_u_int64_t
-%#define uint64_t u_int64_t
-%#endif
-#endif
 
 /* This has to be defined to get around a limitation in Sun's rpcgen. */
 typedef string guestfs_str<>;

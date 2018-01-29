@@ -141,6 +141,7 @@ libguestfs_la_CPPFLAGS = \
 
 libguestfs_la_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(RPC_CFLAGS) \
 	$(GCC_VISIBILITY_HIDDEN) \
 	$(PCRE_CFLAGS) \
 	$(LIBVIRT_CFLAGS) \
@@ -164,7 +165,8 @@ libguestfs_la_LIBADD = \
 	$(LTLIBINTL) \
 	$(LTLIBTHREAD) \
 	$(LTLIBICONV) \
-	$(SERVENT_LIB)
+	$(SERVENT_LIB) \
+	$(RPC_LIBS)
 
 # Force libtool to name the library 'libguestfs.so.0.$(MAX_PROC_NR).0'.
 # Include the version script to limit which symbols are exported.
@@ -212,7 +214,8 @@ unit_tests_CPPFLAGS = \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
 	-I$(top_srcdir)/lib -I.
 unit_tests_CFLAGS = \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(RPC_CFLAGS)
 # We have to link this to libguestfs, but because we want to test
 # non-exported functions we have to link with the objects not the
 # library.

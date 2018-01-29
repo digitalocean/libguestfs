@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -7808,7 +7808,7 @@ guestfs_session_filesystem_available (GuestfsSession *session, const gchar *file
  * The @tsk_dirent structure contains the following fields.
  * 
  * 'tsk_inode'
- * Filesystem reference number of the node. It migh be @0 if the node
+ * Filesystem reference number of the node. It might be @0 if the node
  * has been deleted.
  * 
  * 'tsk_type'
@@ -7816,7 +7816,7 @@ guestfs_session_filesystem_available (GuestfsSession *session, const gchar *file
  * values.
  * 
  * 'tsk_size'
- * File size in bytes. It migh be @-1 if the node has been deleted.
+ * File size in bytes. It might be @-1 if the node has been deleted.
  * 
  * 'tsk_name'
  * The file path relative to its directory.
