@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -156,6 +156,7 @@ guestfs_int_lua_create (lua_State *L)
   guestfs_h *g;
   struct userdata *u;
   unsigned flags = 0;
+  char err[256];
 
   if (lua_gettop (L) == 1) {
     OPTARG_IF_SET (1, "environment",
@@ -171,9 +172,10 @@ guestfs_int_lua_create (lua_State *L)
     return luaL_error (L, "Guestfs.create: too many arguments");
 
   g = guestfs_create_flags (flags);
-  if (!g)
-    return luaL_error (L, "Guestfs.create: cannot create handle: %s",
-                       strerror (errno));
+  if (!g) {
+    strerror_r (errno, err, sizeof err);
+    return luaL_error (L, "Guestfs.create: cannot create handle: %s", err);
+  }
 
   guestfs_set_error_handler (g, NULL, NULL);
 
@@ -240,6 +242,7 @@ error__tostring (lua_State *L)
 {
   int code;
   const char *msg;
+  char err[256];
 
   lua_pushliteral (L, "code");
   lua_gettable (L, 1);
@@ -248,8 +251,10 @@ error__tostring (lua_State *L)
   lua_gettable (L, 1);
   msg = luaL_checkstring (L, -1);
 
-  if (code)
-    lua_pushfstring (L, "%s: %s", msg, strerror (code));
+  if (code) {
+    strerror_r (code, err, sizeof err);
+    lua_pushfstring (L, "%s: %s", msg, err);
+  }
   else
     lua_pushstring (L, msg);
 
@@ -15651,11 +15656,12 @@ get_string_list (lua_State *L, int index)
   const size_t len = lua_objlen (L, index);
   size_t i;
   char **strs;
+  char err[256];
 
   strs = malloc ((len+1) * sizeof (char *));
   if (strs == NULL) {
-    luaL_error (L, "get_string_list: malloc failed: %s",
-                strerror (errno));
+    strerror_r (errno, err, sizeof err);
+    luaL_error (L, "get_string_list: malloc failed: %s", err);
     /*NOTREACHED*/
     return NULL;
   }
@@ -17592,7 +17598,7 @@ luaopen_guestfs (lua_State *L)
 
   /* Add _COPYRIGHT, etc. fields to the module namespace. */
   lua_pushliteral (L, "_COPYRIGHT");
-  lua_pushliteral (L, "Copyright (C) 2009-2017 Red Hat Inc.");
+  lua_pushliteral (L, "Copyright (C) 2009-2018 Red Hat Inc.");
   lua_settable (L, -3);
 
   lua_pushliteral (L, "_DESCRIPTION");

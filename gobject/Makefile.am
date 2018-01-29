@@ -15,8 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS = . docs
-
 include $(top_srcdir)/subdir-rules.mk
 
 include $(srcdir)/Makefile.inc
@@ -33,7 +31,7 @@ EXTRA_DIST = \
 	TODO.txt \
 	.gitignore \
 	bindtests-retvalues.js \
-	docs/.gitignore \
+	guestfs-gobject.pod \
 	tests-misc.js \
 	run-tests \
 	run-tests-retvalues \
@@ -91,6 +89,8 @@ gir_DATA = $(INTROSPECTION_GIRS)
 typelibdir = $(libdir)/girepository-1.0
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
+# Tests.
+
 TESTS = \
 	run-tests \
 	run-tests-retvalues
@@ -106,3 +106,19 @@ $(TESTS): $(typelib_DATA)
 CLEANFILES += $(gir_DATA) $(typelib_DATA)
 
 endif HAVE_INTROSPECTION
+
+# Documentation.
+
+man_MANS = guestfs-gobject.3
+noinst_DATA = $(top_builddir)/website/guestfs-gobject.3.html
+
+guestfs-gobject.3 $(top_builddir)/website/guestfs-gobject.3.html: stamp-guestfs-gobject.pod
+
+stamp-guestfs-gobject.pod: guestfs-gobject.pod
+	$(PODWRAPPER) \
+	  --section 3 \
+	  --man guestfs-gobject.3 \
+	  --html $(top_builddir)/website/guestfs-gobject.3.html \
+	  --license examples \
+	  $<
+	touch $@

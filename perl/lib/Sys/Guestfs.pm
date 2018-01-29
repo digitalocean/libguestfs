@@ -4,7 +4,7 @@
 #          and from the code in the generator/ subdirectory.
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -2620,7 +2620,7 @@ The C<tsk_dirent> structure contains the following fields.
 
 =item 'tsk_inode'
 
-Filesystem reference number of the node. It migh be C<0>
+Filesystem reference number of the node. It might be C<0>
 if the node has been deleted.
 
 =item 'tsk_type'
@@ -2630,7 +2630,7 @@ See below for a detailed list of values.
 
 =item 'tsk_size'
 
-File size in bytes. It migh be C<-1>
+File size in bytes. It might be C<-1>
 if the node has been deleted.
 
 =item 'tsk_name'
@@ -14589,7 +14589,7 @@ with some unique string, to avoid conflicts with other users.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 
 =head1 LICENSE
 

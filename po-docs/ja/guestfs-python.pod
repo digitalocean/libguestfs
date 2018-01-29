@@ -63,9 +63,9 @@ this:
 =head1 関連項目
 
 L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-erlang(3)>,
-L<guestfs-golang(3)>, L<guestfs-java(3)>, L<guestfs-lua(3)>,
-L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-recipes(1)>,
-L<guestfs-ruby(3)>, L<http://libguestfs.org/>.
+L<guestfs-gobject(3)>, L<guestfs-golang(3)>, L<guestfs-java(3)>,
+L<guestfs-lua(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
+L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://libguestfs.org/>.
 
 =head1 著者
 

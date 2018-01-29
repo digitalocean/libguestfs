@@ -68,7 +68,6 @@ fish/run.h
 fish/test-prep.sh
 gobject/Makefile.inc
 gobject/bindtests.js
-gobject/docs/guestfs-title.sgml
 gobject/include/guestfs-gobject.h
 gobject/include/guestfs-gobject/optargs-add_domain.h
 gobject/include/guestfs-gobject/optargs-add_drive.h

@@ -94,10 +94,11 @@ C<Аргумент> — назва невідомого аргументу.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-golang(3)>,
-L<guestfs-java(3)>, L<guestfs-lua(3)>, L<guestfs-ocaml(3)>,
-L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-recipes(1)>,
-L<guestfs-ruby(3)>, L<http://www.erlang.org/>.  L<http://libguestfs.org/>.
+L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-gobject(3)>,
+L<guestfs-golang(3)>, L<guestfs-java(3)>, L<guestfs-lua(3)>,
+L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
+L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://www.erlang.org/>.
+L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 
