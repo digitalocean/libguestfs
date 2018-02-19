@@ -1,0 +1,8 @@
+libguestfs for Debian
+---------------------
+
+This package build-depends on linux-image-* to be able to run the
+tests which involves firing up qemu and a minimal system. This is
+currently only done on i386, amd64.
+
+ -- Hilko Bengen <bengen@debian.org>, Mon, 19 Feb 2018 18:00:47 +0100
