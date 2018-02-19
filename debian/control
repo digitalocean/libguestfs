@@ -43,7 +43,7 @@ Build-Depends: debhelper (>= 10),
   po4a,
   curl,
   flex, bison,
-  golang-go [i386 amd64 armel armhf arm64 ppc64el],
+  golang-go [i386 amd64 armel armhf arm64 mips mipsel mips64el ppc64el],
   dh-php, php-all-dev | php5-dev,
 # for appliance
   linux-image-marvell [armel] | linux-image-versatile [armel],
@@ -111,7 +111,7 @@ Build-Depends: debhelper (>= 10),
   xfsprogs,
   xz-utils,
   zerofree,
-  zfs-fuse [i386 amd64 armel powerpc sparc],
+  zfs-fuse [i386 amd64 armel armhf powerpc ppc64el sparc],
 Homepage: http://libguestfs.org
 Standards-Version: 4.1.3
 Vcs-Git: https://anonscm.debian.org/git/pkg-libvirt/libguestfs.git
