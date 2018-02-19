@@ -1,0 +1,22 @@
+From: Pino Toscano <ptoscano@redhat.com>
+Date: Mon, 19 Feb 2018 14:46:32 +0100
+Subject: appliance: include dash for Debian distros
+
+Make sure that /bin/sh is available in the appliance, and that path is
+provided by dash on Debian distributions.
+---
+ appliance/packagelist.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/appliance/packagelist.in b/appliance/packagelist.in
+index 71a928e..cf264f9 100644
+--- a/appliance/packagelist.in
++++ b/appliance/packagelist.in
+@@ -60,6 +60,7 @@ ifelse(DEBIAN,1,
+ dnl old name used in Jessie and earlier
+   btrfs-tools
+   cryptsetup
++  dash
+   extlinux
+   fdisk
+   genisoimage
