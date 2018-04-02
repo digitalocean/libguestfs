@@ -16,12 +16,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Common_gettext.Gettext
-open Common_utils
-
 open Printf
 open Sys
 open Unix
+
+open Std_utils
+open Tools_utils
+open Common_gettext.Gettext
 
 module G = Guestfs
 
@@ -41,13 +42,13 @@ and parse_selector_list orig_arg = function
   | [ "string"; s ] ->
     KeyString s
   | _ ->
-    error (f_"invalid ssh-inject selector '%s'; see the man page") orig_arg
+    error (f_"invalid ssh-inject selector ‘%s’; see the man page") orig_arg
 
 (* Find the local [on the host] user's SSH public key.  See
  * ssh-copy-id(1) default_ID_file for rationale.
  *)
-let pubkey_re = Str.regexp "^id.*\\.pub$"
-let pubkey_ignore_re = Str.regexp ".*-cert\\.pub$"
+let pubkey_re = PCRE.compile "^id.*\\.pub$"
+let pubkey_ignore_re = PCRE.compile ".*-cert\\.pub$"
 
 let local_user_ssh_pubkey () =
   let home_dir =
@@ -59,8 +60,7 @@ let local_user_ssh_pubkey () =
   let files = Array.to_list files in
   let files = List.filter (
     fun file ->
-      Str.string_match pubkey_re file 0 &&
-        not (Str.string_match pubkey_ignore_re file 0)
+      PCRE.matches pubkey_re file && not (PCRE.matches pubkey_ignore_re file)
   ) files in
   if files = [] then
     error (f_"ssh-inject: no public key file found in %s") ssh_dir;

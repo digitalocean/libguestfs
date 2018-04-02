@@ -163,7 +163,8 @@ thread.
 
 =item B<--quiet>
 
-何も出力しません。  終了コードを設定するのみです（以下の L</終了ステータス> 参照）。
+Don’t produce any output.  Just set the exit code (see L</EXIT STATUS>
+below).
 
 =item B<--uuid>
 

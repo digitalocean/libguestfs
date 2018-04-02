@@ -74,7 +74,7 @@ that you are measuring a typical "hot cache" case.
 
 This command starts up the libguestfs appliance on the named disk image or
 libvirt guest, performs libguestfs inspection on it (see
-L<guestfs(3)/INSPECTION>), mounts the guest's disks, then discards all these
+L<guestfs(3)/INSPECTION>), mounts the guest’s disks, then discards all these
 results and shuts down.
 
 The first time you run the command, it will create an appliance and cache it
@@ -231,7 +231,7 @@ unless you need the results.
 If you previously performed inspection on the guest, then it may be safe to
 cache and reuse the results from last time.
 
-Some disks don't need to be inspected at all: for example, if you are
+Some disks don’t need to be inspected at all: for example, if you are
 creating a disk image, or if the disk image is not a VM, or if the disk
 image has a known layout.
 
@@ -379,7 +379,7 @@ hardware virt acceleration is not available).
 
 Upload and download is as much as 10 times slower on UML than KVM.
 Libguestfs sends this data over the UML emulated serial port, which is far
-less efficient than KVM's virtio-serial.
+less efficient than KVM’s virtio-serial.
 
 =item *
 
@@ -395,11 +395,8 @@ L<http://rwmj.wordpress.com/2013/08/14/performance-of-user-mode-linux-as-a-libgu
 
 =head2 Ensure hardware virtualization is available
 
-Use F</proc/cpuinfo> and this page:
-
-http://virt-tools.org/learning/check-hardware-virt/
-
-ハードウェア仮想化が利用可能であることを確実にします。 BIOS において有効化する必要があるかもしれないことに注意してください。
+Use F</proc/cpuinfo> to ensure that hardware virtualization is available.
+Note that you may need to enable it in your BIOS.
 
 ハードウェア仮想化は一般的に仮想マシンの中において利用可能ではありません。libguestfs
 はどんな他の仮想マシンよりも遅いです。ネスト仮想化は経験上うまく動作しないです。そのため、ベアメタルにおいて libguestfs
@@ -413,7 +410,8 @@ most distributions now do this.
 
 =head2 Processors to avoid
 
-ハードウェア仮想化機能を持たないプロセッサー、およびいくつかの非常に低速なプロセッサー (AMD Geode がよい例です) は避けるべきです。
+Avoid processors that don’t have hardware virtualization, and some
+processors which are simply very slow (AMD Geode being a great example).
 
 =head2 Xen dom0
 
@@ -599,5 +597,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2012-2017 Red Hat Inc.
+Copyright (C) 2012-2018 Red Hat Inc.
 

@@ -1,11 +1,12 @@
 
 =head1 НАЗВА
 
-guestfs-building - How to build libguestfs from source
+guestfs-building -- як зібрати libguestfs з початкових кодів
 
 =head1 ОПИС
 
-This manual page describes how to build libguestfs from source.
+На цій сторінці підручника наведено настанови щодо того, як зібрати
+libguestfs з початкових кодів.
 
 Основні кроки:
 
@@ -17,7 +18,7 @@ This manual page describes how to build libguestfs from source.
 
 =item *
 
-Build, either from the git repository or from a tarball.
+Збирання, з коду зі сховища git або з архіву з кодом.
 
 =item *
 
@@ -25,32 +26,33 @@ Build, either from the git repository or from a tarball.
 
 =item *
 
-Run the tools from the source directory, or install.
+Запуск засобів з каталогу з початковим кодом або встановлення.
 
 =back
 
 =head1 ВИМОГИ
 
-=head2 Short cut for Fedora or Red Hat Enterprise Linux (RHEL) users
+=head2 Настаннови для користувачів Fedora або Red Hat Enterprise Linux (RHEL)
 
-On Fedora, use L<dnf(8)> to install all the requirements:
+У Fedora для встановлення усіх потрібних пакунків слід користуватися
+L<dnf(8)>:
 
  dnf builddep libguestfs
 
-On systems still using L<yum(8)>, do:
+У системах, де все ще використовується L<yum(8)>, можна скористатися ним:
 
  yum-builddep libguestfs
 
-=head2 Short cut for Debian or Ubuntu users
+=head2 Настанови для користувачів Debian або Ubuntu
 
-Use APT to install all the requirements:
+Скористайтеся APT для встановлення усіх потрібних пакунків:
 
  apt-get build-dep libguestfs
 
-If that command doesn't work, take a look at the Debian source package
-L<http://packages.debian.org/source/libguestfs>, at the list of
-C<build-depends> and C<build-depends-indep>, and install everything listed
-there.
+Якщо ця команда не працює, зверніть увагу на пакунок із початковим кодом
+Debian L<http://packages.debian.org/source/libguestfs>, на список
+C<build-depends> і C<build-depends-indep>, і встановіть усі пакунки зі
+списку.
 
 =head2 Повний список вимог
 
@@ -58,13 +60,14 @@ there.
 
 =item F<appliance/packagelist.in>
 
-Install as many package names found in this file as possible.  (It is not
-strictly required to install all of them).
+Встановити якомога більше пакунків із назвами з цього файла. (Без строгої
+вимоги встановити геть усі з цих пакунків.)
 
-I<Note>: If you build libguestfs followed by installing appliance packages,
-the build will not pick them up automatically, even if you do S<C<make
-clean>>.  You have to do this command to clean the old supermin appliance
-and force a new one to be prepared:
+I<Зауваження>: якщо ви збираєте libguestfs із наступним встановленням
+пакунків базової системи, під час збирання ці пакунки не буде вибрано
+автоматично, навіть якщо вами було віддано команду S<C<make clean>>.  Вам
+доведеться віддати ще й цю команду, щоб очистити стару базову систему
+supermin і примусово приготувати нову:
 
  make -C appliance clean-supermin-appliance
 
@@ -74,41 +77,46 @@ I<Обов’язкове>.
 
 =item qemu-img E<ge> 1.3.0
 
-I<Required>.  Virt-p2v and virt-v2v requires qemu-img E<ge> 2.2.0.
+I<Обов'язкове>. Для роботи virt-p2v та virt-v2v потрібна qemu-img E<ge>
+2.2.0.
 
 =item ядро E<ge> 2.6.34
 
-I<Required>.  The following features must be enabled: C<virtio-pci>,
+I<Обов'язкове>. Має бути увімкнено такі можливості: C<virtio-pci>,
 C<virtio-serial>, C<virtio-block>, C<virtio-net>.
 
 =item supermin E<ge> 5.1.0
 
-I<Required>.  For alternatives, see L</USING A PREBUILT BINARY APPLIANCE>
-below.
+I<Обов'язковий>. Зі списком альтернативних варіантів можна ознайомитися у
+розділі L</ВИКОРИСТАННЯ ПОПЕРЕДНЬО ЗІБРАНОЇ БІНАРНОЇ ОСНОВНОЇ СИСТЕМИ>
+нижче.
 
 =item glibc
 
-I<Required>.  We use the custom printf formatters extension of glibc (see
-L<guestfs-hacking(1)/DAEMON CUSTOM PRINTF FORMATTERS>).
+I<Обов'язковий>. Ми використовуємо розширення для нетипових засобів
+форматування printf для glibc (див. L<guestfs-hacking(1)/НЕТИПОВІ ЗАСОБИ
+ФОРМАТУВАННЯ PRINTF У ФОНОВІЙ СЛУЖБІ>).
 
-=item XDR (tirpc, glibc or other)
+=item XDR (tirpc, glibc або інша)
 
-I<Required>.  We use the XDR implementation from C<E<lt>rpc/xdr.hE<gt>>,
-which may come from glibc, tirpc or another library.
+I<Обов'язковий>. Ми використовуємо реалізацію XDR з C<E<lt>rpc/xdr.hE<gt>>,
+яка може походити з glibc, tirpc або іншої бібліотеки.
 
-The C<rpcgen> tool is optional, except if you want to compile from git
-and/or patch libguestfs with new APIs.
+Програма C<rpcgen> є необов'язковою. Вона знадобиться, лише якщо ви хочете
+зібрати програми з git і/або накласти на libguestfs латку із новим
+програмним інтерфейсом.
 
 =item Gcc або Clang
 
-I<Required>.  We use C<__attribute__((cleanup))> which is a GCC extension
-also supported by Clang.
+I<Обов'язковий>. Ми використовуємо C<__attribute__((cleanup))>, розширення
+GCC, підтримку якого передбачено і у Clang.
 
 =item Perl
 
-I<Required>.  Various build steps and tests are written in Perl.  Perl is
-not needed at runtime except if you need to run a small number of virt tools
-which are still written in Perl.
+I<Обов'язковий>. Різноманітні засоби збирання та тестування написано мовою
+Perl. Perl не потрібен для роботи із самою бібліотекою, хіба що вам потрібен
+один із небагатьох інструментів віртуалізації, які усе ще написано мовою
+програмування Perl.
 
 =item Perl C<Pod::Man>
 
@@ -116,12 +124,11 @@ which are still written in Perl.
 
 I<Обов’язкове>. Частина ядра Perl.
 
-=item OCaml E<ge> 3.11
+=item OCaml E<ge> 4.01
 
 =item OCaml findlib
 
-I<Required> if compiling from git.  Optional (but recommended) if compiling
-from tarball.
+I<Обов’язкове>.
 
 =item autoconf
 
@@ -129,7 +136,8 @@ from tarball.
 
 =item gettext
 
-I<Required> if compiling from git.  Optional if compiling from tarball.
+I<Обов'язкове>, якщо збирається версія з git. Необов'язкове, якщо збирання
+відбувається з архіву tar.
 
 =item cpio
 
@@ -145,7 +153,7 @@ I<Обов’язкове>.
 
 I<Обов’язкове>.
 
-=item Perl-compatible Regular Expressions (PCRE) library
+=item Бібліотека для роботи із сумісними з Perl формальними виразами (PCRE)
 
 I<Обов’язкове>.
 
@@ -175,20 +183,23 @@ I<Обов’язкове>.
 
 =item po4a
 
-I<Required> if compiling from git.  Optional if compiling from tarball.
+I<Обов'язкове>, якщо збирається версія з git. Необов'язкове, якщо збирання
+відбувається з архіву tar.
 
 =item hivex E<ge> 1.2.7
 
-I<Required> if compiling from git, and highly recommended otherwise.
-Various core features will be disabled if hivex is not available.
+=item ocaml-hivex
+
+I<Обов'язковий>. ocaml-hivex є прив'язкою OCaml для hivex, яка потрібна для
+збирання фонової служби.
 
 =item libmagic
 
-I<Required>.  This is the library used by the L<file(1)> command.
+I<Обов'язковий>. Це бібліотека, яка використовується програмою L<file(1)>.
 
 =item libvirt E<ge> 0.10.2
 
-Optional.  Always use the latest possible version of libvirt.
+Необов'язкове. Завжди використовуйте найсвіжішу версію libvirt.
 
 =item xmllint
 
@@ -196,152 +207,161 @@ Optional.  Always use the latest possible version of libvirt.
 
 =item libconfig
 
-Optional.  Used to parse libguestfs's own config files,
-eg. F</etc/libguestfs-tools.conf>.
+Необов'язкове. Використовується для обробки у libguestfs власних файлів
+налаштувань, наприклад F</etc/libguestfs-tools.conf>.
 
 =item libselinux
 
-Optional.  Used by the L<libvirt backend|guestfs(3)/BACKEND> to securely
-confine the appliance (sVirt).
+Необов'язковий. Використовується L<модулем libvirt|guestfs(3)/МОДУЛЬ> для
+безпечного ізолювання базової системи (sVirt).
 
 =item Засоби Berkeley DB (db_dump, db_load тощо)
 
-Optional.  Usually found in a package called C<db-utils>, C<db4-utils>,
-C<db4.X-utils> etc.
+Необов'язкові. Зазвичай, можна знайти у пакунках із назвами C<db-utils>,
+C<db4-utils>, C<db4.X-utils> тощо.
 
 =item systemtap
 
-Optional.  For userspace probes.
+Не обов'язкове. Для зондування простору користувача.
 
 =item readline
 
-Optional.  For nicer command line editing in L<guestfish(1)>.
+Необов'язкове. Для красивішого редагування рядків у L<guestfish(1)>.
 
 =item acl
 
-Optional.  Library and programs for handling POSIX ACLs.
+Необов'язкове. Бібліотека і програми для обробки списків керування доступом
+(ACL) POSIX.
 
 =item libcap
 
-Optional.  Library and programs for handling Linux capabilities.
+Необов'язкове. Бібліотека і програми для обробки можливостей Linux.
 
 =item libldm
 
-Optional.  Library and L<ldmtool(1)> for handling Windows Dynamic Disks.
+Необов'язкове. Бібліотека та L<ldmtool(1)> для обробки динамічних дисків
+Windows.
 
 =item sd-journal
 
-Optional.  Library for accessing systemd journals.
+Необов'язкове. Бібліотека для доступу до журналів systemd.
 
 =item gdisk
 
-Optional.  GPT disk support.
+Необов'язкове. Підтримка дисків GPT.
 
 =item netpbm
 
-Optional.  Render icons from guests.
+Необов'язкове. Обробка піктограм з гостьових систем.
 
 =item icoutils
 
-Optional.  Render icons from Windows guests.
+Необов'язкове. Обробка піктограм із гостьових систем Windows.
 
 =item Perl C<Expect>
 
-Optional.  Perl module used to test L<virt-rescue(1)>.
+Необов'язкове. Модуль Perl, який використовується для тестування
+L<virt-rescue(1)>.
 
 =item FUSE
 
-Optional.  L<fusermount(1)>, libfuse and kernel module are all needed if you
-want L<guestmount(1)> and/or L<mount-local|guestfs(3)/MOUNT LOCAL> support.
+Необов'язковий. L<fusermount(1)>, libfuse та модуль ядра потрібні, якщо вам
+потрібна L<guestmount(1)> і/або підтримка L<mount-local|guestfs(3)/ЛОКАЛЬНЕ
+МОНТУВАННЯ>.
 
 =item статичний glibc
 
-Optional.  Used only for testing.
+Необов'язковий. Використовується лише для тестування.
 
 =item qemu-nbd
 
 =item nbdkit
 
-Optional.  qemu-nbd is used for testing.
+Необов'язкове. qemu-nbd використовується для тестування.
 
-L<virt-p2v(1)> requires either qemu-nbd or nbdkit, but these only need to be
-present on the virt-p2v ISO, they do not need to be installed at compile
-time.
+L<virt-p2v(1)> потребує qemu-nbd або nbdkit, але ці програми мають бути лише
+на образі ISO virt-p2v, вони не потрібні на час компіляції.
 
 =item uml_mkcow
 
-Optional.  For the L<UML backend|guestfs(3)/BACKEND>.
+Необов'язковий. Призначено для L<модуля UML|guestfs(3)/МОДУЛЬ>.
 
 =item curl
 
-Optional.  Used by virt-builder for downloads.
+Необов'язкове. Використовується virt-builder для отримання даних.
 
-=item GNU Privacy Guard (GnuPG, gpg) v1 or v2
+=item GNU Privacy Guard (GnuPG, gpg) версії 1 або 2
 
-Optional.  Used by virt-builder for checking digital signatures.
+Необов'язкове. Використовується virt-builder для перевіряння цифрових
+підписів.
 
 =item liblzma
 
-Optional.  If available, virt-builder will use this library for fast,
-parallel uncompression of templates.
+Необов'язковий. Якщо доступний, virt-builder скористається цією бібліотекою
+для швидкого паралельного розпаковування шаблонів.
 
-=item Gtk E<ge> 2.24, or 3
+=item Gtk E<ge> 2.24 або 3
 
 Необов'язкове.
 
-Used by the virt-p2v graphical user interface.
+Використовується графічним інтерфейсом virt-p2v.
 
-Either Gtk 2 or Gtk 3 can be used.  If you want to select a specific version
-of Gtk, use S<C<./configure --with-gtk=2>> or S<C<./configure
---with-gtk=3>>.
+Може бути використано Gtk 2 або Gtk 3. Якщо ви хочете вибрати певну версію
+Gtk, скористайтеся командою S<C<./configure --with-gtk=2>> або
+S<C<./configure --with-gtk=3>>.
 
 =item D-Bus
 
 Необов'язкове.
 
-If the D-Bus low level C API is available, virt-p2v can send a D-Bus message
-to logind to inhibit power saving (sleep, suspend, etc) during P2V
-conversions.
+Якщо є доступним низькорівневий програмний інтерфейс D-Bus мовою C, virt-p2v
+зможе надсилати повідомлення D-Bus до logind для запобігання переходу у
+режим заощадження енергії (присипляння або призупинення роботи) під час
+перетворень P2V.
 
-If this API is not available at build time, then very long conversions might
-be interrupted if the physical machine goes to sleep.
+Якщо цей програмний інтерфейс виявиться недоступним на момент збирання, дуже
+довгі перетворення може бути перервано переходом фізичної машини у стан
+присипляння.
 
 =item zip
 
 =item unzip
 
-Optional.  Used by virt-v2v to handle OVA files.
+Необов'язкове. Використовується virt-v2v для обробки файлів OVA.
 
 =item python-evtx
 
-Optional.  Used by L<virt-log(1)> to parse Windows Event Log files.
+Необов'язкове. Використовується L<virt-log(1)> для обробки файлів журналу
+подій Windows.
 
 =item OCaml gettext
 
-Optional.  For localizing OCaml virt tools.
+Необов'язкове. Для локалізації засобів віртуалізації OCaml.
 
 =item ocaml-ounit E<ge> 2.0.0
 
-Optional.  For testing the common OCaml modules.
+Необов'язкове. Для тестування загальних модулів OCaml.
 
 =item ocaml-libvirt E<ge> 0.6.1.5
 
-Optional.  For building the optional virt-v2v test harness.
+Необов'язковий. Для збирання необов'язкового комплексу для тестування
+virt-v2v.
 
 =item Perl C<Module::Build> E<ge> 0.19
 
 =item Perl C<Test::More>
 
-Optional.  Used to build and test the Perl bindings.
+Необов'язкове. Використовується для збирання і тестування прив'язок Perl.
 
 =item Python E<ge> 2.2
 
-Optional.  Used to build the Python bindings.  For building Python 2 or
-Python 3 bindings, see L</BUILDING PYTHON 2 AND PYTHON 3 BINDINGS> below.
+Необов'язковий. Використовується для збирання прив'язок до Python. Опис
+збирання прив'язок для Python 2 або Python 3 наведено у розділі L</ЗБИРАННЯ
+ПРИВ'ЯЗОК ДО PYTHON 2 І PYTHON 3> нижче.
 
 =item Python C<unittest>
 
-Optional.  Used to run the Python testsuite.
+Необов'язкове. Використовується для запуску комплексу тестування Python.
 
 =item Ruby
 
@@ -351,12 +371,12 @@ Optional.  Used to run the Python testsuite.
 
 =item rubygem-rdoc
 
-Optional.  Used to build the Ruby bindings.
+Необов’язкове. Використовується для збирання прив’язок до Ruby.
 
 =item Java E<ge> 1.6
 
-Optional.  Java, JNI and jpackage-utils are needed for building Java
-bindings.
+Необов'язковий. Для збирання прив'язок до Java потрібні пакунки Java, JNI та
+jpackage-utils.
 
 =item GHC
 
@@ -374,7 +394,7 @@ bindings.
 
 =item gjs
 
-Optional.  Used to build and test the GObject bindings.
+Необов'язкове. Використовується для збирання і тестування прив'язок GObject.
 
 =item LUA
 
@@ -400,15 +420,15 @@ Optional.  Used to build and test the GObject bindings.
 
 =item libvirt-python
 
-Optional.  For testing Python libvirt/libguestfs interactions.
+Обов'язковий. Для тестування взаємодії libvirt/libguestfs з Python.
 
 =item Perl C<Win::Hivex>
 
-Optional.  Used by the L<virt-win-reg(1)> tool.
+Необов'язкове. Використовується програмою L<virt-win-reg(1)>.
 
 =item Perl C<Pod::Usage>
 
-Optional.  Used by some Perl virt tools.
+Необов'язкове. Використовується деякими інструментами віртуалізації Perl.
 
 =item Perl C<libintl>
 
@@ -416,18 +436,22 @@ Optional.  Used by some Perl virt tools.
 
 =item bash-completion
 
-Optional.  For tab-completion of commands in bash.
+Необов'язкове. Для доповнення команд у відповідь на натискання Tab у bash.
 
 =item libtsk
 
-Optional.  Library for filesystem forensics analysis.
+Необов'язкове. Бібліотека для докладного аналізу файлових систем.
+
+=item yara
+
+Необов'язкове. Для категоризації файлів на основі вмісту.
 
 =back
 
 =head1 ЗБИРАННЯ ІЗ GIT
 
-You will need to install additional dependencies C<autoconf>, C<automake>,
-C<gettext>, OCaml findlib and po4a when building from git.
+Для збирання з git вам знадобляться додаткові залежності — C<autoconf>,
+C<automake>, C<gettext>, findlib з OCaml та po4a.
 
  git clone https://github.com/libguestfs/libguestfs
  cd libguestfs
@@ -436,10 +460,10 @@ C<gettext>, OCaml findlib and po4a when building from git.
 
 =head1 ЗБИРАННЯ ІЗ АРХІВІВ TAR
 
-Tarballs are downloaded from L<http://download.libguestfs.org/>.  Stable
+Архіви tar отримуються з L<http://download.libguestfs.org/>.  Stable
 tarballs are signed with the GnuPG key for C<rich@annexia.org>, see
-L<https://pgp.mit.edu/pks/lookup?op=vindex&search=0x91738F73E1B768A0>.  The
-fingerprint is C<F777 4FB1 AD07 4A7E 8C87 67EA 9173 8F73 E1B7 68A0>.
+L<https://pgp.mit.edu/pks/lookup?op=vindex&search=0x91738F73E1B768A0>.
+Відбиток — C<F777 4FB1 AD07 4A7E 8C87 67EA 9173 8F73 E1B7 68A0>.
 
 Отримайте і розпакуйте архів.
 
@@ -449,52 +473,58 @@ fingerprint is C<F777 4FB1 AD07 4A7E 8C87 67EA 9173 8F73 E1B7 68A0>.
 
 =head1 ТЕСТУВАННЯ
 
-B<DO NOT run the tests as root!> Libguestfs can be built and tested as
-non-root.  Running the tests as root could even be dangerous, don't do it.
+B<НЕ ВИКОНУЙТЕ тестування від імені користувача root!> Libguestfs можна
+зібрати і перевірити без використання адміністративного облікового запису
+(root). Запуск тестів від імені користувача root може бути небезпечним, не
+робіть цього.
 
-To sanity check that the build worked, do:
+Для перевірки, чи працюватиме збирання, віддайте таку команду:
 
  make quickcheck
 
-To run the basic tests, do:
+Щоб запустити основні тести, віддайте таку команду:
 
  make check
 
-There are many more tests you can run.  See L<guestfs-hacking(1)> for
-details.
+Існує доволі багато інших тестів, які ви можете запустити. Опис цих тестів
+наведено у підручнику з L<guestfs-hacking(1)>.
 
 =head1 ВСТАНОВЛЕННЯ
 
-B<DO NOT use C<make install>!> You'll end up with conflicting versions of
-libguestfs installed, and this causes constant headaches for users.  See the
-next section for how to use the F<./run> script instead.
+B<НЕ КОРИСТУЙТЕСЯ командою C<make install>!> Її використання призведе до
+конфлікту встановлених версій libguestfs, а це ускладнить роботу
+користувачів. Замість використання цієї команди, ознайомтеся із описом
+використання F<./run>, наведеним у наступному розділі.
 
-Distro packagers can use:
+Пакувальники дистрибутивів можуть скористатися ось цим:
 
  make INSTALLDIRS=vendor DESTDIR=[temp-build-dir] install
 
 =head1 СКРИПТ ./run
 
-You can run L<guestfish(1)>, L<guestmount(1)> and the virt tools without
-needing to install them by using the F<./run> script in the top directory.
-This script works by setting several environment variables.
+Ви можете запускати L<guestfish(1)>, L<guestmount(1)> та інші інструменти
+віртуалізації без їхнього встановлення за допомогою скрипту F<./run> у
+кореневому каталозі розпакованого коду. Цей скрипт працює, встановлюючи
+декілька змінних середовища.
 
 Приклад:
 
  ./run guestfish [звичайні аргументи guestfish ...]
 
- ./run virt-inspector [usual virt-inspector args ...]
+ ./run virt-inspector [звичайні аргументи virt-inspector ...]
 
-The F<./run> script adds every libguestfs binary to the C<$PATH>, so the
-above examples run guestfish and virt-inspector from the build directory
-(not the globally installed guestfish if there is one).
+Скрипт F<./run> додає усі виконувані файли libguestfs до C<$PATH>, отже у
+наведених вище прикладах guestfish і virt-inspector запускаються із каталогу
+збирання (не із загального каталогу встановленого guestfish, якщо такий
+існує).
 
-You can use the script from any directory.  If you wanted to run your own
-libguestfs-using program, then the following command will also work:
+Ви можете скористатися скриптом з будь-якого каталогу. Якщо вам потрібно
+запустити вашу програму, яка використовує libguestfs, має спрацювати така
+команда:
 
- /path/to/libguestfs/run ./my_program [...]
+ /шлях/до/libguestfs/run ./ваша_програма [...]
 
-You can also run the C programs under valgrind like this:
+Також можна запускати програми C під керуванням valgrind ось так:
 
  ./run valgrind [параметри valgrind...] virt-cat [параметри virt-cat...]
 
@@ -502,12 +532,12 @@ You can also run the C programs under valgrind like this:
 
  ./run gdb --аргументи virt-cat [параметри virt-cat...]
 
-This also works with sudo (eg. if you need root access for libvirt or to
-access a block device):
+Це також працює із sudo (наприклад, якщо вам потрібен адміністративний
+доступ для libvirt або для доступу до блокового пристрою):
 
  sudo ./run virt-cat -d LinuxGuest /etc/passwd
 
-To set environment variables, you can either do:
+Для встановлення значення змінних середовища ви можете скористатися або цим:
 
  LIBGUESTFS_HV=/my/qemu ./run guestfish
 
@@ -515,15 +545,15 @@ To set environment variables, you can either do:
 
  ./run env LIBGUESTFS_HV=/my/qemu guestfish
 
-=head1 F<local*> ФАЙЛИ
+=head1 ФАЙЛИ F<local*>
 
-Files in the top source directory that begin with the prefix F<local*> are
-ignored by git.  These files can contain local configuration or scripts that
-you need to build libguestfs.
+Файли у кореневому каталозі коду, назви яких починаються з префікса
+F<local*>, буде проігноровано git. Ці файли можуть містити локальні
+налаштування або скрипти, які потрібні для збирання libguestfs.
 
-I have a file called F<localconfigure> which is a simple wrapper around
-F<autogen.sh> containing local configure customizations that I need.  It
-looks like this:
+Можна створити файл із назвою F<localconfigure>, який буде простою обгорткою
+F<autogen.sh>, яка міститиме локальні зміни у налаштуваннях. Його вміст
+виглядатиме так:
 
  . localenv
  ./autogen.sh \
@@ -531,22 +561,22 @@ looks like this:
      --enable-werror \
      "$@"
 
-So I can use this to build libguestfs:
+Далі, ви зможете скористатися цим файлом для збирання libguestfs:
 
  ./localconfigure && make
 
-If there is a file in the top build directory called F<localenv>, then it
-will be sourced by C<make>.  This file can contain any local environment
-variables needed, eg. for skipping tests:
+Якщо у кореневому каталозі збирання буде файл із назвою F<localenv>, C<make>
+обробить його вміст. У цьому файлі можуть міститися усі потрібні змінні
+середовища, наприклад змінні для пропускання тестів:
 
  # Використовувати інший інтерпретатор python.
  export PYTHON=python3
  # Пропустити цю перевірку, вона не працює.
  export SKIP_TEST_BTRFS_FSCK=1
 
-Note that F<localenv> is included by the top Makefile (so it's a Makefile
-fragment).  But if it is also sourced by your F<localconfigure> script then
-it is used as a shell script.
+Зауважте, що F<localenv> включається до Makefile верхнього рівня (стає
+частиною Makefile). Але, якщо цей файл обробляється також вашим скриптом
+F<localconfigure>, його буде використано як скрипт оболонки.
 
 =head1 ВИБРАНІ ПАРАМЕТРИ ./configure
 
@@ -561,7 +591,7 @@ it is used as a shell script.
 
 =item B<--disable-appliance --disable-daemon>
 
-See L</USING A PREBUILT BINARY APPLIANCE> below.
+Див. L</ВИКОРИСТАННЯ ПОПЕРЕДНЬО ЗІБРАНОЇ БІНАРНОЇ ОСНОВНОЇ СИСТЕМИ> нижче.
 
 =item B<--disable-erlang>
 
@@ -583,144 +613,168 @@ See L</USING A PREBUILT BINARY APPLIANCE> below.
 
 =item B<--disable-ruby>
 
-Disable specific language bindings, even if C<./configure> finds all the
-necessary libraries are installed so that they could be compiled.
+Вимкнути вказані прив'язки до мов, навіть якщо C<./configure> знайде усі
+потрібні бібліотеки і ці прив'язки можна буде зібрати.
 
-Note that disabling OCaml or Perl will have the knock-on effect of disabling
-large numbers of virt tools and parts of the test suite.
+Зауважте, що вимикання OCaml (прив'язок) або Perl призведе до того, що буде
+вимкнено частину комплексу засобів тестування та деякі інструменти.
+
+Для збирання libguestfs необхідний OCaml. Цю залежність не можна
+вилучити. Використання прапорця I<--disable-ocaml> вимикає лише збирання
+прив'язок та інструментів мовою OCaml.
 
 =item B<--disable-fuse>
 
-Disable FUSE support in the API and the L<guestmount(1)> tool.
+Вимкнути підтримку FUSE у програмному інтерфейсі і програмі
+L<guestmount(1)>.
 
 =item B<--disable-gnulib-tests>
 
-On some platforms the GNUlib test suite can be flaky.  This disables it,
-since errors in the GNUlib test suite are often not important.
+На деяких платформах працездатність комплексу тестування GNUlib перебуває
+під сумнівом. За допомогою цього прапорця можна вимкнути комплекс
+тестування, оскільки помилки, на які вказує GNUlib, часто є несуттєвими.
 
 =item B<--disable-static>
 
-Don't build a static linked version of the libguestfs library.
+Не збирати версії бібліотеки libguestfs зі статичною прив'язкою.
 
 =item B<--enable-install-daemon>
 
-Normally L<guestfsd(8)> is not installed by C<make install>, since that
-wouldn't be useful (instead it is "installed" inside the supermin
-appliance).  However if packagers are building "libguestfs live" then they
-should use this option.
+Зазвичай, L<guestfsd(8)> не встановлюється C<make install>, оскільки ця
+фонова служба у основній системі непотрібна (вона корисна, лише коли її
+«встановлено» у базовій системі supermin). Втім, якщо пакувальники збирають
+«портативну версію libguestfs», їм слід скористатися цим параметром.
 
 =item B<--enable-werror>
 
-This turns compiler warnings into errors (ie. C<-Werror>).  Use this for
-development, especially when submitting patches.  It should generally I<not>
-be used for production or distro builds.
+За допомогою цього параметра можна перетворити попередження на помилки
+(тобто додати C<-Werror>). Скористайтеся цим параметром для розробки,
+особливо, якщо надсилатимете латки. Загалом, цей параметр I<не> слід
+використовувати для робочих або дистрибутивних збірок.
 
 =item B<--with-default-backend=libvirt>
 
-This controls the default method that libguestfs uses to run qemu (see
-L<guestfs(3)/BACKEND>).  If not specified, the default backend is C<direct>,
-which means libguestfs runs qemu directly.
+Визначає типовий спосіб, у який libguestfs запускає qemu
+(див. L<guestfs(3)/МОДУЛЬ>). Якщо не вказано, типовим модулем буде
+C<direct>, що означає, що libguestfs запускатиме qemu безпосередньо.
 
-Fedora and Red Hat Enterprise Linux (RHEL) E<ge> 7 use this flag to change
-the default backend to C<libvirt>, because (especially in RHEL)  the policy
-is not to allow any program to run qemu except via libvirt.
+У Fedora і Red Hat Enterprise Linux (RHEL) E<ge> 7 цим прапорцем можна
+скористатися для зміни типового модуля обробки на C<libvirt>, оскільки
+(особливо у RHEL) правила безпеки забороняють запуск qemu, інакше як за
+допомогою libvirt.
 
-Note that despite this setting, all backends are built into libguestfs, and
-you can override the backend at runtime by setting the
-C<$LIBGUESTFS_BACKEND> environment variable (or using API methods).
+Зауважте, що незважаючи на цей параметр, у libguestfs збираються усі модулі
+обробки, і ви можете перевизначити модуль обробки під час запуску програм
+встановленням змінної середовища C<$LIBGUESTFS_BACKEND> (або за допомогою
+програмних інтерфейсів).
+
+=item B<--with-distro=REDHAT|DEBIAN|...>
+
+Libguestfs потребує відомостей, який дистрибутив Linux використовується, щоб
+бібліотека могла вибрати назви пакунків базової системи належним чином
+(див., наприклад, F<appliance/packagelist.in>). Зазвичай, це завдання
+виконується автоматично.
+
+Втім, якщо ви збираєте і пакуєте libguestfs у новому дистрибутиві, ви можете
+скористатися I<--with-distro>, щоб вказати, що дистрибутив є подібним до
+наявного (наприклад, I<--with-distro=REDHAT>, якщо дистрибутив є новою
+похідною від Red Hat або CentOS).
+
+Зауважте, що якщо ваш дистрибутив є повністю новим, він може потребувати
+внесення змін до основної гілки коду бібліотеки.
 
 =item B<--with-extra=">I<назва_дистрибутива>=I<версія>,libvirt,...B<">
 
 =item B<--with-extra="local">
 
-This option controls the "extra" field returned by
-L<guestfs(3)/guestfs_version> and also printed by virt tools' I<--version>
-option.  It is a free text field, but a good idea is to encode a
-comma-separated list of facts such as the distro name and version, whether
-libvirt is the default backend, and anything else that may help with
-debugging problems raised by users.
+Цей параметр визначає вміст поля «extra», яке повертає
+L<guestfs(3)/guestfs_version>, а також виводиться параметром I<--version>
+засобів віртуалізації. Вміст цього поля є довільним, втім, слід записати до
+нього список відокремлених комами фактів, зокрема щодо назви і версії
+бібліотеки, те, чи libvirt є типовим модулем обробки, і взагалі усе, що може
+допомогти користувачам із діагностичними проблемами.
 
-For custom and/or local builds, this can be set to C<local> to indicate this
-is I<not> a distro build.
+Для нетипових і/або локальних збірок можете встановити для цього параметра
+значення C<local>, щоб позначити, що це I<не> дистрибутивна збірка.
 
 =item B<--without-libvirt>
 
-Compile libguestfs without libvirt support, even if libvirt development
-libraries are installed.
+Зібрати libguestfs без підтримки libvirt, навіть якщо буде виявлено
+встановлені бібліотеки для розробки libvirt.
 
 =item B<--with-gtk=2>
 
-This option forces virt-p2v to be built against Gtk 2, which is currently
-the most widely tested configuration.
+Цей параметр примусово визначає для virt-p2v збирання із Gtk 2, у
+конфігурації, яка у поточній версії є найкраще перевіреною.
 
 =item B<--with-qemu=">виконуваний файл1 виконуваний файл2 ...B<">
 
-Provide an alternate qemu binary (or list of binaries).  This can be
-overridden at runtime by setting the C<LIBGUESTFS_HV> environment variable.
-
-=item B<--with-qemu-options=">-M ... -cpu ...B<">
-
-If qemu requires extra options to work on this platform, you can pass them
-here, and they will be used both when testing and running qemu.
+Визначає альтернативний виконуваний файл qemu (або список виконуваних
+файлів). Назву виконуваного файла можна змінити встановленням значення
+змінної середовища C<LIBGUESTFS_HV>.
 
 =item B<--with-supermin-packager-config=>I<yum.conf>
 
-This passes the I<--packager-config> option to L<supermin(1)>.
+Передає параметр I<--packager-config> до L<supermin(1)>.
 
-The most common use for this is to build the appliance using an alternate
-repository (instead of using the installed yum/dnf/apt/etc configuration to
-find and download packages).  You might need to use this if you want to
-build libguestfs without having a network connection.  Examples of using
-this can be found in the Fedora C<libguestfs.spec> file (see L</BUILDING A
-PACKAGE FOR FEDORA> below for resources).
+Найпоширенішим випадком використання цього параметра є збирання базової
+системи за допомогою альтернативного сховища пакунків (замість використання
+встановлених налаштувань yum, dnf, apt тощо для пошуку і отримання
+пакунків). Можливо, вам захочеться скористатися цим, якщо ви захочете
+зібрати libguestfs без використання з'єднання із мережею. Приклади
+використання цього параметра можна знайти у файлі C<libguestfs.spec> для
+Fedora (див. L</ЗБИРАННЯ ПАКУНКА ДЛЯ FEDORA> нижче, щоб дізнатися більше).
 
-=item B<--with-supermin-extra-options=">--opt1 --opt2 ...B<">
+=item B<--with-supermin-extra-options=">--парам1 --парам2 ...B<">
 
-Pass additional options to L<supermin(1)>.  See F<appliance/make.sh.in> to
-understand precisely what this does.
+Передати додаткові параметри L<supermin(1)>. Див. F<appliance/make.sh.in>,
+щоб зрозуміти, як саме це слід робити.
 
 =item B<PYTHON>
 
-This environment variable may be set to point to a python binary
-(eg. C<python3>).  When C<./configure> runs, it inspects this python binary
-to find the version of Python, the location of Python libraries and so on.
-See L</BUILDING PYTHON 2 AND PYTHON 3 BINDINGS> below.
+Цією змінною середовища можна скористатися для того, щоб вказати виконуваний
+файл python (наприклад, C<python3>). Під час запуску C<./configure> програма
+виконує визначення версії цього виконуваного файла Python, розташування
+бібліотек Python тощо. Див. L</ЗБИРАННЯ ПРИВ'ЯЗОК ДО PYTHON 2 І PYTHON 3>
+нижче.
 
 =item B<SUPERMIN>
 
-This environment variable can be set to choose an alternative L<supermin(1)>
-binary.  This might be used, for example, if you want to use a newer
-upstream version of supermin than is packaged for your distro, or if
-supermin is not packaged at all.  On RHEL 7, you must set
-C<SUPERMIN=/usr/bin/supermin5> when compiling libguestfs.
+Цією змінною середовища можна скористатися для вибору альтернативного
+виконуваного файла L<supermin(1)>. Вона може пригодитися, якщо ви хочете
+скористатися новішою версією supermin, ніж та, яка є частиною пакунків
+вашого дистрибутива, або якщо у вашому дистрибутиві взагалі немає пакунка
+supermin. У RHEL 7 вам слід встановити C<SUPERMIN=/usr/bin/supermin5> під
+час збирання libguestfs.
 
 =back
 
 =head1 НОТАТКИ ЩОДО QEMU І KVM
 
-A common problem is with broken or incompatible qemu releases.
+Типовою проблемою є помилкові або несумісні випуски qemu.
 
-Different versions of qemu have problems booting the appliance for different
-reasons.  This varies between versions of qemu, and Linux distributions
-which add their own patches.
+У різних версіях qemu можуть із різних причин виникати проблеми із
+завантаженням базової системи. Проблеми залежать від версії qemu та
+дистрибутивів Linux, які можуть накладати на код пакунка різні латки.
 
-If you find a problem, you could try using your own qemu built from source
-(qemu is very easy to build from source), with a "qemu wrapper".  See
-L<guestfs(3)/QEMU WRAPPERS>.
+Якщо вами буде виявлено проблему, ви можете спробувати скористатися власним
+зібраним із початкових кодів виконуваним файлом qemu (qemu дуже просто
+зібрати із початкових кодів) за допомогою «обгортки
+qemu». Див. L<guestfs(3)/ОБГОРТКИ QEMU>.
 
-By default the configure script will look for qemu-kvm (KVM support).  KVM
-is much faster than using plain qemu.
+Типово, скрипт налаштовування шукатиме qemu-kvm (підтримку KVM). KVM є
+набагато швидшим за звичайний qemu.
 
-You may also need to enable KVM support for non-root users, by following
-these instructions:
+Крім того, може виникнути потреба у вмиканні підтримки KVM для користувачів,
+відмінних від root. Слід скористатися цими настановами:
 L<http://www.linux-kvm.org/page/FAQ#How_can_I_use_kvm_with_a_non-privileged_user.3F>
 
-On some systems, this will work too:
+У деяких системах таке теж спрацює:
 
  chmod 0666 /dev/kvm
 
-On some systems, the chmod will not survive a reboot, and you will need to
-make edits to the udev configuration.
+У деяких системах, де зміна режиму доступу не переживає перезавантаження
+системи, вам доведеться внести зміни до налаштувань udev.
 
 =head1 ВИКОРИСТАННЯ CLANG (LLVM) ЗАМІСТЬ GCC
 
@@ -728,101 +782,108 @@ make edits to the udev configuration.
  ./configure
  make
 
-=head1 USING A PREBUILT BINARY APPLIANCE
+=head1 ВИКОРИСТАННЯ ПОПЕРЕДНЬО ЗІБРАНОЇ БІНАРНОЇ ОСНОВНОЇ СИСТЕМИ
 
-To understand what the libguestfs appliance means, see
-L<guestfs-internals(1)>.
+Щоб зрозуміти, що таке базова система libguestfs,
+див. L<guestfs-internals(1)>.
 
-If you are using non-Linux, or a Linux distribution that does not have
-L<supermin(1)> support, or simply if you don't want to build your own
-libguestfs appliance, then you can use one of the prebuilt binary appliances
-that we supply: L<http://libguestfs.org/download/binaries/appliance>
+Якщо ви користуєтеся операційною системою, відмінною від Linux, або
+дистрибутивом Linux, у якому немає пакунка L<supermin(1)>, або просто не
+хочете збирати власну базову систему libguestfs, ви можете скористатися
+попередньо зібраними двійковими базовими системами, які ми постачаємо:
+L<http://libguestfs.org/download/binaries/appliance>
 
-Build libguestfs like this:
+Зберіть libguestfs ось таким чином:
 
  ./configure --disable-appliance --disable-daemon
  make
 
-Set C<$LIBGUESTFS_PATH> to the path where you unpacked the appliance
-tarball, eg:
+Встановіть для змінної C<$LIBGUESTFS_PATH> значення шляху, до якого ви
+розпакували архів tar із базовою системою, ось так:
 
  export LIBGUESTFS_PATH=/usr/local/lib/guestfs/appliance
 
-and run the libguestfs programs and virt tools in the normal way, eg. using
-the F<./run> script (see above).
+і запускайте програми libguestfs та засоби віртуалізації у звичайний спосіб,
+наприклад, за допомогою скрипту F<./run> (див. вище).
 
 =head1 ЗБИРАННЯ ПРИВ’ЯЗОК ДО PYTHON 2 І PYTHON 3
 
-The F<./configure> script detects the currently installed version of Python
-using whatever program is called C<python> in the current C<$PATH>.
-Libguestfs will build Python 2 or Python 3 bindings as appropriate.
+Скрипт F<./configure> визначає поточну встановлену версію Python на основі
+даних будь-якої програми, яка називається C<python> і зберігається у одному
+з каталогів, описаних у змінній C<$PATH>. Libguestfs збиратиме, відповідно,
+прив'язки до Python 2 або до Python 3.
 
-You can override this behaviour by specifying an alternate Python binary,
-eg:
+Ви можете перевизначити цю поведінку, якщо вкажете альтернативний
+виконуваний файл Python. Приклад:
 
  PYTHON=/usr/bin/python3 ./configure
 
-To build parallel Python 2 and Python 3 bindings, you will need to build
-libguestfs twice.  The second time, you can disable all the other bindings
-and tools and just build the Python bindings.  See the Fedora spec file (see
-below) for a complete example of how to do this.
+Щоб зібрати одночасно прив'язки до Python 2 і Python 3, вам доведеться
+збирати libguestfs двічі. Під час другого збирання ви можете вимкнути усі
+інші прив'язки та інструменти і зібрати лише прив'язки до Python. Із повним
+прикладом того, як це зробити, можна ознайомитися за допомогою файла spec з
+Fedora (див. нижче).
 
 =head1 ЗБИРАННЯ ПАКУНКА ДЛЯ FEDORA
 
 Файл spec для Fedora зберігається тут:
 L<http://pkgs.fedoraproject.org/cgit/rpms/libguestfs.git/>
 
-Libguestfs is built in Fedora using the ordinary Fedora build system (Koji).
+Libguestfs зібрано у Fedora за допомогою типової системи збирання Fedora
+(Koji).
 
-=head1 BUILDING A PACKAGE FOR RED HAT ENTERPRISE LINUX
+=head1 ЗБИРАННЯ ПАКУНКА ДЛЯ RED HAT ENTERPRISE LINUX
 
-Red Hat Enterprise Linux (RHEL) builds of libguestfs are heavily patched.
-There are broadly two types of patches we apply:
+Збірки libguestfs для Red Hat Enterprise Linux (RHEL) містять дуже багато
+латок. Загалом, ці латки можна поділити на два типи:
 
 =over 4
 
 =item *
 
-We disable many features that we do not wish to support for RHEL customers.
-For example, the "libguestfs live" feature is disabled.
+Вимикання багатьох можливостей, підтримку яких ми не хочемо здійснювати для
+користувачів RHEL. Наприклад, ми вимикаємо підтримку можливості «libguestfs
+live».
 
 =item *
 
-We backport upstream features.
+Ми виконуємо зворотне портування можливостей основної версії.
 
 =back
 
-The patches we apply to RHEL releases are available publically in the
-upstream git repository, in a branch called C<rhel-x.y>
+Латки, які ми застосовуємо для випусків RHEL загально доступні у нашому
+основному сховищі коду git, гілка називається C<rhel-x.y>
 
-For example, the RHEL 7.3 patches are available here:
+Наприклад, із латками для RHEL 7.3 можна ознайомитися тут:
 L<https://github.com/libguestfs/libguestfs/commits/rhel-7.3>
 
-The sources and spec files for RHEL versions of libguestfs are available on
-L<https://git.centos.org/project/rpms>, and see also
-L<https://wiki.centos.org/Sources>.
+Початкові коди і файли spec для версії libguestfs для RHEL можна знайти на
+сторінці L<https://git.centos.org/project/rpms>. Також варто ознайомитися із
+вмістом сторінки L<https://wiki.centos.org/Sources>.
 
-=head1 BUILDING i686 32 BIT VIRT-P2V
+=head1 ЗБИРАННЯ VIRT-P2V ДЛЯ 32-БІТОВОЇ АРХІТЕКТУРИ i686
 
 I<(Цей розділ стосується лише архітектури x86-64.)>
 
-Building a 32 bit virt-p2v (i686) binary improves compatibility with older
-hardware.  See L<virt-p2v-make-disk(1)> for details.  Although virt-p2v is a
-simple Gtk application, it is not especially easy to build just virt-p2v as
-a 32 bit application on a 64 bit host.  Usually the simplest way is to use a
-32 bit chroot or even a 32 bit virtual machine to build libguestfs.
+Збирання 32-бітової версії виконуваного файла virt-p2v (i686) покращує
+сумісність із застарілим обладнанням. Докладніший опис наведено у підручнику
+з L<virt-p2v-make-disk(1)>. Хоча virt-p2v є простою програмою на основі Gtk,
+зібрати 32-бітову версію програми virt-p2v на 64-бітовій основній системі
+доволі непросто. Зазвичай, найпростішим способом є використання 32-бітової
+пісочниці chroot або навіть 32-бітової віртуальної машини для збирання
+libguestfs.
 
 У Fedora ви можете скористатися інструментом L<mock(1)>. Приклад:
 
  fedpkg mockbuild --root fedora-23-i386
 
-This will result in a F<virt-v2v-*.i686.rpm> file which can be unpacked to
-extract the 32 bit virt-p2v binary.
+У результаті буде створено файл F<virt-v2v-*.i686.rpm>, який можна
+розпакувати для видобування 32-бітового виконуваного файла virt-p2v.
 
-The binary may be compressed to either F<p2v/virt-p2v.i686.xz>, or
-F<$libdir/virt-p2v/virt-p2v.i686.xz> or
-F<$VIRT_P2V_DATA_DIR/virt-p2v.i686.xz> as appropriate.  This enables the
-L<virt-p2v-make-disk(1)> I<--arch> option.
+Виконуваний файл може бути стиснуто у F<p2v/virt-p2v.i686.xz>,
+F<$libdir/virt-p2v/virt-p2v.i686.xz> або
+F<$VIRT_P2V_DATA_DIR/virt-p2v.i686.xz>. Це вмикає параметр  I<--arch>
+L<virt-p2v-make-disk(1)>.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -838,5 +899,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

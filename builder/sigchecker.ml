@@ -16,9 +16,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Common_gettext.Gettext
-open Common_utils
+open Std_utils
+open Tools_utils
 open Unix_utils
+open Common_gettext.Gettext
 
 open Utils
 
@@ -42,7 +43,7 @@ let import_keyfile ~gpg ~gpghome ~tmpdir ?(trust = true) keyfile =
     (if verbose () then "" else " >/dev/null 2>&1") in
   let r = shell_command cmd in
   if r <> 0 then
-    error (f_"could not import public key\nUse the '-v' option and look for earlier error messages.");
+    error (f_"could not import public key\nUse the ‘-v’ option and look for earlier error messages.");
   let status = read_whole_file status_file in
   let status = String.nsplit "\n" status in
   let key_id = ref "" in
@@ -61,7 +62,7 @@ let import_keyfile ~gpg ~gpghome ~tmpdir ?(trust = true) keyfile =
       (if verbose () then "" else " >/dev/null 2>&1") in
     let r = shell_command cmd in
     if r <> 0 then
-      error (f_"GPG failure: could not trust the imported key\nUse the '-v' option and look for earlier error messages.");
+      error (f_"GPG failure: could not trust the imported key\nUse the ‘-v’ option and look for earlier error messages.");
   );
   let subkeys =
     (* --with-fingerprint is specified twice so gpg outputs the full
@@ -81,7 +82,7 @@ let import_keyfile ~gpg ~gpghome ~tmpdir ?(trust = true) keyfile =
           (match !current with
           | None -> ()
           | Some k ->
-            if String.is_suffix id k then push_front id subkeys;
+            if String.is_suffix id k then List.push_front id subkeys;
             current := None
           )
         | _ -> ()
@@ -106,7 +107,7 @@ let rec create ~gpg ~gpgkey ~check_signature ~tmpdir =
         gpg gpgtmpdir (if verbose () then "" else " >/dev/null 2>&1") in
       let r = shell_command cmd in
       if r <> 0 then
-        error (f_"GPG failure: could not run GPG the first time\nUse the '-v' option and look for earlier error messages.");
+        error (f_"GPG failure: could not run GPG the first time\nUse the ‘-v’ option and look for earlier error messages.");
       match gpgkey with
       | No_Key ->
         assert false
@@ -119,7 +120,7 @@ let rec create ~gpg ~gpgkey ~check_signature ~tmpdir =
           (if verbose () then "" else " >/dev/null 2>&1") in
         let r = shell_command cmd in
         if r <> 0 then
-          error (f_"could not export public key\nUse the '-v' option and look for earlier error messages.");
+          error (f_"could not export public key\nUse the ‘-v’ option and look for earlier error messages.");
         import_keyfile gpg gpgtmpdir tmpdir filename
     ) else
       "", [] in
@@ -199,7 +200,7 @@ and do_verify ?(verify_only = true) t args =
         (quote status_file) args in
   let r = shell_command cmd in
   if r <> 0 then
-    error (f_"GPG failure: could not verify digital signature of file\nTry:\n - Use the '-v' option and look for earlier error messages.\n - Delete the cache: virt-builder --delete-cache\n - Check no one has tampered with the website or your network!");
+    error (f_"GPG failure: could not verify digital signature of file\nTry:\n - Use the ‘-v’ option and look for earlier error messages.\n - Delete the cache: virt-builder --delete-cache\n - Check no one has tampered with the website or your network!");
 
   (* Check the fingerprint is who it should be. *)
   let status = read_whole_file status_file in

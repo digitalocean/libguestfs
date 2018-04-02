@@ -39,78 +39,63 @@
 PyObject *
 guestfs_int_py_put_application (struct guestfs_application *application)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "app_name",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_name));
-#else
-                        PyUnicode_FromString (application->app_name));
-#endif
-  PyDict_SetItemString (dict, "app_display_name",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_display_name));
-#else
-                        PyUnicode_FromString (application->app_display_name));
-#endif
-  PyDict_SetItemString (dict, "app_epoch",
-                        PyLong_FromLong (application->app_epoch));
-  PyDict_SetItemString (dict, "app_version",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_version));
-#else
-                        PyUnicode_FromString (application->app_version));
-#endif
-  PyDict_SetItemString (dict, "app_release",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_release));
-#else
-                        PyUnicode_FromString (application->app_release));
-#endif
-  PyDict_SetItemString (dict, "app_install_path",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_install_path));
-#else
-                        PyUnicode_FromString (application->app_install_path));
-#endif
-  PyDict_SetItemString (dict, "app_trans_path",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_trans_path));
-#else
-                        PyUnicode_FromString (application->app_trans_path));
-#endif
-  PyDict_SetItemString (dict, "app_publisher",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_publisher));
-#else
-                        PyUnicode_FromString (application->app_publisher));
-#endif
-  PyDict_SetItemString (dict, "app_url",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_url));
-#else
-                        PyUnicode_FromString (application->app_url));
-#endif
-  PyDict_SetItemString (dict, "app_source_package",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_source_package));
-#else
-                        PyUnicode_FromString (application->app_source_package));
-#endif
-  PyDict_SetItemString (dict, "app_summary",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_summary));
-#else
-                        PyUnicode_FromString (application->app_summary));
-#endif
-  PyDict_SetItemString (dict, "app_description",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application->app_description));
-#else
-                        PyUnicode_FromString (application->app_description));
-#endif
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (application->app_name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_name", value);
+  value = guestfs_int_py_fromstring (application->app_display_name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_display_name", value);
+  value = PyLong_FromLong (application->app_epoch);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_epoch", value);
+  value = guestfs_int_py_fromstring (application->app_version);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_version", value);
+  value = guestfs_int_py_fromstring (application->app_release);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_release", value);
+  value = guestfs_int_py_fromstring (application->app_install_path);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_install_path", value);
+  value = guestfs_int_py_fromstring (application->app_trans_path);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_trans_path", value);
+  value = guestfs_int_py_fromstring (application->app_publisher);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_publisher", value);
+  value = guestfs_int_py_fromstring (application->app_url);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_url", value);
+  value = guestfs_int_py_fromstring (application->app_source_package);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_source_package", value);
+  value = guestfs_int_py_fromstring (application->app_summary);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_summary", value);
+  value = guestfs_int_py_fromstring (application->app_description);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app_description", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -118,108 +103,83 @@ guestfs_int_py_put_application (struct guestfs_application *application)
 PyObject *
 guestfs_int_py_put_application2 (struct guestfs_application2 *application2)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "app2_name",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_name));
-#else
-                        PyUnicode_FromString (application2->app2_name));
-#endif
-  PyDict_SetItemString (dict, "app2_display_name",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_display_name));
-#else
-                        PyUnicode_FromString (application2->app2_display_name));
-#endif
-  PyDict_SetItemString (dict, "app2_epoch",
-                        PyLong_FromLong (application2->app2_epoch));
-  PyDict_SetItemString (dict, "app2_version",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_version));
-#else
-                        PyUnicode_FromString (application2->app2_version));
-#endif
-  PyDict_SetItemString (dict, "app2_release",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_release));
-#else
-                        PyUnicode_FromString (application2->app2_release));
-#endif
-  PyDict_SetItemString (dict, "app2_arch",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_arch));
-#else
-                        PyUnicode_FromString (application2->app2_arch));
-#endif
-  PyDict_SetItemString (dict, "app2_install_path",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_install_path));
-#else
-                        PyUnicode_FromString (application2->app2_install_path));
-#endif
-  PyDict_SetItemString (dict, "app2_trans_path",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_trans_path));
-#else
-                        PyUnicode_FromString (application2->app2_trans_path));
-#endif
-  PyDict_SetItemString (dict, "app2_publisher",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_publisher));
-#else
-                        PyUnicode_FromString (application2->app2_publisher));
-#endif
-  PyDict_SetItemString (dict, "app2_url",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_url));
-#else
-                        PyUnicode_FromString (application2->app2_url));
-#endif
-  PyDict_SetItemString (dict, "app2_source_package",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_source_package));
-#else
-                        PyUnicode_FromString (application2->app2_source_package));
-#endif
-  PyDict_SetItemString (dict, "app2_summary",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_summary));
-#else
-                        PyUnicode_FromString (application2->app2_summary));
-#endif
-  PyDict_SetItemString (dict, "app2_description",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_description));
-#else
-                        PyUnicode_FromString (application2->app2_description));
-#endif
-  PyDict_SetItemString (dict, "app2_spare1",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_spare1));
-#else
-                        PyUnicode_FromString (application2->app2_spare1));
-#endif
-  PyDict_SetItemString (dict, "app2_spare2",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_spare2));
-#else
-                        PyUnicode_FromString (application2->app2_spare2));
-#endif
-  PyDict_SetItemString (dict, "app2_spare3",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_spare3));
-#else
-                        PyUnicode_FromString (application2->app2_spare3));
-#endif
-  PyDict_SetItemString (dict, "app2_spare4",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (application2->app2_spare4));
-#else
-                        PyUnicode_FromString (application2->app2_spare4));
-#endif
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (application2->app2_name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_name", value);
+  value = guestfs_int_py_fromstring (application2->app2_display_name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_display_name", value);
+  value = PyLong_FromLong (application2->app2_epoch);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_epoch", value);
+  value = guestfs_int_py_fromstring (application2->app2_version);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_version", value);
+  value = guestfs_int_py_fromstring (application2->app2_release);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_release", value);
+  value = guestfs_int_py_fromstring (application2->app2_arch);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_arch", value);
+  value = guestfs_int_py_fromstring (application2->app2_install_path);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_install_path", value);
+  value = guestfs_int_py_fromstring (application2->app2_trans_path);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_trans_path", value);
+  value = guestfs_int_py_fromstring (application2->app2_publisher);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_publisher", value);
+  value = guestfs_int_py_fromstring (application2->app2_url);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_url", value);
+  value = guestfs_int_py_fromstring (application2->app2_source_package);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_source_package", value);
+  value = guestfs_int_py_fromstring (application2->app2_summary);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_summary", value);
+  value = guestfs_int_py_fromstring (application2->app2_description);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_description", value);
+  value = guestfs_int_py_fromstring (application2->app2_spare1);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_spare1", value);
+  value = guestfs_int_py_fromstring (application2->app2_spare2);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_spare2", value);
+  value = guestfs_int_py_fromstring (application2->app2_spare3);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_spare3", value);
+  value = guestfs_int_py_fromstring (application2->app2_spare4);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "app2_spare4", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -227,24 +187,35 @@ guestfs_int_py_put_application2 (struct guestfs_application2 *application2)
 PyObject *
 guestfs_int_py_put_btrfsbalance (struct guestfs_btrfsbalance *btrfsbalance)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "btrfsbalance_status",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (btrfsbalance->btrfsbalance_status));
-#else
-                        PyUnicode_FromString (btrfsbalance->btrfsbalance_status));
-#endif
-  PyDict_SetItemString (dict, "btrfsbalance_total",
-                        PyLong_FromUnsignedLongLong (btrfsbalance->btrfsbalance_total));
-  PyDict_SetItemString (dict, "btrfsbalance_balanced",
-                        PyLong_FromUnsignedLongLong (btrfsbalance->btrfsbalance_balanced));
-  PyDict_SetItemString (dict, "btrfsbalance_considered",
-                        PyLong_FromUnsignedLongLong (btrfsbalance->btrfsbalance_considered));
-  PyDict_SetItemString (dict, "btrfsbalance_left",
-                        PyLong_FromUnsignedLongLong (btrfsbalance->btrfsbalance_left));
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (btrfsbalance->btrfsbalance_status);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsbalance_status", value);
+  value = PyLong_FromUnsignedLongLong (btrfsbalance->btrfsbalance_total);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsbalance_total", value);
+  value = PyLong_FromUnsignedLongLong (btrfsbalance->btrfsbalance_balanced);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsbalance_balanced", value);
+  value = PyLong_FromUnsignedLongLong (btrfsbalance->btrfsbalance_considered);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsbalance_considered", value);
+  value = PyLong_FromUnsignedLongLong (btrfsbalance->btrfsbalance_left);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsbalance_left", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -252,20 +223,27 @@ guestfs_int_py_put_btrfsbalance (struct guestfs_btrfsbalance *btrfsbalance)
 PyObject *
 guestfs_int_py_put_btrfsqgroup (struct guestfs_btrfsqgroup *btrfsqgroup)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "btrfsqgroup_id",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (btrfsqgroup->btrfsqgroup_id));
-#else
-                        PyUnicode_FromString (btrfsqgroup->btrfsqgroup_id));
-#endif
-  PyDict_SetItemString (dict, "btrfsqgroup_rfer",
-                        PyLong_FromUnsignedLongLong (btrfsqgroup->btrfsqgroup_rfer));
-  PyDict_SetItemString (dict, "btrfsqgroup_excl",
-                        PyLong_FromUnsignedLongLong (btrfsqgroup->btrfsqgroup_excl));
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (btrfsqgroup->btrfsqgroup_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsqgroup_id", value);
+  value = PyLong_FromUnsignedLongLong (btrfsqgroup->btrfsqgroup_rfer);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsqgroup_rfer", value);
+  value = PyLong_FromUnsignedLongLong (btrfsqgroup->btrfsqgroup_excl);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsqgroup_excl", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -273,40 +251,75 @@ guestfs_int_py_put_btrfsqgroup (struct guestfs_btrfsqgroup *btrfsqgroup)
 PyObject *
 guestfs_int_py_put_btrfsscrub (struct guestfs_btrfsscrub *btrfsscrub)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "btrfsscrub_data_extents_scrubbed",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_data_extents_scrubbed));
-  PyDict_SetItemString (dict, "btrfsscrub_tree_extents_scrubbed",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_tree_extents_scrubbed));
-  PyDict_SetItemString (dict, "btrfsscrub_data_bytes_scrubbed",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_data_bytes_scrubbed));
-  PyDict_SetItemString (dict, "btrfsscrub_tree_bytes_scrubbed",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_tree_bytes_scrubbed));
-  PyDict_SetItemString (dict, "btrfsscrub_read_errors",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_read_errors));
-  PyDict_SetItemString (dict, "btrfsscrub_csum_errors",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_csum_errors));
-  PyDict_SetItemString (dict, "btrfsscrub_verify_errors",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_verify_errors));
-  PyDict_SetItemString (dict, "btrfsscrub_no_csum",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_no_csum));
-  PyDict_SetItemString (dict, "btrfsscrub_csum_discards",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_csum_discards));
-  PyDict_SetItemString (dict, "btrfsscrub_super_errors",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_super_errors));
-  PyDict_SetItemString (dict, "btrfsscrub_malloc_errors",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_malloc_errors));
-  PyDict_SetItemString (dict, "btrfsscrub_uncorrectable_errors",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_uncorrectable_errors));
-  PyDict_SetItemString (dict, "btrfsscrub_unverified_errors",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_unverified_errors));
-  PyDict_SetItemString (dict, "btrfsscrub_corrected_errors",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_corrected_errors));
-  PyDict_SetItemString (dict, "btrfsscrub_last_physical",
-                        PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_last_physical));
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_data_extents_scrubbed);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_data_extents_scrubbed", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_tree_extents_scrubbed);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_tree_extents_scrubbed", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_data_bytes_scrubbed);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_data_bytes_scrubbed", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_tree_bytes_scrubbed);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_tree_bytes_scrubbed", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_read_errors);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_read_errors", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_csum_errors);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_csum_errors", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_verify_errors);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_verify_errors", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_no_csum);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_no_csum", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_csum_discards);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_csum_discards", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_super_errors);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_super_errors", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_malloc_errors);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_malloc_errors", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_uncorrectable_errors);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_uncorrectable_errors", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_unverified_errors);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_unverified_errors", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_corrected_errors);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_corrected_errors", value);
+  value = PyLong_FromUnsignedLongLong (btrfsscrub->btrfsscrub_last_physical);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfsscrub_last_physical", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -314,20 +327,27 @@ guestfs_int_py_put_btrfsscrub (struct guestfs_btrfsscrub *btrfsscrub)
 PyObject *
 guestfs_int_py_put_btrfssubvolume (struct guestfs_btrfssubvolume *btrfssubvolume)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "btrfssubvolume_id",
-                        PyLong_FromUnsignedLongLong (btrfssubvolume->btrfssubvolume_id));
-  PyDict_SetItemString (dict, "btrfssubvolume_top_level_id",
-                        PyLong_FromUnsignedLongLong (btrfssubvolume->btrfssubvolume_top_level_id));
-  PyDict_SetItemString (dict, "btrfssubvolume_path",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (btrfssubvolume->btrfssubvolume_path));
-#else
-                        PyUnicode_FromString (btrfssubvolume->btrfssubvolume_path));
-#endif
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromUnsignedLongLong (btrfssubvolume->btrfssubvolume_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfssubvolume_id", value);
+  value = PyLong_FromUnsignedLongLong (btrfssubvolume->btrfssubvolume_top_level_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfssubvolume_top_level_id", value);
+  value = guestfs_int_py_fromstring (btrfssubvolume->btrfssubvolume_path);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "btrfssubvolume_path", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -335,25 +355,27 @@ guestfs_int_py_put_btrfssubvolume (struct guestfs_btrfssubvolume *btrfssubvolume
 PyObject *
 guestfs_int_py_put_dirent (struct guestfs_dirent *dirent)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "ino",
-                        PyLong_FromLongLong (dirent->ino));
-#ifdef HAVE_PYSTRING_ASSTRING
-  PyDict_SetItemString (dict, "ftyp",
-                        PyString_FromStringAndSize (&dirent->ftyp, 1));
-#else
-  PyDict_SetItemString (dict, "ftyp",
-                        PyUnicode_FromStringAndSize (&dirent->ftyp, 1));
-#endif
-  PyDict_SetItemString (dict, "name",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (dirent->name));
-#else
-                        PyUnicode_FromString (dirent->name));
-#endif
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromLongLong (dirent->ino);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "ino", value);
+  value = guestfs_int_py_fromstringsize (&dirent->ftyp, 1);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "ftyp", value);
+  value = guestfs_int_py_fromstring (dirent->name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "name", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -361,12 +383,19 @@ guestfs_int_py_put_dirent (struct guestfs_dirent *dirent)
 PyObject *
 guestfs_int_py_put_hivex_node (struct guestfs_hivex_node *hivex_node)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "hivex_node_h",
-                        PyLong_FromLongLong (hivex_node->hivex_node_h));
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromLongLong (hivex_node->hivex_node_h);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "hivex_node_h", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -374,12 +403,19 @@ guestfs_int_py_put_hivex_node (struct guestfs_hivex_node *hivex_node)
 PyObject *
 guestfs_int_py_put_hivex_value (struct guestfs_hivex_value *hivex_value)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "hivex_value_h",
-                        PyLong_FromLongLong (hivex_value->hivex_value_h));
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromLongLong (hivex_value->hivex_value_h);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "hivex_value_h", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -387,22 +423,31 @@ guestfs_int_py_put_hivex_value (struct guestfs_hivex_value *hivex_value)
 PyObject *
 guestfs_int_py_put_inotify_event (struct guestfs_inotify_event *inotify_event)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "in_wd",
-                        PyLong_FromLongLong (inotify_event->in_wd));
-  PyDict_SetItemString (dict, "in_mask",
-                        PyLong_FromUnsignedLong (inotify_event->in_mask));
-  PyDict_SetItemString (dict, "in_cookie",
-                        PyLong_FromUnsignedLong (inotify_event->in_cookie));
-  PyDict_SetItemString (dict, "in_name",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (inotify_event->in_name));
-#else
-                        PyUnicode_FromString (inotify_event->in_name));
-#endif
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromLongLong (inotify_event->in_wd);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "in_wd", value);
+  value = PyLong_FromUnsignedLong (inotify_event->in_mask);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "in_mask", value);
+  value = PyLong_FromUnsignedLong (inotify_event->in_cookie);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "in_cookie", value);
+  value = guestfs_int_py_fromstring (inotify_event->in_name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "in_name", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -410,14 +455,23 @@ guestfs_int_py_put_inotify_event (struct guestfs_inotify_event *inotify_event)
 PyObject *
 guestfs_int_py_put_int_bool (struct guestfs_int_bool *int_bool)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "i",
-                        PyLong_FromLong (int_bool->i));
-  PyDict_SetItemString (dict, "b",
-                        PyLong_FromLong (int_bool->b));
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromLong (int_bool->i);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "i", value);
+  value = PyLong_FromLong (int_bool->b);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "b", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -425,80 +479,83 @@ guestfs_int_py_put_int_bool (struct guestfs_int_bool *int_bool)
 PyObject *
 guestfs_int_py_put_isoinfo (struct guestfs_isoinfo *isoinfo)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "iso_system_id",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (isoinfo->iso_system_id));
-#else
-                        PyUnicode_FromString (isoinfo->iso_system_id));
-#endif
-  PyDict_SetItemString (dict, "iso_volume_id",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (isoinfo->iso_volume_id));
-#else
-                        PyUnicode_FromString (isoinfo->iso_volume_id));
-#endif
-  PyDict_SetItemString (dict, "iso_volume_space_size",
-                        PyLong_FromUnsignedLong (isoinfo->iso_volume_space_size));
-  PyDict_SetItemString (dict, "iso_volume_set_size",
-                        PyLong_FromUnsignedLong (isoinfo->iso_volume_set_size));
-  PyDict_SetItemString (dict, "iso_volume_sequence_number",
-                        PyLong_FromUnsignedLong (isoinfo->iso_volume_sequence_number));
-  PyDict_SetItemString (dict, "iso_logical_block_size",
-                        PyLong_FromUnsignedLong (isoinfo->iso_logical_block_size));
-  PyDict_SetItemString (dict, "iso_volume_set_id",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (isoinfo->iso_volume_set_id));
-#else
-                        PyUnicode_FromString (isoinfo->iso_volume_set_id));
-#endif
-  PyDict_SetItemString (dict, "iso_publisher_id",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (isoinfo->iso_publisher_id));
-#else
-                        PyUnicode_FromString (isoinfo->iso_publisher_id));
-#endif
-  PyDict_SetItemString (dict, "iso_data_preparer_id",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (isoinfo->iso_data_preparer_id));
-#else
-                        PyUnicode_FromString (isoinfo->iso_data_preparer_id));
-#endif
-  PyDict_SetItemString (dict, "iso_application_id",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (isoinfo->iso_application_id));
-#else
-                        PyUnicode_FromString (isoinfo->iso_application_id));
-#endif
-  PyDict_SetItemString (dict, "iso_copyright_file_id",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (isoinfo->iso_copyright_file_id));
-#else
-                        PyUnicode_FromString (isoinfo->iso_copyright_file_id));
-#endif
-  PyDict_SetItemString (dict, "iso_abstract_file_id",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (isoinfo->iso_abstract_file_id));
-#else
-                        PyUnicode_FromString (isoinfo->iso_abstract_file_id));
-#endif
-  PyDict_SetItemString (dict, "iso_bibliographic_file_id",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (isoinfo->iso_bibliographic_file_id));
-#else
-                        PyUnicode_FromString (isoinfo->iso_bibliographic_file_id));
-#endif
-  PyDict_SetItemString (dict, "iso_volume_creation_t",
-                        PyLong_FromLongLong (isoinfo->iso_volume_creation_t));
-  PyDict_SetItemString (dict, "iso_volume_modification_t",
-                        PyLong_FromLongLong (isoinfo->iso_volume_modification_t));
-  PyDict_SetItemString (dict, "iso_volume_expiration_t",
-                        PyLong_FromLongLong (isoinfo->iso_volume_expiration_t));
-  PyDict_SetItemString (dict, "iso_volume_effective_t",
-                        PyLong_FromLongLong (isoinfo->iso_volume_effective_t));
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (isoinfo->iso_system_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_system_id", value);
+  value = guestfs_int_py_fromstring (isoinfo->iso_volume_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_volume_id", value);
+  value = PyLong_FromUnsignedLong (isoinfo->iso_volume_space_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_volume_space_size", value);
+  value = PyLong_FromUnsignedLong (isoinfo->iso_volume_set_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_volume_set_size", value);
+  value = PyLong_FromUnsignedLong (isoinfo->iso_volume_sequence_number);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_volume_sequence_number", value);
+  value = PyLong_FromUnsignedLong (isoinfo->iso_logical_block_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_logical_block_size", value);
+  value = guestfs_int_py_fromstring (isoinfo->iso_volume_set_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_volume_set_id", value);
+  value = guestfs_int_py_fromstring (isoinfo->iso_publisher_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_publisher_id", value);
+  value = guestfs_int_py_fromstring (isoinfo->iso_data_preparer_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_data_preparer_id", value);
+  value = guestfs_int_py_fromstring (isoinfo->iso_application_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_application_id", value);
+  value = guestfs_int_py_fromstring (isoinfo->iso_copyright_file_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_copyright_file_id", value);
+  value = guestfs_int_py_fromstring (isoinfo->iso_abstract_file_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_abstract_file_id", value);
+  value = guestfs_int_py_fromstring (isoinfo->iso_bibliographic_file_id);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_bibliographic_file_id", value);
+  value = PyLong_FromLongLong (isoinfo->iso_volume_creation_t);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_volume_creation_t", value);
+  value = PyLong_FromLongLong (isoinfo->iso_volume_modification_t);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_volume_modification_t", value);
+  value = PyLong_FromLongLong (isoinfo->iso_volume_expiration_t);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_volume_expiration_t", value);
+  value = PyLong_FromLongLong (isoinfo->iso_volume_effective_t);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "iso_volume_effective_t", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -506,84 +563,91 @@ guestfs_int_py_put_isoinfo (struct guestfs_isoinfo *isoinfo)
 PyObject *
 guestfs_int_py_put_lvm_lv (struct guestfs_lvm_lv *lvm_lv)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "lv_name",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_lv->lv_name));
-#else
-                        PyUnicode_FromString (lvm_lv->lv_name));
-#endif
-  PyDict_SetItemString (dict, "lv_uuid",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromStringAndSize (lvm_lv->lv_uuid, 32));
-#else
-                        PyBytes_FromStringAndSize (lvm_lv->lv_uuid, 32));
-#endif
-  PyDict_SetItemString (dict, "lv_attr",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_lv->lv_attr));
-#else
-                        PyUnicode_FromString (lvm_lv->lv_attr));
-#endif
-  PyDict_SetItemString (dict, "lv_major",
-                        PyLong_FromLongLong (lvm_lv->lv_major));
-  PyDict_SetItemString (dict, "lv_minor",
-                        PyLong_FromLongLong (lvm_lv->lv_minor));
-  PyDict_SetItemString (dict, "lv_kernel_major",
-                        PyLong_FromLongLong (lvm_lv->lv_kernel_major));
-  PyDict_SetItemString (dict, "lv_kernel_minor",
-                        PyLong_FromLongLong (lvm_lv->lv_kernel_minor));
-  PyDict_SetItemString (dict, "lv_size",
-                        PyLong_FromUnsignedLongLong (lvm_lv->lv_size));
-  PyDict_SetItemString (dict, "seg_count",
-                        PyLong_FromLongLong (lvm_lv->seg_count));
-  PyDict_SetItemString (dict, "origin",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_lv->origin));
-#else
-                        PyUnicode_FromString (lvm_lv->origin));
-#endif
-  if (lvm_lv->snap_percent >= 0)
-    PyDict_SetItemString (dict, "snap_percent",
-                          PyFloat_FromDouble ((double) lvm_lv->snap_percent));
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (lvm_lv->lv_name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "lv_name", value);
+  value = guestfs_int_py_fromstringsize (lvm_lv->lv_uuid, 32);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "lv_uuid", value);
+  value = guestfs_int_py_fromstring (lvm_lv->lv_attr);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "lv_attr", value);
+  value = PyLong_FromLongLong (lvm_lv->lv_major);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "lv_major", value);
+  value = PyLong_FromLongLong (lvm_lv->lv_minor);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "lv_minor", value);
+  value = PyLong_FromLongLong (lvm_lv->lv_kernel_major);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "lv_kernel_major", value);
+  value = PyLong_FromLongLong (lvm_lv->lv_kernel_minor);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "lv_kernel_minor", value);
+  value = PyLong_FromUnsignedLongLong (lvm_lv->lv_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "lv_size", value);
+  value = PyLong_FromLongLong (lvm_lv->seg_count);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "seg_count", value);
+  value = guestfs_int_py_fromstring (lvm_lv->origin);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "origin", value);
+  if (lvm_lv->snap_percent >= 0) {
+    value = PyFloat_FromDouble ((double) lvm_lv->snap_percent);
+    if (value == NULL)
+      goto err;
+    PyDict_SetItemString (dict, "snap_percent", value);
+  }
   else {
     Py_INCREF (Py_None);
     PyDict_SetItemString (dict, "snap_percent", Py_None);
   }
-  if (lvm_lv->copy_percent >= 0)
-    PyDict_SetItemString (dict, "copy_percent",
-                          PyFloat_FromDouble ((double) lvm_lv->copy_percent));
+  if (lvm_lv->copy_percent >= 0) {
+    value = PyFloat_FromDouble ((double) lvm_lv->copy_percent);
+    if (value == NULL)
+      goto err;
+    PyDict_SetItemString (dict, "copy_percent", value);
+  }
   else {
     Py_INCREF (Py_None);
     PyDict_SetItemString (dict, "copy_percent", Py_None);
   }
-  PyDict_SetItemString (dict, "move_pv",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_lv->move_pv));
-#else
-                        PyUnicode_FromString (lvm_lv->move_pv));
-#endif
-  PyDict_SetItemString (dict, "lv_tags",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_lv->lv_tags));
-#else
-                        PyUnicode_FromString (lvm_lv->lv_tags));
-#endif
-  PyDict_SetItemString (dict, "mirror_log",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_lv->mirror_log));
-#else
-                        PyUnicode_FromString (lvm_lv->mirror_log));
-#endif
-  PyDict_SetItemString (dict, "modules",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_lv->modules));
-#else
-                        PyUnicode_FromString (lvm_lv->modules));
-#endif
+  value = guestfs_int_py_fromstring (lvm_lv->move_pv);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "move_pv", value);
+  value = guestfs_int_py_fromstring (lvm_lv->lv_tags);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "lv_tags", value);
+  value = guestfs_int_py_fromstring (lvm_lv->mirror_log);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "mirror_log", value);
+  value = guestfs_int_py_fromstring (lvm_lv->modules);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "modules", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -591,58 +655,71 @@ guestfs_int_py_put_lvm_lv (struct guestfs_lvm_lv *lvm_lv)
 PyObject *
 guestfs_int_py_put_lvm_pv (struct guestfs_lvm_pv *lvm_pv)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "pv_name",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_pv->pv_name));
-#else
-                        PyUnicode_FromString (lvm_pv->pv_name));
-#endif
-  PyDict_SetItemString (dict, "pv_uuid",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromStringAndSize (lvm_pv->pv_uuid, 32));
-#else
-                        PyBytes_FromStringAndSize (lvm_pv->pv_uuid, 32));
-#endif
-  PyDict_SetItemString (dict, "pv_fmt",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_pv->pv_fmt));
-#else
-                        PyUnicode_FromString (lvm_pv->pv_fmt));
-#endif
-  PyDict_SetItemString (dict, "pv_size",
-                        PyLong_FromUnsignedLongLong (lvm_pv->pv_size));
-  PyDict_SetItemString (dict, "dev_size",
-                        PyLong_FromUnsignedLongLong (lvm_pv->dev_size));
-  PyDict_SetItemString (dict, "pv_free",
-                        PyLong_FromUnsignedLongLong (lvm_pv->pv_free));
-  PyDict_SetItemString (dict, "pv_used",
-                        PyLong_FromUnsignedLongLong (lvm_pv->pv_used));
-  PyDict_SetItemString (dict, "pv_attr",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_pv->pv_attr));
-#else
-                        PyUnicode_FromString (lvm_pv->pv_attr));
-#endif
-  PyDict_SetItemString (dict, "pv_pe_count",
-                        PyLong_FromLongLong (lvm_pv->pv_pe_count));
-  PyDict_SetItemString (dict, "pv_pe_alloc_count",
-                        PyLong_FromLongLong (lvm_pv->pv_pe_alloc_count));
-  PyDict_SetItemString (dict, "pv_tags",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_pv->pv_tags));
-#else
-                        PyUnicode_FromString (lvm_pv->pv_tags));
-#endif
-  PyDict_SetItemString (dict, "pe_start",
-                        PyLong_FromUnsignedLongLong (lvm_pv->pe_start));
-  PyDict_SetItemString (dict, "pv_mda_count",
-                        PyLong_FromLongLong (lvm_pv->pv_mda_count));
-  PyDict_SetItemString (dict, "pv_mda_free",
-                        PyLong_FromUnsignedLongLong (lvm_pv->pv_mda_free));
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (lvm_pv->pv_name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_name", value);
+  value = guestfs_int_py_fromstringsize (lvm_pv->pv_uuid, 32);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_uuid", value);
+  value = guestfs_int_py_fromstring (lvm_pv->pv_fmt);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_fmt", value);
+  value = PyLong_FromUnsignedLongLong (lvm_pv->pv_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_size", value);
+  value = PyLong_FromUnsignedLongLong (lvm_pv->dev_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "dev_size", value);
+  value = PyLong_FromUnsignedLongLong (lvm_pv->pv_free);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_free", value);
+  value = PyLong_FromUnsignedLongLong (lvm_pv->pv_used);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_used", value);
+  value = guestfs_int_py_fromstring (lvm_pv->pv_attr);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_attr", value);
+  value = PyLong_FromLongLong (lvm_pv->pv_pe_count);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_pe_count", value);
+  value = PyLong_FromLongLong (lvm_pv->pv_pe_alloc_count);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_pe_alloc_count", value);
+  value = guestfs_int_py_fromstring (lvm_pv->pv_tags);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_tags", value);
+  value = PyLong_FromUnsignedLongLong (lvm_pv->pe_start);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pe_start", value);
+  value = PyLong_FromLongLong (lvm_pv->pv_mda_count);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_mda_count", value);
+  value = PyLong_FromUnsignedLongLong (lvm_pv->pv_mda_free);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_mda_free", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -650,72 +727,91 @@ guestfs_int_py_put_lvm_pv (struct guestfs_lvm_pv *lvm_pv)
 PyObject *
 guestfs_int_py_put_lvm_vg (struct guestfs_lvm_vg *lvm_vg)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "vg_name",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_vg->vg_name));
-#else
-                        PyUnicode_FromString (lvm_vg->vg_name));
-#endif
-  PyDict_SetItemString (dict, "vg_uuid",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromStringAndSize (lvm_vg->vg_uuid, 32));
-#else
-                        PyBytes_FromStringAndSize (lvm_vg->vg_uuid, 32));
-#endif
-  PyDict_SetItemString (dict, "vg_fmt",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_vg->vg_fmt));
-#else
-                        PyUnicode_FromString (lvm_vg->vg_fmt));
-#endif
-  PyDict_SetItemString (dict, "vg_attr",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_vg->vg_attr));
-#else
-                        PyUnicode_FromString (lvm_vg->vg_attr));
-#endif
-  PyDict_SetItemString (dict, "vg_size",
-                        PyLong_FromUnsignedLongLong (lvm_vg->vg_size));
-  PyDict_SetItemString (dict, "vg_free",
-                        PyLong_FromUnsignedLongLong (lvm_vg->vg_free));
-  PyDict_SetItemString (dict, "vg_sysid",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_vg->vg_sysid));
-#else
-                        PyUnicode_FromString (lvm_vg->vg_sysid));
-#endif
-  PyDict_SetItemString (dict, "vg_extent_size",
-                        PyLong_FromUnsignedLongLong (lvm_vg->vg_extent_size));
-  PyDict_SetItemString (dict, "vg_extent_count",
-                        PyLong_FromLongLong (lvm_vg->vg_extent_count));
-  PyDict_SetItemString (dict, "vg_free_count",
-                        PyLong_FromLongLong (lvm_vg->vg_free_count));
-  PyDict_SetItemString (dict, "max_lv",
-                        PyLong_FromLongLong (lvm_vg->max_lv));
-  PyDict_SetItemString (dict, "max_pv",
-                        PyLong_FromLongLong (lvm_vg->max_pv));
-  PyDict_SetItemString (dict, "pv_count",
-                        PyLong_FromLongLong (lvm_vg->pv_count));
-  PyDict_SetItemString (dict, "lv_count",
-                        PyLong_FromLongLong (lvm_vg->lv_count));
-  PyDict_SetItemString (dict, "snap_count",
-                        PyLong_FromLongLong (lvm_vg->snap_count));
-  PyDict_SetItemString (dict, "vg_seqno",
-                        PyLong_FromLongLong (lvm_vg->vg_seqno));
-  PyDict_SetItemString (dict, "vg_tags",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (lvm_vg->vg_tags));
-#else
-                        PyUnicode_FromString (lvm_vg->vg_tags));
-#endif
-  PyDict_SetItemString (dict, "vg_mda_count",
-                        PyLong_FromLongLong (lvm_vg->vg_mda_count));
-  PyDict_SetItemString (dict, "vg_mda_free",
-                        PyLong_FromUnsignedLongLong (lvm_vg->vg_mda_free));
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (lvm_vg->vg_name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_name", value);
+  value = guestfs_int_py_fromstringsize (lvm_vg->vg_uuid, 32);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_uuid", value);
+  value = guestfs_int_py_fromstring (lvm_vg->vg_fmt);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_fmt", value);
+  value = guestfs_int_py_fromstring (lvm_vg->vg_attr);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_attr", value);
+  value = PyLong_FromUnsignedLongLong (lvm_vg->vg_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_size", value);
+  value = PyLong_FromUnsignedLongLong (lvm_vg->vg_free);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_free", value);
+  value = guestfs_int_py_fromstring (lvm_vg->vg_sysid);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_sysid", value);
+  value = PyLong_FromUnsignedLongLong (lvm_vg->vg_extent_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_extent_size", value);
+  value = PyLong_FromLongLong (lvm_vg->vg_extent_count);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_extent_count", value);
+  value = PyLong_FromLongLong (lvm_vg->vg_free_count);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_free_count", value);
+  value = PyLong_FromLongLong (lvm_vg->max_lv);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "max_lv", value);
+  value = PyLong_FromLongLong (lvm_vg->max_pv);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "max_pv", value);
+  value = PyLong_FromLongLong (lvm_vg->pv_count);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "pv_count", value);
+  value = PyLong_FromLongLong (lvm_vg->lv_count);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "lv_count", value);
+  value = PyLong_FromLongLong (lvm_vg->snap_count);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "snap_count", value);
+  value = PyLong_FromLongLong (lvm_vg->vg_seqno);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_seqno", value);
+  value = guestfs_int_py_fromstring (lvm_vg->vg_tags);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_tags", value);
+  value = PyLong_FromLongLong (lvm_vg->vg_mda_count);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_mda_count", value);
+  value = PyLong_FromUnsignedLongLong (lvm_vg->vg_mda_free);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "vg_mda_free", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -723,24 +819,27 @@ guestfs_int_py_put_lvm_vg (struct guestfs_lvm_vg *lvm_vg)
 PyObject *
 guestfs_int_py_put_mdstat (struct guestfs_mdstat *mdstat)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "mdstat_device",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (mdstat->mdstat_device));
-#else
-                        PyUnicode_FromString (mdstat->mdstat_device));
-#endif
-  PyDict_SetItemString (dict, "mdstat_index",
-                        PyLong_FromLong (mdstat->mdstat_index));
-  PyDict_SetItemString (dict, "mdstat_flags",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (mdstat->mdstat_flags));
-#else
-                        PyUnicode_FromString (mdstat->mdstat_flags));
-#endif
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (mdstat->mdstat_device);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "mdstat_device", value);
+  value = PyLong_FromLong (mdstat->mdstat_index);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "mdstat_index", value);
+  value = guestfs_int_py_fromstring (mdstat->mdstat_flags);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "mdstat_flags", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -748,18 +847,31 @@ guestfs_int_py_put_mdstat (struct guestfs_mdstat *mdstat)
 PyObject *
 guestfs_int_py_put_partition (struct guestfs_partition *partition)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "part_num",
-                        PyLong_FromLong (partition->part_num));
-  PyDict_SetItemString (dict, "part_start",
-                        PyLong_FromUnsignedLongLong (partition->part_start));
-  PyDict_SetItemString (dict, "part_end",
-                        PyLong_FromUnsignedLongLong (partition->part_end));
-  PyDict_SetItemString (dict, "part_size",
-                        PyLong_FromUnsignedLongLong (partition->part_size));
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromLong (partition->part_num);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "part_num", value);
+  value = PyLong_FromUnsignedLongLong (partition->part_start);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "part_start", value);
+  value = PyLong_FromUnsignedLongLong (partition->part_end);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "part_end", value);
+  value = PyLong_FromUnsignedLongLong (partition->part_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "part_size", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -767,36 +879,67 @@ guestfs_int_py_put_partition (struct guestfs_partition *partition)
 PyObject *
 guestfs_int_py_put_stat (struct guestfs_stat *stat)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "dev",
-                        PyLong_FromLongLong (stat->dev));
-  PyDict_SetItemString (dict, "ino",
-                        PyLong_FromLongLong (stat->ino));
-  PyDict_SetItemString (dict, "mode",
-                        PyLong_FromLongLong (stat->mode));
-  PyDict_SetItemString (dict, "nlink",
-                        PyLong_FromLongLong (stat->nlink));
-  PyDict_SetItemString (dict, "uid",
-                        PyLong_FromLongLong (stat->uid));
-  PyDict_SetItemString (dict, "gid",
-                        PyLong_FromLongLong (stat->gid));
-  PyDict_SetItemString (dict, "rdev",
-                        PyLong_FromLongLong (stat->rdev));
-  PyDict_SetItemString (dict, "size",
-                        PyLong_FromLongLong (stat->size));
-  PyDict_SetItemString (dict, "blksize",
-                        PyLong_FromLongLong (stat->blksize));
-  PyDict_SetItemString (dict, "blocks",
-                        PyLong_FromLongLong (stat->blocks));
-  PyDict_SetItemString (dict, "atime",
-                        PyLong_FromLongLong (stat->atime));
-  PyDict_SetItemString (dict, "mtime",
-                        PyLong_FromLongLong (stat->mtime));
-  PyDict_SetItemString (dict, "ctime",
-                        PyLong_FromLongLong (stat->ctime));
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromLongLong (stat->dev);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "dev", value);
+  value = PyLong_FromLongLong (stat->ino);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "ino", value);
+  value = PyLong_FromLongLong (stat->mode);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "mode", value);
+  value = PyLong_FromLongLong (stat->nlink);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "nlink", value);
+  value = PyLong_FromLongLong (stat->uid);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "uid", value);
+  value = PyLong_FromLongLong (stat->gid);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "gid", value);
+  value = PyLong_FromLongLong (stat->rdev);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "rdev", value);
+  value = PyLong_FromLongLong (stat->size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "size", value);
+  value = PyLong_FromLongLong (stat->blksize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "blksize", value);
+  value = PyLong_FromLongLong (stat->blocks);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "blocks", value);
+  value = PyLong_FromLongLong (stat->atime);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "atime", value);
+  value = PyLong_FromLongLong (stat->mtime);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "mtime", value);
+  value = PyLong_FromLongLong (stat->ctime);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "ctime", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -804,54 +947,103 @@ guestfs_int_py_put_stat (struct guestfs_stat *stat)
 PyObject *
 guestfs_int_py_put_statns (struct guestfs_statns *statns)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "st_dev",
-                        PyLong_FromLongLong (statns->st_dev));
-  PyDict_SetItemString (dict, "st_ino",
-                        PyLong_FromLongLong (statns->st_ino));
-  PyDict_SetItemString (dict, "st_mode",
-                        PyLong_FromLongLong (statns->st_mode));
-  PyDict_SetItemString (dict, "st_nlink",
-                        PyLong_FromLongLong (statns->st_nlink));
-  PyDict_SetItemString (dict, "st_uid",
-                        PyLong_FromLongLong (statns->st_uid));
-  PyDict_SetItemString (dict, "st_gid",
-                        PyLong_FromLongLong (statns->st_gid));
-  PyDict_SetItemString (dict, "st_rdev",
-                        PyLong_FromLongLong (statns->st_rdev));
-  PyDict_SetItemString (dict, "st_size",
-                        PyLong_FromLongLong (statns->st_size));
-  PyDict_SetItemString (dict, "st_blksize",
-                        PyLong_FromLongLong (statns->st_blksize));
-  PyDict_SetItemString (dict, "st_blocks",
-                        PyLong_FromLongLong (statns->st_blocks));
-  PyDict_SetItemString (dict, "st_atime_sec",
-                        PyLong_FromLongLong (statns->st_atime_sec));
-  PyDict_SetItemString (dict, "st_atime_nsec",
-                        PyLong_FromLongLong (statns->st_atime_nsec));
-  PyDict_SetItemString (dict, "st_mtime_sec",
-                        PyLong_FromLongLong (statns->st_mtime_sec));
-  PyDict_SetItemString (dict, "st_mtime_nsec",
-                        PyLong_FromLongLong (statns->st_mtime_nsec));
-  PyDict_SetItemString (dict, "st_ctime_sec",
-                        PyLong_FromLongLong (statns->st_ctime_sec));
-  PyDict_SetItemString (dict, "st_ctime_nsec",
-                        PyLong_FromLongLong (statns->st_ctime_nsec));
-  PyDict_SetItemString (dict, "st_spare1",
-                        PyLong_FromLongLong (statns->st_spare1));
-  PyDict_SetItemString (dict, "st_spare2",
-                        PyLong_FromLongLong (statns->st_spare2));
-  PyDict_SetItemString (dict, "st_spare3",
-                        PyLong_FromLongLong (statns->st_spare3));
-  PyDict_SetItemString (dict, "st_spare4",
-                        PyLong_FromLongLong (statns->st_spare4));
-  PyDict_SetItemString (dict, "st_spare5",
-                        PyLong_FromLongLong (statns->st_spare5));
-  PyDict_SetItemString (dict, "st_spare6",
-                        PyLong_FromLongLong (statns->st_spare6));
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromLongLong (statns->st_dev);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_dev", value);
+  value = PyLong_FromLongLong (statns->st_ino);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_ino", value);
+  value = PyLong_FromLongLong (statns->st_mode);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_mode", value);
+  value = PyLong_FromLongLong (statns->st_nlink);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_nlink", value);
+  value = PyLong_FromLongLong (statns->st_uid);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_uid", value);
+  value = PyLong_FromLongLong (statns->st_gid);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_gid", value);
+  value = PyLong_FromLongLong (statns->st_rdev);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_rdev", value);
+  value = PyLong_FromLongLong (statns->st_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_size", value);
+  value = PyLong_FromLongLong (statns->st_blksize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_blksize", value);
+  value = PyLong_FromLongLong (statns->st_blocks);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_blocks", value);
+  value = PyLong_FromLongLong (statns->st_atime_sec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_atime_sec", value);
+  value = PyLong_FromLongLong (statns->st_atime_nsec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_atime_nsec", value);
+  value = PyLong_FromLongLong (statns->st_mtime_sec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_mtime_sec", value);
+  value = PyLong_FromLongLong (statns->st_mtime_nsec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_mtime_nsec", value);
+  value = PyLong_FromLongLong (statns->st_ctime_sec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_ctime_sec", value);
+  value = PyLong_FromLongLong (statns->st_ctime_nsec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_ctime_nsec", value);
+  value = PyLong_FromLongLong (statns->st_spare1);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_spare1", value);
+  value = PyLong_FromLongLong (statns->st_spare2);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_spare2", value);
+  value = PyLong_FromLongLong (statns->st_spare3);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_spare3", value);
+  value = PyLong_FromLongLong (statns->st_spare4);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_spare4", value);
+  value = PyLong_FromLongLong (statns->st_spare5);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_spare5", value);
+  value = PyLong_FromLongLong (statns->st_spare6);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "st_spare6", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -859,32 +1051,59 @@ guestfs_int_py_put_statns (struct guestfs_statns *statns)
 PyObject *
 guestfs_int_py_put_statvfs (struct guestfs_statvfs *statvfs)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "bsize",
-                        PyLong_FromLongLong (statvfs->bsize));
-  PyDict_SetItemString (dict, "frsize",
-                        PyLong_FromLongLong (statvfs->frsize));
-  PyDict_SetItemString (dict, "blocks",
-                        PyLong_FromLongLong (statvfs->blocks));
-  PyDict_SetItemString (dict, "bfree",
-                        PyLong_FromLongLong (statvfs->bfree));
-  PyDict_SetItemString (dict, "bavail",
-                        PyLong_FromLongLong (statvfs->bavail));
-  PyDict_SetItemString (dict, "files",
-                        PyLong_FromLongLong (statvfs->files));
-  PyDict_SetItemString (dict, "ffree",
-                        PyLong_FromLongLong (statvfs->ffree));
-  PyDict_SetItemString (dict, "favail",
-                        PyLong_FromLongLong (statvfs->favail));
-  PyDict_SetItemString (dict, "fsid",
-                        PyLong_FromLongLong (statvfs->fsid));
-  PyDict_SetItemString (dict, "flag",
-                        PyLong_FromLongLong (statvfs->flag));
-  PyDict_SetItemString (dict, "namemax",
-                        PyLong_FromLongLong (statvfs->namemax));
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromLongLong (statvfs->bsize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "bsize", value);
+  value = PyLong_FromLongLong (statvfs->frsize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "frsize", value);
+  value = PyLong_FromLongLong (statvfs->blocks);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "blocks", value);
+  value = PyLong_FromLongLong (statvfs->bfree);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "bfree", value);
+  value = PyLong_FromLongLong (statvfs->bavail);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "bavail", value);
+  value = PyLong_FromLongLong (statvfs->files);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "files", value);
+  value = PyLong_FromLongLong (statvfs->ffree);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "ffree", value);
+  value = PyLong_FromLongLong (statvfs->favail);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "favail", value);
+  value = PyLong_FromLongLong (statvfs->fsid);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "fsid", value);
+  value = PyLong_FromLongLong (statvfs->flag);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "flag", value);
+  value = PyLong_FromLongLong (statvfs->namemax);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "namemax", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -892,55 +1111,79 @@ guestfs_int_py_put_statvfs (struct guestfs_statvfs *statvfs)
 PyObject *
 guestfs_int_py_put_tsk_dirent (struct guestfs_tsk_dirent *tsk_dirent)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "tsk_inode",
-                        PyLong_FromUnsignedLongLong (tsk_dirent->tsk_inode));
-#ifdef HAVE_PYSTRING_ASSTRING
-  PyDict_SetItemString (dict, "tsk_type",
-                        PyString_FromStringAndSize (&tsk_dirent->tsk_type, 1));
-#else
-  PyDict_SetItemString (dict, "tsk_type",
-                        PyUnicode_FromStringAndSize (&tsk_dirent->tsk_type, 1));
-#endif
-  PyDict_SetItemString (dict, "tsk_size",
-                        PyLong_FromLongLong (tsk_dirent->tsk_size));
-  PyDict_SetItemString (dict, "tsk_name",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (tsk_dirent->tsk_name));
-#else
-                        PyUnicode_FromString (tsk_dirent->tsk_name));
-#endif
-  PyDict_SetItemString (dict, "tsk_flags",
-                        PyLong_FromUnsignedLong (tsk_dirent->tsk_flags));
-  PyDict_SetItemString (dict, "tsk_atime_sec",
-                        PyLong_FromLongLong (tsk_dirent->tsk_atime_sec));
-  PyDict_SetItemString (dict, "tsk_atime_nsec",
-                        PyLong_FromLongLong (tsk_dirent->tsk_atime_nsec));
-  PyDict_SetItemString (dict, "tsk_mtime_sec",
-                        PyLong_FromLongLong (tsk_dirent->tsk_mtime_sec));
-  PyDict_SetItemString (dict, "tsk_mtime_nsec",
-                        PyLong_FromLongLong (tsk_dirent->tsk_mtime_nsec));
-  PyDict_SetItemString (dict, "tsk_ctime_sec",
-                        PyLong_FromLongLong (tsk_dirent->tsk_ctime_sec));
-  PyDict_SetItemString (dict, "tsk_ctime_nsec",
-                        PyLong_FromLongLong (tsk_dirent->tsk_ctime_nsec));
-  PyDict_SetItemString (dict, "tsk_crtime_sec",
-                        PyLong_FromLongLong (tsk_dirent->tsk_crtime_sec));
-  PyDict_SetItemString (dict, "tsk_crtime_nsec",
-                        PyLong_FromLongLong (tsk_dirent->tsk_crtime_nsec));
-  PyDict_SetItemString (dict, "tsk_nlink",
-                        PyLong_FromLongLong (tsk_dirent->tsk_nlink));
-  PyDict_SetItemString (dict, "tsk_link",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (tsk_dirent->tsk_link));
-#else
-                        PyUnicode_FromString (tsk_dirent->tsk_link));
-#endif
-  PyDict_SetItemString (dict, "tsk_spare1",
-                        PyLong_FromLongLong (tsk_dirent->tsk_spare1));
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromUnsignedLongLong (tsk_dirent->tsk_inode);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_inode", value);
+  value = guestfs_int_py_fromstringsize (&tsk_dirent->tsk_type, 1);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_type", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_size);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_size", value);
+  value = guestfs_int_py_fromstring (tsk_dirent->tsk_name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_name", value);
+  value = PyLong_FromUnsignedLong (tsk_dirent->tsk_flags);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_flags", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_atime_sec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_atime_sec", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_atime_nsec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_atime_nsec", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_mtime_sec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_mtime_sec", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_mtime_nsec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_mtime_nsec", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_ctime_sec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_ctime_sec", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_ctime_nsec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_ctime_nsec", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_crtime_sec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_crtime_sec", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_crtime_nsec);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_crtime_nsec", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_nlink);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_nlink", value);
+  value = guestfs_int_py_fromstring (tsk_dirent->tsk_link);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_link", value);
+  value = PyLong_FromLongLong (tsk_dirent->tsk_spare1);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "tsk_spare1", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -948,34 +1191,31 @@ guestfs_int_py_put_tsk_dirent (struct guestfs_tsk_dirent *tsk_dirent)
 PyObject *
 guestfs_int_py_put_utsname (struct guestfs_utsname *utsname)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "uts_sysname",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (utsname->uts_sysname));
-#else
-                        PyUnicode_FromString (utsname->uts_sysname));
-#endif
-  PyDict_SetItemString (dict, "uts_release",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (utsname->uts_release));
-#else
-                        PyUnicode_FromString (utsname->uts_release));
-#endif
-  PyDict_SetItemString (dict, "uts_version",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (utsname->uts_version));
-#else
-                        PyUnicode_FromString (utsname->uts_version));
-#endif
-  PyDict_SetItemString (dict, "uts_machine",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (utsname->uts_machine));
-#else
-                        PyUnicode_FromString (utsname->uts_machine));
-#endif
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (utsname->uts_sysname);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "uts_sysname", value);
+  value = guestfs_int_py_fromstring (utsname->uts_release);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "uts_release", value);
+  value = guestfs_int_py_fromstring (utsname->uts_version);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "uts_version", value);
+  value = guestfs_int_py_fromstring (utsname->uts_machine);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "uts_machine", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -983,22 +1223,31 @@ guestfs_int_py_put_utsname (struct guestfs_utsname *utsname)
 PyObject *
 guestfs_int_py_put_version (struct guestfs_version *version)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "major",
-                        PyLong_FromLongLong (version->major));
-  PyDict_SetItemString (dict, "minor",
-                        PyLong_FromLongLong (version->minor));
-  PyDict_SetItemString (dict, "release",
-                        PyLong_FromLongLong (version->release));
-  PyDict_SetItemString (dict, "extra",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (version->extra));
-#else
-                        PyUnicode_FromString (version->extra));
-#endif
+  if (dict == NULL)
+    return NULL;
+  value = PyLong_FromLongLong (version->major);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "major", value);
+  value = PyLong_FromLongLong (version->minor);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "minor", value);
+  value = PyLong_FromLongLong (version->release);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "release", value);
+  value = guestfs_int_py_fromstring (version->extra);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "extra", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -1006,22 +1255,23 @@ guestfs_int_py_put_version (struct guestfs_version *version)
 PyObject *
 guestfs_int_py_put_xattr (struct guestfs_xattr *xattr)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "attrname",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (xattr->attrname));
-#else
-                        PyUnicode_FromString (xattr->attrname));
-#endif
-  PyDict_SetItemString (dict, "attrval",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromStringAndSize (xattr->attrval, xattr->attrval_len));
-#else
-                        PyBytes_FromStringAndSize (xattr->attrval, xattr->attrval_len));
-#endif
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (xattr->attrname);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "attrname", value);
+  value = guestfs_int_py_fromstringsize (xattr->attrval, xattr->attrval_len);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "attrval", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -1029,72 +1279,139 @@ guestfs_int_py_put_xattr (struct guestfs_xattr *xattr)
 PyObject *
 guestfs_int_py_put_xfsinfo (struct guestfs_xfsinfo *xfsinfo)
 {
-  PyObject *dict;
+  PyObject *dict, *value;
 
   dict = PyDict_New ();
-  PyDict_SetItemString (dict, "xfs_mntpoint",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (xfsinfo->xfs_mntpoint));
-#else
-                        PyUnicode_FromString (xfsinfo->xfs_mntpoint));
-#endif
-  PyDict_SetItemString (dict, "xfs_inodesize",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_inodesize));
-  PyDict_SetItemString (dict, "xfs_agcount",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_agcount));
-  PyDict_SetItemString (dict, "xfs_agsize",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_agsize));
-  PyDict_SetItemString (dict, "xfs_sectsize",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_sectsize));
-  PyDict_SetItemString (dict, "xfs_attr",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_attr));
-  PyDict_SetItemString (dict, "xfs_blocksize",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_blocksize));
-  PyDict_SetItemString (dict, "xfs_datablocks",
-                        PyLong_FromUnsignedLongLong (xfsinfo->xfs_datablocks));
-  PyDict_SetItemString (dict, "xfs_imaxpct",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_imaxpct));
-  PyDict_SetItemString (dict, "xfs_sunit",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_sunit));
-  PyDict_SetItemString (dict, "xfs_swidth",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_swidth));
-  PyDict_SetItemString (dict, "xfs_dirversion",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_dirversion));
-  PyDict_SetItemString (dict, "xfs_dirblocksize",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_dirblocksize));
-  PyDict_SetItemString (dict, "xfs_cimode",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_cimode));
-  PyDict_SetItemString (dict, "xfs_logname",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (xfsinfo->xfs_logname));
-#else
-                        PyUnicode_FromString (xfsinfo->xfs_logname));
-#endif
-  PyDict_SetItemString (dict, "xfs_logblocksize",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_logblocksize));
-  PyDict_SetItemString (dict, "xfs_logblocks",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_logblocks));
-  PyDict_SetItemString (dict, "xfs_logversion",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_logversion));
-  PyDict_SetItemString (dict, "xfs_logsectsize",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_logsectsize));
-  PyDict_SetItemString (dict, "xfs_logsunit",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_logsunit));
-  PyDict_SetItemString (dict, "xfs_lazycount",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_lazycount));
-  PyDict_SetItemString (dict, "xfs_rtname",
-#ifdef HAVE_PYSTRING_ASSTRING
-                        PyString_FromString (xfsinfo->xfs_rtname));
-#else
-                        PyUnicode_FromString (xfsinfo->xfs_rtname));
-#endif
-  PyDict_SetItemString (dict, "xfs_rtextsize",
-                        PyLong_FromUnsignedLong (xfsinfo->xfs_rtextsize));
-  PyDict_SetItemString (dict, "xfs_rtblocks",
-                        PyLong_FromUnsignedLongLong (xfsinfo->xfs_rtblocks));
-  PyDict_SetItemString (dict, "xfs_rtextents",
-                        PyLong_FromUnsignedLongLong (xfsinfo->xfs_rtextents));
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (xfsinfo->xfs_mntpoint);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_mntpoint", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_inodesize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_inodesize", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_agcount);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_agcount", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_agsize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_agsize", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_sectsize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_sectsize", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_attr);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_attr", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_blocksize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_blocksize", value);
+  value = PyLong_FromUnsignedLongLong (xfsinfo->xfs_datablocks);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_datablocks", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_imaxpct);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_imaxpct", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_sunit);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_sunit", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_swidth);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_swidth", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_dirversion);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_dirversion", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_dirblocksize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_dirblocksize", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_cimode);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_cimode", value);
+  value = guestfs_int_py_fromstring (xfsinfo->xfs_logname);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_logname", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_logblocksize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_logblocksize", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_logblocks);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_logblocks", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_logversion);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_logversion", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_logsectsize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_logsectsize", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_logsunit);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_logsunit", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_lazycount);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_lazycount", value);
+  value = guestfs_int_py_fromstring (xfsinfo->xfs_rtname);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_rtname", value);
+  value = PyLong_FromUnsignedLong (xfsinfo->xfs_rtextsize);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_rtextsize", value);
+  value = PyLong_FromUnsignedLongLong (xfsinfo->xfs_rtblocks);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_rtblocks", value);
+  value = PyLong_FromUnsignedLongLong (xfsinfo->xfs_rtextents);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "xfs_rtextents", value);
   return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
+};
+#endif
+
+#ifdef GUESTFS_HAVE_STRUCT_YARA_DETECTION
+PyObject *
+guestfs_int_py_put_yara_detection (struct guestfs_yara_detection *yara_detection)
+{
+  PyObject *dict, *value;
+
+  dict = PyDict_New ();
+  if (dict == NULL)
+    return NULL;
+  value = guestfs_int_py_fromstring (yara_detection->yara_name);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "yara_name", value);
+  value = guestfs_int_py_fromstring (yara_detection->yara_rule);
+  if (value == NULL)
+    goto err;
+  PyDict_SetItemString (dict, "yara_rule", value);
+  return dict;
+ err:
+  Py_CLEAR (dict);
+  return NULL;
 };
 #endif
 
@@ -1102,12 +1419,20 @@ guestfs_int_py_put_xfsinfo (struct guestfs_xfsinfo *xfsinfo)
 PyObject *
 guestfs_int_py_put_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (lvm_lvs->len);
-  for (i = 0; i < lvm_lvs->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_lvm_lv (&lvm_lvs->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < lvm_lvs->len; ++i) {
+    element = guestfs_int_py_put_lvm_lv (&lvm_lvs->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1116,12 +1441,20 @@ guestfs_int_py_put_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
 PyObject *
 guestfs_int_py_put_dirent_list (struct guestfs_dirent_list *dirents)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (dirents->len);
-  for (i = 0; i < dirents->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_dirent (&dirents->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < dirents->len; ++i) {
+    element = guestfs_int_py_put_dirent (&dirents->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1130,12 +1463,20 @@ guestfs_int_py_put_dirent_list (struct guestfs_dirent_list *dirents)
 PyObject *
 guestfs_int_py_put_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *btrfsqgroups)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (btrfsqgroups->len);
-  for (i = 0; i < btrfsqgroups->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_btrfsqgroup (&btrfsqgroups->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < btrfsqgroups->len; ++i) {
+    element = guestfs_int_py_put_btrfsqgroup (&btrfsqgroups->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1144,12 +1485,20 @@ guestfs_int_py_put_btrfsqgroup_list (struct guestfs_btrfsqgroup_list *btrfsqgrou
 PyObject *
 guestfs_int_py_put_tsk_dirent_list (struct guestfs_tsk_dirent_list *tsk_dirents)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (tsk_dirents->len);
-  for (i = 0; i < tsk_dirents->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_tsk_dirent (&tsk_dirents->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < tsk_dirents->len; ++i) {
+    element = guestfs_int_py_put_tsk_dirent (&tsk_dirents->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1158,12 +1507,20 @@ guestfs_int_py_put_tsk_dirent_list (struct guestfs_tsk_dirent_list *tsk_dirents)
 PyObject *
 guestfs_int_py_put_partition_list (struct guestfs_partition_list *partitions)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (partitions->len);
-  for (i = 0; i < partitions->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_partition (&partitions->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < partitions->len; ++i) {
+    element = guestfs_int_py_put_partition (&partitions->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1172,12 +1529,20 @@ guestfs_int_py_put_partition_list (struct guestfs_partition_list *partitions)
 PyObject *
 guestfs_int_py_put_statns_list (struct guestfs_statns_list *statnss)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (statnss->len);
-  for (i = 0; i < statnss->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_statns (&statnss->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < statnss->len; ++i) {
+    element = guestfs_int_py_put_statns (&statnss->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1186,12 +1551,20 @@ guestfs_int_py_put_statns_list (struct guestfs_statns_list *statnss)
 PyObject *
 guestfs_int_py_put_application2_list (struct guestfs_application2_list *application2s)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (application2s->len);
-  for (i = 0; i < application2s->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_application2 (&application2s->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < application2s->len; ++i) {
+    element = guestfs_int_py_put_application2 (&application2s->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1200,12 +1573,20 @@ guestfs_int_py_put_application2_list (struct guestfs_application2_list *applicat
 PyObject *
 guestfs_int_py_put_inotify_event_list (struct guestfs_inotify_event_list *inotify_events)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (inotify_events->len);
-  for (i = 0; i < inotify_events->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_inotify_event (&inotify_events->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < inotify_events->len; ++i) {
+    element = guestfs_int_py_put_inotify_event (&inotify_events->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1214,12 +1595,20 @@ guestfs_int_py_put_inotify_event_list (struct guestfs_inotify_event_list *inotif
 PyObject *
 guestfs_int_py_put_application_list (struct guestfs_application_list *applications)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (applications->len);
-  for (i = 0; i < applications->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_application (&applications->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < applications->len; ++i) {
+    element = guestfs_int_py_put_application (&applications->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1228,12 +1617,20 @@ guestfs_int_py_put_application_list (struct guestfs_application_list *applicatio
 PyObject *
 guestfs_int_py_put_hivex_value_list (struct guestfs_hivex_value_list *hivex_values)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (hivex_values->len);
-  for (i = 0; i < hivex_values->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_hivex_value (&hivex_values->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < hivex_values->len; ++i) {
+    element = guestfs_int_py_put_hivex_value (&hivex_values->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1242,12 +1639,20 @@ guestfs_int_py_put_hivex_value_list (struct guestfs_hivex_value_list *hivex_valu
 PyObject *
 guestfs_int_py_put_xattr_list (struct guestfs_xattr_list *xattrs)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (xattrs->len);
-  for (i = 0; i < xattrs->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_xattr (&xattrs->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < xattrs->len; ++i) {
+    element = guestfs_int_py_put_xattr (&xattrs->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1256,12 +1661,42 @@ guestfs_int_py_put_xattr_list (struct guestfs_xattr_list *xattrs)
 PyObject *
 guestfs_int_py_put_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (lvm_pvs->len);
-  for (i = 0; i < lvm_pvs->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_lvm_pv (&lvm_pvs->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < lvm_pvs->len; ++i) {
+    element = guestfs_int_py_put_lvm_pv (&lvm_pvs->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
+  return list;
+};
+#endif
+
+#ifdef GUESTFS_HAVE_STRUCT_YARA_DETECTION
+PyObject *
+guestfs_int_py_put_yara_detection_list (struct guestfs_yara_detection_list *yara_detections)
+{
+  PyObject *list, *element;
+  size_t i;
+
+  list = PyList_New (yara_detections->len);
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < yara_detections->len; ++i) {
+    element = guestfs_int_py_put_yara_detection (&yara_detections->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1270,12 +1705,20 @@ guestfs_int_py_put_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
 PyObject *
 guestfs_int_py_put_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (lvm_vgs->len);
-  for (i = 0; i < lvm_vgs->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_lvm_vg (&lvm_vgs->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < lvm_vgs->len; ++i) {
+    element = guestfs_int_py_put_lvm_vg (&lvm_vgs->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1284,12 +1727,20 @@ guestfs_int_py_put_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
 PyObject *
 guestfs_int_py_put_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *btrfssubvolumes)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (btrfssubvolumes->len);
-  for (i = 0; i < btrfssubvolumes->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_btrfssubvolume (&btrfssubvolumes->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < btrfssubvolumes->len; ++i) {
+    element = guestfs_int_py_put_btrfssubvolume (&btrfssubvolumes->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1298,12 +1749,20 @@ guestfs_int_py_put_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *btrf
 PyObject *
 guestfs_int_py_put_mdstat_list (struct guestfs_mdstat_list *mdstats)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (mdstats->len);
-  for (i = 0; i < mdstats->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_mdstat (&mdstats->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < mdstats->len; ++i) {
+    element = guestfs_int_py_put_mdstat (&mdstats->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1312,12 +1771,20 @@ guestfs_int_py_put_mdstat_list (struct guestfs_mdstat_list *mdstats)
 PyObject *
 guestfs_int_py_put_hivex_node_list (struct guestfs_hivex_node_list *hivex_nodes)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (hivex_nodes->len);
-  for (i = 0; i < hivex_nodes->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_hivex_node (&hivex_nodes->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < hivex_nodes->len; ++i) {
+    element = guestfs_int_py_put_hivex_node (&hivex_nodes->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif
@@ -1326,12 +1793,20 @@ guestfs_int_py_put_hivex_node_list (struct guestfs_hivex_node_list *hivex_nodes)
 PyObject *
 guestfs_int_py_put_stat_list (struct guestfs_stat_list *stats)
 {
-  PyObject *list;
+  PyObject *list, *element;
   size_t i;
 
   list = PyList_New (stats->len);
-  for (i = 0; i < stats->len; ++i)
-    PyList_SetItem (list, i, guestfs_int_py_put_stat (&stats->val[i]));
+  if (list == NULL)
+    return NULL;
+  for (i = 0; i < stats->len; ++i) {
+    element = guestfs_int_py_put_stat (&stats->val[i]);
+    if (element == NULL) {
+      Py_CLEAR (list);
+      return NULL;
+    }
+    PyList_SetItem (list, i, element);
+  }
   return list;
 };
 #endif

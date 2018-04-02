@@ -105,13 +105,7 @@ guestfs_int_py_add_libvirt_dom (PyObject *self, PyObject *args)
 #ifdef GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK
   if (py_iface != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_IFACE_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.iface = PyString_AsString (py_iface);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_iface);
-    optargs_s.iface = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.iface = guestfs_int_py_asstring (py_iface);
   }
 #endif
 #ifdef GUESTFS_ADD_LIBVIRT_DOM_LIVE_BITMASK
@@ -124,37 +118,19 @@ guestfs_int_py_add_libvirt_dom (PyObject *self, PyObject *args)
 #ifdef GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK
   if (py_readonlydisk != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_READONLYDISK_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.readonlydisk = PyString_AsString (py_readonlydisk);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_readonlydisk);
-    optargs_s.readonlydisk = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.readonlydisk = guestfs_int_py_asstring (py_readonlydisk);
   }
 #endif
 #ifdef GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK
   if (py_cachemode != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_CACHEMODE_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.cachemode = PyString_AsString (py_cachemode);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_cachemode);
-    optargs_s.cachemode = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.cachemode = guestfs_int_py_asstring (py_cachemode);
   }
 #endif
 #ifdef GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK
   if (py_discard != Py_None) {
     optargs_s.bitmask |= GUESTFS_ADD_LIBVIRT_DOM_DISCARD_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.discard = PyString_AsString (py_discard);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_discard);
-    optargs_s.discard = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.discard = guestfs_int_py_asstring (py_discard);
   }
 #endif
 #ifdef GUESTFS_ADD_LIBVIRT_DOM_COPYONREAD_BITMASK
@@ -409,6 +385,7 @@ guestfs_int_py_blkid (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_table (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -524,6 +501,7 @@ guestfs_int_py_btrfs_scrub_status (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_btrfsscrub (r);
   guestfs_free_btrfsscrub (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -555,13 +533,7 @@ guestfs_int_py_btrfs_subvolume_create (PyObject *self, PyObject *args)
 #ifdef GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK
   if (py_qgroupid != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_CREATE_OPTS_QGROUPID_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.qgroupid = PyString_AsString (py_qgroupid);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_qgroupid);
-    optargs_s.qgroupid = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.qgroupid = guestfs_int_py_asstring (py_qgroupid);
   }
 #endif
 
@@ -659,13 +631,7 @@ guestfs_int_py_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
 #ifdef GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK
   if (py_qgroupid != Py_None) {
     optargs_s.bitmask |= GUESTFS_BTRFS_SUBVOLUME_SNAPSHOT_OPTS_QGROUPID_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.qgroupid = PyString_AsString (py_qgroupid);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_qgroupid);
-    optargs_s.qgroupid = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.qgroupid = guestfs_int_py_asstring (py_qgroupid);
   }
 #endif
 
@@ -720,11 +686,7 @@ guestfs_int_py_canonical_device_name (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -763,11 +725,7 @@ guestfs_int_py_case_sensitive_path (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -930,6 +888,7 @@ guestfs_int_py_find_inode (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_tsk_dirent_list (r);
   guestfs_free_tsk_dirent_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -966,11 +925,7 @@ guestfs_int_py_findfs_uuid (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -1105,11 +1060,7 @@ guestfs_int_py_get_e2uuid (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -1141,11 +1092,7 @@ guestfs_int_py_get_libvirt_requested_credential_challenge (PyObject *self, PyObj
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -1245,6 +1192,7 @@ guestfs_int_py_grepi (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1281,11 +1229,7 @@ guestfs_int_py_hexdump (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -1326,6 +1270,7 @@ guestfs_int_py_hivex_node_children (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_hivex_node_list (r);
   guestfs_free_hivex_node_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1362,11 +1307,7 @@ guestfs_int_py_inspect_get_format (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -1405,11 +1346,7 @@ guestfs_int_py_inspect_get_hostname (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -1510,6 +1447,7 @@ guestfs_int_py_internal_test_rhashtable (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_table (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1541,6 +1479,7 @@ guestfs_int_py_internal_test_rstringlist (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1571,6 +1510,7 @@ guestfs_int_py_internal_test_rstringlisterr (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1666,6 +1606,7 @@ guestfs_int_py_ldmtool_scan (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1704,6 +1645,7 @@ guestfs_int_py_lgetxattrs (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_xattr_list (r);
   guestfs_free_xattr_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1741,6 +1683,7 @@ guestfs_int_py_list_dm_devices (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1778,6 +1721,7 @@ guestfs_int_py_list_ldm_volumes (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1854,11 +1798,7 @@ guestfs_int_py_lvm_canonical_lv_name (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -1975,11 +1915,7 @@ guestfs_int_py_lvuuid (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -2273,11 +2209,7 @@ guestfs_int_py_part_get_gpt_guid (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -2355,11 +2287,7 @@ guestfs_int_py_part_get_mbr_part_type (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -2399,11 +2327,7 @@ guestfs_int_py_part_get_name (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -2518,11 +2442,7 @@ guestfs_int_py_pvuuid (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -2567,6 +2487,7 @@ guestfs_int_py_readlinklist (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -2804,6 +2725,7 @@ guestfs_int_py_sh_lines (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:

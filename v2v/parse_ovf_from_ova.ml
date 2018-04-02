@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,10 @@
 
 (* Parse OVF from an externally produced OVA file. *)
 
-open Common_gettext.Gettext
-open Common_utils
+open Std_utils
+open Tools_utils
 open Unix_utils
+open Common_gettext.Gettext
 
 open Types
 open Utils
@@ -51,9 +52,7 @@ let parse_ovf_from_ova ovf_filename =
 
   let xpath_string = xpath_string xpathctx
   and xpath_int = xpath_int xpathctx
-  and xpath_string_default = xpath_string_default xpathctx
-  and xpath_int_default = xpath_int_default xpathctx
-  and xpath_int64_default = xpath_int64_default xpathctx in
+  and xpath_int64 = xpath_int64 xpathctx in
 
   let rec parse_top () =
     (* Search for vm name. *)
@@ -63,14 +62,34 @@ let parse_ovf_from_ova ovf_filename =
       | Some _ as name -> name in
 
     (* Search for memory. *)
-    let memory = xpath_int64_default "/ovf:Envelope/ovf:VirtualSystem/ovf:VirtualHardwareSection/ovf:Item[rasd:ResourceType/text()=4]/rasd:VirtualQuantity/text()" (1024L *^ 1024L) in
+    let memory = Option.default (1024L *^ 1024L) (xpath_int64 "/ovf:Envelope/ovf:VirtualSystem/ovf:VirtualHardwareSection/ovf:Item[rasd:ResourceType/text()=4]/rasd:VirtualQuantity/text()") in
     let memory = memory *^ 1024L *^ 1024L in
 
     (* Search for number of vCPUs. *)
-    let vcpu = xpath_int_default "/ovf:Envelope/ovf:VirtualSystem/ovf:VirtualHardwareSection/ovf:Item[rasd:ResourceType/text()=3]/rasd:VirtualQuantity/text()" 1 in
+    let vcpu = Option.default 1 (xpath_int "/ovf:Envelope/ovf:VirtualSystem/ovf:VirtualHardwareSection/ovf:Item[rasd:ResourceType/text()=3]/rasd:VirtualQuantity/text()") in
+
+    (* CPU topology.  coresPerSocket is a VMware proprietary extension.
+     * I couldn't find out how hyperthreads is specified in the OVF.
+     *)
+    let cores_per_socket = xpath_int "/ovf:Envelope/ovf:VirtualSystem/ovf:VirtualHardwareSection/ovf:Item[rasd:ResourceType/text()=3]/vmw:CoresPerSocket/text()" in
+    let cpu_sockets, cpu_cores =
+      match cores_per_socket with
+      | None -> None, None
+      | Some cores_per_socket when cores_per_socket <= 0 ->
+         warning (f_"invalid vmw:CoresPerSocket (%d) ignored")
+                 cores_per_socket;
+         None, None
+      | Some cores_per_socket ->
+         let sockets = vcpu / cores_per_socket in
+         if sockets <= 0 then (
+           warning (f_"invalid vmw:CoresPerSocket < number of cores");
+           None, None
+         )
+         else
+           Some sockets, Some cores_per_socket in
 
     (* BIOS or EFI firmware? *)
-    let firmware = xpath_string_default "/ovf:Envelope/ovf:VirtualSystem/ovf:VirtualHardwareSection/vmw:Config[@vmw:key=\"firmware\"]/@vmw:value" "bios" in
+    let firmware = Option.default "bios" (xpath_string "/ovf:Envelope/ovf:VirtualSystem/ovf:VirtualHardwareSection/vmw:Config[@vmw:key=\"firmware\"]/@vmw:value") in
     let firmware =
       match firmware with
       | "bios" -> BIOS
@@ -78,7 +97,7 @@ let parse_ovf_from_ova ovf_filename =
       | s ->
          error (f_"unknown Config:firmware value %s (expected \"bios\" or \"efi\")") s in
 
-    name, memory, vcpu, firmware,
+    name, memory, vcpu, cpu_sockets, cpu_cores, firmware,
     parse_disks (), parse_removables (), parse_nics ()
 
   (* Helper function to return the parent controller of a disk. *)
@@ -86,10 +105,11 @@ let parse_ovf_from_ova ovf_filename =
     let expr = sprintf "/ovf:Envelope/ovf:VirtualSystem/ovf:VirtualHardwareSection/ovf:Item[rasd:InstanceID/text()=%d]/rasd:ResourceType/text()" id in
     let controller = xpath_int expr in
 
-    (* 6: iscsi controller, 5: ide *)
+    (* 5: IDE, 6: SCSI controller, 20: SATA *)
     match controller with
-    | Some 6 -> Some Source_SCSI
     | Some 5 -> Some Source_IDE
+    | Some 6 -> Some Source_SCSI
+    | Some 20 -> Some Source_SATA
     | None ->
        warning (f_"ova disk has no parent controller, please report this as a bug supplying the *.ovf file extracted from the ova");
        None
@@ -120,11 +140,12 @@ let parse_ovf_from_ova ovf_filename =
         | Some id -> parent_controller id in
 
       Xml.xpathctx_set_current_context xpathctx n;
-      let file_id = xpath_string_default "rasd:HostResource/text()" "" in
-      let rex = Str.regexp "^\\(ovf:\\)?/disk/\\(.*\\)" in
-      if Str.string_match rex file_id 0 then (
+      let file_id =
+        Option.default "" (xpath_string "rasd:HostResource/text()") in
+      let rex = PCRE.compile "^(?:ovf:)?/disk/(.*)" in
+      if PCRE.matches rex file_id then (
         (* Chase the references through to the actual file name. *)
-        let file_id = Str.matched_group 2 file_id in
+        let file_id = PCRE.sub 1 in
         let expr = sprintf "/ovf:Envelope/ovf:DiskSection/ovf:Disk[@ovf:diskId='%s']/@ovf:fileRef" file_id in
         let file_ref =
           match xpath_string expr with
@@ -153,7 +174,7 @@ let parse_ovf_from_ova ovf_filename =
           href = href;
           compressed = compressed
         } in
-        push_front disk disks;
+        List.push_front disk disks;
       ) else
         error (f_"could not parse disk rasd:HostResource from OVF document")
     done;
@@ -196,7 +217,7 @@ let parse_ovf_from_ova ovf_filename =
         s_removable_controller = controller;
         s_removable_slot = slot;
       } in
-      push_front disk removables;
+      List.push_front disk removables;
     done;
     List.rev !removables
 
@@ -210,7 +231,8 @@ let parse_ovf_from_ova ovf_filename =
       let n = Xml.xpathobj_node obj i in
       Xml.xpathctx_set_current_context xpathctx n;
       let vnet =
-        xpath_string_default "rasd:ElementName/text()" (sprintf"eth%d" i) in
+        Option.default (sprintf"eth%d" i)
+                       (xpath_string "rasd:ElementName/text()") in
       let mac = xpath_string "rasd:Address/text()" in
       let nic = {
         s_mac = mac;
@@ -219,7 +241,7 @@ let parse_ovf_from_ova ovf_filename =
         s_vnet_orig = vnet;
         s_vnet_type = Network;
       } in
-      push_front nic nics
+      List.push_front nic nics
     done;
     List.rev !nics
   in

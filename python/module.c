@@ -698,6 +698,9 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_KEY
   { (char *) "hivex_value_key", guestfs_int_py_hivex_value_key, METH_VARARGS, NULL },
 #endif
+#ifdef GUESTFS_HAVE_HIVEX_VALUE_STRING
+  { (char *) "hivex_value_string", guestfs_int_py_hivex_value_string, METH_VARARGS, NULL },
+#endif
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_TYPE
   { (char *) "hivex_value_type", guestfs_int_py_hivex_value_type, METH_VARARGS, NULL },
 #endif
@@ -1328,6 +1331,9 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_PART_GET_DISK_GUID
   { (char *) "part_get_disk_guid", guestfs_int_py_part_get_disk_guid, METH_VARARGS, NULL },
 #endif
+#ifdef GUESTFS_HAVE_PART_GET_GPT_ATTRIBUTES
+  { (char *) "part_get_gpt_attributes", guestfs_int_py_part_get_gpt_attributes, METH_VARARGS, NULL },
+#endif
 #ifdef GUESTFS_HAVE_PART_GET_GPT_GUID
   { (char *) "part_get_gpt_guid", guestfs_int_py_part_get_gpt_guid, METH_VARARGS, NULL },
 #endif
@@ -1352,6 +1358,9 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_PART_LIST
   { (char *) "part_list", guestfs_int_py_part_list, METH_VARARGS, NULL },
 #endif
+#ifdef GUESTFS_HAVE_PART_RESIZE
+  { (char *) "part_resize", guestfs_int_py_part_resize, METH_VARARGS, NULL },
+#endif
 #ifdef GUESTFS_HAVE_PART_SET_BOOTABLE
   { (char *) "part_set_bootable", guestfs_int_py_part_set_bootable, METH_VARARGS, NULL },
 #endif
@@ -1360,6 +1369,9 @@ static PyMethodDef methods[] = {
 #endif
 #ifdef GUESTFS_HAVE_PART_SET_DISK_GUID_RANDOM
   { (char *) "part_set_disk_guid_random", guestfs_int_py_part_set_disk_guid_random, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_PART_SET_GPT_ATTRIBUTES
+  { (char *) "part_set_gpt_attributes", guestfs_int_py_part_set_gpt_attributes, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_PART_SET_GPT_GUID
   { (char *) "part_set_gpt_guid", guestfs_int_py_part_set_gpt_guid, METH_VARARGS, NULL },
@@ -1828,6 +1840,15 @@ static PyMethodDef methods[] = {
 #endif
 #ifdef GUESTFS_HAVE_XFS_REPAIR
   { (char *) "xfs_repair", guestfs_int_py_xfs_repair, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_YARA_DESTROY
+  { (char *) "yara_destroy", guestfs_int_py_yara_destroy, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_YARA_LOAD
+  { (char *) "yara_load", guestfs_int_py_yara_load, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_YARA_SCAN
+  { (char *) "yara_scan", guestfs_int_py_yara_scan, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_ZEGREP
   { (char *) "zegrep", guestfs_int_py_zegrep, METH_VARARGS, NULL },

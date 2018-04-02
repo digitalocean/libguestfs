@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,14 @@
 
 open Printf
 
+open C_utils
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
+open Xpath_helpers
 
 open Types
-open Xpath_helpers
+open Utils
 
 type parsed_disk = {
   p_source_disk : source_disk;
@@ -38,10 +41,35 @@ and parsed_source =
  *)
 let get_drive_slot str offset =
   let name = String.sub str offset (String.length str - offset) in
-  try Some (Utils.drive_index name)
+  try Some (drive_index name)
   with Invalid_argument _ ->
-       warning (f_"could not parse device name '%s' from the source libvirt XML") str;
+       warning (f_"could not parse device name ‘%s’ from the source libvirt XML") str;
        None
+
+(* Create a JSON URI for qemu referring to a remote CURL (http/https)
+ * resource.  See also [v2v/vCenter.ml].
+ *)
+let create_curl_qemu_uri driver host port path =
+  let url =
+    let port =
+      match driver, port with
+      | _, None -> ""
+      | "https", Some 443 -> ""
+      | "http", Some 80 -> ""
+      | _, Some port when port >= 1 -> ":" ^ string_of_int port
+      | _, Some port -> invalid_arg "invalid port number in libvirt XML" in
+    sprintf "%s://%s%s%s" driver host port (uri_quote path) in
+
+  let json_params = [
+    "file.driver", JSON.String driver;  (* "http" or "https" *)
+    "file.url", JSON.String url;
+    "file.timeout", JSON.Int 2000;
+    "file.readahead", JSON.Int (1024 * 1024);
+    (* "file.sslverify", JSON.String "off"; XXX *)
+  ] in
+
+  (* Turn the JSON parameters into a 'json:' protocol string. *)
+  "json: " ^ JSON.string_of_doc json_params
 
 let parse_libvirt_xml ?conn xml =
   debug "libvirt xml is:\n%s" xml;
@@ -50,8 +78,7 @@ let parse_libvirt_xml ?conn xml =
   let xpathctx = Xml.xpath_new_context doc in
   let xpath_string = xpath_string xpathctx
   and xpath_int = xpath_int xpathctx
-  and xpath_int_default = xpath_int_default xpathctx
-  and xpath_int64_default = xpath_int64_default xpathctx in
+  and xpath_int64 = xpath_int64 xpathctx in
 
   let hypervisor =
     match xpath_string "/domain/@type" with
@@ -63,9 +90,30 @@ let parse_libvirt_xml ?conn xml =
     | None | Some "" ->
        error (f_"in the libvirt XML metadata, <name> is missing or empty")
     | Some s -> s in
-  let memory = xpath_int64_default "/domain/memory/text()" (1024L *^ 1024L) in
+  let memory =
+    Option.default (1024L *^ 1024L) (xpath_int64 "/domain/memory/text()") in
   let memory = memory *^ 1024L in
-  let vcpu = xpath_int_default "/domain/vcpu/text()" 1 in
+
+  let cpu_vendor = xpath_string "/domain/cpu/vendor/text()" in
+  let cpu_model = xpath_string "/domain/cpu/model/text()" in
+  let cpu_sockets = xpath_int "/domain/cpu/topology/@sockets" in
+  let cpu_cores = xpath_int "/domain/cpu/topology/@cores" in
+  let cpu_threads = xpath_int "/domain/cpu/topology/@threads" in
+
+  (* Get the <vcpu> field from the input XML.  If not set then
+   * try calculating it from the <cpu> <topology> node.  If that's
+   * not set either, then assume 1 vCPU.
+   *)
+  let vcpu = xpath_int "/domain/vcpu/text()" in
+  let vcpu =
+    match vcpu, cpu_sockets, cpu_cores, cpu_threads with
+    | Some vcpu, _,    _,    _    -> vcpu
+    | None,      None, None, None -> 1
+    | None,      _,    _,    _    ->
+       let sockets = Option.default 1 cpu_sockets
+       and cores = Option.default 1 cpu_cores
+       and threads = Option.default 1 cpu_threads in
+       sockets * cores * threads in
 
   let features =
     let features = ref [] in
@@ -73,7 +121,7 @@ let parse_libvirt_xml ?conn xml =
     let nr_nodes = Xml.xpathobj_nr_nodes obj in
     for i = 0 to nr_nodes-1 do
       let node = Xml.xpathobj_node obj i in
-      push_front (Xml.node_name node) features
+      List.push_front (Xml.node_name node) features
     done;
     !features in
 
@@ -204,7 +252,7 @@ let parse_libvirt_xml ?conn xml =
                             s_controller = controller };
           p_source = p_source
         } in
-        push_front disk disks
+        List.push_front disk disks
       in
       get_disks, add_disk
     in
@@ -223,6 +271,7 @@ let parse_libvirt_xml ?conn xml =
         match target_bus, has_virtio_scsi with
         | None, _ -> None
         | Some "ide", _ -> Some Source_IDE
+        | Some "sata", _ -> Some Source_SATA
         | Some "scsi", true -> Some Source_virtio_SCSI
         | Some "scsi", false -> Some Source_SCSI
         | Some "virtio", _ -> Some Source_virtio_blk
@@ -253,21 +302,27 @@ let parse_libvirt_xml ?conn xml =
          | None -> ()
         );
       | Some "network" ->
-        (* We only handle <source protocol="nbd"> here, and that is
-         * intended only for virt-p2v.
-         *)
         (match (xpath_string "source/@protocol",
                 xpath_string "source/host/@name",
                 xpath_int "source/host/@port") with
         | None, _, _ ->
-          warning (f_"<disk type='%s'> was ignored") "network"
+           warning (f_"<disk type='%s'> was ignored") "network"
         | Some "nbd", Some ("localhost" as host), Some port when port > 0 ->
-          (* virt-p2v: Generate a qemu nbd URL. *)
-          let path = sprintf "nbd:%s:%d" host port in
-          add_disk path format controller P_dont_rewrite
+           (* <source protocol="nbd"> with host localhost is used by
+            * virt-p2v.  Generate a qemu 'nbd:' URL.
+            *)
+           let path = sprintf "nbd:%s:%d" host port in
+           add_disk path format controller P_dont_rewrite
+        | Some ("http"|"https" as driver), Some (_ as host), port ->
+           (* This is for testing curl, eg for testing VMware conversions
+            * without needing VMware around.
+            *)
+           let path = Option.default "" (xpath_string "source/@name") in
+           let qemu_uri = create_curl_qemu_uri driver host port path in
+           add_disk qemu_uri format controller P_dont_rewrite
         | Some protocol, _, _ ->
-          warning (f_"<disk type='network'> with <source protocol='%s'> was ignored")
-            protocol
+           warning (f_"<disk type='network'> with <source protocol='%s'> was ignored")
+                   protocol
         )
       | Some "volume" ->
         (match xpath_string "source/@pool", xpath_string "source/@volume" with
@@ -313,6 +368,7 @@ let parse_libvirt_xml ?conn xml =
         match target_bus, has_virtio_scsi with
         | None, _ -> None
         | Some "ide", _ -> Some Source_IDE
+        | Some "sata", _ -> Some Source_SATA
         | Some "scsi", true -> Some Source_virtio_SCSI
         | Some "scsi", false -> Some Source_SCSI
         | Some "virtio", _ -> Some Source_virtio_blk
@@ -347,7 +403,7 @@ let parse_libvirt_xml ?conn xml =
         { s_removable_type = typ;
           s_removable_controller = controller;
           s_removable_slot = slot } in
-      push_front disk disks
+      List.push_front disk disks
     done;
     List.rev !disks in
 
@@ -391,7 +447,7 @@ let parse_libvirt_xml ?conn xml =
              s_vnet_orig = vnet;
              s_vnet_type = vnet_type
            } in
-           push_front nic nics
+           List.push_front nic nics
          in
          match xpath_string "source/@network | source/@bridge" with
          | None -> ()
@@ -426,6 +482,11 @@ let parse_libvirt_xml ?conn xml =
     s_name = name; s_orig_name = name;
     s_memory = memory;
     s_vcpu = vcpu;
+    s_cpu_vendor = cpu_vendor;
+    s_cpu_model = cpu_model;
+    s_cpu_sockets = cpu_sockets;
+    s_cpu_cores = cpu_cores;
+    s_cpu_threads = cpu_threads;
     s_features = features;
     s_firmware = UnknownFirmware; (* XXX until RHBZ#1217444 is fixed *)
     s_display = display;

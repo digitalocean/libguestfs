@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -110,28 +110,23 @@ let rec generate_prototype ?(extern = true) ?(static = false)
   in
   List.iter (
     function
-    | Pathname n
-    | Device n | Dev_or_Path n
-    | String n
-    | OptString n
-    | Key n
-    | GUID n ->
+    | String ((PlainString|Device|Dev_or_Path|Pathname|Key|GUID|Filename), n)
+    | OptString n ->
         next ();
         pr "const char *%s" n
-    | Mountable n | Mountable_or_Path n ->
+    | String ((Mountable|Mountable_or_Path), n) ->
         next();
         if in_daemon then
           pr "const mountable_t *%s" n
         else
           pr "const char *%s" n
-    | StringList n | DeviceList n | FilenameList n ->
+    | StringList (_, n) ->
         next ();
         pr "char *const *%s" n
     | Bool n -> next (); pr "int %s" n
     | Int n -> next (); pr "int %s" n
     | Int64 n -> next (); pr "int64_t %s" n
-    | FileIn n
-    | FileOut n ->
+    | String ((FileIn|FileOut), n) ->
         if not in_daemon then (next (); pr "const char *%s" n)
     | BufferIn n ->
         next ();
@@ -177,7 +172,7 @@ and generate_c_call_args ?handle ?(implicit_size_ptr = "&size")
     | BufferIn n ->
         next ();
         pr "%s, %s_size" n n
-    | Mountable n | Mountable_or_Path n ->
+    | String ((Mountable|Mountable_or_Path), n) ->
         next ();
         (if in_daemon then pr "&%s" else pr "%s") n
     | arg ->
@@ -211,7 +206,7 @@ and generate_actions_pod () =
       generate_actions_pod_entry f
   ) (actions |> documented_functions |> sort)
 
-and generate_actions_pod_entry ({ c_name = c_name;
+and generate_actions_pod_entry ({ c_name;
                                   style = ret, args, optargs as style } as f) =
   pr "=head2 guestfs_%s\n\n" c_name;
   generate_prototype ~extern:false ~indent:" " ~handle:"g"
@@ -291,7 +286,7 @@ I<The caller must free the returned buffer after use>.\n\n"
     pr "%s\n\n" progress_message;
   if f.protocol_limit_warning then
     pr "%s\n\n" protocol_limit_warning;
-  if List.exists (function Key _ -> true | _ -> false) args then
+  if List.exists (function String (Key, _) -> true | _ -> false) args then
     pr "This function takes a key or passphrase parameter which
 could contain sensitive material.  Read the section
 L</KEYS AND PASSPHRASES> for more information.\n\n";
@@ -324,7 +319,7 @@ L</guestfs_feature_available>.\n\n" opt
     pr "See L</CALLS WITH OPTIONAL ARGUMENTS>.\n\n";
   )
 
-and generate_actions_pod_back_compat_entry ({ name = name;
+and generate_actions_pod_back_compat_entry ({ name;
                                               style = ret, args, _ } as f) =
   pr "=head2 guestfs_%s\n\n" name;
   generate_prototype ~extern:false ~indent:" " ~handle:"g"
@@ -649,11 +644,11 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
 
   let generate_action_header { name = shortname;
                                style = ret, args, optargs as style;
-                               deprecated_by = deprecated_by } =
+                               deprecated_by } =
     pr "#define GUESTFS_HAVE_%s 1\n" (String.uppercase_ascii shortname);
 
     if optargs <> [] then (
-      iteri (
+      List.iteri (
         fun i argt ->
           let uc_shortname = String.uppercase_ascii shortname in
           let n = name_of_optargt argt in
@@ -682,7 +677,7 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
       pr "\n";
       pr "struct guestfs_%s_argv {\n" shortname;
       pr "  uint64_t bitmask;\n";
-      iteri (
+      List.iteri (
         fun i argt ->
           let c_type =
             match argt with
@@ -710,7 +705,7 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
   in
 
   let generate_all_headers = List.iter (
-    fun ({ name = name; style = ret, args, _ } as f) ->
+    fun ({ name; style = ret, args, _ } as f) ->
       (* If once_had_no_optargs is set, then we need to generate a
        * <name>_opts variant, plus a backwards-compatible wrapper
        * called just <name> with no optargs.
@@ -790,7 +785,7 @@ and generate_internal_actions_h () =
   pr "\n";
 
   List.iter (
-    fun { c_name = c_name; style = style } ->
+    fun { c_name; style } ->
       generate_prototype ~single_line:true ~newline:true ~handle:"g"
         ~prefix:"guestfs_impl_" ~optarg_proto:Argv
         c_name style
@@ -799,20 +794,17 @@ and generate_internal_actions_h () =
   pr "\n";
   pr "#endif /* GUESTFS_INTERNAL_ACTIONS_H_ */\n"
 
-(* Generate guestfs-internal-frontend-cleanups.h file. *)
-and generate_internal_frontend_cleanups_h () =
+(* Generate structs-cleanups.h file. *)
+and generate_client_structs_cleanups_h () =
   generate_header CStyle LGPLv2plus;
 
   pr "\
 /* These CLEANUP_* macros automatically free the struct or struct list
  * pointed to by the local variable at the end of the current scope.
- *
- * Don't include this file directly!  To use these cleanups in library
- * bindings and tools, include \"guestfs-internal-frontend.h\" only.
  */
 
-#ifndef GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_
-#define GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_
+#ifndef GUESTFS_STRUCTS_CLEANUPS_H_
+#define GUESTFS_STRUCTS_CLEANUPS_H_
 
 #ifdef HAVE_ATTRIBUTE_CLEANUP
 ";
@@ -851,7 +843,7 @@ and generate_internal_frontend_cleanups_h () =
   ) structs;
 
   pr "\n";
-  pr "#endif /* GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_ */\n"
+  pr "#endif /* GUESTFS_STRUCTS_CLEANUPS_H_ */\n"
 
 (* Functions to free structures. *)
 and generate_client_structs_free () =
@@ -1171,7 +1163,7 @@ and generate_client_structs_copy () =
   ) structs
 
 (* Functions to free structures used by the CLEANUP_* macros. *)
-and generate_client_structs_cleanup () =
+and generate_client_structs_cleanups_c () =
   generate_header CStyle LGPLv2plus;
 
   pr "\
@@ -1181,7 +1173,7 @@ and generate_client_structs_cleanup () =
 #include <stdlib.h>
 
 #include \"guestfs.h\"
-#include \"guestfs-internal-frontend.h\"
+#include \"structs-cleanups.h\"
 
 ";
 
@@ -1372,20 +1364,10 @@ and generate_client_actions actions () =
     List.iter (
       function
       (* parameters which should not be NULL *)
-      | String n
-      | Device n
-      | Mountable n
-      | Pathname n
-      | Dev_or_Path n | Mountable_or_Path n
-      | FileIn n
-      | FileOut n
+      | String (_, n)
       | BufferIn n
-      | StringList n
-      | DeviceList n
-      | Key n
-      | Pointer (_, n)
-      | GUID n
-      | FilenameList n ->
+      | StringList (_, n)
+      | Pointer (_, n) ->
           pr "  if (%s == NULL) {\n" n;
           pr "    error (g, \"%%s: %%s: parameter cannot be NULL\",\n";
           pr "           \"%s\", \"%s\");\n" c_name n;
@@ -1476,7 +1458,7 @@ and generate_client_actions actions () =
     let pr_newline = ref false in
     List.iter (
       function
-      | GUID n ->
+      | String (GUID, n) ->
           pr "  if (!guestfs_int_validate_guid (%s)) {\n" n;
           pr "    error (g, \"%%s: %%s: parameter is not a valid GUID\",\n";
           pr "           \"%s\", \"%s\");\n" c_name n;
@@ -1488,7 +1470,7 @@ and generate_client_actions actions () =
           pr "  }\n";
           pr_newline := true
 
-      | FilenameList n ->
+      | StringList (Filename, n) ->
           pr "  {\n";
           pr "    size_t i;\n";
           pr "    for (i = 0; %s[i] != NULL; ++i) {\n" n;
@@ -1506,17 +1488,11 @@ and generate_client_actions actions () =
           pr_newline := true
 
       (* not applicable *)
-      | String _
-      | Device _
-      | Mountable _
-      | Pathname _
-      | Dev_or_Path _ | Mountable_or_Path _
-      | FileIn _
-      | FileOut _
+      | String ((PlainString|Device|Mountable|Pathname|
+                 Dev_or_Path|Mountable_or_Path|
+                 FileIn|FileOut|Key|Filename), _)
       | BufferIn _
       | StringList _
-      | DeviceList _
-      | Key _
       | Pointer (_, _)
       | OptString _
       | Bool _
@@ -1533,7 +1509,7 @@ and generate_client_actions actions () =
 
     let needs_i =
       List.exists (function
-      | StringList _ | DeviceList _ | FilenameList _ -> true
+      | StringList _ -> true
       | _ -> false) args ||
       List.exists (function
       | OStringList _ -> true
@@ -1550,17 +1526,11 @@ and generate_client_actions actions () =
     (* Required arguments. *)
     List.iter (
       function
-      | String n			(* strings *)
-      | Device n
-      | Mountable n
-      | Pathname n
-      | Dev_or_Path n | Mountable_or_Path n
-      | FileIn n
-      | FileOut n
-      | GUID n ->
+      | String ((PlainString|Device|Mountable|Pathname|Filename
+                 |Dev_or_Path|Mountable_or_Path|FileIn|FileOut|GUID), n) ->
           (* guestfish doesn't support string escaping, so neither do we *)
           pr "    fprintf (trace_buffer.fp, \" \\\"%%s\\\"\", %s);\n" n
-      | Key n ->
+      | String (Key, n) ->
           (* don't print keys *)
           pr "    fprintf (trace_buffer.fp, \" \\\"***\\\"\");\n"
       | OptString n ->			(* string option *)
@@ -1568,9 +1538,7 @@ and generate_client_actions actions () =
           pr "      fprintf (trace_buffer.fp, \" \\\"%%s\\\"\", %s);\n" n;
           pr "    else\n";
           pr "      fprintf (trace_buffer.fp, \" null\");\n"
-      | StringList n
-      | DeviceList n
-      | FilenameList n ->			(* string list *)
+      | StringList (_, n) ->
           pr "    fputc (' ', trace_buffer.fp);\n";
           pr "    fputc ('\"', trace_buffer.fp);\n";
           pr "    for (i = 0; %s[i]; ++i) {\n" n;
@@ -1708,9 +1676,9 @@ and generate_client_actions actions () =
   in
 
   (* For non-daemon functions, generate a wrapper around each function. *)
-  let generate_non_daemon_wrapper { name = name; c_name = c_name;
+  let generate_non_daemon_wrapper { name; c_name;
                                     style = ret, _, optargs as style;
-                                    config_only = config_only } =
+                                    config_only } =
     if optargs = [] then
       generate_prototype ~extern:false ~semicolon:false ~newline:true
         ~handle:"g" ~prefix:"guestfs_"
@@ -1722,6 +1690,7 @@ and generate_client_actions actions () =
         ~dll_public:true
         c_name style;
     pr "{\n";
+    pr "  ACQUIRE_LOCK_FOR_CURRENT_SCOPE (g);\n";
 
     handle_null_optargs optargs c_name;
 
@@ -1787,7 +1756,7 @@ and generate_client_actions actions () =
   ) (actions |> non_daemon_functions |> sort);
 
   (* Client-side stubs for each function. *)
-  let generate_daemon_stub { name = name; c_name = c_name;
+  let generate_daemon_stub { name; c_name;
                              style = ret, args, optargs as style } =
     let errcode =
       match errcode_of_ret ret with
@@ -1808,11 +1777,12 @@ and generate_client_actions actions () =
         c_name style;
 
     pr "{\n";
+    pr "  ACQUIRE_LOCK_FOR_CURRENT_SCOPE (g);\n";
 
     handle_null_optargs optargs c_name;
 
     let args_passed_to_daemon =
-      List.filter (function FileIn _ | FileOut _ -> false | _ -> true)
+      List.filter (function String ((FileIn| FileOut), _) -> false | _ -> true)
         args in
     (match args_passed_to_daemon, optargs with
     | [], [] -> ()
@@ -1848,7 +1818,7 @@ and generate_client_actions actions () =
     );
 
     let has_filein =
-      List.exists (function FileIn _ -> true | _ -> false) args in
+      List.exists (function String (FileIn, _) -> true | _ -> false) args in
     if has_filein then (
       pr "  uint64_t progress_hint = 0;\n";
       pr "  struct stat progress_stat;\n";
@@ -1867,7 +1837,7 @@ and generate_client_actions actions () =
      *)
     List.iter (
       function
-      | FileIn n ->
+      | String (FileIn, n) ->
         pr "  if (stat (%s, &progress_stat) == 0 &&\n" n;
         pr "      S_ISREG (progress_stat.st_mode))\n";
         pr "    progress_hint += progress_stat.st_size;\n";
@@ -1890,13 +1860,11 @@ and generate_client_actions actions () =
     ) else (
       List.iter (
         function
-        | Pathname n | Device n | Mountable n | Dev_or_Path n 
-        | Mountable_or_Path n | String n
-        | Key n | GUID n ->
+        | String (_, n) ->
           pr "  args.%s = (char *) %s;\n" n n
         | OptString n ->
           pr "  args.%s = %s ? (char **) &%s : NULL;\n" n n n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
           pr "  args.%s.%s_val = (char **) %s;\n" n n n;
           pr "  for (args.%s.%s_len = 0; %s[args.%s.%s_len]; args.%s.%s_len++) ;\n" n n n n n n n;
         | Bool n ->
@@ -1915,7 +1883,7 @@ and generate_client_actions actions () =
           pr "  }\n";
           pr "  args.%s.%s_val = (char *) %s;\n" n n n;
           pr "  args.%s.%s_len = %s_size;\n" n n n
-        | FileIn _ | FileOut _ | Pointer _ -> assert false
+        | Pointer _ -> assert false
       ) args_passed_to_daemon;
 
       List.iter (
@@ -1963,7 +1931,7 @@ and generate_client_actions actions () =
     let need_read_reply_label = ref false in
     List.iter (
       function
-      | FileIn n ->
+      | String (FileIn, n) ->
         pr "  r = guestfs_int_send_file (g, %s);\n" n;
         pr "  if (r == -1) {\n";
         trace_return_error ~indent:4 name style errcode;
@@ -2026,7 +1994,7 @@ and generate_client_actions actions () =
     (* Expecting to receive further files (FileOut)? *)
     List.iter (
       function
-      | FileOut n ->
+      | String (FileOut, n) ->
         pr "  if (guestfs_int_recv_file (g, %s) == -1) {\n" n;
         trace_return_error ~indent:4 name style errcode;
         pr "    return %s;\n" (string_of_errcode errcode);
@@ -2042,9 +2010,9 @@ and generate_client_actions actions () =
       pr "  ret_v = ret.%s;\n" n
     | RConstString _ | RConstOptString _ ->
       failwithf "RConstString|RConstOptString cannot be used by daemon functions"
-    | RString n ->
+    | RString (_, n) ->
       pr "  ret_v = ret.%s; /* caller will free */\n" n
-    | RStringList n | RHashtable n ->
+    | RStringList (_, n) | RHashtable (_, _, n) ->
       pr "  /* caller will free this, but we need to add a NULL entry */\n";
       pr "  ret.%s.%s_val =\n" n n;
       pr "    safe_realloc (g, ret.%s.%s_val,\n" n n;
@@ -2104,7 +2072,7 @@ and generate_client_actions_variants () =
 
 ";
 
-  let generate_va_variants { name = name; c_name = c_name;
+  let generate_va_variants { name; c_name;
                              style = ret, args, optargs as style } =
     assert (optargs <> []); (* checked by caller *)
 
@@ -2155,6 +2123,7 @@ and generate_client_actions_variants () =
       ~handle:"g" ~prefix:"guestfs_" ~suffix:"_va" ~optarg_proto:VA
       c_name style;
     pr "{\n";
+    pr "  ACQUIRE_LOCK_FOR_CURRENT_SCOPE (g);\n";
     pr "  struct guestfs_%s_argv optargs_s;\n" c_name;
     pr "  struct guestfs_%s_argv *optargs = &optargs_s;\n" c_name;
     pr "  int i;\n";
@@ -2206,12 +2175,13 @@ and generate_client_actions_variants () =
     pr ";\n";
     pr "}\n\n"
 
-  and generate_back_compat_wrapper { name = name;
+  and generate_back_compat_wrapper { name;
                                      style = ret, args, _ as style } =
     generate_prototype ~extern:false ~semicolon:false ~newline:true
       ~handle:"g" ~prefix:"guestfs_"
       name (ret, args, []);
     pr "{\n";
+    pr "  ACQUIRE_LOCK_FOR_CURRENT_SCOPE (g);\n";
     pr "  struct guestfs_%s_opts_argv optargs_s = { .bitmask = 0 };\n" name;
     pr "  struct guestfs_%s_opts_argv *optargs = &optargs_s;\n" name;
     pr "\n";
@@ -2335,13 +2305,13 @@ and generate_linker_script () =
     List.flatten (
       List.map (
         function
-        | { c_name = c_name; style = _, _, [] } -> ["guestfs_" ^ c_name]
-        | { c_name = c_name; style = _, _, (_::_);
+        | { c_name; style = _, _, [] } -> ["guestfs_" ^ c_name]
+        | { c_name; style = _, _, (_::_);
             once_had_no_optargs = false } ->
             ["guestfs_" ^ c_name;
              "guestfs_" ^ c_name ^ "_va";
              "guestfs_" ^ c_name ^ "_argv"]
-        | { name = name; c_name = c_name; style = _, _, (_::_);
+        | { name; c_name; style = _, _, (_::_);
             once_had_no_optargs = true } ->
             ["guestfs_" ^ name;
              "guestfs_" ^ c_name;

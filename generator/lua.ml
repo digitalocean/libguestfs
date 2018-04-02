@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -64,7 +64,7 @@ let generate_lua_c () =
 #endif
 
 #include <guestfs.h>
-#include \"guestfs-internal-frontend.h\"
+#include \"guestfs-utils.h\"
 
 #define GUESTFS_LUA_HANDLE \"guestfs handle\"
 
@@ -436,8 +436,8 @@ guestfs_int_lua_delete_event_callback (lua_State *L)
 
   (* Actions. *)
   List.iter (
-    fun { name = name; style = (ret, args, optargs as style);
-          c_function = c_function; c_optarg_prefix = c_optarg_prefix } ->
+    fun { name; style = (ret, args, optargs as style);
+          c_function; c_optarg_prefix } ->
       pr "static int\n";
       pr "guestfs_int_lua_%s (lua_State *L)\n" name;
       pr "{\n";
@@ -473,16 +473,14 @@ guestfs_int_lua_delete_event_callback (lua_State *L)
 
       List.iter (
         function
-        | Pathname n | Device n | Mountable n
-        | Dev_or_Path n | Mountable_or_Path n | String n
-        | FileIn n | FileOut n | Key n | GUID n ->
+        | String (_, n) ->
           pr "  const char *%s;\n" n
         | BufferIn n ->
           pr "  const char *%s;\n" n;
           pr "  size_t %s_size;\n" n;
         | OptString n ->
           pr "  const char *%s;\n" n;
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
           pr "  char **%s;\n" n
         | Bool n -> pr "  int %s;\n" n
         | Int n -> pr "  int %s;\n" n
@@ -500,19 +498,17 @@ guestfs_int_lua_delete_event_callback (lua_State *L)
       pr "                       \"%s\");\n" name;
       pr "\n";
 
-      iteri (
+      List.iteri (
         fun i ->
           let i = i+2 in (* Lua indexes from 1(!), plus the handle. *)
           function
-          | Pathname n | Device n | Mountable n
-          | Dev_or_Path n | Mountable_or_Path n | String n
-          | FileIn n | FileOut n | Key n | GUID n ->
+          | String (_, n) ->
             pr "  %s = luaL_checkstring (L, %d);\n" n i
           | BufferIn n ->
             pr "  %s = luaL_checklstring (L, %d, &%s_size);\n" n i n
           | OptString n ->
             pr "  %s = luaL_optstring (L, %d, NULL);\n" n i
-          | StringList n | DeviceList n | FilenameList n ->
+          | StringList (_, n) ->
             pr "  %s = get_string_list (L, %d);\n" n i
           | Bool n ->
             pr "  %s = lua_toboolean (L, %d);\n" n i
@@ -566,13 +562,10 @@ guestfs_int_lua_delete_event_callback (lua_State *L)
       (* Free temporary data. *)
       List.iter (
         function
-        | Pathname _ | Device _ | Mountable _
-        | Dev_or_Path _ | Mountable_or_Path _ | String _
-        | FileIn _ | FileOut _ | Key _
-        | BufferIn _ | OptString _
+        | String _ | BufferIn _ | OptString _
         | Bool _ | Int _ | Int64 _
-        | Pointer _ | GUID _ -> ()
-        | StringList n | DeviceList n | FilenameList n ->
+        | Pointer _ -> ()
+        | StringList (_, n) ->
           pr "  free (%s);\n" n
       ) args;
       List.iter (
@@ -896,7 +889,7 @@ static luaL_Reg methods[] = {
 ";
 
   List.iter (
-    fun { name = name } -> pr "  { \"%s\", guestfs_int_lua_%s },\n" name name
+    fun { name } -> pr "  { \"%s\", guestfs_int_lua_%s },\n" name name
   ) (actions |> external_functions |> sort);
 
   pr "\

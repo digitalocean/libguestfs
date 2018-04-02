@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,11 @@
 open Unix
 open Printf
 
-open Common_gettext.Gettext
-open Common_utils
+open C_utils
+open Std_utils
+open Tools_utils
 open Unix_utils
+open Common_gettext.Gettext
 
 open Types
 open Utils
@@ -30,9 +32,18 @@ open Cmdline
 
 module G = Guestfs
 
+(* Conversion mode, either normal (copying) or [--in-place]. *)
 type conversion_mode =
-    | Copying of overlay list * target list
-    | In_place
+  | Copying of overlay list * target list
+  | In_place
+
+(* Mountpoint stats, used for free space estimation. *)
+type mpstat = {
+  mp_dev : string;                      (* Filesystem device (eg. /dev/sda1) *)
+  mp_path : string;                     (* Guest mountpoint (eg. /boot) *)
+  mp_statvfs : Guestfs.statvfs;         (* Free space stats. *)
+  mp_vfs : string;                      (* VFS type (eg. "ext4") *)
+}
 
 let () = Random.self_init ()
 
@@ -89,6 +100,9 @@ let rec main () =
   );
 
   g#launch ();
+
+  (* Decrypt the disks. *)
+  inspect_decrypt g;
 
   (* Inspection - this also mounts up the filesystems. *)
   (match conversion_mode with
@@ -179,13 +193,40 @@ and open_source cmdline input =
 
   (match source.s_hypervisor with
   | OtherHV hv ->
-    warning (f_"unknown source hypervisor ('%s') in metadata") hv
+    warning (f_"unknown source hypervisor (‘%s’) in metadata") hv
   | _ -> ()
   );
 
   assert (source.s_name <> "");
   assert (source.s_memory > 0L);
+
   assert (source.s_vcpu >= 1);
+  assert (source.s_cpu_vendor <> Some "");
+  assert (source.s_cpu_model <> Some "");
+  (match source.s_cpu_sockets with
+   | None -> ()
+   | Some i when i > 0 -> ()
+   | _ -> assert false);
+  (match source.s_cpu_cores with
+   | None -> ()
+   | Some i when i > 0 -> ()
+   | _ -> assert false);
+  (match source.s_cpu_threads with
+   | None -> ()
+   | Some i when i > 0 -> ()
+   | _ -> assert false);
+  (match source.s_cpu_sockets, source.s_cpu_cores, source.s_cpu_threads with
+   | None, None, None -> () (* no topology specified *)
+   | sockets, cores, threads ->
+      let sockets = Option.default 1 sockets
+      and cores = Option.default 1 cores
+      and threads = Option.default 1 threads in
+      let expected_vcpu = sockets * cores * threads in
+      if expected_vcpu <> source.s_vcpu then
+        warning (f_"source sockets * cores * threads <> number of vCPUs.\nSockets %d * cores per socket %d * threads %d = %d, but number of vCPUs = %d.\n\nThis is a problem with either the source metadata or the virt-v2v input module.  In some circumstances this could stop the guest from booting on the target.")
+                sockets cores threads expected_vcpu source.s_vcpu
+  );
+
   if source.s_disks = [] then
     error (f_"source has no hard disks!");
   List.iter (
@@ -235,7 +276,7 @@ and overlay_dir = (open_guestfs ())#get_cachedir ()
  * guestfs appliance which is also stored here.
  *)
 and check_host_free_space () =
-  let free_space = StatVFS.free_space overlay_dir in
+  let free_space = StatVFS.free_space (StatVFS.statvfs overlay_dir) in
   debug "check_host_free_space: overlay_dir=%s free_space=%Ld"
         overlay_dir free_space;
   if free_space < 1_073_741_824L then
@@ -245,7 +286,7 @@ and check_host_free_space () =
 (* Create a qcow2 v3 overlay to protect the source image(s). *)
 and create_overlays src_disks =
   message (f_"Creating an overlay to protect the source from being modified");
-  mapi (
+  List.mapi (
     fun i ({ s_qemu_uri = qemu_uri; s_format = format } as source) ->
       let overlay_file =
         Filename.temp_file ~temp_dir:overlay_dir "v2vovl" ".qcow2" in
@@ -300,7 +341,7 @@ and init_targets cmdline output source overlays =
           | Some format, _ -> format    (* -of overrides everything *)
           | None, Some format -> format (* same as backing format *)
           | None, None ->
-            error (f_"disk %s (%s) has no defined format.\n\nThe input metadata did not define the disk format (eg. raw/qcow2/etc) of this disk, and so virt-v2v will try to autodetect the format when reading it.\n\nHowever because the input format was not defined, we do not know what output format you want to use.  You have two choices: either define the original format in the source metadata, or use the '-of' option to force the output format.") ov.ov_sd ov.ov_source.s_qemu_uri in
+            error (f_"disk %s (%s) has no defined format.\n\nThe input metadata did not define the disk format (eg. raw/qcow2/etc) of this disk, and so virt-v2v will try to autodetect the format when reading it.\n\nHowever because the input format was not defined, we do not know what output format you want to use.  You have two choices: either define the original format in the source metadata, or use the ‘-of’ option to force the output format.") ov.ov_sd ov.ov_source.s_qemu_uri in
 
         (* What really happens here is that the call to #disk_create
          * below fails if the format is not raw or qcow2.  We would
@@ -310,7 +351,7 @@ and init_targets cmdline output source overlays =
          * early, not below, later.
          *)
         if format <> "raw" && format <> "qcow2" then
-          error (f_"output format should be 'raw' or 'qcow2'.\n\nUse the '-of <format>' option to select a different output format for the converted guest.\n\nOther output formats are not supported at the moment, although might be considered in future.");
+          error (f_"output format should be ‘raw’ or ‘qcow2’.\n\nUse the ‘-of <format>’ option to select a different output format for the converted guest.\n\nOther output formats are not supported at the moment, although might be considered in future.");
 
         (* Only allow compressed with qcow2. *)
         if cmdline.compressed && format <> "qcow2" then
@@ -320,7 +361,7 @@ and init_targets cmdline output source overlays =
          * estimate_target_size will fill in the target_estimated_size field.
          * actual_target_size will fill in the target_actual_size field.
          *)
-        { target_file = ""; target_format = format;
+        { target_file = TargetFile ""; target_format = format;
           target_estimated_size = None;
           target_actual_size = None;
           target_overlay = ov }
@@ -362,40 +403,47 @@ and get_mpstats g =
 
   mpstats
 
+and print_mpstat chan { mp_dev = dev; mp_path = path;
+                        mp_statvfs = s; mp_vfs = vfs } =
+  fprintf chan "mountpoint statvfs %s %s (%s):\n" dev path vfs;
+  fprintf chan "  bsize=%Ld blocks=%Ld bfree=%Ld bavail=%Ld\n"
+    s.Guestfs.bsize s.Guestfs.blocks s.Guestfs.bfree s.Guestfs.bavail
+
 (* Conversion can fail if there is no space on the guest filesystems
  * (RHBZ#1139543).  To avoid this situation, check there is some
  * headroom.  Mainly we care about the root filesystem.
  *)
 and check_guest_free_space mpstats =
   message (f_"Checking for sufficient free disk space in the guest");
-  List.iter (
-    fun { mp_path = mp;
-          mp_statvfs = { G.bfree = bfree; blocks = blocks; bsize = bsize } } ->
-      (* Ignore small filesystems. *)
-      let total_size = blocks *^ bsize in
-      if total_size > 100_000_000L then (
-        (* bfree = free blocks for root user *)
-        let free_bytes = bfree *^ bsize in
-        let needed_bytes =
-          match mp with
-          | "/" ->
-            (* We may install some packages, and they would usually go
-             * on the root filesystem.
-             *)
-            20_000_000L
-          | "/boot" ->
-            (* We usually regenerate the initramfs, which has a
-             * typical size of 20-30MB.  Hence:
-             *)
-            50_000_000L
-          | _ ->
-            (* For everything else, just make sure there is some free space. *)
-            10_000_000L in
 
-        if free_bytes < needed_bytes then
-          error (f_"not enough free space for conversion on filesystem '%s'.  %Ld bytes free < %Ld bytes needed")
-            mp free_bytes needed_bytes
-      )
+  (* Check whether /boot has its own mount point. *)
+  let has_boot = List.exists (fun { mp_path } -> mp_path = "/boot") mpstats in
+
+  let needed_bytes_for_mp = function
+    | "/boot"
+    | "/" when not has_boot ->
+      (* We usually regenerate the initramfs, which has a
+       * typical size of 20-30MB.  Hence:
+       *)
+      50_000_000L
+    | "/" ->
+      (* We may install some packages, and they would usually go
+       * on the root filesystem.
+       *)
+      20_000_000L
+    | _ ->
+      (* For everything else, just make sure there is some free space. *)
+      10_000_000L
+  in
+
+  List.iter (
+    fun { mp_path; mp_statvfs = { G.bfree; bsize } } ->
+      (* bfree = free blocks for root user *)
+      let free_bytes = bfree *^ bsize in
+      let needed_bytes = needed_bytes_for_mp mp_path in
+      if free_bytes < needed_bytes then
+        error (f_"not enough free space for conversion on filesystem ‘%s’.  %Ld bytes free < %Ld bytes needed")
+          mp_path free_bytes needed_bytes
   ) mpstats
 
 (* Perform the fstrim. *)
@@ -403,7 +451,7 @@ and do_fstrim g inspect =
   (* Get all filesystems. *)
   let fses = g#list_filesystems () in
 
-  let fses = filter_map (
+  let fses = List.filter_map (
     function (_, ("unknown"|"swap")) -> None | (dev, _) -> Some dev
   ) fses in
 
@@ -616,15 +664,24 @@ and copy_targets cmdline targets input output =
   at_exit (fun () ->
     if !delete_target_on_exit then (
       List.iter (
-        fun t -> try unlink t.target_file with _ -> ()
+        fun t ->
+          match t.target_file with
+          | TargetURI _ -> ()
+          | TargetFile s -> try unlink s with _ -> ()
       ) targets
     )
   );
   let nr_disks = List.length targets in
-  mapi (
+  List.mapi (
     fun i t ->
-      message (f_"Copying disk %d/%d to %s (%s)")
-        (i+1) nr_disks t.target_file t.target_format;
+      (match t.target_file with
+       | TargetFile s ->
+          message (f_"Copying disk %d/%d to %s (%s)")
+                  (i+1) nr_disks s t.target_format;
+       | TargetURI s ->
+          message (f_"Copying disk %d/%d to qemu URI %s (%s)")
+                  (i+1) nr_disks s t.target_format
+      );
       debug "%s" (string_of_target t);
 
       (* We noticed that qemu sometimes corrupts the qcow2 file on
@@ -644,33 +701,47 @@ and copy_targets cmdline targets input output =
        *)
       input#adjust_overlay_parameters t.target_overlay;
 
-      (* It turns out that libguestfs's disk creation code is
-       * considerably more flexible and easier to use than
-       * qemu-img, so create the disk explicitly using libguestfs
-       * then pass the 'qemu-img convert -n' option so qemu reuses
-       * the disk.
-       *
-       * Also we allow the output mode to actually create the disk
-       * image.  This lets the output mode set ownership and
-       * permissions correctly if required.
-       *)
-      (* What output preallocation mode should we use? *)
-      let preallocation =
-        match t.target_format, cmdline.output_alloc with
-        | ("raw"|"qcow2"), Sparse -> Some "sparse"
-        | ("raw"|"qcow2"), Preallocated -> Some "full"
-        | _ -> None (* ignore -oa flag for other formats *) in
-      let compat =
-        match t.target_format with "qcow2" -> Some "1.1" | _ -> None in
-      output#disk_create
-        t.target_file t.target_format t.target_overlay.ov_virtual_size
-        ?preallocation ?compat;
+      (match t.target_file with
+       | TargetFile filename ->
+          (* It turns out that libguestfs's disk creation code is
+           * considerably more flexible and easier to use than
+           * qemu-img, so create the disk explicitly using libguestfs
+           * then pass the 'qemu-img convert -n' option so qemu reuses
+           * the disk.
+           *
+           * Also we allow the output mode to actually create the disk
+           * image.  This lets the output mode set ownership and
+           * permissions correctly if required.
+           *)
+          (* What output preallocation mode should we use? *)
+          let preallocation =
+            match t.target_format, cmdline.output_alloc with
+            | ("raw"|"qcow2"), Sparse -> Some "sparse"
+            | ("raw"|"qcow2"), Preallocated -> Some "full"
+            | _ -> None (* ignore -oa flag for other formats *) in
+          let compat =
+            match t.target_format with "qcow2" -> Some "1.1" | _ -> None in
+          output#disk_create filename t.target_format
+                             t.target_overlay.ov_virtual_size
+                             ?preallocation ?compat
 
-      let cmd = [ "qemu-img"; "convert" ] @
+       | TargetURI _ ->
+          (* XXX For the moment we assume that qemu URI outputs
+           * need no special work.  We can change this in future.
+           *)
+          ()
+      );
+
+      let cmd =
+        let filename =
+          match t.target_file with
+          | TargetFile filename -> "file:" ^ filename
+          | TargetURI uri -> uri in
+        [ "qemu-img"; "convert" ] @
         (if not (quiet ()) then [ "-p" ] else []) @
         [ "-n"; "-f"; "qcow2"; "-O"; t.target_format ] @
         (if cmdline.compressed then [ "-c" ] else []) @
-        [ overlay_file; t.target_file ] in
+        [ overlay_file; filename ] in
       let start_time = gettimeofday () in
       if run_command cmd <> 0 then
         error (f_"qemu-img command failed, see earlier errors");
@@ -723,11 +794,14 @@ and copy_targets cmdline targets input output =
 
 (* Update the target_actual_size field in the target structure. *)
 and actual_target_size target =
-  let size =
-    (* Ignore errors because we want to avoid failures after copying. *)
-    try Some (du target.target_file)
-    with Failure _ | Invalid_argument _ -> None in
-  { target with target_actual_size = size }
+  match target.target_file with
+  | TargetFile filename ->
+     let size =
+       (* Ignore errors because we want to avoid failures after copying. *)
+       try Some (du filename)
+       with Failure _ | Invalid_argument _ -> None in
+     { target with target_actual_size = size }
+  | TargetURI _ -> target
 
 (* Save overlays if --debug-overlays option was used. *)
 and preserve_overlays overlays src_name =
@@ -744,7 +818,7 @@ and rcaps_from_source source =
   let source_block_types =
     List.map (fun sd -> sd.s_controller) source.s_disks in
   let source_block_type =
-    match sort_uniq source_block_types with
+    match List.sort_uniq source_block_types with
     | [] -> error (f_"source has no hard disks!")
     | [t] -> t
     | _ -> error (f_"source has multiple hard disk types!") in
@@ -752,15 +826,15 @@ and rcaps_from_source source =
     match source_block_type with
     | Some Source_virtio_blk -> Some Virtio_blk
     | Some Source_virtio_SCSI -> Some Virtio_SCSI
-    | Some Source_IDE -> Some IDE
-    | Some t -> error (f_"source has unsupported hard disk type '%s'")
+    | Some (Source_IDE | Source_SATA) -> Some IDE
+    | Some t -> error (f_"source has unsupported hard disk type ‘%s’")
                       (string_of_controller t)
     | None -> error (f_"source has unrecognized hard disk type") in
 
   let source_net_types =
       List.map (fun nic -> nic.s_nic_model) source.s_nics in
   let source_net_type =
-    match sort_uniq source_net_types with
+    match List.sort_uniq source_net_types with
     | [] -> None
     | [t] -> t
     | _ -> error (f_"source has multiple network adapter model!") in
@@ -769,7 +843,7 @@ and rcaps_from_source source =
     | Some Source_virtio_net -> Some Virtio_net
     | Some Source_e1000 -> Some E1000
     | Some Source_rtl8139 -> Some RTL8139
-    | Some t -> error (f_"source has unsupported network adapter model '%s'")
+    | Some t -> error (f_"source has unsupported network adapter model ‘%s’")
                       (string_of_nic_model t)
     | None -> None in
 
@@ -777,7 +851,7 @@ and rcaps_from_source source =
     match source.s_video with
     | Some Source_QXL -> Some QXL
     | Some Source_Cirrus -> Some Cirrus
-    | Some t -> error (f_"source has unsupported video adapter model '%s'")
+    | Some t -> error (f_"source has unsupported video adapter model ‘%s’")
                       (string_of_source_video t)
     | None -> None in
 

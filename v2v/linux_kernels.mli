@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,9 @@ type kernel_info = {
   ki_modules : string list;        (** The list of module names. *)
   ki_supports_virtio_blk : bool;   (** Kernel supports virtio-blk? *)
   ki_supports_virtio_net : bool;   (** Kernel supports virtio-net? *)
+  ki_supports_virtio_rng : bool;   (** Kernel supports virtio-rng? *)
+  ki_supports_virtio_balloon : bool; (** Kernel supports memory balloon? *)
+  ki_supports_isa_pvpanic : bool;  (** Kernel supports ISA pvpanic device? *)
   ki_is_xen_pv_only_kernel : bool; (** Is a Xen paravirt-only kernel? *)
   ki_is_debug : bool;              (** Is debug kernel? *)
   ki_config_file : string option;  (** Path of config file, if found. *)

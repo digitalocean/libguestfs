@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,6 @@
 #include "daemon.h"
 #include "actions.h"
 
-GUESTFSD_EXT_CMD(str_du, du);
-
 int64_t
 do_du (const char *path)
 {
@@ -46,7 +44,7 @@ do_du (const char *path)
 
   pulse_mode_start ();
 
-  r = command (&out, &err, str_du, "-s", buf, NULL);
+  r = command (&out, &err, "du", "-s", buf, NULL);
   if (r == -1) {
     pulse_mode_cancel ();
     reply_with_error ("%s: %s", path, err);

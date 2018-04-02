@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,10 @@
 
 open Printf
 
-open Common_gettext.Gettext
-open Common_utils
+open Std_utils
+open Tools_utils
 open Unix_utils
+open Common_gettext.Gettext
 
 open Types
 open Utils
@@ -40,9 +41,19 @@ let libvirt_supports_json_raw_driver () =
   else
     true
 
+let pigz_available =
+  let test = lazy (shell_command "pigz --help >/dev/null 2>&1" = 0) in
+  fun () -> Lazy.force test
+
+let pxz_available =
+  let test = lazy (shell_command "pxz --help >/dev/null 2>&1" = 0) in
+  fun () -> Lazy.force test
+
 let zcat_command_of_format = function
-  | `GZip -> "gzip -c -d"
-  | `XZ -> "xz -c -d"
+  | `GZip ->
+     if pigz_available () then "pigz -c -d" else "gzip -c -d"
+  | `XZ ->
+     if pxz_available () then "pxz -c -d" else "xz -c -d"
 
 (* Untar part or all files from tar archive. If [paths] is specified it is
  * a list of paths in the tar archive.
@@ -65,7 +76,7 @@ let untar ?format ?(paths = []) file outdir =
 let untar_metadata file outdir =
   let files = external_command (sprintf "tar -tf %s" (Filename.quote file)) in
   let files =
-    filter_map (
+    List.filter_map (
       fun f ->
         if Filename.check_suffix f ".ovf" ||
            Filename.check_suffix f ".mf" then Some f
@@ -198,7 +209,7 @@ object
 
     (* Read any .mf (manifest) files and verify sha1. *)
     let mf = find_files exploded ".mf" in
-    let rex = Str.regexp "\\(SHA1\\|SHA256\\)(\\(.*\\))= \\([0-9a-fA-F]+\\)\r?" in
+    let rex = PCRE.compile "^(SHA1|SHA256)\\((.*)\\)= ([0-9a-fA-F]+)\r?$" in
     List.iter (
       fun mf ->
         debug "processing manifest %s" mf;
@@ -208,10 +219,10 @@ object
           fun chan ->
             let rec loop () =
               let line = input_line chan in
-              if Str.string_match rex line 0 then (
-                let mode = Str.matched_group 1 line in
-                let disk = Str.matched_group 2 line in
-                let expected = Str.matched_group 3 line in
+              if PCRE.matches rex line then (
+                let mode = PCRE.sub 1
+                and disk = PCRE.sub 2
+                and expected = PCRE.sub 3 in
                 let csum = Checksums.of_string mode expected in
                 try
                   if partial then
@@ -221,7 +232,7 @@ object
                     Checksums.verify_checksum csum (mf_folder // disk)
                 with Checksums.Mismatched_checksum (_, actual) ->
                   error (f_"checksum of disk %s does not match manifest %s (actual %s(%s) = %s, expected %s(%s) = %s)")
-                    disk mf mode disk actual mode disk expected;
+                        disk mf mode disk actual mode disk expected;
               )
               else
                 warning (f_"unable to parse line from manifest file: %S") line;
@@ -234,7 +245,8 @@ object
     let ovf_folder = Filename.dirname ovf in
 
     (* Parse the ovf file. *)
-    let name, memory, vcpu, firmware, disks, removables, nics =
+    let name, memory, vcpu, cpu_sockets, cpu_cores, firmware,
+        disks, removables, nics =
       parse_ovf_from_ova ovf in
 
     let name =
@@ -245,7 +257,7 @@ object
       | Some name -> name in
 
     let disks = List.map (
-      fun ({ href = href; compressed = compressed } as disk) ->
+      fun ({ href; compressed } as disk) ->
         let partial =
           if compressed && partial then (
             (* We cannot access compressed disk inside the tar;
@@ -291,7 +303,7 @@ object
               try find_file_in_tar ova filename
               with
               | Not_found ->
-                 error (f_"file '%s' not found in the ova") filename
+                 error (f_"file ‘%s’ not found in the ova") filename
               | Failure msg -> error (f_"%s") msg in
             (* QEMU requires size aligned to 512 bytes. This is safe because
              * tar also works with 512 byte blocks.
@@ -326,6 +338,11 @@ object
       s_orig_name = name;
       s_memory = memory;
       s_vcpu = vcpu;
+      s_cpu_vendor = None;
+      s_cpu_model = None;
+      s_cpu_sockets = cpu_sockets;
+      s_cpu_cores = cpu_cores;
+      s_cpu_threads = None; (* XXX *)
       s_features = []; (* XXX *)
       s_firmware = firmware;
       s_display = None; (* XXX *)

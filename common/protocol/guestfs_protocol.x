@@ -403,6 +403,13 @@ struct guestfs_int_tsk_dirent {
 
 typedef struct guestfs_int_tsk_dirent guestfs_int_tsk_dirent_list<>;
 
+struct guestfs_int_yara_detection {
+  string yara_name<>;
+  string yara_rule<>;
+};
+
+typedef struct guestfs_int_yara_detection guestfs_int_yara_detection_list<>;
+
 /* Function arguments and return values. */
 
 struct guestfs_acl_delete_def_file_args {
@@ -1156,6 +1163,14 @@ struct guestfs_file_ret {
   string description<>;
 };
 
+struct guestfs_file_architecture_args {
+  string filename<>;
+};
+
+struct guestfs_file_architecture_ret {
+  string arch<>;
+};
+
 struct guestfs_filesize_args {
   string file<>;
 };
@@ -1437,12 +1452,28 @@ struct guestfs_hivex_value_key_ret {
   string key<>;
 };
 
+struct guestfs_hivex_value_string_args {
+  int64_t valueh;
+};
+
+struct guestfs_hivex_value_string_ret {
+  string databuf<>;
+};
+
 struct guestfs_hivex_value_type_args {
   int64_t valueh;
 };
 
 struct guestfs_hivex_value_type_ret {
   int64_t datatype;
+};
+
+struct guestfs_hivex_value_utf8_args {
+  int64_t valueh;
+};
+
+struct guestfs_hivex_value_utf8_ret {
+  string databuf<>;
 };
 
 struct guestfs_hivex_value_value_args {
@@ -1493,6 +1524,182 @@ struct guestfs_inotify_read_ret {
 
 struct guestfs_inotify_rm_watch_args {
   int wd;
+};
+
+struct guestfs_inspect_get_arch_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_arch_ret {
+  string arch<>;
+};
+
+struct guestfs_inspect_get_distro_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_distro_ret {
+  string distro<>;
+};
+
+struct guestfs_inspect_get_drive_mappings_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_drive_mappings_ret {
+  guestfs_str drives<>;
+};
+
+struct guestfs_inspect_get_filesystems_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_filesystems_ret {
+  guestfs_str filesystems<>;
+};
+
+struct guestfs_inspect_get_format_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_format_ret {
+  string format<>;
+};
+
+struct guestfs_inspect_get_hostname_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_hostname_ret {
+  string hostname<>;
+};
+
+struct guestfs_inspect_get_major_version_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_major_version_ret {
+  int major;
+};
+
+struct guestfs_inspect_get_minor_version_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_minor_version_ret {
+  int minor;
+};
+
+struct guestfs_inspect_get_mountpoints_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_mountpoints_ret {
+  guestfs_str mountpoints<>;
+};
+
+struct guestfs_inspect_get_package_format_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_package_format_ret {
+  string packageformat<>;
+};
+
+struct guestfs_inspect_get_package_management_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_package_management_ret {
+  string packagemanagement<>;
+};
+
+struct guestfs_inspect_get_product_name_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_product_name_ret {
+  string product<>;
+};
+
+struct guestfs_inspect_get_product_variant_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_product_variant_ret {
+  string variant<>;
+};
+
+struct guestfs_inspect_get_roots_ret {
+  guestfs_str roots<>;
+};
+
+struct guestfs_inspect_get_type_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_type_ret {
+  string name<>;
+};
+
+struct guestfs_inspect_get_windows_current_control_set_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_windows_current_control_set_ret {
+  string controlset<>;
+};
+
+struct guestfs_inspect_get_windows_software_hive_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_windows_software_hive_ret {
+  string path<>;
+};
+
+struct guestfs_inspect_get_windows_system_hive_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_windows_system_hive_ret {
+  string path<>;
+};
+
+struct guestfs_inspect_get_windows_systemroot_args {
+  string root<>;
+};
+
+struct guestfs_inspect_get_windows_systemroot_ret {
+  string systemroot<>;
+};
+
+struct guestfs_inspect_is_live_args {
+  string root<>;
+};
+
+struct guestfs_inspect_is_live_ret {
+  bool live;
+};
+
+struct guestfs_inspect_is_multipart_args {
+  string root<>;
+};
+
+struct guestfs_inspect_is_multipart_ret {
+  bool multipart;
+};
+
+struct guestfs_inspect_is_netinst_args {
+  string root<>;
+};
+
+struct guestfs_inspect_is_netinst_ret {
+  bool netinst;
+};
+
+struct guestfs_inspect_os_ret {
+  guestfs_str roots<>;
 };
 
 struct guestfs_internal_feature_available_args {
@@ -1576,6 +1783,10 @@ struct guestfs_internal_write_args {
 struct guestfs_internal_write_append_args {
   string path<>;
   opaque content<>;
+};
+
+struct guestfs_internal_yara_scan_args {
+  string path<>;
 };
 
 struct guestfs_is_blockdev_args {
@@ -1816,6 +2027,10 @@ struct guestfs_list_disk_labels_ret {
 
 struct guestfs_list_dm_devices_ret {
   guestfs_str devices<>;
+};
+
+struct guestfs_list_filesystems_ret {
+  guestfs_str fses<>;
 };
 
 struct guestfs_list_ldm_partitions_ret {
@@ -2359,6 +2574,15 @@ struct guestfs_part_get_disk_guid_ret {
   string guid<>;
 };
 
+struct guestfs_part_get_gpt_attributes_args {
+  string device<>;
+  int partnum;
+};
+
+struct guestfs_part_get_gpt_attributes_ret {
+  int64_t attributes;
+};
+
 struct guestfs_part_get_gpt_guid_args {
   string device<>;
   int partnum;
@@ -2425,6 +2649,12 @@ struct guestfs_part_list_ret {
   guestfs_int_partition_list partitions;
 };
 
+struct guestfs_part_resize_args {
+  string device<>;
+  int partnum;
+  int64_t endsect;
+};
+
 struct guestfs_part_set_bootable_args {
   string device<>;
   int partnum;
@@ -2438,6 +2668,12 @@ struct guestfs_part_set_disk_guid_args {
 
 struct guestfs_part_set_disk_guid_random_args {
   string device<>;
+};
+
+struct guestfs_part_set_gpt_attributes_args {
+  string device<>;
+  int partnum;
+  int64_t attributes;
 };
 
 struct guestfs_part_set_gpt_guid_args {
@@ -3358,6 +3594,7 @@ enum guestfs_procedure {
   GUESTFS_PROC_FGREP = 153,
   GUESTFS_PROC_FGREPI = 156,
   GUESTFS_PROC_FILE = 49,
+  GUESTFS_PROC_FILE_ARCHITECTURE = 475,
   GUESTFS_PROC_FILESIZE = 218,
   GUESTFS_PROC_FILESYSTEM_AVAILABLE = 333,
   GUESTFS_PROC_FILL = 215,
@@ -3397,7 +3634,9 @@ enum guestfs_procedure {
   GUESTFS_PROC_HIVEX_OPEN = 350,
   GUESTFS_PROC_HIVEX_ROOT = 352,
   GUESTFS_PROC_HIVEX_VALUE_KEY = 359,
+  GUESTFS_PROC_HIVEX_VALUE_STRING = 479,
   GUESTFS_PROC_HIVEX_VALUE_TYPE = 360,
+  GUESTFS_PROC_HIVEX_VALUE_UTF8 = 478,
   GUESTFS_PROC_HIVEX_VALUE_VALUE = 361,
   GUESTFS_PROC_INITRD_CAT = 221,
   GUESTFS_PROC_INITRD_LIST = 128,
@@ -3407,6 +3646,29 @@ enum guestfs_procedure {
   GUESTFS_PROC_INOTIFY_INIT = 179,
   GUESTFS_PROC_INOTIFY_READ = 182,
   GUESTFS_PROC_INOTIFY_RM_WATCH = 181,
+  GUESTFS_PROC_INSPECT_GET_ARCH = 491,
+  GUESTFS_PROC_INSPECT_GET_DISTRO = 484,
+  GUESTFS_PROC_INSPECT_GET_DRIVE_MAPPINGS = 502,
+  GUESTFS_PROC_INSPECT_GET_FILESYSTEMS = 501,
+  GUESTFS_PROC_INSPECT_GET_FORMAT = 482,
+  GUESTFS_PROC_INSPECT_GET_HOSTNAME = 492,
+  GUESTFS_PROC_INSPECT_GET_MAJOR_VERSION = 489,
+  GUESTFS_PROC_INSPECT_GET_MINOR_VERSION = 490,
+  GUESTFS_PROC_INSPECT_GET_MOUNTPOINTS = 500,
+  GUESTFS_PROC_INSPECT_GET_PACKAGE_FORMAT = 485,
+  GUESTFS_PROC_INSPECT_GET_PACKAGE_MANAGEMENT = 486,
+  GUESTFS_PROC_INSPECT_GET_PRODUCT_NAME = 487,
+  GUESTFS_PROC_INSPECT_GET_PRODUCT_VARIANT = 488,
+  GUESTFS_PROC_INSPECT_GET_ROOTS = 481,
+  GUESTFS_PROC_INSPECT_GET_TYPE = 483,
+  GUESTFS_PROC_INSPECT_GET_WINDOWS_CURRENT_CONTROL_SET = 496,
+  GUESTFS_PROC_INSPECT_GET_WINDOWS_SOFTWARE_HIVE = 494,
+  GUESTFS_PROC_INSPECT_GET_WINDOWS_SYSTEM_HIVE = 495,
+  GUESTFS_PROC_INSPECT_GET_WINDOWS_SYSTEMROOT = 493,
+  GUESTFS_PROC_INSPECT_IS_LIVE = 497,
+  GUESTFS_PROC_INSPECT_IS_MULTIPART = 499,
+  GUESTFS_PROC_INSPECT_IS_NETINST = 498,
+  GUESTFS_PROC_INSPECT_OS = 480,
   GUESTFS_PROC_INTERNAL_AUTOSYNC = 282,
   GUESTFS_PROC_INTERNAL_EXIT = 414,
   GUESTFS_PROC_INTERNAL_FEATURE_AVAILABLE = 458,
@@ -3424,6 +3686,7 @@ enum guestfs_procedure {
   GUESTFS_PROC_INTERNAL_UPLOAD = 413,
   GUESTFS_PROC_INTERNAL_WRITE = 246,
   GUESTFS_PROC_INTERNAL_WRITE_APPEND = 290,
+  GUESTFS_PROC_INTERNAL_YARA_SCAN = 474,
   GUESTFS_PROC_IS_BLOCKDEV = 268,
   GUESTFS_PROC_IS_CHARDEV = 267,
   GUESTFS_PROC_IS_DIR = 38,
@@ -3461,6 +3724,7 @@ enum guestfs_procedure {
   GUESTFS_PROC_LIST_DEVICES = 7,
   GUESTFS_PROC_LIST_DISK_LABELS = 369,
   GUESTFS_PROC_LIST_DM_DEVICES = 287,
+  GUESTFS_PROC_LIST_FILESYSTEMS = 476,
   GUESTFS_PROC_LIST_LDM_PARTITIONS = 381,
   GUESTFS_PROC_LIST_LDM_VOLUMES = 380,
   GUESTFS_PROC_LIST_MD_DEVICES = 300,
@@ -3549,6 +3813,7 @@ enum guestfs_procedure {
   GUESTFS_PROC_PART_EXPAND_GPT = 462,
   GUESTFS_PROC_PART_GET_BOOTABLE = 234,
   GUESTFS_PROC_PART_GET_DISK_GUID = 460,
+  GUESTFS_PROC_PART_GET_GPT_ATTRIBUTES = 504,
   GUESTFS_PROC_PART_GET_GPT_GUID = 447,
   GUESTFS_PROC_PART_GET_GPT_TYPE = 393,
   GUESTFS_PROC_PART_GET_MBR_ID = 235,
@@ -3557,9 +3822,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_PART_GET_PARTTYPE = 214,
   GUESTFS_PROC_PART_INIT = 208,
   GUESTFS_PROC_PART_LIST = 213,
+  GUESTFS_PROC_PART_RESIZE = 477,
   GUESTFS_PROC_PART_SET_BOOTABLE = 211,
   GUESTFS_PROC_PART_SET_DISK_GUID = 459,
   GUESTFS_PROC_PART_SET_DISK_GUID_RANDOM = 461,
+  GUESTFS_PROC_PART_SET_GPT_ATTRIBUTES = 503,
   GUESTFS_PROC_PART_SET_GPT_GUID = 446,
   GUESTFS_PROC_PART_SET_GPT_TYPE = 392,
   GUESTFS_PROC_PART_SET_MBR_ID = 236,
@@ -3680,6 +3947,8 @@ enum guestfs_procedure {
   GUESTFS_PROC_XFS_GROWFS = 343,
   GUESTFS_PROC_XFS_INFO = 337,
   GUESTFS_PROC_XFS_REPAIR = 366,
+  GUESTFS_PROC_YARA_DESTROY = 473,
+  GUESTFS_PROC_YARA_LOAD = 472,
   GUESTFS_PROC_ZEGREP = 158,
   GUESTFS_PROC_ZEGREPI = 161,
   GUESTFS_PROC_ZERO = 85,
@@ -3693,7 +3962,7 @@ enum guestfs_procedure {
   GUESTFS_PROC_ZGREPI = 160
 };
 
-const GUESTFS_MAX_PROC_NR = 471;
+const GUESTFS_MAX_PROC_NR = 504;
 
 /* The remote procedure call protocol. */
 

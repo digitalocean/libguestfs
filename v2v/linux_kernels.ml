@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,9 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Types
 
@@ -40,6 +41,9 @@ type kernel_info = {
   ki_modules : string list;
   ki_supports_virtio_blk : bool;
   ki_supports_virtio_net : bool;
+  ki_supports_virtio_rng : bool;
+  ki_supports_virtio_balloon : bool;
+  ki_supports_isa_pvpanic : bool;
   ki_is_xen_pv_only_kernel : bool;
   ki_is_debug : bool;
   ki_config_file : string option;
@@ -53,15 +57,18 @@ let print_kernel_info chan prefix ki =
   fpf "%s\n" (match ki.ki_config_file with None -> "no config" | Some s -> s);
   fpf "%s\n" ki.ki_modpath;
   fpf "%d modules found\n" (List.length ki.ki_modules);
-  fpf "virtio: blk=%b net=%b\n"
-      ki.ki_supports_virtio_blk ki.ki_supports_virtio_net;
-  fpf "xen=%b debug=%b\n"
-      ki.ki_is_xen_pv_only_kernel ki.ki_is_debug
+  fpf "virtio: blk=%b net=%b rng=%b balloon=%b\n"
+      ki.ki_supports_virtio_blk ki.ki_supports_virtio_net
+      ki.ki_supports_virtio_rng ki.ki_supports_virtio_balloon;
+  fpf "pvpanic=%b xen=%b debug=%b\n"
+      ki.ki_supports_isa_pvpanic ki.ki_is_xen_pv_only_kernel ki.ki_is_debug
+
+let rex_ko = PCRE.compile "\\.k?o(?:\\.xz)?$"
+let rex_ko_extract = PCRE.compile "/([^/]+)\\.k?o(?:\\.xz)?$"
 
 let detect_kernels (g : G.guestfs) inspect family bootloader =
   (* What kernel/kernel-like packages are installed on the current guest? *)
   let installed_kernels : kernel_info list =
-    let rex_ko = Str.regexp ".*\\.k?o\\(\\.xz\\)?$" in
     let check_config feature = function
       | None -> false
       | Some config ->
@@ -77,13 +84,12 @@ let detect_kernels (g : G.guestfs) inspect family bootloader =
           | _ -> false
           )
     in
-    let rex_ko_extract = Str.regexp ".*/\\([^/]+\\)\\.k?o\\(\\.xz\\)?$" in
     let rex_initrd =
       if family = `Debian_family then
-        Str.regexp "^initrd.img-.*$"
+        PCRE.compile "^initrd.img-.*$"
       else
-        Str.regexp "^initr\\(d\\|amfs\\)-.*\\(\\.img\\)?$" in
-    filter_map (
+        PCRE.compile "^initr(?:d|amfs)-.*(?:\\.img)?$" in
+    List.filter_map (
       function
       | { G.app2_name = name } as app
           when name = "kernel" || String.is_prefix name "kernel-"
@@ -93,7 +99,7 @@ let detect_kernels (g : G.guestfs) inspect family bootloader =
            let files = Linux.file_list_of_package g inspect app in
 
            if files = [] then (
-             warning (f_"package '%s' contains no files") name;
+             warning (f_"package ‘%s’ contains no files") name;
              None
            )
            else (
@@ -128,7 +134,7 @@ let detect_kernels (g : G.guestfs) inspect family bootloader =
                let files = g#ls "/boot" in
                let files = Array.to_list files in
                let files =
-                 List.filter (fun n -> Str.string_match rex_initrd n 0) files in
+                 List.filter (fun n -> PCRE.matches rex_initrd n) files in
                let files =
                  List.filter (
                    fun n ->
@@ -160,7 +166,7 @@ let detect_kernels (g : G.guestfs) inspect family bootloader =
              let modules = g#find modpath in
              let modules = Array.to_list modules in
              let modules =
-               List.filter (fun m -> Str.string_match rex_ko m 0) modules in
+               List.filter (fun m -> PCRE.matches rex_ko m) modules in
              assert (List.length modules > 0);
 
              (* Determine the kernel architecture by looking at the
@@ -171,10 +177,10 @@ let detect_kernels (g : G.guestfs) inspect family bootloader =
                g#file_architecture any_module in
 
              (* Just return the module names, without path or extension. *)
-             let modules = filter_map (
+             let modules = List.filter_map (
                fun m ->
-                 if Str.string_match rex_ko_extract m 0 then
-                   Some (Str.matched_group 1 m)
+                 if PCRE.matches rex_ko_extract m then
+                   Some (PCRE.sub 1)
                  else
                    None
              ) modules in
@@ -192,6 +198,12 @@ let detect_kernels (g : G.guestfs) inspect family bootloader =
                kernel_supports "virtio_blk" "VIRTIO_BLK" in
              let supports_virtio_net =
                kernel_supports "virtio_net" "VIRTIO_NET" in
+             let supports_virtio_rng =
+               kernel_supports "virtio-rng" "HW_RANDOM_VIRTIO" in
+             let supports_virtio_balloon =
+               kernel_supports "virtio_balloon" "VIRTIO_BALLOON" in
+             let supports_isa_pvpanic =
+               kernel_supports "pvpanic" "PVPANIC" in
              let is_xen_pv_only_kernel =
                check_config "X86_XEN" config_file ||
                check_config "X86_64_XEN" config_file in
@@ -215,6 +227,9 @@ let detect_kernels (g : G.guestfs) inspect family bootloader =
                ki_modules = modules;
                ki_supports_virtio_blk = supports_virtio_blk;
                ki_supports_virtio_net = supports_virtio_net;
+               ki_supports_virtio_rng = supports_virtio_rng;
+               ki_supports_virtio_balloon = supports_virtio_balloon;
+               ki_supports_isa_pvpanic = supports_isa_pvpanic;
                ki_is_xen_pv_only_kernel = is_xen_pv_only_kernel;
                ki_is_debug = is_debug;
                ki_config_file = config_file;
@@ -244,7 +259,7 @@ let detect_kernels (g : G.guestfs) inspect family bootloader =
     let vmlinuzes = bootloader#list_kernels in
 
     (* Map these to installed kernels. *)
-    filter_map (
+    List.filter_map (
       fun vmlinuz ->
         try
           let statbuf = g#statns vmlinuz in

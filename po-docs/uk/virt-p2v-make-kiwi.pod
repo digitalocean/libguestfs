@@ -1,11 +1,11 @@
 
 =head1 НАЗВА
 
-virt-p2v-make-kiwi - Build the virt-p2v kiwi configuration
+virt-p2v-make-kiwi — збирання конфігурації kiwi virt-p2v
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-p2v-make-kiwi [--inject-ssh-identity path] [-o kiwi-folder]
+ virt-p2v-make-kiwi [--inject-ssh-identity шлях] [-o тека-kiwi]
 
 =head1 ОПИС
 
@@ -28,7 +28,7 @@ Using virt-p2v-make-kiwi is very simple:
 
  virt-p2v-make-kiwi
 
-will build a kiwi configuration based on the current machine's distribution.
+will build a kiwi configuration based on the current machine’s distribution.
 
 To control the name of the output folder, use the I<-o> parameter.
 
@@ -47,15 +47,15 @@ repositories using the C<--ignore-repos> and C<--add-repo> kiwi parameters.
 
 The generated ISO image will be placed in the C<build> folder.
 
-=head1 BUILDING A BOOTABLE USB KEY
+=head1 ЗБИРАННЯ ПРИДАТНОГО ДО ЗАВАНТАЖЕННЯ НОСІЯ USB
 
 Use the L<dd(1)> program to write the ISO created above to a USB key:
 
- sudo dd if=path/to/p2v.iso of=/dev/sdX
+ sudo dd if=шлях/до/p2v.iso of=/dev/sdX
 
-=head1 BUILDING A PXE BOOT IMAGE
+=head1 ЗБИРАННЯ ОБРАЗУ ДЛЯ ЗАВАНТАЖЕННЯ PXE
 
-To create a PXE boot image, run kiwi in such a way:
+Для створення образу для завантаження PXE запустіть kiwi ось так:
 
  sudo kiwi --build $PWD/p2v.kiwi -d build --add-profile netboot --type pxe
 

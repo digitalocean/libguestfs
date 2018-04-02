@@ -38,7 +38,7 @@
 #include "getprogname.h"
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 #include "structs-print.h"
 
 #include "fish.h"
@@ -82,6 +82,18 @@ print_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
   for (i = 0; i < lvm_pvs->len; ++i) {
     printf ("[%zu] = {\n", i);
     guestfs_int_print_lvm_pv_indent (&lvm_pvs->val[i], stdout, "\n", "  ");
+    printf ("}\n");
+  }
+}
+
+static void
+print_yara_detection_list (struct guestfs_yara_detection_list *yara_detections)
+{
+  size_t i;
+
+  for (i = 0; i < yara_detections->len; ++i) {
+    printf ("[%zu] = {\n", i);
+    guestfs_int_print_yara_detection_indent (&yara_detections->val[i], stdout, "\n", "  ");
     printf ("}\n");
   }
 }
@@ -1849,6 +1861,63 @@ run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
 }
 
 int
+run_part_set_gpt_attributes (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  int partnum;
+  int64_t attributes;
+  size_t i = 0;
+
+  if (argc != 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "partnum", "xstrtoll", xerr);
+      goto out_partnum;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
+      goto out_partnum;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    partnum = r;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "attributes", "xstrtoll", xerr);
+      goto out_attributes;
+    }
+    attributes = r;
+  }
+  r = guestfs_part_set_gpt_attributes (g, device, partnum, attributes);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_attributes:
+ out_partnum:
+ out_noargs:
+  return ret;
+}
+
+int
 run_part_set_gpt_guid (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -2537,6 +2606,32 @@ run_write_append (const char *cmd, size_t argc, char *argv[])
   r = guestfs_write_append (g, path, content, content_size);
   if (r == -1) goto out;
   ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+int
+run_yara_scan (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  struct guestfs_yara_detection_list *r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_yara_scan (g, path);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_yara_detection_list (r);
+  guestfs_free_yara_detection_list (r);
  out:
   free (path);
  out_path:

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Types
 open Utils
@@ -37,18 +38,20 @@ class virtual bootloader = object
   method update () = ()
 end
 
-(* Helper type used in detect_bootloader. *)
-type bootloader_type =
-  | Grub1
-  | Grub2
-
 (* Helper function for SUSE: remove (hdX,X) prefix from a path. *)
-let remove_hd_prefix path =
-  let rex = Str.regexp "^(hd.*)\\(.*\\)" in
-  Str.replace_first rex "\\1" path
+let remove_hd_prefix =
+  let rex = PCRE.compile "^\\(hd.*\\)" in
+  PCRE.replace rex ""
 
 (* Grub1 (AKA grub-legacy) representation. *)
 class bootloader_grub1 (g : G.guestfs) inspect grub_config =
+  let () =
+  (* Apply the "grub" lens if it is not handling the file
+   * already -- Augeas < 1.7.0 will error out otherwise.
+   *)
+  if g#aug_ls ("/files" ^ grub_config) = [||] then
+    g#aug_transform "grub" grub_config in
+
   (* Grub prefix?  Usually "/boot". *)
   let grub_prefix =
     let mounts = g#inspect_get_mountpoints inspect.i_root in
@@ -76,7 +79,7 @@ object
       let paths = Array.to_list paths in
 
       (* Remove duplicates. *)
-      let paths = remove_duplicates paths in
+      let paths = List.remove_duplicates paths in
 
       (* Get the default kernel from grub if it's set. *)
       let default =
@@ -124,11 +127,11 @@ object
     if paths = [] then
       error (f_"didn't find grub entry for kernel %s") vmlinuz;
     let path = List.hd paths in
-    let rex = Str.regexp ".*/title\\[\\([1-9][0-9]*\\)\\]/kernel" in
-    if not (Str.string_match rex path 0) then
-      error (f_"internal error: regular expression did not match '%s'")
+    let rex = PCRE.compile "/title(?:\\[(\\d+)\\])?/kernel" in
+    if not (PCRE.matches rex path) then
+      error (f_"internal error: regular expression did not match ‘%s’")
         path;
-    let index = int_of_string (Str.matched_group 1 path) - 1 in
+    let index = try int_of_string (PCRE.sub 1) - 1 with Not_found -> 0 in
     g#aug_set (sprintf "/files%s/default" grub_config) (string_of_int index);
     g#aug_save ()
 
@@ -139,11 +142,12 @@ object
       List.exists (fun incl -> g#aug_get incl = grub_config) incls in
     if not incls_contains_conf then (
       g#aug_set "/augeas/load/Grub/incl[last()+1]" grub_config;
-      true;
-    ) else false
+      true
+    ) else
+      false
 
   method configure_console () =
-    let rex = Str.regexp "\\(.*\\)\\b\\([xh]vc0\\)\\b\\(.*\\)" in
+    let rex = PCRE.compile "\\b([xh]vc0)\\b" in
     let expr = sprintf "/files%s/title/kernel/console" grub_config in
 
     let paths = g#aug_match expr in
@@ -151,23 +155,21 @@ object
     List.iter (
       fun path ->
         let console = g#aug_get path in
-        if Str.string_match rex console 0 then (
-          let console = Str.global_replace rex "\\1ttyS0\\3" console in
-          g#aug_set path console
-        )
+        let console' = PCRE.replace ~global:true rex "ttyS0" console in
+        if console <> console' then g#aug_set path console'
     ) paths;
 
     g#aug_save ()
 
   method remove_console () =
-    let rex = Str.regexp "\\(.*\\)\\b\\([xh]vc0\\)\\b\\(.*\\)" in
+    let rex = PCRE.compile "\\b([xh]vc0)\\b" in
     let expr = sprintf "/files%s/title/kernel/console" grub_config in
 
     let rec loop = function
       | [] -> ()
       | path :: paths ->
         let console = g#aug_get path in
-        if Str.string_match rex console 0 then (
+        if PCRE.matches rex console then (
           ignore (g#aug_rm path);
           (* All the paths are invalid, restart the loop. *)
           let paths = g#aug_match expr in
@@ -222,43 +224,6 @@ class bootloader_grub2 (g : G.guestfs) grub_config =
 object (self)
   inherit bootloader
 
-  method private grub2_update_console ~remove () =
-    let rex = Str.regexp "\\(.*\\)\\bconsole=[xh]vc0\\b\\(.*\\)" in
-
-    let paths = [
-      "/files/etc/sysconfig/grub/GRUB_CMDLINE_LINUX";
-      "/files/etc/default/grub/GRUB_CMDLINE_LINUX";
-      "/files/etc/default/grub/GRUB_CMDLINE_LINUX_DEFAULT"
-    ] in
-    let paths = List.map g#aug_match paths in
-    let paths = List.map Array.to_list paths in
-    let paths = List.flatten paths in
-    (match paths with
-    | [] ->
-      if not remove then
-        warning (f_"could not add grub2 serial console (ignored)")
-      else
-        warning (f_"could not remove grub2 serial console (ignored)")
-    | path :: _ ->
-      let grub_cmdline = g#aug_get path in
-      if Str.string_match rex grub_cmdline 0 then (
-        let new_grub_cmdline =
-          if not remove then
-            Str.global_replace rex "\\1console=ttyS0\\2" grub_cmdline
-          else
-            Str.global_replace rex "\\1\\2" grub_cmdline in
-        g#aug_set path new_grub_cmdline;
-        g#aug_save ();
-
-        try
-          ignore (g#command [| grub2_mkconfig_cmd; "-o"; grub_config |])
-        with
-          G.Error msg ->
-            warning (f_"could not rebuild grub2 configuration file (%s).  This may mean that grub output will not be sent to the serial port, but otherwise should be harmless.  Original error message: %s")
-              grub_config msg
-      )
-    )
-
   method name = "grub2"
 
   method augeas_device_patterns = [
@@ -302,12 +267,8 @@ object (self)
       match res with
       | None -> None
       | Some k ->
-        let len = String.length k in
-        let k =
-          if len > 0 && k.[len-1] = '\n' then
-            String.sub k 0 (len-1)
-          else k in
-        Some (remove_hd_prefix k)
+         let k = String.chomp k in
+         Some (remove_hd_prefix k)
     in
 
     let vmlinuzes =
@@ -339,6 +300,42 @@ object (self)
       ignore (g#command cmd)
     | MethodNone -> ()
 
+  method private grub2_update_console ~remove () =
+    let rex = PCRE.compile "\\bconsole=[xh]vc0\\b" in
+
+    let paths = [
+      "/files/etc/sysconfig/grub/GRUB_CMDLINE_LINUX";
+      "/files/etc/default/grub/GRUB_CMDLINE_LINUX";
+      "/files/etc/default/grub/GRUB_CMDLINE_LINUX_DEFAULT"
+    ] in
+    let paths = List.map g#aug_match paths in
+    let paths = List.map Array.to_list paths in
+    let paths = List.flatten paths in
+    match paths with
+    | [] ->
+      if not remove then
+        warning (f_"could not add grub2 serial console (ignored)")
+      else
+        warning (f_"could not remove grub2 serial console (ignored)")
+    | path :: _ ->
+      let grub_cmdline = g#aug_get path in
+      if PCRE.matches rex grub_cmdline then (
+        let new_grub_cmdline =
+          if not remove then
+            PCRE.replace ~global:true rex "console=ttyS0" grub_cmdline
+          else
+            PCRE.replace ~global:true rex "" grub_cmdline in
+        g#aug_set path new_grub_cmdline;
+        g#aug_save ();
+
+        try
+          ignore (g#command [| grub2_mkconfig_cmd; "-o"; grub_config |])
+        with
+          G.Error msg ->
+            warning (f_"could not rebuild grub2 configuration file (%s).  This may mean that grub output will not be sent to the serial port, but otherwise should be harmless.  Original error message: %s")
+              grub_config msg
+      )
+
   method configure_console = self#grub2_update_console ~remove:false
 
   method remove_console = self#grub2_update_console ~remove:true
@@ -347,34 +344,52 @@ object (self)
     ignore (g#command [| grub2_mkconfig_cmd; "-o"; grub_config |])
 end
 
+(* Helper type used in detect_bootloader. *)
+type bootloader_type =
+  | Grub1
+  | Grub2
+
 let detect_bootloader (g : G.guestfs) inspect =
-  let config_file, typ =
-    let locations = [
-      "/boot/grub2/grub.cfg", Grub2;
-      "/boot/grub/grub.cfg", Grub2;
-      "/boot/grub/menu.lst", Grub1;
-      "/boot/grub/grub.conf", Grub1;
-    ] in
-    let locations =
-      match inspect.i_firmware with
-      | I_UEFI _ ->
-        [
-          "/boot/efi/EFI/redhat/grub.cfg", Grub2;
-          "/boot/efi/EFI/redhat/grub.conf", Grub1;
-        ] @ locations
-      | I_BIOS -> locations in
-    try
-      List.find (
-        fun (config_file, _) -> g#is_file ~followsymlinks:true config_file
-      ) locations
-    with
-      Not_found ->
-        error (f_"no bootloader detected") in
+  (* Where to start searching for bootloaders. *)
+  let mp =
+    match inspect.i_firmware with
+    | I_BIOS -> "/boot"
+    | I_UEFI _ -> "/boot/efi/EFI" in
 
-  match typ with
-  | Grub1 ->
-    if config_file = "/boot/efi/EFI/redhat/grub.conf" then
-      g#aug_transform "grub" "/boot/efi/EFI/redhat/grub.conf";
+  (* Find all paths below the mountpoint, then filter them to find
+   * the grub config file.
+   *)
+  let paths =
+    try List.map ((^) mp) (Array.to_list (g#find mp))
+    with G.Error msg ->
+      error (f_"could not find bootloader mount point (%s): %s") mp msg in
 
-    new bootloader_grub1 g inspect config_file
-  | Grub2 -> new bootloader_grub2 g config_file
+  (* We can determine if the bootloader config file is grub 1 or
+   * grub 2 just by looking at the filename.
+   *)
+  let bootloader_type_of_filename path =
+    match last_part_of path '/' with
+    | Some "grub.cfg" -> Some Grub2
+    | Some ("grub.conf" | "menu.lst") -> Some Grub1
+    | Some _
+    | None -> None
+  in
+
+  let grub_config, typ =
+    let rec loop = function
+      | [] -> error (f_"no bootloader detected")
+      | path :: paths ->
+         match bootloader_type_of_filename path with
+         | None -> loop paths
+         | Some typ ->
+            if not (g#is_file ~followsymlinks:true path) then loop paths
+            else path, typ
+    in
+    loop paths in
+
+  let bl =
+    match typ with
+    | Grub1 -> new bootloader_grub1 g inspect grub_config
+    | Grub2 -> new bootloader_grub2 g grub_config in
+  debug "detected bootloader %s at %s" bl#name grub_config;
+  bl

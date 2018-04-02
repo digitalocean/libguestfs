@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2014-2017 Red Hat Inc.
+ * Copyright (C) 2014-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 #include <pthread.h>
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 #include "estimate-max-threads.h"
 
 #include "getprogname.h"

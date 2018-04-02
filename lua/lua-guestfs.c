@@ -48,7 +48,7 @@
 #endif
 
 #include <guestfs.h>
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #define GUESTFS_LUA_HANDLE "guestfs handle"
 
@@ -122,6 +122,8 @@ static void push_xattr (lua_State *L, struct guestfs_xattr *v);
 static void push_xattr_list (lua_State *L, struct guestfs_xattr_list *v);
 static void push_lvm_pv (lua_State *L, struct guestfs_lvm_pv *v);
 static void push_lvm_pv_list (lua_State *L, struct guestfs_lvm_pv_list *v);
+static void push_yara_detection (lua_State *L, struct guestfs_yara_detection *v);
+static void push_yara_detection_list (lua_State *L, struct guestfs_yara_detection_list *v);
 static void push_lvm_vg (lua_State *L, struct guestfs_lvm_vg *v);
 static void push_lvm_vg_list (lua_State *L, struct guestfs_lvm_vg_list *v);
 static void push_btrfssubvolume (lua_State *L, struct guestfs_btrfssubvolume *v);
@@ -5854,6 +5856,29 @@ guestfs_int_lua_hivex_value_key (lua_State *L)
 }
 
 static int
+guestfs_int_lua_hivex_value_string (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  int64_t valueh;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "hivex_value_string");
+
+  valueh = get_int64 (L, 2);
+
+  r = guestfs_hivex_value_string (g, valueh);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
 guestfs_int_lua_hivex_value_type (lua_State *L)
 {
   int64_t r;
@@ -11316,6 +11341,30 @@ guestfs_int_lua_part_get_disk_guid (lua_State *L)
 }
 
 static int
+guestfs_int_lua_part_get_gpt_attributes (lua_State *L)
+{
+  int64_t r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int partnum;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_get_gpt_attributes");
+
+  device = luaL_checkstring (L, 2);
+  partnum = luaL_checkint (L, 3);
+
+  r = guestfs_part_get_gpt_attributes (g, device, partnum);
+  if (r == -1)
+    return last_error (L, g);
+
+  push_int64 (L, r);
+  return 1;
+}
+
+static int
 guestfs_int_lua_part_get_gpt_guid (lua_State *L)
 {
   char *r;
@@ -11509,6 +11558,31 @@ guestfs_int_lua_part_list (lua_State *L)
 }
 
 static int
+guestfs_int_lua_part_resize (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int partnum;
+  int64_t endsect;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_resize");
+
+  device = luaL_checkstring (L, 2);
+  partnum = luaL_checkint (L, 3);
+  endsect = get_int64 (L, 4);
+
+  r = guestfs_part_resize (g, device, partnum, endsect);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_int_lua_part_set_bootable (lua_State *L)
 {
   int r;
@@ -11571,6 +11645,31 @@ guestfs_int_lua_part_set_disk_guid_random (lua_State *L)
   device = luaL_checkstring (L, 2);
 
   r = guestfs_part_set_disk_guid_random (g, device);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_int_lua_part_set_gpt_attributes (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int partnum;
+  int64_t attributes;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "part_set_gpt_attributes");
+
+  device = luaL_checkstring (L, 2);
+  partnum = luaL_checkint (L, 3);
+  attributes = get_int64 (L, 4);
+
+  r = guestfs_part_set_gpt_attributes (g, device, partnum, attributes);
   if (r == -1)
     return last_error (L, g);
 
@@ -15382,6 +15481,69 @@ guestfs_int_lua_xfs_repair (lua_State *L)
 }
 
 static int
+guestfs_int_lua_yara_destroy (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "yara_destroy");
+
+
+  r = guestfs_yara_destroy (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_int_lua_yara_load (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *filename;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "yara_load");
+
+  filename = luaL_checkstring (L, 2);
+
+  r = guestfs_yara_load (g, filename);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_int_lua_yara_scan (lua_State *L)
+{
+  struct guestfs_yara_detection_list *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *path;
+
+  if (g == NULL)
+    return luaL_error (L, "Guestfs.%s: handle is closed",
+                       "yara_scan");
+
+  path = luaL_checkstring (L, 2);
+
+  r = guestfs_yara_scan (g, path);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_yara_detection_list (L, r);
+  guestfs_free_yara_detection_list (r);
+  return 1;
+}
+
+static int
 guestfs_int_lua_zegrep (lua_State *L)
 {
   char **r;
@@ -16643,6 +16805,30 @@ push_lvm_pv_list (lua_State *L, struct guestfs_lvm_pv_list *v)
 }
 
 static void
+push_yara_detection (lua_State *L, struct guestfs_yara_detection *v)
+{
+  lua_newtable (L);
+  lua_pushliteral (L, "yara_name");
+  lua_pushstring (L, v->yara_name);
+  lua_settable (L, -3);
+  lua_pushliteral (L, "yara_rule");
+  lua_pushstring (L, v->yara_rule);
+  lua_settable (L, -3);
+}
+
+static void
+push_yara_detection_list (lua_State *L, struct guestfs_yara_detection_list *v)
+{
+  size_t i;
+
+  lua_newtable (L);
+  for (i = 0; i < v->len; ++i) {
+    push_yara_detection (L, &v->val[i]);
+    lua_rawseti (L, -2, i+1 /* because of base 1 arrays */);
+  }
+}
+
+static void
 push_lvm_vg (lua_State *L, struct guestfs_lvm_vg *v)
 {
   lua_newtable (L);
@@ -17147,6 +17333,7 @@ static luaL_Reg methods[] = {
   { "hivex_open", guestfs_int_lua_hivex_open },
   { "hivex_root", guestfs_int_lua_hivex_root },
   { "hivex_value_key", guestfs_int_lua_hivex_value_key },
+  { "hivex_value_string", guestfs_int_lua_hivex_value_string },
   { "hivex_value_type", guestfs_int_lua_hivex_value_type },
   { "hivex_value_utf8", guestfs_int_lua_hivex_value_utf8 },
   { "hivex_value_value", guestfs_int_lua_hivex_value_value },
@@ -17357,6 +17544,7 @@ static luaL_Reg methods[] = {
   { "part_expand_gpt", guestfs_int_lua_part_expand_gpt },
   { "part_get_bootable", guestfs_int_lua_part_get_bootable },
   { "part_get_disk_guid", guestfs_int_lua_part_get_disk_guid },
+  { "part_get_gpt_attributes", guestfs_int_lua_part_get_gpt_attributes },
   { "part_get_gpt_guid", guestfs_int_lua_part_get_gpt_guid },
   { "part_get_gpt_type", guestfs_int_lua_part_get_gpt_type },
   { "part_get_mbr_id", guestfs_int_lua_part_get_mbr_id },
@@ -17365,9 +17553,11 @@ static luaL_Reg methods[] = {
   { "part_get_parttype", guestfs_int_lua_part_get_parttype },
   { "part_init", guestfs_int_lua_part_init },
   { "part_list", guestfs_int_lua_part_list },
+  { "part_resize", guestfs_int_lua_part_resize },
   { "part_set_bootable", guestfs_int_lua_part_set_bootable },
   { "part_set_disk_guid", guestfs_int_lua_part_set_disk_guid },
   { "part_set_disk_guid_random", guestfs_int_lua_part_set_disk_guid_random },
+  { "part_set_gpt_attributes", guestfs_int_lua_part_set_gpt_attributes },
   { "part_set_gpt_guid", guestfs_int_lua_part_set_gpt_guid },
   { "part_set_gpt_type", guestfs_int_lua_part_set_gpt_type },
   { "part_set_mbr_id", guestfs_int_lua_part_set_mbr_id },
@@ -17524,6 +17714,9 @@ static luaL_Reg methods[] = {
   { "xfs_growfs", guestfs_int_lua_xfs_growfs },
   { "xfs_info", guestfs_int_lua_xfs_info },
   { "xfs_repair", guestfs_int_lua_xfs_repair },
+  { "yara_destroy", guestfs_int_lua_yara_destroy },
+  { "yara_load", guestfs_int_lua_yara_load },
+  { "yara_scan", guestfs_int_lua_yara_scan },
   { "zegrep", guestfs_int_lua_zegrep },
   { "zegrepi", guestfs_int_lua_zegrepi },
   { "zero", guestfs_int_lua_zero },

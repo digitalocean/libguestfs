@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 (* Please read generator/README first. *)
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 
@@ -33,12 +33,12 @@ let non_daemon_functions =
   Actions_core.non_daemon_functions @
   Actions_core_deprecated.non_daemon_functions @
   Actions_debug.non_daemon_functions @
-  Actions_hivex.non_daemon_functions @
   Actions_inspection.non_daemon_functions @
   Actions_inspection_deprecated.non_daemon_functions @
   Actions_properties.non_daemon_functions @
   Actions_properties_deprecated.non_daemon_functions @
-  Actions_tsk.non_daemon_functions
+  Actions_tsk.non_daemon_functions @
+  Actions_yara.non_daemon_functions
 
 (* daemon_functions are any functions which cause some action
  * to take place in the daemon.
@@ -50,7 +50,11 @@ let daemon_functions =
   Actions_core_deprecated.daemon_functions @
   Actions_debug.daemon_functions @
   Actions_hivex.daemon_functions @
-  Actions_tsk.daemon_functions
+  Actions_hivex_deprecated.daemon_functions @
+  Actions_inspection.daemon_functions @
+  Actions_inspection_deprecated.daemon_functions @
+  Actions_tsk.daemon_functions @
+  Actions_yara.daemon_functions
 
 (* Some post-processing of the basic lists of actions. *)
 
@@ -183,6 +187,11 @@ let is_fish { visibility = v; style = (_, args, _) } =
     not (List.exists (function Pointer _ -> true | _ -> false) args)
 let fish_functions = List.filter is_fish
 
+let is_ocaml_function = function
+  | { impl = OCaml _ } -> true
+  | { impl = C } -> false
+let impl_ocaml_functions = List.filter is_ocaml_function
+
 (* In some places we want the functions to be displayed sorted
  * alphabetically, so this is useful:
  *)
@@ -191,4 +200,4 @@ let sort = List.sort action_compare
 (* Find a single action by name, or give an error. *)
 let find name =
   try List.find (fun { name = n } -> n = name) actions
-  with Not_found -> failwithf "could not find action named '%s'" name
+  with Not_found -> failwithf "could not find action named ‘%s’" name

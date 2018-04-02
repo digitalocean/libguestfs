@@ -49,6 +49,7 @@
 
 #include "options.h"
 #include "display-options.h"
+#include "guestfs-utils.h"
 #include "visit.h"
 
 /* Internal tree structure built for each guest. */
@@ -102,11 +103,11 @@ static void __attribute__((noreturn))
 usage (int status)
 {
   if (status != EXIT_SUCCESS)
-    fprintf (stderr, _("Try `%s --help' for more information.\n"),
+    fprintf (stderr, _("Try ‘%s --help’ for more information.\n"),
              getprogname ());
   else {
     printf (_("%s: list differences between virtual machines\n"
-              "Copyright (C) 2010-2017 Red Hat Inc.\n"
+              "Copyright (C) 2010-2018 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] -d domain1 -D domain2\n"
               "  %s [--options] -a disk1.img -A disk2.img [-a|-A ...]\n"
@@ -344,7 +345,7 @@ main (int argc, char *argv[])
     error (EXIT_FAILURE, 0, _("you cannot use -h and --csv options together."));
 
   if (optind != argc) {
-    fprintf (stderr, _("%s: error: extra argument '%s' on command line.\n"
+    fprintf (stderr, _("%s: error: extra argument ‘%s’ on command line.\n"
              "Make sure to specify the argument for --checksum or --format "
              "like '--format=%s'.\n"),
              getprogname (), argv[optind], argv[optind]);
@@ -484,7 +485,11 @@ visit_entry (const char *dir, const char *name,
   struct guestfs_xattr_list *xattrs = NULL;
   size_t i;
 
-  path = full_path (dir, name);
+  path = guestfs_int_full_path (dir, name);
+  if (!path) {
+    perror ("guestfs_int_full_path");
+    goto error;
+  }
 
   /* Copy the stats and xattrs because the visit function will
    * free them after we return.
@@ -496,7 +501,7 @@ visit_entry (const char *dir, const char *name,
   if (xattrs == NULL)
     goto error;
 
-  if (checksum && is_reg (stat->st_mode)) {
+  if (checksum && guestfs_int_is_reg (stat->st_mode)) {
     csum = guestfs_checksum (t->g, checksum, path);
     if (!csum)
       goto error;
@@ -509,13 +514,13 @@ visit_entry (const char *dir, const char *name,
   /* If --dir-links option was NOT passed, flatten nlink field in
    * directories.
    */
-  if (!dir_links && is_dir (stat->st_mode))
+  if (!dir_links && guestfs_int_is_dir (stat->st_mode))
     stat->st_nlink = 0;
 
   /* If --dir-times option was NOT passed, flatten time fields in
    * directories.
    */
-  if (!dir_times && is_dir (stat->st_mode))
+  if (!dir_times && guestfs_int_is_dir (stat->st_mode))
     stat->st_atime_sec = stat->st_mtime_sec = stat->st_ctime_sec =
       stat->st_atime_nsec = stat->st_mtime_nsec = stat->st_ctime_nsec = 0;
 
@@ -657,7 +662,8 @@ changed (guestfs_h *g1, struct file *file1,
 {
   /* Did file content change? */
   if (cst != 0 ||
-      (is_reg (file1->stat->st_mode) && is_reg (file2->stat->st_mode) &&
+      (guestfs_int_is_reg (file1->stat->st_mode) &&
+       guestfs_int_is_reg (file2->stat->st_mode) &&
        (file1->stat->st_mtime_sec != file2->stat->st_mtime_sec ||
         file1->stat->st_ctime_sec != file2->stat->st_ctime_sec ||
         file1->stat->st_size != file2->stat->st_size))) {
@@ -718,8 +724,8 @@ diff (struct file *file1, guestfs_h *g1, struct file *file2, guestfs_h *g2)
   CLEANUP_FREE char *tmpd, *tmpda = NULL, *tmpdb = NULL, *cmd = NULL;
   int r;
 
-  assert (is_reg (file1->stat->st_mode));
-  assert (is_reg (file2->stat->st_mode));
+  assert (guestfs_int_is_reg (file1->stat->st_mode));
+  assert (guestfs_int_is_reg (file2->stat->st_mode));
 
   if (asprintf (&tmpd, "%s/virtdiffXXXXXX", tmpdir) < 0)
     error (EXIT_FAILURE, errno, "asprintf");
@@ -764,19 +770,19 @@ output_file (guestfs_h *g, struct file *file)
   size_t i;
   CLEANUP_FREE char *link = NULL;
 
-  if (is_reg (file->stat->st_mode))
+  if (guestfs_int_is_reg (file->stat->st_mode))
     filetype = "-";
-  else if (is_dir (file->stat->st_mode))
+  else if (guestfs_int_is_dir (file->stat->st_mode))
     filetype = "d";
-  else if (is_chr (file->stat->st_mode))
+  else if (guestfs_int_is_chr (file->stat->st_mode))
     filetype = "c";
-  else if (is_blk (file->stat->st_mode))
+  else if (guestfs_int_is_blk (file->stat->st_mode))
     filetype = "b";
-  else if (is_fifo (file->stat->st_mode))
+  else if (guestfs_int_is_fifo (file->stat->st_mode))
     filetype = "p";
-  else if (is_lnk (file->stat->st_mode))
+  else if (guestfs_int_is_lnk (file->stat->st_mode))
     filetype = "l";
-  else if (is_sock (file->stat->st_mode))
+  else if (guestfs_int_is_sock (file->stat->st_mode))
     filetype = "s";
   else
     filetype = "u";
@@ -812,7 +818,7 @@ output_file (guestfs_h *g, struct file *file)
 
   output_string (file->path);
 
-  if (is_lnk (file->stat->st_mode)) {
+  if (guestfs_int_is_lnk (file->stat->st_mode)) {
     /* XXX Fix this for NTFS. */
     link = guestfs_readlink (g, file->path);
     if (link)

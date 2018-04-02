@@ -17,30 +17,15 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
-generator_built = \
-	guestfs-internal-frontend-cleanups.h \
-	structs-cleanup.c \
-	structs-print.c \
-	structs-print.h \
-	uefi.c
-
-BUILT_SOURCES = \
-	$(generator_built)
-
-EXTRA_DIST = \
-	$(BUILT_SOURCES)
-
 noinst_LTLIBRARIES = libutils.la
 
 libutils_la_SOURCES = \
 	../../lib/guestfs.h \
-	cleanup.c \
-	guestfs-internal-frontend.h \
-	guestfs-internal-frontend-cleanups.h \
-	structs-cleanup.c \
-	structs-print.c \
-	structs-print.h \
-	uefi.c \
+	cleanups.c \
+	cleanups.h \
+	gnulib-cleanups.c \
+	guestfs-utils.h \
+	libxml2-cleanups.c \
 	utils.c
 libutils_la_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \

@@ -50,7 +50,7 @@ For a libvirt guest called "Guest" you could do:
 
  guestmount -d Guest -i --ro /mnt
 
-If you don't know what filesystems are contained in a guest or disk image,
+If you don’t know what filesystems are contained in a guest or disk image,
 use L<virt-filesystems(1)> first:
 
  virt-filesystems -d MyGuest
@@ -267,7 +267,7 @@ something on F</>.
 
 =item B<--no-fork>
 
-Don't daemonize (or fork into the background).
+Don’t daemonize (or fork into the background).
 
 =item B<-n>
 
@@ -416,5 +416,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

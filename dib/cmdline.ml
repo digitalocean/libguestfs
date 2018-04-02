@@ -18,8 +18,9 @@
 
 (* Command line argument parsing. *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 open Getopt.OptionName
 
 open Utils
@@ -54,6 +55,7 @@ type cmdline = {
   arch : string;
   envvars : string list;
   checksum : bool;
+  python : string option;
 }
 
 let parse_cmdline () =
@@ -69,16 +71,16 @@ read the man page virt-dib(1).
       prog in
 
   let elements = ref [] in
-  let append_element element = push_front element elements in
+  let append_element element = List.push_front element elements in
 
   let excluded_elements = ref [] in
-  let append_excluded_element element = push_front element excluded_elements in
+  let append_excluded_element element = List.push_front element excluded_elements in
 
   let element_paths = ref [] in
-  let append_element_path arg = push_front arg element_paths in
+  let append_element_path arg = List.push_front arg element_paths in
 
   let excluded_scripts = ref [] in
-  let append_excluded_script arg = push_front arg excluded_scripts in
+  let append_excluded_script arg = List.push_front arg excluded_scripts in
 
   let debug = ref 0 in
   let set_debug arg =
@@ -105,18 +107,18 @@ read the man page virt-dib(1).
 
   let formats = ref None in
   let set_format arg =
-    let fmts = remove_duplicates (String.nsplit "," arg) in
+    let fmts = List.remove_duplicates (String.nsplit "," arg) in
     let fmtset =
       List.fold_left (
         fun fmtset fmt ->
           try Output_format.add_to_set fmt fmtset
           with Not_found ->
-            error (f_"invalid format '%s' in --formats") fmt
+            error (f_"invalid format ‘%s’ in --formats") fmt
       ) Output_format.empty_set fmts in
     formats := Some fmtset in
 
   let envvars = ref [] in
-  let append_envvar arg = push_front arg envvars in
+  let append_envvar arg = List.push_front arg envvars in
 
   let use_base = ref true in
 
@@ -147,9 +149,12 @@ read the man page virt-dib(1).
 
   let extra_packages = ref [] in
   let append_extra_packages arg =
-    prepend (List.rev (String.nsplit "," arg)) extra_packages in
+    List.push_front_list (List.rev (String.nsplit "," arg)) extra_packages in
 
   let checksum = ref false in
+
+  let python = ref None in
+  let set_python arg = python := Some arg in
 
   let argspec = [
     [ S 'p'; L"element-path" ],           Getopt.String ("path", append_element_path),  s_"Add new a elements location";
@@ -158,7 +163,7 @@ read the man page virt-dib(1).
     [ L"exclude-script" ], Getopt.String ("script", append_excluded_script),
       s_"Exclude the specified script";
     [ L"envvar" ],     Getopt.String ("envvar[=value]", append_envvar),   s_"Carry/set this environment variable";
-    [ L"skip-base" ],  Getopt.Clear use_base,        s_"Skip the inclusion of the 'base' element";
+    [ L"skip-base" ],  Getopt.Clear use_base,        s_"Skip the inclusion of the ‘base’ element";
     [ L"root-label" ], Getopt.String ("label", set_root_label), s_"Label for the root fs";
     [ L"install-type" ], Getopt.Set_string ("type", install_type),  s_"Installation type";
     [ L"image-cache" ], Getopt.String ("directory", set_image_cache), s_"Location for cached images";
@@ -167,6 +172,7 @@ read the man page virt-dib(1).
     [ L"extra-packages" ], Getopt.String ("pkg,...", append_extra_packages),
       s_"Add extra packages to install";
     [ L"checksum" ],   Getopt.Set checksum,          s_"Generate MD5 and SHA256 checksum files";
+    [ L"python" ],     Getopt.String ("python", set_python),         s_"Set Python interpreter";
 
     [ L"ramdisk" ],    Getopt.Set is_ramdisk,        "Switch to a ramdisk build";
     [ L"ramdisk-element" ], Getopt.Set_string ("name", ramdisk_element), s_"Main element for building ramdisks";
@@ -184,7 +190,7 @@ read the man page virt-dib(1).
     [ L"no-network" ], Getopt.Clear network,      s_"Disable appliance network";
     [ L"smp" ],        Getopt.Int ("vcpus", set_smp),           s_"Set number of vCPUs";
     [ L"no-delete-on-failure" ], Getopt.Clear delete_on_failure,
-                                               s_"Don't delete output file on failure";
+                                               s_"Don’t delete output file on failure";
     [ L"machine-readable" ], Getopt.Set machine_readable, s_"Make output machine readable";
 
     [ L"debug" ],      Getopt.Int ("level", set_debug),         s_"Set debug level";
@@ -223,6 +229,7 @@ read the man page virt-dib(1).
   let machine_readable = !machine_readable in
   let extra_packages = List.rev !extra_packages in
   let checksum = !checksum in
+  let python = !python in
 
   (* No elements and machine-readable mode?  Print some facts. *)
   if elements = [] && machine_readable then (
@@ -246,6 +253,18 @@ read the man page virt-dib(1).
   if elements = [] then
     error (f_"at least one distribution root element must be specified");
 
+  let python =
+    match python with
+    | Some exe ->
+      let p =
+        if String.find exe Filename.dir_sep <> -1 then (
+          Unix.access exe [Unix.X_OK];
+          exe
+        ) else
+          get_required_tool exe in
+      Some p
+    | None -> None in
+
   { debug = debug; basepath = basepath; elements = elements;
     excluded_elements = excluded_elements; element_paths = element_paths;
     excluded_scripts = excluded_scripts; use_base = use_base; drive = drive;
@@ -256,5 +275,5 @@ read the man page virt-dib(1).
     extra_packages = extra_packages; memsize = memsize; network = network;
     smp = smp; delete_on_failure = delete_on_failure;
     formats = formats; arch = arch; envvars = envvars;
-    checksum = checksum;
+    checksum = checksum; python = python;
   }

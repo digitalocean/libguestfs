@@ -1,5 +1,5 @@
 (* virt-builder
- * Copyright (C) 2013-2017 Red Hat Inc.
+ * Copyright (C) 2013-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,8 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
+open Tools_utils
 
 type gpgkey_type =
   | No_Key
@@ -33,3 +34,13 @@ and revision =
 let string_of_revision = function
   | Rev_int n -> string_of_int n
   | Rev_string s -> s
+
+let increment_revision = function
+  | Rev_int n -> Rev_int (n + 1)
+  | Rev_string s -> Rev_int ((int_of_string s) + 1)
+
+let get_image_infos filepath =
+  let qemuimg_cmd = "qemu-img info --output json " ^ quote filepath in
+  let lines = external_command qemuimg_cmd in
+  let line = String.concat "\n" lines in
+  Yajl.yajl_tree_parse line

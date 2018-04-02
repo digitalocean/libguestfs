@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2010-2017 Red Hat Inc.
+# Copyright (C) 2010-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@ sources = \
 	actions_debug.mli \
 	actions_hivex.ml \
 	actions_hivex.mli \
+	actions_hivex_deprecated.ml \
+	actions_hivex_deprecated.mli \
 	actions_inspection.ml \
 	actions_inspection.mli \
 	actions_inspection_deprecated.ml \
@@ -43,14 +45,16 @@ sources = \
 	actions_properties_deprecated.mli \
 	actions_tsk.ml \
 	actions_tsk.mli \
+	authors.ml \
+	authors.mli \
+	actions_yara.ml \
+	actions_yara.mli \
 	bindtests.ml \
 	bindtests.mli \
 	c.ml \
 	c.mli \
 	checks.ml \
 	checks.mli \
-	common_utils.ml \
-	common_utils.mli \
 	csharp.ml \
 	csharp.mli \
 	customize.ml \
@@ -73,7 +77,6 @@ sources = \
 	GObject.mli \
 	golang.ml \
 	golang.mli \
-	guestfs_config.ml \
 	haskell.ml \
 	haskell.mli \
 	java.ml \
@@ -81,6 +84,7 @@ sources = \
 	lua.ml \
 	lua.mli \
 	main.ml \
+	main.mli \
 	OCaml.ml \
 	OCaml.mli \
 	optgroups.ml \
@@ -104,6 +108,7 @@ sources = \
 	tests_c_api.ml \
 	tests_c_api.mli \
 	types.ml \
+	types.mli \
 	UEFI.ml \
 	UEFI.mli \
 	utils.ml \
@@ -113,9 +118,6 @@ sources = \
 
 # In build dependency order.
 objects = \
-	$(OCAML_GENERATOR_BYTES_COMPAT_CMO) \
-	guestfs_config.cmo \
-	common_utils.cmo \
 	types.cmo \
 	utils.cmo \
 	proc_nr.cmo \
@@ -124,12 +126,14 @@ objects = \
 	actions_core_deprecated.cmo \
 	actions_debug.cmo \
 	actions_hivex.cmo \
+	actions_hivex_deprecated.cmo \
 	actions_inspection.cmo \
 	actions_inspection_deprecated.cmo \
 	actions_internal_tests.cmo \
 	actions_properties.cmo \
 	actions_properties_deprecated.cmo \
 	actions_tsk.cmo \
+	actions_yara.cmo \
 	actions.cmo \
 	structs.cmo \
 	fish_commands.cmo \
@@ -138,6 +142,7 @@ objects = \
 	events.cmo \
 	pr.cmo \
 	docstrings.cmo \
+	authors.cmo \
 	checks.cmo \
 	c.cmo \
 	XDR.cmo \
@@ -164,42 +169,28 @@ objects = \
 
 EXTRA_DIST = $(sources) files-generated.txt
 
-OCAMLPACKAGES = -package unix,str -I $(srcdir) -I .
+OCAMLPACKAGES = \
+	-package unix,str \
+	-I $(srcdir) \
+	-I . \
+	-I $(top_srcdir)/common/mlstdutils \
+	-I $(top_builddir)/common/mlstdutils
 OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 noinst_PROGRAM = generator
 
-if HAVE_OCAML
-
 generator: $(objects)
-	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -linkpkg $^ -o $@
+#	We need the recursive make here because the generator is
+#	rebuilt in ‘make clean’.
+	$(MAKE) -C $(top_builddir)/common/mlstdutils mlstdutils.cma
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) \
+	    $(OCAMLPACKAGES) -linkpkg mlstdutils.cma \
+	    $^ -o $@
 
-# Dependencies.
-depend: .depend
-
-.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml) common_utils.ml common_utils.mli guestfs_config.ml
-	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
-	  $(SED) 's/ *$$//' | \
-	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
-	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
-	  sort > $@-t
-	mv $@-t $@
-
+# OCaml dependencies.
+.depend: *.mli *.ml
+	$(top_builddir)/ocaml-dep.sh $^
 -include .depend
-
-else
-
-# No OCaml compiler.  Just replace the generator with a script that
-# prints a warning.
-
-generator:
-	rm -f $@ $@-t
-	echo 'echo Warning: Install OCaml compiler in order to rebuild the generated files.' > $@-t
-	chmod +x $@-t
-	mv $@-t $@
-
-endif
 
 noinst_DATA = stamp-generator
 
@@ -218,24 +209,6 @@ stamp-generator: generator
 	cd $(top_srcdir) && $(abs_builddir)/generator
 	touch $@
 
-# We share common_utils.ml{,i} with the mllib directory.  However we
-# have to remove functions which depend on any modules which are not
-# part of the OCaml stdlib.
-common_utils.ml: $(top_srcdir)/mllib/common_utils.ml
-	rm -f $@ $@-t
-	echo '(* This file is generated from mllib/common_utils.ml *)' > $@-t
-	sed -n '/^(\*<stdlib>\*)$$/,/^(\*<\/stdlib>\*)$$/p' $< >> $@-t
-	mv $@-t $@
-common_utils.mli: $(top_srcdir)/mllib/common_utils.mli
-	rm -f $@ $@-t
-	echo '(* This file is generated from mllib/common_utils.mli *)' > $@-t
-	sed -n '/^(\*<stdlib>\*)$$/,/^(\*<\/stdlib>\*)$$/p' $< >> $@-t
-	mv $@-t $@
-guestfs_config.ml: ../mllib/guestfs_config.ml
-	cp $< $@
-
 CLEANFILES += $(noinst_DATA) $(noinst_PROGRAM)
 
 DISTCLEANFILES += .pod2text.data.version.2
-
-SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly

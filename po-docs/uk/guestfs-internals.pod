@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-guestfs-internals - architecture and internals of libguestfs
+guestfs-internals — архітектура і внутрішня будова libguestfs
 
 =head1 ОПИС
 
@@ -43,12 +43,12 @@ L</guestfsd>.  The library talks to L</guestfsd> using remote procedure
 calls (RPC).  There is a mostly one-to-one correspondence between libguestfs
 API calls and RPC calls to the daemon.  Lastly the disk image(s) are
 attached to the qemu process which translates device access by the
-appliance's Linux kernel into accesses to the image.
+appliance’s Linux kernel into accesses to the image.
 
 A common misunderstanding is that the appliance "is" the virtual machine.
 Although the disk image you are attached to might also be used by some
 virtual machine, libguestfs doesn't know or care about this.  (But you will
-care if both libguestfs's qemu process and your virtual machine are trying
+care if both libguestfs’s qemu process and your virtual machine are trying
 to update the disk image at the same time, since these usually results in
 massive disk corruption).
 
@@ -56,27 +56,7 @@ massive disk corruption).
 
 libguestfs uses a state machine to model the child process:
 
-                         |
-          guestfs_create / guestfs_create_flags
-                         |
-                         |
-                     ____V_____
-                    /          \
-                    |  CONFIG  |
-                    \__________/
-                       ^   ^  \
-                       |    \  \ guestfs_launch
-                       |    _\__V______
-                       |   /           \
-                       |   | LAUNCHING |
-                       |   \___________/
-                       |       /
-                       |  guestfs_launch
-                       |     /
-                     __|____V
-                    /        \
-                    | READY  |
-                    \________/
+               
 
 The normal transitions are (1) CONFIG (when the handle is created, but there
 is no child process), (2) LAUNCHING (when the child process is booting up),
@@ -120,14 +100,14 @@ In order to follow the stages involved below, enable libguestfs debugging
 
 =item Створення базової системи
 
-C<supermin --build> is invoked to create the kernel, a small initrd and the
-appliance.
+C<supermin --build> викликається для створення ядра, невеличкого initrd та
+базової системи.
 
 The appliance is cached in F</var/tmp/.guestfs-E<lt>UIDE<gt>> (or in another
 directory if C<LIBGUESTFS_CACHEDIR> or C<TMPDIR> are set).
 
-For a complete description of how the appliance is created and cached, read
-the L<supermin(1)> man page.
+Щоб ознайомитися із повним описом створення базової системи та особливостями
+кешування, прочитайте сторінку підручника щодо L<supermin(1)>.
 
 =item Start qemu and boot the kernel
 
@@ -192,15 +172,15 @@ should see:
 The daemon expects to see a named virtio-serial port exposed by qemu and
 connected on the other end to the library.
 
-The daemon connects to this port (and hence to the library) and sends a four
-byte message C<GUESTFS_LAUNCH_FLAG>, which initiates the communication
-protocol (see below).
+Фонова служба встановлює з'єднання з цим портом (а отже і з бібліотекою) і
+надсилає чотирибайтове повідомлення C<GUESTFS_LAUNCH_FLAG>, яке ініціює
+протокол обміну даними (див. нижче).
 
 =back
 
 =head2 ПРОТОКОЛ ОБМІНУ ДАНИМИ
 
-Don't rely on using this protocol directly.  This section documents how it
+Don’t rely on using this protocol directly.  This section documents how it
 currently works, but it may change at any time.
 
 The protocol used to talk between the library and the daemon running inside
@@ -211,7 +191,7 @@ The detailed format of structures is in
 F<common/protocol/guestfs_protocol.x> (note: this file is automatically
 generated).
 
-There are two broad cases, ordinary functions that don't have any C<FileIn>
+There are two broad cases, ordinary functions that don’t have any C<FileIn>
 and C<FileOut> parameters, which are handled with very simple request/reply
 messages.  Then there are functions that have any C<FileIn> or C<FileOut>
 parameters, which use the same request and reply messages, but they may also
@@ -231,7 +211,7 @@ into which it slurps the rest of the message.  As a result, the total length
 is limited to C<GUESTFS_MESSAGE_MAX> bytes (currently 4MB), which means the
 effective size of any request is limited to somewhere under this size.
 
-Note also that many functions don't take any arguments, in which case the
+Note also that many functions don’t take any arguments, in which case the
 C<guestfs_I<foo>_args> is completely omitted.
 
 The header contains the procedure number (C<guestfs_proc>) which is how the
@@ -339,7 +319,7 @@ When the daemon launches it sends an initial word (C<GUESTFS_LAUNCH_FLAG>)
 which indicates that the guest and daemon is alive.  This is what
 L<guestfs(3)/guestfs_launch> waits for.
 
-=head3 PROGRESS NOTIFICATION MESSAGES
+=head3 ПОВІДОМЛЕННЯ ЩОДО ПОСТУПУ
 
 The daemon may send progress notification messages at any time.  These are
 distinguished by the normal length word being replaced by
@@ -353,7 +333,7 @@ The daemon self-limits the frequency of progress messages it sends (see
 C<daemon/proto.c:notify_progress>).  Not all calls generate progress
 messages.
 
-=head2 ФІКСОВАНА ОСНОВНА СИСТЕМА
+=head2 ФІКСОВАНА БАЗОВА СИСТЕМА
 
 When libguestfs (or libguestfs tools) are run, they search a path looking
 for an appliance.  The path is built into libguestfs, or can be set using
@@ -379,10 +359,10 @@ files:
 
 =back
 
-If the fixed appliance is found, libguestfs skips supermin entirely and just
-runs the virtual machine (using qemu or the current backend, see
-L<guestfs(3)/BACKEND>) with the kernel, initrd and root disk from the fixed
-appliance.
+Якщо буде виявлено фіксовану базову систему, libguestfs не використовуватиме
+supermin взагалі і запустить віртуальну машину (за допомогою qemu або
+поточного модуля обробки, див. L<guestfs(3)/МОДУЛЬ>) із ядром, initrd та
+кореневим диском із фіксованої базової системи.
 
 Thus the fixed appliance can be used when a platform or a Linux distribution
 does not support supermin.  You build the fixed appliance on a platform that
@@ -401,5 +381,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

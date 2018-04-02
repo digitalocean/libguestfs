@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -392,6 +392,9 @@ start_ssh (unsigned spawn_flags, struct config *config,
     set_ssh_internal_error ("ssh: mexp_spawnvf: %m");
     return NULL;
   }
+#if DEBUG_STDERR
+  mexp_set_debug_file (h, stderr);
+#endif
 
   /* We want the ssh ConnectTimeout to be less than the miniexpect
    * timeout, so that if the server is completely unresponsive we
@@ -414,7 +417,8 @@ start_ssh (unsigned spawn_flags, struct config *config,
                            { 0 }
                          }, ovector, ovecsize)) {
     case 100:                   /* Got password prompt. */
-      if (mexp_printf (h, "%s\n", config->password) == -1) {
+      if (mexp_printf_password (h, "%s", config->password) == -1 ||
+          mexp_printf (h, "\n") == -1) {
         set_ssh_mexp_error ("mexp_printf");
         mexp_close (h);
         return NULL;
@@ -572,14 +576,18 @@ start_ssh (unsigned spawn_flags, struct config *config,
 #endif
 
 /**
- * Upload a file to remote using L<scp(1)>.
+ * Upload file(s) to remote using L<scp(1)>.
+ *
+ * Note that the target (directory or file) comes before the list of
+ * local files, because the list of local files is a varargs list.
  *
  * This is a simplified version of L</start_ssh> above.
  */
 int
-scp_file (struct config *config, const char *localfile, const char *remotefile)
+scp_file (struct config *config, const char *target, const char *local, ...)
 {
   size_t i = 0;
+  va_list args;
   const size_t MAX_ARGS = 64;
   const char *argv[MAX_ARGS];
   char port_str[64];
@@ -618,12 +626,25 @@ scp_file (struct config *config, const char *localfile, const char *remotefile)
     ADD_ARG (argv, i, "-i");
     ADD_ARG (argv, i, config->identity_file);
   }
-  ADD_ARG (argv, i, localfile);
+
+  /* Source files or directories.
+   * Strictly speaking this could abort() if the list of files is
+   * too long, but that never happens in virt-p2v. XXX
+   */
+  va_start (args, local);
+  do ADD_ARG (argv, i, local);
+  while ((local = va_arg (args, const char *)) != NULL);
+  va_end (args);
+
+  /* The target file or directory.  We need to rewrite this as
+   * "username@server:target".
+   */
   if (asprintf (&remote, "%s@%s:%s",
                 config->username ? config->username : "root",
-                config->server, remotefile) == -1)
+                config->server, target) == -1)
     error (EXIT_FAILURE, errno, "asprintf");
   ADD_ARG (argv, i, remote);
+
   ADD_ARG (argv, i, NULL);
 
 #if DEBUG_STDERR
@@ -641,6 +662,9 @@ scp_file (struct config *config, const char *localfile, const char *remotefile)
     set_ssh_internal_error ("scp: mexp_spawnv: %m");
     return -1;
   }
+#if DEBUG_STDERR
+  mexp_set_debug_file (h, stderr);
+#endif
 
   /* We want the ssh ConnectTimeout to be less than the miniexpect
    * timeout, so that if the server is completely unresponsive we
@@ -663,7 +687,8 @@ scp_file (struct config *config, const char *localfile, const char *remotefile)
                            { 0 }
                          }, ovector, ovecsize)) {
     case 100:                   /* Got password prompt. */
-      if (mexp_printf (h, "%s\n", config->password) == -1) {
+      if (mexp_printf_password (h, "%s", config->password) == -1 ||
+          mexp_printf (h, "\n") == -1) {
         set_ssh_mexp_error ("mexp_printf");
         mexp_close (h);
         return -1;

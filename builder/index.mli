@@ -1,5 +1,5 @@
 (* virt-builder
- * Copyright (C) 2013-2017 Red Hat Inc.
+ * Copyright (C) 2013-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ and entry = {
   printable_name : string option;       (* the name= field *)
   osinfo : string option;
   file_uri : string;
-  arch : string;
+  arch : arch;
   signature_uri : string option;        (* deprecated, will be removed in 1.26 *)
   checksums : Checksums.csum_t list option;
   revision : Utils.revision;
@@ -37,5 +37,14 @@ and entry = {
   sigchecker : Sigchecker.t;
   proxy : Curl.proxy;
 }
+and arch =
+  | Arch of string              (** Specified in the metadata. *)
+  | GuessedArch of string       (** Guess from inspection data. *)
+
+val string_of_arch : arch -> string
+(** [string_of_arch a]Get the string value of [a]. *)
 
 val print_entry : out_channel -> (string * entry) -> unit
+(** Debugging helper function dumping an index entry to a stream.
+    To write entries for non-debugging purpose, use the
+    [Index_parser.write_entry] function. *)

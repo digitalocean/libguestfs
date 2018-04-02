@@ -1534,11 +1534,9 @@ guestfs_int_ruby_hivex_node_children (VALUE gv, VALUE nodehv)
  *
  * get format of inspected operating system
  *
- * This returns the format of the inspected operating
- * system. You can use it to detect install images, live
- * CDs and similar.
- * 
- * Currently defined formats are:
+ * Before libguestfs 1.38, there was some unreliable
+ * support for detecting installer CDs. This API would
+ * return:
  * 
  * "installed"
  * This is an installed operating system.
@@ -1551,14 +1549,15 @@ guestfs_int_ruby_hivex_node_children (VALUE gv, VALUE nodehv)
  * "unknown"
  * The format of this disk image is not known.
  * 
- * Future versions of libguestfs may return other strings
- * here. The caller should be prepared to handle any
- * string.
+ * In libguestfs ≥ 1.38, this only returns "installed". Use
+ * libosinfo directly to detect installer CDs.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
  * [Since] Added in version 1.9.4.
+ *
+ * [Deprecated] There is no documented replacement
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_inspect_get_format}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_format].
@@ -1591,7 +1590,7 @@ guestfs_int_ruby_inspect_get_format (VALUE gv, VALUE rootv)
  * get hostname of the operating system
  *
  * This function returns the hostname of the operating
- * system as found by inspection of the guest's
+ * system as found by inspection of the guest’s
  * configuration files.
  * 
  * If the hostname could not be determined, then the string
@@ -1632,14 +1631,14 @@ guestfs_int_ruby_inspect_get_hostname (VALUE gv, VALUE rootv)
  *
  * get multipart flag for install disk
  *
- * If "g.inspect_get_format" returns "installer" (this is
- * an install disk), then this returns true if the disk is
- * part of a set.
+ * This is deprecated and always returns "false".
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
  * [Since] Added in version 1.9.4.
+ *
+ * [Deprecated] There is no documented replacement
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_inspect_is_multipart}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_multipart].

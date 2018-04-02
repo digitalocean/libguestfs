@@ -37,7 +37,7 @@
 #include <caml/signals.h>
 
 #include <guestfs.h>
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #include "guestfs-c.h"
 
@@ -805,6 +805,20 @@ copy_xfsinfo (const struct guestfs_xfsinfo *xfsinfo)
 }
 
 static value
+copy_yara_detection (const struct guestfs_yara_detection *yara_detection)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (2, 0);
+  v = caml_copy_string (yara_detection->yara_name);
+  Store_field (rv, 0, v);
+  v = caml_copy_string (yara_detection->yara_rule);
+  Store_field (rv, 1, v);
+  CAMLreturn (rv);
+}
+
+static value
 copy_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
 {
   CAMLparam0 ();
@@ -1026,6 +1040,25 @@ copy_lvm_pv_list (const struct guestfs_lvm_pv_list *lvm_pvs)
     rv = caml_alloc (lvm_pvs->len, 0);
     for (i = 0; i < lvm_pvs->len; ++i) {
       v = copy_lvm_pv (&lvm_pvs->val[i]);
+      Store_field (rv, i, v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static value
+copy_yara_detection_list (const struct guestfs_yara_detection_list *yara_detections)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (yara_detections->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (yara_detections->len, 0);
+    for (i = 0; i < yara_detections->len; ++i) {
+      v = copy_yara_detection (&yara_detections->val[i]);
       Store_field (rv, i, v);
     }
     CAMLreturn (rv);
@@ -9096,6 +9129,37 @@ guestfs_int_ocaml_hivex_value_key (value gv, value valuehv)
 }
 
 /* Automatically generated wrapper for function
+ * val hivex_value_string : t -> int64 -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_hivex_value_string (value gv, value valuehv);
+
+value
+guestfs_int_ocaml_hivex_value_string (value gv, value valuehv)
+{
+  CAMLparam2 (gv, valuehv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("hivex_value_string");
+
+  int64_t valueh = Int64_val (valuehv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_hivex_value_string (g, valueh);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "hivex_value_string");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val hivex_value_type : t -> int64 -> int64
  */
 
@@ -16975,6 +17039,40 @@ guestfs_int_ocaml_part_get_disk_guid (value gv, value devicev)
 }
 
 /* Automatically generated wrapper for function
+ * val part_get_gpt_attributes : t -> string -> int -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_part_get_gpt_attributes (value gv, value devicev, value partnumv);
+
+value
+guestfs_int_ocaml_part_get_gpt_attributes (value gv, value devicev, value partnumv)
+{
+  CAMLparam3 (gv, devicev, partnumv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("part_get_gpt_attributes");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  int partnum = Int_val (partnumv);
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_get_gpt_attributes (g, device, partnum);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "part_get_gpt_attributes");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val part_get_gpt_guid : t -> string -> int -> string
  */
 
@@ -17254,6 +17352,41 @@ guestfs_int_ocaml_part_list (value gv, value devicev)
 }
 
 /* Automatically generated wrapper for function
+ * val part_resize : t -> string -> int -> int64 -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_part_resize (value gv, value devicev, value partnumv, value endsectv);
+
+value
+guestfs_int_ocaml_part_resize (value gv, value devicev, value partnumv, value endsectv)
+{
+  CAMLparam4 (gv, devicev, partnumv, endsectv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("part_resize");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  int partnum = Int_val (partnumv);
+  int64_t endsect = Int64_val (endsectv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_resize (g, device, partnum, endsect);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "part_resize");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val part_set_bootable : t -> string -> int -> bool -> unit
  */
 
@@ -17353,6 +17486,41 @@ guestfs_int_ocaml_part_set_disk_guid_random (value gv, value devicev)
   free (device);
   if (r == -1)
     guestfs_int_ocaml_raise_error (g, "part_set_disk_guid_random");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_set_gpt_attributes : t -> string -> int -> int64 -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_part_set_gpt_attributes (value gv, value devicev, value partnumv, value attributesv);
+
+value
+guestfs_int_ocaml_part_set_gpt_attributes (value gv, value devicev, value partnumv, value attributesv)
+{
+  CAMLparam4 (gv, devicev, partnumv, attributesv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("part_set_gpt_attributes");
+
+  char *device;
+  device = strdup (String_val (devicev));
+  if (device == NULL) caml_raise_out_of_memory ();
+  int partnum = Int_val (partnumv);
+  int64_t attributes = Int64_val (attributesv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_set_gpt_attributes (g, device, partnum, attributes);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "part_set_gpt_attributes");
 
   rv = Val_unit;
   CAMLreturn (rv);
@@ -22993,6 +23161,102 @@ value
 guestfs_int_ocaml_xfs_repair_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return guestfs_int_ocaml_xfs_repair (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11]);
+}
+
+/* Automatically generated wrapper for function
+ * val yara_destroy : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_yara_destroy (value gv);
+
+value
+guestfs_int_ocaml_yara_destroy (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("yara_destroy");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_yara_destroy (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "yara_destroy");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val yara_load : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_yara_load (value gv, value filenamev);
+
+value
+guestfs_int_ocaml_yara_load (value gv, value filenamev)
+{
+  CAMLparam2 (gv, filenamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("yara_load");
+
+  char *filename;
+  filename = strdup (String_val (filenamev));
+  if (filename == NULL) caml_raise_out_of_memory ();
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_yara_load (g, filename);
+  caml_leave_blocking_section ();
+  free (filename);
+  if (r == -1)
+    guestfs_int_ocaml_raise_error (g, "yara_load");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val yara_scan : t -> string -> yara_detection array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value guestfs_int_ocaml_yara_scan (value gv, value pathv);
+
+value
+guestfs_int_ocaml_yara_scan (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    guestfs_int_ocaml_raise_closed ("yara_scan");
+
+  char *path;
+  path = strdup (String_val (pathv));
+  if (path == NULL) caml_raise_out_of_memory ();
+  struct guestfs_yara_detection_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_yara_scan (g, path);
+  caml_leave_blocking_section ();
+  free (path);
+  if (r == NULL)
+    guestfs_int_ocaml_raise_error (g, "yara_scan");
+
+  rv = copy_yara_detection_list (r);
+  guestfs_free_yara_detection_list (r);
+  CAMLreturn (rv);
 }
 
 /* Automatically generated wrapper for function

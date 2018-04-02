@@ -1,5 +1,5 @@
 (* virt-builder
- * Copyright (C) 2013-2017 Red Hat Inc.
+ * Copyright (C) 2013-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
 
 (* Command line argument parsing. *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 open Getopt.OptionName
 
 open Customize_cmdline
@@ -72,7 +73,7 @@ let parse_cmdline () =
     | "auto" -> attach_format := None
     | s -> attach_format := Some s
   in
-  let attach_disk s = push_front (!attach_format, s) attach in
+  let attach_disk s = List.push_front (!attach_format, s) attach in
 
   let cache = ref Paths.xdg_cache_home in
   let set_cache arg = cache := Some arg in
@@ -84,7 +85,7 @@ let parse_cmdline () =
   let delete_on_failure = ref true in
 
   let fingerprints = ref [] in
-  let add_fingerprint arg = push_front arg fingerprints in
+  let add_fingerprint arg = List.push_front arg fingerprints in
 
   let format = ref "" in
   let gpg =
@@ -118,7 +119,7 @@ let parse_cmdline () =
   let set_smp arg = smp := Some arg in
 
   let sources = ref [] in
-  let add_source arg = push_front arg sources in
+  let add_source arg = List.push_front arg sources in
 
   let sync = ref true in
   let warn_if_partition = ref true in
@@ -143,7 +144,7 @@ let parse_cmdline () =
     [ L"delete-cache" ], Getopt.Unit delete_cache_mode,
                                             s_"Delete the template cache";
     [ L"no-delete-on-failure" ], Getopt.Clear delete_on_failure,
-                                            s_"Don't delete output file on failure";
+                                            s_"Don’t delete output file on failure";
     [ L"fingerprint" ], Getopt.String ("AAAA..", add_fingerprint),
                                              s_"Fingerprint of valid signing key";
     [ L"format" ],  Getopt.Set_string ("raw|qcow2", format),      s_"Output format (default: raw)";
@@ -175,7 +176,7 @@ let parse_cmdline () =
   let argspec = argspec @ customize_argspec in
 
   let args = ref [] in
-  let anon_fun s = push_front s args in
+  let anon_fun s = List.push_front s args in
   let usage_msg =
     sprintf (f_"\
 %s: build virtual machine images quickly
@@ -237,26 +238,26 @@ read the man page virt-builder(1).
       (match args with
       | [arg] -> arg
       | [] ->
-        error (f_"virt-builder os-version\nMissing 'os-version'. Use '--list' to list available template names.")
+        error (f_"virt-builder os-version\nMissing ‘os-version’. Use ‘--list’ to list available template names.")
       | _ ->
-        error (f_"too many parameters, expecting 'os-version'")
+        error (f_"too many parameters, expecting ‘os-version’")
       )
     | `List ->
       if format <> None then
-        error (f_"--list: use '--list-format', not '--format'");
+        error (f_"--list: use ‘--list-format’, not ‘--format’");
       (match args with
       | [arg] -> arg
       | [] -> ""
       | _ ->
-        error (f_"too many parameters, at most one 'os-version' is allowed for --list")
+        error (f_"too many parameters, at most one ‘os-version’ is allowed for --list")
       )
     | `Notes ->
       (match args with
       | [arg] -> arg
       | [] ->
-        error (f_"virt-builder --notes os-version\nMissing 'os-version'. Use '--list' to list available template names.")
+        error (f_"virt-builder --notes os-version\nMissing ‘os-version’. Use ‘--list’ to list available template names.")
       | _ ->
-        error (f_"--notes: too many parameters, expecting 'os-version'");
+        error (f_"--notes: too many parameters, expecting ‘os-version’");
       )
     | `Cache_all
     | `Print_cache
@@ -270,7 +271,7 @@ read the man page virt-builder(1).
       (match args with
       | [arg] -> arg
       | [] ->
-        error (f_"virt-builder --get-kernel image\nMissing 'image' (disk image file) argument")
+        error (f_"virt-builder --get-kernel image\nMissing ‘image’ (disk image file) argument")
       | _ ->
         error (f_"--get-kernel: too many parameters")
       ) in

@@ -47,12 +47,8 @@ command a few times:
 
  time guestfish -a /dev/null run
 
-After a few runs, the time should settle down to a few seconds (under 5
+After a few runs, the time should settle down to a few seconds (under 3
 seconds on fast 64 bit hardware).
-
-ハードウェア仮想化を確認する方法:
-
-L<http://virt-tools.org/learning/check-hardware-virt/>
 
 上のコマンドがまったく機能しなければ、 L<libguestfs-test-tool(1)> を使用します。
 
@@ -207,7 +203,7 @@ numbers to change.
 
 =back
 
-We don't guarantee that the numbers will be identical even under these
+We don’t guarantee that the numbers will be identical even under these
 circumstances.  They should be similar.  It would indicate a bug if you saw
 greatly differing numbers.
 
@@ -279,7 +275,7 @@ Linux 仮想マシンにあるすべての Unix ドメインソケットを一�
 
  virt-ls -lR -d Guest / | grep '^s'
 
-'.png' で終わるファイル名を持つすべての通常ファイルを表示するには:
+List all regular files with filenames ending in ‘.png’:
 
  virt-ls -lR -d Guest / | grep -i '^-.*\.png$'
 
@@ -304,8 +300,9 @@ happen to have:
 
  virt-make-fs --partition=mbr --type=vfat /any/tarball.tar.gz output.img
 
-'output.img' を既存の仮想マシンにローディスクとして追加します。仮想マシンがファイルを認識できるかを確認します。Windows
-仮想マシンを試していると、このテストがとくに有用です。
+Add ‘output.img’ as a raw disk to an existing guest.  Check the guest can
+see the files.  This test is particularly useful if you try it with a
+Windows guest.
 
 他のパーティションスキーマを試してください。例: I<--partition=gpt>
 

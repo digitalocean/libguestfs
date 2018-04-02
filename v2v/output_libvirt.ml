@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Types
 open Utils
@@ -27,8 +28,8 @@ open Xpath_helpers
 open Create_libvirt_xml
 
 let arch_is_sane_or_die =
-  let rex = Str.regexp "^[-_A-Za-z0-9]+$" in
-  fun arch -> assert (Str.string_match rex arch 0)
+  let rex = PCRE.compile ~caseless:true "^[-_a-z0-9]+$" in
+  fun arch -> assert (PCRE.matches rex arch)
 
 let target_features_of_capabilities_doc doc arch =
   let xpathctx = Xml.xpath_new_context doc in
@@ -88,10 +89,10 @@ class output_libvirt oc output_pool = object
     (* Does the domain already exist on the target?  (RHBZ#889082) *)
     if Libvirt_utils.domain_exists ?conn:oc source.s_name then (
       if source.s_hypervisor = Physical then (* virt-p2v user *)
-        error (f_"a libvirt domain called '%s' already exists on the target.\n\nIf using virt-p2v, select a different 'Name' in the 'Target properties'. Or delete the existing domain on the target using the 'virsh undefine' command.")
+        error (f_"a libvirt domain called ‘%s’ already exists on the target.\n\nIf using virt-p2v, select a different ‘Name’ in the ‘Target properties’. Or delete the existing domain on the target using the ‘virsh undefine’ command.")
               source.s_name
       else                      (* !virt-p2v *)
-        error (f_"a libvirt domain called '%s' already exists on the target.\n\nIf using virt-v2v directly, use the '-on' option to select a different name. Or delete the existing domain on the target using the 'virsh undefine' command.")
+        error (f_"a libvirt domain called ‘%s’ already exists on the target.\n\nIf using virt-v2v directly, use the ‘-on’ option to select a different name. Or delete the existing domain on the target using the ‘virsh undefine’ command.")
               source.s_name
     );
 
@@ -105,13 +106,13 @@ class output_libvirt oc output_pool = object
 
     (* We can only output to a pool of type 'dir' (directory). *)
     if xpath_string "/pool/@type" <> Some "dir" then
-      error (f_"-o libvirt: output pool '%s' is not a directory (type='dir').  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool;
+      error (f_"-o libvirt: output pool ‘%s’ is not a directory (type='dir').  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool;
     let target_path =
       match xpath_string "/pool/target/path/text()" with
       | None ->
-         error (f_"-o libvirt: output pool '%s' does not have /pool/target/path element.  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool
+         error (f_"-o libvirt: output pool ‘%s’ does not have /pool/target/path element.  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool
       | Some dir when not (is_directory dir) ->
-         error (f_"-o libvirt: output pool '%s' has type='dir' but the /pool/target/path element is not a local directory.  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool
+         error (f_"-o libvirt: output pool ‘%s’ has type='dir' but the /pool/target/path element is not a local directory.  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool
       | Some dir -> dir in
     (* Get the name of the pool, since we have to use that
      * (and not the UUID) in the XML of the guest.
@@ -119,7 +120,7 @@ class output_libvirt oc output_pool = object
     let name =
       match xpath_string "/pool/name/text()" with
       | None ->
-         error (f_"-o libvirt: output pool '%s' does not have /pool/name element.  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool
+         error (f_"-o libvirt: output pool ‘%s’ does not have /pool/name element.  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool
       | Some name -> name in
     pool_name <- Some name;
 
@@ -127,8 +128,9 @@ class output_libvirt oc output_pool = object
     List.map (
       fun t ->
         let target_file =
-          target_path // source.s_name ^ "-" ^ t.target_overlay.ov_sd in
-        { t with target_file = target_file }
+          TargetFile (target_path // source.s_name ^ "-" ^
+                      t.target_overlay.ov_sd) in
+        { t with target_file }
     ) targets
 
   method supported_firmware = [ TargetBIOS; TargetUEFI ]
@@ -194,7 +196,7 @@ class output_libvirt oc output_pool = object
     if run_command cmd = 0 then (
       try Unix.unlink tmpfile with _ -> ()
     ) else (
-      warning (f_"could not define libvirt domain.  The libvirt XML is still available in '%s'.  Try running 'virsh define %s' yourself instead.")
+      warning (f_"could not define libvirt domain.  The libvirt XML is still available in ‘%s’.  Try running ‘virsh define %s’ yourself instead.")
         tmpfile tmpfile
     );
 end

@@ -5,9 +5,9 @@ virt-resize — програма для зміни розмірів дисків
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-resize [--resize /dev/sdaN=[+/-]<size>[%]]
+ virt-resize [--resize /dev/sdaN=[+/-]<розмір>[%]]
    [--expand /dev/sdaN] [--shrink /dev/sdaN]
-   [--ignore /dev/sdaN] [--delete /dev/sdaN] [...] indisk outdisk
+   [--ignore /dev/sdaN] [--delete /dev/sdaN] [...] вхідний_диск вихідний_диск
 
 =head1 ОПИС
 
@@ -33,11 +33,11 @@ of the guest’s partitions to fill the extra 5GB of space:
 
  virt-filesystems --long -h --all -a olddisk
  
- truncate -r olddisk newdisk
- truncate -s +5G newdisk
+ truncate -r старий_диск новий_диск
+ truncate -s +5G новий_диск
  
- # Note "/dev/sda2" is a partition inside the "olddisk" file.
- virt-resize --expand /dev/sda2 olddisk newdisk
+ # Зауважте, що «/dev/sda2» є розділом у у файлі «старий_диск».
+ virt-resize --expand /dev/sda2 старий_диск новий_диск
 
 =item 2.
 
@@ -76,7 +76,7 @@ raw disk:
 =item 2. Locate input disk image
 
 Locate the input disk image (ie. the file or device on the host containing
-the guest's disk).  If the guest is managed by libvirt, you can use C<virsh
+the guest’s disk).  If the guest is managed by libvirt, you can use C<virsh
 dumpxml> like this to find the disk image name:
 
  # virsh dumpxml guestname | xpath /domain/devices/disk/source
@@ -234,7 +234,7 @@ Similarly, to get non-sparse raw output use:
 
  fallocate -l розмір вихідний_диск
 
-(on older systems that don't have the L<fallocate(1)> command use C<dd
+(on older systems that don’t have the L<fallocate(1)> command use C<dd
 if=/dev/zero of=outdisk bs=1M count=..>)
 
 =head2 ЛОГІЧНІ РОЗДІЛИ
@@ -324,9 +324,11 @@ around 2008.
 
 =item B<--colours>
 
-Use ANSI colour sequences to colourize messages.  This is the default when
-the output is a tty.  If the output of the program is redirected to a file,
-ANSI colour sequences are disabled unless you use this option.
+Використовувати послідовності символів ANSI для розфарбовування
+повідомлень. Ці послідовності типово використовуються, якщо дані виводяться
+на термінал tty.  Якщо дані, виведені програмою, спрямовуються до файла,
+послідовності визначення кольорів ANSI буде вимкнено, якщо ви не додасте до
+команди цей параметр.
 
 =item B<-d>
 
@@ -391,7 +393,7 @@ XFS filesystems, if libguestfs was compiled with support for XFS.
 
 =item *
 
-Linux swap partitions.
+Розділи резервної пам'яті на диску Linux.
 
 Please note that libguestfs I<destroys> the existing swap content by
 recreating it with C<mkswap>, so this should not be used when the guest is
@@ -406,8 +408,8 @@ Note that you cannot use I<--expand> and I<--shrink> together.
 Specify the format of the input disk image.  If this flag is not given then
 it is auto-detected from the image itself.
 
-If working with untrusted raw-format guest disk images, you should ensure
-the format is always specified.
+Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
+ненадійних джерел, вам слід завжди вказувати назву формату.
 
 Note that this option I<does not> affect the output format.  See L</QCOW2
 AND NON-SPARSE RAW FORMATS>.
@@ -446,14 +448,15 @@ groups.
 
 =item B<--machine-readable>
 
-This option is used to make the output more machine friendly when being
-parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
+За допомогою цього параметра можна зробити виведені дані придатнішими для
+обробки комп'ютером, якщо для цієї обробки використовуються інші
+програми. Див. L</ПРИДАТНЕ ДО ЧИТАННЯ КОМП'ЮТЕРОМ ВИВЕДЕННЯ> нижче.
 
 =item B<-n>
 
 =item B<--dry-run>
 
-Print a summary of what would be done, but don't do anything.
+Print a summary of what would be done, but don’t do anything.
 
 =item B<--no-copy-boot-loader>
 
@@ -500,8 +503,8 @@ booting into Windows between each resize.
 Specify the format of the output disk image.  If this flag is not given then
 it is auto-detected from the image itself.
 
-If working with untrusted raw-format guest disk images, you should ensure
-the format is always specified.
+Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
+ненадійних джерел, вам слід завжди вказувати назву формату.
 
 Note that this option I<does not create> the output format.  This option
 just tells libguestfs what it is so it doesn't try to guess it.  You still
@@ -512,7 +515,7 @@ NON-SPARSE RAW FORMATS>.
 
 =item B<--quiet>
 
-Не виводити даних резюме.
+Не виводити резюме.
 
 =item B<--resize> РОЗДІЛ=РОЗМІР
 
@@ -557,7 +560,7 @@ as a swap partition).
 
 Див. також опис параметра I<--ignore>.
 
-=item B<--shrink> PART
+=item B<--shrink> РОЗДІЛ
 
 Shrink the named partition until the overall disk image fits in the
 destination.  The named partition B<must> contain a filesystem or PV which
@@ -615,11 +618,12 @@ on DEVICE/LV">.
 
 =back
 
-=head1 MACHINE READABLE OUTPUT
+=head1 ПРИДАТНЕ ДО ЧИТАННЯ КОМП'ЮТЕРОМ ВИВЕДЕННЯ
 
-The I<--machine-readable> option can be used to make the output more machine
-friendly, which is useful when calling virt-resize from other programs, GUIs
-etc.
+Для виведення даних у зручному для машинної обробки форматі можна
+скористатися параметром I<--machine-readable>. Додавання цього параметра
+робить зручним використання virt-resize з інших програм, графічних
+інтерфейсів тощо.
 
 Існує два способи використання цього параметра.
 
@@ -664,8 +668,9 @@ fatal error.
 
 =back
 
-Versions of the program prior to 1.13.9 did not support the
-I<--machine-readable> option and will return an error.
+У версіях програми до 1.13.9 не передбачено використання параметра
+I<--machine-readable>. Якщо цей параметр буде використано для такої версії,
+програма поверне повідомлення про помилку.
 
 =head1 ПРИМІТКИ
 
@@ -693,7 +698,7 @@ printing C<GRUB> on the console, try reinstalling grub.
 For more flexible guest reconfiguration, including if you need to specify
 other parameters to grub-install, use L<virt-rescue(1)>.
 
-=head2 RESIZING WINDOWS BOOT PARTITIONS
+=head2 ЗМІНА РОЗМІРІВ ЗАВАНТАЖУВАЛЬНИХ РОЗДІЛІВ WINDOWS
 
 In Windows Vista and later versions, Microsoft switched to using a separate
 boot partition.  In these VMs, typically F</dev/sda1> is the boot partition
@@ -771,9 +776,10 @@ C<xfs> filesystem.
 
 =item 2.
 
-Virt-resize has no support for expanding that type of filesystem.
+У virt-resize не передбачено підтримки розширення цього типу файлових
+систем.
 
-In this case, there's nothing that can be done to let virt-resize expand
+In this case, there’s nothing that can be done to let virt-resize expand
 that type of filesystem.
 
 =back

@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,6 +54,7 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
+#include "structs-cleanups.h"
 
 #if HAVE_FUSE
 
@@ -1073,7 +1074,7 @@ guestfs_impl_mount_local_run (guestfs_h *g)
   r = guestfs_exists (g, "/");
   guestfs_pop_error_handler (g);
   if (r == -1) {
-    error (g, _("you must call 'guestfs_mount' first to mount a filesystem on '/'.\nNote: '%s' is still mounted.  Use 'guestunmount %s' to clean up."),
+    error (g, _("you must call ‘guestfs_mount’ first to mount a filesystem on '/'.\nNote: ‘%s’ is still mounted.  Use ‘guestunmount %s’ to clean up."),
            g->localmountpoint, g->localmountpoint);
     return -1;
   }

@@ -540,7 +540,7 @@ class GuestFS(object):
 
         "secret"
         For the "rbd" protocol only, this specifies the
-        'secret' to use when connecting to the remote
+        ‘secret’ to use when connecting to the remote
         device. It must be base64 encoded.
 
         If not given, then a secret matching the given
@@ -1987,7 +1987,7 @@ class GuestFS(object):
 
         Shared libraries and data files required by the program
         must be available on filesystems which are mounted in
-        the correct places. It is the caller's responsibility to
+        the correct places. It is the caller’s responsibility to
         ensure all filesystems that are needed are mounted at
         the right locations.
 
@@ -2050,7 +2050,7 @@ class GuestFS(object):
 
     def config(self, hvparam, hvvalue):
         """This can be used to add arbitrary hypervisor parameters
-        of the form *-param value*. Actually it's not quite
+        of the form *-param value*. Actually it’s not quite
         arbitrary - we prevent you from setting some parameters
         which would interfere with parameters that we use.
 
@@ -2570,7 +2570,7 @@ class GuestFS(object):
         the "forceall" option.
 
         "forceall"
-        Assume an answer of 'yes' to all questions; allows
+        Assume an answer of ‘yes’ to all questions; allows
         e2fsck to be used non-interactively.
 
         This option may not be specified at the same time as
@@ -2960,22 +2960,22 @@ class GuestFS(object):
         The "tsk_dirent" structure contains the following
         fields.
 
-        'tsk_inode'
+        "tsk_inode"
         Filesystem reference number of the node. It might be
         0 if the node has been deleted.
 
-        'tsk_type'
+        "tsk_type"
         Basic file type information. See below for a
         detailed list of values.
 
-        'tsk_size'
+        "tsk_size"
         File size in bytes. It might be -1 if the node has
         been deleted.
 
-        'tsk_name'
+        "tsk_name"
         The file path relative to its directory.
 
-        'tsk_flags'
+        "tsk_flags"
         Bitfield containing extra information regarding the
         entry. It contains the logical OR of the following
         values:
@@ -3005,22 +3005,22 @@ class GuestFS(object):
         (NTFS). The API is not able to detect
         application level compression.
 
-        'tsk_atime_sec'
-        'tsk_atime_nsec'
-        'tsk_mtime_sec'
-        'tsk_mtime_nsec'
-        'tsk_ctime_sec'
-        'tsk_ctime_nsec'
-        'tsk_crtime_sec'
-        'tsk_crtime_nsec'
+        "tsk_atime_sec"
+        "tsk_atime_nsec"
+        "tsk_mtime_sec"
+        "tsk_mtime_nsec"
+        "tsk_ctime_sec"
+        "tsk_ctime_nsec"
+        "tsk_crtime_sec"
+        "tsk_crtime_nsec"
         Respectively, access, modification, last status
         change and creation time in Unix format in seconds
         and nanoseconds.
 
-        'tsk_nlink'
+        "tsk_nlink"
         Number of file names pointing to this entry.
 
-        'tsk_link'
+        "tsk_link"
         If the entry is a symbolic link, this field will
         contain the path to the target file.
 
@@ -3331,6 +3331,13 @@ class GuestFS(object):
 
     def get_direct(self):
         """Return the direct appliance mode flag.
+
+        *This function is deprecated.* In new code, use the
+        "internal_get_console_socket" call instead.
+
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed()
         r = libguestfsmod.get_direct(self._o)
@@ -4146,6 +4153,25 @@ class GuestFS(object):
         r = libguestfsmod.hivex_value_key(self._o, valueh)
         return r
 
+    def hivex_value_string(self, valueh):
+        """This calls "g.hivex_value_value" (which returns the data
+        field from a hivex value tuple). It then assumes that
+        the field is a UTF-16LE string and converts the result
+        to UTF-8 (or if this is not possible, it returns an
+        error).
+
+        This is useful for reading strings out of the Windows
+        registry. However it is not foolproof because the
+        registry is not strongly-typed and fields can contain
+        arbitrary or unexpected data.
+
+        This function depends on the feature "hivex". See also
+        "g.feature-available".
+        """
+        self._check_not_closed()
+        r = libguestfsmod.hivex_value_string(self._o, valueh)
+        return r
+
     def hivex_value_type(self, valueh):
         """Return the data type field from a (key, datatype, data)
         tuple.
@@ -4171,6 +4197,13 @@ class GuestFS(object):
         registry. However it is not foolproof because the
         registry is not strongly-typed and fields can contain
         arbitrary or unexpected data.
+
+        *This function is deprecated.* In new code, use the
+        "hivex_value_string" call instead.
+
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
 
         This function depends on the feature "hivex". See also
         "g.feature-available".
@@ -4423,6 +4456,12 @@ class GuestFS(object):
         "meego"
         MeeGo.
 
+        "msdos"
+        Microsoft DOS.
+
+        "neokylin"
+        NeoKylin.
+
         "netbsd"
         NetBSD.
 
@@ -4550,11 +4589,9 @@ class GuestFS(object):
         return r
 
     def inspect_get_format(self, root):
-        """This returns the format of the inspected operating
-        system. You can use it to detect install images, live
-        CDs and similar.
-
-        Currently defined formats are:
+        """Before libguestfs 1.38, there was some unreliable
+        support for detecting installer CDs. This API would
+        return:
 
         "installed"
         This is an installed operating system.
@@ -4567,11 +4604,18 @@ class GuestFS(object):
         "unknown"
         The format of this disk image is not known.
 
-        Future versions of libguestfs may return other strings
-        here. The caller should be prepared to handle any
-        string.
+        In libguestfs ≥ 1.38, this only returns "installed". Use
+        libosinfo directly to detect installer CDs.
 
         Please read "INSPECTION" in guestfs(3) for more details.
+
+        *This function is deprecated.* There is no replacement.
+        Consult the API documentation in guestfs(3) for further
+        information.
+
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed()
         r = libguestfsmod.inspect_get_format(self._o, root)
@@ -4579,7 +4623,7 @@ class GuestFS(object):
 
     def inspect_get_hostname(self, root):
         """This function returns the hostname of the operating
-        system as found by inspection of the guest's
+        system as found by inspection of the guest’s
         configuration files.
 
         If the hostname could not be determined, then the string
@@ -4618,7 +4662,7 @@ class GuestFS(object):
 
         Notes:
 
-        *   Unlike most other inspection API calls, the guest's
+        *   Unlike most other inspection API calls, the guest’s
         disks must be mounted up before you call this, since
         it needs to read information from the guest
         filesystem during the call.
@@ -4935,35 +4979,51 @@ class GuestFS(object):
         return r
 
     def inspect_is_live(self, root):
-        """If "g.inspect_get_format" returns "installer" (this is
-        an install disk), then this returns true if a live image
-        was detected on the disk.
+        """This is deprecated and always returns "false".
 
         Please read "INSPECTION" in guestfs(3) for more details.
+
+        *This function is deprecated.* There is no replacement.
+        Consult the API documentation in guestfs(3) for further
+        information.
+
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed()
         r = libguestfsmod.inspect_is_live(self._o, root)
         return r
 
     def inspect_is_multipart(self, root):
-        """If "g.inspect_get_format" returns "installer" (this is
-        an install disk), then this returns true if the disk is
-        part of a set.
+        """This is deprecated and always returns "false".
 
         Please read "INSPECTION" in guestfs(3) for more details.
+
+        *This function is deprecated.* There is no replacement.
+        Consult the API documentation in guestfs(3) for further
+        information.
+
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed()
         r = libguestfsmod.inspect_is_multipart(self._o, root)
         return r
 
     def inspect_is_netinst(self, root):
-        """If "g.inspect_get_format" returns "installer" (this is
-        an install disk), then this returns true if the disk is
-        a network installer, ie. not a self-contained install CD
-        but one which is likely to require network access to
-        complete the install.
+        """This is deprecated and always returns "false".
 
         Please read "INSPECTION" in guestfs(3) for more details.
+
+        *This function is deprecated.* There is no replacement.
+        Consult the API documentation in guestfs(3) for further
+        information.
+
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed()
         r = libguestfsmod.inspect_is_netinst(self._o, root)
@@ -6071,17 +6131,18 @@ class GuestFS(object):
         "/dev/vg_guest/lv_swap" => "swap"
 
         The key is not necessarily a block device. It may also
-        be an opaque 'mountable' string which can be passed to
+        be an opaque ‘mountable’ string which can be passed to
         "g.mount".
 
         The value can have the special value "unknown", meaning
         the content of the device is undetermined or empty.
         "swap" means a Linux swap partition.
 
-        This command runs other libguestfs commands, which might
-        include "g.mount" and "g.umount", and therefore you
-        should use this soon after launch and only when nothing
-        is mounted.
+        In libguestfs ≤ 1.36 this command ran other libguestfs
+        commands, which might have included "g.mount" and
+        "g.umount", and therefore you had to use this soon after
+        launch and only when nothing else was mounted. This
+        restriction is removed in libguestfs ≥ 1.38.
 
         Not all of the filesystems returned will be mountable.
         In particular, swap partitions are returned in the list.
@@ -7398,7 +7459,7 @@ class GuestFS(object):
         they were added to the guest. If those block devices
         contain partitions, they will have the usual names (eg.
         /dev/sda1). Also LVM /dev/VG/LV-style names can be used,
-        or 'mountable' strings returned by "g.list_filesystems"
+        or ‘mountable’ strings returned by "g.list_filesystems"
         or "g.inspect_get_mountpoints".
 
         The rules are the same as for mount(2): A filesystem
@@ -7760,9 +7821,9 @@ class GuestFS(object):
         return r
 
     def parse_environment(self):
-        """Parse the program's environment and set flags in the
+        """Parse the program’s environment and set flags in the
         handle accordingly. For example if "LIBGUESTFS_DEBUG=1"
-        then the 'verbose' flag is set in the handle.
+        then the ‘verbose’ flag is set in the handle.
 
         *Most programs do not need to call this*. It is done
         implicitly when you call "g.create".
@@ -7780,7 +7841,7 @@ class GuestFS(object):
         """Parse the list of strings in the argument "environment"
         and set flags in the handle accordingly. For example if
         "LIBGUESTFS_DEBUG=1" is a string in the list, then the
-        'verbose' flag is set in the handle.
+        ‘verbose’ flag is set in the handle.
 
         This is the same as "g.parse_environment" except that it
         parses an explicit list of strings instead of the
@@ -7874,6 +7935,17 @@ class GuestFS(object):
         """
         self._check_not_closed()
         r = libguestfsmod.part_get_disk_guid(self._o, device)
+        return r
+
+    def part_get_gpt_attributes(self, device, partnum):
+        """Return the attribute flags of numbered GPT partition
+        "partnum". An error is returned for MBR partitions.
+
+        This function depends on the feature "gdisk". See also
+        "g.feature-available".
+        """
+        self._check_not_closed()
+        r = libguestfsmod.part_get_gpt_attributes(self._o, device, partnum)
         return r
 
     def part_get_gpt_guid(self, device, partnum):
@@ -8010,7 +8082,7 @@ class GuestFS(object):
 
         part_start
         Start of the partition *in bytes*. To get sectors
-        you have to divide by the device's sector size, see
+        you have to divide by the device’s sector size, see
         "g.blockdev_getss".
 
         part_end
@@ -8024,6 +8096,22 @@ class GuestFS(object):
         """
         self._check_not_closed()
         r = libguestfsmod.part_list(self._o, device)
+        return r
+
+    def part_resize(self, device, partnum, endsect):
+        """This command resizes the partition numbered "partnum" on
+        "device" by moving the end position.
+
+        Note that this does not modify any filesystem present in
+        the partition. If you wish to do this, you will need to
+        use filesystem resizing commands like "g.resize2fs".
+
+        When growing a partition you will want to grow the
+        filesystem afterwards, but when shrinking, you need to
+        shrink the filesystem before the partition.
+        """
+        self._check_not_closed()
+        r = libguestfsmod.part_resize(self._o, device, partnum, endsect)
         return r
 
     def part_set_bootable(self, device, partnum, bootable):
@@ -8062,6 +8150,24 @@ class GuestFS(object):
         """
         self._check_not_closed()
         r = libguestfsmod.part_set_disk_guid_random(self._o, device)
+        return r
+
+    def part_set_gpt_attributes(self, device, partnum, attributes):
+        """Set the attribute flags of numbered GPT partition
+        "partnum" to "attributes". Return an error if the
+        partition table of "device" isn't GPT.
+
+        See
+        <https://en.wikipedia.org/wiki/GUID_Partition_Table#Part
+        ition_entries> for a useful list of partition
+        attributes.
+
+        This function depends on the feature "gdisk". See also
+        "g.feature-available".
+        """
+        self._check_not_closed()
+        r = libguestfsmod.part_set_gpt_attributes(self._o, device, partnum,
+                                                  attributes)
         return r
 
     def part_set_gpt_guid(self, device, partnum, guid):
@@ -8896,6 +9002,13 @@ class GuestFS(object):
         you are doing.
 
         The default is disabled.
+
+        *This function is deprecated.* In new code, use the
+        "internal_get_console_socket" call instead.
+
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed()
         r = libguestfsmod.set_direct(self._o, direct)
@@ -9389,7 +9502,7 @@ class GuestFS(object):
         cylinders, heads and sectors on the device, which are
         passed directly to sfdisk as the *-C*, *-H* and *-S*
         parameters. If you pass 0 for any of these, then the
-        corresponding parameter is omitted. Usually for 'large'
+        corresponding parameter is omitted. Usually for ‘large’
         disks, you can just pass 0 for these, but for small
         (floppy-sized) disks, sfdisk (or rather, the kernel)
         cannot work out the right geometry and you will need to
@@ -9463,7 +9576,7 @@ class GuestFS(object):
         """This displays the disk geometry of "device" read from
         the partition table. Especially in the case where the
         underlying block device has been resized, this can be
-        different from the kernel's idea of the geometry (see
+        different from the kernel’s idea of the geometry (see
         "g.sfdisk_kernel_geometry").
 
         The result is in human-readable format, and not designed
@@ -9474,7 +9587,7 @@ class GuestFS(object):
         return r
 
     def sfdisk_kernel_geometry(self, device):
-        """This displays the kernel's idea of the geometry of
+        """This displays the kernel’s idea of the geometry of
         "device".
 
         The result is in human-readable format, and not designed
@@ -9504,13 +9617,13 @@ class GuestFS(object):
 
     def sh(self, command):
         """This call runs a command from the guest filesystem via
-        the guest's /bin/sh.
+        the guest’s /bin/sh.
 
         This is like "g.command", but passes the command to:
 
         /bin/sh -c "command"
 
-        Depending on the guest's shell, this usually results in
+        Depending on the guest’s shell, this usually results in
         wildcards being expanded, shell expressions being
         interpolated and so on.
 
@@ -10213,7 +10326,7 @@ class GuestFS(object):
 
         No cleanup is performed: for example, if a file was
         being uploaded then after cancellation there may be a
-        partially uploaded file. It is the caller's
+        partially uploaded file. It is the caller’s
         responsibility to clean up if necessary.
 
         There are two common places that you might call
@@ -10283,7 +10396,7 @@ class GuestFS(object):
         versions of libguestfs there was no way to get the
         version number. From C code you can use dynamic linker
         functions to find out if this symbol exists (if it
-        doesn't, then it's an earlier version).
+        doesn't, then it’s an earlier version).
 
         The call returns a structure with four elements. The
         first three ("major", "minor" and "release") are numbers
@@ -10747,6 +10860,67 @@ class GuestFS(object):
                                      rtdev)
         return r
 
+    def yara_destroy(self):
+        """Destroy previously loaded Yara rules in order to free
+        libguestfs resources.
+
+        This function depends on the feature "libyara". See also
+        "g.feature-available".
+        """
+        self._check_not_closed()
+        r = libguestfsmod.yara_destroy(self._o)
+        return r
+
+    def yara_load(self, filename):
+        """Upload a set of Yara rules from local file filename.
+
+        Yara rules allow to categorize files based on textual or
+        binary patterns within their content. See "g.yara_scan"
+        to see how to scan files with the loaded rules.
+
+        Rules can be in binary format, as when compiled with
+        yarac command, or in source code format. In the latter
+        case, the rules will be first compiled and then loaded.
+
+        Rules in source code format cannot include external
+        files. In such cases, it is recommended to compile them
+        first.
+
+        Previously loaded rules will be destroyed.
+
+        This function depends on the feature "libyara". See also
+        "g.feature-available".
+        """
+        self._check_not_closed()
+        r = libguestfsmod.yara_load(self._o, filename)
+        return r
+
+    def yara_scan(self, path):
+        """Scan a file with the previously loaded Yara rules.
+
+        For each matching rule, a "yara_detection" structure is
+        returned.
+
+        The "yara_detection" structure contains the following
+        fields.
+
+        "yara_name"
+        Path of the file matching a Yara rule.
+
+        "yara_rule"
+        Identifier of the Yara rule which matched against
+        the given file.
+
+        This function returns a list of yara_detections. Each
+        yara_detection is represented as a dictionary.
+
+        This function depends on the feature "libyara". See also
+        "g.feature-available".
+        """
+        self._check_not_closed()
+        r = libguestfsmod.yara_scan(self._o, path)
+        return r
+
     def zegrep(self, regex, path):
         """This calls the external "zegrep" program and returns the
         matching lines.
@@ -10793,7 +10967,7 @@ class GuestFS(object):
         """This command writes zeroes over the first few blocks of
         "device".
 
-        How many blocks are zeroed isn't specified (but it's
+        How many blocks are zeroed isn't specified (but it’s
         *not* enough to securely wipe the device). It should be
         sufficient to remove any partition tables, filesystem
         superblocks and so on.

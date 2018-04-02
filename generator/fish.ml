@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -53,7 +53,7 @@ let doc_opttype_of = function
   | OString n
   | OStringList n -> ".."
 
-let get_aliases { fish_alias = fish_alias; non_c_aliases = non_c_aliases } =
+let get_aliases { fish_alias; non_c_aliases } =
   let non_c_aliases =
     List.map (fun n -> String.replace_char n '_' '-') non_c_aliases in
   fish_alias @ non_c_aliases
@@ -61,7 +61,7 @@ let get_aliases { fish_alias = fish_alias; non_c_aliases = non_c_aliases } =
 let all_functions_commands_and_aliases_sorted =
   let all =
     List.fold_right (
-      fun ({ name = name; shortdesc = shortdesc } as f) acc ->
+      fun ({ name; shortdesc } as f) acc ->
         let aliases = get_aliases f in
         let aliases = List.filter (
           fun x ->
@@ -99,7 +99,7 @@ let generate_fish_run_cmds actions () =
   pr "#include \"getprogname.h\"\n";
   pr "\n";
   pr "#include \"guestfs.h\"\n";
-  pr "#include \"guestfs-internal-frontend.h\"\n";
+  pr "#include \"guestfs-utils.h\"\n";
   pr "#include \"structs-print.h\"\n";
   pr "\n";
   pr "#include \"fish.h\"\n";
@@ -152,9 +152,8 @@ let generate_fish_run_cmds actions () =
   ) (rstructs_used_by (actions |> fish_functions));
 
   List.iter (
-    fun { name = name; style = (ret, args, optargs as style);
-          fish_output = fish_output; c_function = c_function;
-          c_optarg_prefix = c_optarg_prefix } ->
+    fun { name; style = (ret, args, optargs as style);
+          fish_output; c_function; c_optarg_prefix } ->
       pr "\n";
       pr "int\n";
       pr "run_%s (const char *cmd, size_t argc, char *argv[])\n" name;
@@ -176,19 +175,16 @@ let generate_fish_run_cmds actions () =
       );
       List.iter (
         function
-        | Device n | Mountable n
-        | String n
         | OptString n
-        | GUID n -> pr "  const char *%s;\n" n
-        | Pathname n
-        | Dev_or_Path n | Mountable_or_Path n
-        | FileIn n
-        | FileOut n
-        | Key n -> pr "  char *%s;\n" n
+        | String ((PlainString|Device|Mountable|GUID|Filename), n) ->
+           pr "  const char *%s;\n" n
+        | String ((Pathname|Dev_or_Path|Mountable_or_Path
+                   |FileIn|FileOut|Key), n) ->
+           pr "  char *%s;\n" n
         | BufferIn n ->
             pr "  const char *%s;\n" n;
             pr "  size_t %s_size;\n" n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
             pr "  char **%s;\n" n
         | Bool n -> pr "  int %s;\n" n
         | Int n -> pr "  int %s;\n" n
@@ -209,7 +205,7 @@ let generate_fish_run_cmds actions () =
       (* Check and convert parameters. *)
       let argc_minimum, argc_maximum =
         let args_no_keys =
-          List.filter (function Key _ -> false | _ -> true) args in
+          List.filter (function String (Key, _) -> false | _ -> true) args in
         let argc_minimum = List.length args_no_keys in
         let argc_maximum = argc_minimum + List.length optargs in
         argc_minimum, argc_maximum in
@@ -257,11 +253,9 @@ let generate_fish_run_cmds actions () =
 
       List.iter (
         function
-        | Device name | Mountable name
-        | String name | GUID name ->
+        | String ((Device|Mountable|PlainString|GUID|Filename), name) ->
             pr "  %s = argv[i++];\n" name
-        | Pathname name
-        | Dev_or_Path name | Mountable_or_Path name ->
+        | String ((Pathname|Dev_or_Path|Mountable_or_Path), name) ->
             pr "  %s = win_prefix (argv[i++]); /* process \"win:\" prefix */\n" name;
             pr "  if (%s == NULL) goto out_%s;\n" name name
         | OptString name ->
@@ -271,16 +265,16 @@ let generate_fish_run_cmds actions () =
             pr "  %s = argv[i];\n" name;
             pr "  %s_size = strlen (argv[i]);\n" name;
             pr "  i++;\n"
-        | FileIn name ->
+        | String (FileIn, name) ->
             pr "  %s = file_in (argv[i++]);\n" name;
             pr "  if (%s == NULL) goto out_%s;\n" name name
-        | FileOut name ->
+        | String (FileOut, name) ->
             pr "  %s = file_out (argv[i++]);\n" name;
             pr "  if (%s == NULL) goto out_%s;\n" name name
-        | StringList name | DeviceList name | FilenameList name ->
+        | StringList (_, name) ->
             pr "  %s = parse_string_list (argv[i++]);\n" name;
             pr "  if (%s == NULL) goto out_%s;\n" name name
-        | Key name ->
+        | String (Key, name) ->
             pr "  %s = read_key (\"%s\");\n" name name;
             pr "  if (keys_from_stdin)\n";
             pr "    input_lineno++;\n";
@@ -477,21 +471,19 @@ let generate_fish_run_cmds actions () =
       ) (List.rev optargs);
       List.iter (
         function
-        | Device _ | Mountable _ | String _
+        | String ((Device|Mountable|PlainString|GUID|Filename), _)
         | OptString _
-        | BufferIn _
-        | GUID _ -> ()
+        | BufferIn _ -> ()
         | Bool name
         | Int name | Int64 name ->
             pr " out_%s:\n" name
-        | Pathname name | Dev_or_Path name | Mountable_or_Path name
-        | FileOut name | Key name ->
+        | String ((Pathname|Dev_or_Path|Mountable_or_Path|FileOut|Key), name) ->
             pr "  free (%s);\n" name;
             pr " out_%s:\n" name
-        | FileIn name ->
+        | String (FileIn, name) ->
             pr "  free_file_in (%s);\n" name;
             pr " out_%s:\n" name
-        | StringList name | DeviceList name | FilenameList name ->
+        | StringList (_, name) ->
             pr "  guestfs_int_free_string_list (%s);\n" name;
             pr " out_%s:\n" name
         | Pointer _ -> assert false
@@ -516,7 +508,7 @@ let generate_fish_run_header () =
   pr "\n";
 
   List.iter (
-    fun { name = name } ->
+    fun { name } ->
       pr "extern int run_%s (const char *cmd, size_t argc, char *argv[]);\n"
         name
   ) (actions |> fish_functions |> sort);
@@ -537,8 +529,7 @@ let generate_fish_cmd_entries actions () =
   pr "\n";
 
   List.iter (
-    fun ({ name = name; style = _, args, optargs;
-           shortdesc = shortdesc; longdesc = longdesc } as f) ->
+    fun ({ name; style = _, args, optargs; shortdesc; longdesc } as f) ->
       let aliases = get_aliases f in
 
       let name2 = String.replace_char name '_' '-' in
@@ -548,7 +539,9 @@ let generate_fish_cmd_entries actions () =
         match args with
         | [] -> name2
         | args ->
-            let args = List.filter (function Key _ -> false | _ -> true) args in
+            let args =
+              List.filter (function String (Key, _) -> false
+                                  | _ -> true) args in
             sprintf "%s%s%s"
               name2
               (String.concat ""
@@ -559,7 +552,7 @@ let generate_fish_cmd_entries actions () =
                   ) optargs)) in
 
       let warnings =
-        if List.exists (function Key _ -> true | _ -> false) args then
+        if List.exists (function String (Key, _) -> true | _ -> false) args then
           "\n\nThis command has one or more key or passphrase parameters.
 Guestfish will prompt for these separately."
         else "" in
@@ -612,7 +605,7 @@ let generate_fish_cmds () =
   pr "#include <errno.h>\n";
   pr "\n";
   pr "#include \"guestfs.h\"\n";
-  pr "#include \"guestfs-internal-frontend.h\"\n";
+  pr "#include \"guestfs-utils.h\"\n";
   pr "#include \"structs-print.h\"\n";
   pr "\n";
   pr "#include \"fish.h\"\n";
@@ -624,7 +617,7 @@ let generate_fish_cmds () =
 
   (* List of command_entry structs for pure guestfish commands. *)
   List.iter (
-    fun ({ name = name; shortdesc = shortdesc; longdesc = longdesc } as f) ->
+    fun ({ name; shortdesc; longdesc } as f) ->
       let aliases = get_aliases f in
 
       let name2 = String.replace_char name '_' '-' in
@@ -682,7 +675,7 @@ and generate_fish_cmds_h () =
   pr "\n";
 
   List.iter (
-    fun { name = name } ->
+    fun { name } ->
       pr "extern int run_%s (const char *cmd, size_t argc, char *argv[]);\n"
         name
   ) fish_commands;
@@ -717,7 +710,7 @@ and generate_fish_cmds_gperf () =
 ";
 
   List.iter (
-    fun { name = name } ->
+    fun { name } ->
       pr "extern struct command_entry %s_cmd_entry;\n" name
   ) fish_functions_and_commands_sorted;
 
@@ -730,7 +723,7 @@ struct command_table;
 ";
 
   List.iter (
-    fun ({ name = name } as f) ->
+    fun ({ name } as f) ->
       let aliases = get_aliases f in
       let name2 = String.replace_char name '_' '-' in
 
@@ -822,7 +815,7 @@ static const char *const commands[] = {
    *)
   let commands =
     List.map (
-      fun ({ name = name } as f) ->
+      fun ({ name } as f) ->
         let aliases = get_aliases f in
         let name2 = String.replace_char name '_' '-' in
         name2 :: aliases
@@ -891,7 +884,7 @@ and generate_fish_actions_pod () =
   let rex = Str.regexp "C<guestfs_\\([^>]+\\)>" in
 
   List.iter (
-    fun ({ name = name; style = _, args, optargs; longdesc = longdesc } as f) ->
+    fun ({ name; style = _, args, optargs; longdesc } as f) ->
       let aliases = get_aliases f in
 
       let longdesc =
@@ -912,19 +905,18 @@ and generate_fish_actions_pod () =
       pr " %s" name;
       List.iter (
         function
-        | Pathname n | Device n | Mountable n
-        | Dev_or_Path n | Mountable_or_Path n | String n
-        | GUID n ->
+        | String ((Pathname|Device|Mountable|Dev_or_Path|Mountable_or_Path
+                   |PlainString|GUID|Filename), n) ->
             pr " %s" n
         | OptString n -> pr " %s" n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
             pr " '%s ...'" n
         | Bool _ -> pr " true|false"
         | Int n -> pr " %s" n
         | Int64 n -> pr " %s" n
-        | FileIn n | FileOut n -> pr " (%s|-)" n
+        | String ((FileIn|FileOut), n) -> pr " (%s|-)" n
         | BufferIn n -> pr " %s" n
-        | Key _ -> () (* keys are entered at a prompt *)
+        | String (Key, _) -> () (* keys are entered at a prompt *)
         | Pointer _ -> assert false
       ) args;
       List.iter (
@@ -934,11 +926,11 @@ and generate_fish_actions_pod () =
       pr "\n";
       pr "%s\n\n" longdesc;
 
-      if List.exists (function FileIn _ | FileOut _ -> true
+      if List.exists (function String ((FileIn|FileOut), _) -> true
                       | _ -> false) args then
         pr "Use C<-> instead of a filename to read/write from stdin/stdout.\n\n";
 
-      if List.exists (function Key _ -> true | _ -> false) args then
+      if List.exists (function String (Key, _) -> true | _ -> false) args then
         pr "This command has one or more key or passphrase parameters.
 Guestfish will prompt for these separately.\n\n";
 
@@ -966,7 +958,7 @@ and generate_fish_commands_pod () =
   generate_header PODStyle GPLv2plus;
 
   List.iter (
-    fun ({ name = name; longdesc = longdesc } as f) ->
+    fun ({ name; longdesc } as f) ->
       let aliases = get_aliases f in
       let name = String.replace_char name '_' '-' in
 
@@ -1173,7 +1165,7 @@ $VG guestfish \\
 
   let vg_count = ref 0 in
 
-  iteri (
+  List.iteri (
     fun i (name, _, _, _) ->
       let params = [name] in
       let params =

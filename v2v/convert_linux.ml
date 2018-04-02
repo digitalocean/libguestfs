@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,10 @@
 
 open Printf
 
+open C_utils
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Utils
 open Types
@@ -32,7 +34,7 @@ open Linux_kernels
 module G = Guestfs
 
 (* The conversion function. *)
-let rec convert (g : G.guestfs) inspect source output rcaps =
+let convert (g : G.guestfs) inspect source output rcaps =
   (*----------------------------------------------------------------------*)
   (* Inspect the guest first.  We already did some basic inspection in
    * the common v2v.ml code, but that has to deal with generic guests
@@ -76,14 +78,72 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
   (*----------------------------------------------------------------------*)
   (* Conversion step. *)
 
-  let augeas_grub_configuration () =
+  let rec do_convert () =
+    augeas_grub_configuration ();
+
+    unconfigure_xen ();
+    unconfigure_vbox ();
+    unconfigure_vmware ();
+    unconfigure_citrix ();
+    unconfigure_kudzu ();
+    unconfigure_prltools ();
+
+    let kernel = configure_kernel () in
+
+    if output#keep_serial_console then (
+      configure_console ();
+      bootloader#configure_console ();
+    ) else (
+      remove_console ();
+      bootloader#remove_console ();
+    );
+
+    let acpi = supports_acpi () in
+
+    let video =
+      match rcaps.rcaps_video with
+      | None -> get_display_driver ()
+      | Some video -> video in
+
+    let block_type =
+      match rcaps.rcaps_block_bus with
+      | None -> if kernel.ki_supports_virtio_blk then Virtio_blk else IDE
+      | Some block_type -> block_type in
+
+    let net_type =
+      match rcaps.rcaps_net_bus with
+      | None -> if kernel.ki_supports_virtio_net then Virtio_net else E1000
+      | Some net_type -> net_type in
+
+    configure_display_driver video;
+    remap_block_devices block_type;
+    configure_kernel_modules block_type net_type;
+    rebuild_initrd kernel;
+
+    SELinux_relabel.relabel g;
+
+    (* Return guest capabilities from the convert () function. *)
+    let guestcaps = {
+      gcaps_block_bus = block_type;
+      gcaps_net_bus = net_type;
+      gcaps_video = video;
+      gcaps_virtio_rng = kernel.ki_supports_virtio_rng;
+      gcaps_virtio_balloon = kernel.ki_supports_virtio_balloon;
+      gcaps_isa_pvpanic = kernel.ki_supports_isa_pvpanic;
+      gcaps_arch = Utils.kvm_arch inspect.i_arch;
+      gcaps_acpi = acpi;
+    } in
+
+    guestcaps
+
+  and augeas_grub_configuration () =
     if bootloader#set_augeas_configuration () then
       Linux.augeas_reload g
 
   and unconfigure_xen () =
     (* Remove kmod-xenpv-* (RHEL 3). *)
     let xenmods =
-      filter_map (
+      List.filter_map (
         fun { G.app2_name = name } ->
           if name = "kmod-xenpv" || String.is_prefix name "kmod-xenpv-" then
             Some name
@@ -117,10 +177,10 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
       (try
          let lines = g#read_lines "/etc/rc.local" in
          let lines = Array.to_list lines in
-         let rex = Str.regexp ".*\\b\\(insmod\\|modprobe\\)\\b.*\\bxen-vbd.*" in
+         let rex = PCRE.compile "\\b(insmod|modprobe)\\b.*\\bxen-vbd" in
          let lines = List.map (
            fun s ->
-             if Str.string_match rex s 0 then
+             if PCRE.matches rex s then
                "#" ^ s
              else
                s
@@ -178,12 +238,12 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
     if g#is_file ~followsymlinks:true vboxconfig then (
       let lines = g#read_lines vboxconfig in
       let lines = Array.to_list lines in
-      let rex = Str.regexp "^INSTALL_DIR=\\(.*\\)$" in
-      let lines = filter_map (
+      let rex = PCRE.compile "^INSTALL_DIR=(.*)$" in
+      let lines = List.filter_map (
         fun line ->
-          if Str.string_match rex line 0 then (
-            let path = Str.matched_group 1 line in
-            let path = Utils.shell_unquote path in
+          if PCRE.matches rex line then (
+            let path = PCRE.sub 1 in
+            let path = shell_unquote path in
             if String.length path >= 1 && path.[0] = '/' then (
               let vboxuninstall = path ^ "/uninstall.sh" in
               Some vboxuninstall
@@ -223,13 +283,13 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
     List.iter (
       fun { G.app2_name = name } ->
         if String.is_prefix name "vmware-tools-libraries-" then
-          push_front name libraries
+          List.push_front name libraries
         else if String.is_prefix name "vmware-tools-" then
-          push_front name remove
+          List.push_front name remove
         else if name = "VMwareTools" then
-          push_front name remove
+          List.push_front name remove
         else if String.is_prefix name "kmod-vmware-tools" then
-          push_front name remove
+          List.push_front name remove
     ) inspect.i_apps;
     let libraries = !libraries in
 
@@ -262,8 +322,7 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
              *)
             if provides <> [] then (
               (* Trim whitespace. *)
-              let rex = Str.regexp "^[ \t]*\\([^ \t]+\\)[ \t]*$" in
-              let provides = List.map (Str.replace_first rex "\\1") provides in
+              let provides = List.map String.trim provides in
 
               (* Install the dependencies with yum.  Use yum explicitly
                * because we don't have package names and local install is
@@ -278,13 +337,13 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
               let cmd = Array.of_list cmd in
               (try
                  ignore (g#command cmd);
-                 push_front library remove
+                 List.push_front library remove
                with G.Error msg ->
                  eprintf "%s: could not install replacement for %s.  Error was: %s.  %s was not removed.\n"
                    prog library msg library
               );
             ) else (
-              push_front library remove;
+              List.push_front library remove;
             );
         ) libraries
       )
@@ -329,7 +388,7 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
        * ttys in /etc/inittab if the system uses it. We need to put
        * them back.
        *)
-      let rex = Str.regexp "^\\([1-6]\\):\\([2-5]+\\):respawn:\\(.*\\)" in
+      let rex = PCRE.compile "^([1-6]):([2-5]+):respawn:(.*)" in
       let updated = ref false in
       let rec loop () =
         let comments = g#aug_match "/files/etc/inittab/#comment" in
@@ -338,10 +397,10 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
         | [] -> ()
         | commentp :: _ ->
           let comment = g#aug_get commentp in
-          if Str.string_match rex comment 0 then (
-            let name = Str.matched_group 1 comment in
-            let runlevels = Str.matched_group 2 comment in
-            let process = Str.matched_group 3 comment in
+          if PCRE.matches rex comment then (
+            let name = PCRE.sub 1
+            and runlevels = PCRE.sub 2
+            and process = PCRE.sub 3 in
 
             if String.find process "getty" >= 0 then (
               updated := true;
@@ -630,14 +689,12 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
      *)
     let paths = g#aug_match "/files/etc/inittab/*/process" in
     let paths = Array.to_list paths in
-    let rex = Str.regexp "\\(.*\\)\\b\\([xh]vc0\\)\\b\\(.*\\)" in
+    let rex = PCRE.compile "\\b([xh]vc0)\\b" in
     List.iter (
       fun path ->
         let proc = g#aug_get path in
-        if Str.string_match rex proc 0 then (
-          let proc = Str.global_replace rex "\\1ttyS0\\3" proc in
-          g#aug_set path proc
-        );
+        let proc' = PCRE.replace ~global:true rex "ttyS0" proc in
+        if proc <> proc' then g#aug_set path proc'
     ) paths;
 
     let paths = g#aug_match "/files/etc/securetty/*" in
@@ -660,11 +717,11 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
      *)
     let paths = g#aug_match "/files/etc/inittab/*/process" in
     let paths = Array.to_list paths in
-    let rex = Str.regexp ".*\\b\\([xh]vc0|ttyS0\\)\\b.*" in
+    let rex = PCRE.compile "\\b([xh]vc0|ttyS0)\\b" in
     List.iter (
       fun path ->
         let proc = g#aug_get path in
-        if Str.string_match rex proc 0 then
+        if PCRE.matches rex proc then
           ignore (g#aug_rm (path ^ "/.."))
     ) paths;
 
@@ -727,7 +784,7 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
     if !updated &&
       not (g#is_file ~followsymlinks:true "/usr/bin/X") &&
       not (g#is_file ~followsymlinks:true "/usr/bin/X11/X") then
-      warning (f_"The display driver was updated to '%s', but X11 does not seem to be installed in the guest.  X may not function correctly.")
+      warning (f_"The display driver was updated to ‘%s’, but X11 does not seem to be installed in the guest.  X may not function correctly.")
         video_driver
 
   and configure_kernel_modules block_type net_type =
@@ -832,7 +889,7 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
       fun path ->
         let device = g#aug_get path in
         let module_ = g#aug_get (path ^ "/modulename") in
-        warning (f_"don't know how to update %s which loads the %s module")
+        warning (f_"don’t know how to update %s which loads the %s module")
           device module_;
     ) paths;
 
@@ -868,12 +925,12 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
       | IDE -> ide_block_prefix in
 
     let map =
-      mapi (
+      List.mapi (
         fun i disk ->
           let block_prefix_before_conversion =
             match disk.s_controller with
             | Some Source_IDE -> ide_block_prefix
-            | Some Source_virtio_SCSI | Some Source_SCSI -> "sd"
+            | Some (Source_virtio_SCSI | Source_SCSI | Source_SATA) -> "sd"
             | Some Source_virtio_blk -> "vd"
             | None ->
               (* This is basically a guess.  It assumes the source used IDE. *)
@@ -892,7 +949,7 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
      * although the guest uses xvdX natively.
      *)
     let map = map @
-      mapi (
+      List.mapi (
         fun i disk ->
           "xvd" ^ drive_name i, block_prefix_after_conversion ^ drive_name i
       ) source.s_disks in
@@ -919,15 +976,9 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
       List.flatten (List.map Array.to_list (List.map g#aug_match paths)) in
 
     (* Map device names for each entry. *)
-    let rex_resume = Str.regexp "^\\(.*resume=\\)\\(/dev/[^ ]+\\)\\(.*\\)$"
-    and rex_device_cciss_p =
-      Str.regexp "^/dev/\\(cciss/c[0-9]+d[0-9]+\\)p\\([0-9]+\\)$"
-    and rex_device_cciss =
-      Str.regexp "^/dev/\\(cciss/c[0-9]+d[0-9]+\\)$"
-    and rex_device_p =
-      Str.regexp "^/dev/\\([a-z]+\\)\\([0-9]+\\)$"
-    and rex_device =
-      Str.regexp "^/dev/\\([a-z]+\\)$" in
+    let rex_resume = PCRE.compile "^(.*resume=)(/dev/\\S+)(.*)$"
+    and rex_device_cciss = PCRE.compile "^/dev/(cciss/c\\d+d\\d+)(?:p(\\d+))?$"
+    and rex_device = PCRE.compile "^/dev/([a-z]+)(\\d*)?$" in
 
     let rec replace_if_device path value =
       let replace device =
@@ -945,32 +996,24 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
 
       if String.find path "GRUB_CMDLINE" >= 0 then (
         (* Handle grub2 resume=<dev> specially. *)
-        if Str.string_match rex_resume value 0 then (
-          let start = Str.matched_group 1 value
-          and device = Str.matched_group 2 value
-          and end_ = Str.matched_group 3 value in
+        if PCRE.matches rex_resume value then (
+          let start = PCRE.sub 1
+          and device = PCRE.sub 2
+          and end_ = PCRE.sub 3 in
           let device = replace_if_device path device in
           start ^ device ^ end_
         )
         else value
       )
-      else if Str.string_match rex_device_cciss_p value 0 then (
-        let device = Str.matched_group 1 value
-        and part = Str.matched_group 2 value in
+      else if PCRE.matches rex_device_cciss value then (
+        let device = PCRE.sub 1
+        and part = try PCRE.sub 2 with Not_found -> "" in
         "/dev/" ^ replace device ^ part
       )
-      else if Str.string_match rex_device_cciss value 0 then (
-        let device = Str.matched_group 1 value in
-        "/dev/" ^ replace device
-      )
-      else if Str.string_match rex_device_p value 0 then (
-        let device = Str.matched_group 1 value
-        and part = Str.matched_group 2 value in
+      else if PCRE.matches rex_device value then (
+        let device = PCRE.sub 1
+        and part = try PCRE.sub 2 with Not_found -> "" in
         "/dev/" ^ replace device ^ part
-      )
-      else if Str.string_match rex_device value 0 then (
-        let device = Str.matched_group 1 value in
-        "/dev/" ^ replace device
       )
       else (* doesn't look like a known device name *)
         value
@@ -1009,58 +1052,7 @@ let rec convert (g : G.guestfs) inspect source output rcaps =
     ];
   in
 
-  augeas_grub_configuration ();
-
-  unconfigure_xen ();
-  unconfigure_vbox ();
-  unconfigure_vmware ();
-  unconfigure_citrix ();
-  unconfigure_kudzu ();
-  unconfigure_prltools ();
-
-  let kernel = configure_kernel () in
-
-  if output#keep_serial_console then (
-    configure_console ();
-    bootloader#configure_console ();
-  ) else (
-    remove_console ();
-    bootloader#remove_console ();
-  );
-
-  let acpi = supports_acpi () in
-
-  let video =
-    match rcaps.rcaps_video with
-    | None -> get_display_driver ()
-    | Some video -> video in
-
-  let block_type =
-    match rcaps.rcaps_block_bus with
-    | None -> if kernel.ki_supports_virtio_blk then Virtio_blk else IDE
-    | Some block_type -> block_type in
-
-  let net_type =
-    match rcaps.rcaps_net_bus with
-    | None -> if kernel.ki_supports_virtio_net then Virtio_net else E1000
-    | Some net_type -> net_type in
-
-  configure_display_driver video;
-  remap_block_devices block_type;
-  configure_kernel_modules block_type net_type;
-  rebuild_initrd kernel;
-
-  SELinux_relabel.relabel g;
-
-  let guestcaps = {
-    gcaps_block_bus = block_type;
-    gcaps_net_bus = net_type;
-    gcaps_video = video;
-    gcaps_arch = Utils.kvm_arch inspect.i_arch;
-    gcaps_acpi = acpi;
-  } in
-
-  guestcaps
+  do_convert ()
 
 (* Register this conversion module. *)
 let () =

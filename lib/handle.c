@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,7 @@
 #include <libxml/xmlversion.h>
 
 #include "glthread/lock.h"
+#include "glthread/tls.h"
 #include "ignore-value.h"
 #include "c-ctype.h"
 #include "getprogname.h"
@@ -86,11 +87,13 @@ guestfs_create_flags (unsigned flags, ...)
   g = calloc (1, sizeof (*g));
   if (!g) return NULL;
 
+  gl_recursive_lock_init (g->lock);
+
   g->state = CONFIG;
 
   g->conn = NULL;
 
-  guestfs_int_init_error_handler (g);
+  gl_tls_key_init (g->error_data, NULL);
   g->abort_cb = abort;
 
   g->recovery_proc = 1;
@@ -132,9 +135,9 @@ guestfs_create_flags (unsigned flags, ...)
   if (!g->identifier) goto error;
 
   if (guestfs_int_set_backend (g, DEFAULT_BACKEND) == -1) {
-    warning (g, _("libguestfs was built with an invalid default backend, using 'direct' instead"));
+    warning (g, _("libguestfs was built with an invalid default backend, using ‘direct’ instead"));
     if (guestfs_int_set_backend (g, "direct") == -1) {
-      warning (g, _("'direct' backend does not work"));
+      warning (g, _("‘direct’ backend does not work"));
       goto error;
     }
   }
@@ -169,6 +172,9 @@ guestfs_create_flags (unsigned flags, ...)
   free (g->path);
   free (g->hv);
   free (g->append);
+  guestfs_int_free_error_data_list (g);
+  gl_tls_key_destroy (g->error_data);
+  gl_recursive_lock_destroy (g->lock);
   free (g);
   return NULL;
 }
@@ -319,6 +325,7 @@ guestfs_close (guestfs_h *g)
 {
   struct hv_param *hp, *hp_next;
   guestfs_h **gg;
+  int r;
 
   if (g->state == NO_HANDLE) {
     /* Not safe to call ANY callbacks here, so ... */
@@ -369,7 +376,6 @@ guestfs_close (guestfs_h *g)
   guestfs_int_free_fuse (g);
 #endif
 
-  guestfs_int_free_inspect_info (g);
   guestfs_int_free_drives (g);
 
   for (hp = g->hv_params; hp; hp = hp_next) {
@@ -379,9 +385,6 @@ guestfs_close (guestfs_h *g)
     free (hp);
   }
 
-  while (g->error_cb_stack)
-    guestfs_pop_error_handler (g);
-
   if (g->pda)
     hash_free (g->pda);
   free (g->tmpdir);
@@ -390,7 +393,6 @@ guestfs_close (guestfs_h *g)
   free (g->env_runtimedir);
   free (g->int_tmpdir);
   free (g->int_cachedir);
-  free (g->last_error);
   free (g->identifier);
   free (g->program);
   free (g->path);
@@ -399,6 +401,23 @@ guestfs_close (guestfs_h *g)
   free (g->backend_data);
   guestfs_int_free_string_list (g->backend_settings);
   free (g->append);
+  guestfs_int_free_error_data_list (g);
+  gl_tls_key_destroy (g->error_data);
+  r = glthread_recursive_lock_destroy (&g->lock);
+  if (r != 0) {
+    /* If pthread_mutex_destroy returns 16 (EBUSY), this indicates
+     * that the lock is held somewhere.  That means a programming
+     * error if the main program is using threads.
+     */
+    errno = r;
+    perror ("guestfs_close: g->lock");
+    /* While we're debugging locks in libguestfs I want this to fail
+     * noisily.  Remove this later since there are valid times when
+     * this might fail such as if the program exits during a
+     * libguestfs operation.
+     */
+    abort ();
+  }
   free (g);
 }
 

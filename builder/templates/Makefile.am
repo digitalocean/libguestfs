@@ -1,5 +1,5 @@
 # libguestfs virt-builder tool
-# Copyright (C) 2013-2017 Red Hat Inc.
+# Copyright (C) 2013-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ index_fragments = $(wildcard *.index-fragment)
 EXTRA_DIST = \
 	$(index_fragments) \
 	*.ks \
+	*.virt-install-cmd \
 	debian.preseed \
 	make-template.ml \
 	ubuntu.preseed \

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -169,6 +169,17 @@
    fun:malloc
    ...
    fun:caml_build_primitive_table
+}
+
+# The OCaml PCRE.compile function calls pcre_compile2 which allocates
+# memory.  If these regexps are stored in a global variable then they
+# can never be freed.  This is not really a bug, so ignore it.
+{
+   ocaml_pcre_globals
+   Memcheck:Leak
+   fun:malloc
+   fun:pcre_compile2
+   ...
 }
 
 # glibc

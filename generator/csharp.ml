@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -138,8 +138,8 @@ namespace Guestfs
 
   (* Generate C# function bindings. *)
   List.iter (
-    fun { name = name; style = ret, args, optargs; c_function = c_function;
-          shortdesc = shortdesc; non_c_aliases = non_c_aliases } ->
+    fun { name; style = ret, args, optargs; c_function;
+          shortdesc; non_c_aliases } ->
       let rec csharp_return_type () =
         match ret with
         | RErr -> "void"
@@ -148,11 +148,11 @@ namespace Guestfs
         | RInt64 n -> "long"
         | RConstString n
         | RConstOptString n
-        | RString n
+        | RString (_, n)
         | RBufferOut n -> "string"
         | RStruct (_,n) -> "_" ^ n
-        | RHashtable n -> "Hashtable"
-        | RStringList n -> "string[]"
+        | RHashtable _ -> "Hashtable"
+        | RStringList _ -> "string[]"
         | RStructList (_,n) -> sprintf "_%s[]" n
 
       and c_return_type () =
@@ -190,15 +190,11 @@ namespace Guestfs
           (c_return_type ()) c_function;
         List.iter (
           function
-          | Pathname n | Device n | Mountable n
-          | Dev_or_Path n | Mountable_or_Path n | String n
+          | String (_, n)
           | OptString n
-          | FileIn n | FileOut n
-          | Key n
-          | BufferIn n
-          | GUID n ->
+          | BufferIn n ->
               pr ", [In] string %s" n
-          | StringList n | DeviceList n | FilenameList n ->
+          | StringList (_, n) ->
               pr ", [In] string[] %s" n
           | Bool n ->
               pr ", bool %s" n
@@ -219,15 +215,11 @@ namespace Guestfs
         in
         List.iter (
           function
-          | Pathname n | Device n | Mountable n
-          | Dev_or_Path n | Mountable_or_Path n | String n
+          | String (_, n)
           | OptString n
-          | FileIn n | FileOut n
-          | Key n
-          | BufferIn n
-          | GUID n ->
+          | BufferIn n ->
               next (); pr "string %s" n
-          | StringList n | DeviceList n | FilenameList n ->
+          | StringList (_, n) ->
               next (); pr "string[] %s" n
           | Bool n ->
               next (); pr "bool %s" n

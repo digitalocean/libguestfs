@@ -48,7 +48,7 @@ Linux 仮想マシンにあるすべての Unix ドメインソケットを一�
 
  virt-ls -lR -d guest / | grep '^s'
 
-'.png' で終わるファイル名を持つすべての通常ファイルを表示するには:
+List all regular files with filenames ending in ‘.png’:
 
  virt-ls -lR -d guest / | grep -i '^-.*\.png$'
 
@@ -342,10 +342,10 @@ Specifying any mountpoint disables the inspection of the guest and the mount
 of its root and all of its mountpoints, so make sure to mount all the
 mountpoints needed to work with the filenames given as arguments.
 
-仮想マシンのディスクイメージに含まれるファイルシステムが不明な場合、 guestfish をこのオプションなしで実行することもできます。
-そうすると、利用可能なパーティション、ファイルシステム、 論理ボリューム (LVM) の一覧が表示されます (L</list-partitions>,
-L</list-filesystems>, L</lvs> コマンド参照)。 または、 L<virt-filesystems(1)>
-コマンドを使用することもできます。
+If you don’t know what filesystems a disk image contains, you can either run
+guestfish without this option, then list the partitions, filesystems and LVs
+available (see L</list-partitions>, L</list-filesystems> and L</lvs>
+commands), or you can use the L<virt-filesystems(1)> program.
 
 マウントパラメーターの三番目の (ほとんど使用されない) 項目は、 バックエンドのファイルシステムをマウントするために使用される
 マウントオプションの一覧です。 これが指定されていない場合、 マウントオプションは空文字列または C<ro> (I<--ro>
@@ -464,7 +464,7 @@ For shell scripts, use C<csvtool> (L<https://github.com/Chris00/ocaml-csv>
 also packaged in major Linux distributions).
 
 For other languages, use a CSV processing library (eg. C<Text::CSV> for Perl
-or Python's built-in csv library).
+or Python’s built-in csv library).
 
 Most spreadsheets and databases can import CSV directly.
 
@@ -483,5 +483,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

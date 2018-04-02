@@ -78,6 +78,9 @@
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
+/* Define to 1 if enabled autodetection of appliance image format. */
+#undef APPLIANCE_FORMAT_AUTO
+
 /* Define to the number of bits in type 'ptrdiff_t'. */
 #undef BITSIZEOF_PTRDIFF_T
 
@@ -613,6 +616,9 @@
 /* Define to 1 when the gnulib module write should be tested. */
 #undef GNULIB_TEST_WRITE
 
+/* Define guestfs default path. */
+#undef GUESTFS_DEFAULT_PATH
+
 /* Define to 1 if you have the 'accept4' function. */
 #undef HAVE_ACCEPT4
 
@@ -638,6 +644,9 @@
 
 /* Define to 1 if you have the <attr/xattr.h> header file. */
 #undef HAVE_ATTR_XATTR_H
+
+/* Define to 1 if you have the `aug_source' function. */
+#undef HAVE_AUG_SOURCE
 
 /* Define to 1 if you have the `be32toh' function. */
 #undef HAVE_BE32TOH
@@ -899,9 +908,6 @@
 /* Define to 1 if you have the 'dup3' function. */
 #undef HAVE_DUP3
 
-/* Define to 1 if you have the <dustat.h> header file. */
-#undef HAVE_DUSTAT_H
-
 /* Define to 1 if you have the <endian.h> header file. */
 #undef HAVE_ENDIAN_H
 
@@ -1108,8 +1114,14 @@
 /* Define to 1 if you have the <linux/fs.h> header file. */
 #undef HAVE_LINUX_FS_H
 
+/* Define to 1 if you have the <linux/magic.h> header file. */
+#undef HAVE_LINUX_MAGIC_H
+
 /* Define to 1 if you have the <linux/raid/md_u.h> header file. */
 #undef HAVE_LINUX_RAID_MD_U_H
+
+/* Define to 1 if you have the <linux/rtc.h> header file. */
+#undef HAVE_LINUX_RTC_H
 
 /* Define to 1 if you have the `listxattr' function. */
 #undef HAVE_LISTXATTR
@@ -2179,6 +2191,9 @@
 /* Define to 1 if you have the <spawn.h> header file. */
 #undef HAVE_SPAWN_H
 
+/* Define to 1 if you have the `statfs' function. */
+#undef HAVE_STATFS
+
 /* Define to 1 if you have the `statvfs' function. */
 #undef HAVE_STATVFS
 
@@ -2308,12 +2323,6 @@
 /* Define to 1 if you have the <sys/endian.h> header file. */
 #undef HAVE_SYS_ENDIAN_H
 
-/* Define to 1 if you have the <sys/fs/s5param.h> header file. */
-#undef HAVE_SYS_FS_S5PARAM_H
-
-/* Define to 1 if you have the <sys/fs_types.h> header file. */
-#undef HAVE_SYS_FS_TYPES_H
-
 /* Define to 1 if you have the <sys/inotify.h> header file. */
 #undef HAVE_SYS_INOTIFY_H
 
@@ -2325,9 +2334,6 @@
 
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
-
-/* Define to 1 if you have the <sys/mount.h> header file. */
-#undef HAVE_SYS_MOUNT_H
 
 /* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
    */
@@ -2500,6 +2506,9 @@
 /* Define to 1 if you have the `xmlBufferDetach' function. */
 #undef HAVE_XMLBUFFERDETACH
 
+/* yara library found at compile time. */
+#undef HAVE_YARA
+
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
@@ -2661,9 +2670,6 @@
 /* Location of qemu binary. */
 #undef QEMU
 
-/* Extra options for qemu command line. */
-#undef QEMU_OPTIONS
-
 /* Define to 1 if readlink fails to recognize a trailing slash. */
 #undef READLINK_TRAILING_SLASH_BUG
 
@@ -2712,42 +2718,8 @@
 	STACK_DIRECTION = 0 => direction of growth unknown */
 #undef STACK_DIRECTION
 
-/* Define if the block counts reported by statfs may be truncated to 2GB and
-   the correct values may be stored in the f_spare array. (SunOS 4.1.2, 4.1.3,
-   and 4.1.3_U1 are reported to have this problem. SunOS 4.1.1 seems not to be
-   affected.) */
-#undef STATFS_TRUNCATES_BLOCK_COUNTS
-
 /* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
 #undef STAT_MACROS_BROKEN
-
-/* Define if statfs takes 2 args and struct statfs has a field named f_bsize.
-   (4.3BSD, SunOS 4, HP-UX, AIX PS/2) */
-#undef STAT_STATFS2_BSIZE
-
-/* Define if statfs takes 2 args and struct statfs has a field named f_frsize.
-   (glibc/Linux > 2.6) */
-#undef STAT_STATFS2_FRSIZE
-
-/* Define if statfs takes 2 args and struct statfs has a field named f_fsize.
-   (4.4BSD, NetBSD) */
-#undef STAT_STATFS2_FSIZE
-
-/* Define if statfs takes 2 args and the second argument has type struct
-   fs_data. (Ultrix) */
-#undef STAT_STATFS2_FS_DATA
-
-/* Define if statfs takes 3 args. (DEC Alpha running OSF/1) */
-#undef STAT_STATFS3_OSF1
-
-/* Define if statfs takes 4 args. (SVR3, Dynix, old Irix, old AIX, Dolphin) */
-#undef STAT_STATFS4
-
-/* Define if there is a function named statvfs. (SVR4) */
-#undef STAT_STATVFS
-
-/* Define if statvfs64 should be preferred over statvfs. */
-#undef STAT_STATVFS64
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
@@ -2863,6 +2835,11 @@
    whether compiling with -Ae or -D_HPUX_SOURCE=1.  */
 #ifndef _XOPEN_SOURCE
 # undef _XOPEN_SOURCE
+#endif
+/* Enable X/Open compliant socket functions that do not require linking
+   with -lxnet on HP-UX 11.11.  */
+#ifndef _HPUX_ALT_XOPEN_SOCKET_API
+# undef _HPUX_ALT_XOPEN_SOCKET_API
 #endif
 /* Enable general extensions on Solaris.  */
 #ifndef __EXTENSIONS__
@@ -2980,7 +2957,7 @@
 /* Please see the Gnulib manual for how to use these macros.
 
    Suppress extern inline with HP-UX cc, as it appears to be broken; see
-   <https://lists.gnu.org/archive/html/bug-texinfo/2013-02/msg00030.html>.
+   <https://lists.gnu.org/r/bug-texinfo/2013-02/msg00030.html>.
 
    Suppress extern inline with Sun C in standards-conformance mode, as it
    mishandles inline functions that call each other.  E.g., for 'inline void f
@@ -2997,13 +2974,13 @@
    from calling static functions.  This bug is known to occur on:
 
      OS X 10.8 and earlier; see:
-     https://lists.gnu.org/archive/html/bug-gnulib/2012-12/msg00023.html
+     https://lists.gnu.org/r/bug-gnulib/2012-12/msg00023.html
 
      DragonFly; see
      http://muscles.dragonflybsd.org/bulk/bleeding-edge-potential/latest-per-pkg/ah-tty-0.3.12.log
 
      FreeBSD; see:
-     https://lists.gnu.org/archive/html/bug-gnulib/2014-07/msg00104.html
+     https://lists.gnu.org/r/bug-gnulib/2014-07/msg00104.html
 
    OS X 10.9 has a macro __header_inline indicating the bug is fixed for C and
    for clang but remains for g++; see <https://trac.macports.org/ticket/41033>.

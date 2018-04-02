@@ -1,15 +1,15 @@
 
 =head1 НАЗВА
 
-virt-tar-in - Unpack a tarball into a virtual machine disk image.
+virt-tar-in — розпаковування архіву tar до образу диска віртуальної машини.
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-tar-in -a disk.img data.tar /destination
+ virt-tar-in -a диск.img дані.tar /призначення
 
- virt-tar-in -d domain data.tar /destination
+ virt-tar-in -d домен дані.tar /призначення
 
- zcat data.tar.gz | virt-tar-in -d domain - /destination
+ zcat дані.tar.gz | virt-tar-in -d домен - /призначення
 
 =head1 ОПИС
 
@@ -22,20 +22,22 @@ unpack into.
 
 =head1 ПРИКЛАДИ
 
-Upload a home directory to a guest:
+Вивантаження домашнього каталогу до гостьової системи:
 
  virt-tar-in -d MyGuest homes.tar /home
 
-=head1 JUST A SHELL SCRIPT WRAPPER AROUND GUESTFISH
+=head1 ПРОСТО СКРИПТ КОМАНДНОЇ ОБОЛОНКИ, ОБГОРТКА НАВКОЛО GUESTFISH
 
-This command is just a simple shell script wrapper around the
-L<guestfish(1)> C<tar-in> command.  For anything more complex than a trivial
-copy, you are probably better off using guestfish directly.
+Ця програма є простим скриптом командної оболонки, обгорткою навколо команди
+C<tar-in> L<guestfish(1)>. Якщо вам потрібно виконати якесь завдання,
+складніше за звичайне копіювання, ймовірно, варто скористатися guestfish
+безпосередньо.
 
 =head1 ПАРАМЕТРИ
 
-Since the shell script just passes options straight to guestfish, read
-L<guestfish(1)> to see the full list of options.
+Оскільки скрипт командної оболонки лише передає параметри безпосередньо до
+guestfish, ознайомтеся зі сторінкою підручника для L<guestfish(1)>, щоб
+дізнатися більше про повний набір параметрів.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 

@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -218,7 +218,7 @@ end
 
   (* The actions. *)
   List.iter (
-    fun ({ name = name; style = style; non_c_aliases = non_c_aliases } as f) ->
+    fun ({ name; style; non_c_aliases } as f) ->
       generate_doc f (fun () -> generate_ocaml_prototype name style);
 
       (* Aliases. *)
@@ -269,7 +269,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 ";
 
   List.iter (
-    fun ({ name = name; style = style; non_c_aliases = non_c_aliases } as f) ->
+    fun ({ name; style; non_c_aliases } as f) ->
       let indent = "  " in
 
       (match style with
@@ -369,7 +369,7 @@ let () =
 
   (* The actions. *)
   List.iter (
-    fun { name = name; style = style; non_c_aliases = non_c_aliases } ->
+    fun { name; style; non_c_aliases } ->
       generate_ocaml_prototype ~is_external:true name style;
       List.iter (fun alias -> pr "let %s = %s\n" alias name) non_c_aliases
   ) (actions |> external_functions |> sort);
@@ -387,7 +387,7 @@ class guestfs ?environment ?close_on_exit () =
 ";
 
   List.iter (
-    fun { name = name; style = style; non_c_aliases = non_c_aliases } ->
+    fun { name; style; non_c_aliases } ->
       (match style with
       | _, [], optargs ->
         (* No required params?  Add explicit unit. *)
@@ -425,7 +425,7 @@ and generate_ocaml_c () =
 #include <caml/signals.h>
 
 #include <guestfs.h>
-#include \"guestfs-internal-frontend.h\"
+#include \"guestfs-utils.h\"
 
 #include \"guestfs-c.h\"
 
@@ -497,7 +497,7 @@ copy_table (char * const * argv)
         pr "  CAMLlocal2 (rv, v);\n";
       pr "\n";
       pr "  rv = caml_alloc (%d, 0);\n" (List.length cols);
-      iteri (
+      List.iteri (
         fun i col ->
           (match col with
            | name, FString ->
@@ -541,9 +541,8 @@ copy_table (char * const * argv)
 
   (* The wrappers. *)
   List.iter (
-    fun { name = name; style = (ret, args, optargs as style);
-          blocking = blocking;
-          c_function = c_function; c_optarg_prefix = c_optarg_prefix } ->
+    fun { name; style = (ret, args, optargs as style);
+          blocking; c_function; c_optarg_prefix } ->
       pr "/* Automatically generated wrapper for function\n";
       pr " * ";
       generate_ocaml_prototype name style;
@@ -602,13 +601,7 @@ copy_table (char * const * argv)
 
       List.iter (
         function
-        | Pathname n
-        | Device n | Mountable n | Dev_or_Path n | Mountable_or_Path n
-        | String n
-        | FileIn n
-        | FileOut n
-        | Key n
-        | GUID n ->
+        | String (_, n) ->
             (* Copy strings in case the GC moves them: RHBZ#604691 *)
             pr "  char *%s;\n" n;
             pr "  %s = strdup (String_val (%sv));\n" n n;
@@ -627,7 +620,7 @@ copy_table (char * const * argv)
             pr "  %s = malloc (%s_size);\n" n n;
             pr "  if (%s == NULL) caml_raise_out_of_memory ();\n" n;
             pr "  memcpy (%s, String_val (%sv), %s_size);\n" n n n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
             pr "  char **%s = guestfs_int_ocaml_strings_val (g, %sv);\n" n n
         | Bool n ->
             pr "  int %s = Bool_val (%sv);\n" n n
@@ -701,12 +694,10 @@ copy_table (char * const * argv)
       (* Free strings if we copied them above. *)
       List.iter (
         function
-        | Pathname n | Device n | Mountable n
-        | Dev_or_Path n | Mountable_or_Path n | String n
-        | OptString n | FileIn n | FileOut n | BufferIn n
-        | Key n | GUID n ->
+        | String (_, n)
+        | OptString n | BufferIn n ->
             pr "  free (%s);\n" n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
             pr "  guestfs_int_free_string_list (%s);\n" n;
         | Bool _ | Int _ | Int64 _ | Pointer _ -> ()
       ) args;
@@ -783,7 +774,7 @@ copy_table (char * const * argv)
           name;
         pr "{\n";
         pr "  return guestfs_int_ocaml_%s (argv[0]" name;
-        iteri (fun i _ -> pr ", argv[%d]" (i+1)) (List.tl params);
+        List.iteri (fun i _ -> pr ", argv[%d]" (i+1)) (List.tl params);
         pr ");\n";
         pr "}\n";
         pr "\n"
@@ -874,12 +865,9 @@ and generate_ocaml_function_type ?(extra_unit = false) (ret, args, optargs) =
   ) optargs;
   List.iter (
     function
-    | Pathname _ | Device _ | Mountable _
-    | Dev_or_Path _ | Mountable_or_Path _ | String _
-    | FileIn _ | FileOut _ | BufferIn _ | Key _
-    | GUID _ -> pr "string -> "
+    | String _ | BufferIn _ -> pr "string -> "
     | OptString _ -> pr "string option -> "
-    | StringList _ | DeviceList _ | FilenameList _ ->
+    | StringList _ ->
         pr "string array -> "
     | Bool _ -> pr "bool -> "
     | Int _ -> pr "int -> "
@@ -899,3 +887,11 @@ and generate_ocaml_function_type ?(extra_unit = false) (ret, args, optargs) =
    | RStructList (_, typ) -> pr "%s array" typ
    | RHashtable _ -> pr "(string * string) list"
   )
+
+(* Structure definitions (again).  These are used in the daemon,
+ * but it's convenient to generate them here.
+ *)
+and generate_ocaml_daemon_structs () =
+  generate_header OCamlStyle GPLv2plus;
+
+  generate_ocaml_structure_decls ()

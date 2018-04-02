@@ -346,6 +346,7 @@ GuestfsHivexValue **guestfs_session_hivex_node_values (GuestfsSession *session, 
 gboolean guestfs_session_hivex_open (GuestfsSession *session, const gchar *filename, GuestfsHivexOpen *optargs, GError **err);
 gint64 guestfs_session_hivex_root (GuestfsSession *session, GError **err);
 gchar *guestfs_session_hivex_value_key (GuestfsSession *session, gint64 valueh, GError **err);
+gchar *guestfs_session_hivex_value_string (GuestfsSession *session, gint64 valueh, GError **err);
 gint64 guestfs_session_hivex_value_type (GuestfsSession *session, gint64 valueh, GError **err);
 gchar *guestfs_session_hivex_value_utf8 (GuestfsSession *session, gint64 valueh, GError **err);
 guint8 *guestfs_session_hivex_value_value (GuestfsSession *session, gint64 valueh, gsize *size_r, GError **err);
@@ -556,6 +557,7 @@ gboolean guestfs_session_part_disk (GuestfsSession *session, const gchar *device
 gboolean guestfs_session_part_expand_gpt (GuestfsSession *session, const gchar *device, GError **err);
 gint8 guestfs_session_part_get_bootable (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gchar *guestfs_session_part_get_disk_guid (GuestfsSession *session, const gchar *device, GError **err);
+gint64 guestfs_session_part_get_gpt_attributes (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gchar *guestfs_session_part_get_gpt_guid (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gchar *guestfs_session_part_get_gpt_type (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gint32 guestfs_session_part_get_mbr_id (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
@@ -564,9 +566,11 @@ gchar *guestfs_session_part_get_name (GuestfsSession *session, const gchar *devi
 gchar *guestfs_session_part_get_parttype (GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_part_init (GuestfsSession *session, const gchar *device, const gchar *parttype, GError **err);
 GuestfsPartition **guestfs_session_part_list (GuestfsSession *session, const gchar *device, GError **err);
+gboolean guestfs_session_part_resize (GuestfsSession *session, const gchar *device, gint32 partnum, gint64 endsect, GError **err);
 gboolean guestfs_session_part_set_bootable (GuestfsSession *session, const gchar *device, gint32 partnum, gboolean bootable, GError **err);
 gboolean guestfs_session_part_set_disk_guid (GuestfsSession *session, const gchar *device, const gchar *guid, GError **err);
 gboolean guestfs_session_part_set_disk_guid_random (GuestfsSession *session, const gchar *device, GError **err);
+gboolean guestfs_session_part_set_gpt_attributes (GuestfsSession *session, const gchar *device, gint32 partnum, gint64 attributes, GError **err);
 gboolean guestfs_session_part_set_gpt_guid (GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err);
 gboolean guestfs_session_part_set_gpt_type (GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err);
 gboolean guestfs_session_part_set_mbr_id (GuestfsSession *session, const gchar *device, gint32 partnum, gint32 idbyte, GError **err);
@@ -723,6 +727,9 @@ gboolean guestfs_session_xfs_admin (GuestfsSession *session, const gchar *device
 gboolean guestfs_session_xfs_growfs (GuestfsSession *session, const gchar *path, GuestfsXfsGrowfs *optargs, GError **err);
 GuestfsXFSInfo *guestfs_session_xfs_info (GuestfsSession *session, const gchar *pathordevice, GError **err);
 gint32 guestfs_session_xfs_repair (GuestfsSession *session, const gchar *device, GuestfsXfsRepair *optargs, GError **err);
+gboolean guestfs_session_yara_destroy (GuestfsSession *session, GError **err);
+gboolean guestfs_session_yara_load (GuestfsSession *session, const gchar *filename, GCancellable *cancellable, GError **err);
+GuestfsYaraDetection **guestfs_session_yara_scan (GuestfsSession *session, const gchar *path, GCancellable *cancellable, GError **err);
 gchar **guestfs_session_zegrep (GuestfsSession *session, const gchar *regex, const gchar *path, GError **err);
 gchar **guestfs_session_zegrepi (GuestfsSession *session, const gchar *regex, const gchar *path, GError **err);
 gboolean guestfs_session_zero (GuestfsSession *session, const gchar *device, GError **err);

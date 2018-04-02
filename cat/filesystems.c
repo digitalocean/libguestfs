@@ -37,6 +37,7 @@
 #include "getprogname.h"
 
 #include "guestfs.h"
+#include "structs-cleanups.h"
 #include "options.h"
 #include "display-options.h"
 
@@ -90,7 +91,7 @@ static void __attribute__((noreturn))
 usage (int status)
 {
   if (status != EXIT_SUCCESS)
-    fprintf (stderr, _("Try `%s --help' for more information.\n"),
+    fprintf (stderr, _("Try ‘%s --help’ for more information.\n"),
              getprogname ());
   else {
     printf (_("%s: list filesystems, partitions, block devices, LVM in a VM\n"
@@ -297,7 +298,7 @@ main (int argc, char *argv[])
 
   /* Must be no extra arguments on the command line. */
   if (optind != argc) {
-    fprintf (stderr, _("%s: error: extra argument '%s' on command line.\n"
+    fprintf (stderr, _("%s: error: extra argument ‘%s’ on command line.\n"
              "Make sure to specify the argument for --format "
              "like '--format=%s'.\n"),
              getprogname (), argv[optind], argv[optind]);

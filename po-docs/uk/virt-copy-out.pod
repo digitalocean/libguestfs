@@ -1,40 +1,42 @@
 
 =head1 НАЗВА
 
-virt-copy-out - Copy files and directories out of a virtual machine disk
-image.
+virt-copy-out — копіювання файлів і каталогі з образу диска віртуальної
+машини.
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-copy-out -a disk.img /file|dir [/file|dir ...] localdir
+ virt-copy-out -a диск.img /файл|каталог [/файл|каталог ...] локальний_каталог
 
- virt-copy-out -d domain /file|dir [/file|dir ...] localdir
+ virt-copy-out -d домен /файл|каталог [/файл|каталог ...] локальний_каталог
 
 =head1 ОПИС
 
-C<virt-copy-out> copies files and directories out of a virtual machine disk
-image or named libvirt domain.
+C<virt-copy-out> копіює файли та каталоги з образу диска віртувальної машини
+або іменованого домену libvirt.
 
-You can give one or more filenames and directories on the command line.
-Directories are copied out recursively.
+У рядку команди можна вказати одну або декілька назв файлів або
+каталогів. Каталоги буде скопійовано рекурсивно.
 
 =head1 ПРИКЛАДИ
 
-Download the home directories from a virtual machine:
+Отримання домашніх каталогів з віртуальної машини:
 
  mkdir homes
  virt-copy-out -d MyGuest /home homes
 
-=head1 JUST A SHELL SCRIPT WRAPPER AROUND GUESTFISH
+=head1 ПРОСТО СКРИПТ КОМАНДНОЇ ОБОЛОНКИ, ОБГОРТКА НАВКОЛО GUESTFISH
 
-This command is just a simple shell script wrapper around the
-L<guestfish(1)> C<copy-out> command.  For anything more complex than a
-trivial copy, you are probably better off using guestfish directly.
+Ця програма є простим скриптом командної оболонки, обгорткою навколо команди
+C<copy-out> L<guestfish(1)>. Якщо вам потрібно виконати якесь завдання,
+складніше за звичайне копіювання, ймовірно, варто скористатися guestfish
+безпосередньо.
 
 =head1 ПАРАМЕТРИ
 
-Since the shell script just passes options straight to guestfish, read
-L<guestfish(1)> to see the full list of options.
+Оскільки скрипт командної оболонки лише передає параметри безпосередньо до
+guestfish, ознайомтеся зі сторінкою підручника для L<guestfish(1)>, щоб
+дізнатися більше про повний набір параметрів.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 

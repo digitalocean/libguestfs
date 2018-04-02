@@ -133,6 +133,10 @@
   __attribute__((cleanup(cleanup_free_int_tsk_dirent)))
 #define CLEANUP_FREE_TSK_DIRENT_LIST \
   __attribute__((cleanup(cleanup_free_int_tsk_dirent_list)))
+#define CLEANUP_FREE_YARA_DETECTION \
+  __attribute__((cleanup(cleanup_free_int_yara_detection)))
+#define CLEANUP_FREE_YARA_DETECTION_LIST \
+  __attribute__((cleanup(cleanup_free_int_yara_detection_list)))
 #else /* !HAVE_ATTRIBUTE_CLEANUP */
 #define CLEANUP_FREE_INT_BOOL
 #define CLEANUP_FREE_INT_BOOL_LIST
@@ -186,6 +190,8 @@
 #define CLEANUP_FREE_INTERNAL_MOUNTABLE_LIST
 #define CLEANUP_FREE_TSK_DIRENT
 #define CLEANUP_FREE_TSK_DIRENT_LIST
+#define CLEANUP_FREE_YARA_DETECTION
+#define CLEANUP_FREE_YARA_DETECTION_LIST
 #endif /* !HAVE_ATTRIBUTE_CLEANUP */
 
 /* These functions are used internally by the CLEANUP_* macros.
@@ -244,5 +250,7 @@ extern void cleanup_free_int_internal_mountable (void *ptr);
 extern void cleanup_free_int_internal_mountable_list (void *ptr);
 extern void cleanup_free_int_tsk_dirent (void *ptr);
 extern void cleanup_free_int_tsk_dirent_list (void *ptr);
+extern void cleanup_free_int_yara_detection (void *ptr);
+extern void cleanup_free_int_yara_detection_list (void *ptr);
 
 #endif /* GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_ */

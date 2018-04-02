@@ -290,10 +290,10 @@ You have to mount something on F</> before most commands will work.
 
 何らかの I<-m> または I<--mount> オプションが指定されると、 仮想マシンが自動的に起動されます。
 
-仮想マシンのディスクイメージに含まれるファイルシステムが不明な場合、 guestfish をこのオプションなしで実行することもできます。
-そうすると、利用可能なパーティション、ファイルシステム、 論理ボリューム (LVM) の一覧が表示されます (L</list-partitions>,
-L</list-filesystems>, L</lvs> コマンド参照)。 または、 L<virt-filesystems(1)>
-コマンドを使用することもできます。
+If you don’t know what filesystems a disk image contains, you can either run
+guestfish without this option, then list the partitions, filesystems and LVs
+available (see L</list-partitions>, L</list-filesystems> and L</lvs>
+commands), or you can use the L<virt-filesystems(1)> program.
 
 マウントパラメーターの三番目の (ほとんど使用されない) 項目は、 バックエンドのファイルシステムをマウントするために使用される
 マウントオプションの一覧です。 これが指定されていない場合、 マウントオプションは空文字列または C<ro> (I<--ro>
@@ -330,8 +330,10 @@ IMAGES> below.
 
 =item B<--no-dest-paths>
 
-ゲストのファイルシステムのパスをタブ補完しません。 この機能は、ゲストのファイルシステムのパスを補完する ためにタブキーを使えるようになり、有用です。
-しかし、別の「隠し」guestfs コールを呼び出す可能性があります。 そのため、この機能を無効化するために、このオプションがあります。
+Don’t tab-complete paths on the guest filesystem.  It is useful to be able
+to hit the tab key to complete paths on the guest filesystem, but this
+causes extra "hidden" guestfs calls to be made, so this option is here to
+allow this feature to be disabled.
 
 =item B<--pipe-error>
 
@@ -420,6 +422,13 @@ non-interactive shell.
 In either command line mode or non-interactive shell, the first command that
 gives an error causes the whole shell to exit.  In interactive mode (with a
 prompt) if a command fails, you can continue to enter commands.
+
+Note that arguments of the commands will be considered as guestfish options
+if they start with a dash (C<->): you can always separate the guestfish
+options and the rest of the commands (with their arguments)  using a double
+dash (C<-->).  For example:
+
+ guestfish -- disk_create overlay.qcow2 qcow2 -1 backingfile:image.img
 
 =head1 launch (または run) の使用法
 
@@ -684,7 +693,7 @@ expect:
 
  rm-rf /home/*
 
-Assuming you don't have a directory called literally F</home/*> then the
+Assuming you don’t have a directory called literally F</home/*> then the
 above command will return an error.
 
 ワイルドカードの展開を実行するには C<glob> コマンドを使用します。
@@ -980,13 +989,13 @@ cleans up guestfish when the script exits:
 
 =head2 REMOTE CONTROL DOES NOT WORK WITH I<-a> ETC. OPTIONS
 
-Options such as I<-a>, I<--add>, I<-N>, I<--new> etc don't interact properly
+Options such as I<-a>, I<--add>, I<-N>, I<--new> etc don’t interact properly
 with remote support.  They are processed locally, and not sent through to
 the remote guestfish.  In particular this won't do what you expect:
 
  guestfish --remote --add disk.img
 
-Don't use these options.  Use the equivalent commands instead, eg:
+Don’t use these options.  Use the equivalent commands instead, eg:
 
  guestfish --remote add-drive disk.img
 
@@ -1540,9 +1549,10 @@ using the C<filename=> prefix.
 =head1 関連項目
 
 L<guestfs(3)>, L<http://libguestfs.org/>, L<virt-alignment-scan(1)>,
-L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
-L<virt-customize(1)>, L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>,
-L<virt-filesystems(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
+L<virt-builder(1)>, L<virt-builder-repository(1)>, L<virt-cat(1)>,
+L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-customize(1)>,
+L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
+L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-log(1)>, L<virt-ls(1)>,
 L<virt-make-fs(1)>, L<virt-p2v(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
 L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tail(1)>, L<virt-tar(1)>,
@@ -1555,5 +1565,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

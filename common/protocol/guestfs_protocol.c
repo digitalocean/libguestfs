@@ -1258,6 +1258,29 @@ xdr_guestfs_int_tsk_dirent_list (XDR *xdrs, guestfs_int_tsk_dirent_list *objp)
 }
 
 bool_t
+xdr_guestfs_int_yara_detection (XDR *xdrs, guestfs_int_yara_detection *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->yara_name, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->yara_rule, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_int_yara_detection_list (XDR *xdrs, guestfs_int_yara_detection_list *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_yara_detection_list_val, (u_int *) &objp->guestfs_int_yara_detection_list_len, ~0,
+		sizeof (guestfs_int_yara_detection), (xdrproc_t) xdr_guestfs_int_yara_detection))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_acl_delete_def_file_args (XDR *xdrs, guestfs_acl_delete_def_file_args *objp)
 {
 	register int32_t *buf;
@@ -3147,6 +3170,26 @@ xdr_guestfs_file_ret (XDR *xdrs, guestfs_file_ret *objp)
 }
 
 bool_t
+xdr_guestfs_file_architecture_args (XDR *xdrs, guestfs_file_architecture_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->filename, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_file_architecture_ret (XDR *xdrs, guestfs_file_architecture_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->arch, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_filesize_args (XDR *xdrs, guestfs_filesize_args *objp)
 {
 	register int32_t *buf;
@@ -3930,6 +3973,26 @@ xdr_guestfs_hivex_value_key_ret (XDR *xdrs, guestfs_hivex_value_key_ret *objp)
 }
 
 bool_t
+xdr_guestfs_hivex_value_string_args (XDR *xdrs, guestfs_hivex_value_string_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int64_t (xdrs, &objp->valueh))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_hivex_value_string_ret (XDR *xdrs, guestfs_hivex_value_string_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->databuf, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_hivex_value_type_args (XDR *xdrs, guestfs_hivex_value_type_args *objp)
 {
 	register int32_t *buf;
@@ -3945,6 +4008,26 @@ xdr_guestfs_hivex_value_type_ret (XDR *xdrs, guestfs_hivex_value_type_ret *objp)
 	register int32_t *buf;
 
 	 if (!xdr_int64_t (xdrs, &objp->datatype))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_hivex_value_utf8_args (XDR *xdrs, guestfs_hivex_value_utf8_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int64_t (xdrs, &objp->valueh))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_hivex_value_utf8_ret (XDR *xdrs, guestfs_hivex_value_utf8_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->databuf, ~0))
 		 return FALSE;
 	return TRUE;
 }
@@ -4071,6 +4154,451 @@ xdr_guestfs_inotify_rm_watch_args (XDR *xdrs, guestfs_inotify_rm_watch_args *obj
 	register int32_t *buf;
 
 	 if (!xdr_int (xdrs, &objp->wd))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_arch_args (XDR *xdrs, guestfs_inspect_get_arch_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_arch_ret (XDR *xdrs, guestfs_inspect_get_arch_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->arch, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_distro_args (XDR *xdrs, guestfs_inspect_get_distro_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_distro_ret (XDR *xdrs, guestfs_inspect_get_distro_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->distro, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_drive_mappings_args (XDR *xdrs, guestfs_inspect_get_drive_mappings_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_drive_mappings_ret (XDR *xdrs, guestfs_inspect_get_drive_mappings_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->drives.drives_val, (u_int *) &objp->drives.drives_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_filesystems_args (XDR *xdrs, guestfs_inspect_get_filesystems_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_filesystems_ret (XDR *xdrs, guestfs_inspect_get_filesystems_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->filesystems.filesystems_val, (u_int *) &objp->filesystems.filesystems_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_format_args (XDR *xdrs, guestfs_inspect_get_format_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_format_ret (XDR *xdrs, guestfs_inspect_get_format_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->format, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_hostname_args (XDR *xdrs, guestfs_inspect_get_hostname_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_hostname_ret (XDR *xdrs, guestfs_inspect_get_hostname_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->hostname, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_major_version_args (XDR *xdrs, guestfs_inspect_get_major_version_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_major_version_ret (XDR *xdrs, guestfs_inspect_get_major_version_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->major))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_minor_version_args (XDR *xdrs, guestfs_inspect_get_minor_version_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_minor_version_ret (XDR *xdrs, guestfs_inspect_get_minor_version_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->minor))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_mountpoints_args (XDR *xdrs, guestfs_inspect_get_mountpoints_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_mountpoints_ret (XDR *xdrs, guestfs_inspect_get_mountpoints_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->mountpoints.mountpoints_val, (u_int *) &objp->mountpoints.mountpoints_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_package_format_args (XDR *xdrs, guestfs_inspect_get_package_format_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_package_format_ret (XDR *xdrs, guestfs_inspect_get_package_format_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->packageformat, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_package_management_args (XDR *xdrs, guestfs_inspect_get_package_management_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_package_management_ret (XDR *xdrs, guestfs_inspect_get_package_management_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->packagemanagement, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_product_name_args (XDR *xdrs, guestfs_inspect_get_product_name_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_product_name_ret (XDR *xdrs, guestfs_inspect_get_product_name_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->product, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_product_variant_args (XDR *xdrs, guestfs_inspect_get_product_variant_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_product_variant_ret (XDR *xdrs, guestfs_inspect_get_product_variant_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->variant, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_roots_ret (XDR *xdrs, guestfs_inspect_get_roots_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->roots.roots_val, (u_int *) &objp->roots.roots_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_type_args (XDR *xdrs, guestfs_inspect_get_type_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_type_ret (XDR *xdrs, guestfs_inspect_get_type_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->name, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_windows_current_control_set_args (XDR *xdrs, guestfs_inspect_get_windows_current_control_set_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_windows_current_control_set_ret (XDR *xdrs, guestfs_inspect_get_windows_current_control_set_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->controlset, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_windows_software_hive_args (XDR *xdrs, guestfs_inspect_get_windows_software_hive_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_windows_software_hive_ret (XDR *xdrs, guestfs_inspect_get_windows_software_hive_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_windows_system_hive_args (XDR *xdrs, guestfs_inspect_get_windows_system_hive_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_windows_system_hive_ret (XDR *xdrs, guestfs_inspect_get_windows_system_hive_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_windows_systemroot_args (XDR *xdrs, guestfs_inspect_get_windows_systemroot_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_get_windows_systemroot_ret (XDR *xdrs, guestfs_inspect_get_windows_systemroot_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->systemroot, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_is_live_args (XDR *xdrs, guestfs_inspect_is_live_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_is_live_ret (XDR *xdrs, guestfs_inspect_is_live_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_bool (xdrs, &objp->live))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_is_multipart_args (XDR *xdrs, guestfs_inspect_is_multipart_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_is_multipart_ret (XDR *xdrs, guestfs_inspect_is_multipart_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_bool (xdrs, &objp->multipart))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_is_netinst_args (XDR *xdrs, guestfs_inspect_is_netinst_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->root, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_is_netinst_ret (XDR *xdrs, guestfs_inspect_is_netinst_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_bool (xdrs, &objp->netinst))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_inspect_os_ret (XDR *xdrs, guestfs_inspect_os_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->roots.roots_val, (u_int *) &objp->roots.roots_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
 		 return FALSE;
 	return TRUE;
 }
@@ -4279,6 +4807,16 @@ xdr_guestfs_internal_write_append_args (XDR *xdrs, guestfs_internal_write_append
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
 	 if (!xdr_bytes (xdrs, (char **)&objp->content.content_val, (u_int *) &objp->content.content_len, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_internal_yara_scan_args (XDR *xdrs, guestfs_internal_yara_scan_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
 	return TRUE;
 }
@@ -4882,6 +5420,17 @@ xdr_guestfs_list_dm_devices_ret (XDR *xdrs, guestfs_list_dm_devices_ret *objp)
 	register int32_t *buf;
 
 	 if (!xdr_array (xdrs, (char **)&objp->devices.devices_val, (u_int *) &objp->devices.devices_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_list_filesystems_ret (XDR *xdrs, guestfs_list_filesystems_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->fses.fses_val, (u_int *) &objp->fses.fses_len, ~0,
 		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
 		 return FALSE;
 	return TRUE;
@@ -6549,6 +7098,28 @@ xdr_guestfs_part_get_disk_guid_ret (XDR *xdrs, guestfs_part_get_disk_guid_ret *o
 }
 
 bool_t
+xdr_guestfs_part_get_gpt_attributes_args (XDR *xdrs, guestfs_part_get_gpt_attributes_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->partnum))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_part_get_gpt_attributes_ret (XDR *xdrs, guestfs_part_get_gpt_attributes_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int64_t (xdrs, &objp->attributes))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_part_get_gpt_guid_args (XDR *xdrs, guestfs_part_get_gpt_guid_args *objp)
 {
 	register int32_t *buf;
@@ -6711,6 +7282,20 @@ xdr_guestfs_part_list_ret (XDR *xdrs, guestfs_part_list_ret *objp)
 }
 
 bool_t
+xdr_guestfs_part_resize_args (XDR *xdrs, guestfs_part_resize_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->partnum))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->endsect))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_part_set_bootable_args (XDR *xdrs, guestfs_part_set_bootable_args *objp)
 {
 	register int32_t *buf;
@@ -6742,6 +7327,20 @@ xdr_guestfs_part_set_disk_guid_random_args (XDR *xdrs, guestfs_part_set_disk_gui
 	register int32_t *buf;
 
 	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_part_set_gpt_attributes_args (XDR *xdrs, guestfs_part_set_gpt_attributes_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->partnum))
+		 return FALSE;
+	 if (!xdr_int64_t (xdrs, &objp->attributes))
 		 return FALSE;
 	return TRUE;
 }

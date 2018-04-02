@@ -1,8 +1,8 @@
 
 =head1 НАЗВА
 
-virt-sysprep - Reset, unconfigure or customize a virtual machine so clones
-can be made
+virt-sysprep — скидання налаштувань віртуальної машини до початкових, так,
+щоб з неї можна було роботи клони
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -56,16 +56,18 @@ Windows sysprepping in a future version, and we already have code to do it.
 
 =item B<--add> адреса
 
-Add a remote disk.  The URI format is compatible with guestfish.  See
-L<guestfish(1)/ADDING REMOTE STORAGE>.
+Додати віддалений диск. Формат адреси є сумісним із
+guestfish. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
 =item B<--colors>
 
 =item B<--colours>
 
-Use ANSI colour sequences to colourize messages.  This is the default when
-the output is a tty.  If the output of the program is redirected to a file,
-ANSI colour sequences are disabled unless you use this option.
+Використовувати послідовності символів ANSI для розфарбовування
+повідомлень. Ці послідовності типово використовуються, якщо дані виводяться
+на термінал tty.  Якщо дані, виведені програмою, спрямовуються до файла,
+послідовності визначення кольорів ANSI буде вимкнено, якщо ви не додасте до
+команди цей параметр.
 
 =item B<-c> адреса
 
@@ -88,8 +90,8 @@ libvirt не буде використовуватися взагалі.
 
 =item B<--dry-run>
 
-Perform a read-only "dry run" on the guest.  This runs the sysprep
-operation, but throws away any changes to the disk at the end.
+Виконати тестову обробку гостьової системи у режимі «лише читання». Буде
+виконано дію sysprep, але наприкінці усі зміни до диска буде відкинуто.
 
 =item B<--enable> дії
 
@@ -153,10 +155,10 @@ See L</OPERATIONS> below for a list and an explanation of each operation.
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, virt-sysprep normally turns echoing
-off so you cannot see what you are typing.  If you are not worried about
-Tempest attacks and there is no one else in the room you can specify this
-flag to see what you are typing.
+Типово, якщо virt-sysprep попросить вас ввести ключ або пароль, програма не
+відтворюватиме введені символи на екрані. Якщо ви не боїтеся
+TEMPEST-нападів, або у вашій кімнаті нікого, окрім вас, немає, ви можете
+скористатися цим прапорцем, щоб бачити, які саме символи ви вводите.
 
 =item B<--format> raw|qcow2|..
 
@@ -187,8 +189,9 @@ flag to see what you are typing.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening F</dev/tty>.
+Прочитати параметри ключа або пароля із джерела стандартного
+введення. Типово програма намагається читати паролі від користувача
+відкриттям F</dev/tty>.
 
 =item B<--list-operations>
 
@@ -235,9 +238,10 @@ will do the same, plus mount F</var> with C<rw,nodiratime>.
 
 =item B<--quiet>
 
-Не виводити повідомлень до журналу.
+Не виводити повідомлення до журналу.
 
-To enable detailed logging of individual file operations, use I<-x>.
+Для вмикання ведення докладного журналу окремих дій з файлами скористайтеся
+I<-x>.
 
 =item B<--network>
 
@@ -286,7 +290,7 @@ sysprep operations are skipped for some guest types.
 Operations can be individually enabled using the I<--enable>/I<--operations>
 options.  Use a comma-separated list, for example:
 
- virt-sysprep --operations ssh-hostkeys,udev-persistent-net [etc..]
+ virt-sysprep --operations ssh-hostkeys,udev-persistent-net [тощо..]
 
 Future versions of virt-sysprep may add more operations.  If you are using
 virt-sysprep and want predictable behaviour, specify only the operations
@@ -341,13 +345,14 @@ MAC-адреса мережевої картки
 One or more hard disk images, themselves containing files, directories,
 applications, kernels, configuration, etc.
 
-Some things inside the block devices that might need to be changed:
+Ось деякі параметри всередині блокових пристроїв, які, можливо, доведеться
+змінити:
 
 =over 4
 
 =item *
 
-hostname and other net configuration
+назва вузла та інші налаштування мережі
 
 =item *
 
@@ -355,7 +360,7 @@ UUID
 
 =item *
 
-SSH host keys
+ключі SSH вузла
 
 =item *
 
@@ -418,7 +423,7 @@ Create a snapshot using qemu-img:
 
  qemu-img create -f qcow2 -o backing_file=original snapshot.qcow
 
-The advantage is that you don't need to copy the original (very fast)  and
+The advantage is that you don’t need to copy the original (very fast)  and
 only changes are stored (less storage required).
 
 Note that writing to the backing file once you have created guests on top of
@@ -443,7 +448,7 @@ very cheaply (they copy them on-demand in the background).
 
 =item *
 
-Prepare your template using L<virt-sparsify(1)>.  See below.
+Приготуйте ваш шаблон за допомогою L<virt-sparsify(1)>. Див. нижче.
 
 =back
 
@@ -504,7 +509,8 @@ On the other hand if you need to make adjustments to the guest filesystem
 (eg. copying in files), then I<--script> is ideal since (a)  it has access
 to the host filesystem and (b) you will get immediate feedback on errors.
 
-Either or both options can be used multiple times on the command line.
+Кожен з параметрів або обидва параметри можна використовувати у рядку
+команди довільну кількість разів.
 
 =head1 БЕЗПЕКА
 
@@ -524,7 +530,7 @@ inodes.
 I<(Цей розділ стосується лише гостьових систем Linux)>
 
 For supported guests, virt-sysprep writes a few bytes of randomness from the
-host into the guest's random seed file.
+host into the guest’s random seed file.
 
 If this is just done once and the guest is cloned from the same template,
 then each guest will start with the same entropy, and things like SSH host
@@ -538,10 +544,11 @@ template too, which can be done by enabling just the customize module:
 
 =head1 SELINUX
 
-For guests which make use of SELinux, special handling for them might be
-needed when using operations which create new files or alter existing ones.
+Для гостьових систем, у яких використовується SELinux, може знадобитися
+спеціальна обробка, якщо використовуються дії, які створюють нові файли або
+вносять зміни до наявних файлів.
 
-For further details, see L<virt-builder(1)/SELINUX>.
+Докладніший опис наведено у розділі L<virt-builder(1)/SELINUX>.
 
 =head1 WINDOWS 8
 
@@ -550,7 +557,8 @@ L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
 
 =head1 СТАН ВИХОДУ
 
-This program returns 0 on success, or 1 if there was an error.
+Ця програма повертає 0, якщо роботу виконано успішно, і 1, якщо сталися
+помилки.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
@@ -558,8 +566,8 @@ This program returns 0 on success, or 1 if there was an error.
 
 =item C<VIRT_TOOLS_DATA_DIR>
 
-This can point to the directory containing data files used for Windows
-firstboot installation.
+Ця змінна визначає каталог, у якому містяться файли даних, які
+використовуються для встановлення Windows з першим завантаженням.
 
 Зазвичай, потреби у встановленні власного значення немає. Якщо значення не
 встановлено, буде використано вбудоване типове значення (щось схоже на
@@ -571,17 +579,20 @@ F</usr/share/virt-tools>).
 
 =item F<rhsrvany.exe>
 
-This is the RHSrvAny Windows binary, used to install a "firstboot" script in
-Windows guests.  It is required if you intend to use the I<--firstboot> or
-I<--firstboot-command> options with Windows guests.
+Це виконуваний файл для Windows RHSrvAny, який використовується для
+встановлення скрипту «firstboot» у гостьові системи Windows. Він
+знадобиться, якщо ви маєте намір використовувати параметри I<--firstboot> і
+I<--firstboot-command> для гостьових операційних систем Windows.
 
 Див. також C<https://github.com/rwmjones/rhsrvany>
 
 =item F<pvvxsvc.exe>
 
-This is a Windows binary shipped with SUSE VMDP, used to install a
-"firstboot" script in Windows guests.  It is required if you intend to use
-the I<--firstboot> or I<--firstboot-command> options with Windows guests.
+Це виконуваний файл Windows, що постачається разом із VMDP SUSE,
+використовується для встановлення скрипту «firstboot» у гостьові системи
+Windows. Він знадобиться, якщо ви маєте намір використовувати параметри
+I<--firstboot> і I<--firstboot-command> для гостьових операційних систем
+Windows.
 
 =back
 
@@ -605,7 +616,7 @@ Wanlong Gao, Fujitsu Ltd.
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2017 Red Hat Inc.
+Copyright (C) 2011-2018 Red Hat Inc.
 
 Авторські права належать Fujitsu Ltd., 2012
 

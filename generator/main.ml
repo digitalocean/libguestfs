@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 open Unix
 open Printf
 
-open Common_utils
+open Std_utils
 open Pr
 open Actions
 open Structs
@@ -40,7 +40,7 @@ let perror msg = function
  *)
 let nr_actions_files = 7
 let actions_subsets =
-  let h i { name = name } = i = Hashtbl.hash name mod nr_actions_files in
+  let h i { name } = i = Hashtbl.hash name mod nr_actions_files in
   Array.init nr_actions_files (fun i -> List.filter (h i) actions)
 let output_to_subset fs f =
   for i = 0 to nr_actions_files-1 do
@@ -73,6 +73,11 @@ Run it from the top source directory using the command
      perror "lock: BUGS" exn;
      exit 1);
 
+  output_to "AUTHORS"
+            Authors.generate_authors;
+  output_to "p2v/about-authors.c"
+            Authors.generate_p2v_about_authors_c;
+
   output_to "common/errnostring/errnostring-gperf.gperf"
             Errnostring.generate_errnostring_gperf;
   output_to "common/errnostring/errnostring.c"
@@ -81,15 +86,15 @@ Run it from the top source directory using the command
             Errnostring.generate_errnostring_h;
   output_to "common/protocol/guestfs_protocol.x"
             XDR.generate_xdr;
-  output_to "common/utils/guestfs-internal-frontend-cleanups.h"
-            C.generate_internal_frontend_cleanups_h;
-  output_to "common/utils/structs-cleanup.c"
-            C.generate_client_structs_cleanup;
-  output_to "common/utils/structs-print.c"
+  output_to "common/structs/structs-cleanups.h"
+            C.generate_client_structs_cleanups_h;
+  output_to "common/structs/structs-cleanups.c"
+            C.generate_client_structs_cleanups_c;
+  output_to "common/structs/structs-print.c"
             C.generate_client_structs_print_c;
-  output_to "common/utils/structs-print.h"
+  output_to "common/structs/structs-print.h"
             C.generate_client_structs_print_h;
-  output_to "common/utils/uefi.c"
+  output_to "lib/uefi.c"
             UEFI.generate_uefi_c;
   output_to "lib/guestfs.h"
             C.generate_guestfs_h;
@@ -128,6 +133,10 @@ Run it from the top source directory using the command
             Daemon.generate_daemon_stubs_h;
   output_to_subset "daemon/stubs-%d.c"
                    Daemon.generate_daemon_stubs;
+  output_to "daemon/caml-stubs.c"
+            Daemon.generate_daemon_caml_stubs;
+  output_to "daemon/callbacks.ml"
+            Daemon.generate_daemon_caml_callbacks_ml;
   output_to "daemon/dispatch.c"
             Daemon.generate_daemon_dispatch;
   output_to "daemon/names.c"
@@ -136,6 +145,10 @@ Run it from the top source directory using the command
             Daemon.generate_daemon_optgroups_c;
   output_to "daemon/optgroups.h"
             Daemon.generate_daemon_optgroups_h;
+  output_to "daemon/optgroups.ml"
+            Daemon.generate_daemon_optgroups_ml;
+  output_to "daemon/optgroups.mli"
+            Daemon.generate_daemon_optgroups_mli;
   output_to "daemon/lvm-tokenization.c"
             Daemon.generate_daemon_lvm_tokenization;
   output_to "daemon/structs-cleanups.c"
@@ -180,6 +193,10 @@ Run it from the top source directory using the command
             OCaml.generate_ocaml_c;
   output_to "ocaml/guestfs-c-errnos.c"
             OCaml.generate_ocaml_c_errnos;
+  output_to "daemon/structs.ml"
+            OCaml.generate_ocaml_daemon_structs;
+  output_to "daemon/structs.mli"
+            OCaml.generate_ocaml_daemon_structs;
   output_to "ocaml/bindtests.ml"
             Bindtests.generate_ocaml_bindtests;
 
@@ -293,7 +310,7 @@ Run it from the top source directory using the command
   delete_except_generated "gobject/src/struct-*.c";
   List.iter (
     function
-    | ({ name = name; style = (_, _, (_::_ as optargs)) } as f) ->
+    | ({ name; style = (_, _, (_::_ as optargs)) } as f) ->
       let short = sprintf "optargs-%s" name in
       let filename =
         sprintf "gobject/include/guestfs-gobject/%s.h" short in

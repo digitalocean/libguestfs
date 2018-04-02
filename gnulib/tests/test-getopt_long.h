@@ -1,5 +1,5 @@
 /* Test of command line argument processing.
-   Copyright (C) 2009-2017 Free Software Foundation, Inc.
+   Copyright (C) 2009-2018 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -1815,7 +1815,7 @@ test_getopt_long (void)
 /* Test behavior of getopt_long when POSIXLY_CORRECT is set in the
    environment.  Options with optional arguments should not change
    behavior just because of an environment variable.
-   https://lists.gnu.org/archive/html/bug-m4/2006-09/msg00028.html  */
+   https://lists.gnu.org/r/bug-m4/2006-09/msg00028.html  */
 static void
 test_getopt_long_posix (void)
 {

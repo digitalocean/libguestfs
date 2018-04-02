@@ -63,9 +63,9 @@ L</NON-INTERACTIVE EDITING> below).  To change the init default level to 5:
 
 =item B<--add> файл
 
-Add I<file> which should be a disk image from a virtual machine.  If the
-virtual machine has multiple block devices, you must supply all of them with
-separate I<-a> options.
+Додати I<файл>, який має бути образом диска з віртуальної машини. Якщо у
+віртуальній машині декілька блокових пристроїв, вам слід вказати їх усі за
+допомогою окремих записів параметра I<-a>.
 
 Формат образу диска визначається автоматично. Щоб перевизначити його і
 примусово використати певний формат, скористайтеся параметром
@@ -110,10 +110,10 @@ write:
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, virt-edit normally turns echoing
-off so you cannot see what you are typing.  If you are not worried about
-Tempest attacks and there is no one else in the room you can specify this
-flag to see what you are typing.
+Типово, якщо virt-edit попросить вас ввести ключ або пароль, програма не
+відтворюватиме введені символи на екрані. Якщо ви не боїтеся
+TEMPEST-нападів, або у вашій кімнаті нікого, окрім вас, немає, ви можете
+скористатися цим прапорцем, щоб бачити, які саме символи ви вводите.
 
 =item B<-e> вираз
 
@@ -125,10 +125,11 @@ Instead of launching the external editor, non-interactively apply the Perl
 expression C<EXPR> to each line in the file.  See L</NON-INTERACTIVE
 EDITING> below.
 
-Be careful to properly quote the expression to prevent it from being altered
-by the shell.
+Слід подбати про належне розставлення лапок у виразі, щоб запобігти його
+зміні у командній оболонці.
 
-Note that this option is only available when Perl 5 is installed.
+Зауважте, що цим параметром можна буде скористатися, лише якщо встановлено
+Perl 5.
 
 =item B<--format=raw|qcow2|..>
 
@@ -159,41 +160,49 @@ Note that this option is only available when Perl 5 is installed.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening F</dev/tty>.
+Прочитати параметри ключа або пароля із джерела стандартного
+введення. Типово програма намагається читати паролі від користувача
+відкриттям F</dev/tty>.
 
-=item B<-m> dev[:mountpoint[:options[:fstype]]]
+=item B<-m> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
-=item B<--mount> dev[:mountpoint[:options[:fstype]]]
+=item B<--mount> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
 Змонтувати названий розділ або логічний том до вказаної точки монтування.
 
-If the mountpoint is omitted, it defaults to F</>.
+Якщо точку монтування не вказано, типовим значенням є F</>.
 
-Specifying any mountpoint disables the inspection of the guest and the mount
-of its root and all of its mountpoints, so make sure to mount all the
-mountpoints needed to work with the filenames given as arguments.
+Визначення точки монтування вимикає інспектування гостьової системи і
+призводить до монтування її кореневої системи та усіх її точок
+монтування. Тому вам слід забезпечити монтування усіх точок монтування,
+потрібних для роботи із файлами, назви яких вказано як аргументи.
 
-If you don't know what filesystems a disk image contains, you can either run
-guestfish without this option, then list the partitions, filesystems and LVs
-available (see L</list-partitions>, L</list-filesystems> and L</lvs>
-commands), or you can use the L<virt-filesystems(1)> program.
+Якщо ви не знаєте, які саме файлові системи містяться у образі диска, ви
+можете або запустити guestfish без цього параметра і ознайомитися зі списком
+доступних розділів, файлових систем та логічних томів (див. команди
+L</list-partitions>, L</list-filesystems> і L</lvs>), або скористатися
+програмою L<virt-filesystems(1)>.
 
-The third (and rarely used) part of the mount parameter is the list of mount
-options used to mount the underlying filesystem.  If this is not given, then
-the mount options are either the empty string or C<ro> (the latter if the
-I<--ro> flag is used).  By specifying the mount options, you override this
-default choice.  Probably the only time you would use this is to enable ACLs
-and/or extended attributes if the filesystem can support them:
+Третьою (і нечасто використовуваною) частиною параметра монтування є список
+параметрів монтування, які використовуються для того, щоб змонтувати
+підлеглу файлову систему. Якщо такий список не буде задано, параметрами
+монтування вважатиметься або порожній рядок, або C<ro> (другий варіант
+використовується, якщо використано прапорець I<--ro>). Заданням параметрів
+монтування ви перевизначаєте типовий варіант. Ймовірно, єдиним випадком,
+коли вам може знадобитися це, є випадок вмикання списків керування доступом
+(ACL) і/або розширених атрибутів, якщо у файловій системі передбачено їхню
+підтримку:
 
  -m /dev/sda1:/:acl,user_xattr
 
-Using this flag is equivalent to using the C<mount-options> command.
+Використання цього прапорця є еквівалентним до використання команди
+C<mount-options>.
 
-The fourth part of the parameter is the filesystem driver to use, such as
-C<ext3> or C<ntfs>. This is rarely needed, but can be useful if multiple
-drivers are valid for a filesystem (eg: C<ext2> and C<ext3>), or if
-libguestfs misidentifies a filesystem.
+Четвертою частиною параметра є назва драйвера файлової системи, якою слід
+скористатися, зокрема C<ext3> або C<ntfs>. У визначенні цієї частини
+параметра рідко виникає потреба, але вона може бути корисною, якщо для
+файлової системи можна скористатися декількома драйверами (приклад: C<ext2>
+і C<ext3>), або libguestfs визначає файлову систему помилково.
 
 =item B<-v>
 
@@ -223,8 +232,9 @@ libguestfs misidentifies a filesystem.
 
  virt-edit назва_гостьової_системи файл
 
-whereas in this version you should use I<-a> or I<-d> respectively to avoid
-the confusing case where a disk image might have the same name as a guest.
+тоді як у цій версії вам слід скористатися I<-a> або I<-d>, відповідно, щоб
+уникнути помилок у випадках, коли назва образу диска може збігатися із
+назвою гостьової системи.
 
 З міркувань зворотної сумісності передбачено підтримку запису параметрів у
 застарілому форматі.
@@ -236,7 +246,7 @@ administrator can interactively edit the file.
 
 There are two ways also to use C<virt-edit> from scripts in order to make
 automated edits to files.  (Note that although you I<can> use C<virt-edit>
-like this, it's less error-prone to write scripts directly using the
+like this, it’s less error-prone to write scripts directly using the
 libguestfs API and Augeas for configuration file editing.)
 
 The first method is to temporarily set C<$EDITOR> to any script or program
@@ -247,10 +257,10 @@ The second method is to use the I<-e> parameter of C<virt-edit> to run a
 short Perl snippet in the style of L<sed(1)>.  For example to replace all
 instances of C<foo> with C<bar> in a file:
 
- virt-edit -d domname filename -e 's/foo/bar/'
+ virt-edit -d назва_домену назва_файла -e 's/foo/bar/'
 
 The full power of Perl regular expressions can be used (see L<perlre(1)>).
-For example to delete root's password you could do:
+For example to delete root’s password you could do:
 
  virt-edit -d назва_домену /etc/passwd -e 's/^root:.*?:/root::/'
 
@@ -290,8 +300,8 @@ C<$_> itself (since that would remove all newlines from the file):
 
 =head1 ШЛЯХИ У WINDOWS
 
-C<virt-edit> has a limited ability to understand Windows drive letters and
-paths (eg. F<E:\foo\bar.txt>).
+У C<virt-edit> передбачено обмежені можливості щодо обробки літерних дисків
+та шляхів у Windows (наприклад F<E:\foo\bar.txt>).
 
 Тоді і лише тоді, коли у гостьовій системі працює Windows:
 
@@ -299,18 +309,18 @@ paths (eg. F<E:\foo\bar.txt>).
 
 =item *
 
-Drive letter prefixes like C<C:> are resolved against the Windows Registry
-to the correct filesystem.
+Літери дисків, наприклад C<C:>, замінюються на адреси відповідних файлових
+систем на основі даних з регістру Windows.
 
 =item *
 
-Any backslash (C<\>) characters in the path are replaced with forward
-slashes so that libguestfs can process it.
+Усі символи зворотної похилої риски (C<\>) у шляху замінюються символами
+звичайної похилої риски так, щоб libguestfs змогла обробити адресу.
 
 =item *
 
-The path is resolved case insensitively to locate the file that should be
-edited.
+Шлях до файла, вміст якого має бути редаговано, визначається без врахування
+регістру символів у його записі.
 
 =back
 
@@ -325,31 +335,33 @@ edited.
 
 =item *
 
-NTFS junction points that cross filesystems are not followed.
+Точки з'єднання NTFS, які виходять за межі однією файлової системи
+використовувати не можна.
 
 =back
 
 =head1 ВИКОРИСТАННЯ GUESTFISH
 
-L<guestfish(1)> is a more powerful, lower level tool which you can use when
-C<virt-edit> doesn't work.
+L<guestfish(1)> є потужнішим інструментом нижчого рівня, яким можна
+скористатися, якщо C<virt-edit> не працює.
 
-Using C<virt-edit> is approximately equivalent to doing:
+Використання C<virt-edit> є приблизним еквівалентом такого:
 
  guestfish --rw -i -d назва_домену edit /файл
 
-where C<domname> is the name of the libvirt guest, and F</file> is the full
-path to the file.
+де C<назва_домену> — назва гостьової системи libvirt, а F<файл> — шлях до
+файла повністю.
 
-The command above uses libguestfs's guest inspection feature and so does not
-work on guests that libguestfs cannot inspect, or on things like arbitrary
-disk images that don't contain guests.  To edit a file on a disk image
-directly, use:
+У вказаній вище команді використано можливість інспектування гостьових
+систем засобами libguestfs, отже, вона не працюватиме у гостьових системах,
+які libguestfs не може інспектувати, або у довільних образах дисків, які не
+містять гостьових систем. Щоб редагувати дані файла безпосередньо на образі
+диска, скористайтеся такою командою:
 
  guestfish --rw -a диск.img -m /dev/sda1 edit /файл
 
-where F<disk.img> is the disk image, F</dev/sda1> is the filesystem within
-the disk image to edit, and F</file> is the full path to the file.
+де F<диск.img> — образ диска, F</dev/sda1> — файлова система у образі диска
+для редагування, а F<файл> — шлях до файла повністю.
 
 C<virt-edit> cannot create new files.  Use the guestfish commands C<touch>,
 C<write> or C<upload> instead:
@@ -358,7 +370,7 @@ C<write> or C<upload> instead:
 
  guestfish --rw -i -d назва_домену write /новий_файл "новий вміст"
 
- guestfish --rw -i -d domname upload localfile /newfile
+ guestfish --rw -i -d назва_домену upload локальний_файл /новий_файл
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
@@ -389,5 +401,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

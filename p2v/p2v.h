@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #define P2V_H
 
 #include <stdio.h>
+#include <stdbool.h>
 
 /* Send various debug information to stderr.  Harmless and useful, so
  * can be left enabled in production builds.
@@ -31,10 +32,10 @@
 /* We don't use libguestfs directly here, and we don't link to it
  * either (in fact, we don't want libguestfs on the ISO).  However
  * we include this just so that we can use the convenience macros in
- * guestfs-internal-frontend.h.
+ * utils.h.
  */
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 /* Ensure we don't use libguestfs. */
 #define guestfs_h DO_NOT_USE
@@ -59,6 +60,26 @@ extern int feature_colours_option;
 extern int force_colour;
 
 /* config.c */
+struct cpu_config {
+  char *vendor;                 /* eg. "Intel" */
+  char *model;                  /* eg. "Broadwell" */
+  unsigned sockets;             /* number of sockets */
+  unsigned cores;               /* number of cores per socket */
+  unsigned threads;             /* number of hyperthreads per core */
+  bool acpi;
+  bool apic;
+  bool pae;
+};
+
+struct rtc_config {
+  enum {
+    BASIS_UNKNOWN,              /* RTC could not be read. */
+    BASIS_UTC,                  /* RTC is either UTC or an offset from UTC. */
+    BASIS_LOCALTIME,            /* RTC is localtime. */
+  } basis;
+  int offset;                   /* RTC seconds offset from basis. */
+};
+
 struct config {
   char *server;
   int port;
@@ -71,7 +92,8 @@ struct config {
   char *guestname;
   int vcpus;
   uint64_t memory;
-  int flags;
+  struct cpu_config cpu;
+  struct rtc_config rtc;
   char **disks;
   char **removable;
   char **interfaces;
@@ -83,10 +105,6 @@ struct config {
   char *output_storage;
 };
 
-#define FLAG_ACPI 1
-#define FLAG_APIC 2
-#define FLAG_PAE  4
-
 #define OUTPUT_ALLOCATION_NONE         0
 #define OUTPUT_ALLOCATION_SPARSE       1
 #define OUTPUT_ALLOCATION_PREALLOCATED 2
@@ -95,6 +113,12 @@ extern struct config *new_config (void);
 extern struct config *copy_config (struct config *);
 extern void free_config (struct config *);
 extern void print_config (struct config *, FILE *);
+
+/* cpuid.c */
+extern void get_cpu_config (struct cpu_config *);
+
+/* rtc.c */
+extern void get_rtc_config (struct rtc_config *);
 
 /* kernel-cmdline.c */
 extern char **parse_cmdline_string (const char *cmdline);
@@ -112,6 +136,12 @@ extern void kernel_conversion (struct config *, char **cmdline, int cmdline_sour
 extern void gui_conversion (struct config *);
 
 /* conversion.c */
+struct data_conn {          /* Data per NBD connection / physical disk. */
+  mexp_h *h;                /* miniexpect handle to ssh */
+  pid_t nbd_pid;            /* NBD server PID */
+  int nbd_remote_port;      /* remote NBD port on conversion server */
+};
+
 extern int start_conversion (struct config *, void (*notify_ui) (int type, const char *data));
 #define NOTIFY_LOG_DIR        1  /* location of remote log directory */
 #define NOTIFY_REMOTE_MESSAGE 2  /* log message from remote virt-v2v */
@@ -119,6 +149,9 @@ extern int start_conversion (struct config *, void (*notify_ui) (int type, const
 extern const char *get_conversion_error (void);
 extern void cancel_conversion (void);
 extern int conversion_is_running (void);
+
+/* physical-xml.c */
+extern void generate_physical_xml (struct config *, struct data_conn *, const char *filename);
 
 /* inhibit.c */
 extern int inhibit_power_saving (void);
@@ -128,7 +161,7 @@ extern int test_connection (struct config *);
 extern mexp_h *open_data_connection (struct config *, const char *local_ipaddr, int local_port, int *remote_port);
 extern mexp_h *start_remote_connection (struct config *, const char *remote_dir);
 extern const char *get_ssh_error (void);
-extern int scp_file (struct config *config, const char *localfile, const char *remotefile);
+extern int scp_file (struct config *config, const char *target, const char *local, ...) __attribute__((sentinel));
 
 /* nbd.c */
 extern void set_nbd_option (const char *opt);
@@ -157,8 +190,8 @@ extern char **output_drivers;
 
 /* about-authors.c */
 extern const char *authors[];
-
-/* about-license.c */
-extern const char *gplv2plus;
+extern const char *qa[];
+extern const char *documenters[];
+extern const char *others[];
 
 #endif /* P2V_H */

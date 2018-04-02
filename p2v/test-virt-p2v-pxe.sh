@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs virt-p2v test script
-# Copyright (C) 2014-2017 Red Hat Inc.
+# Copyright (C) 2014-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ username="$(id -un)"
 os="$(cd $d; pwd)"
 
 # The Linux kernel command line.
-cmdline="root=/dev/sda3 ro console=ttyS0 printk.time=1 p2v.server=10.0.2.2 p2v.port=$port p2v.username=$username p2v.identity=file:///var/tmp/id_rsa p2v.name=windows p2v.o=local p2v.os=$os"
+cmdline="root=/dev/sda4 ro console=ttyS0 printk.time=1 p2v.server=10.0.2.2 p2v.port=$port p2v.username=$username p2v.identity=file:///var/tmp/id_rsa p2v.name=windows p2v.o=local p2v.os=$os"
 
 # Run virt-p2v inside qemu.
 $qemu \

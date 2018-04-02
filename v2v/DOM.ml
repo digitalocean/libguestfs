@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,8 @@
 
 (* Poor man's XML DOM, mutable for ease of modification. *)
 
-open Common_utils
+open Std_utils
+open Tools_utils
 
 open Printf
 
@@ -122,7 +123,7 @@ let path_to_nodes (Doc doc) path =
           ) nodes
         | p :: ps ->
           let children =
-            filter_map (
+            List.filter_map (
               function
               | PCData _ -> None
               | Comment _ -> None

@@ -1394,7 +1394,7 @@ fgrepi_stub (XDR *xdr_in)
     return;
 
   struct guestfs_fgrepi_ret ret;
-  ret.lines.lines_len = count_strings (r);
+  ret.lines.lines_len = guestfs_int_count_strings (r);
   ret.lines.lines_val = r;
   reply ((xdrproc_t) &xdr_guestfs_fgrepi_ret, (char *) &ret);
 }
@@ -1612,6 +1612,56 @@ hivex_open_stub (XDR *xdr_in)
 
 #ifdef HAVE_ATTRIBUTE_CLEANUP
 
+#define CLEANUP_XDR_FREE_HIVEX_VALUE_UTF8_ARGS \
+    __attribute__((cleanup(cleanup_xdr_free_hivex_value_utf8_args)))
+
+static void
+cleanup_xdr_free_hivex_value_utf8_args (struct guestfs_hivex_value_utf8_args *argsp)
+{
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_value_utf8_args, (char *) argsp);
+}
+
+#else /* !HAVE_ATTRIBUTE_CLEANUP */
+#define CLEANUP_XDR_FREE_HIVEX_VALUE_UTF8_ARGS
+#endif /* !HAVE_ATTRIBUTE_CLEANUP */
+
+void
+hivex_value_utf8_stub (XDR *xdr_in)
+{
+  CLEANUP_FREE char *r = NULL;
+  CLEANUP_XDR_FREE_HIVEX_VALUE_UTF8_ARGS struct guestfs_hivex_value_utf8_args args;
+  memset (&args, 0, sizeof args);
+  int64_t valueh;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_unavailable_feature ("hivex");
+    return;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    return;
+  }
+
+  if (!xdr_guestfs_hivex_value_utf8_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    return;
+  }
+  valueh = args.valueh;
+
+  r = do_hivex_value_utf8 (valueh);
+  if (r == NULL)
+    /* do_hivex_value_utf8 has already called reply_with_error */
+    return;
+
+  struct guestfs_hivex_value_utf8_ret ret;
+  ret.databuf = r;
+  reply ((xdrproc_t) &xdr_guestfs_hivex_value_utf8_ret, (char *) &ret);
+}
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+
 #define CLEANUP_XDR_FREE_INOTIFY_ADD_WATCH_ARGS \
     __attribute__((cleanup(cleanup_xdr_free_inotify_add_watch_args)))
 
@@ -1712,6 +1762,96 @@ inotify_init_stub (XDR *xdr_in)
   reply (NULL, NULL);
 }
 
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+
+#define CLEANUP_XDR_FREE_INSPECT_GET_TYPE_ARGS \
+    __attribute__((cleanup(cleanup_xdr_free_inspect_get_type_args)))
+
+static void
+cleanup_xdr_free_inspect_get_type_args (struct guestfs_inspect_get_type_args *argsp)
+{
+  xdr_free ((xdrproc_t) xdr_guestfs_inspect_get_type_args, (char *) argsp);
+}
+
+#else /* !HAVE_ATTRIBUTE_CLEANUP */
+#define CLEANUP_XDR_FREE_INSPECT_GET_TYPE_ARGS
+#endif /* !HAVE_ATTRIBUTE_CLEANUP */
+
+void
+inspect_get_type_stub (XDR *xdr_in)
+{
+  CLEANUP_FREE char *r = NULL;
+  CLEANUP_XDR_FREE_INSPECT_GET_TYPE_ARGS struct guestfs_inspect_get_type_args args;
+  memset (&args, 0, sizeof args);
+  CLEANUP_FREE_MOUNTABLE mountable_t root
+      = { .device = NULL, .volume = NULL };
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    return;
+  }
+
+  if (!xdr_guestfs_inspect_get_type_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    return;
+  }
+  RESOLVE_MOUNTABLE (args.root, root, false);
+
+  r = do_inspect_get_type (&root);
+  if (r == NULL)
+    /* do_inspect_get_type has already called reply_with_error */
+    return;
+
+  struct guestfs_inspect_get_type_ret ret;
+  ret.name = r;
+  reply ((xdrproc_t) &xdr_guestfs_inspect_get_type_ret, (char *) &ret);
+}
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+
+#define CLEANUP_XDR_FREE_INSPECT_IS_LIVE_ARGS \
+    __attribute__((cleanup(cleanup_xdr_free_inspect_is_live_args)))
+
+static void
+cleanup_xdr_free_inspect_is_live_args (struct guestfs_inspect_is_live_args *argsp)
+{
+  xdr_free ((xdrproc_t) xdr_guestfs_inspect_is_live_args, (char *) argsp);
+}
+
+#else /* !HAVE_ATTRIBUTE_CLEANUP */
+#define CLEANUP_XDR_FREE_INSPECT_IS_LIVE_ARGS
+#endif /* !HAVE_ATTRIBUTE_CLEANUP */
+
+void
+inspect_is_live_stub (XDR *xdr_in)
+{
+  int r;
+  CLEANUP_XDR_FREE_INSPECT_IS_LIVE_ARGS struct guestfs_inspect_is_live_args args;
+  memset (&args, 0, sizeof args);
+  CLEANUP_FREE_MOUNTABLE mountable_t root
+      = { .device = NULL, .volume = NULL };
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    return;
+  }
+
+  if (!xdr_guestfs_inspect_is_live_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    return;
+  }
+  RESOLVE_MOUNTABLE (args.root, root, false);
+
+  r = do_inspect_is_live (&root);
+  if (r == -1)
+    /* do_inspect_is_live has already called reply_with_error */
+    return;
+
+  struct guestfs_inspect_is_live_ret ret;
+  ret.live = r;
+  reply ((xdrproc_t) &xdr_guestfs_inspect_is_live_ret, (char *) &ret);
+}
+
 void
 internal_exit_stub (XDR *xdr_in)
 {
@@ -1728,6 +1868,56 @@ internal_exit_stub (XDR *xdr_in)
     return;
 
   reply (NULL, NULL);
+}
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+
+#define CLEANUP_XDR_FREE_INTERNAL_YARA_SCAN_ARGS \
+    __attribute__((cleanup(cleanup_xdr_free_internal_yara_scan_args)))
+
+static void
+cleanup_xdr_free_internal_yara_scan_args (struct guestfs_internal_yara_scan_args *argsp)
+{
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_yara_scan_args, (char *) argsp);
+}
+
+#else /* !HAVE_ATTRIBUTE_CLEANUP */
+#define CLEANUP_XDR_FREE_INTERNAL_YARA_SCAN_ARGS
+#endif /* !HAVE_ATTRIBUTE_CLEANUP */
+
+void
+internal_yara_scan_stub (XDR *xdr_in)
+{
+  int r;
+  CLEANUP_XDR_FREE_INTERNAL_YARA_SCAN_ARGS struct guestfs_internal_yara_scan_args args;
+  memset (&args, 0, sizeof args);
+  const char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_libyara_available ()) {
+    reply_with_unavailable_feature ("libyara");
+    return;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    return;
+  }
+
+  if (!xdr_guestfs_internal_yara_scan_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    return;
+  }
+  path = args.path;
+  ABS_PATH (path, false, return);
+
+  NEED_ROOT (false, return);
+  r = do_internal_yara_scan (path);
+  if (r == -1)
+    /* do_internal_yara_scan has already called reply_with_error */
+    return;
+
+  /* do_internal_yara_scan has already sent a reply */
 }
 
 #ifdef HAVE_ATTRIBUTE_CLEANUP
@@ -2132,9 +2322,48 @@ list_devices_stub (XDR *xdr_in)
     return;
 
   struct guestfs_list_devices_ret ret;
-  ret.devices.devices_len = count_strings (r);
+  size_t i;
+  for (i = 0; r[i] != NULL; ++i) {
+    char *rr = reverse_device_name_translation (r[i]);
+    if (rr == NULL)
+      /* reverse_device_name_translation has already called reply_with_error */
+      return;
+    free (r[i]);
+    r[i] = rr;
+  }
+  ret.devices.devices_len = guestfs_int_count_strings (r);
   ret.devices.devices_val = r;
   reply ((xdrproc_t) &xdr_guestfs_list_devices_ret, (char *) &ret);
+}
+
+void
+list_filesystems_stub (XDR *xdr_in)
+{
+  CLEANUP_FREE_STRING_LIST char **r = NULL;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    return;
+  }
+
+  r = do_list_filesystems ();
+  if (r == NULL)
+    /* do_list_filesystems has already called reply_with_error */
+    return;
+
+  struct guestfs_list_filesystems_ret ret;
+  size_t i;
+  for (i = 0; r[i] != NULL; i += 2) {
+    char *rr = reverse_device_name_translation (r[i]);
+    if (rr == NULL)
+      /* reverse_device_name_translation has already called reply_with_error */
+      return;
+    free (r[i]);
+    r[i] = rr;
+  }
+  ret.fses.fses_len = guestfs_int_count_strings (r);
+  ret.fses.fses_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_list_filesystems_ret, (char *) &ret);
 }
 
 #ifdef HAVE_ATTRIBUTE_CLEANUP
@@ -3128,7 +3357,7 @@ strings_stub (XDR *xdr_in)
     return;
 
   struct guestfs_strings_ret ret;
-  ret.stringsout.stringsout_len = count_strings (r);
+  ret.stringsout.stringsout_len = guestfs_int_count_strings (r);
   ret.stringsout.stringsout_val = r;
   reply ((xdrproc_t) &xdr_guestfs_strings_ret, (char *) &ret);
 }
@@ -3591,7 +3820,7 @@ vgs_stub (XDR *xdr_in)
     return;
 
   struct guestfs_vgs_ret ret;
-  ret.volgroups.volgroups_len = count_strings (r);
+  ret.volgroups.volgroups_len = guestfs_int_count_strings (r);
   ret.volgroups.volgroups_val = r;
   reply ((xdrproc_t) &xdr_guestfs_vgs_ret, (char *) &ret);
 }
@@ -3778,7 +4007,7 @@ zgrepi_stub (XDR *xdr_in)
     return;
 
   struct guestfs_zgrepi_ret ret;
-  ret.lines.lines_len = count_strings (r);
+  ret.lines.lines_len = guestfs_int_count_strings (r);
   ret.lines.lines_val = r;
   reply ((xdrproc_t) &xdr_guestfs_zgrepi_ret, (char *) &ret);
 }

@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,19 +56,50 @@ write_cb (void *data_vp, const void *buf, size_t len)
   return 0;
 }
 
+int
+upload_to_fd (int fd, const char *filename)
+{
+  int r, err;
+  struct write_cb_data data = { .fd = fd, .written = 0 };
+
+  r = receive_file (write_cb, &data);
+  if (r == -1) {		/* write error */
+    err = errno;
+    ignore_value (cancel_receive ());
+    errno = err;
+    reply_with_error ("write error: %s", filename);
+    close (fd);
+    return -1;
+  }
+  if (r == -2) {		/* cancellation from library */
+    /* This error is ignored by the library since it initiated the
+     * cancel.  Nevertheless we must send an error reply here.
+     */
+    reply_with_error ("file upload cancelled");
+    close (fd);
+    return -1;
+  }
+
+  if (close (fd) == -1) {
+    reply_with_perror ("close");
+    return -1;
+  }
+
+  return 0;
+}
+
 /* Has one FileIn parameter. */
 static int
 upload (const char *filename, int flags, int64_t offset)
 {
-  struct write_cb_data data = { .written = 0 };
-  int err, r, is_dev;
+  int err, is_dev, fd;
 
-  is_dev = STRPREFIX (filename, "/dev/");
+  is_dev = is_device_parameter (filename);
 
   if (!is_dev) CHROOT_IN;
-  data.fd = open (filename, flags, 0666);
+  fd = open (filename, flags, 0666);
   if (!is_dev) CHROOT_OUT;
-  if (data.fd == -1) {
+  if (fd == -1) {
     err = errno;
     ignore_value (cancel_receive ());
     errno = err;
@@ -77,7 +108,7 @@ upload (const char *filename, int flags, int64_t offset)
   }
 
   if (offset) {
-    if (lseek (data.fd, offset, SEEK_SET) == -1) {
+    if (lseek (fd, offset, SEEK_SET) == -1) {
       err = errno;
       ignore_value (cancel_receive ());
       errno = err;
@@ -86,30 +117,7 @@ upload (const char *filename, int flags, int64_t offset)
     }
   }
 
-  r = receive_file (write_cb, &data);
-  if (r == -1) {		/* write error */
-    err = errno;
-    ignore_value (cancel_receive ());
-    errno = err;
-    reply_with_error ("write error: %s", filename);
-    close (data.fd);
-    return -1;
-  }
-  if (r == -2) {		/* cancellation from library */
-    /* This error is ignored by the library since it initiated the
-     * cancel.  Nevertheless we must send an error reply here.
-     */
-    reply_with_error ("file upload cancelled");
-    close (data.fd);
-    return -1;
-  }
-
-  if (close (data.fd) == -1) {
-    reply_with_perror ("close: %s", filename);
-    return -1;
-  }
-
-  return 0;
+  return upload_to_fd (fd, filename);
 }
 
 /* Has one FileIn parameter. */
@@ -162,7 +170,7 @@ do_download (const char *filename)
     return -1;
   }
 
-  is_dev = STRPREFIX (filename, "/dev/");
+  is_dev = is_device_parameter (filename);
 
   if (!is_dev) CHROOT_IN;
   fd = open (filename, O_RDONLY|O_CLOEXEC);
@@ -256,7 +264,7 @@ do_download_offset (const char *filename, int64_t offset, int64_t size)
   }
   uint64_t usize = (uint64_t) size;
 
-  is_dev = STRPREFIX (filename, "/dev/");
+  is_dev = is_device_parameter (filename);
 
   if (!is_dev) CHROOT_IN;
   fd = open (filename, O_RDONLY|O_CLOEXEC);

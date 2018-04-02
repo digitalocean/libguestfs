@@ -397,6 +397,11 @@ type xfsinfo = {
   xfs_rtextents : int64;
 }
 
+type yara_detection = {
+  yara_name : string;
+  yara_rule : string;
+}
+
 external acl_delete_def_file : t -> string -> unit = "guestfs_int_ocaml_acl_delete_def_file"
 external acl_get_file : t -> string -> string -> string = "guestfs_int_ocaml_acl_get_file"
 external acl_set_file : t -> string -> string -> string -> unit = "guestfs_int_ocaml_acl_set_file"
@@ -620,6 +625,7 @@ external hivex_node_values : t -> int64 -> hivex_value array = "guestfs_int_ocam
 external hivex_open : t -> ?verbose:bool -> ?debug:bool -> ?write:bool -> ?unsafe:bool -> string -> unit = "guestfs_int_ocaml_hivex_open_byte" "guestfs_int_ocaml_hivex_open"
 external hivex_root : t -> int64 = "guestfs_int_ocaml_hivex_root"
 external hivex_value_key : t -> int64 -> string = "guestfs_int_ocaml_hivex_value_key"
+external hivex_value_string : t -> int64 -> string = "guestfs_int_ocaml_hivex_value_string"
 external hivex_value_type : t -> int64 -> int64 = "guestfs_int_ocaml_hivex_value_type"
 external hivex_value_utf8 : t -> int64 -> string = "guestfs_int_ocaml_hivex_value_utf8"
 external hivex_value_value : t -> int64 -> string = "guestfs_int_ocaml_hivex_value_value"
@@ -839,6 +845,7 @@ external part_disk : t -> string -> string -> unit = "guestfs_int_ocaml_part_dis
 external part_expand_gpt : t -> string -> unit = "guestfs_int_ocaml_part_expand_gpt"
 external part_get_bootable : t -> string -> int -> bool = "guestfs_int_ocaml_part_get_bootable"
 external part_get_disk_guid : t -> string -> string = "guestfs_int_ocaml_part_get_disk_guid"
+external part_get_gpt_attributes : t -> string -> int -> int64 = "guestfs_int_ocaml_part_get_gpt_attributes"
 external part_get_gpt_guid : t -> string -> int -> string = "guestfs_int_ocaml_part_get_gpt_guid"
 external part_get_gpt_type : t -> string -> int -> string = "guestfs_int_ocaml_part_get_gpt_type"
 external part_get_mbr_id : t -> string -> int -> int = "guestfs_int_ocaml_part_get_mbr_id"
@@ -847,9 +854,11 @@ external part_get_name : t -> string -> int -> string = "guestfs_int_ocaml_part_
 external part_get_parttype : t -> string -> string = "guestfs_int_ocaml_part_get_parttype"
 external part_init : t -> string -> string -> unit = "guestfs_int_ocaml_part_init"
 external part_list : t -> string -> partition array = "guestfs_int_ocaml_part_list"
+external part_resize : t -> string -> int -> int64 -> unit = "guestfs_int_ocaml_part_resize"
 external part_set_bootable : t -> string -> int -> bool -> unit = "guestfs_int_ocaml_part_set_bootable"
 external part_set_disk_guid : t -> string -> string -> unit = "guestfs_int_ocaml_part_set_disk_guid"
 external part_set_disk_guid_random : t -> string -> unit = "guestfs_int_ocaml_part_set_disk_guid_random"
+external part_set_gpt_attributes : t -> string -> int -> int64 -> unit = "guestfs_int_ocaml_part_set_gpt_attributes"
 external part_set_gpt_guid : t -> string -> int -> string -> unit = "guestfs_int_ocaml_part_set_gpt_guid"
 external part_set_gpt_type : t -> string -> int -> string -> unit = "guestfs_int_ocaml_part_set_gpt_type"
 external part_set_mbr_id : t -> string -> int -> int -> unit = "guestfs_int_ocaml_part_set_mbr_id"
@@ -1009,6 +1018,9 @@ external xfs_admin : t -> ?extunwritten:bool -> ?imgfile:bool -> ?v2log:bool -> 
 external xfs_growfs : t -> ?datasec:bool -> ?logsec:bool -> ?rtsec:bool -> ?datasize:int64 -> ?logsize:int64 -> ?rtsize:int64 -> ?rtextsize:int64 -> ?maxpct:int -> string -> unit = "guestfs_int_ocaml_xfs_growfs_byte" "guestfs_int_ocaml_xfs_growfs"
 external xfs_info : t -> string -> xfsinfo = "guestfs_int_ocaml_xfs_info"
 external xfs_repair : t -> ?forcelogzero:bool -> ?nomodify:bool -> ?noprefetch:bool -> ?forcegeometry:bool -> ?maxmem:int64 -> ?ihashsize:int64 -> ?bhashsize:int64 -> ?agstride:int64 -> ?logdev:string -> ?rtdev:string -> string -> int = "guestfs_int_ocaml_xfs_repair_byte" "guestfs_int_ocaml_xfs_repair"
+external yara_destroy : t -> unit = "guestfs_int_ocaml_yara_destroy"
+external yara_load : t -> string -> unit = "guestfs_int_ocaml_yara_load"
+external yara_scan : t -> string -> yara_detection array = "guestfs_int_ocaml_yara_scan"
 external zegrep : t -> string -> string -> string array = "guestfs_int_ocaml_zegrep"
 external zegrepi : t -> string -> string -> string array = "guestfs_int_ocaml_zegrepi"
 external zero : t -> string -> unit = "guestfs_int_ocaml_zero"
@@ -1252,6 +1264,7 @@ class guestfs ?environment ?close_on_exit () =
     method hivex_open = hivex_open g
     method hivex_root () = hivex_root g
     method hivex_value_key = hivex_value_key g
+    method hivex_value_string = hivex_value_string g
     method hivex_value_type = hivex_value_type g
     method hivex_value_utf8 = hivex_value_utf8 g
     method hivex_value_value = hivex_value_value g
@@ -1471,6 +1484,7 @@ class guestfs ?environment ?close_on_exit () =
     method part_expand_gpt = part_expand_gpt g
     method part_get_bootable = part_get_bootable g
     method part_get_disk_guid = part_get_disk_guid g
+    method part_get_gpt_attributes = part_get_gpt_attributes g
     method part_get_gpt_guid = part_get_gpt_guid g
     method part_get_gpt_type = part_get_gpt_type g
     method part_get_mbr_id = part_get_mbr_id g
@@ -1479,9 +1493,11 @@ class guestfs ?environment ?close_on_exit () =
     method part_get_parttype = part_get_parttype g
     method part_init = part_init g
     method part_list = part_list g
+    method part_resize = part_resize g
     method part_set_bootable = part_set_bootable g
     method part_set_disk_guid = part_set_disk_guid g
     method part_set_disk_guid_random = part_set_disk_guid_random g
+    method part_set_gpt_attributes = part_set_gpt_attributes g
     method part_set_gpt_guid = part_set_gpt_guid g
     method part_set_gpt_type = part_set_gpt_type g
     method part_set_mbr_id = part_set_mbr_id g
@@ -1641,6 +1657,9 @@ class guestfs ?environment ?close_on_exit () =
     method xfs_growfs = xfs_growfs g
     method xfs_info = xfs_info g
     method xfs_repair = xfs_repair g
+    method yara_destroy () = yara_destroy g
+    method yara_load = yara_load g
+    method yara_scan = yara_scan g
     method zegrep = zegrep g
     method zegrepi = zegrepi g
     method zero = zero g

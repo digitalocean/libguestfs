@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,11 @@ type source = {
                                             still saved here). *)
   s_memory : int64;                     (** Memory size (bytes). *)
   s_vcpu : int;                         (** Number of CPUs. *)
+  s_cpu_vendor : string option;         (** Source CPU vendor. *)
+  s_cpu_model : string option;          (** Source CPU model. *)
+  s_cpu_sockets : int option;           (** Number of sockets. *)
+  s_cpu_cores : int option;             (** Number of cores per socket. *)
+  s_cpu_threads : int option;           (** Number of threads per core. *)
   s_features : string list;             (** Machine features. *)
   s_firmware : source_firmware;         (** Firmware (BIOS or EFI). *)
   s_display : source_display option;    (** Guest display. *)
@@ -103,7 +108,7 @@ and source_disk = {
 }
 (** A source disk. *)
 
-and s_controller = Source_IDE | Source_SCSI |
+and s_controller = Source_IDE | Source_SATA | Source_SCSI |
                    Source_virtio_blk | Source_virtio_SCSI
 (** Source disk controller. *)
 
@@ -184,7 +189,7 @@ val string_of_overlay : overlay -> string
 (** {2 Target disks} *)
 
 type target = {
-  target_file : string;      (** Destination file. *)
+  target_file : target_file; (** Destination file or QEMU URI. *)
   target_format : string;    (** Destination format (eg. -of option). *)
 
   (* Note that the estimate is filled in by core v2v.ml code before
@@ -198,9 +203,13 @@ type target = {
 }
 (** Target disk. *)
 
+and target_file =
+  | TargetFile of string     (** Target is a file. *)
+  | TargetURI of string      (** Target is a QEMU URI. *)
+
 val string_of_target : target -> string
 
-(** {2 Other data structures} *)
+(** {2 Guest firmware} *)
 
 type target_firmware = TargetBIOS | TargetUEFI
 
@@ -210,44 +219,7 @@ type i_firmware =
   | I_BIOS
   | I_UEFI of string list
 
-type inspect = {
-  i_root : string;                      (** Root device. *)
-  i_type : string;                      (** Usual inspection fields. *)
-  i_distro : string;
-  i_arch : string;
-  i_major_version : int;
-  i_minor_version : int;
-  i_package_format : string;
-  i_package_management : string;
-  i_product_name : string;
-  i_product_variant : string;
-  i_mountpoints : (string * string) list;
-  i_apps : Guestfs.application2 list;   (** List of packages installed. *)
-  i_apps_map : Guestfs.application2 list StringMap.t;
-    (** This is a map from the app name to the application object.
-        Since RPM allows multiple packages with the same name to be
-        installed, the value is a list. *)
-  i_firmware : i_firmware;
-    (** The list of EFI system partitions for the guest with UEFI,
-        otherwise the BIOS identifier. *)
-  i_windows_systemroot : string;
-  i_windows_software_hive : string;
-  i_windows_system_hive : string;
-  i_windows_current_control_set : string;
-}
-(** Inspection information. *)
-
-val string_of_inspect : inspect -> string
-
-type mpstat = {
-  mp_dev : string;                      (** Filesystem device (eg. /dev/sda1) *)
-  mp_path : string;                     (** Guest mountpoint (eg. /boot) *)
-  mp_statvfs : Guestfs.statvfs;         (** Free space stats. *)
-  mp_vfs : string;                      (** VFS type (eg. "ext4") *)
-}
-(** Mountpoint stats, used for free space estimation. *)
-
-val print_mpstat : out_channel -> mpstat -> unit
+(** {2 Guest capabilities} *)
 
 type guestcaps = {
   gcaps_block_bus : guestcaps_block_type;
@@ -258,6 +230,10 @@ type guestcaps = {
       guest (and in some cases conversion can actually enhance these by
       installing drivers).  Thus this is not known until after
       conversion. *)
+
+  gcaps_virtio_rng : bool;      (** Guest supports virtio-rng. *)
+  gcaps_virtio_balloon : bool;  (** Guest supports virtio balloon. *)
+  gcaps_isa_pvpanic : bool;     (** Guest supports ISA pvpanic device. *)
 
   gcaps_arch : string;      (** Architecture that KVM must emulate. *)
   gcaps_acpi : bool;        (** True if guest supports acpi. *)
@@ -279,6 +255,8 @@ and guestcaps_video_type = QXL | Cirrus
 
 val string_of_guestcaps : guestcaps -> string
 val string_of_requested_guestcaps : requested_guestcaps -> string
+
+(** {2 Guest buses} *)
 
 type target_buses = {
   target_virtio_blk_bus : target_bus_slot array;
@@ -322,11 +300,57 @@ and target_bus_slot =
 
 val string_of_target_buses : target_buses -> string
 
+(** {2 Inspection data} *)
+
+type inspect = {
+  i_root : string;                      (** Root device. *)
+  i_type : string;                      (** Usual inspection fields. *)
+  i_distro : string;
+  i_arch : string;
+  i_major_version : int;
+  i_minor_version : int;
+  i_package_format : string;
+  i_package_management : string;
+  i_product_name : string;
+  i_product_variant : string;
+  i_mountpoints : (string * string) list;
+  i_apps : Guestfs.application2 list;   (** List of packages installed. *)
+  i_apps_map : Guestfs.application2 list StringMap.t;
+    (** This is a map from the app name to the application object.
+        Since RPM allows multiple packages with the same name to be
+        installed, the value is a list. *)
+  i_firmware : i_firmware;
+    (** The list of EFI system partitions for the guest with UEFI,
+        otherwise the BIOS identifier. *)
+  i_windows_systemroot : string;
+  i_windows_software_hive : string;
+  i_windows_system_hive : string;
+  i_windows_current_control_set : string;
+}
+(** Inspection information. *)
+
+val string_of_inspect : inspect -> string
+
+(** {2 Command line parameters} *)
+
 type root_choice = AskRoot | SingleRoot | FirstRoot | RootDev of string
 (** Type of [--root] (root choice) option. *)
 
 type output_allocation = Sparse | Preallocated
 (** Type of [-oa] (output allocation) option. *)
+
+type vddk_options = {
+    vddk_config : string option;
+    vddk_cookie : string option;
+    vddk_libdir : string option;
+    vddk_nfchostport : string option;
+    vddk_port : string option;
+    vddk_snapshot : string option;
+    vddk_thumbprint : string option;
+    vddk_transports : string option;
+    vddk_vimapiver : string option;
+}
+(** Various options passed through to the nbdkit vddk plugin unmodified. *)
 
 (** {2 Input object}
 

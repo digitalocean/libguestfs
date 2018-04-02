@@ -30,7 +30,8 @@
 
 #include "com_redhat_et_libguestfs_GuestFS.h"
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
+#include "structs-cleanups.h"
 
 /* Note that this function returns.  The exception is not thrown
  * until after the wrapper function returns.
@@ -2295,6 +2296,30 @@ Java_com_redhat_et_libguestfs_GuestFS__1wc_1c  (JNIEnv *env, jobject obj, jlong 
 
  ret_error:
   return -1;
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1yara_1load  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *filename;
+
+  filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
+
+  r = guestfs_yara_load (g, filename);
+
+  (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  return;
+
+ ret_error:
+  return;
 }
 
 

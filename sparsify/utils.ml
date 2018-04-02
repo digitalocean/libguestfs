@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2017 Red Hat Inc.
+ * Copyright (C) 2011-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,15 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 
 module G = Guestfs
 
 (* Return true if the filesystem is a read-only LV (RHBZ#1185561). *)
 let is_read_only_lv (g : G.guestfs) =
   let lvs = Array.to_list (g#lvs_full ()) in
-  let ro_uuids = filter_map (
-    fun { G.lv_uuid = lv_uuid; lv_attr = lv_attr } ->
+  let ro_uuids = List.filter_map (
+    fun { G.lv_uuid; lv_attr } ->
       if lv_attr.[1] = 'r' then Some lv_uuid else None
   ) lvs in
   fun fs ->

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Regedit
 
@@ -31,7 +32,9 @@ let virtio_win =
   with Not_found ->
     try Sys.getenv "VIRTIO_WIN_DIR" (* old name for VIRTIO_WIN *)
     with Not_found ->
-      Guestfs_config.datadir // "virtio-win"
+      let iso = Guestfs_config.datadir // "virtio-win" // "virtio-win.iso" in
+      if Sys.file_exists iso then iso
+      else Guestfs_config.datadir // "virtio-win"
 
 let scsi_class_guid = "{4D36E97B-E325-11CE-BFC1-08002BE10318}"
 let viostor_legacy_pciid = "VEN_1AF4&DEV_1001&SUBSYS_00021AF4&REV_00"
@@ -63,7 +66,7 @@ let rec install_drivers ((g, _) as reg) inspect rcaps =
         match net_type with
         | Some model -> model
         | None -> RTL8139 in
-      (IDE, net_type, Cirrus)
+      (IDE, net_type, Cirrus, false, false, false)
   )
   else (
     (* Can we install the block driver? *)
@@ -169,7 +172,13 @@ let rec install_drivers ((g, _) as reg) inspect rcaps =
       | Some Cirrus, _ ->
         Cirrus in
 
-    (block, net, video)
+    (* Did we install the miscellaneous drivers? *)
+    let virtio_rng_supported = g#exists (driverdir // "viorng.inf") in
+    let virtio_ballon_supported = g#exists (driverdir // "balloon.inf") in
+    let isa_pvpanic_supported = g#exists (driverdir // "pvpanic.inf") in
+
+    (block, net, video,
+     virtio_rng_supported, virtio_ballon_supported, isa_pvpanic_supported)
   )
 
 and add_guestor_to_registry ((g, root) as reg) inspect drv_name drv_pciid =

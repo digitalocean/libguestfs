@@ -36,7 +36,7 @@ instead of erl_interface.
 */
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #include "actions.h"
 
@@ -1219,6 +1219,19 @@ run_wc_c (ETERM *args_tuple)
     return make_error ("wc_c");
 
   return erl_mk_int (r);
+}
+
+ETERM *
+run_yara_load (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_yara_load (g, filename);
+  if (r == -1)
+    return make_error ("yara_load");
+
+  return erl_mk_atom ("ok");
 }
 
 ETERM *

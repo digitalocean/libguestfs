@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ open Types
 let non_daemon_functions = [
   { defaults with
     name = "set_hv"; added = (1, 23, 17);
-    style = RErr, [String "hv"], [];
+    style = RErr, [String (PlainString, "hv")], [];
     fish_alias = ["hv"]; config_only = true;
     blocking = false;
     shortdesc = "set the hypervisor binary";
@@ -51,7 +51,7 @@ the qemu binary at the same time as the handle is created." };
 
   { defaults with
     name = "get_hv"; added = (1, 23, 17);
-    style = RString "hv", [], [];
+    style = RString (RPlainString, "hv"), [], [];
     blocking = false;
     tests = [
       InitNone, Always, TestRun (
@@ -260,34 +260,6 @@ C<guestfs_set_event_callback>)." };
 Return the command trace flag." };
 
   { defaults with
-    name = "set_direct"; added = (1, 0, 72);
-    style = RErr, [Bool "direct"], [];
-    fish_alias = ["direct"]; config_only = true;
-    blocking = false;
-    shortdesc = "enable or disable direct appliance mode";
-    longdesc = "\
-If the direct appliance mode flag is enabled, then stdin and
-stdout are passed directly through to the appliance once it
-is launched.
-
-One consequence of this is that log messages aren't caught
-by the library and handled by C<guestfs_set_log_message_callback>,
-but go straight to stdout.
-
-You probably don't want to use this unless you know what you
-are doing.
-
-The default is disabled." };
-
-  { defaults with
-    name = "get_direct"; added = (1, 0, 72);
-    style = RBool "direct", [], [];
-    blocking = false;
-    shortdesc = "get direct appliance mode flag";
-    longdesc = "\
-Return the direct appliance mode flag." };
-
-  { defaults with
     name = "set_recovery_proc"; added = (1, 0, 77);
     style = RErr, [Bool "recoveryproc"], [];
     fish_alias = ["recovery-proc"]; config_only = true;
@@ -342,7 +314,7 @@ This returns the enable network flag." };
 
   { defaults with
     name = "set_backend"; added = (1, 21, 26);
-    style = RErr, [String "backend"], [];
+    style = RErr, [String (PlainString, "backend")], [];
     fish_alias = ["backend"]; config_only = true;
     blocking = false;
     shortdesc = "set the backend";
@@ -356,7 +328,7 @@ See L<guestfs(3)/BACKEND>." };
 
   { defaults with
     name = "get_backend"; added = (1, 21, 26);
-    style = RString "backend", [], [];
+    style = RString (RPlainString, "backend"), [], [];
     blocking = false;
     tests = [
       InitNone, Always, TestRun (
@@ -433,7 +405,7 @@ the default.  Else F</tmp> is the default." };
 
   { defaults with
     name = "get_tmpdir"; added = (1, 19, 58);
-    style = RString "tmpdir", [], [];
+    style = RString (RPlainString, "tmpdir"), [], [];
     blocking = false;
     shortdesc = "get the temporary directory";
     longdesc = "\
@@ -458,7 +430,7 @@ the default.  Else F</var/tmp> is the default." };
 
   { defaults with
     name = "get_cachedir"; added = (1, 19, 58);
-    style = RString "cachedir", [], [];
+    style = RString (RPlainString, "cachedir"), [], [];
     blocking = false;
     shortdesc = "get the appliance cache directory";
     longdesc = "\
@@ -466,7 +438,7 @@ Get the directory used by the handle to store the appliance cache." };
 
   { defaults with
     name = "set_program"; added = (1, 21, 29);
-    style = RErr, [String "program"], [];
+    style = RErr, [String (PlainString, "program")], [];
     fish_alias = ["program"];
     blocking = false;
     shortdesc = "set the program name";
@@ -492,7 +464,7 @@ Get the program name.  See C<guestfs_set_program>." };
 
   { defaults with
     name = "get_backend_settings"; added = (1, 25, 24);
-    style = RStringList "settings", [], [];
+    style = RStringList (RPlainString, "settings"), [], [];
     blocking = false;
     tests = [
       InitNone, Always, TestRun (
@@ -509,7 +481,7 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>." };
 
   { defaults with
     name = "set_backend_settings"; added = (1, 25, 24);
-    style = RErr, [StringList "settings"], [];
+    style = RErr, [StringList (PlainString, "settings")], [];
     config_only = true;
     blocking = false;
     shortdesc = "replace per-backend settings strings";
@@ -533,7 +505,7 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>." };
 
   { defaults with
     name = "get_backend_setting"; added = (1, 27, 2);
-    style = RString "val", [String "name"], [];
+    style = RString (RPlainString, "val"), [String (PlainString, "name")], [];
     blocking = false;
     shortdesc = "get a single per-backend settings string";
     longdesc = "\
@@ -550,7 +522,7 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>." };
 
   { defaults with
     name = "set_backend_setting"; added = (1, 27, 2);
-    style = RErr, [String "name"; String "val"], [];
+    style = RErr, [String (PlainString, "name"); String (PlainString, "val")], [];
     config_only = true;
     blocking = false;
     shortdesc = "set a single per-backend settings string";
@@ -563,7 +535,7 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>." };
 
   { defaults with
     name = "clear_backend_setting"; added = (1, 27, 2);
-    style = RInt "count", [String "name"], [];
+    style = RInt "count", [String (PlainString, "name")], [];
     config_only = true;
     blocking = false;
     shortdesc = "remove a single per-backend settings string";
@@ -579,7 +551,7 @@ See L<guestfs(3)/BACKEND>, L<guestfs(3)/BACKEND SETTINGS>." };
 
   { defaults with
     name = "set_identifier"; added = (1, 31, 14);
-    style = RErr, [String "identifier"], [];
+    style = RErr, [String (PlainString, "identifier")], [];
     fish_alias = ["identifier"];
     blocking = false;
     shortdesc = "set the handle identifier";
@@ -622,7 +594,7 @@ Get the handle identifier.  See C<guestfs_set_identifier>." };
 
   { defaults with
     name = "get_sockdir"; added = (1, 33, 8);
-    style = RString "sockdir", [], [];
+    style = RString (RPlainString, "sockdir"), [], [];
     blocking = false;
     shortdesc = "get the temporary directory for sockets";
     longdesc = "\

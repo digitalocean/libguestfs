@@ -29,27 +29,27 @@ also need to read L<guestfs(3)>.
 
 @INSPECT_VM@
 
-=head1 EXAMPLE: ENABLE DEBUGGING AND LOGGING
+=head1 ПРИКЛАД: ВМИКАННЯ ДІАГНОСТИКИ І ЖУРНАЛЮВАННЯ
 
 @DEBUG_LOGGING@
 
-=head1 EXAMPLE: DISPLAY THE OPERATING SYSTEM ICON OF A GUEST
+=head1 ПРИКЛАД: ПОКАЗ ПІКТОГРАМИ ОПЕРАЦІЙНОЇ СИСТЕМИ ГОСТЬОВОЇ СИСТЕМИ
 
 @DISPLAY_ICON@
 
-=head1 EXAMPLE: THE LIBVIRT AUTHENTICATION API
+=head1 ПРИКЛАД: ПРОГРАМНИЙ ІНТЕРФЕЙС РОЗПІЗНАВАННЯ LIBVIRT
 
 @LIBVIRT_AUTH@
 
-=head1 EXAMPLE: THE MOUNT LOCAL API
+=head1 ПРИКЛАДЛ: ЛОКАЛЬНИЙ ПРОГРАМНИЙ ІНТЕРФЕЙС МОНТУВАННЯ
 
 @MOUNT_LOCAL@
 
-=head1 EXAMPLE: MULTIPLE HANDLES AND THREADS
+=head1 ПРИКЛАД: ОБРОБКА У ДЕКІЛЬКА ДЕСКРПИТОРІВ І ПОТОКІВ
 
 @COPY_OVER@
 
-=head1 EXAMPLE: FETCH DHCP ADDRESS FROM A GUEST
+=head1 ПРИКЛАД: ОТРИМАННЯ АДРЕСИ DHCP ІЗ ГОСТЬОВОЇ СИСТЕМИ
 
 @VIRT_DHCP_ADDRESS@
 
@@ -66,5 +66,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2010-2017 Red Hat Inc.
+Copyright (C) 2010-2018 Red Hat Inc.
 

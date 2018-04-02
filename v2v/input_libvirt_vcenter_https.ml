@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 (** [-i libvirt] when the source is VMware vCenter *)
 
 open Common_gettext.Gettext
-open Common_utils
+open Tools_utils
 open Unix_utils.Env
 
 open Types
@@ -36,7 +36,7 @@ let readahead_for_copying = Some (64 * 1024 * 1024)
 
 (* Subclass specialized for handling VMware vCenter over https. *)
 class input_libvirt_vcenter_https
-  cmdline_dcPath password libvirt_uri parsed_uri scheme server guest =
+        password libvirt_uri parsed_uri server guest =
 object
   inherit input_libvirt password libvirt_uri guest
 
@@ -47,8 +47,7 @@ object
     error_if_libvirt_does_not_support_json_backingfile ()
 
   method source () =
-    debug "input_libvirt_vcenter_https: source: scheme %s server %s"
-          scheme server;
+    debug "input_libvirt_vcenter_https: source: server %s" server;
 
     (* Remove proxy environment variables so curl doesn't try to use
      * them.  Libvirt doesn't use the proxy anyway, and using a proxy
@@ -68,33 +67,18 @@ object
     let xml = Libvirt_utils.dumpxml ?password ?conn:libvirt_uri guest in
     let source, disks = parse_libvirt_xml ?conn:libvirt_uri xml in
 
-    (* Find the <vmware:datacenterpath> element from the XML, if it
-     * exists.  This was added in libvirt >= 1.2.20.
+    (* Find the <vmware:datacenterpath> element from the XML.  This
+     * was added in libvirt >= 1.2.20.
      *)
-    let xml_dcPath =
+    dcPath <- (
       let doc = Xml.parse_memory xml in
       let xpathctx = Xml.xpath_new_context doc in
       Xml.xpath_register_ns xpathctx
         "vmware" "http://libvirt.org/schemas/domain/vmware/1.0";
-      let xpath_string = xpath_string xpathctx in
-      xpath_string "/domain/vmware:datacenterpath" in
-
-    (* Calculate the dcPath we're going to use. *)
-    dcPath <- (
-      match cmdline_dcPath, xml_dcPath with
-      (* Command line --dcpath parameter overrides everything, allowing
-       * users to correct any mistakes in v2v or libvirt.
-       *)
-      | Some p, (None|Some _) ->
-         debug "vcenter: using --dcpath from the command line: %s" p;
-         p
-      | None, Some p ->
-         debug "vcenter: using <vmware:datacenterpath> from libvirt: %s" p;
-         p
-      | None, None ->
-         let p = VCenter.guess_dcPath parsed_uri scheme in
-         debug "vcenter: guessed dcPath from URI: %s" p;
-         p
+      match xpath_string xpathctx "/domain/vmware:datacenterpath" with
+      | Some dcPath -> dcPath
+      | None ->
+         error (f_"vcenter: <vmware:datacenterpath> was not found in the XML.  You need to upgrade to libvirt ≥ 1.2.20.")
     );
 
     (* Save the original source paths, so that we can remap them again
@@ -117,9 +101,9 @@ object
       | { p_source = P_source_dev _ } -> assert false
       | { p_source_disk = disk; p_source = P_dont_rewrite } -> disk
       | { p_source_disk = disk; p_source = P_source_file path } ->
-        let qemu_uri =
-          VCenter.map_source_to_uri readahead dcPath password
-                                    parsed_uri scheme server path in
+        let { VCenter.qemu_uri } =
+          VCenter.map_source ?readahead ?password
+                             dcPath parsed_uri server path in
 
         (* The libvirt ESX driver doesn't normally specify a format, but
          * the format of the -flat file is *always* raw, so force it here.
@@ -138,9 +122,9 @@ object
     | None -> ()
     | Some orig_path ->
       let readahead = readahead_for_copying in
-      let backing_qemu_uri =
-        VCenter.map_source_to_uri readahead dcPath password
-                                  parsed_uri scheme server orig_path in
+      let { VCenter.qemu_uri = backing_qemu_uri } =
+        VCenter.map_source ?readahead ?password
+                           dcPath parsed_uri server orig_path in
 
       (* Rebase the qcow2 overlay to adjust the readahead parameter. *)
       let cmd = [ "qemu-img"; "rebase"; "-u"; "-b"; backing_qemu_uri;

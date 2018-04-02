@@ -1,5 +1,5 @@
 # libguestfs virt-builder tool
-# Copyright (C) 2013-2017 Red Hat Inc.
+# Copyright (C) 2013-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,6 +21,9 @@ AM_YFLAGS = -d
 
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
+	$(REPOSITORY_SOURCES_ML) \
+	$(REPOSITORY_SOURCES_MLI) \
+	index_parser_tests.ml \
 	libguestfs.gpg \
 	opensuse.gpg \
 	test-console.sh \
@@ -28,10 +31,12 @@ EXTRA_DIST = \
 	test-simplestreams/streams/v1/index.json \
 	test-simplestreams/streams/v1/net.cirros-cloud_released_download.json \
 	test-virt-builder.sh \
-	test-virt-builder-docs.sh \
+	test-docs.sh \
+	test-virt-builder-cacheall.sh \
 	test-virt-builder-list.sh \
 	test-virt-builder-list-simplestreams.sh \
 	test-virt-builder-planner.sh \
+	test-virt-builder-repository.sh \
 	test-virt-index-validate.sh \
 	test-virt-index-validate-bad-1 \
 	test-virt-index-validate-good-1 \
@@ -39,10 +44,12 @@ EXTRA_DIST = \
 	test-virt-index-validate-good-3 \
 	test-virt-index-validate-good-4 \
 	virt-builder.pod \
+	virt-builder-repository.pod \
 	virt-index-validate.pod \
 	yajl_tests.ml
 
 SOURCES_MLI = \
+	builder.mli \
 	cache.mli \
 	cmdline.mli \
 	downloader.mli \
@@ -51,20 +58,27 @@ SOURCES_MLI = \
 	ini_reader.mli \
 	languages.mli \
 	list_entries.mli \
+	osinfo.mli \
+	osinfo_config.mli \
+	paths.mli \
 	pxzcat.mli \
+	repository_main.mli \
 	setlocale.mli \
 	sigchecker.mli \
 	simplestreams_parser.mli \
 	sources.mli \
+	utils.mli \
 	yajl.mli
 
 SOURCES_ML = \
+	yajl.ml \
 	utils.ml \
+	osinfo_config.ml \
+	osinfo.ml \
 	pxzcat.ml \
 	setlocale.ml \
 	index.ml \
 	ini_reader.ml \
-	yajl.ml \
 	paths.ml \
 	languages.ml \
 	cache.ml \
@@ -86,13 +100,45 @@ SOURCES_C = \
 	setlocale-c.c \
 	yajl-c.c
 
+REPOSITORY_SOURCES_ML = \
+	yajl.ml \
+	utils.ml \
+	index.ml \
+	cache.ml \
+	downloader.ml \
+	sigchecker.ml \
+	ini_reader.ml \
+	index_parser.ml \
+	paths.ml \
+	sources.ml \
+	osinfo_config.ml \
+	osinfo.ml \
+	repository_main.ml
+
+REPOSITORY_SOURCES_MLI = \
+	cache.mli \
+	downloader.mli \
+	index.mli \
+	index_parser.mli \
+	ini_reader.mli \
+	sigchecker.mli \
+	sources.mli \
+	yajl.mli
+
+REPOSITORY_SOURCES_C = \
+	index-scan.c \
+	index-struct.c \
+	index-parse.c \
+	index-parser-c.c \
+	yajl-c.c
+
 man_MANS =
 noinst_DATA =
 bin_PROGRAMS =
 
 if HAVE_OCAML
 
-bin_PROGRAMS += virt-builder
+bin_PROGRAMS += virt-builder virt-builder-repository
 
 virt_builder_SOURCES = $(SOURCES_C)
 virt_builder_CPPFLAGS = \
@@ -115,16 +161,39 @@ virt_builder_CFLAGS = \
 BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
+virt_builder_repository_SOURCES = $(REPOSITORY_SOURCES_C)
+virt_builder_repository_CPPFLAGS = \
+	-I. \
+	-I$(top_builddir) \
+	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
+	-I$(shell $(OCAMLC) -where) \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_srcdir)/lib
+virt_builder_repository_CFLAGS = \
+	-pthread \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	-Wno-unused-macros \
+	$(LIBTINFO_CFLAGS) \
+	$(LIBXML2_CFLAGS) \
+	$(YAJL_CFLAGS)
+REPOSITORY_BOBJECTS = $(REPOSITORY_SOURCES_ML:.ml=.cmo)
+REPOSITORY_XOBJECTS = $(REPOSITORY_BOBJECTS:.cmo=.cmx)
+
 # -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 OCAMLPACKAGES = \
 	-package str,unix \
 	-I $(top_builddir)/common/utils/.libs \
+	-I $(top_builddir)/common/mlxml \
 	-I $(top_builddir)/lib/.libs \
 	-I $(top_builddir)/gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
-	-I $(top_builddir)/mllib \
+	-I $(top_builddir)/common/mlstdutils \
+	-I $(top_builddir)/common/mlutils \
+	-I $(top_builddir)/common/mlgettext \
+	-I $(top_builddir)/common/mlpcre \
+	-I $(top_builddir)/common/mltools \
 	-I $(top_builddir)/customize
 OCAMLPACKAGES_TESTS =
 if HAVE_OCAML_PKG_GETTEXT
@@ -149,21 +218,46 @@ OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 
 if !HAVE_OCAMLOPT
 OBJECTS = $(BOBJECTS)
+REPOSITORY_OBJECTS = $(REPOSITORY_BOBJECTS)
 else
 OBJECTS = $(XOBJECTS)
+REPOSITORY_OBJECTS = $(REPOSITORY_XOBJECTS)
 endif
 
-OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) customize.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+OCAMLLINKFLAGS = \
+	mlgettext.$(MLARCHIVE) \
+	mlpcre.$(MLARCHIVE) \
+	mlxml.$(MLARCHIVE) \
+	mlstdutils.$(MLARCHIVE) \
+	mlguestfs.$(MLARCHIVE) \
+	mlcutils.$(MLARCHIVE) \
+	mltools.$(MLARCHIVE) \
+	customize.$(MLARCHIVE) \
+	$(LINK_CUSTOM_OCAMLC_ONLY)
 
 virt_builder_DEPENDENCIES = \
 	$(OBJECTS) \
-	../mllib/mllib.$(MLARCHIVE) \
+	../common/mlpcre/mlpcre.$(MLARCHIVE) \
+	../common/mlgettext/mlgettext.$(MLARCHIVE) \
+	../common/mlstdutils/mlstdutils.$(MLARCHIVE) \
+	../common/mlutils/mlcutils.$(MLARCHIVE) \
+	../common/mltools/mltools.$(MLARCHIVE) \
 	../customize/customize.$(MLARCHIVE) \
 	$(top_srcdir)/ocaml-link.sh
 virt_builder_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
 	  $(OBJECTS) -o $@
+
+virt_builder_repository_DEPENDENCIES = \
+	$(REPOSITORY_OBJECTS) \
+	../common/mltools/mltools.$(MLARCHIVE) \
+	../common/mlxml/mlxml.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
+virt_builder_repository_LINK = \
+	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
+	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
+	  $(REPOSITORY_OBJECTS) -o $@
 
 # Manual pages and HTML files for the website.
 
@@ -183,6 +277,20 @@ stamp-virt-builder.pod: virt-builder.pod $(top_srcdir)/customize/customize-synop
 	  $<
 	touch $@
 
+man_MANS += virt-builder-repository.1
+noinst_DATA += $(top_builddir)/website/virt-builder-repository.1.html
+
+virt-builder-repository.1 $(top_builddir)/website/virt-builder-repository.1.html: stamp-virt-builder-repository.pod
+
+stamp-virt-builder-repository.pod: virt-builder-repository.pod
+	$(PODWRAPPER) \
+	  --man virt-builder-repository.1 \
+	  --html $(top_builddir)/website/virt-builder-repository.1.html \
+	  --license GPLv2+ \
+	  --warning safe \
+	  $<
+	touch $@
+
 # Tests.
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
@@ -194,6 +302,10 @@ disk_images := \
 CLEANFILES += *.qcow2 *.xz
 
 check_DATA = $(disk_images)
+
+osinfo_config.ml: Makefile
+	echo 'let libosinfo_db_path = "$(datadir)/libosinfo/db"' > $@-t
+	mv $@-t $@
 
 fedora.qcow2: ../test-data/phony-guests/fedora.img
 	rm -f $@ $@-t
@@ -217,18 +329,46 @@ yajl_tests_BOBJECTS = \
 	yajl_tests.cmo
 yajl_tests_XOBJECTS = $(yajl_tests_BOBJECTS:.cmo=.cmx)
 
+index_parser_tests_SOURCES = \
+	index-scan.c \
+	index-struct.c \
+	index-parser-c.c \
+	index-parse.c \
+	yajl-c.c
+index_parser_tests_CPPFLAGS = $(virt_builder_CPPFLAGS)
+index_parser_tests_BOBJECTS = \
+	yajl.cmo \
+	utils.cmo \
+	index.cmo \
+	cache.cmo \
+	downloader.cmo \
+	sigchecker.cmo \
+	ini_reader.cmo \
+	index_parser.cmo \
+	index_parser_tests.cmo
+index_parser_tests_XOBJECTS = $(index_parser_tests_BOBJECTS:.cmo=.cmx)
+
 # Can't call the following as <test>_OBJECTS because automake gets confused.
 if HAVE_OCAMLOPT
 yajl_tests_THEOBJECTS = $(yajl_tests_XOBJECTS)
 yajl_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+
+index_parser_tests_THEOBJECTS = $(index_parser_tests_XOBJECTS)
+index_parser_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 else
 yajl_tests_THEOBJECTS = $(yajl_tests_BOBJECTS)
 yajl_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+
+index_parser_tests_THEOBJECTS = $(index_parser_tests_BOBJECTS)
+index_parser_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 endif
 
 yajl_tests_DEPENDENCIES = \
 	$(yajl_tests_THEOBJECTS) \
-	../mllib/mllib.$(MLARCHIVE) \
+	../common/mlpcre/mlpcre.$(MLARCHIVE) \
+	../common/mlstdutils/mlstdutils.$(MLARCHIVE) \
+	../common/mlutils/mlcutils.$(MLARCHIVE) \
+	../common/mltools/mltools.$(MLARCHIVE) \
 	../customize/customize.$(MLARCHIVE) \
 	$(top_srcdir)/ocaml-link.sh
 yajl_tests_LINK = \
@@ -236,8 +376,18 @@ yajl_tests_LINK = \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) $(OCAMLLINKFLAGS) \
 	  $(yajl_tests_THEOBJECTS) -o $@
 
+index_parser_tests_DEPENDENCIES = \
+	$(index_parser_tests_THEOBJECTS) \
+	../common/mltools/mltools.$(MLARCHIVE) \
+	$(top_srcdir)/ocaml-link.sh
+index_parser_tests_LINK = \
+	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
+	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) $(OCAMLLINKFLAGS) \
+	  $(index_parser_tests_THEOBJECTS) -o $@
+
 TESTS = \
-	test-virt-builder-docs.sh \
+	test-docs.sh \
+	test-virt-builder-cacheall.sh \
 	test-virt-builder-list.sh \
 	test-virt-index-validate.sh \
 	$(SLOW_TESTS)
@@ -249,8 +399,8 @@ if ENABLE_APPLIANCE
 TESTS += test-virt-builder.sh
 endif ENABLE_APPLIANCE
 if HAVE_OCAML_PKG_OUNIT
-check_PROGRAMS += yajl_tests
-TESTS += yajl_tests
+check_PROGRAMS += yajl_tests index_parser_tests
+TESTS += yajl_tests index_parser_tests
 endif
 
 check-valgrind:
@@ -260,7 +410,8 @@ check-valgrind:
 
 SLOW_TESTS = \
 	$(console_test_scripts) \
-	test-virt-builder-planner.sh
+	test-virt-builder-planner.sh \
+	test-virt-builder-repository.sh
 
 check-slow:
 	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
@@ -294,23 +445,14 @@ CLEANFILES += \
 	console-*.img \
 	console-*.out
 
-# Dependencies.
-depend: .depend
-
-.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
-	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
-	  $(SED) 's/ *$$//' | \
-	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
-	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
-	  sort > $@-t
-	mv $@-t $@
-
+# OCaml dependencies.
+.depend: *.mli *.ml osinfo_config.mli osinfo_config.ml
+	$(top_builddir)/ocaml-dep.sh $^
 -include .depend
 
 endif
 
-.PHONY: depend docs
+.PHONY: docs
 
 # virt-builder's default repository
 

@@ -48,11 +48,7 @@ following command a few times:
  time guestfish -a /dev/null run
 
 After a few runs, the time should settle down to a few seconds (under
-5 seconds on fast 64 bit hardware).
-
-How to check for hardware virt:
-
-L<http://virt-tools.org/learning/check-hardware-virt/>
+3 seconds on fast 64 bit hardware).
 
 If the command above does not work at all, use
 L<libguestfs-test-tool(1)>.
@@ -210,7 +206,7 @@ numbers to change.
 
 =back
 
-We don't guarantee that the numbers will be identical even under these
+We don’t guarantee that the numbers will be identical even under these
 circumstances.  They should be similar.  It would indicate a bug if
 you saw greatly differing numbers.
 
@@ -283,7 +279,7 @@ List all Unix domain sockets in a Linux virtual machine:
 
  virt-ls -lR -d Guest / | grep '^s'
 
-List all regular files with filenames ending in '.png':
+List all regular files with filenames ending in ‘.png’:
 
  virt-ls -lR -d Guest / | grep -i '^-.*\.png$'
 
@@ -308,7 +304,7 @@ that you happen to have:
 
  virt-make-fs --partition=mbr --type=vfat /any/tarball.tar.gz output.img
 
-Add 'output.img' as a raw disk to an existing guest.  Check the guest
+Add ‘output.img’ as a raw disk to an existing guest.  Check the guest
 can see the files.  This test is particularly useful if you try it
 with a Windows guest.
 

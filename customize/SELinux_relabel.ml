@@ -16,12 +16,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Printf
 
 module G = Guestfs
+
+(* Simple reimplementation of Array.mem, available only with OCaml >= 4.03. *)
+let array_find a l =
+  List.mem a (Array.to_list l)
 
 let relabel (g : G.guestfs) =
   (* Is the guest using SELinux? *)
@@ -36,8 +41,18 @@ let relabel (g : G.guestfs) =
       g#aug_load ();
       debug_augeas_errors g;
 
-      (* Get the SELinux policy name, eg. "targeted", "minimum". *)
-      let policy = g#aug_get "/files/etc/selinux/config/SELINUXTYPE" in
+      (* Get the SELinux policy name, eg. "targeted", "minimum".
+       * Use "targeted" if not specified, just like libselinux does.
+       *)
+      let policy =
+        let config_path = "/files/etc/selinux/config" in
+        let selinuxtype_path = config_path ^ "/SELINUXTYPE" in
+        let keys = g#aug_ls config_path in
+        if array_find selinuxtype_path keys then
+          g#aug_get selinuxtype_path
+        else
+          "targeted" in
+
       g#aug_close ();
 
       (* Get the spec file name. *)

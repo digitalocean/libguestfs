@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@
 #include <errno.h>
 
 #include <guestfs.h>
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #include <caml/config.h>
 #include <caml/alloc.h>
@@ -96,7 +96,8 @@ static struct custom_operations guestfs_custom_operations = {
   custom_compare_default,
   custom_hash_default,
   custom_serialize_default,
-  custom_deserialize_default
+  custom_deserialize_default,
+  custom_compare_ext_default,
 };
 
 static value

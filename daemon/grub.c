@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,10 @@
 #include "actions.h"
 #include "optgroups.h"
 
-GUESTFSD_EXT_CMD(str_grub_install, grub-install);
-
 int
 optgroup_grub_available (void)
 {
-  return prog_exists (str_grub_install);
+  return prog_exists ("grub-install");
 }
 
 int
@@ -46,7 +44,7 @@ do_grub_install (const char *root, const char *device)
   }
 
   r = command (verbose ? &out : NULL, &err,
-               str_grub_install, buf, device, NULL);
+               "grub-install", buf, device, NULL);
 
   if (r == -1) {
     if (verbose)

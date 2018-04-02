@@ -30,7 +30,8 @@
 
 #include "com_redhat_et_libguestfs_GuestFS.h"
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
+#include "structs-cleanups.h"
 
 /* Note that this function returns.  The exception is not thrown
  * until after the wrapper function returns.
@@ -1657,6 +1658,34 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1bootable  (JNIEnv *env, jobje
 
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1gpt_1attributes  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jlong jattributes)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+  int partnum;
+  int64_t attributes;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  partnum = jpartnum;
+  attributes = jattributes;
+
+  r = guestfs_part_set_gpt_attributes (g, device, partnum, attributes);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  return;
+
+ ret_error:
+  return;
+}
+
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1gpt_1guid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jstring jguid)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
@@ -2457,6 +2486,53 @@ Java_com_redhat_et_libguestfs_GuestFS__1write_1append  (JNIEnv *env, jobject obj
 
  ret_error:
   return;
+}
+
+
+JNIEXPORT jobjectArray JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1yara_1scan  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jobjectArray jr;
+  jclass cl;
+  jfieldID fl;
+  jobject jfl;
+  CLEANUP_FREE_YARA_DETECTION_LIST struct guestfs_yara_detection_list *r = NULL;
+  const char *path;
+  size_t i;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  r = guestfs_yara_scan (g, path);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  cl = (*env)->FindClass (env, "com/redhat/et/libguestfs/YaraDetection");
+  jr = (*env)->NewObjectArray (env, r->len, cl, NULL);
+
+  for (i = 0; i < r->len; ++i) {
+    jfl = (*env)->AllocObject (env, cl);
+
+    fl = (*env)->GetFieldID (env, cl, "yara_name",
+                             "Ljava/lang/String;");
+    (*env)->SetObjectField (env, jfl, fl,
+                            (*env)->NewStringUTF (env, r->val[i].yara_name));
+    fl = (*env)->GetFieldID (env, cl, "yara_rule",
+                             "Ljava/lang/String;");
+    (*env)->SetObjectField (env, jfl, fl,
+                            (*env)->NewStringUTF (env, r->val[i].yara_rule));
+
+    (*env)->SetObjectArrayElement (env, jr, i, jfl);
+  }
+
+  return jr;
+
+ ret_error:
+  return NULL;
 }
 
 

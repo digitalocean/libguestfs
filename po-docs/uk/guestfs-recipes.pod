@@ -1,14 +1,15 @@
 
 =begin коментар
 
-We break with tradition here and don't use ALL CAPS for the section
+We break with tradition here and don’t use ALL CAPS for the section
 headings, as this makes them much easier to read.
 
 =end коментар
 
 =head1 НАЗВА
 
-guestfs-recipes - libguestfs, guestfish and virt tools recipes
+guestfs-recipes — рецепти для libguestfs, guestfish та інструментів
+віртуалізації
 
 =head1 ОПИС
 
@@ -22,29 +23,31 @@ FTP, NBD, iSCSI, or similar, then you can open it directly.  See
 L<guestfish(1)/ADDING REMOTE STORAGE> for several examples.  This requires
 libguestfs E<ge> 1.22 and qemu E<ge> 1.5.
 
-=head1 Audit a virtual machine for setuid files
+=head1 Аудит віртуальної машини щодо файлів із setuid
 
 See: L<virt-ls(1)/EXAMPLES>.
 
-=head1 Audit a virtual machine for vulnerabilities and security problems
+=head1 Аудит віртуальної машини щодо вразливостей і проблем захисту
 
 Див.
 L<https://rwmj.wordpress.com/2013/05/16/scanning-offline-guests-using-openscap-and-guestmount/#content>
 
-=head1 Change the background image in a Windows XP VM
+=head1 Зміна зображення тла у віртуальній машині Windows XP
 
-The links below explain how to use L<guestfish(1)> to change the background
-image for a user of a Windows XP VM.  Unfortunately the technique appears to
-be substantially different for each version of Windows.
+За наведеними нижче посиланнями можна знайти опис використання
+L<guestfish(1)> для зміни зображення тла для користувача віртуальної машини
+Windows XP. На жаль, у різних версіях Windows методика досягнення
+аналогічного результату є різною.
 
 L<https://lists.fedoraproject.org/pipermail/virt/2011-May/002655.html>
 L<https://lists.fedoraproject.org/pipermail/virt/2011-May/002658.html>
 
-=head1 Checksum a file or device within a disk image
+=head1 Створення контрольної суми файла або пристрою всередині образу диска
 
-To checksum a whole device, or a partition, LV etc within a disk image:
+Щоб створити контрольну суму усього пристрою, розділу, логічного тому
+всередині образу диска, скористайтеся командою:
 
- guestfish --ro -a disk.img run : checksum-device md5 /dev/sda1
+ guestfish --ro -a диск.img run : checksum-device md5 /dev/sda1
 
 Replace C<md5> with the type of checksum you want.  See
 L<guestfs(3)/guestfs_checksum_device> for a list of supported types.
@@ -53,9 +56,9 @@ F</dev/sda1> means "the first partition".  You could use F</dev/sda> to
 checksum the whole disk image, or the name of a logical volume or RAID
 device.
 
-To checksum a single file:
+Створення контрольної суми для окремого файла:
 
- guestfish --ro -a disk.img -i checksum sha256 /etc/passwd
+ guestfish --ro -a диск.img -i checksum sha256 /etc/passwd
 
 або для гостьової системи Windows:
 
@@ -64,22 +67,23 @@ To checksum a single file:
 
 =head1 Клонування віртуальної машини
 
-Use a combination of tools like L<cp(1)>, L<dd(1)>, and virt tools like
-L<virt-sysprep(1)>, L<virt-sparsify(1)> and L<virt-resize(1)>.
+Скористайтеся комбінацією інструментів, подібних до L<cp(1)>, L<dd(1)>, та
+інструментами віртуалізації, зокрема L<virt-sysprep(1)>, L<virt-sparsify(1)>
+та L<virt-resize(1)>.
 
-For more details, see: L<virt-sysprep(1)/COPYING AND CLONING>.
+Докладніший опис у розділі L<virt-sysprep(1)/КОПІЮВАННЯ І КЛОНУВАННЯ>.
 
-=head1 Convert a CD-ROM / DVD / ISO to a tarball
+=head1 Перетворення CD-ROM / DVD / ISO на архів tar
 
-This converts input F<cd.iso> to output F<cd.tar.gz>:
+Ця команда перетворює F<cd.iso> на F<cd.tar.gz>:
 
  guestfish --ro -a cd.iso -m /dev/sda tgz-out / cd.tar.gz
 
-To export just a subdirectory, eg. F</files>, do:
+Щоб експортувати підкаталог, наприклад F</files>, віддайте таку команду:
 
  guestfish --ro -a cd.iso -m /dev/sda tgz-out /files cd.tar.gz
 
-=head1 Convert from one format/filesystem to another
+=head1 Перетворення з одного формату або однієї файлової системи у інший формат
 
 If you have a data disk in one format / filesystem / partition / volume
 manager, you can convert it another using this technique.
@@ -89,7 +93,7 @@ containing a filesystem, and we want to create another disk that contains
 the same files but on an ext3 filesystem embedded in a logical volume on a
 sparse raw-format disk.
 
-First create the formatted-but-empty target disk:
+Спочатку створіть форматований, але порожній диск призначення:
 
  truncate -s 10G target.img
  virt-format -a target.img --partition=mbr --lvm --filesystem=ext3
@@ -100,7 +104,8 @@ new disk:
  guestfish --ro -a source.img -m /dev/sda1  -- tar-out / - | \
  guestfish --rw -a target.img -m /dev/VG/LV -- tar-in - /
 
-To browse the final disk image, do:
+Для навігації створеним остаточним образом диска скористайтеся такою
+командою:
 
  guestfish --ro -a target.img -m /dev/VG/LV
  ><fs> ll /
@@ -108,10 +113,10 @@ To browse the final disk image, do:
 This technique is quite powerful, allowing you for example to split up
 source directories over the target filesystems.
 
-Note this won't work (at least, not directly) for bootable virtual machine
+Note this won’t work (at least, not directly) for bootable virtual machine
 disks because it doesn't copy over the boot loader.
 
-=head1 Convert Windows DVD to bootable USB key
+=head1 Перетворення DVD Windows на придатний до завантаження диск USB
 
 L<http://rwmj.wordpress.com/2013/05/09/tip-convert-a-windows-dvd-iso-to-a-bootable-usb-key-using-guestfish/#content>
 
@@ -125,24 +130,24 @@ required for Windows guests.  Here is how to use guestfish to do this:
 
  guestfish
  ><fs> add-ro input.img
- ><fs> sparse output.img 10G     # adjust the output size
+ ><fs> sparse output.img 10G     # скоригувати розмір результату
  ><fs> run
- # Create a partition table on the output disk:
+ # Створити таблицю розділів на диску-результаті:
  ><fs> part-init /dev/sdb mbr
  ><fs> part-add /dev/sdb p 2048 -2048
- # Copy the data to the target partition:
+ # Скопіювати дані на розділ призначення:
  ><fs> copy-device-to-device /dev/sda /dev/sdb1 sparse:true
- # Optionally resize the target filesystem.  Use ntfsresize
- # for Windows guests:
+ # Додатково змінити розмір файлової системи призначення.
+ # Скористайтеся ntfsresize для гостьових систем Windows:
  ><fs> resize2fs /dev/sdb1
 
-Such a disk image won't be directly bootable.  You may need to boot it with
+Such a disk image won’t be directly bootable.  You may need to boot it with
 an external kernel and initramfs (see below).  Or you can use the guestfish
 commands C<syslinux> or C<extlinux> to install a SYSLINUX bootloader.
 
 =head1 Створення порожніх образів дисків
 
-The L<virt-format(1)> tool can do this directly.
+Програма L<virt-format(1)> може робити це безпосередньо.
 
 Use L<virt-make-fs(1)> to create a disk image with content.  This can also
 create some standard disk images such as virtual floppy devices (VFDs).
@@ -152,7 +157,7 @@ images.  The useful guide below explains the options available.
 
 L<https://rwmj.wordpress.com/2010/09/08/new-guestfish-n-options-in-1-5-9/#content>
 
-L<virt-builder(1)> can create minimal guests.
+L<virt-builder(1)> може створювати мінімальні гостьові системи.
 
 =head1 Вилучення файлів (або інші прості дії з файлами)
 
@@ -160,26 +165,26 @@ L<virt-builder(1)> can create minimal guests.
 
  guestfish -a диск.img -i rm /файл/який/слід/вилучити
 
-To touch a file (bring it up to date or create it):
+Торкнутися файла (оновити його часову позначку або створити його):
 
  guestfish -a диск.img -i touch /файл/позначку/якого/слід/оновити
 
-To stat a file.  Since this is a read-only operation, we can make it safer
-by adding the I<--ro> flag.
+Отримання статистичних даних щодо файла. Оскільки для цієї дії потрібне лише
+читання, можна зробити її безпечнішою, додавши параметр I<--ro>.
 
- guestfish --ro -a disk.img -i stat /file/to/stat
+ guestfish --ro -a диск.img -i stat /файл/який/слід/обробити
 
-There are dozens of these commands.  See L<guestfish(1)> or the output of
+Таких команд десятки. Див. L<guestfish(1)>  або дані, виведені командою
 C<guestfish -h>
 
-=head1 Diff two guests; compare a snapshot to the current version
+=head1 Порівняти дві гостьові системи; порівняти знімок із поточною версією
 
 Since libguestfs E<ge> 1.26, use L<virt-diff(1)> to look for differences
 between two guests (for example if they were originally cloned from the same
 source), or between two snapshots from the same guest.  In earlier versions
 of libguestfs, use L<virt-ls(1)>.
 
-=head1 Disable a systemd service
+=head1 Вимкнути службу systemd
 
 The following is the equivalent of C<systemctl mask ...>. To disable the
 C<cloud-init> service so it doesn't start at next boot:
@@ -187,7 +192,7 @@ C<cloud-init> service so it doesn't start at next boot:
  guestfish -a disk.img -i \
      ln-sf /dev/null /etc/systemd/system/cloud-init.service
 
-To disable tmp-on-tmpfs:
+Щоб вимкнути tmp-on-tmpfs:
 
  guestfish -a disk.img -i \
      ln-sf /dev/null /etc/systemd/system/tmp.mount
@@ -198,7 +203,7 @@ L<virt-ls(1)> to list the available systemd services like this:
 
  virt-ls -a /tmp/fedora-19.img -R /lib/systemd/system
 
-=head1 Drive letters over FUSE
+=head1 Літери дисків у FUSE
 
 You have a Windows guest, and you want to expose the drive letters as FUSE
 mountpoints (F</C/...>, F</D/...> etc).  Instead of L<guestmount(1)>, use
@@ -228,13 +233,13 @@ this Perl script:
  $g->mount_local_run;
  $g->shutdown;
 
-You can use the script like this:
+Ви можете скористатися скриптом ось так:
 
  $ mkdir /tmp/mnt
  $ ./drive-letters.pl /tmp/mnt windows7.img
  filesystem ready on /tmp/mnt
 
-In another window:
+У іншому вікні:
 
  $ cd /tmp/mnt
  $ ls
@@ -249,7 +254,7 @@ In another window:
  $ cd ../..
  $ guestunmount /tmp/mnt
 
-=head1 Dump raw filesystem content from inside a disk image or VM
+=head1 Створення дампів вмісту простої файлової системи у образі диска або ВМ
 
 You can use the L<guestfish(1)> C<download> command to extract the raw
 filesystem content from any filesystem in a disk image or a VM (even one
@@ -259,15 +264,16 @@ which is encrypted or buried inside an LV or RAID device):
 
  guestfish --ro -d Guest run : download /dev/vg_guest/lv_root lv.img
 
-To download to stdout, replace the filename with a C<-> character:
+Щоб отримати дані до stdout, замініть назву файла символом C<->:
 
  guestfish --ro -a disk.img run : download /dev/sda1 - | gzip > sda1.gz
 
-To list the filesystems in a disk image, use L<virt-filesystems(1)>.
+Для отримання списку файлових систем на образі диска скористайтеся
+L<virt-filesystems(1)>.
 
 Див. також L</Вивантаження даних на файлові системи без обробки>.
 
-=head1 Edit grub configuration in a VM
+=head1 Редагувати налаштування grub у віртуальній машині
 
 Ви можете скористатися цим для того, щоб виконати такі завдання:
 
@@ -275,30 +281,31 @@ To list the filesystems in a disk image, use L<virt-filesystems(1)>.
 
 =item *
 
-Fix a virtual machine that does not boot.
+Виправити віртуальну машину, яка не завантажується.
 
 =item *
 
-Change which kernel is used to boot the VM.
+Змінити ядро, яке використовується для завантаження віртуальної машини.
 
 =item *
 
-Change kernel command line options.
+Змінити параметри командного рядка ядра.
 
 =back
 
-Use L<virt-edit(1)> to edit the grub configuration:
+Для редагування налаштувань grub скористайтеся L<virt-edit(1)>:
 
  virt-edit -d BrokenGuest /boot/grub2/grub.cfg
 
-or for general tinkering inside an unbootable VM use L<virt-rescue(1)> like
-this:
+або, для загального виправлення у непридатній до завантаження віртуальній
+машині, скористайтеся L<virt-rescue(1)> соь так:
 
  virt-rescue -d BrokenGuest
 
 =head1 Експортувати будь-який каталог з віртуальної машини
 
-To export F</home> from a VM into a local directory use L<virt-copy-out(1)>:
+Щоб експортувати F</home> з віртуальної машини до локального каталогу,
+скористайтеся L<virt-copy-out(1)>:
 
  virt-copy-out -d Guest /home .
 
@@ -308,30 +315,33 @@ To export F</home> from a VM into a local directory use L<virt-copy-out(1)>:
 
 =item *
 
-The final dot of the command is not a printing error.  It means we want to
-copy out to the current directory.
+Кінцева крамка у команді не є друкарською помилкою. Вона означає, що ми
+хочемо скопіювати дані до поточного каталогу.
 
 =item *
 
-This creates a directory called C<home> under the current directory.
+Ця команда створить каталог із назвою C<home> у поточному каталозі.
 
 =back
 
-If the guest is a Windows guest then you can use drive letters and
-backslashes, but you must prefix the path with C<win:> and quote it to
-protect it from the shell, like this:
+Якщо гостьова система є операційною системою Windows, ви можете скористатися
+літерами дисків та символами зворотної похилої риски, але вам слід додати до
+шляху префікс C<win:> і взяти його у лапки, щоб захистити від обробки
+командною оболонкою, ось так:
 
  virt-copy-out -d WinGuest 'win:c:\windows\system32\config' .
 
-To get the output as a compressed tarball, do:
+Щоб отримати результат у форматі стисненого архіву tar, слід віддати таку
+команду:
 
  virt-tar-out -d Guest /home - | gzip --best > home.tar.gz
 
-Although it sounds tempting, this is usually not a reliable way to get a
-backup from a running guest.  See the entry in the FAQ:
+Хоча виникає спокуса використання цієї команди для створення резервних копій
+запущеної гостьової системи, не варто користуватися нею саме для
+цього. Докладніше про це у розділі запитань та відповідей на них:
 L<http://libguestfs.org/FAQ.html#backup>
 
-=head1 Export external kernel and initramfs (initrd)
+=head1 Експортування зовнішнього ядра та initramfs (initrd)
 
 If a Linux guest doesn't have a boot loader or it is broken, then you can
 usually boot it using an external kernel and initramfs.  In this
@@ -346,7 +356,7 @@ latest kernel and corresponding initramfs for you:
  virt-builder --get-kernel disk.img -o outputdir
  ls -lh outputdir
 
-=head1 Find out which user is using the most space
+=head1 Визначення користувача, дані якого займають найбільше місця
 
 This simple script examines a Linux guest to find out which user is using
 the most space in their home directory:
@@ -368,7 +378,7 @@ the most space in their home directory:
  
  guestfish --remote exit
 
-=head1 Get DHCP address from a VM
+=head1 Отримання адреси DHCP з ВМ
 
 The link below explains the many different possible techniques for getting
 the last assigned DHCP address of a virtual machine.
@@ -378,9 +388,9 @@ L<https://rwmj.wordpress.com/2011/03/31/tip-code-for-getting-dhcp-address-from-a
 In the libguestfs source examples directory you will find the latest version
 of the F<virt-dhcp-address.c> program.
 
-=head1 Get the operating system product name string
+=head1 Отримання рядка назви продукту операційної системи
 
-Save the following script into a file called F<product-name.sh>:
+Збережіть наведений нижче скрипт до файла із назвою F<product-name.sh>:
 
  #!/bin/sh -
  set -e
@@ -389,7 +399,8 @@ Save the following script into a file called F<product-name.sh>:
  guestfish --remote inspect-get-product-name "$root"
  guestfish --remote exit
 
-Make the script executable and run it on a named guest:
+Зробіть скрипт придатним до виконання і запустіть його на іменованій
+гостьовій системі:
 
  # product-name.sh RHEL60x64
  Red Hat Enterprise Linux Server release 6.0 (Santiago)
@@ -403,119 +414,121 @@ C<xpath> command line tool or from your favourite programming language:
  -- NODE --
  <product_name>Red Hat Enterprise Linux Server release 6.0 (Santiago)</product_name>
 
-=head1 Get the default boot kernel for a Linux VM
+=head1 Отримання типового ядра для завантаження для віртуальної машини Linux
 
-The link below contains a program to print the default boot kernel for a
-Linux VM.
+За наведеним нижче посиланням можна знайти програму для виведення типового
+ядра для завантаження у віртуальній машині Linux.
 
 L<https://rwmj.wordpress.com/2010/10/30/tip-use-augeas-to-get-the-default-boot-kernel-for-a-vm/#content>
 
-It uses Augeas, and the technique is generally applicable for many different
-tasks, such as:
+У ній використано Augeas та методику, якою можна скористатися для виконання
+багатьох різних завдань, зокрема таких:
 
 =over 4
 
 =item *
 
-listing the user accounts in the guest
+показ списку облікових записів користувачів у гостьовій системі
 
 =item *
 
-what repositories is it configured to use
+показ списку сховищ, які використовуються системою
 
 =item *
 
-what NTP servers does it connect to
+показ списку серверів NTP, з якими з'єднано систему
 
 =item *
 
-what were the boot messages last time it booted
+показ списку повідомлень під час останнього сеансу завантаження системи
 
 =item *
 
-listing who was logged in recently
+показ списку користувачів, які входили до системи нещодавно
 
 =back
 
 L<http://augeas.net/>
 
-=head1 Hanging guests
+=head1 Повислі гостьові системи
 
-There are various ways to use libguestfs to find out why a guest is hanging
-or unresponsive:
+Існують різноманітні способи скористатися libguestfs для визначення причин,
+чому гостьова система повисла або не відповідає на запити:
 
 =over 4
 
 =item 1.
 
-Read the log files using virt-cat:
+Читання файлів журналу за допомогою virt-cat:
 
  virt-cat Guest /var/log/messages | less
 
 =item 2.
 
-Read the Windows Event Log (Windows Vista or later only):
+Читання журналу подій Windows (лише Windows Vista або новіші версії):
 
 L<https://rwmj.wordpress.com/2011/04/17/decoding-the-windows-event-log-using-guestfish/#content>
 
 =item 3.
 
-Find out which files were last updated in a guest:
+Визначити файли, які було нещодавно оновлено у гостьовій системі:
 
 L<https://rwmj.wordpress.com/2012/02/27/using-libguestfs-to-find-out-why-a-windows-guest-was-hanging/#content>
 
-This might give you a clue as to what program is running.
+Це може підказати вам, яка саме програма працює.
 
 =back
 
-=head1 Hex-dumping sectors from the guest
+=head1 Створення шістнадцяткових дампів секторів диска з гостьової системи
 
-Hex-dump the boot partition (Master Boot Record / first sector):
+Створення шістнадцяткового дампу розділу завантаження (MBR / перший сектор):
 
- guestfish --ro -a disk.img run : pread-device /dev/sda 0x200 0 |
+ guestfish --ro -a диск.img run : pread-device /dev/sda 0x200 0 |
    hexdump -C
 
-(C<0x200> = 512 bytes which is the size of traditional PC sectors)
+(C<0x200> = 512 байтів, тобто розмір традиційних секторів PC)
 
-To hexdump the N'th partition, substitute a number for C<N> in the following
-command:
+Щоб створити шістнадцятковий дамп N-го розділу, замініть C<N> на відповідне
+число у такій команду:
 
  guestfish --ro -a disk.img \
      run : pread-device /dev/sda 0x200 $((N*0x200)) |
    hexdump -C
 
-=head1 Hex-editing sectors in the guest
+=head1 Шістнадцяткове редагування секторів у гостьовій системі
 
-Hex-edit the boot partition (Master Boot Record / first sector):
+Редагування шістнадцяткового дампу розділу завантаження (MBR / перший
+сектор):
 
- guestfish --rw -a disk.img run : hexedit /dev/sda 0x200
+ guestfish --rw -a диск.img run : hexedit /dev/sda 0x200
 
-=head1 Install packages (RPMs, Debian packages) in a guest
+=head1 Встановлення пакунків (RPM, пакунки Debian) у гостьовій системі
 
-Since libguestfs 1.26, L<virt-builder(1)>, L<virt-customize(1)> and
-L<virt-sysprep(1)> have an I<--install> option for installing packages in
-Linux guests.  (Use virt-customize if you have an existing guest, or
-virt-builder if you want to create a guest from scratch).
+Починаючи з libguestfs 1.26, L<virt-builder(1)>, L<virt-customize(1)> та
+L<virt-sysprep(1)> мають параметр I<--install> для встановлення пакунків у
+гостьових системах Linux. (Скористайтеся virt-customize, якщо у вас уже є
+наявна гостьова система, або virt-builder, якщо ви хочете створити гостьову
+систему від початку).
 
 Приклад:
 
  virt-builder fedora-20 --install emacs
 
-=head1 Install packages from an alternate repository
+=head1 Встановлення пакунків із альтернативного сховища
 
-Since libguestfs 1.26, you can use L<virt-builder(1)>, L<virt-customize(1)>
-or L<virt-sysprep(1)> I<--edit> option to edit repository metadata before
-installing packages
+Починаючи з libguestfs 1.26, ви можете скористатися параметром I<--edit>
+L<virt-builder(1)>, L<virt-customize(1)> або L<virt-sysprep(1)>  для
+редагування метаданих сховища до встановлення пакунків.
 
-For example this would install packages from the updates-testing repository
-in Fedora:
+Наприклад, вказана нижче команда встановить пакунки зі сховища
+updates-testing у Fedora:
 
  virt-builder fedora-20 \
    --edit '/etc/yum.repos.d/fedora-updates-testing.repo:
              s/enabled=0/enabled=1/' \
    --install emacs
 
-=head1 Install SYSLINUX bootloader in a guest
+=head1 Встановлення завантажувача SYSLINUX у гостьовій системі
 
 SYSLINUX is a small, easy to configure bootloader for Linux and Windows
 guests.  If your guest is not bootable, you can install the SYSLINUX
@@ -538,18 +551,18 @@ this:
    INITRD initrd
    APPEND ro root=/dev/sda3
 
-Locate the syslinux master boot record (a file called something like
-F</usr/share/syslinux/mbr.bin>).
+Знайдіть головний запис завантаження syslinux (файл, який називається якось
+так: F</usr/share/syslinux/mbr.bin>).
 
- guestfish -a disk.img -i
- # Upload the master boot record and configuration file:
+ guestfish -a диск.img -i
+ # Вивантаження головного запису завантаження та файла налаштувань:
  ><fs> upload ..../mbr.bin /boot/mbr.bin
  ><fs> upload ..../syslinux.cfg /boot/syslinux.cfg
- # Put the MBR into the boot sector:
+ # Запис MBR до сектора завантаження:
  ><fs> copy-file-to-device /boot/mbr.bin /dev/sda size:440
- # Install syslinux on the first partition:
+ # Встановлення syslinux на першому розділі:
  ><fs> extlinux /boot
- # Set the first partition as bootable:
+ # Визначення першого розділу як завантажувального:
  ><fs> part-set-bootable /dev/sda 1 true
 
 Див. також
@@ -557,7 +570,7 @@ L<http://rwmj.wordpress.com/2013/04/04/new-in-libguestfs-use-syslinux-or-extlinu
 
 =head1 Показати список програм, встановлених у віртуальній машині
 
-Save the following to a file F<list-apps.sh>:
+Збережіть такий текст до файла F<list-apps.sh>:
 
  #!/bin/sh -
  set -e
@@ -566,8 +579,8 @@ Save the following to a file F<list-apps.sh>:
  guestfish --remote inspect-list-applications "$root"
  guestfish --remote exit
 
-Make the file executable and then you can run it on any named virtual
-machine:
+Зробіть цей файл придатним до виконання, а потім можете запустити його для
+будь-якої іменованої віртуальної машини:
 
  # list-apps.sh WinGuest
  [0] = {
@@ -614,16 +627,16 @@ on demand.
 
 L<https://rwmj.wordpress.com/2010/12/10/tip-list-services-in-a-windows-guest/#content>
 
-=head1 Make a disk image sparse
+=head1 Створення образу диска розрідженим
 
 Скористайтеся L<virt-sparsify(1)>.
 
-=head1 Monitor disk usage over time
+=head1 Спостереження за зміною використання диска з часом
 
 You can use L<virt-df(1)> to monitor disk usage of your guests over time.
 The link below contains a guide.
 
-L<http://virt-tools.org/learning/advanced-virt-df/>
+L<http://web.archive.org/web/20130214073726/http://virt-tools.org/learning/advanced-virt-df/>
 
 =head1 Читання журналу подій у Windows з версії Windows Vista
 
@@ -640,7 +653,7 @@ files.  One use is to remove the root password from a Linux guest:
 
  virt-edit -d назва_домену /etc/passwd -e 's/^root:.*?:/root::/'
 
- virt-edit -a disk.img /etc/passwd -e 's/^root:.*?:/root::/'
+ virt-edit -a диск.img /etc/passwd -e 's/^root:.*?:/root::/'
 
 =head1 Вилучення пароля адміністратора (Windows)
 
@@ -685,7 +698,7 @@ a filesystem which is encrypted or buried inside an LV or RAID device:
  guestfish --rw -d Guest run : upload lv.img /dev/vg_guest/lv_root
 
 One common problem is that the filesystem isn't the right size for the
-target.  If it is too large, there's not much you can do with libguestfs -
+target.  If it is too large, there’s not much you can do with libguestfs -
 you have to prepare the filesystem differently.  But if the filesystem needs
 to expand into the target, you can use guestfish to resize it to the right
 size:
@@ -717,5 +730,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -55,7 +55,7 @@ let rec generate_ruby_h () =
 #endif
 
 #include \"guestfs.h\"
-#include \"guestfs-internal-frontend.h\" /* Only for POINTER_NOT_IMPLEMENTED */
+#include \"guestfs-utils.h\" /* Only for POINTER_NOT_IMPLEMENTED */
 
 #include \"extconf.h\"
 
@@ -240,7 +240,7 @@ and generate_ruby_c actions () =
         pr "  if (argc < %d || argc > %d)\n" nr_args (nr_args+1);
         pr "    rb_raise (rb_eArgError, \"expecting %d or %d arguments\");\n" nr_args (nr_args+1);
         pr "\n";
-        iteri (
+        List.iteri (
           fun i arg ->
             pr "  volatile VALUE %sv = argv[%d];\n" (name_of_argt arg) i
         ) args;
@@ -251,9 +251,7 @@ and generate_ruby_c actions () =
 
       List.iter (
         function
-        | Pathname n | Device n | Mountable n
-        | Dev_or_Path n | Mountable_or_Path n | String n | Key n
-        | FileIn n | FileOut n | GUID n ->
+        | String (_, n) ->
           pr "  const char *%s = StringValueCStr (%sv);\n" n n;
         | BufferIn n ->
           pr "  Check_Type (%sv, T_STRING);\n" n;
@@ -264,7 +262,7 @@ and generate_ruby_c actions () =
           pr "  size_t %s_size = RSTRING_LEN (%sv);\n" n n
         | OptString n ->
           pr "  const char *%s = !NIL_P (%sv) ? StringValueCStr (%sv) : NULL;\n" n n n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
           pr "  char **%s;\n" n;
           pr "  Check_Type (%sv, T_ARRAY);\n" n;
           pr "  {\n";
@@ -355,11 +353,9 @@ and generate_ruby_c actions () =
 
       List.iter (
         function
-        | Pathname _ | Device _ | Mountable _
-        | Dev_or_Path _ | Mountable_or_Path _ | String _ | Key _
-        | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
-        | BufferIn _ | Pointer _ | GUID _ -> ()
-        | StringList n | DeviceList n | FilenameList n ->
+        | String _ | OptString _ | Bool _ | Int _ | Int64 _
+        | BufferIn _ | Pointer _ -> ()
+        | StringList (_, n) ->
             pr "  free (%s);\n" n
       ) args;
 
@@ -496,8 +492,7 @@ Init__guestfs (void)
 
   (* Methods. *)
   List.iter (
-    fun { name = name; style = _, args, optargs;
-          non_c_aliases = non_c_aliases } ->
+    fun { name; style = _, args, optargs; non_c_aliases } ->
       let nr_args = if optargs = [] then List.length args else -1 in
       pr "  rb_define_method (c_guestfs, \"%s\",\n" name;
       pr "                    guestfs_int_ruby_%s, %d);\n" name nr_args;

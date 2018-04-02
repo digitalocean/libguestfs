@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 open Getopt.OptionName
 
 open Customize_cmdline
@@ -38,7 +39,7 @@ let main () =
     | "auto" -> attach_format := None
     | s -> attach_format := Some s
   in
-  let attach_disk s = push_front (!attach_format, s) attach in
+  let attach_disk s = List.push_front (!attach_format, s) attach in
   let domain = ref None in
   let dryrun = ref false in
   let files = ref [] in
@@ -58,11 +59,11 @@ let main () =
   let add_file arg =
     let uri =
       try URI.parse_uri arg
-      with Invalid_argument "URI.parse_uri" ->
+      with URI.Parse_failed ->
         error (f_"error parsing URI '%s'. Look for error messages printed above.")
           arg in
     let format = match !format with "auto" -> None | fmt -> Some fmt in
-    push_front (uri, format) files;
+    List.push_front (uri, format) files;
     format_consumed := true
   and set_domain dom =
     if !domain <> None then
@@ -133,9 +134,7 @@ read the man page virt-customize(1).
       fun g readonly ->
         List.iter (
           fun (uri, format) ->
-            let { URI.path = path; protocol = protocol;
-                  server = server; username = username;
-                  password = password } = uri in
+            let { URI.path; protocol; server; username; password } = uri in
             let discard = if readonly then None else Some "besteffort" in
             g#add_drive
               ~readonly ?discard
@@ -158,8 +157,8 @@ read the man page virt-customize(1).
   (* Connect to libguestfs. *)
   let g =
     let g = open_guestfs () in
-    may g#set_memsize memsize;
-    may g#set_smp smp;
+    Option.may g#set_memsize memsize;
+    Option.may g#set_smp smp;
     g#set_network network;
 
     (* Add disks. *)

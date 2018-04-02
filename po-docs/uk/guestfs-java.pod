@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-guestfs-java - How to use libguestfs from Java
+guestfs-java — як користуватися libguestfs з коду на Java
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -24,7 +24,7 @@ language.  This page just documents the differences from the C API and gives
 some examples.  If you are not familiar with using libguestfs, you also need
 to read L<guestfs(3)>.
 
-=head2 CLOSING THE HANDLE
+=head2 ЗАКРИТТЯ ДЕСКРИПТОРА
 
 The handle is closed when it is reaped by the garbage collector.  Because
 libguestfs handles include a lot of state, it is also possible to close (and
@@ -116,7 +116,7 @@ three parts:
 
 =item F<libguestfs.jar>
 
-=item F<libguestfs-I<VERSION>.jar>
+=item F<libguestfs-I<ВЕРСІЯ>.jar>
 
 The pure Java JAR file which contains several classes, the primary one being
 C<com.redhat.et.libguestfs.GuestFS>.  Upstream, the JAR file contains a
@@ -131,7 +131,7 @@ should B<not> call these directly.
 
 =item F<libguestfs.so>
 
-The regular libguestfs C library.
+Типова бібліотека C libguestfs.
 
 =back
 

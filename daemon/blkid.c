@@ -28,8 +28,6 @@
 #include "actions.h"
 #include "optgroups.h"
 
-GUESTFSD_EXT_CMD(str_blkid, blkid);
-
 char *
 get_blkid_tag (const char *device, const char *tag)
 {
@@ -39,7 +37,7 @@ get_blkid_tag (const char *device, const char *tag)
   size_t len;
 
   r = commandr (&out, &err,
-                str_blkid,
+                "blkid",
                 /* Adding -c option kills all caching, even on RHEL 5. */
                 "-c", "/dev/null",
                 "-o", "value", "-s", tag, device, NULL);
@@ -66,12 +64,6 @@ get_blkid_tag (const char *device, const char *tag)
     out[len-1] = '\0';
 
   return out;                   /* caller frees */
-}
-
-char *
-do_vfs_type (const mountable_t *mountable)
-{
-  return get_blkid_tag (mountable->device, "TYPE");
 }
 
 char *
@@ -107,7 +99,7 @@ test_blkid_p_i_opt (void)
   int r;
   CLEANUP_FREE char *err = NULL, *err2 = NULL;
 
-  r = commandr (NULL, &err, str_blkid, "-p", "/dev/null", NULL);
+  r = commandr (NULL, &err, "blkid", "-p", "/dev/null", NULL);
   if (r == -1) {
     /* This means we couldn't run the blkid command at all. */
   command_failed:
@@ -119,7 +111,7 @@ test_blkid_p_i_opt (void)
     return 0;
   }
 
-  r = commandr (NULL, &err2, str_blkid, "-i", NULL);
+  r = commandr (NULL, &err2, "blkid", "-i", NULL);
   if (r == -1)
     goto command_failed;
 
@@ -140,7 +132,7 @@ blkid_with_p_i_opt (const char *device)
   CLEANUP_FREE_STRING_LIST char **lines = NULL;
   CLEANUP_FREE_STRINGSBUF DECLARE_STRINGSBUF (ret);
 
-  r = command (&out, &err, str_blkid, "-c", "/dev/null",
+  r = command (&out, &err, "blkid", "-c", "/dev/null",
                "-p", "-i", "-o", "export", device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);

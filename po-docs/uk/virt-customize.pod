@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-virt-customize - Customize a virtual machine
+virt-customize — налаштовування віртуальної машини
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -18,17 +18,18 @@ __CUSTOMIZE_SYNOPSIS__
 
 =head1 ОПИС
 
-Virt-customize can customize a virtual machine (disk image) by installing
-packages, editing configuration files, and so on.
+За допомогою virt-customize можна налаштувати віртуальну машину (образ
+диска) встановленням пакунків, редагуванням файлів налаштувань тощо.
 
-Virt-customize modifies the guest or disk image I<in place>.  The guest must
-be shut down.  If you want to preserve the existing contents of the guest,
-I<you must snapshot, copy or clone the disk first>.
+Virt-customize вносить зміни до гостьової системи або образу диска I<на
+місці>. Гостьова система має бути вимкненою. Якщо ви зочете зберегти наявний
+вміст гостьової системи, I<вам слід спочатку зробити її знімок, скопіювати
+або клонувати її диск>.
 
-You do I<not> need to run virt-customize as root.  In fact we'd generally
-recommend that you don't.
+Вам I<не потрібно> запускати virt-customize від імені користувача
+root. Фактично, запуск у такому режимі є нерекомендованим.
 
-Related tools include: L<virt-sysprep(1)> and L<virt-builder(1)>.
+Пов'язані інструменти: L<virt-sysprep(1)> і L<virt-builder(1)>.
 
 =head1 ПАРАМЕТРИ
 
@@ -51,36 +52,40 @@ Related tools include: L<virt-sysprep(1)> and L<virt-builder(1)>.
 
 =item B<--add> адреса
 
-Add a remote disk.  The URI format is compatible with guestfish.  See
-L<guestfish(1)/ADDING REMOTE STORAGE>.
+Додати віддалений диск. Формат адреси є сумісним із
+guestfish. Див. L<guestfish(1)/ДОДАВАННЯ ВІДДАЛЕНОГО СХОВИЩА>.
 
 =item B<--attach> ФАЙЛ_ISO
 
-The given disk is attached to the libguestfs appliance.  This is used to
-provide extra software repositories or other data for customization.
+Вказаний диск долучається до базової системи libguestfs. Цей диск
+використовується для отримання даних додаткових сховищ програмного
+забезпечення або інших даних для створення нетипової системи.
 
-You probably want to ensure the volume(s) or filesystems in the attached
-disks are labelled (or use an ISO volume name) so that you can mount them by
-label in your run-scripts:
+Ймовірно, вам варто додати мітки для долучених дисків (або скористатися
+назвою тому ISO), щоб надалі монтувати диски за міткою у ваших скриптах
+запуску:
 
  mkdir /tmp/mount
  mount LABEL=EXTRA /tmp/mount
 
-You can have multiple I<--attach> options, and the format can be any disk
-format (not just an ISO).
+Параметр I<--attach> можна вказати декілька разів, а форматом може бути
+будь-який формат образу (не лише ISO).
 
 =item B<--attach-format> ФОРМАТ
 
-Specify the disk format for the next I<--attach> option.  The C<FORMAT> is
-usually C<raw> or C<qcow2>.  Use C<raw> for ISOs.
+Вказати формат диска для наступного параметра I<--attach>. Значенням
+аргументу C<ФОРМАТ> зазвичай є C<raw> або C<qcow2>.  Для образів ISO
+скористайтеся варіантом C<raw>.
 
 =item B<--colors>
 
 =item B<--colours>
 
-Use ANSI colour sequences to colourize messages.  This is the default when
-the output is a tty.  If the output of the program is redirected to a file,
-ANSI colour sequences are disabled unless you use this option.
+Використовувати послідовності символів ANSI для розфарбовування
+повідомлень. Ці послідовності типово використовуються, якщо дані виводяться
+на термінал tty.  Якщо дані, виведені програмою, спрямовуються до файла,
+послідовності визначення кольорів ANSI буде вимкнено, якщо ви не додасте до
+команди цей параметр.
 
 =item B<-c> адреса
 
@@ -103,15 +108,15 @@ libvirt не буде використовуватися взагалі.
 
 =item B<--dry-run>
 
-Perform a read-only "dry run" on the guest.  This runs the sysprep
-operation, but throws away any changes to the disk at the end.
+Виконати тестову обробку гостьової системи у режимі «лише читання». Буде
+виконано дію sysprep, але наприкінці усі зміни до диска буде відкинуто.
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, virt-customize normally turns
-echoing off so you cannot see what you are typing.  If you are not worried
-about Tempest attacks and there is no one else in the room you can specify
-this flag to see what you are typing.
+Типово, якщо virt-customize попросить вас ввести ключ або пароль, програма
+не відтворюватиме введені символи на екрані. Якщо ви не боїтеся
+TEMPEST-нападів, або у вашій кімнаті нікого, окрім вас, немає, ви можете
+скористатися цим прапорцем, щоб бачити, які саме символи ви вводите.
 
 =item B<--format> raw|qcow2|..
 
@@ -125,12 +130,12 @@ this flag to see what you are typing.
 
 Приклад:
 
- virt-customize --format raw -a disk.img
+ virt-customize --format raw -a диск.img
 
 примусове встановлення формату без обробки (без автоматичного визначення)
 для F<disk.img>.
 
- virt-customize --format raw -a disk.img --format auto -a another.img
+ virt-customize --format raw -a диск.img --format auto -a іще_диск.img
 
 примусове встановлення формату без обробки (без автоматичного визначення)
 для F<diskimg> і повернення до автоматичного визначення для F<another.img>.
@@ -142,16 +147,17 @@ this flag to see what you are typing.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening F</dev/tty>.
+Прочитати параметри ключа або пароля із джерела стандартного
+введення. Типово програма намагається читати паролі від користувача
+відкриттям F</dev/tty>.
 
 =item B<-m> МБ
 
 =item B<--memsize> МБ
 
-Change the amount of memory allocated to I<--run> scripts.  Increase this if
-you find that I<--run> scripts or the I<--install> option are running out of
-memory.
+Зміна обсягу пам'яті, наданого скриптам I<--run>. Збільште це значення, якщо
+виявиться, що для використання скриптів I<--run> або параметра I<--install>
+не вистачає пам'яті.
 
 Типові значення можна визначити за допомогою такої команди:
 
@@ -167,15 +173,15 @@ memory.
 Типово увімкнено. Скористайтеся параметром I<--no-network>, щоб вимкнути
 доступ.
 
-The network only allows outgoing connections and has other minor
-limitations.  See L<virt-rescue(1)/NETWORK>.
+У мережі працюватимуть лише вихідні з'єднання, а також буде декілька інших
+незначних обмежень. Див. L<virt-rescue(1)/МЕРЕЖА>.
 
-If you use I<--no-network> then certain other options such as I<--install>
-will not work.
+Якщо ви скористаєтеся параметром I<--no-network>, тоді інші параметри,
+зокрема I<--install>, не працюватимуть.
 
-This does not affect whether the guest can access the network once it has
-been booted, because that is controlled by your hypervisor or cloud
-environment and has nothing to do with virt-customize.
+Це не вплине на доступність мережі для гостьової системи після її
+завантаження, оскільки така доступність керується вашим гіпервізором або
+хмарним середовищем і не має нічого спільного з virt-customize.
 
 Загалом кажучи, вам I<не варто> використовувати I<--no-network>. Але ось
 декілька випадків, коли у вас може виникнути потреба у використанні цього
@@ -186,7 +192,7 @@ environment and has nothing to do with virt-customize.
 =item 1.
 
 У модулі обробки libguestfs, яким ви користуєтеся, не передбачено підтримки
-мережі.  (Див. L<guestfs(3)/BACKEND>).
+мережі.  (Див. L<guestfs(3)/МОДУЛЬ>).
 
 =item 2.
 
@@ -195,9 +201,10 @@ environment and has nothing to do with virt-customize.
 
 =item 3.
 
-You don't want untrusted guest code trying to access your host network when
-running virt-customize.  This is particularly an issue when you don't trust
-the source of the operating system templates.  (See L</SECURITY> below).
+Ви не хочете, щоб ненадійний код із гостьової системи намагався отримати
+доступ до мережевого з'єднання вашої основної системи під час роботи
+virt-customize. Таке, зокрема, може трапитися, якщо ви не довіряєте джерелу
+шаблонів операційних систем.  (Див. L</БЕЗПЕКА> нижче).
 
 =item 4.
 
@@ -210,13 +217,15 @@ the source of the operating system templates.  (See L</SECURITY> below).
 
 =item B<--quiet>
 
-Не виводити повідомлень до журналу.
+Не виводити повідомлення до журналу.
 
-To enable detailed logging of individual file operations, use I<-x>.
+Для вмикання ведення докладного журналу окремих дій з файлами скористайтеся
+I<-x>.
 
 =item B<--smp> N
 
-Enable N E<ge> 2 virtual CPUs for I<--run> scripts to use.
+Увімкнути N E<ge> 2 віртуальних процесорів для використання у скриптах
+I<--run>.
 
 =item B<-v>
 
@@ -242,14 +251,16 @@ __CUSTOMIZE_OPTIONS__
 
 =head1 SELINUX
 
-For guests which make use of SELinux, special handling for them might be
-needed when using operations which create new files or alter existing ones.
+Для гостьових систем, у яких використовується SELinux, може знадобитися
+спеціальна обробка, якщо використовуються дії, які створюють нові файли або
+вносять зміни до наявних файлів.
 
-For further details, see L<virt-builder(1)/SELINUX>.
+Докладніший опис наведено у розділі L<virt-builder(1)/SELINUX>.
 
 =head1 СТАН ВИХОДУ
 
-This program returns 0 on success, or 1 if there was an error.
+Ця програма повертає 0, якщо роботу виконано успішно, і 1, якщо сталися
+помилки.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
@@ -257,8 +268,8 @@ This program returns 0 on success, or 1 if there was an error.
 
 =item C<VIRT_TOOLS_DATA_DIR>
 
-This can point to the directory containing data files used for Windows
-firstboot installation.
+Ця змінна визначає каталог, у якому містяться файли даних, які
+використовуються для встановлення Windows з першим завантаженням.
 
 Зазвичай, потреби у встановленні власного значення немає. Якщо значення не
 встановлено, буде використано вбудоване типове значення (щось схоже на
@@ -270,17 +281,20 @@ F</usr/share/virt-tools>).
 
 =item F<rhsrvany.exe>
 
-This is the RHSrvAny Windows binary, used to install a "firstboot" script in
-Windows guests.  It is required if you intend to use the I<--firstboot> or
-I<--firstboot-command> options with Windows guests.
+Це виконуваний файл для Windows RHSrvAny, який використовується для
+встановлення скрипту «firstboot» у гостьові системи Windows. Він
+знадобиться, якщо ви маєте намір використовувати параметри I<--firstboot> і
+I<--firstboot-command> для гостьових операційних систем Windows.
 
 Див. також C<https://github.com/rwmjones/rhsrvany>
 
 =item F<pvvxsvc.exe>
 
-This is a Windows binary shipped with SUSE VMDP, used to install a
-"firstboot" script in Windows guests.  It is required if you intend to use
-the I<--firstboot> or I<--firstboot-command> options with Windows guests.
+Це виконуваний файл Windows, що постачається разом із VMDP SUSE,
+використовується для встановлення скрипту «firstboot» у гостьові системи
+Windows. Він знадобиться, якщо ви маєте намір використовувати параметри
+I<--firstboot> і I<--firstboot-command> для гостьових операційних систем
+Windows.
 
 =back
 
@@ -302,5 +316,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2017 Red Hat Inc.
+Copyright (C) 2011-2018 Red Hat Inc.
 

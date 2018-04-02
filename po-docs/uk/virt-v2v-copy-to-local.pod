@@ -1,11 +1,12 @@
 
 =head1 НАЗВА
 
-virt-v2v-copy-to-local - Copy a remote guest to the local machine
+virt-v2v-copy-to-local — копіювання віддаленої гостьової системи на
+локальний комп'ютер
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-v2v-copy-to-local -ic LIBVIRT_URI GUEST
+ virt-v2v-copy-to-local -ic АДРЕСА_LIBVIRT ГОСТЬОВА_СИСТЕМА
 
  virt-v2v-copy-to-local -ic xen+ssh://root@xen.example.com xen_guest
 
@@ -143,5 +144,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

@@ -1148,3 +1148,32 @@ guestfs_compare_tsk_dirent_list (const struct guestfs_tsk_dirent_list *s1, const
     return 0;
   }
 }
+
+GUESTFS_DLL_PUBLIC int
+guestfs_compare_yara_detection (const struct guestfs_yara_detection *s1, const struct guestfs_yara_detection *s2)
+{
+  int r;
+
+  r = strcmp (s1->yara_name, s2->yara_name);
+  if (r != 0) return r;
+  r = strcmp (s1->yara_rule, s2->yara_rule);
+  if (r != 0) return r;
+  return 0;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_compare_yara_detection_list (const struct guestfs_yara_detection_list *s1, const struct guestfs_yara_detection_list *s2)
+{
+  if (s1->len < s2->len) return -1;
+  else if (s1->len > s2->len) return 1;
+  else {
+    size_t i;
+    int r;
+
+    for (i = 0; i < s1->len; ++i) {
+      r = guestfs_compare_yara_detection (&s1->val[i], &s2->val[i]);
+      if (r != 0) return r;
+    }
+    return 0;
+  }
+}

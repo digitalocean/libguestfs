@@ -36,7 +36,7 @@ instead of erl_interface.
 */
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #include "actions.h"
 
@@ -639,6 +639,21 @@ run_hivex_root (ETERM *args_tuple)
     return make_error ("hivex_root");
 
   return erl_mk_longlong (r);
+}
+
+ETERM *
+run_hivex_value_string (ETERM *args_tuple)
+{
+  int64_t valueh = get_int64 (ARG (0));
+  char *r;
+
+  r = guestfs_hivex_value_string (g, valueh);
+  if (r == NULL)
+    return make_error ("hivex_value_string");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
 }
 
 ETERM *
@@ -1278,6 +1293,21 @@ run_ntfsclone_out (ETERM *args_tuple)
 }
 
 ETERM *
+run_part_resize (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int partnum = get_int (ARG (1));
+  int64_t endsect = get_int64 (ARG (2));
+  int r;
+
+  r = guestfs_part_resize (g, device, partnum, endsect);
+  if (r == -1)
+    return make_error ("part_resize");
+
+  return erl_mk_atom ("ok");
+}
+
+ETERM *
 run_part_set_disk_guid (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
@@ -1649,6 +1679,18 @@ run_xfs_admin (ETERM *args_tuple)
     free ((char *) optargs_s.uuid);
   if (r == -1)
     return make_error ("xfs_admin");
+
+  return erl_mk_atom ("ok");
+}
+
+ETERM *
+run_yara_destroy (ETERM *args_tuple)
+{
+  int r;
+
+  r = guestfs_yara_destroy (g);
+  if (r == -1)
+    return make_error ("yara_destroy");
 
   return erl_mk_atom ("ok");
 }

@@ -18,9 +18,12 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
-	$(SOURCES_ML) $(SOURCES_C) \
+	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	test-virt-get-kernel-docs.sh \
 	virt-get-kernel.pod
+
+SOURCES_MLI = \
+	get_kernel.mli
 
 SOURCES_ML = \
 	get_kernel.ml
@@ -63,7 +66,11 @@ OCAMLPACKAGES = \
 	-I $(top_builddir)/lib/.libs \
 	-I $(top_builddir)/gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
-	-I $(top_builddir)/mllib
+	-I $(top_builddir)/common/mlstdutils \
+	-I $(top_builddir)/common/mlutils \
+	-I $(top_builddir)/common/mlgettext \
+	-I $(top_builddir)/common/mlpcre \
+	-I $(top_builddir)/common/mltools
 if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
 endif
@@ -83,11 +90,22 @@ else
 OBJECTS = $(XOBJECTS)
 endif
 
-OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+OCAMLLINKFLAGS = \
+	mlstdutils.$(MLARCHIVE) \
+	mlguestfs.$(MLARCHIVE) \
+	mlgettext.$(MLARCHIVE) \
+	mlpcre.$(MLARCHIVE) \
+	mlcutils.$(MLARCHIVE) \
+	mltools.$(MLARCHIVE) \
+	$(LINK_CUSTOM_OCAMLC_ONLY)
 
 virt_get_kernel_DEPENDENCIES = \
 	$(OBJECTS) \
-	../mllib/mllib.$(MLARCHIVE) \
+	../common/mlstdutils/mlstdutils.$(MLARCHIVE) \
+	../common/mlutils/mlcutils.$(MLARCHIVE) \
+	../common/mlgettext/mlgettext.$(MLARCHIVE) \
+	../common/mlpcre/mlpcre.$(MLARCHIVE) \
+	../common/mltools/mltools.$(MLARCHIVE) \
 	$(top_srcdir)/ocaml-link.sh
 virt_get_kernel_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
@@ -116,20 +134,9 @@ stamp-virt-get-kernel.pod: virt-get-kernel.pod
 	  $<
 	touch $@
 
-# Dependencies.
-depend: .depend
-
-.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
-	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
-	  $(SED) 's/ *$$//' | \
-	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
-	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
-	  sort > $@-t
-	mv $@-t $@
-
+# OCaml dependencies.
+.depend: *.ml *.mli
+	$(top_builddir)/ocaml-dep.sh $^
 -include .depend
 
 endif
-
-.PHONY: depend

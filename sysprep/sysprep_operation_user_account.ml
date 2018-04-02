@@ -19,15 +19,14 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
 open Getopt.OptionName
 
 open Sysprep_operation
 
 module G = Guestfs
-
-module StringSet = Set.Make (String)
 
 let remove_users = ref StringSet.empty
 let keep_users = ref StringSet.empty

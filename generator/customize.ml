@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Docstrings
 open Pr
 
@@ -221,8 +221,8 @@ See also I<--run>.";
     op_shortdesc = "Add package(s) to install at first boot";
     op_pod_longdesc = "\
 Install the named packages (a comma-separated list).  These are
-installed when the guest first boots using the guest's package manager
-(eg. apt, yum, etc.) and the guest's network connection.
+installed when the guest first boots using the guest’s package manager
+(eg. apt, yum, etc.) and the guest’s network connection.
 
 For an overview on the different ways to install packages, see
 L<virt-builder(1)/INSTALLING PACKAGES>.";
@@ -243,8 +243,8 @@ dotted hostname.domainname (FQDN) if you want.";
     op_shortdesc = "Add package(s) to install";
     op_pod_longdesc = "\
 Install the named packages (a comma-separated list).  These are
-installed during the image build using the guest's package manager
-(eg. apt, yum, etc.) and the host's network connection.
+installed during the image build using the guest’s package manager
+(eg. apt, yum, etc.) and the host’s network connection.
 
 For an overview on the different ways to install packages, see
 L<virt-builder(1)/INSTALLING PACKAGES>.
@@ -465,7 +465,7 @@ This command performs a L<touch(1)>-like operation on C<FILE>.";
     op_shortdesc = "Uninstall package(s)";
     op_pod_longdesc = "\
 Uninstall the named packages (a comma-separated list).  These are
-removed during the image build using the guest's package manager
+removed during the image build using the guest’s package manager
 (eg. apt, yum, etc.).  Dependent packages may also need to be
 uninstalled to satisfy the request.
 
@@ -623,7 +623,8 @@ and generate_customize_cmdline_ml () =
 
 open Printf
 
-open Common_utils
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
 open Getopt.OptionName
 
@@ -687,7 +688,7 @@ let rec argspec () =
         op_shortdesc = shortdesc; op_pod_longdesc = longdesc } ->
       pr "    (\n";
       pr "      [ L\"%s\" ],\n" name;
-      pr "      Getopt.Unit (fun () -> push_front %s ops),\n" discrim;
+      pr "      Getopt.Unit (fun () -> List.push_front %s ops),\n" discrim;
       pr "      s_\"%s\"\n" shortdesc;
       pr "    ),\n";
       pr "    None, %S;\n" longdesc
@@ -695,7 +696,7 @@ let rec argspec () =
         op_shortdesc = shortdesc; op_pod_longdesc = longdesc } ->
       pr "    (\n";
       pr "      [ L\"%s\" ],\n" name;
-      pr "      Getopt.String (s_\"%s\", fun s -> push_front (%s s) ops),\n" v discrim;
+      pr "      Getopt.String (s_\"%s\", fun s -> List.push_front (%s s) ops),\n" v discrim;
       pr "      s_\"%s\"\n" shortdesc;
       pr "    ),\n";
       pr "    Some %S, %S;\n" v longdesc
@@ -707,7 +708,7 @@ let rec argspec () =
       pr "        s_\"%s\",\n" v;
       pr "        fun s ->\n";
       pr "          let p = split_string_pair \"%s\" s in\n" name;
-      pr "          push_front (%s p) ops\n" discrim;
+      pr "          List.push_front (%s p) ops\n" discrim;
       pr "      ),\n";
       pr "      s_\"%s\"\n" shortdesc;
       pr "    ),\n";
@@ -720,7 +721,7 @@ let rec argspec () =
       pr "        s_\"%s\",\n" v;
       pr "        fun s ->\n";
       pr "          let ss = split_string_list s in\n";
-      pr "          push_front (%s ss) ops\n" discrim;
+      pr "          List.push_front (%s ss) ops\n" discrim;
       pr "      ),\n";
       pr "      s_\"%s\"\n" shortdesc;
       pr "    ),\n";
@@ -733,7 +734,7 @@ let rec argspec () =
       pr "        s_\"%s\",\n" v;
       pr "        fun s ->\n";
       pr "          let ss = split_links_list \"%s\" s in\n" name;
-      pr "          push_front (%s ss) ops\n" discrim;
+      pr "          List.push_front (%s ss) ops\n" discrim;
       pr "      ),\n";
       pr "      s_\"%s\"\n" shortdesc;
       pr "    ),\n";
@@ -746,7 +747,7 @@ let rec argspec () =
       pr "        s_\"%s\",\n" v;
       pr "        fun s ->\n";
       pr "          let sel = Password.parse_selector s in\n";
-      pr "          push_front (%s sel) ops\n" discrim;
+      pr "          List.push_front (%s sel) ops\n" discrim;
       pr "      ),\n";
       pr "      s_\"%s\"\n" shortdesc;
       pr "    ),\n";
@@ -760,7 +761,7 @@ let rec argspec () =
       pr "        fun s ->\n";
       pr "          let user, sel = split_string_pair \"%s\" s in\n" name;
       pr "          let sel = Password.parse_selector sel in\n";
-      pr "          push_front (%s (user, sel)) ops\n" discrim;
+      pr "          List.push_front (%s (user, sel)) ops\n" discrim;
       pr "      ),\n";
       pr "      s_\"%s\"\n" shortdesc;
       pr "    ),\n";
@@ -774,7 +775,7 @@ let rec argspec () =
       pr "        fun s ->\n";
       pr "          let user, selstr = String.split \":\" s in\n";
       pr "          let sel = Ssh_key.parse_selector selstr in\n";
-      pr "          push_front (%s (user, sel)) ops\n" discrim;
+      pr "          List.push_front (%s (user, sel)) ops\n" discrim;
       pr "      ),\n";
       pr "      s_\"%s\"\n" shortdesc;
       pr "    ),\n";
@@ -787,7 +788,7 @@ let rec argspec () =
       pr "        s_\"%s\",\n" v;
       pr "        fun s ->\n";
       pr "          %s s;\n" fn;
-      pr "          push_front (%s s) ops\n" discrim;
+      pr "          List.push_front (%s s) ops\n" discrim;
       pr "      ),\n";
       pr "      s_\"%s\"\n" shortdesc;
       pr "    ),\n";
@@ -800,7 +801,7 @@ let rec argspec () =
       pr "        s_\"%s\",\n" v;
       pr "        fun s ->\n";
       pr "          let sel = Subscription_manager.parse_pool_selector s in\n";
-      pr "          push_front (%s sel) ops\n" discrim;
+      pr "          List.push_front (%s sel) ops\n" discrim;
       pr "      ),\n";
       pr "      s_\"%s\"\n" shortdesc;
       pr "    ),\n";

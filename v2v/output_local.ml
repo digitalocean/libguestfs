@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Types
 open Utils
@@ -33,8 +34,9 @@ class output_local dir = object
   method prepare_targets source targets =
     List.map (
       fun t ->
-        let target_file = dir // source.s_name ^ "-" ^ t.target_overlay.ov_sd in
-        { t with target_file = target_file }
+        let target_file =
+          TargetFile (dir // source.s_name ^ "-" ^ t.target_overlay.ov_sd) in
+        { t with target_file }
     ) targets
 
   method supported_firmware = [ TargetBIOS; TargetUEFI ]

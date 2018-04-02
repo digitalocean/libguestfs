@@ -12,25 +12,28 @@ virt-filesystems — програма для показу списку файл�
 
 =head1 ОПИС
 
-This tool allows you to discover filesystems, partitions, logical volumes,
-and their sizes in a disk image or virtual machine.  It is a replacement for
-L<virt-list-filesystems(1)> and L<virt-list-partitions(1)>.
+За допомогою цієї програми ви зможете виявляти файлові системи, розділи
+диска, логічні томи та визначати їхні розміри у образі диска або у
+віртуальній машині. Програма є замінником L<virt-list-filesystems(1)> та
+L<virt-list-partitions(1)>.
 
-One use for this tool is from shell scripts to iterate over all filesystems
-from a disk image:
+Одним із варіантів використання цієї програми є додавання її у скрипти для
+ітеративного обходу усіх файлових систем на образі диска:
 
  for fs in $(virt-filesystems -a disk.img); do
    # ...
  done
 
-Another use is to list partitions before using another tool to modify those
-partitions (such as L<virt-resize(1)>).  If you are curious about what an
-unknown disk image contains, use this tool along with L<virt-inspector(1)>.
+Це одним використанням програми є виведення списку розділів до використання
+іншого інструмента для внесення змін до цих розділів (зокрема програми
+L<virt-resize(1)>). Якщо вам цікавий вміст невідомого образу диска,
+скористайтеся цим інструментом разом із L<virt-inspector(1)>.
 
-Various command line options control what this program displays.  You need
-to give either I<-a> or I<-d> options to specify the disk image or libvirt
-guest respectively.  If you just specify that then the program shows
-filesystems found, one per line, like this:
+Керувати виведенням даних цією програмою можна за допомогою різноманітних
+параметрів командного рядка. Вам слід задати параметр I<-a> або I<-d>, щоб
+визначити образ диска або гостьову систему libvirt. Якщо ви вкажете один з
+цих параметрів, програма покаже знайдені файлові системи, по одній на рядок,
+ось так:
 
  $ virt-filesystems -a disk.img
  /dev/sda1
@@ -44,8 +47,8 @@ filesystems found, one per line, like this:
  /dev/sda1              filesystem   ext4  boot   524288000
  /dev/vg_guest/lv_root  filesystem   ext4  root   10212081664
 
-If you add I<--extra> then non-mountable (swap, unknown) filesystems are
-shown as well:
+Якщо ви додасте параметр I<--extra>, буде показано і файлові системи, які
+непридатні до монтування (резервна пам'ять, невідомий формат):
 
  $ virt-filesystems -a disk.img --extra
  /dev/sda1
@@ -53,37 +56,42 @@ shown as well:
  /dev/vg_guest/lv_swap
  /dev/vg_guest/lv_data
 
-If you add I<--partitions> then partitions are shown instead of filesystems:
+Якщо ви додасте параметр I<--partitions>, буде показано розділи, а не
+файлові системи:
 
  $ virt-filesystems -a disk.img --partitions
  /dev/sda1
  /dev/sda2
 
-Similarly you can use I<--logical-volumes>, I<--volume-groups>,
-I<--physical-volumes>, I<--block-devices> to list those items.
+У подібний спосіб, ви можете скористатися параметрами I<--logical-volumes>,
+I<--volume-groups>, I<--physical-volumes>, I<--block-devices>, щоб отримати
+список цих записів.
 
-You can use these options in combination as well (if you want a combination
-including filesystems, you have to add I<--filesystems>).  Notice that some
-items fall into several categories (eg. F</dev/sda1> might be both a
-partition and a filesystem).  These items are listed several times.  To get
-a list which includes absolutely everything that virt-filesystems knows
-about, use the I<--all> option.
+Ви можете також скористатися цими параметрами у поєднанні (якщо вам потрібна
+комбінація із файловими системами, вам слід додати
+I<--filesystems>). Зауважте, що деякі з пунктів списку можуть належати
+одночасно декільком категоріям (наприклад, F</dev/sda1> може бути як
+розділом, так і файловою системою). Такі пункти буде показано відповідну
+кількість разів. Щоб отримати список, який міститиме абсолютно усе, про що
+знає virt-filesystems, скористайтеся параметром I<--all>.
 
-UUIDs (because they are quite long) are not shown by default.  Add the
-I<--uuid> option to display device and filesystem UUIDs in the long output.
+UUID (оскільки вони є доволі довгими) типово показано не буде. Додайте
+параметр I<--uuid>, щоб ознайомитися із UUID пристроїв і файлових систем у
+розширених даних.
 
-I<--all --long --uuid> is a useful combination to display all possible
-information about everything.
+I<--all --long --uuid> є корисною комбінацією для показу усіх доступних
+даних щодо усього.
 
  $ virt-filesystems -a win.img --all --long --uuid -h
- Name      Type       VFS  Label           Size Parent   UUID
+ Назва     Тип        VFS  Мітка           Розмір Батьк.   UUID
  /dev/sda1 filesystem ntfs System Reserved 100M -        F81C92571C92112C
  /dev/sda2 filesystem ntfs -               20G  -        F2E8996AE8992E3B
  /dev/sda1 partition  -    -               100M /dev/sda -
  /dev/sda2 partition  -    -               20G  /dev/sda -
  /dev/sda  device     -    -               20G  -        -
 
-For machine-readable output, use I<--csv> to get Comma-Separated Values.
+Для отримання зручних для машинної обробки даних скористайтеся параметром
+I<--csv>. Дані буде виведено у форматі значень відокремлених комами.
 
 =head1 ПАРАМЕТРИ
 
@@ -97,9 +105,9 @@ For machine-readable output, use I<--csv> to get Comma-Separated Values.
 
 =item B<--add> файл
 
-Add I<file> which should be a disk image from a virtual machine.  If the
-virtual machine has multiple block devices, you must supply all of them with
-separate I<-a> options.
+Додати I<файл>, який має бути образом диска з віртуальної машини. Якщо у
+віртуальній машині декілька блокових пристроїв, вам слід вказати їх усі за
+допомогою окремих записів параметра I<-a>.
 
 Формат образу диска визначається автоматично. Щоб перевизначити його і
 примусово використати певний формат, скористайтеся параметром
@@ -113,10 +121,10 @@ I<--format=..>.
 
 =item B<--all>
 
-Display everything.  This is currently the same as specifying these options:
+Вивести усе. У поточній версії це те саме, що вказати такі параметри:
 I<--filesystems>, I<--extra>, I<--partitions>, I<--block-devices>,
-I<--logical-volumes>, I<--volume-groups>, I<--physical-volumes>.  (More may
-be added to this list in future).
+I<--logical-volumes>, I<--volume-groups>, I<--physical-volumes>. (У
+майбутньому до цього списку може бути додано інші пункти).
 
 Див. також I<--long>.
 
@@ -138,9 +146,10 @@ libvirt не буде використовуватися взагалі.
 
 =item B<--csv>
 
-Write out the results in CSV format (comma-separated values).  This format
-can be imported easily into databases and spreadsheets, but read L</NOTE
-ABOUT CSV FORMAT> below.
+Вивести результати до формату CSV (записів, відокремлених комами). Дані у
+цьому форматі можна просто імпортувати до баз даних і електронних
+таблиць. Втім, варто ознайомитися із розділом L</НОТАТКА ЩОДО ФОРМАТУ CSV>,
+наведеним нижче.
 
 =item B<-d> гість
 
@@ -151,16 +160,17 @@ ABOUT CSV FORMAT> below.
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, virt-filesystems normally turns
-echoing off so you cannot see what you are typing.  If you are not worried
-about Tempest attacks and there is no one else in the room you can specify
-this flag to see what you are typing.
+Типово, якщо virt-filesystems попросить вас ввести ключ або пароль, програма
+не відтворюватиме введені символи на екрані. Якщо ви не боїтеся
+TEMPEST-нападів, або у вашій кімнаті нікого, окрім вас, немає, ви можете
+скористатися цим прапорцем, щоб бачити, які саме символи ви вводите.
 
 =item B<--extra>
 
-This causes filesystems that are not ordinary, mountable filesystems to be
-displayed.  This category includes swapspace, and filesystems that are empty
-or contain unknown data.
+Це спричинить показ файлових систем, які не є звичайними файловими
+системами, які придатні до монтування. До цієї категорії включено розділи
+резервної пам'яті та файлові системи, які є порожніми або містять невідомі
+дані.
 
 Цей параметр автоматично встановлює параметр I<--filesystems>.
 
@@ -207,8 +217,9 @@ or contain unknown data.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening F</dev/tty>.
+Прочитати параметри ключа або пароля із джерела стандартного
+введення. Типово програма намагається читати паролі від користувача
+відкриттям F</dev/tty>.
 
 =item B<-l>
 
@@ -216,15 +227,15 @@ passphrases from the user by opening F</dev/tty>.
 
 Показувати додаткові стовпчики даних («довгий формат»).
 
-A title row is added unless you also specify I<--no-title>.
+Якщо ви не додасте параметр I<--no-title>, буде додано рядок заголовка.
 
-The extra columns displayed depend on what output you select, and the
-ordering of columns may change in future versions.  Use the title row,
-I<--csv> output and/or L<csvtool(1)> to match columns to data in external
-programs.
+Вміст додаткових стовпчиків залежить від вибраного виведення, а
+упорядкування стовпчиків може змінитися у майбутніх версіях. Для того, щоб
+виведені дані відповідали вхідним даним зовнішніх програм, скористайтеся
+рядком заголовків, виведенням I<--csv> і/або L<csvtool(1)>.
 
-Use I<-h> if you want sizes to be displayed in human-readable format.  The
-default is to show raw numbers of I<bytes>.
+Якщо дані має бути виведено у зручному для читання людиною форматі,
+скористайтеся параметром I<-h>. Типово, буде показано розміри у I<байтах>.
 
 Скористайтеся параметром I<--uuid>, щоб було показано також UUID.
 
@@ -234,23 +245,23 @@ default is to show raw numbers of I<bytes>.
 
 =item B<--logical-volumes>
 
-Display LVM logical volumes.  In this mode, these are displayed irrespective
-of whether the LVs contain filesystems.
+Показати логічні томи LVM. У цьому режимі томи буде показано незалежно від
+того, чи містяться на логічних томах файлові системи.
 
 =item B<--no-title>
 
 У режимі I<--long> не додавати рядок заголовків.
 
-Note that the order of the columns is not fixed, and may change in future
-versions of virt-filesystems, so using this option may give you unexpected
-surprises.
+Зауважте, що порядок стовпчиків не є фіксованим і може змінитися у майбутніх
+версіях virt-filesystems; отже, використання цього параметра може призвести
+до не зовсім очікуваних наслідків.
 
 =item B<--parts>
 
 =item B<--partitions>
 
-Display partitions.  In this mode, these are displayed irrespective of
-whether the partitions contain filesystems.
+Показати розділи. У цьому режимі розділи буде показано незалежно від того,
+чи містяться на розділах файлові системи.
 
 =item B<--pvs>
 
@@ -264,7 +275,7 @@ whether the partitions contain filesystems.
 
 =item B<--uuids>
 
-In I<--long> mode, display UUIDs as well.
+У режимі I<--long> буде також виведено UUID.
 
 =item B<-v>
 
@@ -294,8 +305,8 @@ In I<--long> mode, display UUIDs as well.
 
 =head1 СТОВПЧИКИ
 
-Note that columns in the output are subject to reordering and change in
-future versions of this tool.
+Зауважте, що порядок і перелік стовпчиків у виведених даних у майбутніх
+версіях може бути змінено.
 
 =over 4
 
@@ -303,55 +314,57 @@ future versions of this tool.
 
 Назва файлової системи, розділу, блокового пристрою або LVM.
 
-For device and partition names these are displayed as canonical libguestfs
-names, so that for example F</dev/sda2> is the second partition on the first
-device.
+Назви пристроїв та розділів буде показано у форматі канонічних назв
+libguestfs. Таким чином, наприклад, F</dev/sda2> означатиме другий розділ на
+першому пристрої.
 
-If the I<--long> option is B<not> specified, then only the name column is
-shown in the output.
+Якщо параметр I<--long> B<не> вказано, у виведених даних буде лише стовпчик
+назв.
 
 =item B<Тип>
 
-The object type, for example C<filesystem>, C<lv>, C<device> etc.
+Тип об'єкта. Наприклад, C<filesystem>, C<lv>, C<device> тощо.
 
 =item B<VFS>
 
-If there is a filesystem, then this column displays the filesystem type if
-one could be detected, eg. C<ext4>.
+Якщо буде виявлено відому програмі файлову систему, у цьому стовпчику буде
+показано дані щодо неї, наприклад C<ext4>.
 
 =item B<Мітка>
 
-If the object has a label (used for identifying and mounting filesystems)
-then this column contains the label.
+Якщо у об'єкта є мітка (яка використовується для ідентифікації та монтування
+файлових систем), у цьому стовпчику міститься мітка.
 
 =item B<MBR>
 
-The partition type byte, displayed as a two digit hexadecimal number.  A
-comprehensive list of partition types can be found here:
+Байт типу розділу, буде показано у форматі двоцифрового шістнадцяткового
+числа. Довідковий список типів розділів наведено тут:
 L<http://www.win.tue.nl/~aeb/partitions/partition_types-1.html>
 
 Це стосується лише розділів DOS (MBR).
 
 =item B<Розмір>
 
-The size of the object in bytes.  If the I<--human> option is used then the
-size is displayed in a human-readable form.
+Розмір об'єкта у байтах. Якщо використано параметр I<--human>, розмір буде
+вказано у зручному для читання форматі.
 
 =item B<Основа>
 
-The parent column records the parent relationship between objects.
+У стовпчику батьківських об'єктів показано відношення батьківських і
+дочірніх об'єктів.
 
-For example, if the object is a partition, then this column contains the
-name of the containing device.  If the object is a logical volume, then this
-column is the name of the volume group.
+Наприклад, якщо об'єкт є розділом, у цьому стовпчику міститиметься назва
+пристрою, на якому цей розділ розташовано. Якщо об'єкт є логічним томом, у
+цьому стовпчику буде наведено назву групи томів.
 
-If there is more than one parent, then this column is (internal to the
-column) a comma-separated list, eg. C</dev/sda,/dev/sdb>.
+Якщо батьківських об'єктів декілька, вмістом стовпчика буде список значень
+відокремлених комами, наприклад C</dev/sda,/dev/sdb>.
 
 =item B<UUID>
 
-If the object has a UUID (used for identifying and mounting filesystems and
-block devices) then this column contains the UUID as a string.
+Якщо у об'єкта є UUID (який використовується для ідентифікації та монтування
+файлових систем та блокових пристроїв), у цьому стовпчику міститься UUID у
+форматі рядка.
 
 UUID буде показано, лише якщо вказано параметр I<--uuid>.
 
@@ -359,27 +372,30 @@ UUID буде показано, лише якщо вказано парамет�
 
 =head1 ЗАУВАЖЕННЯ ЩОДО ФОРМАТУ CSV
 
-Comma-separated values (CSV) is a deceptive format.  It I<seems> like it
-should be easy to parse, but it is definitely not easy to parse.
+Формат значень, які відокремлено комами (CSV), є оманливо простим. Може
+I<здатися>, що його просто обробляти, але насправді це зовсім не так.
 
-Myth: Just split fields at commas.  Reality: This does I<not> work
-reliably.  This example has two columns:
+Міф: достатньо розділити поля за комами. Реальність: поділ комами I<не>
+працює у надійний спосіб. Ось приклад із двома стовпчиками:
 
  "foo,bar",baz
 
-Myth: Read the file one line at a time.  Reality: This does I<not> work
-reliably.  This example has one row:
+Міф: слід читати файл за рядками, один рядок за одну операцію
+читання. Реальність: читання за рядками I<не> працює у надійний спосіб. Ось
+приклад із одним рядком:
 
  "foo
  bar",baz
 
-For shell scripts, use C<csvtool> (L<https://github.com/Chris00/ocaml-csv>
-also packaged in major Linux distributions).
+Для скриптів командної оболонки скористайтеся C<csvtool>
+(L<https://github.com/Chris00/ocaml-csv> також є серед пакунків основних
+дистрибутивів Linux).
 
-For other languages, use a CSV processing library (eg. C<Text::CSV> for Perl
-or Python's built-in csv library).
+Для інших мов програмування використовуйте бібліотеку для обробки даних CSV
+(наприклад, C<Text::CSV> для Perl або вбудовану бібліотеку csv Python).
 
-Most spreadsheets and databases can import CSV directly.
+У більшості електронних таблиць та баз даних передбачено можливості
+безпосереднього імпортування даних CSV.
 
 =head1 СТАН ВИХОДУ
 

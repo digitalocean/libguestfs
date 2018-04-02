@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,3 +20,4 @@ val generate_ocaml_c : unit -> unit
 val generate_ocaml_c_errnos : unit -> unit
 val generate_ocaml_ml : unit -> unit
 val generate_ocaml_mli : unit -> unit
+val generate_ocaml_daemon_structs : unit -> unit

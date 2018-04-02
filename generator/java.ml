@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -189,7 +189,7 @@ public class GuestFS {
    * <code>events</code> is one or more <code>EVENT_*</code> constants,
    * bitwise ORed together.
    * </p><p>
-   * When an event happens, the callback object's <code>event</code> method
+   * When an event happens, the callback object’s <code>event</code> method
    * is invoked like this:
    * </p>
    * <pre>
@@ -330,7 +330,7 @@ public class GuestFS {
         pr "    /* Unpack optional args. */\n";
         pr "    Object _optobj;\n";
         pr "    long _optargs_bitmask = 0;\n";
-        iteri (
+        List.iteri (
           fun i argt ->
             let t, boxed_t, convert, n, default =
               match argt with
@@ -503,18 +503,12 @@ and generate_java_prototype ?(public=false) ?(privat=false) ?(native=false)
       needs_comma := true;
 
       match arg with
-      | Pathname n
-      | Device n | Mountable n | Dev_or_Path n | Mountable_or_Path n
-      | String n
-      | OptString n
-      | FileIn n
-      | FileOut n
-      | Key n
-      | GUID n ->
+      | String (_, n)
+      | OptString n ->
           pr "String %s" n
       | BufferIn n ->
           pr "byte[] %s" n
-      | StringList n | DeviceList n | FilenameList n ->
+      | StringList (_, n) ->
           pr "String[] %s" n
       | Bool n ->
           pr "boolean %s" n
@@ -591,7 +585,8 @@ and generate_java_c actions () =
 
 #include \"com_redhat_et_libguestfs_GuestFS.h\"
 #include \"guestfs.h\"
-#include \"guestfs-internal-frontend.h\"
+#include \"guestfs-utils.h\"
+#include \"structs-cleanups.h\"
 
 /* Note that this function returns.  The exception is not thrown
  * until after the wrapper function returns.
@@ -619,7 +614,7 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
 ";
 
   List.iter (
-    fun { name = name; style = (ret, args, optargs as style);
+    fun { name; style = (ret, args, optargs as style);
           c_function = c_function } ->
       pr "\n";
       pr "JNIEXPORT ";
@@ -641,18 +636,12 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
       pr "  (JNIEnv *env, jobject obj, jlong jg";
       List.iter (
         function
-        | Pathname n
-        | Device n | Mountable n | Dev_or_Path n | Mountable_or_Path n
-        | String n
-        | OptString n
-        | FileIn n
-        | FileOut n
-        | Key n
-        | GUID n ->
+        | String (_, n)
+        | OptString n ->
             pr ", jstring j%s" n
         | BufferIn n ->
             pr ", jbyteArray j%s" n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
             pr ", jobjectArray j%s" n
         | Bool n ->
             pr ", jboolean j%s" n
@@ -713,19 +702,13 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
 
       List.iter (
         function
-        | Pathname n
-        | Device n | Mountable n | Dev_or_Path n | Mountable_or_Path n
-        | String n
-        | OptString n
-        | FileIn n
-        | FileOut n
-        | Key n
-        | GUID n ->
+        | String (_, n)
+        | OptString n ->
             pr "  const char *%s;\n" n
         | BufferIn n ->
             pr "  char *%s;\n" n;
             pr "  size_t %s_size;\n" n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
             pr "  size_t %s_len;\n" n;
             pr "  CLEANUP_FREE char **%s = NULL;\n" n
         | Bool n
@@ -758,7 +741,6 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
          | RString _ | RBufferOut _ | RStruct _ -> false) ||
           List.exists (function
           | StringList _ -> true
-          | DeviceList _ -> true
           | _ -> false) args ||
           List.exists (function
           | OStringList _ -> true
@@ -772,13 +754,7 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
       let add_ret_error_label = ref false in
       List.iter (
         function
-        | Pathname n
-        | Device n | Mountable n | Dev_or_Path n | Mountable_or_Path n
-        | String n
-        | FileIn n
-        | FileOut n
-        | Key n
-        | GUID n ->
+        | String (_, n) ->
             pr "  %s = (*env)->GetStringUTFChars (env, j%s, NULL);\n" n n
         | OptString n ->
             (* This is completely undocumented, but Java null becomes
@@ -788,7 +764,7 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
         | BufferIn n ->
             pr "  %s = (char *) (*env)->GetByteArrayElements (env, j%s, NULL);\n" n n;
             pr "  %s_size = (*env)->GetArrayLength (env, j%s);\n" n n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
             pr "  %s_len = (*env)->GetArrayLength (env, j%s);\n" n n;
             pr "  %s = malloc (sizeof (char *) * (%s_len+1));\n" n n;
             pr "  if (%s == NULL) {\n" n;
@@ -850,20 +826,14 @@ throw_out_of_memory (JNIEnv *env, const char *msg)
       (* Release the parameters. *)
       List.iter (
         function
-        | Pathname n
-        | Device n | Mountable n | Dev_or_Path n | Mountable_or_Path n
-        | String n
-        | FileIn n
-        | FileOut n
-        | Key n
-        | GUID n ->
+        | String (_, n) ->
             pr "  (*env)->ReleaseStringUTFChars (env, j%s, %s);\n" n n
         | OptString n ->
             pr "  if (j%s)\n" n;
             pr "    (*env)->ReleaseStringUTFChars (env, j%s, %s);\n" n n
         | BufferIn n ->
             pr "  (*env)->ReleaseByteArrayElements (env, j%s, (jbyte *) %s, 0);\n" n n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
             pr "  for (i = 0; i < %s_len; ++i) {\n" n;
             pr "    jobject o = (*env)->GetObjectArrayElement (env, j%s, i);\n"
               n;

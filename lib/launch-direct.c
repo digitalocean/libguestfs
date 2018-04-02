@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -47,6 +47,18 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs_protocol.h"
+#include "qemuopts.h"
+
+/* Differences in qemu device names on ARMv7 (virtio-mmio), s/390x
+ * (CCW) vs normal hardware with PCI.
+ */
+#if defined(__arm__)
+#define VIRTIO_DEVICE_NAME(type) type "-device"
+#elif defined(__s390x__)
+#define VIRTIO_DEVICE_NAME(type) type "-ccw"
+#else
+#define VIRTIO_DEVICE_NAME(type) type "-pci"
+#endif
 
 /* Per-handle data. */
 struct backend_direct_data {
@@ -61,8 +73,7 @@ struct backend_direct_data {
 };
 
 static int is_openable (guestfs_h *g, const char *path, int flags);
-static char *make_appliance_dev (guestfs_h *g, int virtio_scsi);
-static void print_qemu_command_line (guestfs_h *g, char **argv);
+static char *make_appliance_dev (guestfs_h *g);
 
 static char *
 create_cow_overlay_direct (guestfs_h *g, void *datav, struct drive *drv)
@@ -96,64 +107,6 @@ create_cow_overlay_direct (guestfs_h *g, void *datav, struct drive *drv)
    */
   return overlay;
 }
-
-#ifdef QEMU_OPTIONS
-/* Like 'add_cmdline' but allowing a shell-quoted string of zero or
- * more options.  XXX The unquoting is not very clever.
- */
-static void
-add_cmdline_shell_unquoted (guestfs_h *g, struct stringsbuf *sb,
-                            const char *options)
-{
-  char quote;
-  const char *startp, *endp, *nextp;
-
-  while (*options) {
-    quote = *options;
-    if (quote == '\'' || quote == '"')
-      startp = options+1;
-    else {
-      startp = options;
-      quote = ' ';
-    }
-
-    endp = strchr (options, quote);
-    if (endp == NULL) {
-      if (quote != ' ') {
-        fprintf (stderr,
-                 _("unclosed quote character (%c) in command line near: %s"),
-                 quote, options);
-        _exit (EXIT_FAILURE);
-      }
-      endp = options + strlen (options);
-    }
-
-    if (quote == ' ') {
-      if (endp[0] == '\0')
-        nextp = endp;
-      else
-        nextp = endp+1;
-    }
-    else {
-      if (!endp[1])
-        nextp = endp+1;
-      else if (endp[1] == ' ')
-        nextp = endp+2;
-      else {
-        fprintf (stderr, _("cannot parse quoted string near: %s"), options);
-        _exit (EXIT_FAILURE);
-      }
-    }
-    while (*nextp && *nextp == ' ')
-      nextp++;
-
-    guestfs_int_add_string_nodup (g, sb,
-				  safe_strndup (g, startp, endp-startp));
-
-    options = nextp;
-  }
-}
-#endif /* defined QEMU_OPTIONS */
 
 /* On Debian, /dev/kvm is mode 0660 and group kvm, so users need to
  * add themselves to the kvm group otherwise things are going to be
@@ -215,11 +168,198 @@ debian_kvm_warning (guestfs_h *g)
 #endif /* __linux__ */
 }
 
+/* Some macros which make using qemuopts a bit easier. */
+#define flag(flag)                                                      \
+  do {                                                                  \
+    if (qemuopts_add_flag (qopts, (flag)) == -1) goto qemuopts_error;   \
+  } while (0)
+#define arg(flag, value)                                                \
+  do {                                                                  \
+    if (qemuopts_add_arg (qopts, (flag), (value)) == -1) goto qemuopts_error; \
+  } while (0)
+#define arg_format(flag, fs, ...)                                       \
+  do {                                                                  \
+    if (qemuopts_add_arg_format (qopts, (flag), (fs), ##__VA_ARGS__) == -1) \
+      goto qemuopts_error;                                              \
+  } while (0)
+#define arg_noquote(flag, value)                                        \
+  do {                                                                  \
+    if (qemuopts_add_arg_noquote (qopts, (flag), (value)) == -1)        \
+      goto qemuopts_error;                                              \
+  } while (0)
+#define start_list(flag)                                                \
+  if (qemuopts_start_arg_list (qopts, (flag)) == -1) goto qemuopts_error; \
+  do
+#define append_list(value)                                       \
+  do {                                                           \
+    if (qemuopts_append_arg_list (qopts, (value)) == -1)         \
+      goto qemuopts_error;                                       \
+  } while (0)
+#define append_list_format(fs, ...)                                     \
+  do {                                                                  \
+    if (qemuopts_append_arg_list_format (qopts, (fs), ##__VA_ARGS__) == -1) \
+      goto qemuopts_error;                                              \
+  } while (0)
+#define end_list()                                                      \
+  while (0);                                                            \
+  do {                                                                  \
+    if (qemuopts_end_arg_list (qopts) == -1) goto qemuopts_error;       \
+  } while (0)
+
+/**
+ * Add the standard elements of the C<-drive> parameter.
+ */
+static int
+add_drive_standard_params (guestfs_h *g, struct backend_direct_data *data,
+                           struct qemuopts *qopts,
+                           size_t i, struct drive *drv)
+{
+  if (!drv->overlay) {
+    CLEANUP_FREE char *file = NULL;
+
+    /* file= parameter. */
+    file = guestfs_int_drive_source_qemu_param (g, &drv->src);
+    append_list_format ("file=%s", file);
+
+    if (drv->readonly)
+      append_list ("snapshot=on");
+    append_list_format ("cache=%s",
+                        drv->cachemode ? drv->cachemode : "writeback");
+    if (drv->src.format)
+      append_list_format ("format=%s", drv->src.format);
+    if (drv->disk_label)
+      append_list_format ("serial=%s", drv->disk_label);
+    if (drv->copyonread)
+      append_list ("copy-on-read=on");
+
+    /* Discard mode. */
+    switch (drv->discard) {
+    case discard_disable:
+      /* Since the default is always discard=ignore, don't specify it
+       * on the command line.  This also avoids unnecessary breakage
+       * with qemu < 1.5 which didn't have the option at all.
+       */
+      break;
+    case discard_enable:
+      if (!guestfs_int_discard_possible (g, drv, &data->qemu_version))
+        return -1;
+      /*FALLTHROUGH*/
+    case discard_besteffort:
+      /* I believe from reading the code that this is always safe as
+       * long as qemu >= 1.5.
+       */
+      if (guestfs_int_version_ge (&data->qemu_version, 1, 5, 0))
+        append_list ("discard=unmap");
+      break;
+    }
+  }
+  else {
+    /* Writable qcow2 overlay on top of read-only drive. */
+    if (data->qemu_mandatory_locking &&
+	/* Add the file-specific locking option only for files, as
+	 * qemu won't accept options unknown to the block driver in
+	 * use.
+	 */
+	drv->src.protocol == drive_protocol_file) {
+      append_list_format ("file.file.filename=%s", drv->overlay);
+      append_list ("file.driver=qcow2");
+      append_list ("file.backing.file.locking=off");
+    }
+    else {
+      /* Ancient qemu (esp. qemu 1.5 in RHEL 7) didn't understand the
+       * file.file.filename= parameter, so use the safer old-style
+       * form of parameters unless we actually want to specify the
+       * locking flag above.
+       */
+      append_list_format ("file=%s", drv->overlay);
+      append_list ("format=qcow2");
+    }
+    append_list ("cache=unsafe");
+    if (drv->disk_label)
+      append_list_format ("serial=%s", drv->disk_label);
+  }
+
+  append_list_format ("id=hd%zu", i);
+
+  return 0;
+
+  /* This label is called implicitly from the qemuopts macros on error. */
+ qemuopts_error:
+  perrorf (g, "qemuopts");
+  return -1;
+}
+
+static int
+add_drive (guestfs_h *g, struct backend_direct_data *data,
+           struct qemuopts *qopts, size_t i, struct drive *drv)
+{
+  /* If there's an explicit 'iface', use it.  Otherwise default to
+   * virtio-scsi.
+   */
+  if (drv->iface && STREQ (drv->iface, "virtio")) { /* virtio-blk */
+    start_list ("-drive") {
+      if (add_drive_standard_params (g, data, qopts, i, drv) == -1)
+        return -1;
+      append_list ("if=none");
+    } end_list ();
+    start_list ("-device") {
+      append_list (VIRTIO_DEVICE_NAME ("virtio-blk"));
+      append_list_format ("drive=hd%zu", i);
+    } end_list ();
+  }
+#if defined(__arm__) || defined(__aarch64__) || defined(__powerpc__)
+  else if (drv->iface && STREQ (drv->iface, "ide")) {
+    error (g, "'ide' interface does not work on ARM or PowerPC");
+    return -1;
+  }
+#endif
+  else if (drv->iface) {
+    start_list ("-drive") {
+      if (add_drive_standard_params (g, data, qopts, i, drv) == -1)
+        return -1;
+      append_list_format ("if=%s", drv->iface);
+    } end_list ();
+  }
+  else /* default case: virtio-scsi */ {
+    start_list ("-drive") {
+      if (add_drive_standard_params (g, data, qopts, i, drv) == -1)
+        return -1;
+      append_list ("if=none");
+    } end_list ();
+    start_list ("-device") {
+      append_list ("scsi-hd");
+      append_list_format ("drive=hd%zu", i);
+    } end_list ();
+  }
+
+  return 0;
+
+  /* This label is called implicitly from the qemuopts macros on error. */
+ qemuopts_error:
+  perrorf (g, "qemuopts");
+  return -1;
+}
+
+static int
+add_drives (guestfs_h *g, struct backend_direct_data *data,
+            struct qemuopts *qopts)
+{
+  size_t i;
+  struct drive *drv;
+
+  ITER_DRIVES (g, i, drv) {
+    if (add_drive (g, data, qopts, i, drv) == -1)
+      return -1;
+  }
+
+  return 0;
+}
+
 static int
 launch_direct (guestfs_h *g, void *datav, const char *arg)
 {
   struct backend_direct_data *data = datav;
-  CLEANUP_FREE_STRINGSBUF DECLARE_STRINGSBUF (cmdline);
+  struct qemuopts *qopts = NULL;
   int daemon_accept_sock = -1, console_sock = -1;
   int r;
   int flags;
@@ -232,13 +372,12 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   CLEANUP_FREE char *appliance_dev = NULL;
   uint32_t size;
   CLEANUP_FREE void *buf = NULL;
-  struct drive *drv;
-  size_t i;
-  int virtio_scsi;
   struct hv_param *hp;
   bool has_kvm;
   int force_tcg;
   const char *cpu_model;
+  CLEANUP_FREE char *append = NULL;
+  CLEANUP_FREE_STRING_LIST char **argv = NULL;
 
   /* At present you must add drives before starting the appliance.  In
    * future when we enable hotplugging you won't need to do this.
@@ -333,34 +472,28 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    * forking, because after fork we are not allowed to use
    * non-signal-safe functions such as malloc.
    */
-#define ADD_CMDLINE(str)			\
-  guestfs_int_add_string (g, &cmdline, (str))
-#define ADD_CMDLINE_STRING_NODUP(str)			\
-  guestfs_int_add_string_nodup (g, &cmdline, (str))
-#define ADD_CMDLINE_PRINTF(fs,...)				\
-  guestfs_int_add_sprintf (g, &cmdline, (fs), ##__VA_ARGS__)
-
-  ADD_CMDLINE (g->hv);
+  qopts = qemuopts_create ();
+  if (qopts == NULL) {
+  qemuopts_error:
+    perrorf (g, "qemuopts");
+    goto cleanup0;
+  }
+  if (qemuopts_set_binary (qopts, g->hv) == -1) goto qemuopts_error;
 
   /* CVE-2011-4127 mitigation: Disable SCSI ioctls on virtio-blk
-   * devices.  The -global option must exist, but you can pass any
-   * strings to it so we don't need to check for the specific virtio
-   * feature.
+   * devices.
    */
-  if (guestfs_int_qemu_supports (g, data->qemu_data, "-global")) {
-    ADD_CMDLINE ("-global");
-    ADD_CMDLINE (VIRTIO_BLK ".scsi=off");
-  }
+  arg ("-global", VIRTIO_DEVICE_NAME ("virtio-blk") ".scsi=off");
 
   if (guestfs_int_qemu_supports (g, data->qemu_data, "-nodefconfig"))
-    ADD_CMDLINE ("-nodefconfig");
+    flag ("-nodefconfig");
 
   /* This oddly named option doesn't actually enable FIPS.  It just
    * causes qemu to do the right thing if FIPS is enabled in the
    * kernel.  So like libvirt, we pass it unconditionally.
    */
   if (guestfs_int_qemu_supports (g, data->qemu_data, "-enable-fips"))
-    ADD_CMDLINE ("-enable-fips");
+    flag ("-enable-fips");
 
   /* Newer versions of qemu (from around 2009/12) changed the
    * behaviour of monitors so that an implicit '-monitor stdio' is
@@ -371,61 +504,48 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    * let's use that to avoid this and any future surprises.
    */
   if (guestfs_int_qemu_supports (g, data->qemu_data, "-nodefaults"))
-    ADD_CMDLINE ("-nodefaults");
+    flag ("-nodefaults");
 
   /* This disables the host-side display (SDL, Gtk). */
-  ADD_CMDLINE ("-display");
-  ADD_CMDLINE ("none");
+  arg ("-display", "none");
 
   /* See guestfs.pod / gdb */
   if (guestfs_int_get_backend_setting_bool (g, "gdb") > 0) {
-    ADD_CMDLINE ("-S");
-    ADD_CMDLINE ("-s");
+    flag ("-S");
+    flag ("-s");
     warning (g, "qemu debugging is enabled, connect gdb to tcp::1234 to begin");
   }
 
-  ADD_CMDLINE ("-machine");
-  ADD_CMDLINE_PRINTF (
+  start_list ("-machine") {
 #ifdef MACHINE_TYPE
-                      MACHINE_TYPE ","
+    append_list (MACHINE_TYPE);
 #endif
 #ifdef __aarch64__
-                      "%s"      /* gic-version */
+    if (has_kvm && !force_tcg)
+      append_list ("gic-version=host");
 #endif
-                      "accel=%s",
-#ifdef __aarch64__
-                      has_kvm && !force_tcg ? "gic-version=host," : "",
-#endif
-                      !force_tcg ? "kvm:tcg" : "tcg");
+    append_list_format ("accel=%s", !force_tcg ? "kvm:tcg" : "tcg");
+  } end_list ();
 
   cpu_model = guestfs_int_get_cpu_model (has_kvm && !force_tcg);
-  if (cpu_model) {
-    ADD_CMDLINE ("-cpu");
-    ADD_CMDLINE (cpu_model);
-  }
+  if (cpu_model)
+    arg ("-cpu", cpu_model);
 
-  if (g->smp > 1) {
-    ADD_CMDLINE ("-smp");
-    ADD_CMDLINE_PRINTF ("%d", g->smp);
-  }
+  if (g->smp > 1)
+    arg_format ("-smp", "%d", g->smp);
 
-  ADD_CMDLINE ("-m");
-  ADD_CMDLINE_PRINTF ("%d", g->memsize);
+  arg_format ("-m", "%d", g->memsize);
 
   /* Force exit instead of reboot on panic */
-  ADD_CMDLINE ("-no-reboot");
+  flag ("-no-reboot");
 
   /* These are recommended settings, see RHBZ#1053847. */
-  ADD_CMDLINE ("-rtc");
-  ADD_CMDLINE ("driftfix=slew");
-  if (guestfs_int_qemu_supports (g, data->qemu_data, "-no-hpet")) {
-    ADD_CMDLINE ("-no-hpet");
-  }
+  arg ("-rtc", "driftfix=slew");
+  if (guestfs_int_qemu_supports (g, data->qemu_data, "-no-hpet"))
+    flag ("-no-hpet");
 #if defined(__i386__) || defined(__x86_64__)
-  if (guestfs_int_version_ge (&data->qemu_version, 1, 3, 0)) {
-    ADD_CMDLINE ("-global");
-    ADD_CMDLINE ("kvm-pit.lost_tick_policy=discard");
-  }
+  if (guestfs_int_version_ge (&data->qemu_version, 1, 3, 0))
+    arg ("-global", "kvm-pit.lost_tick_policy=discard");
 #endif
 
   /* UEFI (firmware) if required. */
@@ -444,174 +564,88 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     goto cleanup0;
   }
   if (uefi_code) {
-    ADD_CMDLINE ("-drive");
-    ADD_CMDLINE_PRINTF ("if=pflash,format=raw,file=%s,readonly", uefi_code);
+    start_list ("-drive") {
+      append_list ("if=pflash");
+      append_list ("format=raw");
+      append_list_format ("file=%s", uefi_code);
+      append_list ("readonly");
+    } end_list ();
     if (uefi_vars) {
-      ADD_CMDLINE ("-drive");
-      ADD_CMDLINE_PRINTF ("if=pflash,format=raw,file=%s", uefi_vars);
+      start_list ("-drive") {
+        append_list ("if=pflash");
+        append_list ("format=raw");
+        append_list_format ("file=%s", uefi_vars);
+      } end_list ();
     }
   }
 
   /* Kernel and initrd. */
-  ADD_CMDLINE ("-kernel");
-  ADD_CMDLINE (kernel);
-  ADD_CMDLINE ("-initrd");
-  ADD_CMDLINE (initrd);
+  arg ("-kernel", kernel);
+  arg ("-initrd", initrd);
 
   /* Add a random number generator (backend for virtio-rng).  This
    * isn't strictly necessary but means we won't need to hang around
    * when needing entropy.
    */
   if (guestfs_int_qemu_supports_device (g, data->qemu_data,
-                                        "virtio-rng-pci")) {
-    ADD_CMDLINE ("-object");
-    ADD_CMDLINE ("rng-random,filename=/dev/urandom,id=rng0");
-    ADD_CMDLINE ("-device");
-    ADD_CMDLINE ("virtio-rng-pci,rng=rng0");
+                                        VIRTIO_DEVICE_NAME ("virtio-rng"))) {
+    start_list ("-object") {
+      append_list ("rng-random");
+      append_list ("filename=/dev/urandom");
+      append_list ("id=rng0");
+    } end_list ();
+    start_list ("-device") {
+      append_list (VIRTIO_DEVICE_NAME ("virtio-rng"));
+      append_list ("rng=rng0");
+    } end_list ();
   }
 
-  /* Add drives */
-  virtio_scsi = guestfs_int_qemu_supports_virtio_scsi (g, data->qemu_data,
-                                                       &data->qemu_version);
+  /* Create the virtio-scsi bus. */
+  start_list ("-device") {
+    append_list (VIRTIO_DEVICE_NAME ("virtio-scsi"));
+    append_list ("id=scsi");
+  } end_list ();
 
-  if (virtio_scsi) {
-    /* Create the virtio-scsi bus. */
-    ADD_CMDLINE ("-device");
-    ADD_CMDLINE (VIRTIO_SCSI ",id=scsi");
-  }
-
-  ITER_DRIVES (g, i, drv) {
-    CLEANUP_FREE char *file = NULL, *escaped_file = NULL, *param = NULL;
-
-    if (!drv->overlay) {
-      const char *discard_mode = "";
-
-      switch (drv->discard) {
-      case discard_disable:
-        /* Since the default is always discard=ignore, don't specify it
-         * on the command line.  This also avoids unnecessary breakage
-         * with qemu < 1.5 which didn't have the option at all.
-         */
-        break;
-      case discard_enable:
-        if (!guestfs_int_discard_possible (g, drv, &data->qemu_version))
-          goto cleanup0;
-        /*FALLTHROUGH*/
-      case discard_besteffort:
-        /* I believe from reading the code that this is always safe as
-         * long as qemu >= 1.5.
-         */
-        if (guestfs_int_version_ge (&data->qemu_version, 1, 5, 0))
-          discard_mode = ",discard=unmap";
-        break;
-      }
-
-      /* Make the file= parameter. */
-      file = guestfs_int_drive_source_qemu_param (g, &drv->src);
-      escaped_file = guestfs_int_qemu_escape_param (g, file);
-
-      /* Make the first part of the -drive parameter, everything up to
-       * the if=... at the end.
-       */
-      param = safe_asprintf
-        (g, "file=%s%s,cache=%s%s%s%s%s%s%s,id=hd%zu",
-         escaped_file,
-         drv->readonly ? ",snapshot=on" : "",
-         drv->cachemode ? drv->cachemode : "writeback",
-         discard_mode,
-         drv->src.format ? ",format=" : "",
-         drv->src.format ? drv->src.format : "",
-         drv->disk_label ? ",serial=" : "",
-         drv->disk_label ? drv->disk_label : "",
-         drv->copyonread ? ",copy-on-read=on" : "",
-         i);
-    }
-    else {
-      /* Writable qcow2 overlay on top of read-only drive. */
-      escaped_file = guestfs_int_qemu_escape_param (g, drv->overlay);
-      if (data->qemu_mandatory_locking &&
-	/* Add the file-specific locking option only for files, as
-	 * qemu won't accept options unknown to the block driver in
-	 * use.
-	 */
-	drv->src.protocol == drive_protocol_file) {
-        param = safe_asprintf
-          (g, "file.file.filename=%s,file.driver=qcow2,file.backing.file.locking=off,cache=unsafe%s%s,id=hd%zu",
-           escaped_file,
-           drv->disk_label ? ",serial=" : "",
-           drv->disk_label ? drv->disk_label : "",
-           i);
-      } else {
-        /* Ancient qemu (esp. qemu 1.5 in RHEL 7) didn't understand the
-         * file.file.filename= parameter, so use the safer old-style
-         * form of parameters unless we actually want to specify the
-         * locking flag above.
-         */
-        param = safe_asprintf
-          (g, "file=%s,format=qcow2,cache=unsafe%s%s,id=hd%zu",
-           escaped_file,
-           drv->disk_label ? ",serial=" : "",
-           drv->disk_label ? drv->disk_label : "",
-           i);
-      }
-    }
-
-    /* If there's an explicit 'iface', use it.  Otherwise default to
-     * virtio-scsi if available.  Otherwise default to virtio-blk.
-     */
-    if (drv->iface && STREQ (drv->iface, "virtio")) /* virtio-blk */
-      goto virtio_blk;
-#if defined(__arm__) || defined(__aarch64__) || defined(__powerpc__)
-    else if (drv->iface && STREQ (drv->iface, "ide")) {
-      error (g, "'ide' interface does not work on ARM or PowerPC");
-      goto cleanup0;
-    }
-#endif
-    else if (drv->iface) {
-      ADD_CMDLINE ("-drive");
-      ADD_CMDLINE_PRINTF ("%s,if=%s", param, drv->iface);
-    }
-    else if (virtio_scsi) {
-      ADD_CMDLINE ("-drive");
-      ADD_CMDLINE_PRINTF ("%s,if=none" /* sic */, param);
-      ADD_CMDLINE ("-device");
-      ADD_CMDLINE_PRINTF ("scsi-hd,drive=hd%zu", i);
-    }
-    else {
-    virtio_blk:
-      ADD_CMDLINE ("-drive");
-      ADD_CMDLINE_PRINTF ("%s,if=none" /* sic */, param);
-      ADD_CMDLINE ("-device");
-      ADD_CMDLINE_PRINTF (VIRTIO_BLK ",drive=hd%zu", i);
-    }
-  }
+  /* Add drives (except for the appliance drive). */
+  if (add_drives (g, data, qopts) == -1)
+    goto cleanup0;
 
   /* Add the ext2 appliance drive (after all the drives). */
   if (has_appliance_drive) {
-    ADD_CMDLINE ("-drive");
-    ADD_CMDLINE_PRINTF ("file=%s,snapshot=on,id=appliance,"
-                        "cache=unsafe,if=none,format=raw",
-                        appliance);
+    start_list ("-drive") {
+      append_list_format ("file=%s", appliance);
+      append_list ("snapshot=on");
+      append_list ("id=appliance");
+      append_list ("cache=unsafe");
+      append_list ("if=none");
+#ifndef APPLIANCE_FORMAT_AUTO
+      append_list ("format=raw");
+#endif
+    } end_list ();
+    start_list ("-device") {
+      append_list ("scsi-hd");
+      append_list ("drive=appliance");
+    } end_list ();
 
-    if (virtio_scsi) {
-      ADD_CMDLINE ("-device");
-      ADD_CMDLINE ("scsi-hd,drive=appliance");
-    }
-    else {
-      ADD_CMDLINE ("-device");
-      ADD_CMDLINE (VIRTIO_BLK ",drive=appliance");
-    }
-
-    appliance_dev = make_appliance_dev (g, virtio_scsi);
+    appliance_dev = make_appliance_dev (g);
   }
 
   /* Create the virtio serial bus. */
-  ADD_CMDLINE ("-device");
-  ADD_CMDLINE (VIRTIO_SERIAL);
+  arg ("-device", VIRTIO_DEVICE_NAME ("virtio-serial"));
 
   /* Create the serial console. */
-  ADD_CMDLINE ("-serial");
-  ADD_CMDLINE ("stdio");
+#ifndef __s390x__
+  arg ("-serial", "stdio");
+#else
+  start_list ("-chardev") {
+    append_list ("stdio");
+    append_list ("id=charconsole0");
+  } end_list ();
+  start_list ("-device") {
+    append_list ("sclpconsole");
+    append_list ("chardev=charconsole0");
+  } end_list ();
+#endif
 
   if (g->verbose &&
       guestfs_int_qemu_supports_device (g, data->qemu_data,
@@ -622,52 +656,54 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
      * https://bugs.launchpad.net/qemu/+bug/1021649
      * QEmu has included sgabios upstream since just before 1.0.
      */
-    ADD_CMDLINE ("-device");
-    ADD_CMDLINE ("sga");
+    arg ("-device", "sga");
   }
 
   /* Set up virtio-serial for the communications channel. */
-  ADD_CMDLINE ("-chardev");
-  ADD_CMDLINE_PRINTF ("socket,path=%s,id=channel0", data->guestfsd_sock);
-  ADD_CMDLINE ("-device");
-  ADD_CMDLINE ("virtserialport,chardev=channel0,name=org.libguestfs.channel.0");
+  start_list ("-chardev") {
+    append_list ("socket");
+    append_list_format ("path=%s", data->guestfsd_sock);
+    append_list ("id=channel0");
+  } end_list ();
+  start_list ("-device") {
+    append_list ("virtserialport");
+    append_list ("chardev=channel0");
+    append_list ("name=org.libguestfs.channel.0");
+  } end_list ();
 
   /* Enable user networking. */
   if (g->enable_network) {
-    ADD_CMDLINE ("-netdev");
-    ADD_CMDLINE ("user,id=usernet,net=169.254.0.0/16");
-    ADD_CMDLINE ("-device");
-    ADD_CMDLINE (VIRTIO_NET ",netdev=usernet");
+    start_list ("-netdev") {
+      append_list ("user");
+      append_list ("id=usernet");
+      append_list ("net=169.254.0.0/16");
+    } end_list ();
+    start_list ("-device") {
+      append_list (VIRTIO_DEVICE_NAME ("virtio-net"));
+      append_list ("netdev=usernet");
+    } end_list ();
   }
 
-  ADD_CMDLINE ("-append");
   flags = 0;
   if (!has_kvm || force_tcg)
     flags |= APPLIANCE_COMMAND_LINE_IS_TCG;
-  ADD_CMDLINE_STRING_NODUP
-    (guestfs_int_appliance_command_line (g, appliance_dev, flags));
+  append = guestfs_int_appliance_command_line (g, appliance_dev, flags);
+  arg ("-append", append);
 
   /* Note: custom command line parameters must come last so that
    * qemu -set parameters can modify previously added options.
    */
 
-  /* Add the extra options for the qemu command line specified
-   * at configure time.
-   */
-#ifdef QEMU_OPTIONS
-  if (STRNEQ (QEMU_OPTIONS, ""))
-    add_cmdline_shell_unquoted (g, &cmdline, QEMU_OPTIONS);
-#endif
-
   /* Add any qemu parameters. */
   for (hp = g->hv_params; hp; hp = hp->next) {
-    ADD_CMDLINE (hp->hv_param);
-    if (hp->hv_value)
-      ADD_CMDLINE (hp->hv_value);
+    if (!hp->hv_value)
+      flag (hp->hv_param);
+    else
+      arg_noquote (hp->hv_param, hp->hv_value);
   }
 
-  /* Finish off the command line. */
-  guestfs_int_end_stringsbuf (g, &cmdline);
+  /* Get the argv list from the command line. */
+  argv = qemuopts_to_argv (qopts);
 
   r = fork ();
   if (r == -1) {
@@ -727,7 +763,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 
     /* Dump the command line (after setting up stderr above). */
     if (g->verbose)
-      print_qemu_command_line (g, cmdline.argv);
+      qemuopts_to_channel (qopts, stderr);
 
     /* Put qemu in a new process group. */
     if (g->pgroup)
@@ -738,13 +774,16 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 
     TRACE0 (launch_run_qemu);
 
-    execv (g->hv, cmdline.argv); /* Run qemu. */
+    execv (g->hv, argv);        /* Run qemu. */
     perror (g->hv);
     _exit (EXIT_FAILURE);
   }
 
   /* Parent (library). */
   data->pid = r;
+
+  qemuopts_free (qopts);
+  qopts = NULL;
 
   /* Fork the recovery process off which will kill qemu if the parent
    * process fails to do so (eg. if the parent segfaults).
@@ -753,6 +792,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   if (g->recovery_proc) {
     r = fork ();
     if (r == 0) {
+      size_t i;
       struct sigaction sa;
       pid_t qemu_pid = data->pid;
       pid_t parent_pid = getppid ();
@@ -897,6 +937,8 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   data->qemu_data = NULL;
 
  cleanup0:
+  if (qopts != NULL)
+    qemuopts_free (qopts);
   if (daemon_accept_sock >= 0)
     close (daemon_accept_sock);
   if (console_sock >= 0)
@@ -919,61 +961,21 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
  * NULL, "ide" or "virtio" (which means virtio-blk).  See RHBZ#975797.
  */
 static char *
-make_appliance_dev (guestfs_h *g, int virtio_scsi)
+make_appliance_dev (guestfs_h *g)
 {
   size_t i, index = 0;
   struct drive *drv;
-  char dev[64] = "/dev/Xd";
+  char dev[64] = "/dev/sd";
 
   /* Calculate the index of the drive. */
   ITER_DRIVES (g, i, drv) {
-    if (virtio_scsi) {
-      if (drv->iface == NULL || STREQ (drv->iface, "ide"))
-        index++;
-    }
-    else /* virtio-blk */ {
-      if (drv->iface == NULL || STRNEQ (drv->iface, "virtio"))
-        index++;
-    }
+    if (drv->iface == NULL || STREQ (drv->iface, "ide"))
+      index++;
   }
 
-  dev[5] = virtio_scsi ? 's' : 'v';
   guestfs_int_drive_name (index, &dev[7]);
 
   return safe_strdup (g, dev);  /* Caller frees. */
-}
-
-/* This is called from the forked subprocess just before qemu runs, so
- * it can just print the message straight to stderr, where it will be
- * picked up and funnelled through the usual appliance event API.
- */
-static void
-print_qemu_command_line (guestfs_h *g, char **argv)
-{
-  int i = 0;
-  int needs_quote;
-
-  struct timeval tv;
-  gettimeofday (&tv, NULL);
-  fprintf (stderr, "[%05" PRIi64 "ms] ",
-           guestfs_int_timeval_diff (&g->launch_t, &tv));
-
-  while (argv[i]) {
-    if (argv[i][0] == '-') /* -option starts a new line */
-      fprintf (stderr, " \\\n   ");
-
-    if (i > 0) fputc (' ', stderr);
-
-    /* Does it need shell quoting?  This only deals with simple cases. */
-    needs_quote = strcspn (argv[i], " ") != strlen (argv[i]);
-
-    if (needs_quote) fputc ('\'', stderr);
-    fprintf (stderr, "%s", argv[i]);
-    if (needs_quote) fputc ('\'', stderr);
-    i++;
-  }
-
-  fputc ('\n', stderr);
 }
 
 /* Check if a file can be opened. */
@@ -1050,27 +1052,7 @@ get_pid_direct (guestfs_h *g, void *datav)
 static int
 max_disks_direct (guestfs_h *g, void *datav)
 {
-  struct backend_direct_data *data = datav;
-
-  /* Get qemu help text and version. */
-  if (data->qemu_data == NULL) {
-    data->qemu_data = guestfs_int_test_qemu (g);
-    if (data->qemu_data == NULL)
-      return -1;
-    data->qemu_version = guestfs_int_qemu_version (g, data->qemu_data);
-    debug (g, "qemu version: %d.%d",
-           data->qemu_version.v_major, data->qemu_version.v_minor);
-    data->qemu_mandatory_locking =
-      guestfs_int_qemu_mandatory_locking (g, data->qemu_data);
-    debug (g, "qemu mandatory locking: %s",
-           data->qemu_mandatory_locking ? "yes" : "no");
-  }
-
-  if (guestfs_int_qemu_supports_virtio_scsi (g, data->qemu_data,
-                                             &data->qemu_version))
-    return 255;
-  else
-    return 27;                  /* conservative estimate */
+  return 255;
 }
 
 static struct backend_ops backend_direct_ops = {

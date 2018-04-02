@@ -23,7 +23,8 @@ module D = Libvirt.Domain
 open Unix
 open Printf
 
-open Common_utils
+open Std_utils
+open Tools_utils
 open Xpath_helpers
 
 type test_plan = {
@@ -189,7 +190,7 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
       printf "%s\n%!" cmd;
       let chan = open_process_in cmd in
       let lines = ref [] in
-      (try while true do push_front (input_line chan) lines done
+      (try while true do List.push_front (input_line chan) lines done
        with End_of_file -> ());
       let lines = List.rev !lines in
       let stat = close_process_in chan in
@@ -262,7 +263,7 @@ let run ~test ?input_disk ?input_xml ?(test_plan = default_plan) () =
       printf "%s\n%!" cmd;
       let chan = open_process_in cmd in
       let lines = ref [] in
-      (try while true do push_front (input_line chan) lines done
+      (try while true do List.push_front (input_line chan) lines done
        with End_of_file -> ());
       let lines = List.rev !lines in
       let stat = close_process_in chan in

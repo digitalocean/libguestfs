@@ -1,7 +1,8 @@
 
 =head1 НАЗВА
 
-boot-benchmark - Benchmark the time taken to boot the libguestfs appliance
+boot-benchmark — визначення часу, потрібного на завантаження базової системи
+libguestfs
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -9,9 +10,9 @@ boot-benchmark - Benchmark the time taken to boot the libguestfs appliance
 
 =head1 ОПИС
 
-Benchmark the time taken to boot the libguestfs appliance.
+Визначення часу, потрібного на завантаження базової системи libguestfs.
 
-It is essentially the same as doing:
+Загалом, те саме, що і таке:
 
  time guestfish -a /dev/null run
 
@@ -39,9 +40,9 @@ If you omit C<./run> then it is run on the installed copy of libguestfs.
 
 Показати коротку довідку.
 
-=item B<--append> "OPTIONS"
+=item B<--append> "ПАРАМЕТРИ"
 
-Append C<OPTIONS> to the kernel command line.
+Дописати C<ПАРАМЕТРИ> до рядка команди ядра.
 
 =item B<-m> МБ
 
@@ -65,5 +66,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2016 Red Hat Inc.
+© Red Hat Inc., 2016
 

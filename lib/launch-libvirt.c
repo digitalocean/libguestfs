@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -196,7 +196,7 @@ get_source_format_or_autodetect (guestfs_h *g, struct drive *drv)
     if (STREQ (format, "unknown")) {
       error (g, _("could not auto-detect the format.\n"
                   "If the format is known, pass the format to libguestfs, eg. using the\n"
-                  "'--format' option, or via the optional 'format' argument to 'add-drive'."));
+                  "‘--format’ option, or via the optional ‘format’ argument to ‘add-drive’."));
       return NULL;
     }
 
@@ -206,15 +206,16 @@ get_source_format_or_autodetect (guestfs_h *g, struct drive *drv)
   /* Non-file protocol. */
   error (g, _("could not auto-detect the format when using a non-file protocol.\n"
               "If the format is known, pass the format to libguestfs, eg. using the\n"
-              "'--format' option, or via the optional 'format' argument to 'add-drive'."));
+              "‘--format’ option, or via the optional ‘format’ argument to ‘add-drive’."));
   return NULL;
 }
 
 /**
  * Create a qcow2 format overlay, with the given C<backing_drive>
- * (file).  The C<format> parameter, which must be non-NULL, is the
- * backing file format.  This is used to create the appliance overlay,
- * and also for read-only drives.
+ * (file).  The C<format> parameter is the backing file format.
+ * The C<format> parameter can be NULL, in this case the backing
+ * format will be determined automatically.  This is used to create
+ * the appliance overlay, and also for read-only drives.
  */
 static char *
 make_qcow2_overlay (guestfs_h *g, const char *backing_drive,
@@ -223,16 +224,16 @@ make_qcow2_overlay (guestfs_h *g, const char *backing_drive,
   char *overlay;
   struct guestfs_disk_create_argv optargs;
 
-  assert (format != NULL);
-
   overlay = guestfs_int_make_temp_path (g, "overlay", "qcow2");
   if (!overlay)
     return NULL;
 
   optargs.bitmask = GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK;
   optargs.backingfile = backing_drive;
-  optargs.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
-  optargs.backingformat = format;
+  if (format) {
+    optargs.bitmask |= GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK;
+    optargs.backingformat = format;
+  }
 
   if (guestfs_disk_create_argv (g, overlay, "qcow2", -1, &optargs) == -1) {
     free (overlay);
@@ -333,7 +334,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
                                MIN_LIBVIRT_MAJOR, MIN_LIBVIRT_MINOR,
                                MIN_LIBVIRT_MICRO)) {
     error (g, _("you must have libvirt >= %d.%d.%d "
-                "to use the 'libvirt' backend"),
+                "to use the ‘libvirt’ backend"),
            MIN_LIBVIRT_MAJOR, MIN_LIBVIRT_MINOR, MIN_LIBVIRT_MICRO);
     return -1;
   }
@@ -460,7 +461,11 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
 
   /* Note that appliance can be NULL if using the old-style appliance. */
   if (appliance) {
+#ifndef APPLIANCE_FORMAT_AUTO
     params.appliance_overlay = make_qcow2_overlay (g, appliance, "raw");
+#else
+    params.appliance_overlay = make_qcow2_overlay (g, appliance, NULL);
+#endif
     if (!params.appliance_overlay)
       goto cleanup;
   }
@@ -787,11 +792,11 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
     CLEANUP_FREE char *backend = guestfs_get_backend (g);
 
     error (g,
-           _("libvirt hypervisor doesn't support qemu or KVM,\n"
+           _("libvirt hypervisor doesn’t support qemu or KVM,\n"
              "so we cannot create the libguestfs appliance.\n"
-             "The current backend is '%s'.\n"
+             "The current backend is ‘%s’.\n"
              "Check that the PATH environment variable is set and contains\n"
-             "the path to the qemu ('qemu-system-*') or KVM ('qemu-kvm', 'kvm' etc).\n"
+             "the path to the qemu (‘qemu-system-*’) or KVM (‘qemu-kvm’, ‘kvm’ etc).\n"
              "Or: try setting:\n"
              "  export LIBGUESTFS_BACKEND=libvirt:qemu:///session\n"
              "Or: if you want to have libguestfs run qemu directly, try:\n"
@@ -1354,6 +1359,7 @@ construct_libvirt_xml_devices (guestfs_h *g,
         return -1;
     }
 
+#ifndef __s390x__
     /* Console. */
     start_element ("serial") {
       attribute ("type", "unix");
@@ -1365,6 +1371,22 @@ construct_libvirt_xml_devices (guestfs_h *g,
         attribute ("port", "0");
       } end_element ();
     } end_element ();
+#else
+    /* https://bugzilla.redhat.com/show_bug.cgi?id=1376547#c14
+     * and https://libvirt.org/formatdomain.html#elementCharConsole
+     */
+    start_element ("console") {
+      attribute ("type", "unix");
+      start_element ("source") {
+        attribute ("mode", "connect");
+        attribute ("path", params->data->console_path);
+      } end_element ();
+      start_element ("target") {
+	attribute ("type", "sclp");
+        attribute ("port", "0");
+      } end_element ();
+    } end_element ();
+#endif
 
     /* Virtio-serial for guestfsd communication. */
     start_element ("channel") {
@@ -1424,7 +1446,7 @@ construct_libvirt_xml_disk (guestfs_h *g,
 
   /* XXX We probably could support this if we thought about it some more. */
   if (drv->iface) {
-    error (g, _("'iface' parameter is not supported by the libvirt backend"));
+    error (g, _("‘iface’ parameter is not supported by the libvirt backend"));
     return -1;
   }
 
@@ -1470,7 +1492,7 @@ construct_libvirt_xml_disk (guestfs_h *g,
         if (!is_host_device) {
           path = realpath (drv->src.u.path, NULL);
           if (path == NULL) {
-            perrorf (g, _("realpath: could not convert '%s' to absolute path"),
+            perrorf (g, _("realpath: could not convert ‘%s’ to absolute path"),
                      drv->src.u.path);
             return -1;
           }
@@ -2052,7 +2074,7 @@ check_bridge_exists (guestfs_h *g, const char *brname)
     return 0;
 
   error (g,
-         _("bridge '%s' not found.  Try running:\n"
+         _("bridge ‘%s’ not found.  Try running:\n"
            "\n"
            "  brctl show\n"
            "\n"

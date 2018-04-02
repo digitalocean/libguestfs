@@ -2160,3 +2160,85 @@ error: ;
   errno = err;
   return NULL;
 }
+
+static void
+free_yara_detection (struct guestfs_yara_detection *s)
+{
+  free (s->yara_name);
+  free (s->yara_rule);
+}
+
+static int
+copy_yara_detection (const struct guestfs_yara_detection *inp, struct guestfs_yara_detection *out)
+{
+  int err;
+
+  out->yara_name = NULL;
+  out->yara_rule = NULL;
+  out->yara_name = strdup (inp->yara_name);
+  if (out->yara_name == NULL) goto error;
+  out->yara_rule = strdup (inp->yara_rule);
+  if (out->yara_rule == NULL) goto error;
+  return 0;
+
+error: ;
+  err = errno;
+  free_yara_detection (out);
+  errno = err;
+  return -1;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_yara_detection *
+guestfs_copy_yara_detection (const struct guestfs_yara_detection *inp)
+{
+  struct guestfs_yara_detection *ret;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  if (copy_yara_detection (inp, ret) == -1) {
+    int err;
+
+    err = errno;
+    free (ret);
+    errno = err;
+    return NULL;
+  }
+
+  return ret;
+}
+
+GUESTFS_DLL_PUBLIC struct guestfs_yara_detection_list *
+guestfs_copy_yara_detection_list (const struct guestfs_yara_detection_list *inp)
+{
+  int err;
+  struct guestfs_yara_detection_list *ret;
+  size_t i = 0;
+  size_t j;
+
+  ret = malloc (sizeof *ret);
+  if (ret == NULL)
+    return NULL;
+
+  ret->len = inp->len;
+  ret->val = malloc (sizeof (struct guestfs_yara_detection) * ret->len);
+  if (ret->val == NULL)
+    goto error;
+
+  for (i = 0; i < ret->len; ++i) {
+    if (copy_yara_detection (&inp->val[i], &ret->val[i]) == -1)
+      goto error;
+  }
+
+  return ret;
+
+error: ;
+  err = errno;
+  for (j = 0; j < i; ++j)
+    free_yara_detection (&ret->val[j]);
+  free (ret->val);
+  free (ret);
+  errno = err;
+  return NULL;
+}

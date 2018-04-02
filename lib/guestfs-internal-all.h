@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2013-2017 Red Hat Inc.
+ * Copyright (C) 2013-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,11 +22,10 @@
  * tools (ie. I<all> C code).
  *
  * If you need a definition used by only the library, put it in
- * F<lib/guestfs-internal.h> instead.  If you need a definition used
- * by only the frontend (non-daemon) parts of libguestfs, try
- * F<lib/guestfs-internal-frontend.h>.  If a definition is used by
- * only a single tool, it should not be in any shared header file at
- * all.
+ * F<lib/guestfs-internal.h> instead.
+ *
+ * If a definition is used by only a single tool, it should not be in
+ * any shared header file at all.
  */
 
 #ifndef GUESTFS_INTERNAL_ALL_H_

@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-virt-p2v-make-disk - Build the virt-p2v disk using virt-builder
+virt-p2v-make-disk — збирання диска virt-p2v за допомогою virt-builder
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -93,7 +93,7 @@ or if using the kernel command line, add:
 
 For more information, see L<virt-p2v(1)/SSH IDENTITIES>.
 
-=head1 32 BIT VIRT-P2V
+=head1 32-БІТОВА VIRT-P2V
 
 For improved compatibility with older hardware, virt-p2v-make-disk has an
 I<--arch> option.  The most useful setting (on x86-64 hosts) is I<--arch
@@ -134,7 +134,7 @@ Add extra packages to the image.  See L</ADDING EXTRA PACKAGES> above.
 
 =item B<--no-warn-if-partition>
 
-Normally you should not write to a partition on a USB drive (ie. don't use
+Normally you should not write to a partition on a USB drive (ie. don’t use
 S<C<-o /dev/sdX1>>, use S<C<-o /dev/sdX>> to make a bootable USB drive).  If
 you do this, virt-builder prints a warning.  This option suppresses that
 warning.
@@ -207,5 +207,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

@@ -1,5 +1,5 @@
 /* virt-ls visitor function
- * Copyright (C) 2010-2017 Red Hat Inc.
+ * Copyright (C) 2010-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,15 +22,5 @@
 typedef int (*visitor_function) (const char *dir, const char *name, const struct guestfs_statns *stat, const struct guestfs_xattr_list *xattrs, void *opaque);
 
 extern int visit (guestfs_h *g, const char *dir, visitor_function f, void *opaque);
-
-extern char *full_path (const char *dir, const char *name);
-
-extern int is_reg (int64_t mode);
-extern int is_dir (int64_t mode);
-extern int is_chr (int64_t mode);
-extern int is_blk (int64_t mode);
-extern int is_fifo (int64_t mode);
-extern int is_lnk (int64_t mode);
-extern int is_sock (int64_t mode);
 
 #endif /* VISIT_H */

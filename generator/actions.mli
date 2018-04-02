@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,10 @@ val internal_functions : Types.action list -> Types.action list
 
 val fish_functions : Types.action list -> Types.action list
 (** Filter {!actions}, returning only functions in guestfish. *)
+
+val impl_ocaml_functions : Types.action list -> Types.action list
+(** Filter {!actions}, returning only functions implemented
+    in OCaml (in the daemon). *)
 
 val documented_functions : Types.action list -> Types.action list
 (** Filter {!actions}, returning only functions requiring documentation. *)

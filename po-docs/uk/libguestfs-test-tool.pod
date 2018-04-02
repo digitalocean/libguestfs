@@ -5,7 +5,7 @@ libguestfs-test-tool — діагностика libguestfs
 
 =head1 КОРОТКИЙ ОПИС
 
- libguestfs-test-tool [--options]
+ libguestfs-test-tool [--параметри]
 
 =head1 ОПИС
 
@@ -15,17 +15,19 @@ libguestfs occasionally breaks for reasons beyond our control: usually
 because of changes in the underlying qemu or kernel packages, or the host
 environment.
 
-If you suspect a problem in libguestfs, then just run:
+Якщо ви вважаєте, що проблема полягає у libguestfs, просто віддайте таку
+команду:
 
  libguestfs-test-tool
 
-It will print lots of diagnostic messages.
+У відповідь буде виведено діагностичні повідомлення.
 
-If it runs to completion successfully, you will see this near the end:
+Якщо дії буде виконано успішно до кінця, ви побачите наприкінці списку
+повідомлень таке:
 
  ===== TEST FINISHED OK =====
 
-and the test tool will exit with code 0.
+і засіб тестування завершить роботу із кодом виходу 0.
 
 If it fails (and/or exits with non-zero error code), please paste the
 I<complete, unedited> output of the test tool into a bug report.  More
@@ -61,7 +63,7 @@ minutes) which does not usually need to be adjusted.
 
 =item B<--version>
 
-Display the libguestfs version number and exit.
+Показати дані щодо версії libguestfs і завершити роботу.
 
 =back
 
@@ -101,7 +103,7 @@ root):
  ~/шлях/до/libvirt/run libguestfs-test-tool
 
 The first command kills any session C<libvirtd> process(es) that may be
-running on the machine.  The second command uses libvirt's C<run> script (in
+running on the machine.  The second command uses libvirt’s C<run> script (in
 the top-level libvirt build directory) to set some environment variables so
 that the alternate version of libvirt is used to run the program.
 
@@ -180,5 +182,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

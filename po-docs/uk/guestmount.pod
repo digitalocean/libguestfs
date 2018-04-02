@@ -1,15 +1,16 @@
 
 =head1 НАЗВА
 
-guestmount - Mount a guest filesystem on the host using FUSE and libguestfs
+guestmount — монтування файлової системи гостьової операційної системи у
+основній системі за допомогою FUSE і libguestfs
 
 =head1 КОРОТКИЙ ОПИС
 
- guestmount [--options] -a disk.img -m device [--ro] mountpoint
+ guestmount [--параметри] -a диск.img -m пристрій [--ro] точка монтування
 
- guestmount [--options] -a disk.img -i [--ro] mountpoint
+ guestmount [--параметри] -a диск.img -i [--ro] точка_монтування
 
- guestmount [--options] -d Guest -i [--ro] mountpoint
+ guestmount [--параметри] -d Гостьова_система -i [--ro] точка_монтування
 
 =head1 ОПИС
 
@@ -46,11 +47,11 @@ To get libguestfs to detect guest mountpoints for you:
 
  guestmount -a guest.img -i --ro /mnt
 
-For a libvirt guest called "Guest" you could do:
+Для гостьової системи libvirt із назвою «Guest» можна віддати таку команду:
 
  guestmount -d Guest -i --ro /mnt
 
-If you don't know what filesystems are contained in a guest or disk image,
+If you don’t know what filesystems are contained in a guest or disk image,
 use L<virt-filesystems(1)> first:
 
  virt-filesystems -d MyGuest
@@ -202,10 +203,10 @@ requests, only cache existing ones.
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, guestfish normally turns echoing
-off so you cannot see what you are typing.  If you are not worried about
-Tempest attacks and there is no one else in the room you can specify this
-flag to see what you are typing.
+Типово, якщо guestfish попросить вас ввести ключ або пароль, програма не
+відтворюватиме введені символи на екрані. Якщо ви не боїтеся
+TEMPEST-нападів, або у вашій кімнаті нікого, окрім вас, немає, ви можете
+скористатися цим прапорцем, щоб бачити, які саме символи ви вводите.
 
 =item B<--fd=>FD
 
@@ -248,17 +249,18 @@ machine.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening F</dev/tty>.
+Прочитати параметри ключа або пароля із джерела стандартного
+введення. Типово програма намагається читати паролі від користувача
+відкриттям F</dev/tty>.
 
 =item B<--live>
 
 Connect to a live virtual machine.  (Experimental, see
 L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
-=item B<-m> dev[:mountpoint[:options[:fstype]]
+=item B<-m> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
-=item B<--mount> dev[:mountpoint[:options[:fstype]]]
+=item B<--mount> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
 Mount the named partition or logical volume on the given mountpoint B<in the
 guest> (this has nothing to do with mountpoints in the host).
@@ -266,23 +268,27 @@ guest> (this has nothing to do with mountpoints in the host).
 If the mountpoint is omitted, it defaults to F</>.  You have to mount
 something on F</>.
 
-The third (and rarely used) part of the mount parameter is the list of mount
-options used to mount the underlying filesystem.  If this is not given, then
-the mount options are either the empty string or C<ro> (the latter if the
-I<--ro> flag is used).  By specifying the mount options, you override this
-default choice.  Probably the only time you would use this is to enable ACLs
-and/or extended attributes if the filesystem can support them:
+Третьою (і нечасто використовуваною) частиною параметра монтування є список
+параметрів монтування, які використовуються для того, щоб змонтувати
+підлеглу файлову систему. Якщо такий список не буде задано, параметрами
+монтування вважатиметься або порожній рядок, або C<ro> (другий варіант
+використовується, якщо використано прапорець I<--ro>). Заданням параметрів
+монтування ви перевизначаєте типовий варіант. Ймовірно, єдиним випадком,
+коли вам може знадобитися це, є випадок вмикання списків керування доступом
+(ACL) і/або розширених атрибутів, якщо у файловій системі передбачено їхню
+підтримку:
 
  -m /dev/sda1:/:acl,user_xattr
 
-The fourth part of the parameter is the filesystem driver to use, such as
-C<ext3> or C<ntfs>. This is rarely needed, but can be useful if multiple
-drivers are valid for a filesystem (eg: C<ext2> and C<ext3>), or if
-libguestfs misidentifies a filesystem.
+Четвертою частиною параметра є назва драйвера файлової системи, якою слід
+скористатися, зокрема C<ext3> або C<ntfs>. У визначенні цієї частини
+параметра рідко виникає потреба, але вона може бути корисною, якщо для
+файлової системи можна скористатися декількома драйверами (приклад: C<ext2>
+і C<ext3>), або libguestfs визначає файлову систему помилково.
 
 =item B<--no-fork>
 
-Don't daemonize (or fork into the background).
+Don’t daemonize (or fork into the background).
 
 =item B<-n>
 
@@ -368,13 +374,13 @@ This option is provided for backwards compatibility and does nothing.
 
 =item B<--verbose>
 
-Enable verbose messages from underlying libguestfs.
+Уможливити докладні повідомлення від підлеглої частини libguestfs.
 
 =item B<-V>
 
 =item B<--version>
 
-Display the program version and exit.
+Показати дані щодо версії програми, потім вийти
 
 =item B<-w>
 
@@ -433,5 +439,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

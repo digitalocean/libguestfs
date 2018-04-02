@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 open Printf
 
 open Common_gettext.Gettext
-open Common_utils
+open Tools_utils
 
 open Types
 open Utils
@@ -38,15 +38,6 @@ let error_if_libvirt_does_not_support_json_backingfile () =
   if backend_is_libvirt () &&
        Libvirt_utils.libvirt_get_version () < (2, 1, 0) then
     error (f_"because of libvirt bug https://bugzilla.redhat.com/1134878 you must EITHER upgrade to libvirt >= 2.1.0 OR set this environment variable:\n\nexport LIBGUESTFS_BACKEND=direct\n\nand then rerun the virt-v2v command.")
-
-(* xen+ssh URLs use the SSH driver in CURL.  Currently this requires
- * ssh-agent authentication.  Give a clear error if this hasn't been
- * set up (RHBZ#1139973).
- *)
-let error_if_no_ssh_agent () =
-  try ignore (Sys.getenv "SSH_AUTH_SOCK")
-  with Not_found ->
-    error (f_"ssh-agent authentication has not been set up ($SSH_AUTH_SOCK is not set).  Please read \"INPUT FROM RHEL 5 XEN\" in the virt-v2v(1) man page.")
 
 (* Superclass. *)
 class virtual input_libvirt (password : string option) libvirt_uri guest =

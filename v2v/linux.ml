@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Types
 open Utils
@@ -51,7 +52,7 @@ and do_remove g { i_package_format = package_format } packages =
     ignore (g#command cmd)
 
   | format ->
-    error (f_"don't know how to remove packages using %s: packages: %s")
+    error (f_"don’t know how to remove packages using %s: packages: %s")
       format (String.concat " " packages)
 
 let file_list_of_package (g : Guestfs.guestfs) inspect app =
@@ -79,7 +80,7 @@ let file_list_of_package (g : Guestfs.guestfs) inspect app =
           match inspect with
           | { i_type = "linux";
               i_distro = "rhel" | "centos" | "scientificlinux" |
-                  "redhat-based";
+                  "oraclelinux" | "redhat-based";
               i_major_version = v } when v < 5 -> true
           | _ -> false in
         if is_rhel_lt_5 then
@@ -95,7 +96,7 @@ let file_list_of_package (g : Guestfs.guestfs) inspect app =
     List.sort compare files
 
   | format ->
-    error (f_"don't know how to get list of files from package using %s")
+    error (f_"don’t know how to get list of files from package using %s")
       format
 
 let is_file_owned (g : G.guestfs) { i_package_format = package_format } path =
@@ -141,7 +142,7 @@ let is_file_owned (g : G.guestfs) { i_package_format = package_format } path =
      else failwithf "RPM file owned test failed: %s" r
 
   | format ->
-    error (f_"don't know how to find file owner using %s") format
+    error (f_"don’t know how to find file owner using %s") format
 
 let is_package_manager_save_file filename =
   (* Recognized suffixes of package managers. *)

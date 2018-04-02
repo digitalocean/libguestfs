@@ -102,7 +102,7 @@ read L</NOTE ABOUT CSV FORMAT> below.
 
 =item B<--dir-links>
 
-The default is to ignore changed in the number of links in directory
+The default is to ignore changes in the number of links in directory
 entries, since those are unlikely to be interesting.  Using this flag
 shows changes to the nlink field of directories.
 
@@ -236,7 +236,7 @@ For shell scripts, use C<csvtool> (L<https://github.com/Chris00/ocaml-csv>
 also packaged in major Linux distributions).
 
 For other languages, use a CSV processing library (eg. C<Text::CSV>
-for Perl or Python's built-in csv library).
+for Perl or Python’s built-in csv library).
 
 Most spreadsheets and databases can import CSV directly.
 
@@ -261,4 +261,4 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.

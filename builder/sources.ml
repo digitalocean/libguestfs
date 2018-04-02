@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Printf
 open Unix
@@ -33,8 +34,6 @@ and source_format =
 | FormatNative
 | FormatSimpleStreams
 
-module StringSet = Set.Make (String)
-
 let parse_conf file =
   debug "trying to read %s" file;
   let sections = Ini_reader.read_ini ~error_suffix:"[ignored]" file in
@@ -46,13 +45,13 @@ let parse_conf file =
         let uri =
           try List.assoc ("uri", None) fields
           with Not_found as ex ->
-            eprintf (f_"%s: no 'uri' entry for '%s' in %s, skipping it\n") prog n file;
+            eprintf (f_"%s: no ‘uri’ entry for ‘%s’ in %s, skipping it\n") prog n file;
             raise ex in
         let gpgkey =
           let k =
             try Some (URI.parse_uri (List.assoc ("gpgkey", None) fields)) with
             | Not_found -> None
-            | Invalid_argument "URI.parse_uri" as ex ->
+            | URI.Parse_failed as ex ->
                debug "'%s' has invalid gpgkey URI" n;
                raise ex in
           match k with

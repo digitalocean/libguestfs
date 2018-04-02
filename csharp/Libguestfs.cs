@@ -428,6 +428,12 @@ namespace Guestfs
       ulong xfs_rtextents;
     }
 
+    [StructLayout (LayoutKind.Sequential)]
+    public class _yara_detection {
+      string yara_name;
+      string yara_rule;
+    }
+
     [DllImport ("libguestfs.so.0")]
     static extern int guestfs_acl_delete_def_file (IntPtr h, [In] string dir);
 
@@ -3628,6 +3634,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_hivex_value_string (IntPtr h, long valueh);
+
+    /// <summary>
+    /// return the data field as a UTF-8 string
+    /// </summary>
+    public string hivex_value_string (long valueh)
+    {
+      string r;
+      r = guestfs_hivex_value_string (_handle, valueh);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern long guestfs_hivex_value_type (IntPtr h, long valueh);
 
     /// <summary>
@@ -3646,7 +3667,7 @@ namespace Guestfs
     static extern string guestfs_hivex_value_utf8 (IntPtr h, long valueh);
 
     /// <summary>
-    /// return the data field from the (key, datatype, data) tuple
+    /// return the data field as a UTF-8 string
     /// </summary>
     public string hivex_value_utf8 (long valueh)
     {
@@ -6759,6 +6780,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_part_get_gpt_attributes (IntPtr h, [In] string device, int partnum);
+
+    /// <summary>
+    /// get the attribute flags of a GPT partition
+    /// </summary>
+    public long part_get_gpt_attributes (string device, int partnum)
+    {
+      long r;
+      r = guestfs_part_get_gpt_attributes (_handle, device, partnum);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_part_get_gpt_guid (IntPtr h, [In] string device, int partnum);
 
     /// <summary>
@@ -6878,6 +6914,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_part_resize (IntPtr h, [In] string device, int partnum, long endsect);
+
+    /// <summary>
+    /// resize a partition
+    /// </summary>
+    public void part_resize (string device, int partnum, long endsect)
+    {
+      int r;
+      r = guestfs_part_resize (_handle, device, partnum, endsect);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_part_set_bootable (IntPtr h, [In] string device, int partnum, bool bootable);
 
     /// <summary>
@@ -6915,6 +6965,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_part_set_disk_guid_random (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_part_set_gpt_attributes (IntPtr h, [In] string device, int partnum, long attributes);
+
+    /// <summary>
+    /// set the attribute flags of a GPT partition
+    /// </summary>
+    public void part_set_gpt_attributes (string device, int partnum, long attributes)
+    {
+      int r;
+      r = guestfs_part_set_gpt_attributes (_handle, device, partnum, attributes);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -9163,6 +9227,49 @@ namespace Guestfs
       int r;
       r = guestfs_xfs_repair_argv (_handle, device, NULL);
       if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_yara_destroy (IntPtr h);
+
+    /// <summary>
+    /// destroy previously loaded yara rules
+    /// </summary>
+    public void yara_destroy ()
+    {
+      int r;
+      r = guestfs_yara_destroy (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_yara_load (IntPtr h, [In] string filename);
+
+    /// <summary>
+    /// load yara rules within libguestfs
+    /// </summary>
+    public void yara_load (string filename)
+    {
+      int r;
+      r = guestfs_yara_load (_handle, filename);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _yara_detection[] guestfs_yara_scan (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// scan a file with the loaded yara rules
+    /// </summary>
+    public _yara_detection[] yara_scan (string path)
+    {
+      _yara_detection[] r;
+      r = guestfs_yara_scan (_handle, path);
+      if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
     }

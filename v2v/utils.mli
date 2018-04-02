@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,8 @@
 
 (** Utilities used in virt-v2v only. *)
 
-val drive_name : int -> string
-val drive_index : string -> int
-
-val shell_unquote : string -> string
-(** If the string looks like a shell quoted string, then attempt to
-    unquote it.
-
-    This is just intended to deal with quoting in configuration files
-    (like ones under /etc/sysconfig), and it doesn't deal with some
-    situations such as $variable interpolation. *)
+val uri_quote : string -> string
+(** Take a string and perform %xx escaping as used in some parts of URLs. *)
 
 val kvm_arch : string -> string
 (** Map guest architecture found by inspection to the architecture
@@ -60,6 +52,8 @@ val qemu_img_supports_offset_and_size : unit -> bool
 
 val backend_is_libvirt : unit -> bool
 (** Return true iff the current backend is libvirt. *)
+
+val error_if_no_ssh_agent : unit -> unit
 
 val find_file_in_tar : string -> string -> int64 * int64
 (** [find_file_in_tar tar filename] looks up file in [tar] archive and returns

@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ open Types
 let non_daemon_functions = [
   { defaults with
     name = "filesystem_walk"; added = (1, 33, 39);
-    style = RStructList ("dirents", "tsk_dirent"), [Mountable "device";], [];
+    style = RStructList ("dirents", "tsk_dirent"), [String (Mountable, "device");], [];
     optional = Some "libtsk";
     progress = true; cancellable = true;
     shortdesc = "walk through the filesystem content";
@@ -43,26 +43,26 @@ The C<tsk_dirent> structure contains the following fields.
 
 =over 4
 
-=item 'tsk_inode'
+=item C<tsk_inode>
 
 Filesystem reference number of the node. It might be C<0>
 if the node has been deleted.
 
-=item 'tsk_type'
+=item C<tsk_type>
 
 Basic file type information.
 See below for a detailed list of values.
 
-=item 'tsk_size'
+=item C<tsk_size>
 
 File size in bytes. It might be C<-1>
 if the node has been deleted.
 
-=item 'tsk_name'
+=item C<tsk_name>
 
 The file path relative to its directory.
 
-=item 'tsk_flags'
+=item C<tsk_flags>
 
 Bitfield containing extra information regarding the entry.
 It contains the logical OR of the following values:
@@ -95,30 +95,30 @@ application level compression.
 
 =back
 
-=item 'tsk_atime_sec'
+=item C<tsk_atime_sec>
 
-=item 'tsk_atime_nsec'
+=item C<tsk_atime_nsec>
 
-=item 'tsk_mtime_sec'
+=item C<tsk_mtime_sec>
 
-=item 'tsk_mtime_nsec'
+=item C<tsk_mtime_nsec>
 
-=item 'tsk_ctime_sec'
+=item C<tsk_ctime_sec>
 
-=item 'tsk_ctime_nsec'
+=item C<tsk_ctime_nsec>
 
-=item 'tsk_crtime_sec'
+=item C<tsk_crtime_sec>
 
-=item 'tsk_crtime_nsec'
+=item C<tsk_crtime_nsec>
 
 Respectively, access, modification, last status change and creation
 time in Unix format in seconds and nanoseconds.
 
-=item 'tsk_nlink'
+=item C<tsk_nlink>
 
 Number of file names pointing to this entry.
 
-=item 'tsk_link'
+=item C<tsk_link>
 
 If the entry is a symbolic link, this field will contain the path
 to the target file.
@@ -173,7 +173,7 @@ Unknown file type
 
   { defaults with
     name = "find_inode"; added = (1, 35, 6);
-    style = RStructList ("dirents", "tsk_dirent"), [Mountable "device"; Int64 "inode";], [];
+    style = RStructList ("dirents", "tsk_dirent"), [String (Mountable, "device"); Int64 "inode";], [];
     optional = Some "libtsk";
     progress = true; cancellable = true;
     shortdesc = "search the entries associated to the given inode";
@@ -188,7 +188,7 @@ See C<filesystem_walk> for more information about C<tsk_dirent> structures." };
 let daemon_functions = [
   { defaults with
     name = "download_inode"; added = (1, 33, 14);
-    style = RErr, [Mountable "device"; Int64 "inode"; FileOut "filename"], [];
+    style = RErr, [String (Mountable, "device"); Int64 "inode"; String (FileOut, "filename")], [];
     optional = Some "sleuthkit";
     progress = true; cancellable = true;
     shortdesc = "download a file to the local machine given its inode";
@@ -202,7 +202,7 @@ The command is capable of downloading deleted or inaccessible files." };
 
   { defaults with
     name = "internal_filesystem_walk"; added = (1, 33, 39);
-    style = RErr, [Mountable "device"; FileOut "filename"], [];
+    style = RErr, [String (Mountable, "device"); String (FileOut, "filename")], [];
     visibility = VInternal;
     optional = Some "libtsk";
     shortdesc = "walk through the filesystem content";
@@ -210,7 +210,7 @@ The command is capable of downloading deleted or inaccessible files." };
 
   { defaults with
     name = "download_blocks"; added = (1, 33, 45);
-    style = RErr, [Mountable "device"; Int64 "start"; Int64 "stop"; FileOut "filename"], [OBool "unallocated"];
+    style = RErr, [String (Mountable, "device"); Int64 "start"; Int64 "stop"; String (FileOut, "filename")], [OBool "unallocated"];
     optional = Some "sleuthkit";
     progress = true; cancellable = true;
     shortdesc = "download the given data units from the disk";
@@ -233,7 +233,7 @@ which data units have not been overwritten yet." };
 
   { defaults with
     name = "internal_find_inode"; added = (1, 35, 6);
-    style = RErr, [Mountable "device"; Int64 "inode"; FileOut "filename";], [];
+    style = RErr, [String (Mountable, "device"); Int64 "inode"; String (FileOut, "filename");], [];
     visibility = VInternal;
     optional = Some "libtsk";
     shortdesc = "search the entries associated to the given inode";

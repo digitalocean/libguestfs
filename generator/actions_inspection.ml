@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,11 @@ open Types
 
 (* Inspection APIs. *)
 
-let non_daemon_functions = [
+let daemon_functions = [
   { defaults with
     name = "inspect_os"; added = (1, 5, 3);
-    style = RStringList "roots", [], [];
+    style = RStringList (RMountable, "roots"), [], [];
+    impl = OCaml "Inspect.inspect_os";
     shortdesc = "inspect disk and return list of operating systems found";
     longdesc = "\
 This function uses other libguestfs functions and certain
@@ -61,8 +62,24 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 See also C<guestfs_list_filesystems>." };
 
   { defaults with
+    name = "inspect_get_roots"; added = (1, 7, 3);
+    style = RStringList (RMountable, "roots"), [], [];
+    impl = OCaml "Inspect.inspect_get_roots";
+    shortdesc = "return list of operating systems found by last inspection";
+    longdesc = "\
+This function is a convenient way to get the list of root
+devices, as returned from a previous call to C<guestfs_inspect_os>,
+but without redoing the whole inspection process.
+
+This returns an empty list if either no root devices were
+found or the caller has not called C<guestfs_inspect_os>.
+
+Please read L<guestfs(3)/INSPECTION> for more details." };
+
+  { defaults with
     name = "inspect_get_type"; added = (1, 5, 3);
-    style = RString "name", [Mountable "root"], [];
+    style = RString (RPlainString, "name"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_type";
     shortdesc = "get type of inspected operating system";
     longdesc = "\
 This returns the type of the inspected operating system.
@@ -115,7 +132,8 @@ Please read L<guestfs(3)/INSPECTION> for more details." };
 
   { defaults with
     name = "inspect_get_arch"; added = (1, 5, 3);
-    style = RString "arch", [Mountable "root"], [];
+    style = RString (RPlainString, "arch"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_arch";
     shortdesc = "get architecture of inspected operating system";
     longdesc = "\
 This returns the architecture of the inspected operating system.
@@ -129,7 +147,8 @@ Please read L<guestfs(3)/INSPECTION> for more details." };
 
   { defaults with
     name = "inspect_get_distro"; added = (1, 5, 3);
-    style = RString "distro", [Mountable "root"], [];
+    style = RString (RPlainString, "distro"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_distro";
     shortdesc = "get distro of inspected operating system";
     longdesc = "\
 This returns the distro (distribution) of the inspected operating
@@ -206,6 +225,14 @@ Mandriva.
 =item \"meego\"
 
 MeeGo.
+
+=item \"msdos\"
+
+Microsoft DOS.
+
+=item \"neokylin\"
+
+NeoKylin.
 
 =item \"netbsd\"
 
@@ -285,7 +312,8 @@ Please read L<guestfs(3)/INSPECTION> for more details." };
 
   { defaults with
     name = "inspect_get_major_version"; added = (1, 5, 3);
-    style = RInt "major", [Mountable "root"], [];
+    style = RInt "major", [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_major_version";
     shortdesc = "get major version of inspected operating system";
     longdesc = "\
 This returns the major version number of the inspected operating
@@ -304,7 +332,8 @@ Please read L<guestfs(3)/INSPECTION> for more details." };
 
   { defaults with
     name = "inspect_get_minor_version"; added = (1, 5, 3);
-    style = RInt "minor", [Mountable "root"], [];
+    style = RInt "minor", [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_minor_version";
     shortdesc = "get minor version of inspected operating system";
     longdesc = "\
 This returns the minor version number of the inspected operating
@@ -317,7 +346,8 @@ See also C<guestfs_inspect_get_major_version>." };
 
   { defaults with
     name = "inspect_get_product_name"; added = (1, 5, 3);
-    style = RString "product", [Mountable "root"], [];
+    style = RString (RPlainString, "product"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_product_name";
     shortdesc = "get product name of inspected operating system";
     longdesc = "\
 This returns the product name of the inspected operating
@@ -331,8 +361,164 @@ string C<unknown> is returned.
 Please read L<guestfs(3)/INSPECTION> for more details." };
 
   { defaults with
+    name = "inspect_get_windows_systemroot"; added = (1, 5, 25);
+    style = RString (RPlainString, "systemroot"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_windows_systemroot";
+    shortdesc = "get Windows systemroot of inspected operating system";
+    longdesc = "\
+This returns the Windows systemroot of the inspected guest.
+The systemroot is a directory path such as F</WINDOWS>.
+
+This call assumes that the guest is Windows and that the
+systemroot could be determined by inspection.  If this is not
+the case then an error is returned.
+
+Please read L<guestfs(3)/INSPECTION> for more details." };
+
+  { defaults with
+    name = "inspect_get_package_format"; added = (1, 7, 5);
+    style = RString (RPlainString, "packageformat"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_package_format";
+    shortdesc = "get package format used by the operating system";
+    longdesc = "\
+This function and C<guestfs_inspect_get_package_management> return
+the package format and package management tool used by the
+inspected operating system.  For example for Fedora these
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
+
+This returns the string C<unknown> if we could not determine the
+package format I<or> if the operating system does not have
+a real packaging system (eg. Windows).
+
+Possible strings include:
+C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>, C<apk>,
+C<xbps>.
+Future versions of libguestfs may return other strings.
+
+Please read L<guestfs(3)/INSPECTION> for more details." };
+
+  { defaults with
+    name = "inspect_get_package_management"; added = (1, 7, 5);
+    style = RString (RPlainString, "packagemanagement"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_package_management";
+    shortdesc = "get package management tool used by the operating system";
+    longdesc = "\
+C<guestfs_inspect_get_package_format> and this function return
+the package format and package management tool used by the
+inspected operating system.  For example for Fedora these
+functions would return C<rpm> (package format), and
+C<yum> or C<dnf> (package management).
+
+This returns the string C<unknown> if we could not determine the
+package management tool I<or> if the operating system does not have
+a real packaging system (eg. Windows).
+
+Possible strings include: C<yum>, C<dnf>, C<up2date>,
+C<apt> (for all Debian derivatives),
+C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>, C<xbps>.
+Future versions of libguestfs may return other strings.
+
+Please read L<guestfs(3)/INSPECTION> for more details." };
+
+  { defaults with
+    name = "inspect_get_hostname"; added = (1, 7, 9);
+    style = RString (RPlainString, "hostname"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_hostname";
+    shortdesc = "get hostname of the operating system";
+    longdesc = "\
+This function returns the hostname of the operating system
+as found by inspection of the guest’s configuration files.
+
+If the hostname could not be determined, then the
+string C<unknown> is returned.
+
+Please read L<guestfs(3)/INSPECTION> for more details." };
+
+  { defaults with
+    name = "inspect_get_product_variant"; added = (1, 9, 13);
+    style = RString (RPlainString, "variant"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_product_variant";
+    shortdesc = "get product variant of inspected operating system";
+    longdesc = "\
+This returns the product variant of the inspected operating
+system.
+
+For Windows guests, this returns the contents of the Registry key
+C<HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion>
+C<InstallationType> which is usually a string such as
+C<Client> or C<Server> (other values are possible).  This
+can be used to distinguish consumer and enterprise versions
+of Windows that have the same version number (for example,
+Windows 7 and Windows 2008 Server are both version 6.1,
+but the former is C<Client> and the latter is C<Server>).
+
+For enterprise Linux guests, in future we intend this to return
+the product variant such as C<Desktop>, C<Server> and so on.  But
+this is not implemented at present.
+
+If the product variant could not be determined, then the
+string C<unknown> is returned.
+
+Please read L<guestfs(3)/INSPECTION> for more details.
+See also C<guestfs_inspect_get_product_name>,
+C<guestfs_inspect_get_major_version>." };
+
+  { defaults with
+    name = "inspect_get_windows_current_control_set"; added = (1, 9, 17);
+    style = RString (RPlainString, "controlset"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_windows_current_control_set";
+    shortdesc = "get Windows CurrentControlSet of inspected operating system";
+    longdesc = "\
+This returns the Windows CurrentControlSet of the inspected guest.
+The CurrentControlSet is a registry key name such as C<ControlSet001>.
+
+This call assumes that the guest is Windows and that the
+Registry could be examined by inspection.  If this is not
+the case then an error is returned.
+
+Please read L<guestfs(3)/INSPECTION> for more details." };
+
+  { defaults with
+    name = "inspect_get_windows_software_hive"; added = (1, 35, 26);
+    style = RString (RPlainString, "path"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_windows_software_hive";
+    shortdesc = "get the path of the Windows software hive";
+    longdesc = "\
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\\SOFTWARE.
+
+This call assumes that the guest is Windows and that the guest
+has a software hive file with the right name.  If this is not the
+case then an error is returned.  This call does not check that the
+hive is a valid Windows Registry hive.
+
+You can use C<guestfs_hivex_open> to read or write to the hive.
+
+Please read L<guestfs(3)/INSPECTION> for more details." };
+
+  { defaults with
+    name = "inspect_get_windows_system_hive"; added = (1, 35, 26);
+    style = RString (RPlainString, "path"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_windows_system_hive";
+    shortdesc = "get the path of the Windows system hive";
+    longdesc = "\
+This returns the path to the hive (binary Windows Registry file)
+corresponding to HKLM\\SYSTEM.
+
+This call assumes that the guest is Windows and that the guest
+has a system hive file with the right name.  If this is not the
+case then an error is returned.  This call does not check that the
+hive is a valid Windows Registry hive.
+
+You can use C<guestfs_hivex_open> to read or write to the hive.
+
+Please read L<guestfs(3)/INSPECTION> for more details." };
+
+  { defaults with
     name = "inspect_get_mountpoints"; added = (1, 5, 3);
-    style = RHashtable "mountpoints", [Mountable "root"], [];
+    style = RHashtable (RPlainString, RMountable, "mountpoints"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_mountpoints";
     shortdesc = "get mountpoints of inspected operating system";
     longdesc = "\
 This returns a hash of where we think the filesystems
@@ -363,7 +549,8 @@ See also C<guestfs_inspect_get_filesystems>." };
 
   { defaults with
     name = "inspect_get_filesystems"; added = (1, 5, 3);
-    style = RStringList "filesystems", [Mountable "root"], [];
+    style = RStringList (RMountable, "filesystems"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_filesystems";
     shortdesc = "get filesystems associated with inspected operating system";
     longdesc = "\
 This returns a list of all the filesystems that we think
@@ -378,80 +565,46 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 See also C<guestfs_inspect_get_mountpoints>." };
 
   { defaults with
-    name = "inspect_get_windows_systemroot"; added = (1, 5, 25);
-    style = RString "systemroot", [Mountable "root"], [];
-    shortdesc = "get Windows systemroot of inspected operating system";
+    name = "inspect_get_drive_mappings"; added = (1, 9, 17);
+    style = RHashtable (RPlainString, RDevice, "drives"), [String (Mountable, "root")], [];
+    impl = OCaml "Inspect.inspect_get_drive_mappings";
+    shortdesc = "get drive letter mappings";
     longdesc = "\
-This returns the Windows systemroot of the inspected guest.
-The systemroot is a directory path such as F</WINDOWS>.
+This call is useful for Windows which uses a primitive system
+of assigning drive letters (like F<C:\\>) to partitions.
+This inspection API examines the Windows Registry to find out
+how disks/partitions are mapped to drive letters, and returns
+a hash table as in the example below:
 
-This call assumes that the guest is Windows and that the
-systemroot could be determined by inspection.  If this is not
-the case then an error is returned.
+ C      =>     /dev/vda2
+ E      =>     /dev/vdb1
+ F      =>     /dev/vdc1
 
-Please read L<guestfs(3)/INSPECTION> for more details." };
+Note that keys are drive letters.  For Windows, the key is
+case insensitive and just contains the drive letter, without
+the customary colon separator character.
 
-  { defaults with
-    name = "inspect_get_roots"; added = (1, 7, 3);
-    style = RStringList "roots", [], [];
-    shortdesc = "return list of operating systems found by last inspection";
-    longdesc = "\
-This function is a convenient way to get the list of root
-devices, as returned from a previous call to C<guestfs_inspect_os>,
-but without redoing the whole inspection process.
+In future we may support other operating systems that also used drive
+letters, but the keys for those might not be case insensitive
+and might be longer than 1 character.  For example in OS-9,
+hard drives were named C<h0>, C<h1> etc.
 
-This returns an empty list if either no root devices were
-found or the caller has not called C<guestfs_inspect_os>.
+For Windows guests, currently only hard drive mappings are
+returned.  Removable disks (eg. DVD-ROMs) are ignored.
 
-Please read L<guestfs(3)/INSPECTION> for more details." };
+For guests that do not use drive mappings, or if the drive mappings
+could not be determined, this returns an empty hash table.
 
-  { defaults with
-    name = "inspect_get_package_format"; added = (1, 7, 5);
-    style = RString "packageformat", [Mountable "root"], [];
-    shortdesc = "get package format used by the operating system";
-    longdesc = "\
-This function and C<guestfs_inspect_get_package_management> return
-the package format and package management tool used by the
-inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format), and
-C<yum> or C<dnf> (package management).
+Please read L<guestfs(3)/INSPECTION> for more details.
+See also C<guestfs_inspect_get_mountpoints>,
+C<guestfs_inspect_get_filesystems>." };
 
-This returns the string C<unknown> if we could not determine the
-package format I<or> if the operating system does not have
-a real packaging system (eg. Windows).
+]
 
-Possible strings include:
-C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>, C<apk>,
-C<xbps>.
-Future versions of libguestfs may return other strings.
-
-Please read L<guestfs(3)/INSPECTION> for more details." };
-
-  { defaults with
-    name = "inspect_get_package_management"; added = (1, 7, 5);
-    style = RString "packagemanagement", [Mountable "root"], [];
-    shortdesc = "get package management tool used by the operating system";
-    longdesc = "\
-C<guestfs_inspect_get_package_format> and this function return
-the package format and package management tool used by the
-inspected operating system.  For example for Fedora these
-functions would return C<rpm> (package format), and
-C<yum> or C<dnf> (package management).
-
-This returns the string C<unknown> if we could not determine the
-package management tool I<or> if the operating system does not have
-a real packaging system (eg. Windows).
-
-Possible strings include: C<yum>, C<dnf>, C<up2date>,
-C<apt> (for all Debian derivatives),
-C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>, C<apk>, C<xbps>.
-Future versions of libguestfs may return other strings.
-
-Please read L<guestfs(3)/INSPECTION> for more details." };
-
+let non_daemon_functions = [
   { defaults with
     name = "inspect_list_applications2"; added = (1, 19, 56);
-    style = RStructList ("applications2", "application2"), [Mountable "root"], [];
+    style = RStructList ("applications2", "application2"), [String (Mountable, "root")], [];
     shortdesc = "get list of applications installed in the operating system";
     longdesc = "\
 Return the list of applications installed in the operating system.
@@ -553,164 +706,8 @@ If unavailable this is returned as an empty string C<\"\">.
 Please read L<guestfs(3)/INSPECTION> for more details." };
 
   { defaults with
-    name = "inspect_get_hostname"; added = (1, 7, 9);
-    style = RString "hostname", [Mountable "root"], [];
-    shortdesc = "get hostname of the operating system";
-    longdesc = "\
-This function returns the hostname of the operating system
-as found by inspection of the guest's configuration files.
-
-If the hostname could not be determined, then the
-string C<unknown> is returned.
-
-Please read L<guestfs(3)/INSPECTION> for more details." };
-
-  { defaults with
-    name = "inspect_get_format"; added = (1, 9, 4);
-    style = RString "format", [Mountable "root"], [];
-    shortdesc = "get format of inspected operating system";
-    longdesc = "\
-This returns the format of the inspected operating system.  You
-can use it to detect install images, live CDs and similar.
-
-Currently defined formats are:
-
-=over 4
-
-=item \"installed\"
-
-This is an installed operating system.
-
-=item \"installer\"
-
-The disk image being inspected is not an installed operating system,
-but a I<bootable> install disk, live CD, or similar.
-
-=item \"unknown\"
-
-The format of this disk image is not known.
-
-=back
-
-Future versions of libguestfs may return other strings here.
-The caller should be prepared to handle any string.
-
-Please read L<guestfs(3)/INSPECTION> for more details." };
-
-  { defaults with
-    name = "inspect_is_live"; added = (1, 9, 4);
-    style = RBool "live", [Mountable "root"], [];
-    shortdesc = "get live flag for install disk";
-    longdesc = "\
-If C<guestfs_inspect_get_format> returns C<installer> (this
-is an install disk), then this returns true if a live image
-was detected on the disk.
-
-Please read L<guestfs(3)/INSPECTION> for more details." };
-
-  { defaults with
-    name = "inspect_is_netinst"; added = (1, 9, 4);
-    style = RBool "netinst", [Mountable "root"], [];
-    shortdesc = "get netinst (network installer) flag for install disk";
-    longdesc = "\
-If C<guestfs_inspect_get_format> returns C<installer> (this
-is an install disk), then this returns true if the disk is
-a network installer, ie. not a self-contained install CD but
-one which is likely to require network access to complete
-the install.
-
-Please read L<guestfs(3)/INSPECTION> for more details." };
-
-  { defaults with
-    name = "inspect_is_multipart"; added = (1, 9, 4);
-    style = RBool "multipart", [Mountable "root"], [];
-    shortdesc = "get multipart flag for install disk";
-    longdesc = "\
-If C<guestfs_inspect_get_format> returns C<installer> (this
-is an install disk), then this returns true if the disk is
-part of a set.
-
-Please read L<guestfs(3)/INSPECTION> for more details." };
-
-  { defaults with
-    name = "inspect_get_product_variant"; added = (1, 9, 13);
-    style = RString "variant", [Mountable "root"], [];
-    shortdesc = "get product variant of inspected operating system";
-    longdesc = "\
-This returns the product variant of the inspected operating
-system.
-
-For Windows guests, this returns the contents of the Registry key
-C<HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion>
-C<InstallationType> which is usually a string such as
-C<Client> or C<Server> (other values are possible).  This
-can be used to distinguish consumer and enterprise versions
-of Windows that have the same version number (for example,
-Windows 7 and Windows 2008 Server are both version 6.1,
-but the former is C<Client> and the latter is C<Server>).
-
-For enterprise Linux guests, in future we intend this to return
-the product variant such as C<Desktop>, C<Server> and so on.  But
-this is not implemented at present.
-
-If the product variant could not be determined, then the
-string C<unknown> is returned.
-
-Please read L<guestfs(3)/INSPECTION> for more details.
-See also C<guestfs_inspect_get_product_name>,
-C<guestfs_inspect_get_major_version>." };
-
-  { defaults with
-    name = "inspect_get_windows_current_control_set"; added = (1, 9, 17);
-    style = RString "controlset", [Mountable "root"], [];
-    shortdesc = "get Windows CurrentControlSet of inspected operating system";
-    longdesc = "\
-This returns the Windows CurrentControlSet of the inspected guest.
-The CurrentControlSet is a registry key name such as C<ControlSet001>.
-
-This call assumes that the guest is Windows and that the
-Registry could be examined by inspection.  If this is not
-the case then an error is returned.
-
-Please read L<guestfs(3)/INSPECTION> for more details." };
-
-  { defaults with
-    name = "inspect_get_drive_mappings"; added = (1, 9, 17);
-    style = RHashtable "drives", [Mountable "root"], [];
-    shortdesc = "get drive letter mappings";
-    longdesc = "\
-This call is useful for Windows which uses a primitive system
-of assigning drive letters (like F<C:\\>) to partitions.
-This inspection API examines the Windows Registry to find out
-how disks/partitions are mapped to drive letters, and returns
-a hash table as in the example below:
-
- C      =>     /dev/vda2
- E      =>     /dev/vdb1
- F      =>     /dev/vdc1
-
-Note that keys are drive letters.  For Windows, the key is
-case insensitive and just contains the drive letter, without
-the customary colon separator character.
-
-In future we may support other operating systems that also used drive
-letters, but the keys for those might not be case insensitive
-and might be longer than 1 character.  For example in OS-9,
-hard drives were named C<h0>, C<h1> etc.
-
-For Windows guests, currently only hard drive mappings are
-returned.  Removable disks (eg. DVD-ROMs) are ignored.
-
-For guests that do not use drive mappings, or if the drive mappings
-could not be determined, this returns an empty hash table.
-
-Please read L<guestfs(3)/INSPECTION> for more details.
-See also C<guestfs_inspect_get_mountpoints>,
-C<guestfs_inspect_get_filesystems>." };
-
-  { defaults with
     name = "inspect_get_icon"; added = (1, 11, 12);
-    style = RBufferOut "icon", [Mountable "root"],  [OBool "favicon"; OBool "highquality"];
+    style = RBufferOut "icon", [String (Mountable, "root")],  [OBool "favicon"; OBool "highquality"];
     shortdesc = "get the icon corresponding to this operating system";
     longdesc = "\
 This function returns an icon corresponding to the inspected
@@ -740,7 +737,7 @@ Notes:
 
 =item *
 
-Unlike most other inspection API calls, the guest's disks must be
+Unlike most other inspection API calls, the guest’s disks must be
 mounted up before you call this, since it needs to read information
 from the guest filesystem during the call.
 
@@ -772,39 +769,5 @@ Operating system icons are usually trademarks.  Seek legal
 advice before using trademarks in applications.
 
 =back" };
-
-  { defaults with
-    name = "inspect_get_windows_software_hive"; added = (1, 35, 26);
-    style = RString "path", [Mountable "root"], [];
-    shortdesc = "get the path of the Windows software hive";
-    longdesc = "\
-This returns the path to the hive (binary Windows Registry file)
-corresponding to HKLM\\SOFTWARE.
-
-This call assumes that the guest is Windows and that the guest
-has a software hive file with the right name.  If this is not the
-case then an error is returned.  This call does not check that the
-hive is a valid Windows Registry hive.
-
-You can use C<guestfs_hivex_open> to read or write to the hive.
-
-Please read L<guestfs(3)/INSPECTION> for more details." };
-
-  { defaults with
-    name = "inspect_get_windows_system_hive"; added = (1, 35, 26);
-    style = RString "path", [Mountable "root"], [];
-    shortdesc = "get the path of the Windows system hive";
-    longdesc = "\
-This returns the path to the hive (binary Windows Registry file)
-corresponding to HKLM\\SYSTEM.
-
-This call assumes that the guest is Windows and that the guest
-has a system hive file with the right name.  If this is not the
-case then an error is returned.  This call does not check that the
-hive is a valid Windows Registry hive.
-
-You can use C<guestfs_hivex_open> to read or write to the hive.
-
-Please read L<guestfs(3)/INSPECTION> for more details." };
 
 ]

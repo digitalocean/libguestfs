@@ -264,6 +264,7 @@ extern struct command_entry hivex_node_values_cmd_entry;
 extern struct command_entry hivex_open_cmd_entry;
 extern struct command_entry hivex_root_cmd_entry;
 extern struct command_entry hivex_value_key_cmd_entry;
+extern struct command_entry hivex_value_string_cmd_entry;
 extern struct command_entry hivex_value_type_cmd_entry;
 extern struct command_entry hivex_value_utf8_cmd_entry;
 extern struct command_entry hivex_value_value_cmd_entry;
@@ -448,6 +449,7 @@ extern struct command_entry part_disk_cmd_entry;
 extern struct command_entry part_expand_gpt_cmd_entry;
 extern struct command_entry part_get_bootable_cmd_entry;
 extern struct command_entry part_get_disk_guid_cmd_entry;
+extern struct command_entry part_get_gpt_attributes_cmd_entry;
 extern struct command_entry part_get_gpt_guid_cmd_entry;
 extern struct command_entry part_get_gpt_type_cmd_entry;
 extern struct command_entry part_get_mbr_id_cmd_entry;
@@ -456,9 +458,11 @@ extern struct command_entry part_get_name_cmd_entry;
 extern struct command_entry part_get_parttype_cmd_entry;
 extern struct command_entry part_init_cmd_entry;
 extern struct command_entry part_list_cmd_entry;
+extern struct command_entry part_resize_cmd_entry;
 extern struct command_entry part_set_bootable_cmd_entry;
 extern struct command_entry part_set_disk_guid_cmd_entry;
 extern struct command_entry part_set_disk_guid_random_cmd_entry;
+extern struct command_entry part_set_gpt_attributes_cmd_entry;
 extern struct command_entry part_set_gpt_guid_cmd_entry;
 extern struct command_entry part_set_gpt_type_cmd_entry;
 extern struct command_entry part_set_mbr_id_cmd_entry;
@@ -620,6 +624,9 @@ extern struct command_entry xfs_admin_cmd_entry;
 extern struct command_entry xfs_growfs_cmd_entry;
 extern struct command_entry xfs_info_cmd_entry;
 extern struct command_entry xfs_repair_cmd_entry;
+extern struct command_entry yara_destroy_cmd_entry;
+extern struct command_entry yara_load_cmd_entry;
+extern struct command_entry yara_scan_cmd_entry;
 extern struct command_entry zegrep_cmd_entry;
 extern struct command_entry zegrepi_cmd_entry;
 extern struct command_entry zero_cmd_entry;
@@ -1050,6 +1057,8 @@ hivex_root, &hivex_root_cmd_entry
 hivex-root, &hivex_root_cmd_entry
 hivex_value_key, &hivex_value_key_cmd_entry
 hivex-value-key, &hivex_value_key_cmd_entry
+hivex_value_string, &hivex_value_string_cmd_entry
+hivex-value-string, &hivex_value_string_cmd_entry
 hivex_value_type, &hivex_value_type_cmd_entry
 hivex-value-type, &hivex_value_type_cmd_entry
 hivex_value_utf8, &hivex_value_utf8_cmd_entry
@@ -1386,6 +1395,8 @@ part_get_bootable, &part_get_bootable_cmd_entry
 part-get-bootable, &part_get_bootable_cmd_entry
 part_get_disk_guid, &part_get_disk_guid_cmd_entry
 part-get-disk-guid, &part_get_disk_guid_cmd_entry
+part_get_gpt_attributes, &part_get_gpt_attributes_cmd_entry
+part-get-gpt-attributes, &part_get_gpt_attributes_cmd_entry
 part_get_gpt_guid, &part_get_gpt_guid_cmd_entry
 part-get-gpt-guid, &part_get_gpt_guid_cmd_entry
 part_get_gpt_type, &part_get_gpt_type_cmd_entry
@@ -1402,12 +1413,16 @@ part_init, &part_init_cmd_entry
 part-init, &part_init_cmd_entry
 part_list, &part_list_cmd_entry
 part-list, &part_list_cmd_entry
+part_resize, &part_resize_cmd_entry
+part-resize, &part_resize_cmd_entry
 part_set_bootable, &part_set_bootable_cmd_entry
 part-set-bootable, &part_set_bootable_cmd_entry
 part_set_disk_guid, &part_set_disk_guid_cmd_entry
 part-set-disk-guid, &part_set_disk_guid_cmd_entry
 part_set_disk_guid_random, &part_set_disk_guid_random_cmd_entry
 part-set-disk-guid-random, &part_set_disk_guid_random_cmd_entry
+part_set_gpt_attributes, &part_set_gpt_attributes_cmd_entry
+part-set-gpt-attributes, &part_set_gpt_attributes_cmd_entry
 part_set_gpt_guid, &part_set_gpt_guid_cmd_entry
 part-set-gpt-guid, &part_set_gpt_guid_cmd_entry
 part_set_gpt_type, &part_set_gpt_type_cmd_entry
@@ -1697,6 +1712,12 @@ xfs_info, &xfs_info_cmd_entry
 xfs-info, &xfs_info_cmd_entry
 xfs_repair, &xfs_repair_cmd_entry
 xfs-repair, &xfs_repair_cmd_entry
+yara_destroy, &yara_destroy_cmd_entry
+yara-destroy, &yara_destroy_cmd_entry
+yara_load, &yara_load_cmd_entry
+yara-load, &yara_load_cmd_entry
+yara_scan, &yara_scan_cmd_entry
+yara-scan, &yara_scan_cmd_entry
 zegrep, &zegrep_cmd_entry
 zegrepi, &zegrepi_cmd_entry
 zero, &zero_cmd_entry

@@ -210,7 +210,7 @@
  * 
  * "secret"
  * For the "rbd" protocol only, this specifies the
- * 'secret' to use when connecting to the remote
+ * ‘secret’ to use when connecting to the remote
  * device. It must be base64 encoded.
  * 
  * If not given, then a secret matching the given
@@ -901,7 +901,7 @@ guestfs_int_ruby_chown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
  * 
  * Shared libraries and data files required by the program
  * must be available on filesystems which are mounted in
- * the correct places. It is the caller's responsibility to
+ * the correct places. It is the caller’s responsibility to
  * ensure all filesystems that are needed are mounted at
  * the right locations.
  * 
@@ -2712,9 +2712,9 @@ guestfs_int_ruby_ntfscat_i (VALUE gv, VALUE devicev, VALUE inodev, VALUE filenam
  *
  * parse the environment and set handle flags accordingly
  *
- * Parse the program's environment and set flags in the
+ * Parse the program’s environment and set flags in the
  * handle accordingly. For example if "LIBGUESTFS_DEBUG=1"
- * then the 'verbose' flag is set in the handle.
+ * then the ‘verbose’ flag is set in the handle.
  * 
  * *Most programs do not need to call this*. It is done
  * implicitly when you call "g.create".
@@ -2803,7 +2803,7 @@ guestfs_int_ruby_part_get_disk_guid (VALUE gv, VALUE devicev)
  * 
  * part_start
  * Start of the partition *in bytes*. To get sectors
- * you have to divide by the device's sector size, see
+ * you have to divide by the device’s sector size, see
  * "g.blockdev_getss".
  * 
  * part_end
@@ -2883,6 +2883,50 @@ guestfs_int_ruby_part_set_bootable (VALUE gv, VALUE devicev, VALUE partnumv, VAL
   int r;
 
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.part_set_gpt_attributes(device, partnum, attributes) -> nil
+ *
+ * set the attribute flags of a GPT partition
+ *
+ * Set the attribute flags of numbered GPT partition
+ * "partnum" to "attributes". Return an error if the
+ * partition table of "device" isn't GPT.
+ * 
+ * See
+ * <https://en.wikipedia.org/wiki/GUID_Partition_Table#Part
+ * ition_entries> for a useful list of partition
+ * attributes.
+ *
+ *
+ * [Since] Added in version 1.21.1.
+ *
+ * [Feature] This function depends on the feature +gdisk+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_set_gpt_attributes}[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_attributes].
+ */
+VALUE
+guestfs_int_ruby_part_set_gpt_attributes (VALUE gv, VALUE devicev, VALUE partnumv, VALUE attributesv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_set_gpt_attributes");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+  long long attributes = NUM2LL (attributesv);
+
+  int r;
+
+  r = guestfs_part_set_gpt_attributes (g, device, partnum, attributes);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -3594,7 +3638,7 @@ guestfs_int_ruby_set_pgroup (VALUE gv, VALUE pgroupv)
  * This displays the disk geometry of "device" read from
  * the partition table. Especially in the case where the
  * underlying block device has been resized, this can be
- * different from the kernel's idea of the geometry (see
+ * different from the kernel’s idea of the geometry (see
  * "g.sfdisk_kernel_geometry").
  * 
  * The result is in human-readable format, and not designed
@@ -3634,13 +3678,13 @@ guestfs_int_ruby_sfdisk_disk_geometry (VALUE gv, VALUE devicev)
  * run a command via the shell
  *
  * This call runs a command from the guest filesystem via
- * the guest's /bin/sh.
+ * the guest’s /bin/sh.
  * 
  * This is like "g.command", but passes the command to:
  * 
  * /bin/sh -c "command"
  * 
- * Depending on the guest's shell, this usually results in
+ * Depending on the guest’s shell, this usually results in
  * wildcards being expanded, shell expressions being
  * interpolated and so on.
  * 
@@ -4019,6 +4063,63 @@ guestfs_int_ruby_write_append (VALUE gv, VALUE pathv, VALUE contentv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.yara_scan(path) -> list
+ *
+ * scan a file with the loaded yara rules
+ *
+ * Scan a file with the previously loaded Yara rules.
+ * 
+ * For each matching rule, a "yara_detection" structure is
+ * returned.
+ * 
+ * The "yara_detection" structure contains the following
+ * fields.
+ * 
+ * "yara_name"
+ * Path of the file matching a Yara rule.
+ * 
+ * "yara_rule"
+ * Identifier of the Yara rule which matched against
+ * the given file.
+ *
+ *
+ * [Since] Added in version 1.37.13.
+ *
+ * [Feature] This function depends on the feature +libyara+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_yara_scan}[http://libguestfs.org/guestfs.3.html#guestfs_yara_scan].
+ */
+VALUE
+guestfs_int_ruby_yara_scan (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "yara_scan");
+
+  const char *path = StringValueCStr (pathv);
+
+  struct guestfs_yara_detection_list *r;
+
+  r = guestfs_yara_scan (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("yara_name"), rb_str_new2 (r->val[i].yara_name));
+    rb_hash_aset (hv, rb_str_new2 ("yara_rule"), rb_str_new2 (r->val[i].yara_rule));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_yara_detection_list (r);
+  return rv;
 }
 
 /*

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Common_utils
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
 
 open Types
@@ -36,7 +37,7 @@ let rec target_bus_assignment source targets guestcaps =
       | Virtio_blk -> virtio_blk_bus
       | Virtio_SCSI -> scsi_bus
       | IDE -> ide_bus in
-    iteri (
+    List.iteri (
       fun i t ->
         let t = BusSlotTarget t in
         insert bus i t
@@ -73,7 +74,8 @@ let rec target_bus_assignment source targets guestcaps =
              | None -> ide_bus (* Wild guess, but should be safe. *)
              | Some Source_virtio_blk -> virtio_blk_bus
              | Some Source_IDE -> ide_bus
-             | Some Source_virtio_SCSI | Some Source_SCSI -> scsi_bus in
+             | Some (Source_virtio_SCSI | Source_SCSI | Source_SATA) ->
+                scsi_bus in
 
         match r.s_removable_slot with
         | None ->

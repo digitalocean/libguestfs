@@ -19,9 +19,10 @@
 open Printf
 open Unix
 
-open Common_gettext.Gettext
-open Common_utils
+open Std_utils
+open Tools_utils
 open Unix_utils
+open Common_gettext.Gettext
 open Getopt.OptionName
 
 open Sysprep_operation
@@ -35,7 +36,7 @@ let set_scriptdir dir =
   scriptdir := Some dir
 
 let scripts = ref []
-let add_script script = push_front script scripts
+let add_script script = List.push_front script scripts
 
 let rec script_perform (g : Guestfs.guestfs) root side_effects =
   let scripts = List.rev !scripts in
@@ -119,10 +120,10 @@ Use one or more I<--script> parameters to specify scripts or programs
 that will be run against the guest.
 
 The script or program is run with its current directory being the
-guest's root directory, so relative paths should be used.  For
+guest’s root directory, so relative paths should be used.  For
 example: C<rm etc/resolv.conf> in the script would remove a Linux
-guest's DNS configuration file, but C<rm /etc/resolv.conf> would
-(try to) remove the host's file.
+guest’s DNS configuration file, but C<rm /etc/resolv.conf> would
+(try to) remove the host’s file.
 
 Normally a temporary mount point for the guest is used, but you
 can choose a specific one by using the I<--scriptdir> parameter.
@@ -148,8 +149,8 @@ will be created."
         extra_pod_argval = Some "SCRIPT";
         extra_pod_description = s_"\
 Run the named C<SCRIPT> (a shell script or program) against the
-guest.  The script can be any program on the host.  The script's
-current directory will be the guest's root directory.
+guest.  The script can be any program on the host.  The script’s
+current directory will be the guest’s root directory.
 
 B<Note:> If the script is not on the $PATH, then you must give
 the full absolute path to the script.";

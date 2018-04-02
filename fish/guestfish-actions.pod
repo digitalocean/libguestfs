@@ -398,7 +398,7 @@ specify the remote username you want.
 
 =item C<secret>
 
-For the C<rbd> protocol only, this specifies the 'secret' to use when
+For the C<rbd> protocol only, this specifies the ‘secret’ to use when
 connecting to the remote device.  It must be base64 encoded.
 
 If not given, then a secret matching the given username will be looked up in the
@@ -1701,7 +1701,7 @@ first parameter.
 
 Shared libraries and data files required by the program
 must be available on filesystems which are mounted in the
-correct places.  It is the caller's responsibility to ensure
+correct places.  It is the caller’s responsibility to ensure
 all filesystems that are needed are mounted at the right
 locations.
 
@@ -1760,7 +1760,7 @@ This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
  config hvparam hvvalue
 
 This can be used to add arbitrary hypervisor parameters of the
-form I<-param value>.  Actually it's not quite arbitrary - we
+form I<-param value>.  Actually it’s not quite arbitrary - we
 prevent you from setting some parameters which would interfere with
 parameters that we use.
 
@@ -2221,7 +2221,7 @@ This option may not be specified at the same time as the C<forceall> option.
 
 =item C<forceall>
 
-Assume an answer of 'yes' to all questions; allows e2fsck to be used
+Assume an answer of ‘yes’ to all questions; allows e2fsck to be used
 non-interactively.
 
 This option may not be specified at the same time as the C<correct> option.
@@ -2619,26 +2619,26 @@ The C<tsk_dirent> structure contains the following fields.
 
 =over 4
 
-=item 'tsk_inode'
+=item C<tsk_inode>
 
 Filesystem reference number of the node. It might be C<0>
 if the node has been deleted.
 
-=item 'tsk_type'
+=item C<tsk_type>
 
 Basic file type information.
 See below for a detailed list of values.
 
-=item 'tsk_size'
+=item C<tsk_size>
 
 File size in bytes. It might be C<-1>
 if the node has been deleted.
 
-=item 'tsk_name'
+=item C<tsk_name>
 
 The file path relative to its directory.
 
-=item 'tsk_flags'
+=item C<tsk_flags>
 
 Bitfield containing extra information regarding the entry.
 It contains the logical OR of the following values:
@@ -2671,30 +2671,30 @@ application level compression.
 
 =back
 
-=item 'tsk_atime_sec'
+=item C<tsk_atime_sec>
 
-=item 'tsk_atime_nsec'
+=item C<tsk_atime_nsec>
 
-=item 'tsk_mtime_sec'
+=item C<tsk_mtime_sec>
 
-=item 'tsk_mtime_nsec'
+=item C<tsk_mtime_nsec>
 
-=item 'tsk_ctime_sec'
+=item C<tsk_ctime_sec>
 
-=item 'tsk_ctime_nsec'
+=item C<tsk_ctime_nsec>
 
-=item 'tsk_crtime_sec'
+=item C<tsk_crtime_sec>
 
-=item 'tsk_crtime_nsec'
+=item C<tsk_crtime_nsec>
 
 Respectively, access, modification, last status change and creation
 time in Unix format in seconds and nanoseconds.
 
-=item 'tsk_nlink'
+=item C<tsk_nlink>
 
 Number of file names pointing to this entry.
 
-=item 'tsk_link'
+=item C<tsk_link>
 
 If the entry is a symbolic link, this field will contain the path
 to the target file.
@@ -3012,6 +3012,13 @@ Get the directory used by the handle to store the appliance cache.
  get-direct
 
 Return the direct appliance mode flag.
+
+I<This function is deprecated.>
+In new code, use the L</internal-get-console-socket> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =head2 get-e2attrs
 
@@ -3746,6 +3753,23 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 This command depends on the feature C<hivex>.   See also
 L</feature-available>.
 
+=head2 hivex-value-string
+
+ hivex-value-string valueh
+
+This calls L</hivex-value-value> (which returns the
+data field from a hivex value tuple).  It then assumes that
+the field is a UTF-16LE string and converts the result to
+UTF-8 (or if this is not possible, it returns an error).
+
+This is useful for reading strings out of the Windows registry.
+However it is not foolproof because the registry is not
+strongly-typed and fields can contain arbitrary or unexpected
+data.
+
+This command depends on the feature C<hivex>.   See also
+L</feature-available>.
+
 =head2 hivex-value-type
 
  hivex-value-type valueh
@@ -3770,6 +3794,13 @@ This is useful for reading strings out of the Windows registry.
 However it is not foolproof because the registry is not
 strongly-typed and fields can contain arbitrary or unexpected
 data.
+
+I<This function is deprecated.>
+In new code, use the L</hivex-value-string> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This command depends on the feature C<hivex>.   See also
 L</feature-available>.
@@ -4020,6 +4051,14 @@ Mandriva.
 
 MeeGo.
 
+=item "msdos"
+
+Microsoft DOS.
+
+=item "neokylin"
+
+NeoKylin.
+
 =item "netbsd"
 
 NetBSD.
@@ -4148,10 +4187,8 @@ See also L</inspect-get-mountpoints>.
 
  inspect-get-format root
 
-This returns the format of the inspected operating system.  You
-can use it to detect install images, live CDs and similar.
-
-Currently defined formats are:
+Before libguestfs 1.38, there was some unreliable support for detecting
+installer CDs.  This API would return:
 
 =over 4
 
@@ -4170,17 +4207,25 @@ The format of this disk image is not known.
 
 =back
 
-Future versions of libguestfs may return other strings here.
-The caller should be prepared to handle any string.
+In libguestfs E<ge> 1.38, this only returns C<installed>.
+Use libosinfo directly to detect installer CDs.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
+
+I<This function is deprecated.>
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =head2 inspect-get-hostname
 
  inspect-get-hostname root
 
 This function returns the hostname of the operating system
-as found by inspection of the guest's configuration files.
+as found by inspection of the guest’s configuration files.
 
 If the hostname could not be determined, then the
 string C<unknown> is returned.
@@ -4218,7 +4263,7 @@ Notes:
 
 =item *
 
-Unlike most other inspection API calls, the guest's disks must be
+Unlike most other inspection API calls, the guest’s disks must be
 mounted up before you call this, since it needs to read information
 from the guest filesystem during the call.
 
@@ -4523,33 +4568,49 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-is-live root
 
-If L</inspect-get-format> returns C<installer> (this
-is an install disk), then this returns true if a live image
-was detected on the disk.
+This is deprecated and always returns C<false>.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
+
+I<This function is deprecated.>
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =head2 inspect-is-multipart
 
  inspect-is-multipart root
 
-If L</inspect-get-format> returns C<installer> (this
-is an install disk), then this returns true if the disk is
-part of a set.
+This is deprecated and always returns C<false>.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
+
+I<This function is deprecated.>
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =head2 inspect-is-netinst
 
  inspect-is-netinst root
 
-If L</inspect-get-format> returns C<installer> (this
-is an install disk), then this returns true if the disk is
-a network installer, ie. not a self-contained install CD but
-one which is likely to require network access to complete
-the install.
+This is deprecated and always returns C<false>.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
+
+I<This function is deprecated.>
+There is no replacement.  Consult the API documentation in
+L<guestfs(3)> for further information.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =head2 inspect-list-applications
 
@@ -5352,15 +5413,17 @@ For example:
  "/dev/vg_guest/lv_swap" => "swap"
 
 The key is not necessarily a block device. It may also be an opaque
-'mountable' string which can be passed to L</mount>.
+‘mountable’ string which can be passed to L</mount>.
 
 The value can have the special value "unknown", meaning the
 content of the device is undetermined or empty.
 "swap" means a Linux swap partition.
 
-This command runs other libguestfs commands, which might include
-L</mount> and L</umount>, and therefore you should
-use this soon after launch and only when nothing is mounted.
+In libguestfs E<le> 1.36 this command ran other libguestfs commands,
+which might have included L</mount> and L</umount>, and
+therefore you had to use this soon after launch and only when
+nothing else was mounted.  This restriction is removed in libguestfs
+E<ge> 1.38.
 
 Not all of the filesystems returned will be mountable.  In
 particular, swap partitions are returned in the list.  Also
@@ -6558,7 +6621,7 @@ Mount a guest disk at a position in the filesystem.  Block devices
 are named F</dev/sda>, F</dev/sdb> and so on, as they were added to
 the guest.  If those block devices contain partitions, they will have
 the usual names (eg. F</dev/sda1>).  Also LVM F</dev/VG/LV>-style
-names can be used, or 'mountable' strings returned by
+names can be used, or ‘mountable’ strings returned by
 L</list-filesystems> or L</inspect-get-mountpoints>.
 
 The rules are the same as for L<mount(2)>:  A filesystem must
@@ -6890,9 +6953,9 @@ L</feature-available>.
 
  parse-environment
 
-Parse the program's environment and set flags in the handle
+Parse the program’s environment and set flags in the handle
 accordingly.  For example if C<LIBGUESTFS_DEBUG=1> then the
-'verbose' flag is set in the handle.
+‘verbose’ flag is set in the handle.
 
 I<Most programs do not need to call this>.  It is done implicitly
 when you call L</create>.
@@ -6909,7 +6972,7 @@ L</parse-environment-list>.
 Parse the list of strings in the argument C<environment>
 and set flags in the handle accordingly.
 For example if C<LIBGUESTFS_DEBUG=1> is a string in the list,
-then the 'verbose' flag is set in the handle.
+then the ‘verbose’ flag is set in the handle.
 
 This is the same as L</parse-environment> except that
 it parses an explicit list of strings instead of the program's
@@ -6984,6 +7047,16 @@ See also L</part-set-bootable>.
 
 Return the disk identifier (GUID) of a GPT-partitioned C<device>.
 Behaviour is undefined for other partition types.
+
+This command depends on the feature C<gdisk>.   See also
+L</feature-available>.
+
+=head2 part-get-gpt-attributes
+
+ part-get-gpt-attributes device partnum
+
+Return the attribute flags of numbered GPT partition C<partnum>.
+An error is returned for MBR partitions.
 
 This command depends on the feature C<gdisk>.   See also
 L</feature-available>.
@@ -7145,7 +7218,7 @@ Partition number, counting from 1.
 =item B<part_start>
 
 Start of the partition I<in bytes>.  To get sectors you have to
-divide by the device's sector size, see L</blockdev-getss>.
+divide by the device’s sector size, see L</blockdev-getss>.
 
 =item B<part_end>
 
@@ -7156,6 +7229,21 @@ End of the partition in bytes.
 Size of the partition in bytes.
 
 =back
+
+=head2 part-resize
+
+ part-resize device partnum endsect
+
+This command resizes the partition numbered C<partnum> on C<device>
+by moving the end position.
+
+Note that this does not modify any filesystem present in the partition.
+If you wish to do this, you will need to use filesystem resizing
+commands like L</resize2fs>.
+
+When growing a partition you will want to grow the filesystem
+afterwards, but when shrinking, you need to shrink the filesystem
+before the partition.
 
 =head2 part-set-bootable
 
@@ -7186,6 +7274,19 @@ L</feature-available>.
 Set the disk identifier (GUID) of a GPT-partitioned C<device> to
 a randomly generated value.
 Return an error if the partition table of C<device> isn't GPT.
+
+This command depends on the feature C<gdisk>.   See also
+L</feature-available>.
+
+=head2 part-set-gpt-attributes
+
+ part-set-gpt-attributes device partnum attributes
+
+Set the attribute flags of numbered GPT partition C<partnum> to C<attributes>. Return an
+error if the partition table of C<device> isn't GPT.
+
+See L<https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_entries>
+for a useful list of partition attributes.
 
 This command depends on the feature C<gdisk>.   See also
 L</feature-available>.
@@ -7963,6 +8064,13 @@ are doing.
 
 The default is disabled.
 
+I<This function is deprecated.>
+In new code, use the L</internal-get-console-socket> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =head2 set-e2attrs
 
  set-e2attrs file attrs [clear:true|false]
@@ -8461,7 +8569,7 @@ C<cyls>, C<heads> and C<sectors> are the number of cylinders, heads
 and sectors on the device, which are passed directly to sfdisk as
 the I<-C>, I<-H> and I<-S> parameters.  If you pass C<0> for any
 of these, then the corresponding parameter is omitted.  Usually for
-'large' disks, you can just pass C<0> for these, but for small
+‘large’ disks, you can just pass C<0> for these, but for small
 (floppy-sized) disks, sfdisk (or rather, the kernel) cannot work
 out the right geometry and you will need to tell it.
 
@@ -8528,7 +8636,7 @@ with correct use of these functions.
 This displays the disk geometry of C<device> read from the
 partition table.  Especially in the case where the underlying
 block device has been resized, this can be different from the
-kernel's idea of the geometry (see L</sfdisk-kernel-geometry>).
+kernel’s idea of the geometry (see L</sfdisk-kernel-geometry>).
 
 The result is in human-readable format, and not designed to
 be parsed.
@@ -8537,7 +8645,7 @@ be parsed.
 
  sfdisk-kernel-geometry device
 
-This displays the kernel's idea of the geometry of C<device>.
+This displays the kernel’s idea of the geometry of C<device>.
 
 The result is in human-readable format, and not designed to
 be parsed.
@@ -8564,13 +8672,13 @@ with correct use of these functions.
  sh command
 
 This call runs a command from the guest filesystem via the
-guest's F</bin/sh>.
+guest’s F</bin/sh>.
 
 This is like L</command>, but passes the command to:
 
  /bin/sh -c "command"
 
-Depending on the guest's shell, this usually results in
+Depending on the guest’s shell, this usually results in
 wildcards being expanded, shell expressions being interpolated
 and so on.
 
@@ -9240,7 +9348,7 @@ another error.
 
 No cleanup is performed: for example, if a file was being uploaded
 then after cancellation there may be a partially uploaded file.  It is
-the caller's responsibility to clean up if necessary.
+the caller’s responsibility to clean up if necessary.
 
 There are two common places that you might call L</user-cancel>:
 
@@ -9298,7 +9406,7 @@ This call was added in version C<1.0.58>.  In previous
 versions of libguestfs there was no way to get the version
 number.  From C code you can use dynamic linker functions
 to find out if this symbol exists (if it doesn't, then
-it's an earlier version).
+it’s an earlier version).
 
 The call returns a structure with four elements.  The first
 three (C<major>, C<minor> and C<release>) are numbers and
@@ -9662,6 +9770,64 @@ This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 This command depends on the feature C<xfs>.   See also
 L</feature-available>.
 
+=head2 yara-destroy
+
+ yara-destroy
+
+Destroy previously loaded Yara rules in order to free libguestfs resources.
+
+This command depends on the feature C<libyara>.   See also
+L</feature-available>.
+
+=head2 yara-load
+
+ yara-load (filename|-)
+
+Upload a set of Yara rules from local file F<filename>.
+
+Yara rules allow to categorize files based on textual or binary patterns
+within their content.
+See L</yara-scan> to see how to scan files with the loaded rules.
+
+Rules can be in binary format, as when compiled with yarac command, or
+in source code format. In the latter case, the rules will be first
+compiled and then loaded.
+
+Rules in source code format cannot include external files. In such cases,
+it is recommended to compile them first.
+
+Previously loaded rules will be destroyed.
+
+Use C<-> instead of a filename to read/write from stdin/stdout.
+
+This command depends on the feature C<libyara>.   See also
+L</feature-available>.
+
+=head2 yara-scan
+
+ yara-scan path
+
+Scan a file with the previously loaded Yara rules.
+
+For each matching rule, a C<yara_detection> structure is returned.
+
+The C<yara_detection> structure contains the following fields.
+
+=over 4
+
+=item C<yara_name>
+
+Path of the file matching a Yara rule.
+
+=item C<yara_rule>
+
+Identifier of the Yara rule which matched against the given file.
+
+=back
+
+This command depends on the feature C<libyara>.   See also
+L</feature-available>.
+
 =head2 zegrep
 
  zegrep regex path
@@ -9702,7 +9868,7 @@ with correct use of these functions.
 
 This command writes zeroes over the first few blocks of C<device>.
 
-How many blocks are zeroed isn't specified (but it's I<not> enough
+How many blocks are zeroed isn't specified (but it’s I<not> enough
 to securely wipe the device).  It should be sufficient to remove
 any partition tables, filesystem superblocks and so on.
 

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ include $(top_srcdir)/common-rules.mk
 ACLOCAL_AMFLAGS = -I m4
 
 # The generator - must be before anything else.
-SUBDIRS = generator
+SUBDIRS = common/mlstdutils generator
 
 # Must be the first tests that run.
 if ENABLE_APPLIANCE
@@ -38,10 +38,15 @@ SUBDIRS += gnulib/tests
 endif
 
 # Basic source for the library.
-SUBDIRS += common/errnostring common/protocol common/utils
+SUBDIRS += common/errnostring common/protocol common/qemuopts
+SUBDIRS += common/utils
+SUBDIRS += common/structs
 SUBDIRS += lib docs examples po
 
 # The daemon and the appliance.
+SUBDIRS += common/mlutils
+SUBDIRS += common/mlaugeas
+SUBDIRS += common/mlpcre
 if ENABLE_DAEMON
 SUBDIRS += daemon
 SUBDIRS += tests/daemon
@@ -86,6 +91,7 @@ SUBDIRS += tests/relative-paths
 SUBDIRS += tests/gdisk
 SUBDIRS += tests/regressions
 SUBDIRS += tests/tsk
+SUBDIRS += tests/yara
 endif
 
 # Common code used by the tools.
@@ -149,18 +155,21 @@ endif
 # Unconditional because nothing is built yet.
 SUBDIRS += csharp
 
-# OCaml tools.  Note 'mllib' and 'customize' contain shared code used
-# by other OCaml tools, so these must come first.
+# OCaml tools.  Note 'common/ml*' and 'customize' contain shared code
+# used by other OCaml tools, so these must come first.
 if HAVE_OCAML
-SUBDIRS += \
-	mllib \
-	customize \
-	builder builder/templates \
-	get-kernel \
-	resize \
-	sparsify \
-	sysprep \
-	v2v
+SUBDIRS += common/mlgettext
+SUBDIRS += common/mlprogress
+SUBDIRS += common/mlvisit
+SUBDIRS += common/mlxml
+SUBDIRS += common/mltools
+SUBDIRS += customize
+SUBDIRS += builder builder/templates
+SUBDIRS += get-kernel
+SUBDIRS += resize
+SUBDIRS += sparsify
+SUBDIRS += sysprep
+SUBDIRS += v2v
 if HAVE_OCAML_PKG_LIBVIRT
 SUBDIRS += v2v/test-harness
 endif
@@ -194,7 +203,7 @@ SUBDIRS += po-docs
 endif
 
 EXTRA_DIST = \
-	BUGS HACKING RELEASES TODO \
+	AUTHORS BUGS HACKING RELEASES TODO \
 	.gitignore \
 	.lvimrc \
 	.mailmap \
@@ -203,6 +212,7 @@ EXTRA_DIST = \
 	autogen.sh \
 	bindtests \
 	cfg.mk \
+	check-mli.sh \
 	contrib/autobuild/autobuild.sh \
 	contrib/intro/libguestfs-intro.html \
 	contrib/intro/overview.png \
@@ -290,7 +300,6 @@ maintainer-upload-website:
 
 # When doing 'make dist' update a few files automatically.
 #
-#  AUTHORS        - list of authors (created from git)
 #  BUGS           - list of bugs (created from Bugzilla)
 #  ChangeLog      - changelog (created from git)
 #  docs/C_SOURCE_FILES
@@ -300,15 +309,9 @@ maintainer-upload-website:
 #                   special xgettext option [not generated here]
 #  po/POTFILES-ml - OCaml files, which need a special tool to translate
 
-dist-hook: AUTHORS BUGS ChangeLog docs/C_SOURCE_FILES po/POTFILES po/POTFILES-ml
-	cp AUTHORS $(distdir)/AUTHORS
+dist-hook: BUGS ChangeLog docs/C_SOURCE_FILES po/POTFILES po/POTFILES-ml
 	cp BUGS $(distdir)/BUGS
 	cp ChangeLog $(distdir)/ChangeLog
-
-AUTHORS: configure.ac
-	rm -f $@ $@-t
-	git shortlog -s | $(AWK) -F'\t' '{print $$2}' | sort -f > $@-t
-	mv $@-t $@
 
 BUGS: configure.ac
 	rm -f $@ $@-t
@@ -348,7 +351,7 @@ po/POTFILES: configure.ac
 po/POTFILES-ml: configure.ac
 	rm -f $@ $@-t
 	cd $(srcdir); \
-	find builder customize dib get-kernel mllib resize sparsify sysprep v2v -name '*.ml' | \
+	find builder common/ml* customize dib get-kernel resize sparsify sysprep v2v -name '*.ml' | \
 	grep -v '^builder/templates/' | \
 	LC_ALL=C sort > $@-t
 	mv $@-t $@
@@ -535,6 +538,10 @@ check-root: build-test-guests
 build-test-guests:
 	$(MAKE) -C test-data/phony-guests check
 
+# Some tests which run at the top level.
+
+TESTS = check-mli.sh
+
 # Print subdirs.
 #
 # If you want to selectively run tests, or if the test suite fails half
@@ -560,6 +567,21 @@ maintainer-commit:
 
 maintainer-tag:
 	git tag -a "v$(VERSION)" -m "Version $(VERSION) ($(BRANCH_TYPE))" -f
+
+# Maintainer only: compare authors (found in git commit messages) to
+# generator/authors.ml.
+maintainer-check-authors:
+	rm -f $@ $@-t
+	git shortlog -s | \
+	    $(AWK) -F'\t' '{print $$2}' | \
+	    sort -f | \
+	    while read author; do \
+	        if ! grep -sqiF "\"$$author\"" generator/authors.ml; then \
+	            echo "FAIL: $$author" is missing from generator/authors.ml; \
+	            exit 1; \
+	        fi; \
+	    done
+	@echo PASS: AUTHORS test
 
 # Maintainer only: check no files are missing from EXTRA_DIST rules,
 # and that all generated files have been included in the tarball.

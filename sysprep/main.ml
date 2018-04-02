@@ -1,5 +1,5 @@
 (* virt-sysprep
- * Copyright (C) 2012-2017 Red Hat Inc.
+ * Copyright (C) 2012-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,8 @@
 open Unix
 open Printf
 
-open Common_utils
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
 open Getopt.OptionName
 
@@ -54,10 +55,10 @@ let main () =
     let add_file arg =
       let uri =
         try URI.parse_uri arg
-        with Invalid_argument "URI.parse_uri" ->
-          error (f_"error parsing URI '%s'. Look for error messages printed above.") arg in
+        with URI.Parse_failed ->
+          error (f_"error parsing URI ‘%s’. Look for error messages printed above.") arg in
       let format = match !format with "auto" -> None | fmt -> Some fmt in
-      push_front (uri, format) files;
+      List.push_front (uri, format) files;
       format_consumed := true
     and set_domain dom =
       if !domain <> None then
@@ -79,7 +80,7 @@ let main () =
         fun opset op_name ->
           try Sysprep_operation.add_to_set op_name opset
           with Not_found ->
-            error (f_"--enable: '%s' is not a known operation") op_name
+            error (f_"--enable: ‘%s’ is not a known operation") op_name
       ) Sysprep_operation.empty_set ops in
       operations := Some opset
     and set_operations op_string =
@@ -109,7 +110,7 @@ let main () =
               | `Remove n -> Sysprep_operation.remove_from_set in
             try f n opset with
             | Not_found ->
-              error (f_"--operations: '%s' is not a known operation") n
+              error (f_"--operations: ‘%s’ is not a known operation") n
       ) currentopset ops in
       operations := Some opset
     and list_operations () =
@@ -176,9 +177,7 @@ read the man page virt-sysprep(1).
         fun g readonly ->
           List.iter (
             fun (uri, format) ->
-              let { URI.path = path; protocol = protocol;
-                    server = server; username = username;
-                    password = password } = uri in
+              let { URI.path; protocol; server; username; password } = uri in
               let discard = if readonly then None else Some "besteffort" in
               g#add_drive
                 ~readonly ?discard
@@ -204,7 +203,7 @@ read the man page virt-sysprep(1).
     let mount_opts = !mount_opts in
     let mount_opts =
       List.map (String.split ":") (String.nsplit ";" mount_opts) in
-    let mount_opts mp = assoc ~default:"" mp mount_opts in
+    let mount_opts mp = List.assoc_lbl ~default:"" mp mount_opts in
 
     message (f_"Examining the guest ...");
 

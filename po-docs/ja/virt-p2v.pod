@@ -15,7 +15,7 @@ Virt-p2v converts a physical machine to run virtualized on KVM, managed by
 libvirt, OpenStack, oVirt, Red Hat Virtualisation (RHV), or one of the other
 targets supported by L<virt-v2v(1)>.
 
-Normally you don't run the virt-p2v program directly.  Instead you have to
+Normally you don’t run the virt-p2v program directly.  Instead you have to
 boot the physical machine using the bootable CD-ROM, ISO or PXE image.  This
 bootable image contains the virt-p2v binary and runs it automatically.
 Booting from a CD-ROM/etc is required because the disks which are being
@@ -63,7 +63,7 @@ virtual machine, as long as it has sufficient memory and disk space to do
 the conversion, and as long as the physical machine can connect directly to
 its SSH port.  (See also L<virt-v2v(1)/RESOURCE REQUIREMENTS>).
 
-Because all of the data on the physical server's hard drive(s) has to be
+Because all of the data on the physical server’s hard drive(s) has to be
 copied over the network, the speed of conversion is largely determined by
 the speed of the network between the two machines.
 
@@ -274,7 +274,7 @@ conversion is successful, you should never reboot it.
 
 =head1 KERNEL COMMAND LINE CONFIGURATION
 
-If you don't want to configure things using the graphical UI, an alternative
+If you don’t want to configure things using the graphical UI, an alternative
 is to configure through the kernel command line.  This is especially
 convenient if you are converting a lot of physical machines which are booted
 using PXE.
@@ -340,7 +340,7 @@ not use sudo).
 =item B<p2v.name=GUESTNAME>
 
 The name of the guest that is created.  The default is to try to derive a
-name from the physical machine's hostname (if possible) else use a randomly
+name from the physical machine’s hostname (if possible) else use a randomly
 generated name.
 
 =item B<p2v.vcpus=NN>
@@ -697,24 +697,13 @@ and is displayed in the GUI.  It has the form:
 
  /tmp/virt-p2v-YYYYMMDD-XXXXXXXX
 
-where C<YYYYMMDD> is the current date, and the X's are random characters.
+where C<YYYYMMDD> is the current date, and the ‘X’s are random characters.
 
 Into this directory are written various files which include:
 
 =over 4
 
 =item F<dmesg>
-
-I<(before conversion)>
-
-The dmesg output from the physical machine.  Useful for detecting problems
-such as missing device drivers or firmware on the virt-p2v ISO.
-
-=item F<environment>
-
-I<(before conversion)>
-
-The content of the environment where L<virt-v2v(1)> will run.
 
 =item F<lscpu>
 
@@ -726,8 +715,18 @@ The content of the environment where L<virt-v2v(1)> will run.
 
 I<(before conversion)>
 
-The output of the corresponding commands (ie L<lscpu(1)> etc) on the
-physical machine.  Useful for debugging novel hardware configurations.
+The output of the corresponding commands (ie L<dmesg(1)>, L<lscpu(1)> etc)
+on the physical machine.
+
+The dmesg output is useful for detecting problems such as missing device
+drivers or firmware on the virt-p2v ISO.  The others are useful for
+debugging novel hardware configurations.
+
+=item F<environment>
+
+I<(before conversion)>
+
+The content of the environment where L<virt-v2v(1)> will run.
 
 =item F<name>
 
@@ -778,7 +777,7 @@ bug reports or support tickets.
 
 =item F<virt-v2v-wrapper.sh>
 
-I<(during/after conversion)>
+I<(before conversion)>
 
 This is the wrapper script which is used when running virt-v2v.  For
 interest only, do not attempt to run this script yourself.
@@ -853,5 +852,5 @@ Tingting Zheng
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

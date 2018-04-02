@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,9 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 open Getopt.OptionName
 
 open Utils
@@ -49,7 +50,7 @@ let rec main () =
                                             s_"Use password from file";
   ] in
   let args = ref [] in
-  let anon_fun s = push_front s args in
+  let anon_fun s = List.push_front s args in
   let usage_msg =
     sprintf (f_"\
 %s: copy a remote guest to the local machine
@@ -144,16 +145,17 @@ read the man page virt-v2v-copy-to-local(1).
   let disks =
     match source with
     | ESXi server ->
+       let dcpath =
+         match dcpath with
+         | Some dcpath -> dcpath
+         | None ->
+            error (f_"vcenter: <vmware:datacenterpath> was not found in the XML.  You need to upgrade to libvirt ≥ 1.2.20.") in
        List.map (
          fun (remote_disk, local_disk) ->
-           let url, sslverify =
-             VCenter.map_source_to_https dcpath parsed_uri
-                                         server remote_disk in
-           debug "esxi: source disk %s (sslverify=%b)" url sslverify;
-           let cookie =
-             VCenter.get_session_cookie password "esx"
-                                        parsed_uri sslverify url in
-           (url, local_disk, sslverify, cookie)
+           let { VCenter.https_url; sslverify; session_cookie } =
+             VCenter.map_source dcpath parsed_uri server remote_disk in
+           debug "esxi: source disk %s (sslverify=%b)" https_url sslverify;
+           (https_url, local_disk, sslverify, session_cookie)
        ) disks
     | Test | Xen_ssh _ ->
        List.map (fun (remote_disk, local_disk) ->
@@ -173,7 +175,7 @@ read the man page virt-v2v-copy-to-local(1).
 
   (* Copy the disks. *)
   let n = List.length disks in
-  iteri (
+  List.iteri (
     fun i (remote_disk, local_disk, sslverify, cookie) ->
     message (f_"Copying remote disk %d/%d to %s")
             (i+1) n local_disk;
@@ -204,12 +206,12 @@ read the man page virt-v2v-copy-to-local(1).
          "url", Some remote_disk;
          "output", Some local_disk;
        ] in
-       if not sslverify then push_back curl_args ("insecure", None);
+       if not sslverify then List.push_back curl_args ("insecure", None);
        (match cookie with
         | None -> ()
-        | Some cookie -> push_back curl_args ("cookie", Some cookie)
+        | Some cookie -> List.push_back curl_args ("cookie", Some cookie)
        );
-       if quiet () then push_back curl_args ("silent", None);
+       if quiet () then List.push_back curl_args ("silent", None);
 
        let curl_h = Curl.create !curl_args in
        if verbose () then
@@ -240,14 +242,10 @@ and parse_libvirt_xml guest_name xml =
   let xpathctx = Xml.xpath_new_context doc in
   Xml.xpath_register_ns xpathctx
                         "vmware" "http://libvirt.org/schemas/domain/vmware/1.0";
-  let xpath_string = xpath_string xpathctx
-  and xpath_string_default = xpath_string_default xpathctx in
+  let xpath_string = xpath_string xpathctx in
 
-  (* Get the dcpath, only present for libvirt >= 1.2.20 so use a
-   * sensible default for older versions.
-   *)
-  let dcpath =
-    xpath_string_default "/domain/vmware:datacenterpath" "ha-datacenter" in
+  (* Get the dcpath, present in libvirt >= 1.2.20. *)
+  let dcpath = xpath_string "/domain/vmware:datacenterpath" in
 
   (* Parse the disks. *)
   let get_disks, add_disk =
@@ -258,7 +256,7 @@ and parse_libvirt_xml guest_name xml =
       incr i;
       let local_disk = sprintf "%s-disk%d" guest_name !i in
 
-      push_front (remote_disk, local_disk) disks;
+      List.push_front (remote_disk, local_disk) disks;
       local_disk
     in
     get_disks, add_disk

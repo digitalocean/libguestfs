@@ -1,15 +1,15 @@
 
 =head1 НАЗВА
 
-virt-make-fs - Make a filesystem from a tar archive or files
+virt-make-fs —створення файлової системи на сонові архіву tar або файлів
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-make-fs [--options] input.tar output.img
+ virt-make-fs [--параметри] вхідний.tar вихідний.img
 
- virt-make-fs [--options] input.tar.gz output.img
+ virt-make-fs [--параметри] вхідний.tar.gz вихідний.img
 
- virt-make-fs [--options] directory output.img
+ virt-make-fs [--параметри] каталог вихідний.img
 
 =head1 ОПИС
 
@@ -49,7 +49,7 @@ then this is just wasted overhead.
 
 =item I<ntfs> або I<vfat>
 
-Useful if exporting data to a Windows guest.
+Корисно, якщо дані експортуються до гостьової системи Windows.
 
 =item I<minix>
 
@@ -85,7 +85,7 @@ L<guestfish(1)> and L<virt-resize(1)> can still be used).
 If the output disk image could be terabyte-sized or larger, it's better to
 use an EFI/GPT-compatible partition table:
 
- virt-make-fs --partition=gpt --size=+4T --format=qcow2 input disk.img
+ virt-make-fs --partition=gpt --size=+4T --format=qcow2 input диск.img
 
 =head2 EXTRA SPACE
 
@@ -104,7 +104,7 @@ image format (check your hypervisor supports this before using it).  This
 allows you to choose a large I<--size> but the extra space won't actually be
 allocated in the image until you try to store something in it.
 
-Don't forget that you can also use local commands including L<resize2fs(8)>
+Don’t forget that you can also use local commands including L<resize2fs(8)>
 and L<virt-resize(1)> to resize existing filesystems, or rerun virt-make-fs
 to build another image from scratch.
 
@@ -175,7 +175,7 @@ Any filesystem which is supported read-write by libguestfs can be used here.
 
 =item B<--label=>МІТКА
 
-Set the filesystem label.
+Встановити мітку файлової системи.
 
 =item B<--partition>
 
@@ -219,5 +219,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2010-2017 Red Hat Inc.
+Copyright (C) 2010-2018 Red Hat Inc.
 

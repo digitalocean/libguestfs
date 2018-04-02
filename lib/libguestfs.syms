@@ -199,6 +199,8 @@
         guestfs_compare_xattr_list;
         guestfs_compare_xfsinfo;
         guestfs_compare_xfsinfo_list;
+        guestfs_compare_yara_detection;
+        guestfs_compare_yara_detection_list;
         guestfs_compress_device_out;
         guestfs_compress_device_out_argv;
         guestfs_compress_device_out_va;
@@ -276,6 +278,8 @@
         guestfs_copy_xattr_list;
         guestfs_copy_xfsinfo;
         guestfs_copy_xfsinfo_list;
+        guestfs_copy_yara_detection;
+        guestfs_copy_yara_detection_list;
         guestfs_cp;
         guestfs_cp_a;
         guestfs_cp_r;
@@ -389,6 +393,8 @@
         guestfs_free_xattr_list;
         guestfs_free_xfsinfo;
         guestfs_free_xfsinfo_list;
+        guestfs_free_yara_detection;
+        guestfs_free_yara_detection_list;
         guestfs_fsck;
         guestfs_fstrim;
         guestfs_fstrim_argv;
@@ -462,6 +468,7 @@
         guestfs_hivex_open_va;
         guestfs_hivex_root;
         guestfs_hivex_value_key;
+        guestfs_hivex_value_string;
         guestfs_hivex_value_type;
         guestfs_hivex_value_utf8;
         guestfs_hivex_value_value;
@@ -506,6 +513,7 @@
         guestfs_internal_feature_available;
         guestfs_internal_filesystem_walk;
         guestfs_internal_find_inode;
+        guestfs_internal_get_console_socket;
         guestfs_internal_hot_add_drive;
         guestfs_internal_hot_remove_drive;
         guestfs_internal_hot_remove_drive_precheck;
@@ -551,6 +559,7 @@
         guestfs_internal_upload;
         guestfs_internal_write;
         guestfs_internal_write_append;
+        guestfs_internal_yara_scan;
         guestfs_is_blockdev;
         guestfs_is_blockdev_opts;
         guestfs_is_blockdev_opts_argv;
@@ -744,6 +753,7 @@
         guestfs_part_expand_gpt;
         guestfs_part_get_bootable;
         guestfs_part_get_disk_guid;
+        guestfs_part_get_gpt_attributes;
         guestfs_part_get_gpt_guid;
         guestfs_part_get_gpt_type;
         guestfs_part_get_mbr_id;
@@ -752,9 +762,11 @@
         guestfs_part_get_parttype;
         guestfs_part_init;
         guestfs_part_list;
+        guestfs_part_resize;
         guestfs_part_set_bootable;
         guestfs_part_set_disk_guid;
         guestfs_part_set_disk_guid_random;
+        guestfs_part_set_gpt_attributes;
         guestfs_part_set_gpt_guid;
         guestfs_part_set_gpt_type;
         guestfs_part_set_mbr_id;
@@ -955,6 +967,9 @@
         guestfs_xfs_repair;
         guestfs_xfs_repair_argv;
         guestfs_xfs_repair_va;
+        guestfs_yara_destroy;
+        guestfs_yara_load;
+        guestfs_yara_scan;
         guestfs_zegrep;
         guestfs_zegrepi;
         guestfs_zero;

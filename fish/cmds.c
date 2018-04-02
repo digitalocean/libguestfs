@@ -31,7 +31,7 @@
 #include <errno.h>
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 #include "structs-print.h"
 
 #include "fish.h"
@@ -749,8 +749,9 @@ list_commands (void)
   printf ("%-20s %s\n", "hivex-open", _("open a Windows Registry hive file"));
   printf ("%-20s %s\n", "hivex-root", _("return the root node of the hive"));
   printf ("%-20s %s\n", "hivex-value-key", _("return the key field from the (key, datatype, data) tuple"));
+  printf ("%-20s %s\n", "hivex-value-string", _("return the data field as a UTF-8 string"));
   printf ("%-20s %s\n", "hivex-value-type", _("return the data type from the (key, datatype, data) tuple"));
-  printf ("%-20s %s\n", "hivex-value-utf8", _("return the data field from the (key, datatype, data) tuple"));
+  printf ("%-20s %s\n", "hivex-value-utf8", _("return the data field as a UTF-8 string"));
   printf ("%-20s %s\n", "hivex-value-value", _("return the data field from the (key, datatype, data) tuple"));
   printf ("%-20s ", "hv");
   printf (_("alias for '%s'"), "set-hv");
@@ -951,6 +952,7 @@ list_commands (void)
   printf ("%-20s %s\n", "part-expand-gpt", _("move backup GPT header to the end of the disk"));
   printf ("%-20s %s\n", "part-get-bootable", _("return true if a partition is bootable"));
   printf ("%-20s %s\n", "part-get-disk-guid", _("get the GUID of a GPT-partitioned disk"));
+  printf ("%-20s %s\n", "part-get-gpt-attributes", _("get the attribute flags of a GPT partition"));
   printf ("%-20s %s\n", "part-get-gpt-guid", _("get the GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-get-gpt-type", _("get the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-get-mbr-id", _("get the MBR type byte (ID byte) from a partition"));
@@ -959,9 +961,11 @@ list_commands (void)
   printf ("%-20s %s\n", "part-get-parttype", _("get the partition table type"));
   printf ("%-20s %s\n", "part-init", _("create an empty partition table"));
   printf ("%-20s %s\n", "part-list", _("list partitions on a device"));
+  printf ("%-20s %s\n", "part-resize", _("resize a partition"));
   printf ("%-20s %s\n", "part-set-bootable", _("make a partition bootable"));
   printf ("%-20s %s\n", "part-set-disk-guid", _("set the GUID of a GPT-partitioned disk"));
   printf ("%-20s %s\n", "part-set-disk-guid-random", _("set the GUID of a GPT-partitioned disk to random value"));
+  printf ("%-20s %s\n", "part-set-gpt-attributes", _("set the attribute flags of a GPT partition"));
   printf ("%-20s %s\n", "part-set-gpt-guid", _("set the GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-set-gpt-type", _("set the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-set-mbr-id", _("set the MBR type byte (ID byte) of a partition"));
@@ -1171,6 +1175,9 @@ list_commands (void)
   printf ("%-20s %s\n", "xfs-growfs", _("expand an existing XFS filesystem"));
   printf ("%-20s %s\n", "xfs-info", _("get geometry of XFS filesystem"));
   printf ("%-20s %s\n", "xfs-repair", _("repair an XFS filesystem"));
+  printf ("%-20s %s\n", "yara-destroy", _("destroy previously loaded yara rules"));
+  printf ("%-20s %s\n", "yara-load", _("load yara rules within libguestfs"));
+  printf ("%-20s %s\n", "yara-scan", _("scan a file with the loaded yara rules"));
   printf ("%-20s %s\n", "zegrep", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "zegrepi", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "zero", _("write zeroes to the device"));

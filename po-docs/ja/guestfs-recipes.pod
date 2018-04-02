@@ -1,7 +1,8 @@
 
 =begin コメント
 
-読みやすさを向上させるために、慣習を破り、セクション見出しをすべて大文字にしてはいません。
+We break with tradition here and don’t use ALL CAPS for the section
+headings, as this makes them much easier to read.
 
 =end コメント
 
@@ -105,7 +106,7 @@ To browse the final disk image, do:
 This technique is quite powerful, allowing you for example to split up
 source directories over the target filesystems.
 
-Note this won't work (at least, not directly) for bootable virtual machine
+Note this won’t work (at least, not directly) for bootable virtual machine
 disks because it doesn't copy over the boot loader.
 
 =head1 Convert Windows DVD to bootable USB key
@@ -133,7 +134,7 @@ required for Windows guests.  Here is how to use guestfish to do this:
  # for Windows guests:
  ><fs> resize2fs /dev/sdb1
 
-Such a disk image won't be directly bootable.  You may need to boot it with
+Such a disk image won’t be directly bootable.  You may need to boot it with
 an external kernel and initramfs (see below).  Or you can use the guestfish
 commands C<syslinux> or C<extlinux> to install a SYSLINUX bootloader.
 
@@ -610,7 +611,7 @@ L<virt-sparsify(1)> を使用します。
 
 時系列で仮想マシンのディスク使用量を監視するために L<virt-df(1)> を使用できます。以下のリンクは仮想マシンを含みます。
 
-L<http://virt-tools.org/learning/advanced-virt-df/>
+L<http://web.archive.org/web/20130214073726/http://virt-tools.org/learning/advanced-virt-df/>
 
 =head1 Windows Vista （またそれ以降）から Windows のイベントログを読み出します
 
@@ -669,7 +670,7 @@ a filesystem which is encrypted or buried inside an LV or RAID device:
  guestfish --rw -d Guest run : upload lv.img /dev/vg_guest/lv_root
 
 One common problem is that the filesystem isn't the right size for the
-target.  If it is too large, there's not much you can do with libguestfs -
+target.  If it is too large, there’s not much you can do with libguestfs -
 you have to prepare the filesystem differently.  But if the filesystem needs
 to expand into the target, you can use guestfish to resize it to the right
 size:
@@ -701,5 +702,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

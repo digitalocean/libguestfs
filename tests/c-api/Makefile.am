@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -41,7 +41,8 @@ check_PROGRAMS = \
 	test-debug-to-file \
 	test-environment \
 	test-pwd \
-	test-event-string
+	test-event-string \
+	test-threads
 if HAVE_LIBDL
 check_PROGRAMS += \
 	test-dlopen
@@ -59,7 +60,8 @@ TESTS = \
 	test-user-cancel \
 	test-debug-to-file \
 	test-environment \
-	test-event-string
+	test-event-string \
+	test-threads
 if HAVE_LIBDL
 TESTS += \
 	test-dlopen
@@ -93,12 +95,14 @@ tests_CPPFLAGS = \
 	-DGUESTFS_PRIVATE=1 \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/common/structs -I$(top_builddir)/common/structs \
 	-I$(top_srcdir)/lib -I$(top_builddir)/lib
 tests_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(PCRE_CFLAGS)
 tests_LDADD = \
 	$(PCRE_LIBS) \
+	$(top_builddir)/common/structs/libstructs.la \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
@@ -260,6 +264,21 @@ test_event_string_CFLAGS = \
 test_event_string_LDADD = \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libguestfs.la \
+	$(LTLIBINTL) \
+	$(top_builddir)/gnulib/lib/libgnu.la
+
+test_threads_SOURCES = test-threads.c
+test_threads_CPPFLAGS = \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib
+test_threads_CFLAGS = \
+	-pthread \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+test_threads_LDADD = \
+	$(top_builddir)/lib/libguestfs.la \
+	$(LTLIBTHREAD) \
 	$(LTLIBINTL) \
 	$(top_builddir)/gnulib/lib/libgnu.la
 

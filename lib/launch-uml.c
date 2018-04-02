@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -110,18 +110,18 @@ uml_supported (guestfs_h *g)
     }
     if (drv->iface) {
       error (g,
-             _("uml backend does not support drives with 'iface' parameter"));
+             _("uml backend does not support drives with ‘iface’ parameter"));
       return false;
     }
     if (drv->disk_label) {
       error (g,
-             _("uml backend does not support drives with 'label' parameter"));
+             _("uml backend does not support drives with ‘label’ parameter"));
       return false;
     }
     /* Note that discard == "besteffort" is fine. */
     if (drv->discard == discard_enable) {
       error (g,
-             _("uml backend does not support drives with 'discard' parameter set to 'enable'"));
+             _("uml backend does not support drives with ‘discard’ parameter set to ‘enable’"));
       return false;
     }
   }

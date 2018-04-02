@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -146,6 +146,8 @@ build_triplet = @build@
 host_triplet = @host@
 @INSTALL_DAEMON_TRUE@sbin_PROGRAMS = guestfsd$(EXEEXT)
 @INSTALL_DAEMON_FALSE@noinst_PROGRAMS = guestfsd$(EXEEXT)
+check_PROGRAMS = daemon_utils_tests$(EXEEXT)
+TESTS = daemon_utils_tests$(EXEEXT)
 subdir = daemon
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -178,10 +180,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
 	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
 	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
-	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
-	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
-	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/ftell.m4 \
+	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
+	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
 	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
 	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
@@ -278,70 +280,78 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/sys_wait_h.m4 $(top_srcdir)/m4/tempname.m4 \
 	$(top_srcdir)/m4/thread.m4 $(top_srcdir)/m4/threadlib.m4 \
 	$(top_srcdir)/m4/time_h.m4 $(top_srcdir)/m4/timespec.m4 \
-	$(top_srcdir)/m4/ttyname_r.m4 $(top_srcdir)/m4/ungetc.m4 \
-	$(top_srcdir)/m4/unistd-safer.m4 $(top_srcdir)/m4/unistd_h.m4 \
-	$(top_srcdir)/m4/unlink.m4 $(top_srcdir)/m4/unlinkat.m4 \
-	$(top_srcdir)/m4/unlinkdir.m4 $(top_srcdir)/m4/usleep.m4 \
-	$(top_srcdir)/m4/utime.m4 $(top_srcdir)/m4/utime_h.m4 \
-	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
-	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
-	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/vsnprintf.m4 \
-	$(top_srcdir)/m4/wait-process.m4 $(top_srcdir)/m4/waitpid.m4 \
-	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
-	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
-	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
-	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/m4/guestfs_progs.m4 \
-	$(top_srcdir)/m4/guestfs_c.m4 \
-	$(top_srcdir)/m4/guestfs_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_fuse.m4 \
-	$(top_srcdir)/m4/guestfs_daemon.m4 \
-	$(top_srcdir)/m4/guestfs_appliance.m4 \
-	$(top_srcdir)/m4/guestfs_qemu.m4 \
-	$(top_srcdir)/m4/guestfs_misc_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_ocaml.m4 \
-	$(top_srcdir)/m4/guestfs_perl.m4 \
-	$(top_srcdir)/m4/guestfs_python.m4 \
-	$(top_srcdir)/m4/guestfs_ruby.m4 \
-	$(top_srcdir)/m4/guestfs_java.m4 \
-	$(top_srcdir)/m4/guestfs_haskell.m4 \
-	$(top_srcdir)/m4/guestfs_php.m4 \
-	$(top_srcdir)/m4/guestfs_erlang.m4 \
-	$(top_srcdir)/m4/guestfs_lua.m4 \
-	$(top_srcdir)/m4/guestfs_golang.m4 \
-	$(top_srcdir)/m4/guestfs_gobject.m4 \
-	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
-	$(top_srcdir)/m4/guestfs_misc.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/tls.m4 $(top_srcdir)/m4/ttyname_r.m4 \
+	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
+	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
+	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
+	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utime.m4 \
+	$(top_srcdir)/m4/utime_h.m4 $(top_srcdir)/m4/utimecmp.m4 \
+	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
+	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
+	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
+	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
+	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
+	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
+	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
+	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
+	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs-progs.m4 \
+	$(top_srcdir)/m4/guestfs-c.m4 \
+	$(top_srcdir)/m4/guestfs-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-fuse.m4 \
+	$(top_srcdir)/m4/guestfs-daemon.m4 \
+	$(top_srcdir)/m4/guestfs-appliance.m4 \
+	$(top_srcdir)/m4/guestfs-qemu.m4 \
+	$(top_srcdir)/m4/guestfs-misc-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-ocaml.m4 \
+	$(top_srcdir)/m4/guestfs-perl.m4 \
+	$(top_srcdir)/m4/guestfs-python.m4 \
+	$(top_srcdir)/m4/guestfs-ruby.m4 \
+	$(top_srcdir)/m4/guestfs-java.m4 \
+	$(top_srcdir)/m4/guestfs-haskell.m4 \
+	$(top_srcdir)/m4/guestfs-php.m4 \
+	$(top_srcdir)/m4/guestfs-erlang.m4 \
+	$(top_srcdir)/m4/guestfs-lua.m4 \
+	$(top_srcdir)/m4/guestfs-golang.m4 \
+	$(top_srcdir)/m4/guestfs-gobject.m4 \
+	$(top_srcdir)/m4/guestfs-bash-completion.m4 \
+	$(top_srcdir)/m4/guestfs-misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = daemon_config.ml
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(man8dir)"
 PROGRAMS = $(noinst_PROGRAMS) $(sbin_PROGRAMS)
+am_daemon_utils_tests_OBJECTS = daemon_utils_tests-command.$(OBJEXT) \
+	daemon_utils_tests-daemon-utils-tests-stubs.$(OBJEXT) \
+	daemon_utils_tests-utils.$(OBJEXT) \
+	daemon_utils_tests-utils-c.$(OBJEXT)
+daemon_utils_tests_OBJECTS = $(am_daemon_utils_tests_OBJECTS)
+daemon_utils_tests_LDADD = $(LDADD)
 am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
 	guestfsd-available.$(OBJEXT) guestfsd-augeas.$(OBJEXT) \
 	guestfsd-base64.$(OBJEXT) guestfsd-blkdiscard.$(OBJEXT) \
 	guestfsd-blkid.$(OBJEXT) guestfsd-blockdev.$(OBJEXT) \
-	guestfsd-btrfs.$(OBJEXT) guestfsd-cap.$(OBJEXT) \
-	guestfsd-checksum.$(OBJEXT) guestfsd-cleanups.$(OBJEXT) \
-	guestfsd-cmp.$(OBJEXT) guestfsd-command.$(OBJEXT) \
-	guestfsd-compress.$(OBJEXT) guestfsd-copy.$(OBJEXT) \
-	guestfsd-cpio.$(OBJEXT) guestfsd-cpmv.$(OBJEXT) \
+	guestfsd-btrfs.$(OBJEXT) guestfsd-caml-stubs.$(OBJEXT) \
+	guestfsd-cap.$(OBJEXT) guestfsd-checksum.$(OBJEXT) \
+	guestfsd-cleanups.$(OBJEXT) guestfsd-cmp.$(OBJEXT) \
+	guestfsd-command.$(OBJEXT) guestfsd-compress.$(OBJEXT) \
+	guestfsd-copy.$(OBJEXT) guestfsd-cpio.$(OBJEXT) \
+	guestfsd-cpmv.$(OBJEXT) guestfsd-daemon-c.$(OBJEXT) \
 	guestfsd-dd.$(OBJEXT) guestfsd-debug.$(OBJEXT) \
-	guestfsd-debug-bmap.$(OBJEXT) guestfsd-devsparts.$(OBJEXT) \
-	guestfsd-df.$(OBJEXT) guestfsd-dir.$(OBJEXT) \
-	guestfsd-dispatch.$(OBJEXT) guestfsd-dmesg.$(OBJEXT) \
-	guestfsd-dropcaches.$(OBJEXT) guestfsd-du.$(OBJEXT) \
-	guestfsd-echo-daemon.$(OBJEXT) guestfsd-ext2.$(OBJEXT) \
-	guestfsd-fallocate.$(OBJEXT) guestfsd-file.$(OBJEXT) \
-	guestfsd-findfs.$(OBJEXT) guestfsd-fill.$(OBJEXT) \
+	guestfsd-debug-bmap.$(OBJEXT) \
+	guestfsd-device-name-translation.$(OBJEXT) \
+	guestfsd-devsparts.$(OBJEXT) guestfsd-df.$(OBJEXT) \
+	guestfsd-dir.$(OBJEXT) guestfsd-dispatch.$(OBJEXT) \
+	guestfsd-dmesg.$(OBJEXT) guestfsd-dropcaches.$(OBJEXT) \
+	guestfsd-du.$(OBJEXT) guestfsd-echo-daemon.$(OBJEXT) \
+	guestfsd-ext2.$(OBJEXT) guestfsd-fallocate.$(OBJEXT) \
+	guestfsd-file.$(OBJEXT) guestfsd-fill.$(OBJEXT) \
 	guestfsd-find.$(OBJEXT) guestfsd-format.$(OBJEXT) \
 	guestfsd-fs-min-size.$(OBJEXT) guestfsd-fsck.$(OBJEXT) \
 	guestfsd-fstrim.$(OBJEXT) guestfsd-glob.$(OBJEXT) \
@@ -364,33 +374,36 @@ am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
 	guestfsd-ntfsclone.$(OBJEXT) guestfsd-optgroups.$(OBJEXT) \
 	guestfsd-parted.$(OBJEXT) guestfsd-pingdaemon.$(OBJEXT) \
 	guestfsd-proto.$(OBJEXT) guestfsd-readdir.$(OBJEXT) \
-	guestfsd-realpath.$(OBJEXT) guestfsd-rename.$(OBJEXT) \
-	guestfsd-rsync.$(OBJEXT) guestfsd-scrub.$(OBJEXT) \
-	guestfsd-selinux.$(OBJEXT) guestfsd-selinux-relabel.$(OBJEXT) \
-	guestfsd-sfdisk.$(OBJEXT) guestfsd-sh.$(OBJEXT) \
-	guestfsd-sleep.$(OBJEXT) guestfsd-sleuthkit.$(OBJEXT) \
-	guestfsd-squashfs.$(OBJEXT) guestfsd-stat.$(OBJEXT) \
-	guestfsd-statvfs.$(OBJEXT) guestfsd-strings.$(OBJEXT) \
+	guestfsd-rename.$(OBJEXT) guestfsd-rsync.$(OBJEXT) \
+	guestfsd-scrub.$(OBJEXT) guestfsd-selinux.$(OBJEXT) \
+	guestfsd-selinux-relabel.$(OBJEXT) guestfsd-sfdisk.$(OBJEXT) \
+	guestfsd-sh.$(OBJEXT) guestfsd-sleep.$(OBJEXT) \
+	guestfsd-sleuthkit.$(OBJEXT) guestfsd-squashfs.$(OBJEXT) \
+	guestfsd-stat.$(OBJEXT) guestfsd-strings.$(OBJEXT) \
 	guestfsd-structs-cleanups.$(OBJEXT) guestfsd-stubs-0.$(OBJEXT) \
 	guestfsd-stubs-1.$(OBJEXT) guestfsd-stubs-2.$(OBJEXT) \
 	guestfsd-stubs-3.$(OBJEXT) guestfsd-stubs-4.$(OBJEXT) \
 	guestfsd-stubs-5.$(OBJEXT) guestfsd-stubs-6.$(OBJEXT) \
 	guestfsd-swap.$(OBJEXT) guestfsd-sync.$(OBJEXT) \
-	guestfsd-syslinux.$(OBJEXT) guestfsd-tar.$(OBJEXT) \
-	guestfsd-tsk.$(OBJEXT) guestfsd-truncate.$(OBJEXT) \
-	guestfsd-umask.$(OBJEXT) guestfsd-upload.$(OBJEXT) \
-	guestfsd-utimens.$(OBJEXT) guestfsd-utsname.$(OBJEXT) \
-	guestfsd-uuids.$(OBJEXT) guestfsd-wc.$(OBJEXT) \
-	guestfsd-xattr.$(OBJEXT) guestfsd-xfs.$(OBJEXT) \
+	guestfsd-syslinux.$(OBJEXT) guestfsd-sysroot-c.$(OBJEXT) \
+	guestfsd-tar.$(OBJEXT) guestfsd-tsk.$(OBJEXT) \
+	guestfsd-truncate.$(OBJEXT) guestfsd-umask.$(OBJEXT) \
+	guestfsd-upload.$(OBJEXT) guestfsd-utils.$(OBJEXT) \
+	guestfsd-utils-c.$(OBJEXT) guestfsd-utimens.$(OBJEXT) \
+	guestfsd-utsname.$(OBJEXT) guestfsd-uuids.$(OBJEXT) \
+	guestfsd-wc.$(OBJEXT) guestfsd-xattr.$(OBJEXT) \
+	guestfsd-xfs.$(OBJEXT) guestfsd-yara.$(OBJEXT) \
 	guestfsd-zero.$(OBJEXT) guestfsd-zerofree.$(OBJEXT)
 guestfsd_OBJECTS = $(am_guestfsd_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfsd_DEPENDENCIES = ../common/errnostring/liberrnostring.la \
-	../common/protocol/libprotocol.la $(am__DEPENDENCIES_1) \
+	../common/protocol/libprotocol.la ../common/utils/libutils.la \
+	camldaemon.o $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) \
 	$(top_builddir)/gnulib/lib/.libs/libgnu.a \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -402,7 +415,7 @@ am__v_lt_0 = --silent
 am__v_lt_1 = 
 guestfsd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(guestfsd_CFLAGS) \
-	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+	$(CFLAGS) $(guestfsd_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -437,8 +450,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(guestfsd_SOURCES)
-DIST_SOURCES = $(guestfsd_SOURCES)
+SOURCES = $(daemon_utils_tests_SOURCES) $(guestfsd_SOURCES)
+DIST_SOURCES = $(daemon_utils_tests_SOURCES) $(guestfsd_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -494,9 +507,186 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 ETAGS = etags
 CTAGS = ctags
-am__DIST_COMMON = $(srcdir)/Makefile.in \
-	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/common-rules.mk \
-	$(top_srcdir)/subdir-rules.mk
+am__tty_colors_dummy = \
+  mgn= red= grn= lgn= blu= brg= std=; \
+  am__color_tests=no
+am__tty_colors = { \
+  $(am__tty_colors_dummy); \
+  if test "X$(AM_COLOR_TESTS)" = Xno; then \
+    am__color_tests=no; \
+  elif test "X$(AM_COLOR_TESTS)" = Xalways; then \
+    am__color_tests=yes; \
+  elif test "X$$TERM" != Xdumb && { test -t 1; } 2>/dev/null; then \
+    am__color_tests=yes; \
+  fi; \
+  if test $$am__color_tests = yes; then \
+    red='[0;31m'; \
+    grn='[0;32m'; \
+    lgn='[1;32m'; \
+    blu='[1;34m'; \
+    mgn='[0;35m'; \
+    brg='[1m'; \
+    std='[m'; \
+  fi; \
+}
+am__recheck_rx = ^[ 	]*:recheck:[ 	]*
+am__global_test_result_rx = ^[ 	]*:global-test-result:[ 	]*
+am__copy_in_global_log_rx = ^[ 	]*:copy-in-global-log:[ 	]*
+# A command that, given a newline-separated list of test names on the
+# standard input, print the name of the tests that are to be re-run
+# upon "make recheck".
+am__list_recheck_tests = $(AWK) '{ \
+  recheck = 1; \
+  while ((rc = (getline line < ($$0 ".trs"))) != 0) \
+    { \
+      if (rc < 0) \
+        { \
+          if ((getline line2 < ($$0 ".log")) < 0) \
+	    recheck = 0; \
+          break; \
+        } \
+      else if (line ~ /$(am__recheck_rx)[nN][Oo]/) \
+        { \
+          recheck = 0; \
+          break; \
+        } \
+      else if (line ~ /$(am__recheck_rx)[yY][eE][sS]/) \
+        { \
+          break; \
+        } \
+    }; \
+  if (recheck) \
+    print $$0; \
+  close ($$0 ".trs"); \
+  close ($$0 ".log"); \
+}'
+# A command that, given a newline-separated list of test names on the
+# standard input, create the global log from their .trs and .log files.
+am__create_global_log = $(AWK) ' \
+function fatal(msg) \
+{ \
+  print "fatal: making $@: " msg | "cat >&2"; \
+  exit 1; \
+} \
+function rst_section(header) \
+{ \
+  print header; \
+  len = length(header); \
+  for (i = 1; i <= len; i = i + 1) \
+    printf "="; \
+  printf "\n\n"; \
+} \
+{ \
+  copy_in_global_log = 1; \
+  global_test_result = "RUN"; \
+  while ((rc = (getline line < ($$0 ".trs"))) != 0) \
+    { \
+      if (rc < 0) \
+         fatal("failed to read from " $$0 ".trs"); \
+      if (line ~ /$(am__global_test_result_rx)/) \
+        { \
+          sub("$(am__global_test_result_rx)", "", line); \
+          sub("[ 	]*$$", "", line); \
+          global_test_result = line; \
+        } \
+      else if (line ~ /$(am__copy_in_global_log_rx)[nN][oO]/) \
+        copy_in_global_log = 0; \
+    }; \
+  if (copy_in_global_log) \
+    { \
+      rst_section(global_test_result ": " $$0); \
+      while ((rc = (getline line < ($$0 ".log"))) != 0) \
+      { \
+        if (rc < 0) \
+          fatal("failed to read from " $$0 ".log"); \
+        print line; \
+      }; \
+      printf "\n"; \
+    }; \
+  close ($$0 ".trs"); \
+  close ($$0 ".log"); \
+}'
+# Restructured Text title.
+am__rst_title = { sed 's/.*/   &   /;h;s/./=/g;p;x;s/ *$$//;p;g' && echo; }
+# Solaris 10 'make', and several other traditional 'make' implementations,
+# pass "-e" to $(SHELL), and POSIX 2008 even requires this.  Work around it
+# by disabling -e (using the XSI extension "set +e") if it's set.
+am__sh_e_setup = case $$- in *e*) set +e;; esac
+# Default flags passed to test drivers.
+am__common_driver_flags = \
+  --color-tests "$$am__color_tests" \
+  --enable-hard-errors "$$am__enable_hard_errors" \
+  --expect-failure "$$am__expect_failure"
+# To be inserted before the command running the test.  Creates the
+# directory for the log if needed.  Stores in $dir the directory
+# containing $f, in $tst the test, in $log the log.  Executes the
+# developer- defined test setup AM_TESTS_ENVIRONMENT (if any), and
+# passes TESTS_ENVIRONMENT.  Set up options for the wrapper that
+# will run the test scripts (or their associated LOG_COMPILER, if
+# thy have one).
+am__check_pre = \
+$(am__sh_e_setup);					\
+$(am__vpath_adj_setup) $(am__vpath_adj)			\
+$(am__tty_colors);					\
+srcdir=$(srcdir); export srcdir;			\
+case "$@" in						\
+  */*) am__odir=`echo "./$@" | sed 's|/[^/]*$$||'`;;	\
+    *) am__odir=.;; 					\
+esac;							\
+test "x$$am__odir" = x"." || test -d "$$am__odir" 	\
+  || $(MKDIR_P) "$$am__odir" || exit $$?;		\
+if test -f "./$$f"; then dir=./;			\
+elif test -f "$$f"; then dir=;				\
+else dir="$(srcdir)/"; fi;				\
+tst=$$dir$$f; log='$@'; 				\
+if test -n '$(DISABLE_HARD_ERRORS)'; then		\
+  am__enable_hard_errors=no; 				\
+else							\
+  am__enable_hard_errors=yes; 				\
+fi; 							\
+case " $(XFAIL_TESTS) " in				\
+  *[\ \	]$$f[\ \	]* | *[\ \	]$$dir$$f[\ \	]*) \
+    am__expect_failure=yes;;				\
+  *)							\
+    am__expect_failure=no;;				\
+esac; 							\
+$(AM_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)
+# A shell command to get the names of the tests scripts with any registered
+# extension removed (i.e., equivalently, the names of the test logs, with
+# the '.log' extension removed).  The result is saved in the shell variable
+# '$bases'.  This honors runtime overriding of TESTS and TEST_LOGS.  Sadly,
+# we cannot use something simpler, involving e.g., "$(TEST_LOGS:.log=)",
+# since that might cause problem with VPATH rewrites for suffix-less tests.
+# See also 'test-harness-vpath-rewrite.sh' and 'test-trs-basic.sh'.
+am__set_TESTS_bases = \
+  bases='$(TEST_LOGS)'; \
+  bases=`for i in $$bases; do echo $$i; done | sed 's/\.log$$//'`; \
+  bases=`echo $$bases`
+RECHECK_LOGS = $(TEST_LOGS)
+AM_RECURSIVE_TARGETS = check recheck
+TEST_SUITE_LOG = test-suite.log
+TEST_EXTENSIONS = @EXEEXT@ .test
+LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
+am__set_b = \
+  case '$@' in \
+    */*) \
+      case '$*' in \
+        */*) b='$*';; \
+          *) b=`echo '$@' | sed 's/\.log$$//'`; \
+       esac;; \
+    *) \
+      b='$*';; \
+  esac
+am__test_logs1 = $(TESTS:=.log)
+am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
+TEST_LOGS = $(am__test_logs2:.test.log=.log)
+TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/build-aux/test-driver
+TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
+	$(TEST_LOG_FLAGS)
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/daemon_config.ml.in \
+	$(top_srcdir)/build-aux/depcomp \
+	$(top_srcdir)/build-aux/test-driver \
+	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
@@ -527,6 +717,7 @@ BMPTOPNM = @BMPTOPNM@
 BRANCH_NUMBER = @BRANCH_NUMBER@
 BRANCH_TYPE = @BRANCH_TYPE@
 BYTESWAP_H = @BYTESWAP_H@
+CAMLRUN = @CAMLRUN@
 CAP_LIBS = @CAP_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -919,6 +1110,7 @@ GREP = @GREP@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GTK_VERSION = @GTK_VERSION@
+GUESTFS_DEFAULT_PATH = @GUESTFS_DEFAULT_PATH@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -1012,6 +1204,7 @@ HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
 HAVE_ISWCNTRL = @HAVE_ISWCNTRL@
+HAVE_LANGINFO_ALTMON = @HAVE_LANGINFO_ALTMON@
 HAVE_LANGINFO_CODESET = @HAVE_LANGINFO_CODESET@
 HAVE_LANGINFO_ERA = @HAVE_LANGINFO_ERA@
 HAVE_LANGINFO_H = @HAVE_LANGINFO_H@
@@ -1186,6 +1379,7 @@ HAVE__BOOL = @HAVE__BOOL@
 HAVE__EXIT = @HAVE__EXIT@
 HIVEX_CFLAGS = @HIVEX_CFLAGS@
 HIVEX_LIBS = @HIVEX_LIBS@
+HIVEX_OPEN_UNSAFE_FLAG = @HIVEX_OPEN_UNSAFE_FLAG@
 HOSTENT_LIB = @HOSTENT_LIB@
 HOST_CPU = @HOST_CPU@
 HOST_CPU_C_ABI = @HOST_CPU_C_ABI@
@@ -1359,6 +1553,8 @@ NEXT_WCHAR_H = @NEXT_WCHAR_H@
 NEXT_WCTYPE_H = @NEXT_WCTYPE_H@
 NM = @NM@
 NMEDIT = @NMEDIT@
+NO_SNV_CFLAGS = @NO_SNV_CFLAGS@
+NO_UM_CFLAGS = @NO_UM_CFLAGS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 OCAMLBEST = @OCAMLBEST@
@@ -1366,6 +1562,8 @@ OCAMLBUILD = @OCAMLBUILD@
 OCAMLC = @OCAMLC@
 OCAMLCDOTOPT = @OCAMLCDOTOPT@
 OCAMLDEP = @OCAMLDEP@
+OCAMLDEP_ALL = @OCAMLDEP_ALL@
+OCAMLDEP_ONE_LINE = @OCAMLDEP_ONE_LINE@
 OCAMLDOC = @OCAMLDOC@
 OCAMLFIND = @OCAMLFIND@
 OCAMLLIB = @OCAMLLIB@
@@ -1377,9 +1575,9 @@ OCAMLVERSION = @OCAMLVERSION@
 OCAML_BYTES_COMPAT_CMO = @OCAML_BYTES_COMPAT_CMO@
 OCAML_BYTES_COMPAT_ML = @OCAML_BYTES_COMPAT_ML@
 OCAML_FLAGS = @OCAML_FLAGS@
-OCAML_GENERATOR_BYTES_COMPAT_CMO = @OCAML_GENERATOR_BYTES_COMPAT_CMO@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
+OCAML_PKG_hivex = @OCAML_PKG_hivex@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
 OCAML_PKG_oUnit = @OCAML_PKG_oUnit@
 OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
@@ -1437,6 +1635,7 @@ REPLACE_DPRINTF = @REPLACE_DPRINTF@
 REPLACE_DUP = @REPLACE_DUP@
 REPLACE_DUP2 = @REPLACE_DUP2@
 REPLACE_DUPLOCALE = @REPLACE_DUPLOCALE@
+REPLACE_FACCESSAT = @REPLACE_FACCESSAT@
 REPLACE_FCHOWNAT = @REPLACE_FCHOWNAT@
 REPLACE_FCLOSE = @REPLACE_FCLOSE@
 REPLACE_FCNTL = @REPLACE_FCNTL@
@@ -1644,6 +1843,8 @@ XZCAT = @XZCAT@
 YACC = @YACC@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
+YARA_CFLAGS = @YARA_CFLAGS@
+YARA_LIBS = @YARA_LIBS@
 YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
 ZIP = @ZIP@
@@ -1733,10 +1934,15 @@ top_srcdir = @top_srcdir@
 # Bindtests temporary files used in many language bindings.
 CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
 	dll*.so *.a *.annot oUnit-*.cache oUnit-*.log *.1 *.3 *.5 *.8 \
-	stamp-*.pod bindtests.tmp
+	stamp-*.pod bindtests.tmp camldaemon.o
 
 # Files that should be universally removed by 'make distclean'.
 DISTCLEANFILES = .depend stamp-*
+
+# Special suffixes used by OCaml.
+
+# Special suffixes used by PO files.
+SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 
 # Rules for building OCaml objects.
@@ -1770,8 +1976,9 @@ guestfs_am_v_podwrapper_0 = @echo "  POD     " $@;
 guestfs_am_v_jar = $(guestfs_am_v_jar_@AM_V@)
 guestfs_am_v_jar_ = $(guestfs_am_v_jar_@AM_DEFAULT_V@)
 guestfs_am_v_jar_0 = @echo "  JAR     " $@;
-generator_built = \
+BUILT_SOURCES = \
 	actions.h \
+	caml-stubs.c \
 	dispatch.c \
 	names.c \
 	lvm-tokenization.c \
@@ -1786,16 +1993,25 @@ generator_built = \
 	stubs-6.c \
 	stubs.h
 
-BUILT_SOURCES = \
-	$(generator_built)
+generator_built = \
+	$(BUILT_SOURCES) \
+	callbacks.ml \
+	optgroups.ml \
+	optgroups.mli \
+	structs.ml \
+	structs.mli
 
 EXTRA_DIST = \
-	$(BUILT_SOURCES) \
+	$(generator_built) \
+	$(SOURCES_MLI) $(SOURCES_ML) \
+	daemon_utils_tests.ml \
 	guestfsd.pod
 
 guestfsd_SOURCES = \
 	../common/errnostring/errnostring.h \
 	../common/protocol/guestfs_protocol.h \
+	../common/utils/cleanups.h \
+	../common/utils/guestfs-utils.h \
 	9p.c \
 	acl.c \
 	actions.h \
@@ -1806,10 +2022,10 @@ guestfsd_SOURCES = \
 	blkid.c \
 	blockdev.c \
 	btrfs.c \
+	caml-stubs.c \
 	cap.c \
 	checksum.c \
 	cleanups.c \
-	cleanups.h \
 	cmp.c \
 	command.c \
 	command.h \
@@ -1817,10 +2033,13 @@ guestfsd_SOURCES = \
 	copy.c \
 	cpio.c \
 	cpmv.c \
+	daemon-c.c \
+	daemon-c.h \
 	daemon.h \
 	dd.c \
 	debug.c \
 	debug-bmap.c \
+	device-name-translation.c \
 	devsparts.c \
 	df.c \
 	dir.c \
@@ -1832,7 +2051,6 @@ guestfsd_SOURCES = \
 	ext2.c \
 	fallocate.c \
 	file.c \
-	findfs.c \
 	fill.c \
 	find.c \
 	format.c \
@@ -1878,7 +2096,6 @@ guestfsd_SOURCES = \
 	pingdaemon.c \
 	proto.c \
 	readdir.c \
-	realpath.c \
 	rename.c \
 	rsync.c \
 	scrub.c \
@@ -1890,7 +2107,6 @@ guestfsd_SOURCES = \
 	sleuthkit.c \
 	squashfs.c \
 	stat.c \
-	statvfs.c \
 	strings.c \
 	structs-cleanups.c \
 	structs-cleanups.h \
@@ -1906,23 +2122,37 @@ guestfsd_SOURCES = \
 	swap.c \
 	sync.c \
 	syslinux.c \
+	sysroot-c.c \
 	tar.c \
 	tsk.c \
 	truncate.c \
 	umask.c \
 	upload.c \
+	utils.c \
+	utils-c.c \
 	utimens.c \
 	utsname.c \
 	uuids.c \
 	wc.c \
 	xattr.c \
 	xfs.c \
+	yara.c \
 	zero.c \
 	zerofree.c
+
+guestfsd_LDFLAGS = \
+	-L$(shell $(OCAMLC) -where) \
+	-L$(shell $(OCAMLC) -where)/hivex \
+	-L../common/mlutils \
+	-L../common/mlstdutils \
+	-L../common/mlaugeas \
+	-L../common/mlpcre
 
 guestfsd_LDADD = \
 	../common/errnostring/liberrnostring.la \
 	../common/protocol/libprotocol.la \
+	../common/utils/libutils.la \
+	camldaemon.o \
 	$(ACL_LIBS) \
 	$(CAP_LIBS) \
 	$(YAJL_LIBS) \
@@ -1940,9 +2170,13 @@ guestfsd_LDADD = \
 	$(SERVENT_LIB) \
 	$(PCRE_LIBS) \
 	$(TSK_LIBS) \
-	$(RPC_LIBS)
+	$(RPC_LIBS) \
+	$(YARA_LIBS) \
+	$(OCAML_LIBS)
 
 guestfsd_CPPFLAGS = \
+	-I$(shell $(OCAMLC) -where) \
+	-I$(shell $(OCAMLC) -where)/hivex \
 	-I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/gnulib/lib \
 	-I$(top_srcdir)/lib \
@@ -1950,7 +2184,9 @@ guestfsd_CPPFLAGS = \
 	-I$(top_srcdir)/common/errnostring \
 	-I$(top_builddir)/common/errnostring \
 	-I$(top_srcdir)/common/protocol \
-	-I$(top_builddir)/common/protocol
+	-I$(top_builddir)/common/protocol \
+	-I$(top_srcdir)/common/utils \
+	-I$(top_builddir)/common/utils
 
 guestfsd_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
@@ -1960,6 +2196,155 @@ guestfsd_CFLAGS = \
 	$(SD_JOURNAL_CFLAGS) \
 	$(YAJL_CFLAGS) \
 	$(PCRE_CFLAGS)
+
+
+# Parts of the daemon are written in OCaml.  These are linked into a
+# library and then linked to the daemon.  See
+# https://caml.inria.fr/pub/docs/manual-ocaml/intfc.html
+SOURCES_MLI = \
+	blkid.mli \
+	btrfs.mli \
+	callbacks.mli \
+	chroot.mli \
+	daemon.mli \
+	daemon_config.mli \
+	devsparts.mli \
+	file.mli \
+	filearch.mli \
+	findfs.mli \
+	inspect.mli \
+	inspect_fs.mli \
+	inspect_fs_unix.mli \
+	inspect_fs_unix_fstab.mli \
+	inspect_fs_windows.mli \
+	inspect_types.mli \
+	inspect_utils.mli \
+	is.mli \
+	ldm.mli \
+	link.mli \
+	listfs.mli \
+	lvm.mli \
+	md.mli \
+	mount.mli \
+	mountable.mli \
+	optgroups.mli \
+	parted.mli \
+	realpath.mli \
+	statvfs.mli \
+	structs.mli \
+	sysroot.mli \
+	utils.mli
+
+SOURCES_ML = \
+	daemon_config.ml \
+	utils.ml \
+	structs.ml \
+	optgroups.ml \
+	sysroot.ml \
+	mountable.ml \
+	chroot.ml \
+	blkid.ml \
+	btrfs.ml \
+	devsparts.ml \
+	file.ml \
+	filearch.ml \
+	is.ml \
+	ldm.ml \
+	link.ml \
+	lvm.ml \
+	findfs.ml \
+	md.ml \
+	mount.ml \
+	parted.ml \
+	listfs.ml \
+	realpath.ml \
+	statvfs.ml \
+	inspect_types.ml \
+	inspect_utils.ml \
+	inspect_fs_unix_fstab.ml \
+	inspect_fs_unix.ml \
+	inspect_fs_windows.ml \
+	inspect_fs.ml \
+	inspect.ml \
+	callbacks.ml \
+	daemon.ml
+
+BOBJECTS = $(SOURCES_ML:.ml=.cmo)
+XOBJECTS = $(BOBJECTS:.cmo=.cmx)
+OCAMLPACKAGES = \
+	-package str,unix,hivex \
+	-I $(top_srcdir)/common/mlaugeas \
+	-I $(top_srcdir)/common/mlstdutils \
+	-I $(top_srcdir)/common/mlutils \
+	-I $(top_builddir)/common/utils/.libs \
+	-I $(top_srcdir)/common/mlpcre \
+	-I $(top_builddir)/common/mlpcre/.libs \
+	-I $(top_builddir)/gnulib/lib/.libs
+
+OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
+@HAVE_OCAMLOPT_FALSE@OBJECTS = $(BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@OBJECTS = $(XOBJECTS)
+OCAML_LIBS = \
+	-lmlpcre \
+	-lmlcutils \
+	-lmlstdutils \
+	-lmlaugeas \
+	-lmlhivex \
+	-lcamlstr \
+	-lunix \
+	-l$(CAMLRUN) -ldl -lm
+
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+daemon_utils_tests_SOURCES = \
+	command.c \
+	daemon-utils-tests-stubs.c \
+	utils.c \
+	utils-c.c
+
+daemon_utils_tests_CPPFLAGS = \
+	-I. \
+	-I$(top_builddir) \
+	-I$(shell $(OCAMLC) -where) \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib \
+	-I$(top_srcdir)/common/errnostring \
+	-I$(top_builddir)/common/errnostring \
+	-I$(top_srcdir)/common/protocol \
+	-I$(top_builddir)/common/protocol \
+	-I$(top_srcdir)/common/utils \
+	-I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib \
+	-I$(top_builddir)/lib
+
+daemon_utils_tests_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(RPC_CFLAGS)
+
+daemon_utils_tests_BOBJECTS = \
+	utils.cmo \
+	daemon_utils_tests.cmo
+
+daemon_utils_tests_XOBJECTS = $(daemon_utils_tests_BOBJECTS:.cmo=.cmx)
+@HAVE_OCAMLOPT_FALSE@daemon_utils_tests_THEOBJECTS = $(daemon_utils_tests_BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@daemon_utils_tests_THEOBJECTS = $(daemon_utils_tests_XOBJECTS)
+OCAMLLINKFLAGS = \
+	mlpcre.$(MLARCHIVE) \
+	mlstdutils.$(MLARCHIVE) \
+	mlcutils.$(MLARCHIVE) \
+	mlaugeas.$(MLARCHIVE) \
+	$(LINK_CUSTOM_OCAMLC_ONLY)
+
+daemon_utils_tests_DEPENDENCIES = \
+	$(daemon_utils_tests_THEOBJECTS) \
+	$(top_srcdir)/ocaml-link.sh
+
+daemon_utils_tests_LINK = \
+	$(top_srcdir)/ocaml-link.sh \
+	  -cclib '-lutils -lgnu' \
+	  -- \
+	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLLINKFLAGS) \
+	  $(OCAMLPACKAGES) \
+	  $(daemon_utils_tests_THEOBJECTS) -o $@
 
 
 # Manual pages and HTML files for the website.
@@ -1973,7 +2358,7 @@ all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cmi .cmo .cmx .lo .ml .mli .o .obj
+.SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo .c .lo .log .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -2004,6 +2389,17 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+daemon_config.ml: $(top_builddir)/config.status $(srcdir)/daemon_config.ml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+
+clean-checkPROGRAMS:
+	@list='$(check_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
@@ -2063,6 +2459,10 @@ clean-sbinPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+daemon_utils_tests$(EXEEXT): $(daemon_utils_tests_OBJECTS) $(daemon_utils_tests_DEPENDENCIES) $(EXTRA_daemon_utils_tests_DEPENDENCIES) 
+	@rm -f daemon_utils_tests$(EXEEXT)
+	$(AM_V_GEN)$(daemon_utils_tests_LINK) $(daemon_utils_tests_OBJECTS) $(daemon_utils_tests_LDADD) $(LIBS)
+
 guestfsd$(EXEEXT): $(guestfsd_OBJECTS) $(guestfsd_DEPENDENCIES) $(EXTRA_guestfsd_DEPENDENCIES) 
 	@rm -f guestfsd$(EXEEXT)
 	$(AM_V_CCLD)$(guestfsd_LINK) $(guestfsd_OBJECTS) $(guestfsd_LDADD) $(LIBS)
@@ -2073,6 +2473,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daemon_utils_tests-command.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daemon_utils_tests-daemon-utils-tests-stubs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daemon_utils_tests-utils-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daemon_utils_tests-utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-9p.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-acl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-augeas.Po@am__quote@
@@ -2082,6 +2486,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-blkid.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-blockdev.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-btrfs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-caml-stubs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-cap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-checksum.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-cleanups.Po@am__quote@
@@ -2091,9 +2496,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-copy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-cpio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-cpmv.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-daemon-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-dd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-debug-bmap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-debug.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-device-name-translation.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-devsparts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-df.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-dir.Po@am__quote@
@@ -2107,7 +2514,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-fill.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-find.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-findfs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-format.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-fs-min-size.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-fsck.Po@am__quote@
@@ -2150,7 +2556,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-pingdaemon.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-proto.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-readdir.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-realpath.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-rename.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-rsync.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-scrub.Po@am__quote@
@@ -2162,7 +2567,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-sleuthkit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-squashfs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stat.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-statvfs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-strings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-structs-cleanups.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs-0.Po@am__quote@
@@ -2175,17 +2579,21 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-swap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-sync.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-syslinux.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-sysroot-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-tar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-truncate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-tsk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-umask.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-upload.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-utils-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-utimens.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-utsname.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-uuids.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-wc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-xattr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-xfs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-yara.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-zero.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-zerofree.Po@am__quote@
 
@@ -2212,6 +2620,62 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+daemon_utils_tests-command.o: command.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -MT daemon_utils_tests-command.o -MD -MP -MF $(DEPDIR)/daemon_utils_tests-command.Tpo -c -o daemon_utils_tests-command.o `test -f 'command.c' || echo '$(srcdir)/'`command.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/daemon_utils_tests-command.Tpo $(DEPDIR)/daemon_utils_tests-command.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='command.c' object='daemon_utils_tests-command.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -c -o daemon_utils_tests-command.o `test -f 'command.c' || echo '$(srcdir)/'`command.c
+
+daemon_utils_tests-command.obj: command.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -MT daemon_utils_tests-command.obj -MD -MP -MF $(DEPDIR)/daemon_utils_tests-command.Tpo -c -o daemon_utils_tests-command.obj `if test -f 'command.c'; then $(CYGPATH_W) 'command.c'; else $(CYGPATH_W) '$(srcdir)/command.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/daemon_utils_tests-command.Tpo $(DEPDIR)/daemon_utils_tests-command.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='command.c' object='daemon_utils_tests-command.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -c -o daemon_utils_tests-command.obj `if test -f 'command.c'; then $(CYGPATH_W) 'command.c'; else $(CYGPATH_W) '$(srcdir)/command.c'; fi`
+
+daemon_utils_tests-daemon-utils-tests-stubs.o: daemon-utils-tests-stubs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -MT daemon_utils_tests-daemon-utils-tests-stubs.o -MD -MP -MF $(DEPDIR)/daemon_utils_tests-daemon-utils-tests-stubs.Tpo -c -o daemon_utils_tests-daemon-utils-tests-stubs.o `test -f 'daemon-utils-tests-stubs.c' || echo '$(srcdir)/'`daemon-utils-tests-stubs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/daemon_utils_tests-daemon-utils-tests-stubs.Tpo $(DEPDIR)/daemon_utils_tests-daemon-utils-tests-stubs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='daemon-utils-tests-stubs.c' object='daemon_utils_tests-daemon-utils-tests-stubs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -c -o daemon_utils_tests-daemon-utils-tests-stubs.o `test -f 'daemon-utils-tests-stubs.c' || echo '$(srcdir)/'`daemon-utils-tests-stubs.c
+
+daemon_utils_tests-daemon-utils-tests-stubs.obj: daemon-utils-tests-stubs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -MT daemon_utils_tests-daemon-utils-tests-stubs.obj -MD -MP -MF $(DEPDIR)/daemon_utils_tests-daemon-utils-tests-stubs.Tpo -c -o daemon_utils_tests-daemon-utils-tests-stubs.obj `if test -f 'daemon-utils-tests-stubs.c'; then $(CYGPATH_W) 'daemon-utils-tests-stubs.c'; else $(CYGPATH_W) '$(srcdir)/daemon-utils-tests-stubs.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/daemon_utils_tests-daemon-utils-tests-stubs.Tpo $(DEPDIR)/daemon_utils_tests-daemon-utils-tests-stubs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='daemon-utils-tests-stubs.c' object='daemon_utils_tests-daemon-utils-tests-stubs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -c -o daemon_utils_tests-daemon-utils-tests-stubs.obj `if test -f 'daemon-utils-tests-stubs.c'; then $(CYGPATH_W) 'daemon-utils-tests-stubs.c'; else $(CYGPATH_W) '$(srcdir)/daemon-utils-tests-stubs.c'; fi`
+
+daemon_utils_tests-utils.o: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -MT daemon_utils_tests-utils.o -MD -MP -MF $(DEPDIR)/daemon_utils_tests-utils.Tpo -c -o daemon_utils_tests-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/daemon_utils_tests-utils.Tpo $(DEPDIR)/daemon_utils_tests-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='daemon_utils_tests-utils.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -c -o daemon_utils_tests-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+
+daemon_utils_tests-utils.obj: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -MT daemon_utils_tests-utils.obj -MD -MP -MF $(DEPDIR)/daemon_utils_tests-utils.Tpo -c -o daemon_utils_tests-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/daemon_utils_tests-utils.Tpo $(DEPDIR)/daemon_utils_tests-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='daemon_utils_tests-utils.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -c -o daemon_utils_tests-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+
+daemon_utils_tests-utils-c.o: utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -MT daemon_utils_tests-utils-c.o -MD -MP -MF $(DEPDIR)/daemon_utils_tests-utils-c.Tpo -c -o daemon_utils_tests-utils-c.o `test -f 'utils-c.c' || echo '$(srcdir)/'`utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/daemon_utils_tests-utils-c.Tpo $(DEPDIR)/daemon_utils_tests-utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils-c.c' object='daemon_utils_tests-utils-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -c -o daemon_utils_tests-utils-c.o `test -f 'utils-c.c' || echo '$(srcdir)/'`utils-c.c
+
+daemon_utils_tests-utils-c.obj: utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -MT daemon_utils_tests-utils-c.obj -MD -MP -MF $(DEPDIR)/daemon_utils_tests-utils-c.Tpo -c -o daemon_utils_tests-utils-c.obj `if test -f 'utils-c.c'; then $(CYGPATH_W) 'utils-c.c'; else $(CYGPATH_W) '$(srcdir)/utils-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/daemon_utils_tests-utils-c.Tpo $(DEPDIR)/daemon_utils_tests-utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils-c.c' object='daemon_utils_tests-utils-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(daemon_utils_tests_CPPFLAGS) $(CPPFLAGS) $(daemon_utils_tests_CFLAGS) $(CFLAGS) -c -o daemon_utils_tests-utils-c.obj `if test -f 'utils-c.c'; then $(CYGPATH_W) 'utils-c.c'; else $(CYGPATH_W) '$(srcdir)/utils-c.c'; fi`
 
 guestfsd-9p.o: 9p.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-9p.o -MD -MP -MF $(DEPDIR)/guestfsd-9p.Tpo -c -o guestfsd-9p.o `test -f '9p.c' || echo '$(srcdir)/'`9p.c
@@ -2339,6 +2803,20 @@ guestfsd-btrfs.obj: btrfs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-btrfs.obj `if test -f 'btrfs.c'; then $(CYGPATH_W) 'btrfs.c'; else $(CYGPATH_W) '$(srcdir)/btrfs.c'; fi`
 
+guestfsd-caml-stubs.o: caml-stubs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-caml-stubs.o -MD -MP -MF $(DEPDIR)/guestfsd-caml-stubs.Tpo -c -o guestfsd-caml-stubs.o `test -f 'caml-stubs.c' || echo '$(srcdir)/'`caml-stubs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-caml-stubs.Tpo $(DEPDIR)/guestfsd-caml-stubs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='caml-stubs.c' object='guestfsd-caml-stubs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-caml-stubs.o `test -f 'caml-stubs.c' || echo '$(srcdir)/'`caml-stubs.c
+
+guestfsd-caml-stubs.obj: caml-stubs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-caml-stubs.obj -MD -MP -MF $(DEPDIR)/guestfsd-caml-stubs.Tpo -c -o guestfsd-caml-stubs.obj `if test -f 'caml-stubs.c'; then $(CYGPATH_W) 'caml-stubs.c'; else $(CYGPATH_W) '$(srcdir)/caml-stubs.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-caml-stubs.Tpo $(DEPDIR)/guestfsd-caml-stubs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='caml-stubs.c' object='guestfsd-caml-stubs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-caml-stubs.obj `if test -f 'caml-stubs.c'; then $(CYGPATH_W) 'caml-stubs.c'; else $(CYGPATH_W) '$(srcdir)/caml-stubs.c'; fi`
+
 guestfsd-cap.o: cap.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-cap.o -MD -MP -MF $(DEPDIR)/guestfsd-cap.Tpo -c -o guestfsd-cap.o `test -f 'cap.c' || echo '$(srcdir)/'`cap.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-cap.Tpo $(DEPDIR)/guestfsd-cap.Po
@@ -2465,6 +2943,20 @@ guestfsd-cpmv.obj: cpmv.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-cpmv.obj `if test -f 'cpmv.c'; then $(CYGPATH_W) 'cpmv.c'; else $(CYGPATH_W) '$(srcdir)/cpmv.c'; fi`
 
+guestfsd-daemon-c.o: daemon-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-daemon-c.o -MD -MP -MF $(DEPDIR)/guestfsd-daemon-c.Tpo -c -o guestfsd-daemon-c.o `test -f 'daemon-c.c' || echo '$(srcdir)/'`daemon-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-daemon-c.Tpo $(DEPDIR)/guestfsd-daemon-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='daemon-c.c' object='guestfsd-daemon-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-daemon-c.o `test -f 'daemon-c.c' || echo '$(srcdir)/'`daemon-c.c
+
+guestfsd-daemon-c.obj: daemon-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-daemon-c.obj -MD -MP -MF $(DEPDIR)/guestfsd-daemon-c.Tpo -c -o guestfsd-daemon-c.obj `if test -f 'daemon-c.c'; then $(CYGPATH_W) 'daemon-c.c'; else $(CYGPATH_W) '$(srcdir)/daemon-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-daemon-c.Tpo $(DEPDIR)/guestfsd-daemon-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='daemon-c.c' object='guestfsd-daemon-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-daemon-c.obj `if test -f 'daemon-c.c'; then $(CYGPATH_W) 'daemon-c.c'; else $(CYGPATH_W) '$(srcdir)/daemon-c.c'; fi`
+
 guestfsd-dd.o: dd.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-dd.o -MD -MP -MF $(DEPDIR)/guestfsd-dd.Tpo -c -o guestfsd-dd.o `test -f 'dd.c' || echo '$(srcdir)/'`dd.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-dd.Tpo $(DEPDIR)/guestfsd-dd.Po
@@ -2506,6 +2998,20 @@ guestfsd-debug-bmap.obj: debug-bmap.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='debug-bmap.c' object='guestfsd-debug-bmap.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-debug-bmap.obj `if test -f 'debug-bmap.c'; then $(CYGPATH_W) 'debug-bmap.c'; else $(CYGPATH_W) '$(srcdir)/debug-bmap.c'; fi`
+
+guestfsd-device-name-translation.o: device-name-translation.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-device-name-translation.o -MD -MP -MF $(DEPDIR)/guestfsd-device-name-translation.Tpo -c -o guestfsd-device-name-translation.o `test -f 'device-name-translation.c' || echo '$(srcdir)/'`device-name-translation.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-device-name-translation.Tpo $(DEPDIR)/guestfsd-device-name-translation.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='device-name-translation.c' object='guestfsd-device-name-translation.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-device-name-translation.o `test -f 'device-name-translation.c' || echo '$(srcdir)/'`device-name-translation.c
+
+guestfsd-device-name-translation.obj: device-name-translation.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-device-name-translation.obj -MD -MP -MF $(DEPDIR)/guestfsd-device-name-translation.Tpo -c -o guestfsd-device-name-translation.obj `if test -f 'device-name-translation.c'; then $(CYGPATH_W) 'device-name-translation.c'; else $(CYGPATH_W) '$(srcdir)/device-name-translation.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-device-name-translation.Tpo $(DEPDIR)/guestfsd-device-name-translation.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='device-name-translation.c' object='guestfsd-device-name-translation.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-device-name-translation.obj `if test -f 'device-name-translation.c'; then $(CYGPATH_W) 'device-name-translation.c'; else $(CYGPATH_W) '$(srcdir)/device-name-translation.c'; fi`
 
 guestfsd-devsparts.o: devsparts.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-devsparts.o -MD -MP -MF $(DEPDIR)/guestfsd-devsparts.Tpo -c -o guestfsd-devsparts.o `test -f 'devsparts.c' || echo '$(srcdir)/'`devsparts.c
@@ -2660,20 +3166,6 @@ guestfsd-file.obj: file.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='file.c' object='guestfsd-file.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-file.obj `if test -f 'file.c'; then $(CYGPATH_W) 'file.c'; else $(CYGPATH_W) '$(srcdir)/file.c'; fi`
-
-guestfsd-findfs.o: findfs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-findfs.o -MD -MP -MF $(DEPDIR)/guestfsd-findfs.Tpo -c -o guestfsd-findfs.o `test -f 'findfs.c' || echo '$(srcdir)/'`findfs.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-findfs.Tpo $(DEPDIR)/guestfsd-findfs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='findfs.c' object='guestfsd-findfs.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-findfs.o `test -f 'findfs.c' || echo '$(srcdir)/'`findfs.c
-
-guestfsd-findfs.obj: findfs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-findfs.obj -MD -MP -MF $(DEPDIR)/guestfsd-findfs.Tpo -c -o guestfsd-findfs.obj `if test -f 'findfs.c'; then $(CYGPATH_W) 'findfs.c'; else $(CYGPATH_W) '$(srcdir)/findfs.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-findfs.Tpo $(DEPDIR)/guestfsd-findfs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='findfs.c' object='guestfsd-findfs.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-findfs.obj `if test -f 'findfs.c'; then $(CYGPATH_W) 'findfs.c'; else $(CYGPATH_W) '$(srcdir)/findfs.c'; fi`
 
 guestfsd-fill.o: fill.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-fill.o -MD -MP -MF $(DEPDIR)/guestfsd-fill.Tpo -c -o guestfsd-fill.o `test -f 'fill.c' || echo '$(srcdir)/'`fill.c
@@ -3291,20 +3783,6 @@ guestfsd-readdir.obj: readdir.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-readdir.obj `if test -f 'readdir.c'; then $(CYGPATH_W) 'readdir.c'; else $(CYGPATH_W) '$(srcdir)/readdir.c'; fi`
 
-guestfsd-realpath.o: realpath.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-realpath.o -MD -MP -MF $(DEPDIR)/guestfsd-realpath.Tpo -c -o guestfsd-realpath.o `test -f 'realpath.c' || echo '$(srcdir)/'`realpath.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-realpath.Tpo $(DEPDIR)/guestfsd-realpath.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='realpath.c' object='guestfsd-realpath.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-realpath.o `test -f 'realpath.c' || echo '$(srcdir)/'`realpath.c
-
-guestfsd-realpath.obj: realpath.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-realpath.obj -MD -MP -MF $(DEPDIR)/guestfsd-realpath.Tpo -c -o guestfsd-realpath.obj `if test -f 'realpath.c'; then $(CYGPATH_W) 'realpath.c'; else $(CYGPATH_W) '$(srcdir)/realpath.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-realpath.Tpo $(DEPDIR)/guestfsd-realpath.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='realpath.c' object='guestfsd-realpath.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-realpath.obj `if test -f 'realpath.c'; then $(CYGPATH_W) 'realpath.c'; else $(CYGPATH_W) '$(srcdir)/realpath.c'; fi`
-
 guestfsd-rename.o: rename.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-rename.o -MD -MP -MF $(DEPDIR)/guestfsd-rename.Tpo -c -o guestfsd-rename.o `test -f 'rename.c' || echo '$(srcdir)/'`rename.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-rename.Tpo $(DEPDIR)/guestfsd-rename.Po
@@ -3458,20 +3936,6 @@ guestfsd-stat.obj: stat.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='stat.c' object='guestfsd-stat.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-stat.obj `if test -f 'stat.c'; then $(CYGPATH_W) 'stat.c'; else $(CYGPATH_W) '$(srcdir)/stat.c'; fi`
-
-guestfsd-statvfs.o: statvfs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-statvfs.o -MD -MP -MF $(DEPDIR)/guestfsd-statvfs.Tpo -c -o guestfsd-statvfs.o `test -f 'statvfs.c' || echo '$(srcdir)/'`statvfs.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-statvfs.Tpo $(DEPDIR)/guestfsd-statvfs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='statvfs.c' object='guestfsd-statvfs.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-statvfs.o `test -f 'statvfs.c' || echo '$(srcdir)/'`statvfs.c
-
-guestfsd-statvfs.obj: statvfs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-statvfs.obj -MD -MP -MF $(DEPDIR)/guestfsd-statvfs.Tpo -c -o guestfsd-statvfs.obj `if test -f 'statvfs.c'; then $(CYGPATH_W) 'statvfs.c'; else $(CYGPATH_W) '$(srcdir)/statvfs.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-statvfs.Tpo $(DEPDIR)/guestfsd-statvfs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='statvfs.c' object='guestfsd-statvfs.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-statvfs.obj `if test -f 'statvfs.c'; then $(CYGPATH_W) 'statvfs.c'; else $(CYGPATH_W) '$(srcdir)/statvfs.c'; fi`
 
 guestfsd-strings.o: strings.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-strings.o -MD -MP -MF $(DEPDIR)/guestfsd-strings.Tpo -c -o guestfsd-strings.o `test -f 'strings.c' || echo '$(srcdir)/'`strings.c
@@ -3641,6 +4105,20 @@ guestfsd-syslinux.obj: syslinux.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-syslinux.obj `if test -f 'syslinux.c'; then $(CYGPATH_W) 'syslinux.c'; else $(CYGPATH_W) '$(srcdir)/syslinux.c'; fi`
 
+guestfsd-sysroot-c.o: sysroot-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-sysroot-c.o -MD -MP -MF $(DEPDIR)/guestfsd-sysroot-c.Tpo -c -o guestfsd-sysroot-c.o `test -f 'sysroot-c.c' || echo '$(srcdir)/'`sysroot-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-sysroot-c.Tpo $(DEPDIR)/guestfsd-sysroot-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysroot-c.c' object='guestfsd-sysroot-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-sysroot-c.o `test -f 'sysroot-c.c' || echo '$(srcdir)/'`sysroot-c.c
+
+guestfsd-sysroot-c.obj: sysroot-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-sysroot-c.obj -MD -MP -MF $(DEPDIR)/guestfsd-sysroot-c.Tpo -c -o guestfsd-sysroot-c.obj `if test -f 'sysroot-c.c'; then $(CYGPATH_W) 'sysroot-c.c'; else $(CYGPATH_W) '$(srcdir)/sysroot-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-sysroot-c.Tpo $(DEPDIR)/guestfsd-sysroot-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sysroot-c.c' object='guestfsd-sysroot-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-sysroot-c.obj `if test -f 'sysroot-c.c'; then $(CYGPATH_W) 'sysroot-c.c'; else $(CYGPATH_W) '$(srcdir)/sysroot-c.c'; fi`
+
 guestfsd-tar.o: tar.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-tar.o -MD -MP -MF $(DEPDIR)/guestfsd-tar.Tpo -c -o guestfsd-tar.o `test -f 'tar.c' || echo '$(srcdir)/'`tar.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-tar.Tpo $(DEPDIR)/guestfsd-tar.Po
@@ -3710,6 +4188,34 @@ guestfsd-upload.obj: upload.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='upload.c' object='guestfsd-upload.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-upload.obj `if test -f 'upload.c'; then $(CYGPATH_W) 'upload.c'; else $(CYGPATH_W) '$(srcdir)/upload.c'; fi`
+
+guestfsd-utils.o: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-utils.o -MD -MP -MF $(DEPDIR)/guestfsd-utils.Tpo -c -o guestfsd-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-utils.Tpo $(DEPDIR)/guestfsd-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='guestfsd-utils.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+
+guestfsd-utils.obj: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-utils.obj -MD -MP -MF $(DEPDIR)/guestfsd-utils.Tpo -c -o guestfsd-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-utils.Tpo $(DEPDIR)/guestfsd-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='guestfsd-utils.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+
+guestfsd-utils-c.o: utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-utils-c.o -MD -MP -MF $(DEPDIR)/guestfsd-utils-c.Tpo -c -o guestfsd-utils-c.o `test -f 'utils-c.c' || echo '$(srcdir)/'`utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-utils-c.Tpo $(DEPDIR)/guestfsd-utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils-c.c' object='guestfsd-utils-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-utils-c.o `test -f 'utils-c.c' || echo '$(srcdir)/'`utils-c.c
+
+guestfsd-utils-c.obj: utils-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-utils-c.obj -MD -MP -MF $(DEPDIR)/guestfsd-utils-c.Tpo -c -o guestfsd-utils-c.obj `if test -f 'utils-c.c'; then $(CYGPATH_W) 'utils-c.c'; else $(CYGPATH_W) '$(srcdir)/utils-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-utils-c.Tpo $(DEPDIR)/guestfsd-utils-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils-c.c' object='guestfsd-utils-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-utils-c.obj `if test -f 'utils-c.c'; then $(CYGPATH_W) 'utils-c.c'; else $(CYGPATH_W) '$(srcdir)/utils-c.c'; fi`
 
 guestfsd-utimens.o: utimens.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-utimens.o -MD -MP -MF $(DEPDIR)/guestfsd-utimens.Tpo -c -o guestfsd-utimens.o `test -f 'utimens.c' || echo '$(srcdir)/'`utimens.c
@@ -3794,6 +4300,20 @@ guestfsd-xfs.obj: xfs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='xfs.c' object='guestfsd-xfs.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-xfs.obj `if test -f 'xfs.c'; then $(CYGPATH_W) 'xfs.c'; else $(CYGPATH_W) '$(srcdir)/xfs.c'; fi`
+
+guestfsd-yara.o: yara.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-yara.o -MD -MP -MF $(DEPDIR)/guestfsd-yara.Tpo -c -o guestfsd-yara.o `test -f 'yara.c' || echo '$(srcdir)/'`yara.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-yara.Tpo $(DEPDIR)/guestfsd-yara.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='yara.c' object='guestfsd-yara.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-yara.o `test -f 'yara.c' || echo '$(srcdir)/'`yara.c
+
+guestfsd-yara.obj: yara.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-yara.obj -MD -MP -MF $(DEPDIR)/guestfsd-yara.Tpo -c -o guestfsd-yara.obj `if test -f 'yara.c'; then $(CYGPATH_W) 'yara.c'; else $(CYGPATH_W) '$(srcdir)/yara.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-yara.Tpo $(DEPDIR)/guestfsd-yara.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='yara.c' object='guestfsd-yara.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-yara.obj `if test -f 'yara.c'; then $(CYGPATH_W) 'yara.c'; else $(CYGPATH_W) '$(srcdir)/yara.c'; fi`
 
 guestfsd-zero.o: zero.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-zero.o -MD -MP -MF $(DEPDIR)/guestfsd-zero.Tpo -c -o guestfsd-zero.o `test -f 'zero.c' || echo '$(srcdir)/'`zero.c
@@ -3924,6 +4444,169 @@ cscopelist-am: $(am__tagged_files)
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
+# Recover from deleted '.trs' file; this should ensure that
+# "rm -f foo.log; make foo.trs" re-run 'foo.test', and re-create
+# both 'foo.log' and 'foo.trs'.  Break the recipe in two subshells
+# to avoid problems with "make -n".
+.log.trs:
+	rm -f $< $@
+	$(MAKE) $(AM_MAKEFLAGS) $<
+
+# Leading 'am--fnord' is there to ensure the list of targets does not
+# expand to empty, as could happen e.g. with make check TESTS=''.
+am--fnord $(TEST_LOGS) $(TEST_LOGS:.log=.trs): $(am__force_recheck)
+am--force-recheck:
+	@:
+
+$(TEST_SUITE_LOG): $(TEST_LOGS)
+	@$(am__set_TESTS_bases); \
+	am__f_ok () { test -f "$$1" && test -r "$$1"; }; \
+	redo_bases=`for i in $$bases; do \
+	              am__f_ok $$i.trs && am__f_ok $$i.log || echo $$i; \
+	            done`; \
+	if test -n "$$redo_bases"; then \
+	  redo_logs=`for i in $$redo_bases; do echo $$i.log; done`; \
+	  redo_results=`for i in $$redo_bases; do echo $$i.trs; done`; \
+	  if $(am__make_dryrun); then :; else \
+	    rm -f $$redo_logs && rm -f $$redo_results || exit 1; \
+	  fi; \
+	fi; \
+	if test -n "$$am__remaking_logs"; then \
+	  echo "fatal: making $(TEST_SUITE_LOG): possible infinite" \
+	       "recursion detected" >&2; \
+	elif test -n "$$redo_logs"; then \
+	  am__remaking_logs=yes $(MAKE) $(AM_MAKEFLAGS) $$redo_logs; \
+	fi; \
+	if $(am__make_dryrun); then :; else \
+	  st=0;  \
+	  errmsg="fatal: making $(TEST_SUITE_LOG): failed to create"; \
+	  for i in $$redo_bases; do \
+	    test -f $$i.trs && test -r $$i.trs \
+	      || { echo "$$errmsg $$i.trs" >&2; st=1; }; \
+	    test -f $$i.log && test -r $$i.log \
+	      || { echo "$$errmsg $$i.log" >&2; st=1; }; \
+	  done; \
+	  test $$st -eq 0 || exit 1; \
+	fi
+	@$(am__sh_e_setup); $(am__tty_colors); $(am__set_TESTS_bases); \
+	ws='[ 	]'; \
+	results=`for b in $$bases; do echo $$b.trs; done`; \
+	test -n "$$results" || results=/dev/null; \
+	all=`  grep "^$$ws*:test-result:"           $$results | wc -l`; \
+	pass=` grep "^$$ws*:test-result:$$ws*PASS"  $$results | wc -l`; \
+	fail=` grep "^$$ws*:test-result:$$ws*FAIL"  $$results | wc -l`; \
+	skip=` grep "^$$ws*:test-result:$$ws*SKIP"  $$results | wc -l`; \
+	xfail=`grep "^$$ws*:test-result:$$ws*XFAIL" $$results | wc -l`; \
+	xpass=`grep "^$$ws*:test-result:$$ws*XPASS" $$results | wc -l`; \
+	error=`grep "^$$ws*:test-result:$$ws*ERROR" $$results | wc -l`; \
+	if test `expr $$fail + $$xpass + $$error` -eq 0; then \
+	  success=true; \
+	else \
+	  success=false; \
+	fi; \
+	br='==================='; br=$$br$$br$$br$$br; \
+	result_count () \
+	{ \
+	    if test x"$$1" = x"--maybe-color"; then \
+	      maybe_colorize=yes; \
+	    elif test x"$$1" = x"--no-color"; then \
+	      maybe_colorize=no; \
+	    else \
+	      echo "$@: invalid 'result_count' usage" >&2; exit 4; \
+	    fi; \
+	    shift; \
+	    desc=$$1 count=$$2; \
+	    if test $$maybe_colorize = yes && test $$count -gt 0; then \
+	      color_start=$$3 color_end=$$std; \
+	    else \
+	      color_start= color_end=; \
+	    fi; \
+	    echo "$${color_start}# $$desc $$count$${color_end}"; \
+	}; \
+	create_testsuite_report () \
+	{ \
+	  result_count $$1 "TOTAL:" $$all   "$$brg"; \
+	  result_count $$1 "PASS: " $$pass  "$$grn"; \
+	  result_count $$1 "SKIP: " $$skip  "$$blu"; \
+	  result_count $$1 "XFAIL:" $$xfail "$$lgn"; \
+	  result_count $$1 "FAIL: " $$fail  "$$red"; \
+	  result_count $$1 "XPASS:" $$xpass "$$red"; \
+	  result_count $$1 "ERROR:" $$error "$$mgn"; \
+	}; \
+	{								\
+	  echo "$(PACKAGE_STRING): $(subdir)/$(TEST_SUITE_LOG)" |	\
+	    $(am__rst_title);						\
+	  create_testsuite_report --no-color;				\
+	  echo;								\
+	  echo ".. contents:: :depth: 2";				\
+	  echo;								\
+	  for b in $$bases; do echo $$b; done				\
+	    | $(am__create_global_log);					\
+	} >$(TEST_SUITE_LOG).tmp || exit 1;				\
+	mv $(TEST_SUITE_LOG).tmp $(TEST_SUITE_LOG);			\
+	if $$success; then						\
+	  col="$$grn";							\
+	 else								\
+	  col="$$red";							\
+	  test x"$$VERBOSE" = x || cat $(TEST_SUITE_LOG);		\
+	fi;								\
+	echo "$${col}$$br$${std}"; 					\
+	echo "$${col}Testsuite summary for $(PACKAGE_STRING)$${std}";	\
+	echo "$${col}$$br$${std}"; 					\
+	create_testsuite_report --maybe-color;				\
+	echo "$$col$$br$$std";						\
+	if $$success; then :; else					\
+	  echo "$${col}See $(subdir)/$(TEST_SUITE_LOG)$${std}";		\
+	  if test -n "$(PACKAGE_BUGREPORT)"; then			\
+	    echo "$${col}Please report to $(PACKAGE_BUGREPORT)$${std}";	\
+	  fi;								\
+	  echo "$$col$$br$$std";					\
+	fi;								\
+	$$success || exit 1
+
+check-TESTS:
+	@list='$(RECHECK_LOGS)';           test -z "$$list" || rm -f $$list
+	@list='$(RECHECK_LOGS:.log=.trs)'; test -z "$$list" || rm -f $$list
+	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
+	@set +e; $(am__set_TESTS_bases); \
+	log_list=`for i in $$bases; do echo $$i.log; done`; \
+	trs_list=`for i in $$bases; do echo $$i.trs; done`; \
+	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
+	exit $$?;
+recheck: all $(check_PROGRAMS)
+	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
+	@set +e; $(am__set_TESTS_bases); \
+	bases=`for i in $$bases; do echo $$i; done \
+	         | $(am__list_recheck_tests)` || exit 1; \
+	log_list=`for i in $$bases; do echo $$i.log; done`; \
+	log_list=`echo $$log_list`; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) \
+	        am__force_recheck=am--force-recheck \
+	        TEST_LOGS="$$log_list"; \
+	exit $$?
+daemon_utils_tests.log: daemon_utils_tests$(EXEEXT)
+	@p='daemon_utils_tests$(EXEEXT)'; \
+	b='daemon_utils_tests'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+.test.log:
+	@p='$<'; \
+	$(am__set_b); \
+	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+@am__EXEEXT_TRUE@.test$(EXEEXT).log:
+@am__EXEEXT_TRUE@	@p='$<'; \
+@am__EXEEXT_TRUE@	$(am__set_b); \
+@am__EXEEXT_TRUE@	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
+@am__EXEEXT_TRUE@	--log-file $$b.log --trs-file $$b.trs \
+@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
+@am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
+
 distdir: $(DISTFILES)
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
@@ -3955,6 +4638,8 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
@@ -3983,6 +4668,9 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
+	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
+	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 
 clean-generic:
 	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
@@ -3998,8 +4686,8 @@ maintainer-clean-generic:
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
-	clean-sbinPROGRAMS mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
+	clean-noinstPROGRAMS clean-sbinPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -4069,23 +4757,24 @@ uninstall-am: uninstall-man uninstall-sbinPROGRAMS
 
 uninstall-man: uninstall-man8
 
-.MAKE: all check install install-am install-strip
+.MAKE: all check check-am install install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstPROGRAMS clean-sbinPROGRAMS \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-man8 \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-sbinPROGRAMS install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-man \
-	uninstall-man8 uninstall-sbinPROGRAMS
+.PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
+	clean-checkPROGRAMS clean-generic clean-libtool \
+	clean-noinstPROGRAMS clean-sbinPROGRAMS cscopelist-am ctags \
+	ctags-am distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-man8 install-pdf \
+	install-pdf-am install-ps install-ps-am install-sbinPROGRAMS \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am recheck tags tags-am uninstall \
+	uninstall-am uninstall-man uninstall-man8 \
+	uninstall-sbinPROGRAMS
 
 .PRECIOUS: Makefile
 
@@ -4114,11 +4803,11 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-.mli.cmi:
+%.cmi: %.mli
 	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-.ml.cmo:
+%.cmo: %.ml
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@%.cmx: %.ml
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 # Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
@@ -4141,6 +4830,24 @@ export TEST_FUNCTIONS := \
 	top_builddir="$(top_builddir)" \
 	abs_top_srcdir="$(abs_top_srcdir)" \
 	abs_top_builddir="$(abs_top_builddir)"
+
+camldaemon.o: $(OBJECTS)
+	$(OCAMLFIND) $(BEST) -output-obj -o $@ \
+	    $(OCAMLFLAGS) $(OCAMLPACKAGES) \
+	    -linkpkg \
+	    mlaugeas.$(MLARCHIVE) \
+	    mlpcre.$(MLARCHIVE) \
+	    mlstdutils.$(MLARCHIVE) \
+	    mlcutils.$(MLARCHIVE) \
+	    $(OBJECTS)
+
+# OCaml dependencies.
+.depend: *.mli *.ml
+	$(top_builddir)/ocaml-dep.sh $^
+-include .depend
+
+check-valgrind:
+	$(MAKE) VG="@VG@" check
 
 guestfsd.8 $(top_builddir)/website/guestfsd.8.html: stamp-guestfsd.pod
 

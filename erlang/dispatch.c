@@ -36,7 +36,7 @@ instead of erl_interface.
 */
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #include "actions.h"
 
@@ -484,6 +484,8 @@ dispatch (ETERM *args_tuple)
     return run_hivex_root (args_tuple);
   else if (atom_equals (fun, "hivex_value_key"))
     return run_hivex_value_key (args_tuple);
+  else if (atom_equals (fun, "hivex_value_string"))
+    return run_hivex_value_string (args_tuple);
   else if (atom_equals (fun, "hivex_value_type"))
     return run_hivex_value_type (args_tuple);
   else if (atom_equals (fun, "hivex_value_utf8"))
@@ -904,6 +906,8 @@ dispatch (ETERM *args_tuple)
     return run_part_get_bootable (args_tuple);
   else if (atom_equals (fun, "part_get_disk_guid"))
     return run_part_get_disk_guid (args_tuple);
+  else if (atom_equals (fun, "part_get_gpt_attributes"))
+    return run_part_get_gpt_attributes (args_tuple);
   else if (atom_equals (fun, "part_get_gpt_guid"))
     return run_part_get_gpt_guid (args_tuple);
   else if (atom_equals (fun, "part_get_gpt_type"))
@@ -920,12 +924,16 @@ dispatch (ETERM *args_tuple)
     return run_part_init (args_tuple);
   else if (atom_equals (fun, "part_list"))
     return run_part_list (args_tuple);
+  else if (atom_equals (fun, "part_resize"))
+    return run_part_resize (args_tuple);
   else if (atom_equals (fun, "part_set_bootable"))
     return run_part_set_bootable (args_tuple);
   else if (atom_equals (fun, "part_set_disk_guid"))
     return run_part_set_disk_guid (args_tuple);
   else if (atom_equals (fun, "part_set_disk_guid_random"))
     return run_part_set_disk_guid_random (args_tuple);
+  else if (atom_equals (fun, "part_set_gpt_attributes"))
+    return run_part_set_gpt_attributes (args_tuple);
   else if (atom_equals (fun, "part_set_gpt_guid"))
     return run_part_set_gpt_guid (args_tuple);
   else if (atom_equals (fun, "part_set_gpt_type"))
@@ -1238,6 +1246,12 @@ dispatch (ETERM *args_tuple)
     return run_xfs_info (args_tuple);
   else if (atom_equals (fun, "xfs_repair"))
     return run_xfs_repair (args_tuple);
+  else if (atom_equals (fun, "yara_destroy"))
+    return run_yara_destroy (args_tuple);
+  else if (atom_equals (fun, "yara_load"))
+    return run_yara_load (args_tuple);
+  else if (atom_equals (fun, "yara_scan"))
+    return run_yara_scan (args_tuple);
   else if (atom_equals (fun, "zegrep"))
     return run_zegrep (args_tuple);
   else if (atom_equals (fun, "zegrepi"))

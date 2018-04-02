@@ -1,5 +1,5 @@
 (* virt-builder
- * Copyright (C) 2013-2017 Red Hat Inc.
+ * Copyright (C) 2013-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Utils
 
@@ -29,7 +30,7 @@ and entry = {
   printable_name : string option;       (* the name= field *)
   osinfo : string option;
   file_uri : string;
-  arch : string;
+  arch : arch;
   signature_uri : string option;        (* deprecated, will be removed in 1.26 *)
   checksums : Checksums.csum_t list option;
   revision : Utils.revision;
@@ -45,52 +46,41 @@ and entry = {
   sigchecker : Sigchecker.t;
   proxy : Curl.proxy;
 }
+and arch =
+  | Arch of string
+  | GuessedArch of string
 
-let print_entry chan (name, { printable_name = printable_name;
-                              file_uri = file_uri;
-                              arch = arch;
-                              osinfo = osinfo;
-                              signature_uri = signature_uri;
-                              checksums = checksums;
-                              revision = revision;
-                              format = format;
-                              size = size;
-                              compressed_size = compressed_size;
-                              expand = expand;
-                              lvexpand = lvexpand;
-                              notes = notes;
-                              aliases = aliases;
-                              hidden = hidden }) =
+let string_of_arch = function Arch a | GuessedArch a -> a
+
+let print_entry chan (name, { printable_name; file_uri; arch; osinfo;
+                              signature_uri; checksums; revision; format;
+                              size; compressed_size; expand; lvexpand;
+                              notes; aliases; hidden }) =
   let fp fs = fprintf chan fs in
   fp "[%s]\n" name;
-  may (fp "name=%s\n") printable_name;
-  may (fp "osinfo=%s\n") osinfo;
+  Option.may (fp "name=%s\n") printable_name;
+  Option.may (fp "osinfo=%s\n") osinfo;
   fp "file=%s\n" file_uri;
-  fp "arch=%s\n" arch;
-  may (fp "sig=%s\n") signature_uri;
-  (match checksums with
-  | None -> ()
-  | Some checksums ->
+  fp "arch=%s\n" (string_of_arch arch);
+  Option.may (fp "sig=%s\n") signature_uri;
+  Option.may (
     List.iter (
       fun c ->
         fp "checksum[%s]=%s\n"
           (Checksums.string_of_csum_t c) (Checksums.string_of_csum c)
-    ) checksums
-  );
+    )
+  ) checksums;
   fp "revision=%s\n" (string_of_revision revision);
-  may (fp "format=%s\n") format;
+  Option.may (fp "format=%s\n") format;
   fp "size=%Ld\n" size;
-  may (fp "compressed_size=%Ld\n") compressed_size;
-  may (fp "expand=%s\n") expand;
-  may (fp "lvexpand=%s\n") lvexpand;
+  Option.may (fp "compressed_size=%Ld\n") compressed_size;
+  Option.may (fp "expand=%s\n") expand;
+  Option.may (fp "lvexpand=%s\n") lvexpand;
   List.iter (
     fun (lang, notes) ->
       match lang with
       | "" -> fp "notes=%s\n" notes
       | lang -> fp "notes[%s]=%s\n" lang notes
   ) notes;
-  (match aliases with
-  | None -> ()
-  | Some l -> fp "aliases=%s\n" (String.concat " " l)
-  );
+  Option.may (fun l -> fp "aliases=%s\n" (String.concat " " l)) aliases;
   if hidden then fp "hidden=true\n"

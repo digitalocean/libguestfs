@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,7 @@
  * This header file is included in the libguestfs library (F<lib/>)
  * only.
  *
- * See also F<lib/guestfs-internal-frontend.h> and
- * F<lib/guestfs-internal-all.h>
+ * See also F<lib/guestfs-internal-all.h>.
  */
 
 #ifndef GUESTFS_INTERNAL_H_
@@ -53,9 +52,11 @@
 #endif
 #endif
 
+#include "glthread/lock.h"
+#include "glthread/tls.h"
 #include "hash.h"
 
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #if ENABLE_PROBES
 #include <sys/sdt.h>
@@ -76,6 +77,14 @@
 #define TRACE3(name, arg1, arg2, arg3)
 #define TRACE4(name, arg1, arg2, arg3, arg4)
 #endif
+
+/* Acquire and release the per-handle lock.  Note the release happens
+ * in an __attribute__((cleanup)) handler, making it simple to write
+ * bug-free code.
+ */
+#define ACQUIRE_LOCK_FOR_CURRENT_SCOPE(g) \
+  CLEANUP_GL_RECURSIVE_LOCK_UNLOCK gl_recursive_lock_t *_lock = &(g)->lock; \
+  gl_recursive_lock_lock (*_lock)
 
 /* Default and minimum appliance memory size. */
 
@@ -117,21 +126,6 @@
 
 /* Some limits on what the inspection code will read, for safety. */
 
-/* Small text configuration files.
- *
- * The upper limit is for general files that we grep or download.  The
- * largest such file is probably "txtsetup.sif" from Windows CDs
- * (~500K).  This number has to be larger than any legitimate file and
- * smaller than the protocol message size.
- *
- * The lower limit is for files parsed by Augeas on the daemon side,
- * where Augeas is running in reduced memory and can potentially
- * create a lot of metadata so we really need to be careful about
- * those.
- */
-#define MAX_SMALL_FILE_SIZE    (2 * 1000 * 1000)
-#define MAX_AUGEAS_FILE_SIZE        (100 * 1000)
-
 /* Maximum RPM or dpkg database we will download to /tmp.  RPM
  * 'Packages' database can get very large: 70 MB is roughly the
  * standard size for a new Fedora install, and after lots of package
@@ -141,21 +135,6 @@
 
 /* Maximum size of Windows explorer.exe.  2.6MB on Windows 7. */
 #define MAX_WINDOWS_EXPLORER_SIZE (4 * 1000 * 1000)
-
-/* Differences in device names on ARM (virtio-mmio) vs normal
- * hardware with PCI.
- */
-#if !defined(__arm__)
-#define VIRTIO_BLK "virtio-blk-pci"
-#define VIRTIO_SCSI "virtio-scsi-pci"
-#define VIRTIO_SERIAL "virtio-serial-pci"
-#define VIRTIO_NET "virtio-net-pci"
-#else /* ARMv7 */
-#define VIRTIO_BLK "virtio-blk-device"
-#define VIRTIO_SCSI "virtio-scsi-device"
-#define VIRTIO_SERIAL "virtio-serial-device"
-#define VIRTIO_NET "virtio-net-device"
-#endif /* ARMv7 */
 
 /* Machine types. */
 #ifdef __arm__
@@ -373,15 +352,9 @@ struct connection_ops {
    * Returns: 1 = yes, 0 = no, -1 = error
    */
   int (*can_read_data) (guestfs_h *g, struct connection *);
-};
 
-/**
- * Stack of old error handlers.
- */
-struct error_cb_stack {
-  struct error_cb_stack   *next;
-  guestfs_error_handler_cb error_cb;
-  void *                   error_cb_data;
+  /* Get the console socket (to support virt-rescue). */
+  int (*get_console_sock) (guestfs_h *g, struct connection *);
 };
 
 /**
@@ -400,6 +373,11 @@ struct cached_feature {
 struct guestfs_h {
   struct guestfs_h *next;	/* Linked list of open handles. */
   enum state state;             /* See the state machine diagram in guestfs(3)*/
+
+  /* Lock acquired when entering any public guestfs_* function to
+   * protect the handle.
+   */
+  gl_recursive_lock_define (, lock);
 
   /**** Configuration of the handle. ****/
   bool verbose;                 /* Debugging. */
@@ -456,9 +434,6 @@ struct guestfs_h {
   char **backend_settings;      /* Backend settings (can be NULL). */
 
   /**** Runtime information. ****/
-  char *last_error;             /* Last error on handle. */
-  int last_errnum;              /* errno, or 0 if there was no errno */
-
   /* Temporary and cache directories. */
   /* The actual temporary directory - this is not created with the
    * handle, you have to call guestfs_int_lazy_make_tmpdir.
@@ -472,9 +447,13 @@ struct guestfs_h {
   char *int_cachedir; /* $LIBGUESTFS_CACHEDIR or guestfs_set_cachedir or NULL */
 
   /* Error handler, plus stack of old error handlers. */
-  guestfs_error_handler_cb   error_cb;
-  void *                     error_cb_data;
-  struct error_cb_stack     *error_cb_stack;
+  gl_tls_key_t error_data;
+
+  /* Linked list of error_data structures allocated for this handle,
+   * plus a mutex to protect the linked list.
+   */
+  gl_lock_define (, error_data_list_lock);
+  struct error_data *error_data_list;
 
   /* Out of memory error handler. */
   guestfs_abort_cb           abort_cb;
@@ -482,12 +461,6 @@ struct guestfs_h {
   /* Events. */
   struct event *events;
   size_t nr_events;
-
-  /* Information gathered by inspect_os.  Must be freed by calling
-   * guestfs_int_free_inspect_info.
-   */
-  struct inspect_fs *fses;
-  size_t nr_fses;
 
   /* Private data area. */
   struct hash_table *pda;
@@ -549,133 +522,6 @@ struct version {
   int v_micro;
 };
 
-/* Per-filesystem data stored for inspect_os. */
-enum inspect_os_format {
-  OS_FORMAT_UNKNOWN = 0,
-  OS_FORMAT_INSTALLED,
-  OS_FORMAT_INSTALLER,
-  /* in future: supplemental disks */
-};
-
-enum inspect_os_type {
-  OS_TYPE_UNKNOWN = 0,
-  OS_TYPE_LINUX,
-  OS_TYPE_WINDOWS,
-  OS_TYPE_FREEBSD,
-  OS_TYPE_NETBSD,
-  OS_TYPE_HURD,
-  OS_TYPE_DOS,
-  OS_TYPE_OPENBSD,
-  OS_TYPE_MINIX,
-};
-
-enum inspect_os_distro {
-  OS_DISTRO_UNKNOWN = 0,
-  OS_DISTRO_DEBIAN,
-  OS_DISTRO_FEDORA,
-  OS_DISTRO_REDHAT_BASED,
-  OS_DISTRO_RHEL,
-  OS_DISTRO_WINDOWS,
-  OS_DISTRO_PARDUS,
-  OS_DISTRO_ARCHLINUX,
-  OS_DISTRO_GENTOO,
-  OS_DISTRO_UBUNTU,
-  OS_DISTRO_MEEGO,
-  OS_DISTRO_LINUX_MINT,
-  OS_DISTRO_MANDRIVA,
-  OS_DISTRO_SLACKWARE,
-  OS_DISTRO_CENTOS,
-  OS_DISTRO_SCIENTIFIC_LINUX,
-  OS_DISTRO_TTYLINUX,
-  OS_DISTRO_MAGEIA,
-  OS_DISTRO_OPENSUSE,
-  OS_DISTRO_BUILDROOT,
-  OS_DISTRO_CIRROS,
-  OS_DISTRO_FREEDOS,
-  OS_DISTRO_SUSE_BASED,
-  OS_DISTRO_SLES,
-  OS_DISTRO_OPENBSD,
-  OS_DISTRO_ORACLE_LINUX,
-  OS_DISTRO_FREEBSD,
-  OS_DISTRO_NETBSD,
-  OS_DISTRO_COREOS,
-  OS_DISTRO_ALPINE_LINUX,
-  OS_DISTRO_ALTLINUX,
-  OS_DISTRO_FRUGALWARE,
-  OS_DISTRO_PLD_LINUX,
-  OS_DISTRO_VOID_LINUX,
-};
-
-enum inspect_os_package_format {
-  OS_PACKAGE_FORMAT_UNKNOWN = 0,
-  OS_PACKAGE_FORMAT_RPM,
-  OS_PACKAGE_FORMAT_DEB,
-  OS_PACKAGE_FORMAT_PACMAN,
-  OS_PACKAGE_FORMAT_EBUILD,
-  OS_PACKAGE_FORMAT_PISI,
-  OS_PACKAGE_FORMAT_PKGSRC,
-  OS_PACKAGE_FORMAT_APK,
-  OS_PACKAGE_FORMAT_XBPS,
-};
-
-enum inspect_os_package_management {
-  OS_PACKAGE_MANAGEMENT_UNKNOWN = 0,
-  OS_PACKAGE_MANAGEMENT_YUM,
-  OS_PACKAGE_MANAGEMENT_UP2DATE,
-  OS_PACKAGE_MANAGEMENT_APT,
-  OS_PACKAGE_MANAGEMENT_PACMAN,
-  OS_PACKAGE_MANAGEMENT_PORTAGE,
-  OS_PACKAGE_MANAGEMENT_PISI,
-  OS_PACKAGE_MANAGEMENT_URPMI,
-  OS_PACKAGE_MANAGEMENT_ZYPPER,
-  OS_PACKAGE_MANAGEMENT_DNF,
-  OS_PACKAGE_MANAGEMENT_APK,
-  OS_PACKAGE_MANAGEMENT_XBPS,
-};
-
-enum inspect_os_role {
-  OS_ROLE_UNKNOWN = 0,
-  OS_ROLE_ROOT,
-  OS_ROLE_USR,
-};
-
-/**
- * The inspection code maintains one of these structures per mountable
- * filesystem found in the disk image.  The struct (or structs) which
- * have the C<role> attribute set to C<OS_ROLE_ROOT> are inspection roots,
- * each corresponding to a single guest.  Note that a filesystem can be
- * shared between multiple guests.
- */
-struct inspect_fs {
-  enum inspect_os_role role;
-  char *mountable;
-  enum inspect_os_type type;
-  enum inspect_os_distro distro;
-  enum inspect_os_package_format package_format;
-  enum inspect_os_package_management package_management;
-  char *product_name;
-  char *product_variant;
-  struct version version;
-  char *arch;
-  char *hostname;
-  char *windows_systemroot;
-  char *windows_software_hive;
-  char *windows_system_hive;
-  char *windows_current_control_set;
-  char **drive_mappings;
-  enum inspect_os_format format;
-  int is_live_disk;
-  int is_netinst_disk;
-  int is_multipart_disk;
-  struct inspect_fstab_entry *fstab;
-  size_t nr_fstab;
-};
-
-struct inspect_fstab_entry {
-  char *mountable;
-  char *mountpoint;
-};
-
 struct guestfs_message_header;
 struct guestfs_message_error;
 struct guestfs_progress;
@@ -704,7 +550,7 @@ extern char *guestfs_int_safe_asprintf (guestfs_h *g, const char *fs, ...)
 #define safe_asprintf guestfs_int_safe_asprintf
 
 /* errors.c */
-extern void guestfs_int_init_error_handler (guestfs_h *g);
+extern void guestfs_int_free_error_data_list (guestfs_h *g);
 
 extern void guestfs_int_error_errno (guestfs_h *g, int errnum, const char *fs, ...)
   __attribute__((format (printf,3,4)));
@@ -867,44 +713,7 @@ extern int guestfs_int_set_backend (guestfs_h *g, const char *method);
   } while (0)
 
 /* inspect.c */
-extern void guestfs_int_free_inspect_info (guestfs_h *g);
 extern char *guestfs_int_download_to_tmp (guestfs_h *g, const char *filename, const char *extension, uint64_t max_size);
-extern int guestfs_int_parse_unsigned_int (guestfs_h *g, const char *str);
-extern int guestfs_int_parse_unsigned_int_ignore_trailing (guestfs_h *g, const char *str);
-extern struct inspect_fs *guestfs_int_search_for_root (guestfs_h *g, const char *root);
-extern int guestfs_int_is_partition (guestfs_h *g, const char *partition);
-
-/* inspect-fs.c */
-extern int guestfs_int_is_file_nocase (guestfs_h *g, const char *);
-extern int guestfs_int_is_dir_nocase (guestfs_h *g, const char *);
-extern int guestfs_int_check_for_filesystem_on (guestfs_h *g,
-                                              const char *mountable);
-extern int guestfs_int_parse_major_minor (guestfs_h *g, struct inspect_fs *fs);
-extern char *guestfs_int_first_line_of_file (guestfs_h *g, const char *filename);
-extern int guestfs_int_first_egrep_of_file (guestfs_h *g, const char *filename, const char *eregex, int iflag, char **ret);
-extern void guestfs_int_check_package_format (guestfs_h *g, struct inspect_fs *fs);
-extern void guestfs_int_check_package_management (guestfs_h *g, struct inspect_fs *fs);
-extern void guestfs_int_merge_fs_inspections (guestfs_h *g, struct inspect_fs *dst, struct inspect_fs *src);
-
-/* inspect-fs-unix.c */
-extern int guestfs_int_check_linux_root (guestfs_h *g, struct inspect_fs *fs);
-extern int guestfs_int_check_linux_usr (guestfs_h *g, struct inspect_fs *fs);
-extern int guestfs_int_check_freebsd_root (guestfs_h *g, struct inspect_fs *fs);
-extern int guestfs_int_check_netbsd_root (guestfs_h *g, struct inspect_fs *fs);
-extern int guestfs_int_check_openbsd_root (guestfs_h *g, struct inspect_fs *fs);
-extern int guestfs_int_check_hurd_root (guestfs_h *g, struct inspect_fs *fs);
-extern int guestfs_int_check_minix_root (guestfs_h *g, struct inspect_fs *fs);
-extern int guestfs_int_check_coreos_root (guestfs_h *g, struct inspect_fs *fs);
-extern int guestfs_int_check_coreos_usr (guestfs_h *g, struct inspect_fs *fs);
-
-/* inspect-fs-windows.c */
-extern char *guestfs_int_case_sensitive_path_silently (guestfs_h *g, const char *);
-extern char * guestfs_int_get_windows_systemroot (guestfs_h *g);
-extern int guestfs_int_check_windows_root (guestfs_h *g, struct inspect_fs *fs, char *windows_systemroot);
-
-/* inspect-fs-cd.c */
-extern int guestfs_int_check_installer_root (guestfs_h *g, struct inspect_fs *fs);
-extern int guestfs_int_check_installer_iso (guestfs_h *g, struct inspect_fs *fs, const char *device);
 
 /* dbdump.c */
 typedef int (*guestfs_int_db_dump_callback) (guestfs_h *g, const unsigned char *key, size_t keylen, const unsigned char *value, size_t valuelen, void *opaque);
@@ -922,33 +731,6 @@ extern void guestfs_int_free_fuse (guestfs_h *g);
 #ifdef HAVE_LIBVIRT
 extern virConnectPtr guestfs_int_open_libvirt_connection (guestfs_h *g, const char *uri, unsigned int flags);
 #endif
-
-/* osinfo.c */
-struct osinfo {
-  /* Data provided by libosinfo database. */
-  enum inspect_os_type type;
-  enum inspect_os_distro distro;
-  char *product_name;
-  int major_version;
-  int minor_version;
-  char *arch;
-  int is_live_disk;
-  bool is_installer;
-
-#if 0
-  /* Not yet available in libosinfo database. */
-  char *product_variant;
-  int is_netinst_disk;
-  int is_multipart_disk;
-#endif
-
-  /* The regular expressions used to match ISOs. */
-  pcre *re_system_id;
-  pcre *re_volume_id;
-  pcre *re_publisher_id;
-  pcre *re_application_id;
-};
-extern int guestfs_int_osinfo_map (guestfs_h *g, const struct guestfs_isoinfo *isoinfo, const struct osinfo **osinfo_ret);
 
 /* command.c */
 struct command;
@@ -996,7 +778,6 @@ extern struct qemu_data *guestfs_int_test_qemu (guestfs_h *g);
 extern struct version guestfs_int_qemu_version (guestfs_h *g, struct qemu_data *);
 extern int guestfs_int_qemu_supports (guestfs_h *g, const struct qemu_data *, const char *option);
 extern int guestfs_int_qemu_supports_device (guestfs_h *g, const struct qemu_data *, const char *device_name);
-extern int guestfs_int_qemu_supports_virtio_scsi (guestfs_h *g, struct qemu_data *, const struct version *qemu_version);
 extern int guestfs_int_qemu_mandatory_locking (guestfs_h *g, const struct qemu_data *data);
 extern char *guestfs_int_drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
 extern bool guestfs_int_discard_possible (guestfs_h *g, struct drive *drv, const struct version *qemu_version);
@@ -1023,7 +804,20 @@ extern int guestfs_int_version_from_x_y_re (guestfs_h *g, struct version *v, con
 extern int guestfs_int_version_from_x_y_or_x (guestfs_h *g, struct version *v, const char *str);
 extern bool guestfs_int_version_ge (const struct version *v, int maj, int min, int mic);
 extern bool guestfs_int_version_cmp_ge (const struct version *a, const struct version *b);
+extern int guestfs_int_parse_unsigned_int (guestfs_h *g, const char *str);
 #define version_init_null(v) guestfs_int_version_from_values (v, 0, 0, 0)
 #define version_is_null(v) ((v)->v_major == 0 && (v)->v_minor == 0 && (v)->v_micro == 0)
+
+/* uefi.c */
+struct uefi_firmware {
+  const char *code;             /* code file (NULL = end of list) */
+  const char *code_debug;       /* code file with debugging msgs (may be NULL)*/
+  const char *vars;             /* vars template file */
+  int flags;                    /* various flags, see below */
+#define UEFI_FLAG_SECURE_BOOT_REQUIRED 1 /* secure boot (see RHBZ#1367615) */
+};
+extern struct uefi_firmware guestfs_int_uefi_i386_firmware[];
+extern struct uefi_firmware guestfs_int_uefi_x86_64_firmware[];
+extern struct uefi_firmware guestfs_int_uefi_aarch64_firmware[];
 
 #endif /* GUESTFS_INTERNAL_H_ */

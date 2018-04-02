@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,11 @@
   (box) = gtk_hbox_new ((homogeneous), (spacing))
 #define vbox_new(box, homogeneous, spacing)             \
   (box) = gtk_vbox_new ((homogeneous), (spacing))
+#endif
+
+#if !GTK_CHECK_VERSION(3,4,0)   /* gtk < 3.4 */
+/* Gtk < 3.4 entirely lacked gtk_about_dialog_add_credit_section. */
+#define gtk_about_dialog_add_credit_section(d,k,v) do {} while (0)
 #endif
 
 #if GTK_CHECK_VERSION(3,4,0)   /* gtk >= 3.4 */

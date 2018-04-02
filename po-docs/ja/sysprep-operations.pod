@@ -450,7 +450,7 @@ be empty.
 
 =head2 B<net-hostname> *
 
-ネットワークインターフェース設定にある HOSTNAME を削除します。
+Remove HOSTNAME and DHCP_HOSTNAME in network interface configuration.
 
 Fedora および Red Hat Enterprise Linux に対して、これは C<ifcfg-*> ファイルから削除されます。
 
@@ -545,11 +545,11 @@ by loading a kernel module.
 Use one or more I<--script> parameters to specify scripts or programs that
 will be run against the guest.
 
-The script or program is run with its current directory being the guest's
+The script or program is run with its current directory being the guest’s
 root directory, so relative paths should be used.  For example: C<rm
-etc/resolv.conf> in the script would remove a Linux guest's DNS
+etc/resolv.conf> in the script would remove a Linux guest’s DNS
 configuration file, but C<rm /etc/resolv.conf> would (try to) remove the
-host's file.
+host’s file.
 
 Normally a temporary mount point for the guest is used, but you can choose a
 specific one by using the I<--scriptdir> parameter.
@@ -602,7 +602,7 @@ SSSD のデータベースとログファイルを削除します。
 
 udev persistent net ルールを削除します。
 
-Remove udev persistent net rules which map the guest's existing MAC address
+Remove udev persistent net rules which map the guest’s existing MAC address
 to a fixed ethernet device (eg. eth0).
 
 仮想マシンをクローンした後、通常 MAC アドレスは変わります。古い MAC アドレスは古い名前（たとえば eth0）を占有するため、このことは新しい
@@ -623,8 +623,9 @@ remove only some users, or to not remove some others.
 
 utmp ファイルを削除します。
 
-このファイルは現在マシンにログインしているユーザーを記録します。最近の Linux
-ディストリビューションは、メモリーに保存するため、仮想マシンのディスクにありません。しかし、古いディストリビューションは、ディスクに保存していました。
+This file records who is currently logged in on a machine.  In modern Linux
+distros it is stored in a ramdisk and hence not part of the virtual
+machine’s disk, but it was stored on disk in older distros.
 
 =head2 B<yum-uuid> *
 

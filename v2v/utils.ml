@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,24 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
-external drive_name : int -> string = "v2v_utils_drive_name"
-external drive_index : string -> int = "v2v_utils_drive_index"
-
-external shell_unquote : string -> string = "v2v_utils_shell_unquote"
+(* URI quoting. *)
+let uri_quote str =
+  let len = String.length str in
+  let xs = ref [] in
+  for i = 0 to len-1 do
+    xs :=
+      (match str.[i] with
+      | ('A'..'Z' | 'a'..'z' | '0'..'9' | '/' | '.' | '-') as c ->
+        String.make 1 c
+      | c ->
+        sprintf "%%%02x" (Char.code c)
+      ) :: !xs
+  done;
+  String.concat "" (List.rev !xs)
 
 (* Map guest architecture found by inspection to the architecture
  * that KVM must emulate.  Note for x86 we assume a 64 bit hypervisor.
@@ -57,12 +68,12 @@ let find_uefi_firmware guest_arch =
     | "x86_64" -> Uefi.uefi_x86_64_firmware
     | "aarch64" -> Uefi.uefi_aarch64_firmware
     | arch ->
-       error (f_"don't know how to convert UEFI guests for architecture %s")
+       error (f_"don’t know how to convert UEFI guests for architecture %s")
              guest_arch in
   let rec loop = function
     | [] ->
        error (f_"cannot find firmware for UEFI guests.\n\nYou probably need to install OVMF (x86-64), or AAVMF (aarch64)")
-    | ({ Uefi.code = code; vars = vars_template } as ret) :: rest ->
+    | ({ Uefi.code; vars = vars_template } as ret) :: rest ->
        if Sys.file_exists code && Sys.file_exists vars_template then ret
        else loop rest
   in
@@ -127,6 +138,17 @@ let backend_is_libvirt () =
   let backend = fst (String.split ":" backend) in
   backend = "libvirt"
 
+(* When using the SSH driver in qemu (currently) this requires
+ * ssh-agent authentication.  Give a clear error if this hasn't been
+ * set up (RHBZ#1139973).  This might improve if we switch to libssh1.
+ *)
+let error_if_no_ssh_agent () =
+  try ignore (Sys.getenv "SSH_AUTH_SOCK")
+  with Not_found ->
+    error (f_"ssh-agent authentication has not been set up ($SSH_AUTH_SOCK is not set).  This is required by qemu to do passwordless ssh access.  See the virt-v2v(1) man page for more information.")
+
+let ws = PCRE.compile "\\s+"
+
 let find_file_in_tar tar filename =
   let lines = external_command (sprintf "tar tRvf %s" (Filename.quote tar)) in
   let rec loop lines =
@@ -136,7 +158,7 @@ let find_file_in_tar tar filename =
       (* Lines have the form:
        * block <offset>: <perms> <owner>/<group> <size> <mdate> <mtime> <file>
        *)
-      let elems = Str.bounded_split (Str.regexp " +") line 8 in
+      let elems = PCRE.nsplit ~max:8 ws line in
       if List.length elems = 8 && List.hd elems = "block" then (
         let elems = Array.of_list elems in
         let offset = elems.(1) in

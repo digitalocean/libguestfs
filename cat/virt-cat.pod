@@ -139,7 +139,7 @@ the mount of its root and all of its mountpoints, so make sure
 to mount all the mountpoints needed to work with the filenames
 given as arguments.
 
-If you don't know what filesystems a disk image contains, you can
+If you don’t know what filesystems a disk image contains, you can
 either run guestfish without this option, then list the partitions,
 filesystems and LVs available (see L</list-partitions>,
 L</list-filesystems> and L</lvs> commands), or you can use the
@@ -257,7 +257,7 @@ where C<domname> is the name of the libvirt guest, and C<file> is the
 full path to the file.  Note the final C<-> (meaning "output to
 stdout").
 
-The command above uses libguestfs's guest inspection feature and so
+The command above uses libguestfs’s guest inspection feature and so
 does not work on guests that libguestfs cannot inspect, or on things
 like arbitrary disk images that don't contain guests.  To display a
 file from a disk image directly, use:

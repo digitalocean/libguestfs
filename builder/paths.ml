@@ -16,7 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Common_utils
+open Std_utils
+open Tools_utils
 
 let xdg_cache_home =
   try Some (Sys.getenv "XDG_CACHE_HOME" // "virt-builder")

@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,6 +45,7 @@
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
+#include "structs-cleanups.h"
 
 static struct backend {
   struct backend *next;
@@ -55,9 +56,24 @@ static struct backend {
 int
 guestfs_impl_launch (guestfs_h *g)
 {
+  int r;
+
   /* Configured? */
   if (g->state != CONFIG) {
     error (g, _("the libguestfs handle has already been launched"));
+    return -1;
+  }
+
+  /* Too many drives?
+   *
+   * Some backends such as ‘unix:’ don't allow us to query max_disks.
+   * Don't fail in this case.
+   */
+  guestfs_push_error_handler (g, NULL, NULL);
+  r = guestfs_max_disks (g);
+  guestfs_pop_error_handler (g);
+  if (r >= 0 && g->nr_drives > (size_t) r) {
+    error (g, _("too many drives have been added, the current backend only supports %d drives"), r);
     return -1;
   }
 
@@ -188,7 +204,7 @@ guestfs_impl_get_pid (guestfs_h *g)
 
   if (g->backend_ops->get_pid == NULL)
     NOT_SUPPORTED (g, -1,
-                   _("the current backend does not support 'get-pid'"));
+                   _("the current backend does not support ‘get-pid’"));
 
   return g->backend_ops->get_pid (g, g->backend_data);
 }
@@ -287,7 +303,7 @@ guestfs_impl_config (guestfs_h *g,
       STREQ (hv_param, "-full-screen") ||
       STREQ (hv_param, "-std-vga") ||
       STREQ (hv_param, "-vnc")) {
-    error (g, _("parameter '%s' isn't allowed"), hv_param);
+    error (g, _("parameter ‘%s’ isn't allowed"), hv_param);
     return -1;
   }
 

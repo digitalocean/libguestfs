@@ -2042,7 +2042,7 @@ guestfs_int_ruby_hivex_open (int argc, VALUE *argv, VALUE gv)
  * call-seq:
  *   g.hivex_value_utf8(valueh) -> string
  *
- * return the data field from the (key, datatype, data) tuple
+ * return the data field as a UTF-8 string
  *
  * This calls "g.hivex_value_value" (which returns the data
  * field from a hivex value tuple). It then assumes that
@@ -2057,6 +2057,8 @@ guestfs_int_ruby_hivex_open (int argc, VALUE *argv, VALUE gv)
  *
  *
  * [Since] Added in version 1.19.35.
+ *
+ * [Deprecated] In new code, use rdoc-ref:hivex_value_string instead.
  *
  * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
  *
@@ -2268,14 +2270,14 @@ guestfs_int_ruby_inspect_get_type (VALUE gv, VALUE rootv)
  *
  * get live flag for install disk
  *
- * If "g.inspect_get_format" returns "installer" (this is
- * an install disk), then this returns true if a live image
- * was detected on the disk.
+ * This is deprecated and always returns "false".
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
  * [Since] Added in version 1.9.4.
+ *
+ * [Deprecated] There is no documented replacement
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_inspect_is_live}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_live].
@@ -2881,17 +2883,18 @@ guestfs_int_ruby_list_devices (VALUE gv)
  * "/dev/vg_guest/lv_swap" => "swap"
  * 
  * The key is not necessarily a block device. It may also
- * be an opaque 'mountable' string which can be passed to
+ * be an opaque ‘mountable’ string which can be passed to
  * "g.mount".
  * 
  * The value can have the special value "unknown", meaning
  * the content of the device is undetermined or empty.
  * "swap" means a Linux swap partition.
  * 
- * This command runs other libguestfs commands, which might
- * include "g.mount" and "g.umount", and therefore you
- * should use this soon after launch and only when nothing
- * is mounted.
+ * In libguestfs ≤ 1.36 this command ran other libguestfs
+ * commands, which might have included "g.mount" and
+ * "g.umount", and therefore you had to use this soon after
+ * launch and only when nothing else was mounted. This
+ * restriction is removed in libguestfs ≥ 1.38.
  * 
  * Not all of the filesystems returned will be mountable.
  * In particular, swap partitions are returned in the list.
@@ -4949,7 +4952,7 @@ guestfs_int_ruby_utimens (VALUE gv, VALUE pathv, VALUE atsecsv, VALUE atnsecsv, 
  * versions of libguestfs there was no way to get the
  * version number. From C code you can use dynamic linker
  * functions to find out if this symbol exists (if it
- * doesn't, then it's an earlier version).
+ * doesn't, then it’s an earlier version).
  * 
  * The call returns a structure with four elements. The
  * first three ("major", "minor" and "release") are numbers
@@ -5187,7 +5190,7 @@ guestfs_int_ruby_write_file (VALUE gv, VALUE pathv, VALUE contentv, VALUE sizev)
  * This command writes zeroes over the first few blocks of
  * "device".
  * 
- * How many blocks are zeroed isn't specified (but it's
+ * How many blocks are zeroed isn't specified (but it’s
  * *not* enough to securely wipe the device). It should be
  * sufficient to remove any partition tables, filesystem
  * superblocks and so on.
