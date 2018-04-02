@@ -7,10 +7,10 @@ Subject: Do not use DTB for armel
  1 file changed, 3 insertions(+)
 
 diff --git a/lib/guestfs-internal.h b/lib/guestfs-internal.h
-index 949cacf..c0423a2 100644
+index be7d8c0..b1c4fc5 100644
 --- a/lib/guestfs-internal.h
 +++ b/lib/guestfs-internal.h
-@@ -160,6 +160,9 @@
+@@ -139,6 +139,9 @@
  /* Machine types. */
  #ifdef __arm__
  #define MACHINE_TYPE "virt"

@@ -8,12 +8,12 @@ Subject: po: Don't fail installation if parts of translated documentation are
  1 file changed, 6 insertions(+), 9 deletions(-)
 
 diff --git a/po/Makefile.am b/po/Makefile.am
-index 460d491..98d1d7b 100644
+index 414736d..8b80bf7 100644
 --- a/po/Makefile.am
 +++ b/po/Makefile.am
 @@ -25,9 +25,9 @@ MSGID_BUGS_ADDRESS = https://bugzilla.redhat.com/enter_bug.cgi?component=libgues
  # Don't use LINGUAS (uppercase) as Gentoo defines it (RHBZ#804464).
- linguas     := ca de en_GB es eu fr gu hi ja kn ml mr nl or pa pl pt_BR ru ta te tg uk zh_CN zh_TW
+ linguas     := ca cs de en_GB es eu fr gu hi ja kn ml mr nl or pa pl pt_BR ru ta te tg uk zh_CN
  
 -POTFILES    := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES)
 -POTFILES_PL := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES-pl)

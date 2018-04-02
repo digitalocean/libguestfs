@@ -9,3 +9,4 @@
 0009-Fix-sbin-reboot-requirements.patch
 0010-Add-fdisk-to-appliance-list.patch
 0011-appliance-include-dash-for-Debian-distros.patch
+0012-Fix-out-of-tree-builds-of-OCaml-components.patch

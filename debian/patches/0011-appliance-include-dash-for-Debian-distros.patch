@@ -9,10 +9,10 @@ provided by dash on Debian distributions.
  1 file changed, 1 insertion(+)
 
 diff --git a/appliance/packagelist.in b/appliance/packagelist.in
-index 71a928e..cf264f9 100644
+index c986cb1..3204dab 100644
 --- a/appliance/packagelist.in
 +++ b/appliance/packagelist.in
-@@ -60,6 +60,7 @@ ifelse(DEBIAN,1,
+@@ -61,6 +61,7 @@ ifelse(DEBIAN,1,
  dnl old name used in Jessie and earlier
    btrfs-tools
    cryptsetup
