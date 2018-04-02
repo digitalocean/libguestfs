@@ -181,6 +181,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_compare_xattr_list@Base 1:1.25.16
  guestfs_compare_xfsinfo@Base 1:1.25.16
  guestfs_compare_xfsinfo_list@Base 1:1.25.16
+ guestfs_compare_yara_detection@Base 1:1.37.13
+ guestfs_compare_yara_detection_list@Base 1:1.37.13
  guestfs_compress_device_out@Base 1.14
  guestfs_compress_device_out_argv@Base 1.14
  guestfs_compress_device_out_va@Base 1.14
@@ -258,6 +260,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_copy_xattr_list@Base 1:1.25.16
  guestfs_copy_xfsinfo@Base 1:1.25.16
  guestfs_copy_xfsinfo_list@Base 1:1.25.16
+ guestfs_copy_yara_detection@Base 1:1.37.13
+ guestfs_copy_yara_detection_list@Base 1:1.37.13
  guestfs_cp@Base 1.10
  guestfs_cp_a@Base 1.10
  guestfs_cp_r@Base 1:1.22
@@ -371,6 +375,8 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_free_xattr_list@Base 1.10
  guestfs_free_xfsinfo@Base 1:1.20
  guestfs_free_xfsinfo_list@Base 1:1.20
+ guestfs_free_yara_detection@Base 1:1.37.13
+ guestfs_free_yara_detection_list@Base 1:1.37.13
  guestfs_fsck@Base 1.10
  guestfs_fstrim@Base 1:1.20
  guestfs_fstrim_argv@Base 1:1.20
@@ -444,6 +450,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_hivex_open_va@Base 1:1.20
  guestfs_hivex_root@Base 1:1.20
  guestfs_hivex_value_key@Base 1:1.20
+ guestfs_hivex_value_string@Base 1:1.37.26
  guestfs_hivex_value_type@Base 1:1.20
  guestfs_hivex_value_utf8@Base 1:1.20
  guestfs_hivex_value_value@Base 1:1.20
@@ -488,10 +495,11 @@ libguestfs.so.0 libguestfs0 #MINVER#
  (optional)guestfs_int_safe_memdup@Base 1:1.29.26
  (optional)guestfs_int_safe_strdup@Base 1:1.29.26
  (optional)guestfs_internal_autosync@Base 1.10
- (optional)guestfs_internal_feature_available@Base 1:1.31.25
  (optional)guestfs_internal_exit@Base 1:1.23.30
+ (optional)guestfs_internal_feature_available@Base 1:1.31.25
  (optional)guestfs_internal_filesystem_walk@Base 1:1.33.39
  (optional)guestfs_internal_find_inode@Base 1:1.35.6
+ (optional)guestfs_internal_get_console_socket@Base 1:1.37.1
  (optional)guestfs_internal_hot_add_drive@Base 1:1.20
  (optional)guestfs_internal_hot_remove_drive@Base 1:1.20
  (optional)guestfs_internal_hot_remove_drive_precheck@Base 1:1.20
@@ -538,6 +546,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  (optional)guestfs_internal_upload@Base 1:1.23.29
  (optional)guestfs_internal_write@Base 1:1.20
  (optional)guestfs_internal_write_append@Base 1:1.20
+ (optional)guestfs_internal_yara_scan@Base 1:1.37.13
  guestfs_is_blockdev@Base 1.10
  guestfs_is_blockdev_opts@Base 1:1.22
  guestfs_is_blockdev_opts_argv@Base 1:1.22
@@ -731,6 +740,7 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_part_expand_gpt@Base 1:1.33.2
  guestfs_part_get_bootable@Base 1.10
  guestfs_part_get_disk_guid@Base 1:1.33.2
+ guestfs_part_get_gpt_attributes@Base 1:1.37.36
  guestfs_part_get_gpt_guid@Base 1:1.29.25
  guestfs_part_get_gpt_type@Base 1:1.22
  guestfs_part_get_mbr_id@Base 1.10
@@ -739,9 +749,11 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_part_get_parttype@Base 1.10
  guestfs_part_init@Base 1.10
  guestfs_part_list@Base 1.10
+ guestfs_part_resize@Base 1:1.37.20
  guestfs_part_set_bootable@Base 1.10
  guestfs_part_set_disk_guid@Base 1:1.33.2
  guestfs_part_set_disk_guid_random@Base 1:1.33.2
+ guestfs_part_set_gpt_attributes@Base 1:1.37.36
  guestfs_part_set_gpt_guid@Base 1:1.29.25
  guestfs_part_set_gpt_type@Base 1:1.22
  guestfs_part_set_mbr_id@Base 1.10
@@ -942,6 +954,9 @@ libguestfs.so.0 libguestfs0 #MINVER#
  guestfs_xfs_repair@Base 1:1.20
  guestfs_xfs_repair_argv@Base 1:1.20
  guestfs_xfs_repair_va@Base 1:1.20
+ guestfs_yara_destroy@Base 1:1.37.13
+ guestfs_yara_load@Base 1:1.37.13
+ guestfs_yara_scan@Base 1:1.37.13
  guestfs_zegrep@Base 1.10
  guestfs_zegrepi@Base 1.10
  guestfs_zero@Base 1.10
