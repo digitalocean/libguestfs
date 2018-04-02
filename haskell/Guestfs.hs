@@ -205,6 +205,7 @@ module Guestfs (
   hivex_node_set_value,
   hivex_root,
   hivex_value_key,
+  hivex_value_string,
   hivex_value_type,
   hivex_value_utf8,
   initrd_list,
@@ -368,6 +369,7 @@ module Guestfs (
   part_expand_gpt,
   part_get_bootable,
   part_get_disk_guid,
+  part_get_gpt_attributes,
   part_get_gpt_guid,
   part_get_gpt_type,
   part_get_mbr_id,
@@ -375,9 +377,11 @@ module Guestfs (
   part_get_name,
   part_get_parttype,
   part_init,
+  part_resize,
   part_set_bootable,
   part_set_disk_guid,
   part_set_disk_guid_random,
+  part_set_gpt_attributes,
   part_set_gpt_guid,
   part_set_gpt_type,
   part_set_mbr_id,
@@ -506,6 +510,8 @@ module Guestfs (
   write,
   write_append,
   write_file,
+  yara_destroy,
+  yara_load,
   zegrep,
   zegrepi,
   zero,
@@ -2736,6 +2742,18 @@ hivex_value_key h valueh = do
       fail err
     else peekCString r
 
+foreign import ccall unsafe "guestfs.h guestfs_hivex_value_string" c_hivex_value_string
+  :: GuestfsP -> Int64 -> IO CString
+
+hivex_value_string :: GuestfsH -> Integer -> IO String
+hivex_value_string h valueh = do
+  r <- withForeignPtr h (\p -> c_hivex_value_string p (fromIntegral valueh))
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
 foreign import ccall unsafe "guestfs.h guestfs_hivex_value_type" c_hivex_value_type
   :: GuestfsP -> Int64 -> IO Int64
 
@@ -4716,6 +4734,18 @@ part_get_disk_guid h device = do
       fail err
     else peekCString r
 
+foreign import ccall unsafe "guestfs.h guestfs_part_get_gpt_attributes" c_part_get_gpt_attributes
+  :: GuestfsP -> CString -> CInt -> IO Int64
+
+part_get_gpt_attributes :: GuestfsH -> String -> Int -> IO Int64
+part_get_gpt_attributes h device partnum = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_get_gpt_attributes p device (fromIntegral partnum))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
 foreign import ccall unsafe "guestfs.h guestfs_part_get_gpt_guid" c_part_get_gpt_guid
   :: GuestfsP -> CString -> CInt -> IO CString
 
@@ -4800,6 +4830,18 @@ part_init h device parttype = do
       fail err
     else return ()
 
+foreign import ccall unsafe "guestfs.h guestfs_part_resize" c_part_resize
+  :: GuestfsP -> CString -> CInt -> Int64 -> IO CInt
+
+part_resize :: GuestfsH -> String -> Int -> Integer -> IO ()
+part_resize h device partnum endsect = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_resize p device (fromIntegral partnum) (fromIntegral endsect))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
 foreign import ccall unsafe "guestfs.h guestfs_part_set_bootable" c_part_set_bootable
   :: GuestfsP -> CString -> CInt -> CInt -> IO CInt
 
@@ -4830,6 +4872,18 @@ foreign import ccall unsafe "guestfs.h guestfs_part_set_disk_guid_random" c_part
 part_set_disk_guid_random :: GuestfsH -> String -> IO ()
 part_set_disk_guid_random h device = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_set_disk_guid_random p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_part_set_gpt_attributes" c_part_set_gpt_attributes
+  :: GuestfsP -> CString -> CInt -> Int64 -> IO CInt
+
+part_set_gpt_attributes :: GuestfsH -> String -> Int -> Integer -> IO ()
+part_set_gpt_attributes h device partnum attributes = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_set_gpt_attributes p device (fromIntegral partnum) (fromIntegral attributes))
   if (r == -1)
     then do
       err <- last_error h
@@ -6369,6 +6423,30 @@ foreign import ccall unsafe "guestfs.h guestfs_write_file" c_write_file
 write_file :: GuestfsH -> String -> String -> Int -> IO ()
 write_file h path content size = do
   r <- withCString path $ \path -> withCString content $ \content -> withForeignPtr h (\p -> c_write_file p path content (fromIntegral size))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_yara_destroy" c_yara_destroy
+  :: GuestfsP -> IO CInt
+
+yara_destroy :: GuestfsH -> IO ()
+yara_destroy h = do
+  r <- withForeignPtr h (\p -> c_yara_destroy p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_yara_load" c_yara_load
+  :: GuestfsP -> CString -> IO CInt
+
+yara_load :: GuestfsH -> String -> IO ()
+yara_load h filename = do
+  r <- withCString filename $ \filename -> withForeignPtr h (\p -> c_yara_load p filename)
   if (r == -1)
     then do
       err <- last_error h

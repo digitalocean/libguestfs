@@ -1,7 +1,8 @@
 
 =head1 НАЗВА
 
-virt-v2v-test-harness - Used to test virt-v2v against real test cases
+virt-v2v-test-harness — використовується для тестування virt-v2v на
+прикладах з реального життя
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -31,7 +32,7 @@ test case converts successfully, boots successfully, and reaches a milestone
 (such as a particular screenshot).  It can also test that the conversion
 created, modified or deleted the expected files from within the guest.
 
-=head2 GETTING THE TEST CASES
+=head2 ОТРИМАННЯ ПРИКЛАДІВ ДЛЯ ТЕСТУВАННЯ
 
 Because the test cases are actual virtual machines, we split them into two
 groups: test cases which are freely redistributable and those which are
@@ -55,7 +56,7 @@ distribute the test images.
 
 =head2 ВИМОГИ
 
-It's recommended to use an idle machine for testing.  You will need B<a lot
+It’s recommended to use an idle machine for testing.  You will need B<a lot
 of disk space> to run the tests, in excess of S<100 GB>.  You should also
 ensure the test machine has plenty of RAM, at least S<16 GB>.
 
@@ -75,14 +76,14 @@ It is also possible to install test harness as an OCaml module.
 Once you have checked out the freely redistributed test cases from the
 repository, do:
 
- ./configure [--with-test-harness=/path/to/libguestfs/v2v/test-harness]
+ ./configure [--with-test-harness=/шлях/до/libguestfs/v2v/test-harness]
  make
  make check -k
 
 Using the I<-k> option is recommended so the test doesn't stop at the first
 failure.
 
-=head2 PARALLEL TESTS
+=head2 ПАРАЛЕЛЬНЕ ТЕСТУВАННЯ
 
 You can run test cases in parallel by doing:
 
@@ -103,7 +104,7 @@ of the libguestfs sources).  eg:
 
  ../libguestfs/run make check -k
 
-=head1 WRITING NEW TEST CASES
+=head1 НАПИСАННЯ НОВИХ ПРИКЛАДІВ ДЛЯ ТЕСТУВАННЯ
 
 If you are interested in writing test cases, it is suggested that you start
 by downloading the freely redistributable test cases, or at least look at
@@ -112,9 +113,9 @@ them online.
 Also you must have the virt-v2v test harness - see L</GETTING THE TEST
 HARNESS> above.
 
-=head2 FILES IN EACH TEST CASE
+=head2 ФАЙЛИ У КОЖНОГО З ПРИКЛАДІВ ДЛЯ ТЕСТУВАННЯ
 
-Each test case consists of:
+Кожен із прикладів для тестування складається з таких компонентів:
 
 =over 4
 
@@ -123,7 +124,7 @@ Each test case consists of:
 The disk image of the virtual machine before conversion.  Usually this
 should be converted to raw format and xz-compressed.
 
-=item I<test>.ova
+=item I<тест>.ova
 
 Alternatively, an OVA, exported from VMware, may be used.
 
@@ -134,7 +135,7 @@ libvirtxml> in L<virt-v2v(1)>.
 
 =item I<test>.ppm
 
-An optional screenshot or screenshots.
+Необов'язковий знімок екрана або знімки екрана.
 
 You can supply zero or more "known good" screenshots which represent
 intermediate steps where the guest is booting.  This is useful where a guest
@@ -149,11 +150,11 @@ against the test images is done using the ImageMagick L<compare(1)> program.
 
 =item I<test>.ml
 
-The test itself - see below.
+Сам приклад для тестування — див. нижче.
 
 =back
 
-=head2 WRITING THE TEST
+=head2 НАПИСАННЯ ТЕСТУ
 
 The test file (F<*.ml>) is used to control the test harness, and minimally
 it would look something like this:
@@ -210,7 +211,7 @@ When you run each test, the following files can be created:
 
 =item I<test>-I<yyyymmdd-hhmmss>.scrn
 
-Screenshot(s) of the guest's graphical console.  These are helpful when
+Screenshot(s) of the guest’s graphical console.  These are helpful when
 writing tests or debugging test failures.
 
 The screenshot format is Portable Pixmap (PPM).
@@ -263,5 +264,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2014-2017 Red Hat Inc.
+Copyright (C) 2014-2018 Red Hat Inc.
 

@@ -1,6 +1,6 @@
 ## DO NOT EDIT! GENERATED AUTOMATICALLY!
 ## Process this file with automake to produce Makefile.in.
-# Copyright (C) 2002-2017 Free Software Foundation, Inc.
+# Copyright (C) 2002-2018 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -633,7 +633,7 @@ EXTRA_libtests_a_SOURCES += getsockname.c
 
 TESTS += test-getsockname
 check_PROGRAMS += test-getsockname
-test_getsockname_LDADD = $(LDADD) @LIBSOCKET@
+test_getsockname_LDADD = $(LDADD) @LIBSOCKET@ $(INET_PTON_LIB)
 EXTRA_DIST += test-getsockname.c signature.h macros.h
 
 ## end   gnulib module getsockname-tests
@@ -824,6 +824,7 @@ langinfo.h: langinfo.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_U
 	      -e 's/@''GNULIB_NL_LANGINFO''@/$(GNULIB_NL_LANGINFO)/g' \
 	      -e 's|@''HAVE_LANGINFO_CODESET''@|$(HAVE_LANGINFO_CODESET)|g' \
 	      -e 's|@''HAVE_LANGINFO_T_FMT_AMPM''@|$(HAVE_LANGINFO_T_FMT_AMPM)|g' \
+	      -e 's|@''HAVE_LANGINFO_ALTMON''@|$(HAVE_LANGINFO_ALTMON)|g' \
 	      -e 's|@''HAVE_LANGINFO_ERA''@|$(HAVE_LANGINFO_ERA)|g' \
 	      -e 's|@''HAVE_LANGINFO_YESEXPR''@|$(HAVE_LANGINFO_YESEXPR)|g' \
 	      -e 's|@''HAVE_NL_LANGINFO''@|$(HAVE_NL_LANGINFO)|g' \
@@ -1992,6 +1993,16 @@ check_PROGRAMS += test-timespec
 EXTRA_DIST += test-timespec.c macros.h
 
 ## end   gnulib module timespec-tests
+
+## begin gnulib module tls-tests
+
+TESTS += test-tls
+check_PROGRAMS += test-tls
+test_tls_LDADD = $(LDADD) @LIBMULTITHREAD@ @YIELD_LIB@
+
+EXTRA_DIST += test-tls.c
+
+## end   gnulib module tls-tests
 
 ## begin gnulib module ttyname_r-tests
 

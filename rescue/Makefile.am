@@ -1,5 +1,5 @@
 # libguestfs virt-rescue
-# Copyright (C) 2010-2017 Red Hat Inc.
+# Copyright (C) 2010-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,15 +26,19 @@ EXTRA_DIST = \
 bin_PROGRAMS = virt-rescue
 
 virt_rescue_SOURCES = \
-	rescue.c
+	escape.c \
+	rescue.c \
+	rescue.h \
+	suggest.c
 
 virt_rescue_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
+	-DGUESTFS_PRIVATE=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
 	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
-	-I$(top_srcdir)/fish \
+	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 virt_rescue_CFLAGS = \
@@ -42,6 +46,7 @@ virt_rescue_CFLAGS = \
 	$(LIBXML2_CFLAGS)
 
 virt_rescue_LDADD = \
+	$(top_builddir)/common/windows/libwindows.la \
 	$(top_builddir)/common/options/liboptions.la \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libguestfs.la \

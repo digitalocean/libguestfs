@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -139,8 +139,7 @@ fill_lvm_pv (guestfs_h *g, struct guestfs_lvm_pv *pv, size_t i)
     | _ -> assert false in
 
   List.iter (
-    fun { name = name; style = (ret, args, optargs as style);
-          c_optarg_prefix = c_optarg_prefix } ->
+    fun { name; style = (ret, args, optargs as style); c_optarg_prefix } ->
       pr "/* The %s function prints its parameters to stdout or the\n" name;
       pr " * file set by internal_test_set_output.\n";
       pr " */\n";
@@ -153,13 +152,7 @@ fill_lvm_pv (guestfs_h *g, struct guestfs_lvm_pv *pv, size_t i)
 
       List.iter (
         function
-        | Pathname n
-        | Device n | Mountable n | Dev_or_Path n | Mountable_or_Path n
-        | String n
-        | FileIn n
-        | FileOut n
-        | Key n
-        | GUID n -> pr "  fprintf (fp, \"%%s\\n\", %s);\n" n
+        | String (_, n) -> pr "  fprintf (fp, \"%%s\\n\", %s);\n" n
         | BufferIn n ->
           pr "  {\n";
           pr "    size_t i;\n";
@@ -167,10 +160,12 @@ fill_lvm_pv (guestfs_h *g, struct guestfs_lvm_pv *pv, size_t i)
           pr "      fprintf (fp, \"<%%02x>\", (unsigned) %s[i]);\n" n;
           pr "    fprintf (fp, \"\\n\");\n";
           pr "  }\n";
-        | OptString n -> pr "  fprintf (fp, \"%%s\\n\", %s ? %s : \"null\");\n" n n
-        | StringList n | DeviceList n | FilenameList n ->
+        | OptString n ->
+           pr "  fprintf (fp, \"%%s\\n\", %s ? %s : \"null\");\n" n n
+        | StringList (_, n) ->
           pr "  print_strings (g, %s);\n" n
-        | Bool n -> pr "  fprintf (fp, \"%%s\\n\", %s ? \"true\" : \"false\");\n" n
+        | Bool n ->
+           pr "  fprintf (fp, \"%%s\\n\", %s ? \"true\" : \"false\");\n" n
         | Int n -> pr "  fprintf (fp, \"%%d\\n\", %s);\n" n
         | Int64 n -> pr "  fprintf (fp, \"%%\" PRIi64 \"\\n\", %s);\n" n
         | Pointer _ -> assert false
@@ -217,7 +212,7 @@ fill_lvm_pv (guestfs_h *g, struct guestfs_lvm_pv *pv, size_t i)
   ) ptests;
 
   List.iter (
-    fun { name = name; style = (ret, args, _ as style) } ->
+    fun { name; style = (ret, args, _ as style) } ->
       if String.sub name (String.length name - 3) 3 <> "err" then (
         pr "/* Test normal return. */\n";
         generate_prototype ~extern:false ~semicolon:false ~newline:true

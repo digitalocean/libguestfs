@@ -30,7 +30,8 @@
 
 #include "com_redhat_et_libguestfs_GuestFS.h"
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
+#include "structs-cleanups.h"
 
 /* Note that this function returns.  The exception is not thrown
  * until after the wrapper function returns.
@@ -1075,6 +1076,32 @@ Java_com_redhat_et_libguestfs_GuestFS__1hivex_1root  (JNIEnv *env, jobject obj, 
 
  ret_error:
   return -1;
+}
+
+
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1hivex_1value_1string  (JNIEnv *env, jobject obj, jlong jg, jlong jvalueh)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jstring jr;
+  char *r;
+  int64_t valueh;
+
+  valueh = jvalueh;
+
+  r = guestfs_hivex_value_string (g, valueh);
+
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  jr = (*env)->NewStringUTF (env, r);
+  free (r);
+  return jr;
+
+ ret_error:
+  return NULL;
 }
 
 
@@ -2429,6 +2456,34 @@ Java_com_redhat_et_libguestfs_GuestFS__1ntfsclone_1out  (JNIEnv *env, jobject ob
 
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1part_1resize  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jlong jendsect)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+  int partnum;
+  int64_t endsect;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  partnum = jpartnum;
+  endsect = jendsect;
+
+  r = guestfs_part_resize (g, device, partnum, endsect);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  return;
+
+ ret_error:
+  return;
+}
+
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1disk_1guid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jguid)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
@@ -3044,6 +3099,27 @@ Java_com_redhat_et_libguestfs_GuestFS__1xfs_1admin  (JNIEnv *env, jobject obj, j
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jlabel, optargs_s.label);
   (*env)->ReleaseStringUTFChars (env, juuid, optargs_s.uuid);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  return;
+
+ ret_error:
+  return;
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1yara_1destroy  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+
+
+  r = guestfs_yara_destroy (g);
+
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

@@ -7,25 +7,28 @@ guestfs-faq — поширені питання щодо libguestfs на від�
 
 =head2 Для чого призначено libguestfs?
 
-libguestfs is a way to create, access and modify disk images.  You can look
-inside disk images, modify the files they contain, create them from scratch,
-resize them, and much more.  It's especially useful from scripts and
-programs and from the command line.
+libguestfs — засіб створення образів диска, доступу до образів диску та
+внесення змін до образів диска. За її допомогою ви зможете бачити вміст
+образів диска, вносити зміни до файлів, які у ньому містяться, створювати
+образи, змінювати їхні розміри тощо. Це особливо корисно для керування
+образами зі скриптів та програм, а також командного рядка.
 
-libguestfs is a C library (hence "lib-"), and a set of tools built on this
-library, and bindings for many common programming languages.
+libguestfs є бібліотекою мовою C (звідси «lib-») і набором інструментів,
+побудованих на основі цієї бібліотеки, а також прив'язок до багатьох типових
+мов програмування.
 
-For more information about what libguestfs can do read the introduction on
-the home page (L<http://libguestfs.org>).
+Докладніший опис призначення і можливостей libguestfs наведено у вступній
+частині домашньої сторінки (L<http://libguestfs.org>).
 
 =head2 Для чого призначено virt tools?
 
-Virt tools (website: L<http://virt-tools.org>) are a whole set of
-virtualization management tools aimed at system administrators.  Some of
-them come from libguestfs, some from libvirt and many others from other open
-source projects.  So virt tools is a superset of libguestfs.  However
-libguestfs comes with many important tools.  See L<http://libguestfs.org>
-for a full list.
+Засоби віртуалізації (сайт: L<http://virt-tools.org>) — загальний набір
+засобів для керування віртуалізацією, призначений для системних
+адміністраторів. Деякі із засобів походять із libguestfs, деякі — з libvirt,
+а багато інших — із інших проектів із відкритим кодом. Отже, засоби
+віртуалізації — надбудован над libguestfs. Втім, багато важливих
+інструментів є частиною саме libguestfs. Із повним списком можна
+ознайомитися тут: L<http://libguestfs.org>.
 
 =head2 Чи потрібно встановлювати пакунки { libvirt / KVM / Red Hat / Fedora } для
 роботи з libguestfs?
@@ -34,15 +37,15 @@ for a full list.
 
 libvirt не є обов’язковою частиною libguestfs.
 
-libguestfs works with any disk image, including ones created in VMware, KVM,
-qemu, VirtualBox, Xen, and many other hypervisors, and ones which you have
-created from scratch.
+libguestfs працює із будь-яким образом диска, зокрема образами, створеним за
+допомогою VMware, KVM, qemu, VirtualBox, Xen та багатьох інших гіпервізорів,
+а також тими образами, які ви створили «з нуля».
 
-S<Red Hat> sponsors (ie. pays for) development of libguestfs and a huge
-number of other open source projects.  But you can run libguestfs and the
-virt tools on many different Linux distros and Mac OS X.  We try our best to
-support all Linux distros as first-class citizens.  Some virt tools have
-been ported to Windows.
+S<Red Hat> спонсорує (тобто оплачує) розробку libguestfs та величезної
+кількості інших проектів із відкритим кодом. Втім, ви можете працювати із
+libguestfs та засобами віртуалізації на багатьох інших дистрибутивах Linux
+та у Mac OS X. Ми намагаємося якнайкраще підтримувати передусім усі
+дистрибутиви Linux. Деякі із засобів віртуалізації портовано на Windows.
 
 =head2 Що дає використання libguestfs порівняно з іншими інструментами?
 
@@ -50,39 +53,44 @@ been ported to Windows.
 
 =item I<порівняно з kpartx>
 
-Libguestfs takes a different approach from kpartx.  kpartx needs root, and
-mounts filesystems on the host kernel (which can be insecure - see
-L<guestfs-security(1)>).  Libguestfs isolates your host kernel from guests,
-is more flexible, scriptable, supports LVM, doesn't require root, is
-isolated from other processes, and cleans up after itself.  Libguestfs is
-more than just file access because you can use it to create images from
-scratch.
+У libguestfs використано інший підхід, порівняно із kpartx. Для роботи
+kpartx потрібні права доступу адміністратора (root) та монтування файлових
+систем на рівні ядра основної системи (що може бути небезпечним,
+див. L<guestfs-security(1)>).  Libguestfs ізолює ядро основної системи від
+гостьових систем, є гнучкішою, придатнішою для керування ззовні, підтримує
+LVM, не потребує прав доступу root, ізольована від інших процесів та чистить
+систему після себе. Libguestfs — це не лише доступ до файлів, оскільки
+бібліотека здатна сама створювати образи «з нуля».
 
 =item I<порівняно з vdfuse>
 
-vdfuse is like kpartx but for VirtualBox images.  See the kpartx comparison
-above.  You can use libguestfs on the partition files exposed by vdfuse,
-although it's not necessary since libguestfs can access VirtualBox images
-directly.
+vdfuse подібна до kpartx, але призначена для образів VirtualBox. Відповідно,
+порівняння подібне до наведеного вище порівняння для kpartx. Ви можете
+скористатися libguestfs для роботи із файлами розділів крізь vdfuse, але у
+цьому немає потреби, оскільки libguestfs може отримувати доступ до образів
+VirtualBox безпосередньо.
 
 =item I<порівняно з qemu-nbd>
 
-NBD (Network Block Device) is a protocol for exporting block devices over
-the network.  qemu-nbd is an NBD server which can handle any disk format
-supported by qemu (eg. raw, qcow2).  You can use libguestfs and qemu-nbd or
-nbdkit together to access block devices over the network, for example:
-C<guestfish -a nbd://remote>
+NBD (Network Block Device) — протокол для експортування блокових пристроїв
+мережею. qemu-nbd — сервер NBD, який може працювати із дисками будь-якого
+формату, якщо підтримку цього формату передбачено у qemu (зокрема з raw,
+qcow2). Ви можете скористатися libguestfs у поєднанні із qemu-nbd або nbdkit
+together для доступу до блокових пристроїв мережею. Приклад: C<guestfish -a
+nbd://віддалена_система>
 
 =item I<порівняно з монтуванням файлових систем у основній системі>
 
-Mounting guest filesystems in the host is insecure and should be avoided
-completely for untrusted guests.  Use libguestfs to provide a layer of
-protection against filesystem exploits.  See also L<guestmount(1)>.
+Монтування файлових систем гостьової системи до основної системи не є
+безпечним. Його слід завжди уникати для ненадійних гостьових
+систем. Скористайтеся libguestfs для створення шару захисту від вразливостей
+у засобах обробки файлових систем. Див. також L<guestmount(1)>.
 
 =item I<порівняно з parted>
 
-Libguestfs supports LVM.  Libguestfs uses parted and provides most parted
-features through the libguestfs API.
+У libguestfs передбачено підтримку LVM. У libguestfs використовується
+parted, бібліотека надає доступ до більшості можливостей parted за допомогою
+програмного інтерфейсу libguestfs.
 
 =back
 
@@ -119,13 +127,14 @@ L<https://www.redhat.com/mailman/listinfo/virt-tools-list>
 
 =head2 Як повідомити про вади?
 
-Please use the following link to enter a bug in Bugzilla:
+Будь ласка, скористайтеся цим посиланням для створення записів звітів щодо
+вад у Bugzilla:
 
 L<https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools>
 
-Include as much detail as you can and a way to reproduce the problem.
+Надайте якнайдокладніший опис і поради щодо способу відтворення проблеми.
 
-Include the full output of L<libguestfs-test-tool(1)>.
+Включіть до звіту усі дані, які було виведено L<libguestfs-test-tool(1)>.
 
 =head1 ТИПОВІ ПРОБЛЕМИ
 
@@ -152,7 +161,7 @@ get further information about the failure, you have to run:
 
  libguestfs-test-tool
 
-If, after using this, you still don't understand the failure, contact us
+If, after using this, you still don’t understand the failure, contact us
 (see previous section).
 
 =head2 libguestfs: помилка: не вдалося знайти відповідного supermin libguestfs,
@@ -163,7 +172,7 @@ LIBGUESTFS_PATH
 
 =head2 supermin-helper: ext2: не знайдено батьківського каталогу
 
-[This issue is fixed permanently in libguestfs E<ge> 1.26.]
+[Цю ваду було остаточно виправлено у libguestfs E<ge> 1.26.]
 
 If you see any of these errors on Debian/Ubuntu, you need to run the
 following command:
@@ -181,22 +190,22 @@ user C<qemu.qemu>.  Unfortunately this usually means that qemu cannot open
 disk images, especially if those disk images are owned by root, or are
 present in directories which require root access.
 
-There is a bug open against libvirt to fix this:
+Для виправлення цього відкрито звіт про ваду у libvirt:
 L<https://bugzilla.redhat.com/show_bug.cgi?id=1045069>
 
-You can work around this by one of the following methods:
+Обійти проблему можна у один з таких способів:
 
 =over 4
 
 =item *
 
-Switch to the direct backend:
+Перемкнутися на безпосередній модуль:
 
  export LIBGUESTFS_BACKEND=direct
 
 =item *
 
-Не запускайте libguestfs від імені користувача root.
+Не запускати libguestfs від імені адміністратора (root).
 
 =item *
 
@@ -222,7 +231,7 @@ This error happens during the supermin boot phase of starting the appliance:
  supermin: chroot
  execl: /init: Permission denied
  supermin: debug: listing directory /
- [...followed by a lot of debug output...]
+ [...далі багато інших діагностичних повідомлень...]
 
 This is a complicated bug related to L<supermin(1)> appliances.  The
 appliance is constructed by copying files like F</bin/bash> and many
@@ -298,7 +307,7 @@ and instead the appliance is built on demand.)
 
  sudo chmod 0644 /boot/vmlinuz*
 
-You may need to add yourself to the C<kvm> group:
+Вам, ймовірно, варто додати вашого користувача до групи C<kvm>:
 
  sudo usermod -a -G kvm ваш_обліковий_запис
 
@@ -318,8 +327,8 @@ L<http://packages.debian.org/search?keywords=libguestfs>
 
 =item Ubuntu
 
-У нас немає повноцінного супровідника пакунків Ubuntu. Пакунки, що надаються
-Canonical (і не контролюються нами) іноді виявляються непрацездатними.
+We don’t have a full time Ubuntu maintainer, and the packages supplied by
+Canonical (which are outside our control) are sometimes broken.
 
 Компанією Canonical прийнято рішення щодо зміни прав доступу до ядра таким
 чином, що його читання не може виконувати жоден з користувачів, окрім
@@ -391,7 +400,7 @@ file before starting.
 Git: L<https://github.com/libguestfs/libguestfs> Архіви з кодом:
 L<http://libguestfs.org/download>
 
-Don't run C<make install>! Use the C<./run> script instead (see README).
+Don’t run C<make install>! Use the C<./run> script instead (see README).
 
 =head2 How can I compile and install libguestfs if my distro doesn't have new
 enough qemu/supermin/kernel?
@@ -425,11 +434,11 @@ you have compiled.
 Use C<./localconfigure> instead of C<./configure>, but otherwise you compile
 libguestfs as usual.
 
-Don't run C<make install>! Use the C<./run> script instead (see README).
+Don’t run C<make install>! Use the C<./run> script instead (see README).
 
-=head2 How can I compile and install libguestfs without supermin?
+=head2 Як зібрати і встановити libguestfs без supermin?
 
-If supermin 5 supports your distro, but you don't happen to have a new
+If supermin 5 supports your distro, but you don’t happen to have a new
 enough supermin installed, then see the previous question.
 
 If supermin 5 doesn't support your distro at all, you will need to use the
@@ -441,7 +450,7 @@ when using libguestfs, you B<must> set the C<LIBGUESTFS_PATH> environment
 variable to the directory of a pre-compiled appliance, as also described in
 L<guestfs-internals(1)/FIXED APPLIANCE>.
 
-For pre-compiled appliances, see also:
+Крім того, попередньо зібрані базові системи можна знайти тут:
 L<http://libguestfs.org/download/binaries/appliance/>.
 
 Ми будемо раді надісланим вами латкам для портування supermin на інші
@@ -534,8 +543,8 @@ appliance.  Previously (and upstream) libguestfs runs qemu directly:
                        └───────┘
  
     upstream          Fedora 18+
-    non-Fedora         RHEL 7+
-    non-RHEL
+    не-Fedora         RHEL 7+
+    не-RHEL
 
 The libvirt backend is more sophisticated, supporting SELinux/sVirt (see
 above), hotplugging and more.  It is, however, more complex and so less
@@ -710,8 +719,8 @@ this qemu version: VMDK version 3"
 Qemu (and hence libguestfs) only supports certain VMDK disk images.  Others
 won't work, giving this or similar errors.
 
-Ideally someone would fix qemu to support the latest VMDK features, but in
-the meantime you have three options:
+Було б чудово, якби хтось виправив qemu так, щоб було реалізовано найновіші
+можливості VMDK, але, доки цього не сталося, у вас три варіанти дій:
 
 =over 4
 
@@ -727,8 +736,8 @@ L<guestfs(3)/REMOTE STORAGE>.
 
 =item 2.
 
-Скористайтеся пропрієтарною програмою vdiskmanager з VMware для перетворення
-образу у простий (raw) формат.
+Скористайтеся пропрієтарним інструментом VMware vdiskmanager для
+перетворення образу у формат raw.
 
 =item 3.
 
@@ -744,19 +753,19 @@ The UFS filesystem format has many variants, and these are not
 self-identifying.  The Linux kernel has to be told which variant of UFS it
 has to use, which libguestfs cannot know.
 
-You have to pass the right C<ufstype> mount option when mounting these
-filesystems.
+Під час монтування цих файлових систем слід передати правильне значення
+параметра монтування C<ufstype>.
 
 Див. L<https://www.kernel.org/doc/Documentation/filesystems/ufs.txt>
 
 =head2 Windows ReFS
 
-Windows ReFS is Microsoft's ZFS/Btrfs copy.  This filesystem has not yet
+Windows ReFS is Microsoft’s ZFS/Btrfs copy.  This filesystem has not yet
 been reverse engineered and implemented in the Linux kernel, and therefore
 libguestfs doesn't support it.  At the moment it seems to be very rare "in
 the wild".
 
-=head2 Non-ASCII characters don't appear on VFAT filesystems.
+=head2 У файлових системах VFAT не видно символів поза ASCII.
 
 Типові симптоми проблеми:
 
@@ -770,8 +779,7 @@ non-ASCII characters, particularly non 8-bit characters from Asian languages
 
 =item *
 
-When you list a directory from a VFAT filesystem, filenames appear as
-question marks.
+У каталогах файлової системи VFAT назви файлів показано знаками питання.
 
 =back
 
@@ -780,8 +788,8 @@ question marks.
 VFAT stores long filenames as UTF-16 characters.  When opening or returning
 filenames, the Linux kernel has to translate these to some form of 8 bit
 string.  UTF-8 would be the obvious choice, except for Linux users who
-persist in using non-UTF-8 locales (the user's locale is not known to the
-kernel because it's a function of libc).
+persist in using non-UTF-8 locales (the user’s locale is not known to the
+kernel because it’s a function of libc).
 
 Therefore you have to tell the kernel what translation you want done when
 you mount the filesystem.  The two methods are the C<iocharset> parameter
@@ -828,7 +836,7 @@ sure the filesystem was created using Joliet and/or Rock Ridge extensions.
 libguestfs does not require any special mount options to handle the
 filesystem.
 
-=head2 Cannot open Windows guests which use NTFS.
+=head2 Не вдається відкрити гостьові системи Windows, у яких використовується NTFS.
 
 Ви бачите такі повідомлення про помилки:
 
@@ -857,9 +865,9 @@ You may L<compile your own libguestfs removing this
 restriction|https://www.redhat.com/archives/libguestfs/2016-February/msg00145.html>,
 but that won't be endorsed or supported by Red Hat.
 
-=head2 Cannot open or inspect RHEL 7 guests.
+=head2 Не вдається відкрити або вивчити гостьові системи RHEL 7.
 
-=head2 Cannot open Linux guests which use XFS.
+=head2 Не вдається відкрити гостоьві системи Linux, де використовується XFS.
 
 RHEL 7 guests, and any other guests that use XFS, can be opened by
 libguestfs, but you have to install the C<libguestfs-xfs> package.
@@ -903,7 +911,7 @@ programs).
 
 =head1 ДІАГНОСТИКА LIBGUESTFS
 
-=head2 Допоможіть! Не працює!
+=head2 Допоможіть, не працює!
 
 If no libguestfs program seems to work at all, run the program below and
 paste the B<complete, unedited> output into an email to C<libguestfs> @
@@ -970,14 +978,14 @@ To set these from the shell, do this before running the program:
  export LIBGUESTFS_TRACE=1
  export LIBGUESTFS_DEBUG=1
 
-For csh/tcsh the equivalent commands would be:
+Для csh/tcsh еквівалентними командами будуть такі:
 
  setenv LIBGUESTFS_TRACE 1
  setenv LIBGUESTFS_DEBUG 1
 
 Докладніші дані можна знайти на сторінці L<guestfs(3)/ЗМІННІ СЕРЕДОВИЩА>
 
-=head2 How do I debug when using guestfish?
+=head2 Як виконувати діагностику за допомогою guestfish?
 
 You can use the same environment variables above.  Alternatively use the
 guestfish options -x (to trace commands) or -v (to get the full debug
@@ -985,7 +993,7 @@ output), or both.
 
 Докладніші дані можна знайти на сторінці L<guestfish(1)>.
 
-=head2 How do I debug when using the API?
+=head2 Як виконувати діагностику за допомогою програмного інтерфейсу?
 
 Call L<guestfs(3)/guestfs_set_trace> to enable command traces, and/or
 L<guestfs(3)/guestfs_set_verbose> to enable debug messages.
@@ -1043,14 +1051,14 @@ L<supermin environment variables|supermin(8)/ENVIRONMENT VARIABLES>:
 You can choose a different qemu by setting the hypervisor L<environment
 variable|guestfs(3)/ENVIRONMENT VARIABLES>:
 
- export LIBGUESTFS_HV=/path/to/qemu-system-x86_64
+ export LIBGUESTFS_HV=/шлях/до/qemu-system-x86_64
  libguestfs-test-tool
 
 =head1 DESIGN/INTERNALS OF LIBGUESTFS
 
 Див. також L<guestfs-internals(1)>.
 
-=head2 Why don't you do everything through the FUSE / filesystem interface?
+=head2 Why don’t you do everything through the FUSE / filesystem interface?
 
 We offer a command called L<guestmount(1)> which lets you mount guest
 filesystems on the host.  This is implemented as a FUSE module.  Why don't
@@ -1076,7 +1084,7 @@ into a single round trip.  In the libguestfs API it is much more efficient
 to download an entire file or directory through one of the streaming calls
 like C<guestfs_download> or C<guestfs_tar_out>.
 
-=head2 Why don't you do everything through GVFS?
+=head2 Why don’t you do everything through GVFS?
 
 The problems are similar to the problems with FUSE.
 
@@ -1116,7 +1124,7 @@ these writes, and then we discard it afterwards.  This ensures that the
 underlying disk is always untouched.
 
 Note also that there is a regression test for this when building libguestfs
-(in C<tests/qemu>).  This is one reason why it's important for packagers to
+(in C<tests/qemu>).  This is one reason why it’s important for packagers to
 run the test suite.
 
 =head2 Does C<--ro> make all disks read-only?
@@ -1133,11 +1141,11 @@ Usually this is I<not> a good idea.  The question is answered in more detail
 in this mailing list posting:
 L<https://www.redhat.com/archives/libguestfs/2010-August/msg00024.html>
 
-See also the next question.
+Див. також наступне питання.
 
-=head2 Why can't I run fsck on a live filesystem using C<guestfish --ro>?
+=head2 Why can’t I run fsck on a live filesystem using C<guestfish --ro>?
 
-This command will usually I<not> work:
+Така команда, зазвичай, I<не працює>:
 
  guestfish --ro -a /dev/vg/my_root_fs run : fsck /dev/sda
 
@@ -1147,7 +1155,7 @@ of data on the underlying filesystem are read by qemu at different times as
 the fsck operation progresses, with host writes in between.  The result is
 that fsck sees massive corruption (imaginary, not real!) and fails.
 
-What you have to do is to create a point-in-time snapshot.  If it's a
+What you have to do is to create a point-in-time snapshot.  If it’s a
 logical volume, use an LVM2 snapshot.  If the filesystem is located inside
 something like a btrfs/ZFS file, use a btrfs/ZFS snapshot, and then run the
 fsck on the snapshot.  In practice you don't need to use libguestfs for this
@@ -1157,7 +1165,7 @@ Creating point-in-time snapshots of host devices and files is outside the
 scope of libguestfs, although libguestfs can operate on them once they are
 created.
 
-=head2 What's the difference between guestfish and virt-rescue?
+=head2 What’s the difference between guestfish and virt-rescue?
 
 A lot of people are confused by the two superficially similar tools we
 provide:
@@ -1169,7 +1177,7 @@ provide:
  $ virt-rescue --ro guest.img
  ><rescue> /sbin/fsck /dev/sda1
 
-And the related question which then arises is why you can't type in full
+And the related question which then arises is why you can’t type in full
 shell commands with all the --options in guestfish (but you can in
 L<virt-rescue(1)>).
 
@@ -1181,21 +1189,21 @@ key differentiating factor of guestfish (and the libguestfs API in general)
 is the ability to automate changes.
 
 L<virt-rescue(1)> is a free-for-all freeform way to boot the libguestfs
-appliance and make arbitrary changes to your VM. It's not structured, you
+appliance and make arbitrary changes to your VM. It’s not structured, you
 can't automate it, but for making quick ad-hoc fixes to your guests, it can
 be quite useful.
 
 But, libguestfs also has a "backdoor" into the appliance allowing you to
-send arbitrary shell commands.  It's not as flexible as virt-rescue, because
+send arbitrary shell commands.  It’s not as flexible as virt-rescue, because
 you can't interact with the shell commands, but here it is anyway:
 
- ><fs> debug sh "cmd arg1 arg2 ..."
+ ><fs> debug sh "команда аргумент1 аргумент2 ..."
 
 Note that you should B<not> rely on this.  It could be removed or changed in
 future. If your program needs some operation, please add it to the
 libguestfs API instead.
 
-=head2 What's the deal with C<guestfish -i>?
+=head2 What’s the deal with C<guestfish -i>?
 
 =head2 Why does virt-cat only work on a real VM image, but virt-df works on any
 disk image?
@@ -1279,7 +1287,7 @@ L<https://www.redhat.com/mailman/listinfo/libguestfs>.  You don't have to be
 subscribed, but there will be a delay until your posting is manually
 approved.
 
-B<Please don't use github pull requests - they will be ignored>.  The
+B<Please don’t use github pull requests - they will be ignored>.  The
 reasons are (a) we want to discuss and dissect patches on the mailing list,
 and (b) github pull requests turn into merge commits but we prefer to have a
 linear history.
@@ -1291,11 +1299,11 @@ mailing list first (L<https://www.redhat.com/mailman/listinfo/libguestfs>).
 This avoids disappointment and wasted work if we don't think the feature
 would fit into the libguestfs project.
 
-If you want to suggest a useful feature but don't want to write the code,
+If you want to suggest a useful feature but don’t want to write the code,
 you can file a bug (see L</GETTING HELP AND REPORTING BUGS>)  with C<"RFE:
 "> at the beginning of the Summary line.
 
-=head2 Who can commit to libguestfs git?
+=head2 Хто має право записувати внески до git libguestfs?
 
 About 5 people have commit access to github.  Patches should be posted on
 the list first and ACKed.  The policy for ACKing and pushing patches is
@@ -1303,10 +1311,10 @@ outlined here:
 
 L<https://www.redhat.com/archives/libguestfs/2012-January/msg00023.html>
 
-=head2 Can I fork libguestfs?
+=head2 Можна мені створити відгалуження libguestfs?
 
 Of course you can.  Git makes it easy to fork libguestfs.  Github makes it
-even easier.  It's nice if you tell us on the mailing list about forks and
+even easier.  It’s nice if you tell us on the mailing list about forks and
 the reasons for them.
 
 =head1 ІНШІ ПИТАННЯ
@@ -1388,7 +1396,7 @@ Nothing helps if the guest is making more fundamental changes (eg.  deleting
 filesystems).  For those kinds of things you must relaunch the appliance.
 
 (Note there is a third problem that you need to use consistent snapshots to
-really examine live disk images, but that's a general problem with using
+really examine live disk images, but that’s a general problem with using
 libguestfs against any live disk image.)
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
@@ -1401,5 +1409,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2012-2017 Red Hat Inc.
+Copyright (C) 2012-2018 Red Hat Inc.
 

@@ -76,7 +76,7 @@ raw disk:
 =item 2. 入力ディスクイメージの位置を探します
 
 Locate the input disk image (ie. the file or device on the host containing
-the guest's disk).  If the guest is managed by libvirt, you can use C<virsh
+the guest’s disk).  If the guest is managed by libvirt, you can use C<virsh
 dumpxml> like this to find the disk image name:
 
  # virsh dumpxml guestname | xpath /domain/devices/disk/source
@@ -233,7 +233,7 @@ Similarly, to get non-sparse raw output use:
 
  fallocate -l size outdisk
 
-(on older systems that don't have the L<fallocate(1)> command use C<dd
+(on older systems that don’t have the L<fallocate(1)> command use C<dd
 if=/dev/zero of=outdisk bs=1M count=..>)
 
 =head2 論理パーティション
@@ -451,7 +451,7 @@ groups.
 
 =item B<--dry-run>
 
-Print a summary of what would be done, but don't do anything.
+Print a summary of what would be done, but don’t do anything.
 
 =item B<--no-copy-boot-loader>
 
@@ -508,7 +508,7 @@ NON-SPARSE RAW FORMATS>.
 
 =item B<--quiet>
 
-概要を表示しません。
+Don’t print the summary.
 
 =item B<--resize> PART=SIZE
 
@@ -768,7 +768,7 @@ C<xfs> filesystem.
 
 Virt-resize has no support for expanding that type of filesystem.
 
-In this case, there's nothing that can be done to let virt-resize expand
+In this case, there’s nothing that can be done to let virt-resize expand
 that type of filesystem.
 
 =back

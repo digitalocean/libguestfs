@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2011-2017 Red Hat Inc.
+# Copyright (C) 2011-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ function serious_error
     echo
     echo
     echo "***** SERIOUS ERROR *****"
-    echo "qemu's snapshot isolation does not appear to be working."
+    echo "qemu’s snapshot isolation does not appear to be working."
     echo "Running libguestfs could cause disk corruption on live guests."
     echo
     echo "DO NOT USE libguestfs before you have resolved this problem."

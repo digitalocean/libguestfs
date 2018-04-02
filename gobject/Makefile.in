@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -202,10 +202,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
 	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
 	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
-	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
-	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
-	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/ftell.m4 \
+	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
+	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
 	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
 	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
@@ -302,44 +302,44 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/sys_wait_h.m4 $(top_srcdir)/m4/tempname.m4 \
 	$(top_srcdir)/m4/thread.m4 $(top_srcdir)/m4/threadlib.m4 \
 	$(top_srcdir)/m4/time_h.m4 $(top_srcdir)/m4/timespec.m4 \
-	$(top_srcdir)/m4/ttyname_r.m4 $(top_srcdir)/m4/ungetc.m4 \
-	$(top_srcdir)/m4/unistd-safer.m4 $(top_srcdir)/m4/unistd_h.m4 \
-	$(top_srcdir)/m4/unlink.m4 $(top_srcdir)/m4/unlinkat.m4 \
-	$(top_srcdir)/m4/unlinkdir.m4 $(top_srcdir)/m4/usleep.m4 \
-	$(top_srcdir)/m4/utime.m4 $(top_srcdir)/m4/utime_h.m4 \
-	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
-	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
-	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/vsnprintf.m4 \
-	$(top_srcdir)/m4/wait-process.m4 $(top_srcdir)/m4/waitpid.m4 \
-	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
-	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
-	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
-	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/m4/guestfs_progs.m4 \
-	$(top_srcdir)/m4/guestfs_c.m4 \
-	$(top_srcdir)/m4/guestfs_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_fuse.m4 \
-	$(top_srcdir)/m4/guestfs_daemon.m4 \
-	$(top_srcdir)/m4/guestfs_appliance.m4 \
-	$(top_srcdir)/m4/guestfs_qemu.m4 \
-	$(top_srcdir)/m4/guestfs_misc_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_ocaml.m4 \
-	$(top_srcdir)/m4/guestfs_perl.m4 \
-	$(top_srcdir)/m4/guestfs_python.m4 \
-	$(top_srcdir)/m4/guestfs_ruby.m4 \
-	$(top_srcdir)/m4/guestfs_java.m4 \
-	$(top_srcdir)/m4/guestfs_haskell.m4 \
-	$(top_srcdir)/m4/guestfs_php.m4 \
-	$(top_srcdir)/m4/guestfs_erlang.m4 \
-	$(top_srcdir)/m4/guestfs_lua.m4 \
-	$(top_srcdir)/m4/guestfs_golang.m4 \
-	$(top_srcdir)/m4/guestfs_gobject.m4 \
-	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
-	$(top_srcdir)/m4/guestfs_misc.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/tls.m4 $(top_srcdir)/m4/ttyname_r.m4 \
+	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
+	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
+	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
+	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utime.m4 \
+	$(top_srcdir)/m4/utime_h.m4 $(top_srcdir)/m4/utimecmp.m4 \
+	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
+	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
+	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
+	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
+	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
+	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
+	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
+	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
+	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs-progs.m4 \
+	$(top_srcdir)/m4/guestfs-c.m4 \
+	$(top_srcdir)/m4/guestfs-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-fuse.m4 \
+	$(top_srcdir)/m4/guestfs-daemon.m4 \
+	$(top_srcdir)/m4/guestfs-appliance.m4 \
+	$(top_srcdir)/m4/guestfs-qemu.m4 \
+	$(top_srcdir)/m4/guestfs-misc-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-ocaml.m4 \
+	$(top_srcdir)/m4/guestfs-perl.m4 \
+	$(top_srcdir)/m4/guestfs-python.m4 \
+	$(top_srcdir)/m4/guestfs-ruby.m4 \
+	$(top_srcdir)/m4/guestfs-java.m4 \
+	$(top_srcdir)/m4/guestfs-haskell.m4 \
+	$(top_srcdir)/m4/guestfs-php.m4 \
+	$(top_srcdir)/m4/guestfs-erlang.m4 \
+	$(top_srcdir)/m4/guestfs-lua.m4 \
+	$(top_srcdir)/m4/guestfs-golang.m4 \
+	$(top_srcdir)/m4/guestfs-gobject.m4 \
+	$(top_srcdir)/m4/guestfs-bash-completion.m4 \
+	$(top_srcdir)/m4/guestfs-misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am \
@@ -412,6 +412,7 @@ am__objects_1 = src/libguestfs_gobject_1_0_la-session.lo \
 	src/libguestfs_gobject_1_0_la-struct-version.lo \
 	src/libguestfs_gobject_1_0_la-struct-xattr.lo \
 	src/libguestfs_gobject_1_0_la-struct-xfsinfo.lo \
+	src/libguestfs_gobject_1_0_la-struct-yara_detection.lo \
 	src/libguestfs_gobject_1_0_la-optargs-add_domain.lo \
 	src/libguestfs_gobject_1_0_la-optargs-add_drive.lo \
 	src/libguestfs_gobject_1_0_la-optargs-add_drive_scratch.lo \
@@ -762,6 +763,7 @@ BMPTOPNM = @BMPTOPNM@
 BRANCH_NUMBER = @BRANCH_NUMBER@
 BRANCH_TYPE = @BRANCH_TYPE@
 BYTESWAP_H = @BYTESWAP_H@
+CAMLRUN = @CAMLRUN@
 CAP_LIBS = @CAP_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -1154,6 +1156,7 @@ GREP = @GREP@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GTK_VERSION = @GTK_VERSION@
+GUESTFS_DEFAULT_PATH = @GUESTFS_DEFAULT_PATH@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -1247,6 +1250,7 @@ HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
 HAVE_ISWCNTRL = @HAVE_ISWCNTRL@
+HAVE_LANGINFO_ALTMON = @HAVE_LANGINFO_ALTMON@
 HAVE_LANGINFO_CODESET = @HAVE_LANGINFO_CODESET@
 HAVE_LANGINFO_ERA = @HAVE_LANGINFO_ERA@
 HAVE_LANGINFO_H = @HAVE_LANGINFO_H@
@@ -1421,6 +1425,7 @@ HAVE__BOOL = @HAVE__BOOL@
 HAVE__EXIT = @HAVE__EXIT@
 HIVEX_CFLAGS = @HIVEX_CFLAGS@
 HIVEX_LIBS = @HIVEX_LIBS@
+HIVEX_OPEN_UNSAFE_FLAG = @HIVEX_OPEN_UNSAFE_FLAG@
 HOSTENT_LIB = @HOSTENT_LIB@
 HOST_CPU = @HOST_CPU@
 HOST_CPU_C_ABI = @HOST_CPU_C_ABI@
@@ -1594,6 +1599,8 @@ NEXT_WCHAR_H = @NEXT_WCHAR_H@
 NEXT_WCTYPE_H = @NEXT_WCTYPE_H@
 NM = @NM@
 NMEDIT = @NMEDIT@
+NO_SNV_CFLAGS = @NO_SNV_CFLAGS@
+NO_UM_CFLAGS = @NO_UM_CFLAGS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 OCAMLBEST = @OCAMLBEST@
@@ -1601,6 +1608,8 @@ OCAMLBUILD = @OCAMLBUILD@
 OCAMLC = @OCAMLC@
 OCAMLCDOTOPT = @OCAMLCDOTOPT@
 OCAMLDEP = @OCAMLDEP@
+OCAMLDEP_ALL = @OCAMLDEP_ALL@
+OCAMLDEP_ONE_LINE = @OCAMLDEP_ONE_LINE@
 OCAMLDOC = @OCAMLDOC@
 OCAMLFIND = @OCAMLFIND@
 OCAMLLIB = @OCAMLLIB@
@@ -1612,9 +1621,9 @@ OCAMLVERSION = @OCAMLVERSION@
 OCAML_BYTES_COMPAT_CMO = @OCAML_BYTES_COMPAT_CMO@
 OCAML_BYTES_COMPAT_ML = @OCAML_BYTES_COMPAT_ML@
 OCAML_FLAGS = @OCAML_FLAGS@
-OCAML_GENERATOR_BYTES_COMPAT_CMO = @OCAML_GENERATOR_BYTES_COMPAT_CMO@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
+OCAML_PKG_hivex = @OCAML_PKG_hivex@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
 OCAML_PKG_oUnit = @OCAML_PKG_oUnit@
 OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
@@ -1672,6 +1681,7 @@ REPLACE_DPRINTF = @REPLACE_DPRINTF@
 REPLACE_DUP = @REPLACE_DUP@
 REPLACE_DUP2 = @REPLACE_DUP2@
 REPLACE_DUPLOCALE = @REPLACE_DUPLOCALE@
+REPLACE_FACCESSAT = @REPLACE_FACCESSAT@
 REPLACE_FCHOWNAT = @REPLACE_FCHOWNAT@
 REPLACE_FCLOSE = @REPLACE_FCLOSE@
 REPLACE_FCNTL = @REPLACE_FCNTL@
@@ -1879,6 +1889,8 @@ XZCAT = @XZCAT@
 YACC = @YACC@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
+YARA_CFLAGS = @YARA_CFLAGS@
+YARA_LIBS = @YARA_LIBS@
 YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
 ZIP = @ZIP@
@@ -1975,6 +1987,11 @@ CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
 
 # Files that should be universally removed by 'make distclean'.
 DISTCLEANFILES = .depend stamp-*
+
+# Special suffixes used by OCaml.
+
+# Special suffixes used by PO files.
+SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 
 # Rules for building OCaml objects.
@@ -2037,6 +2054,7 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/struct-version.h \
   include/guestfs-gobject/struct-xattr.h \
   include/guestfs-gobject/struct-xfsinfo.h \
+  include/guestfs-gobject/struct-yara_detection.h \
   include/guestfs-gobject/optargs-add_domain.h \
   include/guestfs-gobject/optargs-add_drive.h \
   include/guestfs-gobject/optargs-add_drive_scratch.h \
@@ -2129,6 +2147,7 @@ guestfs_gobject_sources = \
   src/struct-version.c \
   src/struct-xattr.c \
   src/struct-xfsinfo.c \
+  src/struct-yara_detection.c \
   src/optargs-add_domain.c \
   src/optargs-add_drive.c \
   src/optargs-add_drive_scratch.c \
@@ -2251,7 +2270,7 @@ all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cmi .cmo .cmx .lo .log .ml .mli .o .obj .test .test$(EXEEXT) .trs
+.SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo .c .lo .log .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -2379,6 +2398,8 @@ src/libguestfs_gobject_1_0_la-struct-xattr.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-struct-xfsinfo.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/libguestfs_gobject_1_0_la-struct-yara_detection.lo:  \
+	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-add_domain.lo:  \
 	src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/libguestfs_gobject_1_0_la-optargs-add_drive.lo:  \
@@ -2606,6 +2627,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-version.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-xattr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-xfsinfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-yara_detection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libguestfs_gobject_1_0_la-tristate.Plo@am__quote@
 
 .c.o:
@@ -2820,6 +2842,13 @@ src/libguestfs_gobject_1_0_la-struct-xfsinfo.lo: src/struct-xfsinfo.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-xfsinfo.c' object='src/libguestfs_gobject_1_0_la-struct-xfsinfo.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-struct-xfsinfo.lo `test -f 'src/struct-xfsinfo.c' || echo '$(srcdir)/'`src/struct-xfsinfo.c
+
+src/libguestfs_gobject_1_0_la-struct-yara_detection.lo: src/struct-yara_detection.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-struct-yara_detection.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-yara_detection.Tpo -c -o src/libguestfs_gobject_1_0_la-struct-yara_detection.lo `test -f 'src/struct-yara_detection.c' || echo '$(srcdir)/'`src/struct-yara_detection.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-yara_detection.Tpo src/$(DEPDIR)/libguestfs_gobject_1_0_la-struct-yara_detection.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-yara_detection.c' object='src/libguestfs_gobject_1_0_la-struct-yara_detection.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o src/libguestfs_gobject_1_0_la-struct-yara_detection.lo `test -f 'src/struct-yara_detection.c' || echo '$(srcdir)/'`src/struct-yara_detection.c
 
 src/libguestfs_gobject_1_0_la-optargs-add_domain.lo: src/optargs-add_domain.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT src/libguestfs_gobject_1_0_la-optargs-add_domain.lo -MD -MP -MF src/$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_domain.Tpo -c -o src/libguestfs_gobject_1_0_la-optargs-add_domain.lo `test -f 'src/optargs-add_domain.c' || echo '$(srcdir)/'`src/optargs-add_domain.c
@@ -3831,11 +3860,11 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-.mli.cmi:
+%.cmi: %.mli
 	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-.ml.cmo:
+%.cmo: %.ml
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@%.cmx: %.ml
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 # Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined

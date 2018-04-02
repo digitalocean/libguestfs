@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2017 Red Hat Inc.
+ * Copyright (C) 2011-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 open Unix
 open Printf
 
-open Common_utils
+open Tools_utils
 open Common_gettext.Gettext
 
 open Utils

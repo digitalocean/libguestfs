@@ -1,5 +1,5 @@
 (* virt-builder
- * Copyright (C) 2013-2017 Red Hat Inc.
+ * Copyright (C) 2013-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,8 @@ open Common_gettext.Gettext
 
 module G = Guestfs
 
-open Common_utils
+open Std_utils
+open Tools_utils
 open Unix_utils
 open Password
 open Planner
@@ -48,7 +49,7 @@ let remove_duplicates index =
    *)
   let nseen = Hashtbl.create 13 in
   List.iter (
-    fun (name, { Index.arch = arch; revision = revision }) ->
+    fun (name, { Index.arch; revision }) ->
       let id = name, arch in
       try
         let rev = Hashtbl.find nseen id in
@@ -58,7 +59,7 @@ let remove_duplicates index =
         Hashtbl.add nseen id revision
   ) index;
   List.filter (
-    fun (name, { Index.arch = arch; revision = revision }) ->
+    fun (name, { Index.arch ; revision }) ->
       let id = name, arch in
       try
         let rev = Hashtbl.find nseen (name, arch) in
@@ -83,7 +84,7 @@ let selected_cli_item cmdline index =
     try
       let item =
         List.find (
-          fun (name, { Index.aliases = aliases }) ->
+          fun (name, { Index.aliases }) ->
             match aliases with
             | None -> false
             | Some l -> List.mem cmdline.arg l
@@ -93,10 +94,10 @@ let selected_cli_item cmdline index =
   let item =
     try List.find (
       fun (name, { Index.arch = a }) ->
-        name = arg && cmdline.arch = normalize_arch a
+        name = arg && cmdline.arch = normalize_arch (Index.string_of_arch a)
     ) index
     with Not_found ->
-      error (f_"cannot find os-version '%s' with architecture '%s'.\nUse --list to list available guest types.")
+      error (f_"cannot find os-version ‘%s’ with architecture ‘%s’.\nUse --list to list available guest types.")
         arg cmdline.arch in
   item
 
@@ -109,7 +110,7 @@ let main () =
     printf "command line:";
     List.iter (printf " %s") (Array.to_list Sys.argv);
     print_newline ();
-    iteri (
+    List.iteri (
       fun i (source, fingerprint) ->
         printf "source[%d] = (%S, %S)\n" i source fingerprint
     ) cmdline.sources
@@ -231,11 +232,11 @@ let main () =
       (match cache with
       | Some cache ->
         let l = List.filter (
-          fun (_, { Index.hidden = hidden }) ->
+          fun (_, { Index.hidden }) ->
             hidden <> true
         ) index in
         let l = List.map (
-          fun (name, { Index.revision = revision; arch = arch }) ->
+          fun (name, { Index.revision; arch }) ->
             (name, arch, revision)
         ) l in
         Cache.print_item_status cache ~header:true l
@@ -250,9 +251,8 @@ let main () =
       | Some _ ->
         List.iter (
           fun (name,
-               { Index.revision = revision; file_uri = file_uri;
-                 proxy = proxy }) ->
-            let template = name, cmdline.arch, revision in
+               { Index.revision; file_uri; proxy; arch }) ->
+            let template = name, arch, revision in
             message (f_"Downloading: %s") file_uri;
             let progress_bar = not (quiet ()) in
             ignore (Downloader.download downloader ~template ~progress_bar
@@ -299,9 +299,8 @@ let main () =
   (* Download the template, or it may be in the cache. *)
   let template =
     let template, delete_on_exit =
-      let { Index.revision = revision; file_uri = file_uri;
-            proxy = proxy } = entry in
-      let template = arg, cmdline.arch, revision in
+      let { Index.revision; file_uri; proxy } = entry in
+      let template = arg, Index.Arch cmdline.arch, revision in
       message (f_"Downloading: %s") file_uri;
       let progress_bar = not (quiet ()) in
       Downloader.download downloader ~template ~progress_bar ~proxy
@@ -316,7 +315,7 @@ let main () =
     | { Index.checksums = Some csums } ->
       (try Checksums.verify_checksums csums template
       with Checksums.Mismatched_checksum (csum, csum_actual) ->
-        error (f_"%s checksum of template did not match the expected checksum!\n  found checksum: %s\n  expected checksum: %s\nTry:\n - Use the '-v' option and look for earlier error messages.\n - Delete the cache: virt-builder --delete-cache\n - Check no one has tampered with the website or your network!")
+        error (f_"%s checksum of template did not match the expected checksum!\n  found checksum: %s\n  expected checksum: %s\nTry:\n - Use the ‘-v’ option and look for earlier error messages.\n - Delete the cache: virt-builder --delete-cache\n - Check no one has tampered with the website or your network!")
           (Checksums.string_of_csum_t csum) csum_actual (Checksums.string_of_csum csum)
       )
 
@@ -339,7 +338,7 @@ let main () =
 
   (* Planner: Input tags. *)
   let itags =
-    let { Index.size = size; format = format } = entry in
+    let { Index.size; format } = entry in
     let format_tag =
       match format with
       | None -> []
@@ -413,12 +412,58 @@ let main () =
     let is_not t = not (is t) in
     let remove = List.remove_assoc in
     let ret = ref [] in
-    let tr task weight otags = push_front (task, weight, otags) ret in
 
-    (* XXX Weights are not very smartly chosen.  At the moment I'm
-     * using a range [0..100] where 0 = free and 100 = expensive.  We
-     * could estimate weights better by looking at file sizes.
+    let infile = List.assoc `Filename itags in
+
+    (* The scheme for weights ranges from 0 = free to 100 = most expensive:
+     *
+     *    0 = free operations like renaming a file in the same directory
+     *   10 = in-place conversions (like [qemu-img resize])
+     *   20 = copy or move a file between two local filesystems
+     *   30 = copy and convert a file between two local filesystems
+     *   40 = copy a file within the same local filesystem
+     *   50 = copy and convert a file within the same local filesystem
+     *   80 = copy, move, convert if source or target is on network filesystem
+     *  100 = complex operations like virt-resize
+     *
+     * Copies and moves across different local filesystems are
+     * cheaper than copies within the same filesystem.  The
+     * theory because less bandwith is available if both source
+     * and destination hit the same device (except in the special
+     * case of moving within a filesystem which is free).
+     *
+     * We could estimate weights better by looking at file sizes.
      *)
+    let weight task otags =
+      let outfile = List.assoc `Filename otags in
+
+      (* If infile/outfile don't exist, get the containing directory. *)
+      let infile =
+        if Sys.file_exists infile then infile else Filename.dirname infile in
+      let outfile =
+        if Sys.file_exists outfile then outfile else Filename.dirname outfile in
+
+      match task with
+      | `Virt_resize -> 100     (* virt-resize is a special case*)
+      | (`Copy|`Move|`Pxzcat|`Disk_resize|`Convert) as task ->
+         if StatVFS.is_network_filesystem infile ||
+            StatVFS.is_network_filesystem outfile
+         then 80 (* NFS etc. *)
+         else (
+           let across = (lstat infile).st_dev <> (lstat outfile).st_dev in
+           match task, across with
+           | `Move, false -> 0     (* rename in same filesystem *)
+           | `Disk_resize, _ -> 10 (* in-place conversion *)
+           | `Move, true           (* move or copy between two filesystems *)
+           | `Copy, true -> 20
+           | (`Pxzcat|`Convert), true -> 30 (* convert between two local fses*)
+           | `Copy, false -> 40    (* copy within same filesystem *)
+           | (`Pxzcat|`Convert), false -> 50 (* convert with same local fs*)
+         )
+    in
+
+    (* Add a transition to the returned list. *)
+    let tr task otags = List.push_front (task, weight task otags, otags) ret in
 
     (* Since the final plan won't run in parallel, we don't only need
      * to choose unique tempfiles per transition, so this is OK:
@@ -430,27 +475,27 @@ let main () =
      * thing a copy does is to remove the template tag (since it's always
      * copied out of the cache directory).
      *)
-    tr `Copy 50 ((`Filename, output_filename) :: remove `Template itags);
-    tr `Copy 50 ((`Filename, tempfile) :: remove `Template itags);
+    if infile <> output_filename then
+      tr `Copy ((`Filename, output_filename) :: remove `Template itags);
+    tr `Copy ((`Filename, tempfile) :: remove `Template itags);
 
     (* We can rename a file instead of copying, but don't rename the
-     * cache copy!  (XXX Also this is not free if copying across
-     * filesystems)
+     * cache copy!
      *)
     if is_not `Template then (
-      if not output_is_block_dev then
-        tr `Rename 0 ((`Filename, output_filename) :: itags);
-      tr `Rename 0 ((`Filename, tempfile) :: itags);
+      if not output_is_block_dev && infile <> output_filename then
+        tr `Move ((`Filename, output_filename) :: itags);
+      tr `Move ((`Filename, tempfile) :: itags)
     );
 
     if is `XZ then (
       (* If the input is XZ-compressed, then we can run xzcat, either
        * to the output file or to a temp file.
        *)
-      if not output_is_block_dev then
-        tr `Pxzcat 80
+      if not output_is_block_dev && infile <> output_filename then
+        tr `Pxzcat
           ((`Filename, output_filename) :: remove `XZ (remove `Template itags));
-      tr `Pxzcat 80
+      tr `Pxzcat
         ((`Filename, tempfile) :: remove `XZ (remove `Template itags));
     )
     else (
@@ -461,11 +506,12 @@ let main () =
       let old_size = Int64.of_string (List.assoc `Size itags) in
       let headroom = 256L *^ 1024L *^ 1024L in
       if output_size >= old_size +^ headroom then (
-        tr `Virt_resize 100
-          ((`Size, Int64.to_string output_size) ::
-              (`Filename, output_filename) ::
-              (`Format, output_format) :: (remove `Template itags));
-        tr `Virt_resize 100
+        if infile <> output_filename then
+          tr `Virt_resize
+             ((`Size, Int64.to_string output_size) ::
+                (`Filename, output_filename) ::
+                  (`Format, output_format) :: (remove `Template itags));
+        tr `Virt_resize
           ((`Size, Int64.to_string output_size) ::
               (`Filename, tempfile) ::
               (`Format, output_format) :: (remove `Template itags))
@@ -484,15 +530,16 @@ let main () =
        *)
       else if output_size > old_size && is_not `Template
               && List.mem_assoc `Format itags then
-        tr `Disk_resize 60 ((`Size, Int64.to_string output_size) :: itags);
+        tr `Disk_resize ((`Size, Int64.to_string output_size) :: itags);
 
       (* qemu-img convert is always possible, and quicker.  It doesn't
        * resize, but it does change the format.
        *)
-      tr `Convert 60
-        ((`Filename, output_filename) :: (`Format, output_format) ::
-            (remove `Template itags));
-      tr `Convert 60
+      if infile <> output_filename then
+        tr `Convert
+           ((`Filename, output_filename) :: (`Format, output_format) ::
+              (remove `Template itags));
+      tr `Convert
         ((`Filename, tempfile) :: (`Format, output_format) ::
             (remove `Template itags));
     );
@@ -504,11 +551,10 @@ let main () =
   (* Plan how to create the disk image. *)
   message (f_"Planning how to build this image");
   let plan =
-    try plan ~max_depth:5 transitions itags ~must ~must_not
-    with
-      Failure "plan" ->
-        error (f_"no plan could be found for making a disk image with\nthe required size, format etc. This is a bug in libguestfs!\nPlease file a bug, giving the command line arguments you used.");
-  in
+    match plan ~max_depth:5 transitions itags ~must ~must_not with
+    | Some plan -> plan
+    | None ->
+       error (f_"no plan could be found for making a disk image with\nthe required size, format etc. This is a bug in libguestfs!\nPlease file a bug, giving the command line arguments you used.") in
 
   (* Print out the plan. *)
   if verbose () then (
@@ -527,14 +573,14 @@ let main () =
     in
     let print_task = function
       | `Copy -> printf "cp"
-      | `Rename -> printf "mv"
+      | `Move -> printf "mv"
       | `Pxzcat -> printf "pxzcat"
       | `Virt_resize -> printf "virt-resize"
       | `Disk_resize -> printf "qemu-img resize"
       | `Convert -> printf "qemu-img convert"
     in
 
-    iteri (
+    List.iteri (
       fun i (itags, task, otags) ->
         printf "%d: itags:" i;
         print_tags itags;
@@ -569,7 +615,7 @@ let main () =
       let cmd = [ "cp"; ifile; ofile ] in
       if run_command cmd <> 0 then exit 1
 
-    | itags, `Rename, otags ->
+    | itags, `Move, otags ->
       let ifile = List.assoc `Filename itags in
       let ofile = List.assoc `Filename otags in
       let cmd = [ "mv"; ifile; ofile ] in
@@ -589,7 +635,7 @@ let main () =
       let osize = Int64.of_string (List.assoc `Size otags) in
       let osize = roundup64 osize 512L in
       let oformat = List.assoc `Format otags in
-      let { Index.expand = expand; lvexpand = lvexpand } = entry in
+      let { Index.expand; lvexpand } = entry in
       message (f_"Resizing (using virt-resize) to expand the disk to %s")
         (human_size osize);
       let preallocation = if oformat = "qcow2" then Some "metadata" else None in
@@ -646,8 +692,8 @@ let main () =
   let g =
     let g = open_guestfs () in
 
-    may g#set_memsize cmdline.memsize;
-    may g#set_smp cmdline.smp;
+    Option.may g#set_memsize cmdline.memsize;
+    Option.may g#set_smp cmdline.smp;
     g#set_network cmdline.network;
 
     (* The output disk is being created, so use cache=unsafe here. *)
@@ -690,7 +736,7 @@ let main () =
         let filesystems = List.map snd (g#mountpoints ()) in
         let stats = List.map g#statvfs filesystems in
         let stats = List.map (
-          fun { G.bfree = bfree; bsize = bsize; blocks = blocks } ->
+          fun { G.bfree; bsize; blocks } ->
             bfree *^ bsize, blocks *^ bsize
         ) stats in
         List.fold_left (
@@ -739,6 +785,6 @@ let main () =
   Pervasives.flush Pervasives.stdout;
   Pervasives.flush Pervasives.stderr;
 
-  may print_string stats
+  Option.may print_string stats
 
 let () = run_main_and_handle_errors main

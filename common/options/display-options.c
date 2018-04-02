@@ -1,5 +1,5 @@
 /* libguestfs - implement --short-options and --long-options
- * Copyright (C) 2010-2017 Red Hat Inc.
+ * Copyright (C) 2010-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 /**
  * This file contains common code used to implement I<--short-options>
  * and I<--long-options> in C virt tools.  (The equivalent for
- * OCaml virt tools is implemented by F<mllib/getopt.ml>).
+ * OCaml virt tools is implemented by F<common/mltools/getopt.ml>).
  *
  * These "hidden" options are used to implement bash tab completion.
  */

@@ -1,7 +1,8 @@
 
 =head1 НАЗВА
 
-guestfs-gobject - How to use libguestfs with the GObject bindings
+guestfs-gobject — як використовувати libguestfs за допомогою прив'язок
+GObject
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -55,5 +56,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2012-2017 Red Hat Inc.
+Copyright (C) 2012-2018 Red Hat Inc.
 

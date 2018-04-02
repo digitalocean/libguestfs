@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 (* Types.  See types.mli for documentation. *)
 
@@ -29,6 +30,11 @@ type source = {
   s_orig_name : string;
   s_memory : int64;
   s_vcpu : int;
+  s_cpu_vendor : string option;
+  s_cpu_model : string option;
+  s_cpu_sockets : int option;
+  s_cpu_cores : int option;
+  s_cpu_threads : int option;
   s_features : string list;
   s_firmware : source_firmware;
   s_display : source_display option;
@@ -55,7 +61,7 @@ and source_disk = {
   s_format : string option;
   s_controller : s_controller option;
 }
-and s_controller = Source_IDE | Source_SCSI |
+and s_controller = Source_IDE | Source_SATA | Source_SCSI |
                    Source_virtio_blk | Source_virtio_SCSI
 and source_removable = {
   s_removable_type : s_removable_type;
@@ -102,6 +108,9 @@ let rec string_of_source s =
 hypervisor type: %s
          memory: %Ld (bytes)
        nr vCPUs: %d
+     CPU vendor: %s
+      CPU model: %s
+   CPU topology: sockets: %s cores/socket: %s threads/core: %s
    CPU features: %s
        firmware: %s
         display: %s
@@ -118,6 +127,11 @@ NICs:
     (string_of_source_hypervisor s.s_hypervisor)
     s.s_memory
     s.s_vcpu
+    (Option.default "" s.s_cpu_vendor)
+    (Option.default "" s.s_cpu_model)
+    (match s.s_cpu_sockets with None -> "-" | Some v -> string_of_int v)
+    (match s.s_cpu_cores with None -> "-" | Some v -> string_of_int v)
+    (match s.s_cpu_threads with None -> "-" | Some v -> string_of_int v)
     (String.concat "," s.s_features)
     (string_of_source_firmware s.s_firmware)
     (match s.s_display with
@@ -189,6 +203,7 @@ and string_of_source_disk { s_qemu_uri = qemu_uri; s_format = format;
 
 and string_of_controller = function
   | Source_IDE -> "ide"
+  | Source_SATA -> "sata"
   | Source_SCSI -> "scsi"
   | Source_virtio_blk -> "virtio-blk"
   | Source_virtio_SCSI -> "virtio-scsi"
@@ -278,12 +293,15 @@ ov_source = %s
     ov.ov_source.s_qemu_uri
 
 type target = {
-  target_file : string;
+  target_file : target_file;
   target_format : string;
   target_estimated_size : int64 option;
   target_actual_size : int64 option;
   target_overlay : overlay;
 }
+and target_file =
+  | TargetFile of string
+  | TargetURI of string
 
 let string_of_target t =
   sprintf "\
@@ -293,7 +311,9 @@ target_estimated_size = %s
 target_overlay = %s
 target_overlay.ov_source = %s
 "
-    t.target_file
+    (match t.target_file with
+     | TargetFile s -> "[file] " ^ s
+     | TargetURI s -> "[qemu] " ^ s)
     t.target_format
     (match t.target_estimated_size with
     | None -> "None" | Some i -> Int64.to_string i)
@@ -366,23 +386,13 @@ i_windows_current_control_set = %s
   inspect.i_windows_system_hive
   inspect.i_windows_current_control_set
 
-type mpstat = {
-  mp_dev : string;
-  mp_path : string;
-  mp_statvfs : Guestfs.statvfs;
-  mp_vfs : string;
-}
-
-let print_mpstat chan { mp_dev = dev; mp_path = path;
-                        mp_statvfs = s; mp_vfs = vfs } =
-  fprintf chan "mountpoint statvfs %s %s (%s):\n" dev path vfs;
-  fprintf chan "  bsize=%Ld blocks=%Ld bfree=%Ld bavail=%Ld\n"
-    s.Guestfs.bsize s.Guestfs.blocks s.Guestfs.bfree s.Guestfs.bavail
-
 type guestcaps = {
   gcaps_block_bus : guestcaps_block_type;
   gcaps_net_bus : guestcaps_net_type;
   gcaps_video : guestcaps_video_type;
+  gcaps_virtio_rng : bool;
+  gcaps_virtio_balloon : bool;
+  gcaps_isa_pvpanic : bool;
   gcaps_arch : string;
   gcaps_acpi : bool;
 }
@@ -468,6 +478,18 @@ let string_of_target_buses buses =
 type root_choice = AskRoot | SingleRoot | FirstRoot | RootDev of string
 
 type output_allocation = Sparse | Preallocated
+
+type vddk_options = {
+    vddk_config : string option;
+    vddk_cookie : string option;
+    vddk_libdir : string option;
+    vddk_nfchostport : string option;
+    vddk_port : string option;
+    vddk_snapshot : string option;
+    vddk_thumbprint : string option;
+    vddk_transports : string option;
+    vddk_vimapiver : string option;
+}
 
 class virtual input = object
   method precheck () = ()

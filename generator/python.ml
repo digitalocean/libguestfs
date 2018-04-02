@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -42,7 +42,7 @@ let rec generate_python_actions_h () =
 #define GUESTFS_PYTHON_ACTIONS_H_
 
 #include \"guestfs.h\"
-#include \"guestfs-internal-frontend.h\"
+#include \"guestfs-utils.h\"
 
 #if PY_VERSION_HEX < 0x02050000
 typedef int Py_ssize_t;
@@ -91,6 +91,9 @@ extern PyObject *guestfs_int_py_event_to_string (PyObject *self, PyObject *args)
 extern char **guestfs_int_py_get_string_list (PyObject *obj);
 extern PyObject *guestfs_int_py_put_string_list (char * const * const argv);
 extern PyObject *guestfs_int_py_put_table (char * const * const argv);
+extern PyObject *guestfs_int_py_fromstring (const char *str);
+extern PyObject *guestfs_int_py_fromstringsize (const char *str, size_t size);
+extern char *guestfs_int_py_asstring (PyObject *obj);
 
 ";
 
@@ -118,7 +121,7 @@ extern PyObject *guestfs_int_py_put_table (char * const * const argv);
   pr "\n";
 
   List.iter (
-    fun { name = name; c_name = c_name } ->
+    fun { name; c_name } ->
       pr "#ifdef GUESTFS_HAVE_%s\n" (String.uppercase_ascii c_name);
       pr "extern PyObject *guestfs_int_py_%s (PyObject *self, PyObject *args);\n" name;
       pr "#endif\n"
@@ -152,12 +155,20 @@ and generate_python_structs () =
     pr "PyObject *\n";
     pr "guestfs_int_py_put_%s_list (struct guestfs_%s_list *%ss)\n" typ typ typ;
     pr "{\n";
-    pr "  PyObject *list;\n";
+    pr "  PyObject *list, *element;\n";
     pr "  size_t i;\n";
     pr "\n";
     pr "  list = PyList_New (%ss->len);\n" typ;
-    pr "  for (i = 0; i < %ss->len; ++i)\n" typ;
-    pr "    PyList_SetItem (list, i, guestfs_int_py_put_%s (&%ss->val[i]));\n" typ typ;
+    pr "  if (list == NULL)\n";
+    pr "    return NULL;\n";
+    pr "  for (i = 0; i < %ss->len; ++i) {\n" typ;
+    pr "    element = guestfs_int_py_put_%s (&%ss->val[i]);\n" typ typ;
+    pr "    if (element == NULL) {\n";
+    pr "      Py_CLEAR (list);\n";
+    pr "      return NULL;\n";
+    pr "    }\n";
+    pr "    PyList_SetItem (list, i, element);\n";
+    pr "  }\n";
     pr "  return list;\n";
     pr "};\n";
     pr "#endif\n";
@@ -171,75 +182,72 @@ and generate_python_structs () =
       pr "PyObject *\n";
       pr "guestfs_int_py_put_%s (struct guestfs_%s *%s)\n" typ typ typ;
       pr "{\n";
-      pr "  PyObject *dict;\n";
+      pr "  PyObject *dict, *value;\n";
       pr "\n";
       pr "  dict = PyDict_New ();\n";
+      pr "  if (dict == NULL)\n";
+      pr "    return NULL;\n";
       List.iter (
         function
         | name, FString ->
-            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "#ifdef HAVE_PYSTRING_ASSTRING\n";
-            pr "                        PyString_FromString (%s->%s));\n"
-              typ name;
-            pr "#else\n";
-            pr "                        PyUnicode_FromString (%s->%s));\n"
-              typ name;
-            pr "#endif\n"
+            pr "  value = guestfs_int_py_fromstring (%s->%s);\n" typ name;
+            pr "  if (value == NULL)\n";
+            pr "    goto err;\n";
+            pr "  PyDict_SetItemString (dict, \"%s\", value);\n" name;
         | name, FBuffer ->
-            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "#ifdef HAVE_PYSTRING_ASSTRING\n";
-            pr "                        PyString_FromStringAndSize (%s->%s, %s->%s_len));\n"
+            pr "  value = guestfs_int_py_fromstringsize (%s->%s, %s->%s_len);\n"
               typ name typ name;
-            pr "#else\n";
-            pr "                        PyBytes_FromStringAndSize (%s->%s, %s->%s_len));\n"
-              typ name typ name;
-            pr "#endif\n"
+            pr "  if (value == NULL)\n";
+            pr "    goto err;\n";
+            pr "  PyDict_SetItemString (dict, \"%s\", value);\n" name;
         | name, FUUID ->
-            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "#ifdef HAVE_PYSTRING_ASSTRING\n";
-            pr "                        PyString_FromStringAndSize (%s->%s, 32));\n"
+            pr "  value = guestfs_int_py_fromstringsize (%s->%s, 32);\n"
               typ name;
-            pr "#else\n";
-            pr "                        PyBytes_FromStringAndSize (%s->%s, 32));\n"
-              typ name;
-            pr "#endif\n"
+            pr "  if (value == NULL)\n";
+            pr "    goto err;\n";
+            pr "  PyDict_SetItemString (dict, \"%s\", value);\n" name;
         | name, (FBytes|FUInt64) ->
-            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "                        PyLong_FromUnsignedLongLong (%s->%s));\n"
-              typ name
+            pr "  value = PyLong_FromUnsignedLongLong (%s->%s);\n" typ name;
+            pr "  if (value == NULL)\n";
+            pr "    goto err;\n";
+            pr "  PyDict_SetItemString (dict, \"%s\", value);\n" name;
         | name, FInt64 ->
-            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "                        PyLong_FromLongLong (%s->%s));\n"
-              typ name
+            pr "  value = PyLong_FromLongLong (%s->%s);\n" typ name;
+            pr "  if (value == NULL)\n";
+            pr "    goto err;\n";
+            pr "  PyDict_SetItemString (dict, \"%s\", value);\n" name;
         | name, FUInt32 ->
-            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "                        PyLong_FromUnsignedLong (%s->%s));\n"
-              typ name
+            pr "  value = PyLong_FromUnsignedLong (%s->%s);\n" typ name;
+            pr "  if (value == NULL)\n";
+            pr "    goto err;\n";
+            pr "  PyDict_SetItemString (dict, \"%s\", value);\n" name;
         | name, FInt32 ->
-            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "                        PyLong_FromLong (%s->%s));\n"
-              typ name
+            pr "  value = PyLong_FromLong (%s->%s);\n" typ name;
+            pr "  if (value == NULL)\n";
+            pr "    goto err;\n";
+            pr "  PyDict_SetItemString (dict, \"%s\", value);\n" name;
         | name, FOptPercent ->
-            pr "  if (%s->%s >= 0)\n" typ name;
-            pr "    PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "                          PyFloat_FromDouble ((double) %s->%s));\n"
-              typ name;
+            pr "  if (%s->%s >= 0) {\n" typ name;
+            pr "    value = PyFloat_FromDouble ((double) %s->%s);\n" typ name;
+            pr "    if (value == NULL)\n";
+            pr "      goto err;\n";
+            pr "    PyDict_SetItemString (dict, \"%s\", value);\n" name;
+            pr "  }\n";
             pr "  else {\n";
             pr "    Py_INCREF (Py_None);\n";
             pr "    PyDict_SetItemString (dict, \"%s\", Py_None);\n" name;
             pr "  }\n"
         | name, FChar ->
-            pr "#ifdef HAVE_PYSTRING_ASSTRING\n";
-            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "                        PyString_FromStringAndSize (&%s->%s, 1));\n"
+            pr "  value = guestfs_int_py_fromstringsize (&%s->%s, 1);\n"
               typ name;
-            pr "#else\n";
-            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-            pr "                        PyUnicode_FromStringAndSize (&%s->%s, 1));\n"
-              typ name;
-            pr "#endif\n"
+            pr "  if (value == NULL)\n";
+            pr "    goto err;\n";
+            pr "  PyDict_SetItemString (dict, \"%s\", value);\n" name;
       ) cols;
       pr "  return dict;\n";
+      pr " err:\n";
+      pr "  Py_CLEAR (dict);\n";
+      pr "  return NULL;\n";
       pr "};\n";
       pr "#endif\n";
       pr "\n";
@@ -276,10 +284,8 @@ and generate_python_actions actions () =
 ";
 
   List.iter (
-    fun { name = name; style = (ret, args, optargs as style);
-          blocking = blocking;
-          c_name = c_name;
-          c_function = c_function; c_optarg_prefix = c_optarg_prefix } ->
+    fun { name; style = (ret, args, optargs as style);
+          blocking; c_name; c_function; c_optarg_prefix } ->
       pr "#ifdef GUESTFS_HAVE_%s\n" (String.uppercase_ascii c_name);
       pr "PyObject *\n";
       pr "guestfs_int_py_%s (PyObject *self, PyObject *args)\n" name;
@@ -314,15 +320,13 @@ and generate_python_actions actions () =
 
       List.iter (
         function
-        | Pathname n | Device n | Mountable n
-        | Dev_or_Path n | Mountable_or_Path n | String n | Key n
-        | FileIn n | FileOut n | GUID n ->
+        | String (_, n) ->
             pr "  const char *%s;\n" n
         | OptString n -> pr "  const char *%s;\n" n
         | BufferIn n ->
             pr "  const char *%s;\n" n;
             pr "  Py_ssize_t %s_size;\n" n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
             pr "  PyObject *py_%s;\n" n;
             pr "  char **%s = NULL;\n" n
         | Bool n -> pr "  int %s;\n" n
@@ -352,11 +356,9 @@ and generate_python_actions actions () =
       pr "  if (!PyArg_ParseTuple (args, (char *) \"O";
       List.iter (
         function
-        | Pathname _ | Device _ | Mountable _
-        | Dev_or_Path _ | Mountable_or_Path _ | String _ | Key _
-        | FileIn _ | FileOut _ | GUID _ -> pr "s"
+        | String _ -> pr "s"
         | OptString _ -> pr "z"
-        | StringList _ | DeviceList _ | FilenameList _ -> pr "O"
+        | StringList _ -> pr "O"
         | Bool _ -> pr "i" (* XXX Python has booleans? *)
         | Int _ -> pr "i"
         | Int64 _ ->
@@ -375,12 +377,9 @@ and generate_python_actions actions () =
       pr "                         &py_g";
       List.iter (
         function
-        | Pathname n | Device n | Mountable n
-        | Dev_or_Path n | Mountable_or_Path n | String n | Key n
-        | FileIn n | FileOut n | GUID n -> pr ", &%s" n
+        | String (_, n) -> pr ", &%s" n
         | OptString n -> pr ", &%s" n
-        | StringList n | DeviceList n | FilenameList n ->
-            pr ", &py_%s" n
+        | StringList (_, n) -> pr ", &py_%s" n
         | Bool n -> pr ", &%s" n
         | Int n -> pr ", &%s" n
         | Int64 n -> pr ", &%s" n
@@ -399,11 +398,9 @@ and generate_python_actions actions () =
       pr "  g = get_handle (py_g);\n";
       List.iter (
         function
-        | Pathname _ | Device _ | Mountable _
-        | Dev_or_Path _ | Mountable_or_Path _ | String _ | Key _
-        | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
-        | BufferIn _ | GUID _ -> ()
-        | StringList n | DeviceList n | FilenameList n ->
+        | String _ | OptString _ | Bool _ | Int _ | Int64 _
+        | BufferIn _ -> ()
+        | StringList (_, n) ->
             pr "  %s = guestfs_int_py_get_string_list (py_%s);\n" n n;
             pr "  if (!%s) goto out;\n" n
         | Pointer (_, n) ->
@@ -428,13 +425,7 @@ and generate_python_actions actions () =
               pr "    optargs_s.%s = PyLong_AsLongLong (py_%s);\n" n n;
               pr "    if (PyErr_Occurred ()) goto out;\n"
             | OString _ ->
-              pr "#ifdef HAVE_PYSTRING_ASSTRING\n";
-              pr "    optargs_s.%s = PyString_AsString (py_%s);\n" n n;
-              pr "#else\n";
-              pr "    PyObject *bytes;\n";
-              pr "    bytes = PyUnicode_AsUTF8String (py_%s);\n" n;
-              pr "    optargs_s.%s = PyBytes_AS_STRING (bytes);\n" n;
-              pr "#endif\n";
+              pr "    optargs_s.%s = guestfs_int_py_asstring (py_%s);\n" n n
             | OStringList _ ->
               pr "    optargs_s.%s = guestfs_int_py_get_string_list (py_%s);\n" n n;
               pr "    if (!optargs_s.%s) goto out;\n" n;
@@ -489,50 +480,38 @@ and generate_python_actions actions () =
        | RBool _ -> pr "  py_r = PyLong_FromLong ((long) r);\n"
        | RInt64 _ -> pr "  py_r = PyLong_FromLongLong (r);\n"
        | RConstString _ ->
-           pr "#ifdef HAVE_PYSTRING_ASSTRING\n";
-           pr "  py_r = PyString_FromString (r);\n";
-           pr "#else\n";
-           pr "  py_r = PyUnicode_FromString (r);\n";
-           pr "#endif\n";
+           pr "  py_r = guestfs_int_py_fromstring (r);\n";
            pr "  if (py_r == NULL) goto out;\n";
        | RConstOptString _ ->
            pr "  if (r) {\n";
-           pr "#ifdef HAVE_PYSTRING_ASSTRING\n";
-           pr "    py_r = PyString_FromString (r);\n";
-           pr "#else\n";
-           pr "    py_r = PyUnicode_FromString (r);\n";
-           pr "#endif\n";
+           pr "    py_r = guestfs_int_py_fromstring (r);\n";
            pr "  } else {\n";
            pr "    Py_INCREF (Py_None);\n";
            pr "    py_r = Py_None;\n";
            pr "  }\n";
            pr "  if (py_r == NULL) goto out;\n";
        | RString _ ->
-           pr "#ifdef HAVE_PYSTRING_ASSTRING\n";
-           pr "  py_r = PyString_FromString (r);\n";
-           pr "#else\n";
-           pr "  py_r = PyUnicode_FromString (r);\n";
-           pr "#endif\n";
+           pr "  py_r = guestfs_int_py_fromstring (r);\n";
            pr "  free (r);\n";
            pr "  if (py_r == NULL) goto out;\n";
        | RStringList _ ->
            pr "  py_r = guestfs_int_py_put_string_list (r);\n";
-           pr "  guestfs_int_free_string_list (r);\n"
+           pr "  guestfs_int_free_string_list (r);\n";
+           pr "  if (py_r == NULL) goto out;\n";
        | RStruct (_, typ) ->
            pr "  py_r = guestfs_int_py_put_%s (r);\n" typ;
-           pr "  guestfs_free_%s (r);\n" typ
+           pr "  guestfs_free_%s (r);\n" typ;
+           pr "  if (py_r == NULL) goto out;\n";
        | RStructList (_, typ) ->
            pr "  py_r = guestfs_int_py_put_%s_list (r);\n" typ;
-           pr "  guestfs_free_%s_list (r);\n" typ
+           pr "  guestfs_free_%s_list (r);\n" typ;
+           pr "  if (py_r == NULL) goto out;\n";
        | RHashtable _ ->
            pr "  py_r = guestfs_int_py_put_table (r);\n";
-           pr "  guestfs_int_free_string_list (r);\n"
+           pr "  guestfs_int_free_string_list (r);\n";
+           pr "  if (py_r == NULL) goto out;\n";
        | RBufferOut _ ->
-           pr "#ifdef HAVE_PYSTRING_ASSTRING\n";
-           pr "  py_r = PyString_FromStringAndSize (r, size);\n";
-           pr "#else\n";
-           pr "  py_r = PyBytes_FromStringAndSize (r, size);\n";
-           pr "#endif\n";
+           pr "  py_r = guestfs_int_py_fromstringsize (r, size);\n";
            pr "  free (r);\n";
            pr "  if (py_r == NULL) goto out;\n";
       );
@@ -549,11 +528,9 @@ and generate_python_actions actions () =
 
       List.iter (
         function
-        | Pathname _ | Device _ | Mountable _
-        | Dev_or_Path _ | Mountable_or_Path _ | String _ | Key _
-        | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
-        | BufferIn _ | Pointer _ | GUID _ -> ()
-        | StringList n | DeviceList n | FilenameList n ->
+        | String _ | OptString _ | Bool _ | Int _ | Int64 _
+        | BufferIn _ | Pointer _ -> ()
+        | StringList (_, n) ->
             pr "  free (%s);\n" n
       ) args;
 
@@ -606,7 +583,7 @@ and generate_python_module () =
   pr "  { (char *) \"event_to_string\",\n";
   pr "    guestfs_int_py_event_to_string, METH_VARARGS, NULL },\n";
   List.iter (
-    fun { name = name; c_name = c_name } ->
+    fun { name; c_name } ->
       pr "#ifdef GUESTFS_HAVE_%s\n" (String.uppercase_ascii c_name);
       pr "  { (char *) \"%s\", guestfs_int_py_%s, METH_VARARGS, NULL },\n"
         name name;
@@ -896,7 +873,7 @@ class GuestFS(object):
              * at the end.
              *)
             let lines =
-              mapi (
+              List.mapi (
                 fun lineno line ->
                   if line = "" && lineno <> endpos then
                     ""
@@ -912,11 +889,9 @@ class GuestFS(object):
        *)
       List.iter (
         function
-        | Pathname _ | Device _ | Mountable _
-        | Dev_or_Path _ | Mountable_or_Path _ | String _ | Key _
-        | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
-        | BufferIn _ | GUID _ -> ()
-        | StringList n | DeviceList n | FilenameList n ->
+        | String _ | OptString _ | Bool _ | Int _ | Int64 _
+        | BufferIn _ -> ()
+        | StringList (_, n) ->
           pr "        %s = list(%s)\n" n n
         | Pointer (_, n) ->
           pr "        %s = %s.c_pointer()\n" n n

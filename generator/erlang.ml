@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -43,7 +43,7 @@ let rec generate_erlang_erl () =
 
   (* Export the public actions. *)
   List.iter (
-    fun { name = name; style = _, args, optargs; non_c_aliases = aliases } ->
+    fun { name; style = _, args, optargs; non_c_aliases = aliases } ->
       let nr_args = List.length args in
       let export name =
         if optargs = [] then
@@ -102,7 +102,7 @@ loop(Port) ->
    * process which dispatches them to the port.
    *)
   List.iter (
-    fun { name = name; style = _, args, optargs; non_c_aliases = aliases } ->
+    fun { name; style = _, args, optargs; non_c_aliases = aliases } ->
       pr "%s(G" name;
       List.iter (
         fun arg ->
@@ -228,7 +228,7 @@ extern int64_t get_int64 (ETERM *term);
   pr "\n";
 
   List.iter (
-    fun { name = name } ->
+    fun { name } ->
       pr "ETERM *run_%s (ETERM *args_tuple);\n" name
   ) (actions |> external_functions |> sort);
 
@@ -254,7 +254,7 @@ instead of erl_interface.
 */
 
 #include \"guestfs.h\"
-#include \"guestfs-internal-frontend.h\"
+#include \"guestfs-utils.h\"
 
 #include \"actions.h\"
 ";
@@ -288,7 +288,7 @@ instead of erl_interface.
       pr "{\n";
       pr "  ETERM *t[%d];\n" (List.length cols);
       pr "\n";
-      iteri (
+      List.iteri (
         fun i col ->
           (match col with
            | name, FString ->
@@ -344,30 +344,24 @@ instead of erl_interface.
 */
 
 #include \"guestfs.h\"
-#include \"guestfs-internal-frontend.h\"
+#include \"guestfs-utils.h\"
 
 #include \"actions.h\"
 ";
 
   (* The wrapper functions. *)
   List.iter (
-    fun { name = name; style = (ret, args, optargs as style);
-          c_function = c_function; c_optarg_prefix = c_optarg_prefix } ->
+    fun { name; style = (ret, args, optargs as style);
+          c_function; c_optarg_prefix } ->
       pr "\n";
       pr "ETERM *\n";
       pr "run_%s (ETERM *args_tuple)\n" name;
       pr "{\n";
 
-      iteri (
+      List.iteri (
         fun i ->
           function
-          | Pathname n
-          | Device n | Mountable n | Dev_or_Path n | Mountable_or_Path n
-          | String n
-          | FileIn n
-          | FileOut n
-          | Key n
-          | GUID n ->
+          | String (_, n) ->
             pr "  CLEANUP_FREE char *%s = erl_iolist_to_string (ARG (%d));\n" n i
           | OptString n ->
             pr "  CLEANUP_FREE char *%s;\n" n;
@@ -379,7 +373,7 @@ instead of erl_interface.
             pr "  ETERM *%s_bin = erl_iolist_to_binary (ARG (%d));\n" n i;
             pr "  const void *%s = ERL_BIN_PTR (%s_bin);\n" n n;
             pr "  size_t %s_size = ERL_BIN_SIZE (%s_bin);\n" n n
-          | StringList n | DeviceList n | FilenameList n ->
+          | StringList (_, n) ->
             pr "  CLEANUP_FREE_STRING_LIST char **%s = get_string_list (ARG (%d));\n" n i
           | Bool n ->
             pr "  int %s = get_bool (ARG (%d));\n" n i
@@ -541,7 +535,7 @@ instead of erl_interface.
 */
 
 #include \"guestfs.h\"
-#include \"guestfs-internal-frontend.h\"
+#include \"guestfs-utils.h\"
 
 #include \"actions.h\"
 
@@ -556,7 +550,7 @@ dispatch (ETERM *args_tuple)
   ";
 
   List.iter (
-    fun { name = name; style = ret, args, optargs } ->
+    fun { name; style = ret, args, optargs } ->
       pr "if (atom_equals (fun, \"%s\"))\n" name;
       pr "    return run_%s (args_tuple);\n" name;
       pr "  else ";

@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,8 @@ val generate_actions_pod : unit -> unit
 val generate_availability_pod : unit -> unit
 val generate_client_actions : Types.action list -> unit -> unit
 val generate_client_actions_variants : unit -> unit
-val generate_client_structs_cleanup : unit -> unit
+val generate_client_structs_cleanups_h : unit -> unit
+val generate_client_structs_cleanups_c : unit -> unit
 val generate_client_structs_compare : unit -> unit
 val generate_client_structs_copy : unit -> unit
 val generate_client_structs_free : unit -> unit
@@ -35,7 +36,6 @@ val generate_client_structs_print_c : unit -> unit
 val generate_event_string_c : unit -> unit
 val generate_guestfs_h : unit -> unit
 val generate_internal_actions_h : unit -> unit
-val generate_internal_frontend_cleanups_h : unit -> unit
 val generate_linker_script : unit -> unit
 val generate_max_proc_nr : unit -> unit
 val generate_structs_pod : unit -> unit

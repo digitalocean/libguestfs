@@ -9,36 +9,38 @@ guestfsd — фонова служба guestfs
 
 =head1 ОПИС
 
-C<guestfsd> is the libguestfs daemon.  Normal users never need to run this
-program explicitly.  This man page discusses what C<guestfsd> does in both
-the libguestfs appliance and when using libguestfs live.
+C<guestfsd> є фоновою службою libguestfs. У звичайних користувачів ніколи не
+виникатиме потреби у явному запуску цієї програми. На цій сторінці
+підручника обговорено, що саме C<guestfsd> робить у базовій системі
+libguestfs і коли libguestfs використовується «вживу».
 
-=head2 LIBGUESTFS APPLIANCE
+=head2 БАЗОВА СИСТЕМА LIBGUESTFS
 
-For the architecture of the libguestfs appliance, see
-L<guestfs(3)/ARCHITECTURE>.
+Архітектуру базової системи libguestfs описано у розділі
+L<guestfs(3)/АРХІТЕКТУРА>.
 
-After the appliance boots, the F</init> script in the appliance starts
-C<guestfsd> with no arguments.  C<guestfsd> opens the virtio-serial port on
-a known path (see L</FILES>).  It initiates the protocol (see
-L<guestfs(3)/COMMUNICATION PROTOCOL>) and processes requests one at a time
-from the library until the appliance is destroyed.
+Після завантаження базової системи скрипт F</init> у базовій системі
+запускає C<guestfsd> без аргументів. C<guestfsd> відкриває послідовний порт
+virtio за відомим шляхом (див. L</ФАЙЛИ>). Він ініціює протокол
+(див. L<guestfs(3)/ПРОТОКОЛ ОБМІНУ ДАНИМИ>) і обробляє запити один за одним
+з бібліотеки, аж доки базову систему не буде знищено.
 
-Filesystems are mounted under F</sysroot> and all filesystem operations
-happen relative to this directory.
+Файлові системи монтуються до каталогу F</sysroot>, а усі дії із файловими
+системами здійснюються відносно цього каталогу.
 
 =head2 LIBGUESTFS LIVE
 
-In the libguestfs live case, C<guestfsd -r> is started from the rc-scripts,
-systemd, etc.
+У випадку libguestfs, C<guestfsd -r> запускається зі скриптів rc, systemd
+тощо.
 
-The C<-r> option causes the daemon to operate on the root filesystem instead
-of F</sysroot>.
+Параметр C<-r> наказує фоновій службі працювати з кореневою файловою
+системою, а не з F</sysroot>.
 
-Currently (because of limitations in virtio-serial) only one client can
-connect at a time, and C<guestfsd> must be restarted after each client
-disconnects.  If libguestfs live were changed to use a different transport
-such as TCP/IP then this limitation could be removed.
+У поточній версії (через обмеження у virtio-serial) одночасно із фоновою
+службою може бути з'єднано лише один клієнт, а після від'єднання кожного з
+клієнтів C<guestfsd> має бути перезапущено. Якщо libguestfs live буде
+перемкнуто на використання іншого каналу передавання даних, зокрема TCP/IP,
+це обмеження буде знято.
 
 =head1 ПАРАМЕТРИ
 
@@ -56,32 +58,35 @@ such as TCP/IP then this limitation could be removed.
 
 =item B<--channel> дф:N
 
-Pass the name of the virtio-serial channel, serial port, etc.  over which
-guestfsd will communicate with the library.  If this parameter is not given,
-then an internal default port is used.
+Передати назву послідовного каналу virtio, послідовного порту тощо, яким
+guestfsd обмінюватиметься даними із бібліотекою. Якщо цей параметр не
+вказано, буде використано внутрішній типовий порт.
 
-The C<fd:N> form causes guestfsd to use the file descriptor C<N> directly.
+Формат C<дф:N> спричиняє використання у guestfsd дескриптора файла C<N>
+безпосередньо.
 
 =item B<-l>
 
 =item B<--listen>
 
-Instead of opening the C<guestfs_channel> and thus expecting that it already
-exists, create the channel as a Unix domain socket, listen on it, and accept
-a single connection.  This is mainly used for testing the daemon.
+Замість відкриття C<guestfs_channel> і, таким чином, сподівання на його
+існування, створити канал як сокет домену Unix, очікувати на дані на ньому і
+прийняти одинарне з'єднання. В основному, це використовується для тестування
+фонової служби.
 
 =item B<-n>
 
 =item B<--network>
 
-Enable network features in the daemon.
+Увімкнути мережеві можливості у фоновій службі.
 
 =item B<-r>
 
-Set the root filesystem to be F</> (instead of the default which is
-F</sysroot>).  Also do not unmount filesystems when the daemon exits.
+Встановити кореневу файлову систему F</> (замість типової, якою є
+F</sysroot>). Крім того, не демонтувати файлові системи, якщо існує фонова
+служба.
 
-This option is used to enable libguestfs live.
+Цей параметр використовується для вмикання libguestfs live.
 
 =item B<-v>
 
@@ -89,8 +94,8 @@ This option is used to enable libguestfs live.
 
 Увімкнути докладний показ повідомлень з метою діагностики.
 
-The verbose flag is also set if the Linux command line contains the
-substring C<guestfs_verbose=1>.
+Прапорець докладних повідомлень також встановлюється, якщо у командному
+рядку Linux міститься підрядок C<guestfs_verbose=1>.
 
 =back
 
@@ -109,29 +114,30 @@ substring C<guestfs_verbose=1>.
 
 =item F</proc/cmdline>
 
-The Linux command line is parsed to discover C<guestfs_*> flags.  The
-following flags are understood:
+Командний рядок Linux буде оброблено з метою виявлення прапорців
+C<guestfs_*>. Розпізнаються такі прапорці:
 
 =over 4
 
 =item B<guestfs_verbose=1>
 
-Enable verbose messages.  This flag is passed by the libguestfs library to
-the appliance to make the daemon more verbose (it acts like the I<-v> flag
-on the command line).  Unrelated to the daemon, it also causes the appliance
-init script to print out a lot more debugging information.
+Увімкнути докладні повідомлення. Цей прапорець передається бібліотекою
+libguestfs до базової системи з метою зробити повідомлення фонової служби
+докладнішими (працює як прапорець I<-v> у командному рядку). Незалежно від
+самої фонової служби, спричиняє виведення скриптом ініціалізації базової
+системи набагато ширшого обсягу інформації.
 
 =item B<guestfs_channel=ШЛЯХ>
 
-Set the path to the virtio-serial channel to something other than the
-default (which is F</dev/virtio-ports/org.libguestfs.channel.0>).  This is
-used by the User-Mode Linux backend to use a regular emulated serial port
-instead of virtio-serial.
+Встановити якийсь нетиповий шлях до послідовного каналу virtio (типовим є
+шлях F</dev/virtio-ports/org.libguestfs.channel.0>). Використовується
+модулем режиму користувача Linux для використання звичайного емульованого
+послідовного порту замість послідовного порту virtio.
 
 =item B<guestfs_network=1>
 
-This is set if the appliance network is enabled (see
-C<guestfs_set_network>).
+Встановлюється, якщо увімкнено мережу у базовій системі
+(див. C<guestfs_set_network>).
 
 =back
 
@@ -147,5 +153,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

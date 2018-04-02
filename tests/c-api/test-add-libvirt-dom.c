@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2010-2017 Red Hat Inc.
+ * Copyright (C) 2010-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include "xgetcwd.h"
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 static void
 make_test_xml (FILE *fp, const char *cwd)

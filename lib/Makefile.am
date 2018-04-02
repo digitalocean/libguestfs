@@ -56,8 +56,9 @@ lib_LTLIBRARIES = libguestfs.la
 libguestfs_la_SOURCES = \
 	../common/errnostring/errnostring.h \
 	../common/protocol/guestfs_protocol.h \
-	../common/utils/guestfs-internal-frontend.h \
-	../common/utils/guestfs-internal-frontend-cleanups.h \
+	../common/qemuopts/qemuopts.h \
+	../common/utils/guestfs-utils.h \
+	../common/structs/structs-cleanups.h \
 	guestfs.h \
 	guestfs-internal.h \
 	guestfs-internal-all.h \
@@ -88,18 +89,11 @@ libguestfs_la_SOURCES = \
 	event-string.c \
 	events.c \
 	file.c \
-	filearch.c \
 	fuse.c \
 	guid.c \
 	handle.c \
-	hivex.c \
 	info.c \
-	inspect.c \
 	inspect-apps.c \
-	inspect-fs.c \
-	inspect-fs-cd.c \
-	inspect-fs-unix.c \
-	inspect-fs-windows.c \
 	inspect-icon.c \
 	journal.c \
 	launch.c \
@@ -109,34 +103,35 @@ libguestfs_la_SOURCES = \
 	launch-unix.c \
 	libvirt-auth.c \
 	libvirt-domain.c \
-	listfs.c \
 	lpj.c \
 	match.c \
 	mountable.c \
-	osinfo.c \
 	private-data.c \
 	proto.c \
 	qemu.c \
+	rescue.c \
 	stringsbuf.c \
 	structs-compare.c \
 	structs-copy.c \
 	structs-free.c \
 	tmpdirs.c \
 	tsk.c \
+	uefi.c \
 	umask.c \
+	version.c \
 	wait.c \
 	whole-file.c \
-	version.c \
+	yara.c \
 	libguestfs.syms
 
 libguestfs_la_CPPFLAGS = \
-	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DGUESTFS_PRIVATE=1 \
-	-DLIBOSINFO_DB_PATH='"$(datadir)/libosinfo/db"' \
 	-I$(top_srcdir)/common/errnostring -I$(top_builddir)/common/errnostring \
 	-I$(top_srcdir)/common/protocol -I$(top_builddir)/common/protocol \
+	-I$(top_srcdir)/common/qemuopts -I$(top_builddir)/common/qemuopts \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/common/structs -I$(top_builddir)/common/structs \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
 
 libguestfs_la_CFLAGS = \
@@ -151,8 +146,10 @@ libguestfs_la_CFLAGS = \
 libguestfs_la_LIBADD = \
 	../common/errnostring/liberrnostring.la \
 	../common/protocol/libprotocol.la \
+	../common/qemuopts/libqemuopts.la \
+	../common/structs/libstructs.la \
 	../common/utils/libutils.la \
-	$(PCRE_LIBS) $(MAGIC_LIBS) \
+	$(PCRE_LIBS) \
 	$(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
 	$(SELINUX_LIBS) \
 	$(YAJL_LIBS) \
@@ -212,6 +209,7 @@ unit_tests_SOURCES = unit-tests.c
 unit_tests_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/common/structs -I$(top_builddir)/common/structs \
 	-I$(top_srcdir)/lib -I.
 unit_tests_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
@@ -220,6 +218,7 @@ unit_tests_CFLAGS = \
 # non-exported functions we have to link with the objects not the
 # library.
 unit_tests_LDADD = \
+	../common/structs/libstructs.la \
 	../common/utils/libutils.la \
 	$(libguestfs_la_OBJECTS) \
 	$(libguestfs_la_LIBADD)

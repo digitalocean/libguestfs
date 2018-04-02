@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@ TESTS = \
 	test-inspect-fstab-md.sh \
 	test-list-filesystems.sh \
 	test-list-md-devices.sh \
+	test-lvm-on-md-device.sh \
+	test-md-and-lvm-devices.sh \
 	test-mdadm.sh
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test

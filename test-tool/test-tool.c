@@ -1,5 +1,5 @@
 /* libguestfs-test-tool
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 #include <libintl.h>
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #include "ignore-value.h"
 
@@ -54,7 +54,7 @@ static void
 usage (void)
 {
   printf (_("libguestfs-test-tool: interactive test tool\n"
-            "Copyright (C) 2009-2017 Red Hat Inc.\n"
+            "Copyright (C) 2009-2018 Red Hat Inc.\n"
             "Usage:\n"
             "  libguestfs-test-tool [--options]\n"
             "Options:\n"
@@ -166,7 +166,7 @@ main (int argc, char *argv[])
   if (guestfs_parse_environment (g) == -1)
     error (EXIT_FAILURE, 0,
            _("failed parsing environment variables.\n"
-             "Check earlier messages, and the output of the 'printenv' command."));
+             "Check earlier messages, and the output of the ‘printenv’ command."));
   guestfs_set_verbose (g, 1);
 
   if (qemu)
@@ -224,7 +224,6 @@ main (int argc, char *argv[])
   p = guestfs_get_cachedir (g);
   printf ("guestfs_get_cachedir: %s\n", p ? : "(null)");
   free (p);
-  printf ("guestfs_get_direct: %d\n", guestfs_get_direct (g));
   p = guestfs_get_hv (g);
   printf ("guestfs_get_hv: %s\n", p);
   free (p);
@@ -314,7 +313,7 @@ set_qemu (guestfs_h *g, const char *path, int use_wrapper)
   if (!use_wrapper) {
     if (access (path, X_OK) == -1)
       error (EXIT_FAILURE, errno,
-             _("binary '%s' does not exist or is not executable"), path);
+             _("binary ‘%s’ does not exist or is not executable"), path);
 
     guestfs_set_hv (g, path);
     return;

@@ -36,7 +36,7 @@ instead of erl_interface.
 */
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #include "actions.h"
 
@@ -1038,6 +1038,21 @@ run_part_set_bootable (ETERM *args_tuple)
 }
 
 ETERM *
+run_part_set_gpt_attributes (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int partnum = get_int (ARG (1));
+  int64_t attributes = get_int64 (ARG (2));
+  int r;
+
+  r = guestfs_part_set_gpt_attributes (g, device, partnum, attributes);
+  if (r == -1)
+    return make_error ("part_set_gpt_attributes");
+
+  return erl_mk_atom ("ok");
+}
+
+ETERM *
 run_part_set_gpt_guid (ETERM *args_tuple)
 {
   CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
@@ -1407,6 +1422,21 @@ run_write_append (ETERM *args_tuple)
     return make_error ("write_append");
 
   return erl_mk_atom ("ok");
+}
+
+ETERM *
+run_yara_scan (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  struct guestfs_yara_detection_list *r;
+
+  r = guestfs_yara_scan (g, path);
+  if (r == NULL)
+    return make_error ("yara_scan");
+
+  ETERM *rt = make_yara_detection_list (r);
+  guestfs_free_yara_detection_list (r);
+  return rt;
 }
 
 ETERM *

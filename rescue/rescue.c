@@ -1,5 +1,5 @@
 /* virt-rescue
- * Copyright (C) 2010-2012 Red Hat Inc.
+ * Copyright (C) 2010-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,20 +26,35 @@
 #include <getopt.h>
 #include <errno.h>
 #include <error.h>
+#include <signal.h>
+#include <termios.h>
+#include <poll.h>
 #include <locale.h>
 #include <assert.h>
 #include <libintl.h>
 
-#include "ignore-value.h"
-#include "xvasprintf.h"
+#include "full-write.h"
 #include "getprogname.h"
+#include "ignore-value.h"
+#include "nonblocking.h"
+#include "xvasprintf.h"
 
 #include "guestfs.h"
+#include "guestfs-utils.h"
+
+#include "windows.h"
 #include "options.h"
 #include "display-options.h"
 
+#include "rescue.h"
+
+static void log_message_callback (guestfs_h *g, void *opaque, uint64_t event, int event_handle, int flags, const char *buf, size_t buf_len, const uint64_t *array, size_t array_len);
+static void do_rescue (int sock);
+static void raw_tty (void);
+static void restore_tty (void);
+static void tstp_handler (int sig);
+static void cont_handler (int sig);
 static void add_scratch_disks (int n, struct drv **drvs);
-static void do_suggestion (struct drv *drvs);
 
 /* Currently open libguestfs handle. */
 guestfs_h *g;
@@ -53,16 +68,20 @@ const char *libvirt_uri = NULL;
 int inspector = 0;
 int in_guestfish = 0;
 int in_virt_rescue = 1;
+int escape_key = '\x1d';        /* ^] */
+
+/* Old terminal settings. */
+static struct termios old_termios;
 
 static void __attribute__((noreturn))
 usage (int status)
 {
   if (status != EXIT_SUCCESS)
-    fprintf (stderr, _("Try `%s --help' for more information.\n"),
+    fprintf (stderr, _("Try ‘%s --help’ for more information.\n"),
              getprogname ());
   else {
     printf (_("%s: Run a rescue shell on a virtual machine\n"
-              "Copyright (C) 2009-2017 Red Hat Inc.\n"
+              "Copyright (C) 2009-2018 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options] -d domname\n"
               "  %s [--options] -a disk.img [-a disk.img ...]\n"
@@ -71,15 +90,17 @@ usage (int status)
               "  --append kernelopts  Append kernel options\n"
               "  -c|--connect uri     Specify libvirt URI for -d option\n"
               "  -d|--domain guest    Add disks from libvirt guest\n"
+              "  -e ^x|none           Set or disable escape key (default ^])\n"
               "  --format[=raw|..]    Force disk format for -a option\n"
               "  --help               Display brief help\n"
-              "  -m|--memsize MB      Set memory size in megabytes\n"
+              "  -i|--inspector       Automatically mount filesystems\n"
+              "  -m|--mount dev[:mnt[:opts[:fstype]] Mount dev on mnt (if omitted, /)\n"
+              "  --memsize MB         Set memory size in megabytes\n"
               "  --network            Enable network\n"
               "  -r|--ro              Access read-only\n"
               "  --scratch[=N]        Add scratch disk(s)\n"
               "  --selinux            For backwards compat only, does nothing\n"
               "  --smp N              Enable SMP with N >= 2 virtual CPUs\n"
-              "  --suggest            Suggest mount commands for this guest\n"
               "  -v|--verbose         Verbose messages\n"
               "  -V|--version         Display version and exit\n"
               "  -w|--rw              Mount read-write\n"
@@ -102,7 +123,7 @@ main (int argc, char *argv[])
 
   enum { HELP_OPTION = CHAR_MAX + 1 };
 
-  static const char options[] = "a:c:d:m:rvVwx";
+  static const char options[] = "a:c:d:e:im:rvVwx";
   static const struct option long_options[] = {
     { "add", 1, 0, 'a' },
     { "append", 1, 0, 0 },
@@ -110,8 +131,10 @@ main (int argc, char *argv[])
     { "domain", 1, 0, 'd' },
     { "format", 2, 0, 0 },
     { "help", 0, 0, HELP_OPTION },
+    { "inspector", 0, 0, 'i' },
     { "long-options", 0, 0, 0 },
-    { "memsize", 1, 0, 'm' },
+    { "mount", 1, 0, 'm' },
+    { "memsize", 1, 0, 0 },
     { "network", 0, 0, 0 },
     { "ro", 0, 0, 'r' },
     { "rw", 0, 0, 'w' },
@@ -126,15 +149,20 @@ main (int argc, char *argv[])
   };
   struct drv *drvs = NULL;
   struct drv *drv;
+  struct mp *mps = NULL;
+  struct mp *mp;
+  char *p;
   const char *format = NULL;
   bool format_consumed = true;
   int c;
   int option_index;
   int network = 0;
   const char *append = NULL;
-  int memsize = 0;
+  int memsize = 0, m;
   int smp = 0;
   int suggest = 0;
+  char *append_full;
+  int sock;
 
   g = guestfs_create ();
   if (g == NULL)
@@ -161,10 +189,10 @@ main (int argc, char *argv[])
       } else if (STREQ (long_options[option_index].name, "smp")) {
         if (sscanf (optarg, "%d", &smp) != 1)
           error (EXIT_FAILURE, 0,
-                 _("could not parse --smp parameter '%s'"), optarg);
+                 _("could not parse --smp parameter ‘%s’"), optarg);
         if (smp < 1)
           error (EXIT_FAILURE, 0,
-                 _("--smp parameter '%s' should be >= 1"), optarg);
+                 _("--smp parameter ‘%s’ should be >= 1"), optarg);
       } else if (STREQ (long_options[option_index].name, "suggest")) {
         suggest = 1;
       } else if (STREQ (long_options[option_index].name, "scratch")) {
@@ -174,12 +202,16 @@ main (int argc, char *argv[])
           int n;
           if (sscanf (optarg, "%d", &n) != 1)
             error (EXIT_FAILURE, 0,
-                   _("could not parse --scratch parameter '%s'"), optarg);
+                   _("could not parse --scratch parameter ‘%s’"), optarg);
           if (n < 1)
             error (EXIT_FAILURE, 0,
-                   _("--scratch parameter '%s' should be >= 1"), optarg);
+                   _("--scratch parameter ‘%s’ should be >= 1"), optarg);
           add_scratch_disks (n, &drvs);
         }
+      } else if (STREQ (long_options[option_index].name, "memsize")) {
+        if (sscanf (optarg, "%d", &memsize) != 1)
+          error (EXIT_FAILURE, 0,
+                 _("could not parse memory size ‘%s’"), optarg);
       } else
         error (EXIT_FAILURE, 0,
                _("unknown long option: %s (%d)"),
@@ -198,10 +230,25 @@ main (int argc, char *argv[])
       OPTION_d;
       break;
 
+    case 'e':
+      escape_key = parse_escape_key (optarg);
+      if (escape_key == -1)
+        error (EXIT_FAILURE, 0, _("unrecognized escape key: %s"), optarg);
+      break;
+
+    case 'i':
+      OPTION_i;
+      break;
+
     case 'm':
-      if (sscanf (optarg, "%d", &memsize) != 1)
-        error (EXIT_FAILURE, 0,
-               _("could not parse memory size '%s'"), optarg);
+      /* For backwards compatibility with virt-rescue <= 1.36, we
+       * must handle -m <number> as a synonym for --memsize.
+       */
+      if (sscanf (optarg, "%d", &m) == 1)
+        memsize = m;
+      else {
+        OPTION_m;
+      }
       break;
 
     case 'r':
@@ -272,14 +319,13 @@ main (int argc, char *argv[])
    * options parsing code.  Assert here that they have known-good
    * values.
    */
-  assert (inspector == 0);
   assert (keys_from_stdin == 0);
   assert (echo_keys == 0);
   assert (live == 0);
 
   /* Must be no extra arguments on the command line. */
   if (optind != argc) {
-    fprintf (stderr, _("%s: error: extra argument '%s' on command line.\n"
+    fprintf (stderr, _("%s: error: extra argument ‘%s’ on command line.\n"
              "Make sure to specify the argument for --format or --scratch "
              "like '--format=%s'.\n"),
              getprogname (), argv[optind], argv[optind]);
@@ -295,27 +341,6 @@ main (int argc, char *argv[])
     usage (EXIT_FAILURE);
   }
 
-  /* Setting "direct mode" is required for the rescue appliance. */
-  if (guestfs_set_direct (g, 1) == -1)
-    exit (EXIT_FAILURE);
-
-  {
-    /* The libvirt backend doesn't support direct mode.  As a temporary
-     * workaround, force the appliance backend, but warn about it.
-     */
-    CLEANUP_FREE char *backend = guestfs_get_backend (g);
-    if (backend) {
-      if (STREQ (backend, "libvirt") ||
-          STRPREFIX (backend, "libvirt:")) {
-        fprintf (stderr, _("%s: warning: virt-rescue doesn't work with the libvirt backend\n"
-                           "at the moment.  As a workaround, forcing backend = 'direct'.\n"),
-                 getprogname ());
-        if (guestfs_set_backend (g, "direct") == -1)
-          exit (EXIT_FAILURE);
-      }
-    }
-  }
-
   /* Set other features. */
   if (memsize > 0)
     if (guestfs_set_memsize (g, memsize) == -1)
@@ -327,180 +352,304 @@ main (int argc, char *argv[])
     if (guestfs_set_smp (g, smp) == -1)
       exit (EXIT_FAILURE);
 
-  {
-    /* Kernel command line must include guestfs_rescue=1 (see
-     * appliance/init) as well as other options.
-     */
-    CLEANUP_FREE char *append_full = xasprintf ("guestfs_rescue=1%s%s",
-                                                append ? " " : "",
-                                                append ? append : "");
-    if (guestfs_set_append (g, append_full) == -1)
-      exit (EXIT_FAILURE);
+  /* Kernel command line must include guestfs_rescue=1 (see
+   * appliance/init) as well as other options.
+   */
+  append_full = xasprintf ("guestfs_rescue=1%s%s",
+                           append ? " " : "",
+                           append ? append : "");
+  if (guestfs_set_append (g, append_full) == -1)
+    exit (EXIT_FAILURE);
+  free (append_full);
+
+  /* Add an event handler to print "log messages".  These will be the
+   * output of the appliance console during launch and shutdown.
+   * After launch, we will read the console messages directly from the
+   * socket and they won't be passed through the event callback.
+   */
+  if (guestfs_set_event_callback (g, log_message_callback,
+                                  GUESTFS_EVENT_APPLIANCE, 0, NULL) == -1)
+    exit (EXIT_FAILURE);
+
+  /* Do the guest drives and mountpoints. */
+  add_drives (drvs);
+  if (guestfs_launch (g) == -1)
+    exit (EXIT_FAILURE);
+  if (inspector)
+    inspect_mount ();
+  mount_mps (mps);
+
+  free_drives (drvs);
+  free_mps (mps);
+
+  /* Also bind-mount /dev etc under /sysroot, if -i was given. */
+  if (inspector) {
+    CLEANUP_FREE_STRING_LIST char **roots;
+    int windows;
+
+    roots = guestfs_inspect_get_roots (g);
+    windows = roots && roots[0] && is_windows (g, roots[0]);
+    if (!windows) {
+      const char *cmd[5] = { "mount", "--rbind", NULL, NULL, NULL };
+      char *r;
+
+      cmd[2] = "/dev"; cmd[3] = "/sysroot/dev";
+      r = guestfs_debug (g, "sh", (char **) cmd);
+      free (r);
+
+      cmd[2] = "/proc"; cmd[3] = "/sysroot/proc";
+      r = guestfs_debug (g, "sh", (char **) cmd);
+      free (r);
+
+      cmd[2] = "/sys"; cmd[3] = "/sysroot/sys";
+      r = guestfs_debug (g, "sh", (char **) cmd);
+      free (r);
+    }
   }
 
-  /* Add drives. */
-  add_drives (drvs);
+  sock = guestfs_internal_get_console_socket (g);
+  if (sock == -1)
+    exit (EXIT_FAILURE);
 
-  /* Free up data structures, no longer needed after this point. */
-  free_drives (drvs);
+  /* Try to set all sockets to non-blocking. */
+  ignore_value (set_nonblocking_flag (STDIN_FILENO, 1));
+  ignore_value (set_nonblocking_flag (STDOUT_FILENO, 1));
+  ignore_value (set_nonblocking_flag (sock, 1));
 
-  /* Run the appliance.  This won't return until the user quits the
-   * appliance.
+  /* Save the initial state of the tty so we always have the original
+   * state to go back to.
    */
-  if (!verbose)
-    guestfs_set_error_handler (g, NULL, NULL);
+  if (tcgetattr (STDIN_FILENO, &old_termios) == -1) {
+    perror ("tcgetattr: stdin");
+    exit (EXIT_FAILURE);
+  }
 
-  /* We expect launch to fail, so ignore the return value, and don't
-   * bother with explicit guestfs_shutdown either.
+  /* Put stdin in raw mode so that we can receive ^C and other
+   * special keys.
    */
-  ignore_value (guestfs_launch (g));
+  raw_tty ();
 
+  /* Restore the tty settings when the process exits. */
+  atexit (restore_tty);
+
+  /* Catch tty stop and cont signals so we can cleanup.
+   * See https://www.gnu.org/software/libc/manual/html_node/Signaling-Yourself.html
+   */
+  signal (SIGTSTP, tstp_handler);
+  signal (SIGCONT, cont_handler);
+
+  /* Print the escape key if set. */
+  if (escape_key > 0)
+    print_escape_key_help ();
+
+  do_rescue (sock);
+
+  restore_tty ();
+
+  /* Shut down the appliance. */
+  guestfs_push_error_handler (g, NULL, NULL);
+  if (guestfs_shutdown (g) == -1) {
+    const char *err;
+
+    /* Ignore "appliance closed the connection unexpectedly" since
+     * this can happen if the user reboots the appliance.
+     */
+    if (guestfs_last_errno (g) == EPIPE)
+      goto next;
+
+    /* Otherwise it's a real error. */
+    err = guestfs_last_error (g);
+    fprintf (stderr, "libguestfs: error: %s\n", err);
+    exit (EXIT_FAILURE);
+  }
+ next:
+  guestfs_pop_error_handler (g);
   guestfs_close (g);
 
   exit (EXIT_SUCCESS);
 }
 
-static void suggest_filesystems (void);
-
-static int
-compare_keys_len (const void *p1, const void *p2)
+static void
+log_message_callback (guestfs_h *g, void *opaque, uint64_t event,
+                      int event_handle, int flags,
+                      const char *buf, size_t buf_len,
+                      const uint64_t *array, size_t array_len)
 {
-  const char *key1 = * (char * const *) p1;
-  const char *key2 = * (char * const *) p2;
-  return strlen (key1) - strlen (key2);
+  if (buf_len > 0) {
+    ignore_value (full_write (STDOUT_FILENO, buf, buf_len));
+  }
 }
 
-/* virt-rescue --suggest flag does a kind of inspection on the
- * drives and suggests mount commands that you should use.
+/* This is the main loop for virt-rescue.  We read and write
+ * directly to the console socket.
  */
+#define BUFSIZE 4096
+static char rbuf[BUFSIZE];      /* appliance -> local tty */
+static char wbuf[BUFSIZE];      /* local tty -> appliance */
+
 static void
-do_suggestion (struct drv *drvs)
+do_rescue (int sock)
 {
-  CLEANUP_FREE_STRING_LIST char **roots = NULL;
-  size_t i;
+  size_t rlen = 0;
+  size_t wlen = 0;
+  struct escape_state escape_state;
 
-  /* For inspection, force add_drives to add the drives read-only. */
-  read_only = 1;
+  init_escape_state (&escape_state);
 
-  /* Add drives. */
-  add_drives (drvs);
+  while (sock >= 0 || rlen > 0) {
+    struct pollfd fds[3];
+    nfds_t nfds = 2;
+    int r;
+    ssize_t n;
 
-  /* Free up data structures, no longer needed after this point. */
-  free_drives (drvs);
+    fds[0].fd = STDIN_FILENO;
+    fds[0].events = 0;
+    if (BUFSIZE-wlen > 0)
+      fds[0].events = POLLIN;
+    fds[0].revents = 0;
 
-  printf (_("Inspecting the virtual machine or disk image ...\n\n"));
-  fflush (stdout);
+    fds[1].fd = STDOUT_FILENO;
+    fds[1].events = 0;
+    if (rlen > 0)
+      fds[1].events |= POLLOUT;
+    fds[1].revents = 0;
 
-  if (guestfs_launch (g) == -1)
-    exit (EXIT_FAILURE);
-
-  /* Don't use inspect_mount, since for virt-rescue we should allow
-   * arbitrary disks and disks with more than one OS on them.  Let's
-   * do this using the basic API instead.
-   */
-  roots = guestfs_inspect_os (g);
-  if (roots == NULL)
-    exit (EXIT_FAILURE);
-
-  if (roots[0] == NULL) {
-    suggest_filesystems ();
-    return;
-  }
-
-  printf (_("This disk contains one or more operating systems.  You can use these mount\n"
-            "commands in virt-rescue (at the ><rescue> prompt) to mount the filesystems.\n\n"));
-
-  for (i = 0; roots[i] != NULL; ++i) {
-    CLEANUP_FREE_STRING_LIST char **mps = NULL;
-    CLEANUP_FREE char *type = NULL, *distro = NULL, *product_name = NULL;
-    int major, minor;
-    size_t j;
-
-    type = guestfs_inspect_get_type (g, roots[i]);
-    distro = guestfs_inspect_get_distro (g, roots[i]);
-    product_name = guestfs_inspect_get_product_name (g, roots[i]);
-    major = guestfs_inspect_get_major_version (g, roots[i]);
-    minor = guestfs_inspect_get_minor_version (g, roots[i]);
-
-    printf (_("# %s is the root of a %s operating system\n"
-              "# type: %s, distro: %s, version: %d.%d\n"
-              "# %s\n\n"),
-            roots[i], type ? : "unknown",
-            type ? : "unknown", distro ? : "unknown", major, minor,
-            product_name ? : "");
-
-    mps = guestfs_inspect_get_mountpoints (g, roots[i]);
-    if (mps == NULL)
-      exit (EXIT_FAILURE);
-
-    /* Sort by key length, shortest key first, so that we end up
-     * mounting the filesystems in the correct order.
-     */
-    qsort (mps, guestfs_int_count_strings (mps) / 2, 2 * sizeof (char *),
-           compare_keys_len);
-
-    for (j = 0; mps[j] != NULL; j += 2)
-      printf ("mount %s /sysroot%s\n", mps[j+1], mps[j]);
-
-    /* If it's Linux, print the bind-mounts and a chroot command. */
-    if (type && STREQ (type, "linux")) {
-      printf ("mount --rbind /dev /sysroot/dev\n");
-      printf ("mount --rbind /proc /sysroot/proc\n");
-      printf ("mount --rbind /sys /sysroot/sys\n");
-      printf ("\n");
-      printf ("cd /sysroot\n");
-      printf ("chroot /sysroot\n");
+    if (sock >= 0) {
+      fds[2].fd = sock;
+      fds[2].events = 0;
+      if (BUFSIZE-rlen > 0)
+        fds[2].events |= POLLIN;
+      if (wlen > 0)
+        fds[2].events |= POLLOUT;
+      fds[2].revents = 0;
+      nfds++;
     }
 
-    printf ("\n");
+    r = poll (fds, nfds, -1);
+    if (r == -1) {
+      if (errno == EINTR || errno == EAGAIN)
+        continue;
+      perror ("poll");
+      return;
+    }
+
+    /* Input from local tty. */
+    if ((fds[0].revents & POLLIN) != 0) {
+      assert (BUFSIZE-wlen > 0);
+      n = read (STDIN_FILENO, wbuf+wlen, BUFSIZE-wlen);
+      if (n == -1) {
+        if (errno == EINTR || errno == EAGAIN)
+          continue;
+        perror ("read");
+        return;
+      }
+      if (n == 0) {
+        /* We don't expect this to happen.  Maybe the whole tty went away?
+         * Anyway, we should exit as soon as possible.
+         */
+        return;
+      }
+      if (n > 0)
+        wlen += n;
+
+      /* Process escape sequences in the tty input.  If the function
+       * returns true, then we exit the loop causing virt-rescue to
+       * exit.
+       */
+      if (escape_key > 0 && process_escapes (&escape_state, wbuf, &wlen))
+        return;
+    }
+
+    /* Log message from appliance. */
+    if (nfds > 2 && (fds[2].revents & POLLIN) != 0) {
+      assert (BUFSIZE-rlen > 0);
+      n = read (sock, rbuf+rlen, BUFSIZE-rlen);
+      if (n == -1) {
+        if (errno == EINTR || errno == EAGAIN)
+          continue;
+        if (errno == ECONNRESET)
+          goto appliance_closed;
+        perror ("read");
+        return;
+      }
+      if (n == 0) {
+      appliance_closed:
+        sock = -1;
+        /* Don't actually close the socket, because it's owned by
+         * the guestfs handle.
+         */
+        continue;
+      }
+      if (n > 0)
+        rlen += n;
+    }
+
+    /* Write log messages to local tty. */
+    if ((fds[1].revents & POLLOUT) != 0) {
+      assert (rlen > 0);
+      n = write (STDOUT_FILENO, rbuf, rlen);
+      if (n == -1) {
+        perror ("write");
+        continue;
+      }
+      rlen -= n;
+      memmove (rbuf, rbuf+n, rlen);
+    }
+
+    /* Write commands to the appliance. */
+    if (nfds > 2 && (fds[2].revents & POLLOUT) != 0) {
+      assert (wlen > 0);
+      n = write (sock, wbuf, wlen);
+      if (n == -1) {
+        perror ("write");
+        continue;
+      }
+      wlen -= n;
+      memmove (wbuf, wbuf+n, wlen);
+    }
   }
 }
 
-/* Inspection failed, so it doesn't contain any OS that we recognise.
- * However there might still be filesystems so print some suggestions
- * for those.
+/* Put the tty in raw mode. */
+static void
+raw_tty (void)
+{
+  struct termios termios;
+
+  if (tcgetattr (STDIN_FILENO, &termios) == -1) {
+    perror ("tcgetattr: stdin");
+    exit (EXIT_FAILURE);
+  }
+  cfmakeraw (&termios);
+  if (tcsetattr (STDIN_FILENO, TCSANOW, &termios) == -1) {
+    perror ("tcsetattr: stdin");
+    exit (EXIT_FAILURE);
+  }
+}
+
+/* Restore the tty to (presumably) cooked mode as it was when
+ * the program was started.
  */
 static void
-suggest_filesystems (void)
+restore_tty (void)
 {
-  size_t i, count;
+  tcsetattr (STDIN_FILENO, TCSANOW, &old_termios);
+}
 
-  CLEANUP_FREE_STRING_LIST char **fses = guestfs_list_filesystems (g);
-  if (fses == NULL)
-    exit (EXIT_FAILURE);
+/* When we get SIGTSTP, switch back to cooked mode. */
+static void
+tstp_handler (int sig)
+{
+  restore_tty ();
+  signal (SIGTSTP, SIG_DFL);
+  raise (SIGTSTP);
+}
 
-  /* Count how many are not swap or unknown.  Possibly we should try
-   * mounting to see which are mountable, but that has a high
-   * probability of breaking.
-   */
-#define TEST_MOUNTABLE(fs) STRNEQ ((fs), "swap") && STRNEQ ((fs), "unknown")
-  count = 0;
-  for (i = 0; fses[i] != NULL; i += 2) {
-    if (TEST_MOUNTABLE (fses[i+1]))
-      count++;
-  }
-
-  if (count == 0) {
-    printf (_("This disk contains no mountable filesystems that we recognize.\n\n"
-              "However you can still use virt-rescue on the disk image, to try to mount\n"
-              "filesystems that are not recognized by libguestfs, or to create partitions,\n"
-              "logical volumes and filesystems on a blank disk.\n"));
-    return;
-  }
-
-  printf (_("This disk contains one or more filesystems, but we don't recognize any\n"
-            "operating system.  You can use these mount commands in virt-rescue (at the\n"
-            "><rescue> prompt) to mount these filesystems.\n\n"));
-
-  for (i = 0; fses[i] != NULL; i += 2) {
-    printf (_("# %s has type '%s'\n"), fses[i], fses[i+1]);
-
-    if (TEST_MOUNTABLE (fses[i+1]))
-      printf ("mount %s /sysroot\n", fses[i]);
-
-    printf ("\n");
-  }
-#undef TEST_MOUNTABLE
+/* When we get SIGCONF, switch to raw mode. */
+static void
+cont_handler (int sig)
+{
+  raw_tty ();
 }
 
 static void add_scratch_disk (struct drv **drvs);

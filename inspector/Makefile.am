@@ -1,5 +1,5 @@
 # libguestfs virt-inspector
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,16 +22,7 @@ example_xml = \
 	example-fedora.xml \
 	example-rhel-6.xml \
 	example-ubuntu.xml \
-	example-windows.xml \
-	example-debian-netinst-cd.xml \
-	example-fedora-dvd.xml \
-	example-fedora-netinst-cd.xml \
-	example-rhel-6-dvd.xml \
-	example-rhel-6-netinst-cd.xml \
-	example-ubuntu-live-cd.xml \
-	example-windows-2003-x64-cd.xml \
-	example-windows-2003-x86-cd.xml \
-	example-windows-xp-cd.xml
+	example-windows.xml
 
 EXTRA_DIST = \
 	expected-debian.img.xml \
@@ -59,6 +50,7 @@ virt_inspector_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/common/structs -I$(top_builddir)/common/structs \
 	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
 	-I$(top_srcdir)/fish \
@@ -70,6 +62,7 @@ virt_inspector_CFLAGS = \
 
 virt_inspector_LDADD = \
 	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/structs/libstructs.la \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \

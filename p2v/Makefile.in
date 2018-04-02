@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-p2v
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -183,10 +183,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
 	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
 	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
-	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
-	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
-	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/ftell.m4 \
+	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
+	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
 	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
 	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
@@ -283,44 +283,44 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/sys_wait_h.m4 $(top_srcdir)/m4/tempname.m4 \
 	$(top_srcdir)/m4/thread.m4 $(top_srcdir)/m4/threadlib.m4 \
 	$(top_srcdir)/m4/time_h.m4 $(top_srcdir)/m4/timespec.m4 \
-	$(top_srcdir)/m4/ttyname_r.m4 $(top_srcdir)/m4/ungetc.m4 \
-	$(top_srcdir)/m4/unistd-safer.m4 $(top_srcdir)/m4/unistd_h.m4 \
-	$(top_srcdir)/m4/unlink.m4 $(top_srcdir)/m4/unlinkat.m4 \
-	$(top_srcdir)/m4/unlinkdir.m4 $(top_srcdir)/m4/usleep.m4 \
-	$(top_srcdir)/m4/utime.m4 $(top_srcdir)/m4/utime_h.m4 \
-	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
-	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
-	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/vsnprintf.m4 \
-	$(top_srcdir)/m4/wait-process.m4 $(top_srcdir)/m4/waitpid.m4 \
-	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
-	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
-	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
-	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/m4/guestfs_progs.m4 \
-	$(top_srcdir)/m4/guestfs_c.m4 \
-	$(top_srcdir)/m4/guestfs_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_fuse.m4 \
-	$(top_srcdir)/m4/guestfs_daemon.m4 \
-	$(top_srcdir)/m4/guestfs_appliance.m4 \
-	$(top_srcdir)/m4/guestfs_qemu.m4 \
-	$(top_srcdir)/m4/guestfs_misc_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_ocaml.m4 \
-	$(top_srcdir)/m4/guestfs_perl.m4 \
-	$(top_srcdir)/m4/guestfs_python.m4 \
-	$(top_srcdir)/m4/guestfs_ruby.m4 \
-	$(top_srcdir)/m4/guestfs_java.m4 \
-	$(top_srcdir)/m4/guestfs_haskell.m4 \
-	$(top_srcdir)/m4/guestfs_php.m4 \
-	$(top_srcdir)/m4/guestfs_erlang.m4 \
-	$(top_srcdir)/m4/guestfs_lua.m4 \
-	$(top_srcdir)/m4/guestfs_golang.m4 \
-	$(top_srcdir)/m4/guestfs_gobject.m4 \
-	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
-	$(top_srcdir)/m4/guestfs_misc.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/tls.m4 $(top_srcdir)/m4/ttyname_r.m4 \
+	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
+	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
+	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
+	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utime.m4 \
+	$(top_srcdir)/m4/utime_h.m4 $(top_srcdir)/m4/utimecmp.m4 \
+	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
+	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
+	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
+	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
+	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
+	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
+	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
+	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
+	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs-progs.m4 \
+	$(top_srcdir)/m4/guestfs-c.m4 \
+	$(top_srcdir)/m4/guestfs-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-fuse.m4 \
+	$(top_srcdir)/m4/guestfs-daemon.m4 \
+	$(top_srcdir)/m4/guestfs-appliance.m4 \
+	$(top_srcdir)/m4/guestfs-qemu.m4 \
+	$(top_srcdir)/m4/guestfs-misc-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-ocaml.m4 \
+	$(top_srcdir)/m4/guestfs-perl.m4 \
+	$(top_srcdir)/m4/guestfs-python.m4 \
+	$(top_srcdir)/m4/guestfs-ruby.m4 \
+	$(top_srcdir)/m4/guestfs-java.m4 \
+	$(top_srcdir)/m4/guestfs-haskell.m4 \
+	$(top_srcdir)/m4/guestfs-php.m4 \
+	$(top_srcdir)/m4/guestfs-erlang.m4 \
+	$(top_srcdir)/m4/guestfs-lua.m4 \
+	$(top_srcdir)/m4/guestfs-golang.m4 \
+	$(top_srcdir)/m4/guestfs-gobject.m4 \
+	$(top_srcdir)/m4/guestfs-bash-completion.m4 \
+	$(top_srcdir)/m4/guestfs-misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -331,11 +331,12 @@ CONFIG_CLEAN_FILES = virt-p2v-make-disk virt-p2v-make-kickstart \
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
 am_virt_p2v_OBJECTS = virt_p2v-about-authors.$(OBJEXT) \
-	virt_p2v-about-license.$(OBJEXT) virt_p2v-config.$(OBJEXT) \
-	virt_p2v-conversion.$(OBJEXT) virt_p2v-gui.$(OBJEXT) \
+	virt_p2v-config.$(OBJEXT) virt_p2v-conversion.$(OBJEXT) \
+	virt_p2v-cpuid.$(OBJEXT) virt_p2v-gui.$(OBJEXT) \
 	virt_p2v-inhibit.$(OBJEXT) virt_p2v-kernel.$(OBJEXT) \
 	virt_p2v-kernel-cmdline.$(OBJEXT) virt_p2v-main.$(OBJEXT) \
-	virt_p2v-nbd.$(OBJEXT) virt_p2v-ssh.$(OBJEXT) \
+	virt_p2v-nbd.$(OBJEXT) virt_p2v-physical-xml.$(OBJEXT) \
+	virt_p2v-rtc.$(OBJEXT) virt_p2v-ssh.$(OBJEXT) \
 	virt_p2v-utils.$(OBJEXT) virt_p2v-whole-file.$(OBJEXT)
 virt_p2v_OBJECTS = $(am_virt_p2v_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -658,6 +659,7 @@ BMPTOPNM = @BMPTOPNM@
 BRANCH_NUMBER = @BRANCH_NUMBER@
 BRANCH_TYPE = @BRANCH_TYPE@
 BYTESWAP_H = @BYTESWAP_H@
+CAMLRUN = @CAMLRUN@
 CAP_LIBS = @CAP_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -1050,6 +1052,7 @@ GREP = @GREP@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GTK_VERSION = @GTK_VERSION@
+GUESTFS_DEFAULT_PATH = @GUESTFS_DEFAULT_PATH@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -1143,6 +1146,7 @@ HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
 HAVE_ISWCNTRL = @HAVE_ISWCNTRL@
+HAVE_LANGINFO_ALTMON = @HAVE_LANGINFO_ALTMON@
 HAVE_LANGINFO_CODESET = @HAVE_LANGINFO_CODESET@
 HAVE_LANGINFO_ERA = @HAVE_LANGINFO_ERA@
 HAVE_LANGINFO_H = @HAVE_LANGINFO_H@
@@ -1317,6 +1321,7 @@ HAVE__BOOL = @HAVE__BOOL@
 HAVE__EXIT = @HAVE__EXIT@
 HIVEX_CFLAGS = @HIVEX_CFLAGS@
 HIVEX_LIBS = @HIVEX_LIBS@
+HIVEX_OPEN_UNSAFE_FLAG = @HIVEX_OPEN_UNSAFE_FLAG@
 HOSTENT_LIB = @HOSTENT_LIB@
 HOST_CPU = @HOST_CPU@
 HOST_CPU_C_ABI = @HOST_CPU_C_ABI@
@@ -1490,6 +1495,8 @@ NEXT_WCHAR_H = @NEXT_WCHAR_H@
 NEXT_WCTYPE_H = @NEXT_WCTYPE_H@
 NM = @NM@
 NMEDIT = @NMEDIT@
+NO_SNV_CFLAGS = @NO_SNV_CFLAGS@
+NO_UM_CFLAGS = @NO_UM_CFLAGS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 OCAMLBEST = @OCAMLBEST@
@@ -1497,6 +1504,8 @@ OCAMLBUILD = @OCAMLBUILD@
 OCAMLC = @OCAMLC@
 OCAMLCDOTOPT = @OCAMLCDOTOPT@
 OCAMLDEP = @OCAMLDEP@
+OCAMLDEP_ALL = @OCAMLDEP_ALL@
+OCAMLDEP_ONE_LINE = @OCAMLDEP_ONE_LINE@
 OCAMLDOC = @OCAMLDOC@
 OCAMLFIND = @OCAMLFIND@
 OCAMLLIB = @OCAMLLIB@
@@ -1508,9 +1517,9 @@ OCAMLVERSION = @OCAMLVERSION@
 OCAML_BYTES_COMPAT_CMO = @OCAML_BYTES_COMPAT_CMO@
 OCAML_BYTES_COMPAT_ML = @OCAML_BYTES_COMPAT_ML@
 OCAML_FLAGS = @OCAML_FLAGS@
-OCAML_GENERATOR_BYTES_COMPAT_CMO = @OCAML_GENERATOR_BYTES_COMPAT_CMO@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
+OCAML_PKG_hivex = @OCAML_PKG_hivex@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
 OCAML_PKG_oUnit = @OCAML_PKG_oUnit@
 OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
@@ -1568,6 +1577,7 @@ REPLACE_DPRINTF = @REPLACE_DPRINTF@
 REPLACE_DUP = @REPLACE_DUP@
 REPLACE_DUP2 = @REPLACE_DUP2@
 REPLACE_DUPLOCALE = @REPLACE_DUPLOCALE@
+REPLACE_FACCESSAT = @REPLACE_FACCESSAT@
 REPLACE_FCHOWNAT = @REPLACE_FCHOWNAT@
 REPLACE_FCLOSE = @REPLACE_FCLOSE@
 REPLACE_FCNTL = @REPLACE_FCNTL@
@@ -1775,6 +1785,8 @@ XZCAT = @XZCAT@
 YACC = @YACC@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
+YARA_CFLAGS = @YARA_CFLAGS@
+YARA_LIBS = @YARA_LIBS@
 YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
 ZIP = @ZIP@
@@ -1876,6 +1888,11 @@ CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
 
 # Files that should be universally removed by 'make distclean'.
 DISTCLEANFILES = .depend stamp-*
+
+# Special suffixes used by OCaml.
+
+# Special suffixes used by PO files.
+SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 
 # Rules for building OCaml objects.
@@ -1909,7 +1926,14 @@ guestfs_am_v_podwrapper_0 = @echo "  POD     " $@;
 guestfs_am_v_jar = $(guestfs_am_v_jar_@AM_V@)
 guestfs_am_v_jar_ = $(guestfs_am_v_jar_@AM_DEFAULT_V@)
 guestfs_am_v_jar_0 = @echo "  JAR     " $@;
+generator_built = \
+	about-authors.c
+
+BUILT_SOURCES = \
+	$(generator_built)
+
 EXTRA_DIST = \
+	$(BUILT_SOURCES) \
 	$(TESTS) $(SLOW_TESTS) \
 	dependencies.m4 \
 	issue \
@@ -1942,9 +1966,9 @@ virtp2vlibdir = $(libdir)/virt-p2v
 virtp2vlib_DATA = virt-p2v.xz
 virt_p2v_SOURCES = \
 	about-authors.c \
-	about-license.c \
 	config.c \
 	conversion.c \
+	cpuid.c \
 	gui.c \
 	gui-gtk2-compat.h \
 	gui-gtk3-compat.h \
@@ -1954,6 +1978,8 @@ virt_p2v_SOURCES = \
 	main.c \
 	nbd.c \
 	p2v.h \
+	physical-xml.c \
+	rtc.c \
 	ssh.c \
 	utils.c \
 	whole-file.c
@@ -1980,7 +2006,8 @@ virt_p2v_LDADD = \
 	$(LIBXML2_LIBS) \
 	$(GTK_LIBS) \
 	$(DBUS_LIBS) \
-	../gnulib/lib/libgnu.la
+	../gnulib/lib/libgnu.la \
+	-lm
 
 
 # Scripts to build the disk image, USB key, or kickstart.
@@ -2028,10 +2055,11 @@ TESTS = test-virt-p2v-cmdline.sh test-virt-p2v-docs.sh $(am__append_1)
 SLOW_TESTS = \
 	test-virt-p2v-pxe.sh
 
-all: all-am
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cmi .cmo .cmx .lo .log .ml .mli .o .obj .test .test$(EXEEXT) .trs
+.SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo .c .lo .log .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -2124,15 +2152,17 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-about-authors.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-about-license.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-conversion.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-cpuid.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-gui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-inhibit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-kernel-cmdline.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-kernel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-nbd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-physical-xml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-rtc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-ssh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_p2v-whole-file.Po@am__quote@
@@ -2175,20 +2205,6 @@ virt_p2v-about-authors.obj: about-authors.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-about-authors.obj `if test -f 'about-authors.c'; then $(CYGPATH_W) 'about-authors.c'; else $(CYGPATH_W) '$(srcdir)/about-authors.c'; fi`
 
-virt_p2v-about-license.o: about-license.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-about-license.o -MD -MP -MF $(DEPDIR)/virt_p2v-about-license.Tpo -c -o virt_p2v-about-license.o `test -f 'about-license.c' || echo '$(srcdir)/'`about-license.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-about-license.Tpo $(DEPDIR)/virt_p2v-about-license.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='about-license.c' object='virt_p2v-about-license.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-about-license.o `test -f 'about-license.c' || echo '$(srcdir)/'`about-license.c
-
-virt_p2v-about-license.obj: about-license.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-about-license.obj -MD -MP -MF $(DEPDIR)/virt_p2v-about-license.Tpo -c -o virt_p2v-about-license.obj `if test -f 'about-license.c'; then $(CYGPATH_W) 'about-license.c'; else $(CYGPATH_W) '$(srcdir)/about-license.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-about-license.Tpo $(DEPDIR)/virt_p2v-about-license.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='about-license.c' object='virt_p2v-about-license.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-about-license.obj `if test -f 'about-license.c'; then $(CYGPATH_W) 'about-license.c'; else $(CYGPATH_W) '$(srcdir)/about-license.c'; fi`
-
 virt_p2v-config.o: config.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-config.o -MD -MP -MF $(DEPDIR)/virt_p2v-config.Tpo -c -o virt_p2v-config.o `test -f 'config.c' || echo '$(srcdir)/'`config.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-config.Tpo $(DEPDIR)/virt_p2v-config.Po
@@ -2216,6 +2232,20 @@ virt_p2v-conversion.obj: conversion.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='conversion.c' object='virt_p2v-conversion.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-conversion.obj `if test -f 'conversion.c'; then $(CYGPATH_W) 'conversion.c'; else $(CYGPATH_W) '$(srcdir)/conversion.c'; fi`
+
+virt_p2v-cpuid.o: cpuid.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-cpuid.o -MD -MP -MF $(DEPDIR)/virt_p2v-cpuid.Tpo -c -o virt_p2v-cpuid.o `test -f 'cpuid.c' || echo '$(srcdir)/'`cpuid.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-cpuid.Tpo $(DEPDIR)/virt_p2v-cpuid.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cpuid.c' object='virt_p2v-cpuid.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-cpuid.o `test -f 'cpuid.c' || echo '$(srcdir)/'`cpuid.c
+
+virt_p2v-cpuid.obj: cpuid.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-cpuid.obj -MD -MP -MF $(DEPDIR)/virt_p2v-cpuid.Tpo -c -o virt_p2v-cpuid.obj `if test -f 'cpuid.c'; then $(CYGPATH_W) 'cpuid.c'; else $(CYGPATH_W) '$(srcdir)/cpuid.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-cpuid.Tpo $(DEPDIR)/virt_p2v-cpuid.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cpuid.c' object='virt_p2v-cpuid.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-cpuid.obj `if test -f 'cpuid.c'; then $(CYGPATH_W) 'cpuid.c'; else $(CYGPATH_W) '$(srcdir)/cpuid.c'; fi`
 
 virt_p2v-gui.o: gui.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-gui.o -MD -MP -MF $(DEPDIR)/virt_p2v-gui.Tpo -c -o virt_p2v-gui.o `test -f 'gui.c' || echo '$(srcdir)/'`gui.c
@@ -2300,6 +2330,34 @@ virt_p2v-nbd.obj: nbd.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='nbd.c' object='virt_p2v-nbd.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-nbd.obj `if test -f 'nbd.c'; then $(CYGPATH_W) 'nbd.c'; else $(CYGPATH_W) '$(srcdir)/nbd.c'; fi`
+
+virt_p2v-physical-xml.o: physical-xml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-physical-xml.o -MD -MP -MF $(DEPDIR)/virt_p2v-physical-xml.Tpo -c -o virt_p2v-physical-xml.o `test -f 'physical-xml.c' || echo '$(srcdir)/'`physical-xml.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-physical-xml.Tpo $(DEPDIR)/virt_p2v-physical-xml.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='physical-xml.c' object='virt_p2v-physical-xml.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-physical-xml.o `test -f 'physical-xml.c' || echo '$(srcdir)/'`physical-xml.c
+
+virt_p2v-physical-xml.obj: physical-xml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-physical-xml.obj -MD -MP -MF $(DEPDIR)/virt_p2v-physical-xml.Tpo -c -o virt_p2v-physical-xml.obj `if test -f 'physical-xml.c'; then $(CYGPATH_W) 'physical-xml.c'; else $(CYGPATH_W) '$(srcdir)/physical-xml.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-physical-xml.Tpo $(DEPDIR)/virt_p2v-physical-xml.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='physical-xml.c' object='virt_p2v-physical-xml.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-physical-xml.obj `if test -f 'physical-xml.c'; then $(CYGPATH_W) 'physical-xml.c'; else $(CYGPATH_W) '$(srcdir)/physical-xml.c'; fi`
+
+virt_p2v-rtc.o: rtc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-rtc.o -MD -MP -MF $(DEPDIR)/virt_p2v-rtc.Tpo -c -o virt_p2v-rtc.o `test -f 'rtc.c' || echo '$(srcdir)/'`rtc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-rtc.Tpo $(DEPDIR)/virt_p2v-rtc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rtc.c' object='virt_p2v-rtc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-rtc.o `test -f 'rtc.c' || echo '$(srcdir)/'`rtc.c
+
+virt_p2v-rtc.obj: rtc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-rtc.obj -MD -MP -MF $(DEPDIR)/virt_p2v-rtc.Tpo -c -o virt_p2v-rtc.obj `if test -f 'rtc.c'; then $(CYGPATH_W) 'rtc.c'; else $(CYGPATH_W) '$(srcdir)/rtc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_p2v-rtc.Tpo $(DEPDIR)/virt_p2v-rtc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rtc.c' object='virt_p2v-rtc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -c -o virt_p2v-rtc.obj `if test -f 'rtc.c'; then $(CYGPATH_W) 'rtc.c'; else $(CYGPATH_W) '$(srcdir)/rtc.c'; fi`
 
 virt_p2v-ssh.o: ssh.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_p2v_CPPFLAGS) $(CPPFLAGS) $(virt_p2v_CFLAGS) $(CFLAGS) -MT virt_p2v-ssh.o -MD -MP -MF $(DEPDIR)/virt_p2v-ssh.Tpo -c -o virt_p2v-ssh.o `test -f 'ssh.c' || echo '$(srcdir)/'`ssh.c
@@ -2709,13 +2767,15 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS) $(DATA)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(virtp2vdatadir)" "$(DESTDIR)$(virtp2vlibdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -2750,6 +2810,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
@@ -2825,7 +2886,7 @@ uninstall-am: uninstall-binSCRIPTS uninstall-man \
 
 uninstall-man: uninstall-man1
 
-.MAKE: check-am install-am install-strip
+.MAKE: all check check-am install install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
 	clean-generic clean-libtool clean-noinstPROGRAMS cscopelist-am \
@@ -2871,11 +2932,11 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-.mli.cmi:
+%.cmi: %.mli
 	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-.ml.cmo:
+%.cmo: %.ml
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@%.cmx: %.ml
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 # Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined

@@ -49,12 +49,8 @@ command a few times:
 
  time guestfish -a /dev/null run
 
-After a few runs, the time should settle down to a few seconds (under 5
+After a few runs, the time should settle down to a few seconds (under 3
 seconds on fast 64 bit hardware).
-
-Як перевірити апаратну віртуалізацію:
-
-L<http://virt-tools.org/learning/check-hardware-virt/>
 
 Якщо вказана вище команда не працюватиме, скористайтеся
 L<libguestfs-test-tool(1)>.
@@ -148,7 +144,8 @@ Does the alignment report match how the guest partitions are aligned?
 
 =head2 Run virt-cat on some files in guests.
 
-L<virt-cat(1)> can display files from guests.  For a Linux guest, try:
+L<virt-cat(1)> може показувати файли у гостьових системах. Для гостьової
+системи Linux можете спробувати таку команду:
 
  virt-cat LinuxGuest /etc/passwd
 
@@ -176,8 +173,8 @@ Shut the guest down and try copying multiple files and directories:
 
 =head2 Копіювання якихось файлів з гостьової системи.
 
-L<virt-copy-out(1)> can recursively copy files and directories out of a
-guest or disk image.
+L<virt-copy-out(1)> може рекурсивно копіювати файли і каталоги з гостьової
+системи або образу диска.
 
  virt-copy-out -d Guest /home .
 
@@ -212,7 +209,7 @@ numbers to change.
 
 =back
 
-We don't guarantee that the numbers will be identical even under these
+We don’t guarantee that the numbers will be identical even under these
 circumstances.  They should be similar.  It would indicate a bug if you saw
 greatly differing numbers.
 
@@ -286,7 +283,7 @@ bug.
 
  virt-ls -lR -d Guest / | grep '^s'
 
-Показати список всіх звичайних файлів, назви яких завершуються на «.png»:
+Показати список усіх звичайних файлів, назви яких завершуються на «.png»:
 
  virt-ls -lR -d Guest / | grep -i '^-.*\.png$'
 
@@ -313,7 +310,7 @@ happen to have:
 
  virt-make-fs --partition=mbr --type=vfat /десь/якийсь.tar.gz образ_результат.img
 
-Add 'output.img' as a raw disk to an existing guest.  Check the guest can
+Add ‘output.img’ as a raw disk to an existing guest.  Check the guest can
 see the files.  This test is particularly useful if you try it with a
 Windows guest.
 

@@ -29,12 +29,12 @@ language.  This page just documents the differences from the C API and gives
 some examples.  If you are not familiar with using libguestfs, you also need
 to read L<guestfs(3)>.
 
-=head2 IMPORTING THE MODULE
+=head2 ІМПОРТУВАННЯ МОДУЛЯ
 
 The module is called C<guestfs>.  The full package name to import is
 C<libguestfs.org/guestfs>.
 
-=head2 CREATING AND CLOSING THE HANDLE
+=head2 СТВОРЕННЯ І ЗАКРИТТЯ ДЕСКРИПТОРА
 
 Use either C<guestfs.Create> or C<guestfs.Create_flags> to create the
 handle.  The handle is closed implicitly if it is garbage collected.
@@ -58,7 +58,7 @@ string for display.
 
 =item *
 
-No support for events (see L<guestfs(3)/EVENTS>).
+Немає підтримки подій (див. L<guestfs(3)/ПОДІЇ>).
 
 =item *
 

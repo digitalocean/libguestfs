@@ -1,5 +1,5 @@
 (* virt-dib
- * Copyright (C) 2015-2017 Red Hat Inc.
+ * Copyright (C) 2015-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Common_utils
+open Tools_utils
 open Common_gettext.Gettext
 
 open Output_format

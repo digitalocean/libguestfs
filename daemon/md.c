@@ -24,7 +24,6 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <glob.h>
 
 #ifdef HAVE_LINUX_RAID_MD_U_H
 #include <sys/ioctl.h>
@@ -32,17 +31,46 @@
 #include <linux/raid/md_u.h>
 #endif /* HAVE_LINUX_RAID_MD_U_H */
 
+#include <caml/mlvalues.h>
+
 #include "daemon.h"
 #include "actions.h"
 #include "optgroups.h"
 #include "c-ctype.h"
 
-GUESTFSD_EXT_CMD(str_mdadm, mdadm);
-
 int
 optgroup_mdadm_available (void)
 {
-  return prog_exists (str_mdadm);
+  return prog_exists ("mdadm");
+}
+
+/* Check if 'dev' is a real RAID device, because in the case where md
+ * is linked directly into the kernel (not a module), /dev/md0 is
+ * sometimes created.  This is called from OCaml function
+ * Md.list_md_devices.
+ */
+extern value guestfs_int_daemon_is_raid_device (value devicev);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_is_raid_device (value devv)
+{
+  const char *dev = String_val (devv);
+  int ret = 1;
+
+#if defined(HAVE_LINUX_RAID_MD_U_H) && defined(GET_ARRAY_INFO)
+  int fd;
+  mdu_array_info_t array;
+
+  fd = open (dev, O_RDONLY);
+  if (fd >= 0) {
+    if (ioctl (fd, GET_ARRAY_INFO, &array) == -1 && errno == ENODEV)
+      ret = 0;
+    close (fd);
+  }
+#endif
+
+  return Val_bool (ret);
 }
 
 static size_t
@@ -97,7 +125,8 @@ do_md_create (const char *name, char *const *devices,
     }
   }
   else
-    nrdevices = count_strings (devices) + count_bits (umissingbitmap);
+    nrdevices =
+      guestfs_int_count_strings (devices) + count_bits (umissingbitmap);
 
   if (optargs_bitmask & GUESTFS_MD_CREATE_LEVEL_BITMASK) {
     if (STRNEQ (level, "linear") && STRNEQ (level, "raid0") &&
@@ -124,10 +153,11 @@ do_md_create (const char *name, char *const *devices,
   }
 
   /* Check invariant. */
-  if (count_strings (devices) + count_bits (umissingbitmap) !=
+  if (guestfs_int_count_strings (devices) + count_bits (umissingbitmap) !=
       (size_t) (nrdevices + spare)) {
     reply_with_error ("devices (%zu) + bits set in missingbitmap (%zu) is not equal to nrdevices (%d) + spare (%d)",
-                      count_strings (devices), count_bits (umissingbitmap),
+                      guestfs_int_count_strings (devices),
+                      count_bits (umissingbitmap),
                       nrdevices, spare);
     return -1;
   }
@@ -136,7 +166,7 @@ do_md_create (const char *name, char *const *devices,
   const char *argv[MAX_ARGS];
   size_t i = 0;
 
-  ADD_ARG (argv, i, str_mdadm);
+  ADD_ARG (argv, i, "mdadm");
   ADD_ARG (argv, i, "--create");
   /* --run suppresses "Continue creating array" question */
   ADD_ARG (argv, i, "--run");
@@ -186,172 +216,13 @@ do_md_create (const char *name, char *const *devices,
 #pragma GCC diagnostic pop
 #endif
 
-static int
-glob_errfunc (const char *epath, int eerrno)
-{
-  fprintf (stderr, "glob: failure reading %s: %s\n", epath, strerror (eerrno));
-  return 1;
-}
-
-/* Check if 'dev' is a real RAID device, because in the case where md
- * is linked directly into the kernel (not a module), /dev/md0 is
- * sometimes created.
- */
-static int
-is_raid_device (const char *dev)
-{
-  int ret = 1;
-
-#if defined(HAVE_LINUX_RAID_MD_U_H) && defined(GET_ARRAY_INFO)
-  int fd;
-  mdu_array_info_t array;
-
-  fd = open (dev, O_RDONLY);
-  if (fd >= 0) {
-    if (ioctl (fd, GET_ARRAY_INFO, &array) == -1 && errno == ENODEV)
-      ret = 0;
-    close (fd);
-  }
-#endif
-
-  return ret;
-}
-
-char **
-do_list_md_devices (void)
-{
-  CLEANUP_FREE_STRINGSBUF DECLARE_STRINGSBUF (ret);
-  glob_t mds;
-
-  memset (&mds, 0, sizeof mds);
-
-#define PREFIX "/sys/block/md"
-#define SUFFIX "/md"
-
-  /* Look for directories under /sys/block matching md[0-9]*
-   * As an additional check, we also make sure they have a md subdirectory.
-   */
-  const int err = glob (PREFIX "[0-9]*" SUFFIX, GLOB_ERR, glob_errfunc, &mds);
-  if (err == GLOB_NOSPACE) {
-    reply_with_error ("glob: returned GLOB_NOSPACE: "
-                      "rerun with LIBGUESTFS_DEBUG=1");
-    goto error;
-  } else if (err == GLOB_ABORTED) {
-    reply_with_error ("glob: returned GLOB_ABORTED: "
-                      "rerun with LIBGUESTFS_DEBUG=1");
-    goto error;
-  }
-
-  for (size_t i = 0; i < mds.gl_pathc; i++) {
-    size_t len;
-    char *dev, *n;
-
-    len = strlen (mds.gl_pathv[i]) - strlen (PREFIX) - strlen (SUFFIX);
-
-#define DEV "/dev/md"
-    dev = malloc (strlen (DEV) + len + 1);
-    if (NULL == dev) {
-      reply_with_perror ("malloc");
-      goto error;
-    }
-
-    n = dev;
-    n = mempcpy (n, DEV, strlen (DEV));
-    n = mempcpy (n, &mds.gl_pathv[i][strlen (PREFIX)], len);
-    *n = '\0';
-
-    if (!is_raid_device (dev)) {
-      free (dev);
-      continue;
-    }
-
-    if (add_string_nodup (&ret, dev) == -1) goto error;
-  }
-
-  if (end_stringsbuf (&ret) == -1) goto error;
-  globfree (&mds);
-
-  return take_stringsbuf (&ret);
-
- error:
-  globfree (&mds);
-
-  return NULL;
-}
-
-char **
-do_md_detail (const char *md)
-{
-  size_t i;
-  int r;
-
-  CLEANUP_FREE char *out = NULL, *err = NULL;
-  CLEANUP_FREE_STRING_LIST char **lines = NULL;
-
-  CLEANUP_FREE_STRINGSBUF DECLARE_STRINGSBUF (ret);
-
-  const char *mdadm[] = { str_mdadm, "-D", "--export", md, NULL };
-  r = commandv (&out, &err, mdadm);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    return NULL;
-  }
-
-  /* Split the command output into lines */
-  lines = split_lines (out);
-  if (lines == NULL)
-    return NULL;
-
-  /* Parse the output of mdadm -D --export:
-   * MD_LEVEL=raid1
-   * MD_DEVICES=2
-   * MD_METADATA=1.0
-   * MD_UUID=cfa81b59:b6cfbd53:3f02085b:58f4a2e1
-   * MD_NAME=localhost.localdomain:0
-   */
-  for (i = 0; lines[i] != NULL; ++i) {
-    char *line = lines[i];
-
-    /* Skip blank lines (shouldn't happen) */
-    if (line[0] == '\0') continue;
-
-    /* Split the line in 2 at the equals sign */
-    char *eq = strchr (line, '=');
-    if (eq) {
-      *eq = '\0'; eq++;
-
-      /* Remove the MD_ prefix from the key and translate the remainder to lower
-       * case */
-      if (STRPREFIX (line, "MD_")) {
-        line += 3;
-        for (char *j = line; *j != '\0'; j++) {
-          *j = c_tolower (*j);
-        }
-      }
-
-      /* Add the key/value pair to the output */
-      if (add_string (&ret, line) == -1 ||
-          add_string (&ret, eq) == -1) return NULL;
-    } else {
-      /* Ignore lines with no equals sign (shouldn't happen). Log to stderr so
-       * it will show up in LIBGUESTFS_DEBUG. */
-      fprintf (stderr, "md-detail: unexpected mdadm output ignored: %s", line);
-    }
-  }
-
-  if (end_stringsbuf (&ret) == -1)
-    return NULL;
-
-  return take_stringsbuf (&ret);
-}
-
 int
 do_md_stop (const char *md)
 {
   int r;
   CLEANUP_FREE char *err = NULL;
 
-  const char *mdadm[] = { str_mdadm, "--stop", md, NULL};
+  const char *mdadm[] = { "mdadm", "--stop", md, NULL};
   r = commandv (NULL, &err, mdadm);
   if (r == -1) {
     reply_with_error ("%s", err);

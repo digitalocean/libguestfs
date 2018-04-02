@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,6 @@ static void udevadm_settle (void);
 static void set_config_defaults (struct config *config);
 static void find_all_disks (void);
 static void find_all_interfaces (void);
-static int cpuinfo_flags (void);
 
 enum { HELP_OPTION = CHAR_MAX + 1 };
 static const char options[] = "Vv";
@@ -90,11 +89,11 @@ static void __attribute__((noreturn))
 usage (int status)
 {
   if (status != EXIT_SUCCESS)
-    fprintf (stderr, _("Try `%s --help' for more information.\n"),
+    fprintf (stderr, _("Try ‘%s --help’ for more information.\n"),
              getprogname ());
   else {
     printf (_("%s: Convert a physical machine to use KVM\n"
-              "Copyright (C) 2009-2017 Red Hat Inc.\n"
+              "Copyright (C) 2009-2018 Red Hat Inc.\n"
               "Usage:\n"
               "  %s [--options]\n"
               "Options:\n"
@@ -277,7 +276,6 @@ set_config_defaults (struct config *config)
 {
   long i;
   char hostname[257];
-  int flags;
 
   /* Default guest name is derived from the source hostname.  If we
    * assume that the p2v ISO gets its IP address and hostname from
@@ -341,11 +339,8 @@ set_config_defaults (struct config *config)
   config->memory |= config->memory >> 32;
   config->memory++;
 
-  flags = cpuinfo_flags ();
-  if (flags >= 0)
-    config->flags = flags;
-  else
-    config->flags = 0;
+  get_cpu_config (&config->cpu);
+  get_rtc_config (&config->rtc);
 
   /* Find all block devices in the system. */
   if (!test_disk)
@@ -585,52 +580,4 @@ find_all_interfaces (void)
 
   if (all_interfaces)
     qsort (all_interfaces, nr_interfaces, sizeof (char *), compare);
-}
-
-/**
- * Read the list of flags from F</proc/cpuinfo>.
- */
-static int
-cpuinfo_flags (void)
-{
-  const char *cmd;
-  CLEANUP_PCLOSE FILE *fp = NULL;
-  CLEANUP_FREE char *flag = NULL;
-  ssize_t len;
-  size_t buflen = 0;
-  int ret = 0;
-
-  /* Get the flags, one per line. */
-  cmd = "< /proc/cpuinfo "
-#if defined(__arm__)
-    "grep ^Features"
-#else
-    "grep ^flags"
-#endif
-    " | awk '{ for (i = 3; i <= NF; ++i) { print $i }; exit }'";
-
-  fp = popen (cmd, "re");
-  if (fp == NULL) {
-    perror ("/proc/cpuinfo");
-    return -1;
-  }
-
-  while (errno = 0, (len = getline (&flag, &buflen, fp)) != -1) {
-    if (len > 0 && flag[len-1] == '\n')
-      flag[len-1] = '\0';
-
-    if (STREQ (flag, "acpi"))
-      ret |= FLAG_ACPI;
-    else if (STREQ (flag, "apic"))
-      ret |= FLAG_APIC;
-    else if (STREQ (flag, "pae"))
-      ret |= FLAG_PAE;
-  }
-
-  if (errno) {
-    perror ("getline");
-    return -1;
-  }
-
-  return ret;
 }

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,10 @@
 open Unix
 open Printf
 
-open Common_utils
-open Common_gettext.Gettext
+open Std_utils
+open Tools_utils
 open Unix_utils
+open Common_gettext.Gettext
 
 open Utils
 
@@ -34,13 +35,13 @@ type t = {
 
 let create ?uid ?gid () = { uid = uid; gid = gid }
 
-let with_fork { uid = uid; gid = gid } name f =
+let with_fork { uid; gid } name f =
   let pid = fork () in
 
   if pid = 0 then (
     (* Child. *)
-    may setgid gid;
-    may setuid uid;
+    Option.may setgid gid;
+    Option.may setuid uid;
     (try f ()
      with exn ->
        eprintf "%s: changeuid: %s: %s\n%!" prog name (Printexc.to_string exn);

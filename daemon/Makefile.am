@@ -17,8 +17,9 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
-generator_built = \
+BUILT_SOURCES = \
 	actions.h \
+	caml-stubs.c \
 	dispatch.c \
 	names.c \
 	lvm-tokenization.c \
@@ -33,11 +34,18 @@ generator_built = \
 	stubs-6.c \
 	stubs.h
 
-BUILT_SOURCES = \
-	$(generator_built)
+generator_built = \
+	$(BUILT_SOURCES) \
+	callbacks.ml \
+	optgroups.ml \
+	optgroups.mli \
+	structs.ml \
+	structs.mli
 
 EXTRA_DIST = \
-	$(BUILT_SOURCES) \
+	$(generator_built) \
+	$(SOURCES_MLI) $(SOURCES_ML) \
+	daemon_utils_tests.ml \
 	guestfsd.pod
 
 if INSTALL_DAEMON
@@ -49,6 +57,8 @@ endif
 guestfsd_SOURCES = \
 	../common/errnostring/errnostring.h \
 	../common/protocol/guestfs_protocol.h \
+	../common/utils/cleanups.h \
+	../common/utils/guestfs-utils.h \
 	9p.c \
 	acl.c \
 	actions.h \
@@ -59,10 +69,10 @@ guestfsd_SOURCES = \
 	blkid.c \
 	blockdev.c \
 	btrfs.c \
+	caml-stubs.c \
 	cap.c \
 	checksum.c \
 	cleanups.c \
-	cleanups.h \
 	cmp.c \
 	command.c \
 	command.h \
@@ -70,10 +80,13 @@ guestfsd_SOURCES = \
 	copy.c \
 	cpio.c \
 	cpmv.c \
+	daemon-c.c \
+	daemon-c.h \
 	daemon.h \
 	dd.c \
 	debug.c \
 	debug-bmap.c \
+	device-name-translation.c \
 	devsparts.c \
 	df.c \
 	dir.c \
@@ -85,7 +98,6 @@ guestfsd_SOURCES = \
 	ext2.c \
 	fallocate.c \
 	file.c \
-	findfs.c \
 	fill.c \
 	find.c \
 	format.c \
@@ -131,7 +143,6 @@ guestfsd_SOURCES = \
 	pingdaemon.c \
 	proto.c \
 	readdir.c \
-	realpath.c \
 	rename.c \
 	rsync.c \
 	scrub.c \
@@ -143,7 +154,6 @@ guestfsd_SOURCES = \
 	sleuthkit.c \
 	squashfs.c \
 	stat.c \
-	statvfs.c \
 	strings.c \
 	structs-cleanups.c \
 	structs-cleanups.h \
@@ -159,23 +169,36 @@ guestfsd_SOURCES = \
 	swap.c \
 	sync.c \
 	syslinux.c \
+	sysroot-c.c \
 	tar.c \
 	tsk.c \
 	truncate.c \
 	umask.c \
 	upload.c \
+	utils.c \
+	utils-c.c \
 	utimens.c \
 	utsname.c \
 	uuids.c \
 	wc.c \
 	xattr.c \
 	xfs.c \
+	yara.c \
 	zero.c \
 	zerofree.c
 
+guestfsd_LDFLAGS = \
+	-L$(shell $(OCAMLC) -where) \
+	-L$(shell $(OCAMLC) -where)/hivex \
+	-L../common/mlutils \
+	-L../common/mlstdutils \
+	-L../common/mlaugeas \
+	-L../common/mlpcre
 guestfsd_LDADD = \
 	../common/errnostring/liberrnostring.la \
 	../common/protocol/libprotocol.la \
+	../common/utils/libutils.la \
+	camldaemon.o \
 	$(ACL_LIBS) \
 	$(CAP_LIBS) \
 	$(YAJL_LIBS) \
@@ -193,9 +216,13 @@ guestfsd_LDADD = \
 	$(SERVENT_LIB) \
 	$(PCRE_LIBS) \
 	$(TSK_LIBS) \
-	$(RPC_LIBS)
+	$(RPC_LIBS) \
+	$(YARA_LIBS) \
+	$(OCAML_LIBS)
 
 guestfsd_CPPFLAGS = \
+	-I$(shell $(OCAMLC) -where) \
+	-I$(shell $(OCAMLC) -where)/hivex \
 	-I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/gnulib/lib \
 	-I$(top_srcdir)/lib \
@@ -203,7 +230,9 @@ guestfsd_CPPFLAGS = \
 	-I$(top_srcdir)/common/errnostring \
 	-I$(top_builddir)/common/errnostring \
 	-I$(top_srcdir)/common/protocol \
-	-I$(top_builddir)/common/protocol
+	-I$(top_builddir)/common/protocol \
+	-I$(top_srcdir)/common/utils \
+	-I$(top_builddir)/common/utils
 guestfsd_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(RPC_CFLAGS) \
@@ -212,6 +241,185 @@ guestfsd_CFLAGS = \
 	$(SD_JOURNAL_CFLAGS) \
 	$(YAJL_CFLAGS) \
 	$(PCRE_CFLAGS)
+
+# Parts of the daemon are written in OCaml.  These are linked into a
+# library and then linked to the daemon.  See
+# https://caml.inria.fr/pub/docs/manual-ocaml/intfc.html
+SOURCES_MLI = \
+	blkid.mli \
+	btrfs.mli \
+	callbacks.mli \
+	chroot.mli \
+	daemon.mli \
+	daemon_config.mli \
+	devsparts.mli \
+	file.mli \
+	filearch.mli \
+	findfs.mli \
+	inspect.mli \
+	inspect_fs.mli \
+	inspect_fs_unix.mli \
+	inspect_fs_unix_fstab.mli \
+	inspect_fs_windows.mli \
+	inspect_types.mli \
+	inspect_utils.mli \
+	is.mli \
+	ldm.mli \
+	link.mli \
+	listfs.mli \
+	lvm.mli \
+	md.mli \
+	mount.mli \
+	mountable.mli \
+	optgroups.mli \
+	parted.mli \
+	realpath.mli \
+	statvfs.mli \
+	structs.mli \
+	sysroot.mli \
+	utils.mli
+
+SOURCES_ML = \
+	daemon_config.ml \
+	utils.ml \
+	structs.ml \
+	optgroups.ml \
+	sysroot.ml \
+	mountable.ml \
+	chroot.ml \
+	blkid.ml \
+	btrfs.ml \
+	devsparts.ml \
+	file.ml \
+	filearch.ml \
+	is.ml \
+	ldm.ml \
+	link.ml \
+	lvm.ml \
+	findfs.ml \
+	md.ml \
+	mount.ml \
+	parted.ml \
+	listfs.ml \
+	realpath.ml \
+	statvfs.ml \
+	inspect_types.ml \
+	inspect_utils.ml \
+	inspect_fs_unix_fstab.ml \
+	inspect_fs_unix.ml \
+	inspect_fs_windows.ml \
+	inspect_fs.ml \
+	inspect.ml \
+	callbacks.ml \
+	daemon.ml
+
+BOBJECTS = $(SOURCES_ML:.ml=.cmo)
+XOBJECTS = $(BOBJECTS:.cmo=.cmx)
+
+OCAMLPACKAGES = \
+	-package str,unix,hivex \
+	-I $(top_srcdir)/common/mlaugeas \
+	-I $(top_srcdir)/common/mlstdutils \
+	-I $(top_srcdir)/common/mlutils \
+	-I $(top_builddir)/common/utils/.libs \
+	-I $(top_srcdir)/common/mlpcre \
+	-I $(top_builddir)/common/mlpcre/.libs \
+	-I $(top_builddir)/gnulib/lib/.libs
+
+OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
+
+if !HAVE_OCAMLOPT
+OBJECTS = $(BOBJECTS)
+else
+OBJECTS = $(XOBJECTS)
+endif
+OCAML_LIBS = \
+	-lmlpcre \
+	-lmlcutils \
+	-lmlstdutils \
+	-lmlaugeas \
+	-lmlhivex \
+	-lcamlstr \
+	-lunix \
+	-l$(CAMLRUN) -ldl -lm
+
+CLEANFILES += camldaemon.o
+
+camldaemon.o: $(OBJECTS)
+	$(OCAMLFIND) $(BEST) -output-obj -o $@ \
+	    $(OCAMLFLAGS) $(OCAMLPACKAGES) \
+	    -linkpkg \
+	    mlaugeas.$(MLARCHIVE) \
+	    mlpcre.$(MLARCHIVE) \
+	    mlstdutils.$(MLARCHIVE) \
+	    mlcutils.$(MLARCHIVE) \
+	    $(OBJECTS)
+
+# OCaml dependencies.
+.depend: *.mli *.ml
+	$(top_builddir)/ocaml-dep.sh $^
+-include .depend
+
+# Tests.
+
+check_PROGRAMS = daemon_utils_tests
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+TESTS = \
+	daemon_utils_tests
+
+check-valgrind:
+	$(MAKE) VG="@VG@" check
+
+daemon_utils_tests_SOURCES = \
+	command.c \
+	daemon-utils-tests-stubs.c \
+	utils.c \
+	utils-c.c
+daemon_utils_tests_CPPFLAGS = \
+	-I. \
+	-I$(top_builddir) \
+	-I$(shell $(OCAMLC) -where) \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib \
+	-I$(top_srcdir)/common/errnostring \
+	-I$(top_builddir)/common/errnostring \
+	-I$(top_srcdir)/common/protocol \
+	-I$(top_builddir)/common/protocol \
+	-I$(top_srcdir)/common/utils \
+	-I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib \
+	-I$(top_builddir)/lib
+daemon_utils_tests_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(RPC_CFLAGS)
+daemon_utils_tests_BOBJECTS = \
+	utils.cmo \
+	daemon_utils_tests.cmo
+daemon_utils_tests_XOBJECTS = $(daemon_utils_tests_BOBJECTS:.cmo=.cmx)
+
+if !HAVE_OCAMLOPT
+daemon_utils_tests_THEOBJECTS = $(daemon_utils_tests_BOBJECTS)
+else
+daemon_utils_tests_THEOBJECTS = $(daemon_utils_tests_XOBJECTS)
+endif
+
+OCAMLLINKFLAGS = \
+	mlpcre.$(MLARCHIVE) \
+	mlstdutils.$(MLARCHIVE) \
+	mlcutils.$(MLARCHIVE) \
+	mlaugeas.$(MLARCHIVE) \
+	$(LINK_CUSTOM_OCAMLC_ONLY)
+
+daemon_utils_tests_DEPENDENCIES = \
+	$(daemon_utils_tests_THEOBJECTS) \
+	$(top_srcdir)/ocaml-link.sh
+daemon_utils_tests_LINK = \
+	$(top_srcdir)/ocaml-link.sh \
+	  -cclib '-lutils -lgnu' \
+	  -- \
+	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLLINKFLAGS) \
+	  $(OCAMLPACKAGES) \
+	  $(daemon_utils_tests_THEOBJECTS) -o $@
 
 # Manual pages and HTML files for the website.
 if INSTALL_DAEMON

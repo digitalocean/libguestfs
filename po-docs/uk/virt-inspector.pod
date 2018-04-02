@@ -1,8 +1,8 @@
 
 =head1 НАЗВА
 
-virt-inspector - Display operating system version and other information
-about a virtual machine
+virt-inspector — показ версії операційної системи та інших даних щодо
+віртуальної машини
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -30,8 +30,8 @@ the libvirt domain (see: C<virsh list --all>).
 You can also run virt-inspector directly on disk images from a single
 virtual machine.  Use C<virt-inspector -a disk.img>.  In rare cases a domain
 has several block devices, in which case you should list several I<-a>
-options one after another, with the first corresponding to the guest's
-F</dev/sda>, the second to the guest's F</dev/sdb> and so on.
+options one after another, with the first corresponding to the guest’s
+F</dev/sda>, the second to the guest’s F</dev/sdb> and so on.
 
 You can also run virt-inspector on install disks, live CDs, bootable USB
 keys and similar.
@@ -40,7 +40,7 @@ Virt-inspector can only inspect and report upon I<one domain at a time>.  To
 inspect several virtual machines, you have to run virt-inspector several
 times (for example, from a shell script for-loop).
 
-Because virt-inspector needs direct access to guest images, it won't
+Because virt-inspector needs direct access to guest images, it won’t
 normally work over remote libvirt connections.
 
 All of the information available from virt-inspector is also available
@@ -61,9 +61,9 @@ THE LIBGUESTFS API>).
 
 =item B<--add> файл
 
-Add I<file> which should be a disk image from a virtual machine.  If the
-virtual machine has multiple block devices, you must supply all of them with
-separate I<-a> options.
+Додати I<файл>, який має бути образом диска з віртуальної машини. Якщо у
+віртуальній машині декілька блокових пристроїв, вам слід вказати їх усі за
+допомогою окремих записів параметра I<-a>.
 
 Формат образу диска визначається автоматично. Щоб перевизначити його і
 примусово використати певний формат, скористайтеся параметром
@@ -95,10 +95,10 @@ at all.
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, virt-inspector normally turns
-echoing off so you cannot see what you are typing.  If you are not worried
-about Tempest attacks and there is no one else in the room you can specify
-this flag to see what you are typing.
+Типово, якщо virt-inspector попросить вас ввести ключ або пароль, програма
+не відтворюватиме введені символи на екрані. Якщо ви не боїтеся
+TEMPEST-нападів, або у вашій кімнаті нікого, окрім вас, немає, ви можете
+скористатися цим прапорцем, щоб бачити, які саме символи ви вводите.
 
 =item B<--format=raw|qcow2|..>
 
@@ -111,13 +111,14 @@ If disk images are requested from libvirt, then this program asks libvirt
 for this information.  In this case, the value of the format parameter is
 ignored.
 
-If working with untrusted raw-format guest disk images, you should ensure
-the format is always specified.
+Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
+ненадійних джерел, вам слід завжди вказувати назву формату.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening F</dev/tty>.
+Прочитати параметри ключа або пароля із джерела стандартного
+введення. Типово програма намагається читати паролі від користувача
+відкриттям F</dev/tty>.
 
 =item B<--no-applications>
 
@@ -167,8 +168,9 @@ Previous versions of virt-inspector allowed you to write either:
 
  virt-inspector назва_гостьової_системи
 
-whereas in this version you should use I<-a> or I<-d> respectively to avoid
-the confusing case where a disk image might have the same name as a guest.
+тоді як у цій версії вам слід скористатися I<-a> або I<-d>, відповідно, щоб
+уникнути помилок у випадках, коли назва образу диска може збігатися із
+назвою гостьової системи.
 
 З міркувань зворотної сумісності передбачено підтримку запису параметрів у
 застарілому форматі.
@@ -201,7 +203,6 @@ name" string, the type of OS and so on, as in this example:
      <major_version>6</major_version>
      <minor_version>1</minor_version>
      <windows_systemroot>/Windows</windows_systemroot>
-     <format>installed</format>
 
 In brief, E<lt>nameE<gt> is the class of operating system (something like
 C<linux> or C<windows>), E<lt>distroE<gt> is the distribution (eg. C<fedora>
@@ -324,27 +325,6 @@ to a PNG file:
 
  base64 -i -d < дані.піктограми > icon.png
 
-=head2 INSPECTING INSTALL DISKS, LIVE CDs
-
-Virt-inspector can detect some operating system installers on install disks,
-live CDs, bootable USB keys and more.
-
-In this case the E<lt>formatE<gt> tag will contain C<installer> and other
-fields may be present to indicate a live CD, network installer, or one part
-of a multipart CD.  For example:
-
- <operatingsystems>
-   <operatingsystem>
-     <root>/dev/sda</root>
-     <name>linux</name>
-     <arch>i386</arch>
-     <distro>ubuntu</distro>
-     <product_name>Ubuntu 10.10 &quot;Maverick Meerkat&quot;</product_name>
-     <major_version>10</major_version>
-     <minor_version>10</minor_version>
-     <format>installer</format>
-     <live/>
-
 =head1 XPATH QUERIES
 
 Virt-inspector includes built in support for running XPath queries.  The
@@ -371,7 +351,7 @@ result on stdout.  All other inspection features are disabled in this mode.
 
  $ virt-inspector -d Guest | \
      virt-inspector --xpath 'string(//icon)' | base64 -i -d | display -
- [displays the guest icon, if there is one]
+ [показує піктограму гостьової системи, якщо така існує]
 
 =head1 GETTING INSPECTION DATA FROM THE LIBGUESTFS API
 
@@ -490,8 +470,8 @@ The old virt-inspector is no longer supported or shipped with libguestfs.
 To confuse matters further, in Red Hat Enterprise Linux 6 we ship two
 versions of virt-inspector with different names:
 
- virt-inspector     Old Perl version.
- virt-inspector2    New C version.
+ virt-inspector     Стара версія на Perl.
+ virt-inspector2    Нова версія на C.
 
 =head1 СТАН ВИХОДУ
 

@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-virt-sparsify - Make a virtual machine disk sparse
+virt-sparsify — зробити диск віртуальної машини розрідженим
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -128,26 +128,27 @@ by doing:
 Check if L</TMPDIR> or I<--tmp> directory has enough space to complete the
 operation.  This is just an estimate.
 
-If the check indicates a problem, then you can either:
+Якщо під час перевірки буде виявлено проблему, ви можете піти одним з таких
+шляхів:
 
 =over 4
 
 =item *
 
-B<ignore> it,
+B<ігнорувати> її,
 
 =item *
 
-print a warning and B<continue>,
+вивести попередженян і B<продовжити>,
 
 =item *
 
-B<warn> and wait for the user to press the Return key (this is the default),
-or:
+B<попередити> і почекати, доки користувач натисне клавішу Enter (типова
+поведінка) або
 
 =item *
 
-B<fail> and exit.
+B<вивести попердження про помилку> і завершити роботу.
 
 =back
 
@@ -157,9 +158,11 @@ You cannot use this option and I<--in-place> together.
 
 =item B<--colours>
 
-Use ANSI colour sequences to colourize messages.  This is the default when
-the output is a tty.  If the output of the program is redirected to a file,
-ANSI colour sequences are disabled unless you use this option.
+Використовувати послідовності символів ANSI для розфарбовування
+повідомлень. Ці послідовності типово використовуються, якщо дані виводяться
+на термінал tty.  Якщо дані, виведені програмою, спрямовуються до файла,
+послідовності визначення кольорів ANSI буде вимкнено, якщо ви не додасте до
+команди цей параметр.
 
 =item B<--compress>
 
@@ -191,10 +194,10 @@ You cannot use this option and I<--in-place> together.
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, virt-sparsify normally turns
-echoing off so you cannot see what you are typing.  If you are not worried
-about Tempest attacks and there is no one else in the room you can specify
-this flag to see what you are typing.
+Типово, якщо virt-sparcify попросить вас ввести ключ або пароль, програма не
+відтворюватиме введені символи на екрані. Якщо ви не боїтеся
+TEMPEST-нападів, або у вашій кімнаті нікого, окрім вас, немає, ви можете
+скористатися цим прапорцем, щоб бачити, які саме символи ви вводите.
 
 =item B<--format> raw
 
@@ -203,8 +206,8 @@ this flag to see what you are typing.
 Specify the format of the input disk image.  If this flag is not given then
 it is auto-detected from the image itself.
 
-If working with untrusted raw-format guest disk images, you should ensure
-the format is always specified.
+Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
+ненадійних джерел, вам слід завжди вказувати назву формату.
 
 =item B<--ignore> файлова_система
 
@@ -229,13 +232,15 @@ L</IN-PLACE SPARSIFICATION> below.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening F</dev/tty>.
+Прочитати параметри ключа або пароля із джерела стандартного
+введення. Типово програма намагається читати паролі від користувача
+відкриттям F</dev/tty>.
 
 =item B<--machine-readable>
 
-This option is used to make the output more machine friendly when being
-parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
+За допомогою цього параметра можна зробити виведені дані придатнішими для
+обробки комп'ютером, якщо для цієї обробки використовуються інші
+програми. Див. L</ПРИДАТНЕ ДО ЧИТАННЯ КОМП'ЮТЕРОМ ВИВЕДЕННЯ> нижче.
 
 =item B<-o> параметр[,параметр,...]
 
@@ -243,8 +248,8 @@ Pass I<-o> option(s) to the L<qemu-img(1)> command to fine-tune the output
 format.  Options available depend on the output format (see I<--convert>)
 and the installed version of the qemu-img program.
 
-You should use I<-o> at most once.  To pass multiple options, separate them
-with commas, eg:
+Вам слід скористатися I<-o> не більше одного разу. Щоб передати декілька
+параметрів, відокремте їх комами. Приклад:
 
  virt-sparsify --convert qcow2 \
    -o cluster_size=512,preallocation=metadata ...
@@ -341,16 +346,18 @@ I<--check-tmpdir> because large amounts of temporary space are not required.
 
 In-place sparsification works using discard (a.k.a trim or unmap)  support.
 
-=head1 MACHINE READABLE OUTPUT
+=head1 ПРИДАТНЕ ДО ЧИТАННЯ КОМП'ЮТЕРОМ ВИВЕДЕННЯ
 
-The I<--machine-readable> option can be used to make the output more machine
-friendly, which is useful when calling virt-sparsify from other programs,
-GUIs etc.
+Для виведення даних у зручному для машинної обробки форматі можна
+скористатися параметром I<--machine-readable>. Додавання цього параметра
+робить зручним використання virt-sparcify з інших програм, графічних
+інтерфейсів тощо.
 
 Існує два способи використання цього параметра.
 
-Firstly use the option on its own to query the capabilities of the
-virt-sparsify binary.  Typical output looks like this:
+Спочатку, скористайтеся цим параметром окремо, щоб опитати систему щодо
+можливостей виконуваного файла virt-sparcify.  Типово виведені дані
+виглядатимуть якось так:
 
  $ virt-sparsify --machine-readable
  virt-sparsify
@@ -388,8 +395,8 @@ fatal error.
 
 =back
 
-All versions of virt-sparsify have supported the I<--machine-readable>
-option.
+Підтримку параметра I<--machine-readable> передбачено у всіх версіях
+virt-sparsify.
 
 =head1 WINDOWS 8
 
@@ -453,5 +460,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2017 Red Hat Inc.
+Copyright (C) 2011-2018 Red Hat Inc.
 

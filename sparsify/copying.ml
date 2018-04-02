@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2017 Red Hat Inc.
+ * Copyright (C) 2011-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,8 @@
 open Unix
 open Printf
 
-open Common_utils
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
 open Unix_utils
 
@@ -70,7 +71,7 @@ let run indisk outdisk check_tmpdir compress convert
   (* Use TMPDIR or --tmp parameter? *)
   let tmp_place =
     match tmp_param with
-    | None -> Directory Filename.temp_dir_name (* $TMPDIR or /tmp *)
+    | None -> Directory (Filename.get_temp_dir_name ()) (* $TMPDIR or /tmp *)
     | Some dir when is_directory dir -> Directory dir
     | Some dev when is_block_device dev -> Block_device dev
     | Some file when String.is_prefix file "prebuilt:" ->
@@ -98,7 +99,7 @@ let run indisk outdisk check_tmpdir compress convert
           virtual_size (human_size virtual_size);
 
     let print_warning () =
-      let free_space = StatVFS.free_space tmpdir in
+      let free_space = StatVFS.free_space (StatVFS.statvfs tmpdir) in
       let extra_needed = virtual_size -^ free_space in
       if extra_needed > 0L then (
         warning (f_"\

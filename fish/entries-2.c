@@ -189,7 +189,7 @@ struct command_entry add_drive_cmd_entry = {
           "        remote username you want.\n"
           "\n"
           "    \"secret\"\n"
-          "        For the \"rbd\" protocol only, this specifies the 'secret' to use when\n"
+          "        For the \"rbd\" protocol only, this specifies the ‘secret’ to use when\n"
           "        connecting to the remote device. It must be base64 encoded.\n"
           "\n"
           "        If not given, then a secret matching the given username will be\n"
@@ -511,7 +511,7 @@ struct command_entry command_cmd_entry = {
           "\n"
           "    Shared libraries and data files required by the program must be\n"
           "    available on filesystems which are mounted in the correct places. It is\n"
-          "    the caller's responsibility to ensure all filesystems that are needed\n"
+          "    the caller’s responsibility to ensure all filesystems that are needed\n"
           "    are mounted at the right locations.\n"
           "\n"
           "    Because of the message protocol, there is a transfer limit of somewhere\n"
@@ -1357,8 +1357,8 @@ struct command_entry parse_environment_cmd_entry = {
           "     parse-environment\n"
           "\n"
           "DESCRIPTION\n"
-          "    Parse the program's environment and set flags in the handle accordingly.\n"
-          "    For example if \"LIBGUESTFS_DEBUG=1\" then the 'verbose' flag is set in\n"
+          "    Parse the program’s environment and set flags in the handle accordingly.\n"
+          "    For example if \"LIBGUESTFS_DEBUG=1\" then the ‘verbose’ flag is set in\n"
           "    the handle.\n"
           "\n"
           "    *Most programs do not need to call this*. It is done implicitly when you\n"
@@ -1409,7 +1409,7 @@ struct command_entry part_list_cmd_entry = {
           "\n"
           "    part_start\n"
           "        Start of the partition *in bytes*. To get sectors you have to divide\n"
-          "        by the device's sector size, see \"blockdev_getss\".\n"
+          "        by the device’s sector size, see \"blockdev_getss\".\n"
           "\n"
           "    part_end\n"
           "        End of the partition in bytes.\n"
@@ -1441,6 +1441,28 @@ struct command_entry part_set_bootable_cmd_entry = {
           "",
   .synopsis = "part-set-bootable device partnum bootable",
   .run = run_part_set_bootable
+};
+
+struct command_entry part_set_gpt_attributes_cmd_entry = {
+  .name = "part-set-gpt-attributes",
+  .help = "NAME\n"
+          "    part-set-gpt-attributes - set the attribute flags of a GPT partition\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     part-set-gpt-attributes device partnum attributes\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Set the attribute flags of numbered GPT partition \"partnum\" to\n"
+          "    \"attributes\". Return an error if the partition table of \"device\" isn't\n"
+          "    GPT.\n"
+          "\n"
+          "    See\n"
+          "    <https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_entries>\n"
+          "    for a useful list of partition attributes.\n"
+          "\n"
+          "",
+  .synopsis = "part-set-gpt-attributes device partnum attributes",
+  .run = run_part_set_gpt_attributes
 };
 
 struct command_entry part_set_gpt_guid_cmd_entry = {
@@ -1806,7 +1828,7 @@ struct command_entry sfdisk_disk_geometry_cmd_entry = {
           "DESCRIPTION\n"
           "    This displays the disk geometry of \"device\" read from the partition\n"
           "    table. Especially in the case where the underlying block device has been\n"
-          "    resized, this can be different from the kernel's idea of the geometry\n"
+          "    resized, this can be different from the kernel’s idea of the geometry\n"
           "    (see \"sfdisk_kernel_geometry\").\n"
           "\n"
           "    The result is in human-readable format, and not designed to be parsed.\n"
@@ -1825,14 +1847,14 @@ struct command_entry sh_cmd_entry = {
           "     sh command\n"
           "\n"
           "DESCRIPTION\n"
-          "    This call runs a command from the guest filesystem via the guest's\n"
+          "    This call runs a command from the guest filesystem via the guest’s\n"
           "    /bin/sh.\n"
           "\n"
           "    This is like \"command\", but passes the command to:\n"
           "\n"
           "     /bin/sh -c \"command\"\n"
           "\n"
-          "    Depending on the guest's shell, this usually results in wildcards being\n"
+          "    Depending on the guest’s shell, this usually results in wildcards being\n"
           "    expanded, shell expressions being interpolated and so on.\n"
           "\n"
           "    All the provisos about \"command\" apply to this call.\n"
@@ -2006,6 +2028,32 @@ struct command_entry write_append_cmd_entry = {
           "",
   .synopsis = "write-append path content",
   .run = run_write_append
+};
+
+struct command_entry yara_scan_cmd_entry = {
+  .name = "yara-scan",
+  .help = "NAME\n"
+          "    yara-scan - scan a file with the loaded yara rules\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     yara-scan path\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Scan a file with the previously loaded Yara rules.\n"
+          "\n"
+          "    For each matching rule, a \"yara_detection\" structure is returned.\n"
+          "\n"
+          "    The \"yara_detection\" structure contains the following fields.\n"
+          "\n"
+          "    \"yara_name\"\n"
+          "        Path of the file matching a Yara rule.\n"
+          "\n"
+          "    \"yara_rule\"\n"
+          "        Identifier of the Yara rule which matched against the given file.\n"
+          "\n"
+          "",
+  .synopsis = "yara-scan path",
+  .run = run_yara_scan
 };
 
 struct command_entry zgrep_cmd_entry = {

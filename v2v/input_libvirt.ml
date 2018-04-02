@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,13 @@
 open Printf
 
 open Common_gettext.Gettext
-open Common_utils
+open Tools_utils
 
 open Types
 open Utils
 
 (* Choose the right subclass based on the URI. *)
-let input_libvirt dcpath password libvirt_uri guest =
+let input_libvirt vddk_options password libvirt_uri input_transport guest =
   match libvirt_uri with
   | None ->
     Input_libvirt_other.input_libvirt_other password libvirt_uri guest
@@ -39,23 +39,28 @@ let input_libvirt dcpath password libvirt_uri guest =
         error (f_"could not parse '-ic %s'.  Original error message was: %s")
           orig_uri msg in
 
-    match server, scheme with
-    | None, _
-    | Some "", _                        (* Not a remote URI. *)
+    match server, scheme, input_transport with
+    | None, _, _
+    | Some "", _, _                     (* Not a remote URI. *)
 
-    | Some _, None                      (* No scheme? *)
-    | Some _, Some "" ->
+    | Some _, None, _                   (* No scheme? *)
+    | Some _, Some "", _ ->
       Input_libvirt_other.input_libvirt_other password libvirt_uri guest
 
-    (* vCenter over https *)
-    | Some server, Some ("esx"|"gsx"|"vpx" as scheme) ->
-      Input_libvirt_vcenter_https.input_libvirt_vcenter_https
-        dcpath password libvirt_uri parsed_uri scheme server guest
+    (* vCenter over https. *)
+    | Some server, Some ("esx"|"gsx"|"vpx"), None ->
+       Input_libvirt_vcenter_https.input_libvirt_vcenter_https
+         password libvirt_uri parsed_uri server guest
+
+    (* vCenter or ESXi using nbdkit vddk plugin *)
+    | Some server, Some ("esx"|"gsx"|"vpx"), Some `VDDK ->
+       Input_libvirt_vddk.input_libvirt_vddk vddk_options password
+                                             libvirt_uri parsed_uri guest
 
     (* Xen over SSH *)
-    | Some server, Some ("xen+ssh" as scheme) ->
+    | Some server, Some "xen+ssh", _ ->
       Input_libvirt_xen_ssh.input_libvirt_xen_ssh
-        password libvirt_uri parsed_uri scheme server guest
+        password libvirt_uri parsed_uri server guest
 
     (* Old virt-v2v also supported qemu+ssh://.  However I am
      * deliberately not supporting this in new virt-v2v.  Don't
@@ -63,7 +68,7 @@ let input_libvirt dcpath password libvirt_uri guest =
      *)
 
     (* Unknown remote scheme. *)
-    | Some _, Some _ ->
+    | Some _, Some _, _ ->
       warning (f_"no support for remote libvirt connections to '-ic %s'.  The conversion may fail when it tries to read the source disks.")
         orig_uri;
       Input_libvirt_other.input_libvirt_other password libvirt_uri guest

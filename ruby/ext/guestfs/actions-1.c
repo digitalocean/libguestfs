@@ -516,7 +516,7 @@ guestfs_int_ruby_clear_backend_setting (VALUE gv, VALUE namev)
  * add hypervisor parameters
  *
  * This can be used to add arbitrary hypervisor parameters
- * of the form *-param value*. Actually it's not quite
+ * of the form *-param value*. Actually it’s not quite
  * arbitrary - we prevent you from setting some parameters
  * which would interfere with parameters that we use.
  * 
@@ -969,22 +969,22 @@ guestfs_int_ruby_exists (VALUE gv, VALUE pathv)
  * The "tsk_dirent" structure contains the following
  * fields.
  * 
- * 'tsk_inode'
+ * "tsk_inode"
  * Filesystem reference number of the node. It might be
  * 0 if the node has been deleted.
  * 
- * 'tsk_type'
+ * "tsk_type"
  * Basic file type information. See below for a
  * detailed list of values.
  * 
- * 'tsk_size'
+ * "tsk_size"
  * File size in bytes. It might be -1 if the node has
  * been deleted.
  * 
- * 'tsk_name'
+ * "tsk_name"
  * The file path relative to its directory.
  * 
- * 'tsk_flags'
+ * "tsk_flags"
  * Bitfield containing extra information regarding the
  * entry. It contains the logical OR of the following
  * values:
@@ -1014,22 +1014,22 @@ guestfs_int_ruby_exists (VALUE gv, VALUE pathv)
  * (NTFS). The API is not able to detect
  * application level compression.
  * 
- * 'tsk_atime_sec'
- * 'tsk_atime_nsec'
- * 'tsk_mtime_sec'
- * 'tsk_mtime_nsec'
- * 'tsk_ctime_sec'
- * 'tsk_ctime_nsec'
- * 'tsk_crtime_sec'
- * 'tsk_crtime_nsec'
+ * "tsk_atime_sec"
+ * "tsk_atime_nsec"
+ * "tsk_mtime_sec"
+ * "tsk_mtime_nsec"
+ * "tsk_ctime_sec"
+ * "tsk_ctime_nsec"
+ * "tsk_crtime_sec"
+ * "tsk_crtime_nsec"
  * Respectively, access, modification, last status
  * change and creation time in Unix format in seconds
  * and nanoseconds.
  * 
- * 'tsk_nlink'
+ * "tsk_nlink"
  * Number of file names pointing to this entry.
  * 
- * 'tsk_link'
+ * "tsk_link"
  * If the entry is a symbolic link, this field will
  * contain the path to the target file.
  * 
@@ -1652,6 +1652,52 @@ guestfs_int_ruby_hivex_root (VALUE gv)
 
 /*
  * call-seq:
+ *   g.hivex_value_string(valueh) -> string
+ *
+ * return the data field as a UTF-8 string
+ *
+ * This calls "g.hivex_value_value" (which returns the data
+ * field from a hivex value tuple). It then assumes that
+ * the field is a UTF-16LE string and converts the result
+ * to UTF-8 (or if this is not possible, it returns an
+ * error).
+ * 
+ * This is useful for reading strings out of the Windows
+ * registry. However it is not foolproof because the
+ * registry is not strongly-typed and fields can contain
+ * arbitrary or unexpected data.
+ *
+ *
+ * [Since] Added in version 1.37.22.
+ *
+ * [Feature] This function depends on the feature +hivex+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_hivex_value_string}[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_string].
+ */
+VALUE
+guestfs_int_ruby_hivex_value_string (VALUE gv, VALUE valuehv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_value_string");
+
+  long long valueh = NUM2LL (valuehv);
+
+  char *r;
+
+  r = guestfs_hivex_value_string (g, valueh);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.hivex_value_value(valueh) -> string
  *
  * return the data field from the (key, datatype, data) tuple
@@ -1856,7 +1902,7 @@ guestfs_int_ruby_inotify_rm_watch (VALUE gv, VALUE wdv)
  * 
  * Notes:
  * 
- * *   Unlike most other inspection API calls, the guest's
+ * *   Unlike most other inspection API calls, the guest’s
  * disks must be mounted up before you call this, since
  * it needs to read information from the guest
  * filesystem during the call.
@@ -1987,16 +2033,14 @@ guestfs_int_ruby_inspect_get_windows_system_hive (VALUE gv, VALUE rootv)
  *
  * get netinst (network installer) flag for install disk
  *
- * If "g.inspect_get_format" returns "installer" (this is
- * an install disk), then this returns true if the disk is
- * a network installer, ie. not a self-contained install CD
- * but one which is likely to require network access to
- * complete the install.
+ * This is deprecated and always returns "false".
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
  *
  * [Since] Added in version 1.9.4.
+ *
+ * [Deprecated] There is no documented replacement
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_inspect_is_netinst}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_is_netinst].
@@ -3215,7 +3259,7 @@ guestfs_int_ruby_mknod (VALUE gv, VALUE modev, VALUE devmajorv, VALUE devminorv,
  * they were added to the guest. If those block devices
  * contain partitions, they will have the usual names (eg.
  * /dev/sda1). Also LVM /dev/VG/LV-style names can be used,
- * or 'mountable' strings returned by "g.list_filesystems"
+ * or ‘mountable’ strings returned by "g.list_filesystems"
  * or "g.inspect_get_mountpoints".
  * 
  * The rules are the same as for mount(2): A filesystem
@@ -3563,6 +3607,50 @@ guestfs_int_ruby_ntfsclone_out (int argc, VALUE *argv, VALUE gv)
   int r;
 
   r = guestfs_ntfsclone_out_argv (g, device, backupfile, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.part_resize(device, partnum, endsect) -> nil
+ *
+ * resize a partition
+ *
+ * This command resizes the partition numbered "partnum" on
+ * "device" by moving the end position.
+ * 
+ * Note that this does not modify any filesystem present in
+ * the partition. If you wish to do this, you will need to
+ * use filesystem resizing commands like "g.resize2fs".
+ * 
+ * When growing a partition you will want to grow the
+ * filesystem afterwards, but when shrinking, you need to
+ * shrink the filesystem before the partition.
+ *
+ *
+ * [Since] Added in version 1.37.20.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_resize}[http://libguestfs.org/guestfs.3.html#guestfs_part_resize].
+ */
+VALUE
+guestfs_int_ruby_part_resize (VALUE gv, VALUE devicev, VALUE partnumv, VALUE endsectv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_resize");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+  long long endsect = NUM2LL (endsectv);
+
+  int r;
+
+  r = guestfs_part_resize (g, device, partnum, endsect);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -4523,6 +4611,41 @@ guestfs_int_ruby_xfs_admin (int argc, VALUE *argv, VALUE gv)
   int r;
 
   r = guestfs_xfs_admin_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.yara_destroy() -> nil
+ *
+ * destroy previously loaded yara rules
+ *
+ * Destroy previously loaded Yara rules in order to free
+ * libguestfs resources.
+ *
+ *
+ * [Since] Added in version 1.37.13.
+ *
+ * [Feature] This function depends on the feature +libyara+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_yara_destroy}[http://libguestfs.org/guestfs.3.html#guestfs_yara_destroy].
+ */
+VALUE
+guestfs_int_ruby_yara_destroy (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "yara_destroy");
+
+
+  int r;
+
+  r = guestfs_yara_destroy (g);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 

@@ -54,14 +54,14 @@ L<http://www.hyperrealm.com/libconfig/libconfig_manual.html>
 
 =head1 АДРЕСА ФАЙЛА
 
-The order of the configuration files being read is, by importance:
+Ось список файлів налаштувань, які читає програма, за рівнем важливості:
 
 =over 4
 
 =item *
 
-$XDG_CONFIG_HOME/libguestfs/libguestfs-tools.conf (C<$XDG_CONFIG_HOME> is
-F<$HOME/.config> if not set).
+$XDG_CONFIG_HOME/libguestfs/libguestfs-tools.conf (C<$XDG_CONFIG_HOME> має
+значення F<$HOME/.config>, якщо не встановлено).
 
 =item *
 
@@ -88,7 +88,7 @@ non-XDG paths which are read for compatibility.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>, L<guestmount(1)>,
+L<guestfish(1)/ВІДКРИТТЯ ДИСКІВ ДЛЯ ЧИТАННЯ І ЗАПИСУ>, L<guestmount(1)>,
 L<virt-rescue(1)>, L<http://libguestfs.org/>,
 L<http://standards.freedesktop.org/basedir-spec/latest/>.
 
@@ -98,5 +98,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2017 Red Hat Inc.
+Copyright (C) 2011-2018 Red Hat Inc.
 

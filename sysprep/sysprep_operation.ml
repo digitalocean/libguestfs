@@ -16,10 +16,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Common_utils
-
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
 open Getopt.OptionName
 
@@ -110,9 +110,9 @@ let remove_all_from_set set =
   empty_set
 
 let register_operation op =
-  push_front op all_operations;
+  List.push_front op all_operations;
   if op.enabled_by_default then
-    push_front op enabled_by_default_operations
+    List.push_front op enabled_by_default_operations
 
 let baked = ref false
 let rec bake () =
@@ -172,8 +172,8 @@ let extra_args () =
   assert !baked;
 
   List.flatten (
-    List.map (fun { extra_args = extra_args } ->
-      List.map (fun { extra_argspec = argspec } -> argspec) extra_args
+    List.map (fun { extra_args } ->
+      List.map (fun { extra_argspec } -> extra_argspec) extra_args
     ) !all_operations
   )
 
@@ -187,22 +187,20 @@ let dump_pod () =
       if op.enabled_by_default then printf "*\n";
       printf "\n";
       printf "%s.\n\n" op.heading;
-      may (printf "%s\n\n") op.pod_description;
-      (match op.pod_notes with
-      | None -> ()
-      | Some notes ->
-        printf "=head3 ";
-        printf (f_"Notes on %s") op.name;
-        printf "\n\n";
-        printf "%s\n\n" notes
-      )
+      Option.may (printf "%s\n\n") op.pod_description;
+      Option.may (fun notes ->
+          printf "=head3 ";
+          printf (f_"Notes on %s") op.name;
+          printf "\n\n";
+          printf "%s\n\n" notes
+      ) op.pod_notes;
   ) !all_operations
 
 let dump_pod_options () =
   assert !baked;
 
   let args = List.map (
-    fun { name = op_name; extra_args = extra_args } ->
+    fun { name = op_name; extra_args } ->
       List.map (fun ea -> op_name, ea) extra_args
   ) !all_operations in
   let args = List.flatten args in
@@ -292,7 +290,7 @@ let perform_operations_on_filesystems ?operations g root
 
   List.iter (
     function
-    | { name = name; perform_on_filesystems = Some fn } ->
+    | { name; perform_on_filesystems = Some fn } ->
       message (f_"Performing %S ...") name;
       fn g root side_effects
     | { perform_on_filesystems = None } -> ()
@@ -313,7 +311,7 @@ let perform_operations_on_devices ?operations g root
 
   List.iter (
     function
-    | { name = name; perform_on_devices = Some fn } ->
+    | { name; perform_on_devices = Some fn } ->
       message (f_"Performing %S ...") name;
       fn g root side_effects
     | { perform_on_devices = None } -> ()

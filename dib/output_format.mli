@@ -1,5 +1,5 @@
 (* virt-dib
- * Copyright (C) 2012-2017 Red Hat Inc.
+ * Copyright (C) 2012-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ type format = {
 
 and extra_arg = {
   extra_argspec : Getopt.keys * Getopt.spec * Getopt.doc;
-  (** The argspec.  See [Getopt] module in [mllib]. *)
+  (** The argspec.  See [Getopt] module in [common/mltools]. *)
 }
 
 val defaults : format

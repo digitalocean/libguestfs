@@ -36,10 +36,6 @@
 #include "daemon.h"
 #include "actions.h"
 
-GUESTFSD_EXT_CMD(str_lvm, lvm);
-GUESTFSD_EXT_CMD(str_rm, rm);
-GUESTFSD_EXT_CMD(str_lvmetad, lvmetad);
-
 /* This runs during daemon start up and creates a fresh LVM
  * configuration which we can modify as we desire.  LVM allows
  * configuration to be completely empty (meaning "all defaults").
@@ -87,13 +83,11 @@ clean_lvm_config (void)
 void
 start_lvmetad (void)
 {
-  char cmd[64];
   int r;
 
-  snprintf (cmd, sizeof cmd, "%s", str_lvmetad);
   if (verbose)
-    printf ("%s\n", cmd);
-  r = system (cmd);
+    printf ("%s\n", "lvmetad");
+  r = system ("lvmetad");
   if (r == -1)
     perror ("system/lvmetad");
   else if (!WIFEXITED (r) || WEXITSTATUS (r) != 0)
@@ -105,7 +99,7 @@ rm_lvm_system_dir (void)
 {
   char cmd[64];
 
-  snprintf (cmd, sizeof cmd, "%s -rf %s", str_rm, lvm_system_dir);
+  snprintf (cmd, sizeof cmd, "rm -rf %s", lvm_system_dir);
   ignore_value (system (cmd));
 }
 
@@ -155,7 +149,7 @@ static int
 vgchange (const char *vgchange_flag)
 {
   CLEANUP_FREE char *err = NULL;
-  int r = command (NULL, &err, str_lvm, "vgchange", vgchange_flag, NULL);
+  int r = command (NULL, &err, "lvm", "vgchange", vgchange_flag, NULL);
   if (r == -1) {
     reply_with_error ("vgchange %s: %s", vgchange_flag, err);
     return -1;
@@ -188,7 +182,7 @@ rescan (void)
   unlink (lvm_cache);
 
   CLEANUP_FREE char *err = NULL;
-  int r = command (NULL, &err, str_lvm, "vgscan", NULL);
+  int r = command (NULL, &err, "lvm", "vgscan", NULL);
   if (r == -1) {
     reply_with_error ("vgscan: %s", err);
     return -1;

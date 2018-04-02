@@ -82,7 +82,7 @@ pipe is closed.
 
 =item B<--quiet>
 
-Don't display error messages from fusermount.  The return status is still
+Don’t display error messages from fusermount.  The return status is still
 set (see L</EXIT STATUS> below).
 
 =item B<--no-retry>

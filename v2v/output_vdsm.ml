@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Unix
 open Printf
@@ -78,13 +79,13 @@ object
   method prepare_targets _ targets =
     if List.length vdsm_params.image_uuids <> List.length targets ||
       List.length vdsm_params.vol_uuids <> List.length targets then
-      error (f_"the number of '--vdsm-image-uuid' and '--vdsm-vol-uuid' parameters passed on the command line has to match the number of guest disk images (for this guest: %d)")
+      error (f_"the number of ‘--vdsm-image-uuid’ and ‘--vdsm-vol-uuid’ parameters passed on the command line has to match the number of guest disk images (for this guest: %d)")
         (List.length targets);
 
     let mp, uuid =
       let fields = String.nsplit "/" os in (* ... "data-center" "UUID" *)
       let fields = List.rev fields in      (* "UUID" "data-center" ... *)
-      let fields = dropwhile ((=) "") fields in
+      let fields = List.dropwhile ((=) "") fields in
       match fields with
       | uuid :: rest when String.length uuid = 36 ->
         let mp = String.concat "/" (List.rev rest) in
@@ -133,15 +134,19 @@ object
 
           debug "VDSM: will export %s to %s" ov_sd target_file;
 
-          { t with target_file = target_file }
-      ) (combine3 targets vdsm_params.image_uuids vdsm_params.vol_uuids) in
+          { t with target_file = TargetFile target_file }
+      ) (List.combine3 targets vdsm_params.image_uuids vdsm_params.vol_uuids) in
 
     (* Generate the .meta files associated with each volume. *)
     let metas =
-      OVF.create_meta_files output_alloc dd_uuid
+      Create_ovf.create_meta_files output_alloc dd_uuid
         vdsm_params.image_uuids targets in
     List.iter (
-      fun ({ target_file = target_file }, meta) ->
+      fun ({ target_file }, meta) ->
+        let target_file =
+          match target_file with
+          | TargetFile s -> s
+          | TargetURI _ -> assert false in
         let meta_filename = target_file ^ ".meta" in
         with_open_out meta_filename (fun chan -> output_string chan meta)
     ) (List.combine targets metas);
@@ -166,7 +171,7 @@ object
     assert (target_firmware = TargetBIOS);
 
     (* Create the metadata. *)
-    let ovf = OVF.create_ovf source targets guestcaps inspect
+    let ovf = Create_ovf.create_ovf source targets guestcaps inspect
       output_alloc dd_uuid
       vdsm_params.image_uuids
       vdsm_params.vol_uuids

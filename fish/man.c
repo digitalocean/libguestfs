@@ -1,5 +1,5 @@
 /* guestfish - guest filesystem shell
- * Copyright (C) 2010-2017 Red Hat Inc.
+ * Copyright (C) 2010-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ int
 run_man (const char *cmd, size_t argc, char *argv[])
 {
   if (argc != 0) {
-    fprintf (stderr, _("use 'man' without parameters to open the manual\n"));
+    fprintf (stderr, _("use ‘man’ without parameters to open the manual\n"));
     return -1;
   }
 

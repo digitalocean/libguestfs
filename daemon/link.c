@@ -30,24 +30,6 @@
 #include "daemon.h"
 #include "actions.h"
 
-GUESTFSD_EXT_CMD(str_ln, ln);
-
-char *
-do_readlink (const char *path)
-{
-  char *link;
-
-  CHROOT_IN;
-  link = areadlink (path);
-  CHROOT_OUT;
-  if (link == NULL) {
-    reply_with_perror ("%s", path);
-    return NULL;
-  }
-
-  return link;			/* caller frees */
-}
-
 char **
 do_internal_readlinklist (const char *path, char *const *names)
 {
@@ -140,7 +122,7 @@ _symlink (const char *flag, const char *target, const char *linkname)
   }
 
   r = command (NULL, &err,
-               str_ln, flag, "--", /* target could begin with '-' */
+               "ln", flag, "--", /* target could begin with '-' */
                target, buf_linkname, NULL);
   if (r == -1) {
     reply_with_error ("ln %s: %s: %s: %s",

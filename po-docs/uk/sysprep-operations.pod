@@ -7,9 +7,10 @@
 
 =head2 B<backup-files> *
 
-Remove editor backup files from the guest.
+Вилучити файли резервних копій редактора з гостьової системи.
 
-The following files are removed from anywhere in the guest filesystem:
+Вказані нижче файли буде вилучено з усіх каталогів файлової системи
+гостьової операційної системи:
 
 =over 4
 
@@ -23,8 +24,8 @@ The following files are removed from anywhere in the guest filesystem:
 
 =back
 
-On Linux and Unix operating systems, only the following filesystems will be
-examined:
+У операційних системах Linux та Unix оброблятимуться лише такі файлові
+системи:
 
 =over 4
 
@@ -453,7 +454,7 @@ UUID, наприклад C</etc/fstab> або завантажувач. Вмик
 
 =head2 B<net-hostname> *
 
-Вилучити HOSTNAME у налаштуваннях інтерфейсу мережі.
+Вилучити HOSTNAME та DHCP_HOSTNAME у налаштуваннях інтерфейсу мережі.
 
 Для Fedora і Red Hat Enterprise Linux це вилучається з файлів C<ifcfg-*>.
 
@@ -480,7 +481,7 @@ UUID, наприклад C</etc/fstab> або завантажувач. Вмик
 
 =head2 B<passwd-backups> *
 
-Remove /etc/passwd- and similar backup files.
+Вилучити /etc/passwd- та подібні файли резервних копій.
 
 У Linux вилучено такі файли:
 
@@ -542,18 +543,18 @@ Remove /etc/passwd- and similar backup files.
 The C<script> module lets you run arbitrary shell scripts or programs
 against the guest.
 
-Note this feature requires FUSE support.  You may have to enable this in
-your host, for example by adding the current user to the C<fuse> group, or
-by loading a kernel module.
+Зауважте, що використання цієї можливості потребує підтримки FUSE. Вам варто
+увімкнути цю підтримку у вашій основній системі, наприклад, додаванням
+поточного користувача до групи C<fuse> або завантаженням модуля ядра.
 
 Use one or more I<--script> parameters to specify scripts or programs that
 will be run against the guest.
 
-The script or program is run with its current directory being the guest's
+The script or program is run with its current directory being the guest’s
 root directory, so relative paths should be used.  For example: C<rm
-etc/resolv.conf> in the script would remove a Linux guest's DNS
+etc/resolv.conf> in the script would remove a Linux guest’s DNS
 configuration file, but C<rm /etc/resolv.conf> would (try to) remove the
-host's file.
+host’s file.
 
 Normally a temporary mount point for the guest is used, but you can choose a
 specific one by using the I<--scriptdir> parameter.
@@ -622,11 +623,12 @@ udev цьому можна запобігти.
 
 Вилучити облікові записи користувачів у гостьовій системі.
 
-By default remove all the user accounts and their home directories.  The
-"root" account is not removed.
+Типово вилучити всі облікові записи користувачів та відповідні домашні
+каталоги. Обліковий запис «root» вилучено не буде.
 
-See the I<--remove-user-accounts> parameter for a way to specify how to
-remove only some users, or to not remove some others.
+Див. опис параметра I<--remove-user-accounts>, щоб дізнатися про те, як
+наказати
+програмі вилучити лише деяких з користувачів і не вилучати інших.
 
 =head2 B<utmp> *
 

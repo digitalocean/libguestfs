@@ -81,7 +81,7 @@ Delete the event handler which was previously registered as C<name>.  If
 multiple event handlers were registered with the same name, they are all
 deleted.
 
-See also the guestfish commands C<event> and C<list-events>.
+Див. також команди guestfish C<event> та C<list-events>.
 
 =head2 display
 
@@ -147,7 +147,7 @@ variable C<$EVENT>.
  event "" progress "echo progress: $3/$4"
  event "" * "echo $EVENT $@"
 
-See also the guestfish commands C<delete-event> and C<list-events>.
+Див. також команди guestfish C<delete-event> і C<list-events>.
 
 =head2 glob
 
@@ -193,7 +193,7 @@ another program to use by setting the C<HEXEDITOR> environment variable.
 
 =head2 lcd
 
- lcd directory
+ lcd каталог
 
 Change the local directory, ie. the current directory of guestfish itself.
 
@@ -217,11 +217,11 @@ Opens the manual page for guestfish.
 
 =head2 less
 
- more filename
+ more назва_файла
 
- less filename
+ less назва_файла
 
-This is used to view a file.
+Використовується для перегляду файла.
 
 The default viewer is C<$PAGER>.  However if you use the alternate command
 C<less> you will get the C<less> command specifically.
@@ -261,7 +261,7 @@ For more advanced image creation, see L</disk-create>.
 
 Size can be specified using standard suffixes, eg. C<1M>.
 
-See also the guestfish L</scratch> command.
+Див. також команду guestfish L</scratch>.
 
 =head2 supported
 

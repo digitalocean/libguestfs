@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,6 @@
 #include "guestfs_protocol.h"
 #include "daemon.h"
 #include "actions.h"
-
-GUESTFSD_EXT_CMD(str_find, find);
 
 static int
 input_to_nul (FILE *fp, char *buf, size_t maxlen)
@@ -87,7 +85,7 @@ do_find0 (const char *dir)
 
   sysrootdirlen = strlen (sysrootdir);
 
-  if (asprintf_nowarn (&cmd, "%s %Q -print0", str_find, sysrootdir) == -1) {
+  if (asprintf_nowarn (&cmd, "find %Q -print0", sysrootdir) == -1) {
     reply_with_perror ("asprintf");
     return -1;
   }

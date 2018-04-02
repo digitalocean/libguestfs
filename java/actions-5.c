@@ -30,7 +30,8 @@
 
 #include "com_redhat_et_libguestfs_GuestFS.h"
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
+#include "structs-cleanups.h"
 
 /* Note that this function returns.  The exception is not thrown
  * until after the wrapper function returns.
@@ -2061,6 +2062,32 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1bootable  (JNIEnv *env, jobje
     goto ret_error;
   }
   return (jboolean) r;
+
+ ret_error:
+  return -1;
+}
+
+
+JNIEXPORT jlong JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1gpt_1attributes  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int64_t r;
+  const char *device;
+  int partnum;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  partnum = jpartnum;
+
+  r = guestfs_part_get_gpt_attributes (g, device, partnum);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  return (jlong) r;
 
  ret_error:
   return -1;

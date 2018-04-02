@@ -36,7 +36,7 @@ instead of erl_interface.
 */
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #include "actions.h"
 
@@ -1446,6 +1446,20 @@ run_part_get_bootable (ETERM *args_tuple)
     return make_error ("part_get_bootable");
 
   return make_bool (r);
+}
+
+ETERM *
+run_part_get_gpt_attributes (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int partnum = get_int (ARG (1));
+  int64_t r;
+
+  r = guestfs_part_get_gpt_attributes (g, device, partnum);
+  if (r == -1)
+    return make_error ("part_get_gpt_attributes");
+
+  return erl_mk_longlong (r);
 }
 
 ETERM *

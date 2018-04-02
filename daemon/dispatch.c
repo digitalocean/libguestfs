@@ -414,6 +414,9 @@ dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_FILE:
       file_stub (xdr_in);
       break;
+    case GUESTFS_PROC_FILE_ARCHITECTURE:
+      file_architecture_stub (xdr_in);
+      break;
     case GUESTFS_PROC_FILESIZE:
       filesize_stub (xdr_in);
       break;
@@ -531,8 +534,14 @@ dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_HIVEX_VALUE_KEY:
       hivex_value_key_stub (xdr_in);
       break;
+    case GUESTFS_PROC_HIVEX_VALUE_STRING:
+      hivex_value_string_stub (xdr_in);
+      break;
     case GUESTFS_PROC_HIVEX_VALUE_TYPE:
       hivex_value_type_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_VALUE_UTF8:
+      hivex_value_utf8_stub (xdr_in);
       break;
     case GUESTFS_PROC_HIVEX_VALUE_VALUE:
       hivex_value_value_stub (xdr_in);
@@ -560,6 +569,75 @@ dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_INOTIFY_RM_WATCH:
       inotify_rm_watch_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_ARCH:
+      inspect_get_arch_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_DISTRO:
+      inspect_get_distro_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_DRIVE_MAPPINGS:
+      inspect_get_drive_mappings_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_FILESYSTEMS:
+      inspect_get_filesystems_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_FORMAT:
+      inspect_get_format_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_HOSTNAME:
+      inspect_get_hostname_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_MAJOR_VERSION:
+      inspect_get_major_version_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_MINOR_VERSION:
+      inspect_get_minor_version_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_MOUNTPOINTS:
+      inspect_get_mountpoints_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_PACKAGE_FORMAT:
+      inspect_get_package_format_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_PACKAGE_MANAGEMENT:
+      inspect_get_package_management_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_PRODUCT_NAME:
+      inspect_get_product_name_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_PRODUCT_VARIANT:
+      inspect_get_product_variant_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_ROOTS:
+      inspect_get_roots_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_TYPE:
+      inspect_get_type_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_WINDOWS_CURRENT_CONTROL_SET:
+      inspect_get_windows_current_control_set_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_WINDOWS_SOFTWARE_HIVE:
+      inspect_get_windows_software_hive_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_WINDOWS_SYSTEM_HIVE:
+      inspect_get_windows_system_hive_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_GET_WINDOWS_SYSTEMROOT:
+      inspect_get_windows_systemroot_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_IS_LIVE:
+      inspect_is_live_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_IS_MULTIPART:
+      inspect_is_multipart_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_IS_NETINST:
+      inspect_is_netinst_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INSPECT_OS:
+      inspect_os_stub (xdr_in);
       break;
     case GUESTFS_PROC_INTERNAL_AUTOSYNC:
       internal_autosync_stub (xdr_in);
@@ -611,6 +689,9 @@ dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_INTERNAL_WRITE_APPEND:
       internal_write_append_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_YARA_SCAN:
+      internal_yara_scan_stub (xdr_in);
       break;
     case GUESTFS_PROC_IS_BLOCKDEV:
       is_blockdev_stub (xdr_in);
@@ -722,6 +803,9 @@ dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_LIST_DM_DEVICES:
       list_dm_devices_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LIST_FILESYSTEMS:
+      list_filesystems_stub (xdr_in);
       break;
     case GUESTFS_PROC_LIST_LDM_PARTITIONS:
       list_ldm_partitions_stub (xdr_in);
@@ -987,6 +1071,9 @@ dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_PART_GET_DISK_GUID:
       part_get_disk_guid_stub (xdr_in);
       break;
+    case GUESTFS_PROC_PART_GET_GPT_ATTRIBUTES:
+      part_get_gpt_attributes_stub (xdr_in);
+      break;
     case GUESTFS_PROC_PART_GET_GPT_GUID:
       part_get_gpt_guid_stub (xdr_in);
       break;
@@ -1011,6 +1098,9 @@ dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_PART_LIST:
       part_list_stub (xdr_in);
       break;
+    case GUESTFS_PROC_PART_RESIZE:
+      part_resize_stub (xdr_in);
+      break;
     case GUESTFS_PROC_PART_SET_BOOTABLE:
       part_set_bootable_stub (xdr_in);
       break;
@@ -1019,6 +1109,9 @@ dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_PART_SET_DISK_GUID_RANDOM:
       part_set_disk_guid_random_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_SET_GPT_ATTRIBUTES:
+      part_set_gpt_attributes_stub (xdr_in);
       break;
     case GUESTFS_PROC_PART_SET_GPT_GUID:
       part_set_gpt_guid_stub (xdr_in);
@@ -1379,6 +1472,12 @@ dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_XFS_REPAIR:
       xfs_repair_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_YARA_DESTROY:
+      yara_destroy_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_YARA_LOAD:
+      yara_load_stub (xdr_in);
       break;
     case GUESTFS_PROC_ZEGREP:
       zegrep_stub (xdr_in);

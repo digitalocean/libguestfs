@@ -1,4 +1,4 @@
-/* Copyright (C) 1991-2017 Free Software Foundation, Inc.
+/* Copyright (C) 1991-2018 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -615,7 +615,8 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
                     {
 # if defined HAVE_GETPWNAM_R || defined _LIBC
                       size_t ssize = strlen (s.data) + 1;
-                      err = getpwnam_r (s.data, &pwbuf, s.data + ssize,
+                      char *sdata = s.data;
+                      err = getpwnam_r (sdata, &pwbuf, sdata + ssize,
                                         s.length - ssize, &p);
 # else
                       p = getpwnam (s.data);
@@ -744,11 +745,11 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
                   char *p = mempcpy (newp, dirname + 1,
                                      unescape - dirname - 1);
                   char *q = unescape;
-                  while (*q != '\0')
+                  while (q != end_name)
                     {
                       if (*q == '\\')
                         {
-                          if (q[1] == '\0')
+                          if (q + 1 == end_name)
                             {
                               /* "~fo\\o\\" unescape to user_name "foo\\",
                                  but "~fo\\o\\/" unescape to user_name
@@ -764,7 +765,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
                   *p = '\0';
                 }
               else
-                *((char *) mempcpy (newp, dirname + 1, end_name - dirname))
+                *((char *) mempcpy (newp, dirname + 1, end_name - dirname - 1))
                   = '\0';
               user_name = newp;
             }
@@ -800,6 +801,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
               {
                 size_t home_len = strlen (p->pw_dir);
                 size_t rest_len = end_name == NULL ? 0 : strlen (end_name);
+                char *d;
 
                 if (__glibc_unlikely (malloc_dirname))
                   free (dirname);
@@ -819,8 +821,10 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
                       }
                     malloc_dirname = 1;
                   }
-                *((char *) mempcpy (mempcpy (dirname, p->pw_dir, home_len),
-                                    end_name, rest_len)) = '\0';
+                d = mempcpy (dirname, p->pw_dir, home_len);
+                if (end_name != NULL)
+                  d = mempcpy (d, end_name, rest_len);
+                *d = '\0';
 
                 dirlen = home_len + rest_len;
                 dirname_modified = 1;

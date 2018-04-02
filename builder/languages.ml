@@ -1,5 +1,5 @@
 (* virt-builder
- * Copyright (C) 2013-2017 Red Hat Inc.
+ * Copyright (C) 2013-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,24 +16,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Common_utils
+open Std_utils
+open Tools_utils
+
+let re_locale =
+  PCRE.compile ~caseless:true "^([a-z]+)(_([a-z]+))?(\\.([a-z0-9-]+))?(@([a-z]+))?$"
 
 let split_locale loc =
-  let regex = Str.regexp "^\\([A-Za-z]+\\)\\(_\\([A-Za-z]+\\)\\)?\\(\\.\\([A-Za-z0-9-]+\\)\\)?\\(@\\([A-Za-z]+\\)\\)?$" in
   let l = ref [] in
-  if Str.string_match regex loc 0 then (
-    let match_or_empty n =
-      try Str.matched_group n loc with
-      | Not_found -> ""
-    in
-    let lang = Str.matched_group 1 loc in
+  if PCRE.matches re_locale loc then (
+    let match_or_empty n = try PCRE.sub n with Not_found -> "" in
+    let lang = PCRE.sub 1 in
     let territory = match_or_empty 3 in
     (match territory with
     | "" -> ()
-    | territory -> push_front (lang ^ "_" ^ territory) l);
-    push_front lang l;
+    | territory -> List.push_front (lang ^ "_" ^ territory) l);
+    List.push_front lang l;
   );
-  push_front "" l;
+  List.push_front "" l;
   List.rev !l
 
 let languages () =

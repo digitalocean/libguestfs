@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -145,6 +145,12 @@ host_triplet = @host@
 @HAVE_LIBVIRT_TRUE@am__append_1 = \
 @HAVE_LIBVIRT_TRUE@	test-qemu-drive-libvirt.sh
 
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@am__append_2 = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@	test-27-disks.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@	test-255-disks.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@	test-add-lots-of-disks.sh
+
+check_PROGRAMS = test-add-disks$(EXEEXT)
 subdir = tests/disks
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -177,10 +183,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
 	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
 	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
-	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
-	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
-	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/ftell.m4 \
+	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
+	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
 	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
 	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
@@ -277,44 +283,44 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/sys_wait_h.m4 $(top_srcdir)/m4/tempname.m4 \
 	$(top_srcdir)/m4/thread.m4 $(top_srcdir)/m4/threadlib.m4 \
 	$(top_srcdir)/m4/time_h.m4 $(top_srcdir)/m4/timespec.m4 \
-	$(top_srcdir)/m4/ttyname_r.m4 $(top_srcdir)/m4/ungetc.m4 \
-	$(top_srcdir)/m4/unistd-safer.m4 $(top_srcdir)/m4/unistd_h.m4 \
-	$(top_srcdir)/m4/unlink.m4 $(top_srcdir)/m4/unlinkat.m4 \
-	$(top_srcdir)/m4/unlinkdir.m4 $(top_srcdir)/m4/usleep.m4 \
-	$(top_srcdir)/m4/utime.m4 $(top_srcdir)/m4/utime_h.m4 \
-	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
-	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
-	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/vsnprintf.m4 \
-	$(top_srcdir)/m4/wait-process.m4 $(top_srcdir)/m4/waitpid.m4 \
-	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
-	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
-	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
-	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/m4/guestfs_progs.m4 \
-	$(top_srcdir)/m4/guestfs_c.m4 \
-	$(top_srcdir)/m4/guestfs_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_fuse.m4 \
-	$(top_srcdir)/m4/guestfs_daemon.m4 \
-	$(top_srcdir)/m4/guestfs_appliance.m4 \
-	$(top_srcdir)/m4/guestfs_qemu.m4 \
-	$(top_srcdir)/m4/guestfs_misc_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_ocaml.m4 \
-	$(top_srcdir)/m4/guestfs_perl.m4 \
-	$(top_srcdir)/m4/guestfs_python.m4 \
-	$(top_srcdir)/m4/guestfs_ruby.m4 \
-	$(top_srcdir)/m4/guestfs_java.m4 \
-	$(top_srcdir)/m4/guestfs_haskell.m4 \
-	$(top_srcdir)/m4/guestfs_php.m4 \
-	$(top_srcdir)/m4/guestfs_erlang.m4 \
-	$(top_srcdir)/m4/guestfs_lua.m4 \
-	$(top_srcdir)/m4/guestfs_golang.m4 \
-	$(top_srcdir)/m4/guestfs_gobject.m4 \
-	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
-	$(top_srcdir)/m4/guestfs_misc.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/tls.m4 $(top_srcdir)/m4/ttyname_r.m4 \
+	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
+	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
+	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
+	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utime.m4 \
+	$(top_srcdir)/m4/utime_h.m4 $(top_srcdir)/m4/utimecmp.m4 \
+	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
+	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
+	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
+	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
+	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
+	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
+	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
+	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
+	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs-progs.m4 \
+	$(top_srcdir)/m4/guestfs-c.m4 \
+	$(top_srcdir)/m4/guestfs-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-fuse.m4 \
+	$(top_srcdir)/m4/guestfs-daemon.m4 \
+	$(top_srcdir)/m4/guestfs-appliance.m4 \
+	$(top_srcdir)/m4/guestfs-qemu.m4 \
+	$(top_srcdir)/m4/guestfs-misc-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-ocaml.m4 \
+	$(top_srcdir)/m4/guestfs-perl.m4 \
+	$(top_srcdir)/m4/guestfs-python.m4 \
+	$(top_srcdir)/m4/guestfs-ruby.m4 \
+	$(top_srcdir)/m4/guestfs-java.m4 \
+	$(top_srcdir)/m4/guestfs-haskell.m4 \
+	$(top_srcdir)/m4/guestfs-php.m4 \
+	$(top_srcdir)/m4/guestfs-erlang.m4 \
+	$(top_srcdir)/m4/guestfs-lua.m4 \
+	$(top_srcdir)/m4/guestfs-golang.m4 \
+	$(top_srcdir)/m4/guestfs-gobject.m4 \
+	$(top_srcdir)/m4/guestfs-bash-completion.m4 \
+	$(top_srcdir)/m4/guestfs-misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -322,6 +328,21 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = test-qemu-drive-libvirt.xml
 CONFIG_CLEAN_VPATH_FILES =
+am_test_add_disks_OBJECTS = test_add_disks-test-add-disks.$(OBJEXT)
+test_add_disks_OBJECTS = $(am_test_add_disks_OBJECTS)
+am__DEPENDENCIES_1 =
+test_add_disks_DEPENDENCIES =  \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la $(am__DEPENDENCIES_1)
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+test_add_disks_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(test_add_disks_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o \
+	$@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -334,14 +355,54 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-SOURCES =
-DIST_SOURCES =
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
+am__depfiles_maybe = depfiles
+am__mv = mv -f
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+SOURCES = $(test_add_disks_SOURCES)
+DIST_SOURCES = $(test_add_disks_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
+# Read a list of newline-separated strings from the standard input,
+# and print each of them once, without duplicates.  Input order is
+# *not* preserved.
+am__uniquify_input = $(AWK) '\
+  BEGIN { nonempty = 0; } \
+  { items[$$0] = 1; nonempty = 1; } \
+  END { if (nonempty) { for (i in items) print i; }; } \
+'
+# Make sure the list of sources is unique.  This is necessary because,
+# e.g., the same source file might be shared among _SOURCES variables
+# for different programs/libraries.
+am__define_uniq_tagged_files = \
+  list='$(am__tagged_files)'; \
+  unique=`for i in $$list; do \
+    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+  done | $(am__uniquify_input)`
+ETAGS = etags
+CTAGS = ctags
 am__tty_colors_dummy = \
   mgn= red= grn= lgn= blu= brg= std=; \
   am__color_tests=no
@@ -547,6 +608,7 @@ TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
 am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(srcdir)/test-qemu-drive-libvirt.xml.in \
+	$(top_srcdir)/build-aux/depcomp \
 	$(top_srcdir)/build-aux/test-driver \
 	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -579,6 +641,7 @@ BMPTOPNM = @BMPTOPNM@
 BRANCH_NUMBER = @BRANCH_NUMBER@
 BRANCH_TYPE = @BRANCH_TYPE@
 BYTESWAP_H = @BYTESWAP_H@
+CAMLRUN = @CAMLRUN@
 CAP_LIBS = @CAP_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -971,6 +1034,7 @@ GREP = @GREP@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GTK_VERSION = @GTK_VERSION@
+GUESTFS_DEFAULT_PATH = @GUESTFS_DEFAULT_PATH@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -1064,6 +1128,7 @@ HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
 HAVE_ISWCNTRL = @HAVE_ISWCNTRL@
+HAVE_LANGINFO_ALTMON = @HAVE_LANGINFO_ALTMON@
 HAVE_LANGINFO_CODESET = @HAVE_LANGINFO_CODESET@
 HAVE_LANGINFO_ERA = @HAVE_LANGINFO_ERA@
 HAVE_LANGINFO_H = @HAVE_LANGINFO_H@
@@ -1238,6 +1303,7 @@ HAVE__BOOL = @HAVE__BOOL@
 HAVE__EXIT = @HAVE__EXIT@
 HIVEX_CFLAGS = @HIVEX_CFLAGS@
 HIVEX_LIBS = @HIVEX_LIBS@
+HIVEX_OPEN_UNSAFE_FLAG = @HIVEX_OPEN_UNSAFE_FLAG@
 HOSTENT_LIB = @HOSTENT_LIB@
 HOST_CPU = @HOST_CPU@
 HOST_CPU_C_ABI = @HOST_CPU_C_ABI@
@@ -1411,6 +1477,8 @@ NEXT_WCHAR_H = @NEXT_WCHAR_H@
 NEXT_WCTYPE_H = @NEXT_WCTYPE_H@
 NM = @NM@
 NMEDIT = @NMEDIT@
+NO_SNV_CFLAGS = @NO_SNV_CFLAGS@
+NO_UM_CFLAGS = @NO_UM_CFLAGS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 OCAMLBEST = @OCAMLBEST@
@@ -1418,6 +1486,8 @@ OCAMLBUILD = @OCAMLBUILD@
 OCAMLC = @OCAMLC@
 OCAMLCDOTOPT = @OCAMLCDOTOPT@
 OCAMLDEP = @OCAMLDEP@
+OCAMLDEP_ALL = @OCAMLDEP_ALL@
+OCAMLDEP_ONE_LINE = @OCAMLDEP_ONE_LINE@
 OCAMLDOC = @OCAMLDOC@
 OCAMLFIND = @OCAMLFIND@
 OCAMLLIB = @OCAMLLIB@
@@ -1429,9 +1499,9 @@ OCAMLVERSION = @OCAMLVERSION@
 OCAML_BYTES_COMPAT_CMO = @OCAML_BYTES_COMPAT_CMO@
 OCAML_BYTES_COMPAT_ML = @OCAML_BYTES_COMPAT_ML@
 OCAML_FLAGS = @OCAML_FLAGS@
-OCAML_GENERATOR_BYTES_COMPAT_CMO = @OCAML_GENERATOR_BYTES_COMPAT_CMO@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
+OCAML_PKG_hivex = @OCAML_PKG_hivex@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
 OCAML_PKG_oUnit = @OCAML_PKG_oUnit@
 OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
@@ -1489,6 +1559,7 @@ REPLACE_DPRINTF = @REPLACE_DPRINTF@
 REPLACE_DUP = @REPLACE_DUP@
 REPLACE_DUP2 = @REPLACE_DUP2@
 REPLACE_DUPLOCALE = @REPLACE_DUPLOCALE@
+REPLACE_FACCESSAT = @REPLACE_FACCESSAT@
 REPLACE_FCHOWNAT = @REPLACE_FCHOWNAT@
 REPLACE_FCLOSE = @REPLACE_FCLOSE@
 REPLACE_FCNTL = @REPLACE_FCNTL@
@@ -1696,6 +1767,8 @@ XZCAT = @XZCAT@
 YACC = @YACC@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
+YARA_CFLAGS = @YARA_CFLAGS@
+YARA_LIBS = @YARA_LIBS@
 YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
 ZIP = @ZIP@
@@ -1789,6 +1862,11 @@ CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
 
 # Files that should be universally removed by 'make distclean'.
 DISTCLEANFILES = .depend stamp-*
+
+# Special suffixes used by OCaml.
+
+# Special suffixes used by PO files.
+SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 
 # Rules for building OCaml objects.
@@ -1822,9 +1900,30 @@ guestfs_am_v_podwrapper_0 = @echo "  POD     " $@;
 guestfs_am_v_jar = $(guestfs_am_v_jar_@AM_V@)
 guestfs_am_v_jar_ = $(guestfs_am_v_jar_@AM_DEFAULT_V@)
 guestfs_am_v_jar_0 = @echo "  JAR     " $@;
-TESTS = test-max-disks.pl test-qemu-drive.sh $(am__append_1)
 TESTS_ENVIRONMENT = \
 	$(top_builddir)/run --test
+
+TESTS = test-qemu-drive.sh $(am__append_1) $(am__append_2) \
+	$(SLOW_TESTS)
+SLOW_TESTS = \
+	test-max-disks.sh
+
+test_add_disks_SOURCES = \
+	test-add-disks.c
+
+test_add_disks_CPPFLAGS = \
+	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
+
+test_add_disks_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+
+test_add_disks_LDADD = \
+	$(top_builddir)/common/utils/libutils.la \
+	$(top_builddir)/lib/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la \
+	$(LIBXML2_LIBS)
 
 EXTRA_DIST = \
 	debug-qemu.sh \
@@ -1833,7 +1932,7 @@ EXTRA_DIST = \
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cmi .cmo .cmx .log .ml .mli .test .test$(EXEEXT) .trs
+.SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo .c .lo .log .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -1867,17 +1966,122 @@ $(am__aclocal_m4_deps):
 test-qemu-drive-libvirt.xml: $(top_builddir)/config.status $(srcdir)/test-qemu-drive-libvirt.xml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
+clean-checkPROGRAMS:
+	@list='$(check_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+
+test-add-disks$(EXEEXT): $(test_add_disks_OBJECTS) $(test_add_disks_DEPENDENCIES) $(EXTRA_test_add_disks_DEPENDENCIES) 
+	@rm -f test-add-disks$(EXEEXT)
+	$(AM_V_CCLD)$(test_add_disks_LINK) $(test_add_disks_OBJECTS) $(test_add_disks_LDADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_add_disks-test-add-disks.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+test_add_disks-test-add-disks.o: test-add-disks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_disks_CPPFLAGS) $(CPPFLAGS) $(test_add_disks_CFLAGS) $(CFLAGS) -MT test_add_disks-test-add-disks.o -MD -MP -MF $(DEPDIR)/test_add_disks-test-add-disks.Tpo -c -o test_add_disks-test-add-disks.o `test -f 'test-add-disks.c' || echo '$(srcdir)/'`test-add-disks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_add_disks-test-add-disks.Tpo $(DEPDIR)/test_add_disks-test-add-disks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-add-disks.c' object='test_add_disks-test-add-disks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_disks_CPPFLAGS) $(CPPFLAGS) $(test_add_disks_CFLAGS) $(CFLAGS) -c -o test_add_disks-test-add-disks.o `test -f 'test-add-disks.c' || echo '$(srcdir)/'`test-add-disks.c
+
+test_add_disks-test-add-disks.obj: test-add-disks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_disks_CPPFLAGS) $(CPPFLAGS) $(test_add_disks_CFLAGS) $(CFLAGS) -MT test_add_disks-test-add-disks.obj -MD -MP -MF $(DEPDIR)/test_add_disks-test-add-disks.Tpo -c -o test_add_disks-test-add-disks.obj `if test -f 'test-add-disks.c'; then $(CYGPATH_W) 'test-add-disks.c'; else $(CYGPATH_W) '$(srcdir)/test-add-disks.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_add_disks-test-add-disks.Tpo $(DEPDIR)/test_add_disks-test-add-disks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-add-disks.c' object='test_add_disks-test-add-disks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_disks_CPPFLAGS) $(CPPFLAGS) $(test_add_disks_CFLAGS) $(CFLAGS) -c -o test_add_disks-test-add-disks.obj `if test -f 'test-add-disks.c'; then $(CYGPATH_W) 'test-add-disks.c'; else $(CYGPATH_W) '$(srcdir)/test-add-disks.c'; fi`
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
-tags TAGS:
 
-ctags CTAGS:
+ID: $(am__tagged_files)
+	$(am__define_uniq_tagged_files); mkid -fID $$unique
+tags: tags-am
+TAGS: tags
 
-cscope cscopelist:
+tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
+	set x; \
+	here=`pwd`; \
+	$(am__define_uniq_tagged_files); \
+	shift; \
+	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
+	  test -n "$$unique" || unique=$$empty_fix; \
+	  if test $$# -gt 0; then \
+	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+	      "$$@" $$unique; \
+	  else \
+	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+	      $$unique; \
+	  fi; \
+	fi
+ctags: ctags-am
 
+CTAGS: ctags
+ctags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
+	$(am__define_uniq_tagged_files); \
+	test -z "$(CTAGS_ARGS)$$unique" \
+	  || $(CTAGS) $(CTAGSFLAGS) $(AM_CTAGSFLAGS) $(CTAGS_ARGS) \
+	     $$unique
+
+GTAGS:
+	here=`$(am__cd) $(top_builddir) && pwd` \
+	  && $(am__cd) $(top_srcdir) \
+	  && gtags -i $(GTAGS_ARGS) "$$here"
+cscopelist: cscopelist-am
+
+cscopelist-am: $(am__tagged_files)
+	list='$(am__tagged_files)'; \
+	case "$(srcdir)" in \
+	  [\\/]* | ?:[\\/]*) sdir="$(srcdir)" ;; \
+	  *) sdir=$(subdir)/$(srcdir) ;; \
+	esac; \
+	for i in $$list; do \
+	  if test -f "$$i"; then \
+	    echo "$(subdir)/$$i"; \
+	  else \
+	    echo "$$sdir/$$i"; \
+	  fi; \
+	done >> $(top_builddir)/cscope.files
+
+distclean-tags:
+	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 # Recover from deleted '.trs' file; this should ensure that
 # "rm -f foo.log; make foo.trs" re-run 'foo.test', and re-create
@@ -2009,7 +2213,7 @@ check-TESTS:
 	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
 	exit $$?;
-recheck: all 
+recheck: all $(check_PROGRAMS)
 	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 	@set +e; $(am__set_TESTS_bases); \
 	bases=`for i in $$bases; do echo $$i; done \
@@ -2020,13 +2224,6 @@ recheck: all
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-test-max-disks.pl.log: test-max-disks.pl
-	@p='test-max-disks.pl'; \
-	b='test-max-disks.pl'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-qemu-drive.sh.log: test-qemu-drive.sh
 	@p='test-qemu-drive.sh'; \
 	b='test-qemu-drive.sh'; \
@@ -2037,6 +2234,34 @@ test-qemu-drive.sh.log: test-qemu-drive.sh
 test-qemu-drive-libvirt.sh.log: test-qemu-drive-libvirt.sh
 	@p='test-qemu-drive-libvirt.sh'; \
 	b='test-qemu-drive-libvirt.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-27-disks.sh.log: test-27-disks.sh
+	@p='test-27-disks.sh'; \
+	b='test-27-disks.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-255-disks.sh.log: test-255-disks.sh
+	@p='test-255-disks.sh'; \
+	b='test-255-disks.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-add-lots-of-disks.sh.log: test-add-lots-of-disks.sh
+	@p='test-add-lots-of-disks.sh'; \
+	b='test-add-lots-of-disks.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-max-disks.sh.log: test-max-disks.sh
+	@p='test-max-disks.sh'; \
+	b='test-max-disks.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2087,6 +2312,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile
@@ -2128,11 +2354,14 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
+	mostlyclean-am
 
 distclean: distclean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-tags
 
 dvi: dvi-am
 
@@ -2175,12 +2404,14 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -2194,18 +2425,19 @@ uninstall-am:
 
 .MAKE: check-am install-am install-strip
 
-.PHONY: all all-am check check-TESTS check-am clean clean-generic \
-	clean-libtool cscopelist-am ctags-am distclean \
-	distclean-generic distclean-libtool distdir dvi dvi-am html \
+.PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
+	clean-checkPROGRAMS clean-generic clean-libtool cscopelist-am \
+	ctags ctags-am distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am recheck tags-am \
-	uninstall uninstall-am
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	recheck tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
@@ -2234,11 +2466,11 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-.mli.cmi:
+%.cmi: %.mli
 	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-.ml.cmo:
+%.cmo: %.ml
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@%.cmx: %.ml
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 # Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
@@ -2261,6 +2493,9 @@ export TEST_FUNCTIONS := \
 	top_builddir="$(top_builddir)" \
 	abs_top_srcdir="$(abs_top_srcdir)" \
 	abs_top_builddir="$(abs_top_builddir)"
+
+check-slow:
+	$(MAKE) check TESTS="$(SLOW_TESTS)" SLOW=1
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

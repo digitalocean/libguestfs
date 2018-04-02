@@ -17,18 +17,19 @@ virt-ls — програма для показу списку файлів у в
 
 =head1 ОПИС
 
-C<virt-ls> lists filenames, file sizes, checksums, extended attributes and
-more from a virtual machine or disk image.
+C<virt-ls> виводить списки назв файлів, розмірів файлів, контрольних сум,
+розширених атрибутів та інші дані з віртуальної машини або образу диска.
 
-Multiple directory names can be given, in which case the output from each is
-concatenated.
+Можна вказати декілька назв каталогів. У цьому випадку виведені дані для
+кожного з них буде об'єднано.
 
-To list directories from a libvirt guest use the I<-d> option to specify the
-name of the guest.  For a disk image, use the I<-a> option.
+Щоб отримати список вмісту каталогів з гостьової системи libvirt,
+скористайтеся параметром I<-d> для задання назви гостьової системи. Для
+роботи з образом диска скористайтеся параметром I<-a>.
 
-C<virt-ls> can do many simple file listings.  For more complicated cases you
-may need to use L<guestfish(1)>, or write a program directly to the
-L<guestfs(3)> API.
+C<virt-ls> може створювати багато простих списків файлів. Складніші списки
+можна створити за допомогою L<guestfish(1)> або програми, яка безпосередньо
+використовує програмний інтерфейс L<guestfs(3)>.
 
 =head1 ПРИКЛАДИ
 
@@ -49,7 +50,7 @@ L<guestfs(3)> API.
 
  virt-ls -lR -d guest / | grep '^s'
 
-Показати список всіх звичайних файлів, назви яких завершуються на «.png»:
+Показати список усіх звичайних файлів, назви яких завершуються на «.png»:
 
  virt-ls -lR -d guest / | grep -i '^-.*\.png$'
 
@@ -67,15 +68,16 @@ L<guestfs(3)> API.
 
  virt-ls -lR -d guest --time-days / | grep '^-' | awk '$6 < 1'
 
-=head2 DIFFERENCES IN SNAPSHOTS AND BACKING FILES
+=head2 ВІДМІННОСТІ МІЖ ЗНІМКАМИ ТА ФАЙЛАМИ РЕЗЕРВНИХ КОПІЙ
 
-Although it is possible to use virt-ls to look for differences, since
-libguestfs E<ge> 1.26 a new tool is available called L<virt-diff(1)>.
+Хоча virt-ls можна скористатися для пошуку відмінностей між каталогами, з
+випуску libguestfs E<ge> 1.26 з цією метою краще користуватися новим
+інструментом, L<virt-diff(1)>.
 
 =head1 РЕЖИМИ ВИВЕДЕННЯ ДАНИХ
 
-C<virt-ls> has four output modes, controlled by different combinations of
-the I<-l> and I<-R> options.
+У C<virt-ls> передбачено чотири режими виведення даних, керування якими
+здійснюється різними комбінаціями параметрів I<-l> та I<-R>.
 
 =head2 ПРОСТИЙ СПИСОК
 
@@ -88,8 +90,8 @@ the I<-l> and I<-R> options.
 
 =head2 ДОВГИЙ СПИСОК
 
-With the I<-l> (I<--long>) option, the output is like the C<ls -l> command
-(more specifically, like the C<guestfs_ll> function).
+З параметром I<-l> (I<--long>) виведені дані будуть подібними до даних, які
+виводить команда C<ls -l> (якщо точніше, функція C<guestfs_ll>).
 
  $ virt-ls -l -d guest /
  total 204
@@ -97,42 +99,45 @@ With the I<-l> (I<--long>) option, the output is like the C<ls -l> command
  dr-xr-xr-x.   5 root root   3072 2009-08-25 19:06 boot
  [тощо]
 
-Note that while this is useful for displaying a directory, do not try
-parsing this output in another program.  Use L</RECURSIVE LONG LISTING>
-instead.
+Зауважте, що хоча такий список зручний для перегляду вмісту каталогу, не
+варто обробляти його за допомогою іншої програми. Для обробки іншими
+програмами слід скористатися варіантом L</РЕКУРСИВНИЙ ДОВГИЙ СПИСОК>.
 
 =head2 РЕКУРСИВНИЙ СПИСОК
 
-With the I<-R> (I<--recursive>) option, C<virt-ls> lists the names of files
-and directories recursively:
+Із параметром I<-R> (I<--recursive>) C<virt-ls> виводить список назв файлів
+і каталогів рекурсивно:
 
  $ virt-ls -R -d guest /tmp
  foo
  foo/bar
  [тощо]
 
-To generate this output, C<virt-ls> runs the C<guestfs_find0> function and
-converts C<\0> characters to C<\n>.
+Для створення такого списку C<virt-ls> викликає функцію C<guestfs_find0> і
+перетворює символи C<\0> на C<\n>.
 
 =head2 РЕКУРСИВНИЙ ДОВГИЙ СПИСОК
 
-Using I<-lR> options together changes the output to display directories
-recursively, with file stats, and optionally other features such as
-checksums and extended attributes.
+Використання параметрів I<-lR> разом змінює виведені дані так, що вміст
+каталогів показується рекурсивно, із даними щодо файлів, а також, якщо
+використано відповідні параметри, іншими даними, зокрема контрольними сумами
+та розширеними атрибутами.
 
-Most of the interesting features of C<virt-ls> are only available when using
-I<-lR> mode.
+Доступ до більшості цікавих можливостей C<virt-ls> можна отримати лише у
+режимі I<-lR>.
 
-The fields are normally space-separated.  Filenames are B<not> quoted, so
-you cannot use the output in another program (because filenames can contain
-spaces and other unsafe characters).  If the guest was untrusted and someone
-knew you were using C<virt-ls> to analyze the guest, they could play tricks
-on you by creating filenames with embedded newline characters.  To B<safely>
-parse the output in another program, use the I<--csv> (Comma-Separated
-Values) option.
+Зазвичай, поля відокремлюються пробілами. До назв файлів B<не додаються>
+лапки. Отже, ви не зможете скористатися виведеними даними у іншій програмі
+(оскільки у назвах файлів можуть міститися пробіли та інші нестандартні
+символи). Якщо до гостьової системи мають доступ сторонні люди і відомо, що
+ви використовуєте C<virt-ls> для аналізу вмісту гостьової системи,
+зловмисники можуть створити файли зі спеціально сконструйованими назвами та
+вбудованими до назв символами розриву рядка. Щоб виведені дані можна було
+B<безпечно> обробити у сторонній програмі, скористайтеся параметром I<--csv>
+для виведення даних у форматі значень, відокремлених комами.
 
-Note that this output format is completely unrelated to the C<ls -lR>
-command.
+Зауважте, що цей формат виведення є повністю незалежним від формату команди
+C<ls -lR>.
 
  $ virt-ls -lR -d guest /bin
  d 0555       4096 /bin
@@ -149,19 +154,19 @@ command.
 
 =item тип
 
-The file type, one of: C<-> (regular file), C<d> (directory), C<c>
-(character device), C<b> (block device), C<p> (named pipe), C<l> (symbolic
-link), C<s> (socket) or C<u> (unknown).
+Тип файла, одне з таких значень: C<-> (звичайний файл), C<d> (каталог), C<c>
+(символьний пристрій), C<b> (блокововий пристрій), C<p> (іменований канал),
+C<l> (символічне посилання), C<s> (сокет) або C<u> (невідомо).
 
 =item права доступу
 
-The Unix permissions, displayed as a 4 digit octal number.
+Права доступу Unix, показані у форматі вісімкового числа із 4 цифр.
 
 =item розмір
 
-The size of the file.  This is shown in bytes unless I<-h> or
-I<--human-readable> option is given, in which case this is shown as a
-human-readable number.
+Розмір файла. Його буде показано у байтах, якщо не використано параметр
+I<-h> або I<--human-readable>. Якщо такий параметр використано, дані буде
+показано у зручному для читанні вигляді.
 
 =item шлях
 
@@ -173,11 +178,10 @@ human-readable number.
 
 =back
 
-In I<-lR> mode, additional command line options enable the display of more
-fields.
+У режимі I<-lR> додаткові параметри командного рядка уможливлюють показ
+додаткових полів.
 
-With the I<--uids> flag, these additional fields are displayed before the
-path:
+З прапорцем I<--uids> ці додаткові поля буде показано до шляху:
 
 =over 4
 
@@ -185,12 +189,12 @@ path:
 
 =item gid
 
-The UID and GID of the owner of the file (displayed numerically).  Note
-these only make sense in the context of a Unix-like guest.
+UID та GID власника файла (буде показано у числовій формі). Зауважте, що ці
+дані мають сенс лише у контексті Unix-подібної гостьової системи.
 
 =back
 
-With the I<--times> flag, these additional fields are displayed:
+Із прапорцем I<--times> буде показано такі додаткові поля:
 
 =over 4
 
@@ -208,17 +212,19 @@ With the I<--times> flag, these additional fields are displayed:
 
 =back
 
-The time fields are displayed as string dates and times, unless one of the
-I<--time-t>, I<--time-relative> or I<--time-days> flags is given.
+Вміст полів дат і часу буде показано у форматі рядків, якщо не вказано
+одного з таких параметрів: I<--time-t>, I<--time-relative> або
+I<--time-days>.
 
-With the I<--extra-stats> flag, these additional fields are displayed:
+Із прапорцем I<--extra-stats> буде показано такі додаткові поля:
 
 =over 4
 
 =item пристрій
 
-The device containing the file (displayed as major:minor).  This may not
-match devices as known to the guest.
+Пристрій на якому міститься файл (буде показано у форматі
+основний:підлеглий). Запис пристрою може не збігатися із записом пристрою,
+який відомий гостьовій системі.
 
 =item inode
 
@@ -230,7 +236,8 @@ match devices as known to the guest.
 
 =item rdev
 
-For block and char special files, the device (displayed as major:minor).
+Для блоковий і символьних спеціальних файлів пристрій (буде показано у
+форматі основний:підлеглий).
 
 =item блоки
 
@@ -238,9 +245,9 @@ For block and char special files, the device (displayed as major:minor).
 
 =back
 
-With the I<--checksum> flag, the checksum of the file contents is shown
-(only for regular files).  Computing file checksums can take a considerable
-amount of time.
+Якщо використано прапорець I<--checksum>, програма покаже контрольну суму
+вмісту файла (лише для звичайних файлів). Обчислення контрольної суми може
+бути доволі тривалою дією.
 
 =head1 ПАРАМЕТРИ
 
@@ -254,9 +261,9 @@ amount of time.
 
 =item B<--add> файл
 
-Add I<file> which should be a disk image from a virtual machine.  If the
-virtual machine has multiple block devices, you must supply all of them with
-separate I<-a> options.
+Додати I<файл>, який має бути образом диска з віртуальної машини. Якщо у
+віртуальній машині декілька блокових пристроїв, вам слід вказати їх усі за
+допомогою окремих записів параметра I<-a>.
 
 Формат образу диска визначається автоматично. Щоб перевизначити його і
 примусово використати певний формат, скористайтеся параметром
@@ -272,12 +279,12 @@ I<--format=..>.
 
 =item B<--checksum=crc|md5|sha1|sha224|sha256|sha384|sha512>
 
-Display checksum over file contents for regular files.  With no argument,
-this defaults to using I<md5>.  Using an argument, you can select the
-checksum type to use.
+Вивести контрольну суму вмісту звичайного файла. Без аргументу для створення
+контрольної суми буде використано I<md5>. За допомогою аргументу ви можете
+визначити потрібний вам тип контрольної суми.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+Цей параметр працюватиме лише у режимі виведення I<-lR>. Див. L</РЕКУРСИВНИЙ
+ДОВГИЙ СПИСОК> вище.
 
 =item B<-c> адреса
 
@@ -291,9 +298,10 @@ libvirt не буде використовуватися взагалі.
 
 =item B<--csv>
 
-Write out the results in CSV format (comma-separated values).  This format
-can be imported easily into databases and spreadsheets, but read L</NOTE
-ABOUT CSV FORMAT> below.
+Вивести результати до формату CSV (записів, відокремлених комами). Дані у
+цьому форматі можна просто імпортувати до баз даних і електронних
+таблиць. Втім, варто ознайомитися із розділом L</НОТАТКА ЩОДО ФОРМАТУ CSV>,
+наведеним нижче.
 
 =item B<-d> гість
 
@@ -304,17 +312,17 @@ ABOUT CSV FORMAT> below.
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, virt-ls normally turns echoing off
-so you cannot see what you are typing.  If you are not worried about Tempest
-attacks and there is no one else in the room you can specify this flag to
-see what you are typing.
+Типово, якщо virt-ls попросить вас ввести ключ або пароль, програма не
+відтворюватиме введені символи на екрані. Якщо ви не боїтеся
+TEMPEST-нападів, або у вашій кімнаті нікого, окрім вас, немає, ви можете
+скористатися цим прапорцем, щоб бачити, які саме символи ви вводите.
 
 =item B<--extra-stats>
 
 Показати додаткові дані.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+Цей параметр працюватиме лише у режимі виведення I<-lR>. Див. L</РЕКУРСИВНИЙ
+ДОВГИЙ СПИСОК> вище.
 
 =item B<--format=raw|qcow2|..>
 
@@ -349,46 +357,54 @@ LISTING> above.
 
 Показати розміри файлів у зручному для читання форматі.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+Цей параметр працюватиме лише у режимі виведення I<-lR>. Див. L</РЕКУРСИВНИЙ
+ДОВГИЙ СПИСОК> вище.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening F</dev/tty>.
+Прочитати параметри ключа або пароля із джерела стандартного
+введення. Типово програма намагається читати паролі від користувача
+відкриттям F</dev/tty>.
 
-=item B<-m> dev[:mountpoint[:options[:fstype]]]
+=item B<-m> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
-=item B<--mount> dev[:mountpoint[:options[:fstype]]]
+=item B<--mount> пристрій[:точка_монтування[:параметри[:тип_файлової_системи]]]
 
 Змонтувати названий розділ або логічний том до вказаної точки монтування.
 
-If the mountpoint is omitted, it defaults to F</>.
+Якщо точку монтування не вказано, типовим значенням є F</>.
 
-Specifying any mountpoint disables the inspection of the guest and the mount
-of its root and all of its mountpoints, so make sure to mount all the
-mountpoints needed to work with the filenames given as arguments.
+Визначення точки монтування вимикає інспектування гостьової системи і
+призводить до монтування її кореневої системи та усіх її точок
+монтування. Тому вам слід забезпечити монтування усіх точок монтування,
+потрібних для роботи із файлами, назви яких вказано як аргументи.
 
-If you don't know what filesystems a disk image contains, you can either run
-guestfish without this option, then list the partitions, filesystems and LVs
-available (see L</list-partitions>, L</list-filesystems> and L</lvs>
-commands), or you can use the L<virt-filesystems(1)> program.
+Якщо ви не знаєте, які саме файлові системи містяться у образі диска, ви
+можете або запустити guestfish без цього параметра і ознайомитися зі списком
+доступних розділів, файлових систем та логічних томів (див. команди
+L</list-partitions>, L</list-filesystems> і L</lvs>), або скористатися
+програмою L<virt-filesystems(1)>.
 
-The third (and rarely used) part of the mount parameter is the list of mount
-options used to mount the underlying filesystem.  If this is not given, then
-the mount options are either the empty string or C<ro> (the latter if the
-I<--ro> flag is used).  By specifying the mount options, you override this
-default choice.  Probably the only time you would use this is to enable ACLs
-and/or extended attributes if the filesystem can support them:
+Третьою (і нечасто використовуваною) частиною параметра монтування є список
+параметрів монтування, які використовуються для того, щоб змонтувати
+підлеглу файлову систему. Якщо такий список не буде задано, параметрами
+монтування вважатиметься або порожній рядок, або C<ro> (другий варіант
+використовується, якщо використано прапорець I<--ro>). Заданням параметрів
+монтування ви перевизначаєте типовий варіант. Ймовірно, єдиним випадком,
+коли вам може знадобитися це, є випадок вмикання списків керування доступом
+(ACL) і/або розширених атрибутів, якщо у файловій системі передбачено їхню
+підтримку:
 
  -m /dev/sda1:/:acl,user_xattr
 
-Using this flag is equivalent to using the C<mount-options> command.
+Використання цього прапорця є еквівалентним до використання команди
+C<mount-options>.
 
-The fourth part of the parameter is the filesystem driver to use, such as
-C<ext3> or C<ntfs>. This is rarely needed, but can be useful if multiple
-drivers are valid for a filesystem (eg: C<ext2> and C<ext3>), or if
-libguestfs misidentifies a filesystem.
+Четвертою частиною параметра є назва драйвера файлової системи, якою слід
+скористатися, зокрема C<ext3> або C<ntfs>. У визначенні цієї частини
+параметра рідко виникає потреба, але вона може бути корисною, якщо для
+файлової системи можна скористатися декількома драйверами (приклад: C<ext2>
+і C<ext3>), або libguestfs визначає файлову систему помилково.
 
 =item B<-l>
 
@@ -398,25 +414,24 @@ libguestfs misidentifies a filesystem.
 
 =item B<--recursive>
 
-Select the mode.  With neither of these options, C<virt-ls> produces a
-simple, flat list of the files in the named directory.  See L</SIMPLE
-LISTING>.
+Вибір режиму. Якщо не буде вказано жодного з варіантів, C<virt-ls> створює
+простий плоский список файлів у вказаному каталозі. Див. L</ПРОСТИЙ СПИСОК>.
 
-C<virt-ls -l> produces a "long listing", which shows more detail.  See
-L</LONG LISTING>.
+C<virt-ls -l> створює «довгий список», у якому більше
+подробиць. Див. L</ДОВГИЙ СПИСОК>.
 
-C<virt-ls -R> produces a recursive list of files starting at the named
-directory.  See L</RECURSIVE LISTING>.
+C<virt-ls -R> створює рекурсивний список файлів, починаючи з вказаного
+каталогу. Див. L</РЕКУРСИВНИЙ СПИСОК>.
 
-C<virt-ls -lR> produces a recursive long listing which can be more easily
-parsed.  See L</RECURSIVE LONG LISTING>.
+C<virt-ls -lR> створює рекурсивні довгі списки, які простіше
+обробляти. Див. L</РЕКУРСИВНИЙ ДОВГИЙ СПИСОК>.
 
 =item B<--times>
 
 Показати поля часу.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+Цей параметр працюватиме лише у режимі виведення I<-lR>. Див. L</РЕКУРСИВНИЙ
+ДОВГИЙ СПИСОК> вище.
 
 =item B<--time-days>
 
@@ -426,30 +441,30 @@ LISTING> above.
 Зауважте, що C<0> у виведених даних означає «менше 1 одного дня до поточного
 моменту» або «вік файла — від 0 до 86399 секунд».
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+Цей параметр працюватиме лише у режимі виведення I<-lR>. Див. L</РЕКУРСИВНИЙ
+ДОВГИЙ СПИСОК> вище.
 
 =item B<--time-relative>
 
 Показувати поля часу у форматі секунд до поточного моменту (від’ємні
 значення для часу у майбутньому).
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+Цей параметр працюватиме лише у режимі виведення I<-lR>. Див. L</РЕКУРСИВНИЙ
+ДОВГИЙ СПИСОК> вище.
 
 =item B<--time-t>
 
 Показувати поля часу у форматі секунд з моменту початку епохи UNIX.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+Цей параметр працюватиме лише у режимі виведення I<-lR>. Див. L</РЕКУРСИВНИЙ
+ДОВГИЙ СПИСОК> вище.
 
 =item B<--uids>
 
 Показати поля UID і GID.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+Цей параметр працюватиме лише у режимі виведення I<-lR>. Див. L</РЕКУРСИВНИЙ
+ДОВГИЙ СПИСОК> вище.
 
 =item B<-v>
 
@@ -479,35 +494,39 @@ LISTING> above.
 
  virt-ls назва_гостьової_системи /каталог
 
-whereas in this version you should use I<-a> or I<-d> respectively to avoid
-the confusing case where a disk image might have the same name as a guest.
+тоді як у цій версії вам слід скористатися I<-a> або I<-d>, відповідно, щоб
+уникнути помилок у випадках, коли назва образу диска може збігатися із
+назвою гостьової системи.
 
 З міркувань зворотної сумісності передбачено підтримку запису параметрів у
 застарілому форматі.
 
 =head1 ЗАУВАЖЕННЯ ЩОДО ФОРМАТУ CSV
 
-Comma-separated values (CSV) is a deceptive format.  It I<seems> like it
-should be easy to parse, but it is definitely not easy to parse.
+Формат значень, які відокремлено комами (CSV), є оманливо простим. Може
+I<здатися>, що його просто обробляти, але насправді це зовсім не так.
 
-Myth: Just split fields at commas.  Reality: This does I<not> work
-reliably.  This example has two columns:
+Міф: достатньо розділити поля за комами. Реальність: поділ комами I<не>
+працює у надійний спосіб. Ось приклад із двома стовпчиками:
 
  "foo,bar",baz
 
-Myth: Read the file one line at a time.  Reality: This does I<not> work
-reliably.  This example has one row:
+Міф: слід читати файл за рядками, один рядок за одну операцію
+читання. Реальність: читання за рядками I<не> працює у надійний спосіб. Ось
+приклад із одним рядком:
 
  "foo
  bar",baz
 
-For shell scripts, use C<csvtool> (L<https://github.com/Chris00/ocaml-csv>
-also packaged in major Linux distributions).
+Для скриптів командної оболонки скористайтеся C<csvtool>
+(L<https://github.com/Chris00/ocaml-csv> також є серед пакунків основних
+дистрибутивів Linux).
 
-For other languages, use a CSV processing library (eg. C<Text::CSV> for Perl
-or Python's built-in csv library).
+Для інших мов програмування використовуйте бібліотеку для обробки даних CSV
+(наприклад, C<Text::CSV> для Perl або вбудовану бібліотеку csv Python).
 
-Most spreadsheets and databases can import CSV directly.
+У більшості електронних таблиць та баз даних передбачено можливості
+безпосереднього імпортування даних CSV.
 
 =head1 СТАН ВИХОДУ
 
@@ -525,5 +544,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

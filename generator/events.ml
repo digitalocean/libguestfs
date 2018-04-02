@@ -18,7 +18,7 @@
 
 (* Please read generator/README first. *)
 
-open Common_utils
+open Std_utils
 open Utils
 
 (* NB: DO NOT REORDER THESE, as doing so will change the ABI.  Only
@@ -44,6 +44,6 @@ let events = [
   "warning";                            (* warnings from the library *)
 ]
 
-let events = mapi (fun i name -> name, 1 lsl i) events
+let events = List.mapi (fun i name -> name, 1 lsl i) events
 
 let all_events_bitmask = (1 lsl List.length events) - 1

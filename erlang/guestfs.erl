@@ -247,6 +247,7 @@
 -export([hivex_open/2, hivex_open/3]).
 -export([hivex_root/1]).
 -export([hivex_value_key/2]).
+-export([hivex_value_string/2]).
 -export([hivex_value_type/2]).
 -export([hivex_value_utf8/2]).
 -export([hivex_value_value/2]).
@@ -466,6 +467,7 @@
 -export([part_expand_gpt/2]).
 -export([part_get_bootable/3]).
 -export([part_get_disk_guid/2]).
+-export([part_get_gpt_attributes/3]).
 -export([part_get_gpt_guid/3]).
 -export([part_get_gpt_type/3]).
 -export([part_get_mbr_id/3]).
@@ -474,9 +476,11 @@
 -export([part_get_parttype/2]).
 -export([part_init/3]).
 -export([part_list/2]).
+-export([part_resize/4]).
 -export([part_set_bootable/4]).
 -export([part_set_disk_guid/3]).
 -export([part_set_disk_guid_random/2]).
+-export([part_set_gpt_attributes/4]).
 -export([part_set_gpt_guid/4]).
 -export([part_set_gpt_type/4]).
 -export([part_set_mbr_id/4]).
@@ -636,6 +640,9 @@
 -export([xfs_growfs/2, xfs_growfs/3]).
 -export([xfs_info/2]).
 -export([xfs_repair/2, xfs_repair/3]).
+-export([yara_destroy/1]).
+-export([yara_load/2]).
+-export([yara_scan/2]).
 -export([zegrep/3]).
 -export([zegrepi/3]).
 -export([zero/2]).
@@ -1412,6 +1419,9 @@ hivex_root(G) ->
 hivex_value_key(G, Valueh) ->
   call_port(G, {hivex_value_key, Valueh}).
 
+hivex_value_string(G, Valueh) ->
+  call_port(G, {hivex_value_string, Valueh}).
+
 hivex_value_type(G, Valueh) ->
   call_port(G, {hivex_value_type, Valueh}).
 
@@ -2122,6 +2132,9 @@ part_get_bootable(G, Device, Partnum) ->
 part_get_disk_guid(G, Device) ->
   call_port(G, {part_get_disk_guid, Device}).
 
+part_get_gpt_attributes(G, Device, Partnum) ->
+  call_port(G, {part_get_gpt_attributes, Device, Partnum}).
+
 part_get_gpt_guid(G, Device, Partnum) ->
   call_port(G, {part_get_gpt_guid, Device, Partnum}).
 
@@ -2146,6 +2159,9 @@ part_init(G, Device, Parttype) ->
 part_list(G, Device) ->
   call_port(G, {part_list, Device}).
 
+part_resize(G, Device, Partnum, Endsect) ->
+  call_port(G, {part_resize, Device, Partnum, Endsect}).
+
 part_set_bootable(G, Device, Partnum, Bootable) ->
   call_port(G, {part_set_bootable, Device, Partnum, Bootable}).
 
@@ -2154,6 +2170,9 @@ part_set_disk_guid(G, Device, Guid) ->
 
 part_set_disk_guid_random(G, Device) ->
   call_port(G, {part_set_disk_guid_random, Device}).
+
+part_set_gpt_attributes(G, Device, Partnum, Attributes) ->
+  call_port(G, {part_set_gpt_attributes, Device, Partnum, Attributes}).
 
 part_set_gpt_guid(G, Device, Partnum, Guid) ->
   call_port(G, {part_set_gpt_guid, Device, Partnum, Guid}).
@@ -2664,6 +2683,15 @@ xfs_repair(G, Device, Optargs) ->
   call_port(G, {xfs_repair, Device, Optargs}).
 xfs_repair(G, Device) ->
   xfs_repair(G, Device, []).
+
+yara_destroy(G) ->
+  call_port(G, {yara_destroy}).
+
+yara_load(G, Filename) ->
+  call_port(G, {yara_load, Filename}).
+
+yara_scan(G, Path) ->
+  call_port(G, {yara_scan, Path}).
 
 zegrep(G, Regex, Path) ->
   call_port(G, {zegrep, Regex, Path}).

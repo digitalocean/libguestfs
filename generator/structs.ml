@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 (* Please read generator/README first. *)
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 
@@ -468,6 +468,15 @@ let structs = [
     "tsk_spare1", FInt64;
     ];
     s_camel_name = "TSKDirent" };
+
+  (* Yara detection information. *)
+  { defaults with
+    s_name = "yara_detection";
+    s_cols = [
+    "yara_name", FString;
+    "yara_rule", FString;
+    ];
+    s_camel_name = "YaraDetection" };
 
 ] (* end of structs *)
 

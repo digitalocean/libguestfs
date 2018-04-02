@@ -1,7 +1,7 @@
-# serial 7
+# serial 8
 # See if we need to provide symlinkat replacement.
 
-dnl Copyright (C) 2009-2017 Free Software Foundation, Inc.
+dnl Copyright (C) 2009-2018 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -37,10 +37,10 @@ AC_DEFUN([gl_FUNC_SYMLINKAT],
          [gl_cv_func_symlinkat_works=yes],
          [gl_cv_func_symlinkat_works=no],
          [case "$host_os" in
-                    # Guess yes on glibc systems.
-            *-gnu*) gl_cv_func_symlinkat_works="guessing yes" ;;
-                    # If we don't know, assume the worst.
-            *)      gl_cv_func_symlinkat_works="guessing no" ;;
+                           # Guess yes on glibc systems.
+            *-gnu* | gnu*) gl_cv_func_symlinkat_works="guessing yes" ;;
+                           # If we don't know, assume the worst.
+            *)             gl_cv_func_symlinkat_works="guessing no" ;;
           esac
          ])
       rm -f conftest.f conftest.link conftest.lnk2])

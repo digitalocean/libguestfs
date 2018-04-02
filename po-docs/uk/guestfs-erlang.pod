@@ -19,7 +19,7 @@ programming language.  This page just documents the differences from the C
 API and gives some examples.  If you are not familiar with using libguestfs,
 you also need to read L<guestfs(3)>.
 
-=head2 OPENING AND CLOSING THE HANDLE
+=head2 ВІДКРИТТЯ І ЗАКРИТТЯ ДЕСКРИПТОРА
 
 The Erlang bindings are implemented using an external program called
 C<erl-guestfs>.  This program must be on the current PATH, or else you

@@ -45,8 +45,8 @@ I<--proxy> parameter.
 
 =head1 BUILDING A LIVE CD / ISO
 
-Once you have the kickstart file, you can use L<livecd-creator(8)> to make a
-live CD:
+Щойно у вас буде файл kickstart, ви можете скористатися L<livecd-creator(8)>
+для створення образу компакт-диска із портативною системою:
 
  sudo livecd-creator p2v.ks
 
@@ -57,11 +57,12 @@ disposable virtual machine for these reasons:
 
 =item *
 
-You have to disable SELinux when running the tool.
+На час роботи із програмою вам слід вимкнути SELinux.
 
 =item *
 
-This tool has to be run as root, and has some nasty failure modes.
+Цю програму слід запускати від імені користувача root. Також її виконання
+іноді супроводжується помилками із доволі прикрими наслідками.
 
 =item *
 
@@ -70,7 +71,7 @@ Cross-builds will fail in strange ways (eg. RHBZ#1092327).
 
 =back
 
-=head1 BUILDING A FEDORA SPIN USING KOJI
+=head1 ЗБИРАННЯ ВАРІАНТА FEDORA ЗА ДОПОМОГОЮ KOJI
 
 This requires C<spin-livecd> permissions on Koji, which are not given out
 usually, even to Fedora packagers.  However assuming you have been given
@@ -87,22 +88,22 @@ Add the C<--scratch> option to do a scratch build (recommended for testing).
 
 =item *
 
-C<1.XX.YY> should match the libguestfs version
+C<1.XX.YY> має збігатися із версією libguestfs
 
 =item *
 
-Instead of C<rawhide> you can use any Koji target.
+Замість C<rawhide> ви можете скористатися будь-якою іншою ціллю Koji.
 
 =back
 
-=head1 BUILDING A BOOTABLE USB KEY
+=head1 ЗБИРАННЯ ПРИДАТНОГО ДО ЗАВАНТАЖЕННЯ НОСІЯ USB
 
-Use the L<livecd-iso-to-disk(8)> program to convert the ISO created above to
-a USB key:
+Скористайтеся програмою L<livecd-iso-to-disk(8)> для перетворення створеного
+за наведеним вище рецептом образу ISO на запис на носії USB:
 
  sudo livecd-iso-to-disk livecd-p2v.iso /dev/sdX
 
-=head1 BUILDING A PXE BOOT IMAGE
+=head1 ЗБИРАННЯ ОБРАЗУ ДЛЯ ЗАВАНТАЖЕННЯ PXE
 
 Use the C<livecd-iso-to-pxeboot> program to convert the ISO created above to
 a PXE boot image.
@@ -139,9 +140,9 @@ can only be built for 64 bit.  It cannot run on old 32 bit only hardware.
 Fedora virt-p2v ISOs are generally built for 32 bit, so like the old RHEL
 6-based virt-p2v 0.9 they can boot on any hardware.
 
-=head1 TESTING VIRT-P2V USING QEMU
+=head1 ТЕСТУВАННЯ VIRT-P2V ЗА ДОПОМОГОЮ QEMU
 
-=head2 TESTING THE P2V ISO USING QEMU
+=head2 ТЕСТУВАННЯ ISO P2V ЗА ДОПОМОГОЮ QEMU
 
 You can use qemu to test-boot the P2V ISO:
 
@@ -151,7 +152,7 @@ Note that C<-hda> is the (virtual) system that you want to convert (for test
 purposes).  It could be any guest type supported by L<virt-v2v(1)>,
 including Windows or Red Hat Enterprise Linux.
 
-=head2 TESTING PXE SUPPORT USING QEMU
+=head2 ТЕСТУВАННЯ ПІДТРИМКИ PXE ЗА ДОПОМОГОЮ QEMU
 
 =over 4
 
@@ -183,7 +184,7 @@ netboot:
      -serial stdio
 
 Note that this requires considerably more memory because the PXE image is
-loaded into memory.  Also that qemu's TFTP server is very slow and the
+loaded into memory.  Also that qemu’s TFTP server is very slow and the
 virt-p2v PXE image is very large, so it can appear to "hang" after pxelinux
 starts up.
 
@@ -297,7 +298,7 @@ C<VIRT_P2V_DATA_DIR> environment variable.
 
 =item F<$datadir/virt-p2v/p2v.service>
 
-Various data files that are used to make the kickstart.
+Різноманітні файли даних, які використовуються для створення kickstart.
 
 The location of these files can be changed by setting the
 C<VIRT_P2V_DATA_DIR> environment variable.
@@ -327,5 +328,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

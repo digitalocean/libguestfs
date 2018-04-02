@@ -219,7 +219,7 @@ public class GuestFS {
    * <code>events</code> is one or more <code>EVENT_*</code> constants,
    * bitwise ORed together.
    * </p><p>
-   * When an event happens, the callback object's <code>event</code> method
+   * When an event happens, the callback object’s <code>event</code> method
    * is invoked like this:
    * </p>
    * <pre>
@@ -785,7 +785,7 @@ public class GuestFS {
    * </p><p>
    * "secret"
    * For the "rbd" protocol only, this specifies the
-   * 'secret' to use when connecting to the remote
+   * ‘secret’ to use when connecting to the remote
    * device. It must be base64 encoded.
    * </p><p>
    * If not given, then a secret matching the given
@@ -3844,7 +3844,7 @@ public class GuestFS {
    * </p><p>
    * Shared libraries and data files required by the program
    * must be available on filesystems which are mounted in
-   * the correct places. It is the caller's responsibility to
+   * the correct places. It is the caller’s responsibility to
    * ensure all filesystems that are needed are mounted at
    * the right locations.
    * </p><p>
@@ -4004,7 +4004,7 @@ public class GuestFS {
    * add hypervisor parameters
    * </p><p>
    * This can be used to add arbitrary hypervisor parameters
-   * of the form *-param value*. Actually it's not quite
+   * of the form *-param value*. Actually it’s not quite
    * arbitrary - we prevent you from setting some parameters
    * which would interfere with parameters that we use.
    * </p><p>
@@ -5273,7 +5273,7 @@ public class GuestFS {
    * the "forceall" option.
    * </p><p>
    * "forceall"
-   * Assume an answer of 'yes' to all questions; allows
+   * Assume an answer of ‘yes’ to all questions; allows
    * e2fsck to be used non-interactively.
    * </p><p>
    * This option may not be specified at the same time as
@@ -5885,22 +5885,22 @@ public class GuestFS {
    * The "tsk_dirent" structure contains the following
    * fields.
    * </p><p>
-   * 'tsk_inode'
+   * "tsk_inode"
    * Filesystem reference number of the node. It might be
    * 0 if the node has been deleted.
    * </p><p>
-   * 'tsk_type'
+   * "tsk_type"
    * Basic file type information. See below for a
    * detailed list of values.
    * </p><p>
-   * 'tsk_size'
+   * "tsk_size"
    * File size in bytes. It might be -1 if the node has
    * been deleted.
    * </p><p>
-   * 'tsk_name'
+   * "tsk_name"
    * The file path relative to its directory.
    * </p><p>
-   * 'tsk_flags'
+   * "tsk_flags"
    * Bitfield containing extra information regarding the
    * entry. It contains the logical OR of the following
    * values:
@@ -5930,22 +5930,22 @@ public class GuestFS {
    * (NTFS). The API is not able to detect
    * application level compression.
    * </p><p>
-   * 'tsk_atime_sec'
-   * 'tsk_atime_nsec'
-   * 'tsk_mtime_sec'
-   * 'tsk_mtime_nsec'
-   * 'tsk_ctime_sec'
-   * 'tsk_ctime_nsec'
-   * 'tsk_crtime_sec'
-   * 'tsk_crtime_nsec'
+   * "tsk_atime_sec"
+   * "tsk_atime_nsec"
+   * "tsk_mtime_sec"
+   * "tsk_mtime_nsec"
+   * "tsk_ctime_sec"
+   * "tsk_ctime_nsec"
+   * "tsk_crtime_sec"
+   * "tsk_crtime_nsec"
    * Respectively, access, modification, last status
    * change and creation time in Unix format in seconds
    * and nanoseconds.
    * </p><p>
-   * 'tsk_nlink'
+   * "tsk_nlink"
    * Number of file names pointing to this entry.
    * </p><p>
-   * 'tsk_link'
+   * "tsk_link"
    * If the entry is a symbolic link, this field will
    * contain the path to the target file.
    * </p><p>
@@ -6528,9 +6528,10 @@ public class GuestFS {
    * Return the direct appliance mode flag.
    * </p>
    * @since 1.0.72
+   * @deprecated This is replaced by method #internal_get_console_socket which is not exported by the Java bindings
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public boolean get_direct ()
+  @Deprecated public boolean get_direct ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -8109,6 +8110,38 @@ public class GuestFS {
 
   /**
    * <p>
+   * return the data field as a UTF-8 string
+   * </p><p>
+   * This calls "g.hivex_value_value" (which returns the data
+   * field from a hivex value tuple). It then assumes that
+   * the field is a UTF-16LE string and converts the result
+   * to UTF-8 (or if this is not possible, it returns an
+   * error).
+   * </p><p>
+   * This is useful for reading strings out of the Windows
+   * registry. However it is not foolproof because the
+   * registry is not strongly-typed and fields can contain
+   * arbitrary or unexpected data.
+   * </p><p>
+   * This function depends on the feature "hivex".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.37.22
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public String hivex_value_string (long valueh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_value_string: handle is closed");
+
+    return _hivex_value_string (g, valueh);
+  }
+
+  private native String _hivex_value_string (long g, long valueh)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * return the data type from the (key, datatype, data) tuple
    * </p><p>
    * Return the data type field from a (key, datatype, data)
@@ -8136,7 +8169,7 @@ public class GuestFS {
 
   /**
    * <p>
-   * return the data field from the (key, datatype, data) tuple
+   * return the data field as a UTF-8 string
    * </p><p>
    * This calls "g.hivex_value_value" (which returns the data
    * field from a hivex value tuple). It then assumes that
@@ -8152,9 +8185,10 @@ public class GuestFS {
    * This function depends on the feature "hivex".  See also {@link #feature_available}.
    * </p>
    * @since 1.19.35
+   * @deprecated In new code, use {@link #hivex_value_string} instead
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public String hivex_value_utf8 (long valueh)
+  @Deprecated public String hivex_value_utf8 (long valueh)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -8539,6 +8573,12 @@ public class GuestFS {
    * "meego"
    * MeeGo.
    * </p><p>
+   * "msdos"
+   * Microsoft DOS.
+   * </p><p>
+   * "neokylin"
+   * NeoKylin.
+   * </p><p>
    * "netbsd"
    * NetBSD.
    * </p><p>
@@ -8704,11 +8744,9 @@ public class GuestFS {
    * <p>
    * get format of inspected operating system
    * </p><p>
-   * This returns the format of the inspected operating
-   * system. You can use it to detect install images, live
-   * CDs and similar.
-   * </p><p>
-   * Currently defined formats are:
+   * Before libguestfs 1.38, there was some unreliable
+   * support for detecting installer CDs. This API would
+   * return:
    * </p><p>
    * "installed"
    * This is an installed operating system.
@@ -8721,16 +8759,16 @@ public class GuestFS {
    * "unknown"
    * The format of this disk image is not known.
    * </p><p>
-   * Future versions of libguestfs may return other strings
-   * here. The caller should be prepared to handle any
-   * string.
+   * In libguestfs ≥ 1.38, this only returns "installed". Use
+   * libosinfo directly to detect installer CDs.
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p>
    * @since 1.9.4
+   * @deprecated There is no documented replacement
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public String inspect_get_format (String root)
+  @Deprecated public String inspect_get_format (String root)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -8747,7 +8785,7 @@ public class GuestFS {
    * get hostname of the operating system
    * </p><p>
    * This function returns the hostname of the operating
-   * system as found by inspection of the guest's
+   * system as found by inspection of the guest’s
    * configuration files.
    * </p><p>
    * If the hostname could not be determined, then the string
@@ -8800,7 +8838,7 @@ public class GuestFS {
    * </p><p>
    * Notes:
    * </p><p>
-   * *   Unlike most other inspection API calls, the guest's
+   * *   Unlike most other inspection API calls, the guest’s
    * disks must be mounted up before you call this, since
    * it needs to read information from the guest
    * filesystem during the call.
@@ -9339,16 +9377,15 @@ public class GuestFS {
    * <p>
    * get live flag for install disk
    * </p><p>
-   * If "g.inspect_get_format" returns "installer" (this is
-   * an install disk), then this returns true if a live image
-   * was detected on the disk.
+   * This is deprecated and always returns "false".
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p>
    * @since 1.9.4
+   * @deprecated There is no documented replacement
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public boolean inspect_is_live (String root)
+  @Deprecated public boolean inspect_is_live (String root)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -9364,16 +9401,15 @@ public class GuestFS {
    * <p>
    * get multipart flag for install disk
    * </p><p>
-   * If "g.inspect_get_format" returns "installer" (this is
-   * an install disk), then this returns true if the disk is
-   * part of a set.
+   * This is deprecated and always returns "false".
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p>
    * @since 1.9.4
+   * @deprecated There is no documented replacement
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public boolean inspect_is_multipart (String root)
+  @Deprecated public boolean inspect_is_multipart (String root)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -9389,18 +9425,15 @@ public class GuestFS {
    * <p>
    * get netinst (network installer) flag for install disk
    * </p><p>
-   * If "g.inspect_get_format" returns "installer" (this is
-   * an install disk), then this returns true if the disk is
-   * a network installer, ie. not a self-contained install CD
-   * but one which is likely to require network access to
-   * complete the install.
+   * This is deprecated and always returns "false".
    * </p><p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * </p>
    * @since 1.9.4
+   * @deprecated There is no documented replacement
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public boolean inspect_is_netinst (String root)
+  @Deprecated public boolean inspect_is_netinst (String root)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -12047,17 +12080,18 @@ public class GuestFS {
    * "/dev/vg_guest/lv_swap" =&gt; "swap"
    * </p><p>
    * The key is not necessarily a block device. It may also
-   * be an opaque 'mountable' string which can be passed to
+   * be an opaque ‘mountable’ string which can be passed to
    * "g.mount".
    * </p><p>
    * The value can have the special value "unknown", meaning
    * the content of the device is undetermined or empty.
    * "swap" means a Linux swap partition.
    * </p><p>
-   * This command runs other libguestfs commands, which might
-   * include "g.mount" and "g.umount", and therefore you
-   * should use this soon after launch and only when nothing
-   * is mounted.
+   * In libguestfs ≤ 1.36 this command ran other libguestfs
+   * commands, which might have included "g.mount" and
+   * "g.umount", and therefore you had to use this soon after
+   * launch and only when nothing else was mounted. This
+   * restriction is removed in libguestfs ≥ 1.38.
    * </p><p>
    * Not all of the filesystems returned will be mountable.
    * In particular, swap partitions are returned in the list.
@@ -14813,7 +14847,7 @@ public class GuestFS {
    * they were added to the guest. If those block devices
    * contain partitions, they will have the usual names (eg.
    * /dev/sda1). Also LVM /dev/VG/LV-style names can be used,
-   * or 'mountable' strings returned by "g.list_filesystems"
+   * or ‘mountable’ strings returned by "g.list_filesystems"
    * or "g.inspect_get_mountpoints".
    * </p><p>
    * The rules are the same as for mount(2): A filesystem
@@ -15635,9 +15669,9 @@ public class GuestFS {
    * <p>
    * parse the environment and set handle flags accordingly
    * </p><p>
-   * Parse the program's environment and set flags in the
+   * Parse the program’s environment and set flags in the
    * handle accordingly. For example if "LIBGUESTFS_DEBUG=1"
-   * then the 'verbose' flag is set in the handle.
+   * then the ‘verbose’ flag is set in the handle.
    * </p><p>
    * *Most programs do not need to call this*. It is done
    * implicitly when you call "g.create".
@@ -15669,7 +15703,7 @@ public class GuestFS {
    * Parse the list of strings in the argument "environment"
    * and set flags in the handle accordingly. For example if
    * "LIBGUESTFS_DEBUG=1" is a string in the list, then the
-   * 'verbose' flag is set in the handle.
+   * ‘verbose’ flag is set in the handle.
    * </p><p>
    * This is the same as "g.parse_environment" except that it
    * parses an explicit list of strings instead of the
@@ -15854,6 +15888,30 @@ public class GuestFS {
   }
 
   private native String _part_get_disk_guid (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * get the attribute flags of a GPT partition
+   * </p><p>
+   * Return the attribute flags of numbered GPT partition
+   * "partnum". An error is returned for MBR partitions.
+   * </p><p>
+   * This function depends on the feature "gdisk".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.21.1
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public long part_get_gpt_attributes (String device, int partnum)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_get_gpt_attributes: handle is closed");
+
+    return _part_get_gpt_attributes (g, device, partnum);
+  }
+
+  private native long _part_get_gpt_attributes (long g, String device, int partnum)
     throws LibGuestFSException;
 
   /**
@@ -16089,7 +16147,7 @@ public class GuestFS {
    * </p><p>
    * part_start
    * Start of the partition *in bytes*. To get sectors
-   * you have to divide by the device's sector size, see
+   * you have to divide by the device’s sector size, see
    * "g.blockdev_getss".
    * </p><p>
    * part_end
@@ -16111,6 +16169,36 @@ public class GuestFS {
   }
 
   private native Partition[] _part_list (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * resize a partition
+   * </p><p>
+   * This command resizes the partition numbered "partnum" on
+   * "device" by moving the end position.
+   * </p><p>
+   * Note that this does not modify any filesystem present in
+   * the partition. If you wish to do this, you will need to
+   * use filesystem resizing commands like "g.resize2fs".
+   * </p><p>
+   * When growing a partition you will want to grow the
+   * filesystem afterwards, but when shrinking, you need to
+   * shrink the filesystem before the partition.
+   * </p>
+   * @since 1.37.20
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void part_resize (String device, int partnum, long endsect)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_resize: handle is closed");
+
+    _part_resize (g, device, partnum, endsect);
+  }
+
+  private native void _part_resize (long g, String device, int partnum, long endsect)
     throws LibGuestFSException;
 
   /**
@@ -16189,6 +16277,36 @@ public class GuestFS {
   }
 
   private native void _part_set_disk_guid_random (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * set the attribute flags of a GPT partition
+   * </p><p>
+   * Set the attribute flags of numbered GPT partition
+   * "partnum" to "attributes". Return an error if the
+   * partition table of "device" isn't GPT.
+   * </p><p>
+   * See
+   * &lt;https://en.wikipedia.org/wiki/GUID_Partition_Table#Part
+   * ition_entries&gt; for a useful list of partition
+   * attributes.
+   * </p><p>
+   * This function depends on the feature "gdisk".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.21.1
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void part_set_gpt_attributes (String device, int partnum, long attributes)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_set_gpt_attributes: handle is closed");
+
+    _part_set_gpt_attributes (g, device, partnum, attributes);
+  }
+
+  private native void _part_set_gpt_attributes (long g, String device, int partnum, long attributes)
     throws LibGuestFSException;
 
   /**
@@ -17857,9 +17975,10 @@ public class GuestFS {
    * The default is disabled.
    * </p>
    * @since 1.0.72
+   * @deprecated This is replaced by method #internal_get_console_socket which is not exported by the Java bindings
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public void set_direct (boolean direct)
+  @Deprecated public void set_direct (boolean direct)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -18701,7 +18820,7 @@ public class GuestFS {
    * cylinders, heads and sectors on the device, which are
    * passed directly to sfdisk as the *-C*, *-H* and *-S*
    * parameters. If you pass 0 for any of these, then the
-   * corresponding parameter is omitted. Usually for 'large'
+   * corresponding parameter is omitted. Usually for ‘large’
    * disks, you can just pass 0 for these, but for small
    * (floppy-sized) disks, sfdisk (or rather, the kernel)
    * cannot work out the right geometry and you will need to
@@ -18796,7 +18915,7 @@ public class GuestFS {
    * This displays the disk geometry of "device" read from
    * the partition table. Especially in the case where the
    * underlying block device has been resized, this can be
-   * different from the kernel's idea of the geometry (see
+   * different from the kernel’s idea of the geometry (see
    * "g.sfdisk_kernel_geometry").
    * </p><p>
    * The result is in human-readable format, and not designed
@@ -18821,7 +18940,7 @@ public class GuestFS {
    * <p>
    * display the kernel geometry
    * </p><p>
-   * This displays the kernel's idea of the geometry of
+   * This displays the kernel’s idea of the geometry of
    * "device".
    * </p><p>
    * The result is in human-readable format, and not designed
@@ -18873,13 +18992,13 @@ public class GuestFS {
    * run a command via the shell
    * </p><p>
    * This call runs a command from the guest filesystem via
-   * the guest's /bin/sh.
+   * the guest’s /bin/sh.
    * </p><p>
    * This is like "g.command", but passes the command to:
    * </p><p>
    * /bin/sh -c "command"
    * </p><p>
-   * Depending on the guest's shell, this usually results in
+   * Depending on the guest’s shell, this usually results in
    * wildcards being expanded, shell expressions being
    * interpolated and so on.
    * </p><p>
@@ -20356,7 +20475,7 @@ public class GuestFS {
    * </p><p>
    * No cleanup is performed: for example, if a file was
    * being uploaded then after cancellation there may be a
-   * partially uploaded file. It is the caller's
+   * partially uploaded file. It is the caller’s
    * responsibility to clean up if necessary.
    * </p><p>
    * There are two common places that you might call
@@ -20464,7 +20583,7 @@ public class GuestFS {
    * versions of libguestfs there was no way to get the
    * version number. From C code you can use dynamic linker
    * functions to find out if this symbol exists (if it
-   * doesn't, then it's an earlier version).
+   * doesn't, then it’s an earlier version).
    * </p><p>
    * The call returns a structure with four elements. The
    * first three ("major", "minor" and "release") are numbers
@@ -21549,6 +21668,103 @@ public class GuestFS {
 
   /**
    * <p>
+   * destroy previously loaded yara rules
+   * </p><p>
+   * Destroy previously loaded Yara rules in order to free
+   * libguestfs resources.
+   * </p><p>
+   * This function depends on the feature "libyara".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.37.13
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void yara_destroy ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("yara_destroy: handle is closed");
+
+    _yara_destroy (g);
+  }
+
+  private native void _yara_destroy (long g)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * load yara rules within libguestfs
+   * </p><p>
+   * Upload a set of Yara rules from local file filename.
+   * </p><p>
+   * Yara rules allow to categorize files based on textual or
+   * binary patterns within their content. See "g.yara_scan"
+   * to see how to scan files with the loaded rules.
+   * </p><p>
+   * Rules can be in binary format, as when compiled with
+   * yarac command, or in source code format. In the latter
+   * case, the rules will be first compiled and then loaded.
+   * </p><p>
+   * Rules in source code format cannot include external
+   * files. In such cases, it is recommended to compile them
+   * first.
+   * </p><p>
+   * Previously loaded rules will be destroyed.
+   * </p><p>
+   * This function depends on the feature "libyara".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.37.13
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void yara_load (String filename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("yara_load: handle is closed");
+
+    _yara_load (g, filename);
+  }
+
+  private native void _yara_load (long g, String filename)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * scan a file with the loaded yara rules
+   * </p><p>
+   * Scan a file with the previously loaded Yara rules.
+   * </p><p>
+   * For each matching rule, a "yara_detection" structure is
+   * returned.
+   * </p><p>
+   * The "yara_detection" structure contains the following
+   * fields.
+   * </p><p>
+   * "yara_name"
+   * Path of the file matching a Yara rule.
+   * </p><p>
+   * "yara_rule"
+   * Identifier of the Yara rule which matched against
+   * the given file.
+   * </p><p>
+   * This function depends on the feature "libyara".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.37.13
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public YaraDetection[] yara_scan (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("yara_scan: handle is closed");
+
+    return _yara_scan (g, path);
+  }
+
+  private native YaraDetection[] _yara_scan (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * return lines matching a pattern
    * </p><p>
    * This calls the external "zegrep" program and returns the
@@ -21608,7 +21824,7 @@ public class GuestFS {
    * This command writes zeroes over the first few blocks of
    * "device".
    * </p><p>
-   * How many blocks are zeroed isn't specified (but it's
+   * How many blocks are zeroed isn't specified (but it’s
    * *not* enough to securely wipe the device). It should be
    * sufficient to remove any partition tables, filesystem
    * superblocks and so on.

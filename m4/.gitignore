@@ -61,7 +61,6 @@
 /fseeko.m4
 /fstatat.m4
 /fstat.m4
-/fsusage.m4
 /ftell.m4
 /ftello.m4
 /ftruncate.m4
@@ -252,6 +251,7 @@
 /thread.m4
 /time_h.m4
 /timespec.m4
+/tls.m4
 /ttyname_r.m4
 /ulonglong.m4
 /ungetc.m4
@@ -261,6 +261,7 @@
 /unlinkdir.m4
 /unlink.m4
 /usleep.m4
+/utimbuf.m4
 /utimecmp.m4
 /utime_h.m4
 /utime.m4

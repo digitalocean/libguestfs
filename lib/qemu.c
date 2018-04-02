@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -58,9 +58,6 @@ struct qemu_data {
   /* The following fields are derived from the fields above. */
   struct version qemu_version;  /* Parsed qemu version number. */
   yajl_val qmp_schema_tree;     /* qmp_schema parsed into a JSON tree */
-
-  int virtio_scsi;              /* See function
-                                   guestfs_int_qemu_supports_virtio_scsi */
 };
 
 static char *cache_filename (guestfs_h *g, const char *cachedir, const struct stat *, const char *suffix);
@@ -441,7 +438,7 @@ generic_read_cache (guestfs_h *g, const char *filename, char **strp)
 static int
 generic_write_cache (guestfs_h *g, const char *filename, const char *str)
 {
-  int fd;
+  CLEANUP_CLOSE int fd = -1;
   size_t len;
 
   fd = open (filename, O_WRONLY|O_CREAT|O_TRUNC|O_NOCTTY|O_CLOEXEC, 0666);
@@ -453,14 +450,9 @@ generic_write_cache (guestfs_h *g, const char *filename, const char *str)
   len = strlen (str);
   if (full_write (fd, str, len) != len) {
     perrorf (g, "%s: write", filename);
-    close (fd);
     return -1;
   }
 
-  if (close (fd) == -1) {
-    perrorf (g, "%s: close", filename);
-    return -1;
-  }
   return 0;
 }
 
@@ -588,50 +580,6 @@ guestfs_int_qemu_supports_device (guestfs_h *g,
   return strstr (data->qemu_devices, device_name) != NULL;
 }
 
-static int
-old_or_broken_virtio_scsi (const struct version *qemu_version)
-{
-  /* qemu 1.1 claims to support virtio-scsi but in reality it's broken. */
-  if (!guestfs_int_version_ge (qemu_version, 1, 2, 0))
-    return 1;
-
-  return 0;
-}
-
-/**
- * Test if qemu supports virtio-scsi.
- *
- * Returns C<1> = use virtio-scsi, or C<0> = use virtio-blk.
- */
-int
-guestfs_int_qemu_supports_virtio_scsi (guestfs_h *g, struct qemu_data *data,
-                                       const struct version *qemu_version)
-{
-  int r;
-
-  /* data->virtio_scsi has these values:
-   *   0 = untested (after handle creation)
-   *   1 = supported
-   *   2 = not supported (use virtio-blk)
-   *   3 = test failed (use virtio-blk)
-   */
-  if (data->virtio_scsi == 0) {
-    if (old_or_broken_virtio_scsi (qemu_version))
-      data->virtio_scsi = 2;
-    else {
-      r = guestfs_int_qemu_supports_device (g, data, VIRTIO_SCSI);
-      if (r > 0)
-        data->virtio_scsi = 1;
-      else if (r == 0)
-        data->virtio_scsi = 2;
-      else
-        data->virtio_scsi = 3;
-    }
-  }
-
-  return data->virtio_scsi == 1;
-}
-
 /* GCC can't work out that the YAJL_IS_<foo> test is sufficient to
  * ensure that YAJL_GET_<foo> later doesn't return NULL.
  */
@@ -704,6 +652,10 @@ guestfs_int_qemu_mandatory_locking (guestfs_h *g,
  * Escape a qemu parameter.
  *
  * Every C<,> becomes C<,,>.  The caller must free the returned string.
+ *
+ * XXX This functionality is now only used when constructing a
+ * qemu-img command in F<lib/create.c>.  We should extend the qemuopts
+ * library to cover this use case.
  */
 char *
 guestfs_int_qemu_escape_param (guestfs_h *g, const char *param)
@@ -788,7 +740,7 @@ guestfs_int_drive_source_qemu_param (guestfs_h *g,
      */
     path = realpath (src->u.path, NULL);
     if (path == NULL) {
-      perrorf (g, _("realpath: could not convert '%s' to absolute path"),
+      perrorf (g, _("realpath: could not convert ‘%s’ to absolute path"),
                src->u.path);
       return NULL;
     }
@@ -1003,7 +955,7 @@ guestfs_int_discard_possible (guestfs_h *g, struct drive *drv,
      */
     NOT_SUPPORTED (g, false,
                    _("discard cannot be enabled on this drive: "
-                     "qemu does not support discard for '%s' format files"),
+                     "qemu does not support discard for ‘%s’ format files"),
                    drv->src.format);
   }
 
@@ -1026,7 +978,7 @@ guestfs_int_discard_possible (guestfs_h *g, struct drive *drv,
   case drive_protocol_tftp:
     NOT_SUPPORTED (g, -1,
                    _("discard cannot be enabled on this drive: "
-                     "protocol '%s' does not support discard"),
+                     "protocol ‘%s’ does not support discard"),
                    guestfs_int_drive_protocol_to_string (drv->src.protocol));
   }
 

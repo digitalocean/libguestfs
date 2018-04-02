@@ -449,6 +449,11 @@ type xfsinfo = {
   xfs_rtextents : int64;
 }
 
+type yara_detection = {
+  yara_name : string;
+  yara_rule : string;
+}
+
 
 (** {3 Actions} *)
 
@@ -1603,6 +1608,8 @@ val get_cachedir : t -> string
 val get_direct : t -> bool
 (** get direct appliance mode flag
 
+    @deprecated This is replaced by method internal_get_console_socket which is not exported by the OCaml bindings
+
     @since 1.0.72
  *)
 
@@ -1966,6 +1973,14 @@ val hivex_value_key : t -> int64 -> string
     @since 1.19.35
  *)
 
+val hivex_value_string : t -> int64 -> string
+(** return the data field as a UTF-8 string
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
+    @since 1.37.22
+ *)
+
 val hivex_value_type : t -> int64 -> int64
 (** return the data type from the (key, datatype, data) tuple
 
@@ -1975,9 +1990,11 @@ val hivex_value_type : t -> int64 -> int64
  *)
 
 val hivex_value_utf8 : t -> int64 -> string
-(** return the data field from the (key, datatype, data) tuple
+(** return the data field as a UTF-8 string
 
     This function depends on the feature "hivex".  See also {!feature_available}.
+
+    @deprecated Use {!hivex_value_string} instead
 
     @since 1.19.35
  *)
@@ -2077,6 +2094,8 @@ val inspect_get_filesystems : t -> string -> string array
 val inspect_get_format : t -> string -> string
 (** get format of inspected operating system
 
+    @deprecated There is no documented replacement
+
     @since 1.9.4
  *)
 
@@ -2173,17 +2192,23 @@ val inspect_get_windows_systemroot : t -> string -> string
 val inspect_is_live : t -> string -> bool
 (** get live flag for install disk
 
+    @deprecated There is no documented replacement
+
     @since 1.9.4
  *)
 
 val inspect_is_multipart : t -> string -> bool
 (** get multipart flag for install disk
 
+    @deprecated There is no documented replacement
+
     @since 1.9.4
  *)
 
 val inspect_is_netinst : t -> string -> bool
 (** get netinst (network installer) flag for install disk
+
+    @deprecated There is no documented replacement
 
     @since 1.9.4
  *)
@@ -3400,6 +3425,14 @@ val part_get_disk_guid : t -> string -> string
     @since 1.33.2
  *)
 
+val part_get_gpt_attributes : t -> string -> int -> int64
+(** get the attribute flags of a GPT partition
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.21.1
+ *)
+
 val part_get_gpt_guid : t -> string -> int -> string
 (** get the GUID of a GPT partition
 
@@ -3452,6 +3485,12 @@ val part_list : t -> string -> partition array
     @since 1.0.78
  *)
 
+val part_resize : t -> string -> int -> int64 -> unit
+(** resize a partition
+
+    @since 1.37.20
+ *)
+
 val part_set_bootable : t -> string -> int -> bool -> unit
 (** make a partition bootable
 
@@ -3472,6 +3511,14 @@ val part_set_disk_guid_random : t -> string -> unit
     This function depends on the feature "gdisk".  See also {!feature_available}.
 
     @since 1.33.2
+ *)
+
+val part_set_gpt_attributes : t -> string -> int -> int64 -> unit
+(** set the attribute flags of a GPT partition
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.21.1
  *)
 
 val part_set_gpt_guid : t -> string -> int -> string -> unit
@@ -3826,6 +3873,8 @@ val set_cachedir : t -> string option -> unit
 
 val set_direct : t -> bool -> unit
 (** enable or disable direct appliance mode
+
+    @deprecated This is replaced by method internal_get_console_socket which is not exported by the OCaml bindings
 
     @since 1.0.72
  *)
@@ -4538,6 +4587,30 @@ val xfs_repair : t -> ?forcelogzero:bool -> ?nomodify:bool -> ?noprefetch:bool -
     This function depends on the feature "xfs".  See also {!feature_available}.
 
     @since 1.19.36
+ *)
+
+val yara_destroy : t -> unit
+(** destroy previously loaded yara rules
+
+    This function depends on the feature "libyara".  See also {!feature_available}.
+
+    @since 1.37.13
+ *)
+
+val yara_load : t -> string -> unit
+(** load yara rules within libguestfs
+
+    This function depends on the feature "libyara".  See also {!feature_available}.
+
+    @since 1.37.13
+ *)
+
+val yara_scan : t -> string -> yara_detection array
+(** scan a file with the loaded yara rules
+
+    This function depends on the feature "libyara".  See also {!feature_available}.
+
+    @since 1.37.13
  *)
 
 val zegrep : t -> string -> string -> string array
@@ -5636,6 +5709,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method get_direct : unit -> bool
   (** get direct appliance mode flag
 
+    @deprecated This is replaced by method internal_get_console_socket which is not exported by the OCaml bindings
+
     @since 1.0.72
    *)
   method get_e2attrs : string -> string
@@ -5946,6 +6021,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.19.35
    *)
+  method hivex_value_string : int64 -> string
+  (** return the data field as a UTF-8 string
+
+    This function depends on the feature "hivex".  See also {!feature_available}.
+
+    @since 1.37.22
+   *)
   method hivex_value_type : int64 -> int64
   (** return the data type from the (key, datatype, data) tuple
 
@@ -5954,9 +6036,11 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
     @since 1.19.35
    *)
   method hivex_value_utf8 : int64 -> string
-  (** return the data field from the (key, datatype, data) tuple
+  (** return the data field as a UTF-8 string
 
     This function depends on the feature "hivex".  See also {!feature_available}.
+
+    @deprecated Use {!hivex_value_string} instead
 
     @since 1.19.35
    *)
@@ -6042,6 +6126,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method inspect_get_format : string -> string
   (** get format of inspected operating system
 
+    @deprecated There is no documented replacement
+
     @since 1.9.4
    *)
   method inspect_get_hostname : string -> string
@@ -6122,15 +6208,21 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method inspect_is_live : string -> bool
   (** get live flag for install disk
 
+    @deprecated There is no documented replacement
+
     @since 1.9.4
    *)
   method inspect_is_multipart : string -> bool
   (** get multipart flag for install disk
 
+    @deprecated There is no documented replacement
+
     @since 1.9.4
    *)
   method inspect_is_netinst : string -> bool
   (** get netinst (network installer) flag for install disk
+
+    @deprecated There is no documented replacement
 
     @since 1.9.4
    *)
@@ -7161,6 +7253,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.33.2
    *)
+  method part_get_gpt_attributes : string -> int -> int64
+  (** get the attribute flags of a GPT partition
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.21.1
+   *)
   method part_get_gpt_guid : string -> int -> string
   (** get the GUID of a GPT partition
 
@@ -7205,6 +7304,11 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.0.78
    *)
+  method part_resize : string -> int -> int64 -> unit
+  (** resize a partition
+
+    @since 1.37.20
+   *)
   method part_set_bootable : string -> int -> bool -> unit
   (** make a partition bootable
 
@@ -7223,6 +7327,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
     This function depends on the feature "gdisk".  See also {!feature_available}.
 
     @since 1.33.2
+   *)
+  method part_set_gpt_attributes : string -> int -> int64 -> unit
+  (** set the attribute flags of a GPT partition
+
+    This function depends on the feature "gdisk".  See also {!feature_available}.
+
+    @since 1.21.1
    *)
   method part_set_gpt_guid : string -> int -> string -> unit
   (** set the GUID of a GPT partition
@@ -7524,6 +7635,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
    *)
   method set_direct : bool -> unit
   (** enable or disable direct appliance mode
+
+    @deprecated This is replaced by method internal_get_console_socket which is not exported by the OCaml bindings
 
     @since 1.0.72
    *)
@@ -8130,6 +8243,27 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
     This function depends on the feature "xfs".  See also {!feature_available}.
 
     @since 1.19.36
+   *)
+  method yara_destroy : unit -> unit
+  (** destroy previously loaded yara rules
+
+    This function depends on the feature "libyara".  See also {!feature_available}.
+
+    @since 1.37.13
+   *)
+  method yara_load : string -> unit
+  (** load yara rules within libguestfs
+
+    This function depends on the feature "libyara".  See also {!feature_available}.
+
+    @since 1.37.13
+   *)
+  method yara_scan : string -> yara_detection array
+  (** scan a file with the loaded yara rules
+
+    This function depends on the feature "libyara".  See also {!feature_available}.
+
+    @since 1.37.13
    *)
   method zegrep : string -> string -> string array
   (** return lines matching a pattern

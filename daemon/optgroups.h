@@ -37,6 +37,7 @@ extern int optgroup_inotify_available (void);
 extern int optgroup_journal_available (void);
 extern int optgroup_ldm_available (void);
 extern int optgroup_libtsk_available (void);
+extern int optgroup_libyara_available (void);
 extern int optgroup_linuxcaps_available (void);
 extern int optgroup_linuxfsuuid_available (void);
 extern int optgroup_linuxmodules_available (void);
@@ -135,10 +136,12 @@ extern int optgroup_zerofree_available (void);
 #define OPTGROUP_GDISK_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_part_expand_gpt (const char *device) { abort (); } \
   char *__attribute__((noreturn)) do_part_get_disk_guid (const char *device) { abort (); } \
+  int64_t __attribute__((noreturn)) do_part_get_gpt_attributes (const char *device, int partnum) { abort (); } \
   char *__attribute__((noreturn)) do_part_get_gpt_guid (const char *device, int partnum) { abort (); } \
   char *__attribute__((noreturn)) do_part_get_gpt_type (const char *device, int partnum) { abort (); } \
   int __attribute__((noreturn)) do_part_set_disk_guid (const char *device, const char *guid) { abort (); } \
   int __attribute__((noreturn)) do_part_set_disk_guid_random (const char *device) { abort (); } \
+  int __attribute__((noreturn)) do_part_set_gpt_attributes (const char *device, int partnum, int64_t attributes) { abort (); } \
   int __attribute__((noreturn)) do_part_set_gpt_guid (const char *device, int partnum, const char *guid) { abort (); } \
   int __attribute__((noreturn)) do_part_set_gpt_type (const char *device, int partnum, const char *guid) { abort (); } \
   int optgroup_gdisk_available (void) { return 0; }
@@ -162,7 +165,9 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_hivex_open (const char *filename, int verbose, int debug, int write, int unsafe) { abort (); } \
   int64_t __attribute__((noreturn)) do_hivex_root (void) { abort (); } \
   char *__attribute__((noreturn)) do_hivex_value_key (int64_t valueh) { abort (); } \
+  char *__attribute__((noreturn)) do_hivex_value_string (int64_t valueh) { abort (); } \
   int64_t __attribute__((noreturn)) do_hivex_value_type (int64_t valueh) { abort (); } \
+  char *__attribute__((noreturn)) do_hivex_value_utf8 (int64_t valueh) { abort (); } \
   char *__attribute__((noreturn)) do_hivex_value_value (int64_t valueh, size_t *size_r) { abort (); } \
   int optgroup_hivex_available (void) { return 0; }
 
@@ -205,6 +210,12 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_internal_filesystem_walk (const mountable_t *device) { abort (); } \
   int __attribute__((noreturn)) do_internal_find_inode (const mountable_t *device, int64_t inode) { abort (); } \
   int optgroup_libtsk_available (void) { return 0; }
+
+#define OPTGROUP_LIBYARA_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_internal_yara_scan (const char *path) { abort (); } \
+  int __attribute__((noreturn)) do_yara_destroy (void) { abort (); } \
+  int __attribute__((noreturn)) do_yara_load (void) { abort (); } \
+  int optgroup_libyara_available (void) { return 0; }
 
 #define OPTGROUP_LINUXCAPS_NOT_AVAILABLE \
   char *__attribute__((noreturn)) do_cap_get_file (const char *path) { abort (); } \

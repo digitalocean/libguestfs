@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
  * makes this a bit harder than it should be.
  *)
 
-open Common_utils
+open Std_utils
 
 open Unix
 open Printf
@@ -139,11 +139,10 @@ let files_equal n1 n2 =
   | i -> failwithf "%s: failed with error code %d" cmd i
 
 let name_of_argt = function
-  | Pathname n | Device n | Mountable n | Dev_or_Path n
-  | Mountable_or_Path n | String n | OptString n
-  | StringList n | DeviceList n | Bool n | Int n | Int64 n
-  | FileIn n | FileOut n | BufferIn n | Key n | Pointer (_, n)
-  | GUID n | FilenameList n -> n
+  | String (_, n) | StringList (_, n)
+  | OptString n
+  | Bool n | Int n | Int64 n
+  | BufferIn n | Pointer (_, n) -> n
 
 let name_of_optargt = function
   | OBool n | OInt n | OInt64 n | OString n | OStringList n -> n
@@ -251,6 +250,6 @@ let args_of_optargs optargs =
     | OBool n -> Bool n
     | OInt n -> Int n
     | OInt64 n -> Int64 n
-    | OString n -> String n
-    | OStringList n -> StringList n
+    | OString n -> String (PlainString, n)
+    | OStringList n -> StringList (PlainString, n)
   ) optargs

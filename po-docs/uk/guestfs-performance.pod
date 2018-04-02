@@ -1,7 +1,8 @@
 
 =head1 НАЗВА
 
-guestfs-performance - engineering libguestfs for greatest performance
+guestfs-performance — керування libguestfs з метою отримання найкращої
+швидкодії
 
 =head1 ОПИС
 
@@ -36,7 +37,8 @@ deviation.  To run it, do:
  make
  ./run utils/boot-benchmark/boot-benchmark
 
-There is a manual page F<utils/boot-benchmark/boot-benchmark.1>
+Передбачено окрему сторінку підручника для
+F<utils/boot-benchmark/boot-benchmark.1>
 
 =head3 Пояснення
 
@@ -65,7 +67,7 @@ second command if you will be using libvirt.
 
  time guestfish --ro -a диск.img -i exit
 
- time guestfish --ro -d GuestName -i exit
+ time guestfish --ro -d НазваГостьовоїСистеми -i exit
 
 Run the command several times in a row and discard the first few runs, so
 that you are measuring a typical "hot cache" case.
@@ -74,7 +76,7 @@ that you are measuring a typical "hot cache" case.
 
 This command starts up the libguestfs appliance on the named disk image or
 libvirt guest, performs libguestfs inspection on it (see
-L<guestfs(3)/INSPECTION>), mounts the guest's disks, then discards all these
+L<guestfs(3)/INSPECTION>), mounts the guest’s disks, then discards all these
 results and shuts down.
 
 The first time you run the command, it will create an appliance and cache it
@@ -152,7 +154,7 @@ rebuild, or cache their own appliance.
 (For detailed information on this subject, see:
 L<libguestfs-make-fixed-appliance(1)>).
 
-=head2 Performance of the fixed appliance
+=head2 Швидкодія фіксованої базової системи
 
 In our testing we did not find that using a fixed appliance gave any
 measurable performance benefit, even when the appliance was located in
@@ -167,7 +169,7 @@ meaning that libguestfs will have more predictable start-up times.
 
 =item 2.
 
-The appliance is loaded on demand.  A simple test such as:
+Базова система завантажується на вимогу. Простий тест, наприклад такий:
 
  time guestfish -a /dev/null run
 
@@ -232,7 +234,7 @@ unless you need the results.
 If you previously performed inspection on the guest, then it may be safe to
 cache and reuse the results from last time.
 
-Some disks don't need to be inspected at all: for example, if you are
+Some disks don’t need to be inspected at all: for example, if you are
 creating a disk image, or if the disk image is not a VM, or if the disk
 image has a known layout.
 
@@ -257,7 +259,7 @@ expensive on Windows.
 
 =back
 
-=head1 PARALLEL APPLIANCES
+=head1 ПАРАЛЕЛЬНІ БАЗОВІ СИСТЕМИ
 
 Libguestfs appliances are mostly I/O bound and you can launch multiple
 appliances in parallel.  Provided there is enough free memory, there should
@@ -304,7 +306,7 @@ scalability when running between 1 and 20 appliances in parallel:
      +    *  * *    +    +     +    +    +    +    +    +
    3 ++-*-+----+----+----+-----+----+----+----+----+---++
      0    2    4    6    8     10   12   14   16   18   20
-               number of parallel appliances
+               кількість паралельних базових систем
 
 It is possible to run many more than 20 appliances in parallel, but if you
 are using the libvirt backend then you should be aware that out of the box
@@ -332,12 +334,12 @@ L<http://rwmj.wordpress.com/2013/02/25/multiple-libguestfs-appliances-in-paralle
      $g->add_drive_ro ("/dev/null");
      $g->launch ();
      
-     # You could add some work for libguestfs to do here.
+     # Тут можна виконати якісь завдання за допомогою libguestfs.
      
      $g->close ();
  }
  
- # Get everything into cache.
+ # Отримати усе до кешу.
  test (); test (); test ();
  
  for my $nr_threads (1..20) {
@@ -380,7 +382,7 @@ hardware virt acceleration is not available).
 
 Upload and download is as much as 10 times slower on UML than KVM.
 Libguestfs sends this data over the UML emulated serial port, which is far
-less efficient than KVM's virtio-serial.
+less efficient than KVM’s virtio-serial.
 
 =item *
 
@@ -392,16 +394,12 @@ all.
 For some actual figures, see:
 L<http://rwmj.wordpress.com/2013/08/14/performance-of-user-mode-linux-as-a-libguestfs-backend/#content>
 
-=head1 TROUBLESHOOTING POOR PERFORMANCE
+=head1 БОРОТЬБА ІЗ ПРОБЛЕМАМИ ЗІ ШВИДКОДІЄЮ
 
-=head2 Ensure hardware virtualization is available
+=head2 Переконайтеся, що увімкнено апаратну віртуалізацію
 
-Use F</proc/cpuinfo> and this page:
-
-http://virt-tools.org/learning/check-hardware-virt/
-
-to ensure that hardware virtualization is available.  Note that you may need
-to enable it in your BIOS.
+Use F</proc/cpuinfo> to ensure that hardware virtualization is available.
+Note that you may need to enable it in your BIOS.
 
 Hardware virt is not usually available inside VMs, and libguestfs will run
 slowly inside another virtual machine whatever you do.  Nested
@@ -414,17 +412,18 @@ Ensure that KVM is enabled and available to the user that will run
 libguestfs.  It should be safe to set 0666 permissions on F</dev/kvm> and
 most distributions now do this.
 
-=head2 Processors to avoid
+=head2 Процесори, яких слід уникати
 
-Avoid processors that don't have hardware virtualization, and some
-processors which are simply very slow (AMD Geode being a great example).
+Не використовуйте процесори, у яких немає апаратної віртуалізації, та
+процесорів, які просто дуже повільні (чудовим прикладом такого процесора є
+AMD Geode).
 
 =head2 Xen dom0
 
-In Xen, dom0 is a virtual machine, and so hardware virtualization is not
-available.
+У Xen dom0 є віртувальною машиною, отже на ньому апаратна віртуалізація
+недоступна.
 
-=head2 Use libguestfs E<ge> 1.34 and qemu E<ge> 2.7
+=head2 Скористайтеся libguestfs E<ge> 1.34 і qemu E<ge> 2.7
 
 During the libguestfs 1.33 development cycle, we spent a large amount of
 time concentrating on boot performance, and added some patches to
@@ -432,25 +431,27 @@ libguestfs, qemu and Linux which in some cases can reduce boot times to well
 under 1 second.  You may therefore get much better performance by moving to
 the versions of libguestfs or qemu mentioned in the heading.
 
-=head1 DETAILED ANALYSIS
+=head1 ДОКЛАДНИЙ АНАЛІЗ
 
-=head2 Boot analysis
+=head2 Аналіз завантаження
 
 In the libguestfs source directory, in F<utils/boot-analysis> is a program
 called C<boot-analysis>.  This program is able to produce a very detailed
 breakdown of the boot steps (eg. qemu, BIOS, kernel, libguestfs init
 script), and can measure how long it takes to perform each step.
 
-To run this program, do:
+Щоб запустити цю програму, віддайте таку команду:
 
  make
  ./run utils/boot-analysis/boot-analysis
 
-There is a manual page F<utils/boot-benchmark/boot-analysis.1>
+Передбачено окрему сторінку підручника для
+F<utils/boot-benchmark/boot-analysis.1>
 
-=head2 Detailed timings using ts
+=head2 Докладний таймінг з використанням ts
 
-Use the L<ts(1)> command (from moreutils) to show detailed timings:
+Скористайтеся програмою L<ts(1)> (з moreutils), щоб переглянути докладну
+картину:
 
  $ guestfish -a /dev/null run -v |& ts -i '%.s'
  0.000022 libguestfs: launch: program=guestfish
@@ -466,14 +467,14 @@ Use the L<ts(1)> command (from moreutils) to show detailed timings:
  0.000030 libguestfs: libvirt version = 1002012 (1.2.12)
  [etc]
 
-The timestamps are seconds (incrementally since the previous line).
+Часові позначки вказано у секундах (з нарощуванням щодо попереднього рядка).
 
-=head2 Detailed timings using SystemTap
+=head2 Докладний таймінг з використанням SystemTap
 
-You can use SystemTap (L<stap(1)>) to get detailed timings from libguestfs
-programs.
+Для отримання докладної інформації щодо часових параметрів обробки у
+програмах libguestfs можете скористатися SystemTap (L<stap(1)>).
 
-Save the following script as F<time.stap>:
+Збережіть такий скрипт із назвою F<time.stap>:
 
  global last;
  
@@ -492,7 +493,7 @@ Save the following script as F<time.stap>:
        printf ("ready\n");
  }
  
- /* Display all calls to static markers. */
+ /* Показати усі виклики статичних маркерів. */
  probe process("/usr/lib*/libguestfs.so.0")
            .provider("guestfs").mark("*") ? {
        display_time();
@@ -506,14 +507,14 @@ Save the following script as F<time.stap>:
        printf ("\t%s %s\n", probefunc(), $$parms);
  }
 
-Run it as root in one window:
+Запустіть його у одному вікні від імені користувача root:
 
  # stap time.stap
  ready
 
-It prints "ready" when SystemTap has loaded the program.  Run your
-libguestfs program, guestfish or a virt tool in another window.  For
-example:
+Скрипт виведен рядок «ready», коли SystemTap завантажить програму. Запустіть
+вашу програму libguestfs, guestfish або програму засобів віртуалізації у
+іншому вікні. Приклад:
 
  $ guestfish -a /dev/null run
 
@@ -533,7 +534,7 @@ taken for each step shown (microseconds in parenthesis).  For example:
 You will need to consult, and even modify, the source to libguestfs to fully
 understand the output.
 
-=head2 Detailed debugging using gdb
+=head2 Докладна діагностика з використанням gdb
 
 You can attach to the appliance BIOS/kernel using gdb.  If you know what
 you're doing, this can be a useful way to diagnose boot regressions.
@@ -547,7 +548,7 @@ like this:
 
  #!/bin/bash -
  
- # Set this to point to the real qemu binary.
+ # Встановіть значення, яке вказуватиме на справжній виконуваний файл qemu.
  qemu=/usr/bin/qemu-kvm
  
  if [ "$1" != "-global" ]; then
@@ -605,5 +606,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2012-2017 Red Hat Inc.
+Copyright (C) 2012-2018 Red Hat Inc.
 

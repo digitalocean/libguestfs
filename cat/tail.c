@@ -37,6 +37,7 @@
 #include "ignore-value.h"
 
 #include "guestfs.h"
+#include "structs-cleanups.h"
 #include "options.h"
 #include "display-options.h"
 #include "windows.h"
@@ -62,7 +63,7 @@ static void __attribute__((noreturn))
 usage (int status)
 {
   if (status != EXIT_SUCCESS)
-    fprintf (stderr, _("Try `%s --help' for more information.\n"),
+    fprintf (stderr, _("Try ‘%s --help’ for more information.\n"),
              getprogname ());
   else {
     printf (_("%s: follow (tail) files in a virtual machine\n"

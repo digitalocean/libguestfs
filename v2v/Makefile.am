@@ -1,5 +1,5 @@
 # libguestfs virt-v2v tool
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ BUILT_SOURCES = \
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	copy_to_local.ml \
+	copy_to_local.mli \
 	v2v_unit_tests.ml \
 	virt-v2v.pod \
 	virt-v2v-copy-to-local.pod
@@ -37,14 +38,17 @@ SOURCES_MLI = \
 	convert_linux.mli \
 	convert_windows.mli \
 	create_libvirt_xml.mli \
+	create_ovf.mli \
 	DOM.mli \
 	input_disk.mli \
 	input_libvirt.mli \
 	input_libvirt_other.mli \
 	input_libvirt_vcenter_https.mli \
+	input_libvirt_vddk.mli \
 	input_libvirt_xen_ssh.mli \
 	input_libvirtxml.mli \
 	input_ova.mli \
+	input_vmx.mli \
 	inspect_source.mli \
 	libvirt_utils.mli \
 	linux.mli \
@@ -59,14 +63,15 @@ SOURCES_MLI = \
 	output_qemu.mli \
 	output_rhv.mli \
 	output_vdsm.mli \
-	OVF.mli \
 	parse_ovf_from_ova.mli \
 	parse_libvirt_xml.mli \
-	qemu_command.mli \
+	parse_vmx.mli \
+	qemuopts.mli \
 	target_bus_assignment.mli \
 	types.mli \
 	uefi.mli \
 	utils.mli \
+	v2v.mli \
 	vCenter.mli \
 	windows.mli \
 	windows_virtio.mli
@@ -80,22 +85,25 @@ SOURCES_ML = \
 	libvirt_utils.ml \
 	DOM.ml \
 	changeuid.ml \
-	OVF.ml \
 	parse_ovf_from_ova.ml \
+	create_ovf.ml \
 	linux.ml \
 	windows.ml \
 	windows_virtio.ml \
 	modules_list.ml \
 	input_disk.ml \
+	parse_vmx.ml \
 	parse_libvirt_xml.ml \
 	create_libvirt_xml.ml \
-	qemu_command.ml \
+	qemuopts.ml \
 	input_libvirtxml.ml \
 	input_libvirt_other.ml \
 	input_libvirt_vcenter_https.ml \
+	input_libvirt_vddk.ml \
 	input_libvirt_xen_ssh.ml \
 	input_libvirt.ml \
 	input_ova.ml \
+	input_vmx.ml \
 	linux_bootloaders.ml \
 	linux_kernels.ml \
 	convert_linux.ml \
@@ -114,7 +122,7 @@ SOURCES_ML = \
 
 SOURCES_C = \
 	libvirt_utils-c.c \
-	utils-c.c
+	qemuopts-c.c
 
 if HAVE_OCAML
 
@@ -125,6 +133,7 @@ virt_v2v_CPPFLAGS = \
 	-I. \
 	-I$(top_builddir) \
 	-I$(shell $(OCAMLC) -where) \
+	-I$(top_srcdir)/common/qemuopts \
 	-I$(top_srcdir)/common/utils \
 	-I$(top_srcdir)/lib
 virt_v2v_CFLAGS = \
@@ -143,10 +152,16 @@ XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 OCAMLPACKAGES = \
 	-package str,unix \
 	-I $(top_builddir)/common/utils/.libs \
+	-I $(top_builddir)/common/qemuopts/.libs \
 	-I $(top_builddir)/lib/.libs \
 	-I $(top_builddir)/gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
-	-I $(top_builddir)/mllib \
+	-I $(top_builddir)/common/mlstdutils \
+	-I $(top_builddir)/common/mlutils \
+	-I $(top_builddir)/common/mlgettext \
+	-I $(top_builddir)/common/mlpcre \
+	-I $(top_builddir)/common/mlxml \
+	-I $(top_builddir)/common/mltools \
 	-I $(top_builddir)/customize
 if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
@@ -154,6 +169,7 @@ endif
 
 OCAMLCLIBS = \
 	-lutils \
+	-lqemuopts \
 	$(LIBVIRT_LIBS) \
 	$(LIBXML2_LIBS) \
 	$(LIBINTL) \
@@ -167,7 +183,15 @@ else
 OBJECTS = $(XOBJECTS)
 endif
 
-OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+OCAMLLINKFLAGS = \
+	mlstdutils.$(MLARCHIVE) \
+	mlguestfs.$(MLARCHIVE) \
+	mlgettext.$(MLARCHIVE) \
+	mlpcre.$(MLARCHIVE) \
+	mlxml.$(MLARCHIVE) \
+	mlcutils.$(MLARCHIVE) \
+	mltools.$(MLARCHIVE) \
+	$(LINK_CUSTOM_OCAMLC_ONLY)
 
 virt_v2v_DEPENDENCIES = $(OBJECTS) $(top_srcdir)/ocaml-link.sh
 virt_v2v_LINK = \
@@ -176,8 +200,7 @@ virt_v2v_LINK = \
 	  $(OBJECTS) -o $@
 
 virt_v2v_copy_to_local_SOURCES = \
-	libvirt_utils-c.c \
-	utils-c.c
+	libvirt_utils-c.c
 virt_v2v_copy_to_local_CPPFLAGS = \
 	-I. \
 	-I$(top_builddir) \
@@ -204,7 +227,12 @@ endif
 
 virt_v2v_copy_to_local_DEPENDENCIES = \
 	$(COPY_TO_LOCAL_OBJECTS) \
-	../mllib/mllib.$(MLARCHIVE) \
+	../common/mlstdutils/mlstdutils.$(MLARCHIVE) \
+	../common/mlxml/mlxml.$(MLARCHIVE) \
+	../common/mlgettext/mlgettext.$(MLARCHIVE) \
+	../common/mlpcre/mlpcre.$(MLARCHIVE) \
+	../common/mlutils/mlcutils.$(MLARCHIVE) \
+	../common/mltools/mltools.$(MLARCHIVE) \
 	$(top_srcdir)/ocaml-link.sh
 virt_v2v_copy_to_local_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
@@ -275,6 +303,7 @@ TESTS = \
 	test-v2v-i-ova-subfolders.sh \
 	test-v2v-i-ova-tar.sh \
 	test-v2v-i-ova-two-disks.sh \
+	test-v2v-i-vmx.sh \
 	test-v2v-bad-networks-and-bridges.sh
 
 if HAVE_LIBVIRT
@@ -358,6 +387,9 @@ real_guests_scripts = \
 	test-v2v-conversion-of-debian-8.sh \
 	test-v2v-conversion-of-fedora-20.sh \
 	test-v2v-conversion-of-fedora-23.sh \
+	test-v2v-conversion-of-opensuse-13.1.sh \
+	test-v2v-conversion-of-opensuse-13.2.sh \
+	test-v2v-conversion-of-opensuse-42.1.sh \
 	test-v2v-conversion-of-rhel-5.10.sh \
 	test-v2v-conversion-of-rhel-6.8.sh \
 	test-v2v-conversion-of-rhel-7.0.sh \
@@ -419,6 +451,17 @@ EXTRA_DIST += \
 	test-v2v-i-ova.ovf \
 	test-v2v-i-ova.sh \
 	test-v2v-i-ova.xml \
+	test-v2v-i-vmx.sh \
+	test-v2v-i-vmx-1.expected \
+	test-v2v-i-vmx-2.expected \
+	test-v2v-i-vmx-3.expected \
+	test-v2v-i-vmx-4.expected \
+	test-v2v-i-vmx-5.expected \
+	test-v2v-i-vmx-1.vmx \
+	test-v2v-i-vmx-2.vmx \
+	test-v2v-i-vmx-3.vmx \
+	test-v2v-i-vmx-4.vmx \
+	test-v2v-i-vmx-5.vmx \
 	test-v2v-in-place.sh \
 	test-v2v-machine-readable.sh \
 	test-v2v-networks-and-bridges-expected.xml \
@@ -455,10 +498,11 @@ v2v_unit_tests_BOBJECTS = \
 	uefi.cmo \
 	utils.cmo \
 	DOM.cmo \
-	OVF.cmo \
+	create_ovf.cmo \
 	windows.cmo \
 	windows_virtio.cmo \
 	linux.cmo \
+	parse_vmx.cmo \
 	v2v_unit_tests.cmo
 v2v_unit_tests_XOBJECTS = $(v2v_unit_tests_BOBJECTS:.cmo=.cmx)
 
@@ -477,7 +521,12 @@ endif
 
 v2v_unit_tests_DEPENDENCIES = \
 	$(v2v_unit_tests_THEOBJECTS) \
-	../mllib/mllib.$(MLARCHIVE) \
+	../common/mlstdutils/mlstdutils.$(MLARCHIVE) \
+	../common/mlxml/mlxml.$(MLARCHIVE) \
+	../common/mlgettext/mlgettext.$(MLARCHIVE) \
+	../common/mlpcre/mlpcre.$(MLARCHIVE) \
+	../common/mlutils/mlcutils.$(MLARCHIVE) \
+	../common/mltools/mltools.$(MLARCHIVE) \
 	$(top_srcdir)/ocaml-link.sh
 v2v_unit_tests_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
@@ -487,19 +536,10 @@ v2v_unit_tests_LINK = \
 	  $(v2v_unit_tests_THEOBJECTS) -o $@
 
 # Dependencies.
-depend: .depend
-
-.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
-	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
-	  $(SED) 's/ *$$//' | \
-	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
-	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
-	  sort > $@-t
-	mv $@-t $@
-
+.depend: *.mli *.ml
+	$(top_builddir)/ocaml-dep.sh $^
 -include .depend
 
 endif
 
-.PHONY: depend docs
+.PHONY: docs

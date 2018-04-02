@@ -38,7 +38,7 @@
 #include "getprogname.h"
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 #include "structs-print.h"
 
 #include "fish.h"
@@ -2247,6 +2247,30 @@ run_wc_c (const char *cmd, size_t argc, char *argv[])
  out:
   free (path);
  out_path:
+ out_noargs:
+  return ret;
+}
+
+int
+run_yara_load (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  char *filename;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  filename = file_in (argv[i++]);
+  if (filename == NULL) goto out_filename;
+  r = guestfs_yara_load (g, filename);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free_file_in (filename);
+ out_filename:
  out_noargs:
   return ret;
 }

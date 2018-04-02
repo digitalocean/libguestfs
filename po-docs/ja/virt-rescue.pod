@@ -7,9 +7,7 @@ virt-rescue - 仮想マシンにおいてレスキューシェルを実行しま
 
  virt-rescue [--options] -d domname
 
- virt-rescue [--options] -a disk.img [-a disk.img ...]
-
- virt-rescue --suggest (-d domname | -a disk.img ...)
+ virt-rescue [--options] -a disk.img [-a disk.img ...] [-i]
 
 古い形式:
 
@@ -27,40 +25,24 @@ disk image.
 You can run virt-rescue on any virtual machine known to libvirt, or directly
 on disk image(s):
 
- virt-rescue -d GuestName
+ virt-rescue -d GuestName -i
 
- virt-rescue --ro -a /path/to/disk.img
+ virt-rescue --ro -a /path/to/disk.img -i
 
  virt-rescue -a /dev/sdc
 
-動作中の仮想マシンには --ro オプションを使用 I<しなければいけません> 。
+For live VMs you I<must> use the I<--ro> option.
 
 When you run virt-rescue on a virtual machine or disk image, you are placed
 in an interactive bash shell where you can use many ordinary Linux
 commands.  What you see in F</> (F</bin>, F</lib> etc) is the rescue
-appliance.  You must mount the virtual machine's filesystems by hand.  There
-is an empty directory called F</sysroot> where you can mount filesystems.
+appliance.  You must mount the virtual machine’s filesystems.  There is an
+empty directory called F</sysroot> where you can mount filesystems.
 
-You can get virt-rescue to suggest mount commands for you by using the
-I<--suggest> option (in another terminal):
-
- $ virt-rescue --suggest -d Fedora15
-仮想マシンまたはディスクイメージの検査中 ...
- 
- This disk contains one or more operating systems.  You can use these
- mount commands in virt-rescue (at the ><rescue> prompt) to mount the
- filesystems.
- 
- # /dev/vg_f15x32/lv_root は linux オペレーティングシステムのルートです
- # 種別: linux, ディストリビューション: fedora, バージョン: 15.0
- # Fedora release 15 (Lovelock)
- 
- mount /dev/vg_f15x32/lv_root /sysroot/
- mount /dev/vda1 /sysroot/boot
- mount --bind /dev /sysroot/dev
- mount --bind /dev/pts /sysroot/dev/pts
- mount --bind /proc /sysroot/proc
- mount --bind /sys /sysroot/sys
+To automatically mount the virtual machine’s filesystems under F</sysroot>
+use the I<-i> option.  This uses libguestfs inspection to find the
+filesystems and mount them in the right place.  You can also mount
+filesystems individually using the I<-m> option.
 
 Another way is to list the logical volumes (with L<lvs(8)>) and partitions
 (with L<parted(8)>) and mount them by hand:
@@ -86,7 +68,7 @@ Virt-rescue can be used on I<any> disk image file or device, not just a
 virtual machine.  For example you can use it on a blank file if you want to
 partition that file (although we would recommend using L<guestfish(1)>
 instead as it is more suitable for this purpose).  You can even use
-virt-rescue on things like SD cards.
+virt-rescue on things like USB drives, SD cards and hard disks.
 
 You can get virt-rescue to give you scratch disk(s) to play with.  This is
 useful for testing out Linux utilities (see I<--scratch>).
@@ -141,6 +123,29 @@ libvirt を使用していると、指定された I<URI> に接続します。 
 
 名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  名前の代わりに仮想マシンの UUID を使用できます。
 
+=item B<-e none>
+
+Disable the escape key.
+
+=item B<-e> KEY
+
+Set the escape key to the given key sequence.  The default is C<^]>.  To
+specify the escape key you can use:
+
+=over 4
+
+=item C<^x>
+
+Control key + C<x> key.
+
+=item C<none>
+
+I<-e none> means there is no escape key, escapes are disabled.
+
+=back
+
+See L</ESCAPE KEY> below for further information.
+
 =item B<--format=raw|qcow2|..>
 
 =item B<--format>
@@ -163,7 +168,14 @@ auto-detection for F<another.img>.
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
 
-=item B<-m> MB
+=item B<-i>
+
+=item B<--inspector>
+
+L<virt-inspector(1)> コードを使用すると、 オペレーティングシステムを判定するためにディスクを検査します。
+また、実際の仮想マシンにマウントすることと同じように ファイルシステムをマウントします。
+
+The filesystems are mounted on F</sysroot> in the rescue environment.
 
 =item B<--memsize> MB
 
@@ -171,6 +183,28 @@ Change the amount of memory allocated to the rescue system.  The default is
 set by libguestfs and is small but adequate for running system tools.  The
 occasional program might need more memory.  The parameter is specified in
 megabytes.
+
+=item B<-m> dev[:mountpoint[:options[:fstype]]]
+
+=item B<--mount> dev[:mountpoint[:options[:fstype]]]
+
+Mount the named partition or logical volume on the given mountpoint B<in the
+guest> (this has nothing to do with mountpoints in the host).
+
+If the mountpoint is omitted, it defaults to F</>.  You have to mount
+something on F</>.
+
+The filesystems are mounted under F</sysroot> in the rescue environment.
+
+マウントパラメーターの三番目の (ほとんど使用されない) 項目は、 バックエンドのファイルシステムをマウントするために使用される
+マウントオプションの一覧です。 これが指定されていない場合、 マウントオプションは空文字列または C<ro> (I<--ro>
+フラグが使用されている場合) になります。
+
+ -m /dev/sda1:/:acl,user_xattr
+
+パラメーターの四番目の項目は使用するファイルシステムドライバー (C<ext3> や C<ntfs> など) です。 これはほとんど必要ありません。
+しかし、複数のドライバーがファイルシステムに対して有効である場合 (例: C<ext2> と C<ext3>)、 または libguestfs
+がファイルシステムを誤検知している場合、 これは有用です。
 
 =item B<--network>
 
@@ -207,9 +241,10 @@ This option is provided for backwards compatibility and does nothing.
 
 =item B<--suggest>
 
-Inspect the disk image and suggest what mount commands should be used to
-mount the disks.  You should use the I<--suggest> option in a second
-terminal, then paste the commands into another virt-rescue.
+This option was used in older versions of virt-rescue to suggest what
+commands you could use to mount filesystems under F</sysroot>.  For the
+current version of virt-rescue, it is easier to use the I<-i> option
+instead.
 
 このオプションは I<--ro> を意味します。仮想マシンが起動していたり、他の virt-rescue を実行しているときでも安全です。
 
@@ -229,8 +264,7 @@ terminal, then paste the commands into another virt-rescue.
 
 =item B<--rw>
 
-This changes the I<-a> and I<-d> options so that disks are added and mounts
-are done read-write.
+ディスクが追加され、読み書き可能でマウントされるよう、 I<-a>, I<-d>, I<-m> オプションを変更します。
 
 L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 
@@ -288,6 +322,55 @@ F</dev/tcp/E<lt>hostnameE<gt>/E<lt>portE<gt>> syntax:
  cat <&3
 
 詳細は L<bash(1)> 参照。
+
+=back
+
+=head1 ESCAPE KEY
+
+Virt-rescue supports various keyboard escape sequences which are entered by
+pressing C<^]> (Control key + C<]> key).
+
+You can change the escape key using the I<-e> option on the command line
+(see above), and you can disable escapes completely using I<-e none>.  The
+rest of this section assumes the default escape key.
+
+The following escapes can be used:
+
+=over 4
+
+=item C<^] ?>
+
+=item C<^] h>
+
+Prints a brief help text about escape sequences.
+
+=item C<^] i>
+
+Prints brief libguestfs inspection information for the guest.  This only
+works if you used I<-i> on the virt-rescue command line.
+
+=item C<^] q>
+
+=item C<^] x>
+
+Quits virt-rescue immediately.
+
+=item C<^] s>
+
+Synchronize the filesystems (sync).
+
+=item C<^] u>
+
+Unmounts all the filesystems, except for the root (appliance)  filesystems.
+
+=item C<^] z>
+
+Suspend virt-rescue (like pressing C<^Z> except that it affects virt-rescue
+rather than the program inside the rescue shell).
+
+=item C<^] ^]>
+
+Sends the literal character C<^]> (ASCII 0x1d) through to the rescue shell.
 
 =back
 
@@ -397,5 +480,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

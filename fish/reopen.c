@@ -1,5 +1,5 @@
 /* guestfish - guest filesystem shell
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ run_reopen (const char *cmd, size_t argc, char *argv[])
   void *cb_data;
 
   if (argc > 0) {
-    fprintf (stderr, _("'reopen' command takes no parameters\n"));
+    fprintf (stderr, _("‘reopen’ command takes no parameters\n"));
     return -1;
   }
 

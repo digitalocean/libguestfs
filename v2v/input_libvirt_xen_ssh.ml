@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 (** [-i libvirt] when the source is Xen *)
 
 open Common_gettext.Gettext
-open Common_utils
+open Tools_utils
 
 open Types
 open Xml
@@ -30,7 +30,7 @@ open Input_libvirt_other
 open Printf
 
 (* Subclass specialized for handling Xen over SSH. *)
-class input_libvirt_xen_ssh password libvirt_uri parsed_uri scheme server guest =
+class input_libvirt_xen_ssh password libvirt_uri parsed_uri server guest =
 object
   inherit input_libvirt password libvirt_uri guest
 
@@ -41,8 +41,7 @@ object
     error_if_no_ssh_agent ()
 
   method source () =
-    debug "input_libvirt_xen_ssh: source: scheme %s server %s"
-          scheme server;
+    debug "input_libvirt_xen_ssh: source: server %s" server;
 
     (* Get the libvirt XML.  This also checks (as a side-effect)
      * that the domain is not running.  (RHBZ#1138586)

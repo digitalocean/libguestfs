@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-miniexpect - A very simple expect library for C.
+miniexpect — дуже проста бібліотека expect для C.
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -17,115 +17,123 @@ miniexpect - A very simple expect library for C.
  }
  mexp_close (h);
 
- cc prog.c -o prog -lminiexpect -lpcre
+ cc prog.c -o програма -lminiexpect -lpcre
 
 =head1 ОПИС
 
-Miniexpect is a very simple expect-like library for C.  Expect is a way to
-control an external program that wants to be run interactively.
+Miniexpect — дуже проста expect-подібна бібліотека мовою C. Expect — це
+спосіб керування зовнішньою програмою, яка працює у інтерактивному режимі.
 
-Miniexpect has a saner interface than libexpect, and doesn't depend on Tcl.
-It is also thread safe, const-correct and uses modern C standards.
+Miniexpect має простіший за libexpect інтерфейс і не залежить від Tcl. Крім
+того, вона захищена для роботи з потоками, правильно працює зі сталими та
+використовує сучасні стандарти C.
 
-Miniexpect is a standalone library, except for a single dependency: it
-requires the PCRE (Perl Compatible Regular Expressions) library from
-L<http://www.pcre.org/>.  The PCRE dependency is fundamental because we want
-to offer the most powerful regular expression syntax to match on, but more
-importantly because PCRE has a convenient way to detect partial matches
-which made this library very simple to implement.
+Miniexpect — самодостатня бібліотека, окрем єдиної залежності: для її роботи
+потрібна бібліотека PCRE (Perl Compatible Regular Expressions) з
+L<http://www.pcre.org/>. Залежність від PCRE є базовою, оскільки ми хотіли
+надати користувачам максимально потужні можливості синтаксису формальних
+виразів. Ще важливішим у цьому аспекті є те, що у PCRE передбачено зручний
+спосіб виявлення часткової відповідності, що робить цю бібліотеку дуже
+простою у реалізації.
 
-This manual page documents the API.  Examples of how to use the API can be
-found in the source directory.
+Цю сторінку підручника присвячено програмному інтерфейсу. Приклади
+використання програмного інтерфейсу можна знайти у каталозі з початковим
+кодом бібліотеки.
 
-=head1 CONCEPTS
+=head1 ПРИНЦИПИ
 
-Miniexpect lets you start up an external program, control it (by sending
-commands to it), and close it down gracefully.  Two things make this
-different from other APIs like L<popen(3)> and L<system(3)>: Firstly
-miniexpect creates a pseudoterminal (pty).  Secondly miniexpect lets you
-match the output of the program using regular expressions.  Both of these
-are handy for controlling interactive programs that might (for example) ask
-for passwords, but you can use miniexpect on just about any external
-program.
+Miniexpect надає вам змогу запустити зовнішню програму, керувати нею
+(надсилаючи їй команди), а потім правильно завершити її роботу. Від інших
+програмних інтерфейсів, зокрема L<popen(3)> і L<system(3)>, це відрізняється
+у двох аспектах: по-перше, miniexpect створює псевдотермінал (pty);
+по-друге, miniexpect надає вам змогу шукати у виведених програмою даних за
+формальними виразами. Обидві ці особливості є зручними для керування
+інтерактивними програмами, які (наприклад) можуть надсилати запити щодо
+паролів. Втім, ви можете використовувати miniexpect майже для будь-якої
+зовнішньої програми.
 
-You can control multiple programs at the same time.
+Одночасно можна керувати декількома програмами.
 
-=head1 SPAWNING THE SUBPROCESS
+=head1 ПОРОДЖЕННЯ ПІДПРОЦЕСІВ
 
-There are four calls for creating a subprocess:
+Для створення підпроцесів передбачено чотири виклики:
 
 B<mexp_h *mexp_spawnl (const char *file, const char *arg, ...);>
 
-This creates a subprocess running the external program C<file> (the current
-C<$PATH> is searched unless you give an absolute path).  C<arg, ...> are the
-arguments to the program.  You should terminate the list of arguments with
-C<NULL>.  Usually the first argument should be the name of the program.
+Створює підпроцес із запущеною зовнішньою програмою C<файл> (пошук цієї
+програми відбуватиметься у каталогах C<$PATH>, якщо ви не вкажете абсолютний
+шлях до програми). C<аргумент, ...> — аргументи для програми. Список
+аргументів слід завершувати символом C<NULL>. Зазвичай, першим аргументом
+має бути назва програми.
 
-The return value is a handle (see next section).
+Поверненим значенням є дескриптор (див. наступний розділ).
 
-If there was an error running the subprocess, C<NULL> is returned and the
-error is available in C<errno>.
+Якщо у підпроцесі станеться помилка, буде повернуто C<NULL>, а номер помилки
+буде доступним у C<errno>.
 
-For example, to run an ssh subprocess you could do:
+Наприклад, щоб запустити підпроцес ssh, ви можете скористатися такою
+командою:
 
  h = mexp_spawnl ("ssh", "ssh", "-l", "root", "host", NULL);
 
-or to run a particular ssh binary:
+а для запуску певного виконуваного файла ssh такою командою:
 
  h = mexp_spawnl ("/usr/local/bin/ssh", "ssh", "-l", "root", "host", NULL);
 
-An alternative to C<mexp_spawnl> is:
+Альтернативою C<mexp_spawnl> є:
 
 B<mexp_h *mexp_spawnv (const char *file, char **argv);>
 
-This is the same as C<mexp_spawnl> except that you pass the arguments in a
-NULL-terminated array.
+Те саме, що і C<mexp_spawnl>, але аргументи передаються у форматі масиву,
+який завершується символом NULL.
 
-There are also two versions of the above calls which take flags:
+Також передбачено дві версії вказаних вище викликів, які приймають прапорці:
 
 B<mexp_h *mexp_spawnlf (unsigned flags, const char *file, const char *arg,
 ...);>
 
 B<mexp_h *mexp_spawnvf (unsigned flags, const char *file, char **argv);>
 
-The flags may contain the following values, logically ORed together:
+Прапорці можуть містити такі значення, які сполучаються між собою логічним
+АБО:
 
 =over 4
 
 =item B<MEXP_SPAWN_KEEP_SIGNALS>
 
-Do not reset signal handlers to C<SIG_DFL> in the subprocess.
+Не скидати у підпроцесах обробники сигналів у значення C<SIG_DFL>.
 
 =item B<MEXP_SPAWN_KEEP_FDS>
 
-Do not close file descriptors E<ge> 3 in the subprocess.
+Не закривати дескриптори файлів E<ge> 3 у підпроцесі.
 
-=item B<MEXP_SPAWN_COOKED_MODE> or B<MEXP_SPAWN_RAW_MODE>
+=item B<MEXP_SPAWN_COOKED_MODE> або B<MEXP_SPAWN_RAW_MODE>
 
-Configure the pty in cooked mode or raw mode.  Raw mode is the default.
+Налаштувати pty на роботу у приготованому (cooked) або простому (raw)
+режимі. Типовим є простий режим.
 
 =back
 
 =head1 ОБРОБНИКИ
 
-After spawning a subprocess, you get back a handle which is a pointer to a
-struct:
+Після створення підпроцесу, вам повертається дескрипто у форматі вказівник
+на структуру:
 
  struct mexp_h;
  typedef struct mexp_h mexp_h;
 
-Various methods can be used on the handle:
+До дескриптора може бути застосовано різні методи:
 
 B<int mexp_get_fd (mexp_h *h);>
 
-Return the file descriptor of the pty of the subprocess.  You can read and
-write to this if you want, although convenience functions are also provided
-(see below).
+Повернути дескриптор файла pty підпроцесу. Ви можете читати дані з цього
+дескриптора або записувати їх до нього, хоча для цього є і зручніші функції
+(див. нижче).
 
 B<pid_t mexp_get_pid (mexp_h *h);>
 
-Return the process ID of the subprocess.  You can send it signals if you
-want.
+Повертає ідентифікатор підпроцесу. Якщо хочете, можете надсилати йому
+сигнали.
 
 B<int mexp_get_timeout_ms (mexp_h *h);>
 
@@ -133,40 +141,42 @@ B<void mexp_set_timeout_ms (mexp_h *h, int millisecs);>
 
 B<void mexp_set_timeout (mexp_h *h, int secs);>
 
-Get or set the timeout used by C<mexp_expect> [see below].  The resolution
-is milliseconds (1/1000th of a second).  Set this before calling
-C<mexp_expect>.  Passing -1 to either of the C<set_> methods means no
-timeout.  The default setting is 60000 milliseconds (60 seconds).
+Отримати або встановити значення часу очікування, яке використовується
+C<mexp_expect> [див. нижче]. Одиницею виміру є мілісекунда (1/1000
+секунди). Встановлювати це значення слід до виклику C<mexp_expect>. Якщо
+якомусь із методів C<set_>  передано -1, часу очікування просто не
+буде. Типовим є значення у 60000 мілісекунд (60 секунд).
 
 B<size_t mexp_get_read_size (mexp *h);>
 
 B<void mexp_set_read_size (mexp *h, size_t read_size);>
 
-Get or set the natural size (in bytes) for reads from the subprocess.  The
-default is 1024.  Most callers will not need to change this.
+Отримати або встановити природний розмір (у байтах) для блоків читання з
+підпроцесу. Типовим значенням є 1024. Для більшості функцій виклику немає
+ніякої потреби у зміні типового значення.
 
 B<int mexp_get_pcre_error (mexp *h);>
 
-When C<mexp_expect> [see below] calls the PCRE function L<pcre_exec(3)>, it
-stashes the return value in the C<pcre_error> field in the handle, and that
-field is returned by this method.
+Коли C<mexp_expect> [див. нижче] виликає функцію PCRE L<pcre_exec(3)>, вона
+накопичує повернуті значення у полі C<pcre_error> у дескрипторі і це поле
+повертається цим методом.
 
-There are two uses for this:
+Існує два використання цього:
 
 =over 4
 
 =item 1.
 
-If C<mexp_expect> returns C<MEXP_PCRE_ERROR>, then the actual PCRE error
-code returned by L<pcre_exec(3)> is available by calling this method.  For a
-list of PCRE error codes, see L<pcreapi(3)>.
+Якщо C<mexp_expect> повертає C<MEXP_PCRE_ERROR>, справжній код помилки PCRE,
+який повернуто L<pcre_exec(3)>, доступний за викликом цього методу. Список
+кодів помилок PCRE наведено у підручнику з L<pcreapi(3)>.
 
 =item 2.
 
-A more unusual use is if you ever need to get the captured substrings from
-your regular expression (calling L<pcre_get_substring(3)>).  The third
-parameter of that function (C<stringcount>) is the value returned by
-L<pcre_exec(3)>, and so you can call it like this:
+Трохи незвичнішим використанням є отримання захоплених підрядків з вашого
+формального виразу (виклику L<pcre_get_substring(3)>). Третім параметром
+функції (C<stringcount>) є значення, яке повертається L<pcre_exec(3)>, отже
+ви можете викликати функцію ось так:
 
  pcre_get_substring (h->buffer, ovector,
                      mexp_get_pcre_error (h), 1, &matched);
@@ -177,58 +187,62 @@ B<void mexp_set_debug_file (mexp *h, FILE *fp);>
 
 B<FILE *mexp_get_debug_file (mexp *h);>
 
-Set or get the debug file of the handle.  To enable debugging, pass a
-non-C<NULL> file handle, eg. C<stderr>.  To disable debugging, pass
-C<NULL>.  Debugging messages are printed on the file handle.
+Встановити або отримати діагностичний файл дескриптора. Щоб увімкнути
+діагностику, передайте дескриптор файла, відмінний від C<NULL>, наприклад
+C<stderr>. Щоб вимкнути діагностику, передайте C<NULL>. Діагностичні
+повідомлення виводитимуться на дескриптор файла.
 
-Note that all output and input gets printed, including passwords.  To
-prevent passwords from being printed, modify your code to call
-C<mexp_printf_password> instead of C<mexp_printf>.
+Зауважте, що виводитимуться усі виведені і введені дані, зокрема паролі. Щоб
+заборонити виведення паролів, змініть ваш код так, щоб викликалася функція
+C<mexp_printf_password>, а не C<mexp_printf>.
 
-The following fields in the handle do not have methods, but can be accessed
-directly instead:
+У вказаних нижче полів у дескрипторі немає методів, але доступ до них можна
+здійснювати безпосередньо:
 
  char *buffer;
  size_t len;
  size_t alloc;
 
-If C<mexp_expect> returns a match then these variables contain the read
-buffer.  Note this buffer does not contain the full input from the process,
-but it will contain at least the part matched by the regular expression (and
-maybe some more).  C<buffer> is the read buffer and C<len> is the number of
-bytes of data in the buffer.
+Якщо C<mexp_expect> повертає відповідник, ці змінні містять буфер
+читання. Зауважте, що цей буфер не містить усіх вхідних даних від процесу,
+але лише містить принаймні ту частину, яка відповідає формальному виразу (і,
+можливо, ще дещо). C<buffer> — буфер читання, а C<len> — кількість байтів
+даних у буфері.
 
  ssize_t next_match;
 
-If C<mexp_expect> returns a match, then C<next_match> points to the first
-byte in the buffer I<after> the fully matched expression.  (It may be C<-1>
-which means it is invalid).  The next time that C<mexp_expect> is called, it
-will start by consuming the data C<buffer[next_match...len-1]>.  Callers may
-also need to read from that point in the buffer before calling L<read(2)> on
-the file descriptor.  Callers may also set this, for example setting it to
-C<-1> in order to ignore the remainder of the buffer.  In most cases callers
-can ignore this field, and C<mexp_expect> will just do the right thing when
-called repeatedly.
+Якщо C<mexp_expect> повертає відповідник, C<next_match> вказує на перший
+байт у буфері I<після> виразу, який повністю відповідає критерію
+пошуку. (Значенням може бути C<-1>, що означає, що критерій пошуку є
+некоректним). Під час наступного виклику C<mexp_expect> функція розпочне
+обробку даних C<buffer[next_match...len-1]>. У функцій виклику також може
+виникнути потреба у читанні з цієї позиції до буфера до виклику L<read(2)>
+щодо дескриптора файла. Функції виклику також можуть встановлювати значення
+для цього поля. Наприклад, можна встановити значення C<-1> з метою
+ігнорування решти вмісту буфера. Здебільшого, у функціях виклику можна
+ігнорувати це поле, і C<mexp_expect> просто зробить все очікуваним чином під
+час наступного виклику.
 
  void *user1;
  void *user2;
  void *user3;
 
-Opaque pointers for use by the caller.  The library will not touch these.
+Непрозорі вказівники, які використовуватиме функція виклику. Бібліотека не
+працюватиме з ними.
 
-=head1 CLOSING THE HANDLE
+=head1 ЗАКРИТТЯ ДЕСКРИПТОРА
 
-To close the handle and clean up the subprocess, call:
+Для закриття дескриптора і очищення підпроцесу виконайте такий виклик:
 
 B<int mexp_close (mexp_h *h);>
 
-This returns the status code from the subprocess.  This is in the form of a
-L<waitpid(2)>/L<system(3)> status so you have to use the macros
-C<WIFEXITED>, C<WEXITSTATUS>, C<WIFSIGNALED>, C<WTERMSIG> etc defined in
-C<E<lt>sys/wait.hE<gt>> to parse it.
+Повертає код стану від підпроцесу. Код стану повертається у формі стану
+L<waitpid(2)>/L<system(3)>, отже ви можете використовувати макроси
+C<WIFEXITED>, C<WEXITSTATUS>, C<WIFSIGNALED>, C<WTERMSIG> тощо, які
+визначено у C<E<lt>sys/wait.hE<gt>>, для обробки цього стану.
 
-If there was a system call error, then C<-1> is returned.  The error will be
-in C<errno>.
+Якщо сталася помилка системного виклику, буде повернуто C<-1>. Номер помилки
+зберігатиметься у C<errno>.
 
 Нотатки:
 
@@ -236,22 +250,23 @@ in C<errno>.
 
 =item *
 
-Even in error cases, the handle is always closed and its memory is freed by
-this call.
+Навіть у випадках помилок цим викликом дескриптор завжди закривається, а
+його пам'ять звільняється.
 
 =item *
 
-It is normal for the kernel to send SIGHUP to the subprocess.
+Надсилання ядром SIGHUP підпроцесу є звичною справою.
 
-If the subprocess doesn't catch the SIGHUP, then it will die with status:
+Якщо підпроцес не перехоплює SIGHUP, його роботу буде завершено з таким
+станом:
 
  WIFSIGNALED (status) && WTERMSIG (status) == SIGHUP
 
-This case should not necessarily be considered an error.
+Цей випадок не обов'язково вважатиметься помилкою.
 
 =back
 
-This is how code should check for and print errors from C<mexp_close>:
+Ось як код має знаходити і виводити помилки від C<mexp_close>:
 
   status = mexp_close (h);
   if (status == -1) {
@@ -259,26 +274,26 @@ This is how code should check for and print errors from C<mexp_close>:
     return -1;
   }
   if (WIFSIGNALED (status) && WTERMSIG (status) == SIGHUP)
-    goto ignore; /* not an error */
+    goto ignore; /* не помилка */
   if (!WIFEXITED (status) || WEXITSTATUS (status) != 0)
-    /* You could use the W* macros to print a better error message. */
+    /* Можна скористатися макросом W* для виведення кращого повідомлення про помилку. */
     fprintf (stderr, "error: subprocess failed, status = %d", status);
     return -1;
   }
  ignore:
-  /* no error case */
+  /* не пов'язані з помилкою випадки */
 
-=head1 EXPECT FUNCTION
+=head1 ФУНКЦІЯ EXPECT
 
-Miniexpect contains a powerful regular expression matching function based on
-L<pcre(3)>:
+Miniexpect містить потужну функцію для пошуку за формальними виразами,
+створену на основі L<pcre(3)>:
 
 B<int mexp_expect (mexp_h *h, const mexp_regexp *regexps, int *ovector, int
 ovecsize);>
 
-The output of the subprocess is matched against the list of PCRE regular
-expressions in C<regexps>.  C<regexps> is a list of regular expression
-structures:
+У даних, виведених підпроцесом, буде виконано пошук за списком формальних
+виразів PCRE з аргумента C<regexps>. C<regexps> є списком структур
+формальних виразів:
 
  struct mexp_regexp {
    int r;
@@ -288,37 +303,39 @@ structures:
  };
  typedef struct mexp_regexp mexp_regexp;
 
-C<r> is the integer code returned from C<mexp_expect> if this regular
-expression matches.  It B<must> be E<gt> 0.  C<r == 0> indicates the end of
-the list of regular expressions.  C<re> is the compiled regular expression.
+C<r> — цілочисельний код, який повертається C<mexp_expect>, якщо буде
+встановлено відповідність формальному виразу. Код B<має бути> значенням
+E<gt> 0. C<r == 0> означає кінець списку формальних виразів. C<re> є
+компільованим формальним виразом.
 
-Possible return values are:
+Можливі повернуті значення:
 
 =over 4
 
 =item C<MEXP_TIMEOUT>
 
-No input matched before the timeout (C<h-E<gt>timeout>) was reached.
+Відповідників до завершення часу очікування на дані (C<h-E<gt>timeout>) не
+знайдено.
 
 =item C<MEXP_EOF>
 
-The subprocess closed the connection.
+Підпроцес розірвав з'єднання.
 
 =item C<MEXP_ERROR>
 
-There was a system call error (eg. from the read call).  The error is
-returned in C<errno>.
+Сталася помилка у системному виклику (наприклад, у виклику функції
+читання). Помилку буде повернуто у C<errno>.
 
 =item C<MEXP_PCRE_ERROR>
 
-There was a C<pcre_exec> error.  C<h-E<gt>pcre_error> is set to the error
-code.  See L<pcreapi(3)> for a list of the C<PCRE_*> error codes and what
-they mean.
+Сталася помилка C<pcre_exec>. Для поля C<h-E<gt>pcre_error> буде встановлено
+значення коду помилки. Номери кодів помилок C<PCRE_*> та їхнє тлумачення
+можна знайти у підручнику з L<pcreapi(3)>.
 
 =item C<r> E<gt> 0
 
-If any regexp matches, the associated integer code (C<regexps[].r>)  is
-returned.
+Якщо буде встановлено відповідність за будь-яким із формальних виразів, буде
+повернуто відповідний цілочисельний код (C<regexps[].r>).
 
 =back
 
@@ -328,50 +345,53 @@ returned.
 
 =item *
 
-C<regexps> may be NULL or an empty list, which means we don't match against
-a regular expression.  This is useful if you just want to wait for EOF or
-timeout.
+C<regexps> може мати значення NULL або бути порожнім списком. Такі значення
+означають, що встановлення відповідності за формальним виразом не
+виконуватиметься. Це корисно, якщо вам просто потрібно зачекати на символ
+кінця файла або перевищення часу очікування.
 
 =item *
 
-C<regexps[].re>, C<regexps[].extra>, C<regexps[].options>, C<ovector> and
-C<ovecsize> are passed through to the L<pcre_exec(3)> function.
+C<regexps[].re>, C<regexps[].extra>, C<regexps[].options>, C<ovector> та
+C<ovecsize> передаються до функції L<pcre_exec(3)>.
 
 =item *
 
-If multiple regular expressions are passed, then they are checked in turn
-and the I<first> regular expression that matches is returned I<even if the
-match happens later in the input than another regular expression>.
+Якщо буде передано декілька формальних виразів, їхня оборобка
+відбуватиметься за вказаним порядком. Буде повернуто  відповідник I<першого>
+формального виразу, I<навіть якщо далі може бути встановлено відповідність
+вхідних даних іншому формальному виразу>.
 
-For example if the input is C<"hello world"> and you pass the two regular
-expressions:
+Наприклад, якщо вхідними даними є C<"hello world"> і ви передали два таких
+формальних вирази:
 
  regexps[0].re = world
  regexps[1].re = hello
 
-then the first regular expression (C<"world">) may match and the C<"hello">
-part of the input may be ignored.
+буде встановлено відповідність першого формального виразу (C<"world">),
+частину вхідних даних C<"hello"> може бути проігноровано.
 
-In some cases this can even lead to unpredictable matching.  In the case
-above, if we only happened to read C<"hello wor">, then the second regular
-expression (C<"hello">) I<would> match.
+Іноді, така поведінка може призвести до несподіваних результатів. У
+наведеному вище прикладі, якщо прочитано лише C<"hello wor">, відповідність
+I<буде> встановлено для другого формального виразу (C<"hello">).
 
-If this is a concern, combine your regular expressions into a single one,
-eg. C<(hello)|(world)>.
+У таких випадках поєднуйте ваші формальні вирази у один, наприклад
+C<(hello)|(world)>.
 
 =back
 
-=head2 mexp_expect example
+=head2 Приклад mexp_expect
 
-It is easier to understand C<mexp_expect> by considering a simple example.
+Зрозуміти, як працює C<mexp_expect>, можна з простого прикладу.
 
-In this example we are waiting for ssh to either send us a password prompt,
-or (if no password was required) a command prompt, and based on the output
-we will either send back a password or a command.
+У цьому прикладі ми чекаємо на те, що ssh або надішле запит щодо введення
+пароля, або (якщо пароль не потрібен) запит щодо введення команди. Залежно
+від отриманих даних, у відповідь буде надіслано або пароль, або команду.
 
-The unusual C<(mexp_regexp[]){...}> syntax is called a "compound literal"
-and is available in C99.  If you need to use an older compiler, you can just
-use a local variable instead.
+Незвична синтаксична конструкція C<(mexp_regexp[]){...}> називається
+«складений літерал», вона доступна у стандарті C99. Якщо вам доводиться
+користуватися застарілим компілятором, можете просто скористатися замість
+неї локальною змінною.
 
  mexp_h *h;
  char *errptr;
@@ -390,10 +410,10 @@ use a local variable instead.
                         { 0 },
                       }, ovector, ovecsize)) {
   case 100:
-    /* here you would send a password */
+    /* тут ви можете надіслати пароль */
     break;
   case 101:
-    /* here you would send a command */
+    /* тут ви можете надіслати команду */
     break;
   case MEXP_EOF:
     fprintf (stderr, "error: ssh closed the connection unexpectedly\n");
@@ -409,17 +429,17 @@ use a local variable instead.
     exit (EXIT_FAILURE);
  }
 
-=head1 SENDING COMMANDS TO THE SUBPROCESS
+=head1 НАДСИЛАННЯ КОМАНД ДО ПІДПРОЦЕСУ
 
-You can write to the subprocess simply by writing to C<h-E<gt>fd>.  However
-we also provide a convenience function:
+Запис даних до підпроцесу можна здійснити простим записуванням даних до
+C<h-E<gt>fd>. Втім, нами передбачено і зручніший варіант:
 
 B<int mexp_printf (mexp_h *h, const char *fs, ...);>
 
 B<int mexp_printf_password (mexp_h *h, const char *fs, ...);>
 
-This returns the number of bytes, if the whole message was written OK.  If
-there was an error, -1 is returned and the error is available in C<errno>.
+Повертає кількість байтів, якщо усе повідомлення було успішно записано. Якщо
+сталася помилка, повертає -1 і записує код помилки до C<errno>.
 
 Нотатки:
 
@@ -427,39 +447,40 @@ there was an error, -1 is returned and the error is available in C<errno>.
 
 =item *
 
-C<mexp_printf> will not do a partial write.  If it cannot write all the
-data, then it will return an error.
+C<mexp_printf> не виконуватиме частковий запис. Якщо не вдасться записати
+усі дані, буде повернуто повідомлення про помилку.
 
 =item *
 
-This function does not write a newline automatically.  If you want to send a
-command followed by a newline you have to do something like:
+Ця функція не записує автоматично символ нового рядка. Якщо ви хочете
+надіслати команду із завершальним символом нового рядка, слід зробити ось
+так:
 
  mexp_printf (h, "exit\n");
 
 =item *
 
-C<mexp_printf_password> works identically to C<mexp_printf> except that the
-output is I<not> sent to the debugging file if debugging is enabled.  As the
-name suggests, use this for passwords so that they don't appear in debugging
-output.
+C<mexp_printf_password> працює ідентично до C<mexp_printf>, але виведені
+дані I<не> надсилаються до діагностичного файла, якщо увімкнено
+діагностику. Як можна зрозуміти з назви, цим полем можна скористатися для
+того, щоб у виведених діагностичних даних не було паролів.
 
 =back
 
 B<int mexp_send_interrupt (mexp_h *h);>
 
-Send the interrupt character (C<^C>, Ctrl-C, C<\003>).  This is like
-pressing C<^C> - the subprocess (or remote process, if using C<ssh>)  is
-gracefully killed.
+Надіслати символ переривання (C<^C>, Ctrl-C, C<\003>). Те саме, що натиснути
+C<^C> - роботу підпроцесу (або віддаленого процесу, якщо використовується
+C<ssh>) буде завершено.
 
-Note this only works if the pty is in cooked mode
-(ie. C<MEXP_SPAWN_COOKED_MODE> was passed to C<mexp_spawnlf> or
-C<mexp_spawnvf>).  In raw mode, all characters are passed through without
-any special interpretation.
+Зауважте, що це працює, лише якщо pty перебуває у приготованому (cooked)
+режимі (тобто було передано C<MEXP_SPAWN_COOKED_MODE> до C<mexp_spawnlf> або
+C<mexp_spawnvf>). У простому (raw) режимі, передаються усі символи без
+будь-якої спеціальної обробки.
 
-=head1 SOURCE
+=head1 ПОЧАТКОВІ КОДИ
 
-Source is available from:
+Початкові коди можна знайти тут:
 L<http://git.annexia.org/?p=miniexpect.git;a=summary>
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
@@ -470,12 +491,12 @@ L<pcre(3)>, L<pcre_exec(3)>, L<pcreapi(3)>, L<waitpid(2)>, L<system(3)>.
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
 
-=head1 LICENSE
+=head1 ЛІЦЕНЗУВАННЯ
 
-The library is released under the Library GPL (LGPL) version 2 or at your
-option any later version.
+Ця бібліотека розповсюджується за умов дотримання Library GPL (LGPL) версії
+2 або, якщо потрібно, будь-якої наступної версії цих умов ліцензування.
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2014 Red Hat Inc.
+© Red Hat Inc., 2014
 

@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -90,27 +90,25 @@ let generate_xdr () =
        *)
       let args_passed_to_daemon = args @ args_of_optargs optargs in
       let args_passed_to_daemon =
-        List.filter (function FileIn _ | FileOut _ -> false | _ -> true)
-          args_passed_to_daemon in
+        List.filter (function String ((FileIn|FileOut), _) -> false | _ -> true)
+                    args_passed_to_daemon in
       (match args_passed_to_daemon with
       | [] -> ()
       | args ->
         pr "struct %s_args {\n" name;
         List.iter (
           function
-          | Pathname n | Device n | Mountable n | Dev_or_Path n
-          | Mountable_or_Path n | String n
-          | Key n | GUID n ->
+          | String (_, n) ->
             pr "  string %s<>;\n" n
           | OptString n -> pr "  guestfs_str *%s;\n" n
-          | StringList n | DeviceList n | FilenameList n ->
+          | StringList (_, n) ->
             pr "  guestfs_str %s<>;\n" n
           | Bool n -> pr "  bool %s;\n" n
           | Int n -> pr "  int %s;\n" n
           | Int64 n -> pr "  int64_t %s;\n" n
           | BufferIn n ->
             pr "  opaque %s<>;\n" n
-          | FileIn _ | FileOut _ | Pointer _ -> assert false
+          | Pointer _ -> assert false
         ) args;
         pr "};\n\n"
       );
@@ -130,11 +128,11 @@ let generate_xdr () =
            pr "};\n\n"
        | RConstString _ | RConstOptString _ ->
            failwithf "RConstString|RConstOptString cannot be used by daemon functions"
-       | RString n ->
+       | RString (_, n) ->
            pr "struct %s_ret {\n" name;
            pr "  string %s<>;\n" n;
            pr "};\n\n"
-       | RStringList n ->
+       | RStringList (_, n) ->
            pr "struct %s_ret {\n" name;
            pr "  guestfs_str %s<>;\n" n;
            pr "};\n\n"
@@ -146,7 +144,7 @@ let generate_xdr () =
            pr "struct %s_ret {\n" name;
            pr "  guestfs_int_%s_list %s;\n" typ n;
            pr "};\n\n"
-       | RHashtable n ->
+       | RHashtable (_, _, n) ->
            pr "struct %s_ret {\n" name;
            pr "  guestfs_str %s<>;\n" n;
            pr "};\n\n"

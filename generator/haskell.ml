@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -61,7 +61,7 @@ module Guestfs (
 
   (* List out the names of the actions we want to export. *)
   List.iter (
-    fun { name = name; style = style } ->
+    fun { name; style } ->
       if can_generate style then pr ",\n  %s" name
   ) (actions |> external_functions |> sort);
 
@@ -123,7 +123,7 @@ assocListOfHashtable (a:b:rest) = (a,b) : assocListOfHashtable rest
 
   (* Generate wrappers for each foreign function. *)
   List.iter (
-    fun { name = name; style = (ret, args, optargs as style);
+    fun { name; style = (ret, args, optargs as style);
           c_function = c_function } ->
       if can_generate style then (
         pr "foreign import ccall unsafe \"guestfs.h %s\" c_%s\n"
@@ -141,16 +141,12 @@ assocListOfHashtable (a:b:rest) = (a,b) : assocListOfHashtable rest
         (* Convert pointer arguments using with* functions. *)
         List.iter (
           function
-          | FileIn n
-          | FileOut n
-          | Pathname n | Device n | Mountable n
-          | Dev_or_Path n | Mountable_or_Path n | String n
-          | Key n | GUID n ->
+          | String (_, n) ->
               pr "withCString %s $ \\%s -> " n n
           | BufferIn n ->
               pr "withCStringLen %s $ \\(%s, %s_size) -> " n n n
           | OptString n -> pr "maybeWith withCString %s $ \\%s -> " n n
-          | StringList n | DeviceList n | FilenameList n ->
+          | StringList (_, n) ->
               pr "withMany withCString %s $ \\%s -> withArray0 nullPtr %s $ \\%s -> " n n n n
           | Bool _ | Int _ | Int64 _ | Pointer _ -> ()
         ) args;
@@ -161,12 +157,9 @@ assocListOfHashtable (a:b:rest) = (a,b) : assocListOfHashtable rest
             | Bool n -> sprintf "(fromBool %s)" n
             | Int n -> sprintf "(fromIntegral %s)" n
             | Int64 n | Pointer (_, n) -> sprintf "(fromIntegral %s)" n
-            | FileIn n | FileOut n
-            | Pathname n | Device n | Mountable n
-            | Dev_or_Path n | Mountable_or_Path n
-            | String n | OptString n
-            | StringList n | DeviceList n | FilenameList n
-            | Key n | GUID n -> n
+            | String (_, n)
+            | OptString n
+            | StringList (_, n) -> n
             | BufferIn n -> sprintf "%s (fromIntegral %s_size)" n n
           ) args in
         pr "withForeignPtr h (\\p -> c_%s %s)\n" name
@@ -220,22 +213,18 @@ and generate_haskell_prototype ~handle ?(hs = false) (ret, args, optargs) =
     List.iter (
       fun arg ->
         (match arg with
-        | Pathname _ | Device _ | Mountable _
-        | Dev_or_Path _ | Mountable_or_Path _ | String _
-        | Key _ | GUID _ ->
-          pr "CString"
-        | BufferIn _ ->
-          pr "CString -> CInt"
-        | OptString _ ->
-          pr "CString"
-        | StringList _ | DeviceList _ | FilenameList _ ->
-          pr "Ptr CString"
-        | Bool _ -> pr "CInt"
-        | Int _ -> pr "CInt"
-        | Int64 _ -> pr "Int64"
-        | Pointer _ -> pr "CInt"
-        | FileIn _ -> pr "CString"
-        | FileOut _ -> pr "CString"
+         | String _ ->
+            pr "CString"
+         | BufferIn _ ->
+            pr "CString -> CInt"
+         | OptString _ ->
+            pr "CString"
+         | StringList _ ->
+            pr "Ptr CString"
+         | Bool _ -> pr "CInt"
+         | Int _ -> pr "CInt"
+         | Int64 _ -> pr "Int64"
+         | Pointer _ -> pr "CInt"
         );
         pr " -> ";
     ) args;
@@ -263,22 +252,18 @@ and generate_haskell_prototype ~handle ?(hs = false) (ret, args, optargs) =
     List.iter (
       fun arg ->
         (match arg with
-        | Pathname _ | Device _ | Mountable _
-        | Dev_or_Path _ | Mountable_or_Path _ | String _
-        | Key _ | GUID _ ->
-          pr "String"
-        | BufferIn _ ->
-          pr "String"
-        | OptString _ ->
-          pr "Maybe String"
-        | StringList _ | DeviceList _ | FilenameList _ ->
-          pr "[String]"
-        | Bool _ -> pr "Bool"
-        | Int _ -> pr "Int"
-        | Int64 _ -> pr "Integer"
-        | Pointer _ -> pr "Int"
-        | FileIn _ -> pr "String"
-        | FileOut _ -> pr "String"
+         | String _ ->
+           pr "String"
+         | BufferIn _ ->
+           pr "String"
+         | OptString _ ->
+           pr "Maybe String"
+         | StringList _ ->
+           pr "[String]"
+         | Bool _ -> pr "Bool"
+         | Int _ -> pr "Int"
+         | Int64 _ -> pr "Integer"
+         | Pointer _ -> pr "Int"
         );
         pr " -> ";
     ) args;

@@ -38,7 +38,7 @@
 #include "getprogname.h"
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 #include "structs-print.h"
 
 #include "fish.h"
@@ -1266,6 +1266,42 @@ run_hivex_root (const char *cmd, size_t argc, char *argv[])
 }
 
 int
+run_hivex_value_string (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  char *r;
+  int64_t valueh;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "valueh", "xstrtoll", xerr);
+      goto out_valueh;
+    }
+    valueh = r;
+  }
+  r = guestfs_hivex_value_string (g, valueh);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_valueh:
+ out_noargs:
+  return ret;
+}
+
+int
 run_hivex_value_value (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -2413,6 +2449,63 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
 }
 
 int
+run_part_resize (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  int partnum;
+  int64_t endsect;
+  size_t i = 0;
+
+  if (argc != 3) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "partnum", "xstrtoll", xerr);
+      goto out_partnum;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
+      goto out_partnum;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    partnum = r;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "endsect", "xstrtoll", xerr);
+      goto out_endsect;
+    }
+    endsect = r;
+  }
+  r = guestfs_part_resize (g, device, partnum, endsect);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_endsect:
+ out_partnum:
+ out_noargs:
+  return ret;
+}
+
+int
 run_part_set_disk_guid (const char *cmd, size_t argc, char *argv[])
 {
   int ret = RUN_ERROR;
@@ -3111,6 +3204,24 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
   }
 
   r = guestfs_xfs_admin_argv (g, device, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+int
+run_yara_destroy (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+
+  if (argc != 0) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  r = guestfs_yara_destroy (g);
   if (r == -1) goto out;
   ret = 0;
  out:

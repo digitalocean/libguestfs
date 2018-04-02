@@ -9,13 +9,15 @@ virt-index-validate — засіб перевірки файла покажчи�
 
 =head1 ОПИС
 
-L<virt-builder(1)> uses an index file to store metadata about templates that
-it knows how to use.  This index file has a specific format which
-virt-index-validate knows how to validate.
+L<virt-builder(1)> використовує файл покажчика (index) для зберігання
+метаданих щодо шаблонів, способи використання яких відомі програмі. Цей файл
+покажчика має специфічний формат, перевірку якого виконує програма
+virt-index-validate.
 
-Note that virt-index-validate can validate either the signed or unsigned
-index file (ie. either F<index> or F<index.asc>).  It can only validate a
-local file, not a URL.
+Зауважте, що virt-index-validate може перевіряти як підписані, так і
+непідписані файли покажчиків (тобто, як F<index>, так і
+F<index.asc>). Програма здатна перевіряти лише локальні файли і не може
+працювати із зовнішніми адресами.
 
 =head1 ПАРАМЕТРИ
 
@@ -23,8 +25,9 @@ local file, not a URL.
 
 =item B<--compat-1.24.0>
 
-Check for compatibility with virt-builder 1.24.0.  (Using this option
-implies I<--compat-1.24.1>, so you don't need to use both.)
+Перевірити на сумісність за допомогою virt-builder 1.24.0. (Використання
+цього параметра автоматично додає I<--compat-1.24.1>, тому немає потреби у
+додатковому параметрі, якщо ви вже вказали цей.)
 
 Зокрема:
 
@@ -32,18 +35,18 @@ implies I<--compat-1.24.1>, so you don't need to use both.)
 
 =item *
 
-This version of virt-builder could not handle C<[...]> (square brackets) in
-field names (eg. C<checksum[sha512]=...>).
+Ця версія virt-builder не здатна обробляти C<[...]> (квадратні дужки) у
+назвах полів (наприклад, C<checksum[sha512]=...>).
 
 =item *
 
-It required detached signatures (C<sig=...>).
+Потребувало від'єднаних підписів (C<sig=...>).
 
 =back
 
 =item B<--compat-1.24.1>
 
-Check for compatibility with virt-builder E<ge> 1.24.1.
+Перевірити на сумісність за допомогою virt-builder E<ge> 1.24.1.
 
 Зокрема:
 
@@ -51,12 +54,12 @@ Check for compatibility with virt-builder E<ge> 1.24.1.
 
 =item *
 
-This version of virt-builder could not handle C<.> (period) in field names
-or C<,> (comma) in subfield names.
+У цій версії virt-builder не було передбачено обробки C<.> (крапки) у назвах
+полів або C<,> (коми) у назвах підполів.
 
 =item *
 
-It could not handle comments appearing in the file.
+Вона не може обробляти коментарі, які є у цьому файлі.
 
 =back
 
@@ -74,8 +77,8 @@ It could not handle comments appearing in the file.
 
 =head1 СТАН ВИХОДУ
 
-This program returns 0 if the index file validates, or non-zero if there was
-an error.
+Ця програма повертає 0, якщо файл покажчика пройде перевірку, або ненульове
+значення, якщо сталася помилка.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Common_utils
+open Std_utils
 
 let input_modules = ref []
 and output_modules = ref []
 
-let register_input_module name = push_front name input_modules
-and register_output_module name = push_front name output_modules
+let register_input_module name = List.push_front name input_modules
+and register_output_module name = List.push_front name output_modules
 
 let input_modules () = List.sort compare !input_modules
 and output_modules () = List.sort compare !output_modules
@@ -36,7 +36,7 @@ type conversion_fn =
 let convert_modules = ref []
 
 let register_convert_module inspect_fn name conversion_fn =
-  push_front (inspect_fn, (name, conversion_fn)) convert_modules
+  List.push_front (inspect_fn, (name, conversion_fn)) convert_modules
 
 let find_convert_module inspect =
   let rec loop = function

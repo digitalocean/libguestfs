@@ -967,7 +967,7 @@ guestfs_session_add_domain (GuestfsSession *session, const gchar *dom, GuestfsAd
  * remote username you want.
  * 
  * @secret
- * For the @rbd protocol only, this specifies the 'secret' to use when
+ * For the @rbd protocol only, this specifies the ‘secret’ to use when
  * connecting to the remote device. It must be base64 encoded.
  * 
  * If not given, then a secret matching the given username will be
@@ -5110,7 +5110,7 @@ guestfs_session_clear_backend_setting (GuestfsSession *session, const gchar *nam
  * 
  * Shared libraries and data files required by the program must be
  * available on filesystems which are mounted in the correct places. It is
- * the caller's responsibility to ensure all filesystems that are needed
+ * the caller’s responsibility to ensure all filesystems that are needed
  * are mounted at the right locations.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
@@ -5326,7 +5326,7 @@ guestfs_session_compress_out (GuestfsSession *session, const gchar *ctype, const
  * add hypervisor parameters
  *
  * This can be used to add arbitrary hypervisor parameters of the form
- * *-param value*. Actually it's not quite arbitrary - we prevent you from
+ * *-param value*. Actually it’s not quite arbitrary - we prevent you from
  * setting some parameters which would interfere with parameters that we
  * use.
  * 
@@ -6214,7 +6214,7 @@ guestfs_session_debug (GuestfsSession *session, const gchar *subcmd, gchar *cons
  *
  * debug the drives (internal use only)
  *
- * This returns the internal list of drives. 'debug' commands are not part
+ * This returns the internal list of drives. ‘debug’ commands are not part
  * of the formal API and can be removed or changed at any time.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
@@ -7024,7 +7024,7 @@ guestfs_session_du (GuestfsSession *session, const gchar *path, GError **err)
  * option.
  * 
  * @forceall
- * Assume an answer of 'yes' to all questions; allows e2fsck to be used
+ * Assume an answer of ‘yes’ to all questions; allows e2fsck to be used
  * non-interactively.
  * 
  * This option may not be specified at the same time as the @correct
@@ -7807,21 +7807,21 @@ guestfs_session_filesystem_available (GuestfsSession *session, const gchar *file
  * 
  * The @tsk_dirent structure contains the following fields.
  * 
- * 'tsk_inode'
+ * @tsk_inode
  * Filesystem reference number of the node. It might be @0 if the node
  * has been deleted.
  * 
- * 'tsk_type'
+ * @tsk_type
  * Basic file type information. See below for a detailed list of
  * values.
  * 
- * 'tsk_size'
+ * @tsk_size
  * File size in bytes. It might be @-1 if the node has been deleted.
  * 
- * 'tsk_name'
+ * @tsk_name
  * The file path relative to its directory.
  * 
- * 'tsk_flags'
+ * @tsk_flags
  * Bitfield containing extra information regarding the entry. It
  * contains the logical OR of the following values:
  * 
@@ -7846,21 +7846,21 @@ guestfs_session_filesystem_available (GuestfsSession *session, const gchar *file
  * filesystem native compression support (NTFS). The API is not
  * able to detect application level compression.
  * 
- * 'tsk_atime_sec'
- * 'tsk_atime_nsec'
- * 'tsk_mtime_sec'
- * 'tsk_mtime_nsec'
- * 'tsk_ctime_sec'
- * 'tsk_ctime_nsec'
- * 'tsk_crtime_sec'
- * 'tsk_crtime_nsec'
+ * @tsk_atime_sec
+ * @tsk_atime_nsec
+ * @tsk_mtime_sec
+ * @tsk_mtime_nsec
+ * @tsk_ctime_sec
+ * @tsk_ctime_nsec
+ * @tsk_crtime_sec
+ * @tsk_crtime_nsec
  * Respectively, access, modification, last status change and creation
  * time in Unix format in seconds and nanoseconds.
  * 
- * 'tsk_nlink'
+ * @tsk_nlink
  * Number of file names pointing to this entry.
  * 
- * 'tsk_link'
+ * @tsk_link
  * If the entry is a symbolic link, this field will contain the path to
  * the target file.
  * 
@@ -8720,6 +8720,7 @@ guestfs_session_get_cachedir (GuestfsSession *session, GError **err)
  * Return the direct appliance mode flag.
  * 
  * Returns: the returned value, or -1 on error
+ * Deprecated: In new code, use guestfs_session_internal_get_console_socket() instead
  * Since: 1.0.72
  */
 gint8
@@ -10822,6 +10823,49 @@ guestfs_session_hivex_value_key (GuestfsSession *session, gint64 valueh, GError 
 }
 
 /**
+ * guestfs_session_hivex_value_string:
+ * @session: (transfer none): A GuestfsSession object
+ * @valueh: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the data field as a UTF-8 string
+ *
+ * This calls guestfs_session_hivex_value_value() (which returns the data
+ * field from a hivex value tuple). It then assumes that the field is a
+ * UTF-16LE string and converts the result to UTF-8 (or if this is not
+ * possible, it returns an error).
+ * 
+ * This is useful for reading strings out of the Windows registry. However
+ * it is not foolproof because the registry is not strongly-typed and
+ * fields can contain arbitrary or unexpected data.
+ * 
+ * This function depends on the feature "hivex".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: (transfer full): the returned string, or NULL on error
+ * Since: 1.37.22
+ */
+gchar *
+guestfs_session_hivex_value_string (GuestfsSession *session, gint64 valueh, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_value_string");
+    return NULL;
+  }
+
+  char *ret = guestfs_hivex_value_string (g, valueh);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_hivex_value_type:
  * @session: (transfer none): A GuestfsSession object
  * @valueh: (type gint64):
@@ -10865,7 +10909,7 @@ guestfs_session_hivex_value_type (GuestfsSession *session, gint64 valueh, GError
  * @valueh: (type gint64):
  * @err: A GError object to receive any generated errors
  *
- * return the data field from the (key, datatype, data) tuple
+ * return the data field as a UTF-8 string
  *
  * This calls guestfs_session_hivex_value_value() (which returns the data
  * field from a hivex value tuple). It then assumes that the field is a
@@ -10880,6 +10924,7 @@ guestfs_session_hivex_value_type (GuestfsSession *session, gint64 valueh, GError
  * See also guestfs_session_feature_available().
  *
  * Returns: (transfer full): the returned string, or NULL on error
+ * Deprecated: In new code, use guestfs_session_hivex_value_string() instead
  * Since: 1.19.35
  */
 gchar *
@@ -11405,6 +11450,12 @@ guestfs_session_inspect_get_arch (GuestfsSession *session, const gchar *root, GE
  * "meego"
  * MeeGo.
  * 
+ * "msdos"
+ * Microsoft DOS.
+ * 
+ * "neokylin"
+ * NeoKylin.
+ * 
  * "netbsd"
  * NetBSD.
  * 
@@ -11604,10 +11655,8 @@ guestfs_session_inspect_get_filesystems (GuestfsSession *session, const gchar *r
  *
  * get format of inspected operating system
  *
- * This returns the format of the inspected operating system. You can use
- * it to detect install images, live CDs and similar.
- * 
- * Currently defined formats are:
+ * Before libguestfs 1.38, there was some unreliable support for detecting
+ * installer CDs. This API would return:
  * 
  * "installed"
  * This is an installed operating system.
@@ -11619,12 +11668,13 @@ guestfs_session_inspect_get_filesystems (GuestfsSession *session, const gchar *r
  * "unknown"
  * The format of this disk image is not known.
  * 
- * Future versions of libguestfs may return other strings here. The caller
- * should be prepared to handle any string.
+ * In libguestfs &ge; 1.38, this only returns @installed. Use libosinfo
+ * directly to detect installer CDs.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: (transfer full): the returned string, or NULL on error
+ * Deprecated: There is no documented replacement
  * Since: 1.9.4
  */
 gchar *
@@ -11656,7 +11706,7 @@ guestfs_session_inspect_get_format (GuestfsSession *session, const gchar *root, 
  * get hostname of the operating system
  *
  * This function returns the hostname of the operating system as found by
- * inspection of the guest's configuration files.
+ * inspection of the guest’s configuration files.
  * 
  * If the hostname could not be determined, then the string @unknown is
  * returned.
@@ -11718,7 +11768,7 @@ guestfs_session_inspect_get_hostname (GuestfsSession *session, const gchar *root
  * 
  * Notes:
  * 
- * *   Unlike most other inspection API calls, the guest's disks must be
+ * *   Unlike most other inspection API calls, the guest’s disks must be
  * mounted up before you call this, since it needs to read information
  * from the guest filesystem during the call.
  * 
@@ -12390,13 +12440,12 @@ guestfs_session_inspect_get_windows_systemroot (GuestfsSession *session, const g
  *
  * get live flag for install disk
  *
- * If guestfs_session_inspect_get_format() returns @installer (this is an
- * install disk), then this returns true if a live image was detected on
- * the disk.
+ * This is deprecated and always returns @false.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: the returned value, or -1 on error
+ * Deprecated: There is no documented replacement
  * Since: 1.9.4
  */
 gint8
@@ -12427,12 +12476,12 @@ guestfs_session_inspect_is_live (GuestfsSession *session, const gchar *root, GEr
  *
  * get multipart flag for install disk
  *
- * If guestfs_session_inspect_get_format() returns @installer (this is an
- * install disk), then this returns true if the disk is part of a set.
+ * This is deprecated and always returns @false.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: the returned value, or -1 on error
+ * Deprecated: There is no documented replacement
  * Since: 1.9.4
  */
 gint8
@@ -12463,14 +12512,12 @@ guestfs_session_inspect_is_multipart (GuestfsSession *session, const gchar *root
  *
  * get netinst (network installer) flag for install disk
  *
- * If guestfs_session_inspect_get_format() returns @installer (this is an
- * install disk), then this returns true if the disk is a network
- * installer, ie. not a self-contained install CD but one which is likely
- * to require network access to complete the install.
+ * This is deprecated and always returns @false.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  * 
  * Returns: the returned value, or -1 on error
+ * Deprecated: There is no documented replacement
  * Since: 1.9.4
  */
 gint8
@@ -16483,15 +16530,17 @@ guestfs_session_list_dm_devices (GuestfsSession *session, GError **err)
  * <![CDATA["/dev/vg_guest/lv_swap" => "swap"]]>
  * 
  * The key is not necessarily a block device. It may also be an opaque
- * 'mountable' string which can be passed to guestfs_session_mount().
+ * ‘mountable’ string which can be passed to guestfs_session_mount().
  * 
  * The value can have the special value "unknown", meaning the content of
  * the device is undetermined or empty. "swap" means a Linux swap
  * partition.
  * 
- * This command runs other libguestfs commands, which might include
- * guestfs_session_mount() and guestfs_session_umount(), and therefore you
- * should use this soon after launch and only when nothing is mounted.
+ * In libguestfs &le; 1.36 this command ran other libguestfs commands,
+ * which might have included guestfs_session_mount() and
+ * guestfs_session_umount(), and therefore you had to use this soon after
+ * launch and only when nothing else was mounted. This restriction is
+ * removed in libguestfs &ge; 1.38.
  * 
  * Not all of the filesystems returned will be mountable. In particular,
  * swap partitions are returned in the list. Also this command does not
@@ -17674,7 +17723,7 @@ guestfs_session_lvcreate_free (GuestfsSession *session, const gchar *logvol, con
 /**
  * guestfs_session_lvm_canonical_lv_name:
  * @session: (transfer none): A GuestfsSession object
- * @lvname: (transfer none) (type filename):
+ * @lvname: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
  * get canonical name of an LV
@@ -20211,7 +20260,7 @@ guestfs_session_modprobe (GuestfsSession *session, const gchar *modulename, GErr
  * named /dev/sda, /dev/sdb and so on, as they were added to the guest. If
  * those block devices contain partitions, they will have the usual names
  * (eg. /dev/sda1). Also LVM /dev/VG/LV-style names can be used, or
- * 'mountable' strings returned by guestfs_session_list_filesystems() or
+ * ‘mountable’ strings returned by guestfs_session_list_filesystems() or
  * guestfs_session_inspect_get_mountpoints().
  * 
  * The rules are the same as for mount(2): A filesystem must first be
@@ -21293,8 +21342,8 @@ guestfs_session_ntfsresize_size (GuestfsSession *session, const gchar *device, g
  *
  * parse the environment and set handle flags accordingly
  *
- * Parse the program's environment and set flags in the handle accordingly.
- * For example if "LIBGUESTFS_DEBUG=1" then the 'verbose' flag is set in
+ * Parse the program’s environment and set flags in the handle accordingly.
+ * For example if "LIBGUESTFS_DEBUG=1" then the ‘verbose’ flag is set in
  * the handle.
  * 
  * *Most programs do not need to call this*. It is done implicitly when you
@@ -21338,7 +21387,7 @@ guestfs_session_parse_environment (GuestfsSession *session, GError **err)
  *
  * Parse the list of strings in the argument @environment and set flags in
  * the handle accordingly. For example if "LIBGUESTFS_DEBUG=1" is a string
- * in the list, then the 'verbose' flag is set in the handle.
+ * in the list, then the ‘verbose’ flag is set in the handle.
  * 
  * This is the same as guestfs_session_parse_environment() except that it
  * parses an explicit list of strings instead of the program's environment.
@@ -21599,6 +21648,44 @@ guestfs_session_part_get_disk_guid (GuestfsSession *session, const gchar *device
   if (ret == NULL) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_part_get_gpt_attributes:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the attribute flags of a GPT partition
+ *
+ * Return the attribute flags of numbered GPT partition @partnum. An error
+ * is returned for MBR partitions.
+ * 
+ * This function depends on the feature "gdisk".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: the returned value, or -1 on error
+ * Since: 1.21.1
+ */
+gint64
+guestfs_session_part_get_gpt_attributes (GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_get_gpt_attributes");
+    return -1;
+  }
+
+  int64_t ret = guestfs_part_get_gpt_attributes (g, device, partnum);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return -1;
   }
 
   return ret;
@@ -21926,7 +22013,7 @@ guestfs_session_part_init (GuestfsSession *session, const gchar *device, const g
  * 
  * part_start
  * Start of the partition *in bytes*. To get sectors you have to divide
- * by the device's sector size, see guestfs_session_blockdev_getss().
+ * by the device’s sector size, see guestfs_session_blockdev_getss().
  * 
  * part_end
  * End of the partition in bytes.
@@ -21966,6 +22053,50 @@ guestfs_session_part_list (GuestfsSession *session, const gchar *device, GError 
   guestfs_free_partition_list (ret);
   l[i] = NULL;
   return l;
+}
+
+/**
+ * guestfs_session_part_resize:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @endsect: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * resize a partition
+ *
+ * This command resizes the partition numbered @partnum on @device by
+ * moving the end position.
+ * 
+ * Note that this does not modify any filesystem present in the partition.
+ * If you wish to do this, you will need to use filesystem resizing
+ * commands like guestfs_session_resize2fs().
+ * 
+ * When growing a partition you will want to grow the filesystem
+ * afterwards, but when shrinking, you need to shrink the filesystem before
+ * the partition.
+ * 
+ * Returns: true on success, false on error
+ * Since: 1.37.20
+ */
+gboolean
+guestfs_session_part_resize (GuestfsSession *session, const gchar *device, gint32 partnum, gint64 endsect, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_resize");
+    return FALSE;
+  }
+
+  int ret = guestfs_part_resize (g, device, partnum, endsect);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
 }
 
 /**
@@ -22077,6 +22208,51 @@ guestfs_session_part_set_disk_guid_random (GuestfsSession *session, const gchar 
   }
 
   int ret = guestfs_part_set_disk_guid_random (g, device);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_part_set_gpt_attributes:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @attributes: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the attribute flags of a GPT partition
+ *
+ * Set the attribute flags of numbered GPT partition @partnum to
+ * @attributes. Return an error if the partition table of @device isn't
+ * GPT.
+ * 
+ * See <ulink
+ * url='https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_entrie
+ * s'> http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_entries
+ * </ulink> for a useful list of partition attributes.
+ * 
+ * This function depends on the feature "gdisk".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.21.1
+ */
+gboolean
+guestfs_session_part_set_gpt_attributes (GuestfsSession *session, const gchar *device, gint32 partnum, gint64 attributes, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_set_gpt_attributes");
+    return FALSE;
+  }
+
+  int ret = guestfs_part_set_gpt_attributes (g, device, partnum, attributes);
   if (ret == -1) {
     g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
     return FALSE;
@@ -24352,6 +24528,7 @@ guestfs_session_set_cachedir (GuestfsSession *session, const gchar *cachedir, GE
  * The default is disabled.
  * 
  * Returns: true on success, false on error
+ * Deprecated: In new code, use guestfs_session_internal_get_console_socket() instead
  * Since: 1.0.72
  */
 gboolean
@@ -25487,7 +25664,7 @@ guestfs_session_setxattr (GuestfsSession *session, const gchar *xattr, const gch
  * @cyls, @heads and @sectors are the number of cylinders, heads and
  * sectors on the device, which are passed directly to sfdisk as the *-C*,
  * *-H* and *-S* parameters. If you pass @0 for any of these, then the
- * corresponding parameter is omitted. Usually for 'large' disks, you can
+ * corresponding parameter is omitted. Usually for ‘large’ disks, you can
  * just pass @0 for these, but for small (floppy-sized) disks, sfdisk (or
  * rather, the kernel) cannot work out the right geometry and you will need
  * to tell it.
@@ -25622,7 +25799,7 @@ guestfs_session_sfdisk_N (GuestfsSession *session, const gchar *device, gint32 p
  *
  * This displays the disk geometry of @device read from the partition
  * table. Especially in the case where the underlying block device has been
- * resized, this can be different from the kernel's idea of the geometry
+ * resized, this can be different from the kernel’s idea of the geometry
  * (see guestfs_session_sfdisk_kernel_geometry()).
  * 
  * The result is in human-readable format, and not designed to be parsed.
@@ -25658,7 +25835,7 @@ guestfs_session_sfdisk_disk_geometry (GuestfsSession *session, const gchar *devi
  *
  * display the kernel geometry
  *
- * This displays the kernel's idea of the geometry of @device.
+ * This displays the kernel’s idea of the geometry of @device.
  * 
  * The result is in human-readable format, and not designed to be parsed.
  * 
@@ -25730,14 +25907,14 @@ guestfs_session_sfdisk_l (GuestfsSession *session, const gchar *device, GError *
  *
  * run a command via the shell
  *
- * This call runs a command from the guest filesystem via the guest's
+ * This call runs a command from the guest filesystem via the guest’s
  * /bin/sh.
  * 
  * This is like guestfs_session_command(), but passes the command to:
  * 
  * <![CDATA[/bin/sh -c "command"]]>
  * 
- * Depending on the guest's shell, this usually results in wildcards being
+ * Depending on the guest’s shell, this usually results in wildcards being
  * expanded, shell expressions being interpolated and so on.
  * 
  * All the provisos about guestfs_session_command() apply to this call.
@@ -27697,7 +27874,7 @@ guestfs_session_upload_offset (GuestfsSession *session, const gchar *filename, c
  * 
  * No cleanup is performed: for example, if a file was being uploaded then
  * after cancellation there may be a partially uploaded file. It is the
- * caller's responsibility to clean up if necessary.
+ * caller’s responsibility to clean up if necessary.
  * 
  * There are two common places that you might call
  * guestfs_session_user_cancel():
@@ -27842,7 +28019,7 @@ guestfs_session_utsname (GuestfsSession *session, GError **err)
  * This call was added in version 1.0.58. In previous versions of
  * libguestfs there was no way to get the version number. From C code you
  * can use dynamic linker functions to find out if this symbol exists (if
- * it doesn't, then it's an earlier version).
+ * it doesn't, then it’s an earlier version).
  * 
  * The call returns a structure with four elements. The first three
  * (@major, @minor and @release) are numbers and correspond to the usual
@@ -29326,6 +29503,172 @@ guestfs_session_xfs_repair (GuestfsSession *session, const gchar *device, Guestf
 }
 
 /**
+ * guestfs_session_yara_destroy:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * destroy previously loaded yara rules
+ *
+ * Destroy previously loaded Yara rules in order to free libguestfs
+ * resources.
+ * 
+ * This function depends on the feature "libyara".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.37.13
+ */
+gboolean
+guestfs_session_yara_destroy (GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "yara_destroy");
+    return FALSE;
+  }
+
+  int ret = guestfs_yara_destroy (g);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_yara_load:
+ * @session: (transfer none): A GuestfsSession object
+ * @filename: (transfer none) (type filename):
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * load yara rules within libguestfs
+ *
+ * Upload a set of Yara rules from local file filename.
+ * 
+ * Yara rules allow to categorize files based on textual or binary patterns
+ * within their content. See guestfs_session_yara_scan() to see how to scan
+ * files with the loaded rules.
+ * 
+ * Rules can be in binary format, as when compiled with yarac command, or
+ * in source code format. In the latter case, the rules will be first
+ * compiled and then loaded.
+ * 
+ * Rules in source code format cannot include external files. In such
+ * cases, it is recommended to compile them first.
+ * 
+ * Previously loaded rules will be destroyed.
+ * 
+ * This function depends on the feature "libyara".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: true on success, false on error
+ * Since: 1.37.13
+ */
+gboolean
+guestfs_session_yara_load (GuestfsSession *session, const gchar *filename, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return FALSE;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "yara_load");
+    return FALSE;
+  }
+
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect (cancellable,
+                               G_CALLBACK (cancelled_handler),
+                               g, NULL);
+  }
+
+  int ret = guestfs_yara_load (g, filename);
+  g_cancellable_disconnect (cancellable, id);
+  if (ret == -1) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_yara_scan:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * scan a file with the loaded yara rules
+ *
+ * Scan a file with the previously loaded Yara rules.
+ * 
+ * For each matching rule, a @yara_detection structure is returned.
+ * 
+ * The @yara_detection structure contains the following fields.
+ * 
+ * @yara_name
+ * Path of the file matching a Yara rule.
+ * 
+ * @yara_rule
+ * Identifier of the Yara rule which matched against the given file.
+ * 
+ * This function depends on the feature "libyara".
+ * See also guestfs_session_feature_available().
+ *
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsYaraDetection): an array of YaraDetection objects, or NULL on error
+ * Since: 1.37.13
+ */
+GuestfsYaraDetection **
+guestfs_session_yara_scan (GuestfsSession *session, const gchar *path, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return NULL;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error (err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "yara_scan");
+    return NULL;
+  }
+
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect (cancellable,
+                               G_CALLBACK (cancelled_handler),
+                               g, NULL);
+  }
+
+  struct guestfs_yara_detection_list *ret = guestfs_yara_scan (g, path);
+  g_cancellable_disconnect (cancellable, id);
+  if (ret == NULL) {
+    g_set_error_literal (err, GUESTFS_ERROR, 0, guestfs_last_error (g));
+    return NULL;
+  }
+
+  GuestfsYaraDetection **l = g_malloc (sizeof (GuestfsYaraDetection*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0 (GuestfsYaraDetection);
+    if (ret->val[i].yara_name) l[i]->yara_name = g_strdup (ret->val[i].yara_name);
+    if (ret->val[i].yara_rule) l[i]->yara_rule = g_strdup (ret->val[i].yara_rule);
+  }
+  guestfs_free_yara_detection_list (ret);
+  l[i] = NULL;
+  return l;
+}
+
+/**
  * guestfs_session_zegrep:
  * @session: (transfer none): A GuestfsSession object
  * @regex: (transfer none) (type utf8):
@@ -29406,7 +29749,7 @@ guestfs_session_zegrepi (GuestfsSession *session, const gchar *regex, const gcha
  *
  * This command writes zeroes over the first few blocks of @device.
  * 
- * How many blocks are zeroed isn't specified (but it's *not* enough to
+ * How many blocks are zeroed isn't specified (but it’s *not* enough to
  * securely wipe the device). It should be sufficient to remove any
  * partition tables, filesystem superblocks and so on.
  * 

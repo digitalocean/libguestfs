@@ -38,7 +38,7 @@
 #include "getprogname.h"
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 #include "structs-print.h"
 
 #include "fish.h"
@@ -2031,6 +2031,49 @@ run_part_get_bootable (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
+ out:
+ out_partnum:
+ out_noargs:
+  return ret;
+}
+
+int
+run_part_get_gpt_attributes (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int64_t r;
+  const char *device;
+  int partnum;
+  size_t i = 0;
+
+  if (argc != 2) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %u)\n"),
+               cmd, "partnum", "xstrtoll", xerr);
+      goto out_partnum;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
+      goto out_partnum;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    partnum = r;
+  }
+  r = guestfs_part_get_gpt_attributes (g, device, partnum);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
  out:
  out_partnum:
  out_noargs:

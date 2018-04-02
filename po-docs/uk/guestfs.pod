@@ -98,8 +98,8 @@ The general structure of all libguestfs-using programs looks like this:
 
  guestfs_h *g = guestfs_create ();
  
- /* Call guestfs_add_drive additional times if there are
-  * multiple disk images.
+ /* Викликаємо guestfs_add_drive додаткові рази, якщо
+  * образів дисків декілька.
   */
  guestfs_add_drive (g, "guest.img");
  
@@ -109,16 +109,16 @@ The general structure of all libguestfs-using programs looks like this:
   */
  guestfs_launch (g);
  
- /* Either: examine what partitions, LVs etc are available: */
+ /* Або визначити розділи, логічні томи тощо, які є доступними: */
  char **partitions = guestfs_list_partitions (g);
  char **logvols = guestfs_lvs (g);
  
- /* Or: ask libguestfs to find filesystems for you: */
+ /* Або наказати libguestfs знайти для вас файлові системи: */
  char **filesystems = guestfs_list_filesystems (g);
  
- /* Or: use inspection (see INSPECTION section below). */
+ /* Або скористатися інспекцією (див. розділ щодо інспекції нижче). */
  
- /* To access a filesystem in the image, you must mount it. */
+ /* Щоб отримати доступ до файлової системи у образі, вам слід її змонтувати. */
  guestfs_mount (g, "/dev/sda1", "/");
  
  /* Тепер ви можете виконувати дії з файловою системою на
@@ -126,7 +126,7 @@ The general structure of all libguestfs-using programs looks like this:
   */
  guestfs_touch (g, "/hello");
  
- /* Synchronize the disk.  This is the opposite of guestfs_launch. */
+ /* Синхронізуємо диск. Це дія, протилежна до guestfs_launch. */
  guestfs_shutdown (g);
  
  /* Закрити і звільнити дескриптор «g». */
@@ -205,7 +205,7 @@ logical volumes you could refer to those instead (eg. F</dev/VG/LV>).  Note
 that these are libguestfs virtual devices, and are nothing to do with host
 devices.
 
-If you are given a disk image and you don't know what it contains then you
+If you are given a disk image and you don’t know what it contains then you
 have to find out.  Libguestfs can do that too: use
 L</guestfs_list_partitions> and L</guestfs_lvs> to list possible partitions
 and LVs, and either try mounting each to see what is mountable, or else
@@ -356,7 +356,7 @@ L</guestfs_copy_device_to_file> або L</guestfs_copy_device_to_device>.
 
  guestfs_copy_device_to_device (g,
          "/dev/VG/Original", "/dev/VG/Copy",
-         /* -1 marks the end of the list of optional parameters */
+         /* -1 позначає завершення списку необов'язкових параметрів */
          -1);
 
 The destination (F</dev/VG/Copy>) must be at least as large as the source
@@ -402,8 +402,8 @@ and you can write tar output to a file descriptor C<fd> by doing:
 L</guestfs_ll> is just designed for humans to read (mainly when using the
 L<guestfish(1)>-equivalent command C<ll>).
 
-L</guestfs_ls> is a quick way to get a list of files in a directory from
-programs, as a flat list of strings.
+L</guestfs_ls> — швидкий спосіб отримати список файлів у каталозі від
+програм у форматі простого списку рядків.
 
 L</guestfs_readdir> is a programmatic way to get a list of files in a
 directory, plus additional information about each one.  It is more
@@ -429,17 +429,17 @@ it expects.
 
 =item *
 
-If the command needs to communicate with daemons, then most likely they
-won't be running.
+Якщо програмі потрібно буде обмінятися даними із фоновими службами,
+найімовірніше, ці фонові служби не працюватимуть.
 
 =item *
 
-The command will be running in limited memory.
+Програму буде запущено з обмеженим обсягом доступної пам'яті.
 
 =item *
 
-The network may not be available unless you enable it (see
-L</guestfs_set_network>).
+Мережа буде недоступною, якщо ви її не увімкнете
+(див. L</guestfs_set_network>).
 
 =item *
 
@@ -447,7 +447,7 @@ Only supports Linux guests (not Windows, BSD, etc).
 
 =item *
 
-Architecture limitations (eg. won't work for a PPC guest on an X86 host).
+Architecture limitations (eg. won’t work for a PPC guest on an X86 host).
 
 =item *
 
@@ -489,11 +489,11 @@ The main Augeas calls are bound through the C<guestfs_aug_*> APIs.  We don't
 document Augeas itself here because there is excellent documentation on the
 L<http://augeas.net/> website.
 
-If you don't want to use Augeas (you fool!) then try calling
+If you don’t want to use Augeas (you fool!) then try calling
 L</guestfs_read_lines> to get the file as a list of lines which you can
 iterate over.
 
-=head2 SYSTEMD JOURNAL FILES
+=head2 ФАЙЛИ ЖУРНАЛУ SYSTEMD
 
 To read the systemd journal from a Linux guest, use the C<guestfs_journal_*>
 APIs starting with L</guestfs_journal_open>.
@@ -549,10 +549,11 @@ L</guestfs_set_uuid> to change the label or UUID.
 You can locate a filesystem by its label or UUID using
 L</guestfs_findfs_label> or L</guestfs_findfs_uuid>.
 
-For LVM2 (which supports only UUIDs), there is a rich set of APIs for
-fetching UUIDs, fetching UUIDs of the contained objects, and changing
-UUIDs.  See: L</guestfs_lvuuid>, L</guestfs_vguuid>, L</guestfs_pvuuid>,
-L</guestfs_vglvuuids>, L</guestfs_vgpvuuids>, L</guestfs_vgchange_uuid>,
+Для LVM2 (де передбачено підтримку лише UUID) передбачено широкий спектр
+інструментів програмного інтерфейсу ддля отримання UUID, отримання UUID
+об'єктів контейнерів і зміни UUID. Див. L</guestfs_lvuuid>,
+L</guestfs_vguuid>, L</guestfs_pvuuid>, L</guestfs_vglvuuids>,
+L</guestfs_vgpvuuids>, L</guestfs_vgchange_uuid>,
 L</guestfs_vgchange_uuid_all>, L</guestfs_pvchange_uuid>,
 L</guestfs_pvchange_uuid_all>.
 
@@ -842,7 +843,8 @@ parameters of L</guestfs_add_drive_opts> like this:
                          GUESTFS_ADD_DRIVE_OPTS_USERNAME, "remoteuser",
                          -1);
 
-The format of the server string is documented in L</guestfs_add_drive_opts>.
+Формат рядка сервера документовано у розділі щодо
+L</guestfs_add_drive_opts>.
 
 =head2 ПЕРЕВІРКА
 
@@ -901,28 +903,21 @@ redo inspection by calling L</guestfs_inspect_os> again.
 other calls and does read the disks.  See documentation for that function
 for details).
 
-=head3 INSPECTING INSTALL DISKS
+=head3 ВИВЧЕННЯ ДИСКІВ ДЛЯ ВСТАНОВЛЕННЯ
 
-Libguestfs (since 1.9.4) can detect some install disks, install CDs, live
-CDs and more.
+Libguestfs (з версії 1.9.4) може виявляти деякі диски для встановлення,
+компакт-диски для встановлення, компакт-диски із портативними системами
+тощо.
 
-Call L</guestfs_inspect_get_format> to return the format of the operating
-system, which currently can be C<installed> (a regular operating system) or
-C<installer> (some sort of install disk).
-
-Further information is available about the operating system that can be
-installed using the regular inspection APIs like
+Докладну інформацію щодо операційних систем на дисках для встановлення можна
+отримати за допомогою звичайних програмних інтерфейсів вивчення, зокрема
 L</guestfs_inspect_get_product_name>, L</guestfs_inspect_get_major_version>
-etc.
+тощо.
 
-Some additional information specific to installer disks is also available
-from the L</guestfs_inspect_is_live>, L</guestfs_inspect_is_netinst> and
-L</guestfs_inspect_is_multipart> calls.
+=head2 ДОДАТКОВІ ЗАУВАЖЕННЯ ЩОДО ГОСТЬОВИХ СИСТЕМ WINDOWS
 
-=head2 SPECIAL CONSIDERATIONS FOR WINDOWS GUESTS
-
-Libguestfs can mount NTFS partitions.  It does this using the
-L<http://www.ntfs-3g.org/> driver.
+Libguestfs може монтувати розділи NTFS. Це завдання виконується за допомогою
+драйвера L<http://www.ntfs-3g.org/>.
 
 =head3 ЛІТЕРИ ДИСКІВ ТА ШЛЯХИ
 
@@ -939,21 +934,23 @@ Dealing with separator characters (backslash vs forward slash) is outside
 the scope of libguestfs, but usually a simple character replacement will
 work.
 
-To resolve the case insensitivity of paths, call
-L</guestfs_case_sensitive_path>.
+Щоб усунути проблему із неврахуванням регістру літер у шляхах, скористайтеся
+викликом L</guestfs_case_sensitive_path>.
 
 =head3 ДОВГІ НАЗВИ ФАЙЛІВ У NTFS
 
-NTFS supports filenames up to 255 characters long.  "Character" means a 2
-byte UTF-16 codepoint which can encode the most common Unicode codepoints.
+У NTFS назви файлів обмежено довжиною у 255 символів. «Символ» означає
+2-байтову позицію у таблиці UTF-16, яка містить більшість типових символів
+Unicode.
 
-Most Linux filesystems support filenames up to 255 I<bytes>.  This means you
-may get an error:
+У більшості файлових систем Linux передбачено підтримку назв файлів довжиною
+до 255 I<байтів>. Це означає, що ви можете отримати повідомлення про
+помилку:
 
  File name too long
 
-when you copy a file from NTFS to a Linux filesystem if the name, when
-reencoded as UTF-8, would exceed 255 bytes in length.
+коли копіюватимете файл з NTFS на файлову систему Linux, якщо назва, коли її
+буде перекодовано у UTF-8, перевищить за довжиною 255 байтів.
 
 This will most often happen when using non-ASCII names that are longer than
 ~127 characters (eg. Greek, Cyrillic) or longer than ~85 characters (Asian
@@ -995,7 +992,7 @@ L</guestfs_lgetxattr> to read the C<system.ntfs_reparse_data> extended
 attribute, and read the raw reparse data from that (you can find the format
 documented in various places around the web).
 
-=head3 EXTENDED ATTRIBUTES ON NTFS-3G FILESYSTEMS
+=head3 РОЗШИРЕНІ АТРИБУТИ НА ФАЙЛОВИХ СИСТЕМАХ NTFS-3G
 
 There are other useful extended attributes that can be read from ntfs-3g
 filesystems (using L</guestfs_getxattr>).  See:
@@ -1067,7 +1064,7 @@ resizing and on failure going back to the original.
 
 =head2 ВИКОРИСТАННЯ LIBGUESTFS ЗА ДОПОМОГОЮ ІНШИХ МОВ ПРОГРАМУВАННЯ
 
-Although we don't want to discourage you from using the C API, we will
+Although we don’t want to discourage you from using the C API, we will
 mention here that the same API is also available in other languages.
 
 The API is broadly identical in all supported languages.  This means that
@@ -1079,7 +1076,7 @@ each language.
 Error messages are automatically transformed into exceptions if the language
 supports it.
 
-We don't try to "object orientify" parts of the API in OO languages,
+We don’t try to "object orientify" parts of the API in OO languages,
 although contributors are welcome to write higher level APIs above what we
 provide in their favourite languages if they wish.
 
@@ -1104,11 +1101,11 @@ top of F<csharp/Libguestfs.cs>.
 Experimental GObject bindings (with GObject Introspection support) are
 available.
 
-See L<guestfs-gobject(3)>.
+Див. L<guestfs-gobject(3)>
 
 =item B<Go>
 
-See L<guestfs-golang(3)>.
+Див. L<guestfs-golang(3)>
 
 =item B<Haskell>
 
@@ -1123,7 +1120,7 @@ arguments in Haskell seems to be very complex.
 
 =item *
 
-Events are not bound.
+Події не обмежено.
 
 =item *
 
@@ -1133,11 +1130,11 @@ Functions with the following return types are not bound:
 
 =item *
 
-Any function returning a struct.
+Будь-яка функція повертає структуру.
 
 =item *
 
-Any function returning a list of structs.
+Будь-яка функція повертає список структур.
 
 =item *
 
@@ -1225,7 +1222,7 @@ exist, so it fails.  In earlier versions of guestfish the error message was
 also unintuitive, but we have corrected this since.  Like the Bourne shell,
 we should have used C<guestfish -c command> to run commands.
 
-=item guestfish megabyte modifiers don't work right on all commands
+=item guestfish megabyte modifiers don’t work right on all commands
 
 In recent guestfish you can use C<1M> to mean 1 megabyte (and similarly for
 other modifiers).  What guestfish actually does is to multiply the number
@@ -1245,7 +1242,7 @@ is also a little obscure.
 This could be fixed in the generator by specially marking parameters and
 return values which take bytes or other units.
 
-=item Ambiguity between devices and paths
+=item Двозначність між пристроями і шляхами
 
 There is a subtle ambiguity in the API between a device name
 (eg. F</dev/sdb2>) and a similar pathname.  A file might just happen to be
@@ -1295,14 +1292,30 @@ scrub the swap partition or don't use libguestfs on encrypted devices.
 All high-level libguestfs actions are synchronous.  If you want to use
 libguestfs asynchronously then you must create a thread.
 
-Only use the handle from a single thread.  Either use the handle exclusively
-from one thread, or provide your own mutex so that two threads cannot issue
-calls on the same handle at the same time.  Even apparently innocent
-functions like L</guestfs_get_trace> are I<not> safe to be called from
-multiple threads without a mutex.
+=head3 Потоки у libguestfs E<ge> 1.38
 
-See the graphical program guestfs-browser for one possible architecture for
-multithreaded programs using libvirt and libguestfs.
+In libguestfs E<ge> 1.38, each handle (C<guestfs_h>) contains a lock which
+is acquired automatically when you call a libguestfs function.  The
+practical effect of this is you can call libguestfs functions with the same
+handle from multiple threads without needing to do any locking.
+
+Also in libguestfs E<ge> 1.38, the last error on the handle
+(L</guestfs_last_error>, L</guestfs_last_errno>) is stored in thread-local
+storage, so it is safe to write code like:
+
+ if (guestfs_add_drive_ro (g, drive) == -1)
+   fprintf (stderr, "error was: %s\n", guestfs_last_error (g));
+
+even when other threads may be concurrently using the same handle C<g>.
+
+=head3 Потоки у libguestfs E<lt> 1.38
+
+In libguestfs E<lt> 1.38, you must use the handle only from a single
+thread.  Either use the handle exclusively from one thread, or provide your
+own mutex so that two threads cannot issue calls on the same handle at the
+same time.  Even apparently innocent functions like L</guestfs_get_trace>
+are I<not> safe to be called from multiple threads without a mutex in
+libguestfs E<lt> 1.38.
 
 Use L</guestfs_set_identifier> to make it simpler to identify threads in
 trace output.
@@ -1312,8 +1325,8 @@ trace output.
 Libguestfs needs a supermin appliance, which it finds by looking along an
 internal path.
 
-By default it looks for these in the directory C<$libdir/guestfs>
-(eg. F</usr/local/lib/guestfs> or F</usr/lib64/guestfs>).
+Типово, пошук відбувається у каталозі C<$libdir/guestfs> (наприклад
+F</usr/local/lib/guestfs> або F</usr/lib64/guestfs>).
 
 Use L</guestfs_set_path> or set the environment variable L</LIBGUESTFS_PATH>
 to change the directories that libguestfs will search in.  The value is a
@@ -1322,7 +1335,7 @@ unless the path contains an empty element or C<.>.  For example
 C<LIBGUESTFS_PATH=:/usr/lib/guestfs> would search the current directory and
 then F</usr/lib/guestfs>.
 
-=head2 QEMU WRAPPERS
+=head2 ОБГОРТКИ QEMU
 
 If you want to compile your own qemu, run qemu from a non-standard location,
 or pass extra arguments to qemu, then you can write a shell-script wrapper
@@ -1588,14 +1601,14 @@ Clone the Linux git repository or download the Linux source tarball.
 
 =item 2. Налаштувати збирання ядра
 
-B<Note:> All 'make' commands must have C<ARCH=um> added.
+B<Note:> All ‘make’ commands must have C<ARCH=um> added.
 
  make menuconfig ARCH=um
 
 Make sure any filesystem drivers that you need are compiled into the kernel.
 
 B<Currently, it needs a large amount of extra work to get modules working>.
-It's recommended that you disable module support in the kernel
+It’s recommended that you disable module support in the kernel
 configuration, which will cause everything to be compiled into the image.
 
 =item 3. Зібрати ядро
@@ -1622,7 +1635,7 @@ No NBD, etc.
 
 =item UML only works on ix86 and x86-64
 
-=item UML is experimental
+=item UML є експериментальною можливістю
 
 In particular, support for UML in libguestfs depends on support for UML in
 the upstream kernel.  If UML was ever removed from the upstream Linux
@@ -1640,34 +1653,13 @@ against the libguestfs API.
 
 =head2 ІМЕНУВАННЯ БЛОКОВИХ ПРИСТРОЇВ
 
-In the kernel there is now quite a profusion of schemata for naming block
-devices (in this context, by I<block device> I mean a physical or virtual
-hard drive).  The original Linux IDE driver used names starting with
-F</dev/hd*>.  SCSI devices have historically used a different naming scheme,
-F</dev/sd*>.  When the Linux kernel I<libata> driver became a popular
-replacement for the old IDE driver (particularly for SATA devices) those
-devices also used the F</dev/sd*> scheme.  Additionally we now have virtual
-machines with paravirtualized drivers.  This has created several different
-naming systems, such as F</dev/vd*> for virtio disks and F</dev/xvd*> for
-Xen PV disks.
+Libguestfs defines F</dev/sd*> as the I<standard naming scheme> for devices
+passed to API calls.  So F</dev/sda> means "the first device added by
+L</guestfs_add_drive_opts>", and F</dev/sdb3> means "the third partition on
+the second device".
 
-As discussed above, libguestfs uses a qemu appliance running an embedded
-Linux kernel to access block devices.  We can run a variety of appliances
-based on a variety of Linux kernels.
-
-This causes a problem for libguestfs because many API calls use device or
-partition names.  Working scripts and the recipe (example) scripts that we
-make available over the internet could fail if the naming scheme changes.
-
-Therefore libguestfs defines F</dev/sd*> as the I<standard naming scheme>.
-Internally F</dev/sd*> names are translated, if necessary, to other names as
-required.  For example, under RHEL 5 which uses the F</dev/hd*> scheme, any
-device parameter F</dev/sda2> is translated to F</dev/hda2> transparently.
-
-Note that this I<only> applies to parameters.  The L</guestfs_list_devices>,
-L</guestfs_list_partitions> and similar calls return the true names of the
-devices and partitions as known to the appliance, but see
-L</guestfs_canonical_device_name>.
+Internally device names are sometimes translated, but this should not be
+visible at the API level.
 
 =head3 МІТКИ ДИСКІВ
 
@@ -1683,77 +1675,9 @@ F</dev/sd*>, or using F</dev/disk/guestfs/I<label>>.  Partitions on the disk
 can be addressed using F</dev/disk/guestfs/I<label>I<partnum>>.
 
 Listing devices (L</guestfs_list_devices>) and partitions
-(L</guestfs_list_partitions>) returns the raw block device name.  However
-you can use L</guestfs_list_disk_labels> to map disk labels to raw block
-device and partition names.
-
-=head3 ALGORITHM FOR BLOCK DEVICE NAME TRANSLATION
-
-Usually this translation is transparent.  However in some (very rare)  cases
-you may need to know the exact algorithm.  Such cases include where you use
-L</guestfs_config> to add a mixture of virtio and IDE devices to the
-qemu-based appliance, so have a mixture of F</dev/sd*> and F</dev/vd*>
-devices.
-
-The algorithm is applied only to I<parameters> which are known to be either
-device or partition names.  Return values from functions such as
-L</guestfs_list_devices> are never changed.
-
-=over 4
-
-=item *
-
-Is the string a parameter which is a device or partition name?
-
-=item *
-
-Does the string begin with F</dev/sd>?
-
-=item *
-
-Does the named device exist? If so, we use that device.  However if I<not>
-then we continue with this algorithm.
-
-=item *
-
-Replace initial F</dev/sd> string with F</dev/hd>.
-
-For example, change F</dev/sda2> to F</dev/hda2>.
-
-If that named device exists, use it.  If not, continue.
-
-=item *
-
-Replace initial F</dev/sd> string with F</dev/vd>.
-
-If that named device exists, use it.  If not, return an error.
-
-=back
-
-=head3 PORTABILITY CONCERNS WITH BLOCK DEVICE NAMING
-
-Although the standard naming scheme and automatic translation is useful for
-simple programs and guestfish scripts, for larger programs it is best not to
-rely on this mechanism.
-
-Where possible for maximum future portability programs using libguestfs
-should use these future-proof techniques:
-
-=over 4
-
-=item *
-
-Use L</guestfs_list_devices> or L</guestfs_list_partitions> to list actual
-device names, and then use those names directly.
-
-Since those device names exist by definition, they will never be translated.
-
-=item *
-
-Use higher level ways to identify filesystems, such as LVM names, UUIDs and
-filesystem labels.
-
-=back
+(L</guestfs_list_partitions>) returns the block device names.  However you
+can use L</guestfs_list_disk_labels> to map disk labels to block device and
+partition names.
 
 =head2 НУЛЬОВІ ДИСКИ
 
@@ -1795,7 +1719,7 @@ Performance testing of libguestfs (see L<guestfs-performance(1)>).
 
 =item 3.
 
-If you want to use libguestfs APIs that don't refer to disks, since
+If you want to use libguestfs APIs that don’t refer to disks, since
 libguestfs requires that at least one disk is added, you should add a null
 disk.
 
@@ -1856,7 +1780,7 @@ hence libguestfs) handles both transparently to the user.
 
 =item I<vmdk>
 
-VMDK is VMware's native disk image format.  There are many variations.
+VMDK is VMware’s native disk image format.  There are many variations.
 Modern qemu (hence libguestfs) supports most variations, but you should be
 aware that older versions of qemu had some very bad data-corrupting bugs in
 this area.
@@ -1867,7 +1791,7 @@ extension.
 
 =item I<vdi>
 
-VDI is VirtualBox's native disk image format.  Qemu (hence libguestfs)  has
+VDI is VirtualBox’s native disk image format.  Qemu (hence libguestfs)  has
 generally good support for this.
 
 =item I<vpc>
@@ -1884,7 +1808,7 @@ I<qcow1>), I<cow>, I<bochs>.
 
 =back
 
-=head3 DETECTING THE FORMAT OF A DISK IMAGE
+=head3 ВИЗНАЧЕННЯ ФОРМАТУ ОБРАЗУ ДИСКА
 
 Firstly note there is a security issue with auto-detecting the format of a
 disk image.  It may or may not apply in your use case.  Read
@@ -1893,7 +1817,7 @@ L</CVE-2010-3851> below.
 Libguestfs offers an API to get the format of a disk image
 (L</guestfs_disk_format>, and it is safest to use this.
 
-I<Don't> be tempted to try parsing the text / human-readable output of
+I<Don’t> be tempted to try parsing the text / human-readable output of
 C<qemu-img> since it cannot be parsed reliably and securely.  Also do not
 use the C<file> command since the output of that changes over time.
 
@@ -1945,7 +1869,7 @@ arguments are used).
 
 =item C<GUESTFS_CREATE_NO_ENVIRONMENT>
 
-Don't parse any environment variables (such as C<LIBGUESTFS_DEBUG> etc).
+Don’t parse any environment variables (such as C<LIBGUESTFS_DEBUG> etc).
 
 You can call L</guestfs_parse_environment> or
 L</guestfs_parse_environment_list> afterwards to parse environment
@@ -1957,7 +1881,7 @@ L</guestfs_parse_environment>.
 
 =item C<GUESTFS_CREATE_NO_CLOSE_ON_EXIT>
 
-Don't try to close the handle in an L<atexit(3)> handler if the program
+Don’t try to close the handle in an L<atexit(3)> handler if the program
 exits without explicitly closing the handle.
 
 The default (if this flag is not given) is to install such an atexit
@@ -2062,8 +1986,8 @@ errors into exceptions using code similar to this:
  guestfs_set_error_handler (g, NULL, NULL);
  
  if (guestfs_launch (g) == -1) {
-   /* Examine the error message and print it, throw it,
-      etc. */
+   /* Вивчаємо повідомлення про помилку і виводимо його, надсилаємо його
+      тощо. */
    msg = guestfs_last_error (g);
    errnum = guestfs_last_errno (g);
  
@@ -2185,7 +2109,7 @@ previous error handler by calling L</guestfs_pop_error_handler>.
 Use the following code to temporarily disable errors around a function:
 
  guestfs_push_error_handler (g, NULL, NULL);
- guestfs_mkdir (g, "/foo"); /* We don't care if this fails. */
+ guestfs_mkdir (g, "/foo"); /* Нам все одно, якщо спроба буде невдалою. */
  guestfs_pop_error_handler (g);
 
 =head2 guestfs_pop_error_handler
@@ -2208,7 +2132,7 @@ I<Note this callback must not return>.
 
 Типовим є виклик L<abort(3)>.
 
-You cannot set C<cb> to C<NULL>.  You can't ignore out of memory situations.
+You cannot set C<cb> to C<NULL>.  You can’t ignore out of memory situations.
 
 =head2 guestfs_get_out_of_memory_handler
 
@@ -2257,7 +2181,7 @@ function, such as:
 
  #define GUESTFS_HAVE_DD 1
 
-if L</guestfs_dd> is available.
+якщо доступна L</guestfs_dd>.
 
 Before version 1.5.8, if you needed to test whether a single libguestfs
 function is available at compile time, we recommended using build tools such
@@ -2293,7 +2217,7 @@ well):
    void *dl;
    int has_function;
  
-   /* Test if the function guestfs_dd is really available. */
+   /* Перевіряємо, чи дійсно функція guestfs_dd є доступною. */
    dl = dlopen (NULL, RTLD_LAZY);
    if (!dl) {
      fprintf (stderr, "dlopen: %s\n", dlerror ());
@@ -2347,7 +2271,7 @@ call with no optional arguments specified:
                          GUESTFS_ADD_DRIVE_OPTS_READONLY, 1,
                          -1);
 
-and so forth.  Don't forget the terminating C<-1> otherwise Bad Things will
+and so forth.  Don’t forget the terminating C<-1> otherwise Bad Things will
 happen!
 
 =head2 USING va_list FOR OPTIONAL ARGUMENTS
@@ -2359,7 +2283,7 @@ example function, this is declared:
  int guestfs_add_drive_opts_va (guestfs_h *g, const char *filename,
                                 va_list args);
 
-=head2 CONSTRUCTING OPTIONAL ARGUMENTS
+=head2 ПОБУДОВА ДОДАТКОВИХ АРГУМЕНТІВ
 
 The third variant is useful where you need to construct these calls.  You
 pass in a structure where you fill in the optional fields.  The structure
@@ -2406,7 +2330,7 @@ that are filled in, and bits set in the bitmask.
 
 =back
 
-=head2 OPTIONAL ARGUMENTS IN OTHER LANGUAGES
+=head2 ДОДАТКОВІ АРГУМЕНТИ ІНШИМИ МОВАМИ
 
 In other languages, optional arguments are expressed in the way that is
 natural for that language.  We refer you to the language-specific
@@ -2442,7 +2366,7 @@ same thread.
 Events may contain a payload, usually nothing (void), an array of 64 bit
 unsigned integers, or a message buffer.  Payloads are discussed later on.
 
-=head2 CLASSES OF EVENTS
+=head2 КЛАСИ ПОДІЙ
 
 =over 4
 
@@ -2595,9 +2519,10 @@ If no callback is registered: the event is ignored.
 
 =item GUESTFS_EVENT_LIBVIRT_AUTH (payload type: libvirt URI)
 
-For any API function that opens a libvirt connection, this event may be
-generated to indicate that libvirt demands authentication information.  See
-L</LIBVIRT AUTHENTICATION> below.
+Для будь-якої функції програмного інтерфейсу, яка відкриває з'єднання
+libvirt, цю подію може бути створено для позначення того, що libvirt
+потрібні дані для розпізнавання користувача. Див. L</РОЗПІЗНАВАННЯ ЗА
+ДОПОМОГОЮ LIBVIRT> нижче.
 
 If no callback is registered: C<virConnectAuthPtrDefault> is used (suitable
 for command-line programs only).
@@ -2721,7 +2646,7 @@ interest:
       GUESTFS_EVENT_WARNING | GUESTFS_EVENT_TRACE,
       0, NULL) == -1)
  if (eh == -1) {
-   // handle error in the usual way
+   // обробка помилки у звичний спосіб
  }
 
 The callback can then direct messages to the appropriate place.  In this
@@ -2742,7 +2667,7 @@ example, messages are directed to syslog:
      syslog (priority, "event 0x%lx: %s", event, buf);
  }
 
-=head2 LIBVIRT AUTHENTICATION
+=head2 РОЗПІЗНАВАННЯ ЗА ДОПОМОГОЮ LIBVIRT
 
 Some libguestfs API calls can open libvirt connections.  Currently the only
 ones are L</guestfs_add_domain>; and L</guestfs_launch> if the libvirt
@@ -2788,19 +2713,19 @@ libguestfs sources, called F<libvirt-auth.c>.
    g = guestfs_create ();
    if (!g) exit (EXIT_FAILURE);
  
-   /* Tell libvirt what credentials the program supports. */
+   /* Повідомляємо libvirt, підтримку яких реєстраційних даних передбачено у програмі. */
    r = guestfs_set_libvirt_supported_credentials (g, creds);
    if (r == -1)
      exit (EXIT_FAILURE);
  
-   /* Set up the event handler. */
+   /* Встановлюємо обробник подій. */
    eh = guestfs_set_event_callback (
        g, do_auth,
        GUESTFS_EVENT_LIBVIRT_AUTH, 0, NULL);
    if (eh == -1)
      exit (EXIT_FAILURE);
  
-   /* An example of a call that may ask for credentials. */
+   /* Приклад виклику, який може призвести до запиту щодо реєстраційних даних. */
    r = guestfs_add_domain (
        g, "dom",
        GUESTFS_ADD_DOMAIN_LIBVIRTURI, "qemu:///system",
@@ -2827,16 +2752,16 @@ libguestfs sources, called F<libvirt-auth.c>.
    size_t replylen;
    int r;
  
-   // buf will be the libvirt URI.  buf_len may be ignored.
+   // buf буде адресою libvirt. buf_len можна ігнорувати.
    printf ("Authentication required for libvirt conn '%s'\n",
            buf);
  
-   // Ask libguestfs what credentials libvirt is demanding.
+   // Питаємо libguestfs, які реєстраційні дані потрібні libvirt.
    creds = guestfs_get_libvirt_requested_credentials (g);
    if (creds == NULL)
      exit (EXIT_FAILURE);
  
-   // Now ask the user for answers.
+   // Тепер просимо користувача відповісти на питання.
    for (i = 0; creds[i] != NULL; ++i)
    {
      if (strcmp (creds[i], "authname") == 0 ||
@@ -2848,9 +2773,9 @@ libguestfs sources, called F<libvirt-auth.c>.
          printf ("%s: ", prompt);
        free (prompt);
  
-       // Some code here to ask for the credential.
+       // Тут має бути якийсь код запитів щодо реєстраційних даних.
        // ...
-       // Put the reply in 'reply', length 'replylen' (bytes).
+       // Записуємо відповідь до «reply» зі довжиною «replylen» (у байтах).
  
       r = guestfs_set_libvirt_requested_credential (g, i,
           reply, replylen);
@@ -2898,7 +2823,7 @@ To retrieve the pointer, use:
  void *guestfs_get_private (guestfs_h *g, const char *key);
 
 This function returns C<NULL> if either no data is found associated with
-C<key>, or if the user previously set the C<key>'s C<data> pointer to
+C<key>, or if the user previously set the C<key>’s C<data> pointer to
 C<NULL>.
 
 Libguestfs does not try to look at or interpret the C<data> pointer in any
@@ -2908,7 +2833,7 @@ handle is closed.  If the data must be freed, then the caller must either
 free it before calling L</guestfs_close> or must set up a close callback to
 do it (see L</GUESTFS_EVENT_CLOSE>).
 
-To walk over all entries, use these two functions:
+Для обходу усіх записів скористайтеся цими двома функціями:
 
  void *guestfs_first_private (guestfs_h *g, const char **key_rtn);
 
@@ -2923,7 +2848,7 @@ returned if there are no keys stored in the handle.
 C<guestfs_next_private> returns the next key, pointer pair.  The return
 value of this function is C<NULL> if there are no further entries to return.
 
-Notes about walking over entries:
+Нотатки щодо обходу записів:
 
 =over 4
 
@@ -2988,8 +2913,8 @@ C<foo_>:
       if (strncmp (key, "foo_", strlen ("foo_")) == 0)
         {
           guestfs_set_private (g, key, NULL);
-          /* note that 'key' pointer is now invalid, and so is
-             the internal iterator */
+          /* зауважте, що вказівник 'key' тепер є некоректним, як і
+             внутрішній ітератор */
           goto again;
         }
       data = guestfs_next_private (g, &key);
@@ -3036,14 +2961,14 @@ ordinary C entry points:
        printf ("ready\n");
  }
  
- /* Display all calls to static markers. */
+ /* Показати усі виклики статичних маркерів. */
  probe process("/usr/lib*/libguestfs.so.0")
            .provider("guestfs").mark("*") ? {
        display_time();
        printf ("\t%s %s\n", $$name, $$parms);
  }
  
- /* Display all calls to guestfs_mkfs* functions. */
+ /* Показати усі виклики функцій guestfs_mkfs*. */
  probe process("/usr/lib*/libguestfs.so.0")
            .function("guestfs_mkfs*") ? {
        display_time();
@@ -3071,7 +2996,7 @@ In the first terminal, stap trace output similar to this is shown:
  1318248061071167 (+4233108):   launch_end
  1318248061280324 (+209157):    guestfs_mkfs g=0x1024ab0 fstype=0x46116f device=0x1024e60
 
-=head1 LIBGUESTFS VERSION NUMBERS
+=head1 НУМЕРАЦІЯ ВЕРСІЙ LIBGUESTFS
 
 Since April 2010, libguestfs has started to make separate development and
 stable releases, along with corresponding branches in our git repository.
@@ -3102,7 +3027,7 @@ Our criteria for backporting changes are:
 
 =item *
 
-Documentation changes which don't affect any code are backported unless the
+Documentation changes which don’t affect any code are backported unless the
 documentation refers to a future feature which is not in stable.
 
 =item *
@@ -3118,7 +3043,7 @@ far out of step, allowing us to backport future fixes more easily.
 
 =item *
 
-We I<don't> backport new features, new APIs, new tools etc, except in one
+We I<don’t> backport new features, new APIs, new tools etc, except in one
 exceptional case: the new feature is required in order to implement an
 important bug fix.
 
@@ -3219,7 +3144,7 @@ by the maximum size of an LV.
 For the hugest disk image files, we recommend using XFS on the host for
 storage.
 
-=head2 MAXIMUM SIZE OF A PARTITION
+=head2 МАКСИМАЛЬНИЙ РОЗМІР РОЗДІЛУ
 
 The MBR (ie. classic MS-DOS) partitioning scheme uses 32 bit sector
 numbers.  Assuming a 512 byte sector size, this means that MBR cannot
@@ -3229,7 +3154,7 @@ It is recommended that you use GPT partitions on disks which are larger than
 this size.  GPT uses 64 bit sector numbers and so can address partitions
 which are theoretically larger than the largest disk we could support.
 
-=head2 MAXIMUM SIZE OF A FILESYSTEM, FILES, DIRECTORIES
+=head2 МАКСИМАЛЬНИЙ РОЗМІР ФАЙЛОВОЇ СИСТЕМИ, ФАЙЛІВ, КАТАЛОГІВ
 
 This depends on the filesystem type.  libguestfs itself does not impose any
 known limit.  Consult Wikipedia or the filesystem documentation to find out
@@ -3293,7 +3218,7 @@ Set the default hypervisor (usually qemu) binary that libguestfs uses.  If
 not set, then the qemu which was found at compile time by the configure
 script is used.
 
-See also L</QEMU WRAPPERS> above.
+Див. також L</ОБГОРТКИ QEMU> вище.
 
 =item LIBGUESTFS_MEMSIZE
 
@@ -3308,7 +3233,7 @@ the discussion of paths in section L</PATH> above.
 
 =item LIBGUESTFS_QEMU
 
-This is the old way to set C<LIBGUESTFS_HV>.
+Це застарілий спосіб встановлення C<LIBGUESTFS_HV>.
 
 =item LIBGUESTFS_TMPDIR
 
@@ -3356,7 +3281,7 @@ non-essential runtime files.
 If it is set, then is used to store temporary sockets.  Otherwise, F</tmp>
 is used.
 
-See also L</get-sockdir>,
+Див. також L</get-sockdir>,
 L<http://www.freedesktop.org/wiki/Specifications/basedir-spec/>.
 
 =back
@@ -3371,14 +3296,14 @@ L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
 L<guestfs-ruby(3)>.
 
 Tools: L<guestfish(1)>, L<guestmount(1)>, L<virt-alignment-scan(1)>,
-L<virt-builder(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
-L<virt-customize(1)>, L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>,
-L<virt-filesystems(1)>, L<virt-format(1)>, L<virt-inspector(1)>,
-L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-log(1)>,
-L<virt-ls(1)>, L<virt-make-fs(1)>, L<virt-p2v(1)>, L<virt-rescue(1)>,
-L<virt-resize(1)>, L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tail(1)>,
-L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>, L<virt-v2v(1)>,
-L<virt-win-reg(1)>.
+L<virt-builder(1)>, L<virt-builder-repository(1)>, L<virt-cat(1)>,
+L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-customize(1)>,
+L<virt-df(1)>, L<virt-diff(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
+L<virt-format(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
+L<virt-list-partitions(1)>, L<virt-log(1)>, L<virt-ls(1)>,
+L<virt-make-fs(1)>, L<virt-p2v(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
+L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tail(1)>, L<virt-tar(1)>,
+L<virt-tar-in(1)>, L<virt-tar-out(1)>, L<virt-v2v(1)>, L<virt-win-reg(1)>.
 
 Other libguestfs topics: L<guestfs-building(1)>, L<guestfs-faq(1)>,
 L<guestfs-hacking(1)>, L<guestfs-internals(1)>, L<guestfs-performance(1)>,
@@ -3399,5 +3324,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

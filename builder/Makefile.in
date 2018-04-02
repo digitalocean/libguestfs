@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-builder tool
-# Copyright (C) 2013-2017 Red Hat Inc.
+# Copyright (C) 2013-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -145,24 +145,27 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = $(am__EXEEXT_1) virt-index-validate$(EXEEXT)
-@HAVE_OCAML_TRUE@am__append_1 = virt-builder
+@HAVE_OCAML_TRUE@am__append_1 = virt-builder virt-builder-repository
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_2 = -package gettext-stub
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = -package oUnit
 
 # Manual pages and HTML files for the website.
-@HAVE_OCAML_TRUE@am__append_4 = virt-builder.1
-@HAVE_OCAML_TRUE@am__append_5 = $(top_builddir)/website/virt-builder.1.html
+@HAVE_OCAML_TRUE@am__append_4 = virt-builder.1 \
+@HAVE_OCAML_TRUE@	virt-builder-repository.1
+@HAVE_OCAML_TRUE@am__append_5 =  \
+@HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-builder.1.html \
+@HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-builder-repository.1.html
 @HAVE_OCAML_TRUE@am__append_6 = *.qcow2 *.xz $(console_test_scripts) \
 @HAVE_OCAML_TRUE@	console-*.img console-*.out
-@HAVE_OCAML_TRUE@TESTS = test-virt-builder-docs.sh \
+@HAVE_OCAML_TRUE@TESTS = test-docs.sh test-virt-builder-cacheall.sh \
 @HAVE_OCAML_TRUE@	test-virt-builder-list.sh \
 @HAVE_OCAML_TRUE@	test-virt-index-validate.sh $(SLOW_TESTS) \
 @HAVE_OCAML_TRUE@	test-virt-builder-list-simplestreams.sh \
 @HAVE_OCAML_TRUE@	$(am__append_7) $(am__EXEEXT_2)
 @HAVE_OCAML_TRUE@check_PROGRAMS = $(am__EXEEXT_2)
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_7 = test-virt-builder.sh
-@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_8 = yajl_tests
-@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_9 = yajl_tests
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_8 = yajl_tests index_parser_tests
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__append_9 = yajl_tests index_parser_tests
 subdir = builder
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -195,10 +198,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
 	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
 	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
-	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
-	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
-	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/ftell.m4 \
+	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
+	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
 	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
 	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
@@ -295,44 +298,44 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/sys_wait_h.m4 $(top_srcdir)/m4/tempname.m4 \
 	$(top_srcdir)/m4/thread.m4 $(top_srcdir)/m4/threadlib.m4 \
 	$(top_srcdir)/m4/time_h.m4 $(top_srcdir)/m4/timespec.m4 \
-	$(top_srcdir)/m4/ttyname_r.m4 $(top_srcdir)/m4/ungetc.m4 \
-	$(top_srcdir)/m4/unistd-safer.m4 $(top_srcdir)/m4/unistd_h.m4 \
-	$(top_srcdir)/m4/unlink.m4 $(top_srcdir)/m4/unlinkat.m4 \
-	$(top_srcdir)/m4/unlinkdir.m4 $(top_srcdir)/m4/usleep.m4 \
-	$(top_srcdir)/m4/utime.m4 $(top_srcdir)/m4/utime_h.m4 \
-	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
-	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
-	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/vsnprintf.m4 \
-	$(top_srcdir)/m4/wait-process.m4 $(top_srcdir)/m4/waitpid.m4 \
-	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
-	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
-	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
-	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/m4/guestfs_progs.m4 \
-	$(top_srcdir)/m4/guestfs_c.m4 \
-	$(top_srcdir)/m4/guestfs_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_fuse.m4 \
-	$(top_srcdir)/m4/guestfs_daemon.m4 \
-	$(top_srcdir)/m4/guestfs_appliance.m4 \
-	$(top_srcdir)/m4/guestfs_qemu.m4 \
-	$(top_srcdir)/m4/guestfs_misc_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_ocaml.m4 \
-	$(top_srcdir)/m4/guestfs_perl.m4 \
-	$(top_srcdir)/m4/guestfs_python.m4 \
-	$(top_srcdir)/m4/guestfs_ruby.m4 \
-	$(top_srcdir)/m4/guestfs_java.m4 \
-	$(top_srcdir)/m4/guestfs_haskell.m4 \
-	$(top_srcdir)/m4/guestfs_php.m4 \
-	$(top_srcdir)/m4/guestfs_erlang.m4 \
-	$(top_srcdir)/m4/guestfs_lua.m4 \
-	$(top_srcdir)/m4/guestfs_golang.m4 \
-	$(top_srcdir)/m4/guestfs_gobject.m4 \
-	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
-	$(top_srcdir)/m4/guestfs_misc.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/tls.m4 $(top_srcdir)/m4/ttyname_r.m4 \
+	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
+	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
+	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
+	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utime.m4 \
+	$(top_srcdir)/m4/utime_h.m4 $(top_srcdir)/m4/utimecmp.m4 \
+	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
+	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
+	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
+	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
+	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
+	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
+	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
+	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
+	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs-progs.m4 \
+	$(top_srcdir)/m4/guestfs-c.m4 \
+	$(top_srcdir)/m4/guestfs-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-fuse.m4 \
+	$(top_srcdir)/m4/guestfs-daemon.m4 \
+	$(top_srcdir)/m4/guestfs-appliance.m4 \
+	$(top_srcdir)/m4/guestfs-qemu.m4 \
+	$(top_srcdir)/m4/guestfs-misc-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-ocaml.m4 \
+	$(top_srcdir)/m4/guestfs-perl.m4 \
+	$(top_srcdir)/m4/guestfs-python.m4 \
+	$(top_srcdir)/m4/guestfs-ruby.m4 \
+	$(top_srcdir)/m4/guestfs-java.m4 \
+	$(top_srcdir)/m4/guestfs-haskell.m4 \
+	$(top_srcdir)/m4/guestfs-php.m4 \
+	$(top_srcdir)/m4/guestfs-erlang.m4 \
+	$(top_srcdir)/m4/guestfs-lua.m4 \
+	$(top_srcdir)/m4/guestfs-golang.m4 \
+	$(top_srcdir)/m4/guestfs-gobject.m4 \
+	$(top_srcdir)/m4/guestfs-bash-completion.m4 \
+	$(top_srcdir)/m4/guestfs-misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -340,11 +343,23 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = libguestfs.conf opensuse.conf
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_OCAML_TRUE@am__EXEEXT_1 = virt-builder$(EXEEXT)
+@HAVE_OCAML_TRUE@am__EXEEXT_1 = virt-builder$(EXEEXT) \
+@HAVE_OCAML_TRUE@	virt-builder-repository$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
 	"$(DESTDIR)$(repoconfdir)"
-@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_2 = yajl_tests$(EXEEXT)
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_2 = yajl_tests$(EXEEXT) \
+@HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@	index_parser_tests$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
+am__index_parser_tests_SOURCES_DIST = index-scan.c index-struct.c \
+	index-parser-c.c index-parse.c yajl-c.c
+@HAVE_OCAML_TRUE@am_index_parser_tests_OBJECTS =  \
+@HAVE_OCAML_TRUE@	index_parser_tests-index-scan.$(OBJEXT) \
+@HAVE_OCAML_TRUE@	index_parser_tests-index-struct.$(OBJEXT) \
+@HAVE_OCAML_TRUE@	index_parser_tests-index-parser-c.$(OBJEXT) \
+@HAVE_OCAML_TRUE@	index_parser_tests-index-parse.$(OBJEXT) \
+@HAVE_OCAML_TRUE@	index_parser_tests-yajl-c.$(OBJEXT)
+index_parser_tests_OBJECTS = $(am_index_parser_tests_OBJECTS)
+index_parser_tests_LDADD = $(LDADD)
 am__virt_builder_SOURCES_DIST = index-scan.c index-struct.c \
 	index-parse.c index-parser-c.c pxzcat-c.c setlocale-c.c \
 	yajl-c.c
@@ -358,6 +373,18 @@ am__objects_1 = virt_builder-index-scan.$(OBJEXT) \
 @HAVE_OCAML_TRUE@am_virt_builder_OBJECTS = $(am__objects_1)
 virt_builder_OBJECTS = $(am_virt_builder_OBJECTS)
 virt_builder_LDADD = $(LDADD)
+am__virt_builder_repository_SOURCES_DIST = index-scan.c index-struct.c \
+	index-parse.c index-parser-c.c yajl-c.c
+am__objects_2 = virt_builder_repository-index-scan.$(OBJEXT) \
+	virt_builder_repository-index-struct.$(OBJEXT) \
+	virt_builder_repository-index-parse.$(OBJEXT) \
+	virt_builder_repository-index-parser-c.$(OBJEXT) \
+	virt_builder_repository-yajl-c.$(OBJEXT)
+@HAVE_OCAML_TRUE@am_virt_builder_repository_OBJECTS =  \
+@HAVE_OCAML_TRUE@	$(am__objects_2)
+virt_builder_repository_OBJECTS =  \
+	$(am_virt_builder_repository_OBJECTS)
+virt_builder_repository_LDADD = $(LDADD)
 am_virt_index_validate_OBJECTS =  \
 	virt_index_validate-index-parse.$(OBJEXT) \
 	virt_index_validate-index-scan.$(OBJEXT) \
@@ -430,9 +457,12 @@ AM_V_YACC = $(am__v_YACC_@AM_V@)
 am__v_YACC_ = $(am__v_YACC_@AM_DEFAULT_V@)
 am__v_YACC_0 = @echo "  YACC    " $@;
 am__v_YACC_1 = 
-SOURCES = $(virt_builder_SOURCES) $(virt_index_validate_SOURCES) \
-	$(yajl_tests_SOURCES)
-DIST_SOURCES = $(am__virt_builder_SOURCES_DIST) \
+SOURCES = $(index_parser_tests_SOURCES) $(virt_builder_SOURCES) \
+	$(virt_builder_repository_SOURCES) \
+	$(virt_index_validate_SOURCES) $(yajl_tests_SOURCES)
+DIST_SOURCES = $(am__index_parser_tests_SOURCES_DIST) \
+	$(am__virt_builder_SOURCES_DIST) \
+	$(am__virt_builder_repository_SOURCES_DIST) \
 	$(virt_index_validate_SOURCES) $(am__yajl_tests_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -701,6 +731,7 @@ BMPTOPNM = @BMPTOPNM@
 BRANCH_NUMBER = @BRANCH_NUMBER@
 BRANCH_TYPE = @BRANCH_TYPE@
 BYTESWAP_H = @BYTESWAP_H@
+CAMLRUN = @CAMLRUN@
 CAP_LIBS = @CAP_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -1093,6 +1124,7 @@ GREP = @GREP@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GTK_VERSION = @GTK_VERSION@
+GUESTFS_DEFAULT_PATH = @GUESTFS_DEFAULT_PATH@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -1186,6 +1218,7 @@ HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
 HAVE_ISWCNTRL = @HAVE_ISWCNTRL@
+HAVE_LANGINFO_ALTMON = @HAVE_LANGINFO_ALTMON@
 HAVE_LANGINFO_CODESET = @HAVE_LANGINFO_CODESET@
 HAVE_LANGINFO_ERA = @HAVE_LANGINFO_ERA@
 HAVE_LANGINFO_H = @HAVE_LANGINFO_H@
@@ -1360,6 +1393,7 @@ HAVE__BOOL = @HAVE__BOOL@
 HAVE__EXIT = @HAVE__EXIT@
 HIVEX_CFLAGS = @HIVEX_CFLAGS@
 HIVEX_LIBS = @HIVEX_LIBS@
+HIVEX_OPEN_UNSAFE_FLAG = @HIVEX_OPEN_UNSAFE_FLAG@
 HOSTENT_LIB = @HOSTENT_LIB@
 HOST_CPU = @HOST_CPU@
 HOST_CPU_C_ABI = @HOST_CPU_C_ABI@
@@ -1533,6 +1567,8 @@ NEXT_WCHAR_H = @NEXT_WCHAR_H@
 NEXT_WCTYPE_H = @NEXT_WCTYPE_H@
 NM = @NM@
 NMEDIT = @NMEDIT@
+NO_SNV_CFLAGS = @NO_SNV_CFLAGS@
+NO_UM_CFLAGS = @NO_UM_CFLAGS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 OCAMLBEST = @OCAMLBEST@
@@ -1540,6 +1576,8 @@ OCAMLBUILD = @OCAMLBUILD@
 OCAMLC = @OCAMLC@
 OCAMLCDOTOPT = @OCAMLCDOTOPT@
 OCAMLDEP = @OCAMLDEP@
+OCAMLDEP_ALL = @OCAMLDEP_ALL@
+OCAMLDEP_ONE_LINE = @OCAMLDEP_ONE_LINE@
 OCAMLDOC = @OCAMLDOC@
 OCAMLFIND = @OCAMLFIND@
 OCAMLLIB = @OCAMLLIB@
@@ -1551,9 +1589,9 @@ OCAMLVERSION = @OCAMLVERSION@
 OCAML_BYTES_COMPAT_CMO = @OCAML_BYTES_COMPAT_CMO@
 OCAML_BYTES_COMPAT_ML = @OCAML_BYTES_COMPAT_ML@
 OCAML_FLAGS = @OCAML_FLAGS@
-OCAML_GENERATOR_BYTES_COMPAT_CMO = @OCAML_GENERATOR_BYTES_COMPAT_CMO@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
+OCAML_PKG_hivex = @OCAML_PKG_hivex@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
 OCAML_PKG_oUnit = @OCAML_PKG_oUnit@
 OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
@@ -1611,6 +1649,7 @@ REPLACE_DPRINTF = @REPLACE_DPRINTF@
 REPLACE_DUP = @REPLACE_DUP@
 REPLACE_DUP2 = @REPLACE_DUP2@
 REPLACE_DUPLOCALE = @REPLACE_DUPLOCALE@
+REPLACE_FACCESSAT = @REPLACE_FACCESSAT@
 REPLACE_FCHOWNAT = @REPLACE_FCHOWNAT@
 REPLACE_FCLOSE = @REPLACE_FCLOSE@
 REPLACE_FCNTL = @REPLACE_FCNTL@
@@ -1818,6 +1857,8 @@ XZCAT = @XZCAT@
 YACC = @YACC@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
+YARA_CFLAGS = @YARA_CFLAGS@
+YARA_LIBS = @YARA_LIBS@
 YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
 ZIP = @ZIP@
@@ -1912,6 +1953,11 @@ CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
 
 # Files that should be universally removed by 'make distclean'.
 DISTCLEANFILES = .depend stamp-*
+
+# Special suffixes used by OCaml.
+
+# Special suffixes used by PO files.
+SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo
 LOG_DRIVER = env $(SHELL) $(top_srcdir)/build-aux/guestfs-test-driver
 
 # Rules for building OCaml objects.
@@ -1948,6 +1994,9 @@ guestfs_am_v_jar_0 = @echo "  JAR     " $@;
 AM_YFLAGS = -d
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
+	$(REPOSITORY_SOURCES_ML) \
+	$(REPOSITORY_SOURCES_MLI) \
+	index_parser_tests.ml \
 	libguestfs.gpg \
 	opensuse.gpg \
 	test-console.sh \
@@ -1955,10 +2004,12 @@ EXTRA_DIST = \
 	test-simplestreams/streams/v1/index.json \
 	test-simplestreams/streams/v1/net.cirros-cloud_released_download.json \
 	test-virt-builder.sh \
-	test-virt-builder-docs.sh \
+	test-docs.sh \
+	test-virt-builder-cacheall.sh \
 	test-virt-builder-list.sh \
 	test-virt-builder-list-simplestreams.sh \
 	test-virt-builder-planner.sh \
+	test-virt-builder-repository.sh \
 	test-virt-index-validate.sh \
 	test-virt-index-validate-bad-1 \
 	test-virt-index-validate-good-1 \
@@ -1966,10 +2017,12 @@ EXTRA_DIST = \
 	test-virt-index-validate-good-3 \
 	test-virt-index-validate-good-4 \
 	virt-builder.pod \
+	virt-builder-repository.pod \
 	virt-index-validate.pod \
 	yajl_tests.ml
 
 SOURCES_MLI = \
+	builder.mli \
 	cache.mli \
 	cmdline.mli \
 	downloader.mli \
@@ -1978,20 +2031,27 @@ SOURCES_MLI = \
 	ini_reader.mli \
 	languages.mli \
 	list_entries.mli \
+	osinfo.mli \
+	osinfo_config.mli \
+	paths.mli \
 	pxzcat.mli \
+	repository_main.mli \
 	setlocale.mli \
 	sigchecker.mli \
 	simplestreams_parser.mli \
 	sources.mli \
+	utils.mli \
 	yajl.mli
 
 SOURCES_ML = \
+	yajl.ml \
 	utils.ml \
+	osinfo_config.ml \
+	osinfo.ml \
 	pxzcat.ml \
 	setlocale.ml \
 	index.ml \
 	ini_reader.ml \
-	yajl.ml \
 	paths.ml \
 	languages.ml \
 	cache.ml \
@@ -2011,6 +2071,38 @@ SOURCES_C = \
 	index-parser-c.c \
 	pxzcat-c.c \
 	setlocale-c.c \
+	yajl-c.c
+
+REPOSITORY_SOURCES_ML = \
+	yajl.ml \
+	utils.ml \
+	index.ml \
+	cache.ml \
+	downloader.ml \
+	sigchecker.ml \
+	ini_reader.ml \
+	index_parser.ml \
+	paths.ml \
+	sources.ml \
+	osinfo_config.ml \
+	osinfo.ml \
+	repository_main.ml
+
+REPOSITORY_SOURCES_MLI = \
+	cache.mli \
+	downloader.mli \
+	index.mli \
+	index_parser.mli \
+	ini_reader.mli \
+	sigchecker.mli \
+	sources.mli \
+	yajl.mli
+
+REPOSITORY_SOURCES_C = \
+	index-scan.c \
+	index-struct.c \
+	index-parse.c \
+	index-parser-c.c \
 	yajl-c.c
 
 man_MANS = $(am__append_4) virt-index-validate.1
@@ -2037,16 +2129,40 @@ noinst_DATA = $(am__append_5) \
 
 @HAVE_OCAML_TRUE@BOBJECTS = $(SOURCES_ML:.ml=.cmo)
 @HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)
+@HAVE_OCAML_TRUE@virt_builder_repository_SOURCES = $(REPOSITORY_SOURCES_C)
+@HAVE_OCAML_TRUE@virt_builder_repository_CPPFLAGS = \
+@HAVE_OCAML_TRUE@	-I. \
+@HAVE_OCAML_TRUE@	-I$(top_builddir) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
+@HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib
+
+@HAVE_OCAML_TRUE@virt_builder_repository_CFLAGS = \
+@HAVE_OCAML_TRUE@	-pthread \
+@HAVE_OCAML_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+@HAVE_OCAML_TRUE@	-Wno-unused-macros \
+@HAVE_OCAML_TRUE@	$(LIBTINFO_CFLAGS) \
+@HAVE_OCAML_TRUE@	$(LIBXML2_CFLAGS) \
+@HAVE_OCAML_TRUE@	$(YAJL_CFLAGS)
+
+@HAVE_OCAML_TRUE@REPOSITORY_BOBJECTS = $(REPOSITORY_SOURCES_ML:.ml=.cmo)
+@HAVE_OCAML_TRUE@REPOSITORY_XOBJECTS = $(REPOSITORY_BOBJECTS:.cmo=.cmx)
 
 # -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
 @HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/common/utils/.libs -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/common/mlxml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/gnulib/lib/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
-@HAVE_OCAML_TRUE@	$(top_builddir)/mllib -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/common/mlstdutils -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/common/mlutils -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/common/mlgettext -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/common/mlpcre -I \
+@HAVE_OCAML_TRUE@	$(top_builddir)/common/mltools -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/customize $(am__append_2)
 @HAVE_OCAML_TRUE@OCAMLPACKAGES_TESTS = $(am__append_3)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
@@ -2063,10 +2179,26 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@OBJECTS = $(BOBJECTS)
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@OBJECTS = $(XOBJECTS)
-@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) customize.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@REPOSITORY_OBJECTS = $(REPOSITORY_BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@REPOSITORY_OBJECTS = $(REPOSITORY_XOBJECTS)
+@HAVE_OCAML_TRUE@OCAMLLINKFLAGS = \
+@HAVE_OCAML_TRUE@	mlgettext.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	mlpcre.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	mlxml.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	mlstdutils.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	mlguestfs.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	mlcutils.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	mltools.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	customize.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	$(LINK_CUSTOM_OCAMLC_ONLY)
+
 @HAVE_OCAML_TRUE@virt_builder_DEPENDENCIES = \
 @HAVE_OCAML_TRUE@	$(OBJECTS) \
-@HAVE_OCAML_TRUE@	../mllib/mllib.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../common/mlpcre/mlpcre.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../common/mlgettext/mlgettext.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../common/mlstdutils/mlstdutils.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../common/mlutils/mlcutils.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../common/mltools/mltools.$(MLARCHIVE) \
 @HAVE_OCAML_TRUE@	../customize/customize.$(MLARCHIVE) \
 @HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh
 
@@ -2074,6 +2206,17 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 @HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
 @HAVE_OCAML_TRUE@	  $(OBJECTS) -o $@
+
+@HAVE_OCAML_TRUE@virt_builder_repository_DEPENDENCIES = \
+@HAVE_OCAML_TRUE@	$(REPOSITORY_OBJECTS) \
+@HAVE_OCAML_TRUE@	../common/mltools/mltools.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../common/mlxml/mlxml.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh
+
+@HAVE_OCAML_TRUE@virt_builder_repository_LINK = \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
+@HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
+@HAVE_OCAML_TRUE@	  $(REPOSITORY_OBJECTS) -o $@
 
 
 # Tests.
@@ -2090,13 +2233,38 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@	yajl_tests.cmo
 
 @HAVE_OCAML_TRUE@yajl_tests_XOBJECTS = $(yajl_tests_BOBJECTS:.cmo=.cmx)
+@HAVE_OCAML_TRUE@index_parser_tests_SOURCES = \
+@HAVE_OCAML_TRUE@	index-scan.c \
+@HAVE_OCAML_TRUE@	index-struct.c \
+@HAVE_OCAML_TRUE@	index-parser-c.c \
+@HAVE_OCAML_TRUE@	index-parse.c \
+@HAVE_OCAML_TRUE@	yajl-c.c
+
+@HAVE_OCAML_TRUE@index_parser_tests_CPPFLAGS = $(virt_builder_CPPFLAGS)
+@HAVE_OCAML_TRUE@index_parser_tests_BOBJECTS = \
+@HAVE_OCAML_TRUE@	yajl.cmo \
+@HAVE_OCAML_TRUE@	utils.cmo \
+@HAVE_OCAML_TRUE@	index.cmo \
+@HAVE_OCAML_TRUE@	cache.cmo \
+@HAVE_OCAML_TRUE@	downloader.cmo \
+@HAVE_OCAML_TRUE@	sigchecker.cmo \
+@HAVE_OCAML_TRUE@	ini_reader.cmo \
+@HAVE_OCAML_TRUE@	index_parser.cmo \
+@HAVE_OCAML_TRUE@	index_parser_tests.cmo
+
+@HAVE_OCAML_TRUE@index_parser_tests_XOBJECTS = $(index_parser_tests_BOBJECTS:.cmo=.cmx)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@yajl_tests_THEOBJECTS = $(yajl_tests_BOBJECTS)
 
 # Can't call the following as <test>_OBJECTS because automake gets confused.
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@yajl_tests_THEOBJECTS = $(yajl_tests_XOBJECTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@index_parser_tests_THEOBJECTS = $(index_parser_tests_BOBJECTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@index_parser_tests_THEOBJECTS = $(index_parser_tests_XOBJECTS)
 @HAVE_OCAML_TRUE@yajl_tests_DEPENDENCIES = \
 @HAVE_OCAML_TRUE@	$(yajl_tests_THEOBJECTS) \
-@HAVE_OCAML_TRUE@	../mllib/mllib.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../common/mlpcre/mlpcre.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../common/mlstdutils/mlstdutils.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../common/mlutils/mlcutils.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	../common/mltools/mltools.$(MLARCHIVE) \
 @HAVE_OCAML_TRUE@	../customize/customize.$(MLARCHIVE) \
 @HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh
 
@@ -2105,11 +2273,22 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) $(OCAMLLINKFLAGS) \
 @HAVE_OCAML_TRUE@	  $(yajl_tests_THEOBJECTS) -o $@
 
+@HAVE_OCAML_TRUE@index_parser_tests_DEPENDENCIES = \
+@HAVE_OCAML_TRUE@	$(index_parser_tests_THEOBJECTS) \
+@HAVE_OCAML_TRUE@	../common/mltools/mltools.$(MLARCHIVE) \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh
+
+@HAVE_OCAML_TRUE@index_parser_tests_LINK = \
+@HAVE_OCAML_TRUE@	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
+@HAVE_OCAML_TRUE@	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLPACKAGES_TESTS) $(OCAMLLINKFLAGS) \
+@HAVE_OCAML_TRUE@	  $(index_parser_tests_THEOBJECTS) -o $@
+
 
 # Slow tests.
 @HAVE_OCAML_TRUE@SLOW_TESTS = \
 @HAVE_OCAML_TRUE@	$(console_test_scripts) \
-@HAVE_OCAML_TRUE@	test-virt-builder-planner.sh
+@HAVE_OCAML_TRUE@	test-virt-builder-planner.sh \
+@HAVE_OCAML_TRUE@	test-virt-builder-repository.sh
 
 
 # Test that the supplied guests boot with a serial console.
@@ -2163,7 +2342,7 @@ all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cmi .cmo .cmx .l .lo .log .ml .mli .o .obj .test .test$(EXEEXT) .trs .y
+.SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo .c .l .lo .log .o .obj .test .test$(EXEEXT) .trs .y
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -2257,9 +2436,17 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+index_parser_tests$(EXEEXT): $(index_parser_tests_OBJECTS) $(index_parser_tests_DEPENDENCIES) $(EXTRA_index_parser_tests_DEPENDENCIES) 
+	@rm -f index_parser_tests$(EXEEXT)
+	$(AM_V_GEN)$(index_parser_tests_LINK) $(index_parser_tests_OBJECTS) $(index_parser_tests_LDADD) $(LIBS)
+
 virt-builder$(EXEEXT): $(virt_builder_OBJECTS) $(virt_builder_DEPENDENCIES) $(EXTRA_virt_builder_DEPENDENCIES) 
 	@rm -f virt-builder$(EXEEXT)
 	$(AM_V_GEN)$(virt_builder_LINK) $(virt_builder_OBJECTS) $(virt_builder_LDADD) $(LIBS)
+
+virt-builder-repository$(EXEEXT): $(virt_builder_repository_OBJECTS) $(virt_builder_repository_DEPENDENCIES) $(EXTRA_virt_builder_repository_DEPENDENCIES) 
+	@rm -f virt-builder-repository$(EXEEXT)
+	$(AM_V_GEN)$(virt_builder_repository_LINK) $(virt_builder_repository_OBJECTS) $(virt_builder_repository_LDADD) $(LIBS)
 index-parse.h: index-parse.c
 	@if test ! -f $@; then rm -f index-parse.c; else :; fi
 	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) index-parse.c; else :; fi
@@ -2278,6 +2465,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/index_parser_tests-index-parse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/index_parser_tests-index-parser-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/index_parser_tests-index-scan.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/index_parser_tests-index-struct.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/index_parser_tests-yajl-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-index-parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-index-parser-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-index-scan.Po@am__quote@
@@ -2285,6 +2477,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-pxzcat-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-setlocale-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder-yajl-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder_repository-index-parse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder_repository-index-parser-c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder_repository-index-scan.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder_repository-index-struct.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_builder_repository-yajl-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-scan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_index_validate-index-struct.Po@am__quote@
@@ -2314,6 +2511,76 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+index_parser_tests-index-scan.o: index-scan.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT index_parser_tests-index-scan.o -MD -MP -MF $(DEPDIR)/index_parser_tests-index-scan.Tpo -c -o index_parser_tests-index-scan.o `test -f 'index-scan.c' || echo '$(srcdir)/'`index-scan.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/index_parser_tests-index-scan.Tpo $(DEPDIR)/index_parser_tests-index-scan.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-scan.c' object='index_parser_tests-index-scan.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o index_parser_tests-index-scan.o `test -f 'index-scan.c' || echo '$(srcdir)/'`index-scan.c
+
+index_parser_tests-index-scan.obj: index-scan.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT index_parser_tests-index-scan.obj -MD -MP -MF $(DEPDIR)/index_parser_tests-index-scan.Tpo -c -o index_parser_tests-index-scan.obj `if test -f 'index-scan.c'; then $(CYGPATH_W) 'index-scan.c'; else $(CYGPATH_W) '$(srcdir)/index-scan.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/index_parser_tests-index-scan.Tpo $(DEPDIR)/index_parser_tests-index-scan.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-scan.c' object='index_parser_tests-index-scan.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o index_parser_tests-index-scan.obj `if test -f 'index-scan.c'; then $(CYGPATH_W) 'index-scan.c'; else $(CYGPATH_W) '$(srcdir)/index-scan.c'; fi`
+
+index_parser_tests-index-struct.o: index-struct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT index_parser_tests-index-struct.o -MD -MP -MF $(DEPDIR)/index_parser_tests-index-struct.Tpo -c -o index_parser_tests-index-struct.o `test -f 'index-struct.c' || echo '$(srcdir)/'`index-struct.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/index_parser_tests-index-struct.Tpo $(DEPDIR)/index_parser_tests-index-struct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-struct.c' object='index_parser_tests-index-struct.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o index_parser_tests-index-struct.o `test -f 'index-struct.c' || echo '$(srcdir)/'`index-struct.c
+
+index_parser_tests-index-struct.obj: index-struct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT index_parser_tests-index-struct.obj -MD -MP -MF $(DEPDIR)/index_parser_tests-index-struct.Tpo -c -o index_parser_tests-index-struct.obj `if test -f 'index-struct.c'; then $(CYGPATH_W) 'index-struct.c'; else $(CYGPATH_W) '$(srcdir)/index-struct.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/index_parser_tests-index-struct.Tpo $(DEPDIR)/index_parser_tests-index-struct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-struct.c' object='index_parser_tests-index-struct.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o index_parser_tests-index-struct.obj `if test -f 'index-struct.c'; then $(CYGPATH_W) 'index-struct.c'; else $(CYGPATH_W) '$(srcdir)/index-struct.c'; fi`
+
+index_parser_tests-index-parser-c.o: index-parser-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT index_parser_tests-index-parser-c.o -MD -MP -MF $(DEPDIR)/index_parser_tests-index-parser-c.Tpo -c -o index_parser_tests-index-parser-c.o `test -f 'index-parser-c.c' || echo '$(srcdir)/'`index-parser-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/index_parser_tests-index-parser-c.Tpo $(DEPDIR)/index_parser_tests-index-parser-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-parser-c.c' object='index_parser_tests-index-parser-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o index_parser_tests-index-parser-c.o `test -f 'index-parser-c.c' || echo '$(srcdir)/'`index-parser-c.c
+
+index_parser_tests-index-parser-c.obj: index-parser-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT index_parser_tests-index-parser-c.obj -MD -MP -MF $(DEPDIR)/index_parser_tests-index-parser-c.Tpo -c -o index_parser_tests-index-parser-c.obj `if test -f 'index-parser-c.c'; then $(CYGPATH_W) 'index-parser-c.c'; else $(CYGPATH_W) '$(srcdir)/index-parser-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/index_parser_tests-index-parser-c.Tpo $(DEPDIR)/index_parser_tests-index-parser-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-parser-c.c' object='index_parser_tests-index-parser-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o index_parser_tests-index-parser-c.obj `if test -f 'index-parser-c.c'; then $(CYGPATH_W) 'index-parser-c.c'; else $(CYGPATH_W) '$(srcdir)/index-parser-c.c'; fi`
+
+index_parser_tests-index-parse.o: index-parse.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT index_parser_tests-index-parse.o -MD -MP -MF $(DEPDIR)/index_parser_tests-index-parse.Tpo -c -o index_parser_tests-index-parse.o `test -f 'index-parse.c' || echo '$(srcdir)/'`index-parse.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/index_parser_tests-index-parse.Tpo $(DEPDIR)/index_parser_tests-index-parse.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-parse.c' object='index_parser_tests-index-parse.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o index_parser_tests-index-parse.o `test -f 'index-parse.c' || echo '$(srcdir)/'`index-parse.c
+
+index_parser_tests-index-parse.obj: index-parse.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT index_parser_tests-index-parse.obj -MD -MP -MF $(DEPDIR)/index_parser_tests-index-parse.Tpo -c -o index_parser_tests-index-parse.obj `if test -f 'index-parse.c'; then $(CYGPATH_W) 'index-parse.c'; else $(CYGPATH_W) '$(srcdir)/index-parse.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/index_parser_tests-index-parse.Tpo $(DEPDIR)/index_parser_tests-index-parse.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-parse.c' object='index_parser_tests-index-parse.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o index_parser_tests-index-parse.obj `if test -f 'index-parse.c'; then $(CYGPATH_W) 'index-parse.c'; else $(CYGPATH_W) '$(srcdir)/index-parse.c'; fi`
+
+index_parser_tests-yajl-c.o: yajl-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT index_parser_tests-yajl-c.o -MD -MP -MF $(DEPDIR)/index_parser_tests-yajl-c.Tpo -c -o index_parser_tests-yajl-c.o `test -f 'yajl-c.c' || echo '$(srcdir)/'`yajl-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/index_parser_tests-yajl-c.Tpo $(DEPDIR)/index_parser_tests-yajl-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='yajl-c.c' object='index_parser_tests-yajl-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o index_parser_tests-yajl-c.o `test -f 'yajl-c.c' || echo '$(srcdir)/'`yajl-c.c
+
+index_parser_tests-yajl-c.obj: yajl-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT index_parser_tests-yajl-c.obj -MD -MP -MF $(DEPDIR)/index_parser_tests-yajl-c.Tpo -c -o index_parser_tests-yajl-c.obj `if test -f 'yajl-c.c'; then $(CYGPATH_W) 'yajl-c.c'; else $(CYGPATH_W) '$(srcdir)/yajl-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/index_parser_tests-yajl-c.Tpo $(DEPDIR)/index_parser_tests-yajl-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='yajl-c.c' object='index_parser_tests-yajl-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(index_parser_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o index_parser_tests-yajl-c.obj `if test -f 'yajl-c.c'; then $(CYGPATH_W) 'yajl-c.c'; else $(CYGPATH_W) '$(srcdir)/yajl-c.c'; fi`
 
 virt_builder-index-scan.o: index-scan.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -MT virt_builder-index-scan.o -MD -MP -MF $(DEPDIR)/virt_builder-index-scan.Tpo -c -o virt_builder-index-scan.o `test -f 'index-scan.c' || echo '$(srcdir)/'`index-scan.c
@@ -2412,6 +2679,76 @@ virt_builder-yajl-c.obj: yajl-c.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='yajl-c.c' object='virt_builder-yajl-c.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_CPPFLAGS) $(CPPFLAGS) $(virt_builder_CFLAGS) $(CFLAGS) -c -o virt_builder-yajl-c.obj `if test -f 'yajl-c.c'; then $(CYGPATH_W) 'yajl-c.c'; else $(CYGPATH_W) '$(srcdir)/yajl-c.c'; fi`
+
+virt_builder_repository-index-scan.o: index-scan.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -MT virt_builder_repository-index-scan.o -MD -MP -MF $(DEPDIR)/virt_builder_repository-index-scan.Tpo -c -o virt_builder_repository-index-scan.o `test -f 'index-scan.c' || echo '$(srcdir)/'`index-scan.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder_repository-index-scan.Tpo $(DEPDIR)/virt_builder_repository-index-scan.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-scan.c' object='virt_builder_repository-index-scan.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -c -o virt_builder_repository-index-scan.o `test -f 'index-scan.c' || echo '$(srcdir)/'`index-scan.c
+
+virt_builder_repository-index-scan.obj: index-scan.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -MT virt_builder_repository-index-scan.obj -MD -MP -MF $(DEPDIR)/virt_builder_repository-index-scan.Tpo -c -o virt_builder_repository-index-scan.obj `if test -f 'index-scan.c'; then $(CYGPATH_W) 'index-scan.c'; else $(CYGPATH_W) '$(srcdir)/index-scan.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder_repository-index-scan.Tpo $(DEPDIR)/virt_builder_repository-index-scan.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-scan.c' object='virt_builder_repository-index-scan.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -c -o virt_builder_repository-index-scan.obj `if test -f 'index-scan.c'; then $(CYGPATH_W) 'index-scan.c'; else $(CYGPATH_W) '$(srcdir)/index-scan.c'; fi`
+
+virt_builder_repository-index-struct.o: index-struct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -MT virt_builder_repository-index-struct.o -MD -MP -MF $(DEPDIR)/virt_builder_repository-index-struct.Tpo -c -o virt_builder_repository-index-struct.o `test -f 'index-struct.c' || echo '$(srcdir)/'`index-struct.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder_repository-index-struct.Tpo $(DEPDIR)/virt_builder_repository-index-struct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-struct.c' object='virt_builder_repository-index-struct.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -c -o virt_builder_repository-index-struct.o `test -f 'index-struct.c' || echo '$(srcdir)/'`index-struct.c
+
+virt_builder_repository-index-struct.obj: index-struct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -MT virt_builder_repository-index-struct.obj -MD -MP -MF $(DEPDIR)/virt_builder_repository-index-struct.Tpo -c -o virt_builder_repository-index-struct.obj `if test -f 'index-struct.c'; then $(CYGPATH_W) 'index-struct.c'; else $(CYGPATH_W) '$(srcdir)/index-struct.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder_repository-index-struct.Tpo $(DEPDIR)/virt_builder_repository-index-struct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-struct.c' object='virt_builder_repository-index-struct.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -c -o virt_builder_repository-index-struct.obj `if test -f 'index-struct.c'; then $(CYGPATH_W) 'index-struct.c'; else $(CYGPATH_W) '$(srcdir)/index-struct.c'; fi`
+
+virt_builder_repository-index-parse.o: index-parse.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -MT virt_builder_repository-index-parse.o -MD -MP -MF $(DEPDIR)/virt_builder_repository-index-parse.Tpo -c -o virt_builder_repository-index-parse.o `test -f 'index-parse.c' || echo '$(srcdir)/'`index-parse.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder_repository-index-parse.Tpo $(DEPDIR)/virt_builder_repository-index-parse.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-parse.c' object='virt_builder_repository-index-parse.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -c -o virt_builder_repository-index-parse.o `test -f 'index-parse.c' || echo '$(srcdir)/'`index-parse.c
+
+virt_builder_repository-index-parse.obj: index-parse.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -MT virt_builder_repository-index-parse.obj -MD -MP -MF $(DEPDIR)/virt_builder_repository-index-parse.Tpo -c -o virt_builder_repository-index-parse.obj `if test -f 'index-parse.c'; then $(CYGPATH_W) 'index-parse.c'; else $(CYGPATH_W) '$(srcdir)/index-parse.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder_repository-index-parse.Tpo $(DEPDIR)/virt_builder_repository-index-parse.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-parse.c' object='virt_builder_repository-index-parse.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -c -o virt_builder_repository-index-parse.obj `if test -f 'index-parse.c'; then $(CYGPATH_W) 'index-parse.c'; else $(CYGPATH_W) '$(srcdir)/index-parse.c'; fi`
+
+virt_builder_repository-index-parser-c.o: index-parser-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -MT virt_builder_repository-index-parser-c.o -MD -MP -MF $(DEPDIR)/virt_builder_repository-index-parser-c.Tpo -c -o virt_builder_repository-index-parser-c.o `test -f 'index-parser-c.c' || echo '$(srcdir)/'`index-parser-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder_repository-index-parser-c.Tpo $(DEPDIR)/virt_builder_repository-index-parser-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-parser-c.c' object='virt_builder_repository-index-parser-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -c -o virt_builder_repository-index-parser-c.o `test -f 'index-parser-c.c' || echo '$(srcdir)/'`index-parser-c.c
+
+virt_builder_repository-index-parser-c.obj: index-parser-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -MT virt_builder_repository-index-parser-c.obj -MD -MP -MF $(DEPDIR)/virt_builder_repository-index-parser-c.Tpo -c -o virt_builder_repository-index-parser-c.obj `if test -f 'index-parser-c.c'; then $(CYGPATH_W) 'index-parser-c.c'; else $(CYGPATH_W) '$(srcdir)/index-parser-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder_repository-index-parser-c.Tpo $(DEPDIR)/virt_builder_repository-index-parser-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='index-parser-c.c' object='virt_builder_repository-index-parser-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -c -o virt_builder_repository-index-parser-c.obj `if test -f 'index-parser-c.c'; then $(CYGPATH_W) 'index-parser-c.c'; else $(CYGPATH_W) '$(srcdir)/index-parser-c.c'; fi`
+
+virt_builder_repository-yajl-c.o: yajl-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -MT virt_builder_repository-yajl-c.o -MD -MP -MF $(DEPDIR)/virt_builder_repository-yajl-c.Tpo -c -o virt_builder_repository-yajl-c.o `test -f 'yajl-c.c' || echo '$(srcdir)/'`yajl-c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder_repository-yajl-c.Tpo $(DEPDIR)/virt_builder_repository-yajl-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='yajl-c.c' object='virt_builder_repository-yajl-c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -c -o virt_builder_repository-yajl-c.o `test -f 'yajl-c.c' || echo '$(srcdir)/'`yajl-c.c
+
+virt_builder_repository-yajl-c.obj: yajl-c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -MT virt_builder_repository-yajl-c.obj -MD -MP -MF $(DEPDIR)/virt_builder_repository-yajl-c.Tpo -c -o virt_builder_repository-yajl-c.obj `if test -f 'yajl-c.c'; then $(CYGPATH_W) 'yajl-c.c'; else $(CYGPATH_W) '$(srcdir)/yajl-c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_builder_repository-yajl-c.Tpo $(DEPDIR)/virt_builder_repository-yajl-c.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='yajl-c.c' object='virt_builder_repository-yajl-c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_builder_repository_CPPFLAGS) $(CPPFLAGS) $(virt_builder_repository_CFLAGS) $(CFLAGS) -c -o virt_builder_repository-yajl-c.obj `if test -f 'yajl-c.c'; then $(CYGPATH_W) 'yajl-c.c'; else $(CYGPATH_W) '$(srcdir)/yajl-c.c'; fi`
 
 virt_index_validate-index-parse.o: index-parse.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_index_validate_CPPFLAGS) $(CPPFLAGS) $(virt_index_validate_CFLAGS) $(CFLAGS) -MT virt_index_validate-index-parse.o -MD -MP -MF $(DEPDIR)/virt_index_validate-index-parse.Tpo -c -o virt_index_validate-index-parse.o `test -f 'index-parse.c' || echo '$(srcdir)/'`index-parse.c
@@ -2752,9 +3089,16 @@ recheck: all $(check_PROGRAMS) $(check_DATA)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-test-virt-builder-docs.sh.log: test-virt-builder-docs.sh
-	@p='test-virt-builder-docs.sh'; \
-	b='test-virt-builder-docs.sh'; \
+test-docs.sh.log: test-docs.sh
+	@p='test-docs.sh'; \
+	b='test-docs.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-virt-builder-cacheall.sh.log: test-virt-builder-cacheall.sh
+	@p='test-virt-builder-cacheall.sh'; \
+	b='test-virt-builder-cacheall.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -2843,6 +3187,13 @@ test-virt-builder-planner.sh.log: test-virt-builder-planner.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-virt-builder-repository.sh.log: test-virt-builder-repository.sh
+	@p='test-virt-builder-repository.sh'; \
+	b='test-virt-builder-repository.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-virt-builder-list-simplestreams.sh.log: test-virt-builder-list-simplestreams.sh
 	@p='test-virt-builder-list-simplestreams.sh'; \
 	b='test-virt-builder-list-simplestreams.sh'; \
@@ -2860,6 +3211,13 @@ test-virt-builder.sh.log: test-virt-builder.sh
 yajl_tests.log: yajl_tests$(EXEEXT)
 	@p='yajl_tests$(EXEEXT)'; \
 	b='yajl_tests'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+index_parser_tests.log: index_parser_tests$(EXEEXT)
+	@p='index_parser_tests$(EXEEXT)'; \
+	b='index_parser_tests'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -3085,11 +3443,11 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-.mli.cmi:
+%.cmi: %.mli
 	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-.ml.cmo:
+%.cmo: %.ml
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@.ml.cmx:
+@HAVE_OCAMLOPT_TRUE@%.cmx: %.ml
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 # Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
@@ -3126,6 +3484,21 @@ export TEST_FUNCTIONS := \
 @HAVE_OCAML_TRUE@	  $<
 @HAVE_OCAML_TRUE@	touch $@
 
+@HAVE_OCAML_TRUE@virt-builder-repository.1 $(top_builddir)/website/virt-builder-repository.1.html: stamp-virt-builder-repository.pod
+
+@HAVE_OCAML_TRUE@stamp-virt-builder-repository.pod: virt-builder-repository.pod
+@HAVE_OCAML_TRUE@	$(PODWRAPPER) \
+@HAVE_OCAML_TRUE@	  --man virt-builder-repository.1 \
+@HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-builder-repository.1.html \
+@HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning safe \
+@HAVE_OCAML_TRUE@	  $<
+@HAVE_OCAML_TRUE@	touch $@
+
+@HAVE_OCAML_TRUE@osinfo_config.ml: Makefile
+@HAVE_OCAML_TRUE@	echo 'let libosinfo_db_path = "$(datadir)/libosinfo/db"' > $@-t
+@HAVE_OCAML_TRUE@	mv $@-t $@
+
 @HAVE_OCAML_TRUE@fedora.qcow2: ../test-data/phony-guests/fedora.img
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
 @HAVE_OCAML_TRUE@	qemu-img convert -f raw -O qcow2 $< $@-t
@@ -3141,7 +3514,9 @@ export TEST_FUNCTIONS := \
 @HAVE_OCAML_TRUE@	xz --best -c $< > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@yajl_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@index_parser_tests.cmx: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 @HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@yajl_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
+@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_TRUE@index_parser_tests.cmo: OCAMLPACKAGES += $(OCAMLPACKAGES_TESTS)
 
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="@VG@" check
@@ -3156,21 +3531,12 @@ export TEST_FUNCTIONS := \
 @HAVE_OCAML_TRUE@	chmod 0755 $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
-# Dependencies.
-@HAVE_OCAML_TRUE@depend: .depend
-
-@HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
-@HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib -I $(abs_top_builddir)/customize $^ | \
-@HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
-@HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
-@HAVE_OCAML_TRUE@	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
-@HAVE_OCAML_TRUE@	  sort > $@-t
-@HAVE_OCAML_TRUE@	mv $@-t $@
-
+# OCaml dependencies.
+@HAVE_OCAML_TRUE@.depend: *.mli *.ml osinfo_config.mli osinfo_config.ml
+@HAVE_OCAML_TRUE@	$(top_builddir)/ocaml-dep.sh $^
 @HAVE_OCAML_TRUE@-include .depend
 
-.PHONY: depend docs
+.PHONY: docs
 
 install-exec-hook:
 	$(LN_S) -f xdg/virt-builder $(DESTDIR)$(sysconfdir)/virt-builder

@@ -116,12 +116,11 @@ virt tools which are still written in Perl.
 
 I<Required>.  Part of Perl core.
 
-=item OCaml E<ge> 3.11
+=item OCaml E<ge> 4.01
 
 =item OCaml findlib
 
-I<Required> if compiling from git.
-Optional (but recommended) if compiling from tarball.
+I<Required>.
 
 =item autoconf
 
@@ -181,8 +180,10 @@ Optional if compiling from tarball.
 
 =item hivex E<ge> 1.2.7
 
-I<Required> if compiling from git, and highly recommended otherwise.
-Various core features will be disabled if hivex is not available.
+=item ocaml-hivex
+
+I<Required>.  ocaml-hivex is the OCaml binding for hivex, which is
+required when building the daemon.
 
 =item libmagic
 
@@ -198,7 +199,7 @@ Optional.  Used only for tests.
 
 =item libconfig
 
-Optional.  Used to parse libguestfs's own config files,
+Optional.  Used to parse libguestfs’s own config files,
 eg. F</etc/libguestfs-tools.conf>.
 
 =item libselinux
@@ -427,6 +428,10 @@ Optional.  For tab-completion of commands in bash.
 
 Optional.  Library for filesystem forensics analysis.
 
+=item yara
+
+Optional.  Tool for categorizing files based on their content.
+
 =back
 
 =head1 BUILDING FROM GIT
@@ -554,7 +559,7 @@ environment variables needed, eg. for skipping tests:
  # Skip this test, it is broken.
  export SKIP_TEST_BTRFS_FSCK=1
 
-Note that F<localenv> is included by the top Makefile (so it's a
+Note that F<localenv> is included by the top Makefile (so it’s a
 Makefile fragment).  But if it is also sourced by your
 F<localconfigure> script then it is used as a shell script.
 
@@ -596,8 +601,12 @@ See L</USING A PREBUILT BINARY APPLIANCE> below.
 Disable specific language bindings, even if C<./configure> finds all
 the necessary libraries are installed so that they could be compiled.
 
-Note that disabling OCaml or Perl will have the knock-on effect of
-disabling large numbers of virt tools and parts of the test suite.
+Note that disabling OCaml (bindings) or Perl will have the knock-on
+effect of disabling parts of the test suite and some tools.
+
+OCaml is required to build libguestfs and this requirement cannot be
+removed.  Using I<--disable-ocaml> only disables the bindings and
+OCaml tools.
 
 =item B<--disable-fuse>
 
@@ -610,7 +619,7 @@ it, since errors in the GNUlib test suite are often not important.
 
 =item B<--disable-static>
 
-Don't build a static linked version of the libguestfs library.
+Don’t build a static linked version of the libguestfs library.
 
 =item B<--enable-install-daemon>
 
@@ -638,6 +647,20 @@ the policy is not to allow any program to run qemu except via libvirt.
 Note that despite this setting, all backends are built into
 libguestfs, and you can override the backend at runtime by setting the
 C<$LIBGUESTFS_BACKEND> environment variable (or using API methods).
+
+=item B<--with-distro=REDHAT|DEBIAN|...>
+
+Libguestfs needs to know which Linux distro is in use so it can choose
+package names for the appliance correctly (see for example
+F<appliance/packagelist.in>).  It normally does this automatically.
+
+However if you can building or packaging libguestfs on a new distro
+then you can use I<--with-distro> to specify that the distro is
+similar to an existing one (eg. I<--with-distro=REDHAT> if the distro
+is a new Red Hat or CentOS derivative).
+
+Note that if your distro is completely new then it may still require
+upstream modifications.
 
 =item B<--with-extra=">I<distroname>=I<version>,libvirt,...B<">
 
@@ -668,11 +691,6 @@ currently the most widely tested configuration.
 Provide an alternate qemu binary (or list of binaries).  This can be
 overridden at runtime by setting the C<LIBGUESTFS_HV> environment
 variable.
-
-=item B<--with-qemu-options=">-M ... -cpu ...B<">
-
-If qemu requires extra options to work on this platform, you can pass
-them here, and they will be used both when testing and running qemu.
 
 =item B<--with-supermin-packager-config=>I<yum.conf>
 
@@ -860,4 +878,4 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.

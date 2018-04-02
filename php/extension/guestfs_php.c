@@ -41,7 +41,7 @@
 #include <php_guestfs_php.h>
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h" /* Only for POINTER_NOT_IMPLEMENTED */
+#include "guestfs-utils.h" /* Only for POINTER_NOT_IMPLEMENTED */
 
 static int res_guestfs_h;
 
@@ -365,6 +365,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_hivex_open, NULL)
   PHP_FE (guestfs_hivex_root, NULL)
   PHP_FE (guestfs_hivex_value_key, NULL)
+  PHP_FE (guestfs_hivex_value_string, NULL)
   PHP_FE (guestfs_hivex_value_type, NULL)
   PHP_FE (guestfs_hivex_value_utf8, NULL)
   PHP_FE (guestfs_hivex_value_value, NULL)
@@ -575,6 +576,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_part_expand_gpt, NULL)
   PHP_FE (guestfs_part_get_bootable, NULL)
   PHP_FE (guestfs_part_get_disk_guid, NULL)
+  PHP_FE (guestfs_part_get_gpt_attributes, NULL)
   PHP_FE (guestfs_part_get_gpt_guid, NULL)
   PHP_FE (guestfs_part_get_gpt_type, NULL)
   PHP_FE (guestfs_part_get_mbr_id, NULL)
@@ -583,9 +585,11 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_part_get_parttype, NULL)
   PHP_FE (guestfs_part_init, NULL)
   PHP_FE (guestfs_part_list, NULL)
+  PHP_FE (guestfs_part_resize, NULL)
   PHP_FE (guestfs_part_set_bootable, NULL)
   PHP_FE (guestfs_part_set_disk_guid, NULL)
   PHP_FE (guestfs_part_set_disk_guid_random, NULL)
+  PHP_FE (guestfs_part_set_gpt_attributes, NULL)
   PHP_FE (guestfs_part_set_gpt_guid, NULL)
   PHP_FE (guestfs_part_set_gpt_type, NULL)
   PHP_FE (guestfs_part_set_mbr_id, NULL)
@@ -742,6 +746,9 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_xfs_growfs, NULL)
   PHP_FE (guestfs_xfs_info, NULL)
   PHP_FE (guestfs_xfs_repair, NULL)
+  PHP_FE (guestfs_yara_destroy, NULL)
+  PHP_FE (guestfs_yara_load, NULL)
+  PHP_FE (guestfs_yara_scan, NULL)
   PHP_FE (guestfs_zegrep, NULL)
   PHP_FE (guestfs_zegrepi, NULL)
   PHP_FE (guestfs_zero, NULL)
@@ -9082,6 +9089,35 @@ PHP_FUNCTION (guestfs_hivex_value_key)
 
   char *r;
   r = guestfs_hivex_value_key (g, valueh);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrdup (r);
+  free (r);
+  GUESTFS_RETURN_STRING (r_copy, 0);
+}
+
+PHP_FUNCTION (guestfs_hivex_value_string)
+{
+  zval *z_g;
+  guestfs_h *g;
+  long valueh;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rl",
+        &z_g, &valueh) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r;
+  r = guestfs_hivex_value_string (g, valueh);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -17567,6 +17603,40 @@ PHP_FUNCTION (guestfs_part_get_disk_guid)
   GUESTFS_RETURN_STRING (r_copy, 0);
 }
 
+PHP_FUNCTION (guestfs_part_get_gpt_attributes)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  guestfs_string_length device_size;
+  long partnum;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsl",
+        &z_g, &device, &device_size, &partnum) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: part_get_gpt_attributes: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int64_t r;
+  r = guestfs_part_get_gpt_attributes (g, device, partnum);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_LONG (r);
+}
+
 PHP_FUNCTION (guestfs_part_get_gpt_guid)
 {
   zval *z_g;
@@ -17870,6 +17940,41 @@ PHP_FUNCTION (guestfs_part_list)
   guestfs_free_partition_list (r);
 }
 
+PHP_FUNCTION (guestfs_part_resize)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  guestfs_string_length device_size;
+  long partnum;
+  long endsect;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsll",
+        &z_g, &device, &device_size, &partnum, &endsect) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: part_resize: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_part_resize (g, device, partnum, endsect);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
 PHP_FUNCTION (guestfs_part_set_bootable)
 {
   zval *z_g;
@@ -17970,6 +18075,41 @@ PHP_FUNCTION (guestfs_part_set_disk_guid_random)
 
   int r;
   r = guestfs_part_set_disk_guid_random (g, device);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_part_set_gpt_attributes)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  guestfs_string_length device_size;
+  long partnum;
+  long attributes;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsll",
+        &z_g, &device, &device_size, &partnum, &attributes) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: part_set_gpt_attributes: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_part_set_gpt_attributes (g, device, partnum, attributes);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -23812,6 +23952,113 @@ PHP_FUNCTION (guestfs_xfs_repair)
   }
 
   RETURN_LONG (r);
+}
+
+PHP_FUNCTION (guestfs_yara_destroy)
+{
+  zval *z_g;
+  guestfs_h *g;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
+        &z_g) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_yara_destroy (g);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_yara_load)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *filename;
+  guestfs_string_length filename_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &filename, &filename_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (filename) != filename_size) {
+    fprintf (stderr, "libguestfs: yara_load: parameter 'filename' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_yara_load (g, filename);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_yara_scan)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *path;
+  guestfs_string_length path_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &path, &path_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  GUESTFS_ZEND_FETCH_RESOURCE (g, guestfs_h *, z_g,
+                               PHP_GUESTFS_HANDLE_RES_NAME, res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (path) != path_size) {
+    fprintf (stderr, "libguestfs: yara_scan: parameter 'path' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  struct guestfs_yara_detection_list *r;
+  r = guestfs_yara_scan (g, path);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  array_init (return_value);
+  size_t c = 0;
+  for (c = 0; c < r->len; ++c) {
+#if ZEND_MODULE_API_NO >= 20151012
+    zval elem;
+    zval *z_elem = &elem;
+#else
+    zval *z_elem;
+    ALLOC_INIT_ZVAL (z_elem);
+#endif
+    array_init (z_elem);
+    guestfs_add_assoc_string (z_elem, "yara_name", r->val[c].yara_name, 1);
+    guestfs_add_assoc_string (z_elem, "yara_rule", r->val[c].yara_rule, 1);
+    add_next_index_zval (return_value, z_elem);
+  }
+  guestfs_free_yara_detection_list (r);
 }
 
 PHP_FUNCTION (guestfs_zegrep)

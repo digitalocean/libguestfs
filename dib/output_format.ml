@@ -1,5 +1,5 @@
 (* virt-dib
- * Copyright (C) 2012-2017 Red Hat Inc.
+ * Copyright (C) 2012-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Common_utils
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
 open Getopt.OptionName
 
@@ -68,7 +69,7 @@ let set_cardinal set =
   FormatSet.cardinal set
 
 let register_format op =
-  push_front op all_formats
+  List.push_front op all_formats
 
 let baked = ref false
 let rec bake () =
@@ -105,7 +106,7 @@ let extra_args () =
   assert !baked;
 
   List.flatten (
-    List.map (fun { extra_args = extra_args } ->
+    List.map (fun { extra_args } ->
       List.map (fun { extra_argspec = argspec } -> argspec) extra_args
     ) !all_formats
   )
@@ -182,7 +183,7 @@ let get_filenames ~formats image_name =
   (* Run the formats in alphabetical, rather than random order. *)
   let formats = List.sort compare_formats (FormatSet.elements formats) in
 
-  filter_map (
+  List.filter_map (
     function
     | { output_to_file = true; name } ->
       Some (output_filename image_name name)

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,10 @@
 
 open Printf
 
-open Common_gettext.Gettext
-open Common_utils
+open Std_utils
+open Tools_utils
 open Unix_utils
+open Common_gettext.Gettext
 
 open Types
 open Utils
@@ -62,73 +63,106 @@ object
     (* Write targets to a temporary local file - see above for reason. *)
     List.map (
       fun t ->
-        let target_file = tmpdir // t.target_overlay.ov_sd in
-        { t with target_file = target_file }
+        let target_file = TargetFile (tmpdir // t.target_overlay.ov_sd) in
+        { t with target_file }
     ) targets
 
   method create_metadata source targets _ guestcaps inspect target_firmware =
+    (* Collect the common properties for all the disks. *)
+    let min_ram = source.s_memory /^ 1024L /^ 1024L in
+    let common_properties =
+      let properties = ref [
+        "hw_disk_bus",
+        (match guestcaps.gcaps_block_bus with
+         | Virtio_blk -> "virtio"
+         | Virtio_SCSI -> "scsi"
+         | IDE -> "ide");
+        "hw_vif_model",
+        (match guestcaps.gcaps_net_bus with
+         | Virtio_net -> "virtio"
+         | E1000 -> "e1000"
+         | RTL8139 -> "rtl8139");
+        "hw_video_model",
+        (match guestcaps.gcaps_video with
+         | QXL -> "qxl"
+         | Cirrus -> "cirrus");
+        "architecture", guestcaps.gcaps_arch;
+        "hypervisor_type", "kvm";
+        "vm_mode", "hvm";
+        "os_type", inspect.i_type;
+        "os_distro",
+        (match inspect.i_distro with
+        (* http://docs.openstack.org/cli-reference/glance-property-keys.html *)
+         | "archlinux" -> "arch"
+         | "sles" -> "sled"
+         | x -> x (* everything else is the same in libguestfs and OpenStack*)
+        )
+      ] in
+      if source.s_cpu_sockets <> None || source.s_cpu_cores <> None ||
+         source.s_cpu_threads <> None then (
+        List.push_back properties ("hw_cpu_sockets",
+                              match source.s_cpu_sockets with
+                              | None -> "1"
+                              | Some v -> string_of_int v);
+        List.push_back properties ("hw_cpu_cores",
+                              match source.s_cpu_cores with
+                              | None -> "1"
+                              | Some v -> string_of_int v);
+        List.push_back properties ("hw_cpu_threads",
+                              match source.s_cpu_threads with
+                              | None -> "1"
+                              | Some v -> string_of_int v);
+      )
+      else (
+        List.push_back properties ("hw_cpu_sockets", "1");
+        List.push_back properties ("hw_cpu_cores", string_of_int source.s_vcpu);
+      );
+      (match guestcaps.gcaps_block_bus with
+       | Virtio_SCSI ->
+          List.push_back properties ("hw_scsi_model", "virtio-scsi")
+       | Virtio_blk | IDE -> ()
+      );
+      (match inspect.i_major_version, inspect.i_minor_version with
+       | 0, 0 -> ()
+       | x, 0 -> List.push_back properties ("os_version", string_of_int x)
+       | x, y -> List.push_back properties ("os_version", sprintf "%d.%d" x y)
+      );
+      if guestcaps.gcaps_virtio_rng then
+        List.push_back properties ("hw_rng_model", "virtio");
+      (* XXX Neither memory balloon nor pvpanic are supported by
+       * Glance at this time.
+       *)
+      (match target_firmware with
+       | TargetBIOS -> ()
+       | TargetUEFI ->
+          List.push_back properties ("hw_firmware_type", "uefi")
+      );
+
+      !properties in
+
     (* The first disk, assumed to be the system disk, will be called
      * "guestname".  Subsequent disks, assumed to be data disks,
      * will be called "guestname-disk2" etc.  The manual strongly
      * hints you should import the data disks to Cinder.
      *)
-    iteri (
-      fun i { target_file = target_file; target_format = target_format } ->
+    List.iteri (
+      fun i { target_file; target_format } ->
         let name =
           if i == 0 then source.s_name
           else sprintf "%s-disk%d" source.s_name (i+1) in
-
-        (* Set the properties (ie. metadata). *)
-        let min_ram = source.s_memory /^ 1024L /^ 1024L in
-        let properties = ref [
-          "hw_disk_bus",
-          (match guestcaps.gcaps_block_bus with
-           | Virtio_blk -> "virtio"
-           | Virtio_SCSI -> "scsi"
-           | IDE -> "ide");
-          "hw_vif_model",
-          (match guestcaps.gcaps_net_bus with
-           | Virtio_net -> "virtio"
-           | E1000 -> "e1000"
-           | RTL8139 -> "rtl8139");
-          "hw_video_model",
-          (match guestcaps.gcaps_video with
-           | QXL -> "qxl"
-           | Cirrus -> "cirrus");
-          "architecture", guestcaps.gcaps_arch;
-          "hypervisor_type", "kvm";
-          "vm_mode", "hvm";
-          "os_type", inspect.i_type;
-          "os_distro",
-          (match inspect.i_distro with
-          (* http://docs.openstack.org/cli-reference/glance-property-keys.html *)
-           | "archlinux" -> "arch"
-           | "sles" -> "sled"
-           | x -> x (* everything else is the same in libguestfs and OpenStack*)
-          )
-        ] in
-        (match guestcaps.gcaps_block_bus with
-         | Virtio_SCSI ->
-            push_back properties ("hw_scsi_model", "virtio-scsi")
-         | Virtio_blk | IDE -> ()
-        );
-        (match inspect.i_major_version, inspect.i_minor_version with
-         | 0, 0 -> ()
-         | x, 0 -> push_back properties ("os_version", string_of_int x)
-         | x, y -> push_back properties ("os_version", sprintf "%d.%d" x y)
-        );
-        (match target_firmware with
-         | TargetBIOS -> ()
-         | TargetUEFI ->
-            push_back properties ("hw_firmware_type", "uefi")
-        );
 
         let properties =
           List.flatten (
             List.map (
               fun (k, v) -> [ "--property"; sprintf "%s=%s" k v ]
-            ) !properties
+            ) common_properties
           ) in
+
+        let target_file =
+          match target_file with
+          | TargetFile s -> s
+          | TargetURI _ -> assert false in
+
         let cmd = [ "glance"; "image-create"; "--name"; name;
                     "--disk-format=" ^ target_format;
                     "--container-format=bare"; "--file"; target_file;

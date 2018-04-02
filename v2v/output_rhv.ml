@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-open Common_gettext.Gettext
-open Common_utils
+open Std_utils
+open Tools_utils
 open Unix_utils
+open Common_gettext.Gettext
 
 open Unix
 open Printf
@@ -89,7 +90,7 @@ and check_storage_domain domain_class os mp =
   let () =
     let master_vms_dir = mp // uuid // "master" // "vms" in
     if not (is_directory master_vms_dir) then
-      error (f_"%s does not exist or is not a directory.\n\nMost likely cause: Either the %s (%s) has not been attached to any Data Center, or the path %s is not an %s at all.\n\nYou have to attach the %s to a Data Center using the RHV-M / OVirt user interface first.\n\nIf you don't know what the %s mount point should be then you can also find this out through the RHV-M user interface.")
+      error (f_"%s does not exist or is not a directory.\n\nMost likely cause: Either the %s (%s) has not been attached to any Data Center, or the path %s is not an %s at all.\n\nYou have to attach the %s to a Data Center using the RHV-M / OVirt user interface first.\n\nIf you don’t know what the %s mount point should be then you can also find this out through the RHV-M user interface.")
         master_vms_dir domain_class os os
         domain_class domain_class domain_class in
 
@@ -229,17 +230,22 @@ object
         fun ({ target_overlay = ov } as t, image_uuid, vol_uuid) ->
           let ov_sd = ov.ov_sd in
           let target_file = images_dir // image_uuid // vol_uuid in
+
           debug "RHV: will export %s to %s" ov_sd target_file;
 
-          { t with target_file = target_file }
-      ) (combine3 targets image_uuids vol_uuids) in
+          { t with target_file = TargetFile target_file }
+      ) (List.combine3 targets image_uuids vol_uuids) in
 
     (* Generate the .meta file associated with each volume. *)
     let metas =
-      OVF.create_meta_files output_alloc esd_uuid image_uuids
+      Create_ovf.create_meta_files output_alloc esd_uuid image_uuids
         targets in
     List.iter (
-      fun ({ target_file = target_file }, meta) ->
+      fun ({ target_file }, meta) ->
+        let target_file =
+          match target_file with
+          | TargetFile s -> s
+          | TargetURI _ -> assert false in
         let meta_filename = target_file ^ ".meta" in
         Changeuid.make_file changeuid_t meta_filename meta
     ) (List.combine targets metas);
@@ -268,7 +274,7 @@ object
     assert (target_firmware = TargetBIOS);
 
     (* Create the metadata. *)
-    let ovf = OVF.create_ovf source targets guestcaps inspect
+    let ovf = Create_ovf.create_ovf source targets guestcaps inspect
       output_alloc esd_uuid image_uuids vol_uuids vm_uuid in
 
     (* Write it to the metadata file. *)

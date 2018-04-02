@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,9 @@ type ovf_disk = {
 }
 (** A VMDK disk from a parsed OVF. *)
 
-val parse_ovf_from_ova : string -> string option * int64 * int * Types.source_firmware * ovf_disk list * Types.source_removable list * Types.source_nic list
+val parse_ovf_from_ova : string -> string option * int64 * int * int option * int option * Types.source_firmware * ovf_disk list * Types.source_removable list * Types.source_nic list
 (** Parse an OVF file.
 
     The returned tuple is
-    [name, memory, vcpu, firmware, disks, removables, nics] *)
+    [name, memory, vcpu, cpu_sockets, cpu_cores, firmware,
+    disks, removables, nics] *)

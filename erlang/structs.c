@@ -36,7 +36,7 @@ instead of erl_interface.
 */
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #include "actions.h"
 
@@ -508,6 +508,17 @@ make_xfsinfo (const struct guestfs_xfsinfo *xfsinfo)
 }
 
 ETERM *
+make_yara_detection (const struct guestfs_yara_detection *yara_detection)
+{
+  ETERM *t[2];
+
+  t[0] = erl_mk_string (yara_detection->yara_name);
+  t[1] = erl_mk_string (yara_detection->yara_rule);
+
+  return erl_mk_list (t, 2);
+}
+
+ETERM *
 make_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
 {
   size_t len = lvm_lvs->len;
@@ -707,6 +718,23 @@ make_lvm_pv_list (const struct guestfs_lvm_pv_list *lvm_pvs)
 
   for (i = 0; i < len; ++i)
     t[i] = make_lvm_pv (&lvm_pvs->val[i]);
+
+  return erl_mk_list (t, len);
+}
+
+ETERM *
+make_yara_detection_list (const struct guestfs_yara_detection_list *yara_detections)
+{
+  size_t len = yara_detections->len;
+  size_t i;
+  CLEANUP_FREE ETERM **t;
+
+  t = malloc (sizeof (ETERM *) * len);
+  if (t == NULL)
+    return make_error ("make_yara_detection_list");
+
+  for (i = 0; i < len; ++i)
+    t[i] = make_yara_detection (&yara_detections->val[i]);
 
   return erl_mk_list (t, len);
 }

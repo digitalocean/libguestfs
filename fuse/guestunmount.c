@@ -35,7 +35,7 @@
 #include <sys/wait.h>
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #include "ignore-value.h"
 #include "getprogname.h"
@@ -53,7 +53,7 @@ static void __attribute__((noreturn))
 usage (int status)
 {
   if (status != EXIT_SUCCESS)
-    fprintf (stderr, _("Try `%s --help' for more information.\n"),
+    fprintf (stderr, _("Try ‘%s --help’ for more information.\n"),
              getprogname ());
   else {
     printf (_("%s: clean up a mounted filesystem\n"
@@ -117,13 +117,13 @@ main (int argc, char *argv[])
         display_short_options (options);
       else if (STREQ (long_options[option_index].name, "fd")) {
         if (sscanf (optarg, "%d", &fd) != 1 || fd < 0)
-          error (EXIT_FAILURE, 0, _("cannot parse fd option '%s'"), optarg);
+          error (EXIT_FAILURE, 0, _("cannot parse fd option ‘%s’"), optarg);
       } else if (STREQ (long_options[option_index].name, "no-retry")) {
         retries = 0;
       } else if (STREQ (long_options[option_index].name, "retry")) {
         if (sscanf (optarg, "%zu", &retries) != 1 || retries >= 64)
           error (EXIT_FAILURE, 0,
-                 _("cannot parse retries option or value is too large '%s'"),
+                 _("cannot parse retries option or value is too large ‘%s’"),
                  optarg);
       } else
         error (EXIT_FAILURE, 0,

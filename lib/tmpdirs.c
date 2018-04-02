@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <libintl.h>
@@ -74,7 +75,7 @@ set_abs_path (guestfs_h *g, const char *ctxstr,
   }
 
   if (!S_ISDIR (statbuf.st_mode)) {
-    error (g, _("%s: %s: '%s' is not a directory"),
+    error (g, _("%s: %s: ‘%s’ is not a directory"),
            _("setting temporary directory"), ctxstr, tmpdir);
     return -1;
   }
@@ -179,13 +180,22 @@ guestfs_impl_get_sockdir (guestfs_h *g)
 }
 
 static int
-lazy_make_tmpdir (guestfs_h *g, char *(*getdir) (guestfs_h *g), char **dest)
+lazy_make_tmpdir (guestfs_h *g,
+                  char *(*getdir) (guestfs_h *g), int is_runtime_dir,
+                  char **dest)
 {
   if (!*dest) {
     CLEANUP_FREE char *tmpdir = getdir (g);
     char *tmppath = safe_asprintf (g, "%s/libguestfsXXXXXX", tmpdir);
     if (mkdtemp (tmppath) == NULL) {
-      perrorf (g, _("%s: cannot create temporary directory"), tmppath);
+      int bad_runtime_dir = is_runtime_dir && errno == EACCES &&
+        STRPREFIX (tmpdir, "/run/user/");
+
+      if (!bad_runtime_dir)
+        perrorf (g, _("%s: cannot create temporary directory"), tmppath);
+      else
+        error (g, _("%s: cannot create temporary directory.  It may be that $XDG_RUNTIME_DIR is pointing to a directory which we cannot write to, for example if you used ‘su [user]’ to change to this user account (see https://bugzilla.redhat.com/967509).  You can correct this by adjusting XDG_RUNTIME_DIR and possibly creating /run/user/%d with the right ownership."),
+               tmppath, (int) geteuid ());
       free (tmppath);
       return -1;
     }
@@ -213,13 +223,13 @@ lazy_make_tmpdir (guestfs_h *g, char *(*getdir) (guestfs_h *g), char **dest)
 int
 guestfs_int_lazy_make_tmpdir (guestfs_h *g)
 {
-  return lazy_make_tmpdir (g, guestfs_get_tmpdir, &g->tmpdir);
+  return lazy_make_tmpdir (g, guestfs_get_tmpdir, 0, &g->tmpdir);
 }
 
 int
 guestfs_int_lazy_make_sockdir (guestfs_h *g)
 {
-  return lazy_make_tmpdir (g, guestfs_get_sockdir, &g->sockdir);
+  return lazy_make_tmpdir (g, guestfs_get_sockdir, 1, &g->sockdir);
 }
 
 /**

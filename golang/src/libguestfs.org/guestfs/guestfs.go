@@ -1134,6 +1134,29 @@ func return_XFSInfo_list (c *C.struct_guestfs_xfsinfo_list) *[]XFSInfo {
     return &r
 }
 
+type YaraDetection struct {
+    yara_name string
+    yara_rule string
+}
+
+func return_YaraDetection (c *C.struct_guestfs_yara_detection) *YaraDetection {
+    r := YaraDetection{}
+    r.yara_name = C.GoString (c.yara_name)
+    r.yara_rule = C.GoString (c.yara_rule)
+    return &r
+}
+
+func return_YaraDetection_list (c *C.struct_guestfs_yara_detection_list) *[]YaraDetection {
+    nrelems := int (c.len)
+    ptr := uintptr (unsafe.Pointer (c.val))
+    elemsize := unsafe.Sizeof (*c.val)
+    r := make ([]YaraDetection, nrelems)
+    for i := 0; i < nrelems; i++ {
+        r[i] = *return_YaraDetection ((*C.struct_guestfs_yara_detection) (unsafe.Pointer (ptr)))
+        ptr += elemsize    }
+    return &r
+}
+
 /* acl_delete_def_file : delete the default POSIX ACL of a directory */
 func (g *Guestfs) Acl_delete_def_file (dir string) *GuestfsError {
     if g.g == nil {
@@ -5823,6 +5846,21 @@ func (g *Guestfs) Hivex_value_key (valueh int64) (string, *GuestfsError) {
     return C.GoString (r), nil
 }
 
+/* hivex_value_string : return the data field as a UTF-8 string */
+func (g *Guestfs) Hivex_value_string (valueh int64) (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("hivex_value_string")
+    }
+
+    r := C.guestfs_hivex_value_string (g.g, C.int64_t (valueh))
+
+    if r == nil {
+        return "", get_error_from_handle (g, "hivex_value_string")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
 /* hivex_value_type : return the data type from the (key, datatype, data) tuple */
 func (g *Guestfs) Hivex_value_type (valueh int64) (int64, *GuestfsError) {
     if g.g == nil {
@@ -5837,7 +5875,7 @@ func (g *Guestfs) Hivex_value_type (valueh int64) (int64, *GuestfsError) {
     return int64 (r), nil
 }
 
-/* hivex_value_utf8 : return the data field from the (key, datatype, data) tuple */
+/* hivex_value_utf8 : return the data field as a UTF-8 string */
 func (g *Guestfs) Hivex_value_utf8 (valueh int64) (string, *GuestfsError) {
     if g.g == nil {
         return "", closed_handle_error ("hivex_value_utf8")
@@ -10745,6 +10783,23 @@ func (g *Guestfs) Part_get_disk_guid (device string) (string, *GuestfsError) {
     return C.GoString (r), nil
 }
 
+/* part_get_gpt_attributes : get the attribute flags of a GPT partition */
+func (g *Guestfs) Part_get_gpt_attributes (device string, partnum int) (int64, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("part_get_gpt_attributes")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_part_get_gpt_attributes (g.g, c_device, C.int (partnum))
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "part_get_gpt_attributes")
+    }
+    return int64 (r), nil
+}
+
 /* part_get_gpt_guid : get the GUID of a GPT partition */
 func (g *Guestfs) Part_get_gpt_guid (device string, partnum int) (string, *GuestfsError) {
     if g.g == nil {
@@ -10890,6 +10945,23 @@ func (g *Guestfs) Part_list (device string) (*[]Partition, *GuestfsError) {
     return return_Partition_list (r), nil
 }
 
+/* part_resize : resize a partition */
+func (g *Guestfs) Part_resize (device string, partnum int, endsect int64) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("part_resize")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_part_resize (g.g, c_device, C.int (partnum), C.int64_t (endsect))
+
+    if r == -1 {
+        return get_error_from_handle (g, "part_resize")
+    }
+    return nil
+}
+
 /* part_set_bootable : make a partition bootable */
 func (g *Guestfs) Part_set_bootable (device string, partnum int, bootable bool) *GuestfsError {
     if g.g == nil {
@@ -10943,6 +11015,23 @@ func (g *Guestfs) Part_set_disk_guid_random (device string) *GuestfsError {
 
     if r == -1 {
         return get_error_from_handle (g, "part_set_disk_guid_random")
+    }
+    return nil
+}
+
+/* part_set_gpt_attributes : set the attribute flags of a GPT partition */
+func (g *Guestfs) Part_set_gpt_attributes (device string, partnum int, attributes int64) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("part_set_gpt_attributes")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    r := C.guestfs_part_set_gpt_attributes (g.g, c_device, C.int (partnum), C.int64_t (attributes))
+
+    if r == -1 {
+        return get_error_from_handle (g, "part_set_gpt_attributes")
     }
     return nil
 }
@@ -14257,6 +14346,55 @@ func (g *Guestfs) Xfs_repair (device string, optargs *OptargsXfs_repair) (int, *
         return 0, get_error_from_handle (g, "xfs_repair")
     }
     return int (r), nil
+}
+
+/* yara_destroy : destroy previously loaded yara rules */
+func (g *Guestfs) Yara_destroy () *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("yara_destroy")
+    }
+
+    r := C.guestfs_yara_destroy (g.g)
+
+    if r == -1 {
+        return get_error_from_handle (g, "yara_destroy")
+    }
+    return nil
+}
+
+/* yara_load : load yara rules within libguestfs */
+func (g *Guestfs) Yara_load (filename string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("yara_load")
+    }
+
+    c_filename := C.CString (filename)
+    defer C.free (unsafe.Pointer (c_filename))
+
+    r := C.guestfs_yara_load (g.g, c_filename)
+
+    if r == -1 {
+        return get_error_from_handle (g, "yara_load")
+    }
+    return nil
+}
+
+/* yara_scan : scan a file with the loaded yara rules */
+func (g *Guestfs) Yara_scan (path string) (*[]YaraDetection, *GuestfsError) {
+    if g.g == nil {
+        return nil, closed_handle_error ("yara_scan")
+    }
+
+    c_path := C.CString (path)
+    defer C.free (unsafe.Pointer (c_path))
+
+    r := C.guestfs_yara_scan (g.g, c_path)
+
+    if r == nil {
+        return nil, get_error_from_handle (g, "yara_scan")
+    }
+    defer C.guestfs_free_yara_detection_list (r)
+    return return_YaraDetection_list (r), nil
 }
 
 /* zegrep : return lines matching a pattern */

@@ -333,6 +333,7 @@ guestfs_int_py_btrfs_filesystem_show (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -802,13 +803,7 @@ guestfs_int_py_cpio_out (PyObject *self, PyObject *args)
 #ifdef GUESTFS_CPIO_OUT_FORMAT_BITMASK
   if (py_format != Py_None) {
     optargs_s.bitmask |= GUESTFS_CPIO_OUT_FORMAT_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.format = PyString_AsString (py_format);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_format);
-    optargs_s.format = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.format = guestfs_int_py_asstring (py_format);
   }
 #endif
 
@@ -1048,11 +1043,7 @@ guestfs_int_py_get_append (PyObject *self, PyObject *args)
 
 
   if (r) {
-#ifdef HAVE_PYSTRING_ASSTRING
-    py_r = PyString_FromString (r);
-#else
-    py_r = PyUnicode_FromString (r);
-#endif
+    py_r = guestfs_int_py_fromstring (r);
   } else {
     Py_INCREF (Py_None);
     py_r = Py_None;
@@ -1115,11 +1106,7 @@ guestfs_int_py_get_program (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromString (r);
-#else
-  py_r = PyUnicode_FromString (r);
-#endif
+  py_r = guestfs_int_py_fromstring (r);
   if (py_r == NULL) goto out;
 
   PyErr_Clear ();
@@ -1160,6 +1147,7 @@ guestfs_int_py_head_n (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1274,11 +1262,7 @@ guestfs_int_py_initrd_cat (PyObject *self, PyObject *args)
     goto out;
   }
 
-#ifdef HAVE_PYSTRING_ASSTRING
-  py_r = PyString_FromStringAndSize (r, size);
-#else
-  py_r = PyBytes_FromStringAndSize (r, size);
-#endif
+  py_r = guestfs_int_py_fromstringsize (r, size);
   free (r);
   if (py_r == NULL) goto out;
 
@@ -1392,6 +1376,7 @@ guestfs_int_py_inspect_get_roots (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -1459,13 +1444,7 @@ guestfs_int_py_internal_test (PyObject *self, PyObject *args)
 #ifdef GUESTFS_INTERNAL_TEST_OSTRING_BITMASK
   if (py_ostring != Py_None) {
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRING_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.ostring = PyString_AsString (py_ostring);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_ostring);
-    optargs_s.ostring = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.ostring = guestfs_int_py_asstring (py_ostring);
   }
 #endif
 #ifdef GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK
@@ -2059,6 +2038,7 @@ guestfs_int_py_internal_test_rhashtableerr (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_table (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -2226,6 +2206,7 @@ guestfs_int_py_isoinfo_device (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_isoinfo (r);
   guestfs_free_isoinfo (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -2338,6 +2319,7 @@ guestfs_int_py_ldmtool_volume_partitions (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -2375,6 +2357,7 @@ guestfs_int_py_list_disk_labels (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_table (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -2412,6 +2395,7 @@ guestfs_int_py_list_md_devices (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -2690,6 +2674,7 @@ guestfs_int_py_lvs_full (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_lvm_lv_list (r);
   guestfs_free_lvm_lv_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -2728,6 +2713,7 @@ guestfs_int_py_md_stat (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_mdstat_list (r);
   guestfs_free_mdstat_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -2771,13 +2757,7 @@ guestfs_int_py_mkfs (PyObject *self, PyObject *args)
 #ifdef GUESTFS_MKFS_OPTS_FEATURES_BITMASK
   if (py_features != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.features = PyString_AsString (py_features);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_features);
-    optargs_s.features = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.features = guestfs_int_py_asstring (py_features);
   }
 #endif
 #ifdef GUESTFS_MKFS_OPTS_INODE_BITMASK
@@ -2797,13 +2777,7 @@ guestfs_int_py_mkfs (PyObject *self, PyObject *args)
 #ifdef GUESTFS_MKFS_OPTS_LABEL_BITMASK
   if (py_label != Py_None) {
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_LABEL_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.label = PyString_AsString (py_label);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_label);
-    optargs_s.label = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.label = guestfs_int_py_asstring (py_label);
   }
 #endif
 
@@ -2938,6 +2912,7 @@ guestfs_int_py_mountpoints (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_table (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -3086,6 +3061,44 @@ guestfs_int_py_part_get_bootable (PyObject *self, PyObject *args)
   }
 
   py_r = PyLong_FromLong ((long) r);
+
+  PyErr_Clear ();
+ out:
+  return py_r;
+}
+#endif
+
+#ifdef GUESTFS_HAVE_PART_GET_GPT_ATTRIBUTES
+PyObject *
+guestfs_int_py_part_get_gpt_attributes (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int64_t r;
+  const char *device;
+  int partnum;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osi:guestfs_part_get_gpt_attributes",
+                         &py_g, &device, &partnum))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_part_get_gpt_attributes (g, device, partnum);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLongLong (r);
 
   PyErr_Clear ();
  out:
@@ -3605,6 +3618,7 @@ guestfs_int_py_stat (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_stat (r);
   guestfs_free_stat (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -3942,6 +3956,7 @@ guestfs_int_py_vglvuuids (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_string_list (r);
   guestfs_int_free_string_list (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -4162,6 +4177,7 @@ guestfs_int_py_xfs_info (PyObject *self, PyObject *args)
 
   py_r = guestfs_int_py_put_xfsinfo (r);
   guestfs_free_xfsinfo (r);
+  if (py_r == NULL) goto out;
 
   PyErr_Clear ();
  out:
@@ -4258,25 +4274,13 @@ guestfs_int_py_xfs_repair (PyObject *self, PyObject *args)
 #ifdef GUESTFS_XFS_REPAIR_LOGDEV_BITMASK
   if (py_logdev != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_LOGDEV_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.logdev = PyString_AsString (py_logdev);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_logdev);
-    optargs_s.logdev = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.logdev = guestfs_int_py_asstring (py_logdev);
   }
 #endif
 #ifdef GUESTFS_XFS_REPAIR_RTDEV_BITMASK
   if (py_rtdev != Py_None) {
     optargs_s.bitmask |= GUESTFS_XFS_REPAIR_RTDEV_BITMASK;
-#ifdef HAVE_PYSTRING_ASSTRING
-    optargs_s.rtdev = PyString_AsString (py_rtdev);
-#else
-    PyObject *bytes;
-    bytes = PyUnicode_AsUTF8String (py_rtdev);
-    optargs_s.rtdev = PyBytes_AS_STRING (bytes);
-#endif
+    optargs_s.rtdev = guestfs_int_py_asstring (py_rtdev);
   }
 #endif
 

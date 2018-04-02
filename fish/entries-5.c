@@ -1271,7 +1271,7 @@ struct command_entry parse_environment_list_cmd_entry = {
           "DESCRIPTION\n"
           "    Parse the list of strings in the argument \"environment\" and set flags in\n"
           "    the handle accordingly. For example if \"LIBGUESTFS_DEBUG=1\" is a string\n"
-          "    in the list, then the 'verbose' flag is set in the handle.\n"
+          "    in the list, then the ‘verbose’ flag is set in the handle.\n"
           "\n"
           "    This is the same as \"parse_environment\" except that it parses an\n"
           "    explicit list of strings instead of the program's environment.\n"
@@ -1298,6 +1298,23 @@ struct command_entry part_get_bootable_cmd_entry = {
           "",
   .synopsis = "part-get-bootable device partnum",
   .run = run_part_get_bootable
+};
+
+struct command_entry part_get_gpt_attributes_cmd_entry = {
+  .name = "part-get-gpt-attributes",
+  .help = "NAME\n"
+          "    part-get-gpt-attributes - get the attribute flags of a GPT partition\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     part-get-gpt-attributes device partnum\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Return the attribute flags of numbered GPT partition \"partnum\". An error\n"
+          "    is returned for MBR partitions.\n"
+          "\n"
+          "",
+  .synopsis = "part-get-gpt-attributes device partnum",
+  .run = run_part_get_gpt_attributes
 };
 
 struct command_entry part_set_gpt_type_cmd_entry = {
@@ -1549,7 +1566,7 @@ struct command_entry sfdisk_cmd_entry = {
           "    \"cyls\", \"heads\" and \"sectors\" are the number of cylinders, heads and\n"
           "    sectors on the device, which are passed directly to sfdisk as the *-C*,\n"
           "    *-H* and *-S* parameters. If you pass 0 for any of these, then the\n"
-          "    corresponding parameter is omitted. Usually for 'large' disks, you can\n"
+          "    corresponding parameter is omitted. Usually for ‘large’ disks, you can\n"
           "    just pass 0 for these, but for small (floppy-sized) disks, sfdisk (or\n"
           "    rather, the kernel) cannot work out the right geometry and you will need\n"
           "    to tell it.\n"
@@ -1808,7 +1825,7 @@ struct command_entry user_cancel_cmd_entry = {
           "\n"
           "    No cleanup is performed: for example, if a file was being uploaded then\n"
           "    after cancellation there may be a partially uploaded file. It is the\n"
-          "    caller's responsibility to clean up if necessary.\n"
+          "    caller’s responsibility to clean up if necessary.\n"
           "\n"
           "    There are two common places that you might call \"user_cancel\":\n"
           "\n"

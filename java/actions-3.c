@@ -30,7 +30,8 @@
 
 #include "com_redhat_et_libguestfs_GuestFS.h"
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
+#include "structs-cleanups.h"
 
 /* Note that this function returns.  The exception is not thrown
  * until after the wrapper function returns.

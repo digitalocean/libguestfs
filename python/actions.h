@@ -25,7 +25,7 @@
 #define GUESTFS_PYTHON_ACTIONS_H_
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 #if PY_VERSION_HEX < 0x02050000
 typedef int Py_ssize_t;
@@ -74,6 +74,9 @@ extern PyObject *guestfs_int_py_event_to_string (PyObject *self, PyObject *args)
 extern char **guestfs_int_py_get_string_list (PyObject *obj);
 extern PyObject *guestfs_int_py_put_string_list (char * const * const argv);
 extern PyObject *guestfs_int_py_put_table (char * const * const argv);
+extern PyObject *guestfs_int_py_fromstring (const char *str);
+extern PyObject *guestfs_int_py_fromstringsize (const char *str, size_t size);
+extern char *guestfs_int_py_asstring (PyObject *obj);
 
 #ifdef GUESTFS_HAVE_STRUCT_APPLICATION
 extern PyObject *guestfs_int_py_put_application (struct guestfs_application *application);
@@ -150,6 +153,9 @@ extern PyObject *guestfs_int_py_put_xattr (struct guestfs_xattr *xattr);
 #ifdef GUESTFS_HAVE_STRUCT_XFSINFO
 extern PyObject *guestfs_int_py_put_xfsinfo (struct guestfs_xfsinfo *xfsinfo);
 #endif
+#ifdef GUESTFS_HAVE_STRUCT_YARA_DETECTION
+extern PyObject *guestfs_int_py_put_yara_detection (struct guestfs_yara_detection *yara_detection);
+#endif
 #ifdef GUESTFS_HAVE_STRUCT_LVM_LV
 extern PyObject *guestfs_int_py_put_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs);
 #endif
@@ -185,6 +191,9 @@ extern PyObject *guestfs_int_py_put_xattr_list (struct guestfs_xattr_list *xattr
 #endif
 #ifdef GUESTFS_HAVE_STRUCT_LVM_PV
 extern PyObject *guestfs_int_py_put_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs);
+#endif
+#ifdef GUESTFS_HAVE_STRUCT_YARA_DETECTION
+extern PyObject *guestfs_int_py_put_yara_detection_list (struct guestfs_yara_detection_list *yara_detections);
 #endif
 #ifdef GUESTFS_HAVE_STRUCT_LVM_VG
 extern PyObject *guestfs_int_py_put_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs);
@@ -856,6 +865,9 @@ extern PyObject *guestfs_int_py_hivex_root (PyObject *self, PyObject *args);
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_KEY
 extern PyObject *guestfs_int_py_hivex_value_key (PyObject *self, PyObject *args);
 #endif
+#ifdef GUESTFS_HAVE_HIVEX_VALUE_STRING
+extern PyObject *guestfs_int_py_hivex_value_string (PyObject *self, PyObject *args);
+#endif
 #ifdef GUESTFS_HAVE_HIVEX_VALUE_TYPE
 extern PyObject *guestfs_int_py_hivex_value_type (PyObject *self, PyObject *args);
 #endif
@@ -1486,6 +1498,9 @@ extern PyObject *guestfs_int_py_part_get_bootable (PyObject *self, PyObject *arg
 #ifdef GUESTFS_HAVE_PART_GET_DISK_GUID
 extern PyObject *guestfs_int_py_part_get_disk_guid (PyObject *self, PyObject *args);
 #endif
+#ifdef GUESTFS_HAVE_PART_GET_GPT_ATTRIBUTES
+extern PyObject *guestfs_int_py_part_get_gpt_attributes (PyObject *self, PyObject *args);
+#endif
 #ifdef GUESTFS_HAVE_PART_GET_GPT_GUID
 extern PyObject *guestfs_int_py_part_get_gpt_guid (PyObject *self, PyObject *args);
 #endif
@@ -1510,6 +1525,9 @@ extern PyObject *guestfs_int_py_part_init (PyObject *self, PyObject *args);
 #ifdef GUESTFS_HAVE_PART_LIST
 extern PyObject *guestfs_int_py_part_list (PyObject *self, PyObject *args);
 #endif
+#ifdef GUESTFS_HAVE_PART_RESIZE
+extern PyObject *guestfs_int_py_part_resize (PyObject *self, PyObject *args);
+#endif
 #ifdef GUESTFS_HAVE_PART_SET_BOOTABLE
 extern PyObject *guestfs_int_py_part_set_bootable (PyObject *self, PyObject *args);
 #endif
@@ -1518,6 +1536,9 @@ extern PyObject *guestfs_int_py_part_set_disk_guid (PyObject *self, PyObject *ar
 #endif
 #ifdef GUESTFS_HAVE_PART_SET_DISK_GUID_RANDOM
 extern PyObject *guestfs_int_py_part_set_disk_guid_random (PyObject *self, PyObject *args);
+#endif
+#ifdef GUESTFS_HAVE_PART_SET_GPT_ATTRIBUTES
+extern PyObject *guestfs_int_py_part_set_gpt_attributes (PyObject *self, PyObject *args);
 #endif
 #ifdef GUESTFS_HAVE_PART_SET_GPT_GUID
 extern PyObject *guestfs_int_py_part_set_gpt_guid (PyObject *self, PyObject *args);
@@ -1986,6 +2007,15 @@ extern PyObject *guestfs_int_py_xfs_info (PyObject *self, PyObject *args);
 #endif
 #ifdef GUESTFS_HAVE_XFS_REPAIR
 extern PyObject *guestfs_int_py_xfs_repair (PyObject *self, PyObject *args);
+#endif
+#ifdef GUESTFS_HAVE_YARA_DESTROY
+extern PyObject *guestfs_int_py_yara_destroy (PyObject *self, PyObject *args);
+#endif
+#ifdef GUESTFS_HAVE_YARA_LOAD
+extern PyObject *guestfs_int_py_yara_load (PyObject *self, PyObject *args);
+#endif
+#ifdef GUESTFS_HAVE_YARA_SCAN
+extern PyObject *guestfs_int_py_yara_scan (PyObject *self, PyObject *args);
 #endif
 #ifdef GUESTFS_HAVE_ZEGREP
 extern PyObject *guestfs_int_py_zegrep (PyObject *self, PyObject *args);

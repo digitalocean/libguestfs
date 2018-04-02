@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Yajl
 open Utils
@@ -28,8 +29,7 @@ let ensure_trailing_slash str =
   if String.length str > 0 && str.[String.length str - 1] <> '/' then str ^ "/"
   else str
 
-let get_index ~downloader ~sigchecker
-  { Sources.uri = uri; proxy = proxy } =
+let get_index ~downloader ~sigchecker { Sources.uri; proxy } =
 
   let uri = ensure_trailing_slash uri in
 
@@ -60,7 +60,7 @@ let get_index ~downloader ~sigchecker
         uri format;
 
     let index = Array.to_list (object_get_object "index" tree) in
-    filter_map (
+    List.filter_map (
       fun (_, desc) ->
         let format = object_get_string "format" desc in
         let datatype = object_get_string "datatype" desc in
@@ -81,11 +81,11 @@ let get_index ~downloader ~sigchecker
     let products_node = object_get_object "products" tree in
 
     let products = Array.to_list products_node in
-    filter_map (
+    List.filter_map (
       fun (prod, prod_desc) ->
-        let arch = object_get_string "arch" prod_desc in
+        let arch = Index.Arch (object_get_string "arch" prod_desc) in
         let prods = Array.to_list (object_get_object "versions" prod_desc) in
-        let prods = filter_map (
+        let prods = List.filter_map (
           fun (rel, rel_desc) ->
             let pubname = objects_get_string "pubname" [rel_desc; prod_desc] in
             let items = object_find_object "items" rel_desc in

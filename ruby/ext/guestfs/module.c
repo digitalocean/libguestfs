@@ -539,6 +539,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_hivex_root, 0);
   rb_define_method (c_guestfs, "hivex_value_key",
                     guestfs_int_ruby_hivex_value_key, 1);
+  rb_define_method (c_guestfs, "hivex_value_string",
+                    guestfs_int_ruby_hivex_value_string, 1);
   rb_define_method (c_guestfs, "hivex_value_type",
                     guestfs_int_ruby_hivex_value_type, 1);
   rb_define_method (c_guestfs, "hivex_value_utf8",
@@ -977,6 +979,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_part_get_bootable, 2);
   rb_define_method (c_guestfs, "part_get_disk_guid",
                     guestfs_int_ruby_part_get_disk_guid, 1);
+  rb_define_method (c_guestfs, "part_get_gpt_attributes",
+                    guestfs_int_ruby_part_get_gpt_attributes, 2);
   rb_define_method (c_guestfs, "part_get_gpt_guid",
                     guestfs_int_ruby_part_get_gpt_guid, 2);
   rb_define_method (c_guestfs, "part_get_gpt_type",
@@ -993,12 +997,16 @@ Init__guestfs (void)
                     guestfs_int_ruby_part_init, 2);
   rb_define_method (c_guestfs, "part_list",
                     guestfs_int_ruby_part_list, 1);
+  rb_define_method (c_guestfs, "part_resize",
+                    guestfs_int_ruby_part_resize, 3);
   rb_define_method (c_guestfs, "part_set_bootable",
                     guestfs_int_ruby_part_set_bootable, 3);
   rb_define_method (c_guestfs, "part_set_disk_guid",
                     guestfs_int_ruby_part_set_disk_guid, 2);
   rb_define_method (c_guestfs, "part_set_disk_guid_random",
                     guestfs_int_ruby_part_set_disk_guid_random, 1);
+  rb_define_method (c_guestfs, "part_set_gpt_attributes",
+                    guestfs_int_ruby_part_set_gpt_attributes, 3);
   rb_define_method (c_guestfs, "part_set_gpt_guid",
                     guestfs_int_ruby_part_set_gpt_guid, 3);
   rb_define_method (c_guestfs, "part_set_gpt_type",
@@ -1317,6 +1325,12 @@ Init__guestfs (void)
                     guestfs_int_ruby_xfs_info, 1);
   rb_define_method (c_guestfs, "xfs_repair",
                     guestfs_int_ruby_xfs_repair, -1);
+  rb_define_method (c_guestfs, "yara_destroy",
+                    guestfs_int_ruby_yara_destroy, 0);
+  rb_define_method (c_guestfs, "yara_load",
+                    guestfs_int_ruby_yara_load, 1);
+  rb_define_method (c_guestfs, "yara_scan",
+                    guestfs_int_ruby_yara_scan, 1);
   rb_define_method (c_guestfs, "zegrep",
                     guestfs_int_ruby_zegrep, 2);
   rb_define_method (c_guestfs, "zegrepi",

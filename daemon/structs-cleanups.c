@@ -605,3 +605,25 @@ cleanup_free_int_tsk_dirent_list (void *ptr)
   }
 }
 
+void
+cleanup_free_int_yara_detection (void *ptr)
+{
+  struct guestfs_int_yara_detection *x = (* (struct guestfs_int_yara_detection **) ptr);
+
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_yara_detection, (char *) x);
+    free (x);
+  }
+}
+
+void
+cleanup_free_int_yara_detection_list (void *ptr)
+{
+  struct guestfs_int_yara_detection_list *x = (* (struct guestfs_int_yara_detection_list **) ptr);
+
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_yara_detection_list, (char *) x);
+    free (x);
+  }
+}
+

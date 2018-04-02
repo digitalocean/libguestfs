@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,12 @@ open Types
 let non_daemon_functions = [
   { defaults with
     name = "debug_drives"; added = (1, 13, 22);
-    style = RStringList "cmdline", [], [];
+    style = RStringList (RPlainString, "cmdline"), [], [];
     visibility = VDebug;
     blocking = false;
     shortdesc = "debug the drives (internal use only)";
     longdesc = "\
-This returns the internal list of drives.  'debug' commands are
+This returns the internal list of drives.  ‘debug’ commands are
 not part of the formal API and can be removed or changed at any time." };
 
 ]
@@ -38,7 +38,7 @@ not part of the formal API and can be removed or changed at any time." };
 let daemon_functions = [
   { defaults with
     name = "debug"; added = (1, 0, 11);
-    style = RString "result", [String "subcmd"; StringList "extraargs"], [];
+    style = RString (RPlainString, "result"), [String (PlainString, "subcmd"); StringList (PlainString, "extraargs")], [];
     visibility = VDebug;
     shortdesc = "debugging and internals";
     longdesc = "\
@@ -52,7 +52,7 @@ to find out what you can do." };
 
   { defaults with
     name = "debug_upload"; added = (1, 3, 5);
-    style = RErr, [FileIn "filename"; String "tmpname"; Int "mode"], [];
+    style = RErr, [String (FileIn, "filename"); String (PlainString, "tmpname"); Int "mode"], [];
     visibility = VDebug;
     cancellable = true;
     shortdesc = "upload a file to the appliance (internal use only)";

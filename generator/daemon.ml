@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -48,7 +48,7 @@ let generate_daemon_actions_h () =
     function
     | { style = _, _, [] } -> ()
     | { name = shortname; style = _, _, (_::_ as optargs) } ->
-        iteri (
+        List.iteri (
           fun i arg ->
             let uc_shortname = String.uppercase_ascii shortname in
             let n = name_of_optargt arg in
@@ -59,11 +59,11 @@ let generate_daemon_actions_h () =
   ) (actions |> daemon_functions |> sort);
 
   List.iter (
-    fun { name = name; style = ret, args, optargs } ->
+    fun { name; style = ret, args, optargs } ->
       let args_passed_to_daemon = args @ args_of_optargs optargs in
       let args_passed_to_daemon =
-        List.filter (function FileIn _ | FileOut _ -> false | _ -> true)
-          args_passed_to_daemon in
+        List.filter (function String ((FileIn|FileOut), _) -> false | _ -> true)
+                    args_passed_to_daemon in
       let style = ret, args_passed_to_daemon, [] in
       generate_prototype
         ~single_line:true ~newline:true ~in_daemon:true ~prefix:"do_"
@@ -83,7 +83,7 @@ let generate_daemon_stubs_h () =
 ";
 
   List.iter (
-    fun { name = name } ->
+    fun { name } ->
       pr "extern void %s_stub (XDR *xdr_in);\n" name;
   ) (actions |> daemon_functions |> sort);
 
@@ -117,14 +117,14 @@ let generate_daemon_stubs actions () =
 ";
 
   List.iter (
-    fun { name = name; style = ret, args, optargs; optional = optional } ->
+    fun { name; style = ret, args, optargs; optional } ->
       (* Generate server-side stubs. *)
       let uc_name = String.uppercase_ascii name in
 
       let args_passed_to_daemon = args @ args_of_optargs optargs in
       let args_passed_to_daemon =
-        List.filter (function FileIn _ | FileOut _ -> false | _ -> true)
-          args_passed_to_daemon in
+        List.filter (function String ((FileIn|FileOut), _) -> false | _ -> true)
+                    args_passed_to_daemon in
 
       if args_passed_to_daemon <> [] then (
         pr "#ifdef HAVE_ATTRIBUTE_CLEANUP\n";
@@ -170,16 +170,17 @@ let generate_daemon_stubs actions () =
         pr "  memset (&args, 0, sizeof args);\n";
         List.iter (
           function
-          | Device n | Dev_or_Path n ->
+          | String ((Device|Dev_or_Path), n) ->
             pr "  CLEANUP_FREE char *%s = NULL;\n" n
-          | Pathname n | String n | Key n | OptString n | GUID n ->
+          | String ((Pathname|PlainString|Key|GUID), n)
+          | OptString n ->
             pr "  const char *%s;\n" n
-          | Mountable n | Mountable_or_Path n ->
+          | String ((Mountable|Mountable_or_Path), n) ->
             pr "  CLEANUP_FREE_MOUNTABLE mountable_t %s\n" n;
             pr "      = { .device = NULL, .volume = NULL };\n"
-          | StringList n | FilenameList n ->
+          | StringList ((PlainString|Filename), n) ->
             pr "  char **%s;\n" n
-          | DeviceList n ->
+          | StringList (Device, n) ->
             pr "  CLEANUP_FREE_STRING_LIST char **%s = NULL;\n" n
           | Bool n -> pr "  int %s;\n" n
           | Int n -> pr "  int %s;\n" n
@@ -187,13 +188,16 @@ let generate_daemon_stubs actions () =
           | BufferIn n ->
               pr "  const char *%s;\n" n;
               pr "  size_t %s_size;\n" n
-          | FileIn _ | FileOut _ | Pointer _ -> assert false
+          | String ((FileIn|FileOut|Filename), _)
+          | StringList ((Mountable|Pathname|FileIn|FileOut|Key|GUID
+                         |Dev_or_Path|Mountable_or_Path), _)
+          | Pointer _ -> assert false
         ) args_passed_to_daemon
       );
       pr "\n";
 
       let is_filein =
-        List.exists (function FileIn _ -> true | _ -> false) args in
+        List.exists (function String (FileIn, _) -> true | _ -> false) args in
 
       (* Reject Optional functions that are not available (RHBZ#679737). *)
       (match optional with
@@ -246,24 +250,24 @@ let generate_daemon_stubs actions () =
         in
         List.iter (
           function
-          | Pathname n ->
+          | String (Pathname, n) ->
               pr_args n;
               pr "  ABS_PATH (%s, %b, return);\n" n is_filein;
-          | Device n ->
+          | String (Device, n) ->
               pr "  RESOLVE_DEVICE (args.%s, %s, %b);\n" n n is_filein;
-          | Mountable n ->
+          | String (Mountable, n) ->
               pr "  RESOLVE_MOUNTABLE (args.%s, %s, %b);\n" n n is_filein;
-          | Dev_or_Path n ->
+          | String (Dev_or_Path, n) ->
               pr "  REQUIRE_ROOT_OR_RESOLVE_DEVICE (args.%s, %s, %b);\n"
                 n n is_filein;
-          | Mountable_or_Path n ->
+          | String (Mountable_or_Path, n) ->
               pr "  REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE (args.%s, %s, %b);\n"
                 n n is_filein;
-          | String n | Key n | GUID n -> pr_args n
+          | String ((PlainString|Key|GUID), n) -> pr_args n
           | OptString n -> pr "  %s = args.%s ? *args.%s : NULL;\n" n n n
-          | StringList n | FilenameList n as arg ->
+          | StringList ((PlainString|Filename) as arg, n) ->
             (match arg with
-            | FilenameList n ->
+            | Filename ->
               pr "  {\n";
               pr "    size_t i;\n";
               pr "    for (i = 0; i < args.%s.%s_len; ++i) {\n" n n;
@@ -289,7 +293,7 @@ let generate_daemon_stubs actions () =
             pr "  }\n";
             pr "  %s[args.%s.%s_len] = NULL;\n" n n n;
             pr "  args.%s.%s_val = %s;\n" n n n
-          | DeviceList n ->
+          | StringList (Device, n) ->
             pr "  /* Copy the string list and apply device name translation\n";
             pr "   * to each one.\n";
             pr "   */\n";
@@ -307,13 +311,17 @@ let generate_daemon_stubs actions () =
           | BufferIn n ->
               pr "  %s = args.%s.%s_val;\n" n n n;
               pr "  %s_size = args.%s.%s_len;\n" n n n
-          | FileIn _ | FileOut _ | Pointer _ -> assert false
+          | String ((FileIn|FileOut|Filename), _)
+          | StringList ((Mountable|Pathname|FileIn|FileOut|Key|GUID
+                         |Dev_or_Path|Mountable_or_Path), _)
+          | Pointer _ -> assert false
         ) args_passed_to_daemon;
         pr "\n"
       );
 
       (* this is used at least for do_equal *)
-      if List.exists (function Pathname _ -> true | _ -> false) args then (
+      if List.exists (function String (Pathname, _) -> true
+                             | _ -> false) args then (
         (* Emit NEED_ROOT just once, even when there are two or
            more Pathname args *)
         pr "  NEED_ROOT (%b, return);\n" is_filein
@@ -325,7 +333,7 @@ let generate_daemon_stubs actions () =
       let () =
         let args' =
           List.filter
-            (function FileIn _ | FileOut _ -> false | _ -> true) args in
+            (function String ((FileIn|FileOut), _) -> false | _ -> true) args in
         let style = ret, args' @ args_of_optargs optargs, [] in
         pr "  r = do_%s " name;
         generate_c_call_args ~in_daemon:true style;
@@ -359,7 +367,7 @@ let generate_daemon_stubs actions () =
        * send its own reply.
        *)
       let no_reply =
-        List.exists (function FileOut _ -> true | _ -> false) args in
+        List.exists (function String (FileOut, _) -> true | _ -> false) args in
       if no_reply then
         pr "  /* do_%s has already sent a reply */\n" name
       else (
@@ -372,14 +380,70 @@ let generate_daemon_stubs actions () =
               name
         | RConstString _ | RConstOptString _ ->
             failwithf "RConstString|RConstOptString cannot be used by daemon functions"
-        | RString n ->
+        | RString (RPlainString, n) ->
             pr "  struct guestfs_%s_ret ret;\n" name;
             pr "  ret.%s = r;\n" n;
             pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
               name
-        | RStringList n | RHashtable n ->
+        | RString ((RDevice|RMountable), n) ->
             pr "  struct guestfs_%s_ret ret;\n" name;
-            pr "  ret.%s.%s_len = count_strings (r);\n" n n;
+            pr "  CLEANUP_FREE char *rr = reverse_device_name_translation (r);\n";
+            pr "  if (rr == NULL)\n";
+            pr "    /* reverse_device_name_translation has already called reply_with_error */\n";
+            pr "    return;\n";
+            pr "  ret.%s = rr;\n" n;
+            pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name
+        | RStringList (RPlainString, n)
+        | RHashtable (RPlainString, RPlainString, n) ->
+            pr "  struct guestfs_%s_ret ret;\n" name;
+            pr "  ret.%s.%s_len = guestfs_int_count_strings (r);\n" n n;
+            pr "  ret.%s.%s_val = r;\n" n n;
+            pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name
+        | RStringList ((RDevice|RMountable), n)
+        | RHashtable ((RDevice|RMountable), (RDevice|RMountable), n) ->
+            pr "  struct guestfs_%s_ret ret;\n" name;
+            pr "  size_t i;\n";
+            pr "  for (i = 0; r[i] != NULL; ++i) {\n";
+            pr "    char *rr = reverse_device_name_translation (r[i]);\n";
+            pr "    if (rr == NULL)\n";
+            pr "      /* reverse_device_name_translation has already called reply_with_error */\n";
+            pr "      return;\n";
+            pr "    free (r[i]);\n";
+            pr "    r[i] = rr;\n";
+            pr "  }\n";
+            pr "  ret.%s.%s_len = guestfs_int_count_strings (r);\n" n n;
+            pr "  ret.%s.%s_val = r;\n" n n;
+            pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name
+        | RHashtable ((RDevice|RMountable), RPlainString, n) ->
+            pr "  struct guestfs_%s_ret ret;\n" name;
+            pr "  size_t i;\n";
+            pr "  for (i = 0; r[i] != NULL; i += 2) {\n";
+            pr "    char *rr = reverse_device_name_translation (r[i]);\n";
+            pr "    if (rr == NULL)\n";
+            pr "      /* reverse_device_name_translation has already called reply_with_error */\n";
+            pr "      return;\n";
+            pr "    free (r[i]);\n";
+            pr "    r[i] = rr;\n";
+            pr "  }\n";
+            pr "  ret.%s.%s_len = guestfs_int_count_strings (r);\n" n n;
+            pr "  ret.%s.%s_val = r;\n" n n;
+            pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name
+        | RHashtable (RPlainString, (RDevice|RMountable), n) ->
+            pr "  struct guestfs_%s_ret ret;\n" name;
+            pr "  size_t i;\n";
+            pr "  for (i = 0; r[i] != NULL; i += 2) {\n";
+            pr "    char *rr = reverse_device_name_translation (r[i+1]);\n";
+            pr "    if (rr == NULL)\n";
+            pr "      /* reverse_device_name_translation has already called reply_with_error */\n";
+            pr "      return;\n";
+            pr "    free (r[i+1]);\n";
+            pr "    r[i+1] = rr;\n";
+            pr "  }\n";
+            pr "  ret.%s.%s_len = guestfs_int_count_strings (r);\n" n n;
             pr "  ret.%s.%s_val = r;\n" n n;
             pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
               name
@@ -406,6 +470,330 @@ let generate_daemon_stubs actions () =
       );
       pr "}\n\n";
   ) (actions |> daemon_functions |> sort)
+
+let generate_daemon_caml_callbacks_ml () =
+  generate_header OCamlStyle GPLv2plus;
+
+  if actions |> impl_ocaml_functions <> [] then (
+    pr "let init_callbacks () =\n";
+    pr "  (* Initialize callbacks to OCaml code. *)\n";
+    List.iter (
+      fun ({ name; style = ret, args, optargs } as f) ->
+        let ocaml_function =
+          match f.impl with
+          | OCaml f -> f
+          | C -> assert false in
+
+        pr "  Callback.register %S %s;\n" ocaml_function ocaml_function
+    ) (actions |> impl_ocaml_functions |> sort)
+  )
+  else
+    pr "let init_callbacks () = ()\n"
+
+(* Generate stubs for the functions implemented in OCaml.
+ * Basically we implement the do_<name> function here, and
+ * have it call out to OCaml code.
+ *)
+let generate_daemon_caml_stubs () =
+  generate_header CStyle GPLv2plus;
+
+  pr "\
+#include <config.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <inttypes.h>
+#include <errno.h>
+
+#include <caml/alloc.h>
+#include <caml/callback.h>
+#include <caml/fail.h>
+#include <caml/memory.h>
+#include <caml/mlvalues.h>
+
+#include \"daemon.h\"
+#include \"actions.h\"
+#include \"daemon-c.h\"
+
+";
+
+  (* Implement code for returning structs and struct lists. *)
+  let emit_return_struct typ =
+    let struc = Structs.lookup_struct typ in
+    pr "/* Implement RStruct (%S, _). */\n" typ;
+    pr "static guestfs_int_%s *\n" typ;
+    pr "return_%s (value retv)\n" typ;
+    pr "{\n";
+    pr "  guestfs_int_%s *ret;\n" typ;
+    pr "  value v;\n";
+    pr "\n";
+    pr "  ret = malloc (sizeof (*ret));\n";
+    pr "  if (ret == NULL) {\n";
+    pr "    reply_with_perror (\"malloc\");\n";
+    pr "    return NULL;\n";
+    pr "  }\n";
+    pr "\n";
+    List.iteri (
+      fun i ->
+        pr "  v = Field (retv, %d);\n" i;
+        function
+        | n, (FString|FUUID) ->
+           pr "  ret->%s = strdup (String_val (v));\n" n;
+           pr "  if (ret->%s == NULL) return NULL;\n" n
+        | n, FBuffer ->
+           pr "  ret->%s_len = caml_string_length (v);\n" n;
+           pr "  ret->%s = strdup (String_val (v));\n" n;
+           pr "  if (ret->%s == NULL) return NULL;\n" n
+        | n, (FBytes|FInt64|FUInt64) ->
+           pr "  ret->%s = Int64_val (v);\n" n
+        | n, (FInt32|FUInt32) ->
+           pr "  ret->%s = Int32_val (v);\n" n
+        | n, FOptPercent ->
+           pr "  if (v == Val_int (0)) /* None */\n";
+           pr "    ret->%s = -1;\n" n;
+           pr "  else {\n";
+           pr "    v = Field (v, 0);\n";
+           pr "    ret->%s = Double_val (v);\n" n;
+           pr "  }\n"
+        | n, FChar ->
+           pr "  ret->%s = Int_val (v);\n" n
+    ) struc.s_cols;
+    pr "\n";
+    pr "  return ret;\n";
+    pr "}\n";
+    pr "\n"
+
+  and emit_return_struct_list typ =
+    pr "/* Implement RStructList (%S, _). */\n" typ;
+    pr "static guestfs_int_%s_list *\n" typ;
+    pr "return_%s_list (value retv)\n" typ;
+    pr "{\n";
+    pr "  guestfs_int_%s_list *ret;\n" typ;
+    pr "  guestfs_int_%s *r;\n" typ;
+    pr "  size_t i, len;\n";
+    pr "  value v, rv;\n";
+    pr "\n";
+    pr "  /* Count the number of elements in the list. */\n";
+    pr "  rv = retv;\n";
+    pr "  len = 0;\n";
+    pr "  while (rv != Val_int (0)) {\n";
+    pr "    len++;\n";
+    pr "    rv = Field (rv, 1);\n";
+    pr "  }\n";
+    pr "\n";
+    pr "  ret = malloc (sizeof *ret);\n";
+    pr "  if (ret == NULL) {\n";
+    pr "    reply_with_perror (\"malloc\");\n";
+    pr "    return NULL;\n";
+    pr "  }\n";
+    pr "  ret->guestfs_int_%s_list_len = len;\n" typ;
+    pr "  ret->guestfs_int_%s_list_val =\n" typ;
+    pr "    calloc (len, sizeof (guestfs_int_%s));\n" typ;
+    pr "  if (ret->guestfs_int_%s_list_val == NULL) {\n" typ;
+    pr "    reply_with_perror (\"calloc\");\n";
+    pr "    free (ret);\n";
+    pr "    return NULL;\n";
+    pr "  }\n";
+    pr "\n";
+    pr "  rv = retv;\n";
+    pr "  for (i = 0; i < len; ++i) {\n";
+    pr "    v = Field (rv, 0);\n";
+    pr "    r = return_%s (v);\n" typ;
+    pr "    if (r == NULL)\n";
+    pr "      return NULL; /* XXX leaks memory along this error path */\n";
+    pr "    memcpy (&ret->guestfs_int_%s_list_val[i], r, sizeof (*r));\n" typ;
+    pr "    free (r);\n";
+    pr "    rv = Field (rv, 1);\n";
+    pr "  }\n";
+    pr "\n";
+    pr "  return ret;\n";
+    pr "}\n";
+    pr "\n";
+  in
+
+  List.iter (
+    function
+    | typ, RStructOnly ->
+       emit_return_struct typ
+    | typ, (RStructListOnly | RStructAndList) ->
+       emit_return_struct typ;
+       emit_return_struct_list typ
+  ) (rstructs_used_by (actions |> impl_ocaml_functions));
+
+  (* Implement the wrapper functions. *)
+  List.iter (
+    fun ({ name; style = ret, args, optargs } as f) ->
+      let uc_name = String.uppercase_ascii name in
+      let ocaml_function =
+        match f.impl with
+        | OCaml f -> f
+        | C -> assert false in
+
+      pr "/* Wrapper for OCaml function ‘%s’. */\n" ocaml_function;
+
+      let args_do_function = args @ args_of_optargs optargs in
+      let args_do_function =
+        List.filter (function
+                     | String ((FileIn|FileOut), _) -> false | _ -> true)
+                    args_do_function in
+      let style = ret, args_do_function, [] in
+      generate_prototype ~extern:false ~semicolon:false
+                         ~single_line:false ~newline:false
+                         ~in_daemon:true ~prefix:"do_"
+                         name style;
+      pr "\n";
+
+      let add_unit_arg =
+        let args = List.filter
+                     (function
+                      | String ((FileIn|FileOut), _) -> false | _ -> true)
+                 args in
+        args = [] in
+      let nr_args = List.length args_do_function in
+
+      pr "{\n";
+      pr "  static value *cb = NULL;\n";
+      pr "  CAMLparam0 ();\n";
+      pr "  CAMLlocal2 (v, retv);\n";
+      pr "  CAMLlocalN (args, %d);\n"
+         (nr_args + if add_unit_arg then 1 else 0);
+      pr "\n";
+      pr "  if (cb == NULL)\n";
+      pr "    cb = caml_named_value (\"%s\");\n" ocaml_function;
+      pr "\n";
+
+      (* Construct the actual call, but note that we want to pass
+       * the optional arguments first in the list.
+       *)
+      let i = ref 0 in
+      List.iter (
+        fun optarg ->
+          let n = name_of_optargt optarg in
+          let uc_n = String.uppercase_ascii n in
+
+          (* optargs are all passed as [None|Some _] *)
+          pr "  if ((optargs_bitmask & GUESTFS_%s_%s_BITMASK) == 0)\n"
+             uc_name uc_n;
+          pr "    args[%d] = Val_int (0); /* None */\n" !i;
+          pr "  else {\n";
+          pr "    v = ";
+          (match optarg with
+           | OBool _ ->
+              pr "Val_bool (%s)" n;
+           | OInt _ -> assert false
+           | OInt64 _ -> assert false
+           | OString _ -> assert false
+           | OStringList _ -> assert false
+          );
+          pr ";\n";
+          pr "    args[%d] = caml_alloc (1, 0);\n" !i;
+          pr "    Store_field (args[%d], 0, v);\n" !i;
+          pr "  }\n";
+          incr i
+      ) optargs;
+      List.iter (
+        fun arg ->
+          pr "  args[%d] = " !i;
+          (match arg with
+           | Bool n -> pr "Val_bool (%s)" n
+           | Int n -> pr "Val_int (%s)" n
+           | Int64 n -> pr "caml_copy_int64 (%s)" n
+           | String ((PlainString|Device|Pathname|Dev_or_Path), n) ->
+              pr "caml_copy_string (%s)" n
+           | String ((Mountable|Mountable_or_Path), n) ->
+              pr "guestfs_int_daemon_copy_mountable (%s)" n
+           | String _ -> assert false
+           | OptString _ -> assert false
+           | StringList _ -> assert false
+           | BufferIn _ -> assert false
+           | Pointer _ -> assert false
+          );
+          pr ";\n";
+          incr i
+      ) args;
+      assert (!i = nr_args);
+
+      (* If there are no non-optional arguments, we add a unit arg. *)
+      if add_unit_arg then
+        pr "  args[%d] = Val_unit;\n" !i;
+
+      pr "  retv = caml_callbackN_exn (*cb, %d, args);\n"
+         (nr_args + if add_unit_arg then 1 else 0);
+      pr "\n";
+      pr "  if (Is_exception_result (retv)) {\n";
+      pr "    retv = Extract_exception (retv);\n";
+      pr "    guestfs_int_daemon_exn_to_reply_with_error (%S, retv);\n" name;
+      (match errcode_of_ret ret with
+       | `CannotReturnError ->
+          pr "    CAMLreturn0;\n"
+       | `ErrorIsMinusOne ->
+          pr "    CAMLreturnT (int, -1);\n"
+       | `ErrorIsNULL ->
+          pr "    CAMLreturnT (void *, NULL);\n"
+      );
+      pr "  }\n";
+      pr "\n";
+
+      (match ret with
+       | RErr ->
+          pr "  CAMLreturnT (int, 0);\n"
+       | RInt _ ->
+          pr "  CAMLreturnT (int, Int_val (retv));\n"
+       | RInt64 _ ->
+          pr "  CAMLreturnT (int, Int64_val (retv));\n"
+       | RBool _ ->
+          pr "  CAMLreturnT (int, Bool_val (retv));\n"
+       | RConstString _ -> assert false
+       | RConstOptString _ -> assert false
+       | RString ((RPlainString|RDevice), _) ->
+          pr "  char *ret = strdup (String_val (retv));\n";
+          pr "  if (ret == NULL) {\n";
+          pr "    reply_with_perror (\"strdup\");\n";
+          pr "    CAMLreturnT (char *, NULL);\n";
+          pr "  }\n";
+          pr "  CAMLreturnT (char *, ret); /* caller frees */\n"
+       | RString (RMountable, _) ->
+          pr "  char *ret =\n";
+          pr "    guestfs_int_daemon_return_string_mountable (retv);\n";
+          pr "  CAMLreturnT (char *, ret); /* caller frees */\n"
+       | RStringList ((RPlainString|RDevice), _) ->
+          pr "  char **ret = guestfs_int_daemon_return_string_list (retv);\n";
+          pr "  CAMLreturnT (char **, ret); /* caller frees */\n"
+       | RStringList (RMountable, _) ->
+          pr "  char **ret =\n";
+          pr "    guestfs_int_daemon_return_string_mountable_list (retv);\n";
+          pr "  CAMLreturnT (char **, ret); /* caller frees */\n"
+       | RStruct (_, typ) ->
+          pr "  guestfs_int_%s *ret =\n" typ;
+          pr "    return_%s (retv);\n" typ;
+          pr "  /* caller frees */\n";
+          pr "  CAMLreturnT (guestfs_int_%s *, ret);\n" typ
+       | RStructList (_, typ) ->
+          pr "  guestfs_int_%s_list *ret =\n" typ;
+          pr "    return_%s_list (retv);\n" typ;
+          pr "  /* caller frees */\n";
+          pr "  CAMLreturnT (guestfs_int_%s_list *, ret);\n" typ
+       | RHashtable (RPlainString, RPlainString, _)
+       | RHashtable (RPlainString, RDevice, _) ->
+          pr "  char **ret =\n";
+          pr "    guestfs_int_daemon_return_hashtable_string_string (retv);\n";
+          pr "  CAMLreturnT (char **, ret); /* caller frees */\n"
+       | RHashtable (RMountable, RPlainString, _) ->
+          pr "  char **ret =\n";
+          pr "    guestfs_int_daemon_return_hashtable_mountable_string (retv);\n";
+          pr "  CAMLreturnT (char **, ret); /* caller frees */\n"
+       | RHashtable (RPlainString, RMountable, _) ->
+          pr "  char **ret =\n";
+          pr "    guestfs_int_daemon_return_hashtable_string_mountable (retv);\n";
+          pr "  CAMLreturnT (char **, ret); /* caller frees */\n"
+       | RHashtable _ -> assert false
+       | RBufferOut _ -> assert false
+      );
+      pr "}\n";
+      pr "\n"
+  ) (actions |> impl_ocaml_functions |> sort)
 
 let generate_daemon_dispatch () =
   generate_header CStyle GPLv2plus;
@@ -437,7 +825,7 @@ let generate_daemon_dispatch () =
   pr "  switch (proc_nr) {\n";
 
   List.iter (
-    fun { name = name } ->
+    fun { name } ->
       pr "    case GUESTFS_PROC_%s:\n" (String.uppercase_ascii name);
       pr "      %s_stub (xdr_in);\n" name;
       pr "      break;\n"
@@ -652,7 +1040,7 @@ let generate_daemon_names () =
   pr "const char *function_names[] = {\n";
   List.iter (
     function
-    | { name = name; proc_nr = Some proc_nr } ->
+    | { name; proc_nr = Some proc_nr } ->
       pr "  [%d] = \"%s\",\n" proc_nr name
     | { proc_nr = None } -> assert false
   ) (actions |> daemon_functions |> sort);
@@ -665,6 +1053,8 @@ let generate_daemon_optgroups_c () =
   generate_header CStyle GPLv2plus;
 
   pr "#include <config.h>\n";
+  pr "\n";
+  pr "#include <caml/mlvalues.h>\n";
   pr "\n";
   pr "#include \"daemon.h\"\n";
   pr "#include \"optgroups.h\"\n";
@@ -688,7 +1078,22 @@ let generate_daemon_optgroups_c () =
         pr "  { \"%s\", optgroup_%s_available },\n" group group
   ) optgroups_names_all;
   pr "  { NULL, NULL }\n";
-  pr "};\n"
+  pr "};\n";
+  pr "\n";
+  pr "/* Wrappers so these functions can be called from OCaml code. */\n";
+  List.iter (
+    fun group ->
+      pr "extern value guestfs_int_daemon_optgroup_%s_available (value);\n"
+         group;
+      pr "\n";
+      pr "/* NB: This is a \"noalloc\" call. */\n";
+      pr "value\n";
+      pr "guestfs_int_daemon_optgroup_%s_available (value unitv)\n" group;
+      pr "{\n";
+      pr "  return Val_bool (optgroup_%s_available ());\n" group;
+      pr "}\n";
+      pr "\n"
+  ) optgroups_names
 
 let generate_daemon_optgroups_h () =
   generate_header CStyle GPLv2plus;
@@ -719,7 +1124,7 @@ let generate_daemon_optgroups_h () =
       pr "#define OPTGROUP_%s_NOT_AVAILABLE \\\n"
          (String.uppercase_ascii group);
       List.iter (
-        fun { name = name; style = ret, args, optargs } ->
+        fun { name; style = ret, args, optargs } ->
           let style = ret, args @ args_of_optargs optargs, [] in
           pr "  ";
           generate_prototype
@@ -737,8 +1142,26 @@ let generate_daemon_optgroups_h () =
 
   pr "#endif /* GUESTFSD_OPTGROUPS_H */\n"
 
+(* Generate optgroup available functions in OCaml. *)
+let generate_daemon_optgroups_ml () =
+  generate_header OCamlStyle GPLv2plus;
+
+  List.iter (
+    fun group ->
+      pr "external %s_available : unit -> bool =\n" group;
+      pr "  \"guestfs_int_daemon_optgroup_%s_available\" \"noalloc\"\n" group
+  ) optgroups_names
+
+let generate_daemon_optgroups_mli () =
+  generate_header OCamlStyle GPLv2plus;
+
+  List.iter (
+    fun group ->
+      pr "val %s_available : unit -> bool\n" group
+  ) optgroups_names
+
 (* Generate structs-cleanups.c file. *)
-and generate_daemon_structs_cleanups_c () =
+let generate_daemon_structs_cleanups_c () =
   generate_header CStyle GPLv2plus;
 
   pr "\
@@ -788,7 +1211,7 @@ and generate_daemon_structs_cleanups_c () =
   ) structs
 
 (* Generate structs-cleanups.h file. *)
-and generate_daemon_structs_cleanups_h () =
+let generate_daemon_structs_cleanups_h () =
   generate_header CStyle GPLv2plus;
 
   pr "\

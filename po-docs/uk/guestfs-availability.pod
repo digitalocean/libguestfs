@@ -75,10 +75,12 @@ L</guestfs_btrfstune_seeding> L</guestfs_mkfs_btrfs>
 
 =item B<gdisk>
 
-Такі функції: L</guestfs_part_expand_gpt> L</guestfs_part_get_disk_guid>
+The following functions: L</guestfs_part_expand_gpt>
+L</guestfs_part_get_disk_guid> L</guestfs_part_get_gpt_attributes>
 L</guestfs_part_get_gpt_guid> L</guestfs_part_get_gpt_type>
 L</guestfs_part_set_disk_guid> L</guestfs_part_set_disk_guid_random>
-L</guestfs_part_set_gpt_guid> L</guestfs_part_set_gpt_type>
+L</guestfs_part_set_gpt_attributes> L</guestfs_part_set_gpt_guid>
+L</guestfs_part_set_gpt_type>
 
 =item B<grub>
 
@@ -92,7 +94,8 @@ L</guestfs_hivex_node_delete_child> L</guestfs_hivex_node_get_child>
 L</guestfs_hivex_node_get_value> L</guestfs_hivex_node_name>
 L</guestfs_hivex_node_parent> L</guestfs_hivex_node_set_value>
 L</guestfs_hivex_node_values> L</guestfs_hivex_open> L</guestfs_hivex_root>
-L</guestfs_hivex_value_key> L</guestfs_hivex_value_type>
+L</guestfs_hivex_value_key> L</guestfs_hivex_value_string>
+L</guestfs_hivex_value_type> L</guestfs_hivex_value_utf8>
 L</guestfs_hivex_value_value>
 
 =item B<inotify>
@@ -120,8 +123,13 @@ L</guestfs_list_ldm_volumes>
 
 =item B<libtsk>
 
-The following functions: L</guestfs_internal_filesystem_walk>
+Такі функції: L</guestfs_internal_filesystem_walk>
 L</guestfs_internal_find_inode>
+
+=item B<libyara>
+
+Такі функції: L</guestfs_internal_yara_scan> L</guestfs_yara_destroy>
+L</guestfs_yara_load>
 
 =item B<linuxcaps>
 
@@ -203,7 +211,7 @@ L</guestfs_scrub_freespace>
 
 =item B<squashfs>
 
-The following functions: L</guestfs_mksquashfs>
+Такі функції: L</guestfs_mksquashfs>
 
 =item B<syslinux>
 

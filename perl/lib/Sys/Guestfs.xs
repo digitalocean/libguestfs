@@ -4202,6 +4202,21 @@ PREINIT:
       RETVAL
 
 SV *
+hivex_value_string (g, valueh)
+      guestfs_h *g;
+      int64_t valueh;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_hivex_value_string (g, valueh);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
 hivex_value_type (g, valueh)
       guestfs_h *g;
       int64_t valueh;
@@ -8519,6 +8534,21 @@ PREINIT:
       RETVAL
 
 SV *
+part_get_gpt_attributes (g, device, partnum)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_part_get_gpt_attributes (g, device, partnum);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+SV *
 part_get_gpt_guid (g, device, partnum)
       guestfs_h *g;
       char *device;
@@ -8648,6 +8678,19 @@ PREINIT:
       guestfs_free_partition_list (r);
 
 void
+part_resize (g, device, partnum, endsect)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+      int64_t endsect;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_part_resize (g, device, partnum, endsect);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 part_set_bootable (g, device, partnum, bootable)
       guestfs_h *g;
       char *device;
@@ -8680,6 +8723,19 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_part_set_disk_guid_random (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+part_set_gpt_attributes (g, device, partnum, attributes)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+      int64_t attributes;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_part_set_gpt_attributes (g, device, partnum, attributes);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -11392,6 +11448,48 @@ PREINIT:
       RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
+
+void
+yara_destroy (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_yara_destroy (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+yara_load (g, filename)
+      guestfs_h *g;
+      char *filename;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_yara_load (g, filename);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+yara_scan (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      struct guestfs_yara_detection_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_yara_scan (g, path);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "yara_name", 9, newSVpv (r->val[i].yara_name, 0), 0);
+        (void) hv_store (hv, "yara_rule", 9, newSVpv (r->val[i].yara_rule, 0), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_yara_detection_list (r);
 
 void
 zegrep (g, regex, path)

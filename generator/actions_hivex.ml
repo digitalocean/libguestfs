@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,29 +22,10 @@ open Types
 
 (* Hivex APIs. *)
 
-let non_daemon_functions = [
-  { defaults with
-    name = "hivex_value_utf8"; added = (1, 19, 35);
-    style = RString "databuf", [Int64 "valueh"], [];
-    optional = Some "hivex";
-    shortdesc = "return the data field from the (key, datatype, data) tuple";
-    longdesc = "\
-This calls C<guestfs_hivex_value_value> (which returns the
-data field from a hivex value tuple).  It then assumes that
-the field is a UTF-16LE string and converts the result to
-UTF-8 (or if this is not possible, it returns an error).
-
-This is useful for reading strings out of the Windows registry.
-However it is not foolproof because the registry is not
-strongly-typed and fields can contain arbitrary or unexpected
-data." };
-
-]
-
 let daemon_functions = [
   { defaults with
     name = "hivex_open"; added = (1, 19, 35);
-    style = RErr, [Pathname "filename"], [OBool "verbose"; OBool "debug"; OBool "write"; OBool "unsafe"];
+    style = RErr, [String (Pathname, "filename")], [OBool "verbose"; OBool "debug"; OBool "write"; OBool "unsafe"];
     optional = Some "hivex";
     tests = [
       InitScratchFS, Always, TestRun (
@@ -85,7 +66,7 @@ This is a wrapper around the L<hivex(3)> call of the same name." };
 
   { defaults with
     name = "hivex_node_name"; added = (1, 19, 35);
-    style = RString "name", [Int64 "nodeh"], [];
+    style = RString (RPlainString, "name"), [Int64 "nodeh"], [];
     optional = Some "hivex";
     shortdesc = "return the name of the node";
     longdesc = "\
@@ -105,7 +86,7 @@ This is a wrapper around the L<hivex(3)> call of the same name." };
 
   { defaults with
     name = "hivex_node_get_child"; added = (1, 19, 35);
-    style = RInt64 "child", [Int64 "nodeh"; String "name"], [];
+    style = RInt64 "child", [Int64 "nodeh"; String (PlainString, "name")], [];
     optional = Some "hivex";
     shortdesc = "return the named child of node";
     longdesc = "\
@@ -136,7 +117,7 @@ This is a wrapper around the L<hivex(3)> call of the same name." };
 
   { defaults with
     name = "hivex_node_get_value"; added = (1, 19, 35);
-    style = RInt64 "valueh", [Int64 "nodeh"; String "key"], [];
+    style = RInt64 "valueh", [Int64 "nodeh"; String (PlainString, "key")], [];
     optional = Some "hivex";
     shortdesc = "return the named value";
     longdesc = "\
@@ -148,7 +129,7 @@ This is a wrapper around the L<hivex(3)> call of the same name." };
 
   { defaults with
     name = "hivex_value_key"; added = (1, 19, 35);
-    style = RString "key", [Int64 "valueh"], [];
+    style = RString (RPlainString, "key"), [Int64 "valueh"], [];
     optional = Some "hivex";
     shortdesc = "return the key field from the (key, datatype, data) tuple";
     longdesc = "\
@@ -179,6 +160,22 @@ This is a wrapper around the L<hivex(3)> call of the same name.
 See also: C<guestfs_hivex_value_utf8>." };
 
   { defaults with
+    name = "hivex_value_string"; added = (1, 37, 22);
+    style = RString (RPlainString, "databuf"), [Int64 "valueh"], [];
+    optional = Some "hivex";
+    shortdesc = "return the data field as a UTF-8 string";
+    longdesc = "\
+This calls C<guestfs_hivex_value_value> (which returns the
+data field from a hivex value tuple).  It then assumes that
+the field is a UTF-16LE string and converts the result to
+UTF-8 (or if this is not possible, it returns an error).
+
+This is useful for reading strings out of the Windows registry.
+However it is not foolproof because the registry is not
+strongly-typed and fields can contain arbitrary or unexpected
+data." };
+
+  { defaults with
     name = "hivex_commit"; added = (1, 19, 35);
     style = RErr, [OptString "filename"], [];
     optional = Some "hivex";
@@ -206,7 +203,7 @@ This is a wrapper around the L<hivex(3)> call of the same name." };
 
   { defaults with
     name = "hivex_node_add_child"; added = (1, 19, 35);
-    style = RInt64 "nodeh", [Int64 "parent"; String "name"], [];
+    style = RInt64 "nodeh", [Int64 "parent"; String (PlainString, "name")], [];
     optional = Some "hivex";
     shortdesc = "add a child node";
     longdesc = "\
@@ -226,7 +223,7 @@ This is a wrapper around the L<hivex(3)> call of the same name." };
 
   { defaults with
     name = "hivex_node_set_value"; added = (1, 19, 35);
-    style = RErr, [Int64 "nodeh"; String "key"; Int64 "t"; BufferIn "val"], [];
+    style = RErr, [Int64 "nodeh"; String (PlainString, "key"); Int64 "t"; BufferIn "val"], [];
     optional = Some "hivex";
     shortdesc = "set or replace a single value in a node";
     longdesc = "\

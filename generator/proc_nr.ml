@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -479,6 +479,39 @@ let proc_nr = [
 469, "aug_transform";
 470, "internal_find_inode";
 471, "mksquashfs";
+472, "yara_load";
+473, "yara_destroy";
+474, "internal_yara_scan";
+475, "file_architecture";
+476, "list_filesystems";
+477, "part_resize";
+478, "hivex_value_utf8";
+479, "hivex_value_string";
+480, "inspect_os";
+481, "inspect_get_roots";
+482, "inspect_get_format";
+483, "inspect_get_type";
+484, "inspect_get_distro";
+485, "inspect_get_package_format";
+486, "inspect_get_package_management";
+487, "inspect_get_product_name";
+488, "inspect_get_product_variant";
+489, "inspect_get_major_version";
+490, "inspect_get_minor_version";
+491, "inspect_get_arch";
+492, "inspect_get_hostname";
+493, "inspect_get_windows_systemroot";
+494, "inspect_get_windows_software_hive";
+495, "inspect_get_windows_system_hive";
+496, "inspect_get_windows_current_control_set";
+497, "inspect_is_live";
+498, "inspect_is_netinst";
+499, "inspect_is_multipart";
+500, "inspect_get_mountpoints";
+501, "inspect_get_filesystems";
+502, "inspect_get_drive_mappings";
+503, "part_set_gpt_attributes";
+504, "part_get_gpt_attributes";
 ]
 
 (* End of list.  If adding a new entry, add it at the end of the list

@@ -765,3 +765,24 @@ libguestfs generated file
  void guestfs_free_tsk_dirent (struct guestfs_tsk_dirent *);
  void guestfs_free_tsk_dirent_list (struct guestfs_tsk_dirent_list *);
 
+=head2 guestfs_yara_detection
+
+ struct guestfs_yara_detection {
+   char *yara_name;
+   char *yara_rule;
+ };
+ 
+ struct guestfs_yara_detection_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_yara_detection *val; /* Elements. */
+ };
+
+ int guestfs_compare_yara_detection (const struct guestfs_yara_detection *, const struct guestfs_yara_detection *);
+ int guestfs_compare_yara_detection_list (const struct guestfs_yara_detection_list *, const struct guestfs_yara_detection_list *);
+ 
+ struct guestfs_yara_detection *guestfs_copy_yara_detection (const struct guestfs_yara_detection *);
+ struct guestfs_yara_detection_list *guestfs_copy_yara_detection_list (const struct guestfs_yara_detection_list *);
+ 
+ void guestfs_free_yara_detection (struct guestfs_yara_detection *);
+ void guestfs_free_yara_detection_list (struct guestfs_yara_detection_list *);
+

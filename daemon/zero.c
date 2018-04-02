@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,6 @@
 #include "daemon.h"
 #include "actions.h"
 #include "optgroups.h"
-
-GUESTFSD_EXT_CMD(str_wipefs, wipefs);
 
 static const char zero_buf[4096];
 
@@ -81,7 +79,7 @@ do_zero (const char *device)
 int
 optgroup_wipefs_available (void)
 {
-  return prog_exists (str_wipefs);
+  return prog_exists ("wipefs");
 }
 
 /* See RHBZ#872831 */
@@ -93,7 +91,7 @@ wipefs_has_force_option (void)
   CLEANUP_FREE char *out = NULL, *err = NULL;
 
   if (flag == -1) {
-    r = command (&out, &err, str_wipefs, "--help", NULL);
+    r = command (&out, &err, "wipefs", "--help", NULL);
     if (r == -1) {
       reply_with_error ("%s", err);
       return -1;
@@ -118,7 +116,7 @@ do_wipefs (const char *device)
   if (force == -1)
     return -1;
 
-  ADD_ARG (argv, i, str_wipefs);
+  ADD_ARG (argv, i, "wipefs");
   ADD_ARG (argv, i, "-a");
   if (force)
     ADD_ARG (argv, i, "--force");
@@ -379,7 +377,7 @@ wipe_device_before_mkfs (const char *device)
   if (force == -1)
     return;
 
-  ADD_ARG (argv, i, str_wipefs);
+  ADD_ARG (argv, i, "wipefs");
   ADD_ARG (argv, i, "-a");
   if (force)
     ADD_ARG (argv, i, "--force");

@@ -1,7 +1,8 @@
 
 =head1 НАЗВА
 
-guestunmount - Unmount a guestmounted filesystem
+guestunmount — демонтування змонтованої за допомогою guestmount файлової
+системи
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -82,7 +83,7 @@ pipe is closed.
 
 =item B<--quiet>
 
-Don't display error messages from fusermount.  The return status is still
+Don’t display error messages from fusermount.  The return status is still
 set (see L</EXIT STATUS> below).
 
 =item B<--no-retry>
@@ -103,7 +104,7 @@ second>, S<2 seconds>, S<4 seconds>, etc before each retry.
 
 =item B<--version>
 
-Display the program version and exit.
+Показати дані щодо версії програми, потім вийти
 
 =back
 

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [36])
-m4_define([libguestfs_release], [13])
+m4_define([libguestfs_minor],   [38])
+m4_define([libguestfs_release], [0])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 
@@ -88,11 +88,11 @@ gl_INIT
 dnl Check for external programs required to either build or run
 dnl libguestfs.
 HEADING([Checking for external programs])
-m4_include([m4/guestfs_progs.m4])
+m4_include([m4/guestfs-progs.m4])
 
 dnl Find the release date for this version.  This is used in
 dnl the website 'index.html' file.  We have to do this after
-dnl testing for awk in guestfs_progs.m4 above.
+dnl testing for awk in guestfs-progs.m4 above.
 AC_MSG_CHECKING([for the release date of $PACKAGE_VERSION])
 RELEASE_DATE="$(grep ^$PACKAGE_VERSION@<:@@<:@:space:@:>@@:>@ ${srcdir}/RELEASES | $AWK '{print $2}' | head -1)"
 AS_IF([test "x$RELEASE_DATE" != "x"],[
@@ -107,63 +107,63 @@ AC_SUBST([RELEASE_DATE])
 
 dnl The C compiler environment.
 HEADING([Checking for the C compiler environment])
-m4_include([m4/guestfs_c.m4])
+m4_include([m4/guestfs-c.m4])
 
 dnl Any C libraries required by the libguestfs C library (not the daemon).
 HEADING([Checking for libraries used by libguestfs])
-m4_include([m4/guestfs_libraries.m4])
+m4_include([m4/guestfs-libraries.m4])
 
 dnl Check for FUSE.
 HEADING([Checking for FUSE])
-m4_include([m4/guestfs_fuse.m4])
+m4_include([m4/guestfs-fuse.m4])
 
 dnl The daemon and any dependencies.
 HEADING([Checking the daemon and its dependencies])
-m4_include([m4/guestfs_daemon.m4])
+m4_include([m4/guestfs-daemon.m4])
 
 dnl The appliance and any dependencies.
 HEADING([Checking the appliance and its dependencies])
-m4_include([m4/guestfs_appliance.m4])
+m4_include([m4/guestfs-appliance.m4])
 
 dnl Check for QEMU.
 HEADING([Checking for QEMU])
-m4_include([m4/guestfs_qemu.m4])
+m4_include([m4/guestfs-qemu.m4])
 
 dnl Miscellaneous libraries used by other programs.
 HEADING([Checking for other libraries])
-m4_include([m4/guestfs_misc_libraries.m4])
+m4_include([m4/guestfs-misc-libraries.m4])
 
 dnl Check for language bindings.
 HEADING([Checking for OCaml])
-m4_include([m4/guestfs_ocaml.m4])
+m4_include([m4/guestfs-ocaml.m4])
 HEADING([Checking for Perl])
-m4_include([m4/guestfs_perl.m4])
+m4_include([m4/guestfs-perl.m4])
 HEADING([Checking for Python])
-m4_include([m4/guestfs_python.m4])
+m4_include([m4/guestfs-python.m4])
 HEADING([Checking for Ruby])
-m4_include([m4/guestfs_ruby.m4])
+m4_include([m4/guestfs-ruby.m4])
 HEADING([Checking for Java])
-m4_include([m4/guestfs_java.m4])
+m4_include([m4/guestfs-java.m4])
 HEADING([Checking for Haskell])
-m4_include([m4/guestfs_haskell.m4])
+m4_include([m4/guestfs-haskell.m4])
 HEADING([Checking for PHP])
-m4_include([m4/guestfs_php.m4])
+m4_include([m4/guestfs-php.m4])
 HEADING([Checking for Erlang])
-m4_include([m4/guestfs_erlang.m4])
+m4_include([m4/guestfs-erlang.m4])
 HEADING([Checking for Lua])
-m4_include([m4/guestfs_lua.m4])
+m4_include([m4/guestfs-lua.m4])
 HEADING([Checking for Go])
-m4_include([m4/guestfs_golang.m4])
+m4_include([m4/guestfs-golang.m4])
 HEADING([Checking for GObject Introspection])
-m4_include([m4/guestfs_gobject.m4])
+m4_include([m4/guestfs-gobject.m4])
 
 dnl Bash completion.
 HEADING([Checking for bash completion])
-m4_include([m4/guestfs_bash_completion.m4])
+m4_include([m4/guestfs-bash-completion.m4])
 
 dnl Miscellaneous configuration that doesn't fit anywhere else.
 HEADING([Performing additional configuration])
-m4_include([m4/guestfs_misc.m4])
+m4_include([m4/guestfs-misc.m4])
 
 dnl Work around autoconf's lack of expanded variables.
 eval my_sysconfdir="\"[$]sysconfdir\""
@@ -194,6 +194,8 @@ AC_CONFIG_FILES([inspector/test-virt-inspector.sh],
                 [chmod +x,-w inspector/test-virt-inspector.sh])
 AC_CONFIG_FILES([installcheck.sh],
                 [chmod +x,-w installcheck.sh])
+AC_CONFIG_FILES([ocaml-dep.sh],
+                [chmod +x,-w ocaml-dep.sh])
 AC_CONFIG_FILES([p2v/virt-p2v-make-disk],
                 [chmod +x,-w p2v/virt-p2v-make-disk])
 AC_CONFIG_FILES([p2v/virt-p2v-make-kickstart],
@@ -224,15 +226,28 @@ AC_CONFIG_FILES([Makefile
                  common/errnostring/Makefile
                  common/edit/Makefile
                  common/miniexpect/Makefile
+                 common/mlaugeas/Makefile
+                 common/mlgettext/Makefile
+                 common/mlpcre/Makefile
+                 common/mlprogress/Makefile
+                 common/mlstdutils/Makefile
+                 common/mlstdutils/guestfs_config.ml
+                 common/mltools/Makefile
+                 common/mlutils/Makefile
+                 common/mlvisit/Makefile
+                 common/mlxml/Makefile
                  common/options/Makefile
                  common/parallel/Makefile
                  common/progress/Makefile
                  common/protocol/Makefile
+                 common/qemuopts/Makefile
+                 common/structs/Makefile
                  common/utils/Makefile
                  common/visit/Makefile
                  common/windows/Makefile
                  csharp/Makefile
                  customize/Makefile
+                 daemon/daemon_config.ml
                  daemon/Makefile
                  df/Makefile
                  dib/Makefile
@@ -262,8 +277,6 @@ AC_CONFIG_FILES([Makefile
                  lua/Makefile
                  lua/examples/Makefile
                  make-fs/Makefile
-                 mllib/Makefile
-                 mllib/guestfs_config.ml
                  ocaml/META
                  ocaml/Makefile
                  ocaml/examples/Makefile
@@ -335,6 +348,7 @@ AC_CONFIG_FILES([Makefile
                  tests/tsk/Makefile
                  tests/xfs/Makefile
                  tests/xml/Makefile
+                 tests/yara/Makefile
                  tools/Makefile
                  utils/boot-analysis/Makefile
                  utils/boot-benchmark/Makefile
@@ -356,7 +370,7 @@ echo "This is how we have configured the optional components for you today:"
 echo
 echo       "Daemon .............................. $enable_daemon"
 echo       "Appliance ........................... $ENABLE_APPLIANCE"
-echo       "QEMU ................................ $QEMU $QEMU_OPTIONS"
+echo       "QEMU ................................ $QEMU"
 echo       "guestfish and C-based virt tools .... yes"
 echo       "FUSE filesystem ..................... $enable_fuse"
 AS_ECHO_N(["GNU gettext for i18n ................ "])

@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,6 +44,8 @@
 #define SERIAL_CONSOLE "console=hvc0 console=ttyS0"
 #elif defined(__arm__) || defined(__aarch64__)
 #define SERIAL_CONSOLE "console=ttyAMA0"
+#elif defined(__s390x__)
+#define SERIAL_CONSOLE "console=ttysclp0"
 #else
 #define SERIAL_CONSOLE "console=ttyS0"
 #endif

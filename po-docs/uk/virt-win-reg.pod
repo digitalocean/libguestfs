@@ -95,8 +95,8 @@ If disk images are requested from libvirt, then this program asks libvirt
 for this information.  In this case, the value of the format parameter is
 ignored.
 
-If working with untrusted raw-format guest disk images, you should ensure
-the format is always specified.
+Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
+ненадійних джерел, вам слід завжди вказувати назву формату.
 
 =item B<--merge>
 
@@ -228,7 +228,7 @@ This file would need conversion before you could I<--merge> it.
 
 =head1 CurrentControlSet тощо.
 
-Registry keys like C<CurrentControlSet> don't really exist in the Windows
+Registry keys like C<CurrentControlSet> don’t really exist in the Windows
 Registry at the level of the hive file, and therefore you cannot modify
 these.
 
@@ -249,11 +249,13 @@ Similarly, other C<Current...> keys in the path may need to be replaced.
 
 =head1 ВИЛУЧЕННЯ КЛЮЧІВ ТА ЗНАЧЕНЬ РЕЄСТРУ
 
-To delete a whole registry key, use the syntax:
+Для вилучення усього ключа реєстру скористайтеся такою синтаксичною
+конструкцією:
 
  [-HKEY_LOCAL_MACHINE\Foo]
 
-To delete a single value within a key, use the syntax:
+Для вилучення окремого значення у ключі скористайтеся такою синтаксичною
+конструкцією:
 
  [HKEY_LOCAL_MACHINE\Foo]
  "Value"=-

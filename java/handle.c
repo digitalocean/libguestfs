@@ -1,5 +1,5 @@
 /* libguestfs Java bindings.
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@
 
 #include "com_redhat_et_libguestfs_GuestFS.h"
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h"
+#include "guestfs-utils.h"
 
 /* This is the opaque data passed between _set_event_callback and
  * the C wrapper which calls the Java event callback.

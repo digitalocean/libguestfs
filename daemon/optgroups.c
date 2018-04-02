@@ -23,6 +23,8 @@
 
 #include <config.h>
 
+#include <caml/mlvalues.h>
+
 #include "daemon.h"
 #include "optgroups.h"
 
@@ -47,6 +49,7 @@ struct optgroup optgroups[] = {
   { "journal", optgroup_journal_available },
   { "ldm", optgroup_ldm_available },
   { "libtsk", optgroup_libtsk_available },
+  { "libyara", optgroup_libyara_available },
   { "linuxcaps", optgroup_linuxcaps_available },
   { "linuxfsuuid", optgroup_linuxfsuuid_available },
   { "linuxmodules", optgroup_linuxmodules_available },
@@ -71,3 +74,320 @@ struct optgroup optgroups[] = {
   { "zerofree", optgroup_zerofree_available },
   { NULL, NULL }
 };
+
+/* Wrappers so these functions can be called from OCaml code. */
+extern value guestfs_int_daemon_optgroup_acl_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_acl_available (value unitv)
+{
+  return Val_bool (optgroup_acl_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_blkdiscard_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_blkdiscard_available (value unitv)
+{
+  return Val_bool (optgroup_blkdiscard_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_blkdiscardzeroes_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_blkdiscardzeroes_available (value unitv)
+{
+  return Val_bool (optgroup_blkdiscardzeroes_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_btrfs_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_btrfs_available (value unitv)
+{
+  return Val_bool (optgroup_btrfs_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_extlinux_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_extlinux_available (value unitv)
+{
+  return Val_bool (optgroup_extlinux_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_fstrim_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_fstrim_available (value unitv)
+{
+  return Val_bool (optgroup_fstrim_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_gdisk_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_gdisk_available (value unitv)
+{
+  return Val_bool (optgroup_gdisk_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_grub_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_grub_available (value unitv)
+{
+  return Val_bool (optgroup_grub_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_hivex_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_hivex_available (value unitv)
+{
+  return Val_bool (optgroup_hivex_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_inotify_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_inotify_available (value unitv)
+{
+  return Val_bool (optgroup_inotify_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_journal_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_journal_available (value unitv)
+{
+  return Val_bool (optgroup_journal_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_ldm_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_ldm_available (value unitv)
+{
+  return Val_bool (optgroup_ldm_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_libtsk_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_libtsk_available (value unitv)
+{
+  return Val_bool (optgroup_libtsk_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_libyara_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_libyara_available (value unitv)
+{
+  return Val_bool (optgroup_libyara_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_linuxcaps_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_linuxcaps_available (value unitv)
+{
+  return Val_bool (optgroup_linuxcaps_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_linuxfsuuid_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_linuxfsuuid_available (value unitv)
+{
+  return Val_bool (optgroup_linuxfsuuid_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_linuxmodules_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_linuxmodules_available (value unitv)
+{
+  return Val_bool (optgroup_linuxmodules_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_linuxxattrs_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_linuxxattrs_available (value unitv)
+{
+  return Val_bool (optgroup_linuxxattrs_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_luks_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_luks_available (value unitv)
+{
+  return Val_bool (optgroup_luks_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_lvm2_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_lvm2_available (value unitv)
+{
+  return Val_bool (optgroup_lvm2_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_mdadm_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_mdadm_available (value unitv)
+{
+  return Val_bool (optgroup_mdadm_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_mknod_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_mknod_available (value unitv)
+{
+  return Val_bool (optgroup_mknod_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_ntfs3g_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_ntfs3g_available (value unitv)
+{
+  return Val_bool (optgroup_ntfs3g_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_ntfsprogs_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_ntfsprogs_available (value unitv)
+{
+  return Val_bool (optgroup_ntfsprogs_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_rsync_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_rsync_available (value unitv)
+{
+  return Val_bool (optgroup_rsync_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_scrub_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_scrub_available (value unitv)
+{
+  return Val_bool (optgroup_scrub_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_selinux_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_selinux_available (value unitv)
+{
+  return Val_bool (optgroup_selinux_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_selinuxrelabel_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_selinuxrelabel_available (value unitv)
+{
+  return Val_bool (optgroup_selinuxrelabel_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_sleuthkit_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_sleuthkit_available (value unitv)
+{
+  return Val_bool (optgroup_sleuthkit_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_squashfs_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_squashfs_available (value unitv)
+{
+  return Val_bool (optgroup_squashfs_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_syslinux_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_syslinux_available (value unitv)
+{
+  return Val_bool (optgroup_syslinux_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_wipefs_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_wipefs_available (value unitv)
+{
+  return Val_bool (optgroup_wipefs_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_xfs_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_xfs_available (value unitv)
+{
+  return Val_bool (optgroup_xfs_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_xz_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_xz_available (value unitv)
+{
+  return Val_bool (optgroup_xz_available ());
+}
+
+extern value guestfs_int_daemon_optgroup_zerofree_available (value);
+
+/* NB: This is a "noalloc" call. */
+value
+guestfs_int_daemon_optgroup_zerofree_available (value unitv)
+{
+  return Val_bool (optgroup_zerofree_available ());
+}
+

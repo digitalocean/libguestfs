@@ -503,3 +503,21 @@ guestfs_free_tsk_dirent_list (struct guestfs_tsk_dirent_list *x)
   }
 }
 
+GUESTFS_DLL_PUBLIC void
+guestfs_free_yara_detection (struct guestfs_yara_detection *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_yara_detection, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
+guestfs_free_yara_detection_list (struct guestfs_yara_detection_list *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_yara_detection_list, (char *) x);
+    free (x);
+  }
+}
+

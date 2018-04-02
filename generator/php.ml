@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -55,7 +55,7 @@ PHP_FUNCTION (guestfs_last_error);
 ";
 
   List.iter (
-    fun { name = name } -> pr "PHP_FUNCTION (guestfs_%s);\n" name
+    fun { name } -> pr "PHP_FUNCTION (guestfs_%s);\n" name
   ) (actions |> external_functions |> sort);
 
   pr "\
@@ -90,7 +90,7 @@ and generate_php_c () =
 #include <php_guestfs_php.h>
 
 #include \"guestfs.h\"
-#include \"guestfs-internal-frontend.h\" /* Only for POINTER_NOT_IMPLEMENTED */
+#include \"guestfs-utils.h\" /* Only for POINTER_NOT_IMPLEMENTED */
 
 static int res_guestfs_h;
 
@@ -199,7 +199,7 @@ static zend_function_entry guestfs_php_functions[] = {
 ";
 
   List.iter (
-    fun { name = name } -> pr "  PHP_FE (guestfs_%s, NULL)\n" name
+    fun { name } -> pr "  PHP_FE (guestfs_%s, NULL)\n" name
   ) (actions |> external_functions |> sort);
 
   pr "  { NULL, NULL, NULL }
@@ -271,7 +271,7 @@ PHP_FUNCTION (guestfs_last_error)
   (* Now generate the PHP bindings for each action. *)
   List.iter (
     fun { name = shortname; style = ret, args, optargs as style;
-          c_function = c_function; c_optarg_prefix = c_optarg_prefix } ->
+          c_function; c_optarg_prefix } ->
       pr "PHP_FUNCTION (guestfs_%s)\n" shortname;
       pr "{\n";
       pr "  zval *z_g;\n";
@@ -279,19 +279,14 @@ PHP_FUNCTION (guestfs_last_error)
 
       List.iter (
         function
-        | String n | Device n | Mountable n | Pathname n
-        | Dev_or_Path n | Mountable_or_Path n
-        | FileIn n | FileOut n | Key n
-        | BufferIn n
-        | GUID n ->
+        | String (_, n)
+        | BufferIn n ->
             pr "  char *%s;\n" n;
             pr "  guestfs_string_length %s_size;\n" n
         | OptString n ->
             pr "  char *%s = NULL;\n" n;
             pr "  guestfs_string_length %s_size;\n" n
-        | StringList n
-        | DeviceList n
-        | FilenameList n ->
+        | StringList (_, n) ->
             pr "  zval *z_%s;\n" n;
             pr "  char **%s;\n" n;
         | Bool n ->
@@ -330,12 +325,10 @@ PHP_FUNCTION (guestfs_last_error)
       let param_string = String.concat "" (
         List.map (
           function
-          | String n | Device n | Mountable n | Pathname n
-          | Dev_or_Path n | Mountable_or_Path n
-          | FileIn n | FileOut n | BufferIn n | Key n
-          | GUID n -> "s"
+          | String (_, n)
+          | BufferIn n -> "s"
           | OptString n -> "s!"
-          | StringList n | DeviceList n | FilenameList n -> "a"
+          | StringList (_, n) -> "a"
           | Bool n -> "b"
           | Int n | Int64 n -> "l"
           | Pointer _ -> ""
@@ -365,12 +358,11 @@ PHP_FUNCTION (guestfs_last_error)
       pr "        &z_g";
       List.iter (
         function
-        | String n | Device n | Mountable n | Pathname n
-        | Dev_or_Path n | Mountable_or_Path n
-        | FileIn n | FileOut n | BufferIn n | Key n
-        | OptString n | GUID n ->
+        | String (_, n)
+        | BufferIn n
+        | OptString n ->
             pr ", &%s, &%s_size" n n
-        | StringList n | DeviceList n | FilenameList n ->
+        | StringList (_, n) ->
             pr ", &z_%s" n
         | Bool n ->
             pr ", &%s" n
@@ -400,10 +392,7 @@ PHP_FUNCTION (guestfs_last_error)
 
       List.iter (
         function
-        | String n | Device n | Mountable n | Pathname n
-        | Dev_or_Path n | Mountable_or_Path n
-        | FileIn n | FileOut n | Key n
-        | GUID n ->
+        | String (_, n) ->
             (* Just need to check the string doesn't contain any ASCII
              * NUL characters, which won't be supported by the C API.
              *)
@@ -422,9 +411,7 @@ PHP_FUNCTION (guestfs_last_error)
             pr "  }\n";
             pr "\n"
         | BufferIn n -> ()
-        | StringList n
-        | DeviceList n
-        | FilenameList n ->
+        | StringList (_, n) ->
             pr "  %s = get_stringlist (z_%s);\n" n n;
             pr "\n"
         | Bool _ | Int _ | Int64 _ -> ()
@@ -499,14 +486,10 @@ PHP_FUNCTION (guestfs_last_error)
       (* Free up parameters. *)
       List.iter (
         function
-        | String n | Device n | Mountable n | Pathname n
-        | Dev_or_Path n | Mountable_or_Path n
-        | FileIn n | FileOut n | Key n
-        | OptString n | GUID n -> ()
-        | BufferIn n -> ()
-        | StringList n
-        | DeviceList n
-        | FilenameList n ->
+        | String _
+        | OptString _
+        | BufferIn _ -> ()
+        | StringList (_, n) ->
             pr "  guestfs_efree_stringlist (%s);\n" n;
             pr "\n"
         | Bool _ | Int _ | Int64 _ | Pointer _ -> ()

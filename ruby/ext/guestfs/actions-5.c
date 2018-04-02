@@ -3139,7 +3139,7 @@ guestfs_int_ruby_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
  * Parse the list of strings in the argument "environment"
  * and set flags in the handle accordingly. For example if
  * "LIBGUESTFS_DEBUG=1" is a string in the list, then the
- * 'verbose' flag is set in the handle.
+ * ‘verbose’ flag is set in the handle.
  * 
  * This is the same as "g.parse_environment" except that it
  * parses an explicit list of strings instead of the
@@ -3217,6 +3217,43 @@ guestfs_int_ruby_part_get_bootable (VALUE gv, VALUE devicev, VALUE partnumv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.part_get_gpt_attributes(device, partnum) -> fixnum
+ *
+ * get the attribute flags of a GPT partition
+ *
+ * Return the attribute flags of numbered GPT partition
+ * "partnum". An error is returned for MBR partitions.
+ *
+ *
+ * [Since] Added in version 1.21.1.
+ *
+ * [Feature] This function depends on the feature +gdisk+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_part_get_gpt_attributes}[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_attributes].
+ */
+VALUE
+guestfs_int_ruby_part_get_gpt_attributes (VALUE gv, VALUE devicev, VALUE partnumv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_get_gpt_attributes");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+
+  int64_t r;
+
+  r = guestfs_part_get_gpt_attributes (g, device, partnum);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
 }
 
 /*
@@ -3640,7 +3677,7 @@ guestfs_int_ruby_set_uuid_random (VALUE gv, VALUE devicev)
  * cylinders, heads and sectors on the device, which are
  * passed directly to sfdisk as the *-C*, *-H* and *-S*
  * parameters. If you pass 0 for any of these, then the
- * corresponding parameter is omitted. Usually for 'large'
+ * corresponding parameter is omitted. Usually for ‘large’
  * disks, you can just pass 0 for these, but for small
  * (floppy-sized) disks, sfdisk (or rather, the kernel)
  * cannot work out the right geometry and you will need to
@@ -4106,7 +4143,7 @@ guestfs_int_ruby_txz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
  * 
  * No cleanup is performed: for example, if a file was
  * being uploaded then after cancellation there may be a
- * partially uploaded file. It is the caller's
+ * partially uploaded file. It is the caller’s
  * responsibility to clean up if necessary.
  * 
  * There are two common places that you might call

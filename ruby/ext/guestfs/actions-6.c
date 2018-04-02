@@ -910,6 +910,8 @@ guestfs_int_ruby_find (VALUE gv, VALUE directoryv)
  *
  * [Since] Added in version 1.0.72.
  *
+ * [Deprecated] In new code, use rdoc-ref:internal_get_console_socket instead.
+ *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_get_direct}[http://libguestfs.org/guestfs.3.html#guestfs_get_direct].
  */
@@ -2842,7 +2844,7 @@ guestfs_int_ruby_set_label (VALUE gv, VALUE mountablev, VALUE labelv)
  *
  * display the kernel geometry
  *
- * This displays the kernel's idea of the geometry of
+ * This displays the kernel’s idea of the geometry of
  * "device".
  * 
  * The result is in human-readable format, and not designed
@@ -3363,6 +3365,55 @@ guestfs_int_ruby_wc_c (VALUE gv, VALUE pathv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.yara_load(filename) -> nil
+ *
+ * load yara rules within libguestfs
+ *
+ * Upload a set of Yara rules from local file filename.
+ * 
+ * Yara rules allow to categorize files based on textual or
+ * binary patterns within their content. See "g.yara_scan"
+ * to see how to scan files with the loaded rules.
+ * 
+ * Rules can be in binary format, as when compiled with
+ * yarac command, or in source code format. In the latter
+ * case, the rules will be first compiled and then loaded.
+ * 
+ * Rules in source code format cannot include external
+ * files. In such cases, it is recommended to compile them
+ * first.
+ * 
+ * Previously loaded rules will be destroyed.
+ *
+ *
+ * [Since] Added in version 1.37.13.
+ *
+ * [Feature] This function depends on the feature +libyara+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_yara_load}[http://libguestfs.org/guestfs.3.html#guestfs_yara_load].
+ */
+VALUE
+guestfs_int_ruby_yara_load (VALUE gv, VALUE filenamev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "yara_load");
+
+  const char *filename = StringValueCStr (filenamev);
+
+  int r;
+
+  r = guestfs_yara_load (g, filename);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
 }
 
 /*

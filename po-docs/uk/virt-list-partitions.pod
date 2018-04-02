@@ -1,7 +1,8 @@
 
 =head1 НАЗВА
 
-virt-list-partitions - List partitions in a virtual machine or disk image
+virt-list-partitions — показ списку розділів у віртуальній машині або на
+образі диска
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -55,8 +56,8 @@ If disk images are requested from libvirt, then this program asks libvirt
 for this information.  In this case, the value of the format parameter is
 ignored.
 
-If working with untrusted raw-format guest disk images, you should ensure
-the format is always specified.
+Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
+ненадійних джерел, вам слід завжди вказувати назву формату.
 
 =item B<-h>
 
@@ -91,5 +92,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

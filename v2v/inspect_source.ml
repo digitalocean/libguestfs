@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,8 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
 
 module G = Guestfs
@@ -120,7 +121,7 @@ and choose_root root_choice g = function
         printf "\n***\n";
         printf (f_"Dual- or multi-boot operating system detected.  Choose the root filesystem\nthat contains the main operating system from the list below:\n");
         printf "\n";
-        iteri (
+        List.iteri (
           fun i root ->
             let prod = g#inspect_get_product_name root in
             match prod with
@@ -131,7 +132,7 @@ and choose_root root_choice g = function
         let i = ref 0 in
         let n = List.length roots in
         while !i < 1 || !i > n do
-          printf (f_"Enter a number between 1 and %d, or 'exit': ") n;
+          printf (f_"Enter a number between 1 and %d, or ‘exit’: ") n;
           let input = read_line () in
           if input = "exit" || input = "q" || input = "quit" then
             exit 0
@@ -212,5 +213,5 @@ and sanity_check_inspection inspect =
 
 and error_if_unknown fieldname value =
   if value = "unknown" then
-    error (f_"inspection could not detect the source guest (or physical machine).\n\nAssuming that you are running virt-v2v/virt-p2v on a source which is supported (and not, for example, a blank disk), then this should not happen.\n\nInspection field '%s' was 'unknown'.")
+    error (f_"inspection could not detect the source guest (or physical machine).\n\nAssuming that you are running virt-v2v/virt-p2v on a source which is supported (and not, for example, a blank disk), then this should not happen.\n\nInspection field ‘%s’ was ‘unknown’.")
           fieldname

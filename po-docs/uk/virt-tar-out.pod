@@ -1,40 +1,44 @@
 
 =head1 НАЗВА
 
-virt-tar-out - Pack a virtual machine disk image directory into a tarball.
+virt-tar-out — пакування каталогу на образі диска віртуальної машини до
+архіву tar.
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-tar-out -a disk.img /dir files.tar
+ virt-tar-out -a диск.img /каталог файли.tar
 
- virt-tar-out -d domain /dir files.tar
+ virt-tar-out -d домен /каталог файли.tar
 
- virt-tar-out -d domain /dir - | gzip --best > files.tar.gz
+ virt-tar-out -d домен /каталог - | gzip --best > файли.tar.gz
 
 =head1 ОПИС
 
-C<virt-tar-out> packs a virtual machine disk image directory into a tarball.
+C<virt-tar-out> пакує каталог на образі диска віртуальної машини до архіву
+tar.
 
-The first parameter is the absolute path of the virtual machine directory.
-The second parameter is the tar file to write.  Use C<-> to write to
-standard output.
+Першим параметром є абсолютний шлях до каталогу у віртуальній машині. Другим
+параметром є файл архіву tar, до якого слід записати дані. Скорисайтеся
+параметром C<->, щоб вивести дані до стандартного виведення.
 
 =head1 ПРИКЛАДИ
 
-Download the home directories from a guest:
+Отримати домашні каталоги користувачів з гостьової операційної системи:
 
  virt-tar-out -d MyGuest /home - | gzip --best > homes.tar.gz
 
-=head1 JUST A SHELL SCRIPT WRAPPER AROUND GUESTFISH
+=head1 ПРОСТО СКРИПТ КОМАНДНОЇ ОБОЛОНКИ, ОБГОРТКА НАВКОЛО GUESTFISH
 
-This command is just a simple shell script wrapper around the
-L<guestfish(1)> C<tar-out> command.  For anything more complex than a
-trivial copy, you are probably better off using guestfish directly.
+Ця програма є простим скриптом командної оболонки, обгорткою навколо команди
+C<tar-out> L<guestfish(1)>. Якщо вам потрібно виконати якесь завдання,
+складніше за звичайне копіювання, ймовірно, варто скористатися guestfish
+безпосередньо.
 
 =head1 ПАРАМЕТРИ
 
-Since the shell script just passes options straight to guestfish, read
-L<guestfish(1)> to see the full list of options.
+Оскільки скрипт командної оболонки лише передає параметри безпосередньо до
+guestfish, ознайомтеся зі сторінкою підручника для L<guestfish(1)>, щоб
+дізнатися більше про повний набір параметрів.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 

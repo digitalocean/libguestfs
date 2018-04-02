@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2012-2017 Red Hat Inc.
+ * Copyright (C) 2012-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Actions
 open Docstrings
 open Events
@@ -33,7 +33,7 @@ open Utils
 
 let generate_header = generate_header ~inputs:["generator/gobject.ml"]
 
-let camel_of_name { camel_name = camel_name } = "Guestfs" ^ camel_name
+let camel_of_name { camel_name } = "Guestfs" ^ camel_name
 
 let generate_gobject_proto name ?(single_line = true)
                                 (ret, args, optargs) f =
@@ -77,19 +77,10 @@ let generate_gobject_proto name ?(single_line = true)
         pr "gint32 %s" n
       | Int64 n->
         pr "gint64 %s" n
-      | String n
-      | Device n | Mountable n
-      | Pathname n
-      | Dev_or_Path n | Mountable_or_Path n
-      | OptString n
-      | Key n
-      | FileIn n
-      | FileOut n
-      | GUID n ->
+      | String (_, n)
+      | OptString n ->
         pr "const gchar *%s" n
-      | StringList n
-      | DeviceList n
-      | FilenameList n ->
+      | StringList (_, n) ->
         pr "gchar *const *%s" n
       | BufferIn n ->
         pr "const guint8 *%s, gsize %s_size" n n
@@ -115,7 +106,7 @@ let filenames =
   List.map (fun { s_name = typ } -> "struct-" ^ typ) external_structs @
 
   (* optargs *)
-  List.map (function { name = name } -> "optargs-" ^ name) (
+  List.map (function { name } -> "optargs-" ^ name) (
     List.filter (
       function
       | { style = _, _, (_::_) } -> true
@@ -689,7 +680,7 @@ gboolean guestfs_session_close (GuestfsSession *session, GError **err);
 ";
 
   List.iter (
-    fun ({ name = name; style = style } as f) ->
+    fun ({ name; style } as f) ->
       generate_gobject_proto name style f;
       pr ";\n";
   ) (actions |> external_functions |> sort);
@@ -945,11 +936,10 @@ guestfs_session_close (GuestfsSession *session, GError **err)
   let literal = Str.regexp "\\(^\\|\n\\)[ \t]+\\([^\n]*\\)\\(\n\\|$\\)" in
 
   List.iter (
-    fun ({ name = name; style = (ret, args, optargs as style);
-           cancellable = cancellable; c_function = c_function;
-           c_optarg_prefix = c_optarg_prefix;
-           shortdesc = shortdesc; longdesc = longdesc;
-           deprecated_by = deprecated_by } as f) ->
+    fun ({ name; style = (ret, args, optargs as style);
+           cancellable; c_function; c_optarg_prefix;
+           shortdesc; longdesc;
+           deprecated_by } as f) ->
       pr "\n";
 
       let longdesc = Str.global_substitute urls (
@@ -1029,17 +1019,17 @@ guestfs_session_close (GuestfsSession *session, GError **err)
             pr " (type gint32):"
           | Int64 _ ->
             pr " (type gint64):"
-          | String _ | Key _ | GUID _ ->
+          | String ((PlainString|Key|GUID), _) ->
             pr " (transfer none) (type utf8):"
           | OptString _ ->
             pr " (transfer none) (type utf8) (allow-none):"
-          | Device _ | Mountable _ | Pathname _
-          | Dev_or_Path _ | Mountable_or_Path _
-          | FileIn _ | FileOut _ ->
+          | String ((Device|Mountable|Pathname|Filename
+                     |Dev_or_Path|Mountable_or_Path|FileIn|FileOut), _) ->
             pr " (transfer none) (type filename):"
-          | StringList _ ->
+          | StringList ((PlainString|Key|GUID), _) ->
             pr " (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings"
-          | DeviceList _ | FilenameList _ ->
+          | StringList ((Device|Mountable|Pathname|Filename
+                         |Dev_or_Path|Mountable_or_Path|FileIn|FileOut), _) ->
             pr " (transfer none) (array zero-terminated=1) (element-type filename): an array of strings"
           | BufferIn n ->
             pr " (transfer none) (array length=%s_size) (element-type guint8): an array of binary data\n" n;
@@ -1204,11 +1194,10 @@ guestfs_session_close (GuestfsSession *session, GError **err)
           match argt with
           | BufferIn n ->
             pr "(const char *) %s, %s_size" n n
-          | Bool n | Int n | Int64 n | String n | Device n | Mountable n
-          | Pathname n | Dev_or_Path n | Mountable_or_Path n
-          | OptString n | StringList n
-          | DeviceList n | Key n | FileIn n | FileOut n
-          | GUID n | FilenameList n ->
+          | Bool n | Int n | Int64 n
+          | String (_, n)
+          | OptString n
+          | StringList (_, n) ->
             pr "%s" n
           | Pointer (_, n) ->
             pr "%s" n

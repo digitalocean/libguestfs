@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2017 Free Software Foundation, Inc.
+# Copyright (C) 2002-2018 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -159,7 +159,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module fstat-tests:
   # Code from module fstatat:
   # Code from module fstatat-tests:
-  # Code from module fsusage:
   # Code from module ftell:
   # Code from module ftell-tests:
   # Code from module ftello:
@@ -479,6 +478,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module timespec-add:
   # Code from module timespec-sub:
   # Code from module timespec-tests:
+  # Code from module tls:
+  # Code from module tls-tests:
   # Code from module ttyname_r:
   # Code from module ttyname_r-tests:
   # Code from module unistd:
@@ -693,11 +694,6 @@ AC_SUBST([LTALLOCA])
     AC_LIBOBJ([fstatat])
   fi
   gl_SYS_STAT_MODULE_INDICATOR([fstatat])
-  gl_FSUSAGE
-  if test $gl_cv_fs_space = yes; then
-    AC_LIBOBJ([fsusage])
-    gl_PREREQ_FSUSAGE_EXTRA
-  fi
   gl_FUNC_FTELL
   if test $REPLACE_FTELL = 1; then
     AC_LIBOBJ([ftell])
@@ -1189,6 +1185,7 @@ AC_SUBST([LTALLOCA])
   gl_THREADLIB
   gl_HEADER_TIME_H
   gl_TIMESPEC
+  gl_TLS
   gl_FUNC_TTYNAME_R
   if test $HAVE_TTYNAME_R = 0 || test $REPLACE_TTYNAME_R = 1; then
     AC_LIBOBJ([ttyname_r])
@@ -1761,8 +1758,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/fpending.h
   lib/fstat.c
   lib/fstatat.c
-  lib/fsusage.c
-  lib/fsusage.h
   lib/ftell.c
   lib/ftello.c
   lib/fts-cycle.c
@@ -1804,6 +1799,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/glthread/lock.c
   lib/glthread/lock.h
   lib/glthread/threadlib.c
+  lib/glthread/tls.c
+  lib/glthread/tls.h
   lib/hard-locale.c
   lib/hard-locale.h
   lib/hash-pjw.c
@@ -1838,7 +1835,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/malloc/scratch_buffer_set_array_size.c
   lib/malloca.c
   lib/malloca.h
-  lib/malloca.valgrind
   lib/mbrtowc.c
   lib/mbsinit.c
   lib/mbsrtowcs-impl.h
@@ -2055,7 +2051,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/fseeko.m4
   m4/fstat.m4
   m4/fstatat.m4
-  m4/fsusage.m4
   m4/ftell.m4
   m4/ftello.m4
   m4/ftruncate.m4
@@ -2231,6 +2226,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/threadlib.m4
   m4/time_h.m4
   m4/timespec.m4
+  m4/tls.m4
   m4/ttyname_r.m4
   m4/ungetc.m4
   m4/unistd-safer.m4
@@ -2505,6 +2501,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-thread_self.c
   tests/test-time.c
   tests/test-timespec.c
+  tests/test-tls.c
   tests/test-ttyname_r.c
   tests/test-unistd.c
   tests/test-unlink.c

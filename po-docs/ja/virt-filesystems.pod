@@ -219,7 +219,7 @@ LVM 論理ボリュームを表示します。  このモードでは、論理�
 
 =item B<--no-title>
 
-I<--long> モードでは、見出し行を追加しません。
+In I<--long> mode, don’t add a title row.
 
 Note that the order of the columns is not fixed, and may change in future
 versions of virt-filesystems, so using this option may give you unexpected
@@ -345,7 +345,7 @@ For shell scripts, use C<csvtool> (L<https://github.com/Chris00/ocaml-csv>
 also packaged in major Linux distributions).
 
 For other languages, use a CSV processing library (eg. C<Text::CSV> for Perl
-or Python's built-in csv library).
+or Python’s built-in csv library).
 
 Most spreadsheets and databases can import CSV directly.
 

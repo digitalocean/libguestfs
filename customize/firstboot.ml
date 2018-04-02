@@ -1,5 +1,5 @@
 (* virt-customize
- * Copyright (C) 2012-2017 Red Hat Inc.
+ * Copyright (C) 2012-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,18 +18,19 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
 
 open Regedit
 
 let unix2dos s =
-  String.concat "\r\n" (Str.split_delim (Str.regexp_string "\n") s)
+  String.concat "\r\n" (String.nsplit "\n" s)
 
 let sanitize_name =
-  let rex = Str.regexp "[^A-Za-z0-9_]" in
+  let rex = PCRE.compile ~caseless:true "[^a-z0-9_]" in
   fun n ->
-    let n = Str.global_replace rex "-" n in
+    let n = PCRE.replace ~global:true rex "-" n in
     let len = String.length n and max = 60 in
     if len >= max then String.sub n 0 max else n
 
@@ -153,7 +154,7 @@ WantedBy=%s
 
   and install_sysvinit_service g root distro major =
     match distro with
-    | "fedora"|"rhel"|"centos"|"scientificlinux"|"redhat-based" ->
+    | "fedora"|"rhel"|"centos"|"scientificlinux"|"oraclelinux"|"redhat-based" ->
       install_sysvinit_redhat g
     | "opensuse"|"sles"|"suse-based" ->
       install_sysvinit_suse g
@@ -231,10 +232,10 @@ WantedBy=%s
     if guest_arch_compatible then
       try ignore (g#sh cmd)
       with Guestfs.Error msg ->
-        warning (f_"could not finish firstboot installation by running '%s' because the command failed: %s")
+        warning (f_"could not finish firstboot installation by running ‘%s’ because the command failed: %s")
                 cmd msg
     else (
-      warning (f_"cannot finish firstboot installation by running '%s' because host cpu (%s) and guest arch (%s) are not compatible.  The firstboot service may not run at boot.")
+      warning (f_"cannot finish firstboot installation by running ‘%s’ because host cpu (%s) and guest arch (%s) are not compatible.  The firstboot service may not run at boot.")
               cmd Guestfs_config.host_cpu guest_arch
     )
 end

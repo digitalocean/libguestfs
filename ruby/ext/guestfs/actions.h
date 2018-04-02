@@ -38,7 +38,7 @@
 #endif
 
 #include "guestfs.h"
-#include "guestfs-internal-frontend.h" /* Only for POINTER_NOT_IMPLEMENTED */
+#include "guestfs-utils.h" /* Only for POINTER_NOT_IMPLEMENTED */
 
 #include "extconf.h"
 
@@ -286,6 +286,7 @@ extern VALUE guestfs_int_ruby_hivex_node_values (VALUE gv, VALUE nodehv);
 extern VALUE guestfs_int_ruby_hivex_open (int argc, VALUE *argv, VALUE gv);
 extern VALUE guestfs_int_ruby_hivex_root (VALUE gv);
 extern VALUE guestfs_int_ruby_hivex_value_key (VALUE gv, VALUE valuehv);
+extern VALUE guestfs_int_ruby_hivex_value_string (VALUE gv, VALUE valuehv);
 extern VALUE guestfs_int_ruby_hivex_value_type (VALUE gv, VALUE valuehv);
 extern VALUE guestfs_int_ruby_hivex_value_utf8 (VALUE gv, VALUE valuehv);
 extern VALUE guestfs_int_ruby_hivex_value_value (VALUE gv, VALUE valuehv);
@@ -496,6 +497,7 @@ extern VALUE guestfs_int_ruby_part_disk (VALUE gv, VALUE devicev, VALUE parttype
 extern VALUE guestfs_int_ruby_part_expand_gpt (VALUE gv, VALUE devicev);
 extern VALUE guestfs_int_ruby_part_get_bootable (VALUE gv, VALUE devicev, VALUE partnumv);
 extern VALUE guestfs_int_ruby_part_get_disk_guid (VALUE gv, VALUE devicev);
+extern VALUE guestfs_int_ruby_part_get_gpt_attributes (VALUE gv, VALUE devicev, VALUE partnumv);
 extern VALUE guestfs_int_ruby_part_get_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv);
 extern VALUE guestfs_int_ruby_part_get_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv);
 extern VALUE guestfs_int_ruby_part_get_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv);
@@ -504,9 +506,11 @@ extern VALUE guestfs_int_ruby_part_get_name (VALUE gv, VALUE devicev, VALUE part
 extern VALUE guestfs_int_ruby_part_get_parttype (VALUE gv, VALUE devicev);
 extern VALUE guestfs_int_ruby_part_init (VALUE gv, VALUE devicev, VALUE parttypev);
 extern VALUE guestfs_int_ruby_part_list (VALUE gv, VALUE devicev);
+extern VALUE guestfs_int_ruby_part_resize (VALUE gv, VALUE devicev, VALUE partnumv, VALUE endsectv);
 extern VALUE guestfs_int_ruby_part_set_bootable (VALUE gv, VALUE devicev, VALUE partnumv, VALUE bootablev);
 extern VALUE guestfs_int_ruby_part_set_disk_guid (VALUE gv, VALUE devicev, VALUE guidv);
 extern VALUE guestfs_int_ruby_part_set_disk_guid_random (VALUE gv, VALUE devicev);
+extern VALUE guestfs_int_ruby_part_set_gpt_attributes (VALUE gv, VALUE devicev, VALUE partnumv, VALUE attributesv);
 extern VALUE guestfs_int_ruby_part_set_gpt_guid (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv);
 extern VALUE guestfs_int_ruby_part_set_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv);
 extern VALUE guestfs_int_ruby_part_set_mbr_id (VALUE gv, VALUE devicev, VALUE partnumv, VALUE idbytev);
@@ -663,6 +667,9 @@ extern VALUE guestfs_int_ruby_xfs_admin (int argc, VALUE *argv, VALUE gv);
 extern VALUE guestfs_int_ruby_xfs_growfs (int argc, VALUE *argv, VALUE gv);
 extern VALUE guestfs_int_ruby_xfs_info (VALUE gv, VALUE pathordevicev);
 extern VALUE guestfs_int_ruby_xfs_repair (int argc, VALUE *argv, VALUE gv);
+extern VALUE guestfs_int_ruby_yara_destroy (VALUE gv);
+extern VALUE guestfs_int_ruby_yara_load (VALUE gv, VALUE filenamev);
+extern VALUE guestfs_int_ruby_yara_scan (VALUE gv, VALUE pathv);
 extern VALUE guestfs_int_ruby_zegrep (VALUE gv, VALUE regexv, VALUE pathv);
 extern VALUE guestfs_int_ruby_zegrepi (VALUE gv, VALUE regexv, VALUE pathv);
 extern VALUE guestfs_int_ruby_zero (VALUE gv, VALUE devicev);

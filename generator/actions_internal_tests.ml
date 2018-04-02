@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,14 @@ open Types
 (* These test functions are used in the language binding tests. *)
 
 let test_all_args = [
-  String "str";
+  String (PlainString, "str");
   OptString "optstr";
-  StringList "strlist";
+  StringList (PlainString, "strlist");
   Bool "b";
   Int "integer";
   Int64 "integer64";
-  FileIn "filein";
-  FileOut "fileout";
+  String (FileIn, "filein");
+  String (FileOut, "fileout");
   BufferIn "bufferin";
 ]
 
@@ -49,11 +49,11 @@ let test_all_rets = [
   "internal_test_rbool",        RBool "valout";
   "internal_test_rconststring", RConstString "valout";
   "internal_test_rconstoptstring", RConstOptString "valout";
-  "internal_test_rstring",      RString "valout";
-  "internal_test_rstringlist",  RStringList "valout";
+  "internal_test_rstring",      RString (RPlainString, "valout");
+  "internal_test_rstringlist",  RStringList (RPlainString, "valout");
   "internal_test_rstruct",      RStruct ("valout", "lvm_pv");
   "internal_test_rstructlist",  RStructList ("valout", "lvm_pv");
-  "internal_test_rhashtable",   RHashtable "valout";
+  "internal_test_rhashtable",   RHashtable (RPlainString, RPlainString, "valout");
   "internal_test_rbufferout",   RBufferOut "valout";
 ]
 
@@ -112,7 +112,7 @@ You probably don't want to call this function." }
     fun (name, ret) -> [
       { defaults with
         name = name;
-        style = ret, [String "val"], [];
+        style = ret, [String (PlainString, "val")], [];
         visibility = VBindTest;
         blocking = false;
         shortdesc = "internal test function - do not use";
@@ -145,7 +145,7 @@ You probably don't want to call this function." }
 let test_support_functions = [
   { defaults with
     name = "internal_test_set_output";
-    style = RErr, [String "filename"], [];
+    style = RErr, [String (PlainString, "filename")], [];
     visibility = VBindTest;
     blocking = false;
     shortdesc = "internal test function - do not use";

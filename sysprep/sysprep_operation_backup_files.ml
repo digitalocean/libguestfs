@@ -1,5 +1,5 @@
 (* virt-sysprep
- * Copyright (C) 2012-2017 Red Hat Inc.
+ * Copyright (C) 2012-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,10 @@
 
 open Printf
 
+open Std_utils
+open C_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 open Visit
 open Unix_utils.Fnmatch
 open Sysprep_operation

@@ -507,6 +507,13 @@ struct command_entry get_direct_cmd_entry = {
           "DESCRIPTION\n"
           "    Return the direct appliance mode flag.\n"
           "\n"
+          "    *This function is deprecated.* In new code, use the\n"
+          "    \"internal-get-console-socket\" call instead.\n"
+          "\n"
+          "    Deprecated functions will not be removed from the API, but the fact that\n"
+          "    they are deprecated indicates that there are problems with correct use\n"
+          "    of these functions.\n"
+          "\n"
           "",
   .synopsis = "get-direct",
   .run = run_get_direct
@@ -1391,7 +1398,7 @@ struct command_entry sfdisk_kernel_geometry_cmd_entry = {
           "     sfdisk-kernel-geometry device\n"
           "\n"
           "DESCRIPTION\n"
-          "    This displays the kernel's idea of the geometry of \"device\".\n"
+          "    This displays the kernel’s idea of the geometry of \"device\".\n"
           "\n"
           "    The result is in human-readable format, and not designed to be parsed.\n"
           "\n"
@@ -1603,6 +1610,35 @@ struct command_entry wc_c_cmd_entry = {
           "",
   .synopsis = "wc-c path",
   .run = run_wc_c
+};
+
+struct command_entry yara_load_cmd_entry = {
+  .name = "yara-load",
+  .help = "NAME\n"
+          "    yara-load - load yara rules within libguestfs\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     yara-load filename\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Upload a set of Yara rules from local file filename.\n"
+          "\n"
+          "    Yara rules allow to categorize files based on textual or binary patterns\n"
+          "    within their content. See \"yara_scan\" to see how to scan files with the\n"
+          "    loaded rules.\n"
+          "\n"
+          "    Rules can be in binary format, as when compiled with yarac command, or\n"
+          "    in source code format. In the latter case, the rules will be first\n"
+          "    compiled and then loaded.\n"
+          "\n"
+          "    Rules in source code format cannot include external files. In such\n"
+          "    cases, it is recommended to compile them first.\n"
+          "\n"
+          "    Previously loaded rules will be destroyed.\n"
+          "\n"
+          "",
+  .synopsis = "yara-load filename",
+  .run = run_yara_load
 };
 
 struct command_entry zegrep_cmd_entry = {

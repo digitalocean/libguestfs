@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-boot-analysis - Trace and analyze the appliance boot process
+boot-analysis — трасування і аналіз процесу завантаження базової системи
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -56,9 +56,9 @@ things up to date.
 
 Показати коротку довідку.
 
-=item B<--append> "OPTIONS"
+=item B<--append> "ПАРАМЕТРИ"
 
-Append C<OPTIONS> to the kernel command line.
+Дописати C<ПАРАМЕТРИ> до рядка команди ядра.
 
 =item B<--color>
 
@@ -95,5 +95,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2016 Red Hat Inc.
+© Red Hat Inc., 2016
 

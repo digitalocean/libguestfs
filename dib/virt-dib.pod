@@ -69,7 +69,7 @@ Use the specified architecture for the output image.  The default
 value is the same as the host running virt-dib.
 
 Right now this option does nothing more than setting the C<ARCH>
-environment variable for the elements, and it's up to them to
+environment variable for the elements, and it’s up to them to
 produce an image for the requested architecture.
 
 =item B<--checksum>
@@ -206,7 +206,7 @@ B<docker>.
 
 =item C<qcow2> (enabled by default)
 
-QEMU's qcow2.  This output format requires the C<qemu-img> tool.
+QEMU’s qcow2.  This output format requires the C<qemu-img> tool.
 
 =item C<raw>
 
@@ -348,17 +348,28 @@ Not applicable in ramdisk mode, see L</RAMDISK BUILDING>.
 
 =item B<--no-delete-on-failure>
 
-Don't delete the output files on failure to build.  You can use this
+Don’t delete the output files on failure to build.  You can use this
 to debug failures to run scripts.
 
 The default is to delete the output files if virt-dib fails (or,
 for example, some script that it runs fails).
 
+=item B<--python> PYTHON
+
+Specify a different Python interpreter to use.  Parts of
+C<diskimage-builder> are implemented in Python, and thus an
+interpreter is needed.
+
+C<PYTHON> can either be an executable filename (e.g. F<python2>,
+which is then searched in C<$PATH>), or a full path (e.g.
+F</usr/bin/python2>).  If not specified, the default value is
+F<python>.
+
 =item B<-q>
 
 =item B<--quiet>
 
-Don't print ordinary progress messages.
+Don’t print ordinary progress messages.
 
 =item B<--qemu-img-options> option[,option,...]
 

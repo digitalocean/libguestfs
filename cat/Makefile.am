@@ -1,5 +1,5 @@
 # libguestfs virt-cat, virt-filesystems, virt-log, virt-ls and virt-tail.
-# Copyright (C) 2010-2017 Red Hat Inc.
+# Copyright (C) 2010-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ virt_cat_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/common/structs -I$(top_builddir)/common/structs \
 	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
 	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
@@ -51,6 +52,7 @@ virt_cat_CFLAGS = \
 virt_cat_LDADD = \
 	$(top_builddir)/common/options/liboptions.la \
 	$(top_builddir)/common/windows/libwindows.la \
+	$(top_builddir)/common/structs/libstructs.la \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
@@ -65,6 +67,7 @@ virt_filesystems_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/common/structs -I$(top_builddir)/common/structs \
 	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
 	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
@@ -77,6 +80,7 @@ virt_filesystems_CFLAGS = \
 virt_filesystems_LDADD = \
 	$(top_builddir)/common/options/liboptions.la \
 	$(top_builddir)/common/windows/libwindows.la \
+	$(top_builddir)/common/structs/libstructs.la \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
@@ -91,6 +95,7 @@ virt_log_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/common/structs -I$(top_builddir)/common/structs \
 	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
 	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
@@ -102,6 +107,7 @@ virt_log_CFLAGS = \
 
 virt_log_LDADD = \
 	$(top_builddir)/common/options/liboptions.la \
+	$(top_builddir)/common/structs/libstructs.la \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
@@ -116,6 +122,7 @@ virt_ls_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/common/structs -I$(top_builddir)/common/structs \
 	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 	-I$(top_srcdir)/common/visit \
 	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
@@ -129,6 +136,7 @@ virt_ls_CFLAGS = \
 virt_ls_LDADD = \
 	$(top_builddir)/common/options/liboptions.la \
 	$(top_builddir)/common/visit/libvisit.la \
+	$(top_builddir)/common/structs/libstructs.la \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \
@@ -143,6 +151,7 @@ virt_tail_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+	-I$(top_srcdir)/common/structs -I$(top_builddir)/common/structs \
 	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
 	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
 	-I$(top_srcdir)/common/windows -I$(top_builddir)/common/windows \
@@ -155,6 +164,7 @@ virt_tail_CFLAGS = \
 virt_tail_LDADD = \
 	$(top_builddir)/common/options/liboptions.la \
 	$(top_builddir)/common/windows/libwindows.la \
+	$(top_builddir)/common/structs/libstructs.la \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libguestfs.la \
 	$(LIBXML2_LIBS) \

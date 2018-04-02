@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 (* Please read generator/README first. *)
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Actions
@@ -41,7 +41,7 @@ let () =
 
   (* Check function names. *)
   List.iter (
-    fun { name = name } ->
+    fun { name } ->
       let len = String.length name in
 
       if len >= 7 && String.sub name 0 7 = "guestfs" then
@@ -65,7 +65,7 @@ let () =
   (* Check added field was set to something. *)
   List.iter (
     function
-    | { name = name; visibility = VPublic|VPublicNoFish|VDebug;
+    | { name; visibility = VPublic|VPublicNoFish|VDebug;
         added = (-1, _, _) } ->
        failwithf "function %s has no 'added' (version when added) field" name
     | _ -> ()
@@ -73,7 +73,7 @@ let () =
 
   (* Check function parameter/return names. *)
   List.iter (
-    fun { name = name; style = style } ->
+    fun { name; style } ->
       let check_arg_ret_name n =
         if contains_uppercase n then
           failwithf "%s param/ret %s should not contain uppercase chars"
@@ -126,9 +126,9 @@ let () =
       (match ret with
        | RErr -> ()
        | RInt n | RInt64 n | RBool n
-       | RConstString n | RConstOptString n | RString n
-       | RStringList n | RStruct (n, _) | RStructList (n, _)
-       | RHashtable n | RBufferOut n ->
+       | RConstString n | RConstOptString n | RString (_, n)
+       | RStringList (_, n) | RStruct (n, _) | RStructList (n, _)
+       | RHashtable (_, _, n) | RBufferOut n ->
            check_arg_ret_name n
       );
       List.iter (fun arg -> check_arg_ret_name (name_of_argt arg)) args;
@@ -137,14 +137,14 @@ let () =
 
   (* Maximum of 63 optargs permitted. *)
   List.iter (
-    fun { name = name; style = _, _, optargs } ->
+    fun { name; style = _, _, optargs } ->
       if List.length optargs > 63 then
         failwithf "maximum of 63 optional args allowed for %s" name;
   ) actions;
 
   (* Some parameter types not supported for daemon functions. *)
   List.iter (
-    fun { name = name; style = _, args, _ } ->
+    fun { name; style = _, args, _ } ->
       let check_arg_type = function
         | Pointer _ ->
             failwithf "Pointer is not supported for daemon function %s."
@@ -154,9 +154,32 @@ let () =
       List.iter check_arg_type args;
   ) (actions |> daemon_functions);
 
+  (* Some String/stringt and StringList/stringt combinations are
+   * not permitted.
+   *)
+  List.iter (
+    fun { name; style = _, args, _ } ->
+      let check_arg_type = function
+        (* Previously only DeviceList and FilenameList were special list
+         * types.  We could permit more here in future.
+         *)
+        | StringList (FileIn, _)
+        | StringList (FileOut, _)
+        | StringList (Mountable, _)
+        | StringList (Pathname, _)
+        | StringList (Dev_or_Path, _)
+        | StringList (Mountable_or_Path, _)
+        | StringList (Key, _)
+        | StringList (GUID, _) ->
+           failwithf "StringList (t, _) is not permitted for %s." name
+        | _ -> ()
+      in
+      List.iter check_arg_type args
+  ) actions;
+
   (* Check short descriptions. *)
   List.iter (
-    fun { name = name; shortdesc = shortdesc } ->
+    fun { name; shortdesc } ->
       if shortdesc.[0] <> Char.lowercase_ascii shortdesc.[0] then
         failwithf "short description of %s should begin with lowercase." name;
       let c = shortdesc.[String.length shortdesc-1] in
@@ -166,7 +189,7 @@ let () =
 
   (* Check long descriptions. *)
   List.iter (
-    fun { name = name; longdesc = longdesc } ->
+    fun { name; longdesc } ->
       if longdesc.[String.length longdesc-1] = '\n' then
         failwithf "long description of %s should not end with \\n." name;
       if longdesc.[0] <> Char.uppercase_ascii longdesc.[0] then
@@ -175,7 +198,7 @@ let () =
 
   (* Check flags. *)
   List.iter (
-    fun ({ name = name; style = ret, _, _ } as f) ->
+    fun ({ name; style = ret, _, _ } as f) ->
       List.iter (
         fun n ->
           if contains_uppercase n then
@@ -214,7 +237,7 @@ let () =
   (* Check blocking flag is set on all daemon functions. *)
   List.iter (
     function
-    | { name = name; blocking = false } ->
+    | { name; blocking = false } ->
       failwithf "%s: blocking flag should be 'true' on this daemon function"
         name
     | { blocking = true } -> ()
@@ -223,7 +246,7 @@ let () =
   (* Check wrapper flag is set on all daemon functions. *)
   List.iter (
     function
-    | { name = name; wrapper = false } ->
+    | { name; wrapper = false } ->
       failwithf "%s: wrapper flag should be 'true' on this daemon function"
         name
     | { wrapper = true } -> ()
@@ -231,7 +254,7 @@ let () =
 
   (* Non-fish functions must have correct camel_name. *)
   List.iter (
-    fun { name = name; camel_name = camel_name } ->
+    fun { name; camel_name } ->
       if not (contains_uppercase camel_name) then
         failwithf "%s: camel case name must contain uppercase characters"
           name;
@@ -242,7 +265,7 @@ let () =
   (* ConfigOnly should only be specified on non_daemon_functions. *)
   List.iter (
     function
-    | { name = name; config_only = true } ->
+    | { name; config_only = true } ->
       failwithf "%s cannot have ConfigOnly flag" name
     | { config_only = false } -> ()
   ) ((actions |> daemon_functions) @ fish_commands);
@@ -250,7 +273,7 @@ let () =
   (* once_had_no_optargs can only apply if the function now has optargs. *)
   List.iter (
     function
-    | { name = name; once_had_no_optargs = true; style = _, _, [] } ->
+    | { name; once_had_no_optargs = true; style = _, _, [] } ->
       failwithf "%s cannot have once_had_no_optargs flag and no optargs" name
     | { once_had_no_optargs = false } | { style = _, _, (_::_) } -> ()
   ) actions;
@@ -262,7 +285,7 @@ let () =
        * warning when the user does 'make check' instead.
        *)
     | { tests = [] } -> ()
-    | { name = name; tests = tests } ->
+    | { name; tests } ->
       let funcs =
         List.map (
           fun (_, _, test, _) ->
@@ -283,7 +306,7 @@ let () =
     function
     | { tests = [] }
     | { optional = None } -> ()
-    | { name = name; tests = tests; optional = Some optgroup } ->
+    | { name; tests; optional = Some optgroup } ->
       List.iter (
         function
         | _, IfAvailable o, _, _ when o = optgroup ->

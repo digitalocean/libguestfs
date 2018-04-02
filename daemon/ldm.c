@@ -23,7 +23,6 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <glob.h>
 #include <string.h>
 
 #include <yajl/yajl_tree.h>
@@ -39,93 +38,10 @@
 #pragma GCC diagnostic ignored "-Wnull-dereference"
 #endif
 
-GUESTFSD_EXT_CMD(str_ldmtool, ldmtool);
-
 int
 optgroup_ldm_available (void)
 {
-  return prog_exists (str_ldmtool);
-}
-
-static int
-glob_errfunc (const char *epath, int eerrno)
-{
-  fprintf (stderr, "glob: failure reading %s: %s\n", epath, strerror (eerrno));
-  return 1;
-}
-
-static char **
-get_devices (const char *pattern)
-{
-  CLEANUP_FREE_STRINGSBUF DECLARE_STRINGSBUF (ret);
-  glob_t devs;
-  int err;
-  size_t i;
-
-  memset (&devs, 0, sizeof devs);
-
-  err = glob (pattern, GLOB_ERR, glob_errfunc, &devs);
-  if (err == GLOB_NOSPACE) {
-    reply_with_error ("glob: returned GLOB_NOSPACE: "
-                      "rerun with LIBGUESTFS_DEBUG=1");
-    goto error;
-  } else if (err == GLOB_ABORTED) {
-    reply_with_error ("glob: returned GLOB_ABORTED: "
-                      "rerun with LIBGUESTFS_DEBUG=1");
-    goto error;
-  }
-
-  for (i = 0; i < devs.gl_pathc; ++i) {
-    if (add_string (&ret, devs.gl_pathv[i]) == -1)
-      goto error;
-  }
-
-  if (end_stringsbuf (&ret) == -1) goto error;
-
-  globfree (&devs);
-  return take_stringsbuf (&ret);
-
- error:
-  globfree (&devs);
-
-  return NULL;
-}
-
-/* All device mapper devices called /dev/mapper/ldm_vol_*.  XXX We
- * could tighten this up in future if ldmtool had a way to read these
- * names back after they have been created.
- */
-char **
-do_list_ldm_volumes (void)
-{
-  struct stat buf;
-
-  /* If /dev/mapper doesn't exist at all, don't give an error. */
-  if (stat ("/dev/mapper", &buf) == -1) {
-    if (errno == ENOENT)
-      return empty_list ();
-    reply_with_perror ("/dev/mapper");
-    return NULL;
-  }
-
-  return get_devices ("/dev/mapper/ldm_vol_*");
-}
-
-/* Same as above but /dev/mapper/ldm_part_*.  See comment above. */
-char **
-do_list_ldm_partitions (void)
-{
-  struct stat buf;
-
-  /* If /dev/mapper doesn't exist at all, don't give an error. */
-  if (stat ("/dev/mapper", &buf) == -1) {
-    if (errno == ENOENT)
-      return empty_list ();
-    reply_with_perror ("/dev/mapper");
-    return NULL;
-  }
-
-  return get_devices ("/dev/mapper/ldm_part_*");
+  return prog_exists ("ldmtool");
 }
 
 int
@@ -134,7 +50,7 @@ do_ldmtool_create_all (void)
   int r;
   CLEANUP_FREE char *err = NULL;
 
-  r = command (NULL, &err, str_ldmtool, "create", "all", NULL);
+  r = command (NULL, &err, "ldmtool", "create", "all", NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     return -1;
@@ -148,7 +64,7 @@ do_ldmtool_remove_all (void)
   int r;
   CLEANUP_FREE char *err = NULL;
 
-  r = command (NULL, &err, str_ldmtool, "remove", "all", NULL);
+  r = command (NULL, &err, "ldmtool", "remove", "all", NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     return -1;
@@ -320,14 +236,14 @@ do_ldmtool_scan_devices (char * const * devices)
   int r;
   CLEANUP_FREE char *out = NULL, *err = NULL;
 
-  nr_devices = count_strings (devices);
+  nr_devices = guestfs_int_count_strings (devices);
   argv = malloc ((3 + nr_devices) * sizeof (char *));
   if (argv == NULL) {
     reply_with_perror ("malloc");
     return NULL;
   }
 
-  argv[0] = str_ldmtool;
+  argv[0] = "ldmtool";
   argv[1] = "scan";
   for (i = 0; i < nr_devices; ++i)
     argv[2+i] = devices[i];
@@ -349,7 +265,7 @@ do_ldmtool_diskgroup_name (const char *diskgroup)
   int r;
   CLEANUP_FREE char *out = NULL, *err = NULL;
 
-  r = command (&out, &err, str_ldmtool, "show", "diskgroup", diskgroup, NULL);
+  r = command (&out, &err, "ldmtool", "show", "diskgroup", diskgroup, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     return NULL;
@@ -365,7 +281,7 @@ do_ldmtool_diskgroup_volumes (const char *diskgroup)
   int r;
   CLEANUP_FREE char *out = NULL, *err = NULL;
 
-  r = command (&out, &err, str_ldmtool, "show", "diskgroup", diskgroup, NULL);
+  r = command (&out, &err, "ldmtool", "show", "diskgroup", diskgroup, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     return NULL;
@@ -381,7 +297,7 @@ do_ldmtool_diskgroup_disks (const char *diskgroup)
   int r;
   CLEANUP_FREE char *out = NULL, *err = NULL;
 
-  r = command (&out, &err, str_ldmtool, "show", "diskgroup", diskgroup, NULL);
+  r = command (&out, &err, "ldmtool", "show", "diskgroup", diskgroup, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     return NULL;
@@ -398,7 +314,7 @@ do_ldmtool_volume_type (const char *diskgroup, const char *volume)
   CLEANUP_FREE char *out = NULL, *err = NULL;
 
   r = command (&out, &err,
-               str_ldmtool, "show", "volume", diskgroup, volume, NULL);
+               "ldmtool", "show", "volume", diskgroup, volume, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     return NULL;
@@ -415,7 +331,7 @@ do_ldmtool_volume_hint (const char *diskgroup, const char *volume)
   CLEANUP_FREE char *out = NULL, *err = NULL;
 
   r = command (&out, &err,
-               str_ldmtool, "show", "volume", diskgroup, volume, NULL);
+               "ldmtool", "show", "volume", diskgroup, volume, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     return NULL;
@@ -432,7 +348,7 @@ do_ldmtool_volume_partitions (const char *diskgroup, const char *volume)
   CLEANUP_FREE char *out = NULL, *err = NULL;
 
   r = command (&out, &err,
-               str_ldmtool, "show", "volume", diskgroup, volume, NULL);
+               "ldmtool", "show", "volume", diskgroup, volume, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     return NULL;

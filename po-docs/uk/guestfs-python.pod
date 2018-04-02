@@ -19,7 +19,7 @@ you also need to read L<guestfs(3)>.
 
 =head2 python_return_dict=True
 
-All new code should construct the handle using:
+Увесь новий код має будувати дескриптор за допомогою такого:
 
  g = guestfs.GuestFS(python_return_dict=True)
 
@@ -43,8 +43,9 @@ single string argument which is the error message.
 
 =head2 USING PYTHON BINDINGS IN A VIRTUALENV
 
-These bindings are I<not> available in pypi owing to a licensing problem.
-See L<https://bugzilla.redhat.com/1075594> for current status.
+Ці прив'язки недоступні у pypi через проблеми із ліцензуванням. За станом
+розв'язання проблем можна слідкувати тут:
+L<https://bugzilla.redhat.com/1075594>.
 
 However we do publish a Python distribution for selected stable versions of
 libguestfs in L<http://libguestfs.org/download/python>.  You can use it like

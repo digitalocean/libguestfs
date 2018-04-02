@@ -1,44 +1,47 @@
 
 =head1 НАЗВА
 
-virt-copy-in - Copy files and directories into a virtual machine disk image.
+virt-copy-in — копіювання файлів та каталогів до образу диска віртуальної
+машини.
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-copy-in -a disk.img file|dir [file|dir ...] /destination
+ virt-copy-in -a диск.img файл|каталог [файл|каталог ...] /призначення
 
- virt-copy-in -d domain file|dir [file|dir ...] /destination
+ virt-copy-in -d домент файл|каталог [файл|каталог ...] /призначення
 
 =head1 ОПИС
 
-C<virt-copy-in> copies files and directories from the local disk into a
-virtual machine disk image or named libvirt domain.
+C<virt-copy-in> копіює файли та каталоги з локального диска до образу диска
+віртувальної машини або іменованого домену libvirt.
 
-You can give one or more filenames and directories on the command line.
-Directories are copied in recursively.  The final parameter must be the
-destination directory in the disk image which must be an absolute path
-starting with a F</> character.
+У рядку команди можна вказати одну або декілька назв файлів або
+каталогів. Каталоги буде скопійовано рекурсивно. Останнім параметром має
+бути каталог призначення на образі диску, який має бути вказано як
+абсолютний шлях, що починається із символу F</>.
 
 =head1 ПРИКЛАДИ
 
-Update F</etc/resolv.conf> in a guest:
+Оновлення F</etc/resolv.conf> у гостьовій системі:
 
  virt-copy-in -d MyGuest resolv.conf /etc
 
-Upload a home directory to a guest:
+Вивантаження домашнього каталогу до гостьової системи:
 
  virt-copy-in -d MyGuest skel /home
 
-=head1 JUST A SHELL SCRIPT WRAPPER AROUND GUESTFISH
+=head1 ПРОСТО СКРИПТ КОМАНДНОЇ ОБОЛОНКИ, ОБГОРТКА НАВКОЛО GUESTFISH
 
-This command is just a simple shell script wrapper around the
-L<guestfish(1)> C<copy-in> command.  For anything more complex than a
-trivial copy, you are probably better off using guestfish directly.
+Ця програма є простим скриптом командної оболонки, обгорткою навколо команди
+C<copy-in> L<guestfish(1)>. Якщо вам потрібно виконати якесь завдання,
+складніше за звичайне копіювання, ймовірно, варто скористатися guestfish
+безпосередньо.
 
 =head1 ПАРАМЕТРИ
 
-Since the shell script just passes options straight to guestfish, read
-L<guestfish(1)> to see the full list of options.
+Оскільки скрипт командної оболонки лише передає параметри безпосередньо до
+guestfish, ознайомтеся зі сторінкою підручника для L<guestfish(1)>, щоб
+дізнатися більше про повний набір параметрів.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 

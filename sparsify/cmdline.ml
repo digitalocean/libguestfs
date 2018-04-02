@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2017 Red Hat Inc.
+ * Copyright (C) 2011-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,9 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 open Getopt.OptionName
 
 open Utils
@@ -42,7 +43,7 @@ and mode_t =
 and check_t = [`Ignore|`Continue|`Warn|`Fail]
 
 let parse_cmdline () =
-  let add xs s = push_front s xs in
+  let add xs s = List.push_front s xs in
 
   let check_tmpdir = ref `Warn in
   let set_check_tmpdir = function
@@ -51,7 +52,7 @@ let parse_cmdline () =
     | "warn" | "warning" | "w" -> check_tmpdir := `Warn
     | "fail" | "f" | "error" -> check_tmpdir := `Fail
     | str ->
-      error (f_"--check-tmpdir: unknown argument `%s'") str
+      error (f_"--check-tmpdir: unknown argument ‘%s’") str
   in
 
   let compress = ref false in
@@ -77,7 +78,7 @@ let parse_cmdline () =
     [ L"zero" ],    Getopt.String (s_"fs", add zeroes),   s_"Zero filesystem";
   ] in
   let disks = ref [] in
-  let anon_fun s = push_front s disks in
+  let anon_fun s = List.push_front s disks in
   let usage_msg =
     sprintf (f_"\
 %s: sparsify a virtual machine disk
@@ -146,7 +147,7 @@ read the man page virt-sparsify(1).
 
       (* Check the output is not a char special (RHBZ#1056290). *)
       if is_char_device outdisk then
-        error (f_"output '%s' cannot be a character device, it must be a regular file")
+        error (f_"output ‘%s’ cannot be a character device, it must be a regular file")
               outdisk;
 
       indisk,

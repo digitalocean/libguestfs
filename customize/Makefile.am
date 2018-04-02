@@ -1,5 +1,5 @@
 # virt-customize
-# Copyright (C) 2014-2017 Red Hat Inc.
+# Copyright (C) 2014-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ EXTRA_DIST = \
 	customize_main.ml \
 	test-firstboot.sh \
 	test-password.pl \
+	test-selinuxrelabel.sh \
 	test-settings.sh \
 	test-virt-customize.sh \
 	test-virt-customize-docs.sh \
@@ -38,6 +39,7 @@ SOURCES_MLI = \
 	append_line.mli \
 	crypt.mli \
 	customize_cmdline.mli \
+	customize_main.mli \
 	customize_run.mli \
 	firstboot.mli \
 	hostname.mli \
@@ -47,8 +49,7 @@ SOURCES_MLI = \
 	SELinux_relabel.mli \
 	ssh_key.mli \
 	subscription_manager.mli \
-	timezone.mli \
-	urandom.mli
+	timezone.mli
 
 # This list must be in dependency order.
 SOURCES_ML = \
@@ -56,7 +57,6 @@ SOURCES_ML = \
 	crypt.ml \
 	firstboot.ml \
 	hostname.ml \
-	urandom.ml \
 	password.ml \
 	perl_edit.ml \
 	random_seed.ml \
@@ -124,7 +124,11 @@ OCAMLPACKAGES = \
 	-I $(top_builddir)/lib/.libs \
 	-I $(top_builddir)/gnulib/lib/.libs \
 	-I $(top_builddir)/ocaml \
-	-I $(top_builddir)/mllib \
+	-I $(top_builddir)/common/mlstdutils \
+	-I $(top_builddir)/common/mlutils \
+	-I $(top_builddir)/common/mlgettext \
+	-I $(top_builddir)/common/mlpcre \
+	-I $(top_builddir)/common/mltools \
 	-I $(builddir)
 if HAVE_OCAML_PKG_GETTEXT
 OCAMLPACKAGES += -package gettext-stub
@@ -150,7 +154,15 @@ else
 CUSTOMIZE_THEOBJECTS = $(CUSTOMIZE_XOBJECTS)
 endif
 
-OCAMLLINKFLAGS = mlguestfs.$(MLARCHIVE) mllib.$(MLARCHIVE) customize.$(MLARCHIVE) $(LINK_CUSTOM_OCAMLC_ONLY)
+OCAMLLINKFLAGS = \
+	mlstdutils.$(MLARCHIVE) \
+	mlguestfs.$(MLARCHIVE) \
+	mlgettext.$(MLARCHIVE) \
+	mlpcre.$(MLARCHIVE) \
+	mlcutils.$(MLARCHIVE) \
+	mltools.$(MLARCHIVE) \
+	customize.$(MLARCHIVE) \
+	$(LINK_CUSTOM_OCAMLC_ONLY)
 
 OCAMLCLIBS = \
 	-lutils \
@@ -167,7 +179,10 @@ virt_customize_DEPENDENCIES = \
 	$(top_srcdir)/ocaml-link.sh \
 	$(CUSTOMIZE_THEOBJECTS) \
 	$(CUSTOMIZE_CMA) \
-	../mllib/mllib.$(MLARCHIVE)
+	../common/mlutils/mlcutils.$(MLARCHIVE) \
+	../common/mlgettext/mlgettext.$(MLARCHIVE) \
+	../common/mlpcre/mlpcre.$(MLARCHIVE) \
+	../common/mltools/mltools.$(MLARCHIVE)
 virt_customize_LINK = \
 	$(top_srcdir)/ocaml-link.sh -cclib '$(OCAMLCLIBS)' -- \
 	  $(OCAMLFIND) $(BEST) $(OCAMLFLAGS) $(OCAMLPACKAGES) $(OCAMLLINKFLAGS) \
@@ -211,6 +226,7 @@ check-valgrind:
 SLOW_TESTS = \
 	$(firstboot_test_scripts) \
 	$(password_test_scripts) \
+	test-selinuxrelabel.sh \
 	$(settings_test_scripts)
 
 check-slow:
@@ -225,6 +241,7 @@ firstboot_test_scripts := \
 	test-firstboot-debian-7.sh \
 	test-firstboot-debian-8.sh \
 	test-firstboot-fedora-25.sh \
+	test-firstboot-fedora-26.sh \
 	test-firstboot-ubuntu-10.04.sh \
 	test-firstboot-ubuntu-12.04.sh \
 	test-firstboot-ubuntu-14.04.sh \
@@ -294,20 +311,11 @@ CLEANFILES += \
 	password-*.log \
 	settings-*.img
 
-# Dependencies.
-depend: .depend
-
-.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
-	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) -I $(abs_top_builddir)/mllib $^ | \
-	  $(SED) 's/ *$$//' | \
-	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
-	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
-	  sort > $@-t
-	mv $@-t $@
-
+# OCaml dependencies.
+.depend: *.mli *.ml
+	$(top_builddir)/ocaml-dep.sh $^
 -include .depend
 
 endif
 
-.PHONY: depend docs
+.PHONY: docs

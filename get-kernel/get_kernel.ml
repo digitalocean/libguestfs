@@ -1,5 +1,5 @@
 (* virt-get-kernel
- * Copyright (C) 2013-2017 Red Hat Inc.
+ * Copyright (C) 2013-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 open Getopt.OptionName
 
 module G = Guestfs
@@ -39,7 +40,7 @@ let parse_cmdline () =
       error (f_"--add option can only be given once");
     let uri =
       try URI.parse_uri arg
-      with Invalid_argument "URI.parse_uri" ->
+      with URI.Parse_failed ->
         error (f_"error parsing URI '%s'. Look for error messages printed above.") arg in
     file := Some uri
   and set_domain dom =
@@ -99,9 +100,7 @@ read the man page virt-get-kernel(1).
                   ?libvirturi dom)
     | Some uri, None ->
       fun g ->
-        let { URI.path = path; protocol = protocol;
-              server = server; username = username;
-              password = password } = uri in
+        let { URI.path; protocol; server; username; password } = uri in
         let format = match !format with "auto" -> None | s -> Some s in
         g#add_drive
           ~readonly:true ?format ~protocol ?server ?username ?secret:password
@@ -124,7 +123,7 @@ let rec do_fetch ~transform_fn ~outputdir g root =
     match typ with
     | "linux" -> pick_kernel_files_linux g root
     | typ ->
-      error (f_"operating system '%s' not supported") typ in
+      error (f_"operating system ‘%s’ not supported") typ in
 
   (* Download the files. *)
   List.iter (

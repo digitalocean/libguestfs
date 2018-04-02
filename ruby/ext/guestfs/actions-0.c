@@ -926,7 +926,7 @@ guestfs_int_ruby_disk_has_backing_file (VALUE gv, VALUE filenamev)
  * the "forceall" option.
  * 
  * "forceall"
- * Assume an answer of 'yes' to all questions; allows
+ * Assume an answer of ‘yes’ to all questions; allows
  * e2fsck to be used non-interactively.
  * 
  * This option may not be specified at the same time as
@@ -1610,6 +1610,12 @@ guestfs_int_ruby_hivex_value_type (VALUE gv, VALUE valuehv)
  * 
  * "meego"
  * MeeGo.
+ * 
+ * "msdos"
+ * Microsoft DOS.
+ * 
+ * "neokylin"
+ * NeoKylin.
  * 
  * "netbsd"
  * NetBSD.
@@ -3815,6 +3821,8 @@ guestfs_int_ruby_set_backend (VALUE gv, VALUE backendv)
  *
  *
  * [Since] Added in version 1.0.72.
+ *
+ * [Deprecated] In new code, use rdoc-ref:internal_get_console_socket instead.
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_set_direct}[http://libguestfs.org/guestfs.3.html#guestfs_set_direct].

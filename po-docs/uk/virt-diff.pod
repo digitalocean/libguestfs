@@ -1,35 +1,37 @@
 
 =head1 НАЗВА
 
-virt-diff - Differences between files in two virtual machines
+virt-diff -- показ відмінностей між файлами у двох віртуальних машинах
 
 =head1 КОРОТКИЙ ОПИС
 
  virt-diff [--параметри] -d домен1 -D домен2
 
- virt-diff [--options] -a disk1.img [-a ...] -A disk2.img [-A ...]
+ virt-diff [--параметри] -a диск1.img [-a ...] -A диск2.img [-A ...]
 
 =head1 ОПИС
 
-C<virt-diff> lists the differences between files in two virtual machines or
-disk images.  The usual use case is to show the changes in a VM after it has
-been running for a while, by taking a snapshot, running the VM, and then
-using this tool to show what changed between the new VM state and the old
-snapshot.
+C<virt-diff> показує список відмінностей між файлами у двох віртуальних
+машинах або на двох образах дисків. Звичайним випадком застосування є показ
+змін у віртуальній машині після певного проміжку роботи: можна зробити
+знімок, запустити віртуальну машину, а потмі скористатися цією програмою для
+перегляду змін, які відрізняють новий стан віртуальної машини і старий її
+знімок.
 
-This tool will find differences in filenames, file sizes, checksums,
-extended attributes, file content and more from a virtual machine or disk
-image.  However it B<does not> look at the boot loader, unused space between
-partitions or within filesystems, "hidden" sectors and so on.  In other
-words, it is not a security or forensics tool.
+Ця програма виявить відмінності у назвах файлів, розмірах файлів,
+контрольних сумах, розширених атрибутах, вмісті файлів та інших даних з
+віртуальної машини або образу диска. Втім, вона B<не> шукатиме відмінності у
+завантажувачі, невикористаному місці між розділами або всередині файлових
+систем, «прихованих» секторах тощо. Іншими словами, це не інструмент
+вивчення питань безпеки або ретельного дослідження.
 
-To specify two guests, you have to use the I<-a> or I<-d> option(s)  for the
-first guest, and the I<-A> or I<-D> option(s) for the second guest.  The
-common case is:
+Щоб вказати дві гостьові системи, вам слід скористатися параметром I<-a> або
+I<-d> для першої гостьової системи і параметром I<-A> або I<-D> для
+другої. Типовий варіант команди:
 
- virt-diff -a old.img -A new.img
+ virt-diff -a старий.img -A новий.img
 
-or using names known to libvirt:
+або з використанням відомих libvirt назв:
 
  virt-diff -d oldguest -D newguest
 
@@ -45,9 +47,9 @@ or using names known to libvirt:
 
 =item B<--add> файл
 
-Add I<file> which should be a disk image from the first virtual machine.  If
-the virtual machine has multiple block devices, you must supply all of them
-with separate I<-a> options.
+Додати I<файл>, який має бути образом диска з першої віртуальної
+машини. Якщо у віртуальній машині декілька блокових пристроїв, вам слід
+вказати їх усі за допомогою окремих записів параметра I<-a>.
 
 Формат образу диска визначається автоматично. Щоб перевизначити його і
 примусово використати певний формат, скористайтеся параметром
@@ -61,30 +63,31 @@ I<--format=..>.
 
 =item B<--all>
 
-Same as I<--extra-stats> I<--times> I<--uids> I<--xattrs>.
+Те саме, що I<--extra-stats> I<--times> I<--uids> I<--xattrs>.
 
 =item B<--atime>
 
-The default is to ignore changes in file access times, since those are
-unlikely to be interesting.  Using this flag shows atime differences as
-well.
+Типово, зміни у часі доступу до файла ігноруватимуться, оскільки вони,
+зазвичай, не варті уваги. Якщо буде використано цей параметр, програма
+показуватиме і відмінності у значеннях часу доступу.
 
 =item B<-A> файл
 
 =item B<-A> адреса
 
-Add a disk image from the second virtual machine.
+Додати образ диска із іншої віртуальної машини.
 
 =item B<--checksum>
 
 =item B<--checksum=crc|md5|sha1|sha224|sha256|sha384|sha512>
 
-Use a checksum over file contents to detect when regular files have changed
-content.
+Використовувати контрольну суму вмісту файла для визначення випадків зміни
+вмісту файла.
 
-With no argument, this defaults to using I<md5>.  Using an argument, you can
-select the checksum type to use.  If the flag is omitted then file times and
-size are used to determine if a file has changed.
+Без аргументів, типово, буде використано I<md5>. За допомогою аргумента ви
+можете вказати тип контрольної суми, яку буде використано. Якщо прапорець не
+вказано, для визначення того, чи було змінено файл, буде використано часові
+параметри та розмір файла.
 
 =item B<-c> адреса
 
@@ -98,21 +101,23 @@ libvirt не буде використовуватися взагалі.
 
 =item B<--csv>
 
-Write out the results in CSV format (comma-separated values).  This format
-can be imported easily into databases and spreadsheets, but read L</NOTE
-ABOUT CSV FORMAT> below.
+Вивести результати до формату CSV (записів, відокремлених комами). Дані у
+цьому форматі можна просто імпортувати до баз даних і електронних
+таблиць. Втім, варто ознайомитися із розділом L</НОТАТКА ЩОДО ФОРМАТУ CSV>,
+наведеним нижче.
 
 =item B<--dir-links>
 
-The default is to ignore changed in the number of links in directory
+The default is to ignore changes in the number of links in directory
 entries, since those are unlikely to be interesting.  Using this flag shows
 changes to the nlink field of directories.
 
 =item B<--dir-times>
 
-The default is to ignore changed times on directory entries, since those are
-unlikely to be interesting.  Using this flag shows changes to the time
-fields of directories.
+Типово, програма ігнорує зміну часових параметрів для записів каталогів,
+оскільки така зміна навряд чи є цікавою для користувача. За допомогою цього
+прапорця ви можете наказати програмі показувати зміни у полях часових
+параметрів каталогів.
 
 =item B<-d> гість
 
@@ -128,10 +133,10 @@ fields of directories.
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, virt-diff normally turns echoing
-off so you cannot see what you are typing.  If you are not worried about
-Tempest attacks and there is no one else in the room you can specify this
-flag to see what you are typing.
+Типово, якщо virt-diff попросить вас ввести ключ або пароль, програма не
+відтворюватиме введені символи на екрані. Якщо ви не боїтеся
+TEMPEST-нападів, або у вашій кімнаті нікого, окрім вас, немає, ви можете
+скористатися цим прапорцем, щоб бачити, які саме символи ви вводите.
 
 =item B<--extra-stats>
 
@@ -172,8 +177,9 @@ flag to see what you are typing.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening F</dev/tty>.
+Прочитати параметри ключа або пароля із джерела стандартного
+введення. Типово програма намагається читати паролі від користувача
+відкриттям F</dev/tty>.
 
 =item B<--times>
 
@@ -224,27 +230,30 @@ passphrases from the user by opening F</dev/tty>.
 
 =head1 ЗАУВАЖЕННЯ ЩОДО ФОРМАТУ CSV
 
-Comma-separated values (CSV) is a deceptive format.  It I<seems> like it
-should be easy to parse, but it is definitely not easy to parse.
+Формат значень, які відокремлено комами (CSV), є оманливо простим. Може
+I<здатися>, що його просто обробляти, але насправді це зовсім не так.
 
-Myth: Just split fields at commas.  Reality: This does I<not> work
-reliably.  This example has two columns:
+Міф: достатньо розділити поля за комами. Реальність: поділ комами I<не>
+працює у надійний спосіб. Ось приклад із двома стовпчиками:
 
  "foo,bar",baz
 
-Myth: Read the file one line at a time.  Reality: This does I<not> work
-reliably.  This example has one row:
+Міф: слід читати файл за рядками, один рядок за одну операцію
+читання. Реальність: читання за рядками I<не> працює у надійний спосіб. Ось
+приклад із одним рядком:
 
  "foo
  bar",baz
 
-For shell scripts, use C<csvtool> (L<https://github.com/Chris00/ocaml-csv>
-also packaged in major Linux distributions).
+Для скриптів командної оболонки скористайтеся C<csvtool>
+(L<https://github.com/Chris00/ocaml-csv> також є серед пакунків основних
+дистрибутивів Linux).
 
-For other languages, use a CSV processing library (eg. C<Text::CSV> for Perl
-or Python's built-in csv library).
+Для інших мов програмування використовуйте бібліотеку для обробки даних CSV
+(наприклад, C<Text::CSV> для Perl або вбудовану бібліотеку csv Python).
 
-Most spreadsheets and databases can import CSV directly.
+У більшості електронних таблиць та баз даних передбачено можливості
+безпосереднього імпортування даних CSV.
 
 =head1 СТАН ВИХОДУ
 
@@ -262,5 +271,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

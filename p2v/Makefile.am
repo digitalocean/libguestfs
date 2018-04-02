@@ -1,5 +1,5 @@
 # libguestfs virt-p2v
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,14 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
+generator_built = \
+	about-authors.c
+
+BUILT_SOURCES = \
+	$(generator_built)
+
 EXTRA_DIST = \
+	$(BUILT_SOURCES) \
 	$(TESTS) $(SLOW_TESTS) \
 	dependencies.m4 \
 	issue \
@@ -71,9 +78,9 @@ noinst_PROGRAMS = virt-p2v
 
 virt_p2v_SOURCES = \
 	about-authors.c \
-	about-license.c \
 	config.c \
 	conversion.c \
+	cpuid.c \
 	gui.c \
 	gui-gtk2-compat.h \
 	gui-gtk3-compat.h \
@@ -83,6 +90,8 @@ virt_p2v_SOURCES = \
 	main.c \
 	nbd.c \
 	p2v.h \
+	physical-xml.c \
+	rtc.c \
 	ssh.c \
 	utils.c \
 	whole-file.c
@@ -109,7 +118,8 @@ virt_p2v_LDADD = \
 	$(LIBXML2_LIBS) \
 	$(GTK_LIBS) \
 	$(DBUS_LIBS) \
-	../gnulib/lib/libgnu.la
+	../gnulib/lib/libgnu.la \
+	-lm
 
 # Scripts to build the disk image, USB key, or kickstart.
 bin_SCRIPTS = virt-p2v-make-disk virt-p2v-make-kickstart virt-p2v-make-kiwi

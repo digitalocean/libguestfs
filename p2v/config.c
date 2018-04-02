@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,10 @@ copy_config (struct config *old)
     c->identity_file = strdup (c->identity_file);
   if (c->guestname)
     c->guestname = strdup (c->guestname);
+  if (c->cpu.vendor)
+    c->cpu.vendor = strdup (c->cpu.vendor);
+  if (c->cpu.model)
+    c->cpu.model = strdup (c->cpu.model);
   if (c->disks)
     c->disks = guestfs_int_copy_string_list (c->disks);
   if (c->removable)
@@ -95,6 +99,8 @@ free_config (struct config *c)
   free (c->identity_url);
   free (c->identity_file);
   free (c->guestname);
+  free (c->cpu.vendor);
+  free (c->cpu.model);
   guestfs_int_free_string_list (c->disks);
   guestfs_int_free_string_list (c->removable);
   guestfs_int_free_string_list (c->interfaces);
@@ -132,10 +138,33 @@ print_config (struct config *config, FILE *fp)
            config->guestname ? config->guestname : "none");
   fprintf (fp, "vcpus  . . . . .   %d\n", config->vcpus);
   fprintf (fp, "memory . . . . .   %" PRIu64 "\n", config->memory);
+  if (config->cpu.vendor)
+    fprintf (fp, "cpu vendor . . .   %s\n", config->cpu.vendor);
+  if (config->cpu.model)
+    fprintf (fp, "cpu model  . . .   %s\n", config->cpu.model);
+  if (config->cpu.sockets > 0)
+    fprintf (fp, "cpu sockets  . .   %u\n", config->cpu.sockets);
+  if (config->cpu.cores > 0)
+    fprintf (fp, "cpu cores  . . .   %u\n", config->cpu.cores);
+  if (config->cpu.threads > 0)
+    fprintf (fp, "cpu threads  . .   %u\n", config->cpu.threads);
   fprintf (fp, "flags  . . . . .  %s%s%s\n",
-           config->flags & FLAG_ACPI ? " acpi" : "",
-           config->flags & FLAG_APIC ? " apic" : "",
-           config->flags & FLAG_PAE  ? " pae"  : "");
+           config->cpu.acpi ? " acpi" : "",
+           config->cpu.apic ? " apic" : "",
+           config->cpu.pae  ? " pae"  : "");
+  fprintf (fp, "rtc offset . . .   ");
+  switch (config->rtc.basis) {
+  case BASIS_UNKNOWN:
+    fprintf (fp, "unknown");
+    break;
+  case BASIS_UTC:
+    fprintf (fp, "%d seconds from UTC", config->rtc.offset);
+    break;
+  case BASIS_LOCALTIME:
+    fprintf (fp, "%d seconds from localtime", config->rtc.offset);
+    break;
+  }
+  fprintf (fp, "\n");
   fprintf (fp, "disks  . . . . .  ");
   if (config->disks != NULL) {
     for (i = 0; config->disks[i] != NULL; ++i)

@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2017 Red Hat Inc.
+# Copyright (C) 2009-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -128,8 +128,6 @@ host_triplet = @host@
 # Must be the first tests that run.
 @ENABLE_APPLIANCE_TRUE@am__append_1 = tests/qemu
 @ENABLE_GNULIB_TESTS_TRUE@am__append_2 = gnulib/tests
-
-# The daemon and the appliance.
 @ENABLE_DAEMON_TRUE@am__append_3 = daemon tests/daemon
 
 # Tests - order is important.
@@ -146,7 +144,7 @@ host_triplet = @host@
 @ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd tests/http \
 @ENABLE_APPLIANCE_TRUE@	tests/syslinux tests/journal \
 @ENABLE_APPLIANCE_TRUE@	tests/relative-paths tests/gdisk \
-@ENABLE_APPLIANCE_TRUE@	tests/regressions tests/tsk
+@ENABLE_APPLIANCE_TRUE@	tests/regressions tests/tsk tests/yara
 @HAVE_P2V_TRUE@am__append_5 = common/miniexpect p2v
 
 # Language bindings.
@@ -162,18 +160,12 @@ host_triplet = @host@
 @HAVE_GOBJECT_TRUE@am__append_15 = gobject
 @HAVE_GOLANG_TRUE@am__append_16 = golang golang/examples
 
-# OCaml tools.  Note 'mllib' and 'customize' contain shared code used
-# by other OCaml tools, so these must come first.
-@HAVE_OCAML_TRUE@am__append_17 = \
-@HAVE_OCAML_TRUE@	mllib \
-@HAVE_OCAML_TRUE@	customize \
-@HAVE_OCAML_TRUE@	builder builder/templates \
-@HAVE_OCAML_TRUE@	get-kernel \
-@HAVE_OCAML_TRUE@	resize \
-@HAVE_OCAML_TRUE@	sparsify \
-@HAVE_OCAML_TRUE@	sysprep \
-@HAVE_OCAML_TRUE@	v2v
-
+# OCaml tools.  Note 'common/ml*' and 'customize' contain shared code
+# used by other OCaml tools, so these must come first.
+@HAVE_OCAML_TRUE@am__append_17 = common/mlgettext common/mlprogress \
+@HAVE_OCAML_TRUE@	common/mlvisit common/mlxml common/mltools \
+@HAVE_OCAML_TRUE@	customize builder builder/templates \
+@HAVE_OCAML_TRUE@	get-kernel resize sparsify sysprep v2v
 @HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@am__append_18 = v2v/test-harness
 @HAVE_FUSE_TRUE@@HAVE_OCAML_TRUE@am__append_19 = dib
 
@@ -220,10 +212,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
 	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
 	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
-	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
-	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
-	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/ftell.m4 \
+	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
+	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 \
 	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
 	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
@@ -320,44 +312,44 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/sys_wait_h.m4 $(top_srcdir)/m4/tempname.m4 \
 	$(top_srcdir)/m4/thread.m4 $(top_srcdir)/m4/threadlib.m4 \
 	$(top_srcdir)/m4/time_h.m4 $(top_srcdir)/m4/timespec.m4 \
-	$(top_srcdir)/m4/ttyname_r.m4 $(top_srcdir)/m4/ungetc.m4 \
-	$(top_srcdir)/m4/unistd-safer.m4 $(top_srcdir)/m4/unistd_h.m4 \
-	$(top_srcdir)/m4/unlink.m4 $(top_srcdir)/m4/unlinkat.m4 \
-	$(top_srcdir)/m4/unlinkdir.m4 $(top_srcdir)/m4/usleep.m4 \
-	$(top_srcdir)/m4/utime.m4 $(top_srcdir)/m4/utime_h.m4 \
-	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
-	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
-	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/vsnprintf.m4 \
-	$(top_srcdir)/m4/wait-process.m4 $(top_srcdir)/m4/waitpid.m4 \
-	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
-	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
-	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
-	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/m4/guestfs_progs.m4 \
-	$(top_srcdir)/m4/guestfs_c.m4 \
-	$(top_srcdir)/m4/guestfs_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_fuse.m4 \
-	$(top_srcdir)/m4/guestfs_daemon.m4 \
-	$(top_srcdir)/m4/guestfs_appliance.m4 \
-	$(top_srcdir)/m4/guestfs_qemu.m4 \
-	$(top_srcdir)/m4/guestfs_misc_libraries.m4 \
-	$(top_srcdir)/m4/guestfs_ocaml.m4 \
-	$(top_srcdir)/m4/guestfs_perl.m4 \
-	$(top_srcdir)/m4/guestfs_python.m4 \
-	$(top_srcdir)/m4/guestfs_ruby.m4 \
-	$(top_srcdir)/m4/guestfs_java.m4 \
-	$(top_srcdir)/m4/guestfs_haskell.m4 \
-	$(top_srcdir)/m4/guestfs_php.m4 \
-	$(top_srcdir)/m4/guestfs_erlang.m4 \
-	$(top_srcdir)/m4/guestfs_lua.m4 \
-	$(top_srcdir)/m4/guestfs_golang.m4 \
-	$(top_srcdir)/m4/guestfs_gobject.m4 \
-	$(top_srcdir)/m4/guestfs_bash_completion.m4 \
-	$(top_srcdir)/m4/guestfs_misc.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/tls.m4 $(top_srcdir)/m4/ttyname_r.m4 \
+	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
+	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
+	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
+	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utime.m4 \
+	$(top_srcdir)/m4/utime_h.m4 $(top_srcdir)/m4/utimecmp.m4 \
+	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
+	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
+	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
+	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
+	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
+	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
+	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
+	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
+	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
+	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs-progs.m4 \
+	$(top_srcdir)/m4/guestfs-c.m4 \
+	$(top_srcdir)/m4/guestfs-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-fuse.m4 \
+	$(top_srcdir)/m4/guestfs-daemon.m4 \
+	$(top_srcdir)/m4/guestfs-appliance.m4 \
+	$(top_srcdir)/m4/guestfs-qemu.m4 \
+	$(top_srcdir)/m4/guestfs-misc-libraries.m4 \
+	$(top_srcdir)/m4/guestfs-ocaml.m4 \
+	$(top_srcdir)/m4/guestfs-perl.m4 \
+	$(top_srcdir)/m4/guestfs-python.m4 \
+	$(top_srcdir)/m4/guestfs-ruby.m4 \
+	$(top_srcdir)/m4/guestfs-java.m4 \
+	$(top_srcdir)/m4/guestfs-haskell.m4 \
+	$(top_srcdir)/m4/guestfs-php.m4 \
+	$(top_srcdir)/m4/guestfs-erlang.m4 \
+	$(top_srcdir)/m4/guestfs-lua.m4 \
+	$(top_srcdir)/m4/guestfs-golang.m4 \
+	$(top_srcdir)/m4/guestfs-gobject.m4 \
+	$(top_srcdir)/m4/guestfs-bash-completion.m4 \
+	$(top_srcdir)/m4/guestfs-misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -366,9 +358,9 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = installcheck.sh php/extension/php-for-tests.sh \
-	pick-guests.pl podwrapper.pl run \
-	builder/test-config/virt-builder/repos.d/test-index.conf \
+CONFIG_CLEAN_FILES = installcheck.sh ocaml-dep.sh \
+	php/extension/php-for-tests.sh pick-guests.pl podwrapper.pl \
+	run builder/test-config/virt-builder/repos.d/test-index.conf \
 	builder/test-simplestreams/virt-builder/repos.d/cirros.conf \
 	builder/test-website/virt-builder/repos.d/libguestfs.conf \
 	python/t/tests_helper.py ruby/ext/guestfs/extconf.rb \
@@ -409,7 +401,7 @@ am__recursive_targets = \
   $(RECURSIVE_CLEAN_TARGETS) \
   $(am__extra_recursive_targets)
 AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
-	cscope distdir dist dist-all distcheck
+	cscope check recheck distdir dist dist-all distcheck
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
 	$(LISP)config.h.in
 # Read a list of newline-separated strings from the standard input,
@@ -431,37 +423,245 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
-DIST_SUBDIRS = generator tests/qemu test-data gnulib/lib gnulib/tests \
-	common/errnostring common/protocol common/utils lib docs \
-	examples po daemon tests/daemon appliance tests/c-api \
-	tests/tmpdirs tests/protocol tests/events tests/parallel \
-	tests/create tests/disks tests/discard tests/mountable \
-	tests/network tests/lvm tests/luks tests/md tests/selinux \
-	tests/relabel tests/ntfs tests/btrfs tests/xfs tests/charsets \
-	tests/xml tests/mount-local tests/9p tests/rsync tests/bigdirs \
+am__tty_colors_dummy = \
+  mgn= red= grn= lgn= blu= brg= std=; \
+  am__color_tests=no
+am__tty_colors = { \
+  $(am__tty_colors_dummy); \
+  if test "X$(AM_COLOR_TESTS)" = Xno; then \
+    am__color_tests=no; \
+  elif test "X$(AM_COLOR_TESTS)" = Xalways; then \
+    am__color_tests=yes; \
+  elif test "X$$TERM" != Xdumb && { test -t 1; } 2>/dev/null; then \
+    am__color_tests=yes; \
+  fi; \
+  if test $$am__color_tests = yes; then \
+    red='[0;31m'; \
+    grn='[0;32m'; \
+    lgn='[1;32m'; \
+    blu='[1;34m'; \
+    mgn='[0;35m'; \
+    brg='[1m'; \
+    std='[m'; \
+  fi; \
+}
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+am__recheck_rx = ^[ 	]*:recheck:[ 	]*
+am__global_test_result_rx = ^[ 	]*:global-test-result:[ 	]*
+am__copy_in_global_log_rx = ^[ 	]*:copy-in-global-log:[ 	]*
+# A command that, given a newline-separated list of test names on the
+# standard input, print the name of the tests that are to be re-run
+# upon "make recheck".
+am__list_recheck_tests = $(AWK) '{ \
+  recheck = 1; \
+  while ((rc = (getline line < ($$0 ".trs"))) != 0) \
+    { \
+      if (rc < 0) \
+        { \
+          if ((getline line2 < ($$0 ".log")) < 0) \
+	    recheck = 0; \
+          break; \
+        } \
+      else if (line ~ /$(am__recheck_rx)[nN][Oo]/) \
+        { \
+          recheck = 0; \
+          break; \
+        } \
+      else if (line ~ /$(am__recheck_rx)[yY][eE][sS]/) \
+        { \
+          break; \
+        } \
+    }; \
+  if (recheck) \
+    print $$0; \
+  close ($$0 ".trs"); \
+  close ($$0 ".log"); \
+}'
+# A command that, given a newline-separated list of test names on the
+# standard input, create the global log from their .trs and .log files.
+am__create_global_log = $(AWK) ' \
+function fatal(msg) \
+{ \
+  print "fatal: making $@: " msg | "cat >&2"; \
+  exit 1; \
+} \
+function rst_section(header) \
+{ \
+  print header; \
+  len = length(header); \
+  for (i = 1; i <= len; i = i + 1) \
+    printf "="; \
+  printf "\n\n"; \
+} \
+{ \
+  copy_in_global_log = 1; \
+  global_test_result = "RUN"; \
+  while ((rc = (getline line < ($$0 ".trs"))) != 0) \
+    { \
+      if (rc < 0) \
+         fatal("failed to read from " $$0 ".trs"); \
+      if (line ~ /$(am__global_test_result_rx)/) \
+        { \
+          sub("$(am__global_test_result_rx)", "", line); \
+          sub("[ 	]*$$", "", line); \
+          global_test_result = line; \
+        } \
+      else if (line ~ /$(am__copy_in_global_log_rx)[nN][oO]/) \
+        copy_in_global_log = 0; \
+    }; \
+  if (copy_in_global_log) \
+    { \
+      rst_section(global_test_result ": " $$0); \
+      while ((rc = (getline line < ($$0 ".log"))) != 0) \
+      { \
+        if (rc < 0) \
+          fatal("failed to read from " $$0 ".log"); \
+        print line; \
+      }; \
+      printf "\n"; \
+    }; \
+  close ($$0 ".trs"); \
+  close ($$0 ".log"); \
+}'
+# Restructured Text title.
+am__rst_title = { sed 's/.*/   &   /;h;s/./=/g;p;x;s/ *$$//;p;g' && echo; }
+# Solaris 10 'make', and several other traditional 'make' implementations,
+# pass "-e" to $(SHELL), and POSIX 2008 even requires this.  Work around it
+# by disabling -e (using the XSI extension "set +e") if it's set.
+am__sh_e_setup = case $$- in *e*) set +e;; esac
+# Default flags passed to test drivers.
+am__common_driver_flags = \
+  --color-tests "$$am__color_tests" \
+  --enable-hard-errors "$$am__enable_hard_errors" \
+  --expect-failure "$$am__expect_failure"
+# To be inserted before the command running the test.  Creates the
+# directory for the log if needed.  Stores in $dir the directory
+# containing $f, in $tst the test, in $log the log.  Executes the
+# developer- defined test setup AM_TESTS_ENVIRONMENT (if any), and
+# passes TESTS_ENVIRONMENT.  Set up options for the wrapper that
+# will run the test scripts (or their associated LOG_COMPILER, if
+# thy have one).
+am__check_pre = \
+$(am__sh_e_setup);					\
+$(am__vpath_adj_setup) $(am__vpath_adj)			\
+$(am__tty_colors);					\
+srcdir=$(srcdir); export srcdir;			\
+case "$@" in						\
+  */*) am__odir=`echo "./$@" | sed 's|/[^/]*$$||'`;;	\
+    *) am__odir=.;; 					\
+esac;							\
+test "x$$am__odir" = x"." || test -d "$$am__odir" 	\
+  || $(MKDIR_P) "$$am__odir" || exit $$?;		\
+if test -f "./$$f"; then dir=./;			\
+elif test -f "$$f"; then dir=;				\
+else dir="$(srcdir)/"; fi;				\
+tst=$$dir$$f; log='$@'; 				\
+if test -n '$(DISABLE_HARD_ERRORS)'; then		\
+  am__enable_hard_errors=no; 				\
+else							\
+  am__enable_hard_errors=yes; 				\
+fi; 							\
+case " $(XFAIL_TESTS) " in				\
+  *[\ \	]$$f[\ \	]* | *[\ \	]$$dir$$f[\ \	]*) \
+    am__expect_failure=yes;;				\
+  *)							\
+    am__expect_failure=no;;				\
+esac; 							\
+$(AM_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)
+# A shell command to get the names of the tests scripts with any registered
+# extension removed (i.e., equivalently, the names of the test logs, with
+# the '.log' extension removed).  The result is saved in the shell variable
+# '$bases'.  This honors runtime overriding of TESTS and TEST_LOGS.  Sadly,
+# we cannot use something simpler, involving e.g., "$(TEST_LOGS:.log=)",
+# since that might cause problem with VPATH rewrites for suffix-less tests.
+# See also 'test-harness-vpath-rewrite.sh' and 'test-trs-basic.sh'.
+am__set_TESTS_bases = \
+  bases='$(TEST_LOGS)'; \
+  bases=`for i in $$bases; do echo $$i; done | sed 's/\.log$$//'`; \
+  bases=`echo $$bases`
+RECHECK_LOGS = $(TEST_LOGS)
+TEST_SUITE_LOG = test-suite.log
+TEST_EXTENSIONS = @EXEEXT@ .test
+LOG_DRIVER = $(SHELL) $(top_srcdir)/build-aux/test-driver
+LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
+am__set_b = \
+  case '$@' in \
+    */*) \
+      case '$*' in \
+        */*) b='$*';; \
+          *) b=`echo '$@' | sed 's/\.log$$//'`; \
+       esac;; \
+    *) \
+      b='$*';; \
+  esac
+am__test_logs1 = $(TESTS:=.log)
+am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
+TEST_LOGS = $(am__test_logs2:.test.log=.log)
+TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/build-aux/test-driver
+TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
+	$(TEST_LOG_FLAGS)
+DIST_SUBDIRS = common/mlstdutils generator tests/qemu test-data \
+	gnulib/lib gnulib/tests common/errnostring common/protocol \
+	common/qemuopts common/utils common/structs lib docs examples \
+	po common/mlutils common/mlaugeas common/mlpcre daemon \
+	tests/daemon appliance tests/c-api tests/tmpdirs \
+	tests/protocol tests/events tests/parallel tests/create \
+	tests/disks tests/discard tests/mountable tests/network \
+	tests/lvm tests/luks tests/md tests/selinux tests/relabel \
+	tests/ntfs tests/btrfs tests/xfs tests/charsets tests/xml \
+	tests/mount-local tests/9p tests/rsync tests/bigdirs \
 	tests/disk-labels tests/hotplug tests/nbd tests/http \
 	tests/syslinux tests/journal tests/relative-paths tests/gdisk \
-	tests/regressions tests/tsk common/edit common/options \
-	common/parallel common/progress common/visit common/windows \
-	test-tool fish align cat diff df edit format inspector make-fs \
-	rescue common/miniexpect p2v bash perl perl/examples ocaml \
-	ocaml/examples python python/examples ruby ruby/examples java \
-	java/examples haskell php erlang erlang/examples lua \
-	lua/examples gobject golang golang/examples csharp mllib \
-	customize builder builder/templates get-kernel resize sparsify \
-	sysprep v2v v2v/test-harness dib tools fuse \
-	utils/boot-analysis utils/boot-benchmark utils/qemu-boot \
-	utils/qemu-speed-test po-docs
+	tests/regressions tests/tsk tests/yara common/edit \
+	common/options common/parallel common/progress common/visit \
+	common/windows test-tool fish align cat diff df edit format \
+	inspector make-fs rescue common/miniexpect p2v bash perl \
+	perl/examples ocaml ocaml/examples python python/examples ruby \
+	ruby/examples java java/examples haskell php erlang \
+	erlang/examples lua lua/examples gobject golang \
+	golang/examples csharp common/mlgettext common/mlprogress \
+	common/mlvisit common/mlxml common/mltools customize builder \
+	builder/templates get-kernel resize sparsify sysprep v2v \
+	v2v/test-harness dib tools fuse utils/boot-analysis \
+	utils/boot-benchmark utils/qemu-boot utils/qemu-speed-test \
+	po-docs
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/installcheck.sh.in $(srcdir)/pick-guests.pl.in \
-	$(srcdir)/podwrapper.pl.in $(srcdir)/run.in \
-	$(top_srcdir)/build-aux/config.guess \
+	$(srcdir)/installcheck.sh.in $(srcdir)/ocaml-dep.sh.in \
+	$(srcdir)/pick-guests.pl.in $(srcdir)/podwrapper.pl.in \
+	$(srcdir)/run.in $(top_srcdir)/build-aux/config.guess \
 	$(top_srcdir)/build-aux/config.rpath \
 	$(top_srcdir)/build-aux/config.sub \
 	$(top_srcdir)/build-aux/guestfs-test-driver \
 	$(top_srcdir)/build-aux/install-sh \
 	$(top_srcdir)/build-aux/ltmain.sh \
 	$(top_srcdir)/build-aux/missing \
+	$(top_srcdir)/build-aux/test-driver \
 	$(top_srcdir)/builder/test-config/virt-builder/repos.d/test-index.conf.in \
 	$(top_srcdir)/builder/test-simplestreams/virt-builder/repos.d/cirros.conf.in \
 	$(top_srcdir)/builder/test-website/virt-builder/repos.d/libguestfs.conf.in \
@@ -469,8 +669,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/php/extension/php-for-tests.sh.in \
 	$(top_srcdir)/python/t/tests_helper.py.in \
 	$(top_srcdir)/ruby/ext/guestfs/extconf.rb.in \
-	$(top_srcdir)/website/index.html.in AUTHORS COPYING \
-	COPYING.LIB ChangeLog README TODO build-aux/config.guess \
+	$(top_srcdir)/website/index.html.in COPYING COPYING.LIB \
+	ChangeLog README TODO build-aux/config.guess \
 	build-aux/config.rpath build-aux/config.sub \
 	build-aux/install-sh build-aux/ltmain.sh build-aux/missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -544,6 +744,7 @@ BMPTOPNM = @BMPTOPNM@
 BRANCH_NUMBER = @BRANCH_NUMBER@
 BRANCH_TYPE = @BRANCH_TYPE@
 BYTESWAP_H = @BYTESWAP_H@
+CAMLRUN = @CAMLRUN@
 CAP_LIBS = @CAP_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -936,6 +1137,7 @@ GREP = @GREP@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GTK_VERSION = @GTK_VERSION@
+GUESTFS_DEFAULT_PATH = @GUESTFS_DEFAULT_PATH@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -1029,6 +1231,7 @@ HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
 HAVE_ISWCNTRL = @HAVE_ISWCNTRL@
+HAVE_LANGINFO_ALTMON = @HAVE_LANGINFO_ALTMON@
 HAVE_LANGINFO_CODESET = @HAVE_LANGINFO_CODESET@
 HAVE_LANGINFO_ERA = @HAVE_LANGINFO_ERA@
 HAVE_LANGINFO_H = @HAVE_LANGINFO_H@
@@ -1203,6 +1406,7 @@ HAVE__BOOL = @HAVE__BOOL@
 HAVE__EXIT = @HAVE__EXIT@
 HIVEX_CFLAGS = @HIVEX_CFLAGS@
 HIVEX_LIBS = @HIVEX_LIBS@
+HIVEX_OPEN_UNSAFE_FLAG = @HIVEX_OPEN_UNSAFE_FLAG@
 HOSTENT_LIB = @HOSTENT_LIB@
 HOST_CPU = @HOST_CPU@
 HOST_CPU_C_ABI = @HOST_CPU_C_ABI@
@@ -1376,6 +1580,8 @@ NEXT_WCHAR_H = @NEXT_WCHAR_H@
 NEXT_WCTYPE_H = @NEXT_WCTYPE_H@
 NM = @NM@
 NMEDIT = @NMEDIT@
+NO_SNV_CFLAGS = @NO_SNV_CFLAGS@
+NO_UM_CFLAGS = @NO_UM_CFLAGS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 OCAMLBEST = @OCAMLBEST@
@@ -1383,6 +1589,8 @@ OCAMLBUILD = @OCAMLBUILD@
 OCAMLC = @OCAMLC@
 OCAMLCDOTOPT = @OCAMLCDOTOPT@
 OCAMLDEP = @OCAMLDEP@
+OCAMLDEP_ALL = @OCAMLDEP_ALL@
+OCAMLDEP_ONE_LINE = @OCAMLDEP_ONE_LINE@
 OCAMLDOC = @OCAMLDOC@
 OCAMLFIND = @OCAMLFIND@
 OCAMLLIB = @OCAMLLIB@
@@ -1394,9 +1602,9 @@ OCAMLVERSION = @OCAMLVERSION@
 OCAML_BYTES_COMPAT_CMO = @OCAML_BYTES_COMPAT_CMO@
 OCAML_BYTES_COMPAT_ML = @OCAML_BYTES_COMPAT_ML@
 OCAML_FLAGS = @OCAML_FLAGS@
-OCAML_GENERATOR_BYTES_COMPAT_CMO = @OCAML_GENERATOR_BYTES_COMPAT_CMO@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
+OCAML_PKG_hivex = @OCAML_PKG_hivex@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
 OCAML_PKG_oUnit = @OCAML_PKG_oUnit@
 OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
@@ -1454,6 +1662,7 @@ REPLACE_DPRINTF = @REPLACE_DPRINTF@
 REPLACE_DUP = @REPLACE_DUP@
 REPLACE_DUP2 = @REPLACE_DUP2@
 REPLACE_DUPLOCALE = @REPLACE_DUPLOCALE@
+REPLACE_FACCESSAT = @REPLACE_FACCESSAT@
 REPLACE_FCHOWNAT = @REPLACE_FCHOWNAT@
 REPLACE_FCLOSE = @REPLACE_FCLOSE@
 REPLACE_FCNTL = @REPLACE_FCNTL@
@@ -1661,6 +1870,8 @@ XZCAT = @XZCAT@
 YACC = @YACC@
 YAJL_CFLAGS = @YAJL_CFLAGS@
 YAJL_LIBS = @YAJL_LIBS@
+YARA_CFLAGS = @YARA_CFLAGS@
+YARA_LIBS = @YARA_LIBS@
 YFLAGS = @YFLAGS@
 YIELD_LIB = @YIELD_LIB@
 ZIP = @ZIP@
@@ -1758,6 +1969,11 @@ CLEANFILES = *~ *.bak *.orig *.rej *.cmi *.cmo *.cma *.cmx *.cmxa \
 
 # Files that should be universally removed by 'make distclean'.
 DISTCLEANFILES = .depend stamp-*
+
+# Special suffixes used by OCaml.
+
+# Special suffixes used by PO files.
+SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo
 ACLOCAL_AMFLAGS = -I m4
 
 # The generator - must be before anything else.
@@ -1768,6 +1984,8 @@ ACLOCAL_AMFLAGS = -I m4
 # Gnulib - must be built and tested before the library.
 
 # Basic source for the library.
+
+# The daemon and the appliance.
 
 # Common code used by the tools.
 
@@ -1780,13 +1998,14 @@ ACLOCAL_AMFLAGS = -I m4
 # bash-completion
 
 # Unconditional because nothing is built yet.
-SUBDIRS = generator $(am__append_1) test-data gnulib/lib \
-	$(am__append_2) common/errnostring common/protocol \
-	common/utils lib docs examples po $(am__append_3) \
-	$(am__append_4) common/edit common/options common/parallel \
-	common/progress common/visit common/windows test-tool fish \
-	align cat diff df edit format inspector make-fs rescue \
-	$(am__append_5) bash $(am__append_6) $(am__append_7) \
+SUBDIRS = common/mlstdutils generator $(am__append_1) test-data \
+	gnulib/lib $(am__append_2) common/errnostring common/protocol \
+	common/qemuopts common/utils common/structs lib docs examples \
+	po common/mlutils common/mlaugeas common/mlpcre \
+	$(am__append_3) $(am__append_4) common/edit common/options \
+	common/parallel common/progress common/visit common/windows \
+	test-tool fish align cat diff df edit format inspector make-fs \
+	rescue $(am__append_5) bash $(am__append_6) $(am__append_7) \
 	$(am__append_8) $(am__append_9) $(am__append_10) \
 	$(am__append_11) $(am__append_12) $(am__append_13) \
 	$(am__append_14) $(am__append_15) $(am__append_16) csharp \
@@ -1795,7 +2014,7 @@ SUBDIRS = generator $(am__append_1) test-data gnulib/lib \
 	utils/boot-benchmark utils/qemu-boot utils/qemu-speed-test \
 	$(am__append_23)
 EXTRA_DIST = \
-	BUGS HACKING RELEASES TODO \
+	AUTHORS BUGS HACKING RELEASES TODO \
 	.gitignore \
 	.lvimrc \
 	.mailmap \
@@ -1804,6 +2023,7 @@ EXTRA_DIST = \
 	autogen.sh \
 	bindtests \
 	cfg.mk \
+	check-mli.sh \
 	contrib/autobuild/autobuild.sh \
 	contrib/intro/libguestfs-intro.html \
 	contrib/intro/overview.png \
@@ -1894,10 +2114,14 @@ SKIP_TESTS_FAILING_IN_UML = \
 QEMUDIR = $(HOME)/d/qemu
 QEMUBINARY = $(QEMUDIR)/x86_64-softmmu/qemu-system-x86_64
 LIBVIRTDIR = $(HOME)/d/libvirt
+
+# Some tests which run at the top level.
+TESTS = check-mli.sh
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
+.SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo .log .test .test$(EXEEXT) .trs
 am--refresh: Makefile
 	@:
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/common-rules.mk $(am__configure_deps)
@@ -1948,6 +2172,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 distclean-hdr:
 	-rm -f config.h stamp-h1
 installcheck.sh: $(top_builddir)/config.status $(srcdir)/installcheck.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+ocaml-dep.sh: $(top_builddir)/config.status $(srcdir)/ocaml-dep.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 php/extension/php-for-tests.sh: $(top_builddir)/config.status $(top_srcdir)/php/extension/php-for-tests.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -2084,6 +2310,169 @@ cscopelist-am: $(am__tagged_files)
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 	-rm -f cscope.out cscope.in.out cscope.po.out cscope.files
+
+# Recover from deleted '.trs' file; this should ensure that
+# "rm -f foo.log; make foo.trs" re-run 'foo.test', and re-create
+# both 'foo.log' and 'foo.trs'.  Break the recipe in two subshells
+# to avoid problems with "make -n".
+.log.trs:
+	rm -f $< $@
+	$(MAKE) $(AM_MAKEFLAGS) $<
+
+# Leading 'am--fnord' is there to ensure the list of targets does not
+# expand to empty, as could happen e.g. with make check TESTS=''.
+am--fnord $(TEST_LOGS) $(TEST_LOGS:.log=.trs): $(am__force_recheck)
+am--force-recheck:
+	@:
+
+$(TEST_SUITE_LOG): $(TEST_LOGS)
+	@$(am__set_TESTS_bases); \
+	am__f_ok () { test -f "$$1" && test -r "$$1"; }; \
+	redo_bases=`for i in $$bases; do \
+	              am__f_ok $$i.trs && am__f_ok $$i.log || echo $$i; \
+	            done`; \
+	if test -n "$$redo_bases"; then \
+	  redo_logs=`for i in $$redo_bases; do echo $$i.log; done`; \
+	  redo_results=`for i in $$redo_bases; do echo $$i.trs; done`; \
+	  if $(am__make_dryrun); then :; else \
+	    rm -f $$redo_logs && rm -f $$redo_results || exit 1; \
+	  fi; \
+	fi; \
+	if test -n "$$am__remaking_logs"; then \
+	  echo "fatal: making $(TEST_SUITE_LOG): possible infinite" \
+	       "recursion detected" >&2; \
+	elif test -n "$$redo_logs"; then \
+	  am__remaking_logs=yes $(MAKE) $(AM_MAKEFLAGS) $$redo_logs; \
+	fi; \
+	if $(am__make_dryrun); then :; else \
+	  st=0;  \
+	  errmsg="fatal: making $(TEST_SUITE_LOG): failed to create"; \
+	  for i in $$redo_bases; do \
+	    test -f $$i.trs && test -r $$i.trs \
+	      || { echo "$$errmsg $$i.trs" >&2; st=1; }; \
+	    test -f $$i.log && test -r $$i.log \
+	      || { echo "$$errmsg $$i.log" >&2; st=1; }; \
+	  done; \
+	  test $$st -eq 0 || exit 1; \
+	fi
+	@$(am__sh_e_setup); $(am__tty_colors); $(am__set_TESTS_bases); \
+	ws='[ 	]'; \
+	results=`for b in $$bases; do echo $$b.trs; done`; \
+	test -n "$$results" || results=/dev/null; \
+	all=`  grep "^$$ws*:test-result:"           $$results | wc -l`; \
+	pass=` grep "^$$ws*:test-result:$$ws*PASS"  $$results | wc -l`; \
+	fail=` grep "^$$ws*:test-result:$$ws*FAIL"  $$results | wc -l`; \
+	skip=` grep "^$$ws*:test-result:$$ws*SKIP"  $$results | wc -l`; \
+	xfail=`grep "^$$ws*:test-result:$$ws*XFAIL" $$results | wc -l`; \
+	xpass=`grep "^$$ws*:test-result:$$ws*XPASS" $$results | wc -l`; \
+	error=`grep "^$$ws*:test-result:$$ws*ERROR" $$results | wc -l`; \
+	if test `expr $$fail + $$xpass + $$error` -eq 0; then \
+	  success=true; \
+	else \
+	  success=false; \
+	fi; \
+	br='==================='; br=$$br$$br$$br$$br; \
+	result_count () \
+	{ \
+	    if test x"$$1" = x"--maybe-color"; then \
+	      maybe_colorize=yes; \
+	    elif test x"$$1" = x"--no-color"; then \
+	      maybe_colorize=no; \
+	    else \
+	      echo "$@: invalid 'result_count' usage" >&2; exit 4; \
+	    fi; \
+	    shift; \
+	    desc=$$1 count=$$2; \
+	    if test $$maybe_colorize = yes && test $$count -gt 0; then \
+	      color_start=$$3 color_end=$$std; \
+	    else \
+	      color_start= color_end=; \
+	    fi; \
+	    echo "$${color_start}# $$desc $$count$${color_end}"; \
+	}; \
+	create_testsuite_report () \
+	{ \
+	  result_count $$1 "TOTAL:" $$all   "$$brg"; \
+	  result_count $$1 "PASS: " $$pass  "$$grn"; \
+	  result_count $$1 "SKIP: " $$skip  "$$blu"; \
+	  result_count $$1 "XFAIL:" $$xfail "$$lgn"; \
+	  result_count $$1 "FAIL: " $$fail  "$$red"; \
+	  result_count $$1 "XPASS:" $$xpass "$$red"; \
+	  result_count $$1 "ERROR:" $$error "$$mgn"; \
+	}; \
+	{								\
+	  echo "$(PACKAGE_STRING): $(subdir)/$(TEST_SUITE_LOG)" |	\
+	    $(am__rst_title);						\
+	  create_testsuite_report --no-color;				\
+	  echo;								\
+	  echo ".. contents:: :depth: 2";				\
+	  echo;								\
+	  for b in $$bases; do echo $$b; done				\
+	    | $(am__create_global_log);					\
+	} >$(TEST_SUITE_LOG).tmp || exit 1;				\
+	mv $(TEST_SUITE_LOG).tmp $(TEST_SUITE_LOG);			\
+	if $$success; then						\
+	  col="$$grn";							\
+	 else								\
+	  col="$$red";							\
+	  test x"$$VERBOSE" = x || cat $(TEST_SUITE_LOG);		\
+	fi;								\
+	echo "$${col}$$br$${std}"; 					\
+	echo "$${col}Testsuite summary for $(PACKAGE_STRING)$${std}";	\
+	echo "$${col}$$br$${std}"; 					\
+	create_testsuite_report --maybe-color;				\
+	echo "$$col$$br$$std";						\
+	if $$success; then :; else					\
+	  echo "$${col}See $(subdir)/$(TEST_SUITE_LOG)$${std}";		\
+	  if test -n "$(PACKAGE_BUGREPORT)"; then			\
+	    echo "$${col}Please report to $(PACKAGE_BUGREPORT)$${std}";	\
+	  fi;								\
+	  echo "$$col$$br$$std";					\
+	fi;								\
+	$$success || exit 1
+
+check-TESTS:
+	@list='$(RECHECK_LOGS)';           test -z "$$list" || rm -f $$list
+	@list='$(RECHECK_LOGS:.log=.trs)'; test -z "$$list" || rm -f $$list
+	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
+	@set +e; $(am__set_TESTS_bases); \
+	log_list=`for i in $$bases; do echo $$i.log; done`; \
+	trs_list=`for i in $$bases; do echo $$i.trs; done`; \
+	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
+	exit $$?;
+recheck: all 
+	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
+	@set +e; $(am__set_TESTS_bases); \
+	bases=`for i in $$bases; do echo $$i; done \
+	         | $(am__list_recheck_tests)` || exit 1; \
+	log_list=`for i in $$bases; do echo $$i.log; done`; \
+	log_list=`echo $$log_list`; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) \
+	        am__force_recheck=am--force-recheck \
+	        TEST_LOGS="$$log_list"; \
+	exit $$?
+check-mli.sh.log: check-mli.sh
+	@p='check-mli.sh'; \
+	b='check-mli.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+.test.log:
+	@p='$<'; \
+	$(am__set_b); \
+	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+@am__EXEEXT_TRUE@.test$(EXEEXT).log:
+@am__EXEEXT_TRUE@	@p='$<'; \
+@am__EXEEXT_TRUE@	$(am__set_b); \
+@am__EXEEXT_TRUE@	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
+@am__EXEEXT_TRUE@	--log-file $$b.log --trs-file $$b.trs \
+@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
+@am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
 
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
@@ -2277,6 +2666,7 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-recursive
 all-am: Makefile $(DATA) config.h
 installdirs: installdirs-recursive
@@ -2300,6 +2690,9 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
+	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
+	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 
 clean-generic:
 	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
@@ -2382,14 +2775,14 @@ ps-am:
 
 uninstall-am:
 
-.MAKE: $(am__recursive_targets) all install-am install-strip
+.MAKE: $(am__recursive_targets) all check-am install-am install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
-	am--refresh check check-am clean clean-cscope clean-generic \
-	clean-libtool clean-local cscope cscopelist-am ctags ctags-am \
-	dist dist-all dist-bzip2 dist-gzip dist-hook dist-lzip \
-	dist-shar dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-generic distclean-hdr distclean-libtool \
+	am--refresh check check-TESTS check-am clean clean-cscope \
+	clean-generic clean-libtool clean-local cscope cscopelist-am \
+	ctags ctags-am dist dist-all dist-bzip2 dist-gzip dist-hook \
+	dist-lzip dist-shar dist-tarZ dist-xz dist-zip distcheck \
+	distclean distclean-generic distclean-hdr distclean-libtool \
 	distclean-tags distcleancheck distdir distuninstallcheck dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-data install-data-am install-dvi install-dvi-am \
@@ -2399,7 +2792,7 @@ uninstall-am:
 	installcheck installcheck-am installcheck-local installdirs \
 	installdirs-am maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am
+	ps ps-am recheck tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
@@ -2418,7 +2811,6 @@ maintainer-upload-website:
 
 # When doing 'make dist' update a few files automatically.
 #
-#  AUTHORS        - list of authors (created from git)
 #  BUGS           - list of bugs (created from Bugzilla)
 #  ChangeLog      - changelog (created from git)
 #  docs/C_SOURCE_FILES
@@ -2428,15 +2820,9 @@ maintainer-upload-website:
 #                   special xgettext option [not generated here]
 #  po/POTFILES-ml - OCaml files, which need a special tool to translate
 
-dist-hook: AUTHORS BUGS ChangeLog docs/C_SOURCE_FILES po/POTFILES po/POTFILES-ml
-	cp AUTHORS $(distdir)/AUTHORS
+dist-hook: BUGS ChangeLog docs/C_SOURCE_FILES po/POTFILES po/POTFILES-ml
 	cp BUGS $(distdir)/BUGS
 	cp ChangeLog $(distdir)/ChangeLog
-
-AUTHORS: configure.ac
-	rm -f $@ $@-t
-	git shortlog -s | $(AWK) -F'\t' '{print $$2}' | sort -f > $@-t
-	mv $@-t $@
 
 BUGS: configure.ac
 	rm -f $@ $@-t
@@ -2476,7 +2862,7 @@ po/POTFILES: configure.ac
 po/POTFILES-ml: configure.ac
 	rm -f $@ $@-t
 	cd $(srcdir); \
-	find builder customize dib get-kernel mllib resize sparsify sysprep v2v -name '*.ml' | \
+	find builder common/ml* customize dib get-kernel resize sparsify sysprep v2v -name '*.ml' | \
 	grep -v '^builder/templates/' | \
 	LC_ALL=C sort > $@-t
 	mv $@-t $@
@@ -2656,6 +3042,21 @@ maintainer-commit:
 
 maintainer-tag:
 	git tag -a "v$(VERSION)" -m "Version $(VERSION) ($(BRANCH_TYPE))" -f
+
+# Maintainer only: compare authors (found in git commit messages) to
+# generator/authors.ml.
+maintainer-check-authors:
+	rm -f $@ $@-t
+	git shortlog -s | \
+	    $(AWK) -F'\t' '{print $$2}' | \
+	    sort -f | \
+	    while read author; do \
+	        if ! grep -sqiF "\"$$author\"" generator/authors.ml; then \
+	            echo "FAIL: $$author" is missing from generator/authors.ml; \
+	            exit 1; \
+	        fi; \
+	    done
+	@echo PASS: AUTHORS test
 
 # Maintainer only: check no files are missing from EXTRA_DIST rules,
 # and that all generated files have been included in the tarball.

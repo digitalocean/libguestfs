@@ -1,11 +1,11 @@
 
 =head1 НАЗВА
 
-virt-format - Erase and make a blank disk
+virt-format — витирання і створення порожнього диска
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-format [--options] -a disk.img [-a disk.img ...]
+ virt-format [--параметри] -a диск.img [-a диск.img ...]
 
 =head1 ОПИС
 
@@ -20,7 +20,7 @@ L<guestfish(1)>, you should instead use the guestfish I<-N> option.
 
 Normal usage would be something like this:
 
- virt-format -a disk.qcow
+ virt-format -a диск.qcow
 
 or this:
 
@@ -86,7 +86,7 @@ supported by libguestfs.
 
 =item B<--filesystem=none>
 
-Create no filesystem.  This is the default.
+Не створювати файлової системи. Типова поведінка.
 
 =item B<--format=raw|qcow2|..>
 
@@ -100,12 +100,12 @@ Create no filesystem.  This is the default.
 
 Приклад:
 
- virt-format --format=raw -a disk.img
+ virt-format --format=raw -a диск.img
 
 примусове встановлення формату без обробки (без автоматичного визначення)
 для F<disk.img>.
 
- virt-format --format=raw -a disk.img --format -a another.img
+ virt-format --format=raw -a диск.img --format -a ще_один_диск.img
 
 примусове встановлення формату без обробки (без автоматичного визначення)
 для F<diskimg> і повернення до автоматичного визначення для F<another.img>.
@@ -117,7 +117,7 @@ Create no filesystem.  This is the default.
 
 =item B<--label=>МІТКА
 
-Set the filesystem label.
+Встановити мітку файлової системи.
 
 =item B<--lvm=/dev/I<VG>/I<LV>>
 
@@ -130,7 +130,7 @@ Create a Linux LVM2 logical volume with the default name (F</dev/VG/LV>).
 
 =item B<--lvm=none>
 
-Create no logical volume.  This is the default.
+Не створювати логічного тому. Типове поведінка.
 
 =item B<--partition>
 
@@ -141,11 +141,11 @@ chosen if the disk size is E<lt> 2 TB, GPT if E<ge> 2 TB.
 
 =item B<--partition=gpt>
 
-Create a GPT partition.
+Створити розділ GPT.
 
 =item B<--partition=mbr>
 
-Create an MBR partition.
+Створити розділ MBR.
 
 =item B<--partition=none>
 

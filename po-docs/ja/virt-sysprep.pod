@@ -224,7 +224,7 @@ will do the same, plus mount F</var> with C<rw,nodiratime>.
 
 =item B<--quiet>
 
-ログメッセージを表示しません。
+Don’t print log messages.
 
 To enable detailed logging of individual file operations, use I<-x>.
 
@@ -402,7 +402,7 @@ Create a snapshot using qemu-img:
 
  qemu-img create -f qcow2 -o backing_file=original snapshot.qcow
 
-The advantage is that you don't need to copy the original (very fast)  and
+The advantage is that you don’t need to copy the original (very fast)  and
 only changes are stored (less storage required).
 
 Note that writing to the backing file once you have created guests on top of
@@ -508,7 +508,7 @@ inodes.
 I<(このセクションは Linux 仮想マシンのみに適用します)>
 
 For supported guests, virt-sysprep writes a few bytes of randomness from the
-host into the guest's random seed file.
+host into the guest’s random seed file.
 
 If this is just done once and the guest is cloned from the same template,
 then each guest will start with the same entropy, and things like SSH host
@@ -587,7 +587,7 @@ Wanlong Gao, Fujitsu Ltd.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2011-2017 Red Hat Inc.
+Copyright (C) 2011-2018 Red Hat Inc.
 
 Copyright (C) 2012 Fujitsu Ltd.
 

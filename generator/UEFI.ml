@@ -18,7 +18,7 @@
 
 (* Please read generator/README first. *)
 
-open Common_utils
+open Std_utils
 open Utils
 open Pr
 open Docstrings
@@ -77,7 +77,7 @@ let firmware = [
     [];
 ]
 
-let arches = sort_uniq (List.map (fun (arch, _, _, _, _) -> arch) firmware)
+let arches = List.sort_uniq (List.map (fun (arch, _, _, _, _) -> arch) firmware)
 
 let generate_uefi_c () =
   generate_header CStyle LGPLv2plus;
@@ -86,7 +86,8 @@ let generate_uefi_c () =
   pr "\n";
   pr "#include <stdio.h>\n";
   pr "\n";
-  pr "#include \"guestfs-internal-frontend.h\"\n";
+  pr "#include \"guestfs.h\"\n";
+  pr "#include \"guestfs-internal.h\"\n";
 
   List.iter (
     fun arch ->

@@ -24,29 +24,32 @@ virt-df — програма для показу даних щодо вільн�
 
 =head1 ОПИС
 
-C<virt-df> is a command line tool to display free space on virtual machine
-filesystems.  Unlike other tools, it doesn't just display the size of disk
-allocated to a virtual machine, but can look inside disk images to see how
-much space is really being used.
+C<virt-df> — інструмент командного рядка для показу вільного місця у
+файлових системах віртуальної машини. На відміну від інших інструментів, він
+не показує розмір диску, який отримано для віртуальної машини, а може
+зазирнути всередину образу диска і визначити, скільки саме місця насправді
+використовується.
 
-If used without any I<-a> or I<-d> arguments, C<virt-df> checks with libvirt
-to get a list of all active and inactive guests, and performs a C<df>-type
-operation on each one in turn, printing out the results.
+Якщо команду віддано без аргументів I<-a> або I<-d>, C<virt-df> отримає від
+libvirt список активних і неактивних гостьових систем і виконає дію типу
+C<df> для кожного з них послідовно, а потім виведе результати.
 
-If any I<-a> or I<-d> arguments are specified, C<virt-df> performs a
-C<df>-type operation on either the single named libvirt domain, or on the
-disk image(s) listed on the command line (which must all belong to a single
-VM).  B<In this mode (with arguments), C<virt-df> will only work for a
-single guest>.  If you want to run on multiple guests, then you have to
-invoke C<virt-df> multiple times.
+Якщо вказано якийсь із аргументів, I<-a> або I<-d>, C<virt-df> виконає дію
+типу C<df> або над окремим вказаним за назвою доменом libvirt, або над
+образами дисків, вказаних у форматі списку у командному рядку (усі вони
+мають належати до однієї віртуальної машини).  B<У цьому режимі (з
+аргументами), C<virt-df> працюватиме для однієї гостьової системи>. Якщо ви
+хочете обробити декілька гостьових систем, вам слід викликати C<virt-df>
+декілька разів.
 
-Use the I<--csv> option to get a format which can be easily parsed by other
-programs.  Other options are similar to the standard L<df(1)> command.
+Скористайтеся параметром I<--csv>, щоб отримати формат у вигляді даних, які
+може бути просто оброблено у інших програмах. Інші параметри подібні  до
+параметрів стандартної команди L<df(1)>.
 
 =head1 ПРИКЛАДИ
 
-Show disk usage for a single libvirt guest called C<F14x64>.  Make the
-output human-readable:
+Показати використання диска для окремої гостьової системи libvirt, яка
+називається C<F14x64>. Зробити виведені дані зручними для читання:
 
  # virt-df -d F14x64 -h
  Filesystem                       Size     Used  Available  Use%
@@ -60,9 +63,10 @@ F<test.img>:
  Filesystem                  1K-blocks     Used  Available  Use%
  test1.img:/dev/sda1             99099     1551      92432    2%
 
-If a single guest has multiple disks, use the I<-a> option repeatedly.  A
-plus sign (C<+>) is displayed for each additional disk.  B<Note: Do not do
-this with unrelated guest disks.>
+Якщо у одній гостьовій системі декілька дисків, скористайтеся параметром
+I<-a> декілька разів. Для кожного з додаткових дисків буде показано символ
+«плюс» (C<+>). B<Зауваження: не робіть цього для непов'язаних дисків
+гостьових систем.>
 
  $ virt-df -a Win7x32TwoDisks-a -a Win7x32TwoDisks-b 
  Файлова система              1K-блоків    Вик.   Доступно %Вик.
@@ -82,9 +86,9 @@ this with unrelated guest disks.>
 
 =item B<--add> ФАЙЛ
 
-Add C<FILE> which should be a disk image from a virtual machine.  If the
-virtual machine has multiple block devices, you must supply all of them with
-separate I<-a> options.
+Додати I<ФАЙЛ>, який має бути образом диска з віртуальної машини. Якщо у
+віртуальній машині декілька блокових пристроїв, вам слід вказати їх усі за
+допомогою окремих записів параметра I<-a>.
 
 Формат образу диска визначається автоматично. Щоб перевизначити його і
 примусово використати певний формат, скористайтеся параметром
@@ -108,9 +112,10 @@ libvirt не буде використовуватися взагалі.
 
 =item B<--csv>
 
-Write out the results in CSV format (comma-separated values).  This format
-can be imported easily into databases and spreadsheets, but read L</NOTE
-ABOUT CSV FORMAT> below.
+Вивести результати до формату CSV (записів, відокремлених комами). Дані у
+цьому форматі можна просто імпортувати до баз даних і електронних
+таблиць. Втім, варто ознайомитися із розділом L</НОТАТКА ЩОДО ФОРМАТУ CSV>,
+наведеним нижче.
 
 =item B<-d> гість
 
@@ -162,8 +167,9 @@ ABOUT CSV FORMAT> below.
 
 =item B<--one-per-guest>
 
-Since libguestfs 1.22, this is the default.  This option does nothing and is
-left here for backwards compatibility with older scripts.
+З версії libguestfs 1.22 ця поведінка є типовою. Використання цього
+параметра не має жодних наслідків. Параметр збережено лише з міркувань
+зворотної сумісності із давніми скриптами.
 
 =item B<-P> кількість_потоків
 
@@ -182,9 +188,9 @@ left here for backwards compatibility with older scripts.
 навіть після перенесення або перейменування, або якщо дві гостьові системи
 мають однакові назви.
 
-Note that only domains that we fetch from libvirt come with UUIDs.  For disk
-images, we still print the disk image name even when this option is
-specified.
+Зауважте, що UUID матимуть лише ті домени, які ми отримуємо з libvirt. Для
+образів дисків ми виводимо назви образів дисків, навіть якщо вказано цей
+параметр.
 
 =item B<-v>
 
@@ -206,9 +212,9 @@ specified.
 
 =head1 ЧИСЛОВІ ДАНІ ЩОДО STATVFS
 
-C<virt-df> (and L<df(1)>) get information by issuing a L<statvfs(3)> system
-call.  You can get the same information directly, either from the host
-(using libguestfs) or inside the guest:
+C<virt-df> (і L<df(1)>) отримує інформацію, виконуючи системний виклик
+L<statvfs(3)>. Ви можете отримати ті самі дані безпосередньо або від
+основної системи (за допомогою libguestfs), або з самої гостьової системи:
 
 =over 4
 
@@ -218,7 +224,7 @@ call.  You can get the same information directly, either from the host
 
  guestfish --ro -d НАЗВА_ГОСТЬОВОЇ_СИСТЕМИ -i statvfs /
 
-(change F</> to see stats for other filesystems).
+(замініть F</>, щоб переглянути статистику для інших файлових систем).
 
 =item З гостьової системи
 
@@ -226,33 +232,36 @@ call.  You can get the same information directly, either from the host
 
  python -c 'import os; s = os.statvfs ("/"); print s'
 
-(change F</> to see stats for other filesystems).
+(замініть F</>, щоб переглянути статистику для інших файлових систем).
 
 =back
 
 =head1 ЗАУВАЖЕННЯ ЩОДО ФОРМАТУ CSV
 
-Comma-separated values (CSV) is a deceptive format.  It I<seems> like it
-should be easy to parse, but it is definitely not easy to parse.
+Формат значень, які відокремлено комами (CSV), є оманливо простим. Може
+I<здатися>, що його просто обробляти, але насправді це зовсім не так.
 
-Myth: Just split fields at commas.  Reality: This does I<not> work
-reliably.  This example has two columns:
+Міф: достатньо розділити поля за комами. Реальність: поділ комами I<не>
+працює у надійний спосіб. Ось приклад із двома стовпчиками:
 
  "foo,bar",baz
 
-Myth: Read the file one line at a time.  Reality: This does I<not> work
-reliably.  This example has one row:
+Міф: слід читати файл за рядками, один рядок за одну операцію
+читання. Реальність: читання за рядками I<не> працює у надійний спосіб. Ось
+приклад із одним рядком:
 
  "foo
  bar",baz
 
-For shell scripts, use C<csvtool> (L<https://github.com/Chris00/ocaml-csv>
-also packaged in major Linux distributions).
+Для скриптів командної оболонки скористайтеся C<csvtool>
+(L<https://github.com/Chris00/ocaml-csv> також є серед пакунків основних
+дистрибутивів Linux).
 
-For other languages, use a CSV processing library (eg. C<Text::CSV> for Perl
-or Python's built-in csv library).
+Для інших мов програмування використовуйте бібліотеку для обробки даних CSV
+(наприклад, C<Text::CSV> для Perl або вбудовану бібліотеку csv Python).
 
-Most spreadsheets and databases can import CSV directly.
+У більшості електронних таблиць та баз даних передбачено можливості
+безпосереднього імпортування даних CSV.
 
 =head1 СТАН ВИХОДУ
 
@@ -270,5 +279,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2017 Red Hat Inc.
+Copyright (C) 2009-2018 Red Hat Inc.
 

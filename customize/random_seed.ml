@@ -1,5 +1,5 @@
 (* virt-sysprep
- * Copyright (C) 2012-2017 Red Hat Inc.
+ * Copyright (C) 2012-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ let rec set_random_seed (g : Guestfs.guestfs) root =
     let distro = g#inspect_get_distro root in
     let file =
       match typ, distro with
-      | "linux", ("fedora"|"rhel"|"centos"|"scientificlinux"|"redhat-based") ->
+      | "linux", ("fedora"|"rhel"|"centos"|"scientificlinux"|"oraclelinux"|"redhat-based") ->
         Some "/var/lib/random-seed"
       | "linux", ("debian"|"ubuntu") ->
         Some "/var/lib/urandom/random-seed"

@@ -253,7 +253,7 @@ struct command_entry config_cmd_entry = {
           "\n"
           "DESCRIPTION\n"
           "    This can be used to add arbitrary hypervisor parameters of the form\n"
-          "    *-param value*. Actually it's not quite arbitrary - we prevent you from\n"
+          "    *-param value*. Actually it’s not quite arbitrary - we prevent you from\n"
           "    setting some parameters which would interfere with parameters that we\n"
           "    use.\n"
           "\n"
@@ -383,7 +383,7 @@ struct command_entry debug_drives_cmd_entry = {
           "     debug-drives\n"
           "\n"
           "DESCRIPTION\n"
-          "    This returns the internal list of drives. 'debug' commands are not part\n"
+          "    This returns the internal list of drives. ‘debug’ commands are not part\n"
           "    of the formal API and can be removed or changed at any time.\n"
           "\n"
           "",
@@ -473,21 +473,21 @@ struct command_entry filesystem_walk_cmd_entry = {
           "\n"
           "    The \"tsk_dirent\" structure contains the following fields.\n"
           "\n"
-          "    'tsk_inode'\n"
+          "    \"tsk_inode\"\n"
           "        Filesystem reference number of the node. It might be 0 if the node\n"
           "        has been deleted.\n"
           "\n"
-          "    'tsk_type'\n"
+          "    \"tsk_type\"\n"
           "        Basic file type information. See below for a detailed list of\n"
           "        values.\n"
           "\n"
-          "    'tsk_size'\n"
+          "    \"tsk_size\"\n"
           "        File size in bytes. It might be -1 if the node has been deleted.\n"
           "\n"
-          "    'tsk_name'\n"
+          "    \"tsk_name\"\n"
           "        The file path relative to its directory.\n"
           "\n"
-          "    'tsk_flags'\n"
+          "    \"tsk_flags\"\n"
           "        Bitfield containing extra information regarding the entry. It\n"
           "        contains the logical OR of the following values:\n"
           "\n"
@@ -512,21 +512,21 @@ struct command_entry filesystem_walk_cmd_entry = {
           "            native compression support (NTFS). The API is not able to detect\n"
           "            application level compression.\n"
           "\n"
-          "    'tsk_atime_sec'\n"
-          "    'tsk_atime_nsec'\n"
-          "    'tsk_mtime_sec'\n"
-          "    'tsk_mtime_nsec'\n"
-          "    'tsk_ctime_sec'\n"
-          "    'tsk_ctime_nsec'\n"
-          "    'tsk_crtime_sec'\n"
-          "    'tsk_crtime_nsec'\n"
+          "    \"tsk_atime_sec\"\n"
+          "    \"tsk_atime_nsec\"\n"
+          "    \"tsk_mtime_sec\"\n"
+          "    \"tsk_mtime_nsec\"\n"
+          "    \"tsk_ctime_sec\"\n"
+          "    \"tsk_ctime_nsec\"\n"
+          "    \"tsk_crtime_sec\"\n"
+          "    \"tsk_crtime_nsec\"\n"
           "        Respectively, access, modification, last status change and creation\n"
           "        time in Unix format in seconds and nanoseconds.\n"
           "\n"
-          "    'tsk_nlink'\n"
+          "    \"tsk_nlink\"\n"
           "        Number of file names pointing to this entry.\n"
           "\n"
-          "    'tsk_link'\n"
+          "    \"tsk_link\"\n"
           "        If the entry is a symbolic link, this field will contain the path to\n"
           "        the target file.\n"
           "\n"
@@ -802,6 +802,29 @@ struct command_entry hivex_root_cmd_entry = {
   .run = run_hivex_root
 };
 
+struct command_entry hivex_value_string_cmd_entry = {
+  .name = "hivex-value-string",
+  .help = "NAME\n"
+          "    hivex-value-string - return the data field as a UTF-8 string\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     hivex-value-string valueh\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    This calls \"hivex_value_value\" (which returns the data field from a\n"
+          "    hivex value tuple). It then assumes that the field is a UTF-16LE string\n"
+          "    and converts the result to UTF-8 (or if this is not possible, it returns\n"
+          "    an error).\n"
+          "\n"
+          "    This is useful for reading strings out of the Windows registry. However\n"
+          "    it is not foolproof because the registry is not strongly-typed and\n"
+          "    fields can contain arbitrary or unexpected data.\n"
+          "\n"
+          "",
+  .synopsis = "hivex-value-string valueh",
+  .run = run_hivex_value_string
+};
+
 struct command_entry hivex_value_value_cmd_entry = {
   .name = "hivex-value-value",
   .help = "NAME\n"
@@ -912,7 +935,7 @@ struct command_entry inspect_get_icon_cmd_entry = {
           "\n"
           "    Notes:\n"
           "\n"
-          "    *   Unlike most other inspection API calls, the guest's disks must be\n"
+          "    *   Unlike most other inspection API calls, the guest’s disks must be\n"
           "        mounted up before you call this, since it needs to read information\n"
           "        from the guest filesystem during the call.\n"
           "\n"
@@ -975,12 +998,16 @@ struct command_entry inspect_is_netinst_cmd_entry = {
           "     inspect-is-netinst root\n"
           "\n"
           "DESCRIPTION\n"
-          "    If \"inspect_get_format\" returns \"installer\" (this is an install disk),\n"
-          "    then this returns true if the disk is a network installer, ie. not a\n"
-          "    self-contained install CD but one which is likely to require network\n"
-          "    access to complete the install.\n"
+          "    This is deprecated and always returns \"false\".\n"
           "\n"
           "    Please read \"INSPECTION\" in guestfs(3) for more details.\n"
+          "\n"
+          "    *This function is deprecated.* There is no replacement. Consult the API\n"
+          "    documentation in guestfs(3) for further information.\n"
+          "\n"
+          "    Deprecated functions will not be removed from the API, but the fact that\n"
+          "    they are deprecated indicates that there are problems with correct use\n"
+          "    of these functions.\n"
           "\n"
           "",
   .synopsis = "inspect-is-netinst root",
@@ -1514,7 +1541,7 @@ struct command_entry mount_cmd_entry = {
           "    named /dev/sda, /dev/sdb and so on, as they were added to the guest. If\n"
           "    those block devices contain partitions, they will have the usual names\n"
           "    (eg. /dev/sda1). Also LVM /dev/VG/LV-style names can be used, or\n"
-          "    'mountable' strings returned by \"list_filesystems\" or\n"
+          "    ‘mountable’ strings returned by \"list_filesystems\" or\n"
           "    \"inspect_get_mountpoints\".\n"
           "\n"
           "    The rules are the same as for mount(2): A filesystem must first be\n"
@@ -1672,6 +1699,31 @@ struct command_entry ntfsclone_out_cmd_entry = {
           "",
   .synopsis = "ntfsclone-out device backupfile [metadataonly:true|false] [rescue:true|false] [ignorefscheck:true|false] [preservetimestamps:true|false] [force:true|false]",
   .run = run_ntfsclone_out
+};
+
+struct command_entry part_resize_cmd_entry = {
+  .name = "part-resize",
+  .help = "NAME\n"
+          "    part-resize - resize a partition\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     part-resize device partnum endsect\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    This command resizes the partition numbered \"partnum\" on \"device\" by\n"
+          "    moving the end position.\n"
+          "\n"
+          "    Note that this does not modify any filesystem present in the partition.\n"
+          "    If you wish to do this, you will need to use filesystem resizing\n"
+          "    commands like \"resize2fs\".\n"
+          "\n"
+          "    When growing a partition you will want to grow the filesystem\n"
+          "    afterwards, but when shrinking, you need to shrink the filesystem before\n"
+          "    the partition.\n"
+          "\n"
+          "",
+  .synopsis = "part-resize device partnum endsect",
+  .run = run_part_resize
 };
 
 struct command_entry part_set_disk_guid_cmd_entry = {
@@ -2101,6 +2153,23 @@ struct command_entry xfs_admin_cmd_entry = {
           "",
   .synopsis = "xfs-admin device [extunwritten:true|false] [imgfile:true|false] [v2log:true|false] [projid32bit:true|false] [lazycounter:true|false] [label:..] [uuid:..]",
   .run = run_xfs_admin
+};
+
+struct command_entry yara_destroy_cmd_entry = {
+  .name = "yara-destroy",
+  .help = "NAME\n"
+          "    yara-destroy - destroy previously loaded yara rules\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     yara-destroy\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    Destroy previously loaded Yara rules in order to free libguestfs\n"
+          "    resources.\n"
+          "\n"
+          "",
+  .synopsis = "yara-destroy",
+  .run = run_yara_destroy
 };
 
 struct command_entry zegrepi_cmd_entry = {

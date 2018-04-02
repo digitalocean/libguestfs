@@ -1,7 +1,7 @@
 #!/bin/bash -
 # @configure_input@
 # virt-p2v-make-disk
-# Copyright (C) 2014-2017 Red Hat Inc.
+# Copyright (C) 2014-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -147,7 +147,7 @@ fi
 if [ ! -f "$virt_p2v_xz_binary" ]; then
     echo "$program: cannot find $virt_p2v_xz_binary"
     if [ -n "$arch" ]; then
-        echo "You used the '--arch' option, so it's likely that you will need to build"
+        echo "You used the '--arch' option, so it’s likely that you will need to build"
         echo "a virt-p2v.$arch binary yourself."
         echo "See guestfs-building(1) section BUILDING i686 32 BIT VIRT-P2V for help."
     fi
@@ -169,7 +169,7 @@ xzcat "$virt_p2v_xz_binary" > "$virt_p2v_binary"
 # Variations depending on the target distro.  The main difference
 # is in the list of distro packages we add to the base appliance.
 case "$osversion" in
-    centos-*|fedora-*|rhel-*|scientificlinux-*)
+    centos-*|fedora-*|rhel-*|scientificlinux-*|oraclelinux-*)
         depsfile="$datadir/dependencies.redhat"
         cat > $tmpdir/p2v.conf <<'EOF'
 add_drivers+=" usb-storage "

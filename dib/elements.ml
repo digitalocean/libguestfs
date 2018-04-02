@@ -18,14 +18,13 @@
 
 (* Parsing and handling of elements. *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Utils
 
 open Printf
-
-module StringSet = Set.Make (String)
 
 type element = {
   directory : string;
@@ -35,14 +34,9 @@ and hooks_map = (string, string list) Hashtbl.t  (* hook name, scripts *)
 
 exception Duplicate_script of string * string (* hook, script *)
 
-(* These are the elements which we don't ever try to use. *)
 let builtin_elements_blacklist = [
 ]
 
-(* These are the scripts which we don't ever try to run.
- * Usual reason could be that they are not compatible the way virt-dib works:
- * e.g. they expect the tree of elements outside the chroot, which is not
- * available in the appliance. *)
 let builtin_scripts_blacklist = [
   "01-sahara-version";            (* Gets the Git commit ID of the d-i-b and
                                    * sahara-image-elements repositories. *)
@@ -88,7 +82,7 @@ let load_scripts (g : Guestfs.guestfs) path =
     | _ -> false
     ) listing in
   let scripts = List.filter (fun x -> valid_script_name x.Guestfs.name) scripts in
-  filter_map (
+  List.filter_map (
      fun x ->
        let { Guestfs.st_mode = mode } = g#statns (path ^ "/" ^ x.Guestfs.name) in
        if mode &^ 0o111_L > 0_L then Some x.Guestfs.name

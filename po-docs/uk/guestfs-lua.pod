@@ -29,13 +29,13 @@ variable.  Typical usage is:
 (you can use any name you want instead of C<G>, but in the examples in this
 man page we always use C<G>).
 
-=head2 OPENING AND CLOSING THE HANDLE
+=head2 ВІДКРИТТЯ І ЗАКРИТТЯ ДЕСКРИПТОРА
 
 To create a new handle, call:
 
  g = G.create ()
 
-You can also use the optional arguments:
+Ви також можете скористатися необов'язковими аргументами:
 
  g = G.create { environment = 0, close_on_exit = 0 }
 

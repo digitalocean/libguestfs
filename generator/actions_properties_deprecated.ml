@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ see L<guestfs(3)>." };
 
   { defaults with
     name = "set_attach_method"; added = (1, 9, 8);
-    style = RErr, [String "backend"], [];
+    style = RErr, [String (PlainString, "backend")], [];
     fish_alias = ["attach-method"]; config_only = true;
     blocking = false;
     deprecated_by = Replaced_by "set_backend";
@@ -112,7 +112,7 @@ See L<guestfs(3)/BACKEND>." };
 
   { defaults with
     name = "get_attach_method"; added = (1, 9, 8);
-    style = RString "backend", [], [];
+    style = RString (RPlainString, "backend"), [], [];
     blocking = false;
     deprecated_by = Replaced_by "get_backend";
     tests = [
@@ -124,6 +124,36 @@ See L<guestfs(3)/BACKEND>." };
 Return the current backend.
 
 See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>." };
+
+  { defaults with
+    name = "set_direct"; added = (1, 0, 72);
+    style = RErr, [Bool "direct"], [];
+    deprecated_by = Replaced_by "internal_get_console_socket";
+    fish_alias = ["direct"]; config_only = true;
+    blocking = false;
+    shortdesc = "enable or disable direct appliance mode";
+    longdesc = "\
+If the direct appliance mode flag is enabled, then stdin and
+stdout are passed directly through to the appliance once it
+is launched.
+
+One consequence of this is that log messages aren't caught
+by the library and handled by C<guestfs_set_log_message_callback>,
+but go straight to stdout.
+
+You probably don't want to use this unless you know what you
+are doing.
+
+The default is disabled." };
+
+  { defaults with
+    name = "get_direct"; added = (1, 0, 72);
+    style = RBool "direct", [], [];
+    deprecated_by = Replaced_by "internal_get_console_socket";
+    blocking = false;
+    shortdesc = "get direct appliance mode flag";
+    longdesc = "\
+Return the direct appliance mode flag." };
 
 ]
 

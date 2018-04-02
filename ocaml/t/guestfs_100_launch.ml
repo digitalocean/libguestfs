@@ -1,5 +1,5 @@
 (* libguestfs OCaml tests
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ let () =
   let cmp { Guestfs.name = n1 } { Guestfs.name = n2 } = compare n1 n2 in
   let dirs = List.sort cmp dirs in
   let dirs = List.map (
-    fun { Guestfs.name = name; Guestfs.ftyp = ftyp } -> (name, ftyp)
+    fun { Guestfs.name; ftyp } -> (name, ftyp)
   ) dirs in
 
   if dirs <> [ ".", 'd';

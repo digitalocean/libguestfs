@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Printf
 
@@ -42,13 +43,11 @@ let rec list_entries ~list_format ~sources index =
 
 and list_entries_short index =
   List.iter (
-    fun (name, { Index.printable_name = printable_name;
-                 arch = arch;
-                 hidden = hidden }) ->
+    fun (name, { Index.printable_name; arch; hidden }) ->
       if not hidden then (
         printf "%-24s" name;
-        printf " %-10s" arch;
-        may (printf " %s") printable_name;
+        printf " %-10s" (Index.string_of_arch arch);
+        Option.may (printf " %s") printable_name;
         printf "\n"
       )
   ) index
@@ -57,7 +56,7 @@ and list_entries_long ~sources index =
   let langs = Languages.languages () in
 
   List.iter (
-    fun { Sources.uri = uri; gpgkey = gpgkey } ->
+    fun { Sources.uri; gpgkey } ->
       printf (f_"Source URI: %s\n") uri;
       (match gpgkey with
       | Utils.No_Key -> ()
@@ -70,28 +69,19 @@ and list_entries_long ~sources index =
   ) sources;
 
   List.iter (
-    fun (name, { Index.printable_name = printable_name;
-                 arch = arch;
-                 size = size;
-                 compressed_size = compressed_size;
-                 notes = notes;
-                 aliases = aliases;
-                 hidden = hidden }) ->
+    fun (name, { Index.printable_name; arch; size; compressed_size;
+                 notes; aliases; hidden }) ->
       if not hidden then (
         printf "%-24s %s\n" "os-version:" name;
-        may (printf "%-24s %s\n" (s_"Full name:")) printable_name;
-        printf "%-24s %s\n" (s_"Architecture:") arch;
+        Option.may (printf "%-24s %s\n" (s_"Full name:")) printable_name;
+        printf "%-24s %s\n" (s_"Architecture:") (Index.string_of_arch arch);
         printf "%-24s %s\n" (s_"Minimum/default size:") (human_size size);
-        (match compressed_size with
-        | None -> ()
-        | Some size ->
-          printf "%-24s %s\n" (s_"Download size:") (human_size size);
-        );
-        (match aliases with
-        | None -> ()
-        | Some l -> printf "%-24s %s\n" (s_"Aliases:")
-                      (String.concat " " l);
-        );
+        Option.may (fun size ->
+            printf "%-24s %s\n" (s_"Download size:") (human_size size)
+        ) compressed_size;
+        Option.may (
+            fun l -> printf "%-24s %s\n" (s_"Aliases:") (String.concat " " l)
+        ) aliases;
         let notes = Languages.find_notes langs notes in
         (match notes with
         | notes :: _ ->
@@ -106,7 +96,7 @@ and list_entries_long ~sources index =
 and list_entries_json ~sources index =
   let json_sources =
     List.map (
-      fun { Sources.uri = uri; gpgkey = gpgkey } ->
+      fun { Sources.uri; gpgkey } ->
         let item = [ "uri", JSON.String uri ] in
         let item =
           match gpgkey with
@@ -119,20 +109,14 @@ and list_entries_json ~sources index =
     ) sources in
   let json_templates =
     List.map (
-      fun (name, { Index.printable_name = printable_name;
-                   arch = arch;
-                   size = size;
-                   compressed_size = compressed_size;
-                   notes = notes;
-                   aliases = aliases;
-                   osinfo = osinfo;
-                   hidden = hidden }) ->
+      fun (name, { Index.printable_name; arch; size; compressed_size;
+                   notes; aliases; osinfo; hidden }) ->
         let item = [ "os-version", JSON.String name ] in
         let item =
           match printable_name with
           | None -> item
           | Some str -> ("full-name", JSON.String str) :: item in
-        let item = ("arch", JSON.String arch) :: item in
+        let item = ("arch", JSON.String (Index.string_of_arch arch)) :: item in
         let item = ("size", JSON.Int64 size) :: item in
         let item =
           match compressed_size with

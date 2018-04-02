@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 open Printf
 
-open Common_utils
+open Std_utils
 open Types
 open Utils
 open Pr
@@ -330,8 +330,8 @@ PREINIT:
 ";
 
   List.iter (
-    fun { name = name; style = (ret, args, optargs as style);
-          c_function = c_function; c_optarg_prefix = c_optarg_prefix } ->
+    fun { name; style = (ret, args, optargs as style);
+          c_function; c_optarg_prefix } ->
       (match ret with
        | RErr -> pr "void\n"
        | RInt _ -> pr "SV *\n"
@@ -355,12 +355,10 @@ PREINIT:
         pr ", ...";
       pr ")\n";
       pr "      guestfs_h *g;\n";
-      iteri (
+      List.iteri (
         fun i ->
           function
-          | Pathname n | Device n | Mountable n
-          | Dev_or_Path n | Mountable_or_Path n | String n
-          | FileIn n | FileOut n | Key n | GUID n ->
+          | String (_, n) ->
               pr "      char *%s;\n" n
           | BufferIn n ->
               pr "      char *%s;\n" n;
@@ -371,7 +369,7 @@ PREINIT:
                * to add 1 to the ST(x) operator.
                *)
               pr "      char *%s = SvOK(ST(%d)) ? SvPV_nolen(ST(%d)) : NULL;\n" n (i+1) (i+1)
-          | StringList n | DeviceList n | FilenameList n ->
+          | StringList (_, n) ->
               pr "      char **%s;\n" n
           | Bool n -> pr "      int %s;\n" n
           | Int n -> pr "      int %s;\n" n
@@ -513,12 +511,11 @@ PREINIT:
       (* Cleanup any arguments. *)
       List.iter (
         function
-        | Pathname _ | Device _ | Mountable _
-        | Dev_or_Path _ | Mountable_or_Path _ | String _
-        | OptString _ | Bool _ | Int _ | Int64 _
-        | FileIn _ | FileOut _
-        | BufferIn _ | Key _ | Pointer _ | GUID _ -> ()
-        | StringList n | DeviceList n | FilenameList n ->
+        | String _ | OptString _
+        | Bool _ | Int _ | Int64 _
+        | BufferIn _
+        | Pointer _ -> ()
+        | StringList (_, n) ->
             pr "      free (%s);\n" n
       ) args;
 
@@ -729,8 +726,7 @@ use warnings;
 
 # This is always 1.0, never changes, and is unrelated to the
 # real libguestfs version.  If you want to find the libguestfs
-# library version, use $g->version.  If you want to test if
-# APIs/parameters are present, use %%guestfs_introspection.
+# library version, use $g->version.
 use vars qw($VERSION);
 $VERSION = '1.0';
 
@@ -891,8 +887,7 @@ errnos:
    * they are pulled in from the XS code automatically.
    *)
   List.iter (
-    fun ({ name = name; style = style;
-           longdesc = longdesc; non_c_aliases = non_c_aliases } as f) ->
+    fun ({ name; style; longdesc; non_c_aliases } as f) ->
       let longdesc = String.replace longdesc "C<guestfs_" "C<$g-E<gt>" in
       pr "=item ";
       generate_perl_prototype name style;
@@ -932,84 +927,6 @@ C<$g-E<gt>feature-available>.\n\n" opt
 
   pr "=cut\n\n";
 
-  (* Introspection hash. *)
-  pr "use vars qw(%%guestfs_introspection);\n";
-  pr "%%guestfs_introspection = (\n";
-  List.iter (
-    fun { name = name; style = (ret, args, optargs); shortdesc = shortdesc } ->
-      pr "  \"%s\" => {\n" name;
-      pr "    ret => ";
-      (match ret with
-       | RErr -> pr "'void'"
-       | RInt _ -> pr "'int'"
-       | RBool _ -> pr "'bool'"
-       | RInt64 _ -> pr "'int64'"
-       | RConstString _ -> pr "'const string'"
-       | RConstOptString _ -> pr "'const nullable string'"
-       | RString _ -> pr "'string'"
-       | RStringList _ -> pr "'string list'"
-       | RHashtable _ -> pr "'hash'"
-       | RStruct (_, typ) -> pr "'struct %s'" typ
-       | RStructList (_, typ) -> pr "'struct %s list'" typ
-       | RBufferOut _ -> pr "'buffer'"
-      );
-      pr ",\n";
-      let pr_type i = function
-        | Pathname n -> pr "[ '%s', 'string(path)', %d ]" n i
-        | Device n -> pr "[ '%s', 'string(device)', %d ]" n i
-        | Mountable n -> pr "[ '%s', 'string(mountable)', %d ]" n i
-        | Dev_or_Path n -> pr "[ '%s', 'string(dev_or_path)', %d ]" n i
-        | Mountable_or_Path n ->
-          pr "[ '%s', 'string(mountable_or_path)', %d ]" n i
-        | String n | GUID n -> pr "[ '%s', 'string', %d ]" n i
-        | FileIn n -> pr "[ '%s', 'string(filename)', %d ]" n i
-        | FileOut n -> pr "[ '%s', 'string(filename)', %d ]" n i
-        | Key n -> pr "[ '%s', 'string(key)', %d ]" n i
-        | BufferIn n -> pr "[ '%s', 'buffer', %d ]" n i
-        | OptString n -> pr "[ '%s', 'nullable string', %d ]" n i
-        | StringList n -> pr "[ '%s', 'string list', %d ]" n i
-        | DeviceList n -> pr "[ '%s', 'string(device) list', %d ]" n i
-        | Bool n -> pr "[ '%s', 'bool', %d ]" n i
-        | Int n -> pr "[ '%s', 'int', %d ]" n i
-        | Int64 n -> pr "[ '%s', 'int64', %d ]" n i
-        | Pointer (t, n) -> pr "[ '%s', 'pointer(%s)', %d ]" n t i
-        | FilenameList n -> pr "[ '%s', 'string(path) list', %d ]" n i
-      in
-      pr "    args => [\n";
-      iteri (fun i arg ->
-        pr "      ";
-        pr_type i arg;
-        pr ",\n"
-      ) args;
-      pr "    ],\n";
-      if optargs <> [] then (
-        pr "    optargs => {\n";
-        iteri (fun i arg ->
-          pr "      %s => " (name_of_argt arg);
-          pr_type i arg;
-          pr ",\n"
-        ) (args_of_optargs optargs);
-        pr "    },\n";
-      );
-      pr "    name => \"%s\",\n" name;
-      pr "    description => %S,\n" shortdesc;
-      pr "  },\n";
-  ) (actions |> external_functions |> sort);
-  pr ");\n\n";
-
-  pr "# Add aliases to the introspection hash.\n";
-  let i = ref 0 in
-  List.iter (
-    fun { name = name; non_c_aliases = non_c_aliases } ->
-      List.iter (
-        fun alias ->
-          pr "my %%ielem%d = %%{$guestfs_introspection{%s}};\n" !i name;
-          pr "$guestfs_introspection{%s} = \\%%ielem%d;\n" alias !i;
-          incr i
-      ) non_c_aliases
-  ) (actions |> external_functions |> sort);
-  pr "\n";
-
   (* End of file. *)
   pr "\
 1;
@@ -1032,33 +949,6 @@ class, use the ordinary Perl UNIVERSAL method C<can(METHOD)>
  if (defined (Sys::Guestfs->can (\"set_verbose\"))) {
    print \"\\$g->set_verbose is available\\n\";
  }
-
-Perl does not offer a way to list the arguments of a method, and
-from time to time we may add extra arguments to calls that take
-optional arguments.  For this reason, we provide a global hash
-variable C<%%guestfs_introspection> which contains the arguments
-and their types for each libguestfs method.  The keys of this
-hash are the method names, and the values are an hashref
-containing useful introspection information about the method
-(further fields may be added to this in future).
-
- use Sys::Guestfs;
- $Sys::Guestfs::guestfs_introspection{mkfs}
- => {
-    ret => 'void',                    # return type
-    args => [                         # required arguments
-      [ 'fstype', 'string', 0 ],
-      [ 'device', 'string(device)', 1 ],
-    ],
-    optargs => {                      # optional arguments
-      blocksize => [ 'blocksize', 'int', 0 ],
-      features => [ 'features', 'string', 1 ],
-      inode => [ 'inode', 'int', 2 ],
-      sectorsize => [ 'sectorsize', 'int', 3 ],
-    },
-    name => \"mkfs\",
-    description => \"make a filesystem\",
-  }
 
 To test if particular features are supported by the current
 build, use the L</feature_available> method like the example below.  Note
@@ -1113,11 +1003,11 @@ and generate_perl_prototype name (ret, args, optargs) =
    | RInt64 n
    | RConstString n
    | RConstOptString n
-   | RString n
+   | RString (_, n)
    | RBufferOut n -> pr "$%s = " n
    | RStruct (n,_)
-   | RHashtable n -> pr "%%%s = " n
-   | RStringList n
+   | RHashtable (_, _, n) -> pr "%%%s = " n
+   | RStringList (_, n)
    | RStructList (n,_) -> pr "@%s = " n
   );
   pr "$g->%s (" name;
@@ -1127,12 +1017,11 @@ and generate_perl_prototype name (ret, args, optargs) =
       if !comma then pr ", ";
       comma := true;
       match arg with
-      | Pathname n | Device n | Mountable n
-      | Dev_or_Path n | Mountable_or_Path n | String n
-      | OptString n | Bool n | Int n | Int64 n | FileIn n | FileOut n
-      | BufferIn n | Key n | Pointer (_, n) | GUID n ->
+      | String (_, n)
+      | OptString n | Bool n | Int n | Int64 n
+      | BufferIn n | Pointer (_, n) ->
           pr "$%s" n
-      | StringList n | DeviceList n | FilenameList n ->
+      | StringList (_, n) ->
           pr "\\@%s" n
   ) args;
   List.iter (

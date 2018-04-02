@@ -1,6 +1,6 @@
 /* quotearg.c - quote arguments for output
 
-   Copyright (C) 1998-2002, 2004-2017 Free Software Foundation, Inc.
+   Copyright (C) 1998-2002, 2004-2018 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -887,8 +887,9 @@ quotearg_n_options (int n, char const *arg, size_t argsize,
   if (nslots <= n)
     {
       bool preallocated = (sv == &slotvec0);
+      int nmax = MIN (INT_MAX, MIN (PTRDIFF_MAX, SIZE_MAX) / sizeof *sv) - 1;
 
-      if (MIN (INT_MAX, MIN (PTRDIFF_MAX, SIZE_MAX) / sizeof *sv) <= n)
+      if (nmax < n)
         xalloc_die ();
 
       slotvec = sv = xrealloc (preallocated ? NULL : sv, (n + 1) * sizeof *sv);
@@ -1079,3 +1080,10 @@ quote (char const *arg)
 {
   return quote_n (0, arg);
 }
+
+/*
+ * Hey Emacs!
+ * Local Variables:
+ * coding: utf-8
+ * End:
+ */

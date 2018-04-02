@@ -154,8 +154,8 @@ See also I<--run>.
 =item B<--firstboot-install> PKG,PKG..
 
 Install the named packages (a comma-separated list).  These are installed
-when the guest first boots using the guest's package manager (eg. apt, yum,
-etc.) and the guest's network connection.
+when the guest first boots using the guest’s package manager (eg. apt, yum,
+etc.) and the guest’s network connection.
 
 For an overview on the different ways to install packages, see
 L<virt-builder(1)/INSTALLING PACKAGES>.
@@ -168,8 +168,8 @@ hostname.domainname (FQDN) if you want.
 =item B<--install> PKG,PKG..
 
 Install the named packages (a comma-separated list).  These are installed
-during the image build using the guest's package manager (eg. apt, yum,
-etc.) and the host's network connection.
+during the image build using the guest’s package manager (eg. apt, yum,
+etc.) and the host’s network connection.
 
 For an overview on the different ways to install packages, see
 L<virt-builder(1)/INSTALLING PACKAGES>.
@@ -361,7 +361,7 @@ This command recursively truncates all files under C<PATH> to zero-length.
 =item B<--uninstall> PKG,PKG..
 
 Uninstall the named packages (a comma-separated list).  These are removed
-during the image build using the guest's package manager (eg. apt, yum,
+during the image build using the guest’s package manager (eg. apt, yum,
 etc.).  Dependent packages may also need to be uninstalled to satisfy the
 request.
 

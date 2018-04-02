@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2010-2017 Red Hat Inc.
+ * Copyright (C) 2010-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,36 +35,6 @@ int
 do_exists (const char *path)
 {
   return get_mode (path, NULL, 0);
-}
-
-/* Takes optional arguments, consult optargs_bitmask. */
-int
-do_is_file (const char *path, int followsymlinks)
-{
-  mode_t mode;
-  int r;
-
-  if (!(optargs_bitmask & GUESTFS_IS_FILE_FOLLOWSYMLINKS_BITMASK))
-    followsymlinks = 0;
-
-  r = get_mode (path, &mode, followsymlinks);
-  if (r <= 0) return r;
-  return S_ISREG (mode);
-}
-
-/* Takes optional arguments, consult optargs_bitmask. */
-int
-do_is_dir (const char *path, int followsymlinks)
-{
-  mode_t mode;
-  int r;
-
-  if (!(optargs_bitmask & GUESTFS_IS_DIR_FOLLOWSYMLINKS_BITMASK))
-    followsymlinks = 0;
-
-  r = get_mode (path, &mode, followsymlinks);
-  if (r <= 0) return r;
-  return S_ISDIR (mode);
 }
 
 /* Takes optional arguments, consult optargs_bitmask. */
@@ -110,17 +80,6 @@ do_is_fifo (const char *path, int followsymlinks)
   r = get_mode (path, &mode, followsymlinks);
   if (r <= 0) return r;
   return S_ISFIFO (mode);
-}
-
-int
-do_is_symlink (const char *path)
-{
-  mode_t mode;
-  int r;
-
-  r = get_mode (path, &mode, 0);
-  if (r <= 0) return r;
-  return S_ISLNK (mode);
 }
 
 /* Takes optional arguments, consult optargs_bitmask. */

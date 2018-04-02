@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Printf
 
@@ -47,11 +48,11 @@ let var_from_lines var lines =
   let var_lines = List.filter (fun x -> String.is_prefix x var_with_equal) lines in
   match var_lines with
   | [] ->
-    error (f_"variable '%s' not found in lines:\n%s")
+    error (f_"variable ‘%s’ not found in lines:\n%s")
       var (String.concat "\n" lines)
   | [x] -> snd (String.split "=" x)
   | _ ->
-    error (f_"variable '%s' has more than one occurrency in lines:\n%s")
+    error (f_"variable ‘%s’ has more than one occurrency in lines:\n%s")
       var (String.concat "\n" lines)
 
 let string_index_fn fn str =
@@ -90,10 +91,13 @@ let digit_prefix_compare a b =
 let do_mkdir dir =
   mkdir_p dir 0o755
 
-let require_tool tool =
-  try ignore (which tool)
+let get_required_tool tool =
+  try which tool
   with Executable_not_found tool ->
     error (f_"%s needed but not found") tool
+
+let require_tool tool =
+  ignore (get_required_tool tool)
 
 let do_cp src destdir =
   let cmd = [ "cp"; "-t"; destdir; "-a"; src ] in

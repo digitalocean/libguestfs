@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2017 Red Hat Inc.
+ * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
 
 open Printf
 
+open Std_utils
+open Tools_utils
 open Common_gettext.Gettext
-open Common_utils
 
 open Utils
 open Types
@@ -98,7 +99,7 @@ let convert (g : G.guestfs) inspect source output rcaps =
          let uninstkey = "UninstallString" in
          let valueh = g#hivex_node_get_value node uninstkey in
          if valueh = 0L then (
-           warning (f_"cannot uninstall Xen PV drivers: registry key 'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s' does not contain an '%s' key")
+           warning (f_"cannot uninstall Xen PV drivers: registry key ‘HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s’ does not contain an ‘%s’ key")
                    xenpvreg uninstkey;
            raise Not_found
          );
@@ -144,28 +145,28 @@ let convert (g : G.guestfs) inspect source output rcaps =
                if valueh = 0L then
                  raise Not_found;
 
-               let dispname = g#hivex_value_utf8 valueh in
-               if not (Str.string_match (Str.regexp ".*\\(Parallels\\|Virtuozzo\\) Tools.*")
-                                        dispname 0) then
+               let dispname = g#hivex_value_string valueh in
+               if String.find dispname "Parallels Tools" = -1 &&
+                  String.find dispname "Virtuozzo Tools" = -1 then
                  raise Not_found;
 
                let uninstval = "UninstallString" in
                let valueh = g#hivex_node_get_value uninstnode uninstval in
                if valueh = 0L then (
                  let name = g#hivex_node_name uninstnode in
-                 warning (f_"cannot uninstall Parallels Tools: registry key 'HKLM\\SOFTWARE\\%s\\%s' with DisplayName '%s' doesn't contain value '%s'")
+                 warning (f_"cannot uninstall Parallels Tools: registry key ‘HKLM\\SOFTWARE\\%s\\%s’ with DisplayName ‘%s’ doesn't contain value ‘%s’")
                          (String.concat "\\" path) name dispname uninstval;
                  raise Not_found
                );
 
-               let uninst = (g#hivex_value_utf8 valueh) ^
+               let uninst = (g#hivex_value_string valueh) ^
                      " /quiet /norestart /l*v+ \"%~dpn0.log\"" ^
                      " REBOOT=ReallySuppress REMOVE=ALL" ^
                      (* without these custom Parallels-specific MSI properties the
                       * uninstaller still shows a no-way-out reboot dialog *)
                      " PREVENT_REBOOT=Yes LAUNCHED_BY_SETUP_EXE=Yes" in
 
-               push_front uninst uninsts
+               List.push_front uninst uninsts
              with
                Not_found -> ()
          ) uninstnodes
@@ -179,7 +180,53 @@ let convert (g : G.guestfs) inspect source output rcaps =
   (*----------------------------------------------------------------------*)
   (* Perform the conversion of the Windows guest. *)
 
-  let rec configure_firstboot () =
+  let rec do_convert () =
+    (* Firstboot configuration. *)
+    configure_firstboot ();
+
+    (* Open the system hive for writes and update it. *)
+    let block_driver,
+        net_driver,
+        video_driver,
+        virtio_rng_supported,
+        virtio_ballon_supported,
+        isa_pvpanic_supported =
+      Registry.with_hive_write g inspect.i_windows_system_hive
+                               update_system_hive in
+
+    (* Open the software hive for writes and update it. *)
+    Registry.with_hive_write g inspect.i_windows_software_hive
+                             update_software_hive;
+
+    fix_ntfs_heads ();
+
+    fix_win_esp ();
+
+    (* Warn if installation of virtio block drivers might conflict with
+     * group policy or AV software causing a boot 0x7B error (RHBZ#1260689).
+     *)
+    if block_driver = Virtio_blk then (
+      if has_group_policy then
+        warning (f_"this guest has Windows Group Policy Objects (GPO) and a new virtio block device driver was installed.  In some circumstances, Group Policy may prevent new drivers from working (resulting in a 7B boot error).  If this happens, try disabling Group Policy before doing the conversion.");
+      if has_antivirus then
+        warning (f_"this guest has Anti-Virus (AV) software and a new virtio block device driver was installed.  In some circumstances, AV may prevent new drivers from working (resulting in a 7B boot error).  If this happens, try disabling AV before doing the conversion.");
+    );
+
+    (* Return guest capabilities from the convert () function. *)
+    let guestcaps = {
+      gcaps_block_bus = block_driver;
+      gcaps_net_bus = net_driver;
+      gcaps_video = video_driver;
+      gcaps_virtio_rng = virtio_rng_supported;
+      gcaps_virtio_balloon = virtio_ballon_supported;
+      gcaps_isa_pvpanic = isa_pvpanic_supported;
+      gcaps_arch = Utils.kvm_arch inspect.i_arch;
+      gcaps_acpi = true;
+    } in
+
+    guestcaps
+
+  and configure_firstboot () =
     (* Note that pnp_wait.exe must be the first firstboot script as it
      * suppresses PnP for all following scripts.
      *)
@@ -360,9 +407,8 @@ if errorlevel 3010 exit /b 0
         Firstboot.add_firstboot_script g inspect.i_root
           "uninstall Parallels tools" fb_script
     ) prltools_uninsts
-  in
 
-  let rec update_system_hive reg =
+  and update_system_hive reg =
     (* Update the SYSTEM hive.  When this function is called the hive has
      * already been opened as a hivex handle inside guestfs.
      *)
@@ -569,7 +615,7 @@ if errorlevel 3010 exit /b 0
             match Registry.get_node reg path with
             | None -> raise Not_found
             | Some node -> node in
-          let current_boot_entry = g#hivex_value_utf8 (
+          let current_boot_entry = g#hivex_value_string (
             g#hivex_node_get_value boot_mgr_default_link "Element") in
           let path = ["Objects"; current_boot_entry; "Elements"; "16000046"] in
           match Registry.get_node reg path with
@@ -596,43 +642,7 @@ if errorlevel 3010 exit /b 0
       g#rmdir esp_temp_path
   in
 
-  (* Firstboot configuration. *)
-  configure_firstboot ();
-
-  (* Open the system hive for writes and update it. *)
-  let block_driver, net_driver, video_driver =
-    Registry.with_hive_write g inspect.i_windows_system_hive
-                             update_system_hive in
-
-  (* Open the software hive for writes and update it. *)
-  Registry.with_hive_write g inspect.i_windows_software_hive
-                           update_software_hive;
-
-  fix_ntfs_heads ();
-
-  fix_win_esp ();
-
-  (* Warn if installation of virtio block drivers might conflict with
-   * group policy or AV software causing a boot 0x7B error (RHBZ#1260689).
-   *)
-  let () =
-    if block_driver = Virtio_blk then (
-      if has_group_policy then
-        warning (f_"this guest has Windows Group Policy Objects (GPO) and a new virtio block device driver was installed.  In some circumstances, Group Policy may prevent new drivers from working (resulting in a 7B boot error).  If this happens, try disabling Group Policy before doing the conversion.");
-      if has_antivirus then
-        warning (f_"this guest has Anti-Virus (AV) software and a new virtio block device driver was installed.  In some circumstances, AV may prevent new drivers from working (resulting in a 7B boot error).  If this happens, try disabling AV before doing the conversion.");
-    ) in
-
-  (* Return guest capabilities. *)
-  let guestcaps = {
-    gcaps_block_bus = block_driver;
-    gcaps_net_bus = net_driver;
-    gcaps_video = video_driver;
-    gcaps_arch = Utils.kvm_arch inspect.i_arch;
-    gcaps_acpi = true;
-  } in
-
-  guestcaps
+  do_convert ()
 
 (* Register this conversion module. *)
 let () =
