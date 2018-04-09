@@ -1,0 +1,23 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Mon, 9 Apr 2018 23:26:40 +0200
+Subject: Add libtinfo to guestfsd (fixes FTBFS on architectures that lack a
+ native OCaml compiler)
+
+---
+ daemon/Makefile.am | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/daemon/Makefile.am b/daemon/Makefile.am
+index 94ee866..26d6f78 100644
+--- a/daemon/Makefile.am
++++ b/daemon/Makefile.am
+@@ -218,7 +218,8 @@ guestfsd_LDADD = \
+ 	$(TSK_LIBS) \
+ 	$(RPC_LIBS) \
+ 	$(YARA_LIBS) \
+-	$(OCAML_LIBS)
++	$(OCAML_LIBS) \
++	$(LIBTINFO_LIBS)
+ 
+ guestfsd_CPPFLAGS = \
+ 	-I$(shell $(OCAMLC) -where) \
