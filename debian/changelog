@@ -1,3 +1,16 @@
+libguestfs (1:1.38.0-1) unstable; urgency=medium
+
+  * New upstream version 1.38.0
+  * Add architectures for golang-go, zfs-fuse build-dependencies
+  * Update Vcs-* fields for salsa.debian.org
+  * Add build dependencies: yara, hivex-ocaml
+  * Update .symbols
+  * Rebase patches, add patches to fix out-of-tree builds
+  * Remove kernel package build dependency all architectures other than
+    i386, amd64 (Closes: #894742)
+
+ -- Hilko Bengen <bengen@debian.org>  Mon, 09 Apr 2018 12:21:32 +0200
+
 libguestfs (1:1.36.13-2) unstable; urgency=medium
 
   * Add upstream patch adding dash to the supermin appliance (Closes: #889861)
