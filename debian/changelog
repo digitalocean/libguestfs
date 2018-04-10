@@ -1,3 +1,9 @@
+libguestfs (1:1.38.0-3) unstable; urgency=medium
+
+  * Specify default guestfs path (LIBGUESTFS_PATH) at build time
+
+ -- Hilko Bengen <bengen@debian.org>  Tue, 10 Apr 2018 09:45:34 +0200
+
 libguestfs (1:1.38.0-2) unstable; urgency=medium
 
   * Attempt to fix armel, mips* FTBFS
