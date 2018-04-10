@@ -61,6 +61,7 @@ $(CURDIR)/debian/build-$1/config.status::
 		--disable-gnulib-tests     \
 		--with-readline	           \
 		--disable-haskell          \
+		--with-guestfs-path=/usr/lib/$(DEB_HOST_MULTIARCH)/guestfs \
 		--with-qemu=qemu-system-$(QEMU_CPU) \
 		$(if $(findstring powerpcspe,$(DEB_HOST_GNU_CPU)),\
 			--with-qemu-options="-M ppce500 -cpu e500v2") \
