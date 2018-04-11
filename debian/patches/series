@@ -11,3 +11,4 @@
 0011-appliance-include-dash-for-Debian-distros.patch
 0012-Fix-out-of-tree-builds-of-OCaml-components.patch
 0013-Add-libtinfo-to-guestfsd-fixes-FTBFS-on-architecture.patch
+0014-Disable-v2v-test-harness.patch
