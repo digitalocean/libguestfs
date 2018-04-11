@@ -7,7 +7,7 @@ Subject: Make php buildable with builddir != srcdir
  1 file changed, 10 insertions(+), 15 deletions(-)
 
 diff --git a/php/Makefile.am b/php/Makefile.am
-index a974cdf..472f40d 100644
+index a974cdf..a719780 100644
 --- a/php/Makefile.am
 +++ b/php/Makefile.am
 @@ -36,26 +36,16 @@ php_DATA = guestfs_php.ini
@@ -36,21 +36,16 @@ index a974cdf..472f40d 100644
 -
  extension/config.h: extension/config.m4 ../config.status
 -	cd extension && phpize
-+	test $(srcdir) != $(builddir) && cp -rsft $(builddir)/extension $(abs_srcdir)/extension/.
++	if [ $(srcdir) != $(builddir) ]; then cp -rsft $(builddir)/extension $(abs_srcdir)/extension/.; fi
 +	cd extension && $(PHPIZE)
  	cd extension && ./configure --prefix=$(prefix) --libdir=$(libdir)
  	test -f "$@" && touch -- $@
  
-@@ -70,6 +60,7 @@ TESTS = run-php-tests.sh
- # rule.  Therefore, don't die if this fails.
- clean-local:
- 	-$(MAKE) -C extension clean
-+	test $(srcdir) != $(builddir) && cp rm -rf extension
- 	rm -f extension/tests/*.exp
- 	rm -f extension/tests/*.log
+@@ -75,8 +65,13 @@ clean-local:
  	rm -f extension/tests/*.out
-@@ -77,6 +68,10 @@ clean-local:
+ 	rm -f extension/tests/*.php
  	rm -f extension/tests/*.sh
++	if [ $(srcdir) != $(builddir) ]; then rm -rf extension; fi
  
  install-data-hook:
 -	$(MAKE) -C extension INSTALL_ROOT=$(DESTDIR) install

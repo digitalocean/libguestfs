@@ -1,7 +1,6 @@
 From: Hilko Bengen <bengen@debian.org>
 Date: Sat, 14 Feb 2015 14:17:09 +0100
-Subject: Generate tarballs for supermin appliance using reproducible
- timestamp
+Subject: Generate tarballs for supermin appliance using reproducible timestamp
 
 ---
  appliance/Makefile.am | 6 +++---

@@ -7,18 +7,18 @@ Subject: perl: Fix out-of-tree build by generating symlinks
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/perl/Makefile.am b/perl/Makefile.am
-index d1fbccf..1d571d9 100644
+index d1fbccf..91add8d 100644
 --- a/perl/Makefile.am
 +++ b/perl/Makefile.am
 @@ -57,9 +57,11 @@ all-local: Build
  
  clean-local: Build
  	./Build clean
-+	test $(srcdir) != $(builddir) && find -type l | xargs rm -f
++	if [ $(srcdir) != $(builddir) ]; then find -type l | xargs rm -f ; fi
  
  Build: Build.PL
 -	$(PERL) $(srcdir)/Build.PL --prefix "@prefix@"
-+	test $(srcdir) != $(builddir) && cp -rsft $(builddir) $(abs_srcdir)/.
++	if [ $(srcdir) != $(builddir) ]; then cp -rsft $(builddir) $(abs_srcdir)/. ; fi
 +	$(PERL) ./Build.PL --prefix "@prefix@"
  
  TESTS_ENVIRONMENT = $(top_builddir)/run --test
