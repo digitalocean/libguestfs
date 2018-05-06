@@ -1,4 +1,9 @@
-(* guestfs-inspection
+(* libguestfs generated file
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/daemon.ml
+ *          and from the code in the generator/ subdirectory.
+ * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
+ *
  * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +25,6 @@ val list_devices : unit -> string list
 val list_partitions : unit -> string list
 val part_to_dev : string -> string
 val part_to_partnum : string -> int
-val is_whole_device : string -> bool
-val nr_devices : unit -> int
 val device_index : string -> int
+val nr_devices : unit -> int
+val is_whole_device : string -> bool

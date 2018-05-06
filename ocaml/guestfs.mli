@@ -134,6 +134,8 @@ module Errno : sig
   (** Integer value of errno [ESRCH].  See {!Guestfs.last_errno}. *)
   val errno_ENOENT : int
   (** Integer value of errno [ENOENT].  See {!Guestfs.last_errno}. *)
+  val errno_EROFS : int
+  (** Integer value of errno [EROFS].  See {!Guestfs.last_errno}. *)
 end
 
 (** {3 Structs} *)

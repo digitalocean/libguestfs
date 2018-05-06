@@ -1,4 +1,9 @@
-(* guestfs-inspection
+(* libguestfs generated file
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/daemon.ml
+ *          and from the code in the generator/ subdirectory.
+ * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
+ *
  * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,19 +21,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-type partition = {
-  part_num : int32;
-  part_start : int64;
-  part_end : int64;
-  part_size : int64;
-}
-
-val part_get_mbr_id : string -> int -> int
-val part_list : string -> partition list
-
+val part_list : string -> Structs.partition list
 val part_get_parttype : string -> string
-
+val part_get_mbr_id : string -> int -> int
 val part_get_gpt_type : string -> int -> string
-val part_get_gpt_guid : string -> int -> string
-val part_get_gpt_attributes : string -> int -> int64
 val part_set_gpt_attributes : string -> int -> int64 -> unit
+val part_get_gpt_attributes : string -> int -> int64
+val part_get_gpt_guid : string -> int -> string

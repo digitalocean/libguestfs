@@ -1609,6 +1609,7 @@ PAMCUT = @PAMCUT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PBMTEXT = @PBMTEXT@
 PCRE_CFLAGS = @PCRE_CFLAGS@
+PCRE_CONFIG = @PCRE_CONFIG@
 PCRE_LIBS = @PCRE_LIBS@
 PERL = @PERL@
 PHP = @PHP@
@@ -2110,11 +2111,12 @@ noinst_DATA = $(am__append_5) \
 	$(top_builddir)/website/virt-index-validate.1.html
 @HAVE_OCAML_TRUE@virt_builder_SOURCES = $(SOURCES_C)
 @HAVE_OCAML_TRUE@virt_builder_CPPFLAGS = \
-@HAVE_OCAML_TRUE@	-I. \
+@HAVE_OCAML_TRUE@	-I$(builddir) -I$(srcdir) \
 @HAVE_OCAML_TRUE@	-I$(top_builddir) \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 @HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib \
+@HAVE_OCAML_TRUE@	-I$(top_builddir)/common/utils \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/utils \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib
 
@@ -2131,7 +2133,7 @@ noinst_DATA = $(am__append_5) \
 @HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 @HAVE_OCAML_TRUE@virt_builder_repository_SOURCES = $(REPOSITORY_SOURCES_C)
 @HAVE_OCAML_TRUE@virt_builder_repository_CPPFLAGS = \
-@HAVE_OCAML_TRUE@	-I. \
+@HAVE_OCAML_TRUE@	-I$(builddir) -I$(srcdir) \
 @HAVE_OCAML_TRUE@	-I$(top_builddir) \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 @HAVE_OCAML_TRUE@	-I$(shell $(OCAMLC) -where) \
@@ -3443,11 +3445,11 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-%.cmi: %.mli
+%.cmi: $(srcdir)/%.mli
 	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-%.cmo: %.ml
+%.cmo: $(srcdir)/%.ml
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@%.cmx: %.ml
+@HAVE_OCAMLOPT_TRUE@%.cmx: $(srcdir)/%.ml
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 # Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
@@ -3532,7 +3534,7 @@ export TEST_FUNCTIONS := \
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
 # OCaml dependencies.
-@HAVE_OCAML_TRUE@.depend: *.mli *.ml osinfo_config.mli osinfo_config.ml
+@HAVE_OCAML_TRUE@.depend: $(srcdir)/*.mli $(srcdir)/*.ml osinfo_config.mli osinfo_config.ml
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml-dep.sh $^
 @HAVE_OCAML_TRUE@-include .depend
 

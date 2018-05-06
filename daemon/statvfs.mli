@@ -1,4 +1,9 @@
-(* guestfs-inspection
+(* libguestfs generated file
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/daemon.ml
+ *          and from the code in the generator/ subdirectory.
+ * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
+ *
  * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,18 +21,4 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-type statvfs = {
-  bsize : int64;
-  frsize : int64;
-  blocks : int64;
-  bfree : int64;
-  bavail : int64;
-  files : int64;
-  ffree : int64;
-  favail : int64;
-  fsid : int64;
-  flag : int64;
-  namemax : int64;
-}
-
-val statvfs : string -> statvfs
+val statvfs : string -> Structs.statvfs

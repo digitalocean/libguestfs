@@ -32,9 +32,7 @@ type source = {
   s_vcpu : int;
   s_cpu_vendor : string option;
   s_cpu_model : string option;
-  s_cpu_sockets : int option;
-  s_cpu_cores : int option;
-  s_cpu_threads : int option;
+  s_cpu_topology : source_cpu_topology option;
   s_features : string list;
   s_firmware : source_firmware;
   s_display : source_display option;
@@ -102,6 +100,11 @@ and source_sound = {
 }
 and source_sound_model =
   AC97 | ES1370 | ICH6 | ICH9 | PCSpeaker | SB16 | USBAudio
+and source_cpu_topology = {
+  s_cpu_sockets : int;
+  s_cpu_cores : int;
+  s_cpu_threads : int;
+}
 
 let rec string_of_source s =
   sprintf "    source name: %s
@@ -110,7 +113,7 @@ hypervisor type: %s
        nr vCPUs: %d
      CPU vendor: %s
       CPU model: %s
-   CPU topology: sockets: %s cores/socket: %s threads/core: %s
+   CPU topology: %s
    CPU features: %s
        firmware: %s
         display: %s
@@ -129,9 +132,9 @@ NICs:
     s.s_vcpu
     (Option.default "" s.s_cpu_vendor)
     (Option.default "" s.s_cpu_model)
-    (match s.s_cpu_sockets with None -> "-" | Some v -> string_of_int v)
-    (match s.s_cpu_cores with None -> "-" | Some v -> string_of_int v)
-    (match s.s_cpu_threads with None -> "-" | Some v -> string_of_int v)
+    (match s.s_cpu_topology with
+    | None -> ""
+    | Some topology -> string_of_source_cpu_topology topology)
     (String.concat "," s.s_features)
     (string_of_source_firmware s.s_firmware)
     (match s.s_display with
@@ -272,6 +275,11 @@ and string_of_source_sound_model = function
   | PCSpeaker -> "pcspk"
   | SB16      -> "sb16"
   | USBAudio  -> "usb"
+
+and string_of_source_cpu_topology { s_cpu_sockets; s_cpu_cores;
+                                    s_cpu_threads } =
+  sprintf "sockets: %d cores/socket: %d threads/core: %d"
+    s_cpu_sockets s_cpu_cores s_cpu_threads
 
 type overlay = {
   ov_overlay_file : string;
@@ -478,18 +486,6 @@ let string_of_target_buses buses =
 type root_choice = AskRoot | SingleRoot | FirstRoot | RootDev of string
 
 type output_allocation = Sparse | Preallocated
-
-type vddk_options = {
-    vddk_config : string option;
-    vddk_cookie : string option;
-    vddk_libdir : string option;
-    vddk_nfchostport : string option;
-    vddk_port : string option;
-    vddk_snapshot : string option;
-    vddk_thumbprint : string option;
-    vddk_transports : string option;
-    vddk_vimapiver : string option;
-}
 
 class virtual input = object
   method precheck () = ()

@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [38])
-m4_define([libguestfs_release], [0])
+m4_define([libguestfs_release], [1])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 
@@ -373,6 +373,7 @@ echo       "Appliance ........................... $ENABLE_APPLIANCE"
 echo       "QEMU ................................ $QEMU"
 echo       "guestfish and C-based virt tools .... yes"
 echo       "FUSE filesystem ..................... $enable_fuse"
+echo       "Default backend ..................... $DEFAULT_BACKEND"
 AS_ECHO_N(["GNU gettext for i18n ................ "])
 if test "x$HAVE_GNU_GETTEXT_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 AS_ECHO_N(["virt-p2v ............................ "])

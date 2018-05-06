@@ -1,4 +1,9 @@
-(* guestfs-inspection
+(* libguestfs generated file
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/daemon.ml
+ *          and from the code in the generator/ subdirectory.
+ * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
+ *
  * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,24 +23,24 @@
 
 val inspect_os : unit -> Mountable.t list
 val inspect_get_roots : unit -> Mountable.t list
-val inspect_get_mountpoints : Mountable.t -> (string * Mountable.t) list
-val inspect_get_filesystems : Mountable.t -> Mountable.t list
-val inspect_get_format : Mountable.t -> string
 val inspect_get_type : Mountable.t -> string
+val inspect_get_arch : Mountable.t -> string
 val inspect_get_distro : Mountable.t -> string
-val inspect_get_package_format : Mountable.t -> string
-val inspect_get_package_management : Mountable.t -> string
-val inspect_get_product_name : Mountable.t -> string
-val inspect_get_product_variant : Mountable.t -> string
 val inspect_get_major_version : Mountable.t -> int
 val inspect_get_minor_version : Mountable.t -> int
-val inspect_get_arch : Mountable.t -> string
-val inspect_get_hostname : Mountable.t -> string
+val inspect_get_product_name : Mountable.t -> string
 val inspect_get_windows_systemroot : Mountable.t -> string
+val inspect_get_package_format : Mountable.t -> string
+val inspect_get_package_management : Mountable.t -> string
+val inspect_get_hostname : Mountable.t -> string
+val inspect_get_product_variant : Mountable.t -> string
+val inspect_get_windows_current_control_set : Mountable.t -> string
 val inspect_get_windows_software_hive : Mountable.t -> string
 val inspect_get_windows_system_hive : Mountable.t -> string
-val inspect_get_windows_current_control_set : Mountable.t -> string
+val inspect_get_mountpoints : Mountable.t -> (string * Mountable.t) list
+val inspect_get_filesystems : Mountable.t -> Mountable.t list
 val inspect_get_drive_mappings : Mountable.t -> (string * string) list
+val inspect_get_format : Mountable.t -> string
 val inspect_is_live : Mountable.t -> bool
 val inspect_is_netinst : Mountable.t -> bool
 val inspect_is_multipart : Mountable.t -> bool

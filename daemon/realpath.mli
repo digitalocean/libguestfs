@@ -1,4 +1,9 @@
-(* guestfs-inspection
+(* libguestfs generated file
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/daemon.ml
+ *          and from the code in the generator/ subdirectory.
+ * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
+ *
  * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify

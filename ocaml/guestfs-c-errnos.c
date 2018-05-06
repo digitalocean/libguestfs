@@ -44,6 +44,7 @@ value guestfs_int_ocaml_get_ENOTSUP (value unitv);
 value guestfs_int_ocaml_get_EPERM (value unitv);
 value guestfs_int_ocaml_get_ESRCH (value unitv);
 value guestfs_int_ocaml_get_ENOENT (value unitv);
+value guestfs_int_ocaml_get_EROFS (value unitv);
 
 /* NB: "noalloc" function. */
 value
@@ -78,4 +79,11 @@ value
 guestfs_int_ocaml_get_ENOENT (value unitv)
 {
   return Val_int (ENOENT);
+}
+
+/* NB: "noalloc" function. */
+value
+guestfs_int_ocaml_get_EROFS (value unitv)
+{
+  return Val_int (EROFS);
 }

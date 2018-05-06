@@ -238,7 +238,14 @@ AC_ARG_ENABLE([packet-dump],[
     [])
 
 dnl Check for PCRE (required)
-PKG_CHECK_MODULES([PCRE], [libpcre])
+PKG_CHECK_MODULES([PCRE], [libpcre], [], [
+    AC_CHECK_PROGS([PCRE_CONFIG], [pcre-config pcre2-config], [no])
+    AS_IF([test "x$PCRE_CONFIG" = "xno"], [
+        AC_MSG_ERROR([Please install the pcre devel package])
+    ])
+    PCRE_CFLAGS=`$PCRE_CONFIG --cflags`
+    PCRE_LIBS=`$PCRE_CONFIG --libs`
+])
 
 dnl Check for Augeas >= 1.0.0 (required).
 PKG_CHECK_MODULES([AUGEAS],[augeas >= 1.0.0])
@@ -256,7 +263,8 @@ AC_CHECK_LIB([magic],[magic_file],[
     ], [])
 ],[])
 AS_IF([test -z "$MAGIC_LIBS"],
-    [AC_MSG_ERROR([libmagic (part of the "file" command) is required])])
+    [AC_MSG_ERROR([libmagic (part of the "file" command) is required.
+                   Please install the file devel package])])
 
 dnl libvirt (highly recommended)
 AC_ARG_WITH([libvirt],[
@@ -269,8 +277,13 @@ AS_IF([test "$with_libvirt" != "no"],[
         AC_SUBST([LIBVIRT_CFLAGS])
         AC_SUBST([LIBVIRT_LIBS])
         AC_DEFINE([HAVE_LIBVIRT],[1],[libvirt found at compile time.])
-    ],
-    [AC_MSG_WARN([libvirt not found, some core features will be disabled])])
+    ],[
+        if test "$DEFAULT_BACKEND" = "libvirt"; then
+            AC_MSG_ERROR([Please install the libvirt devel package])
+        else
+            AC_MSG_WARN([libvirt not found, some core features will be disabled])
+        fi
+    ])
 ])
 AM_CONDITIONAL([HAVE_LIBVIRT],[test "x$LIBVIRT_LIBS" != "x"])
 

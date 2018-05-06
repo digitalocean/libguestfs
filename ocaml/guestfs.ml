@@ -79,6 +79,8 @@ module Errno = struct
   let errno_ESRCH = esrch ()
   external enoent : unit -> int = "guestfs_int_ocaml_get_ENOENT" "noalloc"
   let errno_ENOENT = enoent ()
+  external erofs : unit -> int = "guestfs_int_ocaml_get_EROFS" "noalloc"
+  let errno_EROFS = erofs ()
 end
 
 (* Give the exceptions names, so they can be raised from the C code. *)
