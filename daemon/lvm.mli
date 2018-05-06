@@ -1,4 +1,9 @@
-(* guestfs-inspection
+(* libguestfs generated file
+ * WARNING: THIS FILE IS GENERATED FROM THE FOLLOWING FILES:
+ *          generator/daemon.ml
+ *          and from the code in the generator/ subdirectory.
+ * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
+ *
  * Copyright (C) 2009-2018 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,16 +21,4 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
-val available : unit -> bool
-
 val lvs : unit -> string list
-
-val lv_canonical : string -> string option
-(** Convert a non-canonical LV path like /dev/mapper/vg-lv or /dev/dm-0
-    to a canonical one.
-
-    On error this raises an exception.  There are two possible non-error
-    return cases:
-
-    Some lv = conversion was successful, returning the canonical LV
-    None = input path was not an LV, it could not be made canonical *)

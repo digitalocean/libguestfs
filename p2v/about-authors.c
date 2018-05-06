@@ -97,6 +97,7 @@ const char *others[] = {
   "Lars Kellogg-Stedman",
   "Lars Seipel",
   "Lee Yarwood",
+  "Lin Ma",
   "Marcin Gibula",
   "Margaret Lewicka",
   "Maros Zatko",

@@ -39,14 +39,12 @@ let rec check_for_filesystem_on mountable vfs_type =
         if vfs_type = "ufs" then ( (* Hack for the *BSDs. *)
           (* FreeBSD fs is a variant of ufs called ufs2 ... *)
           try
-            Mount.mount_vfs (Some "ro,ufstype=ufs2") (Some "ufs")
-                            mountable "/";
+            Mount.mount_vfs "ro,ufstype=ufs2" "ufs" mountable "/";
             true
           with _ ->
             (* while NetBSD and OpenBSD use another variant labeled 44bsd *)
             try
-              Mount.mount_vfs (Some "ro,ufstype=44bsd") (Some "ufs")
-                              mountable "/";
+              Mount.mount_vfs "ro,ufstype=44bsd" "ufs" mountable "/";
               true
             with _ -> false
         ) else (
@@ -57,7 +55,7 @@ let rec check_for_filesystem_on mountable vfs_type =
       if not mounted then None
       else (
         let role = check_filesystem mountable in
-        Mount.umount_all ();
+        Mount_utils.umount_all ();
         role
       )
     ) in

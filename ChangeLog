@@ -1,3 +1,763 @@
+commit bbdb83339da30a86c8f394c6159722c766b5bbad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 1 21:15:59 2018 +0100
+
+    Version 1.38.1.
+
+commit 63523b6c461280922c9b5103dc282e28243bc0bc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 30 13:07:53 2018 +0200
+
+    daemon: simplify string allocation
+    
+    When creating an helper string for do_aug_match(), use a simpler
+    asprintf() with manual free(), since the code block is small enough.
+    
+    This slightly helps static code analyzers.
+    
+    (cherry picked from commit 9667587366c8fca4d0a91aaebc771b8bbd9933e8)
+
+commit eb5b07d7fe367abda455e0764a199f82e15169b6
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 30 13:07:52 2018 +0200
+
+    common/qemuopts: use the old pointer as realloc pointer
+    
+    Call realloc() directly with the pointer to the old data, instead of
+    assigning it to the destination variable, and using that one.  The rest
+    of the code is the same, already properly checking for the results of
+    realloc(), so this mostly help static code analyzers.
+    
+    (cherry picked from commit d48d0fc2d1d7cd10ac44d3cdd5d13e4adbec6b9e)
+
+commit 709b36fa64914d455229391fa9d381ee4f670269
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 30 13:07:51 2018 +0200
+
+    launch: libvirt: free format string
+    
+    When the result guestfs_disk_format() is not known, free the string
+    before returning an error.
+    
+    (cherry picked from commit 526f6b4012df3cd7637b956591063aa12e314f84)
+
+commit 0fdf1b6269e2e206d181778dcb606e4889ed829a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 30 13:07:50 2018 +0200
+
+    daemon: upload: fix fd leak on lseek failure
+    
+    Make sure to not leak the file descriptor in the upload() function, in
+    case lseek() fails.
+    
+    (cherry picked from commit fced1327180038fe1412cdbc8575c06233f0ed61)
+
+commit 62b59441e3b1a08acd694c14cac86b8da47a7cbb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 1 17:16:07 2018 +0100
+
+    builder: templates: Update osinfo for Fedora.
+    
+    (cherry picked from commit 7631be21d7475a5efa03f04bbac41c64ad282502)
+
+commit f17b95837d3a40a9c5cd935cf6320877576974c7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 1 17:15:32 2018 +0100
+
+    builder: templates: aarch64 is now a primary architecture, fix location.
+    
+    (cherry picked from commit 7a2cc8ba29f93ee82fca18d079e25a71e98601c0)
+
+commit 0cc79fb0ed62e3c768702593f8609119c70034ce
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Apr 27 09:21:38 2018 +0200
+
+    common/mlpcre: fix access to freed memory
+    
+    free_last_match() frees the memory of the match passed as argument, so
+    accessing it is not possible after free_last_match().  Since all we
+    need is the return code, save it locally for later usage.
+    
+    (cherry picked from commit bd4e99cc134dd20cb1f16ac11e44810de30b973a)
+
+commit 27e9fc12843123a5cded96762d93d62c4c6f07db
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 25 11:43:02 2018 +0100
+
+    v2v: -i ova: Handle OVAs containing snapshots (RHBZ#1570407).
+    
+    Also adds a regression test.
+    
+    (cherry picked from commit e5946165c8ea78e0e91c4cfdb5e793526cd638e1)
+
+commit 39c318fc74d1479ab86256a4f55d01d9702feba7
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 25 10:50:56 2018 +0100
+
+    v2v: -i ova: Sanity check hrefs to ensure they stay inside the tarball.
+    
+    Check for hrefs like "../../../../dev/sda", or dubious symlinks in the
+    tarball, which could escape from the tarball into the host system.
+    
+    We use realpath(3) to do this.  Since this function does not work on
+    non-existent files, we must change the signature of get_file_ref so it
+    can return whether the file exists or not.
+    
+    (cherry picked from commit 80d6d93962dcccfa0e2145206321ab32a34ca31f)
+
+commit 0efdea2a06ddce8203492e2357782aaeb10b5a0e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Apr 25 09:56:22 2018 +0100
+
+    v2v: -i ova: Replace subdirectory function with clearer inline code.
+    
+    (cherry picked from commit e24771468050a75404a1884cd950ac4b4ad769f6)
+
+commit b9d8d866b6b186ce387da23770de2e383ac7787c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 24 22:10:11 2018 +0100
+
+    common: mlstdutils: Inline unsafe ‘subdirectory’ function.
+    
+    This function is ill-defined and unsafe.  As a preparation for
+    removing it completely, inline it in the places where it is used.
+    
+    (cherry picked from commit 075333ede2a9939008281ac41e695b806c9defe6)
+
+commit 2bfcdd2950a8598aa61528ebf935687c0f3fd565
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 24 11:22:39 2018 +0100
+
+    v2v: -i ova: Factor out code for dealing with OVA files.
+    
+    Factor out the complex code that handles dealing with multiple
+    different OVA file formats into a separate Parse_ova module.
+    
+    This is largely straightforward code refactoring -- there should be no
+    significant functional change.
+    
+    However:
+    
+     - Parse_ova now checks up front if the OVA contains any compressed
+       disks and avoids the tar optimization in that case.  This is a
+       regression for the case of an OVA containing a mix of both
+       compressed and uncompressed disks (we expect this to be rare).
+       The change is nevertheless good because it reduces the coupling
+       between two parts of the code.
+    
+     - I had to simplify an error message.
+    
+    (cherry picked from commit 184dba59819708e5d6cdfc1af3f344199ec0b438)
+
+commit b3cd351d5f59f9d5e52f87fa4c98044d49d142a3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Apr 24 15:33:57 2018 +0100
+
+    v2v: parse OVF: Export useful parse_disks function.
+    
+    So you can parse out just the list of disks.
+    
+    (cherry picked from commit ece2c60c5028938dc10fafaa416da679d88cf28f)
+
+commit 63cd8143bc014932f2efa0757d5ca1e77ab98621
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 23 10:20:35 2018 +0100
+
+    v2v: Ignore miscellaneous tar messages when parsing tar for file locations.
+    
+    We use ‘tar tRvf’ to parse the locations of files within the tarball.
+    However examination of tar.git:src/list.c shows various other messages
+    which can appear in the output:
+    
+      block <offset>: ** Block of NULs **
+      block <offset>: ** End of File **
+    
+    Indeed it was easy to produce the first message just by using modern
+    tar to create a tarball:
+    
+      $ tar tRvf '/var/tmp/bz1570407-reproducer.ova'
+      block 0: -rw-r--r-- rjones/rjones   100 2018-04-22 17:06 RHEL7_3_042218_extra-disk1.vmdk.000000000
+      block 2: -rw-r--r-- rjones/rjones   243 2018-04-22 17:07 RHEL7_3_042218_extra.mf
+      block 4: -rw-r--r-- rjones/rjones 13066 2018-04-22 15:08 RHEL7_3_042218_extra.ovf
+      block 31: ** Block of NULs **
+    
+    Ignore these messages.
+    
+    (cherry picked from commit d1e95a30f305d029bc82118b211a6a635b72ed47)
+
+commit c350074a4e6f30a275e82560f9e1eac436ad8940
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 23 10:07:26 2018 +0100
+
+    v2v: -i ova: Ignore non-existent files mentioned in *.mf.
+    
+    Some OVA files generated by VMware have a *.mf file which contains
+    checksums for files which don't exist in the OVA.  Ignore these
+    checksums.
+    
+    Thanks: Nisim Simsolo.
+    (cherry picked from commit 112e3bc3114c98b80bae12126570f919442f9f4c)
+
+commit 45a48ecd5564a4180ec074bb3d5b35cc0ea7ca51
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 23 09:54:45 2018 +0100
+
+    mltools: Checksums.verify_checksum{,s} returns an error type instead of throwing exception.
+    
+    Simple code refactoring, making it both more difficult to ignore the
+    error case and easier to add other error cases in future.
+    
+    (cherry picked from commit 190333b8b01ed09e4be853429147b0eec5ccfae9)
+
+commit 2c60a4be453da829038dbdc8210ea51ce341f805
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 20 13:17:05 2018 +0100
+
+    Update AUTHORS
+    
+    (cherry picked from commit 70741b91216aabfe017338eb0a06a1f6dbb02d1f)
+
+commit 0ecc9584956e9d325162b03caa62d18c72fb412d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 20 12:27:03 2018 +0100
+
+    v2v: tests: Set VIRTIO_WIN to point to phony virtio drivers directory.
+    
+    As well as being consistent with other tests in this directory this
+    also fixes a problem when we ran the tests and the real virtio-win
+    package happened to be installed on the same machine.
+    
+    The test used to pick up the virtio drivers from the virtio-win
+    package, resulting in different test output (because virtio drivers
+    had been installed).
+    
+    Now we use the phony virtio drivers in all cases and also update the
+    test output (because virtio drivers are now always installed).
+    
+    (cherry picked from commit 2274ee593e6c9573631e71fa4ed349615254c97f)
+
+commit 916f5fa78615eb64bee52fec0195dab13cdcb7cc
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 20 12:26:26 2018 +0100
+
+    v2v: windows: Print calculated virtio_win in debugging output.
+    
+    So we know where drivers are being installed from, and whether
+    that is a directory or a CD/ISO.
+    
+    (cherry picked from commit a8b4d2749b83af81e24f0e7b1a10b412e11c2382)
+
+commit 0a164fe364d90625c40aeed91118f9820cb42691
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Apr 20 10:57:31 2018 +0200
+
+    v2v: rework handling of CPU topology
+    
+    Instead of storing the number of sockets, cores, and threads separately
+    with the possibility to have each of them optional, store them together,
+    so either we have a CPU topology or none.  This slightly simplifies the
+    handling of CPU topology.
+    
+    Most of the output modes/producers already considered a missing
+    information of a topology as "1" when any of the other was specified, so
+    the behaviour is unchanged.  The only behaviour changes are when
+    parsing, and creating libvirt XMLs:
+    - libvirt requires all the three attributes to be specified, so when
+      reading use them only if <topology> has all of them
+    - for the same reason, write <topology> only when all of them are
+      specified
+    
+    Adapt the vmx, and ova input modes to consider 1 threads when they have
+    the other information of a CPU topology, since none of them can provide
+    that information yet.
+    
+    (cherry picked from commit ac398265c4579a985f3687d0097eb5b6494ff661)
+
+commit c3772450544f58d5ec01916df74bd5833e74a480
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Apr 11 18:11:08 2018 +0200
+
+    v2v: linux: correctly update resume=/dev/device entries (RHBZ#1532224)
+    
+    When updating the device names to the new names, handle GRUB_CMDLINE
+    entries (typically in grub2 configuration files) correctly: loop over
+    the whole configuration value, and replace each occurrency of
+    resume=/dev/device found.
+    
+    The actual code is moved away from replace_if_device, since this
+    function now does only the actual replacement of the device string.
+    
+    (cherry picked from commit f2bd817bbc79d543ed6621e75acc9357631b6069)
+
+commit b4c460acc2bd07fc9bb21fb2fed970fa8253ebc8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 16 09:52:14 2018 +0100
+
+    v2v: Give better diagnostics if filesystem falls back to read-only (RHBZ#1567763).
+    
+    Some filesystems fall back silently to read-only if there are problems
+    such a dirty filesystem and an unrecoverable journal.  Almost all
+    conversions involve writing to the root filesystem, so these will
+    inevitably fail later on with a strange error message.
+    
+    Test the root filesystem is writable by creating and deleting a
+    temporary file, and if the creation fails then give better
+    diagnostics.
+    
+    Reported-by: Piotr Kliczewski
+    (cherry picked from commit 201e6d1595c1cdae7f1fbce11626412768b33f99)
+
+commit b08b30bd4903a8d3b6a269e0721438debb2dbdd3
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Apr 13 08:50:58 2018 +0100
+
+    builder: templates: Use --cpu=power7|power8 because of libvirt regression.
+    
+    Works around libvirt regression:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1539022
+    
+    (cherry picked from commit 2f62020f08487bf3aefe6a7542cc1077b11948e6)
+
+commit b99825f34676cd038c7fec1c6b4b7123735f9b8a
+Author: Hilko Bengen <bengen@hilluzination.de>
+Date:   Thu Apr 12 11:43:53 2018 +0200
+
+    Fix out-of-tree builds of OCaml components
+    
+    - Add $(srcdir), $(builddir) to Makefiles where required
+    - Post-process ocamldep output
+    - generate ocaml/.depends
+    
+    (cherry picked from commit 802c5d2055593adf6bfae796b102b8c902de571e)
+
+commit 2056275f3b6199b11510fae88e92559a2a2df15d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 10 12:31:34 2018 +0200
+
+    daemon: autogenerate OCaml interfaces
+    
+    Add a way to generate OCaml interfaces for all the modules in the
+    daemon that implement APIs: this makes sure that for them the
+    interface of each function matches the actual API specified in the
+    generator.
+    
+    (cherry picked from commit e6556761574fc24d2f1fa72165e5083107323882)
+
+commit 0644f894ea2dcf66275a7580b8d720f50e9ae4ba
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 9 17:07:57 2018 +0200
+
+    daemon: move Mount.umount_all to new Mount_utils module
+    
+    This way the Mount module contains only the OCaml implementations of
+    mount-related daemon APIs.
+    
+    This is simple refactoring, with no functional changes.
+    
+    (cherry picked from commit 6c13d2356e7d124d35ccad03c963d2f791e6c2d0)
+
+commit 07d52027516ea4433ed384746d001c46981ffdfc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 9 17:03:24 2018 +0200
+
+    daemon: move Lvm.lv_canonical to new Lvm_utils module
+    
+    This way the Lvm module contains only the OCaml implementations of LVM
+    daemon APIs.
+    
+    This is simple refactoring, with no functional changes.
+    
+    (cherry picked from commit 2bdc7b83ced72c189dcba233745d081e3a042bce)
+
+commit a439762c28bb0a98f8e834287817f54fc42ae4a4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 9 14:21:04 2018 +0200
+
+    daemon: use the structs from the Structs module
+    
+    No need to redeclare them again in few modules, just use them from the
+    Structs module.
+    
+    (cherry picked from commit 188e995d32c5c4d11b87c656f942a7794a7c98ed)
+
+commit 9080b5f7c9c19055e3d8eef5c26492299228529e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Apr 9 12:52:55 2018 +0200
+
+    daemon: directly use Optgroups
+    
+    Avoid extra module variables, and just use Optgroups directly.
+    
+    (cherry picked from commit a43bdb937995a3920ef4ea2cda746c78c83cd34b)
+
+commit 05dfd228c2737e10633f30a414d455f0045c2d54
+Author: Lin Ma <lma@suse.com>
+Date:   Tue Apr 10 15:42:56 2018 +0800
+
+    configure: support using local gnulib src directory as $GNULIB_SRCDIR
+    
+    Don't clone online gnulib repo if the environment variable $GNULIB_SRCDIR
+    is available, and add an option '--gnulib-srcdir' for bootstrap to specify
+    a local source directory.
+    
+    (borrowed some code which wrote by Jim Meyering and Eric Blake in libvirt)
+    
+    Signed-off-by: Lin Ma <lma@suse.com>
+    (cherry picked from commit e4056aa57a9b148b9c1290753fb7c4b48d93e9bf)
+
+commit a87325ce668438286238a70956f3bf52a690c949
+Author: Lin Ma <lma@suse.com>
+Date:   Tue Apr 10 15:42:55 2018 +0800
+
+    configure: output clearer message when missing libmagic
+    
+    Some of users probably don't know which packages they exactly need to
+    install while they experienced the error message:
+    
+    libmagic (part of the "file" command) is required.
+    
+    So add corresponding package information into error message.
+    
+    Signed-off-by: Lin Ma <lma@suse.com>
+    (cherry picked from commit a682c6776da7d2f511ddb520660922436c9fbbf1)
+
+commit ecd5dea2779cd5e24fdc9da924e9986cb745f7c7
+Author: Lin Ma <lma@suse.com>
+Date:   Tue Apr 10 15:42:54 2018 +0800
+
+    configure: try pcre-config if pcre pkg-config file not found
+    
+    Signed-off-by: Lin Ma <lma@suse.com>
+    (cherry picked from commit ec0bf981bd2c6b364a2f154de57ee93152531a90)
+
+commit 490946f0f61c8874d211c97b1f2945b7ba2e13ff
+Author: Lin Ma <lma@suse.com>
+Date:   Tue Apr 10 15:42:53 2018 +0800
+
+    configure: output the default backend in summary
+    
+    Signed-off-by: Lin Ma <lma@suse.com>
+    (cherry picked from commit 104d47453ede0caa96a4cf89b07f110f2efc96b1)
+
+commit b73929c16c3ac4d9cdf3d3b6c777002fa44f0ac6
+Author: Lin Ma <lma@suse.com>
+Date:   Tue Apr 10 15:42:52 2018 +0800
+
+    configure: error out if using libvirt backend and no header files
+    
+    It should error out instead of warning if users provide the option
+    '--with-default-backend=libvirt' and no libvirt devel package installed.
+    
+    Signed-off-by: Lin Ma <lma@suse.com>
+    (cherry picked from commit 5f25f4273f5e18907b1aa7338561ac3982877b4b)
+
+commit 40f52502e32f17d258dd92ba98c6173d6fe6aaaa
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Apr 9 08:51:18 2018 +0100
+
+    daemon: Fix type signature of mount_vfs (RHBZ#1564983).
+    
+    Reported-by: Yongkui Guo.
+    
+    Fixes commit 82bbd9c8a503661528289589976697d08cb41090.
+    
+    (cherry picked from commit 07ead43cbbf0bbc69a00e4a5df1a9642fd75cbf4)
+
+commit 35a9e6db58707495774ccaa6c64a2ca55dc8c876
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Apr 3 18:20:20 2018 +0200
+
+    v2v: OVF: improve get_ostype mappings
+    
+    - consider CentOS as RHEL, since oVirt has no CentOS OS mappings, and
+      CentOS is derived from RHEL
+    - use rhel_6_9_plus_ppc64 for RHEL 6 >= 6.9 on ppc64/ppc64le, while
+      rhel_6_ppc64 for RHEL 6 < 6.9
+    - use rhel_7_s390x for RHEL 7 on s390x
+    - use sles_11, and sles_11_ppc64 for any SLES greater than 11, not only
+      11
+    - use sles_12_s390x for SLES 11+ on s390x
+    - use ubuntu_16_04_s390x for Ubuntu 16.04+ on s390x
+    - use other_linux_ppc64 for any unmapped Linux distro on ppc64/ppc64le
+    - use other_linux_s390x for any unmapped Linux distro on s390x
+    
+    (cherry picked from commit 8307dcb3a984b5825be68d0e7cdca03c06d74aa9)
+
+commit 506fe5f9ef33a8d218bffeb487b2ecbc2fea235c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Apr 5 10:27:20 2018 +0100
+
+    todo: Remove section about using qmp-schema, since we are now using it.
+    
+    (cherry picked from commit cd65dcf57603e5e5e5cfe03e06b47013b5bbfa44)
+
+commit 651909c434673009363bf79e808f0b941e1abf93
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Mar 23 12:30:42 2018 +0100
+
+    v2v: ova: convert models of network interfaces
+    
+    So far v2v did not read the model of network interfaces, resulting in
+    "virtio" as the model for such interfaces.
+    
+    Start reading the model, if available, directly mapping E1000, while
+    other models are considered as Source_other_nic.
+    
+    (cherry picked from commit 551a64f9b6b487cbe312c4074c93630cf7e0bf6a)
+
+commit 4be4637e002d4be756b182a31e0f3d011b37e64e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 21 13:51:29 2018 +0000
+
+    v2v: Move and rename vddk_options and vdsm_options structure.
+    
+    Simple refactoring, giving the structures uniform names and handling.
+    
+    (cherry picked from commit e03759f67a147d3d94bf2c9c86daae3723208629)
+
+commit 046a6028f8785c8acb9912cb72f66d1eda8c76ad
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 22 15:17:48 2018 +0000
+
+    v2v: docs: Move the input and output modes "spider" after examples.
+    
+    I've had several reports that it just puts people off.  Possibly we
+    should delete or rewrite it but this moves it below the examples
+    section which is more important.
+    
+    (cherry picked from commit 1c247612518108481a9700d73ef26d6c15855358)
+
+commit d559218794417a866ea7afc303f79f5b5a790559
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 22 16:02:21 2018 +0000
+
+    v2v: Fix parsing of OVA files and documentation for --network and --bridge (RHBZ#1559027).
+    
+    When parsing OVA files we have to work backwards to whether the
+    original VMware object was a network or a bridge.  It seems as if the
+    presence of <rasd:Connection> is sufficient.  I dropped the use of
+    <rasd:ElementName> since it is literally just an internal name for the
+    network element, and is not significant in how the network is used.
+    
+    Also update documentation because you must use ‘--bridge’ when
+    converting VMware guests to RHV.
+    
+    For a full explanation see:
+    
+      https://bugzilla.redhat.com/show_bug.cgi?id=1559027#c2
+    
+    (cherry picked from commit 992f835258221b240d4ca73ed32002c5e2b8a8b7)
+
+commit 09c33f5ed41da172a2789d7a2dc8142a3111de37
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Mar 21 13:40:59 2018 +0100
+
+    tests: regressions: make test-big-heap use a temporary empty file
+    
+    Newer versions of qemu use file locking for the images by default, and
+    apparently that does not work with /dev/null.  Since this test just
+    calls qemu-img to get the format of an empty image, create a temporary
+    one instead.
+    
+    (cherry picked from commit 2bf88b102c24224d6a1d54c267ec55050175dc85)
+
+commit 9331ae0b677edc43550da811e9eb03bfed910950
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Mar 16 11:46:41 2018 +0000
+
+    v2v: cmdline: Replace { foo = foo } with { foo } in record expression.
+    
+    See:
+    https://forge.ocamlcore.org/docman/view.php/77/112/leroy-cug2010.pdf
+    
+    Followup of commit c7651744da455a00a7abeb930621c50bfb23c40c.
+    
+    (cherry picked from commit 971519fd5711f19564d949afd5c1fe6b6e4e2fad)
+
+commit 0a9449519a33eff8201c880b98b5af71f7246c81
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Mar 15 17:31:31 2018 +0000
+
+    v2v: Update target.target_estimated_size in targets list in main function.
+    
+    The rebasing in commit 5dae9ca23dab90dfb890f6663aa4bacf1df31ced caused
+    this field to never get updated.
+    
+    (cherry picked from commit 777701a7383cdadea6e29b3a20d5cd61306598fa)
+
+commit fba27cdfbcfbb6a019ed0ffe8ce5ee17e8c160af
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Mar 7 10:15:01 2018 +0000
+
+    v2v: Factor out wait_for_file utility function.
+    
+    Simple code motion.
+    
+    (cherry picked from commit 58d70eedee923642da6270c9ebf7fe62dc72d49b)
+
+commit bcdc7fceb6e97dad774e8b6d9be661f342b320a8
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Feb 28 14:47:55 2018 +0000
+
+    v2v: rhv: Fix virtio-rng and memballoon OVF fragment for RHV.
+    
+    Without this extra element, oVirt will crash with a Java
+    NullPointerException (see https://bugzilla.redhat.com/1550123).
+    
+    Fixes commit dac5fc53acdd1e51be2957c67e1e063e2132e680.
+    
+    (cherry picked from commit d7b31559c291bc8af3419679facdf174e6e647c1)
+
+commit 3c0a77fbf7176c5378568ef28e085adbc13faa89
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Mar 1 10:14:32 2018 +0100
+
+    automake2junit.ml: use LargeFile to stat'ing files
+    
+    While scanning the sources, some of the files (i.e. the cached
+    appliance) may be larger than 4G, and thus raise EOVERFLOW on 32bit
+    architectures.
+    
+    Fixes commit b4e119d8b795756df1e24d3f6b6fa791ce58a5aa.
+    
+    (cherry picked from commit ba53251ab912b8bac9e00c1022adc6ba9bdf70a3)
+
+commit f7df2acc669e9543c57ee3d09f92605d4ef553fc
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 27 17:07:33 2018 +0100
+
+    v2v: update once more the URL with glance metadata
+    
+    Another year, another URL for them.
+    
+    (cherry picked from commit 8d5b3094d5f8dbf405c0128930d521342818b1dc)
+
+commit 34e0ebba8c1f7c8aa11b8c4a578879c1e15b6ff6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 22 11:45:18 2018 +0000
+
+    v2v: -oc option specifies a generic target hypervisor URI.
+    
+    No change in the code or the command line, this is just documenting
+    that -oc is not specifically a libvirt URI.
+    
+    (cherry picked from commit 95445949f57f289aee9fbba4c71e87d7b4d3f10c)
+
+commit 5f70bf70409810b2cee89ec6d624179030b858e3
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Feb 23 14:35:16 2018 +0100
+
+    automake2junit.ml: ignore symlinks when searching for .trs files
+    
+    One gnulib test creates a symlink to the same directory, causing our
+    iteration to read the same test directory over and over, every time
+    considering it as new level of subdirectory.
+    
+    As solution (or workaround), when iterating through a directory consider
+    only regular files, and directories, ignoring any other file type
+    (symlinks included).
+    
+    (cherry picked from commit b4e119d8b795756df1e24d3f6b6fa791ce58a5aa)
+
+commit 546eef63b2b3fa95d086d3f176fe8b7563cb09fe
+Author: Yuri Chornoivan <yurchor@ukr.net>
+Date:   Fri Feb 23 09:54:08 2018 +0000
+
+    docs: Fix typo in man page.
+    
+    (cherry picked from commit 5f8bba5d52a6f93fa80b27172659c4ac0ec35eee)
+
+commit 179f8eef85768826e5928a41d04f5f7981e962a0
+Author: Tomáš Golembiovský <tgolembi@redhat.com>
+Date:   Wed Feb 21 10:39:10 2018 +0100
+
+    tmp: ignore virt-v2v overlay files
+    
+    Failed virt-v2v tests can leave the overlay files on disk. Make sure
+    they are ignored.
+    
+    Signed-off-by: Tomáš Golembiovský <tgolembi@redhat.com>
+    (cherry picked from commit 4344d9115b638ab7c0fcada7d3b045df464da1aa)
+
+commit db64a58be2fd0f82db0d31a1fff69ed3feaf4707
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 15 18:13:42 2018 +0100
+
+    daemon: tsk: handle new enum values in sleuthkit 4.5
+    
+    Resort to a version check for them, as they do not exist in older
+    versions.
+    
+    (cherry picked from commit 1c996bf314b02e28b4e71a627c8c0b96fe842ab5)
+
+commit f9af390e486bf5989f23c92d33304aea17a04c17
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 15 18:09:37 2018 +0100
+
+    lib: qemu: help GCC 8 by break'ing a case in a switch
+    
+    GCC 8 thinks that the case drive_protocol_gluster may fall through, most
+    probably because the only code is a switch case that handles the
+    elements of an enum, and thus letting other fall through. In reality
+    this ought to not happen at all, so help GCC by break'ing the case,
+    which will then lead to the abort() at the end of
+    guestfs_int_drive_source_qemu_param.
+    
+    (cherry picked from commit 491970b82fcf7fdd5c9323b5c9bc93508c75ea5c)
+
+commit e2e3248377e52314ce9ac60a9cb1fed9ec209ad4
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Feb 19 14:46:32 2018 +0100
+
+    appliance: include dash for Debian distros
+    
+    Make sure that /bin/sh is available in the appliance, and that path is
+    provided by dash on Debian distributions.
+    
+    (cherry picked from commit 0cca7f9061455d29a7f893e715028cd3e75c19fd)
+
+commit 7b2004386f1048156a816f7e1cea4010178682c1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 14 15:21:05 2018 +0100
+
+    inspect: use check_tests also for detecting Hurd
+    
+    Even though the list of checks is very short, at least this migrates
+    from imperative checks to a "declarative" one.
+    
+    There should be no behaviour change, other than using os-release if it
+    contains all the needed information.
+    
+    (cherry picked from commit 535a4471f36fa1ed855b371bd67aef32fe5f319b)
+
+commit d357a0008f77512225117eac421fbc5b4b9b4419
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Feb 13 10:54:05 2018 +0100
+
+    inspector: fix help text (RHBZ#1544674)
+    
+    (cherry picked from commit 62b09ba0b0942d36b4e238b242513157babccb44)
+
+commit 689448ba27b80a02d4f49403bdacbdfa5959f45d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Feb 9 15:55:38 2018 +0000
+
+    python: Fix missing & additional backslashes which broke python sdist.
+    
+    Fixes commit e6c89f96316c3eda6049d0c3ed4de4cda6f4f973.
+    
+    (cherry picked from commit d0e5a819e8b16b38c22cb7309e88bf49a6fdcc4a)
+
+commit 0a55098f661457b3a4e17b8f5cdd7540d53aec32
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Feb 22 18:39:37 2018 +0100
+
+    builder-repository: fix compute_short_id for sles X.0
+    
+    It needs to check for the minor version, not major version.
+    
+    Fixes commit a442d2c3217f709128f0e377f88649fb6ba90f45.
+
 commit 1e99b961796711af5f5f28def3d97e31097fcf75
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Wed Feb 7 15:47:56 2018 +0000

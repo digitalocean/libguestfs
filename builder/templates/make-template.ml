@@ -642,13 +642,13 @@ and make_boot_media os arch =
   | Fedora ver, X86_64 ->
      Location (sprintf "http://mirror.bytemark.co.uk/fedora/linux/releases/%d/Server/x86_64/os/" ver)
 
+  | Fedora ver, Aarch64 ->
+     Location (sprintf "http://mirror.bytemark.co.uk/fedora/linux/releases/%d/Server/aarch64/os/" ver)
+
   (* Fedora secondary architectures.
    * By using dl.fedoraproject.org we avoid randomly using mirrors
    * which might have incomplete copies.
    *)
-  | Fedora ver, Aarch64 ->
-     Location (sprintf "https://dl.fedoraproject.org/pub/fedora-secondary/releases/%d/Server/aarch64/os/" ver)
-
   | Fedora ver, I686 ->
      Location (sprintf "https://dl.fedoraproject.org/pub/fedora-secondary/releases/%d/Server/i386/os/" ver)
 
@@ -765,12 +765,12 @@ and make_virt_install_command os arch ks tmpname tmpout tmpefivars
    | PPC64 ->
       add "--arch=ppc64";
       add "--machine=pseries";
-      add "--cpu=POWER7";
+      add "--cpu=power7";
       add "--vcpus=1"
    | PPC64le ->
       add "--arch=ppc64le";
       add "--machine=pseries";
-      add "--cpu=POWER8";
+      add "--cpu=power8";
       add "--vcpus=1"
    | arch ->
       add (sprintf "--arch=%s" (string_of_arch arch));
@@ -866,7 +866,7 @@ and os_variant_of_os ?(for_fedora = false) os arch =
     | Fedora _, (PPC64|PPC64le) -> "fedora22"
     | Fedora ver, _ when ver <= 23 ->
        sprintf "fedora%d" ver
-    | Fedora _, _ -> "fedora23" (* max version known in Fedora 24 *)
+    | Fedora _, _ -> "fedora26" (* max version known in Fedora 28 *)
 
     | CentOS (major, minor), _ when (major, minor) <= (7,0) ->
        sprintf "centos%d.%d" major minor

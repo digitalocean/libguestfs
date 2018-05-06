@@ -33,6 +33,18 @@ open Xpath_helpers
 
 open Printf
 
+type vddk_options = {
+    vddk_config : string option;
+    vddk_cookie : string option;
+    vddk_libdir : string option;
+    vddk_nfchostport : string option;
+    vddk_port : string option;
+    vddk_snapshot : string option;
+    vddk_thumbprint : string option;
+    vddk_transports : string option;
+    vddk_vimapiver : string option;
+}
+
 (* Subclass specialized for handling VMware via nbdkit vddk plugin. *)
 class input_libvirt_vddk vddk_options password libvirt_uri parsed_uri guest =
   (* The VDDK path. *)
@@ -334,15 +346,7 @@ object
          (* Wait for the pidfile to appear so we know that nbdkit
           * is listening for requests.
           *)
-         let rec loop i =
-           if i = 0 then false
-           else if Sys.file_exists pidfile then true
-           else (
-             sleep 1;
-             loop (i-1)
-           )
-         in
-         if not (loop 30) then (
+         if not (wait_for_file pidfile 30) then (
            if verbose () then
              error (f_"nbdkit did not start up.  See previous debugging messages for problems.")
            else

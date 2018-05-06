@@ -209,7 +209,7 @@ let parse_cmdline () =
     [ M"oa" ],       Getopt.String ("sparse|preallocated", set_output_alloc),
                                     s_"Set output allocation mode";
     [ M"oc" ],       Getopt.String ("uri", set_string_option_once "-oc" output_conn),
-                                    s_"Libvirt URI";
+                                    s_"Output hypervisor connection";
     [ M"of" ],       Getopt.String ("raw|qcow2", set_string_option_once "-of" output_format),
                                     s_"Set output format";
     [ M"on" ],       Getopt.String ("name", set_string_option_once "-on" output_name),
@@ -313,7 +313,7 @@ read the man page virt-v2v(1).
   let qemu_boot = !qemu_boot in
   let root_choice = !root_choice in
   let vddk_options =
-      { vddk_config = !vddk_config;
+      { Input_libvirt_vddk.vddk_config = !vddk_config;
         vddk_cookie = !vddk_cookie;
         vddk_libdir = !vddk_libdir;
         vddk_nfchostport = !vddk_nfchostport;
@@ -536,21 +536,20 @@ read the man page virt-v2v(1).
         | Some s -> s in
       if vdsm_image_uuids = [] || vdsm_vol_uuids = [] then
         error (f_"-o vdsm: either --vdsm-vol-uuid or --vdsm-vm-uuid was not specified");
-      let vdsm_params = {
+      let vdsm_options = {
         Output_vdsm.image_uuids = vdsm_image_uuids;
         vol_uuids = vdsm_vol_uuids;
         vm_uuid = vdsm_vm_uuid;
         ovf_output = vdsm_ovf_output;
         compat = vdsm_compat;
       } in
-      Output_vdsm.output_vdsm os vdsm_params output_alloc,
+      Output_vdsm.output_vdsm os vdsm_options output_alloc,
       output_format, output_alloc in
 
   {
-    compressed = compressed; debug_overlays = debug_overlays;
-    do_copy = do_copy; in_place = in_place; network_map = network_map;
-    output_alloc = output_alloc; output_format = output_format;
-    output_name = output_name;
-    print_source = print_source; root_choice = root_choice;
+    compressed; debug_overlays; do_copy; in_place; network_map;
+    output_alloc; output_format; output_name;
+    print_source;
+    root_choice;
   },
   input, output

@@ -154,6 +154,7 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-gz.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-invalid-manifest1.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-invalid-manifest2.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-snapshots.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-subfolders.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-tar.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh test-v2v-i-vmx.sh \
@@ -224,6 +225,10 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-gz.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-invalid-manifest1.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-invalid-manifest2.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-snapshots.expected \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-snapshots.expected2 \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-snapshots.ovf \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-snapshots.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-subfolders.expected \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-subfolders.expected2 \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-subfolders.ovf \
@@ -1661,6 +1666,7 @@ PAMCUT = @PAMCUT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PBMTEXT = @PBMTEXT@
 PCRE_CFLAGS = @PCRE_CFLAGS@
+PCRE_CONFIG = @PCRE_CONFIG@
 PCRE_LIBS = @PCRE_LIBS@
 PERL = @PERL@
 PHP = @PHP@
@@ -2083,6 +2089,7 @@ SOURCES_MLI = \
 	output_qemu.mli \
 	output_rhv.mli \
 	output_vdsm.mli \
+	parse_ova.mli \
 	parse_ovf_from_ova.mli \
 	parse_libvirt_xml.mli \
 	parse_vmx.mli \
@@ -2106,6 +2113,7 @@ SOURCES_ML = \
 	DOM.ml \
 	changeuid.ml \
 	parse_ovf_from_ova.ml \
+	parse_ova.ml \
 	create_ovf.ml \
 	linux.ml \
 	windows.ml \
@@ -2853,6 +2861,13 @@ test-v2v-i-ova-invalid-manifest2.sh.log: test-v2v-i-ova-invalid-manifest2.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-i-ova-snapshots.sh.log: test-v2v-i-ova-snapshots.sh
+	@p='test-v2v-i-ova-snapshots.sh'; \
+	b='test-v2v-i-ova-snapshots.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-v2v-i-ova-subfolders.sh.log: test-v2v-i-ova-subfolders.sh
 	@p='test-v2v-i-ova-subfolders.sh'; \
 	b='test-v2v-i-ova-subfolders.sh'; \
@@ -3399,11 +3414,11 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-%.cmi: %.mli
+%.cmi: $(srcdir)/%.mli
 	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-%.cmo: %.ml
+%.cmo: $(srcdir)/%.ml
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@%.cmx: %.ml
+@HAVE_OCAMLOPT_TRUE@%.cmx: $(srcdir)/%.ml
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 # Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined
@@ -3476,7 +3491,7 @@ export TEST_FUNCTIONS := \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@v2v_unit_tests.cmx: OCAMLPACKAGES += -package oUnit
 
 # Dependencies.
-@HAVE_OCAML_TRUE@.depend: *.mli *.ml
+@HAVE_OCAML_TRUE@.depend: $(srcdir)/*.mli $(srcdir)/*.ml
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml-dep.sh $^
 @HAVE_OCAML_TRUE@-include .depend
 

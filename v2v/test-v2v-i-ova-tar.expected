@@ -6,7 +6,7 @@ hypervisor type: vmware
        nr vCPUs: 1
      CPU vendor: 
       CPU model: 
-   CPU topology: sockets: - cores/socket: - threads/core: -
+   CPU topology: 
    CPU features: 
        firmware: uefi
         display: 
@@ -17,5 +17,5 @@ disks:
 removable media:
 	CD-ROM [ide] in slot 0
 NICs:
-	Network "Network adapter 1"
+	Bridge "PG-VLAN60" [e1000]
 

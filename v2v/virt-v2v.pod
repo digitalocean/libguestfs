@@ -7,7 +7,7 @@ virt-v2v - Convert a guest to use KVM
  virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi vmware_guest
 
  virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi vmware_guest \
-   -o rhv -os rhv.nfs:/export_domain --network ovirtmgmt
+   -o rhv -os rhv.nfs:/export_domain --bridge ovirtmgmt
 
  virt-v2v -i libvirtxml guest-domain.xml -o local -os /var/tmp
 
@@ -31,57 +31,6 @@ virtualize those machines (physical to virtual, or p2v).
 
 This manual page documents the rewritten virt-v2v included in
 libguestfs E<ge> 1.28.
-
-=head1 INPUT AND OUTPUT MODES
-
-                          ┌────────────┐  ┌─────────▶ -o null
- -i disk ────────────┐    │            │ ─┘┌───────▶ -o local
- -i ova  ──────────┐ └──▶ │ virt-v2v   │ ──┘┌───────▶ -o qemu
-                   └────▶ │ conversion │ ───┘┌────────────┐
- VMware─▶┌────────────┐   │ server     │ ────▶ -o libvirt │─▶ KVM
- Xen ───▶│ -i libvirt ──▶ │            │     │  (default) │
- ... ───▶│  (default) │   │            │ ──┐ └────────────┘
-         └────────────┘   │            │ ─┐└──────▶ -o glance
- -i libvirtxml ─────────▶ │            │ ┐└─────────▶ -o rhv
- -i vmx ────────────────▶ │            │ └──────────▶ -o vdsm
-                          └────────────┘
-
-Virt-v2v has a number of possible input and output modes, selected
-using the I<-i> and I<-o> options.  Only one input and output mode can
-be selected for each run of virt-v2v.
-
-I<-i disk> is used for reading from local disk images (mainly for
-testing).
-
-I<-i libvirt> is used for reading from any libvirt source.  Since
-libvirt can connect to many different hypervisors, it is used for
-reading guests from VMware, RHEL 5 Xen and more.  The I<-ic>
-option selects the precise libvirt source.
-
-I<-i libvirtxml> is used to read from libvirt XML files.  This is the
-method used by L<virt-p2v(1)> behind the scenes.
-
-I<-i ova> is used for reading from a VMware ova source file.
-
-I<-i vmx> is used for reading from a VMware vmx file.
-
-I<-o glance> is used for writing to OpenStack Glance.
-
-I<-o libvirt> is used for writing to any libvirt target.  Libvirt can
-connect to local or remote KVM hypervisors.  The I<-oc> option selects
-the precise libvirt target.
-
-I<-o local> is used to write to a local disk image with a local
-libvirt configuration file (mainly for testing).
-
-I<-o qemu> writes to a local disk image with a shell script for
-booting the guest directly in qemu (mainly for testing).
-
-I<-o rhv> is used to write to a RHV / oVirt target.  I<-o vdsm>
-is only used when virt-v2v runs under VDSM control.
-
-I<--in-place> instructs virt-v2v to customize the guest OS in the input
-virtual machine, instead of creating a new VM in the target hypervisor.
 
 =head1 EXAMPLES
 
@@ -110,7 +59,7 @@ settings on your RHV-M management console.  Guest network
 interface(s) are connected to the target network called C<ovirtmgmt>.
 
  virt-v2v -ic vpx://vcenter.example.com/Datacenter/esxi vmware_guest \
-   -o rhv -os rhv.nfs:/export_domain --network ovirtmgmt
+   -o rhv -os rhv.nfs:/export_domain --bridge ovirtmgmt
 
 In this case the host running virt-v2v acts as a B<conversion server>.
 
@@ -169,6 +118,57 @@ To convert a local disk image and immediately boot it in local
 qemu, do:
 
  virt-v2v -i disk disk.img -o qemu -os /var/tmp --qemu-boot
+
+=head1 INPUT AND OUTPUT MODES
+
+                          ┌────────────┐  ┌─────────▶ -o null
+ -i disk ────────────┐    │            │ ─┘┌───────▶ -o local
+ -i ova  ──────────┐ └──▶ │ virt-v2v   │ ──┘┌───────▶ -o qemu
+                   └────▶ │ conversion │ ───┘┌────────────┐
+ VMware─▶┌────────────┐   │ server     │ ────▶ -o libvirt │─▶ KVM
+ Xen ───▶│ -i libvirt ──▶ │            │     │  (default) │
+ ... ───▶│  (default) │   │            │ ──┐ └────────────┘
+         └────────────┘   │            │ ─┐└──────▶ -o glance
+ -i libvirtxml ─────────▶ │            │ ┐└─────────▶ -o rhv
+ -i vmx ────────────────▶ │            │ └──────────▶ -o vdsm
+                          └────────────┘
+
+Virt-v2v has a number of possible input and output modes, selected
+using the I<-i> and I<-o> options.  Only one input and output mode can
+be selected for each run of virt-v2v.
+
+I<-i disk> is used for reading from local disk images (mainly for
+testing).
+
+I<-i libvirt> is used for reading from any libvirt source.  Since
+libvirt can connect to many different hypervisors, it is used for
+reading guests from VMware, RHEL 5 Xen and more.  The I<-ic>
+option selects the precise libvirt source.
+
+I<-i libvirtxml> is used to read from libvirt XML files.  This is the
+method used by L<virt-p2v(1)> behind the scenes.
+
+I<-i ova> is used for reading from a VMware ova source file.
+
+I<-i vmx> is used for reading from a VMware vmx file.
+
+I<-o glance> is used for writing to OpenStack Glance.
+
+I<-o libvirt> is used for writing to any libvirt target.  Libvirt can
+connect to local or remote KVM hypervisors.  The I<-oc> option selects
+the precise libvirt target.
+
+I<-o local> is used to write to a local disk image with a local
+libvirt configuration file (mainly for testing).
+
+I<-o qemu> writes to a local disk image with a shell script for
+booting the guest directly in qemu (mainly for testing).
+
+I<-o rhv> is used to write to a RHV / oVirt target.  I<-o vdsm>
+is only used when virt-v2v runs under VDSM control.
+
+I<--in-place> instructs virt-v2v to customize the guest OS in the input
+virtual machine, instead of creating a new VM in the target hypervisor.
 
 =head1 SUPPORT MATRIX
 
@@ -550,13 +550,13 @@ This mode is only used when virt-v2v runs under VDSM control.
 
 Set the output file allocation mode.  The default is C<sparse>.
 
-=item B<-oc> libvirtURI
+=item B<-oc> URI
 
-Specify a libvirt connection to use when writing the converted guest.
-This is only used when S<I<-o libvirt>>.  See L</OUTPUT TO LIBVIRT> below.
+Specify a connection URI to use when writing the converted guest.
 
-Only local libvirt connections can be used.  Remote libvirt
-connections will not work.
+For S<I<-o libvirt>> this is the libvirt URI.  Only local libvirt
+connections can be used.  Remote libvirt connections will not work.
+See L</OUTPUT TO LIBVIRT> below for further information.
 
 =item B<-of> format
 
@@ -1046,27 +1046,22 @@ guest’s Network Interface Cards (NICs):
  NICs:
      Network "default" mac: 52:54:00:d0:cf:0e
 
-This is typical of a libvirt guest: It has a single network interface
-connected to a network called C<default>.
-
-To map a specific network to a target network, for example C<default>
-on the source to C<ovirtmgmt> on the target, use:
-
- virt-v2v [...] --network default:ovirtmgmt
-
-To map every network to a target network, use:
-
- virt-v2v [...] --network ovirtmgmt
-
-Bridges are handled in the same way, but you have to use the
-I<--bridge> option instead.  For example:
+Bridges are special classes of network devices which are attached to a
+named external network on the source hypervisor, for example:
 
  $ virt-v2v [-i ...] --print-source name
  [...]
  NICs:
      Bridge "br0"
- 
- $ virt-v2v [...] --bridge br0:targetbr
+
+To map a specific bridge to a target network, for example C<br0> on
+the source to C<ovirtmgmt> on the target, use:
+
+ virt-v2v [...] --bridge br0:ovirtmgmt
+
+To map every bridge to a target network, use:
+
+ virt-v2v [...] --bridge ovirtmgmt
 
 =head1 INPUT FROM VMWARE VCENTER SERVER
 

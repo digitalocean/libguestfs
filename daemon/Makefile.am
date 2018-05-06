@@ -36,9 +36,26 @@ BUILT_SOURCES = \
 
 generator_built = \
 	$(BUILT_SOURCES) \
+	blkid.mli \
+	btrfs.mli \
 	callbacks.ml \
+	devsparts.mli \
+	file.mli \
+	filearch.mli \
+	findfs.mli \
+	inspect.mli \
+	is.mli \
+	ldm.mli \
+	link.mli \
+	listfs.mli \
+	lvm.mli \
+	md.mli \
+	mount.mli \
 	optgroups.ml \
 	optgroups.mli \
+	parted.mli \
+	realpath.mli \
+	statvfs.mli \
 	structs.ml \
 	structs.mli
 
@@ -268,8 +285,10 @@ SOURCES_MLI = \
 	link.mli \
 	listfs.mli \
 	lvm.mli \
+	lvm_utils.mli \
 	md.mli \
 	mount.mli \
+	mount_utils.mli \
 	mountable.mli \
 	optgroups.mli \
 	parted.mli \
@@ -296,9 +315,11 @@ SOURCES_ML = \
 	ldm.ml \
 	link.ml \
 	lvm.ml \
+	lvm_utils.ml \
 	findfs.ml \
 	md.ml \
 	mount.ml \
+	mount_utils.ml \
 	parted.ml \
 	listfs.ml \
 	realpath.ml \
@@ -318,11 +339,11 @@ XOBJECTS = $(BOBJECTS:.cmo=.cmx)
 
 OCAMLPACKAGES = \
 	-package str,unix,hivex \
-	-I $(top_srcdir)/common/mlaugeas \
-	-I $(top_srcdir)/common/mlstdutils \
-	-I $(top_srcdir)/common/mlutils \
+	-I $(top_builddir)/common/mlaugeas \
+	-I $(top_builddir)/common/mlstdutils \
+	-I $(top_builddir)/common/mlutils \
 	-I $(top_builddir)/common/utils/.libs \
-	-I $(top_srcdir)/common/mlpcre \
+	-I $(top_builddir)/common/mlpcre \
 	-I $(top_builddir)/common/mlpcre/.libs \
 	-I $(top_builddir)/gnulib/lib/.libs
 
@@ -356,7 +377,7 @@ camldaemon.o: $(OBJECTS)
 	    $(OBJECTS)
 
 # OCaml dependencies.
-.depend: *.mli *.ml
+.depend: $(srcdir)/*.mli $(srcdir)/*.ml
 	$(top_builddir)/ocaml-dep.sh $^
 -include .depend
 

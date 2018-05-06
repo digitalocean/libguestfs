@@ -1459,6 +1459,7 @@ PAMCUT = @PAMCUT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PBMTEXT = @PBMTEXT@
 PCRE_CFLAGS = @PCRE_CFLAGS@
+PCRE_CONFIG = @PCRE_CONFIG@
 PCRE_LIBS = @PCRE_LIBS@
 PERL = @PERL@
 PHP = @PHP@
@@ -2308,11 +2309,11 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-%.cmi: %.mli
+%.cmi: $(srcdir)/%.mli
 	$(guestfs_am_v_ocamlcmi)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-%.cmo: %.ml
+%.cmo: $(srcdir)/%.ml
 	$(guestfs_am_v_ocamlc)$(OCAMLFIND) ocamlc $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
-@HAVE_OCAMLOPT_TRUE@%.cmx: %.ml
+@HAVE_OCAMLOPT_TRUE@%.cmx: $(srcdir)/%.ml
 @HAVE_OCAMLOPT_TRUE@	$(guestfs_am_v_ocamlopt)$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) $(OCAMLPACKAGES) -c $< -o $@
 
 # Test shell scripts should use '$TEST_FUNCTIONS' to get a predefined

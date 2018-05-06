@@ -21,8 +21,8 @@ open Printf
 open Std_utils
 
 let rec list_filesystems () =
-  let has_lvm2 = Lvm.available () in
-  let has_ldm = Ldm.available () in
+  let has_lvm2 = Optgroups.lvm2_available () in
+  let has_ldm = Optgroups.ldm_available () in
 
   let devices = Devsparts.list_devices () in
   let partitions = Devsparts.list_partitions () in
@@ -125,13 +125,13 @@ and check_with_vfs_type device =
     let default_volume = Btrfs.btrfs_subvolume_get_default mountable in
     let vols =
       List.filter (
-        fun { Btrfs.btrfssubvolume_id = id } -> id <> default_volume
+        fun { Structs.btrfssubvolume_id = id } -> id <> default_volume
       ) vols in
 
     Some (
       (mountable, vfs_type) (* whole device = default volume *)
       :: List.map (
-           fun { Btrfs.btrfssubvolume_path = path } ->
+           fun { Structs.btrfssubvolume_path = path } ->
              let mountable = Mountable.of_btrfsvol device path in
              (mountable, "btrfs")
          ) vols
