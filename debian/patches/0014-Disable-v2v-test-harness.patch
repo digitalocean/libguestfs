@@ -20,10 +20,11 @@ index d691889..fe7c40a 100644
  if HAVE_OCAML
  if HAVE_OCAML_PKG_LIBVIRT
  
-@@ -132,5 +133,6 @@ stamp-virt-v2v-test-harness.pod: virt-v2v-test-harness.pod
+@@ -130,6 +131,7 @@ stamp-virt-v2v-test-harness.pod: virt-v2v-test-harness.pod
+ 	$(top_builddir)/ocaml-dep.sh -I .. $^
+ -include .depend
  
- endif
- endif
 +endif
+ endif
+ endif
  
- .PHONY: docs

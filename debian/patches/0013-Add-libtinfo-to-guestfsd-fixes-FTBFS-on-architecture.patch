@@ -8,10 +8,10 @@ Subject: Add libtinfo to guestfsd (fixes FTBFS on architectures that lack a
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/daemon/Makefile.am b/daemon/Makefile.am
-index 94ee866..26d6f78 100644
+index 6240f51..4ef20c8 100644
 --- a/daemon/Makefile.am
 +++ b/daemon/Makefile.am
-@@ -218,7 +218,8 @@ guestfsd_LDADD = \
+@@ -235,7 +235,8 @@ guestfsd_LDADD = \
  	$(TSK_LIBS) \
  	$(RPC_LIBS) \
  	$(YARA_LIBS) \

@@ -8,7 +8,5 @@
 0008-po-Don-t-fail-installation-if-parts-of-translated-do.patch
 0009-Fix-sbin-reboot-requirements.patch
 0010-Add-fdisk-to-appliance-list.patch
-0011-appliance-include-dash-for-Debian-distros.patch
-0012-Fix-out-of-tree-builds-of-OCaml-components.patch
 0013-Add-libtinfo-to-guestfsd-fixes-FTBFS-on-architecture.patch
 0014-Disable-v2v-test-harness.patch
