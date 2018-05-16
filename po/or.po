@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: libguestfs 1.37.37\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2018-05-01 21:37+0100\n"
+"POT-Creation-Date: 2018-05-15 14:10+0100\n"
 "PO-Revision-Date: 2015-02-21 10:51-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libguestfs/"
@@ -8621,7 +8621,7 @@ msgstr ""
 msgid "xmlSaveDoc failed"
 msgstr ""
 
-#: lib/appliance.c:217
+#: lib/appliance.c:219
 #, c-format
 msgid ""
 "cannot find any suitable libguestfs supermin, fixed or old-style appliance "
@@ -9081,15 +9081,15 @@ msgstr ""
 msgid "fuse_loop: %s"
 msgstr ""
 
-#: lib/fuse.c:1137
+#: lib/fuse.c:1138
 msgid "no filesystem is mounted"
 msgstr ""
 
-#: lib/fuse.c:1255
+#: lib/fuse.c:1257
 msgid "could not initialize dir cache hashtables"
 msgstr ""
 
-#: lib/fuse.c:1510
+#: lib/fuse.c:1512
 msgid ""
 "FUSE is not supported in this build of libguestfs because libfuse was not "
 "found when libguestfs was compiled"
@@ -9118,24 +9118,24 @@ msgstr ""
 msgid "guestfs_close: called twice on the same handle\n"
 msgstr "guestfs_close: ସମାନ ନିୟନ୍ତ୍ରଣରେ ଦୁଇଥର ଡ଼ାକିଥିଲା\n"
 
-#: lib/handle.c:555
+#: lib/handle.c:556
 msgid ""
 "configured --without-qemu so calling guestfs_set_qemu with qemu == NULL is "
 "an error"
 msgstr ""
 
-#: lib/handle.c:608
+#: lib/handle.c:609
 #, c-format
 msgid "too small value for memsize (must be at least %d)"
 msgstr ""
 
-#: lib/handle.c:725
+#: lib/handle.c:726
 msgid ""
 "identifier must contain only alphanumeric characters, underscore or minus "
 "sign"
 msgstr ""
 
-#: lib/handle.c:831
+#: lib/handle.c:832
 msgid "setting not found"
 msgstr ""
 

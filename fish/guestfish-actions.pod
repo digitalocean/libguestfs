@@ -7773,7 +7773,7 @@ Remove the single directory C<path>.
 
  rmmountpoint exemptpath
 
-This calls removes a mountpoint that was previously created
+This call removes a mountpoint that was previously created
 with L</mkmountpoint>.  See L</mkmountpoint>
 for full details.
 

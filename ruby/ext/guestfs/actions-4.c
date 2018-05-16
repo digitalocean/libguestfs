@@ -2905,7 +2905,7 @@ guestfs_int_ruby_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
  *
  * remove a mountpoint
  *
- * This calls removes a mountpoint that was previously
+ * This call removes a mountpoint that was previously
  * created with "g.mkmountpoint". See "g.mkmountpoint" for
  * full details.
  *

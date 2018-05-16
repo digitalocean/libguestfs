@@ -8707,7 +8707,7 @@ class GuestFS(object):
         return r
 
     def rmmountpoint(self, exemptpath):
-        """This calls removes a mountpoint that was previously
+        """This call removes a mountpoint that was previously
         created with "g.mkmountpoint". See "g.mkmountpoint" for
         full details.
         """

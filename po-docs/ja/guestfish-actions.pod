@@ -7367,7 +7367,7 @@ its a directory.  This is like the C<rm -rf> shell command.
 
  rmmountpoint exemptpath
 
-This calls removes a mountpoint that was previously created with
+This call removes a mountpoint that was previously created with
 L</mkmountpoint>.  See L</mkmountpoint> for full details.
 
 =head2 rsync

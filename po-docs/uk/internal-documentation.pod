@@ -1117,13 +1117,13 @@ Used to cache the appliance features (see F<lib/available.c>).
    int msg_next_serial;
  
  #if HAVE_FUSE
-   /**** Використовується у програмних інтерфейсах mount-local. ****/
-   const char *localmountpoint;
-   struct fuse *fuse;                    /* Обробник FUSE. */
-   int ml_dir_cache_timeout;             /* Час очікування на кешування каталогів. */
-   Hash_table *lsc_ht, *xac_ht, *rlc_ht; /* Кеш каталогів. */
-   int ml_read_only;                     /* Чи змонтовано у режимі лише читання. */
-   int ml_debug_calls;        /* Додаткові діагностичні дані для кожного виклику FUSE. */
+   /**** Used by the mount-local APIs. ****/
+   char *localmountpoint;
+   struct fuse *fuse;                    /* FUSE handle. */
+   int ml_dir_cache_timeout;             /* Directory cache timeout. */
+   Hash_table *lsc_ht, *xac_ht, *rlc_ht; /* Directory cache. */
+   int ml_read_only;                     /* If mounted read-only. */
+   int ml_debug_calls;        /* Extra debug info on each FUSE call. */
  #endif
  
  #ifdef HAVE_LIBVIRT_BACKEND
@@ -2854,7 +2854,7 @@ the library, or just a single virt tool) then it should B<not> be here!
 
 Utility functions used by the library, tools and language bindings.
 
-These functions these I<must not> call internal library functions such as
+These functions I<must not> call internal library functions such as
 C<safe_*>, C<error> or C<perrorf>, or any C<guestfs_int_*>.
 
 =head4 Функція C<common/utils/utils.c:guestfs_int_split_string>

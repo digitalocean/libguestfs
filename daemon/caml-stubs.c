@@ -44,12 +44,13 @@
 static guestfs_int_partition *
 return_partition (value retv)
 {
-  guestfs_int_partition *ret;
+  CLEANUP_FREE_PARTITION guestfs_int_partition *ret = NULL;
+  guestfs_int_partition *real_ret;
   value v;
 
-  ret = malloc (sizeof (*ret));
+  ret = calloc (1, sizeof (*ret));
   if (ret == NULL) {
-    reply_with_perror ("malloc");
+    reply_with_perror ("calloc");
     return NULL;
   }
 
@@ -62,14 +63,17 @@ return_partition (value retv)
   v = Field (retv, 3);
   ret->part_size = Int64_val (v);
 
-  return ret;
+  real_ret = ret;
+  ret = NULL;
+  return real_ret;
 }
 
 /* Implement RStructList ("partition", _). */
 static guestfs_int_partition_list *
 return_partition_list (value retv)
 {
-  guestfs_int_partition_list *ret;
+  CLEANUP_FREE_PARTITION_LIST guestfs_int_partition_list *ret = NULL;
+  guestfs_int_partition_list *real_ret;
   guestfs_int_partition *r;
   size_t i, len;
   value v, rv;
@@ -82,18 +86,19 @@ return_partition_list (value retv)
     rv = Field (rv, 1);
   }
 
-  ret = malloc (sizeof *ret);
+  ret = calloc (1, sizeof *ret);
   if (ret == NULL) {
-    reply_with_perror ("malloc");
+    reply_with_perror ("calloc");
     return NULL;
   }
-  ret->guestfs_int_partition_list_len = len;
-  ret->guestfs_int_partition_list_val =
-    calloc (len, sizeof (guestfs_int_partition));
-  if (ret->guestfs_int_partition_list_val == NULL) {
-    reply_with_perror ("calloc");
-    free (ret);
-    return NULL;
+  if (len > 0) {
+    ret->guestfs_int_partition_list_val =
+      calloc (len, sizeof (guestfs_int_partition));
+    if (ret->guestfs_int_partition_list_val == NULL) {
+      reply_with_perror ("calloc");
+      return NULL;
+    }
+    ret->guestfs_int_partition_list_len = len;
   }
 
   rv = retv;
@@ -101,25 +106,28 @@ return_partition_list (value retv)
     v = Field (rv, 0);
     r = return_partition (v);
     if (r == NULL)
-      return NULL; /* XXX leaks memory along this error path */
+      return NULL;
     memcpy (&ret->guestfs_int_partition_list_val[i], r, sizeof (*r));
     free (r);
     rv = Field (rv, 1);
   }
 
-  return ret;
+  real_ret = ret;
+  ret = NULL;
+  return real_ret;
 }
 
 /* Implement RStruct ("btrfssubvolume", _). */
 static guestfs_int_btrfssubvolume *
 return_btrfssubvolume (value retv)
 {
-  guestfs_int_btrfssubvolume *ret;
+  CLEANUP_FREE_BTRFSSUBVOLUME guestfs_int_btrfssubvolume *ret = NULL;
+  guestfs_int_btrfssubvolume *real_ret;
   value v;
 
-  ret = malloc (sizeof (*ret));
+  ret = calloc (1, sizeof (*ret));
   if (ret == NULL) {
-    reply_with_perror ("malloc");
+    reply_with_perror ("calloc");
     return NULL;
   }
 
@@ -131,14 +139,17 @@ return_btrfssubvolume (value retv)
   ret->btrfssubvolume_path = strdup (String_val (v));
   if (ret->btrfssubvolume_path == NULL) return NULL;
 
-  return ret;
+  real_ret = ret;
+  ret = NULL;
+  return real_ret;
 }
 
 /* Implement RStructList ("btrfssubvolume", _). */
 static guestfs_int_btrfssubvolume_list *
 return_btrfssubvolume_list (value retv)
 {
-  guestfs_int_btrfssubvolume_list *ret;
+  CLEANUP_FREE_BTRFSSUBVOLUME_LIST guestfs_int_btrfssubvolume_list *ret = NULL;
+  guestfs_int_btrfssubvolume_list *real_ret;
   guestfs_int_btrfssubvolume *r;
   size_t i, len;
   value v, rv;
@@ -151,18 +162,19 @@ return_btrfssubvolume_list (value retv)
     rv = Field (rv, 1);
   }
 
-  ret = malloc (sizeof *ret);
+  ret = calloc (1, sizeof *ret);
   if (ret == NULL) {
-    reply_with_perror ("malloc");
+    reply_with_perror ("calloc");
     return NULL;
   }
-  ret->guestfs_int_btrfssubvolume_list_len = len;
-  ret->guestfs_int_btrfssubvolume_list_val =
-    calloc (len, sizeof (guestfs_int_btrfssubvolume));
-  if (ret->guestfs_int_btrfssubvolume_list_val == NULL) {
-    reply_with_perror ("calloc");
-    free (ret);
-    return NULL;
+  if (len > 0) {
+    ret->guestfs_int_btrfssubvolume_list_val =
+      calloc (len, sizeof (guestfs_int_btrfssubvolume));
+    if (ret->guestfs_int_btrfssubvolume_list_val == NULL) {
+      reply_with_perror ("calloc");
+      return NULL;
+    }
+    ret->guestfs_int_btrfssubvolume_list_len = len;
   }
 
   rv = retv;
@@ -170,25 +182,28 @@ return_btrfssubvolume_list (value retv)
     v = Field (rv, 0);
     r = return_btrfssubvolume (v);
     if (r == NULL)
-      return NULL; /* XXX leaks memory along this error path */
+      return NULL;
     memcpy (&ret->guestfs_int_btrfssubvolume_list_val[i], r, sizeof (*r));
     free (r);
     rv = Field (rv, 1);
   }
 
-  return ret;
+  real_ret = ret;
+  ret = NULL;
+  return real_ret;
 }
 
 /* Implement RStruct ("statvfs", _). */
 static guestfs_int_statvfs *
 return_statvfs (value retv)
 {
-  guestfs_int_statvfs *ret;
+  CLEANUP_FREE_STATVFS guestfs_int_statvfs *ret = NULL;
+  guestfs_int_statvfs *real_ret;
   value v;
 
-  ret = malloc (sizeof (*ret));
+  ret = calloc (1, sizeof (*ret));
   if (ret == NULL) {
-    reply_with_perror ("malloc");
+    reply_with_perror ("calloc");
     return NULL;
   }
 
@@ -215,7 +230,9 @@ return_statvfs (value retv)
   v = Field (retv, 10);
   ret->namemax = Int64_val (v);
 
-  return ret;
+  real_ret = ret;
+  ret = NULL;
+  return real_ret;
 }
 
 /* Wrapper for OCaml function ‘Btrfs.btrfs_subvolume_get_default’. */

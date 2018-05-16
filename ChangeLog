@@ -1,3 +1,162 @@
+commit 8287f4f1198671600aab6a373fcbc0035ae1f70f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 15 13:53:21 2018 +0100
+
+    Version 1.38.2.
+
+commit f948a79af95c4305e07d7cbfe592f15f886d2a7c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 15 14:03:19 2018 +0100
+
+    authors: Add Nikolay Ivanets (alternate form).
+    
+    (cherry picked from commit 140a25b51143acbcefc6251e65e81066301d15a0)
+
+commit 8f5561493e1e793c48434823eb6349910cc54ece
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 15 14:03:08 2018 +0100
+
+    authors: Add Adam Robinson.
+    
+    (cherry picked from commit 5982f7aec8f722cd396f6dcebf5e458e5be509b7)
+
+commit 4b4472ec3cb0dbf10e87b5aedee5d5dd3bffa31b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 15 09:24:21 2018 +0100
+
+    macOS: unix-utils: Include <sys/mount.h>.
+    
+    If <sys/mount.h> is available on the platform, always include
+    it in this file.
+    
+    (cherry picked from commit eb4d283a090aa19ce75814654e0d2703af39a8bf)
+
+commit 62093aee1234a23d686037c8688a634da57502fe
+Author: Adam Robinson <adarobin@umich.edu>
+Date:   Tue May 15 09:22:20 2018 +0100
+
+    macOS: Include <rpc/types.h> before <rpc/xdr.h>.
+    
+    The ordering of includes is required on this platform.
+    
+    (cherry picked from commit 431d8c8c1e52cb52568c7f25a169ae6e0ee2129e)
+
+commit 7a907e01cf275655ec5455a38e9617b001bcdb85
+Author: Yuri Chornoivan <yurchor@ukr.net>
+Date:   Sat May 12 20:26:19 2018 +0100
+
+    Fixes for typos in manual pages.
+    
+    (cherry picked from commit 22cae846ce305c9a772044ce181cb7efc3a93500)
+
+commit 31f8b052192c45e2eda5147fbeda0655ce8b5752
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 9 14:47:15 2018 +0200
+
+    v2v: update results of test-v2v-i-ova-snapshots for non-json
+    
+    When using non-JSON disk notation, the disk will be the snapshot #2.
+    
+    Fixes commit e5946165c8ea78e0e91c4cfdb5e793526cd638e1.
+    
+    (cherry picked from commit 1286779deda58d7f4b0072fedc98fadb56e8c227)
+
+commit 3ad892733ade394482bd55603051d2e32bcd39e1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon May 7 17:06:11 2018 +0200
+
+    daemon: tweak regexp for file type detection (RHBZ#1575640)
+    
+    Newer versions of file slightly changed the output, removing the comma
+    between the type, and the architecture string.
+    
+    Tweak the regular expression so:
+    - the comma is optional, but if missing then only the architecture
+      string will follow
+    - the architecture string has no commas
+    
+    (cherry picked from commit 3151d5e92741a297830bca717e0b93a5e130abd6)
+
+commit 80acac866227abfa5324a9bec219f4e92d33c948
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 4 17:04:42 2018 +0200
+
+    java: support OpenJDK 10+
+    
+    Starting OpenJDK 10, the 'javah' utility is no more provided [1], and
+    its functionality is provided by 'javac' itself.  Hence, do not error
+    out on missing 'javah', and store whether it was found; in case it is
+    not, then:
+    1) assume 'javac' has the -h parameter to generate the C header, and
+       make use of it
+    2) tell the buildsystem that com_redhat_et_libguestfs_GuestFS.h depends
+       on the JAR, since the the header is generated at the step (1)
+    
+    [1] https://bugs.java.com/view_bug.do?bug_id=JDK-8182758
+    
+    (cherry picked from commit 662dc5d0bf65e72dab11aa58d4bc373b5a3b7e75)
+
+commit a184abae9e8bf304eab625686f72e43458821332
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 4 15:52:52 2018 +0200
+
+    common/qemuopts: ensure arg lists are never empty
+    
+    Since it does not make much sense, then forbid this situation outright:
+    - change qemuopts_end_arg_list() to return an error if the current arg
+      list has no elements
+    - when creating the argv array, assert that each arg list is not empty
+    
+    (cherry picked from commit 784f18156ea12794c337ed6c80c9cc337c07c455)
+
+commit effc435c3673d4597be2cc6fe70f28af6d0a9ee5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 4 15:49:20 2018 +0200
+
+    appliance: initialize the appliance_files struct
+    
+    Some compilers do not manage to figure out that the members of it are
+    set only when search_appliance() in the end returns 1, which is already
+    checked.  Help them a bit by resetting the appliance_files struct on our
+    own, so they will not report that 'appliance.kernel', and the others are
+    used as uninitialized.
+    
+    (cherry picked from commit 2dd9fd8530422c87131cd3afc97f6b15d75f4ed8)
+
+commit 60865023c3f96bf8de23474111adc1a022e32a43
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu May 3 18:27:02 2018 +0200
+
+    daemon: fix memory allocation and leaks in OCaml stubs
+    
+    Use the cleanup handlers to free the structs (and list of structs) in
+    case their OCaml->C transformation fails for any reason; use calloc()
+    to not try to use uninitialized memory.
+    
+    In case of lists, avoid allocating the memory for the array if there
+    are no elements, since the returned pointer in that case is either NULL,
+    or a free()-only pointer; also, set the list size only after the array
+    is allocated, to not confuse the XDR routines.
+    
+    (cherry picked from commit c36f284b1595c3b25a25b2ae75102542e68b0772)
+
+commit 5a81041f9ffafb192e2749e8e19525c79a708855
+Author: Mykola Ivanets <stenavin@gmail.com>
+Date:   Wed May 2 13:19:24 2018 +0300
+
+    fuse: mount_local: Fix crash when called from Java binding.
+    
+    "localmountpoint" parameter is allocated in JNI before calling
+    mount_local and freed afterward.  But guestfs handle keeps reference
+    to passed "localmountpoint" parameter and will try to access it in
+    umount_local and free after mount_local_run caller thread ends
+    which leads to a crash (an attempt to access to already freed memory).
+    
+    RWMJ: Remove ‘const’ from definition of localmountpoint, and
+    wrap a comment at 80 columns.
+    
+    (cherry picked from commit 296370fb86e96eec095d86faf6de8f532395ea54)
+
 commit bbdb83339da30a86c8f394c6159722c766b5bbad
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue May 1 21:15:59 2018 +0100
