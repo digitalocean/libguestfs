@@ -3175,6 +3175,13 @@ case of concatenating C<"/" + "filename"> as well as C<"/dir" +
 
 Ця функція встановлює C<errno> і повертає C<NULL>, якщо станеться помилка.
 
+=head4 Function C<common/utils/utils.c:guestfs_int_hexdump>
+
+ void
+ guestfs_int_hexdump (const void *data, size_t len, FILE *fp)
+
+Hexdump a block of memory to C<FILE *>, used for debugging.
+
 =head2 Підкаталог F<common/visit>
 
 =head3 Файл F<common/visit/visit.c>

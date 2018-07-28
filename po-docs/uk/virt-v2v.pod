@@ -868,6 +868,25 @@ kernel available on the guest.  A recommended procedure is, before using
 virt-v2v, to check that the boot kernel is the best kernel available in the
 guest (for example by making sure the guest is up-to-date).
 
+=head2 "vsyscall attempted with vsyscall=none"
+
+When run on a recent Debian host virt-v2v may fail to convert guests which
+were created before 2013.  In the debugging output you will see a crash
+message similar to:
+
+ vsyscall attempted with vsyscall=none ip:...
+ segfault at ...
+
+This is caused because Debian removed support for running old binaries which
+used the legacy vsyscall page to call into the kernel.
+
+You can work around this problem by running this command before running
+virt-v2v:
+
+ export LIBGUESTFS_APPEND="vsyscall=emulate"
+
+For more information, see L<https://bugzilla.redhat.com/1592061>
+
 =head1 WINDOWS
 
 =head2 Windows E<ge> 8 Fast Startup is incompatible with virt-v2v
@@ -1318,7 +1337,7 @@ character in the form of its ascii hex-code (C<%5c>):
 
 =head2 OVA: IMPORTING A GUEST
 
-To import an OVA file called F<VM.ova>, do;
+To import an OVA file called F<VM.ova>, do:
 
  $ virt-v2v -i ova VM.ova -o local -os /var/tmp
 
@@ -1427,8 +1446,8 @@ disks.
 =head1 INPUT FROM VMWARE ESXi HYPERVISOR
 
 You should use the OVA or VMX methods above (see L</INPUT FROM VMWARE OVA>
-and/or L</INPUT FROM VMWARE VMX>) if possible, as it is much faster and
-requires much less disk space than the method described in this section.
+and/or L</INPUT FROM VMWARE VMX>) if possible, as they are much faster and
+require much less disk space than the method described in this section.
 
 You can use the L<virt-v2v-copy-to-local(1)> tool to copy the guest off the
 hypervisor into a local file, and then convert it.

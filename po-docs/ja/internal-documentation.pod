@@ -3160,6 +3160,13 @@ The caller must free the returned path.
 
 This function sets C<errno> and returns C<NULL> on error.
 
+=head4 Function C<common/utils/utils.c:guestfs_int_hexdump>
+
+ void
+ guestfs_int_hexdump (const void *data, size_t len, FILE *fp)
+
+Hexdump a block of memory to C<FILE *>, used for debugging.
+
 =head2 Subdirectory F<common/visit>
 
 =head3 File F<common/visit/visit.c>
