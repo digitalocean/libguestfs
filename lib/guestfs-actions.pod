@@ -12650,7 +12650,7 @@ This function returns 0 on success or -1 on error.
  guestfs_rmmountpoint (guestfs_h *g,
                        const char *exemptpath);
 
-This calls removes a mountpoint that was previously created
+This call removes a mountpoint that was previously created
 with C<guestfs_mkmountpoint>.  See C<guestfs_mkmountpoint>
 for full details.
 

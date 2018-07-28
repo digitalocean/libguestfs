@@ -59,6 +59,7 @@ const char *documenters[] = {
 /* Libguestfs developers (if not included above). */
 const char *others[] = {
   "Adam Huffman",
+  "Adam Robinson",
   "Andrea Bolognani",
   "Angus Salkeld",
   "Ani Peter",

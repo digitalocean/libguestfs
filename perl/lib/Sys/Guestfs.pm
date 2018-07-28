@@ -7229,7 +7229,7 @@ Remove the single directory C<path>.
 
 =item $g->rmmountpoint ($exemptpath);
 
-This calls removes a mountpoint that was previously created
+This call removes a mountpoint that was previously created
 with C<$g-E<gt>mkmountpoint>.  See C<$g-E<gt>mkmountpoint>
 for full details.
 

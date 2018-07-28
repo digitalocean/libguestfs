@@ -1116,7 +1116,7 @@ Used to cache the appliance features (see F<lib/available.c>).
  
  #if HAVE_FUSE
    /**** Used by the mount-local APIs. ****/
-   const char *localmountpoint;
+   char *localmountpoint;
    struct fuse *fuse;                    /* FUSE handle. */
    int ml_dir_cache_timeout;             /* Directory cache timeout. */
    Hash_table *lsc_ht, *xac_ht, *rlc_ht; /* Directory cache. */
@@ -2839,7 +2839,7 @@ the library, or just a single virt tool) then it should B<not> be here!
 
 Utility functions used by the library, tools and language bindings.
 
-These functions these I<must not> call internal library functions such as
+These functions I<must not> call internal library functions such as
 C<safe_*>, C<error> or C<perrorf>, or any C<guestfs_int_*>.
 
 =head4 Function C<common/utils/utils.c:guestfs_int_split_string>
@@ -3159,6 +3159,13 @@ case of concatenating C<"/" + "filename"> as well as C<"/dir" +
 The caller must free the returned path.
 
 This function sets C<errno> and returns C<NULL> on error.
+
+=head4 Function C<common/utils/utils.c:guestfs_int_hexdump>
+
+ void
+ guestfs_int_hexdump (const void *data, size_t len, FILE *fp)
+
+Hexdump a block of memory to C<FILE *>, used for debugging.
 
 =head2 Subdirectory F<common/visit>
 

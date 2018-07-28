@@ -20354,7 +20354,7 @@ test_mke2fs_2_perform (guestfs_h *g)
   const char *arg2439 = "/dev/sda1";
   struct guestfs_mke2fs_argv optargs2440;
   optargs2440.blocksize = 4096;
-  optargs2440.uuid = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  optargs2440.uuid = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   optargs2440.journaldev = 1;
   optargs2440.bitmask = UINT64_C(0x100100002);
   int ret2438;
@@ -20364,7 +20364,7 @@ test_mke2fs_2_perform (guestfs_h *g)
   const char *arg2442 = "/dev/sda2";
   struct guestfs_mke2fs_argv optargs2443;
   optargs2443.blocksize = 4096;
-  optargs2443.journaldevice = "UUID=1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  optargs2443.journaldevice = "UUID=e2367f2d-2e90-d185-074b-51cdb35c306e";
   optargs2443.label = "JOURNAL";
   optargs2443.fstype = "ext2";
   optargs2443.forcecreate = 1;
@@ -20645,7 +20645,7 @@ test_mke2journal_U_0_perform (guestfs_h *g)
   ret2538 = guestfs_part_add (g, arg2539, arg2540, 204800, -64);
   if (ret2538 == -1)
     return -1;
-  const char *arg2546 = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  const char *arg2546 = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   const char *arg2547 = "/dev/sda1";
   int ret2544;
   ret2544 = guestfs_mke2journal_U (g, 4096, arg2546, arg2547);
@@ -20653,7 +20653,7 @@ test_mke2journal_U_0_perform (guestfs_h *g)
     return -1;
   const char *arg2550 = "ext2";
   const char *arg2552 = "/dev/sda2";
-  const char *arg2553 = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  const char *arg2553 = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   int ret2549;
   ret2549 = guestfs_mke2fs_JU (g, arg2550, 4096, arg2552, arg2553);
   if (ret2549 == -1)
@@ -21809,7 +21809,7 @@ test_mkswap_2_perform (guestfs_h *g)
     return -1;
   const char *arg2747 = "/dev/sda1";
   struct guestfs_mkswap_opts_argv optargs2748;
-  optargs2748.uuid = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  optargs2748.uuid = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   optargs2748.bitmask = UINT64_C(0x2);
   int ret2746;
   ret2746 = guestfs_mkswap_opts_argv (g, arg2747, &optargs2748);
@@ -21820,9 +21820,9 @@ test_mkswap_2_perform (guestfs_h *g)
   ret = guestfs_vfs_uuid (g, arg2749);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "1cb1ac6f-02a8-69bd-dbda-655ff8d79390")) {
+  if (! STREQ (ret, "e2367f2d-2e90-d185-074b-51cdb35c306e")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_mkswap_2", "vfs_uuid", "1cb1ac6f-02a8-69bd-dbda-655ff8d79390", ret);
+             "test_mkswap_2", "vfs_uuid", "e2367f2d-2e90-d185-074b-51cdb35c306e", ret);
     return -1;
   }
   return 0;
@@ -21873,7 +21873,7 @@ test_mkswap_3_perform (guestfs_h *g)
   const char *arg2756 = "/dev/sda1";
   struct guestfs_mkswap_opts_argv optargs2757;
   optargs2757.label = "hello";
-  optargs2757.uuid = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  optargs2757.uuid = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   optargs2757.bitmask = UINT64_C(0x3);
   int ret2755;
   ret2755 = guestfs_mkswap_opts_argv (g, arg2756, &optargs2757);
@@ -21992,7 +21992,7 @@ test_mkswap_U_0_perform (guestfs_h *g)
   ret2769 = guestfs_part_disk (g, arg2770, arg2771);
   if (ret2769 == -1)
     return -1;
-  const char *arg2774 = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  const char *arg2774 = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   const char *arg2775 = "/dev/sda1";
   int ret2773;
   ret2773 = guestfs_mkswap_U (g, arg2774, arg2775);
@@ -27440,7 +27440,7 @@ test_set_e2uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for set_e2uuid (0) */
   const char *arg3593 = "/dev/sda1";
-  const char *arg3594 = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  const char *arg3594 = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   int ret3592;
   ret3592 = guestfs_set_e2uuid (g, arg3593, arg3594);
   if (ret3592 == -1)
@@ -27450,9 +27450,9 @@ test_set_e2uuid_0_perform (guestfs_h *g)
   ret = guestfs_get_e2uuid (g, arg3596);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "1cb1ac6f-02a8-69bd-dbda-655ff8d79390")) {
+  if (! STREQ (ret, "e2367f2d-2e90-d185-074b-51cdb35c306e")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_set_e2uuid_0", "get_e2uuid", "1cb1ac6f-02a8-69bd-dbda-655ff8d79390", ret);
+             "test_set_e2uuid_0", "get_e2uuid", "e2367f2d-2e90-d185-074b-51cdb35c306e", ret);
     return -1;
   }
   return 0;
@@ -27869,7 +27869,7 @@ test_set_uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for set_uuid (0) */
   const char *arg3641 = "/dev/sda1";
-  const char *arg3642 = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  const char *arg3642 = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   int ret3640;
   ret3640 = guestfs_set_uuid (g, arg3641, arg3642);
   if (ret3640 == -1)
@@ -27879,9 +27879,9 @@ test_set_uuid_0_perform (guestfs_h *g)
   ret = guestfs_vfs_uuid (g, arg3644);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "1cb1ac6f-02a8-69bd-dbda-655ff8d79390")) {
+  if (! STREQ (ret, "e2367f2d-2e90-d185-074b-51cdb35c306e")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_set_uuid_0", "vfs_uuid", "1cb1ac6f-02a8-69bd-dbda-655ff8d79390", ret);
+             "test_set_uuid_0", "vfs_uuid", "e2367f2d-2e90-d185-074b-51cdb35c306e", ret);
     return -1;
   }
   return 0;
@@ -28622,18 +28622,18 @@ test_swapon_uuid_0_perform (guestfs_h *g)
   /* TestRun for swapon_uuid (0) */
   const char *arg3720 = "/dev/sdc";
   struct guestfs_mkswap_opts_argv optargs3721;
-  optargs3721.uuid = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  optargs3721.uuid = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   optargs3721.bitmask = UINT64_C(0x2);
   int ret3719;
   ret3719 = guestfs_mkswap_opts_argv (g, arg3720, &optargs3721);
   if (ret3719 == -1)
     return -1;
-  const char *arg3723 = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  const char *arg3723 = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   int ret3722;
   ret3722 = guestfs_swapon_uuid (g, arg3723);
   if (ret3722 == -1)
     return -1;
-  const char *arg3726 = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  const char *arg3726 = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   int ret3725;
   ret3725 = guestfs_swapoff_uuid (g, arg3726);
   if (ret3725 == -1)
@@ -31172,7 +31172,7 @@ test_vfs_uuid_0_perform (guestfs_h *g)
 {
   /* TestResultString for vfs_uuid (0) */
   const char *arg4052 = "/dev/sda1";
-  const char *arg4053 = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  const char *arg4053 = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   int ret4051;
   ret4051 = guestfs_set_e2uuid (g, arg4052, arg4053);
   if (ret4051 == -1)
@@ -31182,9 +31182,9 @@ test_vfs_uuid_0_perform (guestfs_h *g)
   ret = guestfs_vfs_uuid (g, arg4055);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "1cb1ac6f-02a8-69bd-dbda-655ff8d79390")) {
+  if (! STREQ (ret, "e2367f2d-2e90-d185-074b-51cdb35c306e")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_vfs_uuid_0", "vfs_uuid", "1cb1ac6f-02a8-69bd-dbda-655ff8d79390", ret);
+             "test_vfs_uuid_0", "vfs_uuid", "e2367f2d-2e90-d185-074b-51cdb35c306e", ret);
     return -1;
   }
   return 0;
@@ -32914,7 +32914,7 @@ test_xfs_admin_1_perform (guestfs_h *g)
     return -1;
   const char *arg4343 = "/dev/sda1";
   struct guestfs_xfs_admin_argv optargs4344;
-  optargs4344.uuid = "1cb1ac6f-02a8-69bd-dbda-655ff8d79390";
+  optargs4344.uuid = "e2367f2d-2e90-d185-074b-51cdb35c306e";
   optargs4344.bitmask = UINT64_C(0x40);
   int ret4342;
   ret4342 = guestfs_xfs_admin_argv (g, arg4343, &optargs4344);
@@ -32925,9 +32925,9 @@ test_xfs_admin_1_perform (guestfs_h *g)
   ret = guestfs_vfs_uuid (g, arg4345);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "1cb1ac6f-02a8-69bd-dbda-655ff8d79390")) {
+  if (! STREQ (ret, "e2367f2d-2e90-d185-074b-51cdb35c306e")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_xfs_admin_1", "vfs_uuid", "1cb1ac6f-02a8-69bd-dbda-655ff8d79390", ret);
+             "test_xfs_admin_1", "vfs_uuid", "e2367f2d-2e90-d185-074b-51cdb35c306e", ret);
     return -1;
   }
   return 0;

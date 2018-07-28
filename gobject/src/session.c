@@ -23774,7 +23774,7 @@ guestfs_session_rmdir (GuestfsSession *session, const gchar *path, GError **err)
  *
  * remove a mountpoint
  *
- * This calls removes a mountpoint that was previously created with
+ * This call removes a mountpoint that was previously created with
  * guestfs_session_mkmountpoint(). See guestfs_session_mkmountpoint() for
  * full details.
  * 

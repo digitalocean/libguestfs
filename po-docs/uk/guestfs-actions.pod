@@ -12393,7 +12393,7 @@ Remove the single directory C<path>.
  guestfs_rmmountpoint (guestfs_h *g,
                        const char *exemptpath);
 
-This calls removes a mountpoint that was previously created with
+This call removes a mountpoint that was previously created with
 C<guestfs_mkmountpoint>.  See C<guestfs_mkmountpoint> for full details.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.

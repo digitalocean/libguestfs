@@ -1345,7 +1345,7 @@ struct command_entry rmmountpoint_cmd_entry = {
           "     rmmountpoint exemptpath\n"
           "\n"
           "DESCRIPTION\n"
-          "    This calls removes a mountpoint that was previously created with\n"
+          "    This call removes a mountpoint that was previously created with\n"
           "    \"mkmountpoint\". See \"mkmountpoint\" for full details.\n"
           "\n"
           "",

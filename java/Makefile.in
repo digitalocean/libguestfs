@@ -167,7 +167,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@ENABLE_APPLIANCE_TRUE@@HAVE_JAVA_TRUE@am__append_1 = run-java-tests
+@HAVE_JAVAH_FALSE@@HAVE_JAVA_TRUE@am__append_1 = -h .
+@ENABLE_APPLIANCE_TRUE@@HAVE_JAVA_TRUE@am__append_2 = run-java-tests
 subdir = java
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -2008,7 +2009,8 @@ EXTRA_DIST = \
 	run-java-tests \
 	Makefile.inc
 
-@HAVE_JAVA_TRUE@JAVAC_FLAGS = $(EXTRA_JAVAC_FLAGS) -encoding utf-8
+@HAVE_JAVA_TRUE@JAVAC_FLAGS = $(EXTRA_JAVAC_FLAGS) -encoding utf-8 \
+@HAVE_JAVA_TRUE@	$(am__append_1)
 @HAVE_JAVA_TRUE@JAVADOC_FLAGS = -encoding utf-8
 
 # Java source.
@@ -2052,7 +2054,7 @@ EXTRA_DIST = \
 @HAVE_JAVA_TRUE@noinst_SCRIPTS = doc-stamp
 
 # Tests (not comprehensive).
-@HAVE_JAVA_TRUE@TESTS = run-bindtests $(am__append_1)
+@HAVE_JAVA_TRUE@TESTS = run-bindtests $(am__append_2)
 @HAVE_JAVA_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @HAVE_JAVA_TRUE@check_DATA = Bindtests.class $(java_tests:.java=.class)
 all: $(BUILT_SOURCES)
@@ -2706,9 +2708,11 @@ clean-local:
 @HAVE_JAVA_TRUE@libguestfs-${VERSION}.jar: $(libguestfs_jar_class_files)
 @HAVE_JAVA_TRUE@	$(guestfs_am_v_jar)$(JAR) cf $@ $^
 
-@HAVE_JAVA_TRUE@com_redhat_et_libguestfs_GuestFS.h: $(java_prefix)/GuestFS.class
-@HAVE_JAVA_TRUE@	rm -f $@
-@HAVE_JAVA_TRUE@	$(JAVAH) -classpath $(srcdir):. com.redhat.et.libguestfs.GuestFS
+@HAVE_JAVAH_TRUE@@HAVE_JAVA_TRUE@com_redhat_et_libguestfs_GuestFS.h: $(java_prefix)/GuestFS.class
+@HAVE_JAVAH_TRUE@@HAVE_JAVA_TRUE@	rm -f $@
+@HAVE_JAVAH_TRUE@@HAVE_JAVA_TRUE@	$(JAVAH) -classpath $(srcdir):. com.redhat.et.libguestfs.GuestFS
+
+@HAVE_JAVAH_FALSE@@HAVE_JAVA_TRUE@com_redhat_et_libguestfs_GuestFS.h: libguestfs-${VERSION}.jar
 
 @HAVE_JAVA_TRUE@doc-stamp: $(java_sources)
 @HAVE_JAVA_TRUE@	$(JAVADOC) $(JAVADOC_FLAGS) -d api \

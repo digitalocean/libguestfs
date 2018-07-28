@@ -19,7 +19,7 @@
 /**
  * Utility functions used by the library, tools and language bindings.
  *
- * These functions these I<must not> call internal library functions
+ * These functions I<must not> call internal library functions
  * such as C<safe_*>, C<error> or C<perrorf>, or any C<guestfs_int_*>.
  */
 
@@ -732,4 +732,30 @@ guestfs_int_full_path (const char *dir, const char *name)
     return NULL;
 
   return path;
+}
+
+/**
+ * Hexdump a block of memory to C<FILE *>, used for debugging.
+ */
+void
+guestfs_int_hexdump (const void *data, size_t len, FILE *fp)
+{
+  size_t i, j;
+
+  for (i = 0; i < len; i += 16) {
+    fprintf (fp, "%04zx: ", i);
+    for (j = i; j < MIN (i+16, len); ++j)
+      fprintf (fp, "%02x ", ((const unsigned char *)data)[j]);
+    for (; j < i+16; ++j)
+      fprintf (fp, "   ");
+    fprintf (fp, "|");
+    for (j = i; j < MIN (i+16, len); ++j)
+      if (c_isprint (((const char *)data)[j]))
+	fprintf (fp, "%c", ((const char *)data)[j]);
+      else
+	fprintf (fp, ".");
+    for (; j < i+16; ++j)
+      fprintf (fp, " ");
+    fprintf (fp, "|\n");
+  }
 }

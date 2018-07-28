@@ -12149,7 +12149,7 @@ its a directory.  This is like the C<rm -rf> shell command.
  guestfs_rmmountpoint (guestfs_h *g,
                        const char *exemptpath);
 
-This calls removes a mountpoint that was previously created with
+This call removes a mountpoint that was previously created with
 C<guestfs_mkmountpoint>.  See C<guestfs_mkmountpoint> for full details.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。

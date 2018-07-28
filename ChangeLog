@@ -1,3 +1,489 @@
+commit 474853a12ef3f315ff1c5d0b153b469dfce226b0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 29 19:25:50 2018 +0100
+
+    Version 1.38.3.
+
+commit 84ddf1565b776fa0a46476c8427c386eb273c3e2
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Jun 27 19:24:58 2018 +0200
+
+    v2v: -o local: print libvirt XML
+    
+    In verbose mode, print the generated libvirt XML to stderr for
+    debugging, just like -o libvirt does.
+    
+    (cherry picked from commit b61c98b9e157295ba59c5162f8a9ca15e7b49ed8)
+
+commit d4dc32b2952b44cf93a302fd0ef62af853be88bd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 25 08:43:55 2018 +0100
+
+    docs: building: autotools and gettext must be installed separately.
+    
+    Thanks: Nir Soffer
+    (cherry picked from commit 264f7ae9ddcd92270ab230b1448d67583eed3682)
+
+commit d626bc1294933d195244ae7fc0f6da4adb657a9d
+Author: Yuri Chornoivan <yurchor@ukr.net>
+Date:   Sun Jun 24 10:57:53 2018 +0300
+
+    Fix minor typos
+    
+    (cherry picked from commit adbf1bc320ba013fde7db2f43a1917fdd7bf9af2)
+
+commit 7ae5283960f04b00f22871f3b518728cd2a82817
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 12 10:22:02 2018 +0100
+
+    p2v: Allow virt-v2v input and output drivers containing '-' (RHBZ#1590220).
+    
+    The new ‘-o rhv-upload’ output mode contains a '-' character in the
+    name, but the regular expression which matched the output of the
+    virt-v2v command did not recognize '-' as a valid character.  It ended
+    up mapping this to just "rhv" meaning two "rhv" entries would appear
+    in the list of output drivers.
+    
+    Thanks: Ming Xie.
+    (cherry picked from commit 3886a113f231f7b38a89333491888c4d9a0c19da)
+
+commit 02f7b33925965af8bd23047d619cb74f92e2df6a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 18 10:31:18 2018 +0100
+
+    v2v: <File ovf:size> changed to the actual size (if known).
+    
+    Note that this attribute is optional.
+    
+    Thanks: Arik Hadas
+    (cherry picked from commit 75e8b1386766b18aecefdc8a75fbbf85ddb52037)
+
+commit 92ac580faba9285d6a37e0da3ac5d360f52785ef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 18 10:31:18 2018 +0100
+
+    v2v: Add <Disk ovf:capacity> attribute containing disk virtual size (RHBZ#1592468).
+    
+    Virt-v2v transfers to newer versions of ovirt-engine can fail with:
+    
+      ovirtsdk4.Error: Fault reason is "Operation Failed". Fault detail is "failed to parse a given ovf configuration ovf error: [empty name]: cannot read '//*/disksection' with value: null". HTTP response code is 400.
+    
+    This was caused by a change made to oVirt:
+    
+      https://gerrit.ovirt.org/#/c/91902/
+    
+    so that it now requires the <Disk ovf:capacity> attribute.
+    
+    Thanks: Arik Hadas
+    (cherry picked from commit 7c2afc88fd6aceb869a5e1c47a8183879ddec5fc)
+
+commit 23b7fe9801c6962e494041d0abc8b7fafb1bcd4b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Sun Jun 17 14:02:00 2018 +0100
+
+    v2v: docs: Removed vsyscall support in Debian kernels requiring workaround (RHBZ#1592061).
+    
+    Thanks: Haigang Li
+    (cherry picked from commit 8c3375d47c524b391617ab64f7f533ec66f532ec)
+
+commit f337354b821a7f3fe5cbd27cf8bf120acf34feed
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jun 15 16:17:35 2018 +0100
+
+    v2v: -o libvirt: Don't write only <vendor> without <model> (RHBZ#1591789).
+    
+    Avoids the libvirt error:
+    
+      error: XML error: CPU vendor specified without CPU model
+    
+    (cherry picked from commit e2910eeaf84afe63887afdc62b319bff1549d296)
+
+commit e431e06b17960d3f1a7825853f351fd5c57d2686
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 14 11:19:49 2018 +0100
+
+    lib: libvirt: Convert all socket parameters to an absolute path (RHBZ#1588451).
+    
+    (cherry picked from commit 70bc83f893e6e0daf20ca7c9b7bfe875ceaed594)
+
+commit 55cb07c34ef3e3e18730adfe34dfb877b880710c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jun 15 12:41:31 2018 +0200
+
+    fuse: fix build when not available
+    
+    The 'localmountpoint' variable in the handle is available only when
+    building with FUSE support, so guard it in a proper #ifdef block.
+    
+    Fixes commit 296370fb86e96eec095d86faf6de8f532395ea54.
+    
+    Thanks to: Corentin Labbe (both reporting, and testing)
+    
+    (cherry picked from commit 4f927e58a91aa52d1115c4ec5e65b1301c65d5be)
+
+commit ef6dafc28e6967e7a1f64ec1c6d1cf583048ea9e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 14 11:09:54 2018 +0100
+
+    gitignore: Don't ignore patch files.
+    
+    (cherry picked from commit afd1c70601c51043684a0245ce2f63d71a9cc07a)
+
+commit 56bf4241e28a43ee28ff1574aa2a55a23f883442
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 12 17:30:25 2018 +0100
+
+    v2v: tests: Stable-sort CPU features in --print-source option.
+    
+    The test failed with:
+    
+      -   CPU features: pae,apic,acpi
+      +   CPU features: acpi,apic,pae
+    
+    Fixes commit 67145499ec2e992d129c943b17b6484a01170022.
+    
+    (cherry picked from commit a804a6f205cac05ba6a99148ff8189eaacfceb3c)
+
+commit c211c08de56ead853da390e73f2663cde6df9fa0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jun 7 10:06:14 2018 +0100
+
+    v2v: parse_libvirt_xml: Simplify code by using xpath_get_nodes utility fn.
+    
+    No functional change.
+    
+    (cherry picked from commit 67145499ec2e992d129c943b17b6484a01170022)
+
+commit 1868311414d8718443cd5d308192520eaaab7297
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jun 5 10:19:40 2018 +0100
+
+    v2v: copy-to-local: Use Getopt ‘M’ for -ic parameter.
+    
+    (cherry picked from commit 0b3c95cc7aee49ee841d54f54e14254423b2fae0)
+
+commit c6be218637f950782427f0c423c65259638c39d6
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jun 6 11:02:06 2018 +0100
+
+    docs: security: Document CVE-2018-11806.
+    
+    Qemu: slirp: heap buffer overflow while reassembling fragmented
+    datagrams.
+    
+    (cherry picked from commit a4d5548a4560ba4c548e64bf4a161f1003760e34)
+
+commit aba3877788a3673ebc80f1f0f472a74410173dd4
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 4 05:41:58 2018 -0400
+
+    fish: rc: Minor whitespace fixes.
+    
+    (cherry picked from commit 553e201119542966caecefbb9f7cdad965c29239)
+
+commit 2f207f1393d9bc5fbf09b746959abddfc6ad1f99
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jun 4 05:24:13 2018 -0400
+
+    utils: Factor out hexdump code used by --enable-packet-dump.
+    
+    Factor out the common code used to hexdump the protocol when
+    ./configure --enable-packet-dump is used.
+    
+    It's not quite a straight refactor because I had to fix some
+    signedness bugs in the code which were not revealed before because
+    this code is usually disabled.
+    
+    (cherry picked from commit 2add3c699552ef837d072c1b507a11fc61efb3ab)
+
+commit c829f970542e806db5c1a0bb8ab9babb32a7b76a
+Author: Mykola Ivanets <stenavin@gmail.com>
+Date:   Fri Jun 1 07:59:51 2018 +0300
+
+    daemon: inspect: better handling windows drive mapping.
+    
+    I saw several Windows disk images which contains strange registry entry
+    for mapped drives:
+    
+    "\\DosDevices\\Y:"=hex(3):00,00,00,00,00,00,00,00,00,00,00,00
+    
+    Which is decoded something like diskID = 0x0, partition starts at 0
+    bytes offset from the start of the disk.  In addition to a Windows disk
+    image, I have attached dummy disk and made xfs file system on a whole
+    device without partitioning it.  I mount xfs file system to a "/" and
+    then mkdir and mount other found file systems inside (/fs1, /fs2 etc.).
+    
+    When we decode drive mappings we are looking for a disk with ID 0x0 (it
+    is 4 bytes somewhere LBA0).  It is appeared that dummy non-partitioned
+    disk with xfs file system has zeros by offset where diskID is expected
+    to be).  So the disk is considered as a candidate to search for
+    partition at offset 0. part-list command (and "parted" which is used
+    under the hood) reports there is 1 partition on "dummy" disk which
+    starts exactly at offset 0.  And thus dummy device name and partition
+    number are simply concatenated together and corresponding drive mapping
+    is returned: Y => /dev/sdX1.  But /dev/sdX1 is not existing block
+    device.
+    
+    No matter either it is a bug in "parted" (or it works this way
+    by-design), let's protect ourself from this situation: in addition we
+    look for msdos partition table on a disk before making any further
+    assumptions.
+    
+    (cherry picked from commit 7b4d13626ff878b124d01ec452a4fd0052934133)
+
+commit c8601acae11a339f2313a6c8abcb70d94df6e420
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu May 24 10:24:25 2018 +0100
+
+    daemon: Move lvmetad to early in the appliance boot process.
+    
+    When the daemon starts up it creates a fresh (empty) LVM configuration
+    and starts up lvmetad (which depends on the LVM configuration).
+    
+    However this appears to cause problems: Some types of PV seem to
+    require lvmetad and don't work without it
+    (https://bugzilla.redhat.com/show_bug.cgi?id=1581810).  If we don't
+    start lvmetad earlier, the device nodes are not created.
+    
+    Therefore move the whole initialization step into appliance/init.
+    
+    Two further changes had to be made:
+    
+    Now we are using lvmetad all the time, using vgchange is incorrect.
+    With lvmetad activated early we must use ‘pvscan --cache --activate ay’
+    to scan all disks for PVs and activate any VGs on them (although the
+    documentation is complex, confusing and contradictory so I'm not
+    completely sure about this).
+    
+    The ‘lvm_system_dir’ local variable in ‘daemon/lvm-filter.c’
+    previously contained the path of the directory above $LVM_SYSTEM_DIR
+    (eg. $LVM_SYSTEM_DIR = "/etc/lvm", lvm_system_dir = "/etc").  As this
+    was highly confusing, I have changed it so the local variable and the
+    environment variable have identical contents.  This involved removing
+    the ‘lvm/’ component from a couple of paths since it is now included
+    in the local variable.
+    
+    (cherry picked from commit dd162d2cd56a2ecf4bcd40a7f463940eaac875b8)
+
+commit 2134e0eb822a4b5596b8f14792c906bc22d9ba90
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue May 22 10:46:21 2018 +0200
+
+    v2v: linux: fix kernel detection when split in different packages
+    
+    The current detection code for Linux kernels assumes that a kernel
+    package contains everything in it, i.e. the kernel itself, its modules,
+    and its configuration.  However, since recent Ubuntu versions (e.g.
+    starting from 18.04) modules & config (with few more files) are split in
+    an own package, thus not detecting the modpath from installed vmlinuz
+    files.
+    
+    To overcome this situation, rework this detection a bit:
+    1) find the vmlinuz file as before, but then immediately make sure it
+       exists by stat'ing it
+    2) find the modules path from the package as before:
+    2a) if found, extract the version in the same step
+    2b) if not found, get the kernel version from the vmlinuz filename,
+        and use it to detect the modules path
+    3) check that the modules path exists
+    
+    The detection done in (2b) is based on the current packaging scheme
+    found in the most important Linux distributions (Fedora, RHEL, CentOS,
+    Debian, Ubuntu, openSUSE, AltLinux, and possibly more).  The notable
+    exception is Arch Linux.
+    
+    As additional change, do not assume the config file is in the same
+    package as vmlinuz, but directly look into the filesystem using the
+    version we already have.
+    
+    (cherry picked from commit 500acb15f8f777e9fe99a60c4216daf84a92aae3)
+
+commit 670527f3a51b93eab192c2edd8e5fd572eb0a77d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 22 08:09:28 2018 +0100
+
+    v2v: Use Std_utils.qemu_input_filename instead of prefixing "file:" to filename (RHBZ#1580292).
+    
+    This also allows us to use virt-v2v with the old version of qemu in
+    RHEL 7.
+    
+    Fixes commit e29296cfa20dd691995832940a30fe2e6b98149a.
+    
+    Thanks: Pino Toscano for suggesting the fix.
+    (cherry picked from commit 0c934144eb8ea0ee1e1f68d4975415c001a62556)
+
+commit 64d4172608aad274c01281b6b51345896318198b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon May 21 08:26:50 2018 +0100
+
+    builder: templates: Remove bogus proxy from Ubuntu apt configuration (RHBZ#1579047).
+    
+    Thanks: Lars Seipel.
+    
+    See also commit 4b2e9c9264dcebd3c5945050b7f1d1b4cb4d3dae which did the
+    same for Debian back in 2013.
+    
+    (cherry picked from commit 3632c77bfdb49a6115a562ad2d0c6377eed5badb)
+
+commit 8287f4f1198671600aab6a373fcbc0035ae1f70f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 15 13:53:21 2018 +0100
+
+    Version 1.38.2.
+
+commit f948a79af95c4305e07d7cbfe592f15f886d2a7c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 15 14:03:19 2018 +0100
+
+    authors: Add Nikolay Ivanets (alternate form).
+    
+    (cherry picked from commit 140a25b51143acbcefc6251e65e81066301d15a0)
+
+commit 8f5561493e1e793c48434823eb6349910cc54ece
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 15 14:03:08 2018 +0100
+
+    authors: Add Adam Robinson.
+    
+    (cherry picked from commit 5982f7aec8f722cd396f6dcebf5e458e5be509b7)
+
+commit 4b4472ec3cb0dbf10e87b5aedee5d5dd3bffa31b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue May 15 09:24:21 2018 +0100
+
+    macOS: unix-utils: Include <sys/mount.h>.
+    
+    If <sys/mount.h> is available on the platform, always include
+    it in this file.
+    
+    (cherry picked from commit eb4d283a090aa19ce75814654e0d2703af39a8bf)
+
+commit 62093aee1234a23d686037c8688a634da57502fe
+Author: Adam Robinson <adarobin@umich.edu>
+Date:   Tue May 15 09:22:20 2018 +0100
+
+    macOS: Include <rpc/types.h> before <rpc/xdr.h>.
+    
+    The ordering of includes is required on this platform.
+    
+    (cherry picked from commit 431d8c8c1e52cb52568c7f25a169ae6e0ee2129e)
+
+commit 7a907e01cf275655ec5455a38e9617b001bcdb85
+Author: Yuri Chornoivan <yurchor@ukr.net>
+Date:   Sat May 12 20:26:19 2018 +0100
+
+    Fixes for typos in manual pages.
+    
+    (cherry picked from commit 22cae846ce305c9a772044ce181cb7efc3a93500)
+
+commit 31f8b052192c45e2eda5147fbeda0655ce8b5752
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed May 9 14:47:15 2018 +0200
+
+    v2v: update results of test-v2v-i-ova-snapshots for non-json
+    
+    When using non-JSON disk notation, the disk will be the snapshot #2.
+    
+    Fixes commit e5946165c8ea78e0e91c4cfdb5e793526cd638e1.
+    
+    (cherry picked from commit 1286779deda58d7f4b0072fedc98fadb56e8c227)
+
+commit 3ad892733ade394482bd55603051d2e32bcd39e1
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon May 7 17:06:11 2018 +0200
+
+    daemon: tweak regexp for file type detection (RHBZ#1575640)
+    
+    Newer versions of file slightly changed the output, removing the comma
+    between the type, and the architecture string.
+    
+    Tweak the regular expression so:
+    - the comma is optional, but if missing then only the architecture
+      string will follow
+    - the architecture string has no commas
+    
+    (cherry picked from commit 3151d5e92741a297830bca717e0b93a5e130abd6)
+
+commit 80acac866227abfa5324a9bec219f4e92d33c948
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 4 17:04:42 2018 +0200
+
+    java: support OpenJDK 10+
+    
+    Starting OpenJDK 10, the 'javah' utility is no more provided [1], and
+    its functionality is provided by 'javac' itself.  Hence, do not error
+    out on missing 'javah', and store whether it was found; in case it is
+    not, then:
+    1) assume 'javac' has the -h parameter to generate the C header, and
+       make use of it
+    2) tell the buildsystem that com_redhat_et_libguestfs_GuestFS.h depends
+       on the JAR, since the the header is generated at the step (1)
+    
+    [1] https://bugs.java.com/view_bug.do?bug_id=JDK-8182758
+    
+    (cherry picked from commit 662dc5d0bf65e72dab11aa58d4bc373b5a3b7e75)
+
+commit a184abae9e8bf304eab625686f72e43458821332
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 4 15:52:52 2018 +0200
+
+    common/qemuopts: ensure arg lists are never empty
+    
+    Since it does not make much sense, then forbid this situation outright:
+    - change qemuopts_end_arg_list() to return an error if the current arg
+      list has no elements
+    - when creating the argv array, assert that each arg list is not empty
+    
+    (cherry picked from commit 784f18156ea12794c337ed6c80c9cc337c07c455)
+
+commit effc435c3673d4597be2cc6fe70f28af6d0a9ee5
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri May 4 15:49:20 2018 +0200
+
+    appliance: initialize the appliance_files struct
+    
+    Some compilers do not manage to figure out that the members of it are
+    set only when search_appliance() in the end returns 1, which is already
+    checked.  Help them a bit by resetting the appliance_files struct on our
+    own, so they will not report that 'appliance.kernel', and the others are
+    used as uninitialized.
+    
+    (cherry picked from commit 2dd9fd8530422c87131cd3afc97f6b15d75f4ed8)
+
+commit 60865023c3f96bf8de23474111adc1a022e32a43
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu May 3 18:27:02 2018 +0200
+
+    daemon: fix memory allocation and leaks in OCaml stubs
+    
+    Use the cleanup handlers to free the structs (and list of structs) in
+    case their OCaml->C transformation fails for any reason; use calloc()
+    to not try to use uninitialized memory.
+    
+    In case of lists, avoid allocating the memory for the array if there
+    are no elements, since the returned pointer in that case is either NULL,
+    or a free()-only pointer; also, set the list size only after the array
+    is allocated, to not confuse the XDR routines.
+    
+    (cherry picked from commit c36f284b1595c3b25a25b2ae75102542e68b0772)
+
+commit 5a81041f9ffafb192e2749e8e19525c79a708855
+Author: Mykola Ivanets <stenavin@gmail.com>
+Date:   Wed May 2 13:19:24 2018 +0300
+
+    fuse: mount_local: Fix crash when called from Java binding.
+    
+    "localmountpoint" parameter is allocated in JNI before calling
+    mount_local and freed afterward.  But guestfs handle keeps reference
+    to passed "localmountpoint" parameter and will try to access it in
+    umount_local and free after mount_local_run caller thread ends
+    which leads to a crash (an attempt to access to already freed memory).
+    
+    RWMJ: Remove ‘const’ from definition of localmountpoint, and
+    wrap a comment at 80 columns.
+    
+    (cherry picked from commit 296370fb86e96eec095d86faf6de8f532395ea54)
+
 commit bbdb83339da30a86c8f394c6159722c766b5bbad
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Tue May 1 21:15:59 2018 +0100

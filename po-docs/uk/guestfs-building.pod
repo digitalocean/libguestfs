@@ -38,16 +38,19 @@ libguestfs з початкових кодів.
 L<dnf(8)>:
 
  dnf builddep libguestfs
+ dnf install autoconf automake libtool gettext-devel
 
 У системах, де все ще використовується L<yum(8)>, можна скористатися ним:
 
  yum-builddep libguestfs
+ yum install autoconf automake libtool gettext-devel
 
 =head2 Настанови для користувачів Debian або Ubuntu
 
 Скористайтеся APT для встановлення усіх потрібних пакунків:
 
  apt-get build-dep libguestfs
+ apt-get install autoconf automake libtool-bin gettext
 
 Якщо ця команда не працює, зверніть увагу на пакунок із початковим кодом
 Debian L<http://packages.debian.org/source/libguestfs>, на список
