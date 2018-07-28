@@ -10,4 +10,3 @@
 0010-Add-fdisk-to-appliance-list.patch
 0013-Add-libtinfo-to-guestfsd-fixes-FTBFS-on-architecture.patch
 0014-Disable-v2v-test-harness.patch
-0013-java-support-OpenJDK-10.patch
