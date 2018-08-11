@@ -66,6 +66,11 @@ let uefi_x86_64_firmware = [
     vars = "/usr/share/edk2/ovmf/OVMF_VARS.fd";
     flags = [];
   };
+  { code = "/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd";
+    code_debug = None;
+    vars = "/usr/share/edk2/ovmf/OVMF_VARS.fd";
+    flags = [UEFI_FLAG_SECURE_BOOT_REQUIRED];
+  };
   { code = "/usr/share/qemu/ovmf-x86_64-code.bin";
     code_debug = None;
     vars = "/usr/share/qemu/ovmf-x86_64-vars.bin";

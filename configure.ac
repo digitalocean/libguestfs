@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [38])
-m4_define([libguestfs_release], [3])
+m4_define([libguestfs_release], [4])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 
@@ -192,6 +192,8 @@ AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
 AC_CONFIG_FILES([inspector/test-virt-inspector.sh],
                 [chmod +x,-w inspector/test-virt-inspector.sh])
+AC_CONFIG_FILES([inspector/test-virt-inspector-luks.sh],
+                [chmod +x,-w inspector/test-virt-inspector-luks.sh])
 AC_CONFIG_FILES([installcheck.sh],
                 [chmod +x,-w installcheck.sh])
 AC_CONFIG_FILES([ocaml-dep.sh],

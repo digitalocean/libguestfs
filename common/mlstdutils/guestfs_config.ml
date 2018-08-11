@@ -18,8 +18,8 @@
  *)
 
 let package_name = "libguestfs"
-let package_version = "1.38.3"
-let package_version_full = "1.38.3"
+let package_version = "1.38.4"
+let package_version_full = "1.38.4"
 let prefix = "/usr"
 let datadir = prefix ^ "/share"
 let host_cpu = "x86_64"
