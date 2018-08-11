@@ -1,3 +1,124 @@
+commit daabd0138b6467d4d02e100a046c07cff6d42cd0
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Aug 9 15:23:38 2018 +0100
+
+    Version 1.38.4.
+
+commit 8d5f54b45cf68037b58a65b08c2229d2196a8d27
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 6 15:36:46 2018 +0200
+
+    btrfs_balance_status: delay allocation of 'ret'
+    
+    Allocate 'ret' as late as possible, so there is no risk that early
+    returns will leak it.
+    
+    (cherry picked from commit 31ee088812f3dbe280006549358896145b0d5c46)
+
+commit 961c37995eb1d3015cc2654ba6345bab7fb4be3f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jul 27 12:10:38 2018 +0200
+
+    daemon: inspect: ignore fstab devs that cannot be resolved (RHBZ#1608131)
+    
+    If the /etc/fstab of a guest contains devices specified with UUID or
+    LABEL, then the new OCaml inspection code will report the findfs failure
+    as general failure of the inspection.  OTOH, the old C inspection code
+    simply ignored all the devices that cannot be resolved.
+    
+    Hence, restore the old behaviour by ignoring unresolvable devices.
+    
+    (cherry picked from commit 67c36779c3bd383f8c550d9c43b0884d1a108c4d)
+
+commit 72a97dc0bc30fe59d46f1be12b984799919adc2f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 18 13:37:30 2018 +0100
+
+    inspector: Add a regression test for LUKS images (RHBZ#1602353).
+    
+    (cherry picked from commit ec2228ea05c0f482bc00df63586e8be36b591bfb)
+
+commit 0845072201d5aa0d71efd686465df9ef1e3d95cb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 18 13:11:43 2018 +0100
+
+    test-data/phony-guests: Add Fedora LUKS phony image for testing.
+    
+    This is not added to guests-all-good since it cannot be used in
+    automated tests -- a password must be supplied.
+    
+    (cherry picked from commit 16e64b8988a7768aa78ff200ca46878b151dbd1f)
+
+commit 9be59a48174f9c3d97345c14c9c83d41d58e818d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 25 12:39:02 2018 +0100
+
+    Revert "lvm: do not pass --cache to vgscan"
+    
+    This reverts commit 19b0ae6c6502c4833c73e1b1bfa47b43a40f21e9.
+    
+    (cherry picked from commit 83fb657bec7f4de8392cd28d29185afdd46ae9bb)
+
+commit 435ebc5211f86cfb51ab6a48a20ccb9b58de676c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 18 12:36:36 2018 +0100
+
+    test-data/phony-guests: Add comment to Makefile above Fedora btrfs image.
+    
+    Fixes commit 754e8194382a9ed265c7fa172e438049e4eb8389.
+    
+    (cherry picked from commit 3a87c4bb441430c9cef9223e67d10bf51a4e865c)
+
+commit 76f6f73bdad8ad962ea926197812d3c57abf99db
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jul 17 15:21:41 2018 +0200
+
+    uefi: add non-deprecated Fedora paths for OVMF w/ secboot
+    
+    Add new paths for the Secure Boot variant of OVMF as found in Fedora.
+    
+    (cherry picked from commit 4167ee21736f44b6cd527eefc488f218a901323c)
+
+commit 51c9d30c74db80e6cded30c38aee7d1cb9dc4b88
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Jul 13 20:39:04 2018 +0100
+
+    build: Disable warnings about attribute malloc functions.
+    
+    (cherry picked from commit 2280c501ffaf812a1b27c62e5365b94431b1cc51)
+
+commit 4c354ed41074adbf8956bdb648f71958233b7d10
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Jul 12 08:31:46 2018 +0100
+
+    v2v: Remove old TODO file.
+    
+    (cherry picked from commit 32202e3917ddd52222998f231ccda27fa36ea0b0)
+
+commit eef61c112db69e6305454c3ac4dddf08cfa79785
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Jul 11 16:20:26 2018 +0100
+
+    build: Disable -Wabi warning as it is broken with GCC 8.1.
+    
+    (cherry picked from commit aeabe622ac4c8dc1c3a2f6068fb20a75ce21a169)
+
+commit ca67625da3a916754b1d879f417a3b0cc2d7d8bd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 3 19:34:20 2018 +0100
+
+    v2v: types: Fix comment for #create_metadata method.
+    
+    (cherry picked from commit 8fdc1d4852bfe5067b35cb8dca387d56b3836645)
+
+commit 1097e149b68c95bd181db44fb1fceea611de996c
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Jul 3 19:19:44 2018 +0100
+
+    v2v: Single character whitespace change.
+    
+    (cherry picked from commit 186ac2bfb21bc4536de93d682eb61a0b8928aeb8)
+
 commit 474853a12ef3f315ff1c5d0b153b469dfce226b0
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Fri Jun 29 19:25:50 2018 +0100

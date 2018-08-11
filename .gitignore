@@ -351,6 +351,7 @@ Makefile.in
 /inspector/actual-*.xml
 /inspector/stamp-virt-inspector.pod
 /inspector/test-virt-inspector.sh
+/inspector/test-virt-inspector-luks.sh
 /inspector/test-xmllint.sh
 /inspector/virt-inspector
 /inspector/virt-inspector.1
@@ -645,6 +646,7 @@ Makefile.in
 /test-data/phony-guests/debian.img
 /test-data/phony-guests/fedora.img
 /test-data/phony-guests/fedora-btrfs.img
+/test-data/phony-guests/fedora-luks.img
 /test-data/phony-guests/fedora-md1.img
 /test-data/phony-guests/fedora-md2.img
 /test-data/phony-guests/fedora-name.db

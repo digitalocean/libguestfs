@@ -67,6 +67,11 @@ guestfs_int_uefi_x86_64_firmware[] = {
     "/usr/share/edk2/ovmf/OVMF_VARS.fd",
     0
   },
+  { "/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd",
+    NULL,
+    "/usr/share/edk2/ovmf/OVMF_VARS.fd",
+    UEFI_FLAG_SECURE_BOOT_REQUIRED
+  },
   { "/usr/share/qemu/ovmf-x86_64-code.bin",
     NULL,
     "/usr/share/qemu/ovmf-x86_64-vars.bin",

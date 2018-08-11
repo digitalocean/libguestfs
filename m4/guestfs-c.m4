@@ -56,12 +56,14 @@ nw="$nw -Wunsafe-loop-optimizations" # just a warning that an optimization
 nw="$nw -Wstack-protector"           # Useless warning when stack protector
                                      # cannot being used in a function.
 nw="$nw -Wcast-align"                # Useless warning on arm >= 7, intel
+nw="$nw -Wabi"                       # Broken in GCC 8.1.
 dnl things I might fix soon:
 nw="$nw -Wpacked"                    # Allow attribute((packed)) on structs
 nw="$nw -Wlong-long"                 # Allow long long since it's required
                                      # by Python, Ruby and xstrtoll.
 nw="$nw -Wsuggest-attribute=pure"    # Don't suggest pure functions.
 nw="$nw -Wsuggest-attribute=const"   # Don't suggest const functions.
+nw="$nw -Wsuggest-attribute=malloc"  # Don't suggest malloc functions.
 nw="$nw -Wunsuffixed-float-constants" # Don't care about these.
 nw="$nw -Wswitch-default"            # This warning is actively dangerous.
 nw="$nw -Woverlength-strings"        # Who cares about stupid ISO C99 limit.
