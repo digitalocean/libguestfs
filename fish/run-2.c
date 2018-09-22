@@ -214,7 +214,7 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -281,7 +281,7 @@ run_add_drive_scratch (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -751,7 +751,7 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -1031,7 +1031,7 @@ run_glob_expand (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -1283,7 +1283,7 @@ run_is_chardev (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -1364,7 +1364,7 @@ run_is_socket (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -1659,7 +1659,7 @@ run_mksquashfs (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -2196,7 +2196,7 @@ run_rsync_in (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }

@@ -64,14 +64,23 @@ val parse_resize : int64 -> string -> int64
 val human_size : int64 -> string
 (** Converts a size in bytes to a human-readable string. *)
 
-val create_standard_options : Getopt.speclist -> ?anon_fun:Getopt.anon_fun -> ?key_opts:bool -> Getopt.usage_msg -> Getopt.t
+type cmdline_options = {
+  getopt : Getopt.t;              (** The actual {!Getopt} handle. *)
+}
+(** Structure representing all the data needed for handling command
+    line options. *)
+
+val create_standard_options : Getopt.speclist -> ?anon_fun:Getopt.anon_fun -> ?key_opts:bool -> ?machine_readable:bool -> Getopt.usage_msg -> cmdline_options
 (** Adds the standard libguestfs command line options to the specified ones,
     sorting them, and setting [long_options] to them.
 
     [key_opts] specifies whether add the standard options related to
     keys management, i.e. [--echo-keys] and [--keys-from-stdin].
 
-    Returns a new [Getopt.t] handle. *)
+    [machine_readable] specifies whether add the [--machine-readable]
+    option.
+
+    Returns a new {!cmdline_options} structure. *)
 
 val external_command : ?echo_cmd:bool -> string -> string list
 (** Run an external command, slurp up the output as a list of lines.
@@ -98,8 +107,11 @@ val run_commands : ?echo_cmd:bool -> (string list * Unix.file_descr option * Uni
     [echo_cmd] specifies whether output the full command on verbose
     mode, and it's on by default. *)
 
-val run_command : ?echo_cmd:bool -> ?stdout_chan:Unix.file_descr -> ?stderr_chan:Unix.file_descr -> string list -> int
+val run_command : ?echo_cmd:bool -> ?stdout_fd:Unix.file_descr -> ?stderr_fd:Unix.file_descr -> string list -> int
 (** Run an external command without using a shell, and return its exit code.
+
+    If [stdout_fd] or [stderr_fd] is specified, the file descriptor
+    is automatically closed after executing the command.
 
     [echo_cmd] specifies whether output the full command on verbose
     mode, and it's on by default. *)
@@ -170,3 +182,17 @@ val inspect_decrypt : Guestfs.guestfs -> unit
 (** Simple implementation of decryption: look for any [crypto_LUKS]
     partitions and decrypt them, then rescan for VGs.  This only works
     for Fedora whole-disk encryption. *)
+
+val with_timeout : string -> int -> ?sleep:int -> (unit -> 'a option) -> 'a
+(** [with_timeout op timeout ?sleep fn] implements a timeout loop.
+
+    [fn] is run repeatedly until the function returns [Some result],
+    whereupon [with_timeout] returns [result] to the caller.
+
+    If [fn] returns [None] then the we wait a few seconds (controlled
+    by [?sleep]) and repeat.
+
+    If the [timeout] (in seconds) is reached, then the function
+    calls {!error} and the program exits.  The error message will
+    contain the diagnostic string [op] to identify the operation
+    which timed out. *)

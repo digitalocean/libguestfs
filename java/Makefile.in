@@ -379,7 +379,8 @@ LTLIBRARIES = $(jnilib_LTLIBRARIES)
 @HAVE_JAVA_TRUE@libguestfs_jni_la_DEPENDENCIES =  \
 @HAVE_JAVA_TRUE@	$(top_builddir)/common/structs/libstructs.la \
 @HAVE_JAVA_TRUE@	$(top_builddir)/common/utils/libutils.la \
-@HAVE_JAVA_TRUE@	$(top_builddir)/lib/libguestfs.la
+@HAVE_JAVA_TRUE@	$(top_builddir)/lib/libguestfs.la \
+@HAVE_JAVA_TRUE@	$(top_builddir)/gnulib/lib/libgnu.la
 am__libguestfs_jni_la_SOURCES_DIST =  \
 	com_redhat_et_libguestfs_GuestFS.h actions-0.c actions-1.c \
 	actions-2.c actions-3.c actions-4.c actions-5.c actions-6.c \
@@ -1546,6 +1547,7 @@ OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OCAML_PKG_hivex = @OCAML_PKG_hivex@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
 OCAML_PKG_oUnit = @OCAML_PKG_oUnit@
+OCAML_RUNTIME_VARIANT_PIC_OPTION = @OCAML_RUNTIME_VARIANT_PIC_OPTION@
 OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
@@ -2053,7 +2055,8 @@ EXTRA_DIST = \
 @HAVE_JAVA_TRUE@libguestfs_jni_la_LIBADD = \
 @HAVE_JAVA_TRUE@	$(top_builddir)/common/structs/libstructs.la \
 @HAVE_JAVA_TRUE@	$(top_builddir)/common/utils/libutils.la \
-@HAVE_JAVA_TRUE@	$(top_builddir)/lib/libguestfs.la
+@HAVE_JAVA_TRUE@	$(top_builddir)/lib/libguestfs.la \
+@HAVE_JAVA_TRUE@	$(top_builddir)/gnulib/lib/libgnu.la
 
 @HAVE_JAVA_TRUE@libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO) -shared
 @HAVE_JAVA_TRUE@BUILT_SOURCES = com_redhat_et_libguestfs_GuestFS.h

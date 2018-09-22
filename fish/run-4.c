@@ -403,7 +403,7 @@ run_btrfs_subvolume_create (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -508,7 +508,7 @@ run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -866,7 +866,7 @@ run_fstrim (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -1651,7 +1651,7 @@ run_ntfsfix (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -2100,7 +2100,7 @@ run_set_e2attrs (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }

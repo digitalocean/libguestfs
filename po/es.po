@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libguestfs 1.37.37\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2018-08-09 15:49+0100\n"
+"POT-Creation-Date: 2018-09-21 16:19+0100\n"
 "PO-Revision-Date: 2015-03-18 06:06-0400\n"
 "Last-Translator: Alex Puchades <alex94puchades@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/libguestfs/"
@@ -426,17 +426,17 @@ msgstr ""
 msgid "%s: %s: integer out of range\n"
 msgstr "%s: %s: entero fuera de rango\n"
 
-#: common/mltools/getopt-c.c:378
+#: common/mltools/getopt-c.c:385
 #, c-format
 msgid "%s: ‘%s’ is not allowed for -%c; allowed values are:\n"
 msgstr ""
 
-#: common/mltools/getopt-c.c:381
+#: common/mltools/getopt-c.c:388
 #, c-format
 msgid "%s: ‘%s’ is not allowed for %s%s; allowed values are:\n"
 msgstr ""
 
-#: common/mltools/getopt-c.c:405
+#: common/mltools/getopt-c.c:423
 #, c-format
 msgid "Extra parameter on the command line: ‘%s’.\n"
 msgstr ""
@@ -3718,8 +3718,8 @@ msgstr "%s: argumento optativo  \"%s\" desconocido\n"
 #: fish/run-5.c:3054 fish/run-5.c:3255 fish/run-6.c:1258 fish/run-6.c:1329
 #: fish/run-6.c:1673 fish/run-6.c:1832 fish/run-6.c:2160
 #, c-format
-msgid "%s: optional argument \"%s\" given twice\n"
-msgstr "%s: el argumento optativo \"%s\" ha sido ofrecido dos veces\n"
+msgid "%s: optional argument \"%s\" given more than once\n"
+msgstr ""
 
 #: fish/run-0.c:507 fish/run-0.c:580 fish/run-0.c:867 fish/run-0.c:1006
 #: fish/run-0.c:1046 fish/run-0.c:1060 fish/run-0.c:1098 fish/run-0.c:1134
@@ -4170,7 +4170,7 @@ msgstr ""
 msgid "backingformat parameter cannot be used with raw format"
 msgstr "el parámetro backingformat no puede usarse con formato raw"
 
-#: lib/create.c:154 lib/create.c:294
+#: lib/create.c:154 lib/create.c:283
 #, c-format
 msgid "invalid value for preallocation parameter ‘%s’"
 msgstr ""
@@ -4213,17 +4213,17 @@ msgstr ""
 msgid "%s: close"
 msgstr ""
 
-#: lib/create.c:279
+#: lib/create.c:268
 #, c-format
 msgid "invalid value for backingformat parameter ‘%s’"
 msgstr ""
 
-#: lib/create.c:302
+#: lib/create.c:291
 #, c-format
 msgid "invalid value for compat parameter ‘%s’"
 msgstr ""
 
-#: lib/create.c:310
+#: lib/create.c:299
 #, c-format
 msgid "invalid value for clustersize parameter ‘%d’"
 msgstr ""
@@ -5951,10 +5951,9 @@ msgid "virt-list-partitions: no image or VM name given"
 msgstr "virt-list-partitions: no han sido ofrecidas imágenes o nombres MV"
 
 #: tools/virt-tar:190 tools/virt-tar:197
-msgid "virt-tar: extract/upload mode specified twice on the command line\n"
+msgid ""
+"virt-tar: extract/upload mode specified more than once on the command line\n"
 msgstr ""
-"virt-tar: extraer/cargar el modo especificado dos veces en la línea de "
-"comando\n"
 
 #: tools/virt-tar:219
 msgid "virt-tar: no image, VM names, directory or filename given"
@@ -6736,3 +6735,11 @@ msgstr ""
 #~ msgstr ""
 #~ "el comando '%s' no puede usarse en archivos de comando, consulta la "
 #~ "página del manual"
+
+#~ msgid "%s: optional argument \"%s\" given twice\n"
+#~ msgstr "%s: el argumento optativo \"%s\" ha sido ofrecido dos veces\n"
+
+#~ msgid "virt-tar: extract/upload mode specified twice on the command line\n"
+#~ msgstr ""
+#~ "virt-tar: extraer/cargar el modo especificado dos veces en la línea de "
+#~ "comando\n"

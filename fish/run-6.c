@@ -1255,7 +1255,7 @@ run_mkswap (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -1326,7 +1326,7 @@ run_mktemp (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -1670,7 +1670,7 @@ run_remount (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -1829,7 +1829,7 @@ run_rsync_out (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -2157,7 +2157,7 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }

@@ -358,7 +358,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = installcheck.sh ocaml-dep.sh \
+CONFIG_CLEAN_FILES = installcheck.sh ocaml-dep.sh ocaml-link.sh \
 	php/extension/php-for-tests.sh pick-guests.pl podwrapper.pl \
 	run builder/test-config/virt-builder/repos.d/test-index.conf \
 	builder/test-simplestreams/virt-builder/repos.d/cirros.conf \
@@ -654,8 +654,9 @@ DIST_SUBDIRS = common/mlstdutils generator tests/qemu test-data \
 	po-docs
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/installcheck.sh.in $(srcdir)/ocaml-dep.sh.in \
-	$(srcdir)/pick-guests.pl.in $(srcdir)/podwrapper.pl.in \
-	$(srcdir)/run.in $(top_srcdir)/build-aux/config.guess \
+	$(srcdir)/ocaml-link.sh.in $(srcdir)/pick-guests.pl.in \
+	$(srcdir)/podwrapper.pl.in $(srcdir)/run.in \
+	$(top_srcdir)/build-aux/config.guess \
 	$(top_srcdir)/build-aux/config.rpath \
 	$(top_srcdir)/build-aux/config.sub \
 	$(top_srcdir)/build-aux/guestfs-test-driver \
@@ -1608,6 +1609,7 @@ OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OCAML_PKG_hivex = @OCAML_PKG_hivex@
 OCAML_PKG_libvirt = @OCAML_PKG_libvirt@
 OCAML_PKG_oUnit = @OCAML_PKG_oUnit@
+OCAML_RUNTIME_VARIANT_PIC_OPTION = @OCAML_RUNTIME_VARIANT_PIC_OPTION@
 OCAML_WARN_ERROR = @OCAML_WARN_ERROR@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
@@ -2176,6 +2178,8 @@ distclean-hdr:
 installcheck.sh: $(top_builddir)/config.status $(srcdir)/installcheck.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 ocaml-dep.sh: $(top_builddir)/config.status $(srcdir)/ocaml-dep.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+ocaml-link.sh: $(top_builddir)/config.status $(srcdir)/ocaml-link.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 php/extension/php-for-tests.sh: $(top_builddir)/config.status $(top_srcdir)/php/extension/php-for-tests.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@

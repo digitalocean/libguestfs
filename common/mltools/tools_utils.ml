@@ -229,7 +229,11 @@ let human_size i =
     )
   )
 
-let create_standard_options argspec ?anon_fun ?(key_opts = false) usage_msg =
+type cmdline_options = {
+  getopt : Getopt.t;
+}
+
+let create_standard_options argspec ?anon_fun ?(key_opts = false) ?(machine_readable = false) usage_msg =
   (** Install an exit hook to check gc consistency for --debug-gc *)
   let set_debug_gc () =
     at_exit (fun () -> Gc.compact()) in
@@ -249,8 +253,16 @@ let create_standard_options argspec ?anon_fun ?(key_opts = false) usage_msg =
         [ L"echo-keys" ],       Getopt.Unit c_set_echo_keys,       s_"Don’t turn off echo for passphrases";
         [ L"keys-from-stdin" ], Getopt.Unit c_set_keys_from_stdin, s_"Read passphrases from stdin";
       ]
+      else []) @
+      (if machine_readable then
+      [
+        [ L"machine-readable" ], Getopt.Unit set_machine_readable, s_"Make output machine readable";
+      ]
       else []) in
-  Getopt.create argspec ?anon_fun usage_msg
+  let getopt = Getopt.create argspec ?anon_fun usage_msg in
+  {
+    getopt;
+  }
 
 (* Run an external command, slurp up the output as a list of lines. *)
 let external_command ?(echo_cmd = true) cmd =
@@ -277,8 +289,8 @@ let rec run_commands ?(echo_cmd = true) cmds =
   let res = Array.make (List.length cmds) 0 in
   let pids =
     List.mapi (
-      fun i (args, stdout_chan, stderr_chan) ->
-        let run_res = do_run args ?stdout_chan ?stderr_chan in
+      fun i (args, stdout_fd, stderr_fd) ->
+        let run_res = do_run args ?stdout_fd ?stderr_fd in
         match run_res with
         | Either (pid, app, outfd, errfd) ->
           Some (i, pid, app, outfd, errfd)
@@ -304,8 +316,8 @@ let rec run_commands ?(echo_cmd = true) cmds =
   done;
   Array.to_list res
 
-and run_command ?(echo_cmd = true) ?stdout_chan ?stderr_chan args =
-  let run_res = do_run args ~echo_cmd ?stdout_chan ?stderr_chan in
+and run_command ?(echo_cmd = true) ?stdout_fd ?stderr_fd args =
+  let run_res = do_run args ~echo_cmd ?stdout_fd ?stderr_fd in
   match run_res with
   | Either (pid, app, outfd, errfd) ->
     let _, stat = Unix.waitpid [] pid in
@@ -313,7 +325,7 @@ and run_command ?(echo_cmd = true) ?stdout_chan ?stderr_chan args =
   | Or code ->
     code
 
-and do_run ?(echo_cmd = true) ?stdout_chan ?stderr_chan args =
+and do_run ?(echo_cmd = true) ?stdout_fd ?stderr_fd args =
   let app = List.hd args in
   let get_fd default = function
     | None ->
@@ -326,13 +338,13 @@ and do_run ?(echo_cmd = true) ?stdout_chan ?stderr_chan args =
     let app =
       if Filename.is_relative app then which app
       else (Unix.access app [Unix.X_OK]; app) in
-    let outfd = get_fd Unix.stdout stdout_chan in
-    let errfd = get_fd Unix.stderr stderr_chan in
+    let outfd = get_fd Unix.stdout stdout_fd in
+    let errfd = get_fd Unix.stderr stderr_fd in
     if echo_cmd then
       debug "%s" (stringify_args args);
     let pid = Unix.create_process app (Array.of_list args) Unix.stdin
                 outfd errfd in
-    Either (pid, app, stdout_chan, stderr_chan)
+    Either (pid, app, stdout_fd, stderr_fd)
   with
   | Executable_not_found _ ->
     Or 127
@@ -543,3 +555,17 @@ let inspect_decrypt g =
    * function.
    *)
   c_inspect_decrypt g#ocaml_handle (Guestfs.c_pointer g#ocaml_handle)
+
+let with_timeout op timeout ?(sleep = 2) fn =
+  let start_t = Unix.gettimeofday () in
+  let rec loop () =
+    if Unix.gettimeofday () -. start_t > float_of_int timeout then
+      error (f_"%s: operation timed out") op;
+
+    match fn () with
+    | Some r -> r
+    | None ->
+       Unix.sleep sleep;
+       loop ()
+  in
+  loop ()

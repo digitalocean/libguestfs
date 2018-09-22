@@ -594,7 +594,7 @@ Mostly this consists of wrappers around the L<qemu-img(1)> program.
                                 VALID_FLAG_ALPHA|VALID_FLAG_DIGIT, "")
  
  static int
- disk_create_qcow2 (guestfs_h *g, const char *orig_filename, int64_t size,
+ disk_create_qcow2 (guestfs_h *g, const char *filename, int64_t size,
                     const char *backingfile,
                     const struct guestfs_disk_create_argv *optargs)
 

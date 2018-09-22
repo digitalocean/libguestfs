@@ -47,7 +47,6 @@ let parse_cmdline () =
 
   let interactive = ref false in
   let compression = ref true in
-  let machine_readable = ref false in
 
   let argspec = [
     [ L"gpg" ], Getopt.Set_string ("gpg", gpg), s_"Set GPG binary/command";
@@ -55,7 +54,6 @@ let parse_cmdline () =
       s_"ID of the GPG key to sign the repo with";
     [ S 'i'; L"interactive" ], Getopt.Set interactive, s_"Ask the user about missing data";
     [ L"no-compression" ], Getopt.Clear compression, s_"Don’t compress the new images in the index";
-    [ L"machine-readable" ], Getopt.Set machine_readable, s_"Make output machine readable";
   ] in
 
   let args = ref [] in
@@ -70,13 +68,13 @@ A short summary of the options is given below.  For detailed help please
 read the man page virt-builder-repository(1).
 ")
       prog in
-  let opthandle = create_standard_options argspec ~anon_fun usage_msg in
-  Getopt.parse opthandle;
+  let opthandle = create_standard_options argspec ~anon_fun ~machine_readable:true usage_msg in
+  Getopt.parse opthandle.getopt;
 
   (* Machine-readable mode?  Print out some facts about what
    * this binary supports.
    *)
-  if !machine_readable then (
+  if machine_readable () then (
     printf "virt-builder-repository\n";
     exit 0
   );
@@ -152,7 +150,7 @@ let compress_to file outdir =
   let cmd = [ "xz"; "-f"; "--best"; "--block-size=16777216"; "-c"; file ] in
   let file_flags = [ Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC; ] in
   let outfd = Unix.openfile outimg file_flags 0o666 in
-  let res = run_command cmd ~stdout_chan:outfd in
+  let res = run_command cmd ~stdout_fd:outfd in
   if res <> 0 then
     error (f_"‘xz’ command failed");
   outimg
