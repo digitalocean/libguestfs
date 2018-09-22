@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libguestfs 1.37.37\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2018-08-09 15:49+0100\n"
+"POT-Creation-Date: 2018-09-21 16:19+0100\n"
 "PO-Revision-Date: 2017-11-18 01:52-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/projects/p/libguestfs/"
@@ -548,17 +548,17 @@ msgstr "%s: «%s» не є числовим значенням.\n"
 msgid "%s: %s: integer out of range\n"
 msgstr "%s: %s: ціле значення поза межами діапазону\n"
 
-#: common/mltools/getopt-c.c:378
+#: common/mltools/getopt-c.c:385
 #, c-format
 msgid "%s: ‘%s’ is not allowed for -%c; allowed values are:\n"
 msgstr "%s: «%s» не можна використовувати з -%c; дозволені значення:\n"
 
-#: common/mltools/getopt-c.c:381
+#: common/mltools/getopt-c.c:388
 #, c-format
 msgid "%s: ‘%s’ is not allowed for %s%s; allowed values are:\n"
 msgstr "%s: «%s» не можна використовувати з %s%s; дозволені значення:\n"
 
-#: common/mltools/getopt-c.c:405
+#: common/mltools/getopt-c.c:423
 #, c-format
 msgid "Extra parameter on the command line: ‘%s’.\n"
 msgstr "Зайвий параметр у рядку команди: «%s».\n"
@@ -3986,8 +3986,8 @@ msgstr "%s: невідомий додатковий аргумент «%s»\n"
 #: fish/run-5.c:3054 fish/run-5.c:3255 fish/run-6.c:1258 fish/run-6.c:1329
 #: fish/run-6.c:1673 fish/run-6.c:1832 fish/run-6.c:2160
 #, c-format
-msgid "%s: optional argument \"%s\" given twice\n"
-msgstr "%s: додатковий аргумент «%s» вказано двічі\n"
+msgid "%s: optional argument \"%s\" given more than once\n"
+msgstr ""
 
 #: fish/run-0.c:507 fish/run-0.c:580 fish/run-0.c:867 fish/run-0.c:1006
 #: fish/run-0.c:1046 fish/run-0.c:1060 fish/run-0.c:1098 fish/run-0.c:1134
@@ -4512,7 +4512,7 @@ msgstr ""
 "параметр backingformat не можна використовувати, якщо використовується "
 "формат raw"
 
-#: lib/create.c:154 lib/create.c:294
+#: lib/create.c:154 lib/create.c:283
 #, c-format
 msgid "invalid value for preallocation parameter ‘%s’"
 msgstr "некоректне значення для параметра preallocation, «%s»"
@@ -4558,17 +4558,17 @@ msgstr "%s: записати"
 msgid "%s: close"
 msgstr "%s: закрити"
 
-#: lib/create.c:279
+#: lib/create.c:268
 #, c-format
 msgid "invalid value for backingformat parameter ‘%s’"
 msgstr "некоректне значення для параметра backingformat, «%s»"
 
-#: lib/create.c:302
+#: lib/create.c:291
 #, c-format
 msgid "invalid value for compat parameter ‘%s’"
 msgstr "некоректне значення для параметра compat, «%s»"
 
-#: lib/create.c:310
+#: lib/create.c:299
 #, c-format
 msgid "invalid value for clustersize parameter ‘%d’"
 msgstr "некоректне значення для параметра clustersize, «%d»"
@@ -6529,10 +6529,9 @@ msgid "virt-list-partitions: no image or VM name given"
 msgstr "virt-list-partitions: не вказано образу або назви віртуальної машини"
 
 #: tools/virt-tar:190 tools/virt-tar:197
-msgid "virt-tar: extract/upload mode specified twice on the command line\n"
+msgid ""
+"virt-tar: extract/upload mode specified more than once on the command line\n"
 msgstr ""
-"virt-tar: у командному рядку двічі вказано режим видобування або "
-"вивантаження\n"
 
 #: tools/virt-tar:219
 msgid "virt-tar: no image, VM names, directory or filename given"
@@ -10984,6 +10983,14 @@ msgstr "virt-win-reg: {p}: не вдалося вивантажити файл �
 
 #~ msgid "‘-ic %s’ URL does not contain a host name field"
 #~ msgstr "У адресі «-ic %s» не міститься поля назви вузла"
+
+#~ msgid "%s: optional argument \"%s\" given twice\n"
+#~ msgstr "%s: додатковий аргумент «%s» вказано двічі\n"
+
+#~ msgid "virt-tar: extract/upload mode specified twice on the command line\n"
+#~ msgstr ""
+#~ "virt-tar: у командному рядку двічі вказано режим видобування або "
+#~ "вивантаження\n"
 
 #~ msgid ""
 #~ "checksum of disk %s does not match manifest %s (actual %s(%s) = %s, "

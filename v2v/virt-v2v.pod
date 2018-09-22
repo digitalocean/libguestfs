@@ -1011,6 +1011,20 @@ This can also prevent booting with a 7B error [see previous section]
 if the guest has group policy containing
 C<Device Installation Restrictions>.
 
+=head2 Support for SHA-2 certificates in Windows 7 and Windows Server 2008 R2
+
+Later versions of the Windows virtio drivers are signed using SHA-2
+certificates (instead of SHA-1).  The original shipping Windows 7 and
+Windows Server 2008 R2 did not understand SHA-2 certificates and so
+the Windows virtio drivers will not install properly.
+
+To fix this you must apply SHA-2 Code Signing Support from:
+L<https://docs.microsoft.com/en-us/security-updates/SecurityAdvisories/2015/3033929>
+before converting the guest.
+
+For further information see:
+L<https://bugzilla.redhat.com/show_bug.cgi?id=1624878>
+
 =head1 UEFI
 
 VMware allows you to present UEFI firmware to guests (instead of the
@@ -1595,6 +1609,35 @@ link above.
 VDDK imports require a feature added in libvirt E<ge> 3.7.
 
 =back
+
+=head2 VDDK: ESXi NFC SERVICE MEMORY LIMITS
+
+In the verbose log you may see errors like:
+
+ nbdkit: vddk[3]: error: [NFC ERROR] NfcFssrvrProcessErrorMsg:
+ received NFC error 5 from server: Failed to allocate the
+ requested 2097176 bytes
+
+This seems especially common when there are multiple parallel
+connections open to the VMware server.
+
+These can be caused by resource limits set on the VMware server.  You
+can increase the limit for the NFC service by editing
+F</etc/vmware/hostd/config.xml> and adjusting the
+C<E<lt>maxMemoryE<gt>> setting:
+
+ <nfcsvc>
+   <path>libnfcsvc.so</path>
+   <enabled>true</enabled>
+   <maxMemory>50331648</maxMemory>
+   <maxStreamMemory>10485760</maxStreamMemory>
+ </nfcsvc>
+
+and restarting the C<hostd> service:
+
+ # /etc/init.d/hostd restart
+
+For more information see L<https://bugzilla.redhat.com/1614276>.
 
 =head2 VDDK: URI
 

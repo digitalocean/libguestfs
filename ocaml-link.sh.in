@@ -1,6 +1,6 @@
 #!/bin/bash -
 # Script used to link OCaml programs.
-# ocaml-link.sh.  Generated from ocaml-link.sh.in by configure.
+# @configure_input@
 # (C) Copyright 2015-2018 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,6 @@ done
 
 # NB -cclib must come last.
 exec "$@" \
-     -runtime-variant _pic \
+     @OCAML_RUNTIME_VARIANT_PIC_OPTION@ \
      -linkpkg \
-     -cclib " $cclib"
+     -cclib "@LDFLAGS@ $cclib"

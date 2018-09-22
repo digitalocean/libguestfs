@@ -214,7 +214,7 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -362,7 +362,7 @@ run_aug_transform (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -526,7 +526,7 @@ run_compress_device_out (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -599,7 +599,7 @@ run_compress_out (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -742,7 +742,7 @@ run_e2fsck (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -1756,7 +1756,7 @@ run_mkfs_btrfs (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -1876,7 +1876,7 @@ run_mount_9p (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -2000,7 +2000,7 @@ run_ntfsresize (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }
@@ -2571,7 +2571,7 @@ run_umount_local (const char *cmd, size_t argc, char *argv[])
     }
 
     if (optargs_s.bitmask & this_mask) {
-      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+      fprintf (stderr, _("%s: optional argument \"%s\" given more than once\n"),
                cmd, this_arg);
       goto out;
     }

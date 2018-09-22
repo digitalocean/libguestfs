@@ -1,3 +1,508 @@
+commit fe1ee20a59ba62a89ef7e233b5b909c1942684bf
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 21 16:04:27 2018 +0100
+
+    Version 1.38.6.
+
+commit a028009ef40a12ce432805e29022bc92090e88b9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 5 17:28:57 2018 +0100
+
+    sparsify: Fix test-virt-sparsify-in-place-fstrim-unsupported.sh
+    
+    Since Linux commit f663b5b38fff trimming vfat is now supported by
+    Linux.  This broke the test which assumed it was not supported.  Use
+    another filesystem (minix) which does not support trimming instead.
+    
+    Thanks: Daniel P. Berrangé and Pino Toscano.
+    (cherry picked from commit da48f4e5ff344bbcd34418fbb01e50889ed144b8)
+
+commit 51991281d6a3bd634e4c8733fd241770a16a985e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 21 14:40:45 2018 +0100
+
+    Version 1.38.5.
+
+commit 763a65a5a034170cfbbedfd4c841f06250da8310
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 20 12:59:44 2018 +0100
+
+    tools: Ensure CFLAGS and LDFLAGS are passed to all OCaml binaries (RHBZ#1624130).
+    
+    After this commit, all annocheck errors are fixed except for:
+    
+      Hardened: virt-get-kernel: MAYB: Gaps were detected in the annobin coverage.  Run with -v to list.
+    
+    After discussion with the annocheck maintainers this gap in coverage
+    (which corresponds to the OCaml runtime) seems to be caused either by
+    the runtime not being linked with the right flags, or might be a bug
+    in annocheck itself.  In any case it's not something that can be
+    resolved within the scope of libguestfs.
+    
+    (cherry picked from commit 34c23403c51a4d59d826c8045e06f9aabc2ceb16)
+
+commit abb92bd8c1b601a5f12cdbf75d4a80576c25dcba
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Sep 20 12:42:59 2018 +0100
+
+    tools: Link OCaml programs with -runtime-variant _pic if available.
+    
+    OCaml has a small runtime which is statically linked into the virt
+    tools (providing things like GC and primitives).  Since OCaml 4.03 it
+    has been possible to select variants of this runtime, one of which is
+    compiled with -fPIC, using ‘ocamlopt -runtime-variant _pic’.
+    
+    This has performance implications on i686, but is relatively free on
+    other architectures.  Since it (in theory) adds to the security of the
+    final binary this commit enables it whenever it is available.
+    
+    (cherry picked from commit 09abb9c990f6e07b3577088522b8ad9fb439a80e)
+
+commit c32c53b14432d7fe59bd20b2a41c8d3e10d24c9b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Sep 17 18:18:01 2018 +0200
+
+    mltools: create a cmdline_options struct
+    
+    Instead of returning directly a Getopt.t handle, now
+    Tools_utils.create_standard_options returns a struct, which at the
+    moment contains only the Getopt.t handle.  This way, it will be easy to
+    add more data needed for handling standard command line options.
+    
+    This is mostly refactoring, with no functional changes.
+    
+    (cherry picked from commit ec438b7b85aaf2d6ecea32947fc9773ef65064de)
+
+commit ce2b34766c5d0365e0d0667e40d6ea12386d2875
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 14 13:49:06 2018 +0100
+
+    customize: Use set -x for test-firstboot.sh slow test.
+    
+    Aids in debugging failed tests.
+    
+    (cherry picked from commit d54be028a2ebf5bd3c18a50772146839811493a5)
+
+commit c3f89c0b8916dcf93d867561349040cb612a6f56
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Sep 14 11:59:38 2018 +0100
+
+    v2v: -it vddk: Fix check for incorrect LD_LIBRARY_PATH.
+    
+    In nbdkit >= 1.7.2, nbdkit vddk --dump-plugin will print the shared
+    library name in normal output, which breaks this test.
+    
+    The actual error when LD_LIBRARY_PATH is not set includes this line:
+    
+      nbdkit: error: libvixDiskLib.so.6: cannot open shared object file: No such file or directory
+    
+    so search instead for the error message "cannot open shared object file".
+    
+    (cherry picked from commit bbefbc8a480538b9a0fb12d2bacc0635a46ac171)
+
+commit 735f14f6dcf74760f9aae7e9551e329531041c6f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 11 15:57:03 2018 +0100
+
+    builder: templates: Add Windows template support.
+    
+    Provides support for building:
+    
+     - Windows 7
+     - Windows Server 2008 R2
+     - Windows Server 2012
+     - Windows Server 2012 R2
+     - Windows Server 2016
+    
+    Note that these images cannot be released to the public because of
+    obvious licensing issues.  But this documents how we build them for
+    internal consumption so that others can also build them.
+    
+    Thanks: Christophe Fergeau, Tomáš Golembiovský.
+    (cherry picked from commit 089f0345f4d7c50816e2ac712e65e9bf59abf119)
+
+commit 3502b09dc12520543c59a6348975e3c5b6500aac
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Wed Sep 12 22:11:17 2018 +0100
+
+    builder: templates: Use virt-sparsify --in-place (instead of copying).
+    
+    virt-sparsify in copying mode takes a huge amount of temporary space
+    and takes a very long time.  In any case it's not really necessary for
+    modern guests since in-place sparsification is fully supported now.
+    
+    (cherry picked from commit 755834c79701a119222d150a3008dfe65f07bdd1)
+
+commit 378cc1449eabcb000714946b8722e2a091b61dac
+Author: Nikolay Ivanets <stenavin@gmail.com>
+Date:   Tue Sep 11 12:18:07 2018 +0300
+
+    daemon: consider /etc/mdadm/mdadm.conf while inspecting mountpoints.
+    
+    Inspection code checks /etc/mdadm.conf to map MD device paths listed in
+    mdadm.conf to MD device paths in the guestfs appliance. However on some
+    operating systems (e.g. Ubuntu) mdadm.conf has alternative location:
+    /etc/mdadm/mdadm.conf.
+    
+    This patch consider an alternative location of mdadm.conf as well.
+    
+    (cherry picked from commit eaa9c8cbc6dc65a4af06a03612a8c0ae4a3df83f)
+
+commit f228f1244c83ceabccb37c052633cd3a11825fb9
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 11 16:44:14 2018 +0100
+
+    builder: templates: Specify --arch explicitly, even on x86_64.
+    
+    (cherry picked from commit e6895bd9d28370861528ab81ea34098b87f3739a)
+
+commit 380719d6cebfed6d815cb2d191416023246fa74d
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 11 16:31:25 2018 +0100
+
+    builder: templates: Make UEFI code arch-independent.
+    
+    Previously it only worked for aarch64.
+    
+    (cherry picked from commit cc01166a24f62e4660d050544ff4b4b39f0392fc)
+
+commit 20250d6d8480dc0869190b2d5925e7078fd65b13
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 11 16:16:26 2018 +0100
+
+    builder: templates: Refactor code for using UEFI.
+    
+    Simple refactoring.
+    
+    (cherry picked from commit 613c1782ea0be10facf29a6a8bd4589dafc14b57)
+
+commit 1da34c3af473f12b142e67de3f9b8f0829b7f455
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 11 15:53:56 2018 +0100
+
+    builder: templates: Refactor code for adding --initrd-inject.
+    
+    Initrd is a Linux thing, so this code should only be used for
+    Linux-based OSes.  Refactor to make it a bit cleaner.
+    
+    (cherry picked from commit 00fff03485bece9f7955eb7d5896cc5a49a50e30)
+
+commit 88e66fc54862acab38e73945388720fd745fa804
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 11 15:51:20 2018 +0100
+
+    builder: templates: Add a can_sysprep_os function.
+    
+    Does virt-sysprep know how to sysprep this disk image?  Add a function
+    to find out.
+    
+    Just refactoring.
+    
+    (cherry picked from commit d0ff42dfa24969e2fa708269b5f77672f713b501)
+
+commit 7fedd01dbdad430429466f58517f0f4d5764b0ea
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 11 15:49:24 2018 +0100
+
+    builder: templates: Rename make_kickstart function.
+    
+    This function will soon be used to generate Windows unattended.xml
+    files (as well as Debian preseed) so just rename it back to
+    ‘make_kickstart’ rather than attempting to explain in the name every
+    way it could be used.
+    
+    (cherry picked from commit 112880e61bb38fb04a1270f47c8597518af0c746)
+
+commit 5025818991f4134286ae9c9711f959bed459823b
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Sep 11 15:48:35 2018 +0100
+
+    builder: templates: Add generic method for deleting files on exit.
+    
+    Simple refactoring.
+    
+    (cherry picked from commit e9bd010f6a25439ad1b1b909c6943c108f9f401e)
+
+commit 0c09e78c3bb4b2ed617e560f2968e5e91c5a2a0a
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 3 16:20:54 2018 +0100
+
+    mltools: Add with_timeout utility function.
+    
+    Higher-order function which performs an operation repeatedly until it
+    succeeds or fails, or a timeout is reached.
+    
+    (cherry picked from commit e4f4ed61880a9b88c085bde600170b3e669065e8)
+
+commit 86a4197c4f975f832dfa84f839455b860dfb5b33
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 3 15:24:05 2018 +0100
+
+    v2v: windows: Fix rhev-apt command line (RHBZ#1624902).
+    
+    See:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1584678#c15
+    
+    Fixes commit bcdbe6405c10ecb7374ae47eee6385be17dbd49e.  However this
+    bug was copied directly from old virt-v2v which did the same thing
+    (from lib/Sys/VirtConvert/Converter/Windows.pm):
+    
+      echo installing rhev-apt >>log.txt
+      "rhev-apt.exe" /S /v /qn >>log.txt
+    
+    Thanks: Lev Veyde
+    (cherry picked from commit e12c56176abcc2d970a35f83bffc95f7ad1b2aab)
+
+commit 6ff93d53ee706289e9525e13def1d262f853328e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Sep 3 14:30:21 2018 +0100
+
+    v2v: docs: Describe support for SHA-2 certs for Windows 7 / 2008 R2 (RHBZ#1624878).
+    
+    Thanks: Yan Vugenfirer.
+    (cherry picked from commit 741ef228cd8d17bd1a8a60a2cfa83c3937120ede)
+
+commit 515de4a96fed700c4c8864507c9ac175ea66241e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 14 14:40:01 2018 +0100
+
+    java: Link with gnulib to resolve missing hash_free symbol.
+    
+    (cherry picked from commit 56f1e6cecd509d8421570562f9eef8b9ac86e727)
+
+commit f62aa781f6926c51a817920268110a52c05256ef
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 28 08:55:06 2018 -0400
+
+    ppc64le: Remove bogus __powerpc64le__.
+    
+    Not a thing - tested on P9.
+    
+    (cherry picked from commit 5b87b9f132deaf81b9dd00415a02728056bfbadb)
+
+commit 9dd770cb31adadbf2bb93aa6e305608d600976ec
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 28 12:59:06 2018 +0100
+
+    ppc64le: Don't use -cpu parameter under any circumstances (RHBZ#1605071).
+    
+    (cherry picked from commit 56318f0b5ffc287fed71cc7cdd2007dff2b8fb17)
+
+commit 1df892106d17ff03fb0df62e19946a764c2614cb
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 17 21:37:29 2018 +0100
+
+    v2v: Document how to adjust ESXi NFC memory limit (RHBZ#1614276).
+    
+    (cherry picked from commit 0d0b5511309182f163ae263e862ddb0235780917)
+
+commit db77f8b839b03c22778725b4c6e78bec26310713
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 24 13:11:09 2018 +0200
+
+    v2v: test-harness: use Xml.parse_file
+    
+    Use Xml.parse_file instead of read_whole_file + Xml.parse_memory.
+    
+    (cherry picked from commit 10f9779c082fc144cfa1f3ae3677c21013057f12)
+
+commit ebe64abe4321f687481ab44373ffd3b3861fba3b
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 24 13:06:36 2018 +0200
+
+    builder: index_parser_tests: really use parameter
+    
+    Really use the parameter of the "read_file" function, instead of
+    hardcoding "out".  This does not change the behaviour, since all the
+    callers already use "out" as the file name to read.
+    
+    Fixes commit 7e3689bfe019d93de2e04711a13b18248de7051d.
+    
+    (cherry picked from commit d7772fb78b15ded7758f65a0010032dbc5cd5861)
+
+commit 2c5bfc120791ae4359e929a36f40cced476571b4
+Author: Sebastian Meyer <meyer@b1-systems.de>
+Date:   Thu Aug 23 16:45:27 2018 +0200
+
+    Fix error with --uninstall option on SUSE
+    
+    The `-l` option for some `zypper` subcommands is short for
+    `--auto-agree-with-licenses` and not available on the `zypper rm` command.
+    
+    (cherry picked from commit fd43730e2bfff17a365ffcf768b6c8db3089b524)
+
+commit 9251aeacf2f2440934de8403fcb6fab0980226cd
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 20 18:17:29 2018 +0200
+
+    common/mltools: getopt: add Getopt.OptString
+    
+    Introduce a new type of option with an optional string argument.
+    
+    (cherry picked from commit 8863ccbd648d1c2ba7b0e6efaa38d33a6ba85e49)
+
+commit 0f219768de5441f842706bc7b19ae08fe6e1f3d6
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Aug 22 16:53:34 2018 +0200
+
+    lib: create: avoid one extra string allocation
+    
+    When creating the qemu-img command, use the guestfs_int_cmd_add_arg &
+    guestfs_int_cmd_add_arg_format APIs to add the proper filename directly,
+    without creating a string for it.
+    
+    This should cause no functional change.
+    
+    (cherry picked from commit 962e8b6255295dfa9c40835aa9d03fb8ec97889d)
+
+commit 72e4e9f7c15d16f162445cae6c32aa5a2ff88a23
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 14 12:52:56 2018 +0100
+
+    build: Use LT_INIT in configure.ac.
+    
+    Avoids the warning:
+    libtoolize: Remember to add 'LT_INIT' to configure.ac.
+    
+    This is the new name for AC_PROG_LIBTOOL, so I removed that.
+    
+    However to use this macro we must enable AC_USE_SYSTEM_EXTENSIONS.
+    (AC_GNU_SOURCE was removed back in 2011).
+    
+    (cherry picked from commit 1b25fc393b218f41551458925be4e1eeab551310)
+
+commit fe463e1d32fbaa5059e8a51cd93638c12f7af14a
+Author: Bernhard M. Wiedemann <bwiedemann@suse.de>
+Date:   Wed Aug 22 05:52:10 2018 +0200
+
+    generator: Do not claim copyright for future years
+    
+    This change helps to make libguestfs package build reproducible.
+    See https://reproducible-builds.org/ for why this is good.
+    
+    Without this patch, building today's libguestfs in 2033, claims
+     Copyright (C) 2009-2033 Red Hat Inc.
+    which cannot be correct.
+    
+    This affected files like
+    /usr/include/guestfs-gobject.h
+    /usr/lib/perl5/vendor_perl/5.26.2/x86_64-linux-thread-multi/Sys/Guestfs.pm
+    /usr/lib64/python2.7/site-packages/guestfs.py
+    /usr/lib64/ocaml/guestfs/guestfs.mli
+    
+    Commits like 212762c59351822e9db7d3dc82afe1765808d918
+    will take care of updating the year.
+    
+    (cherry picked from commit 4d39faaa30eace5f52e92e344d3a62dcce52d71c)
+
+commit 4a5e46ed9c56f73c10deb675b62eefdbde71c686
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 20 17:29:53 2018 +0200
+
+    OCaml tools: simplify machine-readable handling
+    
+    Make use of the helper provided by Tools_utils.create_standard_options,
+    so there is no need to implement the logic in each tool.
+    
+    This affects all the OCaml tools with --machine-readable, namely:
+    virt-builder, virt-builder-repository, virt-dib, virt-get-kernel,
+    virt-resize, virt-sparsify, and virt-v2v.
+    
+    (cherry picked from commit 2fa78e6dcedee155b362acc5454c4732b7286f26)
+
+commit 2ccb27802b83d69cda7e929de92f480c630530f7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Mon Aug 20 17:29:52 2018 +0200
+
+    mlstdutils/mltools: factorize the machine-readable option
+    
+    Store the machine-readable flag globally, just like done for
+    verbose/debug/etc, and enhance create_standard_options to provide
+    --machine-readable automatically.
+    
+    (cherry picked from commit b8f0740b519e4f24adf669efbdbe8eb69ed7b6c6)
+
+commit d19db01f940be21c2874adb406c0c259d469b2cd
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 17 16:09:02 2018 +0100
+
+    mltools: Rename run_command std*_chan -> std*_fd.
+    
+    These are file descriptors, not the high level OCaml in_channel/
+    out_channel type, so we would normally not refer to them as *_chan.
+    
+    Just renaming, no functional change.
+    
+    (cherry picked from commit 13d85d722fe024f3e5e40029f1b65b3437c2864c)
+
+commit 06b783643ee4a99b5cdfcd586516965b85f53fee
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Fri Aug 17 16:04:55 2018 +0100
+
+    mltools: Document that run_command closes stdout_chan/stderr_chan.
+    
+    This behaviour is documented for run_commands, but not documented for
+    run_command, so document it.
+    
+    (cherry picked from commit f835c314cd3409c9bc64c84286791987c924cd1f)
+
+commit 8a541703e2bb89e3fe603aa81a1cd6cc9b3da169
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Aug 14 15:58:51 2018 +0200
+
+    v2v: parse_libvirt_xml: number disks from 0
+    
+    When parsing the libvirt XML, make sure to assign the IDs for disks
+    (s_disk_id) from 0 instead of 1.  This does not change the actual
+    behaviour, just makes the IDs like in all the other input modes not
+    based on libvirt XML.
+    
+    (cherry picked from commit 840dbb1dfc8441eb1971bfc58359713fd38b1819)
+
+commit 7d3335f39e2e00d7dea225a243ca890c91a6726f
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Tue Aug 14 16:07:38 2018 +0100
+
+    v2v: Verify that ’source.s_disks.s_disk_id‘s are all unique.
+    
+    (cherry picked from commit f9745c8229c8880cdf5efabe8c4dcb9049be7e39)
+
+commit 5ab06791d0255301ed09a389dd7e44dea4fb15ed
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Aug 10 13:58:04 2018 +0200
+
+    Change wording from "twice" to "more than once" in error messages
+    
+    When erroring out about duplicated parameters, say "more than once"
+    instead of "twice", since there can be more than two repeated
+    parameters.
+    
+    Thanks to: Xiaodai Wang
+    
+    (cherry picked from commit c486f0cf4ab9ed8c32797eaae1db834a9a03ad17)
+
+commit 598b4a797cdf1d8b2bd8ed1e35e00b44824daf30
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 9 15:01:37 2018 +0200
+
+    v2v: parse_libvirt_xml: handle srN CDROM devices (RHBZ#1612785)
+    
+    This device naming is mostly written by virt-p2v, so get the slot from
+    it directly without using the drive_index "decoding" function.
+    
+    (cherry picked from commit c9abaa3e96e7209595f0982c1f2f97e37f3369a6)
+
+commit bda47a2d1af81996b9ea05532635835e2f829a2d
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Thu Aug 9 12:14:04 2018 +0200
+
+    daemon: utils: add a couple of checks for split_device_partition
+    
+    Mostly to check the behaviour of the function with cases like in
+    RHBZ#1611690.
+    
+    (cherry picked from commit a3e8871705958342a4a75b675cd8f9c53ea30978)
+
 commit daabd0138b6467d4d02e100a046c07cff6d42cd0
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Aug 9 15:23:38 2018 +0100

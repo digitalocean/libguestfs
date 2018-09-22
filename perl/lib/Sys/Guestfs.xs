@@ -416,7 +416,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -516,7 +516,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -575,7 +575,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -643,7 +643,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -901,7 +901,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -1266,7 +1266,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -1298,7 +1298,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -1364,7 +1364,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -1397,7 +1397,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -1660,7 +1660,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -1775,7 +1775,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2048,7 +2048,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2082,7 +2082,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2139,7 +2139,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2188,7 +2188,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2237,7 +2237,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2286,7 +2286,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2335,7 +2335,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2441,7 +2441,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2593,7 +2593,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2697,7 +2697,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -2785,7 +2785,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -3254,7 +3254,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -3813,7 +3813,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -3866,7 +3866,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -4164,7 +4164,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -4510,7 +4510,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -4929,7 +4929,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -5209,7 +5209,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -5250,7 +5250,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -5710,7 +5710,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -5758,7 +5758,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -5806,7 +5806,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -5841,7 +5841,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -5876,7 +5876,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -5951,7 +5951,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -7276,7 +7276,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -7558,7 +7558,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -7699,7 +7699,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -7772,7 +7772,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -7895,7 +7895,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -7931,7 +7931,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -7998,7 +7998,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -8058,7 +8058,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -8102,7 +8102,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -8343,7 +8343,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -8375,7 +8375,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -8411,7 +8411,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -9162,7 +9162,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -9323,7 +9323,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -9360,7 +9360,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -9397,7 +9397,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -9463,7 +9463,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -9586,7 +9586,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -10306,7 +10306,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -10390,7 +10390,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -10464,7 +10464,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -10590,7 +10590,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -10683,7 +10683,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -10724,7 +10724,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -11246,7 +11246,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -11306,7 +11306,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }
@@ -11437,7 +11437,7 @@ PREINIT:
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
-          croak ("optional argument '%s' given twice",
+          croak ("optional argument '%s' given more than once",
                  this_arg);
         optargs_s.bitmask |= this_mask;
       }

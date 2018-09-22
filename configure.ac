@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [38])
-m4_define([libguestfs_release], [4])
+m4_define([libguestfs_release], [6])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 
@@ -32,6 +32,8 @@ m4_define([HEADING],
 AC_CONFIG_AUX_DIR([build-aux])
 AC_REQUIRE_AUX_FILE([guestfs-test-driver])
 
+AC_USE_SYSTEM_EXTENSIONS
+
 dnl Initialize automake.
 AM_INIT_AUTOMAKE(foreign subdir-objects tar-pax) dnl NB: Do not [quote] this parameter.
 
@@ -39,6 +41,9 @@ m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes]) # make --enable-silent-rules the default.
 
 AC_CONFIG_MACRO_DIR([m4])
+
+dnl Initialize libtool.
+LT_INIT
 
 dnl Stable or development version?
 BRANCH_NUMBER=libguestfs_major.libguestfs_minor
@@ -198,6 +203,8 @@ AC_CONFIG_FILES([installcheck.sh],
                 [chmod +x,-w installcheck.sh])
 AC_CONFIG_FILES([ocaml-dep.sh],
                 [chmod +x,-w ocaml-dep.sh])
+AC_CONFIG_FILES([ocaml-link.sh],
+                [chmod +x,-w ocaml-link.sh])
 AC_CONFIG_FILES([p2v/virt-p2v-make-disk],
                 [chmod +x,-w p2v/virt-p2v-make-disk])
 AC_CONFIG_FILES([p2v/virt-p2v-make-kickstart],
