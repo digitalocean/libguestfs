@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -185,6 +185,7 @@ extern struct command_entry equal_cmd_entry;
 extern struct command_entry event_cmd_entry;
 extern struct command_entry exists_cmd_entry;
 extern struct command_entry extlinux_cmd_entry;
+extern struct command_entry f2fs_expand_cmd_entry;
 extern struct command_entry fallocate_cmd_entry;
 extern struct command_entry fallocate64_cmd_entry;
 extern struct command_entry feature_available_cmd_entry;
@@ -286,6 +287,7 @@ extern struct command_entry inspect_get_icon_cmd_entry;
 extern struct command_entry inspect_get_major_version_cmd_entry;
 extern struct command_entry inspect_get_minor_version_cmd_entry;
 extern struct command_entry inspect_get_mountpoints_cmd_entry;
+extern struct command_entry inspect_get_osinfo_cmd_entry;
 extern struct command_entry inspect_get_package_format_cmd_entry;
 extern struct command_entry inspect_get_package_management_cmd_entry;
 extern struct command_entry inspect_get_product_name_cmd_entry;
@@ -377,6 +379,7 @@ extern struct command_entry lvcreate_free_cmd_entry;
 extern struct command_entry lvm_canonical_lv_name_cmd_entry;
 extern struct command_entry lvm_clear_filter_cmd_entry;
 extern struct command_entry lvm_remove_all_cmd_entry;
+extern struct command_entry lvm_scan_cmd_entry;
 extern struct command_entry lvm_set_filter_cmd_entry;
 extern struct command_entry lvremove_cmd_entry;
 extern struct command_entry lvrename_cmd_entry;
@@ -916,6 +919,8 @@ equal, &equal_cmd_entry
 event, &event_cmd_entry
 exists, &exists_cmd_entry
 extlinux, &extlinux_cmd_entry
+f2fs_expand, &f2fs_expand_cmd_entry
+f2fs-expand, &f2fs_expand_cmd_entry
 fallocate, &fallocate_cmd_entry
 fallocate64, &fallocate64_cmd_entry
 feature_available, &feature_available_cmd_entry
@@ -1101,6 +1106,8 @@ inspect_get_minor_version, &inspect_get_minor_version_cmd_entry
 inspect-get-minor-version, &inspect_get_minor_version_cmd_entry
 inspect_get_mountpoints, &inspect_get_mountpoints_cmd_entry
 inspect-get-mountpoints, &inspect_get_mountpoints_cmd_entry
+inspect_get_osinfo, &inspect_get_osinfo_cmd_entry
+inspect-get-osinfo, &inspect_get_osinfo_cmd_entry
 inspect_get_package_format, &inspect_get_package_format_cmd_entry
 inspect-get-package-format, &inspect_get_package_format_cmd_entry
 inspect_get_package_management, &inspect_get_package_management_cmd_entry
@@ -1272,6 +1279,8 @@ lvm_clear_filter, &lvm_clear_filter_cmd_entry
 lvm-clear-filter, &lvm_clear_filter_cmd_entry
 lvm_remove_all, &lvm_remove_all_cmd_entry
 lvm-remove-all, &lvm_remove_all_cmd_entry
+lvm_scan, &lvm_scan_cmd_entry
+lvm-scan, &lvm_scan_cmd_entry
 lvm_set_filter, &lvm_set_filter_cmd_entry
 lvm-set-filter, &lvm_set_filter_cmd_entry
 lvremove, &lvremove_cmd_entry

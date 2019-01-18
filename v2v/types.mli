@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,11 @@
 │source│
 │struct│
 └──┬───┘
+   │ source.s_disks
+   │
    │    ┌───────┐  ┌───────┐  ┌───────┐
    └────┤ disk1 ├──┤ disk2 ├──┤ disk3 │  Source disks
-        └───▲───┘  └───▲───┘  └───▲───┘  (source.s_disks)
+        └───▲───┘  └───▲───┘  └───▲───┘
             │          │          │
             │          │          │ overlay.ov_source
         ┌───┴───┐  ┌───┴───┐  ┌───┴───┐
@@ -62,6 +64,7 @@ type source = {
   s_orig_name : string;                 (** Original guest name (if we rename
                                             the guest using -on, original is
                                             still saved here). *)
+  s_genid : string option;              (** VM Generation ID. *)
   s_memory : int64;                     (** Memory size (bytes). *)
   s_vcpu : int;                         (** Number of CPUs. *)
   s_cpu_vendor : string option;         (** Source CPU vendor. *)
@@ -123,8 +126,11 @@ and source_nic = {
   s_mac : string option;                (** MAC address. *)
   s_nic_model : s_nic_model option;     (** Network adapter model. *)
   s_vnet : string;                      (** Source network name. *)
-  s_vnet_orig : string;                 (** Original network (if we map it). *)
   s_vnet_type : vnet_type;              (** Source network type. *)
+  s_mapping_explanation : string option;
+  (** If the NIC or network was mapped, this contains an English
+      explanation of the change which can be written to the target
+      hypervisor metadata for informational purposes. *)
 }
 (** Network adapter models. *)
 and s_nic_model = Source_other_nic of string |
@@ -168,12 +174,25 @@ val string_of_source : source -> string
 val string_of_source_disk : source_disk -> string
 val string_of_controller : s_controller -> string
 val string_of_nic_model : s_nic_model -> string
+val string_of_vnet_type : vnet_type -> string
 val string_of_source_sound_model : source_sound_model -> string
 val string_of_source_video : source_video -> string
 val string_of_source_cpu_topology : source_cpu_topology -> string
 
 val string_of_source_hypervisor : source_hypervisor -> string
 val source_hypervisor_of_string : string -> source_hypervisor
+
+(** {2 Disk stats}
+
+    Note that the estimate is filled in by core v2v.ml code before
+    copying starts, and the actual size is filled in after copying
+    (but may not be filled in if [--no-copy] so don't rely on it). *)
+type disk_stats = {
+  mutable target_estimated_size : int64 option;
+                             (** Est. max. space taken on target. *)
+  mutable target_actual_size : int64 option;
+                             (** Actual size on target. *)
+}
 
 (** {2 Overlay disks} *)
 
@@ -186,6 +205,8 @@ type overlay = {
    * error messages).  It must NOT be opened/read/modified.
    *)
   ov_source : source_disk;   (** Link back to the source disk. *)
+
+  ov_stats : disk_stats;     (** Size stats for this disk. *)
 }
 (** Overlay disk. *)
 
@@ -196,13 +217,6 @@ val string_of_overlay : overlay -> string
 type target = {
   target_file : target_file; (** Destination file or QEMU URI. *)
   target_format : string;    (** Destination format (eg. -of option). *)
-
-  (* Note that the estimate is filled in by core v2v.ml code before
-   * copying starts, and the actual size is filled in after copying
-   * (but may not be filled in if [--no-copy] so don't rely on it).
-   *)
-  target_estimated_size : int64 option; (** Est. max. space taken on target. *)
-  target_actual_size : int64 option; (** Actual size on target. *)
 
   target_overlay : overlay;  (** Link back to the overlay disk. *)
 }
@@ -240,8 +254,9 @@ type guestcaps = {
   gcaps_virtio_balloon : bool;  (** Guest supports virtio balloon. *)
   gcaps_isa_pvpanic : bool;     (** Guest supports ISA pvpanic device. *)
 
-  gcaps_arch : string;      (** Architecture that KVM must emulate. *)
-  gcaps_acpi : bool;        (** True if guest supports acpi. *)
+  gcaps_machine : guestcaps_machine; (** Machine model. *)
+  gcaps_arch : string;          (** Architecture that KVM must emulate. *)
+  gcaps_acpi : bool;            (** True if guest supports acpi. *)
 }
 (** Guest capabilities after conversion.  eg. Was virtio found or installed? *)
 
@@ -257,6 +272,7 @@ and requested_guestcaps = {
 and guestcaps_block_type = Virtio_blk | Virtio_SCSI | IDE
 and guestcaps_net_type = Virtio_net | E1000 | RTL8139
 and guestcaps_video_type = QXL | Cirrus
+and guestcaps_machine = I440FX | Q35 | Virt
 
 val string_of_guestcaps : guestcaps -> string
 val string_of_requested_guestcaps : requested_guestcaps -> string
@@ -300,7 +316,7 @@ v}
 
 and target_bus_slot =
 | BusSlotEmpty                  (** This bus slot is empty. *)
-| BusSlotTarget of target       (** Contains a fixed disk. *)
+| BusSlotDisk of source_disk    (** Contains a fixed disk. *)
 | BusSlotRemovable of source_removable (** Contains a removable CD/floppy. *)
 
 val string_of_target_buses : target_buses -> string
@@ -311,6 +327,7 @@ type inspect = {
   i_root : string;                      (** Root device. *)
   i_type : string;                      (** Usual inspection fields. *)
   i_distro : string;
+  i_osinfo : string;
   i_arch : string;
   i_major_version : int;
   i_minor_version : int;
@@ -346,7 +363,36 @@ type output_allocation = Sparse | Preallocated
 
 (** {2 Input object}
 
-    There is one of these used for the [-i] option. *)
+    This is subclassed for the various input [-i] options.
+
+    The order of steps is:
+
+{v
+    command line parsing      Input object of right subclass is
+        │                     created depending on ‘-i’ option.
+        │
+        ▼
+    input#precheck            Called very early on, do pre-checks here.
+        │
+        │
+        ▼
+    input#source              Open the source hypervisor connection,
+        │                     read metadata, and fill out and return
+        │                     the ‘Types.source’ structure.
+        ▼
+    conversion                Guest is converted into a local overlay.
+        │
+        │
+        ▼
+    input#adjust_overlay_parameters   Optional method for adjusting
+        │                     QEMU overlay parameters ready for copying
+        │                     (eg. using a larger readahead setting).
+        ▼
+    copying                   Guest data is copied to the target disks
+                              by running ‘qemu-img convert’.
+v}
+
+*)
 
 class virtual input : object
   method precheck : unit -> unit
@@ -366,7 +412,49 @@ end
 
 (** {2 Output object}
 
-    There is one of these used for the [-o] option. *)
+    This is subclassed for the various output [-o] options.
+
+    The order of steps is:
+
+{v
+    command line parsing      Output object of right subclass is
+        │                     created depending on ‘-o’ option.
+        │
+        ▼
+    output#precheck           Called very early on, do pre-checks here.
+        │
+        │
+        ▼
+    conversion                Guest is converted into a local overlay.
+        │
+        │
+        ▼
+    output#prepare_targets    The output module should construct
+        │                     the names or URIs of the target disks,
+        │                     but SHOULD NOT create them.
+        ▼
+    Guestfs#disk_create       Create the target disks.  In rare
+        │                     cases output modules can override
+        │                     this by defining output#disk_create.
+        ▼
+    copying                   Guest data is copied to the target disks
+        │                     by running ‘qemu-img convert’.
+        │
+        ▼
+    output#create_metadata    VM should be created from the metadata
+                              supplied.  Also any finalization can
+                              be done here.
+v}
+
+    There is no general method to clean up on error.  You can
+    register a normal {!at_exit} function, but that won’t always
+    be called if virt-v2v is killed abruptly.  You have to
+    write output methods to be robust in the face of this.
+
+    The above documentation applies to copying mode (the normal mode).
+    [--in-place] works differently - best to look at the sources in
+    [v2v/v2v.ml].
+*)
 
 class virtual output : object
   method precheck : unit -> unit
@@ -376,23 +464,30 @@ class virtual output : object
   method virtual as_options : string
   (** Converts the output object back to the equivalent command line options.
       This is just used for pretty-printing log messages. *)
-  method virtual prepare_targets : source -> target list -> target list
-  (** Called before conversion to prepare the output. *)
   method virtual supported_firmware : target_firmware list
   (** Does this output method support UEFI?  Allows us to abort early if
       conversion is impossible. *)
   method check_target_firmware : guestcaps -> target_firmware -> unit
-  (** Called before conversion once the guest's target firmware is known.
+  (** Called before conversion once the guest’s target firmware is known.
       Can be used as an additional check that the target firmware is
       supported on the host. *)
-  method check_target_free_space : source -> target list -> unit
-  (** Called before conversion.  Can be used to check there is enough space
-      on the target, using the [target.target_estimated_size] field. *)
-  method virtual create_metadata : source -> target list -> target_buses -> guestcaps -> inspect -> target_firmware -> unit
-  (** Called after conversion and copying to finish off and create metadata. *)
+  method override_output_format : overlay -> string option
+  (** In rare cases we want to override the -of option on the command
+      line (silently).  It’s best not to do this, instead modify
+      prepare_targets so it gives an error if the output format
+      chosen is not supported by the target. *)
+  method virtual prepare_targets : source -> (string * overlay) list -> target_buses -> guestcaps -> inspect -> target_firmware -> target_file list
+  (** Called after conversion but before copying to prepare (but {b not}
+      create) the target file.  The [(string * overlay list)] parameter
+      is a list of the (format, overlay) for each target disk.  If
+      the format is wrong/unsupported by the target, give an error. *)
   method disk_create : ?backingfile:string -> ?backingformat:string -> ?preallocation:string -> ?compat:string -> ?clustersize:int -> string -> string -> int64 -> unit
   (** Called in order to create disks on the target.  The method has the
-      same signature as Guestfs#disk_create. *)
+      same signature as Guestfs#disk_create.  Normally you should {b not}
+      define this since the default method calls Guestfs#disk_create. *)
+  method virtual create_metadata : source -> target list -> target_buses -> guestcaps -> inspect -> target_firmware -> unit
+  (** Called after conversion and copying to create metadata and
+      do any finalization. *)
   method keep_serial_console : bool
   (** Whether this output supports serial consoles (RHV does not). *)
   method install_rhev_apt : bool

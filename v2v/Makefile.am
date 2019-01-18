@@ -1,5 +1,5 @@
 # libguestfs virt-v2v tool
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,19 +22,34 @@ generator_built = \
 	uefi.mli
 
 BUILT_SOURCES = \
-	$(generator_built)
+	$(generator_built) \
+	config.ml \
+	output_rhv_upload_createvm_source.ml \
+	output_rhv_upload_plugin_source.ml \
+	output_rhv_upload_precheck_source.ml
 
 EXTRA_DIST = \
 	$(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
 	copy_to_local.ml \
 	copy_to_local.mli \
+	embed.sh \
+	rhv-upload-createvm.py \
+	rhv-upload-plugin.py \
+	rhv-upload-precheck.py \
 	v2v_unit_tests.ml \
 	virt-v2v.pod \
-	virt-v2v-copy-to-local.pod
+	virt-v2v-copy-to-local.pod \
+	virt-v2v-input-vmware.pod \
+	virt-v2v-input-xen.pod \
+	virt-v2v-output-local.pod \
+	virt-v2v-output-openstack.pod \
+	virt-v2v-output-rhv.pod \
+	virt-v2v-support.pod
 
 SOURCES_MLI = \
 	changeuid.mli \
 	cmdline.mli \
+	config.mli \
 	convert_linux.mli \
 	convert_windows.mli \
 	create_libvirt_xml.mli \
@@ -54,19 +69,28 @@ SOURCES_MLI = \
 	linux.mli \
 	linux_bootloaders.mli \
 	linux_kernels.mli \
+	measure_disk.mli \
 	modules_list.mli \
 	name_from_disk.mli \
+	networks.mli \
+	openstack_image_properties.mli \
 	output_glance.mli \
 	output_libvirt.mli \
 	output_local.mli \
 	output_null.mli \
+	output_openstack.mli \
 	output_qemu.mli \
 	output_rhv.mli \
+	output_rhv_upload.mli \
+	output_rhv_upload_createvm_source.mli \
+	output_rhv_upload_plugin_source.mli \
+	output_rhv_upload_precheck_source.mli \
 	output_vdsm.mli \
 	parse_ova.mli \
 	parse_ovf_from_ova.mli \
 	parse_libvirt_xml.mli \
 	parse_vmx.mli \
+	python_script.mli \
 	qemuopts.mli \
 	target_bus_assignment.mli \
 	types.mli \
@@ -78,9 +102,11 @@ SOURCES_MLI = \
 	windows_virtio.mli
 
 SOURCES_ML = \
+	config.ml \
 	types.ml \
 	uefi.ml \
 	utils.ml \
+	python_script.ml \
 	name_from_disk.ml \
 	vCenter.ml \
 	libvirt_utils.ml \
@@ -97,6 +123,7 @@ SOURCES_ML = \
 	parse_vmx.ml \
 	parse_libvirt_xml.ml \
 	create_libvirt_xml.ml \
+	openstack_image_properties.ml \
 	qemuopts.ml \
 	input_libvirtxml.ml \
 	input_libvirt_other.ml \
@@ -116,15 +143,30 @@ SOURCES_ML = \
 	output_local.ml \
 	output_qemu.ml \
 	output_rhv.ml \
+	output_rhv_upload_createvm_source.ml \
+	output_rhv_upload_plugin_source.ml \
+	output_rhv_upload_precheck_source.ml \
+	output_rhv_upload.ml \
 	output_vdsm.ml \
+	output_openstack.ml \
 	inspect_source.ml \
 	target_bus_assignment.ml \
+	measure_disk.ml \
+	networks.ml \
 	cmdline.ml \
 	v2v.ml
 
 SOURCES_C = \
 	libvirt_utils-c.c \
 	qemuopts-c.c
+
+# These files are generated and contain *.py embedded as an OCaml string.
+output_rhv_upload_createvm_source.ml: $(srcdir)/rhv-upload-createvm.py
+	$(srcdir)/embed.sh code $^ $@
+output_rhv_upload_plugin_source.ml: $(srcdir)/rhv-upload-plugin.py
+	$(srcdir)/embed.sh code $^ $@
+output_rhv_upload_precheck_source.ml: $(srcdir)/rhv-upload-precheck.py
+	$(srcdir)/embed.sh code $^ $@
 
 if HAVE_OCAML
 
@@ -174,6 +216,7 @@ OCAMLCLIBS = \
 	-lqemuopts \
 	$(LIBVIRT_LIBS) \
 	$(LIBXML2_LIBS) \
+	$(JANSSON_LIBS) \
 	$(LIBINTL) \
 	-lgnu
 
@@ -247,11 +290,25 @@ virttoolsdatadir = $(datadir)/virt-tools
 
 # Manual pages and HTML files for the website.
 
-man_MANS = virt-v2v.1 virt-v2v-copy-to-local.1
+man_MANS = \
+	virt-v2v.1 \
+	virt-v2v-copy-to-local.1 \
+	virt-v2v-input-vmware.1 \
+	virt-v2v-input-xen.1 \
+	virt-v2v-output-local.1 \
+	virt-v2v-output-openstack.1 \
+	virt-v2v-output-rhv.1 \
+	virt-v2v-support.1
 
 noinst_DATA = \
 	$(top_builddir)/website/virt-v2v.1.html \
-	$(top_builddir)/website/virt-v2v-copy-to-local.1.html
+	$(top_builddir)/website/virt-v2v-copy-to-local.1.html \
+	$(top_builddir)/website/virt-v2v-input-vmware.1.html \
+	$(top_builddir)/website/virt-v2v-input-xen.1.html \
+	$(top_builddir)/website/virt-v2v-output-local.1.html \
+	$(top_builddir)/website/virt-v2v-output-openstack.1.html \
+	$(top_builddir)/website/virt-v2v-output-rhv.1.html \
+	$(top_builddir)/website/virt-v2v-support.1.html
 
 virt-v2v.1 $(top_builddir)/website/virt-v2v.1.html: stamp-virt-v2v.pod
 
@@ -270,6 +327,72 @@ stamp-virt-v2v-copy-to-local.pod: virt-v2v-copy-to-local.pod
 	$(PODWRAPPER) \
 	  --man virt-v2v-copy-to-local.1 \
 	  --html $(top_builddir)/website/virt-v2v-copy-to-local.1.html \
+	  --license GPLv2+ \
+	  --warning safe \
+	  $<
+	touch $@
+
+virt-v2v-input-vmware.1 $(top_builddir)/website/virt-v2v-input-vmware.1.html: stamp-virt-v2v-input-vmware.pod
+
+stamp-virt-v2v-input-vmware.pod: virt-v2v-input-vmware.pod
+	$(PODWRAPPER) \
+	  --man virt-v2v-input-vmware.1 \
+	  --html $(top_builddir)/website/virt-v2v-input-vmware.1.html \
+	  --license GPLv2+ \
+	  --warning safe \
+	  $<
+	touch $@
+
+virt-v2v-input-xen.1 $(top_builddir)/website/virt-v2v-input-xen.1.html: stamp-virt-v2v-input-xen.pod
+
+stamp-virt-v2v-input-xen.pod: virt-v2v-input-xen.pod
+	$(PODWRAPPER) \
+	  --man virt-v2v-input-xen.1 \
+	  --html $(top_builddir)/website/virt-v2v-input-xen.1.html \
+	  --license GPLv2+ \
+	  --warning safe \
+	  $<
+	touch $@
+
+virt-v2v-output-local.1 $(top_builddir)/website/virt-v2v-output-local.1.html: stamp-virt-v2v-output-local.pod
+
+stamp-virt-v2v-output-local.pod: virt-v2v-output-local.pod
+	$(PODWRAPPER) \
+	  --man virt-v2v-output-local.1 \
+	  --html $(top_builddir)/website/virt-v2v-output-local.1.html \
+	  --license GPLv2+ \
+	  --warning safe \
+	  $<
+	touch $@
+
+virt-v2v-output-openstack.1 $(top_builddir)/website/virt-v2v-output-openstack.1.html: stamp-virt-v2v-output-openstack.pod
+
+stamp-virt-v2v-output-openstack.pod: virt-v2v-output-openstack.pod
+	$(PODWRAPPER) \
+	  --man virt-v2v-output-openstack.1 \
+	  --html $(top_builddir)/website/virt-v2v-output-openstack.1.html \
+	  --license GPLv2+ \
+	  --warning safe \
+	  $<
+	touch $@
+
+virt-v2v-output-rhv.1 $(top_builddir)/website/virt-v2v-output-rhv.1.html: stamp-virt-v2v-output-rhv.pod
+
+stamp-virt-v2v-output-rhv.pod: virt-v2v-output-rhv.pod
+	$(PODWRAPPER) \
+	  --man virt-v2v-output-rhv.1 \
+	  --html $(top_builddir)/website/virt-v2v-output-rhv.1.html \
+	  --license GPLv2+ \
+	  --warning safe \
+	  $<
+	touch $@
+
+virt-v2v-support.1 $(top_builddir)/website/virt-v2v-support.1.html: stamp-virt-v2v-support.pod
+
+stamp-virt-v2v-support.pod: virt-v2v-support.pod
+	$(PODWRAPPER) \
+	  --man virt-v2v-support.1 \
+	  --html $(top_builddir)/website/virt-v2v-support.1.html \
 	  --license GPLv2+ \
 	  --warning safe \
 	  $<
@@ -295,6 +418,7 @@ TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 TESTS = \
 	test-v2v-docs.sh \
+	test-v2v-python-syntax.sh \
 	test-v2v-i-ova-bad-sha1.sh \
 	test-v2v-i-ova-bad-sha256.sh \
 	test-v2v-i-ova-formats.sh \
@@ -307,6 +431,9 @@ TESTS = \
 	test-v2v-i-ova-tar.sh \
 	test-v2v-i-ova-two-disks.sh \
 	test-v2v-i-vmx.sh \
+	test-v2v-it-vddk-io-query.sh \
+	test-v2v-o-rhv-upload-oo-query.sh \
+	test-v2v-o-vdsm-oo-query.sh \
 	test-v2v-bad-networks-and-bridges.sh
 
 if HAVE_LIBVIRT
@@ -331,17 +458,21 @@ TESTS += \
 	test-v2v-cdrom.sh \
 	test-v2v-floppy.sh \
 	test-v2v-in-place.sh \
+	test-v2v-mac.sh \
 	test-v2v-networks-and-bridges.sh \
 	test-v2v-no-copy.sh \
 	test-v2v-o-glance.sh \
 	test-v2v-o-libvirt.sh \
 	test-v2v-o-null.sh \
+	test-v2v-o-openstack.sh \
 	test-v2v-o-qemu.sh \
 	test-v2v-o-rhv.sh \
+	test-v2v-o-rhv-upload.sh \
 	test-v2v-o-vdsm-options.sh \
 	test-v2v-oa-option.sh \
 	test-v2v-of-option.sh \
 	test-v2v-on-option.sh \
+	test-v2v-print-estimate.sh \
 	test-v2v-print-source.sh \
 	test-v2v-sound.sh \
 	$(SLOW_TESTS) \
@@ -351,6 +482,7 @@ endif ENABLE_APPLIANCE
 
 # The VMDK file is used for some -i ova tests.
 check_DATA = windows.vmdk
+if ENABLE_APPLIANCE
 windows.vmdk: ../test-data/phony-guests/windows.img
 	rm -f $@ $@-t
 	if [ -s $< ]; then \
@@ -359,6 +491,10 @@ windows.vmdk: ../test-data/phony-guests/windows.img
 	else \
 	    touch $@; \
 	fi
+else
+windows.vmdk:
+	touch $@
+endif
 
 DISTCLEANFILES += \
 	windows.vmdk
@@ -400,7 +536,11 @@ real_guests_scripts = \
 	test-v2v-conversion-of-ubuntu-10.04.sh \
 	test-v2v-conversion-of-ubuntu-12.04.sh \
 	test-v2v-conversion-of-ubuntu-14.04.sh \
-	test-v2v-conversion-of-ubuntu-16.04.sh
+	test-v2v-conversion-of-ubuntu-16.04.sh \
+	test-v2v-conversion-of-ubuntu-18.04.sh \
+	test-v2v-conversion-of-windows-6.2-server.sh \
+	test-v2v-conversion-of-windows-6.3-server.sh \
+	test-v2v-conversion-of-windows-10.0-server.sh
 
 test-v2v-conversion-of-%.sh:
 	rm -f $@ $@-t
@@ -470,7 +610,11 @@ EXTRA_DIST += \
 	test-v2v-i-vmx-4.vmx \
 	test-v2v-i-vmx-5.vmx \
 	test-v2v-in-place.sh \
+	test-v2v-it-vddk-io-query.sh \
 	test-v2v-machine-readable.sh \
+	test-v2v-mac-expected.xml \
+	test-v2v-mac.sh \
+	test-v2v-mac.xml \
 	test-v2v-networks-and-bridges-expected.xml \
 	test-v2v-networks-and-bridges.sh \
 	test-v2v-networks-and-bridges.xml \
@@ -478,15 +622,25 @@ EXTRA_DIST += \
 	test-v2v-o-glance.sh \
 	test-v2v-o-libvirt.sh \
 	test-v2v-o-null.sh \
+	test-v2v-o-openstack.sh \
 	test-v2v-o-qemu.sh \
+	test-v2v-o-rhv.ovf.expected \
 	test-v2v-o-rhv.sh \
+	test-v2v-o-rhv-upload.sh \
+	test-v2v-o-rhv-upload-module/ovirtsdk4/__init__.py \
+	test-v2v-o-rhv-upload-module/ovirtsdk4/types.py \
+	test-v2v-o-rhv-upload-oo-query.sh \
+	test-v2v-o-vdsm-oo-query.sh \
+	test-v2v-o-vdsm-options.ovf.expected \
 	test-v2v-o-vdsm-options.sh \
 	test-v2v-oa-option.sh \
 	test-v2v-of-option.sh \
 	test-v2v-on-option.sh \
+	test-v2v-print-estimate.sh \
 	test-v2v-print-source.expected \
 	test-v2v-print-source.sh \
 	test-v2v-print-source.xml \
+	test-v2v-python-syntax.sh \
 	test-v2v-conversion-of.sh \
 	test-v2v-sound.sh \
 	test-v2v-sound.xml \
@@ -507,8 +661,8 @@ v2v_unit_tests_BOBJECTS = \
 	DOM.cmo \
 	create_ovf.cmo \
 	windows.cmo \
-	windows_virtio.cmo \
 	linux.cmo \
+	windows_virtio.cmo \
 	parse_vmx.cmo \
 	v2v_unit_tests.cmo
 v2v_unit_tests_XOBJECTS = $(v2v_unit_tests_BOBJECTS:.cmo=.cmx)
@@ -543,7 +697,11 @@ v2v_unit_tests_LINK = \
 	  $(v2v_unit_tests_THEOBJECTS) -o $@
 
 # Dependencies.
-.depend: $(srcdir)/*.mli $(srcdir)/*.ml
+.depend: \
+	$(srcdir)/*.mli \
+	$(srcdir)/*.ml \
+	config.ml \
+	output_rhv_upload_*_source.ml
 	$(top_builddir)/ocaml-dep.sh $^
 -include .depend
 

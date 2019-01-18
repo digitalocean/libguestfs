@@ -155,7 +155,7 @@ C<ls -lR>.
 =item тип
 
 Тип файла, одне з таких значень: C<-> (звичайний файл), C<d> (каталог), C<c>
-(символьний пристрій), C<b> (блокововий пристрій), C<p> (іменований канал),
+(символьний пристрій), C<b> (блоковий пристрій), C<p> (іменований канал),
 C<l> (символічне посилання), C<s> (сокет) або C<u> (невідомо).
 
 =item права доступу
@@ -360,6 +360,23 @@ TEMPEST-нападів, або у вашій кімнаті нікого, окр
 Цей параметр працюватиме лише у режимі виведення I<-lR>. Див. L</РЕКУРСИВНИЙ
 ДОВГИЙ СПИСОК> вище.
 
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
+
 =item B<--keys-from-stdin>
 
 Прочитати параметри ключа або пароля із джерела стандартного
@@ -544,5 +561,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

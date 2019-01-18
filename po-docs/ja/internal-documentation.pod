@@ -56,57 +56,41 @@ any way.
 
 The appliance kernel command line.
 
+=head4 Definition C<lib/appliance-kcmdline.c:VALID_TERM>
+
+ #define VALID_TERM
+
+Check that the $TERM environment variable is reasonable before we pass it
+through to the appliance.
+
 =head4 Function C<lib/appliance-kcmdline.c:guestfs_int_appliance_command_line>
 
- #define VALID_TERM(term) \
-   guestfs_int_string_is_valid ((term), 1, 16, \
-                                VALID_FLAG_ALPHA|VALID_FLAG_DIGIT, "-_")
- 
- #if defined(__powerpc64__)
- #define SERIAL_CONSOLE "console=hvc0 console=ttyS0"
- #elif defined(__arm__) || defined(__aarch64__)
- #define SERIAL_CONSOLE "console=ttyAMA0"
- #elif defined(__s390x__)
- #define SERIAL_CONSOLE "console=ttysclp0"
- #else
- #define SERIAL_CONSOLE "console=ttyS0"
- #endif
- 
- #if defined(__aarch64__)
- #define EARLYPRINTK "earlyprintk=pl011,0x9000000"
- #endif
- 
- /**
-  * Construct the Linux command line passed to the appliance.  This is
-  * used by the C<direct> and C<libvirt> backends, and is simply
-  * located in this file because it's a convenient place for this
-  * common code.
-  *
-  * The C<appliance_dev> parameter must be the full device name of the
-  * appliance disk and must have already been adjusted to take into
-  * account virtio-blk or virtio-scsi; eg C</dev/sdb>.
-  *
-  * The C<flags> parameter can contain the following flags logically
-  * or'd together (or 0):
-  *
-  * =over 4
-  *
-  * =item C<APPLIANCE_COMMAND_LINE_IS_TCG>
-  *
-  * If we are launching a qemu TCG guest (ie. KVM is known to be
-  * disabled or unavailable).  If you don't know, don't pass this flag.
-  *
-  * =back
-  *
-  * Note that this function returns a newly allocated buffer which must
-  * be freed by the caller.
-  */
  char *
  guestfs_int_appliance_command_line (guestfs_h *g, const char *appliance_dev,
  				    int flags)
 
-Check that the $TERM environment variable is reasonable before we pass it
-through to the appliance.
+Construct the Linux command line passed to the appliance.  This is used by
+the C<direct> and C<libvirt> backends, and is simply located in this file
+because it's a convenient place for this common code.
+
+The C<appliance_dev> parameter must be the full device name of the appliance
+disk and must have already been adjusted to take into account virtio-blk or
+virtio-scsi; eg C</dev/sdb>.
+
+The C<flags> parameter can contain the following flags logically or'd
+together (or 0):
+
+=over 4
+
+=item C<APPLIANCE_COMMAND_LINE_IS_TCG>
+
+If we are launching a qemu TCG guest (ie. KVM is known to be disabled or
+unavailable).  If you don't know, don't pass this flag.
+
+=back
+
+Note that this function returns a newly allocated buffer which must be freed
+by the caller.
 
 =head3 File F<lib/appliance-uefi.c>
 
@@ -587,16 +571,9 @@ APIs for creating empty disks.
 
 Mostly this consists of wrappers around the L<qemu-img(1)> program.
 
-=head4 Function C<lib/create.c:disk_create_qcow2>
+=head4 Definition C<lib/create.c:VALID_FORMAT>
 
- #define VALID_FORMAT(format) \
-   guestfs_int_string_is_valid ((format), 1, 16, \
-                                VALID_FLAG_ALPHA|VALID_FLAG_DIGIT, "")
- 
- static int
- disk_create_qcow2 (guestfs_h *g, const char *filename, int64_t size,
-                    const char *backingfile,
-                    const struct guestfs_disk_create_argv *optargs)
+ #define VALID_FORMAT
 
 Check for valid backing format.  Allow any C<^[[:alnum]]+$> (in C locale),
 but limit the length to something reasonable.
@@ -678,35 +655,33 @@ Called during launch to add a dummy slot to C<g-E<gt>drives>.
 
 Free up all the drives in the handle.
 
-=head4 Function C<lib/drives.c:valid_port>
+=head4 Definition C<lib/drives.c:VALID_FORMAT_IFACE>
 
- #define VALID_FORMAT_IFACE(str) \
-   guestfs_int_string_is_valid ((str), 1, 0, \
-                                VALID_FLAG_ALPHA|VALID_FLAG_DIGIT, "-_")
- 
- /**
-  * Check the disk label is reasonable.  It can't contain certain
-  * characters, eg. C<'/'>, C<','>.  However be stricter here and
-  * ensure it's just alphabetic and E<le> 20 characters in length.
-  */
- #define VALID_DISK_LABEL(str) \
-   guestfs_int_string_is_valid ((str), 1, 20, VALID_FLAG_ALPHA, NULL)
- 
- /**
-  * Check the server hostname is reasonable.
-  */
- #define VALID_HOSTNAME(str) \
-   guestfs_int_string_is_valid ((str), 1, 255, \
-                                VALID_FLAG_ALPHA|VALID_FLAG_DIGIT, "-.:[]")
- 
- /**
-  * Check the port number is reasonable.
-  */
- static int
- valid_port (int port)
+ #define VALID_FORMAT_IFACE
 
 Check string parameter matches regular expression C<^[-_[:alnum:]]+$> (in C
 locale).
+
+=head4 Definition C<lib/drives.c:VALID_DISK_LABEL>
+
+ #define VALID_DISK_LABEL
+
+Check the disk label is reasonable.  It can't contain certain characters,
+eg. C<'/'>, C<','>.  However be stricter here and ensure it's just
+alphabetic and E<le> 20 characters in length.
+
+=head4 Definition C<lib/drives.c:VALID_HOSTNAME>
+
+ #define VALID_HOSTNAME
+
+Check the server hostname is reasonable.
+
+=head4 Function C<lib/drives.c:valid_port>
+
+ static int
+ valid_port (int port)
+
+Check the port number is reasonable.
 
 =head4 Function C<lib/drives.c:guestfs_impl_remove_drive>
 
@@ -1138,6 +1113,9 @@ Used to cache the appliance features (see F<lib/available.c>).
    /* Cached features. */
    struct cached_feature *features;
    size_t nr_features;
+ 
+   /* Used by lib/info.c.  -1 = not tested or error; else 0 or 1. */
+   int qemu_img_supports_U_option;
  };
 
 The libguestfs handle.
@@ -1206,6 +1184,19 @@ Close all open handles (called from L<atexit(3)>).
 
 This is a convenience function, but we might consider exporting it as an API
 in future.
+
+=head3 File F<lib/info.c>
+
+=head4 Function C<lib/info.c:qemu_img_supports_U_option>
+
+ static int
+ qemu_img_supports_U_option (guestfs_h *g)
+
+Test if the qemu-img info command supports the C<-U> option to disable
+locking.  The result is memoized in the handle.
+
+Note this option was added in qemu 2.11.  We can remove this test when we
+can assume everyone is using qemu >= 2.11.
 
 =head3 File F<lib/inspect-icon.c>
 
@@ -1664,9 +1655,20 @@ qemu, but don't fail if parsing is not possible.
 =head4 Function C<lib/qemu.c:parse_json>
 
  static void
- parse_json (guestfs_h *g, const char *json, yajl_val *treep)
+ parse_json (guestfs_h *g, const char *json, json_t **treep)
 
 Parse the json output from QMP.  But don't fail if parsing is not possible.
+
+=head4 Function C<lib/qemu.c:parse_has_kvm>
+
+ static void
+ parse_has_kvm (guestfs_h *g, const char *json, bool *ret)
+
+Parse the json output from QMP query-kvm to find out if KVM is enabled on
+this machine.  Don't fail if parsing is not possible, assume KVM is
+available.
+
+The JSON output looks like: {"return": {"enabled": true, "present": true}}
 
 =head4 Function C<lib/qemu.c:generic_read_cache>
 
@@ -2225,7 +2227,7 @@ Make a LUKS map name from the partition name, eg. C<"/dev/vda2" =E<gt>
 =head4 Function C<common/options/decrypt.c:inspect_do_decrypt>
 
  void
- inspect_do_decrypt (guestfs_h *g)
+ inspect_do_decrypt (guestfs_h *g, struct key_store *ks)
 
 Simple implementation of decryption: look for any C<crypto_LUKS> partitions
 and decrypt them, then rescan for VGs.  This only works for Fedora
@@ -2277,7 +2279,7 @@ some utilities such as L<virt-cat(1)>.
 =head4 Function C<common/options/inspect.c:inspect_mount_handle>
 
  void
- inspect_mount_handle (guestfs_h *g)
+ inspect_mount_handle (guestfs_h *g, struct key_store *ks)
 
 This function implements the I<-i> option.
 
@@ -2546,7 +2548,7 @@ Free the list of qemu options.
 
 Add a command line flag which has no argument. eg:
 
- qemuopts_add_flag (qopts, "-nodefconfig");
+ qemuopts_add_flag (qopts, "-no-user-config");
 
 Returns C<0> on success.  Returns C<-1> on error, setting C<errno>.
 
@@ -2834,6 +2836,126 @@ F<lib/guestfs-internal-all.h>
 
 If a definition is only needed by a single component of libguestfs (eg. just
 the library, or just a single virt tool) then it should B<not> be here!
+
+=head3 File F<common/utils/libxml2-writer-macros.h>
+
+These macros make it easier to write XML.  To use them correctly you must be
+aware of these assumptions:
+
+=over 4
+
+=item *
+
+The C<xmlTextWriterPtr> is called C<xo>.  It is used implicitly by all the
+macros.
+
+=item *
+
+On failure, a function called C<xml_error> is called which you must define
+(usually as a macro).  You must use C<CLEANUP_*> macros in your functions if
+you want correct cleanup of local variables along the error path.
+
+=item *
+
+All the "bad" casting is hidden inside the macros.
+
+=back
+
+=head4 Definition C<common/utils/libxml2-writer-macros.h:start_element>
+
+ #define start_element
+
+To define an XML element use:
+
+ start_element ("name") {
+   ...
+ } end_element ();
+
+which produces C<<< <name>...</name> >>>
+
+=head4 Definition C<common/utils/libxml2-writer-macros.h:empty_element>
+
+ #define empty_element
+
+To define an empty element:
+
+ empty_element ("name");
+
+which produces C<<< <name/> >>>
+
+=head4 Definition C<common/utils/libxml2-writer-macros.h:single_element>
+
+ #define single_element
+
+To define a single element with no attributes containing some text:
+
+ single_element ("name", text);
+
+which produces C<<< <name>text</name> >>>
+
+=head4 Definition C<common/utils/libxml2-writer-macros.h:single_element_format>
+
+ #define single_element_format
+
+To define a single element with no attributes containing some text using a
+format string:
+
+ single_element_format ("cores", "%d", nr_cores);
+
+which produces C<<< <cores>4</cores> >>>
+
+=head4 Definition C<common/utils/libxml2-writer-macros.h:attribute>
+
+ #define attribute
+
+To define an XML element with attributes, use:
+
+ start_element ("name") {
+   attribute ("foo", "bar");
+   attribute_format ("count", "%d", count);
+   ...
+ } end_element ();
+
+which produces C<<< <name foo="bar" count="123">...</name> >>>
+
+=head4 Definition C<common/utils/libxml2-writer-macros.h:attribute_ns>
+
+ #define attribute_ns
+
+C<attribute_ns (prefix, key, namespace_uri, value)> defines a namespaced
+attribute.
+
+=head4 Definition C<common/utils/libxml2-writer-macros.h:string>
+
+ #define string
+
+To define a verbatim string, use:
+
+ string ("hello");
+
+=head4 Definition C<common/utils/libxml2-writer-macros.h:string_format>
+
+ #define string_format
+
+To define a verbatim string using a format string, use:
+
+ string ("%s, world", greeting);
+
+=head4 Definition C<common/utils/libxml2-writer-macros.h:base64>
+
+ #define base64
+
+To write a string encoded as base64:
+
+ base64 (data, size);
+
+=head4 Definition C<common/utils/libxml2-writer-macros.h:comment>
+
+ #define comment
+
+To define a comment in the XML, use:
+
+  comment ("number of items = %d", nr_items);
 
 =head3 File F<common/utils/utils.c>
 
@@ -3917,10 +4039,31 @@ This file implements the guestfish C<time> command.
 
 =head3 File F<p2v/config.c>
 
+=head4 Function C<p2v/config.c:new_config>
+
+ struct config *
+ new_config (void)
+
+Allocate a new config struct.
+
+=head4 Function C<p2v/config.c:copy_config>
+
+ struct config *
+ copy_config (struct config *old)
+
+Copy a config struct.
+
+=head4 Function C<p2v/config.c:free_config>
+
+ void
+ free_config (struct config *c)
+
+Free a config struct.
+
 =head4 Function C<p2v/config.c:print_config>
 
  void
- print_config (struct config *config, FILE *fp)
+ print_config (struct config *c, FILE *fp)
 
 Print the conversion parameters and other important information.
 
@@ -4446,6 +4589,16 @@ but we don't support all that.
 
 Returns a list of key, value pairs, terminated by C<NULL>.
 
+=head3 File F<p2v/kernel-config.c>
+
+=head4 Function C<p2v/kernel-config.c:update_config_from_kernel_cmdline>
+
+ void
+ update_config_from_kernel_cmdline (struct config *c, char **cmdline)
+
+Read the kernel command line and parse out any C<p2v.*> fields that we
+understand into the config struct.
+
 =head3 File F<p2v/kernel.c>
 
 Kernel-driven, non-interactive configuration of virt-p2v.
@@ -4683,7 +4836,7 @@ Download URL to local file using the external 'curl' command.
  static int
  cache_ssh_identity (struct config *config)
 
-Re-cache the C<config-E<gt>identity_url> if needed.
+Re-cache the C<config-E<gt>identity.url> if needed.
 
 =head4 Function C<p2v/ssh.c:start_ssh>
 

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,16 +17,21 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
-EXTRA_DIST = libguestfs-test-tool.pod
+EXTRA_DIST = \
+	libguestfs-test-tool.pod \
+	test-libguestfs-test-tool-docs.sh
 
 bin_PROGRAMS = libguestfs-test-tool
 man_MANS = libguestfs-test-tool.1
 
-libguestfs_test_tool_SOURCES = test-tool.c
+libguestfs_test_tool_SOURCES = \
+	../common/options/display-options.c \
+	test-tool.c
 
 libguestfs_test_tool_CPPFLAGS = \
 	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
 	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+	-I$(top_srcdir)/common/options -I$(top_builddir)/common/options \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
@@ -52,6 +57,14 @@ stamp-libguestfs-test-tool.pod: libguestfs-test-tool.pod
 	  --warning safe \
 	  $<
 	touch $@
+
+# Tests.
+
+TESTS_ENVIRONMENT = \
+	$(top_builddir)/run --test
+
+TESTS = \
+	test-libguestfs-test-tool-docs.sh
 
 check-valgrind:
 	$(top_builddir)/run --test @VG@ ./libguestfs-test-tool

@@ -13,12 +13,12 @@ virt-tar-in — розпаковування архіву tar до образу 
 
 =head1 ОПИС
 
-C<virt-tar-in> unpacks an uncompressed tarball into a virtual machine disk
-image or named libvirt domain.
+C<virt-tar-in> розпаковує нестиснений архів tar до образу диска віртуальної
+машини або вказаного за назвою домену libvirt.
 
-The first parameter is the tar file.  Use C<-> to read the tar file from
-standard input.  The second parameter is the absolute target directory to
-unpack into.
+Першим параметром є файл tar. Скористайтеся записом C<->, якщо файл слід
+прочитати зі стандартного джерела вхідних даних. Другим параметром є
+абсолютний шлях до каталогу призначення, до якого слід розпакувати дані.
 
 =head1 ПРИКЛАДИ
 

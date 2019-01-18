@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@ let init_callbacks () =
   Callback.register "Parted.part_get_gpt_guid" Parted.part_get_gpt_guid;
   Callback.register "Parted.part_get_gpt_type" Parted.part_get_gpt_type;
   Callback.register "Parted.part_get_mbr_id" Parted.part_get_mbr_id;
+  Callback.register "Parted.part_get_mbr_part_type" Parted.part_get_mbr_part_type;
   Callback.register "Parted.part_get_parttype" Parted.part_get_parttype;
   Callback.register "Parted.part_list" Parted.part_list;
   Callback.register "Parted.part_set_gpt_attributes" Parted.part_set_gpt_attributes;

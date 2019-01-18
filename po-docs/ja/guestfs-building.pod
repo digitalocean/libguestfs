@@ -171,7 +171,7 @@ I<Required>.
 
 I<Required>.
 
-=item yajl E<ge> 2.0.4
+=item Jansson E<ge> 2.7
 
 I<Required>.
 
@@ -858,5 +858,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

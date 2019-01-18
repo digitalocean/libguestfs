@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -852,6 +852,27 @@ run_exists (const char *cmd, size_t argc, char *argv[])
  out:
   free (path);
  out_path:
+ out_noargs:
+  return ret;
+}
+
+int
+run_f2fs_expand (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = RUN_ERROR;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    ret = RUN_WRONG_ARGS;
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_f2fs_expand (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
  out_noargs:
   return ret;
 }

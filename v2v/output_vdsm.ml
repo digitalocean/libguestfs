@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,25 +32,98 @@ type vdsm_options = {
   vm_uuid : string;
   ovf_output : string;
   compat : string;
+  ovf_flavour : Create_ovf.ovf_flavour;
 }
+
+let ovf_flavours_str = String.concat "|" Create_ovf.ovf_flavours
+
+let print_output_options () =
+  printf (f_"Output options (-oo) which can be used with -o vdsm:
+
+  -oo vdsm-compat=0.10|1.1     Write qcow2 with compat=0.10|1.1
+                                   (default: 0.10)
+  -oo vdsm-vm-uuid=UUID        VM UUID (required)
+  -oo vdsm-ovf-output=DIR      OVF metadata directory (required)
+  -oo vdsm-ovf-flavour=%s
+                               Set the type of generated OVF (default: rhvexp)
+
+For each disk you must supply one of each of these options:
+
+  -oo vdsm-image-uuid=UUID     Image directory UUID
+  -oo vdsm-vol-uuid=UUID       Disk volume UUID
+") ovf_flavours_str
+
+let parse_output_options options =
+  let vm_uuid = ref None in
+  let ovf_output = ref None in (* default "." *)
+  let compat = ref "0.10" in
+  let ovf_flavour = ref Create_ovf.RHVExportStorageDomain in
+  let image_uuids = ref [] in
+  let vol_uuids = ref [] in
+
+  List.iter (
+    function
+    | "vdsm-compat", "0.10" -> compat := "0.10"
+    | "vdsm-compat", "1.1" -> compat := "1.1"
+    | "vdsm-compat", v ->
+       error (f_"-o vdsm: unknown vdsm-compat level ‘%s’") v
+    | "vdsm-vm-uuid", v ->
+       if !vm_uuid <> None then
+         error (f_"-o vdsm: -oo vdsm-vm-uuid set more than once");
+       vm_uuid := Some v;
+    | "vdsm-ovf-output", v ->
+       if !ovf_output <> None then
+         error (f_"-o vdsm: -oo vdsm-ovf-output set more than once");
+       ovf_output := Some v;
+    | "vdsm-ovf-flavour", v ->
+       ovf_flavour := Create_ovf.ovf_flavour_of_string v
+    | "vdsm-image-uuid", v ->
+       List.push_front v image_uuids
+    | "vdsm-vol-uuid", v ->
+       List.push_front v vol_uuids
+    | k, _ ->
+       error (f_"-o vdsm: unknown output option ‘-oo %s’") k
+  ) options;
+
+  let compat = !compat in
+  let image_uuids = List.rev !image_uuids in
+  let vol_uuids = List.rev !vol_uuids in
+  if image_uuids = [] || vol_uuids = [] then
+    error (f_"-o vdsm: either -oo vdsm-vol-uuid or -oo vdsm-vm-uuid was not specified");
+  let vm_uuid =
+    match !vm_uuid with
+    | None ->
+       error (f_"-o vdsm: -oo vdsm-image-uuid was not specified")
+    | Some uuid -> uuid in
+  let ovf_output = Option.default "." !ovf_output in
+  let ovf_flavour = !ovf_flavour in
+
+  { image_uuids; vol_uuids; vm_uuid; ovf_output; compat; ovf_flavour }
 
 class output_vdsm os vdsm_options output_alloc =
 object
   inherit output
 
   method as_options =
-    sprintf "-o vdsm -os %s%s%s --vdsm-vm-uuid %s --vdsm-ovf-output %s%s" os
+    sprintf "-o vdsm -os %s%s%s -oo vdsm-vm-uuid=%s -oo vdsm-ovf-output=%s%s%s" os
       (String.concat ""
-         (List.map (sprintf " --vdsm-image-uuid %s") vdsm_options.image_uuids))
+         (List.map (sprintf " -oo vdsm-image-uuid=%s")
+                   vdsm_options.image_uuids))
       (String.concat ""
-         (List.map (sprintf " --vdsm-vol-uuid %s") vdsm_options.vol_uuids))
+         (List.map (sprintf " -oo vdsm-vol-uuid=%s")
+                   vdsm_options.vol_uuids))
       vdsm_options.vm_uuid
       vdsm_options.ovf_output
       (match vdsm_options.compat with
        | "0.10" -> "" (* currently this is the default, so don't print it *)
-       | s -> sprintf " --vdsm-compat=%s" s)
+       | s -> sprintf " -oo vdsm-compat=%s" s)
+      (match vdsm_options.ovf_flavour with
+       (* currently this is the default, so don't print it *)
+       | Create_ovf.RHVExportStorageDomain -> ""
+       | flav -> sprintf "-oo vdsm-ovf-flavour=%s"
+                         (Create_ovf.ovf_flavour_to_string flav))
 
-  method supported_firmware = [ TargetBIOS ]
+  method supported_firmware = [ TargetBIOS; TargetUEFI ]
 
   (* RHV doesn't support serial consoles.  This causes the conversion
    * step to remove it.
@@ -70,17 +143,12 @@ object
    *
    * 'os' is the output storage domain (-os /rhv/data/<data center>/<data domain>)
    * this is already mounted path.
-   *
-   * Note it's good to fail here (early) if there are any problems, since
-   * the next time we are called (in {!create_metadata}) we have already
-   * done the conversion and copy, and the user won't thank us for
-   * displaying errors there.
    *)
-  method prepare_targets _ targets =
-    if List.length vdsm_options.image_uuids <> List.length targets ||
-      List.length vdsm_options.vol_uuids <> List.length targets then
-      error (f_"the number of ‘--vdsm-image-uuid’ and ‘--vdsm-vol-uuid’ parameters passed on the command line has to match the number of guest disk images (for this guest: %d)")
-        (List.length targets);
+  method prepare_targets _ overlays _ _ _ _ =
+    if List.length vdsm_options.image_uuids <> List.length overlays ||
+      List.length vdsm_options.vol_uuids <> List.length overlays then
+      error (f_"the number of ‘-oo vdsm-image-uuid’ and ‘-oo vdsm-vol-uuid’ parameters passed on the command line has to match the number of guest disk images (for this guest: %d)")
+        (List.length overlays);
 
     let mp, uuid =
       let fields = String.nsplit "/" os in (* ... "data-center" "UUID" *)
@@ -128,21 +196,18 @@ object
     (* Create the target filenames. *)
     let targets =
       List.map (
-        fun ({ target_overlay = ov } as t, image_uuid, vol_uuid) ->
-          let ov_sd = ov.ov_sd in
+        fun ((_, ov), image_uuid, vol_uuid) ->
           let target_file = images_dir // image_uuid // vol_uuid in
-
-          debug "VDSM: will export %s to %s" ov_sd target_file;
-
-          { t with target_file = TargetFile target_file }
-      ) (List.combine3 targets vdsm_options.image_uuids vdsm_options.vol_uuids) in
+          debug "VDSM: will export %s to %s" ov.ov_sd target_file;
+          TargetFile target_file
+      ) (List.combine3 overlays vdsm_options.image_uuids vdsm_options.vol_uuids) in
 
     (* Generate the .meta files associated with each volume. *)
     let metas =
       Create_ovf.create_meta_files output_alloc dd_uuid
-        vdsm_options.image_uuids targets in
+        vdsm_options.image_uuids overlays in
     List.iter (
-      fun ({ target_file }, meta) ->
+      fun (target_file, meta) ->
         let target_file =
           match target_file with
           | TargetFile s -> s
@@ -151,7 +216,7 @@ object
         with_open_out meta_filename (fun chan -> output_string chan meta)
     ) (List.combine targets metas);
 
-    (* Return the list of targets. *)
+    (* Return the list of target files. *)
     targets
 
   method disk_create ?backingfile ?backingformat ?preallocation ?compat
@@ -167,15 +232,14 @@ object
 
   (* This is called after conversion to write the OVF metadata. *)
   method create_metadata source targets _ guestcaps inspect target_firmware =
-    (* See #supported_firmware above. *)
-    assert (target_firmware = TargetBIOS);
-
     (* Create the metadata. *)
     let ovf = Create_ovf.create_ovf source targets guestcaps inspect
+      target_firmware
       output_alloc dd_uuid
       vdsm_options.image_uuids
       vdsm_options.vol_uuids
-      vdsm_options.vm_uuid in
+      vdsm_options.vm_uuid
+      vdsm_options.ovf_flavour in
 
     (* Write it to the metadata file. *)
     let file = vdsm_options.ovf_output // vdsm_options.vm_uuid ^ ".ovf" in

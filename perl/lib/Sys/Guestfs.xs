@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2902,6 +2902,17 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+f2fs_expand (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_f2fs_expand (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 fallocate (g, path, len)
       guestfs_h *g;
       char *path;
@@ -4569,6 +4580,21 @@ PREINIT:
         free (r[i]);
       }
       free (r);
+
+SV *
+inspect_get_osinfo (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_osinfo (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
 
 SV *
 inspect_get_package_format (g, root)
@@ -7071,6 +7097,17 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_lvm_remove_all (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+lvm_scan (g, activate)
+      guestfs_h *g;
+      int activate;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_lvm_scan (g, activate);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 

@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1431,6 +1431,14 @@ val extlinux : t -> string -> unit
     @since 1.21.27
  *)
 
+val f2fs_expand : t -> string -> unit
+(** expand a f2fs filesystem
+
+    This function depends on the feature "f2fs".  See also {!feature_available}.
+
+    @since 1.39.3
+ *)
+
 val fallocate : t -> string -> int -> unit
 (** preallocate a file in the guest filesystem
 
@@ -2129,6 +2137,12 @@ val inspect_get_mountpoints : t -> string -> (string * string) list
 (** get mountpoints of inspected operating system
 
     @since 1.5.3
+ *)
+
+val inspect_get_osinfo : t -> string -> string
+(** get a possible osinfo short ID corresponding to this operating system
+
+    @since 1.39.1
  *)
 
 val inspect_get_package_format : t -> string -> string
@@ -2907,6 +2921,12 @@ val lvm_remove_all : t -> unit
     This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 0.8
+ *)
+
+val lvm_scan : t -> bool -> unit
+(** scan for LVM physical volumes, volume groups and logical volumes
+
+    @since 1.39.8
  *)
 
 val lvm_set_filter : t -> string array -> unit
@@ -4496,6 +4516,8 @@ val vgs_full : t -> lvm_vg array
 val vgscan : t -> unit
 (** rescan for LVM physical volumes, volume groups and logical volumes
 
+    @deprecated Use {!lvm_scan} instead
+
     @since 1.3.2
  *)
 
@@ -5559,6 +5581,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
 
     @since 1.21.27
    *)
+  method f2fs_expand : string -> unit
+  (** expand a f2fs filesystem
+
+    This function depends on the feature "f2fs".  See also {!feature_available}.
+
+    @since 1.39.3
+   *)
   method fallocate : string -> int -> unit
   (** preallocate a file in the guest filesystem
 
@@ -6156,6 +6185,11 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   (** get mountpoints of inspected operating system
 
     @since 1.5.3
+   *)
+  method inspect_get_osinfo : string -> string
+  (** get a possible osinfo short ID corresponding to this operating system
+
+    @since 1.39.1
    *)
   method inspect_get_package_format : string -> string
   (** get package format used by the operating system
@@ -6809,6 +6843,11 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
     This function depends on the feature "lvm2".  See also {!feature_available}.
 
     @since 0.8
+   *)
+  method lvm_scan : bool -> unit
+  (** scan for LVM physical volumes, volume groups and logical volumes
+
+    @since 1.39.8
    *)
   method lvm_set_filter : string array -> unit
   (** set LVM device filter
@@ -8164,6 +8203,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
    *)
   method vgscan : unit -> unit
   (** rescan for LVM physical volumes, volume groups and logical volumes
+
+    @deprecated Use {!lvm_scan} instead
 
     @since 1.3.2
    *)

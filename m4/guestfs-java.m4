@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ if test "x$with_java" != "xno"; then
             /usr/lib64/jvm/java \
             /usr/lib/jvm/default-java \
             /usr/lib/jvm/default \
+            /etc/java-config-2/current-system-vm \
             /usr/lib/jvm/java-8-openjdk \
             /usr/lib/jvm/java-7-openjdk \
             /usr/lib/jvm/java-6-openjdk

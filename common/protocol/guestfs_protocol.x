@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1127,6 +1127,10 @@ struct guestfs_extlinux_args {
   string directory<>;
 };
 
+struct guestfs_f2fs_expand_args {
+  string device<>;
+};
+
 struct guestfs_fallocate_args {
   string path<>;
   int len;
@@ -2169,6 +2173,10 @@ struct guestfs_lvm_canonical_lv_name_args {
 
 struct guestfs_lvm_canonical_lv_name_ret {
   string lv<>;
+};
+
+struct guestfs_lvm_scan_args {
+  bool activate;
 };
 
 struct guestfs_lvm_set_filter_args {
@@ -3589,6 +3597,7 @@ enum guestfs_procedure {
   GUESTFS_PROC_EQUAL = 93,
   GUESTFS_PROC_EXISTS = 36,
   GUESTFS_PROC_EXTLINUX = 400,
+  GUESTFS_PROC_F2FS_EXPAND = 505,
   GUESTFS_PROC_FALLOCATE = 169,
   GUESTFS_PROC_FALLOCATE64 = 252,
   GUESTFS_PROC_FGREP = 153,
@@ -3751,6 +3760,7 @@ enum guestfs_procedure {
   GUESTFS_PROC_LVM_CANONICAL_LV_NAME = 277,
   GUESTFS_PROC_LVM_CLEAR_FILTER = 256,
   GUESTFS_PROC_LVM_REMOVE_ALL = 48,
+  GUESTFS_PROC_LVM_SCAN = 506,
   GUESTFS_PROC_LVM_SET_FILTER = 255,
   GUESTFS_PROC_LVREMOVE = 77,
   GUESTFS_PROC_LVRENAME = 219,
@@ -3962,7 +3972,7 @@ enum guestfs_procedure {
   GUESTFS_PROC_ZGREPI = 160
 };
 
-const GUESTFS_MAX_PROC_NR = 504;
+const GUESTFS_MAX_PROC_NR = 506;
 
 /* The remote procedure call protocol. */
 

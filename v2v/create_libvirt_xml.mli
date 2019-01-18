@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,12 @@
 
 (** Create libvirt XML for [-o libvirt] and [-o local]. *)
 
-val create_libvirt_xml : ?pool:string -> Types.source -> Types.target_buses ->
+val create_libvirt_xml : ?pool:string -> Types.source -> Types.target list ->
+                         Types.target_buses ->
                          Types.guestcaps -> string list ->
                          Types.target_firmware ->
+                         Types.inspect ->
                          DOM.doc
-(** [create_libvirt_xml ?pool source target_buses guestcaps target_features
-     target_firmware] creates the final libvirt XML for the output
-    hypervisor. *)
+(** [create_libvirt_xml ?pool source targets target_buses guestcaps
+    target_features target_firmware] creates the final libvirt XML
+    for the output hypervisor. *)

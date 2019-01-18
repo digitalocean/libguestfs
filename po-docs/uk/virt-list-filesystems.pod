@@ -1,7 +1,8 @@
 
 =head1 НАЗВА
 
-virt-list-filesystems - List filesystems in a virtual machine or disk image
+virt-list-filesystems — показ списку файлових систем у віртуальній машині
+або на образі диска
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -11,17 +12,16 @@ virt-list-filesystems - List filesystems in a virtual machine or disk image
 
 =head1 ЗАСТАРІЛЕ
 
-This tool is obsolete.  Use L<virt-filesystems(1)> as a more flexible
-replacement.
+Ця програма вважається застарілою. Замість неї слід використовувати програму
+L<virt-filesystems(1)>, яке є гнучкішим замінником.
 
 =head1 ОПИС
 
-C<virt-list-filesystems> is a command line tool to list the filesystems that
-are contained in a virtual machine or disk image.
+C<virt-list-filesystems> — інструмент командного рядка для показу списку
+файлових систем, які містяться у віртуальній машині (або образі диска).
 
-C<virt-list-filesystems> is just a simple wrapper around L<libguestfs(3)>
-functionality.  For more complex cases you should look at the
-L<guestfish(1)> tool.
+C<virt-list-filesystems> є простою обгорткою навколо L<libguestfs(3)>. Для
+виконання складніших дій можна скористатися програмою L<guestfish(1)>.
 
 =head1 ПАРАМЕТРИ
 
@@ -47,12 +47,13 @@ L<guestfish(1)> tool.
 
 =item B<--format> raw
 
-Specify the format of disk images given on the command line.  If this is
-omitted then the format is autodetected from the content of the disk image.
+Визначає формат образу диска, назву якого вказано у рядку команди. Якщо
+формат не вказано, його буде визначено автоматично на основі вмісту образу
+диска.
 
-If disk images are requested from libvirt, then this program asks libvirt
-for this information.  In this case, the value of the format parameter is
-ignored.
+Якщо вказаний диск походить з libvirt, ця програма надішле запит щодо даних
+до libvirt. У цьому випадку вказане значення параметра формату буде
+проігноровано.
 
 Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
 ненадійних джерел, вам слід завжди вказувати назву формату.
@@ -61,15 +62,16 @@ ignored.
 
 =item B<--long>
 
-With this option, C<virt-list-filesystems> displays the type of each
-filesystem too (where "type" means C<ext3>, C<xfs> etc.)
+Якщо вказано цей параметр, C<virt-list-filesystems> показує тип кожної
+файлової системи (де під типом ми розуміємо C<ext3>, C<xfs> тощо)
 
 =item B<-a>
 
 =item B<--all>
 
-Normally we only show mountable filesystems.  If this option is given then
-swap devices are shown too.
+Зазвичай, буде показано лише файлові системи, які придатні до
+монтування. Якщо вказано цей параметр, програма показуватиме і пристрої
+резервної пам'яті на диску.
 
 =back
 

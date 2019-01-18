@@ -1,0 +1,270 @@
+
+=item B<p2v.remote.server=SERVER>
+
+=item B<p2v.server=СЕРВЕР>
+
+
+
+Назву або IP-адресу сервера перетворення.
+
+Ці дані є завжди обов'язковими, якщо ви використовуєте спосіб із
+налаштовуванням ядра. Якщо virt-p2v не знайде цих даних у командному рядку
+ядра, програма автоматично перемкнеться на спосіб налаштовування за
+допомогою графічного інтерфейсу (інтерактивний спосіб).
+
+=item B<p2v.remote.port=PORT>
+
+=item B<p2v.port=PORT>
+
+
+
+Номер порту SSH на сервері перетворення (типове значення: C<22>).
+
+=item B<p2v.auth.username=USERNAME>
+
+=item B<p2v.username=КОРИСТУВАЧ>
+
+
+
+Ім'я користувача SSH, яке буде використано для входу на сервер перетворення
+(типове значення: C<root>).
+
+=item B<p2v.auth.password=PASSWORD>
+
+=item B<p2v.password=ПАРОЛЬ>
+
+
+
+Пароль SSH, який буде використано для входу на сервер перетворення.
+
+Типовою поведінкою буде спроба встановлення зв'язку без пароля. Якщо зв'язок
+встановити не вдасться, virt-p2v  попросить користувача ввести пароль
+(ймовірно, декілька разів протягом перетворення).
+
+This setting is ignored if C<p2v.auth.identity.url> is present.
+
+=item B<p2v.auth.identity.url=URL>
+
+=item B<p2v.identity=АДРЕСА>
+
+
+
+Вказує адресу файла профілю SSH (закритого ключа). Адресу буде оброблено за
+допомогою L<curl(1)>, тому тут можна вказати будь-яку адресу, підтримку якої
+передбачено у curl, зокрема C<https://> та C<file://>. Щоб дізнатися більше
+про використання профілів SSH, ознайомтеся із розділом L</ПРОФІЛІ SSH>
+нижче.
+
+If C<p2v.auth.identity.url> is present, it overrides C<p2v.auth.password>.
+There is no fallback.
+
+=item B<p2v.auth.sudo>
+
+=item B<p2v.sudo>
+
+
+
+Скористайтеся C<p2v.sudo>, щоб наказати virt-p2v використовувати L<sudo(8)>
+для отримання прав доступу root на сервері перетворення після входу до
+системи від імені користувача, відмінного від root (типова поведінка: не
+використовувати sudo).
+
+=item B<p2v.guestname=GUESTNAME>
+
+=item B<p2v.name=НАЗВА_ГОСТЬОВОЇ_СИСТЕМИ>
+
+
+
+Назва гостьової системи, яку буде створено. Типовою поведінкою є
+встановлення назви на основі назви вузла фізичної машини (якщо це
+можливо). Якщо назву встановити не вдасться, буде використано назву, яку
+створено випадковим чином.
+
+=item B<p2v.vcpus=N>
+
+
+
+Кількість віртуальних процесорів, про які буде повідомлено гостьовій
+системі. Типово, ця кількість дорівнюватиме кількості фізичних процесорів у
+системі.
+
+=item B<p2v.memory=n(M|G)>
+
+
+
+The size of the guest memory.  You must specify the unit such as megabytes
+or gigabytes by using for example C<p2v.memory=1024M> or C<p2v.memory=1G>.
+
+Типово, буде використано той самий об'єм оперативної пам'яті, який є у
+фізичної машини.
+
+=item B<p2v.cpu.vendor=VENDOR>
+
+
+
+The vCPU vendor, eg. "Intel" or "AMD".  The default is to use the same CPU
+vendor as the physical machine.
+
+=item B<p2v.cpu.model=MODEL>
+
+
+
+The vCPU model, eg. "IvyBridge".  The default is to use the same CPU model
+as the physical machine.
+
+=item B<p2v.cpu.sockets=N>
+
+
+
+Number of vCPU sockets to use.  The default is to use the same as the
+physical machine.
+
+=item B<p2v.cpu.cores=N>
+
+
+
+Number of vCPU cores to use.  The default is to use the same as the physical
+machine.
+
+=item B<p2v.cpu.threads=N>
+
+
+
+Number of vCPU hyperthreads to use.  The default is to use the same as the
+physical machine.
+
+=item B<p2v.cpu.acpi>
+
+
+
+Whether to enable ACPI in the remote virtual machine.  The default is to use
+the same as the physical machine.
+
+=item B<p2v.cpu.apic>
+
+
+
+Whether to enable APIC in the remote virtual machine.  The default is to use
+the same as the physical machine.
+
+=item B<p2v.cpu.pae>
+
+
+
+Whether to enable PAE in the remote virtual machine.  The default is to use
+the same as the physical machine.
+
+=item B<p2v.rtc.basis=(unknown|utc|localtime)>
+
+
+
+Set the basis of the Real Time Clock in the virtual machine.  The default is
+to try to detect this setting from the physical machine.
+
+=item B<p2v.rtc.offset=[+|-]HOURS>
+
+
+
+The offset of the Real Time Clock from UTC.  The default is to try to detect
+this setting from the physical machine.
+
+=item B<p2v.disks=sda,sdb,...>
+
+
+
+Список фізичних жорстких дисків для перетворення. Приклад:
+
+ p2v.disks=sda,sdc
+
+Типово, буде перетворено усі знайдені локальні жорсткі диски.
+
+=item B<p2v.removable=sra,srb,...>
+
+
+
+Список портативних носіїв даних, які слід включити до перетворення. Типовою
+поведінкою є створення віртуальних портативних пристроїв для усіх знайдених
+фізичних портативних пристроїв. Зауважте, що вміст портативних пристроїв
+ніколи не копіюватиметься до гостьової системи.
+
+=item B<p2v.interfaces=em1,...>
+
+
+
+Список інтерфейсів мережі для перетворення. Типовою поведінкою є створення
+інтерфейсів мережі для усіх знайдених фізичних інтерфейсів мережі.
+
+=item B<p2v.network_map=interface:target,...>
+
+=item B<p2v.network=інтерфейс:призначення,...>
+
+
+
+Керує тим, як інтерфейси мережі буде з'єднано із віртуальними мережами у
+гіпервізорі призначення. Типовою поведінкою є встановлення з'єднання на усіх
+інтерфейсах мережі із мережею C<default> у гіпервізорі.
+
+Вам слід вказати список пар C<інтерфейс:призначення>, відокремлених комами,
+і, необов'язково, типове призначення. Приклади:
+
+ p2v.network=em1:ovirtmgmt
+
+пов'язує інтерфейс C<em1> із мережею призначення C<ovirtmgmt>.
+
+ p2v.network=em1:ovirtmgmt,em2:management,other
+
+пов'язує інтерфейс C<em1> із C<ovirtmgmt>, а інтерфейс C<em2> із
+C<management>; усі інші знайдені інтерфейси буде пов'язано із C<other>.
+
+=item B<p2v.output.type=(libvirt|local|...)>
+
+=item B<p2v.o=(libvirt|local|...)>
+
+
+
+Встановити режим для виведення даних. Те саме, що і параметр virt-v2v
+I<-o>. Див. L<virt-v2v(1)/ПАРАМЕТРИ>.
+
+Якщо не вказано, типовим значенням є C<local>, а перетворені гостьові
+системи буде записано до F</var/tmp>.
+
+=item B<p2v.output.allocation=(none|sparse|preallocated)>
+
+=item B<p2v.oa=(none|sparse|preallocated)>
+
+
+
+Встановити режим отримання пам'яті для виведення даних. Те саме, що і
+параметр virt-v2v I<-oa>. Див. L<virt-v2v(1)/ПАРАМЕТРИ>.
+
+=item B<p2v.output.connection=URI>
+
+=item B<p2v.oc=URI>
+
+
+
+Встановити для з'єднання виведення адресу libvirt. Те саме, Що параметр
+virt-v2v I<-oc>. Див. L<virt-v2v(1)/ПАРАМЕТРИ> та
+L<http://libvirt.org/uri.html>
+
+=item B<p2v.output.format=(raw|qcow2|...)>
+
+=item B<p2v.of=(raw|qcow2|...)>
+
+
+
+Встановити формат для виведення даних. Те саме, що і параметр virt-v2v
+I<-of>. Див. L<virt-v2v(1)/ПАРАМЕТРИ>.
+
+=item B<p2v.output.storage=STORAGE>
+
+=item B<p2v.os=STORAGE>
+
+
+
+Встановити сховище даних для виведення. Те саме, що і параметр virt-v2v
+I<-os>. Див. L<virt-v2v(1)/ПАРАМЕТРИ>.
+
+Якщо не вказано, типово буде використано F</var/tmp> (на сервері
+перетворення).
+

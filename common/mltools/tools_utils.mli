@@ -1,5 +1,5 @@
 (* Common utilities for OCaml tools in libguestfs.
- * Copyright (C) 2010-2018 Red Hat Inc.
+ * Copyright (C) 2010-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,8 +64,21 @@ val parse_resize : int64 -> string -> int64
 val human_size : int64 -> string
 (** Converts a size in bytes to a human-readable string. *)
 
+type machine_readable_fn = {
+  pr : 'a. ('a, unit, string, unit) format4 -> 'a;
+} (* [@@unboxed] *)
+(** Helper type for {!machine_readable}, used to workaround
+    limitations in returned values. *)
+val machine_readable : unit -> machine_readable_fn option
+(** Returns the printf-like function to use to write all the machine
+    readable output to, in case it was enabled via
+    [--machine-readable]. *)
+
+type key_store
+
 type cmdline_options = {
   getopt : Getopt.t;              (** The actual {!Getopt} handle. *)
+  ks : key_store;                 (** Container for keys read via [--key]. *)
 }
 (** Structure representing all the data needed for handling command
     line options. *)
@@ -75,7 +88,10 @@ val create_standard_options : Getopt.speclist -> ?anon_fun:Getopt.anon_fun -> ?k
     sorting them, and setting [long_options] to them.
 
     [key_opts] specifies whether add the standard options related to
-    keys management, i.e. [--echo-keys] and [--keys-from-stdin].
+    keys management, i.e. [--echo-keys], [--key], and [--keys-from-stdin].
+    In case [key_opts] is specified, {!recfield:cmdline_options.ks} will
+    contain the keys specified via [--key], so it ought to be passed around
+    where needed.
 
     [machine_readable] specifies whether add the [--machine-readable]
     option.
@@ -178,7 +194,7 @@ val inspect_mount_root_ro : Guestfs.guestfs -> string -> unit
 val is_btrfs_subvolume : Guestfs.guestfs -> string -> bool
 (** Checks if a filesystem is a btrfs subvolume. *)
 
-val inspect_decrypt : Guestfs.guestfs -> unit
+val inspect_decrypt : Guestfs.guestfs -> key_store -> unit
 (** Simple implementation of decryption: look for any [crypto_LUKS]
     partitions and decrypt them, then rescan for VGs.  This only works
     for Fedora whole-disk encryption. *)

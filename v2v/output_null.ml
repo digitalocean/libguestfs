@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,45 @@ open Utils
  * too small, so we have to set the size.  We could set it to
  * match the input size but it's easier to set it to some huge
  * size instead.
+ *
+ * In case neither the null-co driver nor the JSON syntax for URLs
+ * is supported, fall back by writing the disks to a temporary
+ * directory removed at exit.
  *)
 
+let can_use_qemu_null_co_device () =
+  (* We actually attempt to convert a raw file to the null-co device
+   * using a JSON URL.
+   *)
+  let tmp = Filename.temp_file "v2vqemunullcotst" ".img" in
+  Unix.truncate tmp 1024;
+
+  let json = [
+    "file.driver", JSON.String "null-co";
+    "file.size", JSON.String "1E";
+  ] in
+
+  let cmd =
+    sprintf "qemu-img convert -n -f raw -O raw %s json:%s >/dev/null%s"
+            (quote tmp)
+            (quote (JSON.string_of_doc ~fmt:JSON.Compact json))
+            (if verbose () then "" else " 2>&1") in
+  debug "%s" cmd;
+  let r = 0 = Sys.command cmd in
+  Unix.unlink tmp;
+  debug "qemu-img supports the null-co device: %b" r;
+  r
+
 class output_null =
+  (* Create a temporary directory which is always deleted at exit,
+   * so we can put the drives there in case qemu does not support
+   * the null-co device w/ a JSON URL.
+   *)
+  let tmpdir =
+    let base_dir = (open_guestfs ())#get_cachedir () in
+    let t = Mkdtemp.temp_dir ~base_dir "null." in
+    rmdir_on_exit t;
+    t in
 object
   inherit output
 
@@ -50,20 +86,21 @@ object
 
   method supported_firmware = [ TargetBIOS; TargetUEFI ]
 
-  method prepare_targets source targets =
-    let json_params = [
-      "file.driver", JSON.String "null-co";
-      "file.size", JSON.String "1E";
-    ] in
-    let target_file = TargetURI ("json:" ^ JSON.string_of_doc json_params) in
+  (* Force raw output, ignoring -of command line option. *)
+  method override_output_format _ = Some "raw"
 
-    (* While it's not intended that output drivers can set the
-     * target_format field (thus overriding the -of option), in
-     * this special case of -o null it is reasonable.
-     *)
-    let target_format = "raw" in
+  method prepare_targets source overlays _ _ _ _ =
+    if can_use_qemu_null_co_device () then (
+      let json_params = [
+        "file.driver", JSON.String "null-co";
+        "file.size", JSON.String "1E";
+      ] in
+      let target_file = TargetURI ("json:" ^ JSON.string_of_doc json_params) in
 
-    List.map (fun t -> { t with target_file; target_format }) targets
+      List.map (fun _ -> target_file) overlays
+    ) else (
+      List.map (fun (_, ov) -> TargetFile (tmpdir // ov.ov_sd)) overlays
+    )
 
   method create_metadata _ _ _ _ _ _ = ()
 end

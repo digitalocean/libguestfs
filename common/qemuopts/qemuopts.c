@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -196,7 +196,7 @@ last_option (struct qemuopts *qopts)
 /**
  * Add a command line flag which has no argument. eg:
  *
- *  qemuopts_add_flag (qopts, "-nodefconfig");
+ *  qemuopts_add_flag (qopts, "-no-user-config");
  *
  * Returns C<0> on success.  Returns C<-1> on error, setting C<errno>.
  */

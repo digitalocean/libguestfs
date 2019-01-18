@@ -82,6 +82,13 @@ MANPAGES = \
 	virt-tar-in.1 \
 	virt-tar-out.1 \
 	virt-v2v.1 \
+	virt-v2v-copy-to-local.1 \
+	virt-v2v-input-vmware.1 \
+	virt-v2v-input-xen.1 \
+	virt-v2v-output-local.1 \
+	virt-v2v-output-openstack.1 \
+	virt-v2v-output-rhv.1 \
+	virt-v2v-support.1 \
 	virt-v2v-test-harness.1 \
 	virt-win-reg.1
 
@@ -146,6 +153,14 @@ virt-sysprep.1: virt-sysprep.pod sysprep-extra-options.pod sysprep-operations.po
 	  --license GPLv2+ \
           --insert $(srcdir)/sysprep-extra-options.pod:__EXTRA_OPTIONS__ \
           --insert $(srcdir)/sysprep-operations.pod:__OPERATIONS__ \
+	  $<
+
+virt-p2v.1: virt-p2v.pod virt-p2v-kernel-config.pod
+	$(PODWRAPPER) \
+	  --no-strict-checks \
+	  --man $@ \
+	  --license GPLv2+ \
+	  --insert $(srcdir)/virt-p2v-kernel-config.pod:__KERNEL_CONFIG__ \
 	  $<
 
 %.1: %.pod

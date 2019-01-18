@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ class output_libvirt oc output_pool = object
     | None -> sprintf "-o libvirt -os %s" output_pool
     | Some uri -> sprintf "-o libvirt -oc %s -os %s" uri output_pool
 
-  method prepare_targets source targets =
+  method prepare_targets source overlays _ _ _ _ =
     (* Get the capabilities from libvirt. *)
     let xml = Libvirt_utils.capabilities ?conn:oc () in
     debug "libvirt capabilities XML:\n%s" xml;
@@ -106,13 +106,13 @@ class output_libvirt oc output_pool = object
 
     (* We can only output to a pool of type 'dir' (directory). *)
     if xpath_string "/pool/@type" <> Some "dir" then
-      error (f_"-o libvirt: output pool ‘%s’ is not a directory (type='dir').  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool;
+      error (f_"-o libvirt: output pool ‘%s’ is not a directory (type='dir').  See virt-v2v-output-local(1)") output_pool;
     let target_path =
       match xpath_string "/pool/target/path/text()" with
       | None ->
-         error (f_"-o libvirt: output pool ‘%s’ does not have /pool/target/path element.  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool
+         error (f_"-o libvirt: output pool ‘%s’ does not have /pool/target/path element.  See virt-v2v-output-local(1)") output_pool
       | Some dir when not (is_directory dir) ->
-         error (f_"-o libvirt: output pool ‘%s’ has type='dir' but the /pool/target/path element is not a local directory.  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool
+         error (f_"-o libvirt: output pool ‘%s’ has type='dir' but the /pool/target/path element is not a local directory.  See virt-v2v-output-local(1)") output_pool
       | Some dir -> dir in
     (* Get the name of the pool, since we have to use that
      * (and not the UUID) in the XML of the guest.
@@ -120,18 +120,15 @@ class output_libvirt oc output_pool = object
     let name =
       match xpath_string "/pool/name/text()" with
       | None ->
-         error (f_"-o libvirt: output pool ‘%s’ does not have /pool/name element.  See virt-v2v(1) section \"OUTPUT TO LIBVIRT\"") output_pool
+         error (f_"-o libvirt: output pool ‘%s’ does not have /pool/name element.  See virt-v2v-output-local(1)") output_pool
       | Some name -> name in
     pool_name <- Some name;
 
     (* Set up the targets. *)
     List.map (
-      fun t ->
-        let target_file =
-          TargetFile (target_path // source.s_name ^ "-" ^
-                      t.target_overlay.ov_sd) in
-        { t with target_file }
-    ) targets
+      fun (_, ov) ->
+        TargetFile (target_path // source.s_name ^ "-" ^ ov.ov_sd)
+    ) overlays
 
   method supported_firmware = [ TargetBIOS; TargetUEFI ]
 
@@ -145,7 +142,8 @@ class output_libvirt oc output_pool = object
         *)
        error_unless_uefi_firmware guestcaps.gcaps_arch
 
-  method create_metadata source _ target_buses guestcaps _ target_firmware =
+  method create_metadata source targets
+                         target_buses guestcaps inspect target_firmware =
     (* We copied directly into the final pool directory.  However we
      * have to tell libvirt.
      *)
@@ -173,8 +171,8 @@ class output_libvirt oc output_pool = object
 
     (* Create the metadata. *)
     let doc =
-      create_libvirt_xml ~pool:pool_name source target_buses
-                         guestcaps target_features target_firmware in
+      create_libvirt_xml ~pool:pool_name source targets target_buses
+                         guestcaps target_features target_firmware inspect in
 
     let tmpfile, chan = Filename.open_temp_file "v2vlibvirt" ".xml" in
     DOM.doc_to_chan chan doc;

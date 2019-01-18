@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -833,5 +833,18 @@ is not large enough." };
     longdesc = "\
 This command is the same as C<guestfs_ntfsresize> except that it
 allows you to specify the new size (in bytes) explicitly." };
+
+  { defaults with
+    name = "vgscan"; added = (1, 3, 2);
+    style = RErr, [], [];
+    deprecated_by = Replaced_by "lvm_scan";
+    tests = [
+      InitEmpty, Always, TestRun (
+        [["vgscan"]]), []
+    ];
+    shortdesc = "rescan for LVM physical volumes, volume groups and logical volumes";
+    longdesc = "\
+This rescans all block devices and rebuilds the list of LVM
+physical volumes, volume groups and logical volumes." };
 
 ]

@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -942,6 +942,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1major_1version  (JNIEnv *e
 
  ret_error:
   return -1;
+}
+
+
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1osinfo  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jstring jr;
+  char *r;
+  const char *root;
+
+  root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
+  r = guestfs_inspect_get_osinfo (g, root);
+
+  (*env)->ReleaseStringUTFChars (env, jroot, root);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  jr = (*env)->NewStringUTF (env, r);
+  free (r);
+  return jr;
+
+ ret_error:
+  return NULL;
 }
 
 

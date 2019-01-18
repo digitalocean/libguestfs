@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,22 +16,40 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+type ovf_flavour =
+  | OVirt
+  | RHVExportStorageDomain
+
+(** The string representation of available OVF flavours. *)
+val ovf_flavours : string list
+
+(** Convert from a string to the corresponding OVF flavour.
+
+    Throw [Invalid_argument] if the string does not match any
+    valid flavour. *)
+val ovf_flavour_of_string : string -> ovf_flavour
+
+(** Convert an OVF flavour to its string representation. *)
+val ovf_flavour_to_string : ovf_flavour -> string
+
 (** Create OVF and related files for RHV.
 
-    The format is described in
-    http://www.ovirt.org/images/8/86/Ovirt_ovf_format.odt
+    The format for RHV export storage domain is described in:
+    http://resources.ovirt.org/old-site-files/Ovirt_ovf_format.odt
+
+    The format understood by oVirt has no known documentation.
 
     OVF isn't a real standard, so it's likely that if we ever had to
     create OVF for another target management system then we would need
     to heavily modify or even duplicate this code. *)
 
-val create_ovf : Types.source -> Types.target list -> Types.guestcaps -> Types.inspect -> Types.output_allocation -> string -> string list -> string list -> string -> DOM.doc
+val create_ovf : Types.source -> Types.target list -> Types.guestcaps -> Types.inspect -> Types.target_firmware  -> Types.output_allocation -> string -> string list -> string list -> string ->  ovf_flavour -> DOM.doc
 (** Create the OVF file.
 
     Actually a {!DOM} document is created, not a file.  It can be written
     to the desired output location using {!DOM.doc_to_chan}. *)
 
-val create_meta_files : Types.output_allocation -> string -> string list -> Types.target list -> string list
+val create_meta_files : Types.output_allocation -> string -> string list -> (string * Types.overlay) list -> string list
 (** Create the .meta file associated with each target.
 
     Note this does not write them, since output_rhv has to do a

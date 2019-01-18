@@ -1,0 +1,155 @@
+
+=head1 НАЗВА
+
+virt-v2v-support - Supported hypervisors, virtualization management systems
+and guests in virt-v2v
+
+=head1 ОПИС
+
+This page documents which foreign hypervisors, virtualization management
+systems and guest types that L<virt-v2v(1)> can support.
+
+Note this page applies to upstream virt-v2v from L<http://libguestfs.org>
+and in downstream distributions of virt-v2v sometimes features are
+intentionally removed, or are present but not supported.
+
+=head2 Гіпервізори (вхід)
+
+=over 4
+
+=item VMware ESXi
+
+Має бути керованим VMware vCenter E<ge> 5.0, якщо недоступне VDDK.
+
+=item OVA, експортований з VMware
+
+OVA з інших гіпервізорів не працюватимуть.
+
+=item VMX з VMware
+
+Файли VMX, створені іншими гіпервізорами, не працюватимуть.
+
+=item RHEL 5 Xen
+
+=item SUSE Xen
+
+=item Citrix Xen
+
+Останнє тестування Citrix Xen виконувалося досить давно.
+
+=item Hyper-V
+
+Немає свіжих результатів тестування. Потребує експортування диска або
+використання L<virt-p2v(1)> на Hyper-V.
+
+=item Безпосередньо з образів дисків
+
+Лише образи дисків, експортовані з підтримуваних гіпервізорів, такі, де
+використовується формат контейнера, підтримку якого передбачено у qemu.
+
+=item Фізичні машини
+
+За допомогою інструмента L<virt-p2v(1)>.
+
+=back
+
+=head2 Гіпервізори (виведення)
+
+Лише QEMU і KVM.
+
+=head2 Системи керування віртуалізацією (виведення)
+
+=over 4
+
+=item OpenStack
+
+=item Red Hat Virtualization (RHV) 4.1 і новіші версії
+
+=item Локальна libvirt
+
+Як наслідок, L<virsh(1)>, L<virt-manager(1)> та подібні програми.
+
+=item Локальний диск
+
+=back
+
+=head2 Гості
+
+=over 4
+
+=item Red Hat Enterprise Linux 3, 4, 5, 6, 7
+
+=item CentOS 3, 4, 5, 6, 7
+
+=item Scientific Linux 3, 4, 5, 6, 7
+
+=item Oracle Linux
+
+=item Fedora
+
+=item SLES 10 і новіші версії
+
+=item OpenSUSE 10 і новіші версії
+
+=item Debian 6 і новіші версії
+
+=item Ubuntu 10.04, 12.04, 14.04, 16.04 і новіші версії
+
+=item від Windows XP до Windows 10 / Windows Server 2016
+
+Ми використовуємо внутрішню нумерацію версій Windows,
+див. L<https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions>
+
+У поточній версії передбачено підтримку версій від NT 5.2 до NT 6.3.
+
+Див. додаткові зауваження щодо перетворення гостьових систем Windows у
+розділі L</WINDOWS> нижче.
+
+=back
+
+=head2 Мікрокод гостьової системи
+
+BIOS is supported for all guest types and hypervisors.
+
+VMware надає вам змогу надавати мікропрограми UEFI гостьовим системам
+(замість звичайного BIOS для PC). Virt-v2v може перетворювати такі гостьові
+системи, але потребує підтримки UEFI з боку гіпервізору призначення.
+
+У поточній версії KVM передбачено підтримку OVMF, мікропрограми UEFI з
+відкритим кодом, і можливість запускати такі гостьові системи.
+
+Оскільки підтримку OVMF було додано до KVM лише нещодавно (у 2014/2015
+роках), підтримку гостьових систем UEFI передбачено ще не в усіх середовищах
+призначення:
+
+=over 4
+
+=item UEFI на libvirt, qemu
+
+Підтримку передбачено. Virt-v2v створить належний файл XML libvirt
+(метадані) автоматично, але зауважте, що на сервері перетворення має бути
+встановлено ту саму версію OVMF, що і на гіпервізорі призначення, інакше вам
+доведеться коригувати шляхи у метаданих.
+
+=item UEFI на OpenStack
+
+Підтримки не передбачено.
+
+=item UEFI on oVirt or RHV
+
+Supported since oVirt/RHV E<ge> 4.2 and virt-v2v E<ge> 1.39.12.
+
+=back
+
+=head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
+
+L<virt-v2v(1)>, L<http://libguestfs.org>.
+
+=head1 АВТОР
+
+Richard W.M. Jones
+
+=head1 АВТОРСЬКІ ПРАВА
+
+Copyright (C) 2009-2019 Red Hat Inc.
+

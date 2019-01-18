@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -94,8 +94,7 @@
  * creating device nodes.
  */
 #ifdef __powerpc__
-#  define DEFAULT_MEMSIZE 768
-#  define MIN_MEMSIZE 256
+#  define DEFAULT_MEMSIZE 1024
 #endif
 
 /* Kernel 3.19 is unable to uncompress the initramfs on aarch64 unless
@@ -104,16 +103,15 @@
  * common on aarch64, treat this like the ppc case above.
  */
 #ifdef __aarch64__
-#  define DEFAULT_MEMSIZE 768
-#  define MIN_MEMSIZE 256
+#  define DEFAULT_MEMSIZE 1024
 #endif
 
 /* The default and minimum memory size for most users. */
 #ifndef DEFAULT_MEMSIZE
-#  define DEFAULT_MEMSIZE 500
+#  define DEFAULT_MEMSIZE 768
 #endif
 #ifndef MIN_MEMSIZE
-#  define MIN_MEMSIZE 128
+#  define MIN_MEMSIZE 256
 #endif
 
 /* Timeout waiting for appliance to come up (seconds).
@@ -123,15 +121,6 @@
  * option.
  */
 #define APPLIANCE_TIMEOUT (20*60) /* 20 mins */
-
-/* Some limits on what the inspection code will read, for safety. */
-
-/* Maximum RPM or dpkg database we will download to /tmp.  RPM
- * 'Packages' database can get very large: 70 MB is roughly the
- * standard size for a new Fedora install, and after lots of package
- * installation/removal I have seen well over 100 MB databases.
- */
-#define MAX_PKG_DB_SIZE       (300 * 1000 * 1000)
 
 /* Maximum size of Windows explorer.exe.  2.6MB on Windows 7. */
 #define MAX_WINDOWS_EXPLORER_SIZE (4 * 1000 * 1000)
@@ -145,6 +134,17 @@
 #endif
 #ifdef __powerpc__
 #define MACHINE_TYPE "pseries"
+#endif
+
+/* Differences in qemu device names on ARMv7 (virtio-mmio), s/390x
+ * (CCW) vs normal hardware with PCI.
+ */
+#if defined(__arm__)
+#define VIRTIO_DEVICE_NAME(type) type "-device"
+#elif defined(__s390x__)
+#define VIRTIO_DEVICE_NAME(type) type "-ccw"
+#else
+#define VIRTIO_DEVICE_NAME(type) type "-pci"
 #endif
 
 /* Guestfs handle and associated structures. */
@@ -510,6 +510,9 @@ struct guestfs_h {
   /* Cached features. */
   struct cached_feature *features;
   size_t nr_features;
+
+  /* Used by lib/info.c.  -1 = not tested or error; else 0 or 1. */
+  int qemu_img_supports_U_option;
 };
 
 /**
@@ -779,6 +782,7 @@ extern struct version guestfs_int_qemu_version (guestfs_h *g, struct qemu_data *
 extern int guestfs_int_qemu_supports (guestfs_h *g, const struct qemu_data *, const char *option);
 extern int guestfs_int_qemu_supports_device (guestfs_h *g, const struct qemu_data *, const char *device_name);
 extern int guestfs_int_qemu_mandatory_locking (guestfs_h *g, const struct qemu_data *data);
+extern bool guestfs_int_platform_has_kvm (guestfs_h *g, const struct qemu_data *data);
 extern char *guestfs_int_drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
 extern bool guestfs_int_discard_possible (guestfs_h *g, struct drive *drv, const struct version *qemu_version);
 extern char *guestfs_int_qemu_escape_param (guestfs_h *g, const char *param);

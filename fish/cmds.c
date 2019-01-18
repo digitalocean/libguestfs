@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -667,6 +667,7 @@ list_commands (void)
   printf ("%-20s %s\n", "event", _("register a handler for an event or events"));
   printf ("%-20s %s\n", "exists", _("test if file or directory exists"));
   printf ("%-20s %s\n", "extlinux", _("install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem"));
+  printf ("%-20s %s\n", "f2fs-expand", _("expand a f2fs filesystem"));
   printf ("%-20s %s\n", "fallocate", _("preallocate a file in the guest filesystem"));
   printf ("%-20s %s\n", "fallocate64", _("preallocate a file in the guest filesystem"));
   printf ("%-20s %s\n", "feature-available", _("test availability of some parts of the API"));
@@ -777,6 +778,7 @@ list_commands (void)
   printf ("%-20s %s\n", "inspect-get-major-version", _("get major version of inspected operating system"));
   printf ("%-20s %s\n", "inspect-get-minor-version", _("get minor version of inspected operating system"));
   printf ("%-20s %s\n", "inspect-get-mountpoints", _("get mountpoints of inspected operating system"));
+  printf ("%-20s %s\n", "inspect-get-osinfo", _("get a possible osinfo short ID corresponding to this operating system"));
   printf ("%-20s %s\n", "inspect-get-package-format", _("get package format used by the operating system"));
   printf ("%-20s %s\n", "inspect-get-package-management", _("get package management tool used by the operating system"));
   printf ("%-20s %s\n", "inspect-get-product-name", _("get product name of inspected operating system"));
@@ -871,6 +873,7 @@ list_commands (void)
   printf ("%-20s %s\n", "lvm-canonical-lv-name", _("get canonical name of an LV"));
   printf ("%-20s %s\n", "lvm-clear-filter", _("clear LVM device filter"));
   printf ("%-20s %s\n", "lvm-remove-all", _("remove all LVM LVs, VGs and PVs"));
+  printf ("%-20s %s\n", "lvm-scan", _("scan for LVM physical volumes, volume groups and logical volumes"));
   printf ("%-20s %s\n", "lvm-set-filter", _("set LVM device filter"));
   printf ("%-20s %s\n", "lvremove", _("remove an LVM logical volume"));
   printf ("%-20s %s\n", "lvrename", _("rename an LVM logical volume"));

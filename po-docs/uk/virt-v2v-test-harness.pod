@@ -18,102 +18,107 @@ virt-v2v-test-harness — використовується для тестува
 
 =head1 ОПИС
 
-L<virt-v2v(1)> converts guests from a foreign hypervisor to run on KVM,
-managed by libvirt, OpenStack, oVirt, Red Hat Virtualisation (RHV) or
-several other targets.
+L<virt-v2v(1)> перетворює фізичні машини зі сторонніх гіпервізорів для
+запуску під керуванням libvirt, OpenStack, oVirt, Red Hat Virtualisation
+(RHV) або одним із інших призначень.
 
-Virt-v2v-test-harness is a small library (module name: C<V2v_test_harness>)
-used to run virt-v2v against a set of test cases consisting of real virtual
-machines.
+Virt-v2v-test-harness — невеличка бібліотека (назва модуля:
+C<V2v_test_harness>), яка використовується virt-v2v для обробки набору
+тестів, які містять справжні віртуальні машини.
 
-It acts as a test harness, taking a test case, running virt-v2v on it
-(non-destructively), then test-booting the result.  It can ensure that the
-test case converts successfully, boots successfully, and reaches a milestone
-(such as a particular screenshot).  It can also test that the conversion
-created, modified or deleted the expected files from within the guest.
+Це працює як комплекс тестування: вибирається тест, запускається virt-v2v
+для нього (у недеструктивний спосіб), потім виконується тестове завантаження
+результату. Програма переконується, що тест було успішно перетворено, він
+успішно завантажується і досягає у роботі певного етапу (такого як на
+еталонному знімку). Програма також може перевірити, чи було під час
+перетворення створено, змінено або вилучено очікувані файли у гостьовій
+системі.
 
 =head2 ОТРИМАННЯ ПРИКЛАДІВ ДЛЯ ТЕСТУВАННЯ
 
-Because the test cases are actual virtual machines, we split them into two
-groups: test cases which are freely redistributable and those which are
-proprietary.  The former are things like Fedora or CentOS images, which are
-free software.  The latter are things like Windows or Red Hat Enterprise
-Linux.
+Оскільки тести є насправді віртуальними машинами, ми поділили їх на дві
+групи: тести, які поширюються вільно, і тести, які є пропрієтарними. Перші є
+образами, подібними до образів Fedora або CentOS, які є вільним програмним
+забезпеченням. Другі — образи, які подібні до образів Windows або Red Hat
+Enterprise Linux.
 
-The freely redistributable test cases can be downloaded from:
-L<http://git.annexia.org/?p=virt-v2v-test-cases-free.git> I<B<not available
-yet>>
+Вільно доступні і поширювати тести можна отримати тут:
+L<http://git.annexia.org/?p=virt-v2v-test-cases-free.git> I<B<ще не є
+доступними>>
 
-The proprietary test cases are available at
-L<http://git.annexia.org/?p=virt-v2v-test-cases-nonfree.git> This I<does
-not> contain the proprietary images themselves, which are not made available
-to the public for licensing reasons.
+Пропрієтарні тести можна отримати зі сторінки
+L<http://git.annexia.org/?p=virt-v2v-test-cases-nonfree.git> У тестах I<не>
+міститься самих образів пропрієтарних систем, які з причин ліцензування не є
+загальнодоступними.
 
-The test cases consist of disk images which are very large, from 250 MB
-through to tens of gigabytes I<each>.  This means that distributing test
-cases can be very time-consuming and expensive.  We use L<git-annex(1)> to
-distribute the test images.
+Тести є образами дисків із дуже великими розмірами — від  250 МБ до десятків
+гігабайт I<кожен>. Це означає, що поширення тестів може бути дуже тривалим і
+вимогливим до ресурсів завданням. Ми використовуємо для поширення образів
+тестів  L<git-annex(1)>.
 
 =head2 ВИМОГИ
 
-It’s recommended to use an idle machine for testing.  You will need B<a lot
-of disk space> to run the tests, in excess of S<100 GB>.  You should also
-ensure the test machine has plenty of RAM, at least S<16 GB>.
+Для тестування рекомендуємо використовувати бездіяльну машину. Для виконання
+тестів вам знадобиться доволі B<багато вільного місця на диску>, більше
+S<100 ГБ>. Крім того, на тестовій машині має бути багато оперативної
+пам'яті, принаймні S<16 ГБ>.
 
-=head2 GETTING THE TEST HARNESS
+=head2 ОТРИМАННЯ КОМПЛЕКСУ ДЛЯ ТЕСТУВАННЯ
 
-To run the test cases you must have the virt-v2v test harness.
+Для запуску тестів вам знадобиться комплекс тестів virt-v2v.
 
-The OCaml module is C<V2v_test_harness>.
+Модуль OCaml називається C<V2v_test_harness>.
 
-The easiest way is to compile libguestfs from source (I<note> do not install
-it).  The test harness will be in C<libguestfs/v2v/test-harness>
+Найпростішим способом є зібрати libguestfs з початкових кодів
+(I<Зауваження>: не встановлювати її). Тестовий комплекс зберігатиметься у
+C<libguestfs/v2v/test-harness>
 
-It is also possible to install test harness as an OCaml module.
+Крім того, комплекс тестів можна встановити як модуль OCaml.
 
-=head2 RUNNING THE TEST CASES
+=head2 ВИКОНАННЯ ТЕСТУВАННЯ
 
-Once you have checked out the freely redistributed test cases from the
-repository, do:
+Щойно ви отримаєте вільно розповсюджувані тести зі сховища, віддайте такі
+команди:
 
  ./configure [--with-test-harness=/шлях/до/libguestfs/v2v/test-harness]
  make
  make check -k
 
-Using the I<-k> option is recommended so the test doesn't stop at the first
-failure.
+Рекомендуємо скористатися параметром I<-k>, щоб тестування не зупинялося
+після першої ж помилки.
 
 =head2 ПАРАЛЕЛЬНЕ ТЕСТУВАННЯ
 
-You can run test cases in parallel by doing:
+Запустити тести паралельно можна за допомогою такої команди:
 
  make check -k -j<N>
 
-(eg. I<-j2> for running up to 2 tests in parallel).  Be careful about
-running too many parallel tests, as it can slow down each test enough to
-cause false failures.
+(наприклад I<-j2>, щоб запустити 2 тести паралельно). Будьте обережні із
+паралельним запуском надто великої кількості тестів — це може спричинити
+помилки, які не пов'язано із помилковою роботою бібліотеки.
 
-=head2 RUNNING TEST CASES AGAINST UPSTREAM VIRT-V2V
+=head2 ТЕСТУВАННЯ ОСНОВНОЇ ГІЛКИ РОЗРОБКИ VIRT-V2V
 
-Using C<make check> picks up whatever C<virt-v2v> binary is on your
+Використання C<make check> призведе до використання виконуваного файла
+C<virt-v2v>, який зберігається у одному з каталогів зі змінної середовища
 C<$PATH>.
 
-If you have compiled libguestfs from source and want to test that version of
-virt-v2v, use the libguestfs C<run> script (in the top-level build directory
-of the libguestfs sources).  eg:
+Якщо вами було зібрано libguestfs з початкових кодів і ви хочете перевірити
+зібрану версію virt-v2v, скористайтеся скриптом libguestfs C<run>
+(зберігається у каталозі збирання верхнього рівня у каталозі із початковими
+кодами libguestfs). Приклад:
 
  ../libguestfs/run make check -k
 
 =head1 НАПИСАННЯ НОВИХ ПРИКЛАДІВ ДЛЯ ТЕСТУВАННЯ
 
-If you are interested in writing test cases, it is suggested that you start
-by downloading the freely redistributable test cases, or at least look at
-them online.
+Якщо ви цікавитеся написанням тестів, пропонуємо вам розпочати із отримання
+вільно розповсюджуваних тестів або, принаймні, ознайомлення з ними у мережі.
 
-Also you must have the virt-v2v test harness - see L</GETTING THE TEST
-HARNESS> above.
+Крім того, у вас має бути комплекс для тестування virt-v2v —
+див. L</ОТРИМАННЯ КОМПЛЕКСУ ДЛЯ ТЕСТУВАННЯ> вище.
 
-=head2 ФАЙЛИ У КОЖНОГО З ПРИКЛАДІВ ДЛЯ ТЕСТУВАННЯ
+=head2 ФАЙЛИ КОЖНОГО З ПРИКЛАДІВ ДЛЯ ТЕСТУВАННЯ
 
 Кожен із прикладів для тестування складається з таких компонентів:
 
@@ -121,32 +126,36 @@ HARNESS> above.
 
 =item I<тест>.img.xz
 
-The disk image of the virtual machine before conversion.  Usually this
-should be converted to raw format and xz-compressed.
+Образ диска віртуальної машини до перетворення. Зазвичай, його має бути
+перетворено у простий формат (raw) і стиснуто за допомогою xz.
 
 =item I<тест>.ova
 
-Alternatively, an OVA, exported from VMware, may be used.
+Крім того, можна скористатися OVA, експортованим з VMware.
 
 =item I<test>.xml
 
-The libvirt XML used as input to virt-v2v.  See the discussion of I<-i
-libvirtxml> in L<virt-v2v(1)>.
+XML libvirt, який використовується як вхідні дані virt-v2v. Див. обговорення
+щодо I<-i libvirtxml> на сторінці підручника щодо L<virt-v2v(1)>.
 
 =item I<test>.ppm
 
 Необов'язковий знімок екрана або знімки екрана.
 
-You can supply zero or more "known good" screenshots which represent
-intermediate steps where the guest is booting.  This is useful where a guest
-sits for some time doing something, and lets the test harness know that it
-should allow the guest to continue to boot.
+Ви можете не надавати «відомі правильні» знімки екрана, надати один або
+декілька таких знімків, які відповідають проміжним крокам завантаження
+гостьової системи. Корисно робити такі знімки на етапах, коли гостьова
+система виконує якісь тривалі дії. Це надасть комплексу тестування дані, за
+допомогою яких він зможе визначити, чи слід дозволяти гостьовій системі
+продовжувати завантаження.
 
-You can supply zero or one "final" screenshot.  This is often a screenshot
-of the login page which indicates that the guest booted successfully.
+Ви можете не вказувати «остаточний» знімок екрана або вказати один такий
+знімок. Це часто знімок вікна входу до системи, який вказує на те, що
+гостьову систему було успішно завантажено.
 
-The screenshots are captured using L<virsh(1)>.  Comparison of screenshots
-against the test images is done using the ImageMagick L<compare(1)> program.
+Знімки вікон створюються за допомогою L<virsh(1)>. Порівняння знімків вікон
+із еталонними знімками виконується за допомогою програми L<compare(1)> з
+комплекту ImageMagick.
 
 =item I<test>.ml
 
@@ -156,8 +165,8 @@ against the test images is done using the ImageMagick L<compare(1)> program.
 
 =head2 НАПИСАННЯ ТЕСТУ
 
-The test file (F<*.ml>) is used to control the test harness, and minimally
-it would look something like this:
+Файл тестування (F<*.ml>) використовується для керування комплексом
+тестування. Його мінімальна версія виглядає десь так:
 
  open V2v_test_harness
  
@@ -165,28 +174,29 @@ it would look something like this:
  
  let () = run ~test ()
 
-That would instruct the test harness to:
+Це має проінструктувати комплекс тестування про те, що слід:
 
 =over 4
 
 =item *
 
-Uncompress F<I<short_name>.img.xz>
+Розпакувати F<I<short_name>.img.xz>
 
 =item *
 
-Run C<virt-v2v -i libvirtxml I<short_name>.xml [...]>
+Запустити C<virt-v2v -i libvirtxml I<short_name>.xml [...]>
 
 =item *
 
-Boot the resulting guest and check that it writes to its disk and then the
-disk becomes idle.
+Завантажити отриману гостьову систему і перевірити, чи виконує вона запис на
+свій диск і чи стає після цього диск бездіяльним.
 
 =back
 
-The above is a rather simplistic test.  A more realistic test is to ensure
-the guest reaches a final milestone (screenshot), eg. a login page.  To do
-that you have to supply a C<~test_plan> parameter:
+Вище наведено надто спрощене тестування. Реалістичнішим варіантом був ви
+варіант із перевіркою того, чи гостьова система досягла остаточного етапу
+завантаження (за знімком), наприклад сторінки входу до системи. Для
+реалізації такої перевірки вам слід вказати параметр C<~test_plan>:
 
  open V2v_test_harness
  
@@ -198,23 +208,25 @@ that you have to supply a C<~test_plan> parameter:
  
  let () = run ~test ~test_plan ()
 
-For an even better test, you can supply post-conversion and post-boot test
-cases which examine the disk image (using libguestfs) to verify that files
-have been created, modified or deleted as expected within the disk image.
-See F<V2v_test_harness.mli> for more information on how to do that.
+Ще надійніший варіант тестування можна створити, якщо виконуватиметься
+тестування після перетворення і після завантаження із перевіркою образу
+диска (за допомогою libguestfs) з метою переконатися, що у образі диска у
+очікуваний спосіб створюються, змінюються та вилучаються файли. Щоб
+дізнатися більше про те, як цього досягти, ознайомтеся із вмістом файла
+F<V2v_test_harness.mli>.
 
-=head2 FILES GENERATED BY RUNNING THE TEST
+=head2 ФАЙЛИ, ЯКІ СТВОРЮЮТЬСЯ ПІД ЧАС ВИКОНАННЯ ТЕСТУВАННЯ
 
-When you run each test, the following files can be created:
+Під час виконання тестування може бути створено такі файли:
 
 =over 4
 
 =item I<test>-I<yyyymmdd-hhmmss>.scrn
 
-Screenshot(s) of the guest’s graphical console.  These are helpful when
-writing tests or debugging test failures.
+Знімки графічної консолі гостьової операційної системи. Такі знімки корисні
+для написання тестів або діагностики помилок під час тестування.
 
-The screenshot format is Portable Pixmap (PPM).
+Форматом знімків екрана є Portable Pixmap (PPM).
 
 =item I<test>.img
 
@@ -224,15 +236,17 @@ The screenshot format is Portable Pixmap (PPM).
 
 =item I<test>-converted.xml
 
-The result of conversion, ie. after running virt-v2v but before test-booting
-the guest.  See the L<virt-v2v(1)> manual page description of I<-o local>.
+Результат перетворення, тобто стан після виконання virt-v2v, але перед
+тестовим завантаженням гостьової системи. Див. сторінку підручника щодо
+L<virt-v2v(1)>, щоб ознайомитися із описом параметра I<-o local>.
 
 Формат образу диска — qcow2.
 
 =item I<test>-booted-sda
 
-The disk image after test-booting.  This is a qcow2 file which uses the
-I<test>-converted-sda file as a backing disk, in order to save disk space.
+Образ диска після тестового завантаження. Це файл qcow2, у якому з метою
+заощадження місця на диску використовується як диск резервної пам'яті файл
+I<test>-converted-sda.
 
 =back
 
@@ -242,16 +256,18 @@ I<test>-converted-sda file as a backing disk, in order to save disk space.
 
 =item F<$ocamllibdir/v2v_test_harness/v2v_test_harness.mli>
 
-The test library interface.  Read this for detailed programming
-documentation.
+Інтерфейс тестування бібліотеки. Ознайомтеся, що дізнатися більше про
+можливості програмування.
 
 =item C<$ocamllibdir/v2v_test_harness/META>
 
-The findlib META file allowing you to use the library from L<ocamlfind(1)>.
+Файл META findlib, який надає вам змогу користуватися бібліотекою з
+L<ocamlfind(1)>.
 
 =back
 
-NB: To find the value of C<$ocamllibdir>, run C<ocamlc -where>
+Зауваження: щоб визначити поточне значення C<$ocamllibdir>, віддайте команду
+C<ocamlc -where>
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -264,5 +280,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2014-2018 Red Hat Inc.
+Copyright (C) 2014-2019 Red Hat Inc.
 

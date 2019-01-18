@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,15 @@ let convert (g : G.guestfs) inspect source output rcaps =
   (*----------------------------------------------------------------------*)
   (* Inspect the Windows guest. *)
 
-  (* If the Windows guest appears to be using group policy. *)
+  (* If the Windows guest appears to be using group policy.
+   *
+   * Since this was written, it has been noted that it may be possible
+   * to remove this restriction:
+   *
+   * 12:35 < StenaviN> here is the article from MS: https://support.microsoft.com/uk-ua/help/2773300/stop-0x0000007b-error-after-you-use-a-group-policy-setting-to-prevent
+   * 12:35 < StenaviN> aside of that the following registry hive should be deleted as well: [-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall]
+   * 12:36 < StenaviN> more precisely, [-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Restrictions]
+   *)
   let has_group_policy =
     Registry.with_hive_readonly g inspect.i_windows_software_hive
       (fun reg ->
@@ -124,8 +132,10 @@ let convert (g : G.guestfs) inspect source output rcaps =
          Not_found -> None
       ) in
 
-  (* Locate and retrieve all uninstallation commands for Parallels Tools *)
-  let prltools_uninsts =
+  (* Locate and retrieve all the uninstallation commands for installed
+   * applications.
+   *)
+  let unistallation_commands pretty_name matchfn extra_uninstall_string =
     let uninsts = ref [] in
 
     Registry.with_hive_readonly g inspect.i_windows_software_hive
@@ -146,25 +156,25 @@ let convert (g : G.guestfs) inspect source output rcaps =
                  raise Not_found;
 
                let dispname = g#hivex_value_string valueh in
-               if String.find dispname "Parallels Tools" = -1 &&
-                  String.find dispname "Virtuozzo Tools" = -1 then
+               if not (matchfn dispname) then
                  raise Not_found;
 
                let uninstval = "UninstallString" in
                let valueh = g#hivex_node_get_value uninstnode uninstval in
                if valueh = 0L then (
                  let name = g#hivex_node_name uninstnode in
-                 warning (f_"cannot uninstall Parallels Tools: registry key ‘HKLM\\SOFTWARE\\%s\\%s’ with DisplayName ‘%s’ doesn't contain value ‘%s’")
-                         (String.concat "\\" path) name dispname uninstval;
+                 warning (f_"cannot uninstall %s: registry key ‘HKLM\\SOFTWARE\\%s\\%s’ with DisplayName ‘%s’ doesn't contain value ‘%s’")
+                    pretty_name (String.concat "\\" path) name dispname uninstval;
                  raise Not_found
                );
 
                let uninst = (g#hivex_value_string valueh) ^
                      " /quiet /norestart /l*v+ \"%~dpn0.log\"" ^
-                     " REBOOT=ReallySuppress REMOVE=ALL" ^
-                     (* without these custom Parallels-specific MSI properties the
-                      * uninstaller still shows a no-way-out reboot dialog *)
-                     " PREVENT_REBOOT=Yes LAUNCHED_BY_SETUP_EXE=Yes" in
+                     " REBOOT=ReallySuppress REMOVE=ALL" in
+               let uninst =
+                 match extra_uninstall_string with
+                 | None -> uninst
+                 | Some s -> uninst ^ " " ^ s in
 
                List.push_front uninst uninsts
              with
@@ -176,6 +186,26 @@ let convert (g : G.guestfs) inspect source output rcaps =
 
     !uninsts
   in
+
+  (* Locate and retrieve all uninstallation commands for Parallels Tools. *)
+  let prltools_uninsts =
+    let matchfn s =
+      String.find s "Parallels Tools" != -1 ||
+      String.find s "Virtuozzo Tools" != -1
+    in
+    (* Without these custom Parallels-specific MSI properties the
+     * uninstaller still shows a no-way-out reboot dialog.
+     *)
+    let extra_uninstall_string =
+      Some "PREVENT_REBOOT=Yes LAUNCHED_BY_SETUP_EXE=Yes" in
+    unistallation_commands "Parallels Tools" matchfn extra_uninstall_string in
+
+  (* Locate and retrieve all uninstallation commands for VMware Tools. *)
+  let vmwaretools_uninst =
+    let matchfn s =
+      String.find s "VMware Tools" != -1
+    in
+    unistallation_commands "VMware Tools" matchfn None in
 
   (*----------------------------------------------------------------------*)
   (* Perform the conversion of the Windows guest. *)
@@ -212,6 +242,12 @@ let convert (g : G.guestfs) inspect source output rcaps =
         warning (f_"this guest has Anti-Virus (AV) software and a new virtio block device driver was installed.  In some circumstances, AV may prevent new drivers from working (resulting in a 7B boot error).  If this happens, try disabling AV before doing the conversion.");
     );
 
+    (* XXX Look up this information in libosinfo in future. *)
+    let machine =
+      match inspect.i_arch with
+      | "i386"|"x86_64" -> I440FX
+      | _ -> Virt in
+
     (* Return guest capabilities from the convert () function. *)
     let guestcaps = {
       gcaps_block_bus = block_driver;
@@ -220,6 +256,7 @@ let convert (g : G.guestfs) inspect source output rcaps =
       gcaps_virtio_rng = virtio_rng_supported;
       gcaps_virtio_balloon = virtio_ballon_supported;
       gcaps_isa_pvpanic = isa_pvpanic_supported;
+      gcaps_machine = machine;
       gcaps_arch = Utils.kvm_arch inspect.i_arch;
       gcaps_acpi = true;
     } in
@@ -255,7 +292,8 @@ let convert (g : G.guestfs) inspect source output rcaps =
       configure_vmdp tool_path;
 
     unconfigure_xenpv ();
-    unconfigure_prltools ()
+    unconfigure_prltools ();
+    unconfigure_vmwaretools ()
 
   (* [set_reg_val_dword_1 path name] creates a registry key
    * called [name = dword:1] in the registry [path].
@@ -408,6 +446,23 @@ if errorlevel 3010 exit /b 0
           "uninstall Parallels tools" fb_script
     ) prltools_uninsts
 
+  and unconfigure_vmwaretools () =
+    List.iter (
+      fun uninst ->
+        let fb_script = "\
+@echo off
+
+echo uninstalling VMware Tools
+" ^ uninst ^
+(* ERROR_SUCCESS_REBOOT_REQUIRED == 3010 is OK too *)
+"
+if errorlevel 3010 exit /b 0
+" in
+
+        Firstboot.add_firstboot_script g inspect.i_root
+          "uninstall VMware Tools" fb_script
+    ) vmwaretools_uninst
+
   and update_system_hive reg =
     (* Update the SYSTEM hive.  When this function is called the hive has
      * already been opened as a hivex handle inside guestfs.
@@ -499,6 +554,15 @@ if errorlevel 3010 exit /b 0
     (* Find the node \Microsoft\Windows\CurrentVersion.  If the node
      * has a key called DevicePath then append the virtio driver
      * path to this key.
+     *
+     * Note that simply adding the directory to DevicePath doesn't
+     * seem to be a 100% reliable way of enabling the drivers.  In
+     * particular it does not work for my self-built Windows Server Core
+     * 2012 + R2 releases (although that might be an artifact of
+     * the way I build them).  In any case I had to add a firstboot
+     * batch file which did this single command:
+     *
+     * %systemroot%\Sysnative\PnPutil -i -a %systemroot%\Drivers\Virtio\*.inf
      *)
     let node =
       Registry.get_node reg ["Microsoft"; "Windows"; "CurrentVersion"] in

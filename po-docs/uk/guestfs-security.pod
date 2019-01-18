@@ -5,166 +5,187 @@ guestfs-security - захист libguestfs
 
 =head1 ОПИС
 
-This manual page discusses security implications of using libguestfs,
-particularly with untrusted or malicious guests or disk images.
+Цю сторінку підручника присвячено обговоренню питань щодо безпеки у
+користуванні libguestfs, зокрема проблемам ненадійних або шкідливих
+гостьових систем або образів дисків.
 
 =head1 ЗВІТУВАННЯ ЩОДО ПРОБЛЕМ ІЗ БЕЗПЕКОЮ
 
-If you wish to privately report a security issue, please follow the Red Hat
-security procedure at L<https://access.redhat.com/security/team/contact>
+Якщо ви хочете конфіденційно повідомити про ваду захисту, будь ласка,
+скористайтеся безпечною процедурою Red Hat, описаною тут:
+L<https://access.redhat.com/security/team/contact>
 
-If the security problem is not so serious, you can simply file a bug (see
-L</BUGS> below), or send an email to our mailing list
-(L<https://www.redhat.com/mailman/listinfo/libguestfs>).  You do not need to
-subscribe to the mailing list to send email, but there will be a delay while
-the message is moderated.
+Якщо проблема захисту не така серйозна, ви можете просто створити
+повідомлення про ваду (див. розділ L</ВАДИ> нижче) або надіслати
+повідомлення електронною поштою до нашого списку листування
+(L<https://www.redhat.com/mailman/listinfo/libguestfs>). Можете не
+підписуватися на список листування, якщо не хочете. Втім, для непідписаних
+користувачів повідомлення з'являються у списку із затримкою, потрібною на
+модерацію.
 
 =head1 ЗАГАЛЬНІ ВАДИ
 
 =head2 Захист змонтованих файлових систем
 
-You should never mount an untrusted guest filesystem directly on your host
-kernel (eg. using loopback or kpartx).
+Ніколи не монтуйте файлову систему ненадійної гостьової системи
+безпосередньо до ядра вашої основної системи (наприклад, за допомогою
+петльового пристрою або kpartx).
 
-When you mount a filesystem, mistakes in the kernel filesystem (VFS)  can be
-escalated into exploits by attackers creating a malicious filesystem.  These
-exploits are very severe for two reasons.  Firstly there are very many
-filesystem drivers in the kernel, and many of them are infrequently used and
-not much developer attention has been paid to the code.  Linux userspace
-helps potential crackers by detecting the filesystem type and automatically
-choosing the right VFS driver, even if that filesystem type is unexpected.
-Secondly, a kernel-level exploit is like a local root exploit (worse in some
-ways), giving immediate and total access to the system right down to the
-hardware level.
+Коли ви монтуєте файлову систему, помилки у реалізації файлової системи у
+ядрі (VFS) можуть призвести до експлуатації зловмисниками шляхом створення
+відповідної файлової системи. Такі вразливості є дуже серйозними з двох
+причин. По-перше, у ядрі дуже багато драйверів файлових систем, багато з них
+використовуються нерегулярно, вони не часто привертають увагу
+розробників. Простір користувача Linux допомагає потенційним зловмисникам
+виявленням типу файлової системи і автоматичним вибором правильного драйвера
+VFS, навіть якщо тип файлової системи є неочікуваним. По-друге, вразливість
+на рівні ядра — це локальна вразливість із правами доступу адміністратора
+(що є ще гіршою у певному сенсі), яка надає негайний і повний доступ до
+системи, аж до рівня обладнання.
 
 Ці вразливості могли бути присутніми у ядрі доволі довго
 (L<https://lwn.net/Articles/538898/>).
 
-Libguestfs provides a layered approach to protecting you from exploits:
+У libguestfs реалізовано багатошаровний підхід до захисту вашої системи від
+експлоїтів:
 
-   untrusted filesystem
+   ненадійна файлова система
  --------------------------------------
-   appliance kernel
+   ядро базової системи
  --------------------------------------
-   qemu process running as non-root
+   процес qemu, запущений не від імені root
  --------------------------------------
-   sVirt [if using libvirt + SELinux]
+   sVirt [якщо використано libvirt + SELinux]
  --------------------------------------
-   host kernel
+   ядро основної системи
 
-We run a Linux kernel inside a qemu virtual machine, usually running as a
-non-root user.  The attacker would need to write a filesystem which first
-exploited the kernel, and then exploited either qemu virtualization (eg. a
-faulty qemu driver) or the libguestfs protocol, and finally to be as serious
-as the host kernel exploit it would need to escalate its privileges to
-root.  Additionally if you use the libvirt back end and SELinux, sVirt is
-used to confine the qemu process.  This multi-step escalation, performed by
-a static piece of data, is thought to be extremely hard to do, although we
-never say ‘never’ about security issues.
+Ми запускаємо ядро Linux всередині віртуальної машини qemu, зазвичай від
+імені непривілейованого користувача. Зловмиснику доведеться написати файлову
+систему, яка спочатку експлуатуватиме вразливість у ядрі, а потім
+експлуатуватиме вразливість або у віртуалізації qemu (наприклад, у
+неякісному драйвері qemu), або у протоколі libguestfs, і нарешті, щоб
+отримати результат, еквівалентний до вразливості у ядрі, доведеться якось
+отримати права доступу адміністратора (root). Крім того, якщо ви
+використовуєте модуль обробки libvirt та SELinux, для обмеження прав доступу
+qemu використовується sVirt. Тому таке розширення доступу, яке має
+виконуватися за допомогою статичного коду, можна вважати надзвичайно важким
+завданням, хоча ми ніколи не кажемо «ніколи» щодо вразливостей у захисті.
 
-Callers can also reduce the attack surface by forcing the filesystem type
-when mounting (use L<guestfs(3)/guestfs_mount_vfs>).
+Функції виклику також можуть значно звузити можливості нападу, якщо
+примусово вказуватимуть тип файлової системи при монтуванні
+(використовуватимуть L<guestfs(3)/guestfs_mount_vfs>).
 
 =head2 Загальні зауваження щодо захисту
 
-Be careful with any files or data that you download from a guest (by
-"download" we mean not just the L<guestfs(3)/guestfs_download> command but
-any command that reads files, filenames, directories or anything else from a
-disk image).  An attacker could manipulate the data to fool your program
-into doing the wrong thing.  Consider cases such as:
+Будьте обережні із будь-якими файлами або даними, які ви отримуєте із
+гостьової системи (під терміном «отримуєте» ми маємо на увазі не лише
+виконання команди L<guestfs(3)/guestfs_download>, але і виконання будь-якої
+команди, яка читає файли, назви файлів, каталоги або будь-які інші дані з
+образу диска). Зловмисник може змінити дані так, щоб змусити вашу програму
+виконати якісь потрібні йому дії. Слід зважати на такі можливі випадки:
 
 =over 4
 
 =item *
 
-the data (file etc) not being present
+даних (файла чи чогось іншого) немає
 
 =item *
 
-being present but empty
+дані є, але вони порожні
 
 =item *
 
-being much larger than normal
+даних набагато більше, ніж звичайно
 
 =item *
 
-containing arbitrary 8 bit data
+дані є довільними 8-бітовими значеннями
 
 =item *
 
-being in an unexpected character encoding
+дані представлено у неочікуваному кодуванні
 
 =item *
 
-containing homoglyphs.
+назви даних містять гомогліфи.
 
 =back
 
 =head2 Захист протоколу
 
-The protocol is designed to be secure, being based on RFC 4506 (XDR)  with a
-defined upper message size.  However a program that uses libguestfs must
-also take care - for example you can write a program that downloads a binary
-from a disk image and executes it locally, and no amount of protocol
-security will save you from the consequences.
+Протокол розроблено із врахуванням питань безпеки, засновано на RFC 4506
+(XDR) із визначеною верхньою межею розміру повідомлення. Втім, програмам, у
+яких використано libguestfs, також слід вживати певних заходів
+захисту. Наприклад, ви можете написати програму, яка отримує виконуваний
+файл із образу диска і виконує його у локальній системі. Ніякий захист у
+протоколі не вбереже вашу систему від небезпечних наслідків виконання
+шкідливої програми.
 
-=head2 Inspection security
+=head2 Інспектування захисту
 
-Parts of the inspection API (see L<guestfs(3)/INSPECTION>) return untrusted
-strings directly from the guest, and these could contain any 8 bit data.
-Callers should be careful to escape these before printing them to a
-structured file (for example, use HTML escaping if creating a web page).
+Елементи програмного інтерфейсу інспектування
+(див. L<guestfs(3)/ІНСПЕКТУВАННЯ>) повертають довільні рядки безпосередньо з
+гостьової системи. Повернуті рядки можуть містити довільні 8-бітові дані. У
+функціях, які викликають такі елементи програмного інтерфейсу, слід подбати
+про екранування даних до виведення їх до структурованого файла (наприклад,
+екранування коду HTML, якщо створюється вебсторінка).
 
-Guest configuration may be altered in unusual ways by the administrator of
-the virtual machine, and may not reflect reality (particularly for untrusted
-or actively malicious guests).  For example we parse the hostname from
-configuration files like F</etc/sysconfig/network> that we find in the
-guest, but the guest administrator can easily manipulate these files to
-provide the wrong hostname.
+Налаштування гостьової системи може бути змінено у незвичний спосіб
+адміністратором віртуальної машини. Дані у файлах налаштувань можуть бути
+неактуальними (особливо у ненадійних або активно шкідливих гостьових
+системах). Наприклад, ми отримуємо назву вузла із файлів налаштувань,
+наприклад F</etc/sysconfig/network>, які зберігаються у гостьовій системі,
+але адміністратор гостьової системи може легко внести зміни до цих файлів
+так, щоб надавати неправильну назву вузла.
 
-The inspection API parses guest configuration using two external libraries:
-Augeas (Linux configuration) and hivex (Windows Registry).  Both are
-designed to be robust in the face of malicious data, although denial of
-service attacks are still possible, for example with oversized configuration
-files.
+Програмний інтерфейс інспектування обробляє налаштування гостьових систем за
+допомогою двох зовнішніх бібліотек: Augeas (налаштування Linux) та hivex
+(реєстр Windows). Розробники обох бібліотек подбали про стійкість коду до
+шкідливих даних, але атаки з метою викликати відмову в обслуговуванні усе ще
+можливі. Наприклад, для цього можна скористатися файлами налаштувань
+величезних розмірів.
 
 =head2 Запуск незахищених команд гостьової системи
 
-Be very cautious about running commands from the guest.  By running a
-command in the guest, you are giving CPU time to a binary that you do not
-control, under the same user account as the library, albeit wrapped in qemu
-virtualization.  More information and alternatives can be found in
-L<guestfs(3)/RUNNING COMMANDS>.
+Будьте дуже обережні із запуском програм з гостьової системи. Запускаючи
+програму з гостьової системи, ви надаєте процесорний час виконуваному файлу,
+який ви не контролюєте, для того самого облікового запису, від імені якого
+працює бібліотека, хоча і замкненому у віртуальному просторі
+qemu. Докладніший опис варіантів запуску можна знайти у розділі
+L<guestfs(3)/ВИКОНАННЯ КОМАНД>.
 
-=head1 HISTORICAL SECURITY ISSUES IN LIBGUESTFS
+=head1 ІСТОРИЧНО ВІДОМІ ВАДИ ЗАХИСТУ У LIBGUESTFS
 
 =head2 CVE-2010-3851
 
 L<https://bugzilla.redhat.com/642934>
 
-This security bug concerns the automatic disk format detection that qemu
-does on disk images.
+Ця вада у захисті стосується автоматичного визначення формату диска, яке
+qemu виконує для образів дисків.
 
-A raw disk image is just the raw bytes, there is no header.  Other disk
-images like qcow2 contain a special header.  Qemu deals with this by looking
-for one of the known headers, and if none is found then assuming the disk
-image must be raw.
+Простий (raw) образ диска — це просто набір байтів без заголовка. У інших
+форматах образів дисків, зокрема qcow2, міститься спеціальний
+заголовок. Qemu шукає у образі один із відомих заголовків і, якщо такого
+заголовка не буде знайдено, вважає образ диска простим.
 
-This allows a guest which has been given a raw disk image to write some
-other header.  At next boot (or when the disk image is accessed by
-libguestfs) qemu would do autodetection and think the disk image format was,
-say, qcow2 based on the header written by the guest.
+Це надає змогу гостьовій системі, якій надано простий образ диска, записати
+до нього якийсь інший заголовок. Під час наступного завантаження (або
+доступу до образу диска за допомогою libguestfs) qemu має виконати
+автовизначення і на основі заголовка від гостьової системи визначити, що
+форматом образу диска є, скажімо» qcow2.
 
-This in itself would not be a problem, but qcow2 offers many features, one
-of which is to allow a disk image to refer to another image (called the
-"backing disk").  It does this by placing the path to the backing disk into
-the qcow2 header.  This path is not validated and could point to any host
-file (eg. "/etc/passwd").  The backing disk is then exposed through "holes"
-in the qcow2 disk image, which of course is completely under the control of
-the attacker.
+Сама процедура встановлення заголовків не є проблемною. Проблема полягає у
+тому, що у формат qcow2 передбачено багато можливостей, одна з яких надає
+змогу образу диска посилатися на інший образ (який називається «резервним
+диском»). Реалізується ця можливість шляхом запису адреси резервного диска
+до заголовка qcow2. Ця адреса не перевіряється і може вказувати на будь-який
+файл у основній системі (наприклад, «/etc/passwd»). Далі, доступ до даних
+резервного диска надається через «дірки» у образі диска qcow2, який,
+звичайно ж, може потрапити під повний контроль зловмисника.
 
-In libguestfs this is rather hard to exploit except under two circumstances:
+У libguestfs скористатися цією вразливістю доволі складно, окрім двох
+випадків:
 
 =over 4
 
@@ -179,191 +200,209 @@ In libguestfs this is rather hard to exploit except under two circumstances:
 
 =back
 
-The way to avoid this is to specify the expected disk format when adding
-disks (the optional C<format> option to
-L<guestfs(3)/guestfs_add_drive_opts>).  You should always do this if the
-disk is raw format, and it’s a good idea for other cases too.  (See also
-L<guestfs(3)/DISK IMAGE FORMATS>).
+Цих проблем можна уникнути, вказавши очікуваний формат диска під час
+додавання дисків (необов'язковий параметр C<format> у
+L<guestfs(3)/guestfs_add_drive_opts>). Вам завжди варто вказувати формат,
+якщо дані диска зберігаються у простому форматі (raw). У інших випадках цим
+теж не варто нехтувати. (Див. також L<guestfs(3)/ФОРМАТИ ОБРАЗІВ ДИСКІВ>).
 
-For disks added from libvirt using calls like
-L<guestfs(3)/guestfs_add_domain>, the format is fetched from libvirt and
-passed through.
+Для дисків, які додаються з libvirt за допомогою викликів, подібних до
+L<guestfs(3)/guestfs_add_domain>, дані щодо формату отримуються від libvirt
+і передаються далі ланцюжком обробки.
 
-For libguestfs tools, use the I<--format> command line parameter as
-appropriate.
+Для засобів libguestfs використовувати параметр командного рядка I<--format>
+у належний спосіб.
 
 =head2 CVE-2011-4127
 
 L<https://bugzilla.redhat.com/752375>
 
-This is a bug in the kernel which allowed guests to overwrite parts of the
-host’s drives which they should not normally have access to.
+Це вада у ядрі, яка надавала змогу гостьовим системам перезаписувати частини
+дисків основної системи, до яких вони за звичайних умов не повинні були мати
+доступу.
 
-It is sufficient to update libguestfs to any version E<ge> 1.16 which
-contains a change that mitigates the problem.
+Достатньо оновити libguestfs до будь-якої версії E<ge> 1.16, яка містить
+зміну, що усуває проблему.
 
 =head2 CVE-2012-2690
 
 L<https://bugzilla.redhat.com/831117>
 
-Old versions of both virt-edit and the guestfish C<edit> command created a
-new file containing the changes but did not set the permissions, etc of the
-new file to match the old one.  The result of this was that if you edited a
-security sensitive file such as F</etc/shadow> then it would be left
-world-readable after the edit.
+У старих версіях програми virt-edit та команди команди C<edit> guestfish
+створювався новий файл, у якому зберігалися зміни, але не встановлювалися
+права доступу та інші параметри так, щоб вони збігалися із параметрами
+старого редагованого файла. У результаті після редагування конфіденційного
+файла, зокрема F</etc/shadow>, він ставав доступним для сторонніх
+користувачів.
 
-It is sufficient to update libguestfs to any version E<ge> 1.16.
+Достатньо оновити libguestfs до будь-якої версії E<ge> 1.16.
 
 =head2 CVE-2013-2124
 
 L<https://bugzilla.redhat.com/968306>
 
-This security bug was a flaw in inspection where an untrusted guest using a
-specially crafted file in the guest OS could cause a double-free in the C
-library (denial of service).
+Ця вада захисту була «діркою» у засобі інспектування, пов'язаною з тим, що
+відповідним чином створена гостьова система за допомогою приготованого
+файла, що у ній зберігався, могла призвести до подвійного вивільнення
+пам'яті у бібліотеці мовою C (спричинити відмову в обслуговуванні).
 
-It is sufficient to update libguestfs to a version that is not vulnerable:
-libguestfs E<ge> 1.20.8, E<ge> 1.22.2 or E<ge> 1.23.2.
+Достатньо оновити libguestfs до версії, у якій вразливість усунено:
+libguestfs E<ge> 1.20.8, E<ge> 1.22.2 або E<ge> 1.23.2.
 
 =head2 CVE-2013-4419
 
 L<https://bugzilla.redhat.com/1016960>
 
-When using the L<guestfish(1)> I<--remote> or guestfish I<--listen> options,
-guestfish would create a socket in a known location
+Якщо використано параметр L<guestfish(1)> I<--remote> або guestfish
+I<--listen>, guestfish має створити сокет у відомому місці
 (F</tmp/.guestfish-$UID/socket-$PID>).
 
-The location has to be a known one in order for both ends to communicate.
-However no checking was done that the containing directory
-(F</tmp/.guestfish-$UID>) is owned by the user.  Thus another user could
-create this directory and potentially hijack sockets owned by another user’s
-guestfish client or server.
+Місце має бути наперед відомим, щоб за його допомогою обидва боки каналу
+зв'язку могли обмінюватися даними. Втім, не виконується перевірки, чи
+належить відповідний каталог (F</tmp/.guestfish-$UID>) користувачеві. Тому
+цей каталог може бути створено іншим користувачем, який, потенційно, може
+перехопити сокети клієнта або сервера guestfish.
 
-It is sufficient to update libguestfs to a version that is not vulnerable:
-libguestfs E<ge> 1.20.12, E<ge> 1.22.7 or E<ge> 1.24.
+Достатньо оновити libguestfs до версії, у якій вразливість усунено:
+libguestfs E<ge> 1.20.12, E<ge> 1.22.7 або E<ge> 1.24.
 
-=head2 Denial of service when inspecting disk images with corrupt btrfs volumes
+=head2 Відмова у обслуговуванні при інспектуванні образів дисків із пошкодженими
+томами btrfs
 
-It was possible to crash libguestfs (and programs that use libguestfs as a
-library) by presenting a disk image containing a corrupt btrfs volume.
+Можна було спричинити аварійне завершення роботи libguestfs (та програм, які
+використовують libguestfs як бібліотеку) передаванням їм образу диска, на
+якому містився пошкоджений том btrfs.
 
-This was caused by a NULL pointer dereference causing a denial of service,
-and is not thought to be exploitable any further.
+Причиною було розіменування нульового вказівника, яке спричиняло відмову в
+обслуговуванні. Ми вважаємо, що ширше використання цієї вразливості
+неможливе.
 
-See commit d70ceb4cbea165c960710576efac5a5716055486 for the fix.  This fix
-is included in libguestfs stable branches S<E<ge> 1.26.0>, S<E<ge> 1.24.6>
-and S<E<ge> 1.22.8>, and also in RHEL S<E<ge> 7.0>.  Earlier versions of
-libguestfs are not vulnerable.
+Див. внесок d70ceb4cbea165c960710576efac5a5716055486 із виправленням. Це
+виправлено включено до стабільних гілок libguestfs S<E<ge> 1.26.0>, S<E<ge>
+1.24.6> та S<E<ge> 1.22.8>, а також до RHEL S<E<ge> 7.0>. Старіші версії
+libguestfs не є вразливими.
 
 =head2 CVE-2014-0191
 
-Libguestfs previously used unsafe libxml2 APIs for parsing libvirt XML.
-These APIs defaulted to allowing network connections to be made when certain
-XML documents were presented.  Using a malformed XML document it was also
-possible to exhaust all CPU, memory or file descriptors on the machine.
+У попередніх версіях libguestfs використовувала незахищені програмні
+інтерфейси libxml2 для обробки XML libvirt. Ці програмні інтерфейси типово
+надавали доступ до встановлення з'єднань мережі, якщо передавалися документи
+XML певного вмісту. За допомогою спеціально сформованого документа XML також
+можна було вичерпати можливості комп'ютера за процесорним часом, пам'яттю
+або дескрипторами файлів.
 
-Since the libvirt XML comes from a trusted source (the libvirt daemon)  it
-is not thought that this could have been exploitable.
+Оскільки XML libvirt надходить із надійного джерела (фонової служби
+libvirt), ми вважаємо, що цією вразливістю неможливо було скористатися.
 
-This was fixed in libguestfs E<ge> 1.27.9 and the fix was backported to
-stable versions E<ge> 1.26.2, E<ge> 1.24.9, E<ge> 1.22.10 and E<ge> 1.20.13.
+Вразливість виправлено у libguestfs E<ge> 1.27.9, виправлення було зворотно
+портовано до стабільних версій E<ge> 1.26.2, E<ge> 1.24.9, E<ge> 1.22.10 та
+E<ge> 1.20.13.
 
 =head2 Shellshock (bash CVE-2014-6271)
 
-This bash bug indirectly affects libguestfs.  For more information see:
+Вада у bash опосередковано торкнулася libguestfs. Докладніша інформація:
 L<https://www.redhat.com/archives/libguestfs/2014-September/msg00252.html>
 
 =head2 CVE-2014-8484
 
 =head2 CVE-2014-8485
 
-These two bugs in binutils affect the GNU L<strings(1)> program, and thus
-the L<guestfs(3)/guestfs_strings> and L<guestfs(3)/guestfs_strings_e> APIs
-in libguestfs.  Running strings on an untrusted file could cause arbitrary
-code execution (confined to the libguestfs appliance).
+Ці дві вади є вадами програми із комплекту binutils GNU L<strings(1)>. Через
+них вразливими стали інтерфейси L<guestfs(3)/guestfs_strings> та
+L<guestfs(3)/guestfs_strings_e> у libguestfs. Обробка за допомогою strings
+відповідно сформованого файла могла призвести до виконання довільного коду
+(область виконання обмежено базовою системою libguestfs).
 
-In libguestfs E<ge> 1.29.5 and E<ge> 1.28.3, libguestfs uses the C<strings>
-I<-a> option to avoid BFD parsing on the file.
+У libguestfs E<ge> 1.29.5 та E<ge> 1.28.3 використано параметр C<strings>
+I<-a> для того, щоб уникнути обробки файлів за допомогою BFD.
 
 =head2 CVE-2015-5745
 
 L<https://bugzilla.redhat.com/show_bug.cgi?id=1251157>
 
-This is not a vulnerability in libguestfs, but because we always give a
-virtio-serial port to each guest (since that is how guest-host communication
-happens), an escalation from the appliance to the host qemu process is
-possible.  This could affect you if:
+Це не вразливість у libguestfs, але оскільки ми завжди надаємо порт
+virtio-serial для кожної гостьової системи (оскільки так здійснюється обмін
+даними між гостьовою і основною системами), можливе проникнення з базової
+системи до процесу qemu основної системи. Це може стосуватися таких
+випадків:
 
 =over 4
 
 =item *
 
-your libguestfs program runs untrusted programs out of the guest (using
-L<guestfs(3)/guestfs_sh> etc), or
+ваша програма libguestfs запускає ненадійні програми з гостьової системи (за
+допомогою L<guestfs(3)/guestfs_sh> тощо) або
 
 =item *
 
-another exploit was found in (for example) kernel filesystem code that
-allowed a malformed filesystem to take over the appliance.
+у коді файлових систем ядра буде виявлено іншу властивість (наприклад), яка
+надає змогу відповідним чином створеній файловій системі захопити контроль
+над базовою системою.
 
 =back
 
-If you use sVirt to confine qemu, that would thwart some attacks.
+Якщо ви використовуєте sVirt для обмеження qemu, це може запобігти деяким
+нападам.
 
 =head2 Права доступу до F<.ssh> і F<.ssh/authorized_keys>
 
 L<https://bugzilla.redhat.com/1260778>
 
-The tools L<virt-customize(1)>, L<virt-sysprep(1)> and L<virt-builder(1)>
-have an I<--ssh-inject> option for injecting an SSH key into virtual machine
-disk images.  They may create a F<~user/.ssh> directory and
-F<~user/.ssh/authorized_keys> file in the guest to do this.
+У програмах L<virt-customize(1)>, L<virt-sysprep(1)> та L<virt-builder(1)>
+передбачено параметр I<--ssh-inject> для вставляння ключа SSH до образів
+дисків віртуальної машини. Для виконання цього завдання програми можуть
+створювати каталог F<~user/.ssh> і файл F<~user/.ssh/authorized_keys> у
+гостьовій системі.
 
-In libguestfs E<lt> 1.31.5 and libguestfs E<lt> 1.30.2, the new directory
-and file would get mode C<0755> and mode C<0644> respectively.  However
-these permissions (especially for F<~user/.ssh>) are wider than the
-permissions that OpenSSH uses.  In current libguestfs, the directory and
-file are created with mode C<0700> and mode C<0600>.
+У libguestfs E<lt> 1.31.5 та libguestfs E<lt> 1.30.2 для нового каталогу і
+файла вибираються режими доступу C<0755> і C<0644>, відповідно. Втім, такі
+права доступу (особливо до F<~user/.ssh>) є ширшими за ті, які використовує
+OpenSSH. У поточних версіях libguestfs каталог і файл створюються із режимом
+доступу C<0700> і C<0600>, відповідно.
 
 =head2 CVE-2015-8869
 
 L<https://bugzilla.redhat.com/CVE-2015-8869>
 
-This vulnerability in OCaml might affect virt tools written in the OCaml
-programming language.  It affects only 64 bit platforms.  Because this bug
-affects code generation it is difficult to predict which precise software
-could be affected, and therefore our recommendation is that you recompile
-libguestfs using a version of the OCaml compiler where this bug has been
-fixed (or ask your Linux distro to do the same).
+Ця вразливість у OCaml може стосуватися усіх інструментів віртуалізації, які
+написано мовою програмування OCaml. Вона стосується лише 64-бітових
+платформ. Оскільки ця вада стосується створення коду, важко визначити точний
+перелік вражених програм, тому рекомендують повторно зібрати libguestfs за
+допомогою версії компілятора OCaml, де цю ваду виправлено (або попросити
+розробників вашого дистрибутива Linux зробити це для вас).
 
 =head2 CVE-2017-5208, CVE-2017-5331, CVE-2017-5332, CVE-2017-5333, CVE-2017-6009,
 CVE-2017-6010, CVE-2017-6011
 
-Multiple vulnerabilities in the L<wrestool(1)> program in the C<icoutils>
-package can be exploited for local code execution on the host.
+Вразливості у програмі L<wrestool(1)> з пакунка C<icoutils> може бути
+використано для локального виконання коду у основній системі.
 
-When libguestfs inspection (see L</Inspection security> above) detects a
-Windows XP or Windows 7 guest and is asked to find an associated icon for
-the guest, it will download an untrusted file from the guest and run
-C<wrestool -x> on that file.  This can lead to local code execution on the
-host.  Any disk image or guest can be crafted to look like a Windows guest
-to libguestfs inspection, so just because you do not have Windows guests
-does not help.
+Коли засіб інспектування libguestfs (див. L</Inspection security> вище)
+виявляє гостьову систему Windows XP або Windows 7 і отримує запит щодо
+пошуку пов'язаної піктограми гостьової системи, засіб інспектування отримує
+файл, який не є безпечним, з гостьової системи і запускає C<wrestool -x> для
+цього файла. Це може призвести до виконання коду у основній
+системі. Зловмисники можуть створити образ диска або гостьову систему, яка
+виглядатиме як гостьова система Windows для засобу інспектування libguestfs,
+тому те, що у вас немає гостьових систем Windows, не допоможе вберегтися від
+вразливості.
 
-Any program calling the libguestfs API C<guestfs_inspect_get_icon> could be
-vulnerable.  This includes L<virt-inspector(1)> and L<virt-manager(1)>.
+Потенційно вразливими є усі програми, які викликають програмний інтерфейс
+libguestfs C<guestfs_inspect_get_icon>. Такими програмами, зокрема, є
+L<virt-inspector(1)> та L<virt-manager(1)>.
 
-The solution is to update to the non-vulnerable version of icoutils (at
-least 0.31.1).
+Усунути проблему можна, оновивши icoutils до невразливої версії (принаймні
+до 0.31.1).
 
 =head2 CVE-2017-7244, CVE-2017-7245, CVE-2017-7246
 
-Multiple vulnerabilities in PCRE could be exploited to crash libguestfs
-(ie. cause a denial of service) when performing inspection on an untrusted
-virtual machine.
+Вразливостями у PCRE можна скористатися для спричинення аварійного
+завершення роботи libguestfs (тобто, спричинити відмову в обслуговуванні)
+під час виконання інспектування віртуальної машини, до якої можуть мати
+доступ зловмисники.
 
-The solution is to update to a version of PCRE with these bugs fixed
-(upstream version E<ge> 8.41).
+Усунути проблему можна, оновивши PCRE до версії, де вади виправлено
+(основної версії E<ge> 8.41).
 
 =head2 CVE-2018-11806
 
@@ -398,5 +437,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

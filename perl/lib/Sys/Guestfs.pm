@@ -4,7 +4,7 @@
 #          and from the code in the generator/ subdirectory.
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -2354,6 +2354,14 @@ See also C<$g-E<gt>syslinux>.
 This function depends on the feature C<extlinux>.  See also
 C<$g-E<gt>feature-available>.
 
+=item $g->f2fs_expand ($device);
+
+This expands a f2fs filesystem to match the size of the underlying
+device.
+
+This function depends on the feature C<f2fs>.  See also
+C<$g-E<gt>feature-available>.
+
 =item $g->fallocate ($path, $len);
 
 This command preallocates a file (containing zero bytes) named
@@ -3886,6 +3894,10 @@ Frugalware.
 
 Gentoo.
 
+=item "kalilinux"
+
+Kali Linux.
+
 =item "linuxmint"
 
 Linux Mint.
@@ -4190,6 +4202,17 @@ C<$g-E<gt>inspect_get_drive_mappings>.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 See also C<$g-E<gt>inspect_get_filesystems>.
+
+=item $id = $g->inspect_get_osinfo ($root);
+
+This function returns a possible short ID for libosinfo corresponding
+to the guest.
+
+I<Note:> The returned ID is only a guess by libguestfs, and nothing
+ensures that it actually exists in osinfo-db.
+
+If no ID could not be determined, then the string C<unknown> is
+returned.
 
 =item $packageformat = $g->inspect_get_package_format ($root);
 
@@ -5457,8 +5480,8 @@ Reads and writes to this block device are decrypted from and
 encrypted to the underlying C<device> respectively.
 
 If this block device contains LVM volume groups, then
-calling C<$g-E<gt>vgscan> followed by C<$g-E<gt>vg_activate_all>
-will make them visible.
+calling C<$g-E<gt>lvm_scan> with the C<activate>
+parameter C<true> will make them visible.
 
 Use C<$g-E<gt>list_dm_devices> to list all device mapper
 devices.
@@ -5518,6 +5541,21 @@ and physical volumes.
 
 This function depends on the feature C<lvm2>.  See also
 C<$g-E<gt>feature-available>.
+
+=item $g->lvm_scan ($activate);
+
+This scans all block devices and rebuilds the list of LVM
+physical volumes, volume groups and logical volumes.
+
+If the C<activate> parameter is C<true> then newly found
+volume groups and logical volumes are activated, meaning
+the LV F</dev/VG/LV> devices become visible.
+
+When a libguestfs handle is launched it scans for existing
+devices, so you do not normally need to use this API.  However
+it is useful when you have added a new device or deleted an
+existing device (such as when the C<$g-E<gt>luks_open> API
+is used).
 
 =item $g->lvm_set_filter (\@devices);
 
@@ -8805,6 +8843,13 @@ C<$g-E<gt>feature-available>.
 This rescans all block devices and rebuilds the list of LVM
 physical volumes, volume groups and logical volumes.
 
+I<This function is deprecated.>
+In new code, use the L</lvm_scan> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item $uuid = $g->vguuid ($vgname);
 
 This command returns the UUID of the LVM VG named C<vgname>.
@@ -9216,7 +9261,7 @@ with some unique string, to avoid conflicts with other users.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 
 =head1 LICENSE
 

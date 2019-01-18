@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,14 @@ open Common_gettext.Gettext
 
 open Types
 
-let rec target_bus_assignment source targets guestcaps =
+let rec target_bus_assignment source guestcaps =
   let virtio_blk_bus = ref [| |]
   and ide_bus = ref [| |]
   and scsi_bus = ref [| |]
   and floppy_bus = ref [| |] in
 
-  (* Add the fixed disks (targets) to either the virtio-blk or IDE bus,
-   * depending on whether the guest has virtio drivers or not.
+  (* Assign the fixed disks (source.s_disks) to either the virtio-blk or
+   * IDE bus, depending on whether the guest has virtio drivers or not.
    *)
   let () =
     let bus =
@@ -38,10 +38,10 @@ let rec target_bus_assignment source targets guestcaps =
       | Virtio_SCSI -> scsi_bus
       | IDE -> ide_bus in
     List.iteri (
-      fun i t ->
-        let t = BusSlotTarget t in
-        insert bus i t
-    ) targets in
+      fun i d ->
+        let d = BusSlotDisk d in
+        insert bus i d
+    ) source.s_disks in
 
   (* Now we have to assign the removable disks.  These go in the
    * same slot they originally occupied, except in two cases: (1) That

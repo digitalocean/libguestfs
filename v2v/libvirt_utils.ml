@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +16,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
+open Std_utils
+
 (* This module implements various [virsh]-like commands, but with
     non-broken authentication handling. *)
 
 external dumpxml : ?password:string -> ?conn:string -> string -> string = "v2v_dumpxml"
+let dumpxml ?password_file =
+  let password = Option.map read_first_line_from_file password_file in
+  dumpxml ?password
+
 external pool_dumpxml : ?conn:string -> string -> string = "v2v_pool_dumpxml"
 external vol_dumpxml : ?conn:string -> string -> string -> string = "v2v_vol_dumpxml"
 

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@ open Regedit
 
 open Types
 open Utils
+
+module G = Guestfs
 
 let virtio_win =
   try Sys.getenv "VIRTIO_WIN"
@@ -181,6 +183,40 @@ let rec install_drivers ((g, _) as reg) inspect rcaps =
      virtio_rng_supported, virtio_ballon_supported, isa_pvpanic_supported)
   )
 
+and install_linux_tools g inspect =
+  let os =
+    match inspect.i_distro with
+    | "fedora" -> Some "fc28"
+    | "rhel" | "centos" | "scientificlinux" | "redhat-based"
+    | "oraclelinux" ->
+      (match inspect.i_major_version with
+       | 6 -> Some "el6"
+       | 7 -> Some "el7"
+       | _ -> None)
+    | "sles" | "suse-based" | "opensuse" -> Some "lp151"
+    | _ -> None in
+
+  match os with
+  | None ->
+      warning (f_"don't know how to install guest tools on %s-%d")
+        inspect.i_distro inspect.i_major_version
+  | Some os ->
+      let src_path = "linux" // os in
+      let dst_path = "/var/tmp" in
+      debug "locating packages in %s" src_path;
+      let packages =
+        copy_from_virtio_win g inspect src_path dst_path
+                             (fun _ _ -> true)
+                             (fun () ->
+                               warning (f_"guest tools directory ‘%s’ is missing from the virtio-win directory or ISO.\n\nGuest tools are only provided in the RHV Guest Tools ISO, so this can happen if you are using the version of virtio-win which contains just the virtio drivers.  In this case only virtio drivers can be installed in the guest, and installation of Guest Tools will be skipped.")
+                                       src_path) in
+      debug "done copying %d files" (List.length packages);
+      let packages = List.map ((//) dst_path) packages in
+      try
+        Linux.install_local g inspect packages;
+      with G.Error msg ->
+        warning (f_"failed to install QEMU Guest Agent: %s") msg
+
 and add_guestor_to_registry ((g, root) as reg) inspect drv_name drv_pciid =
   let ddb_node = g#hivex_node_get_child root "DriverDatabase" in
 
@@ -254,28 +290,48 @@ and ddb_regedits inspect drv_name drv_pciid =
  * been copied.
  *)
 and copy_drivers g inspect driverdir =
-  let ret = ref false in
+  [] <> copy_from_virtio_win g inspect "/" driverdir
+    virtio_iso_path_matches_guest_os
+    (fun () ->
+      error (f_"root directory ‘/’ is missing from the virtio-win directory or ISO.\n\nThis should not happen and may indicate that virtio-win or virt-v2v is broken in some way.  Please report this as a bug with a full debug log."))
+
+(* Copy all files from virtio_win directory/ISO located in [srcdir]
+ * subdirectory and all its subdirectories to the [destdir]. The directory
+ * hierarchy is not preserved, meaning all files will be directly in [destdir].
+ * The file list is filtered based on [filter] function.
+ *
+ * If [srcdir] is missing from the ISO then [missing ()] is called
+ * which might give a warning or error.
+ *
+ * Returns list of copied files.
+ *)
+and copy_from_virtio_win g inspect srcdir destdir filter missing =
+  let ret = ref [] in
   if is_directory virtio_win then (
-    debug "windows: copy_drivers: source directory virtio_win %s" virtio_win;
+    let dir = virtio_win // srcdir in
+    debug "windows: copy_from_virtio_win: guest tools source directory %s" dir;
 
-    let cmd = sprintf "cd %s && find -L -type f" (quote virtio_win) in
-    let paths = external_command cmd in
-    List.iter (
-      fun path ->
-        if virtio_iso_path_matches_guest_os path inspect then (
-          let source = virtio_win // path in
-          let target = driverdir //
-                         String.lowercase_ascii (Filename.basename path) in
-          debug "copying virtio driver bits: 'host:%s' -> '%s'"
-                source target;
+    if not (is_directory srcdir) then missing ()
+    else (
+      let cmd = sprintf "cd %s && find -L -type f" (quote dir) in
+      let paths = external_command cmd in
+      List.iter (
+        fun path ->
+          if filter path inspect then (
+            let source = dir // path in
+            let target_name = String.lowercase_ascii (Filename.basename path) in
+            let target = destdir // target_name in
+            debug "windows: copying guest tools bits: 'host:%s' -> '%s'"
+                  source target;
 
-          g#write target (read_whole_file source);
-          ret := true
-        )
+            g#write target (read_whole_file source);
+            List.push_front target_name ret
+          )
       ) paths
+    )
   )
   else if is_regular_file virtio_win then (
-    debug "windows: copy_drivers: source ISO virtio_win %s" virtio_win;
+    debug "windows: copy_from_virtio_win: guest tools source ISO %s" virtio_win;
 
     try
       let g2 = open_guestfs ~identifier:"virtio_win" () in
@@ -283,21 +339,25 @@ and copy_drivers g inspect driverdir =
       g2#launch ();
       let vio_root = "/" in
       g2#mount_ro "/dev/sda" vio_root;
-      let paths = g2#find vio_root in
-      Array.iter (
-        fun path ->
-          let source = vio_root // path in
-          if g2#is_file source ~followsymlinks:false &&
-               virtio_iso_path_matches_guest_os path inspect then (
-            let target = driverdir //
-                           String.lowercase_ascii (Filename.basename path) in
-            debug "copying virtio driver bits: '%s:%s' -> '%s'"
-                  virtio_win path target;
+      let srcdir = vio_root ^ "/" ^ srcdir in
+      if not (g2#is_dir srcdir) then missing ()
+      else (
+        let paths = g2#find srcdir in
+        Array.iter (
+          fun path ->
+            let source = srcdir ^ "/" ^ path in
+            if g2#is_file source ~followsymlinks:false &&
+                filter path inspect then (
+              let target_name = String.lowercase_ascii (Filename.basename path) in
+              let target = destdir ^ "/" ^ target_name in
+              debug "windows: copying guest tools bits: '%s:%s' -> '%s'"
+                    virtio_win path target;
 
-            g#write target (g2#read_file source);
-            ret := true
-          )
+              g#write target (g2#read_file source);
+              List.push_front target_name ret
+            )
         ) paths;
+      );
       g2#close()
     with Guestfs.Error msg ->
       error (f_"%s: cannot open virtio-win ISO file: %s") virtio_win msg

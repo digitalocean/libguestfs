@@ -344,6 +344,10 @@ ocaml/guestfs-c-errnos.c
 ocaml/guestfs.ml
 ocaml/guestfs.mli
 p2v/about-authors.c
+p2v/config.c
+p2v/kernel-config.c
+p2v/p2v-config.h
+p2v/virt-p2v-kernel-config.pod
 perl/bindtests.pl
 perl/lib/Sys/Guestfs.pm
 perl/lib/Sys/Guestfs.xs

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,8 +161,8 @@ class input_ova ova = object
            let doc = [
                "file", JSON.Dict [
                            "driver", JSON.String "raw";
-                           "offset", JSON.Int64 offset;
-                           "size", JSON.Int64 size;
+                           "offset", JSON.Int offset;
+                           "size", JSON.Int size;
                            "file", JSON.Dict [
                                        "driver", JSON.String "file";
                                        "filename", JSON.String tar_path]
@@ -189,6 +189,7 @@ class input_ova ova = object
       s_hypervisor = VMware;
       s_name = name;
       s_orig_name = name;
+      s_genid = None; (* XXX *)
       s_memory = memory;
       s_vcpu = vcpu;
       s_cpu_vendor = None;

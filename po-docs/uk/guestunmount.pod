@@ -12,59 +12,66 @@ guestunmount — демонтування змонтованої за допом
 
 =head1 ОПИС
 
-guestunmount is a utility to clean up mounted filesystems automatically.
-L<guestmount(1)> mounts filesystems using libguestfs.  This program unmounts
-the filesystem when a program or script has finished with it.
+guestunmount — програма для автоматичного вилучення змонтованих файлових
+систем. L<guestmount(1)> монтує файлові системи за допомогою libguestfs. Ця
+програма демонтує файлову систему, коли програма або скрипт завершує роботу
+з нею.
 
-guestunmount is a wrapper around the FUSE L<fusermount(1)> program, which
-must exist on the current C<PATH>.
+guestunmount є обгорткою навколо програми FUSE L<fusermount(1)>, яка має
+зберігатися у одному з каталогів, вказаних за допомогою поточної змінної
+C<PATH>.
 
-There are two ways to use guestunmount.  When called as:
+Існує два способи використання guestunmount. Якщо програму викликано так:
 
  guestunmount точка_монтування
 
-it unmounts C<mountpoint> immediately.
+вона демонтує точку монтування C<точка_монтування> негайно.
 
-When called as:
+Якщо ж програму викликано так:
 
  guestunmount --fd=FD точка_монтування
 
-it waits until the pipe C<FD> is closed.  This can be used to monitor
-another process and clean up its mountpoint when that process exits, as
-described below.
+програма чекатиме, аж доки не буде закрито дескриптор файла C<FD>
+каналу. Цим можна скористатися для спостереження за іншим процесом і
+вилучення точки монтування після завершення роботи процесу, як це описано
+нижче.
 
 =head2 З ПРОГРАМ
 
-You can just call C<guestunmount mountpoint> from the program, but a more
-sophisticated way to use guestunmount is to have it monitor your program so
-it can clean up the mount point if your program exits unexpectedly.
+Ви можете просто викликати C<guestunmount точка_монтування> з програми, але
+розумніше було б скористатися guestunmount так, щоб ця програма спостерігала
+за вашою програмою і вилучала точку монтування, якщо програма неочікувано
+завершить роботу.
 
-In the program, create a pipe (eg. by calling L<pipe(2)>).  Let C<FD> be the
-file descriptor number of the read side of the pipe (ie. C<pipefd[0]>).
+У програмі створіть канал обробки (наприклад, за допомогою виклику
+L<pipe(2)>). Нехай C<FD> є номером дескриптора файла з боку читання у каналі
+(тобто C<pipefd[0]>).
 
-After mounting the filesystem with L<guestmount(1)> (on C<mountpoint>), fork
-and run guestunmount like this:
+Після монтування файлової системи за допомогою L<guestmount(1)> (до точки
+монтування C<точка_монтування>) виконайте відгалуження (fork) і запустіть
+guestunmount ось так:
 
  guestunmount --fd=FD точка_монтування
 
-Close the read side of the pipe in the parent process.
+Закрийте бік читання у каналі обробки у батьківському процесі.
 
-Now, when the write side of the pipe (ie. C<pipefd[1]>) is closed for any
-reason, either explicitly or because the parent process exits, guestunmount
-notices and unmounts the mountpoint.
+Тепер, коли з якоїсь причини буде закрито бік запису у каналі (тобто
+C<pipefd[1]>), явно або у результаті завершення роботи батьківського
+процесу, guestunmount зауважить це і демонтує точку монтування.
 
-If your operating system supports it, you should set the C<FD_CLOEXEC> flag
-on the write side of the pipe.  This is so that other child processes don't
-inherit the file descriptor and keep it open.
+Якщо у вашій операційній системі передбачено підтримку цього, вам слід
+встановити прапорець C<FD_CLOEXEC> на боці запису у каналі. Таким чином ви
+забороните іншим дочірнім процесам успадковувати дескриптор файла і тримати
+його відкритим.
 
-Guestunmount never daemonizes itself.
+Guestunmount ніколи не перетворюється на фонову службу.
 
 =head2 ЗІ СКРИПТІВ ОБОЛОНКИ
 
-Since bash doesn't provide a way to create an unnamed pipe, use a trap to
-call guestunmount on exit like this:
+Оскільки у bash не передбачено способу створення неіменованого каналу
+обробки, скористайтеся trap для виклику guestunmount при виході, ось так:
 
- trap "guestunmount mountpoint" EXIT INT QUIT TERM
+ trap "guestunmount точка_монтування" EXIT INT QUIT TERM
 
 =head1 ПАРАМЕТРИ
 
@@ -72,8 +79,8 @@ call guestunmount on exit like this:
 
 =item B<--fd=FD>
 
-Specify the pipe file descriptor to monitor, and delay cleanup until that
-pipe is closed.
+Вкажіть дескриптор файла каналу для спостереження і відкладіть вилучення до
+закриття каналу.
 
 =item B<--help>
 
@@ -83,22 +90,25 @@ pipe is closed.
 
 =item B<--quiet>
 
-Don’t display error messages from fusermount.  The return status is still
-set (see L</EXIT STATUS> below).
+Не показувати повідомлень про помилки від fusermount. Стан повернення все
+одно буде встановлено (див. L</СТАН ВИХОДУ> нижче).
 
 =item B<--no-retry>
 
 =item B<--retry=N>
 
-By default, guestunmount will retry the fusermount operation up to S<5
-times> (that is, it will run it up to S<6 times> = S<1 try> + S<5 retries>).
+Типово, guestunmount виконуватиме повторні спроби fusermount аж до S<5
+разів> (тобто загалом буде виконано S<6 спроб> = S<1 перша спроба> + S<5
+повторних спроб>).
 
-Use I<--no-retry> to make guestunmount run fusermount only once.
+Скористайтеся параметром I<--no-retry>, щоб наказати guestunmount запускати
+fusermount лише один раз.
 
-Use I<--retry=N> to make guestunmount retry C<N> times instead of 5.
+Скористайтеся параметром I<--retry=N>, щоб наказати guestunmount виконувати
+C<N> повторних спроб замість 5.
 
-guestunmount performs an exponential back-off between retries, waiting S<1
-second>, S<2 seconds>, S<4 seconds>, etc before each retry.
+guestunmount збільшує час між спробами експоненційно, очікуючи S<1 секунду>,
+S<2 секунди>, S<4 секунди> тощо перед кожною повторною спробою.
 
 =item B<-V>
 
@@ -114,26 +124,29 @@ second>, S<2 seconds>, S<4 seconds>, etc before each retry.
 
 =item C<PATH>
 
-The L<fusermount(1)> program (supplied by FUSE) must be available on the
-current C<PATH>.
+Програма L<fusermount(1)> (є частиною комплекту FUSE) має зберігатися у
+одному з каталогів, вказаних за допомогою поточної змінної C<PATH>.
 
 =back
 
 =head1 СТАН ВИХОДУ
 
-This program returns 0 if successful, or one of the following error codes:
+Ця програма повертає значення 0 у разі успішного завершення або один із
+таких кодів помилок:
 
 =over 4
 
 =item C<1>
 
-Program error, eg. could not allocate memory, could not run fusermount.  See
-the error message printed for more information.
+Помилка програми, наприклад, не вдалося отримати достатній обсяг пам'яті, не
+вдалося запустити fusermount.  Щоб дізнатися більше, ознайомтеся із
+виведеним повідомленням про помилку.
 
 =item C<2>
 
-The mount point could not be unmounted even after retrying.  See the error
-message printed for the underlying fusermount error.
+Не вдалося демонтувати точку монтування навіть після повторних спроб. Дані
+щодо базової помилки fusermount буде показано у виведеному повідомленні про
+помилку.
 
 =item C<3>
 
@@ -143,8 +156,8 @@ message printed for the underlying fusermount error.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestmount(1)>, L<fusermount(1)>, L<pipe(2)>, L<guestfs(3)/MOUNT LOCAL>,
-L<http://libguestfs.org/>, L<http://fuse.sf.net/>.
+L<guestmount(1)>, L<fusermount(1)>, L<pipe(2)>, L<guestfs(3)/ЛОКАЛЬНЕ
+МОНТУВАННЯ>, L<http://libguestfs.org/>, L<http://fuse.sf.net/>.
 
 =head1 АВТОРИ
 

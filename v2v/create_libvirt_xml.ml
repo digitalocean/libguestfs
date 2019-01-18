@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,116 @@ open DOM
 let string_set_of_list =
   List.fold_left (fun set x -> StringSet.add x set) StringSet.empty
 
-let create_libvirt_xml ?pool source target_buses guestcaps
-                       target_features target_firmware =
+let find_target_disk targets { s_disk_id = id } =
+  try List.find (fun t -> t.target_overlay.ov_source.s_disk_id = id) targets
+  with Not_found -> assert false
+
+let get_osinfo_id = function
+  | { i_type = "linux"; i_distro = "rhel";
+      i_major_version = major; i_minor_version = minor } ->
+    Some (sprintf "http://redhat.com/rhel/%d.%d" major minor)
+
+  | { i_type = "linux"; i_distro = "centos";
+      i_major_version = major; i_minor_version = minor } when major < 7 ->
+    Some (sprintf "http://centos.org/centos/%d.%d" major minor)
+
+  | { i_type = "linux"; i_distro = "centos"; i_major_version = major } ->
+    Some (sprintf "http://centos.org/centos/%d.0" major)
+
+  | { i_type = "linux"; i_distro = "sles";
+      i_major_version = major; i_minor_version = 0;
+      i_product_name = product } when String.find product "Desktop" >= 0 ->
+    Some (sprintf "http://suse.com/sled/%d" major)
+
+  | { i_type = "linux"; i_distro = "sles";
+      i_major_version = major; i_minor_version = minor;
+      i_product_name = product } when String.find product "Desktop" >= 0 ->
+    Some (sprintf "http://suse.com/sled/%d.%d" major minor)
+
+  | { i_type = "linux"; i_distro = "sles";
+      i_major_version = major; i_minor_version = 0 } ->
+    Some (sprintf "http://suse.com/sles/%d" major)
+
+  | { i_type = "linux"; i_distro = "sles";
+      i_major_version = major; i_minor_version = minor } ->
+    Some (sprintf "http://suse.com/sles/%d.%d" major minor)
+
+  | { i_type = "linux"; i_distro = "opensuse";
+      i_major_version = major; i_minor_version = minor } ->
+    Some (sprintf "http://opensuse.org/opensuse/%d.%d" major minor)
+
+  | { i_type = "linux"; i_distro = "debian"; i_major_version = major } ->
+    Some (sprintf "http://debian.org/debian/%d" major)
+
+  | { i_type = "linux"; i_distro = "ubuntu";
+      i_major_version = major; i_minor_version = minor } ->
+    Some (sprintf "http://ubuntu.com/ubuntu/%d.%02d" major minor)
+
+  | { i_type = "linux"; i_distro = "fedora"; i_major_version = major } ->
+    Some (sprintf "http://fedoraproject.org/fedora/%d" major)
+
+  | { i_type = "windows"; i_major_version = major; i_minor_version = minor }
+    when major < 4 ->
+    Some (sprintf "http://microsoft.com/win/%d.%d" major minor)
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 1 } ->
+    Some "http://microsoft.com/win/xp"
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
+      i_product_name = product } when String.find product "XP" >= 0 ->
+    Some "http://microsoft.com/win/xp"
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
+      i_product_name = product } when String.find product "R2" >= 0 ->
+    Some "http://microsoft.com/win/2k3r2"
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2 } ->
+    Some "http://microsoft.com/win/2k3"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
+      i_product_variant = "Server" } ->
+    Some "http://microsoft.com/win/2k8"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 0 } ->
+    Some "http://microsoft.com/win/vista"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
+      i_product_variant = "Server" } ->
+    Some "http://microsoft.com/win/2k8r2"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1 } ->
+    Some "http://microsoft.com/win/7"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 2;
+      i_product_variant = "Server" } ->
+    Some "http://microsoft.com/win/2k12"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 2 } ->
+    Some "http://microsoft.com/win/8"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 3;
+      i_product_variant = "Server" } ->
+    Some "http://microsoft.com/win/2k12r2"
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 3 } ->
+    Some "http://microsoft.com/win/8.1"
+
+  | { i_type = "windows"; i_major_version = 10; i_minor_version = 0;
+      i_product_variant = "Server" } ->
+    Some "http://microsoft.com/win/2k16"
+
+  | { i_type = "windows"; i_major_version = 10; i_minor_version = 0 } ->
+    Some "http://microsoft.com/win/10"
+
+  | { i_type = typ; i_distro = distro;
+      i_major_version = major; i_minor_version = minor; i_arch = arch;
+      i_product_name = product } ->
+    warning (f_"unknown guest operating system: %s %s %d.%d %s (%s)")
+      typ distro major minor arch product;
+    None
+
+let create_libvirt_xml ?pool source targets target_buses guestcaps
+                       target_features target_firmware inspect =
   (* The main body of the libvirt XML document. *)
   let body = ref [] in
 
@@ -39,6 +147,24 @@ let create_libvirt_xml ?pool source target_buses guestcaps
     Comment generated_by;
     e "name" [] [PCData source.s_name];
   ];
+
+  (match source.s_genid with
+   | None -> ()
+   | Some genid -> List.push_back body (e "genid" [] [PCData genid])
+  );
+
+
+  (match get_osinfo_id inspect with
+   | None -> ()
+   | Some osinfo_id ->
+     List.push_back_list body [
+       e "metadata" [] [
+         e "libosinfo:libosinfo" ["xmlns:libosinfo", "http://libosinfo.org/xmlns/libvirt/domain/1.0"] [
+           e "libosinfo:os" ["id", osinfo_id] [];
+         ];
+       ];
+     ];
+  );
 
   let memory_k = source.s_memory /^ 1024L in
   List.push_back_list body [
@@ -81,15 +207,17 @@ let create_libvirt_xml ?pool source target_buses guestcaps
     match target_firmware with
     | TargetBIOS -> None
     | TargetUEFI -> Some (find_uefi_firmware guestcaps.gcaps_arch) in
-  let secure_boot_required =
-    match uefi_firmware with
-    | Some { Uefi.flags = flags }
-         when List.mem Uefi.UEFI_FLAG_SECURE_BOOT_REQUIRED flags -> true
-    | _ -> false in
-  (* Currently these are required by secure boot, but in theory they
-   * might be independent properties.
-   *)
-  let machine_q35 = secure_boot_required in
+  let machine, secure_boot_required =
+    match guestcaps.gcaps_machine, uefi_firmware with
+    | _, Some { Uefi.flags = flags }
+         when List.mem Uefi.UEFI_FLAG_SECURE_BOOT_REQUIRED flags ->
+       (* Force machine type to Q35 because PC does not support
+        * secure boot.  We must remove this when we get the
+        * correct machine type from libosinfo in future. XXX
+        *)
+       Q35, true
+    | machine, _ ->
+       machine, false in
   let smm = secure_boot_required in
 
   (* We have the machine features of the guest when it was on the
@@ -140,7 +268,18 @@ let create_libvirt_xml ?pool source target_buses guestcaps
 
   (* The <os> section subelements. *)
   let os_section =
-    let machine = if machine_q35 then [ "machine", "q35" ] else [] in
+    let os = ref [] in
+
+    let machine =
+      match machine with
+      | I440FX -> "pc"
+      | Q35 -> "q35"
+      | Virt -> "virt" in
+
+    List.push_back os
+                   (e "type" ["arch", guestcaps.gcaps_arch;
+                              "machine", machine]
+                      [PCData "hvm"]);
 
     let loader =
       match uefi_firmware with
@@ -152,8 +291,8 @@ let create_libvirt_xml ?pool source target_buses guestcaps
              [ PCData code ];
            e "nvram" ["template", vars_template] [] ] in
 
-    (e "type" (["arch", guestcaps.gcaps_arch] @ machine) [PCData "hvm"])
-    :: loader in
+    List.push_back_list os loader;
+    !os in
 
   List.push_back_list body [
     e "os" [] os_section;
@@ -171,7 +310,10 @@ let create_libvirt_xml ?pool source target_buses guestcaps
     let make_disk bus_name drive_prefix i = function
     | BusSlotEmpty -> Comment (sprintf "%s slot %d is empty" bus_name i)
 
-    | BusSlotTarget t ->
+    | BusSlotDisk d ->
+       (* Find the corresponding target disk. *)
+       let t = find_target_disk targets d in
+
        let target_file =
          match t.target_file with
          | TargetFile s -> s
@@ -243,7 +385,7 @@ let create_libvirt_xml ?pool source target_buses guestcaps
       | Virtio_net -> "virtio" | E1000 -> "e1000" | RTL8139 -> "rtl8139" in
     List.map (
       fun { s_mac = mac; s_vnet_type = vnet_type;
-            s_vnet = vnet; s_vnet_orig = vnet_orig } ->
+            s_vnet = vnet; s_mapping_explanation = explanation } ->
         let vnet_type_str =
           match vnet_type with
           | Bridge -> "bridge" | Network -> "network" in
@@ -254,11 +396,9 @@ let create_libvirt_xml ?pool source target_buses guestcaps
             e "model" [ "type", net_model ] [];
           ] in
           let children =
-            if vnet_orig <> vnet then
-              Comment (sprintf "%s mapped from \"%s\" to \"%s\""
-                         vnet_type_str vnet_orig vnet) :: children
-            else
-              children in
+            match explanation with
+            | Some explanation -> Comment explanation :: children
+            | None -> children in
           e "interface" [ "type", vnet_type_str ] children in
 
         (match mac with

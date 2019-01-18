@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -947,6 +947,42 @@ guestfs_int_ruby_exists (VALUE gv, VALUE pathv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.f2fs_expand(device) -> nil
+ *
+ * expand a f2fs filesystem
+ *
+ * This expands a f2fs filesystem to match the size of the
+ * underlying device.
+ *
+ *
+ * [Since] Added in version 1.39.3.
+ *
+ * [Feature] This function depends on the feature +f2fs+.  See also {#feature_available}[rdoc-ref:feature_available].
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_f2fs_expand}[http://libguestfs.org/guestfs.3.html#guestfs_f2fs_expand].
+ */
+VALUE
+guestfs_int_ruby_f2fs_expand (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "f2fs_expand");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_f2fs_expand (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
 }
 
 /*
@@ -2857,8 +2893,8 @@ guestfs_int_ruby_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
  * underlying "device" respectively.
  * 
  * If this block device contains LVM volume groups, then
- * calling "g.vgscan" followed by "g.vg_activate_all" will
- * make them visible.
+ * calling "g.lvm_scan" with the "activate" parameter
+ * "true" will make them visible.
  * 
  * Use "g.list_dm_devices" to list all device mapper
  * devices.
@@ -4502,6 +4538,8 @@ guestfs_int_ruby_vgs_full (VALUE gv)
  *
  *
  * [Since] Added in version 1.3.2.
+ *
+ * [Deprecated] In new code, use rdoc-ref:lvm_scan instead.
  *
  * [C API] For the C API documentation for this function, see
  *         {guestfs_vgscan}[http://libguestfs.org/guestfs.3.html#guestfs_vgscan].

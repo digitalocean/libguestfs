@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -208,6 +208,7 @@ extern VALUE guestfs_int_ruby_egrepi (VALUE gv, VALUE regexv, VALUE pathv);
 extern VALUE guestfs_int_ruby_equal (VALUE gv, VALUE file1v, VALUE file2v);
 extern VALUE guestfs_int_ruby_exists (VALUE gv, VALUE pathv);
 extern VALUE guestfs_int_ruby_extlinux (VALUE gv, VALUE directoryv);
+extern VALUE guestfs_int_ruby_f2fs_expand (VALUE gv, VALUE devicev);
 extern VALUE guestfs_int_ruby_fallocate (VALUE gv, VALUE pathv, VALUE lenv);
 extern VALUE guestfs_int_ruby_fallocate64 (VALUE gv, VALUE pathv, VALUE lenv);
 extern VALUE guestfs_int_ruby_feature_available (VALUE gv, VALUE groupsv);
@@ -308,6 +309,7 @@ extern VALUE guestfs_int_ruby_inspect_get_icon (int argc, VALUE *argv, VALUE gv)
 extern VALUE guestfs_int_ruby_inspect_get_major_version (VALUE gv, VALUE rootv);
 extern VALUE guestfs_int_ruby_inspect_get_minor_version (VALUE gv, VALUE rootv);
 extern VALUE guestfs_int_ruby_inspect_get_mountpoints (VALUE gv, VALUE rootv);
+extern VALUE guestfs_int_ruby_inspect_get_osinfo (VALUE gv, VALUE rootv);
 extern VALUE guestfs_int_ruby_inspect_get_package_format (VALUE gv, VALUE rootv);
 extern VALUE guestfs_int_ruby_inspect_get_package_management (VALUE gv, VALUE rootv);
 extern VALUE guestfs_int_ruby_inspect_get_product_name (VALUE gv, VALUE rootv);
@@ -427,6 +429,7 @@ extern VALUE guestfs_int_ruby_lvcreate_free (VALUE gv, VALUE logvolv, VALUE volg
 extern VALUE guestfs_int_ruby_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev);
 extern VALUE guestfs_int_ruby_lvm_clear_filter (VALUE gv);
 extern VALUE guestfs_int_ruby_lvm_remove_all (VALUE gv);
+extern VALUE guestfs_int_ruby_lvm_scan (VALUE gv, VALUE activatev);
 extern VALUE guestfs_int_ruby_lvm_set_filter (VALUE gv, VALUE devicesv);
 extern VALUE guestfs_int_ruby_lvremove (VALUE gv, VALUE devicev);
 extern VALUE guestfs_int_ruby_lvrename (VALUE gv, VALUE logvolv, VALUE newlogvolv);

@@ -9,47 +9,52 @@ virt-p2v-make-kiwi — збирання конфігурації kiwi virt-p2v
 
 =head1 ОПИС
 
-L<virt-p2v(1)> converts a physical machine to run virtualized on KVM,
-managed by libvirt, OpenStack, oVirt, Red Hat Enterprise Virtualisation
-(RHEV), or one of the other targets supported by L<virt-v2v(1)>.
+L<virt-p2v(1)> перетворює фізичну машину для запуску віртуалізованою у KVM,
+під керуванням libvirt, OpenStack, oVirt, Red Hat Enterprise Virtualisation
+(RHEV) або одним із інших призначень, підтримку яких передбачено у
+L<virt-v2v(1)>.
 
-Kiwi is a tool used mainly by SUSE Linux Enterprise and openSUSE to build
-live CDs, make appliances and so on. It is driven by a few files including
-an xml description of the machine.
+Kiwi — інструмент, що використовується в основному в SUSE Linux Enterprise
+та openSUSE для збирання образів компакт-дисків із портативною системою,
+створення базових систем тощо. Керування цим інструментом здійснюється за
+допомогою декількох файлів із xml-описом машини.
 
 virt-p2v-make-kiwi builds a folder containing all the pieces needed for kiwi
 to build a bootable P2V live CD ISO, USB key, or PXE image.  This tool only
 builds the kiwi configuration, but this manual page describes some of the
 ways you can use the kiwi configuration.
 
-=head1 BUILDING THE KIWI CONFIGURATION
+=head1 ПОБУДОВА НАЛАШТУВАНЬ KIWI
 
-Using virt-p2v-make-kiwi is very simple:
+Користування virt-p2v-make-kiwi є дуже простим:
 
  virt-p2v-make-kiwi
 
-will build a kiwi configuration based on the current machine’s distribution.
+збереже налаштування kiwi на основі поточного дистрибутива машини.
 
-To control the name of the output folder, use the I<-o> parameter.
+Для керування назвою теки для виведення даних скористайтеся параметром
+I<-o>.
 
-=head1 BUILDING A LIVE CD / ISO
+=head1 ЗБИРАННЯ ISO АБО ОБРАЗУ ДИСКА ІЗ ПОРТАТИВНОЮ СИСТЕМОЮ
 
-Once you have the kiwi configuration folder, you can use L<kiwi(1)> to make
-a live CD:
+Щойно у вас буде тека налаштувань kiwi, ви зможете скористатися L<kiwi(1)>
+для створення образу компакт-диска із портативною системою:
 
  sudo kiwi --build p2v.kiwi -d build --type iso
 
-Before running this, you may have to tweak the C<config.xml> file to change
-the locale and keyboard mapping to the one you need.
+Перш ніж віддавати цю команду, ви можете скоригувати файл C<config.xml> з
+метою зміни локалі та прив'язки клавіатури відповідно до ваших потреб.
 
-If running on a SUSE Linux Entreprise Server, add the path to your packages
-repositories using the C<--ignore-repos> and C<--add-repo> kiwi parameters.
+Якщо ви працюєте у SUSE Linux Entreprise Server, додайте шлях до сховищ
+пакунків вашого дистрибутива за допомогою параметрів kiwi C<--ignore-repos>
+і C<--add-repo>.
 
-The generated ISO image will be placed in the C<build> folder.
+Створений образ ISO буде розташовано у теці C<build>.
 
 =head1 ЗБИРАННЯ ПРИДАТНОГО ДО ЗАВАНТАЖЕННЯ НОСІЯ USB
 
-Use the L<dd(1)> program to write the ISO created above to a USB key:
+Скористайтеся програмою L<dd(1)> для запису створеного вище образу ISO на
+флешку USB:
 
  sudo dd if=шлях/до/p2v.iso of=/dev/sdX
 
@@ -59,45 +64,46 @@ Use the L<dd(1)> program to write the ISO created above to a USB key:
 
  sudo kiwi --build $PWD/p2v.kiwi -d build --add-profile netboot --type pxe
 
-For more details on how to use the generated image, report to the kiwi
-documentation on PXE images:
+Щоб дізнатися більше про те, як користуватися створеним образом, зверніться
+до документації з kiwi, зокрема розділу щодо образів PXE:
 L<https://doc.opensuse.org/projects/kiwi/doc/#chap.pxe>
 
 =head1 ДОДАВАННЯ ПРОФІЛЮ SSH
 
-You can inject an SSH identity (private key) file to the kiwi config and
-hence into the ISO using the I<--inject-ssh-identity> option.  Note that you
-I<cannot> inject a key once the ISO has been built.
+Ви можете вставити файл профілю SSH (закритий ключ) до налаштувань kiwi, а
+отже до ISO, за допомогою параметр I<--inject-ssh-identity>. Зауважте, що ви
+I<не можете> вставити ключ після збирання образу ISO.
 
-First create a key pair.  It must have an empty passphrase:
+Спочатку створіть пару ключів. Пароль до пари ключів має бути порожнім:
 
  ssh-keygen -t rsa -N '' -f id_rsa
 
-This creates a private key (C<id_rsa>) and a public key (C<id_rsa.pub>)
-pair.  The public key should be appended to the C<authorized_keys> file on
-the virt-v2v conversion server (usually to C</root/.ssh/authorized_keys>).
+Ця команда створить закритий ключ (C<id_rsa>) і відкритий ключ
+(C<id_rsa.pub>). Відкритий ключ слід дописати до файла C<authorized_keys> на
+сервері перетворення virt-v2v (зазвичай, до файла
+C</root/.ssh/authorized_keys>).
 
-The private key should be added to the kiwi config and then discarded:
+Закритий ключ має бути додано до налаштувань kiwi, а потім відкинуто:
 
  virt-p2v-make-kiwi [...] --inject-ssh-identity id_rsa
  rm id_rsa
 
-The ISO can then be built from the kickstart in the usual way (see above),
-and it will contain the embedded SSH identity (F</var/tmp/id_rsa>).
+Образ ISO далі може бути зібрано на основі kickstart у звичний спосіб
+(див. вище), і він міститиме вбудований профіль SSH (F</var/tmp/id_rsa>).
 
-When booting virt-p2v, specify the URL of the injected file like this:
+При завантаженні virt-p2v вкажіть адресу вставленого файла ось так:
 
- │         User name: [root_____________________________] │
+ │         Користувач: [root____________________________] │
  │                                                        │
- │          Password: [    <leave this field blank>     ] │
+ │          Пароль: [      <не заповнюйте>                 ] │
  │                                                        │
- │  SSH Identity URL: [file:///var/tmp/id_rsa___________] │
+ │  Адреса профілю SSH: [file:///var/tmp/id_rsa_______] │
 
-or if using the kernel command line, add:
+або, якщо використовується командний рядок ядра, додайте:
 
  p2v.identity=file:///var/tmp/id_rsa
 
-For more information, see L<virt-p2v(1)/SSH IDENTITIES>.
+Докладніший опис наведено у розділі L<virt-p2v(1)/ПРОФІЛІ SSH>.
 
 =head1 ПАРАМЕТРИ
 
@@ -109,15 +115,15 @@ For more information, see L<virt-p2v(1)/SSH IDENTITIES>.
 
 =item B<--inject-ssh-identity> id_rsa
 
-Add an SSH identity (private key) file into the kickstart.  See L</ADDING AN
-SSH IDENTITY> above.
+Додати файл профілю SSH (закритий ключ) до kickstart. Див. L</ДОДАВАННЯ
+ПРОФІЛЮ SSH> вище.
 
 =item B<-o> ВИВЕДЕННЯ
 
 =item B<--output> ВИВЕДЕННЯ
 
-Write kiwi configuration to the C<OUTPUT> folder.  If not specified, the
-default is F<p2v.kiwi> in the current directory.
+Записати налаштування kiwi до теки C<ВИВЕДЕННЯ>. Якщо теку не вказано,
+налаштування буде записано до F<p2v.kiwi> у поточному каталозі.
 
 =item B<-V>
 
@@ -133,10 +139,10 @@ default is F<p2v.kiwi> in the current directory.
 
 =item F<$libdir/virt-p2v/virt-p2v.xz>
 
-The L<virt-p2v(1)> binary which is copied into the kiwi configuration.
+Виконуваний файл L<virt-p2v(1)>, який скопійовано до налаштувань kiwi.
 
-The location of the binary can be changed by setting the
-C<VIRT_P2V_DATA_DIR> environment variable.
+Розташування виконуваного файла можна змінити за допомогою встановлення
+відповідного значення змінної середовища C<VIRT_P2V_DATA_DIR>.
 
 =item F<$datadir/virt-p2v/issue>
 
@@ -146,10 +152,11 @@ C<VIRT_P2V_DATA_DIR> environment variable.
 
 =item F<$datadir/virt-p2v/p2v.service>
 
-Various data files that are used to make the kiwi appliance.
+Різноманітні файли даних, які використовуються для створення базової системи
+kiwi.
 
-The location of these files can be changed by setting the
-C<VIRT_P2V_DATA_DIR> environment variable.
+Розташування цих файлів можна змінити за допомогою встановлення відповідного
+значення змінної середовища C<VIRT_P2V_DATA_DIR>.
 
 =back
 
@@ -159,8 +166,9 @@ C<VIRT_P2V_DATA_DIR> environment variable.
 
 =item C<VIRT_P2V_DATA_DIR>
 
-The directory where virt-p2v-make-kiwi looks for data files and the virt-p2v
-binary (see L</FILES> above).  If not set, a compiled-in location is used.
+Каталог, де virt-p2v-make-kiwi шукатиме файли даних і виконуваний файл
+virt-p2v (див. L</ФАЙЛИ> вище). Якщо не встановлено, буде використано
+вказане під час компіляції місце.
 
 =back
 

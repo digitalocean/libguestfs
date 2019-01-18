@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2017 Red Hat Inc.
+ * Copyright (C) 2017-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ let authors = [
 "Angus Salkeld", [], [ Development ];
 "Ani Peter", [], [ Development ];
 "Bastien ROUCARIÈS", [], [ Development ];
+"Bernhard M. Wiedemann", [], [ Development ];
 "Cao jin", [], [ Development ];
 "Charles Duffy", [], [ Development ];
 "Chen Hanxiao", [], [ Development ];
@@ -48,6 +49,7 @@ let authors = [
 "Dan Lipsitt", [], [ Development ];
 "Daniel P. Berrangé", [ "Daniel Berrange" ], [ Development ];
 "Daniel Cabrera", [], [ Development ];
+"Daniel Erez", [], [ Development ];
 "Daniel Exner", [], [ Development ];
 "Dave Vasilevsky", [], [ Development ];
 "David Sommerseth", [], [ Development ];
@@ -100,6 +102,7 @@ let authors = [
 "Nikita A Menkovich", [], [ Development ];
 "Nikita Menkovich", [], [ Development ];
 "Nikos Skalkotos", [], [ Development ];
+"Nir Soffer", [], [ Development ];
 "Olaf Hering", [], [ Development ];
 "Or Goshen", [], [ Development ];
 "Paul Mackerras", [], [ Development ];
@@ -112,6 +115,7 @@ let authors = [
 "Robert Antoni Buj Gelonch", [], [ Development ];
 "Roman Kagan", [], [ Development; V2V_and_P2V ];
 "Sandeep Shedmake", [], [ Development ];
+"Sebastian Meyer", [], [ Development ];
 "Shahar Havivi", [], [ Development; V2V_and_P2V ];
 "Shahar Lev", [], [ Development ];
 "Shankar Prasad", [], [ Development ];

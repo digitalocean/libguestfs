@@ -93,7 +93,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module close-tests:
   # Code from module closedir:
   # Code from module closeout:
-  # Code from module configmake:
   # Code from module connect:
   # Code from module connect-tests:
   # Code from module ctype:
@@ -147,6 +146,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module float:
   # Code from module float-tests:
   # Code from module fnmatch:
+  # Code from module fnmatch-h:
+  # Code from module fnmatch-h-tests:
   # Code from module fnmatch-tests:
   # Code from module fpending:
   # Code from module fpending-tests:
@@ -202,6 +203,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module gettimeofday-tests:
   # Code from module gitlog-to-changelog:
   # Code from module glob:
+  # Code from module glob-h:
+  # Code from module glob-h-tests:
   # Code from module glob-tests:
   # Code from module gnu-make:
   # Code from module gnumakefile:
@@ -247,6 +250,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module listen:
   # Code from module listen-tests:
   # Code from module localcharset:
+  # Code from module localcharset-tests:
   # Code from module locale:
   # Code from module locale-tests:
   # Code from module localeconv:
@@ -281,6 +285,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module memrchr:
   # Code from module memrchr-tests:
   # Code from module minmax:
+  # Code from module mkdir:
+  # Code from module mkdir-tests:
   # Code from module mkdtemp:
   # Code from module mkstemps:
   # Code from module msvc-inval:
@@ -306,6 +312,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module openat-safer-tests:
   # Code from module openat-tests:
   # Code from module opendir:
+  # Code from module opendirat:
   # Code from module pathmax:
   # Code from module pathmax-tests:
   # Code from module perror:
@@ -367,6 +374,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module sched:
   # Code from module sched-tests:
   # Code from module scratch_buffer:
+  # Code from module scratch_buffer-tests:
   # Code from module select:
   # Code from module select-tests:
   # Code from module servent:
@@ -376,6 +384,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module setlocale-tests:
   # Code from module setsockopt:
   # Code from module setsockopt-tests:
+  # Code from module sh-filename:
   # Code from module sigaction:
   # Code from module sigaction-tests:
   # Code from module signal-h:
@@ -503,6 +512,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module utimecmp:
   # Code from module utimens:
   # Code from module utimens-tests:
+  # Code from module utimensat:
+  # Code from module utimensat-tests:
   # Code from module vasnprintf:
   # Code from module vasnprintf-tests:
   # Code from module vasprintf:
@@ -598,7 +609,6 @@ AC_SUBST([LTALLOCA])
   fi
   gl_DIRENT_MODULE_INDICATOR([closedir])
   gl_CLOSEOUT
-  gl_CONFIGMAKE_PREP
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   if test "$ac_cv_header_winsock2_h" = yes; then
     AC_LIBOBJ([connect])
@@ -670,10 +680,12 @@ AC_SUBST([LTALLOCA])
     AC_LIBOBJ([itold])
   fi
   gl_FUNC_FNMATCH_POSIX
-  if test -n "$FNMATCH_H"; then
+  if test $HAVE_FNMATCH = 0 || test $REPLACE_FNMATCH = 1; then
     AC_LIBOBJ([fnmatch])
     gl_PREREQ_FNMATCH
   fi
+  gl_FNMATCH_MODULE_INDICATOR([fnmatch])
+  gl_FNMATCH_H
   gl_FUNC_FPENDING
   if test $gl_cv_func___fpending = no; then
     AC_LIBOBJ([fpending])
@@ -782,12 +794,16 @@ AC_SUBST([LTALLOCA])
   fi
   gl_SYS_TIME_MODULE_INDICATOR([gettimeofday])
   gl_GLOB
-  if test -n "$GLOB_H"; then
+  if test $HAVE_GLOB = 0 || test $REPLACE_GLOB = 1; then
     AC_LIBOBJ([glob])
-    AC_LIBOBJ([glob_pattern_p])
     AC_LIBOBJ([globfree])
     gl_PREREQ_GLOB
   fi
+  if test $HAVE_GLOB_PATTERN_P = 0 || test $REPLACE_GLOB_PATTERN_P = 1; then
+    AC_LIBOBJ([glob_pattern_p])
+  fi
+  gl_GLOB_MODULE_INDICATOR([glob])
+  gl_GLOB_H
   gl_GNU_MAKE
   # Autoconf 2.61a.99 and earlier don't support linking a file only
   # in VPATH builds.  But since GNUmakefile is for maintainer use
@@ -799,7 +815,6 @@ AC_SUBST([LTALLOCA])
           m4_defn([m4_PACKAGE_VERSION])), [1], [],
         [AC_CONFIG_LINKS([$GNUmakefile:$GNUmakefile], [],
           [GNUmakefile=$GNUmakefile])])
-  gl_HARD_LOCALE
   AC_REQUIRE([gl_HOST_CPU_C_ABI])
   gl_HOSTENT
   gl_HUMAN
@@ -829,7 +844,8 @@ AC_SUBST([LTALLOCA])
   gl___INLINE
   gl_LIMITS_H
   gl_LOCALCHARSET
-  LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)/$gl_source_base\""
+  dnl For backward compatibility. Some packages still use this.
+  LOCALCHARSET_TESTS_ENVIRONMENT=
   AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
   gl_LOCALE_H
   gl_FUNC_LOCALECONV
@@ -909,6 +925,10 @@ AC_SUBST([LTALLOCA])
   fi
   gl_STRING_MODULE_INDICATOR([memrchr])
   gl_MINMAX
+  gl_FUNC_MKDIR
+  if test $REPLACE_MKDIR = 1; then
+    AC_LIBOBJ([mkdir])
+  fi
   gl_FUNC_MKDTEMP
   if test $HAVE_MKDTEMP = 0; then
     AC_LIBOBJ([mkdtemp])
@@ -1344,6 +1364,7 @@ changequote([, ])dnl
   gl_SYS_SOCKET_MODULE_INDICATOR([listen])
   AC_CHECK_FUNCS_ONCE([newlocale])
   gl_LOCALENAME
+  gl_LOCALE_MODULE_INDICATOR([localename])
   AC_CHECK_FUNCS_ONCE([newlocale])
   AC_CHECK_HEADERS_ONCE([semaphore.h])
   gt_LOCALE_FR
@@ -1385,17 +1406,17 @@ changequote([, ])dnl
   fi
   gl_UNISTD_MODULE_INDICATOR([pipe])
   gl_FUNC_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE
-  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = 1; then
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN = 1 || test $REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = 1; then
     AC_LIBOBJ([spawn_faction_addclose])
   fi
   gl_SPAWN_MODULE_INDICATOR([posix_spawn_file_actions_addclose])
   gl_FUNC_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2
-  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = 1; then
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN = 1 || test $REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = 1; then
     AC_LIBOBJ([spawn_faction_adddup2])
   fi
   gl_SPAWN_MODULE_INDICATOR([posix_spawn_file_actions_adddup2])
   gl_FUNC_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN
-  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = 1; then
+  if test $HAVE_POSIX_SPAWN = 0 || test $REPLACE_POSIX_SPAWN = 1 || test $REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = 1; then
     AC_LIBOBJ([spawn_faction_addopen])
   fi
   gl_SPAWN_MODULE_INDICATOR([posix_spawn_file_actions_addopen])
@@ -1489,6 +1510,7 @@ changequote([, ])dnl
     AC_LIBOBJ([setsockopt])
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([setsockopt])
+  gl_SH_FILENAME
   gl_SIGACTION
   if test $HAVE_SIGACTION = 0; then
     AC_LIBOBJ([sigaction])
@@ -1535,6 +1557,11 @@ changequote([, ])dnl
   fi
   gl_UNISTD_MODULE_INDICATOR([usleep])
   gl_UTIMECMP
+  gl_FUNC_UTIMENSAT
+  if test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1; then
+    AC_LIBOBJ([utimensat])
+  fi
+  gl_SYS_STAT_MODULE_INDICATOR([utimensat])
   abs_aux_dir=`cd "$ac_aux_dir"; pwd`
   AC_SUBST([abs_aux_dir])
   gl_FUNC_VSNPRINTF
@@ -1710,7 +1737,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/closedir.c
   lib/closeout.c
   lib/closeout.h
-  lib/config.charset
   lib/connect.c
   lib/creat-safer.c
   lib/cycle-check.c
@@ -1846,6 +1872,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/mempcpy.c
   lib/memrchr.c
   lib/minmax.h
+  lib/mkdir.c
   lib/mkdtemp.c
   lib/mkstemps.c
   lib/msvc-inval.c
@@ -1865,6 +1892,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/openat.c
   lib/openat.h
   lib/opendir.c
+  lib/opendirat.c
+  lib/opendirat.h
   lib/pathmax.h
   lib/perror.c
   lib/pipe-safer.c
@@ -1888,8 +1917,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/readlink.c
   lib/readlinkat.c
   lib/realloc.c
-  lib/ref-add.sin
-  lib/ref-del.sin
   lib/rewinddir.c
   lib/safe-read.c
   lib/safe-read.h
@@ -1946,6 +1973,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/strtoumax.c
   lib/symlink.c
   lib/symlinkat.c
+  lib/sys-limits.h
   lib/sys_ioctl.in.h
   lib/sys_select.in.h
   lib/sys_socket.c
@@ -2015,7 +2043,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/closedir.m4
   m4/closeout.m4
   m4/codeset.m4
-  m4/configmake.m4
   m4/ctype.m4
   m4/cycle-check.m4
   m4/d-ino.m4
@@ -2046,6 +2073,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/flexmember.m4
   m4/float_h.m4
   m4/fnmatch.m4
+  m4/fnmatch_h.m4
   m4/fpending.m4
   m4/fpieee.m4
   m4/fseeko.m4
@@ -2070,11 +2098,10 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/getprogname.m4
   m4/gettime.m4
   m4/gettimeofday.m4
-  m4/glibc21.m4
   m4/glob.m4
+  m4/glob_h.m4
   m4/gnu-make.m4
   m4/gnulib-common.m4
-  m4/hard-locale.m4
   m4/host-cpu-c-abi.m4
   m4/hostent.m4
   m4/human.m4
@@ -2083,6 +2110,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/include_next.m4
   m4/inet_ntop.m4
   m4/inet_pton.m4
+  m4/intl-thread-locale.m4
   m4/intlmacosx.m4
   m4/intmax_t.m4
   m4/inttostr.m4
@@ -2127,6 +2155,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/mempcpy.m4
   m4/memrchr.m4
   m4/minmax.m4
+  m4/mkdir.m4
   m4/mkdtemp.m4
   m4/mkstemps.m4
   m4/mmap-anon.m4
@@ -2140,7 +2169,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/nocrash.m4
   m4/nonblocking.m4
   m4/off_t.m4
-  m4/onceonly.m4
   m4/open-cloexec.m4
   m4/open.m4
   m4/openat.m4
@@ -2177,6 +2205,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/servent.m4
   m4/setenv.m4
   m4/setlocale.m4
+  m4/sh-filename.m4
   m4/sig_atomic_t.m4
   m4/sigaction.m4
   m4/signal_h.m4
@@ -2239,6 +2268,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/utime_h.m4
   m4/utimecmp.m4
   m4/utimens.m4
+  m4/utimensat.m4
   m4/utimes.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
@@ -2310,6 +2340,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-fgetc.c
   tests/test-filevercmp.c
   tests/test-float.c
+  tests/test-fnmatch-h.c
   tests/test-fnmatch.c
   tests/test-fpending.c
   tests/test-fpending.sh
@@ -2348,6 +2379,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-getsockname.c
   tests/test-getsockopt.c
   tests/test-gettimeofday.c
+  tests/test-glob-h.c
   tests/test-glob.c
   tests/test-hash.c
   tests/test-i-ring.c
@@ -2365,6 +2397,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-langinfo.c
   tests/test-limits-h.c
   tests/test-listen.c
+  tests/test-localcharset.c
   tests/test-locale.c
   tests/test-localeconv.c
   tests/test-localename.c
@@ -2397,6 +2430,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-memchr.c
   tests/test-memmem.c
   tests/test-memrchr.c
+  tests/test-mkdir.c
+  tests/test-mkdir.h
   tests/test-nanosleep.c
   tests/test-netdb.c
   tests/test-netinet_in.c
@@ -2412,6 +2447,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-nonblocking-socket.sh
   tests/test-nonblocking-writer.h
   tests/test-nonblocking.c
+  tests/test-once.c
   tests/test-open.c
   tests/test-open.h
   tests/test-openat-safer.c
@@ -2448,6 +2484,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-rmdir.h
   tests/test-rwlock1.c
   tests/test-sched.c
+  tests/test-scratch-buffer.c
   tests/test-select-fd.c
   tests/test-select-in.sh
   tests/test-select-out.sh
@@ -2514,6 +2551,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-utimens-common.h
   tests/test-utimens.c
   tests/test-utimens.h
+  tests/test-utimensat.c
   tests/test-vasnprintf.c
   tests/test-vasprintf.c
   tests/test-vc-list-files-cvs.sh
@@ -2572,6 +2610,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/isblank.c
   tests=lib/langinfo.in.h
   tests=lib/listen.c
+  tests=lib/localename-table.c
+  tests=lib/localename-table.h
   tests=lib/localename.c
   tests=lib/localename.h
   tests=lib/mbtowc-impl.h
@@ -2618,6 +2658,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/usleep.c
   tests=lib/utimecmp.c
   tests=lib/utimecmp.h
+  tests=lib/utimensat.c
   tests=lib/vsnprintf.c
   tests=lib/w32sock.h
   tests=lib/wait-process.c

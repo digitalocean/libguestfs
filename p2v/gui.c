@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,6 +98,10 @@
 #define MAX_SUPPORTED_VCPUS 160
 #define MAX_SUPPORTED_MEMORY_MB (UINT64_C (4000 * 1024))
 
+#if GLIB_CHECK_VERSION(2,32,0) && GTK_CHECK_VERSION(3,12,0)   /* glib >= 2.32 && gtk >= 3.12 */
+#define USE_POPOVERS
+#endif
+
 static void create_connection_dialog (struct config *);
 static void create_conversion_dialog (struct config *);
 static void create_running_dialog (void);
@@ -129,7 +133,7 @@ static GtkWidget *conv_dlg,
 /* The running dialog which is displayed when virt-v2v is running. */
 static GtkWidget *run_dlg,
   *v2v_output_sw, *v2v_output, *log_label, *status_label,
-  *cancel_button, *reboot_button;
+  *cancel_button, *shutdown_button;
 
 /* Colour tags used in the v2v_output GtkTextBuffer. */
 static GtkTextTag *v2v_output_tags[16];
@@ -228,12 +232,12 @@ create_connection_dialog (struct config *config)
   hbox_new (server_hbox, FALSE, 4);
   server_entry = gtk_entry_new ();
   gtk_label_set_mnemonic_widget (GTK_LABEL (server_label), server_entry);
-  if (config->server != NULL)
-    gtk_entry_set_text (GTK_ENTRY (server_entry), config->server);
+  if (config->remote.server != NULL)
+    gtk_entry_set_text (GTK_ENTRY (server_entry), config->remote.server);
   port_colon_label = gtk_label_new (":");
   port_entry = gtk_entry_new ();
   gtk_entry_set_width_chars (GTK_ENTRY (port_entry), 6);
-  snprintf (port_str, sizeof port_str, "%d", config->port);
+  snprintf (port_str, sizeof port_str, "%d", config->remote.port);
   gtk_entry_set_text (GTK_ENTRY (port_entry), port_str);
   gtk_box_pack_start (GTK_BOX (server_hbox), server_entry, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (server_hbox), port_colon_label, FALSE, FALSE, 0);
@@ -247,8 +251,8 @@ create_connection_dialog (struct config *config)
   set_alignment (username_label, 1., 0.5);
   username_entry = gtk_entry_new ();
   gtk_label_set_mnemonic_widget (GTK_LABEL (username_label), username_entry);
-  if (config->username != NULL)
-    gtk_entry_set_text (GTK_ENTRY (username_entry), config->username);
+  if (config->auth.username != NULL)
+    gtk_entry_set_text (GTK_ENTRY (username_entry), config->auth.username);
   else
     gtk_entry_set_text (GTK_ENTRY (username_entry), "root");
   table_attach (table, username_entry,
@@ -265,8 +269,8 @@ create_connection_dialog (struct config *config)
   gtk_entry_set_input_purpose (GTK_ENTRY (password_entry),
                                GTK_INPUT_PURPOSE_PASSWORD);
 #endif
-  if (config->password != NULL)
-    gtk_entry_set_text (GTK_ENTRY (password_entry), config->password);
+  if (config->auth.password != NULL)
+    gtk_entry_set_text (GTK_ENTRY (password_entry), config->auth.password);
   table_attach (table, password_entry,
                 1, 2, 2, 3, GTK_EXPAND|GTK_FILL, GTK_FILL, 4, 4);
 
@@ -276,15 +280,15 @@ create_connection_dialog (struct config *config)
   set_alignment (identity_label, 1., 0.5);
   identity_entry = gtk_entry_new ();
   gtk_label_set_mnemonic_widget (GTK_LABEL (identity_label), identity_entry);
-  if (config->identity_url != NULL)
-    gtk_entry_set_text (GTK_ENTRY (identity_entry), config->identity_url);
+  if (config->auth.identity.url != NULL)
+    gtk_entry_set_text (GTK_ENTRY (identity_entry), config->auth.identity.url);
   table_attach (table, identity_entry,
                 1, 2, 3, 4, GTK_EXPAND|GTK_FILL, GTK_FILL, 4, 4);
 
   sudo_button =
     gtk_check_button_new_with_mnemonic (_("Use su_do when running virt-v2v"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (sudo_button),
-                                config->sudo);
+                                config->auth.sudo);
   table_attach (table, sudo_button,
                 1, 2, 4, 5, GTK_FILL, GTK_FILL, 4, 4);
 
@@ -446,42 +450,42 @@ test_connection_clicked (GtkWidget *w, gpointer data)
 #endif
 
   /* Get the fields from the various widgets. */
-  free (config->server);
-  config->server = strdup (gtk_entry_get_text (GTK_ENTRY (server_entry)));
-  if (STREQ (config->server, "")) {
+  free (config->remote.server);
+  config->remote.server = strdup (gtk_entry_get_text (GTK_ENTRY (server_entry)));
+  if (STREQ (config->remote.server, "")) {
     gtk_label_set_text (GTK_LABEL (spinner_message),
                         _("error: No conversion server given."));
     gtk_widget_grab_focus (server_entry);
     errors++;
   }
   port_str = gtk_entry_get_text (GTK_ENTRY (port_entry));
-  if (sscanf (port_str, "%d", &config->port) != 1 ||
-      config->port <= 0 || config->port >= 65536) {
+  if (sscanf (port_str, "%d", &config->remote.port) != 1 ||
+      config->remote.port <= 0 || config->remote.port >= 65536) {
     gtk_label_set_text (GTK_LABEL (spinner_message),
                         _("error: Invalid port number. If in doubt, use \"22\"."));
     gtk_widget_grab_focus (port_entry);
     errors++;
   }
-  free (config->username);
-  config->username = strdup (gtk_entry_get_text (GTK_ENTRY (username_entry)));
-  if (STREQ (config->username, "")) {
+  free (config->auth.username);
+  config->auth.username = strdup (gtk_entry_get_text (GTK_ENTRY (username_entry)));
+  if (STREQ (config->auth.username, "")) {
     gtk_label_set_text (GTK_LABEL (spinner_message),
                         _("error: No user name.  If in doubt, use \"root\"."));
     gtk_widget_grab_focus (username_entry);
     errors++;
   }
-  free (config->password);
-  config->password = strdup (gtk_entry_get_text (GTK_ENTRY (password_entry)));
+  free (config->auth.password);
+  config->auth.password = strdup (gtk_entry_get_text (GTK_ENTRY (password_entry)));
 
-  free (config->identity_url);
+  free (config->auth.identity.url);
   identity_str = gtk_entry_get_text (GTK_ENTRY (identity_entry));
   if (identity_str && STRNEQ (identity_str, ""))
-    config->identity_url = strdup (identity_str);
+    config->auth.identity.url = strdup (identity_str);
   else
-    config->identity_url = NULL;
-  config->identity_file_needs_update = 1;
+    config->auth.identity.url = NULL;
+  config->auth.identity.file_needs_update = 1;
 
-  config->sudo = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (sudo_button));
+  config->auth.sudo = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (sudo_button));
 
   if (errors)
     return;
@@ -638,7 +642,7 @@ about_button_clicked (GtkWidget *w, gpointer data)
   g_object_set (G_OBJECT (dialog),
                 "program-name", getprogname (),
                 "version", PACKAGE_VERSION_FULL " (" host_cpu ")",
-                "copyright", "\u00A9 2009-2018 Red Hat Inc.",
+                "copyright", "\u00A9 2009-2019 Red Hat Inc.",
                 "comments",
                   _("Virtualize a physical machine to run on KVM"),
 #if GTK_CHECK_VERSION(3,0,0)   /* gtk >= 3 */
@@ -839,8 +843,8 @@ create_conversion_dialog (struct config *config)
   oc_entry = gtk_entry_new ();
   gtk_label_set_mnemonic_widget (GTK_LABEL (oc_label), oc_entry);
   gtk_widget_set_tooltip_markup (oc_entry, _("For <b>libvirt</b> only, the libvirt connection URI, or leave blank to add the guest to the default libvirt instance on the conversion server.  For others, leave this field blank."));
-  if (config->output_connection != NULL)
-    gtk_entry_set_text (GTK_ENTRY (oc_entry), config->output_connection);
+  if (config->output.connection != NULL)
+    gtk_entry_set_text (GTK_ENTRY (oc_entry), config->output.connection);
   table_attach (output_tbl, oc_entry,
                 1, 2, 1, 2, GTK_FILL, GTK_FILL, 1, 1);
 
@@ -851,8 +855,8 @@ create_conversion_dialog (struct config *config)
   os_entry = gtk_entry_new ();
   gtk_label_set_mnemonic_widget (GTK_LABEL (os_label), os_entry);
   gtk_widget_set_tooltip_markup (os_entry, _("For <b>local</b>, put the directory name on the conversion server.  For <b>rhv</b>, put the Export Storage Domain (server:/mountpoint).  For others, leave this field blank."));
-  if (config->output_storage != NULL)
-    gtk_entry_set_text (GTK_ENTRY (os_entry), config->output_storage);
+  if (config->output.storage != NULL)
+    gtk_entry_set_text (GTK_ENTRY (os_entry), config->output.storage);
   table_attach (output_tbl, os_entry,
                 1, 2, 2, 3, GTK_FILL, GTK_FILL, 1, 1);
 
@@ -863,8 +867,8 @@ create_conversion_dialog (struct config *config)
   of_entry = gtk_entry_new ();
   gtk_label_set_mnemonic_widget (GTK_LABEL (of_label), of_entry);
   gtk_widget_set_tooltip_markup (of_entry, _("The output disk format, typically <b>raw</b> or <b>qcow2</b>.  If blank, defaults to <b>raw</b>."));
-  if (config->output_format != NULL)
-    gtk_entry_set_text (GTK_ENTRY (of_entry), config->output_format);
+  if (config->output.format != NULL)
+    gtk_entry_set_text (GTK_ENTRY (of_entry), config->output.format);
   table_attach (output_tbl, of_entry,
                 1, 2, 3, 4, GTK_FILL, GTK_FILL, 1, 1);
 
@@ -878,7 +882,7 @@ create_conversion_dialog (struct config *config)
                                   "sparse");
   gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (oa_combo),
                                   "preallocated");
-  switch (config->output_allocation) {
+  switch (config->output.allocation) {
   case OUTPUT_ALLOCATION_PREALLOCATED:
     gtk_combo_box_set_active (GTK_COMBO_BOX (oa_combo), 1);
     break;
@@ -1034,8 +1038,8 @@ repopulate_output_combo (struct config *config)
   size_t i;
 
   /* Which driver is currently selected? */
-  if (config && config->output)
-    output = strdup (config->output);
+  if (config && config->output.type)
+    output = strdup (config->output.type);
   else
     output = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (o_combo));
 
@@ -1325,15 +1329,20 @@ maybe_identify_click (GtkWidget *interfaces_list, GdkEventButton *event,
                       gpointer data)
 {
   gboolean ret = FALSE;         /* Did we handle this event? */
+  guint button;
 
   /* Single left click only. */
-  if (event->type == GDK_BUTTON_PRESS && event->button == 1) {
+  if (gdk_event_get_event_type ((const GdkEvent *) event) == GDK_BUTTON_PRESS &&
+      gdk_event_get_button ((const GdkEvent *) event, &button) &&
+      button == 1) {
     GtkTreePath *path;
     GtkTreeViewColumn *column;
+    gdouble event_x, event_y;
 
-    if (gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (interfaces_list),
-                                       event->x, event->y,
-                                       &path, &column, NULL, NULL)) {
+    if (gdk_event_get_coords ((const GdkEvent *) event, &event_x, &event_y)
+        && gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (interfaces_list),
+                                          event_x, event_y,
+                                          &path, &column, NULL, NULL)) {
       GList *cols;
       gint column_index;
 
@@ -1606,8 +1615,21 @@ static void *start_conversion_thread (void *data);
 static gboolean conversion_error (gpointer user_data);
 static gboolean conversion_finished (gpointer user_data);
 static void cancel_conversion_dialog (GtkWidget *w, gpointer data);
+#ifdef USE_POPOVERS
+static void activate_action (GSimpleAction *action, GVariant *parameter, gpointer user_data);
+#else
+static void shutdown_button_clicked (GtkToolButton *w, gpointer data);
+#endif
+static void shutdown_clicked (GtkWidget *w, gpointer data);
 static void reboot_clicked (GtkWidget *w, gpointer data);
 static gboolean close_running_dialog (GtkWidget *w, GdkEvent *event, gpointer data);
+
+#ifdef USE_POPOVERS
+static const GActionEntry shutdown_actions[] = {
+  { "shutdown", activate_action, NULL, NULL, NULL },
+  { "reboot", activate_action, NULL, NULL, NULL },
+};
+#endif
 
 /**
  * Create the running dialog.
@@ -1623,6 +1645,14 @@ create_running_dialog (void)
     { "black", "maroon", "green", "olive", "navy", "purple", "teal", "silver",
       "gray", "red", "lime", "yellow", "blue", "fuchsia", "cyan", "white" };
   GtkTextBuffer *buf;
+#ifdef USE_POPOVERS
+  GMenu *shutdown_menu;
+  GSimpleActionGroup *shutdown_group;
+#else
+  GtkWidget *shutdown_menu;
+  GtkWidget *shutdown_menu_item;
+  GtkWidget *reboot_menu_item;
+#endif
 
   run_dlg = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (run_dlg), getprogname ());
@@ -1686,15 +1716,51 @@ create_running_dialog (void)
     (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (run_dlg))),
      status_label, TRUE, TRUE, 0);
 
+  /* Shutdown popup menu. */
+#ifdef USE_POPOVERS
+  shutdown_menu = g_menu_new ();
+  g_menu_append (shutdown_menu, _("_Shutdown"), "shutdown.shutdown");
+  g_menu_append (shutdown_menu, _("_Reboot"), "shutdown.reboot");
+
+  shutdown_group = g_simple_action_group_new ();
+  g_action_map_add_action_entries (G_ACTION_MAP (shutdown_group),
+                                   shutdown_actions,
+                                   G_N_ELEMENTS (shutdown_actions), NULL);
+#else
+  shutdown_menu = gtk_menu_new ();
+  shutdown_menu_item = gtk_menu_item_new_with_mnemonic (_("_Shutdown"));
+  gtk_menu_shell_append (GTK_MENU_SHELL (shutdown_menu), shutdown_menu_item);
+  gtk_widget_show (shutdown_menu_item);
+  reboot_menu_item = gtk_menu_item_new_with_mnemonic (_("_Reboot"));
+  gtk_menu_shell_append (GTK_MENU_SHELL (shutdown_menu), reboot_menu_item);
+  gtk_widget_show (reboot_menu_item);
+#endif
+
   /* Buttons. */
   gtk_dialog_add_buttons (GTK_DIALOG (run_dlg),
                           _("_Cancel conversion ..."), 1,
-                          _("_Reboot"), 2,
                           NULL);
   cancel_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (run_dlg), 1);
   gtk_widget_set_sensitive (cancel_button, FALSE);
-  reboot_button = gtk_dialog_get_widget_for_response (GTK_DIALOG (run_dlg), 2);
-  gtk_widget_set_sensitive (reboot_button, FALSE);
+#ifdef USE_POPOVERS
+  shutdown_button = gtk_menu_button_new ();
+  gtk_button_set_use_underline (GTK_BUTTON (shutdown_button), TRUE);
+  gtk_button_set_label (GTK_BUTTON (shutdown_button), _("_Shutdown ..."));
+  gtk_button_set_always_show_image (GTK_BUTTON (shutdown_button), TRUE);
+  gtk_widget_insert_action_group (shutdown_button, "shutdown",
+                                  G_ACTION_GROUP (shutdown_group));
+  gtk_menu_button_set_use_popover (GTK_MENU_BUTTON (shutdown_button), TRUE);
+  gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (shutdown_button),
+                                  G_MENU_MODEL (shutdown_menu));
+#else
+  shutdown_button = GTK_WIDGET (gtk_menu_tool_button_new (NULL,
+                                                          _("_Shutdown ...")));
+  gtk_tool_button_set_use_underline (GTK_TOOL_BUTTON (shutdown_button), TRUE);
+  gtk_menu_tool_button_set_menu (GTK_MENU_TOOL_BUTTON (shutdown_button),
+                                 shutdown_menu);
+#endif
+  gtk_widget_set_sensitive (shutdown_button, FALSE);
+  gtk_dialog_add_action_widget (GTK_DIALOG (run_dlg), shutdown_button, 2);
 
   /* Signals. */
   g_signal_connect_swapped (G_OBJECT (run_dlg), "delete_event",
@@ -1703,8 +1769,14 @@ create_running_dialog (void)
                             G_CALLBACK (gtk_main_quit), NULL);
   g_signal_connect (G_OBJECT (cancel_button), "clicked",
                     G_CALLBACK (cancel_conversion_dialog), NULL);
-  g_signal_connect (G_OBJECT (reboot_button), "clicked",
+#ifndef USE_POPOVERS
+  g_signal_connect (G_OBJECT (shutdown_button), "clicked",
+                    G_CALLBACK (shutdown_button_clicked), shutdown_menu);
+  g_signal_connect (G_OBJECT (shutdown_menu_item), "activate",
+                    G_CALLBACK (shutdown_clicked), NULL);
+  g_signal_connect (G_OBJECT (reboot_menu_item), "activate",
                     G_CALLBACK (reboot_clicked), NULL);
+#endif
 }
 
 /**
@@ -1721,7 +1793,7 @@ show_running_dialog (void)
   gtk_widget_show_all (run_dlg);
   gtk_widget_set_sensitive (cancel_button, TRUE);
   if (is_iso_environment)
-    gtk_widget_set_sensitive (reboot_button, FALSE);
+    gtk_widget_set_sensitive (shutdown_button, FALSE);
 }
 
 /**
@@ -1981,40 +2053,40 @@ start_conversion_clicked (GtkWidget *w, gpointer data)
   set_network_map_from_ui (config);
 
   /* Output selection. */
-  free (config->output);
-  config->output =
+  free (config->output.type);
+  config->output.type =
     gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (o_combo));
 
-  config->output_allocation = OUTPUT_ALLOCATION_NONE;
+  config->output.allocation = OUTPUT_ALLOCATION_NONE;
   str2 = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (oa_combo));
   if (str2) {
     if (STREQ (str2, "sparse"))
-      config->output_allocation = OUTPUT_ALLOCATION_SPARSE;
+      config->output.allocation = OUTPUT_ALLOCATION_SPARSE;
     else if (STREQ (str2, "preallocated"))
-      config->output_allocation = OUTPUT_ALLOCATION_PREALLOCATED;
+      config->output.allocation = OUTPUT_ALLOCATION_PREALLOCATED;
     free (str2);
   }
 
-  free (config->output_connection);
+  free (config->output.connection);
   str = gtk_entry_get_text (GTK_ENTRY (oc_entry));
   if (str && STRNEQ (str, ""))
-    config->output_connection = strdup (str);
+    config->output.connection = strdup (str);
   else
-    config->output_connection = NULL;
+    config->output.connection = NULL;
 
-  free (config->output_format);
+  free (config->output.format);
   str = gtk_entry_get_text (GTK_ENTRY (of_entry));
   if (str && STRNEQ (str, ""))
-    config->output_format = strdup (str);
+    config->output.format = strdup (str);
   else
-    config->output_format = NULL;
+    config->output.format = NULL;
 
-  free (config->output_storage);
+  free (config->output.storage);
   str = gtk_entry_get_text (GTK_ENTRY (os_entry));
   if (str && STRNEQ (str, ""))
-    config->output_storage = strdup (str);
+    config->output.storage = strdup (str);
   else
-    config->output_storage = NULL;
+    config->output.storage = NULL;
 
   /* Display the UI for conversion. */
   show_running_dialog ();
@@ -2077,9 +2149,9 @@ conversion_error (gpointer user_data)
   /* Disable the cancel button. */
   gtk_widget_set_sensitive (cancel_button, FALSE);
 
-  /* Enable the reboot button. */
+  /* Enable the shutdown button. */
   if (is_iso_environment)
-    gtk_widget_set_sensitive (reboot_button, TRUE);
+    gtk_widget_set_sensitive (shutdown_button, TRUE);
 
   return FALSE;
 }
@@ -2105,9 +2177,9 @@ conversion_finished (gpointer user_data)
   /* Disable the cancel button. */
   gtk_widget_set_sensitive (cancel_button, FALSE);
 
-  /* Enable the reboot button. */
+  /* Enable the shutdown button. */
   if (is_iso_environment)
-    gtk_widget_set_sensitive (reboot_button, TRUE);
+    gtk_widget_set_sensitive (shutdown_button, TRUE);
 
   return FALSE;
 }
@@ -2190,6 +2262,38 @@ cancel_conversion_dialog (GtkWidget *w, gpointer data)
     cancel_conversion ();
 
   gtk_widget_destroy (dlg);
+}
+
+#ifdef USE_POPOVERS
+static void
+activate_action (GSimpleAction *action, GVariant *parameter, gpointer user_data)
+{
+  const char *action_name = g_action_get_name (G_ACTION (action));
+  if (STREQ (action_name, "shutdown"))
+    shutdown_clicked (NULL, user_data);
+  else if (STREQ (action_name, "reboot"))
+    reboot_clicked (NULL, user_data);
+}
+#else
+static void
+shutdown_button_clicked (GtkToolButton *w, gpointer data)
+{
+  GtkMenu *menu = data;
+
+  gtk_menu_popup (menu, NULL, NULL, NULL, NULL, 1,
+                  gtk_get_current_event_time ());
+}
+#endif
+
+static void
+shutdown_clicked (GtkWidget *w, gpointer data)
+{
+  if (!is_iso_environment)
+    return;
+
+  sync ();
+  sleep (2);
+  ignore_value (system ("/sbin/poweroff"));
 }
 
 static void

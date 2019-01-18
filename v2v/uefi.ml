@@ -3,7 +3,7 @@
  *          from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,14 +38,6 @@ let uefi_aarch64_firmware = [
   { code = "/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw";
     code_debug = None;
     vars = "/usr/share/edk2/aarch64/vars-template-pflash.raw";
-    flags = [];
-  };
-]
-
-let uefi_i386_firmware = [
-  { code = "/usr/share/edk2.git/ovmf-ia32/OVMF_CODE-pure-efi.fd";
-    code_debug = None;
-    vars = "/usr/share/edk2.git/ovmf-ia32/OVMF_VARS-pure-efi.fd";
     flags = [];
   };
 ]

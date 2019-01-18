@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -362,6 +362,15 @@ Run it from the top source directory using the command
             Customize.generate_customize_synopsis_pod;
   output_to "customize/customize-options.pod"
             Customize.generate_customize_options_pod;
+
+  output_to "p2v/p2v-config.h"
+            P2v_config.generate_p2v_config_h;
+  output_to "p2v/config.c"
+            P2v_config.generate_p2v_config_c;
+  output_to "p2v/kernel-config.c"
+            P2v_config.generate_p2v_kernel_config_c;
+  output_to "p2v/virt-p2v-kernel-config.pod"
+            P2v_config.generate_p2v_kernel_config_pod;
 
   (* Generate the list of files generated -- last. *)
   printf "generated %d lines of code\n" (get_lines_generated ());

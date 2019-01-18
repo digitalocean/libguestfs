@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2456,6 +2456,50 @@ guestfs_int_ruby_luks_kill_slot (VALUE gv, VALUE devicev, VALUE keyv, VALUE keys
   int r;
 
   r = guestfs_luks_kill_slot (g, device, key, keyslot);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.lvm_scan(activate) -> nil
+ *
+ * scan for LVM physical volumes, volume groups and logical volumes
+ *
+ * This scans all block devices and rebuilds the list of
+ * LVM physical volumes, volume groups and logical volumes.
+ * 
+ * If the "activate" parameter is "true" then newly found
+ * volume groups and logical volumes are activated, meaning
+ * the LV /dev/VG/LV devices become visible.
+ * 
+ * When a libguestfs handle is launched it scans for
+ * existing devices, so you do not normally need to use
+ * this API. However it is useful when you have added a new
+ * device or deleted an existing device (such as when the
+ * "g.luks_open" API is used).
+ *
+ *
+ * [Since] Added in version 1.39.8.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_lvm_scan}[http://libguestfs.org/guestfs.3.html#guestfs_lvm_scan].
+ */
+VALUE
+guestfs_int_ruby_lvm_scan (VALUE gv, VALUE activatev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "lvm_scan");
+
+  int activate = RTEST (activatev);
+
+  int r;
+
+  r = guestfs_lvm_scan (g, activate);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
