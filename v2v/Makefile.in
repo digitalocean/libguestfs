@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-v2v tool
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009-2018 Red Hat Inc.
+# Copyright (C) 2009-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -130,6 +130,7 @@ am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
+pkglibexecdir = $(libexecdir)/@PACKAGE@
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -147,7 +148,8 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@bin_PROGRAMS = virt-v2v$(EXEEXT) \
 @HAVE_OCAML_TRUE@	virt-v2v-copy-to-local$(EXEEXT)
 @HAVE_OCAML_PKG_GETTEXT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = -package gettext-stub
-@HAVE_OCAML_TRUE@TESTS = test-v2v-docs.sh test-v2v-i-ova-bad-sha1.sh \
+@HAVE_OCAML_TRUE@TESTS = test-v2v-docs.sh test-v2v-python-syntax.sh \
+@HAVE_OCAML_TRUE@	test-v2v-i-ova-bad-sha1.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-bad-sha256.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-formats.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-good-checksums.sh \
@@ -158,6 +160,9 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-subfolders.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-tar.sh \
 @HAVE_OCAML_TRUE@	test-v2v-i-ova-two-disks.sh test-v2v-i-vmx.sh \
+@HAVE_OCAML_TRUE@	test-v2v-it-vddk-io-query.sh \
+@HAVE_OCAML_TRUE@	test-v2v-o-rhv-upload-oo-query.sh \
+@HAVE_OCAML_TRUE@	test-v2v-o-vdsm-oo-query.sh \
 @HAVE_OCAML_TRUE@	test-v2v-bad-networks-and-bridges.sh \
 @HAVE_OCAML_TRUE@	$(am__append_2) $(am__EXEEXT_1) \
 @HAVE_OCAML_TRUE@	$(am__append_4) $(am__append_5)
@@ -176,17 +181,21 @@ host_triplet = @host@
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-cdrom.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-floppy.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-in-place.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-mac.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-networks-and-bridges.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-no-copy.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-glance.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-libvirt.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-null.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-openstack.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-qemu.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-rhv.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-rhv-upload.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-o-vdsm-options.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-oa-option.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-on-option.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-print-estimate.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-print-source.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	test-v2v-sound.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(SLOW_TESTS) \
@@ -256,7 +265,11 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	test-v2v-i-vmx-4.vmx \
 @HAVE_OCAML_TRUE@	test-v2v-i-vmx-5.vmx \
 @HAVE_OCAML_TRUE@	test-v2v-in-place.sh \
+@HAVE_OCAML_TRUE@	test-v2v-it-vddk-io-query.sh \
 @HAVE_OCAML_TRUE@	test-v2v-machine-readable.sh \
+@HAVE_OCAML_TRUE@	test-v2v-mac-expected.xml \
+@HAVE_OCAML_TRUE@	test-v2v-mac.sh \
+@HAVE_OCAML_TRUE@	test-v2v-mac.xml \
 @HAVE_OCAML_TRUE@	test-v2v-networks-and-bridges-expected.xml \
 @HAVE_OCAML_TRUE@	test-v2v-networks-and-bridges.sh \
 @HAVE_OCAML_TRUE@	test-v2v-networks-and-bridges.xml \
@@ -264,15 +277,25 @@ host_triplet = @host@
 @HAVE_OCAML_TRUE@	test-v2v-o-glance.sh \
 @HAVE_OCAML_TRUE@	test-v2v-o-libvirt.sh \
 @HAVE_OCAML_TRUE@	test-v2v-o-null.sh \
+@HAVE_OCAML_TRUE@	test-v2v-o-openstack.sh \
 @HAVE_OCAML_TRUE@	test-v2v-o-qemu.sh \
+@HAVE_OCAML_TRUE@	test-v2v-o-rhv.ovf.expected \
 @HAVE_OCAML_TRUE@	test-v2v-o-rhv.sh \
+@HAVE_OCAML_TRUE@	test-v2v-o-rhv-upload.sh \
+@HAVE_OCAML_TRUE@	test-v2v-o-rhv-upload-module/ovirtsdk4/__init__.py \
+@HAVE_OCAML_TRUE@	test-v2v-o-rhv-upload-module/ovirtsdk4/types.py \
+@HAVE_OCAML_TRUE@	test-v2v-o-rhv-upload-oo-query.sh \
+@HAVE_OCAML_TRUE@	test-v2v-o-vdsm-oo-query.sh \
+@HAVE_OCAML_TRUE@	test-v2v-o-vdsm-options.ovf.expected \
 @HAVE_OCAML_TRUE@	test-v2v-o-vdsm-options.sh \
 @HAVE_OCAML_TRUE@	test-v2v-oa-option.sh \
 @HAVE_OCAML_TRUE@	test-v2v-of-option.sh \
 @HAVE_OCAML_TRUE@	test-v2v-on-option.sh \
+@HAVE_OCAML_TRUE@	test-v2v-print-estimate.sh \
 @HAVE_OCAML_TRUE@	test-v2v-print-source.expected \
 @HAVE_OCAML_TRUE@	test-v2v-print-source.sh \
 @HAVE_OCAML_TRUE@	test-v2v-print-source.xml \
+@HAVE_OCAML_TRUE@	test-v2v-python-syntax.sh \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of.sh \
 @HAVE_OCAML_TRUE@	test-v2v-sound.sh \
 @HAVE_OCAML_TRUE@	test-v2v-sound.xml \
@@ -295,11 +318,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/clock_time.m4 \
 	$(top_srcdir)/m4/close-stream.m4 $(top_srcdir)/m4/close.m4 \
 	$(top_srcdir)/m4/closedir.m4 $(top_srcdir)/m4/closeout.m4 \
-	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/configmake.m4 \
-	$(top_srcdir)/m4/ctype.m4 $(top_srcdir)/m4/cycle-check.m4 \
-	$(top_srcdir)/m4/d-ino.m4 $(top_srcdir)/m4/d-type.m4 \
-	$(top_srcdir)/m4/dirent_h.m4 $(top_srcdir)/m4/dirfd.m4 \
-	$(top_srcdir)/m4/dirname.m4 \
+	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/ctype.m4 \
+	$(top_srcdir)/m4/cycle-check.m4 $(top_srcdir)/m4/d-ino.m4 \
+	$(top_srcdir)/m4/d-type.m4 $(top_srcdir)/m4/dirent_h.m4 \
+	$(top_srcdir)/m4/dirfd.m4 $(top_srcdir)/m4/dirname.m4 \
 	$(top_srcdir)/m4/double-slash-root.m4 $(top_srcdir)/m4/dup.m4 \
 	$(top_srcdir)/m4/dup2.m4 $(top_srcdir)/m4/dup3.m4 \
 	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/environ.m4 \
@@ -312,12 +334,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fdopen.m4 $(top_srcdir)/m4/fdopendir.m4 \
 	$(top_srcdir)/m4/filenamecat.m4 $(top_srcdir)/m4/flexmember.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
-	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
-	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/ftell.m4 \
-	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
-	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/fnmatch_h.m4 $(top_srcdir)/m4/fpending.m4 \
+	$(top_srcdir)/m4/fpieee.m4 $(top_srcdir)/m4/fseeko.m4 \
+	$(top_srcdir)/m4/fstat.m4 $(top_srcdir)/m4/fstatat.m4 \
+	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
+	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
+	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
 	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
 	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
@@ -325,17 +347,17 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getlogin_r.m4 $(top_srcdir)/m4/getopt.m4 \
 	$(top_srcdir)/m4/getpagesize.m4 \
 	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
-	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
-	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glob.m4 \
+	$(top_srcdir)/m4/glob_h.m4 $(top_srcdir)/m4/gnu-make.m4 \
 	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
-	$(top_srcdir)/m4/hard-locale.m4 \
 	$(top_srcdir)/m4/host-cpu-c-abi.m4 $(top_srcdir)/m4/hostent.m4 \
 	$(top_srcdir)/m4/human.m4 $(top_srcdir)/m4/i-ring.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
+	$(top_srcdir)/m4/intl-thread-locale.m4 \
 	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
 	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
 	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
@@ -360,20 +382,20 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
 	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
 	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/minmax.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mkstemps.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/mkdir.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mkstemps.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
 	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
 	$(top_srcdir)/m4/nonblocking.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
-	$(top_srcdir)/m4/open-cloexec.m4 $(top_srcdir)/m4/open.m4 \
-	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
-	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
-	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
-	$(top_srcdir)/m4/posix_spawn.m4 $(top_srcdir)/m4/pread.m4 \
-	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/priv-set.m4 \
+	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/open-cloexec.m4 \
+	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
+	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
+	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
+	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/posix_spawn.m4 \
+	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
+	$(top_srcdir)/m4/priv-set.m4 \
 	$(top_srcdir)/m4/pthread_rwlock_rdlock.m4 \
 	$(top_srcdir)/m4/pthread_sigmask.m4 \
 	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
@@ -387,6 +409,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/sched_h.m4 \
 	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
 	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sh-filename.m4 \
 	$(top_srcdir)/m4/sig_atomic_t.m4 $(top_srcdir)/m4/sigaction.m4 \
 	$(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
@@ -420,18 +443,19 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
 	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utime.m4 \
 	$(top_srcdir)/m4/utime_h.m4 $(top_srcdir)/m4/utimecmp.m4 \
-	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
-	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
-	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
-	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
-	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
-	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
-	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
-	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
-	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
-	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs-progs.m4 \
+	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimensat.m4 \
+	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
+	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/vsnprintf.m4 \
+	$(top_srcdir)/m4/wait-process.m4 $(top_srcdir)/m4/waitpid.m4 \
+	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
+	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
+	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
+	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
+	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
+	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
+	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
+	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
+	$(top_srcdir)/m4/guestfs-progs.m4 \
 	$(top_srcdir)/m4/guestfs-c.m4 \
 	$(top_srcdir)/m4/guestfs-libraries.m4 \
 	$(top_srcdir)/m4/guestfs-fuse.m4 \
@@ -450,6 +474,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/guestfs-lua.m4 \
 	$(top_srcdir)/m4/guestfs-golang.m4 \
 	$(top_srcdir)/m4/guestfs-gobject.m4 \
+	$(top_srcdir)/m4/guestfs-v2v.m4 \
 	$(top_srcdir)/m4/guestfs-bash-completion.m4 \
 	$(top_srcdir)/m4/guestfs-misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -457,7 +482,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = config.ml
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 @HAVE_OCAML_PKG_OUNIT_TRUE@@HAVE_OCAML_TRUE@am__EXEEXT_1 = v2v_unit_tests$(EXEEXT)
@@ -758,12 +783,11 @@ TEST_LOGS = $(am__test_logs2:.test.log=.log)
 TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/build-aux/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
-am__DIST_COMMON = $(srcdir)/Makefile.in \
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.ml.in \
 	$(top_srcdir)/build-aux/depcomp \
 	$(top_srcdir)/build-aux/test-driver \
 	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
 ACL_LIBS = @ACL_LIBS@
 ALLOCA = @ALLOCA@
@@ -854,7 +878,6 @@ GHC = @GHC@
 GIO_CFLAGS = @GIO_CFLAGS@
 GIO_LIBS = @GIO_LIBS@
 GJS = @GJS@
-GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
 GMSGFMT = @GMSGFMT@
 GMSGFMT_015 = @GMSGFMT_015@
@@ -895,6 +918,7 @@ GNULIB_FFSL = @GNULIB_FFSL@
 GNULIB_FFSLL = @GNULIB_FFSLL@
 GNULIB_FGETC = @GNULIB_FGETC@
 GNULIB_FGETS = @GNULIB_FGETS@
+GNULIB_FNMATCH = @GNULIB_FNMATCH@
 GNULIB_FOPEN = @GNULIB_FOPEN@
 GNULIB_FPRINTF = @GNULIB_FPRINTF@
 GNULIB_FPRINTF_POSIX = @GNULIB_FPRINTF_POSIX@
@@ -928,12 +952,14 @@ GNULIB_GETLOADAVG = @GNULIB_GETLOADAVG@
 GNULIB_GETLOGIN = @GNULIB_GETLOGIN@
 GNULIB_GETLOGIN_R = @GNULIB_GETLOGIN_R@
 GNULIB_GETPAGESIZE = @GNULIB_GETPAGESIZE@
+GNULIB_GETPASS = @GNULIB_GETPASS@
 GNULIB_GETPEERNAME = @GNULIB_GETPEERNAME@
 GNULIB_GETSOCKNAME = @GNULIB_GETSOCKNAME@
 GNULIB_GETSOCKOPT = @GNULIB_GETSOCKOPT@
 GNULIB_GETSUBOPT = @GNULIB_GETSUBOPT@
 GNULIB_GETTIMEOFDAY = @GNULIB_GETTIMEOFDAY@
 GNULIB_GETUSERSHELL = @GNULIB_GETUSERSHELL@
+GNULIB_GLOB = @GNULIB_GLOB@
 GNULIB_GL_UNISTD_H_GETOPT = @GNULIB_GL_UNISTD_H_GETOPT@
 GNULIB_GRANTPT = @GNULIB_GRANTPT@
 GNULIB_GROUP_MEMBER = @GNULIB_GROUP_MEMBER@
@@ -952,6 +978,7 @@ GNULIB_LINK = @GNULIB_LINK@
 GNULIB_LINKAT = @GNULIB_LINKAT@
 GNULIB_LISTEN = @GNULIB_LISTEN@
 GNULIB_LOCALECONV = @GNULIB_LOCALECONV@
+GNULIB_LOCALENAME = @GNULIB_LOCALENAME@
 GNULIB_LOCALTIME = @GNULIB_LOCALTIME@
 GNULIB_LSEEK = @GNULIB_LSEEK@
 GNULIB_LSTAT = @GNULIB_LSTAT@
@@ -1023,6 +1050,7 @@ GNULIB_POSIX_SPAWNATTR_SETSCHEDPOLICY = @GNULIB_POSIX_SPAWNATTR_SETSCHEDPOLICY@
 GNULIB_POSIX_SPAWNATTR_SETSIGDEFAULT = @GNULIB_POSIX_SPAWNATTR_SETSIGDEFAULT@
 GNULIB_POSIX_SPAWNATTR_SETSIGMASK = @GNULIB_POSIX_SPAWNATTR_SETSIGMASK@
 GNULIB_POSIX_SPAWNP = @GNULIB_POSIX_SPAWNP@
+GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR@
 GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
 GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
 GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
@@ -1237,6 +1265,7 @@ HAVE_DECL_STRSIGNAL = @HAVE_DECL_STRSIGNAL@
 HAVE_DECL_STRTOIMAX = @HAVE_DECL_STRTOIMAX@
 HAVE_DECL_STRTOK_R = @HAVE_DECL_STRTOK_R@
 HAVE_DECL_STRTOUMAX = @HAVE_DECL_STRTOUMAX@
+HAVE_DECL_TRUNCATE = @HAVE_DECL_TRUNCATE@
 HAVE_DECL_TTYNAME_R = @HAVE_DECL_TTYNAME_R@
 HAVE_DECL_UNSETENV = @HAVE_DECL_UNSETENV@
 HAVE_DECL_VSNPRINTF = @HAVE_DECL_VSNPRINTF@
@@ -1259,6 +1288,9 @@ HAVE_FDOPENDIR = @HAVE_FDOPENDIR@
 HAVE_FEATURES_H = @HAVE_FEATURES_H@
 HAVE_FFSL = @HAVE_FFSL@
 HAVE_FFSLL = @HAVE_FFSLL@
+HAVE_FNMATCH = @HAVE_FNMATCH@
+HAVE_FNMATCH_H = @HAVE_FNMATCH_H@
+HAVE_FREELOCALE = @HAVE_FREELOCALE@
 HAVE_FSEEKO = @HAVE_FSEEKO@
 HAVE_FSTATAT = @HAVE_FSTATAT@
 HAVE_FSYNC = @HAVE_FSYNC@
@@ -1271,10 +1303,15 @@ HAVE_GETHOSTNAME = @HAVE_GETHOSTNAME@
 HAVE_GETLOGIN = @HAVE_GETLOGIN@
 HAVE_GETOPT_H = @HAVE_GETOPT_H@
 HAVE_GETPAGESIZE = @HAVE_GETPAGESIZE@
+HAVE_GETPASS = @HAVE_GETPASS@
 HAVE_GETSUBOPT = @HAVE_GETSUBOPT@
 HAVE_GETTIMEOFDAY = @HAVE_GETTIMEOFDAY@
+HAVE_GLOB = @HAVE_GLOB@
+HAVE_GLOB_H = @HAVE_GLOB_H@
+HAVE_GLOB_PATTERN_P = @HAVE_GLOB_PATTERN_P@
 HAVE_GRANTPT = @HAVE_GRANTPT@
 HAVE_GROUP_MEMBER = @HAVE_GROUP_MEMBER@
+HAVE_IMAXDIV_T = @HAVE_IMAXDIV_T@
 HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
@@ -1314,6 +1351,7 @@ HAVE_MSVC_INVALID_PARAMETER_HANDLER = @HAVE_MSVC_INVALID_PARAMETER_HANDLER@
 HAVE_NANOSLEEP = @HAVE_NANOSLEEP@
 HAVE_NETDB_H = @HAVE_NETDB_H@
 HAVE_NETINET_IN_H = @HAVE_NETINET_IN_H@
+HAVE_NEWLOCALE = @HAVE_NEWLOCALE@
 HAVE_NL_LANGINFO = @HAVE_NL_LANGINFO@
 HAVE_OPENAT = @HAVE_OPENAT@
 HAVE_OPENDIR = @HAVE_OPENDIR@
@@ -1326,6 +1364,7 @@ HAVE_POSIX_OPENPT = @HAVE_POSIX_OPENPT@
 HAVE_POSIX_SIGNALBLOCKING = @HAVE_POSIX_SIGNALBLOCKING@
 HAVE_POSIX_SPAWN = @HAVE_POSIX_SPAWN@
 HAVE_POSIX_SPAWNATTR_T = @HAVE_POSIX_SPAWNATTR_T@
+HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR = @HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR@
 HAVE_POSIX_SPAWN_FILE_ACTIONS_T = @HAVE_POSIX_SPAWN_FILE_ACTIONS_T@
 HAVE_PREAD = @HAVE_PREAD@
 HAVE_PSELECT = @HAVE_PSELECT@
@@ -1396,7 +1435,6 @@ HAVE_SYS_TYPES_H = @HAVE_SYS_TYPES_H@
 HAVE_SYS_UIO_H = @HAVE_SYS_UIO_H@
 HAVE_TIMEGM = @HAVE_TIMEGM@
 HAVE_TIMEZONE_T = @HAVE_TIMEZONE_T@
-HAVE_TRUNCATE = @HAVE_TRUNCATE@
 HAVE_TYPE_VOLATILE_SIG_ATOMIC_T = @HAVE_TYPE_VOLATILE_SIG_ATOMIC_T@
 HAVE_TZSET = @HAVE_TZSET@
 HAVE_UNISTD_H = @HAVE_UNISTD_H@
@@ -1479,6 +1517,8 @@ INTROSPECTION_LIBS = @INTROSPECTION_LIBS@
 INTROSPECTION_MAKEFILE = @INTROSPECTION_MAKEFILE@
 INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
 INTROSPECTION_TYPELIBDIR = @INTROSPECTION_TYPELIBDIR@
+JANSSON_CFLAGS = @JANSSON_CFLAGS@
+JANSSON_LIBS = @JANSSON_LIBS@
 JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
@@ -1563,7 +1603,9 @@ NEXT_AS_FIRST_DIRECTIVE_DIRENT_H = @NEXT_AS_FIRST_DIRECTIVE_DIRENT_H@
 NEXT_AS_FIRST_DIRECTIVE_ERRNO_H = @NEXT_AS_FIRST_DIRECTIVE_ERRNO_H@
 NEXT_AS_FIRST_DIRECTIVE_FCNTL_H = @NEXT_AS_FIRST_DIRECTIVE_FCNTL_H@
 NEXT_AS_FIRST_DIRECTIVE_FLOAT_H = @NEXT_AS_FIRST_DIRECTIVE_FLOAT_H@
+NEXT_AS_FIRST_DIRECTIVE_FNMATCH_H = @NEXT_AS_FIRST_DIRECTIVE_FNMATCH_H@
 NEXT_AS_FIRST_DIRECTIVE_GETOPT_H = @NEXT_AS_FIRST_DIRECTIVE_GETOPT_H@
+NEXT_AS_FIRST_DIRECTIVE_GLOB_H = @NEXT_AS_FIRST_DIRECTIVE_GLOB_H@
 NEXT_AS_FIRST_DIRECTIVE_INTTYPES_H = @NEXT_AS_FIRST_DIRECTIVE_INTTYPES_H@
 NEXT_AS_FIRST_DIRECTIVE_LANGINFO_H = @NEXT_AS_FIRST_DIRECTIVE_LANGINFO_H@
 NEXT_AS_FIRST_DIRECTIVE_LIMITS_H = @NEXT_AS_FIRST_DIRECTIVE_LIMITS_H@
@@ -1597,7 +1639,9 @@ NEXT_DIRENT_H = @NEXT_DIRENT_H@
 NEXT_ERRNO_H = @NEXT_ERRNO_H@
 NEXT_FCNTL_H = @NEXT_FCNTL_H@
 NEXT_FLOAT_H = @NEXT_FLOAT_H@
+NEXT_FNMATCH_H = @NEXT_FNMATCH_H@
 NEXT_GETOPT_H = @NEXT_GETOPT_H@
+NEXT_GLOB_H = @NEXT_GLOB_H@
 NEXT_INTTYPES_H = @NEXT_INTTYPES_H@
 NEXT_LANGINFO_H = @NEXT_LANGINFO_H@
 NEXT_LIMITS_H = @NEXT_LIMITS_H@
@@ -1719,9 +1763,11 @@ REPLACE_FCNTL = @REPLACE_FCNTL@
 REPLACE_FDOPEN = @REPLACE_FDOPEN@
 REPLACE_FDOPENDIR = @REPLACE_FDOPENDIR@
 REPLACE_FFLUSH = @REPLACE_FFLUSH@
+REPLACE_FNMATCH = @REPLACE_FNMATCH@
 REPLACE_FOPEN = @REPLACE_FOPEN@
 REPLACE_FPRINTF = @REPLACE_FPRINTF@
 REPLACE_FPURGE = @REPLACE_FPURGE@
+REPLACE_FREELOCALE = @REPLACE_FREELOCALE@
 REPLACE_FREOPEN = @REPLACE_FREOPEN@
 REPLACE_FSEEK = @REPLACE_FSEEK@
 REPLACE_FSEEKO = @REPLACE_FSEEKO@
@@ -1740,7 +1786,10 @@ REPLACE_GETGROUPS = @REPLACE_GETGROUPS@
 REPLACE_GETLINE = @REPLACE_GETLINE@
 REPLACE_GETLOGIN_R = @REPLACE_GETLOGIN_R@
 REPLACE_GETPAGESIZE = @REPLACE_GETPAGESIZE@
+REPLACE_GETPASS = @REPLACE_GETPASS@
 REPLACE_GETTIMEOFDAY = @REPLACE_GETTIMEOFDAY@
+REPLACE_GLOB = @REPLACE_GLOB@
+REPLACE_GLOB_PATTERN_P = @REPLACE_GLOB_PATTERN_P@
 REPLACE_GMTIME = @REPLACE_GMTIME@
 REPLACE_INET_NTOP = @REPLACE_INET_NTOP@
 REPLACE_INET_PTON = @REPLACE_INET_PTON@
@@ -1773,6 +1822,7 @@ REPLACE_MKNOD = @REPLACE_MKNOD@
 REPLACE_MKSTEMP = @REPLACE_MKSTEMP@
 REPLACE_MKTIME = @REPLACE_MKTIME@
 REPLACE_NANOSLEEP = @REPLACE_NANOSLEEP@
+REPLACE_NEWLOCALE = @REPLACE_NEWLOCALE@
 REPLACE_NL_LANGINFO = @REPLACE_NL_LANGINFO@
 REPLACE_NULL = @REPLACE_NULL@
 REPLACE_OBSTACK_PRINTF = @REPLACE_OBSTACK_PRINTF@
@@ -1782,6 +1832,7 @@ REPLACE_OPENDIR = @REPLACE_OPENDIR@
 REPLACE_PERROR = @REPLACE_PERROR@
 REPLACE_POPEN = @REPLACE_POPEN@
 REPLACE_POSIX_SPAWN = @REPLACE_POSIX_SPAWN@
+REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR@
 REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
 REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
 REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
@@ -1903,6 +1954,7 @@ UTIME_H = @UTIME_H@
 VALGRIND = @VALGRIND@
 VERSION = @VERSION@
 VERSION_SCRIPT_FLAGS = @VERSION_SCRIPT_FLAGS@
+VIRT_V2V_NBDKIT_PYTHON_PLUGIN = @VIRT_V2V_NBDKIT_PYTHON_PLUGIN@
 WARN_CFLAGS = @WARN_CFLAGS@
 WCHAR_T_SUFFIX = @WCHAR_T_SUFFIX@
 WERROR_CFLAGS = @WERROR_CFLAGS@
@@ -1918,8 +1970,6 @@ XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 XMLLINT = @XMLLINT@
 XZCAT = @XZCAT@
 YACC = @YACC@
-YAJL_CFLAGS = @YAJL_CFLAGS@
-YAJL_LIBS = @YAJL_LIBS@
 YARA_CFLAGS = @YARA_CFLAGS@
 YARA_LIBS = @YARA_LIBS@
 YFLAGS = @YFLAGS@
@@ -1968,7 +2018,6 @@ install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
 libvirt_ro_uri = @libvirt_ro_uri@
-lispdir = @lispdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
@@ -1979,7 +2028,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -2058,14 +2106,24 @@ generator_built = \
 	uefi.mli
 
 BUILT_SOURCES = \
-	$(generator_built)
+	$(generator_built) \
+	config.ml \
+	output_rhv_upload_createvm_source.ml \
+	output_rhv_upload_plugin_source.ml \
+	output_rhv_upload_precheck_source.ml
 
 EXTRA_DIST = $(SOURCES_MLI) $(SOURCES_ML) $(SOURCES_C) \
-	copy_to_local.ml copy_to_local.mli v2v_unit_tests.ml \
-	virt-v2v.pod virt-v2v-copy-to-local.pod $(am__append_8)
+	copy_to_local.ml copy_to_local.mli embed.sh \
+	rhv-upload-createvm.py rhv-upload-plugin.py \
+	rhv-upload-precheck.py v2v_unit_tests.ml virt-v2v.pod \
+	virt-v2v-copy-to-local.pod virt-v2v-input-vmware.pod \
+	virt-v2v-input-xen.pod virt-v2v-output-local.pod \
+	virt-v2v-output-openstack.pod virt-v2v-output-rhv.pod \
+	virt-v2v-support.pod $(am__append_8)
 SOURCES_MLI = \
 	changeuid.mli \
 	cmdline.mli \
+	config.mli \
 	convert_linux.mli \
 	convert_windows.mli \
 	create_libvirt_xml.mli \
@@ -2085,19 +2143,28 @@ SOURCES_MLI = \
 	linux.mli \
 	linux_bootloaders.mli \
 	linux_kernels.mli \
+	measure_disk.mli \
 	modules_list.mli \
 	name_from_disk.mli \
+	networks.mli \
+	openstack_image_properties.mli \
 	output_glance.mli \
 	output_libvirt.mli \
 	output_local.mli \
 	output_null.mli \
+	output_openstack.mli \
 	output_qemu.mli \
 	output_rhv.mli \
+	output_rhv_upload.mli \
+	output_rhv_upload_createvm_source.mli \
+	output_rhv_upload_plugin_source.mli \
+	output_rhv_upload_precheck_source.mli \
 	output_vdsm.mli \
 	parse_ova.mli \
 	parse_ovf_from_ova.mli \
 	parse_libvirt_xml.mli \
 	parse_vmx.mli \
+	python_script.mli \
 	qemuopts.mli \
 	target_bus_assignment.mli \
 	types.mli \
@@ -2109,9 +2176,11 @@ SOURCES_MLI = \
 	windows_virtio.mli
 
 SOURCES_ML = \
+	config.ml \
 	types.ml \
 	uefi.ml \
 	utils.ml \
+	python_script.ml \
 	name_from_disk.ml \
 	vCenter.ml \
 	libvirt_utils.ml \
@@ -2128,6 +2197,7 @@ SOURCES_ML = \
 	parse_vmx.ml \
 	parse_libvirt_xml.ml \
 	create_libvirt_xml.ml \
+	openstack_image_properties.ml \
 	qemuopts.ml \
 	input_libvirtxml.ml \
 	input_libvirt_other.ml \
@@ -2147,9 +2217,16 @@ SOURCES_ML = \
 	output_local.ml \
 	output_qemu.ml \
 	output_rhv.ml \
+	output_rhv_upload_createvm_source.ml \
+	output_rhv_upload_plugin_source.ml \
+	output_rhv_upload_precheck_source.ml \
+	output_rhv_upload.ml \
 	output_vdsm.ml \
+	output_openstack.ml \
 	inspect_source.ml \
 	target_bus_assignment.ml \
+	measure_disk.ml \
+	networks.ml \
 	cmdline.ml \
 	v2v.ml
 
@@ -2198,6 +2275,7 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	-lqemuopts \
 @HAVE_OCAML_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_OCAML_TRUE@	$(JANSSON_LIBS) \
 @HAVE_OCAML_TRUE@	$(LIBINTL) \
 @HAVE_OCAML_TRUE@	-lgnu
 
@@ -2264,10 +2342,25 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@virttoolsdatadir = $(datadir)/virt-tools
 
 # Manual pages and HTML files for the website.
-@HAVE_OCAML_TRUE@man_MANS = virt-v2v.1 virt-v2v-copy-to-local.1
+@HAVE_OCAML_TRUE@man_MANS = \
+@HAVE_OCAML_TRUE@	virt-v2v.1 \
+@HAVE_OCAML_TRUE@	virt-v2v-copy-to-local.1 \
+@HAVE_OCAML_TRUE@	virt-v2v-input-vmware.1 \
+@HAVE_OCAML_TRUE@	virt-v2v-input-xen.1 \
+@HAVE_OCAML_TRUE@	virt-v2v-output-local.1 \
+@HAVE_OCAML_TRUE@	virt-v2v-output-openstack.1 \
+@HAVE_OCAML_TRUE@	virt-v2v-output-rhv.1 \
+@HAVE_OCAML_TRUE@	virt-v2v-support.1
+
 @HAVE_OCAML_TRUE@noinst_DATA = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-v2v.1.html \
-@HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-v2v-copy-to-local.1.html
+@HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-v2v-copy-to-local.1.html \
+@HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-v2v-input-vmware.1.html \
+@HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-v2v-input-xen.1.html \
+@HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-v2v-output-local.1.html \
+@HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-v2v-output-openstack.1.html \
+@HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-v2v-output-rhv.1.html \
+@HAVE_OCAML_TRUE@	$(top_builddir)/website/virt-v2v-support.1.html
 
 
 # Tests.
@@ -2317,7 +2410,11 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of-ubuntu-10.04.sh \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of-ubuntu-12.04.sh \
 @HAVE_OCAML_TRUE@	test-v2v-conversion-of-ubuntu-14.04.sh \
-@HAVE_OCAML_TRUE@	test-v2v-conversion-of-ubuntu-16.04.sh
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-ubuntu-16.04.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-ubuntu-18.04.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-windows-6.2-server.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-windows-6.3-server.sh \
+@HAVE_OCAML_TRUE@	test-v2v-conversion-of-windows-10.0-server.sh
 
 @HAVE_OCAML_TRUE@v2v_unit_tests_BOBJECTS = \
 @HAVE_OCAML_TRUE@	types.cmo \
@@ -2326,8 +2423,8 @@ SOURCES_C = \
 @HAVE_OCAML_TRUE@	DOM.cmo \
 @HAVE_OCAML_TRUE@	create_ovf.cmo \
 @HAVE_OCAML_TRUE@	windows.cmo \
-@HAVE_OCAML_TRUE@	windows_virtio.cmo \
 @HAVE_OCAML_TRUE@	linux.cmo \
+@HAVE_OCAML_TRUE@	windows_virtio.cmo \
 @HAVE_OCAML_TRUE@	parse_vmx.cmo \
 @HAVE_OCAML_TRUE@	v2v_unit_tests.cmo
 
@@ -2391,6 +2488,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+config.ml: $(top_builddir)/config.status $(srcdir)/config.ml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -2823,6 +2922,13 @@ test-v2v-docs.sh.log: test-v2v-docs.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-python-syntax.sh.log: test-v2v-python-syntax.sh
+	@p='test-v2v-python-syntax.sh'; \
+	b='test-v2v-python-syntax.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-v2v-i-ova-bad-sha1.sh.log: test-v2v-i-ova-bad-sha1.sh
 	@p='test-v2v-i-ova-bad-sha1.sh'; \
 	b='test-v2v-i-ova-bad-sha1.sh'; \
@@ -2907,6 +3013,27 @@ test-v2v-i-vmx.sh.log: test-v2v-i-vmx.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-it-vddk-io-query.sh.log: test-v2v-it-vddk-io-query.sh
+	@p='test-v2v-it-vddk-io-query.sh'; \
+	b='test-v2v-it-vddk-io-query.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-o-rhv-upload-oo-query.sh.log: test-v2v-o-rhv-upload-oo-query.sh
+	@p='test-v2v-o-rhv-upload-oo-query.sh'; \
+	b='test-v2v-o-rhv-upload-oo-query.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-o-vdsm-oo-query.sh.log: test-v2v-o-vdsm-oo-query.sh
+	@p='test-v2v-o-vdsm-oo-query.sh'; \
+	b='test-v2v-o-vdsm-oo-query.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-v2v-bad-networks-and-bridges.sh.log: test-v2v-bad-networks-and-bridges.sh
 	@p='test-v2v-bad-networks-and-bridges.sh'; \
 	b='test-v2v-bad-networks-and-bridges.sh'; \
@@ -2984,6 +3111,13 @@ test-v2v-in-place.sh.log: test-v2v-in-place.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-mac.sh.log: test-v2v-mac.sh
+	@p='test-v2v-mac.sh'; \
+	b='test-v2v-mac.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-v2v-networks-and-bridges.sh.log: test-v2v-networks-and-bridges.sh
 	@p='test-v2v-networks-and-bridges.sh'; \
 	b='test-v2v-networks-and-bridges.sh'; \
@@ -3019,6 +3153,13 @@ test-v2v-o-null.sh.log: test-v2v-o-null.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-o-openstack.sh.log: test-v2v-o-openstack.sh
+	@p='test-v2v-o-openstack.sh'; \
+	b='test-v2v-o-openstack.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-v2v-o-qemu.sh.log: test-v2v-o-qemu.sh
 	@p='test-v2v-o-qemu.sh'; \
 	b='test-v2v-o-qemu.sh'; \
@@ -3029,6 +3170,13 @@ test-v2v-o-qemu.sh.log: test-v2v-o-qemu.sh
 test-v2v-o-rhv.sh.log: test-v2v-o-rhv.sh
 	@p='test-v2v-o-rhv.sh'; \
 	b='test-v2v-o-rhv.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-o-rhv-upload.sh.log: test-v2v-o-rhv-upload.sh
+	@p='test-v2v-o-rhv-upload.sh'; \
+	b='test-v2v-o-rhv-upload.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -3057,6 +3205,13 @@ test-v2v-of-option.sh.log: test-v2v-of-option.sh
 test-v2v-on-option.sh.log: test-v2v-on-option.sh
 	@p='test-v2v-on-option.sh'; \
 	b='test-v2v-on-option.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-print-estimate.sh.log: test-v2v-print-estimate.sh
+	@p='test-v2v-print-estimate.sh'; \
+	b='test-v2v-print-estimate.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -3197,6 +3352,34 @@ test-v2v-conversion-of-ubuntu-14.04.sh.log: test-v2v-conversion-of-ubuntu-14.04.
 test-v2v-conversion-of-ubuntu-16.04.sh.log: test-v2v-conversion-of-ubuntu-16.04.sh
 	@p='test-v2v-conversion-of-ubuntu-16.04.sh'; \
 	b='test-v2v-conversion-of-ubuntu-16.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-ubuntu-18.04.sh.log: test-v2v-conversion-of-ubuntu-18.04.sh
+	@p='test-v2v-conversion-of-ubuntu-18.04.sh'; \
+	b='test-v2v-conversion-of-ubuntu-18.04.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-windows-6.2-server.sh.log: test-v2v-conversion-of-windows-6.2-server.sh
+	@p='test-v2v-conversion-of-windows-6.2-server.sh'; \
+	b='test-v2v-conversion-of-windows-6.2-server.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-windows-6.3-server.sh.log: test-v2v-conversion-of-windows-6.3-server.sh
+	@p='test-v2v-conversion-of-windows-6.3-server.sh'; \
+	b='test-v2v-conversion-of-windows-6.3-server.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-v2v-conversion-of-windows-10.0-server.sh.log: test-v2v-conversion-of-windows-10.0-server.sh
+	@p='test-v2v-conversion-of-windows-10.0-server.sh'; \
+	b='test-v2v-conversion-of-windows-10.0-server.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -3465,6 +3648,14 @@ export TEST_FUNCTIONS := \
 	abs_top_srcdir="$(abs_top_srcdir)" \
 	abs_top_builddir="$(abs_top_builddir)"
 
+# These files are generated and contain *.py embedded as an OCaml string.
+output_rhv_upload_createvm_source.ml: $(srcdir)/rhv-upload-createvm.py
+	$(srcdir)/embed.sh code $^ $@
+output_rhv_upload_plugin_source.ml: $(srcdir)/rhv-upload-plugin.py
+	$(srcdir)/embed.sh code $^ $@
+output_rhv_upload_precheck_source.ml: $(srcdir)/rhv-upload-precheck.py
+	$(srcdir)/embed.sh code $^ $@
+
 @HAVE_OCAML_TRUE@virt-v2v.1 $(top_builddir)/website/virt-v2v.1.html: stamp-virt-v2v.pod
 
 @HAVE_OCAML_TRUE@stamp-virt-v2v.pod: virt-v2v.pod
@@ -3486,14 +3677,82 @@ export TEST_FUNCTIONS := \
 @HAVE_OCAML_TRUE@	  --warning safe \
 @HAVE_OCAML_TRUE@	  $<
 @HAVE_OCAML_TRUE@	touch $@
-@HAVE_OCAML_TRUE@windows.vmdk: ../test-data/phony-guests/windows.img
-@HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	if [ -s $< ]; then \
-@HAVE_OCAML_TRUE@	    qemu-img convert -f raw $< -O vmdk $@-t; \
-@HAVE_OCAML_TRUE@	    mv $@-t $@; \
-@HAVE_OCAML_TRUE@	else \
-@HAVE_OCAML_TRUE@	    touch $@; \
-@HAVE_OCAML_TRUE@	fi
+
+@HAVE_OCAML_TRUE@virt-v2v-input-vmware.1 $(top_builddir)/website/virt-v2v-input-vmware.1.html: stamp-virt-v2v-input-vmware.pod
+
+@HAVE_OCAML_TRUE@stamp-virt-v2v-input-vmware.pod: virt-v2v-input-vmware.pod
+@HAVE_OCAML_TRUE@	$(PODWRAPPER) \
+@HAVE_OCAML_TRUE@	  --man virt-v2v-input-vmware.1 \
+@HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-v2v-input-vmware.1.html \
+@HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning safe \
+@HAVE_OCAML_TRUE@	  $<
+@HAVE_OCAML_TRUE@	touch $@
+
+@HAVE_OCAML_TRUE@virt-v2v-input-xen.1 $(top_builddir)/website/virt-v2v-input-xen.1.html: stamp-virt-v2v-input-xen.pod
+
+@HAVE_OCAML_TRUE@stamp-virt-v2v-input-xen.pod: virt-v2v-input-xen.pod
+@HAVE_OCAML_TRUE@	$(PODWRAPPER) \
+@HAVE_OCAML_TRUE@	  --man virt-v2v-input-xen.1 \
+@HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-v2v-input-xen.1.html \
+@HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning safe \
+@HAVE_OCAML_TRUE@	  $<
+@HAVE_OCAML_TRUE@	touch $@
+
+@HAVE_OCAML_TRUE@virt-v2v-output-local.1 $(top_builddir)/website/virt-v2v-output-local.1.html: stamp-virt-v2v-output-local.pod
+
+@HAVE_OCAML_TRUE@stamp-virt-v2v-output-local.pod: virt-v2v-output-local.pod
+@HAVE_OCAML_TRUE@	$(PODWRAPPER) \
+@HAVE_OCAML_TRUE@	  --man virt-v2v-output-local.1 \
+@HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-v2v-output-local.1.html \
+@HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning safe \
+@HAVE_OCAML_TRUE@	  $<
+@HAVE_OCAML_TRUE@	touch $@
+
+@HAVE_OCAML_TRUE@virt-v2v-output-openstack.1 $(top_builddir)/website/virt-v2v-output-openstack.1.html: stamp-virt-v2v-output-openstack.pod
+
+@HAVE_OCAML_TRUE@stamp-virt-v2v-output-openstack.pod: virt-v2v-output-openstack.pod
+@HAVE_OCAML_TRUE@	$(PODWRAPPER) \
+@HAVE_OCAML_TRUE@	  --man virt-v2v-output-openstack.1 \
+@HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-v2v-output-openstack.1.html \
+@HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning safe \
+@HAVE_OCAML_TRUE@	  $<
+@HAVE_OCAML_TRUE@	touch $@
+
+@HAVE_OCAML_TRUE@virt-v2v-output-rhv.1 $(top_builddir)/website/virt-v2v-output-rhv.1.html: stamp-virt-v2v-output-rhv.pod
+
+@HAVE_OCAML_TRUE@stamp-virt-v2v-output-rhv.pod: virt-v2v-output-rhv.pod
+@HAVE_OCAML_TRUE@	$(PODWRAPPER) \
+@HAVE_OCAML_TRUE@	  --man virt-v2v-output-rhv.1 \
+@HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-v2v-output-rhv.1.html \
+@HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning safe \
+@HAVE_OCAML_TRUE@	  $<
+@HAVE_OCAML_TRUE@	touch $@
+
+@HAVE_OCAML_TRUE@virt-v2v-support.1 $(top_builddir)/website/virt-v2v-support.1.html: stamp-virt-v2v-support.pod
+
+@HAVE_OCAML_TRUE@stamp-virt-v2v-support.pod: virt-v2v-support.pod
+@HAVE_OCAML_TRUE@	$(PODWRAPPER) \
+@HAVE_OCAML_TRUE@	  --man virt-v2v-support.1 \
+@HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-v2v-support.1.html \
+@HAVE_OCAML_TRUE@	  --license GPLv2+ \
+@HAVE_OCAML_TRUE@	  --warning safe \
+@HAVE_OCAML_TRUE@	  $<
+@HAVE_OCAML_TRUE@	touch $@
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@windows.vmdk: ../test-data/phony-guests/windows.img
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	rm -f $@ $@-t
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	if [ -s $< ]; then \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	    qemu-img convert -f raw $< -O vmdk $@-t; \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	    mv $@-t $@; \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	else \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	    touch $@; \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	fi
+@ENABLE_APPLIANCE_FALSE@@HAVE_OCAML_TRUE@windows.vmdk:
+@ENABLE_APPLIANCE_FALSE@@HAVE_OCAML_TRUE@	touch $@
 
 @HAVE_OCAML_TRUE@check-valgrind:
 @HAVE_OCAML_TRUE@	$(MAKE) VG="@VG@" check
@@ -3514,7 +3773,11 @@ export TEST_FUNCTIONS := \
 @HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_TRUE@v2v_unit_tests.cmx: OCAMLPACKAGES += -package oUnit
 
 # Dependencies.
-@HAVE_OCAML_TRUE@.depend: $(srcdir)/*.mli $(srcdir)/*.ml
+@HAVE_OCAML_TRUE@.depend: \
+@HAVE_OCAML_TRUE@	$(srcdir)/*.mli \
+@HAVE_OCAML_TRUE@	$(srcdir)/*.ml \
+@HAVE_OCAML_TRUE@	config.ml \
+@HAVE_OCAML_TRUE@	output_rhv_upload_*_source.ml
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml-dep.sh $^
 @HAVE_OCAML_TRUE@-include .depend
 

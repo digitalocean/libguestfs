@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,10 @@
 
 type field = string * json_t    (** ["field": "value"] *)
 and json_t =                    (** JSON value. *)
+  | Null                        (** special null value *)
   | String of string            (** string value, eg. ["string"] *)
-  | Int of int                  (** int value, eg. [99] *)
-  | Int64 of int64              (** int64 value, eg. [99] *)
+  | Int of int64                (** int value, eg. [99] *)
+  | Float of float              (** floating point value, eg. [9.9] *)
   | Bool of bool                (** boolean value, [true] or [false] *)
   | List of json_t list         (** array value, eg. [[1,2,3]] *)
   | Dict of field list          (** object, eg. [{ "a": 1, "b": "c" }] *)

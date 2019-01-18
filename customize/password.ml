@@ -1,5 +1,5 @@
 (* virt-sysprep
- * Copyright (C) 2012-2018 Red Hat Inc.
+ * Copyright (C) 2012-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,7 +165,7 @@ and default_crypto g root =
   | ("opensuse"|"sles"), _ -> `MD5
 
   (* Rolling distributions, which hopefully should be updated enough. *)
-  | ("archlinux"|"voidlinux"), _ -> `SHA512
+  | ("archlinux"|"voidlinux"|"kalilinux"), _ -> `SHA512
 
   | _, _ ->
     let minor = g#inspect_get_minor_version root in

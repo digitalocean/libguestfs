@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@
     password prompt to stdout, which is the same place we would be
     reading the XML from.  This file works around this brokenness. *)
 
-val dumpxml : ?password:string -> ?conn:string -> string -> string
-(** [dumpxml ?password ?conn dom] returns the libvirt XML of domain [dom].
+val dumpxml : ?password_file:string -> ?conn:string -> string -> string
+(** [dumpxml ?password_file ?conn dom] returns the libvirt XML of domain [dom].
     The optional [?conn] parameter is the libvirt connection URI.
     [dom] may be a guest name or UUID. *)
 

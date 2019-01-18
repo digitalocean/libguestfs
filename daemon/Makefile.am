@@ -113,6 +113,7 @@ guestfsd_SOURCES = \
 	du.c \
 	echo-daemon.c \
 	ext2.c \
+	f2fs.c \
 	fallocate.c \
 	file.c \
 	fill.c \
@@ -218,7 +219,7 @@ guestfsd_LDADD = \
 	camldaemon.o \
 	$(ACL_LIBS) \
 	$(CAP_LIBS) \
-	$(YAJL_LIBS) \
+	$(JANSSON_LIBS) \
 	$(SELINUX_LIBS) \
 	$(AUGEAS_LIBS) \
 	$(HIVEX_LIBS) \
@@ -256,7 +257,7 @@ guestfsd_CFLAGS = \
 	$(AUGEAS_CFLAGS) \
 	$(HIVEX_CFLAGS) \
 	$(SD_JOURNAL_CFLAGS) \
-	$(YAJL_CFLAGS) \
+	$(JANSSON_CFLAGS) \
 	$(PCRE_CFLAGS)
 
 # Parts of the daemon are written in OCaml.  These are linked into a

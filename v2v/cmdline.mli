@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,19 @@
 
 (** Command line argument parsing. *)
 
-module NetTypeAndName : sig
-  type t = Types.vnet_type * string option
-  (** To find the mapping for a specific named network or bridge, use
-      the key [(Network|Bridge, Some name)].  To find the default mapping
-      use [(Network|Bridge, None)]. *)
-  val compare : t -> t -> int
-end
-module NetworkMap : sig
-  type key = NetTypeAndName.t
-  type 'a t = 'a Map.Make(NetTypeAndName).t
-  val mem : key -> 'a t -> bool
-  val find : key -> 'a t -> 'a
-end
-
 type cmdline = {
   compressed : bool;
   debug_overlays : bool;
   do_copy : bool;
   in_place : bool;
-  network_map : string NetworkMap.t;
+  network_map : Networks.t;
   output_alloc : Types.output_allocation;
   output_format : string option;
   output_name : string option;
+  print_estimate : bool;
   print_source : bool;
   root_choice : Types.root_choice;
+  ks : Tools_utils.key_store;
 }
 
 val parse_cmdline : unit -> cmdline * Types.input * Types.output

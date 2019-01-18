@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -328,6 +328,8 @@ dispatch (ETERM *args_tuple)
     return run_exists (args_tuple);
   else if (atom_equals (fun, "extlinux"))
     return run_extlinux (args_tuple);
+  else if (atom_equals (fun, "f2fs_expand"))
+    return run_f2fs_expand (args_tuple);
   else if (atom_equals (fun, "fallocate"))
     return run_fallocate (args_tuple);
   else if (atom_equals (fun, "fallocate64"))
@@ -528,6 +530,8 @@ dispatch (ETERM *args_tuple)
     return run_inspect_get_minor_version (args_tuple);
   else if (atom_equals (fun, "inspect_get_mountpoints"))
     return run_inspect_get_mountpoints (args_tuple);
+  else if (atom_equals (fun, "inspect_get_osinfo"))
+    return run_inspect_get_osinfo (args_tuple);
   else if (atom_equals (fun, "inspect_get_package_format"))
     return run_inspect_get_package_format (args_tuple);
   else if (atom_equals (fun, "inspect_get_package_management"))
@@ -766,6 +770,8 @@ dispatch (ETERM *args_tuple)
     return run_lvm_clear_filter (args_tuple);
   else if (atom_equals (fun, "lvm_remove_all"))
     return run_lvm_remove_all (args_tuple);
+  else if (atom_equals (fun, "lvm_scan"))
+    return run_lvm_scan (args_tuple);
   else if (atom_equals (fun, "lvm_set_filter"))
     return run_lvm_set_filter (args_tuple);
   else if (atom_equals (fun, "lvremove"))

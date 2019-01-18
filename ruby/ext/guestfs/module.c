@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -379,6 +379,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_exists, 1);
   rb_define_method (c_guestfs, "extlinux",
                     guestfs_int_ruby_extlinux, 1);
+  rb_define_method (c_guestfs, "f2fs_expand",
+                    guestfs_int_ruby_f2fs_expand, 1);
   rb_define_method (c_guestfs, "fallocate",
                     guestfs_int_ruby_fallocate, 2);
   rb_define_method (c_guestfs, "fallocate64",
@@ -583,6 +585,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_inspect_get_minor_version, 1);
   rb_define_method (c_guestfs, "inspect_get_mountpoints",
                     guestfs_int_ruby_inspect_get_mountpoints, 1);
+  rb_define_method (c_guestfs, "inspect_get_osinfo",
+                    guestfs_int_ruby_inspect_get_osinfo, 1);
   rb_define_method (c_guestfs, "inspect_get_package_format",
                     guestfs_int_ruby_inspect_get_package_format, 1);
   rb_define_method (c_guestfs, "inspect_get_package_management",
@@ -833,6 +837,8 @@ Init__guestfs (void)
                     guestfs_int_ruby_lvm_clear_filter, 0);
   rb_define_method (c_guestfs, "lvm_remove_all",
                     guestfs_int_ruby_lvm_remove_all, 0);
+  rb_define_method (c_guestfs, "lvm_scan",
+                    guestfs_int_ruby_lvm_scan, 1);
   rb_define_method (c_guestfs, "lvm_set_filter",
                     guestfs_int_ruby_lvm_set_filter, 1);
   rb_define_method (c_guestfs, "lvremove",

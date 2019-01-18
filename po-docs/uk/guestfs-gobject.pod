@@ -6,7 +6,7 @@ GObject
 
 =head1 КОРОТКИЙ ОПИС
 
-From Javascript using gjs:
+З Javascript за допомогою gjs:
 
  const Guestfs = imports.gi.Guestfs;
  var g = new Guestfs.Session();
@@ -16,22 +16,22 @@ From Javascript using gjs:
 
 =head1 ОПИС
 
-This manual page documents how to call libguestfs using GObject bindings,
-especially from Javascript.
+Цю сторінку підручника присвячено опису того, як викликати libguestfs за
+допомогою прив'язок до GObject, особливо з Javascript.
 
-Note that the GObject bindings have problems handling 64 bit values.  You
-should not use the GObject bindings if there are native bindings for your
-language.  For example, to use libguestfs from Python you are strongly
-advised to use the Python native bindings instead (see
-L<guestfs-python(3)>).
+Зауважте, що у прив'язок до GObject є певні проблеми із обробкою 64-бітових
+значень. Вам не слід використовувати прив'язки до GObject, якщо існують
+безпосередні прив'язки до потрібної вам мови програмування. Наприклад, щоб
+скористатися libguestfs у коді мовою Python, ми наполегливо рекомендуємо вам
+використовувати природні прив'язки до Python (див. L<guestfs-python(3)>).
 
-This page just documents the differences from the C API and gives some
-examples.  If you are not familiar with using libguestfs, you also need to
-read L<guestfs(3)>.
+На сторінці задокументовано відмінності від програмного інтерфейсу C та
+подано декілька прикладів. Якщо ви не дуже знайомі із користуванням
+libguestfs, вам також слід прочитати підручник з L<guestfs(3)>.
 
 =head1 JAVASCRIPT
 
-Using gjs, you can write a C<.js> file containing:
+За допомогою gjs ви можете записати файл C<.js>, який міститиме:
 
  const Guestfs = imports.gi.Guestfs;
  var g = new Guestfs.Session();
@@ -39,9 +39,9 @@ Using gjs, you can write a C<.js> file containing:
  g.launch();
  g.close();
 
-and then run it using:
+а потім запустити його такою командою:
 
- gjs program.js
+ gjs програма.js
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -56,5 +56,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2012-2018 Red Hat Inc.
+Copyright (C) 2012-2019 Red Hat Inc.
 

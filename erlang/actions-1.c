@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -418,6 +418,19 @@ run_exists (ETERM *args_tuple)
     return make_error ("exists");
 
   return make_bool (r);
+}
+
+ETERM *
+run_f2fs_expand (ETERM *args_tuple)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_f2fs_expand (g, device);
+  if (r == -1)
+    return make_error ("f2fs_expand");
+
+  return erl_mk_atom ("ok");
 }
 
 ETERM *

@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2018 Red Hat Inc.
+ * Copyright (C) 2011-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,4 +18,4 @@
 
 (** This is the virt-sparsify --in-place mode. *)
 
-val run : string -> string option -> string list -> string list -> unit
+val run : string -> string option -> string list -> string list -> Tools_utils.key_store -> unit

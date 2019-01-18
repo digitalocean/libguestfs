@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1642,6 +1642,37 @@ do_part_get_mbr_id (const char *device,
   }
 
   CAMLreturnT (int, Int_val (retv));
+}
+
+/* Wrapper for OCaml function ‘Parted.part_get_mbr_part_type’. */
+char *
+do_part_get_mbr_part_type (const char *device,
+                           int partnum)
+{
+  static value *cb = NULL;
+  CAMLparam0 ();
+  CAMLlocal2 (v, retv);
+  CAMLlocalN (args, 2);
+
+  if (cb == NULL)
+    cb = caml_named_value ("Parted.part_get_mbr_part_type");
+
+  args[0] = caml_copy_string (device);
+  args[1] = Val_int (partnum);
+  retv = caml_callbackN_exn (*cb, 2, args);
+
+  if (Is_exception_result (retv)) {
+    retv = Extract_exception (retv);
+    guestfs_int_daemon_exn_to_reply_with_error ("part_get_mbr_part_type", retv);
+    CAMLreturnT (void *, NULL);
+  }
+
+  char *ret = strdup (String_val (retv));
+  if (ret == NULL) {
+    reply_with_perror ("strdup");
+    CAMLreturnT (char *, NULL);
+  }
+  CAMLreturnT (char *, ret); /* caller frees */
 }
 
 /* Wrapper for OCaml function ‘Parted.part_get_parttype’. */

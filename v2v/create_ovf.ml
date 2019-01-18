@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,21 @@ open Common_gettext.Gettext
 open Types
 open Utils
 open DOM
+
+type ovf_flavour =
+  | OVirt
+  | RHVExportStorageDomain
+
+let ovf_flavours = ["ovirt"; "rhvexp"]
+
+let ovf_flavour_of_string = function
+  | "ovirt" -> OVirt
+  | "rhvexp" -> RHVExportStorageDomain
+  | flav -> invalid_arg flav
+
+let ovf_flavour_to_string = function
+  | OVirt -> "ovirt"
+  | RHVExportStorageDomain -> "rhvexp"
 
 (* We set the creation time to be the same for all dates in
  * all metadata files.  All dates in OVF are UTC.
@@ -231,6 +246,203 @@ and get_ostype = function
       typ distro major minor arch product;
     "Unassigned"
 
+(* Determine the ovirt:id attribute from libguestfs inspection.
+ * See ovirt-engine sources, file:
+ *   packaging/conf/osinfo-defaults.properties
+ * and also:
+ *   https://bugzilla.redhat.com/show_bug.cgi?id=1219857#c9
+ *)
+and get_ovirt_osid = function
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 3;
+      i_arch = "i386" } ->
+    9
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 3;
+      i_arch = "x86_64" } ->
+    15
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 4;
+      i_arch = "i386" } ->
+    8
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 4;
+      i_arch = "x86_64" } ->
+    14
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 5;
+      i_arch = "i386" } ->
+    7
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 5;
+      i_arch = "x86_64" } ->
+    13
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 6;
+      i_arch = "i386" } ->
+    18
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 6;
+      i_arch = "x86_64" } ->
+    19
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 6;
+      i_minor_version = min; i_arch = ("ppc64"|"ppc64le") } when min >= 9 ->
+    1007
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 6;
+      i_arch = ("ppc64"|"ppc64le") } ->
+    1003
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 7;
+      i_arch = "x86_64" } ->
+    24
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 7;
+      i_arch = ("ppc64"|"ppc64le") } ->
+    1006
+
+  | { i_type = "linux"; i_distro = ("rhel"|"centos"); i_major_version = 7;
+      i_arch = "s390x" } ->
+    2003
+
+  | { i_type = "linux"; i_distro = "sles"; i_major_version = maj;
+      i_arch = "x86_64" } when maj >= 11 ->
+    1193
+
+  | { i_type = "linux"; i_distro = "sles"; i_major_version = maj;
+      i_arch = ("ppc64"|"ppc64le") } when maj >= 11 ->
+    1004
+
+  | { i_type = "linux"; i_distro = "sles"; i_major_version = maj;
+      i_arch = "s390x" } when maj >= 12 ->
+    2004
+
+   (* Only Debian 7 is available, so use it for any 7+ version. *)
+  | { i_type = "linux"; i_distro = "debian"; i_major_version = v }
+      when v >= 7 ->
+    1300
+
+   (* Only Ubuntu 12.04 to 14.04 are available, so use them starting
+    * from 12.04, and 14.04 for anything after it.
+    *)
+  | { i_type = "linux"; i_distro = "ubuntu"; i_major_version = v;
+      i_arch = ("ppc64"|"ppc64le") } when v >= 14 ->
+    1005
+
+  | { i_type = "linux"; i_distro = "ubuntu"; i_major_version = v;
+      i_arch = "s390x" } when v >= 16 ->
+    2005
+
+  | { i_type = "linux"; i_distro = "ubuntu"; i_major_version = v }
+      when v >= 14 ->
+    1256
+
+  | { i_type = "linux"; i_distro = "ubuntu"; i_major_version = 12;
+      i_minor_version = 4 } ->
+    1252
+
+  | { i_type = "linux"; i_distro = "ubuntu"; i_major_version = 12;
+      i_minor_version = 10 } ->
+    1253
+
+  | { i_type = "linux"; i_distro = "ubuntu"; i_major_version = 13;
+      i_minor_version = 4 } ->
+    1254
+
+  | { i_type = "linux"; i_distro = "ubuntu"; i_major_version = 13;
+      i_minor_version = 10 } ->
+    1255
+
+  | { i_type = "linux"; i_arch = ("ppc64"|"ppc64le") } ->
+    1002
+
+  | { i_type = "linux"; i_arch = "s390x" } ->
+    2002
+
+  | { i_type = "linux" } ->
+    5
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 1 } ->
+    1 (* no architecture differentiation of XP on RHV *)
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
+      i_product_name = product } when String.find product "XP" >= 0 ->
+    1 (* no architecture differentiation of XP on RHV *)
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
+      i_arch = "i386" } ->
+    3
+
+  | { i_type = "windows"; i_major_version = 5; i_minor_version = 2;
+      i_arch = "x86_64" } ->
+    10
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
+      i_arch = "i386" } ->
+    4
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 0;
+      i_arch = "x86_64" } ->
+    16
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
+      i_arch = "i386" } ->
+    11
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
+      i_arch = "x86_64"; i_product_variant = "Client" } ->
+    12
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 1;
+      i_arch = "x86_64" } ->
+    17
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 2;
+      i_arch = "i386" } ->
+    20
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 2;
+      i_arch = "x86_64"; i_product_variant = "Client" } ->
+    21
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 2;
+      i_arch = "x86_64" } ->
+    23
+
+   (* Treat Windows 8.1 client like Windows 8.  See:
+    * https://bugzilla.redhat.com/show_bug.cgi?id=1309580#c4
+    *)
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 3;
+      i_arch = "i386"; i_product_variant = "Client" } ->
+    20
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 3;
+      i_arch = "x86_64"; i_product_variant = "Client" } ->
+    21
+
+  | { i_type = "windows"; i_major_version = 6; i_minor_version = 3;
+      i_arch = "x86_64" } ->
+    25
+
+  | { i_type = "windows"; i_major_version = 10; i_minor_version = 0;
+      i_arch = "i386" } ->
+    26
+
+  | { i_type = "windows"; i_major_version = 10; i_minor_version = 0;
+      i_arch = "x86_64"; i_product_variant = "Client" } ->
+    27
+
+  | { i_type = "windows"; i_major_version = 10; i_minor_version = 0;
+      i_arch = "x86_64" } ->
+    29
+
+  | { i_type = typ; i_distro = distro;
+      i_major_version = major; i_minor_version = minor; i_arch = arch;
+      i_product_name = product } ->
+    warning (f_"unknown guest operating system: %s %s %d.%d %s (%s)")
+      typ distro major minor arch product;
+    0
+
 (* Set the <Origin/> element based on the source hypervisor.
  * https://bugzilla.redhat.com/show_bug.cgi?id=1342398#c6
  * https://gerrit.ovirt.org/#/c/59147/
@@ -250,8 +462,16 @@ let origin_of_source_hypervisor = function
    *)
   | _ -> None
 
+(* Set the <BiosType> element. Other possible values:
+ *   1  q35 + SeaBIOS
+ *   3  q35 + UEFI + Secure Boot
+ *)
+let get_ovirt_biostype = function
+  | TargetBIOS -> 0  (* i440fx + SeaBIOS *)
+  | TargetUEFI -> 2  (* q35 + UEFI *)
+
 (* Generate the .meta file associated with each volume. *)
-let create_meta_files output_alloc sd_uuid image_uuids targets =
+let create_meta_files output_alloc sd_uuid image_uuids overlays =
   (* Note: Upper case in the .meta, mixed case in the OVF. *)
   let output_alloc_for_rhv =
     match output_alloc with
@@ -259,7 +479,7 @@ let create_meta_files output_alloc sd_uuid image_uuids targets =
     | Preallocated -> "PREALLOCATED" in
 
   List.map (
-    fun ({ target_overlay = ov } as t, image_uuid) ->
+    fun ((target_format, ov), image_uuid) ->
       let size_in_sectors =
         if ov.ov_virtual_size &^ 511L <> 0L then
           error (f_"the virtual size of the input disk %s is not an exact multiple of 512 bytes.  The virtual size is: %Ld.\n\nThis probably means something unexpected is going on, so please file a bug about this issue.")
@@ -268,11 +488,11 @@ let create_meta_files output_alloc sd_uuid image_uuids targets =
         ov.ov_virtual_size /^ 512L in
 
       let format_for_rhv =
-        match t.target_format with
+        match target_format with
         | "raw" -> "RAW"
         | "qcow2" -> "COW"
         | _ ->
-          error (f_"RHV does not support the output format ‘%s’, only raw or qcow2") t.target_format in
+          error (f_"RHV does not support the output format ‘%s’, only raw or qcow2") target_format in
 
       let buf = Buffer.create 256 in
       let bpf fs = bprintf buf fs in
@@ -291,11 +511,11 @@ let create_meta_files output_alloc sd_uuid image_uuids targets =
       bpf "DESCRIPTION=%s\n" (String.replace generated_by "=" "_");
       bpf "EOF\n";
       Buffer.contents buf
-  ) (List.combine targets image_uuids)
+  ) (List.combine overlays image_uuids)
 
 (* Create the OVF file. *)
-let rec create_ovf source targets guestcaps inspect
-    output_alloc sd_uuid image_uuids vol_uuids vm_uuid =
+let rec create_ovf source targets guestcaps inspect target_firmware
+    output_alloc sd_uuid image_uuids vol_uuids vm_uuid ovf_flavour =
   assert (List.length targets = List.length vol_uuids);
 
   let memsize_mb = source.s_memory /^ 1024L /^ 1024L in
@@ -303,6 +523,7 @@ let rec create_ovf source targets guestcaps inspect
   let vmtype = get_vmtype inspect in
   let vmtype = match vmtype with `Desktop -> "0" | `Server -> "1" in
   let ostype = get_ostype inspect in
+  let biostype = get_ovirt_biostype target_firmware in
 
   let ovf : doc =
     doc "ovf:Envelope" [
@@ -310,16 +531,31 @@ let rec create_ovf source targets guestcaps inspect
       "xmlns:vssd", "http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData";
       "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance";
       "xmlns:ovf", "http://schemas.dmtf.org/ovf/envelope/1/";
+      "xmlns:ovirt", "http://www.ovirt.org/ovf";
       "ovf:version", "0.9"
     ] [
       Comment generated_by;
       e "References" [] [];
-      e "Section" ["xsi:type", "ovf:NetworkSection_Type"] [
-        e "Info" [] [PCData "List of networks"]
-      ];
-      e "Section" ["xsi:type", "ovf:DiskSection_Type"] [
-        e "Info" [] [PCData "List of Virtual Disks"]
-      ];
+      (match ovf_flavour with
+      | OVirt ->
+        e "NetworkSection" [] [
+          e "Info" [] [PCData "List of networks"]
+        ]
+      | RHVExportStorageDomain ->
+        e "Section" ["xsi:type", "ovf:NetworkSection_Type"] [
+          e "Info" [] [PCData "List of networks"]
+        ]
+      );
+      (match ovf_flavour with
+      | OVirt ->
+        e "DiskSection" [] [
+          e "Info" [] [PCData "List of Virtual Disks"]
+        ]
+      | RHVExportStorageDomain ->
+        e "Section" ["xsi:type", "ovf:DiskSection_Type"] [
+          e "Info" [] [PCData "List of Virtual Disks"]
+        ]
+      );
 
       let content_subnodes = ref [
         e "Name" [] [PCData source.s_name];
@@ -335,6 +571,7 @@ let rec create_ovf source targets guestcaps inspect
         e "VmType" [] [PCData vmtype];
         (* See https://bugzilla.redhat.com/show_bug.cgi?id=1260590#c17 *)
         e "DefaultDisplayType" [] [PCData "1"];
+        e "BiosType" [] [PCData (string_of_int biostype)];
       ] in
 
       (match source.s_cpu_model with
@@ -352,17 +589,30 @@ let rec create_ovf source targets guestcaps inspect
       );
 
       List.push_back content_subnodes (
-        e "Section" ["ovf:id", vm_uuid; "ovf:required", "false";
-                     "xsi:type", "ovf:OperatingSystemSection_Type"] [
+        let osinfo_subnodes = [
           e "Info" [] [PCData inspect.i_product_name];
           e "Description" [] [PCData ostype];
-          ]
+        ] in
+        (match ovf_flavour with
+        | OVirt ->
+          let ovirt_osid = get_ovirt_osid inspect in
+          e "OperatingSystemSection" ["ovf:id", vm_uuid;
+                                      "ovf:required", "false";
+                                      "ovirt:id", string_of_int ovirt_osid]
+            osinfo_subnodes
+        | RHVExportStorageDomain ->
+          e "Section" ["ovf:id", vm_uuid; "ovf:required", "false";
+                       "xsi:type", "ovf:OperatingSystemSection_Type"]
+            osinfo_subnodes
+        )
       );
 
       let virtual_hardware_section_items = ref [
         e "Info" [] [PCData (sprintf "%d CPU, %Ld Memory"
                                      source.s_vcpu memsize_mb)]
       ] in
+
+      (* XXX How to set machine type for Q35? *)
 
       List.push_back virtual_hardware_section_items (
         e "Item" [] ([
@@ -405,10 +655,14 @@ let rec create_ovf source targets guestcaps inspect
          * See RHBZ#1213701 and RHBZ#1211231 for the reasoning
          * behind that.
          *)
+        let qxl_resourcetype =
+          match ovf_flavour with
+          | OVirt -> 32768 (* RHBZ#1598715 *)
+          | RHVExportStorageDomain -> 20 in
         e "Item" [] [
           e "rasd:Caption" [] [PCData "Graphical Controller"];
           e "rasd:InstanceId" [] [PCData (uuidgen ())];
-          e "rasd:ResourceType" [] [PCData "20"];
+          e "rasd:ResourceType" [] [PCData (string_of_int qxl_resourcetype)];
           e "Type" [] [PCData "video"];
           e "rasd:VirtualQuantity" [] [PCData "1"];
           e "rasd:Device" [] [PCData "qxl"];
@@ -444,24 +698,34 @@ let rec create_ovf source targets guestcaps inspect
         );
 
       List.push_back content_subnodes (
-        e "Section" ["xsi:type", "ovf:VirtualHardwareSection_Type"]
-          !virtual_hardware_section_items
+        match ovf_flavour with
+        | OVirt ->
+          e "VirtualHardwareSection" [] !virtual_hardware_section_items
+        | RHVExportStorageDomain ->
+          e "Section" ["xsi:type", "ovf:VirtualHardwareSection_Type"]
+            !virtual_hardware_section_items
       );
 
-      e "Content" ["ovf:id", "out"; "xsi:type", "ovf:VirtualSystem_Type"]
-        !content_subnodes
+      (match ovf_flavour with
+      | OVirt ->
+        e "VirtualSystem" ["ovf:id", vm_uuid] !content_subnodes
+      | RHVExportStorageDomain ->
+        e "Content" ["ovf:id", "out"; "xsi:type", "ovf:VirtualSystem_Type"]
+          !content_subnodes
+      )
     ] in
 
   (* Add disks to the OVF XML. *)
-  add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf;
+  add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids
+    ovf_flavour ovf;
 
   (* Old virt-v2v ignored removable media. XXX *)
 
   (* Add networks to the OVF XML. *)
-  add_networks source.s_nics guestcaps ovf;
+  add_networks source.s_nics guestcaps ovf_flavour ovf;
 
   (* Add sound card to the OVF XML. *)
-  add_sound_card source.s_sound ovf;
+  add_sound_card source.s_sound ovf_flavour ovf;
 
   (* Old virt-v2v didn't really look at the video and display
    * metadata, instead just adding a single standard display (see
@@ -481,21 +745,43 @@ let rec create_ovf source targets guestcaps inspect
   (* Return the OVF document. *)
   ovf
 
+(* Find appropriate section depending on the OVF flavour being generated.
+ *
+ * For example normal disk section is in node <DiskSection> whereas in case of
+ * RHV export storage domain it is <Section xsi:type="ovf:DiskSection_Type">.
+ *)
+and get_flavoured_section ovf ovirt_path rhv_path rhv_path_attr = function
+  | OVirt ->
+     let nodes = path_to_nodes ovf ovirt_path in
+     (match nodes with
+      | [node] -> node
+      | [] | _::_::_ -> assert false)
+  | RHVExportStorageDomain ->
+     let nodes = path_to_nodes ovf rhv_path in
+     try find_node_by_attr nodes rhv_path_attr
+     with Not_found -> assert false
+
 (* This modifies the OVF DOM, adding a section for each disk. *)
-and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
+and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids
+    ovf_flavour ovf =
   let references =
     let nodes = path_to_nodes ovf ["ovf:Envelope"; "References"] in
     match nodes with
     | [] | _::_::_ -> assert false
     | [node] -> node in
   let disk_section =
-    let sections = path_to_nodes ovf ["ovf:Envelope"; "Section"] in
-    try find_node_by_attr sections ("xsi:type", "ovf:DiskSection_Type")
-    with Not_found -> assert false in
+    get_flavoured_section ovf
+                          ["ovf:Envelope"; "DiskSection"]
+                          ["ovf:Envelope"; "Section"]
+                          ("xsi:type", "ovf:DiskSection_Type")
+                          ovf_flavour in
   let virtualhardware_section =
-    let sections = path_to_nodes ovf ["ovf:Envelope"; "Content"; "Section"] in
-    try find_node_by_attr sections ("xsi:type", "ovf:VirtualHardwareSection_Type")
-    with Not_found -> assert false in
+    get_flavoured_section ovf
+                          ["ovf:Envelope"; "VirtualSystem";
+                               "VirtualHardwareSection"]
+                          ["ovf:Envelope"; "Content"; "Section"]
+                          ("xsi:type", "ovf:VirtualHardwareSection_Type")
+                          ovf_flavour in
 
   (* Iterate over the disks, adding them to the OVF document. *)
   List.iteri (
@@ -509,7 +795,12 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
       let is_bootable_drive = i == 0 in
       let boot_order = i+1 in
 
-      let fileref = sprintf "%s/%s" image_uuid vol_uuid in
+      let fileref =
+        match ovf_flavour with
+        | OVirt ->
+          vol_uuid
+        | RHVExportStorageDomain ->
+          sprintf "%s/%s" image_uuid vol_uuid in
 
       (* ovf:size and ovf:actual_size fields are integer GBs.  If you
        * use floating point numbers then RHV will fail to parse them.
@@ -521,7 +812,8 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
       in
       let size_gb = bytes_to_gb ov.ov_virtual_size in
       let actual_size_gb, is_estimate =
-        match t.target_actual_size, t.target_estimated_size with
+        let ds = t.target_overlay.ov_stats in
+        match ds.target_actual_size, ds.target_estimated_size with
         | Some actual_size, _ -> Some (bytes_to_gb actual_size), false
           (* In the --no-copy case the target file does not exist.  In
            * that case we use the estimated size.
@@ -549,7 +841,7 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
           "ovf:id", vol_uuid;
           "ovf:description", generated_by;
         ] in
-        (match t.target_actual_size with
+        (match t.target_overlay.ov_stats.target_actual_size with
          | None -> ()
          | Some actual_size ->
             List.push_back attrs ("ovf:size", Int64.to_string actual_size)
@@ -560,7 +852,10 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
       (* Add disk to DiskSection. *)
       let disk =
         let attrs = ref [
-          "ovf:diskId", vol_uuid;
+          "ovf:diskId",
+          (match ovf_flavour with
+          | OVirt -> image_uuid
+          | RHVExportStorageDomain -> vol_uuid);
           "ovf:size", Int64.to_string size_gb;
           "ovf:capacity", Int64.to_string ov.ov_virtual_size;
           "ovf:fileRef", fileref;
@@ -619,20 +914,25 @@ and add_disks targets guestcaps output_alloc sd_uuid image_uuids vol_uuids ovf =
   ) (List.combine3 targets image_uuids vol_uuids)
 
 (* This modifies the OVF DOM, adding a section for each NIC. *)
-and add_networks nics guestcaps ovf =
+and add_networks nics guestcaps ovf_flavour ovf =
   let network_section =
-    let sections = path_to_nodes ovf ["ovf:Envelope"; "Section"] in
-    try find_node_by_attr sections ("xsi:type", "ovf:NetworkSection_Type")
-    with Not_found -> assert false in
+    get_flavoured_section ovf
+                          ["ovf:Envelope"; "NetworkSection"]
+                          ["ovf:Envelope"; "Section"]
+                          ("xsi:type", "ovf:NetworkSection_Type")
+                          ovf_flavour in
   let virtualhardware_section =
-    let sections = path_to_nodes ovf ["ovf:Envelope"; "Content"; "Section"] in
-    try find_node_by_attr sections ("xsi:type", "ovf:VirtualHardwareSection_Type")
-    with Not_found -> assert false in
+    get_flavoured_section ovf
+                          ["ovf:Envelope"; "VirtualSystem";
+                               "VirtualHardwareSection"]
+                          ["ovf:Envelope"; "Content"; "Section"]
+                          ("xsi:type", "ovf:VirtualHardwareSection_Type")
+                          ovf_flavour in
 
   (* Iterate over the NICs, adding them to the OVF document. *)
   List.iteri (
     fun i { s_mac = mac; s_vnet_type = vnet_type;
-            s_vnet = vnet; s_vnet_orig = vnet_orig } ->
+            s_vnet = vnet; s_mapping_explanation = explanation } ->
       let dev = sprintf "eth%d" i in
 
       let model =
@@ -645,10 +945,10 @@ and add_networks nics guestcaps ovf =
         bus dev;
         "1" *) in
 
-      if vnet_orig <> vnet then (
-        let c =
-          Comment (sprintf "mapped from \"%s\" to \"%s\"" vnet_orig vnet) in
-        append_child c network_section
+      (match explanation with
+       | None -> ()
+       | Some explanation ->
+          append_child (Comment explanation) network_section
       );
 
       let network = e "Network" ["ovf:name", vnet] [] in
@@ -675,7 +975,7 @@ and add_networks nics guestcaps ovf =
   ) nics
 
 (* This modifies the OVF DOM, adding a sound card, if oVirt can emulate it. *)
-and add_sound_card sound ovf =
+and add_sound_card sound ovf_flavour ovf =
   let device =
     match sound with
     | None -> None
@@ -689,11 +989,12 @@ and add_sound_card sound ovf =
   match device with
   | Some device ->
      let virtualhardware_section =
-       let sections =
-         path_to_nodes ovf ["ovf:Envelope"; "Content"; "Section"] in
-       try find_node_by_attr sections
+       get_flavoured_section ovf
+                             ["ovf:Envelope"; "VirtualSystem";
+                                  "VirtualHardwareSection"]
+                             ["ovf:Envelope"; "Content"; "Section"]
                              ("xsi:type", "ovf:VirtualHardwareSection_Type")
-       with Not_found -> assert false in
+                             ovf_flavour in
 
      let item =
        e "Item" [] [

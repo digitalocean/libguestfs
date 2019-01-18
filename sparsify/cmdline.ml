@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2018 Red Hat Inc.
+ * Copyright (C) 2011-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ type cmdline = {
   ignores : string list;
   zeroes : string list;
   mode : mode_t;
+  ks : key_store;
 }
 
 and mode_t =
@@ -106,21 +107,23 @@ read the man page virt-sparsify(1).
   (* No arguments and machine-readable mode?  Print out some facts
    * about what this binary supports.
    *)
-  if disks = [] && machine_readable () then (
-    printf "virt-sparsify\n";
-    printf "linux-swap\n";
-    printf "zero\n";
-    printf "check-tmpdir\n";
-    printf "in-place\n";
-    printf "tmp-option\n";
+  (match disks, machine_readable () with
+  | [], Some { pr } ->
+    pr "virt-sparsify\n";
+    pr "linux-swap\n";
+    pr "zero\n";
+    pr "check-tmpdir\n";
+    pr "in-place\n";
+    pr "tmp-option\n";
     let g = open_guestfs () in
     g#add_drive "/dev/null";
     g#launch ();
     if g#feature_available [| "ntfsprogs"; "ntfs3g" |] then
-      printf "ntfs\n";
+      pr "ntfs\n";
     if g#feature_available [| "btrfs" |] then
-      printf "btrfs\n";
+      pr "btrfs\n";
     exit 0
+  | _, _ -> ()
   );
 
   let indisk, mode =
@@ -178,4 +181,5 @@ read the man page virt-sparsify(1).
     ignores = ignores;
     zeroes = zeroes;
     mode = mode;
+    ks = opthandle.ks;
   }

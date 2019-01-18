@@ -3,7 +3,7 @@
  *          from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@ const char *others[] = {
   "Angus Salkeld",
   "Ani Peter",
   "Bastien ROUCARIÈS",
+  "Bernhard M. Wiedemann",
   "Cao jin",
   "Charles Duffy",
   "Chen Hanxiao",
@@ -72,6 +73,7 @@ const char *others[] = {
   "Dan Lipsitt",
   "Daniel P. Berrangé",
   "Daniel Cabrera",
+  "Daniel Erez",
   "Daniel Exner",
   "Dave Vasilevsky",
   "David Sommerseth",
@@ -116,6 +118,7 @@ const char *others[] = {
   "Nikita A Menkovich",
   "Nikita Menkovich",
   "Nikos Skalkotos",
+  "Nir Soffer",
   "Olaf Hering",
   "Or Goshen",
   "Paul Mackerras",
@@ -125,6 +128,7 @@ const char *others[] = {
   "Rajesh Ranjan",
   "Robert Antoni Buj Gelonch",
   "Sandeep Shedmake",
+  "Sebastian Meyer",
   "Shahar Lev",
   "Shankar Prasad",
   "Thomas S Hatch",

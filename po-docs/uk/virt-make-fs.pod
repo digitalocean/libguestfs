@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-virt-make-fs —створення файлової системи на сонові архіву tar або файлів
+virt-make-fs —створення файлової системи на основі архіву tar або файлів
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -13,39 +13,43 @@ virt-make-fs —створення файлової системи на соно
 
 =head1 ОПИС
 
-Virt-make-fs is a command line tool for creating a filesystem from a tar
-archive or some files in a directory.  It is similar to tools like
-L<mkisofs(1)>, L<genisoimage(1)> and L<mksquashfs(1)>.  Unlike those tools,
-it can create common filesystem types like ext2/3 or NTFS, which can be
-useful if you want to attach these filesystems to existing virtual machines
-(eg. to import large amounts of read-only data to a VM).
+Virt-make-fs — інструмент командного рядка для створення файлової системи на
+основі архіву tar або якихось файлів у каталозі. Подібний для інструментів
+L<mkisofs(1)>, L<genisoimage(1)> та L<mksquashfs(1)>. На відміну від цих
+інструментів він може створювати файлові системи стандартних типів, зокрема
+ext2/3 або NTFS, що може бути корисним, якщо ви хочете долучити ці файлові
+системи до наявних віртуальних машин (наприклад, щоб імпортувати великі
+обсяги доступних лише для читання даних до віртуальної машини).
 
-To create blank disks, use L<virt-format(1)>.  To create complex layouts,
-use L<guestfish(1)>.
+Для створення порожніх дисків скористайтеся L<virt-format(1)>. Для створення
+складних компонувань скористайтеся L<guestfish(1)>.
 
 Базовий варіант використання:
 
  virt-make-fs вхідні_дані вихідний.образ
 
-where C<input> is either a directory containing files that you want to add,
-or a tar archive (either uncompressed tar or gzip-compressed tar); and
-F<output.img> is a disk image.  The input type is detected automatically.
-The output disk image defaults to a raw ext2 sparse image unless you specify
-extra flags (see L</OPTIONS> below).
+де C<вхідні_дані> є або каталогом, де зберігаються файли, які ви хочете
+додати, або архів tar (нестиснений або стиснений за допомогою gzip); а
+F<виведений.образ> є образом диска. Тип виведених даних визначається
+автоматично. Типовим виведеним образом диска є простий (raw) розріджений
+образ ext2, якщо ви не вкажете додаткових прапорців (див. розділ
+L</ПАРАМЕТРИ> нижче).
 
 =head2 ТИП ФАЙЛОВОЇ СИСТЕМИ
 
-The default filesystem type is C<ext2>.  Just about any filesystem type that
-libguestfs supports can be used (but I<not> read-only formats like
-ISO9660).  Here are some of the more common choices:
+Типовим типом файлової системи є C<ext2>. Можна використовувати майже
+будь-який тип файлової системи, підтримку якого передбачено у libguestfs
+(але I<не> придатний лише для читання формат, зокрема ISO9660). Ось декілька
+із найпоширеніших варіантів:
 
 =over 4
 
 =item I<ext3>
 
-Note that ext3 filesystems contain a journal, typically 1-32 MB in size.  If
-you are not going to use the filesystem in a way that requires the journal,
-then this is just wasted overhead.
+Зауважте, що у файлових системах ext3 міститься журнал із типовим розміром
+1-32 МБ. Якщо ви не збираєтеся використовувати файлову систему у спосіб,
+який потребує журналу, цей журнал є лише непотрібним доповненням файлової
+системи.
 
 =item I<ntfs> або I<vfat>
 
@@ -53,8 +57,8 @@ then this is just wasted overhead.
 
 =item I<minix>
 
-Lower overhead than C<ext2>, but certain limitations on filename length and
-total filesystem size.
+Менша зайва витрата місця за C<ext2>, але є певні обмеження щодо довжини
+назви файла і загального розміру файлової системи.
 
 =back
 
@@ -62,19 +66,21 @@ total filesystem size.
 
  virt-make-fs --type=minix input minixfs.img
 
-=head2 TO PARTITION OR NOT TO PARTITION
+=head2 ДІЛИТИ ЧИ НЕ ДІЛИТИ НА РОЗДІЛИ
 
-Optionally virt-make-fs can add a partition table to the output disk.
+На вимогу, virt-make-fs може додавати на диск-результат таблицю розділів.
 
-Adding a partition can make the disk image more compatible with certain
-virtualized operating systems which don't expect to see a filesystem
-directly located on a block device (Linux doesn't care and will happily
-handle both types).
+Додавання розділу може зробити образ диска суміснішим із деякими
+віртуалізованими операційними системами, які не можуть працювати із
+файловими системами, які безпосередньо розміщено на блоковому пристрої
+(Linux не звертає на це уваги і може успішно працювати із обома типами
+образів).
 
-On the other hand, if you have a partition table then the output image is no
-longer a straight filesystem.  For example you cannot run L<fsck(8)>
-directly on a partitioned disk image.  (However libguestfs tools such as
-L<guestfish(1)> and L<virt-resize(1)> can still be used).
+З іншого боку, якщо у вас є таблиця розділів, образ-результат вже не буде
+простою файловою системою. Наприклад, ви не зможете запустити L<fsck(8)>
+безпосередньо для поділеного на розділи образу диска. (Втім, можна буде
+користуватися засобами libguestfs, зокрема L<guestfish(1)> і
+L<virt-resize(1)>).
 
 =head3 ПРИКЛАД
 
@@ -82,31 +88,34 @@ L<guestfish(1)> and L<virt-resize(1)> can still be used).
 
  virt-make-fs --partition -- input образ.img
 
-If the output disk image could be terabyte-sized or larger, it's better to
-use an EFI/GPT-compatible partition table:
+Якщо виведений образ диска може бути розміром у терабайт або більше, краще
+скористатися сумісною із EFI/GPT таблицею розділів:
 
  virt-make-fs --partition=gpt --size=+4T --format=qcow2 input диск.img
 
-=head2 EXTRA SPACE
+=head2 ЗАЙВЕ МІСЦЕ
 
-Unlike formats such as tar and squashfs, a filesystem does not "just fit"
-the files that it contains, but might have extra space.  Depending on how
-you are going to use the output, you might think this extra space is wasted
-and want to minimize it, or you might want to leave space so that more files
-can be added later.  Virt-make-fs defaults to minimizing the extra space,
-but you can use the I<--size> flag to leave space in the filesystem if you
-want it.
+На відміну від форматів, таких як tar і squashfs, файлова система не може
+«просто підлаштуватися» під файли, які вона містить, — вона може потребувати
+зайвого місця. Залежно від того, як ви збираєтеся використовувати виведений
+образ, зайве місце може бути небажаним, таким, яке слід мінімізувати, або
+бажаним для додавання згодом файлів. Типовою поведінкою virt-make-fs є
+мінімізація зайвого місця, але ви можете скористатися прапорцем I<--size>
+для створення зайвого місця, якщо вам це потрібно.
 
-An alternative way to leave extra space but not make the output image any
-bigger is to use an alternative disk image format (instead of the default
-"raw" format).  Using I<--format=qcow2> will use the native qemu/KVM qcow2
-image format (check your hypervisor supports this before using it).  This
-allows you to choose a large I<--size> but the extra space won't actually be
-allocated in the image until you try to store something in it.
+Альтернативним способом створити зайве місце без збільшення
+образу-результату є використання альтернативного формату образів дисків
+(замість типового формату «raw"»). За допомогою параметра I<--format=qcow2>
+можна визначити природний для qemu/KVM формат образів qcow2 (перш ніж
+користуватися ним, перевірте, чи передбачено підтримку цього формату у
+вашому гіпервізорі). Це надасть вам змогу вибрати більший розмір за
+допомогою I<--size> так, щоб зайве місце було розподілено у образі лише
+після того, як ви спробуєте на ньому щось зберегти.
 
-Don’t forget that you can also use local commands including L<resize2fs(8)>
-and L<virt-resize(1)> to resize existing filesystems, or rerun virt-make-fs
-to build another image from scratch.
+Не забувайте, що ви також можете скористатися локальними командами, зокрема
+L<resize2fs(8)> та L<virt-resize(1)>, для зміни розмірів наявних файлових
+систем або повторно запустити virt-make-fs для збирання іншого образу «з
+нуля».
 
 =head3 ПРИКЛАД
 
@@ -124,8 +133,9 @@ to build another image from scratch.
 
 Створити віртуальну дискету.
 
-Currently this preselects the size (1440K), partition type (MBR) and
-filesystem type (VFAT).  In future it may also choose the geometry.
+У поточній версії буде попередньо вибрано розмір (1440 кБ), тип розділу
+(MBR) і тип файлової системи (VFAT). У майбутньому також може бути вибрано
+геометрію.
 
 =item B<--size=>N
 
@@ -135,25 +145,29 @@ filesystem type (VFAT).  In future it may also choose the geometry.
 
 =item B<-s> B<+>N
 
-Use the I<--size> (or I<-s>) option to choose the size of the output image.
+Скористайтеся параметром I<--size> (або I<-s>), щоб вибрати розмір
+образу-результату.
 
-If this option is I<not> given, then the output image will be just large
-enough to contain all the files, with not much wasted space.
+Якщо цей параметр I<не> вказано, образ-результат буде точно таким великим,
+щоб умістити усі файли без зайвої витрати місця.
 
-To choose a fixed size output disk, specify an absolute number followed by
-b/K/M/G/T/P/E to mean bytes, Kilobytes, Megabytes, Gigabytes, Terabytes,
-Petabytes or Exabytes.  This must be large enough to contain all the input
-files, else you will get an error.
+Щоб вибрати для диска-результату фіксований розмір, вкажіть значення розміру
+з суфіксом b/K/M/G/T/P/E, який позначає байти, кілобайти, мегабайти,
+гігабайти, терабайти, петабайти або ексабайти. Диск має бути достатньо
+об'ємним, щоб умістити усі вхідні файли. Якщо розмір диска виявиться
+недостатнім, вам буде повідомлено про помилку.
 
-To leave extra space, specify C<+> (plus sign) and a number followed by
-b/K/M/G/T/P/E to mean bytes, Kilobytes, Megabytes, Gigabytes, Terabytes,
-Petabytes or Exabytes.  For example: I<--size=+200M> means enough space for
-the input files, and (approximately) an extra 200 MB free space.
+Щоб лишити на диску зайве місце, вкажіть C<+> (символ «плюс») із числовим
+значенням та суфіксом b/K/M/G/T/P/E , який позначає байти, кілобайти,
+мегабайти, гігабайти, терабайти, петабайти або ексабайти. Наприклад,
+I<--size=+200M> означає «достатньо місця для вхідних файлів та (приблизно)
+зайві 200 МБ вільного місця».
 
-Note that virt-make-fs estimates free space, and therefore will not produce
-filesystems containing precisely the free space requested.  (It is much more
-expensive and time-consuming to produce a filesystem which has precisely the
-desired free space).
+Зауважте, що virt-make-fs estimates використовує оцінки вільного місця на
+диску, тому створені програмою файлові системи не міститимуть рівно стільки
+вільного місця, скільки ви вкажете. (Створення файлової системи, яка
+міститиме рівно стільки місця, скільки було вказано користувачем, є доволі
+складним і тривалим завданням.)
 
 =item B<--format=>ФОРМАТ
 
@@ -161,7 +175,7 @@ desired free space).
 
 Вибрати формат образу диска-результату.
 
-The default is C<raw> (raw sparse disk image).
+Типовимт є C<raw> (простий розріджений образ диска).
 
 =item B<--type=>ФС
 
@@ -171,7 +185,8 @@ The default is C<raw> (raw sparse disk image).
 
 Типовим значенням є C<ext2>.
 
-Any filesystem which is supported read-write by libguestfs can be used here.
+Тут можна скористатися будь-якою файловою системою, підтримку читання і
+запису для якої передбачено у libguestfs.
 
 =item B<--label=>МІТКА
 
@@ -181,13 +196,13 @@ Any filesystem which is supported read-write by libguestfs can be used here.
 
 =item B<--partition=>ТИП РОЗДІЛУ
 
-If specified, this flag adds an MBR partition table to the output disk
-image.
+Якщо його вказано, цей прапорець додає таблицю розділів MBR на виведений
+програмою образ диска.
 
-You can change the partition table type, eg. I<--partition=gpt> for large
-disks.
+Ви можете змінити тип таблиці розділів, наприклад, вказати
+I<--partition=gpt> для великих дисків.
 
-For MBR, virt-make-fs sets the partition type byte automatically.
+Для MBR virt-make-fs встановлює значення байта типу розділу автоматично.
 
 =item B<-v>
 
@@ -219,5 +234,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2010-2018 Red Hat Inc.
+Copyright (C) 2010-2019 Red Hat Inc.
 

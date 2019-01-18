@@ -7,7 +7,7 @@ libguestfs generated file
           and from the code in the generator/ subdirectory.
  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 
- Copyright (C) 2009-2018 Red Hat Inc.
+ Copyright (C) 2009-2019 Red Hat Inc.
 
  Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
  змінювати її за умов дотримання GNU General Public License  утому вигляді, що
@@ -31,45 +31,49 @@ libguestfs generated file
 
  alloc назва_файла розмір
 
-This creates an empty (zeroed) file of the given size, and then adds so it
-can be further examined.
+Створити порожній (нульовий) файл вказаного розміру, а потім додати його для
+подальшого вивчення.
 
-For more advanced image creation, see L</disk-create>.
+Щоб дізнатися про ширші можливості зі створення образів,
+див. L</disk-create>.
 
-Size can be specified using standard suffixes, eg. C<1M>.
+Розмір можна вказати за допомогою стандартних суфіксів, наприклад C<1M>.
 
-To create a sparse file, use L</sparse> instead.  To create a prepared disk
-image, see L</PREPARED DISK IMAGES>.
+Для створення розріджених файлів слід використовувати замість цієї команди
+L</sparse>. Опис створення приготованого диска наведено у розділі L</ОБРАЗИ
+ПРИГОТОВАНИХ ДИСКІВ>.
 
 =head2 copy-in
 
- copy-in local [local ...] /remotedir
+ copy-in локальний [локальний ...] /віддалений_каталог
 
-C<copy-in> copies local files or directories recursively into the disk
-image, placing them in the directory called F</remotedir> (which must
-exist).  This guestfish meta-command turns into a sequence of L</tar-in> and
-other commands as necessary.
+C<copy-in> копіює локальні файли або каталоги рекурсивно до образу диска,
+розташовуючи їх у каталозі із назвою F</віддалений_каталог> (цей каталог має
+існувати). Ця метакоманда guestfish перетворюється у послідовність
+L</tar-in> та інших команд, якщо це потрібно.
 
-Multiple local files and directories can be specified, but the last
-parameter must always be a remote directory.  Wildcards cannot be used.
+Можна вказувати одразу декілька локальних файлів або каталогів, але останнім
+параметром обов'язково має бути віддалений каталог. Не можна використовувати
+символи-замінники.
 
 =head2 copy-out
 
- copy-out remote [remote ...] localdir
+ copy-out віддалений [віддалений ...] локальний_каталог
 
-C<copy-out> copies remote files or directories recursively out of the disk
-image, placing them on the host disk in a local directory called C<localdir>
-(which must exist).  This guestfish meta-command turns into a sequence of
-L</download>, L</tar-out> and other commands as necessary.
+C<copy-out> копіює віддалені файли або каталоги рекурсивно з образу диска,
+розташовуючи їх на диску основної системи у каталозі із назвою
+F</локальний_каталог> (цей каталог має існувати). Ця метакоманда guestfish
+перетворюється у послідовність L</download>, L</tar-out> та інших команд,
+якщо це потрібно.
 
-Multiple remote files and directories can be specified, but the last
-parameter must always be a local directory.  To download to the current
-directory, use C<.> as in:
+Можна вказувати одразу декілька віддалених файлів або каталогів, але
+останнім параметром обов'язково має бути локальний каталог. Щоб отримати
+дані до поточного каталогу, скористайтеся записом C<.>, ось так:
 
  copy-out /home .
 
-Wildcards cannot be used in the ordinary command, but you can use them with
-the help of L</glob> like this:
+Символи-замінники не можна використовувати у звичайних командах, але ви
+можете скористатися ними за допомогою L</glob>, ось так:
 
  glob copy-out /home/* .
 
@@ -77,9 +81,9 @@ the help of L</glob> like this:
 
  delete-event назва
 
-Delete the event handler which was previously registered as C<name>.  If
-multiple event handlers were registered with the same name, they are all
-deleted.
+Вилучає обробник подій, який раніше було зареєстровано як C<назва>. Якщо із
+тією самою назвою було зареєстровано декілька обробників подій, буде
+вилучено усі обробники.
 
 Див. також команди guestfish C<event> та C<list-events>.
 
@@ -87,11 +91,13 @@ deleted.
 
  display назва_файла
 
-Use C<display> (a graphical display program) to display an image file.  It
-downloads the file, and runs C<display> on it.
+Скористатися C<display> (програмою для графічного показу) для показу файла
+зображення. Буде виконано отримання файла, а потім запущено C<display> для
+його показу.
 
-To use an alternative program, set the C<GUESTFISH_DISPLAY_IMAGE>
-environment variable.  For example to use the GNOME display program:
+Щоб скористатися альтернативною програмою, встановіть значення для змінної
+середовища C<GUESTFISH_DISPLAY_IMAGE>.  Наприклад, щоб скористатися
+програмою для показу зображень GNOME, віддайте таку команду:
 
  export GUESTFISH_DISPLAY_IMAGE=eog
 
@@ -101,7 +107,7 @@ environment variable.  For example to use the GNOME display program:
 
  echo [параметри...]
 
-This echos the parameters to the terminal.
+Виводить параметри до термінала.
 
 =head2 edit
 
@@ -111,36 +117,39 @@ This echos the parameters to the terminal.
 
  edit назва_файла
 
-This is used to edit a file.  It downloads the file, edits it locally using
-your editor, then uploads the result.
+Ця команда використовується для редагування файла. Файл буде отримано з
+образу, ви зможете локально внести до нього зміни, а результати внесення
+змін буде автоматично вивантажено на образ.
 
-The editor is C<$EDITOR>.  However if you use the alternate commands C<vi>
-or C<emacs> you will get those corresponding editors.
+Редактор визначається змінною середовища C<$EDITOR>. Втім, якщо ви ви
+скористаєтеся альтернативними варіантами, C<vi> або C<emacs>, буде запущено
+відповідні редактори.
 
 =head2 event
 
- event name eventset "shell script ..."
+ event назва набір_подій "скрипт оболонки..."
 
-Register a shell script fragment which is executed when an event is raised.
-See L<guestfs(3)/guestfs_set_event_callback> for a discussion of the event
-API in libguestfs.
+Реєструє фрагмент скрипту оболонки, який буде виконано, якщо надійде
+повідомлення про подію. Див. опис L<guestfs(3)/guestfs_set_event_callback>,
+де наведено обговорення програмного інтерфейсу подій у libguestfs.
 
-The C<name> parameter is a name that you give to this event handler.  It can
-be any string (even the empty string) and is simply there so you can delete
-the handler using the guestfish C<delete-event> command.
+Значенням параметра C<назва> є назва, яку ви хочете надати обробнику
+подій. Це може бути довільний рядок (навіть порожній). Його призначено для
+ідентифікації обробника для його вилучення за допомогою команди
+C<delete-event> guestfish.
 
-The C<eventset> parameter is a comma-separated list of one or more events,
-for example C<close> or C<close,trace>.  The special value C<*> means all
-events.
+Значенням параметра C<набір_подій> є список відокремлених комами записів
+однієї або декількох подій. Приклади: C<close> або
+C<close,trace>. Спеціальне значення C<*> означає «усі події».
 
-The third and final parameter is the shell script fragment (or any external
-command) that is executed when any of the events in the eventset occurs.  It
-is executed using C<$SHELL -c>, or if C<$SHELL> is not set then F</bin/sh
--c>.
+Третім і останнім параметром команди є фрагмент скрипту оболонки (або
+будь-яка зовнішня програма), яку буде виконано, якщо станеться якась із
+подій із вказаного набору. Скрипт буде виконано за допомогою C<$SHELL -c>
+або, якщо C<$SHELL> не встановлено, за допомогою F</bin/sh -c>.
 
-The shell script fragment receives callback parameters as arguments C<$1>,
-C<$2> etc.  The actual event that was called is available in the environment
-variable C<$EVENT>.
+Фрагмент скрипту оболонки отримує параметри зворотного виклику як аргументи
+C<$1>, C<$2> тощо. Справжня назва події, яку було викликано, доступна у
+змінній середовища C<$EVENT>.
 
  event "" close "echo closed"
  event messages appliance,library,trace "echo $@"
@@ -153,41 +162,43 @@ variable C<$EVENT>.
 
  glob команда параметри...
 
-Expand wildcards in any paths in the args list, and run C<command>
-repeatedly on each matching path.
+Розгортає символи-замінники у будь-яких шляхах у списку аргументів і виконує
+команду C<команда> циклічно для усіх відповідних шляхів.
 
 Див. L</WILDCARDS AND GLOBBING>.
 
 =head2 hexedit
 
- hexedit <filename|device>
- hexedit <filename|device> <max>
- hexedit <filename|device> <start> <max>
+ hexedit <назва_файла|пристрій>
+ hexedit <назва_файла|пристрій> <макс>
+ hexedit <назва_файла|пристрій> <початок> <макс>
 
-Use hexedit (a hex editor) to edit all or part of a binary file or block
-device.
+Використовує hexedit (шістнадцятковий редактор) для редагування усього або
+частини двійкового файла або блокового пристрою.
 
-This command works by downloading potentially the whole file or device,
-editing it locally, then uploading it.  If the file or device is large, you
-have to specify which part you wish to edit by using C<max> and/or C<start>
-C<max> parameters.  C<start> and C<max> are specified in bytes, with the
-usual modifiers allowed such as C<1M> (1 megabyte).
+Ця команда працює шляхом отримання даних усього файла або пристрою,
+локального редагування та наступного вивантаження даних. Якщо об'єм даних
+файла або пристрою є надто великим, вам слід вказати частину, яку ви хочете
+редагувати, за допомогою параметрів C<макс> і/або C<початок>
+C<макс>. Значення C<початок> і C<макс> слід вказувати у байтах зі звичними
+доступними модифікаторами, наприклад, C<1M> (1 мегабайт).
 
-For example to edit the first few sectors of a disk you might do:
+Приклад для редагування перших декількох секторів на диску:
 
  hexedit /dev/sda 1M
 
-which would allow you to edit anywhere within the first megabyte of the
-disk.
+Ви зможете редагувати будь-які дані у межах першого мегабайта даних на
+диску.
 
-To edit the superblock of an ext2 filesystem on F</dev/sda1>, do:
+Щоб внести зміни до суперблоку файлової системи ext2 на F</dev/sda1>,
+віддайте таку команду:
 
  hexedit /dev/sda1 0x400 0x400
 
-(assuming the superblock is in the standard location).
+(тут ми припускаємо, що суперблок розташовано стандартно).
 
-This command requires the external L<hexedit(1)> program.  You can specify
-another program to use by setting the C<HEXEDITOR> environment variable.
+Для виконання цієї команди потрібна зовнішня програма L<hexedit(1)>. Вказати
+нестандартну програму можна за допомогою змінної середовища C<HEXEDITOR>.
 
 Див. також L</hexdump>.
 
@@ -195,15 +206,17 @@ another program to use by setting the C<HEXEDITOR> environment variable.
 
  lcd каталог
 
-Change the local directory, ie. the current directory of guestfish itself.
+Змінює локальний каталог, тобто поточний каталог програми guestfish.
 
-Note that C<!cd> won't do what you might expect.
+Зауважте, що команда C<!cd> не виконає тієї дії, якої ви від неї могли б
+сподіватися.
 
 =head2 list-events
 
  list-events
 
-List the event handlers registered using the guestfish C<event> command.
+Виводить список обробників подій, зареєстрованих за допомогою команди
+C<event> guestfish.
 
 =head2 man
 
@@ -211,7 +224,7 @@ List the event handlers registered using the guestfish C<event> command.
 
   man
 
-Opens the manual page for guestfish.
+Відкриває сторінку підручника щодо guestfish.
 
 =head2 more
 
@@ -223,43 +236,46 @@ Opens the manual page for guestfish.
 
 Використовується для перегляду файла.
 
-The default viewer is C<$PAGER>.  However if you use the alternate command
-C<less> you will get the C<less> command specifically.
+Типовим засобом для перегляду є C<$PAGER>. Втім, якщо ви скористаєтеся
+альтернативною командою C<less>, ви отримаєте саме команду C<less>.
 
 =head2 reopen
 
   reopen
 
-Close and reopen the libguestfs handle.  It is not necessary to use this
-normally, because the handle is closed properly when guestfish exits.
-However this is occasionally useful for testing.
+Закрити і повторно відкрити дескриптор libguestfs. Зазвичай, у цій команді
+немає потреби, оскільки дескриптор належним чином закривається під час
+виходу з guestfish. Втім, ця команда іноді корисна для тестування.
 
 =head2 setenv
 
-  setenv VAR value
+  setenv ЗМІННА значення
 
-Set the environment variable C<VAR> to the string C<value>.
+Встановити для змінної середовища C<ЗМІННА> рядкове значення C<значення>.
 
-To print the value of an environment variable use a shell command such as:
+Щоб вивести значення змінної середовища, скористайтеся командною оболонкою,
+ось так:
 
- !echo $VAR
+ !echo $ЗМІННА
 
 =head2 sparse
 
- sparse filename size
+ sparse назва_файла розмір
 
-This creates an empty sparse file of the given size, and then adds so it can
-be further examined.
+Створити порожній розріджений файл вказаного розміру, а потім додати його
+для подальшого вивчення.
 
-In all respects it works the same as the L</alloc> command, except that the
-image file is allocated sparsely, which means that disk blocks are not
-assigned to the file until they are needed.  Sparse disk files only use
-space when written to, but they are slower and there is a danger you could
-run out of real disk space during a write operation.
+В усіх аспектах команда працює так само як команда L</alloc>, окрім того, що
+файл образу розміщається із розрідженням, що означає, що блоки диска не
+пов'язується із файлом до того, як це стане потрібно. Розріджені файли на
+диску використовують місце на диску, лише якщо до них виконується запис, але
+працюють повільніше, і існує небезпека вичерпання  доступного місця на диску
+під час дії із запису.
 
-For more advanced image creation, see L</disk-create>.
+Щоб дізнатися про ширші можливості зі створення образів,
+див. L</disk-create>.
 
-Size can be specified using standard suffixes, eg. C<1M>.
+Розмір можна вказати за допомогою стандартних суфіксів, наприклад C<1M>.
 
 Див. також команду guestfish L</scratch>.
 
@@ -267,22 +283,22 @@ Size can be specified using standard suffixes, eg. C<1M>.
 
  supported
 
-This command returns a list of the optional groups known to the daemon, and
-indicates which ones are supported by this build of the libguestfs
-appliance.
+Ця команда повертає список усіх додаткових груп, які відомі файловій службі,
+і позначає ті служби, підтримку яких передбачено у поточній збірці базової
+системи libguestfs.
 
 Див. також L<guestfs(3)/AVAILABILITY>.
 
 =head2 time
 
- time command args...
+ time команда аргументи...
 
-Run the command as usual, but print the elapsed time afterwards.  This can
-be useful for benchmarking operations.
+Виконати команду у звичайному режимі, але після виконання вивести дані щодо
+витраченого часу. Корисна для вимірювання швидкодії.
 
 =head2 unsetenv
 
-  unsetenv VAR
+  unsetenv ЗМІННА
 
-Remove C<VAR> from the environment.
+Вилучити змінну C<ЗМІННА> з середовища.
 

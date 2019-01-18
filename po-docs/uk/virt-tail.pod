@@ -128,6 +128,23 @@ I<-f>>. Потреби у явному додаванні параметра I<-
 диска. Таким чином можна уникнути можливих проблем з захистом для
 сформованих зловмисниками гостьових систем (CVE-2010-3851).
 
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
+
 =item B<--keys-from-stdin>
 
 Прочитати параметри ключа або пароля із джерела стандартного

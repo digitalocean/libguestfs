@@ -132,6 +132,23 @@ auto-detection for F<another.img>.
 仮想マシンのディスクイメージが信頼できない raw 形式である場合、 ディスク形式を指定するためにこのオプションを使用すべきです。
 これにより、悪意のある仮想マシンにより起こり得る セキュリティ問題を回避できます (CVE-2010-3851)。
 
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
+
 =item B<--keys-from-stdin>
 
 Read key or passphrase parameters from stdin.  The default is to try to read
@@ -288,5 +305,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2011-2018 Red Hat Inc.
+Copyright (C) 2011-2019 Red Hat Inc.
 

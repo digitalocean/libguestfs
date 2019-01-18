@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -697,6 +697,29 @@ struct command_entry inspect_get_major_version_cmd_entry = {
           "",
   .synopsis = "inspect-get-major-version root",
   .run = run_inspect_get_major_version
+};
+
+struct command_entry inspect_get_osinfo_cmd_entry = {
+  .name = "inspect-get-osinfo",
+  .help = "NAME\n"
+          "    inspect-get-osinfo - get a possible osinfo short ID corresponding to\n"
+          "    this operating system\n"
+          "\n"
+          "SYNOPSIS\n"
+          "     inspect-get-osinfo root\n"
+          "\n"
+          "DESCRIPTION\n"
+          "    This function returns a possible short ID for libosinfo corresponding to\n"
+          "    the guest.\n"
+          "\n"
+          "    *Note:* The returned ID is only a guess by libguestfs, and nothing\n"
+          "    ensures that it actually exists in osinfo-db.\n"
+          "\n"
+          "    If no ID could not be determined, then the string \"unknown\" is returned.\n"
+          "\n"
+          "",
+  .synopsis = "inspect-get-osinfo root",
+  .run = run_inspect_get_osinfo
 };
 
 struct command_entry inspect_get_roots_cmd_entry = {

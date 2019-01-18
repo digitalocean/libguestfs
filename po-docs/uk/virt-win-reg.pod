@@ -1,64 +1,64 @@
 
 =head1 НАЗВА
 
-virt-win-reg - Export and merge Windows Registry entries from a Windows
-guest
+virt-win-reg — програма для експортування та дописування записів реєстру
+Windows з гостьової системи Windows
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-win-reg domname 'HKLM\Path\To\Subkey'
+ virt-win-reg назва_домену 'HKLM\Шлях\до\підключа'
 
- virt-win-reg domname 'HKLM\Path\To\Subkey' name
+ virt-win-reg назва_домену 'HKLM\Шлях\до\підключа' назва
 
- virt-win-reg domname 'HKLM\Path\To\Subkey' @
+ virt-win-reg назва_домену 'HKLM\Шлях\до\підключа' @
 
- virt-win-reg --merge domname [input.reg ...]
+ virt-win-reg --merge назва_домену [вхідний.reg ...]
 
- virt-win-reg [--options] disk.img ... # instead of domname
+ virt-win-reg [--параметри] диск.img ... # замість назва_домену
 
 =head1 ПОПЕРЕДЖЕННЯ
 
-You must I<not> use C<virt-win-reg> with the I<--merge> option on live
-virtual machines.  If you do this, you I<will> get irreversible disk
-corruption in the VM.  C<virt-win-reg> tries to stop you from doing this,
-but doesn't catch all cases.
+I<Не> використовуйте C<virt-win-reg> з параметром I<--merge> для активних
+віртуальних машин. Якщо ви зробите це, ви I<невиправно> ушкодите диск у
+віртуальній машині. C<virt-win-reg> намагатиметься запобігти подібним діям,
+але програма не завжди може визначити усі можливі випадки.
 
-Modifying the Windows Registry is an inherently risky operation.  The format
-is deliberately obscure and undocumented, and Registry changes can leave the
-system unbootable.  Therefore when using the I<--merge> option, make sure
-you have a reliable backup first.
+Внесення змін до реєстру Windows є ризикованою дією. Формат реєстру доволі
+неясний і недокументований, а зміни у реєстрі можуть призвести до
+неможливості завантажити систему. Тому, якщо ви користуєтеся параметром
+I<--merge>, не забувайте спочатку створити надійну резервну копію.
 
 =head1 ОПИС
 
-This program can export and merge Windows Registry entries from a Windows
-guest.
+Ця програма може експортувати і дописувати записи реєстру Windows з
+гостьової системи Windows.
 
-The first parameter is the libvirt guest name or the raw disk image of a
-Windows guest.
+Першим параметром є назва гостьової системи libvirt або простого (raw)
+образу гостьової системи Windows.
 
-If I<--merge> is I<not> specified, then the chosen registry key is
-displayed/exported (recursively).  For example:
+Якщо I<не> вказано параметр I<--merge>, вибраний ключ реєстру буде показано
+або експортовано (рекурсивно). Приклад:
 
  $ virt-win-reg Windows7 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft'
 
-You can also display single values from within registry keys, for example:
+Крім того, ви можете переглядати окремі значення у ключах реєстру. Приклад:
 
  $ cvkey='HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
  $ virt-win-reg Windows7 $cvkey ProductName
  Windows 7 Enterprise
 
-With I<--merge>, you can merge a textual regedit file into the Windows
-Registry:
+За допомогою I<--merge> ви можете дописати текстовий файл regedit до реєстру
+Windows:
 
  $ virt-win-reg --merge Windows7 changes.reg
 
 =head2 ПРИМІТКА
 
-This program is only meant for simple access to the registry.  If you want
-to do complicated things with the registry, we suggest you download the
-Registry hive files from the guest using L<libguestfs(3)> or L<guestfish(1)>
-and access them locally, eg. using L<hivex(3)>, L<hivexsh(1)> or
-L<hivexregedit(1)>.
+Цю програму призначено лише для спрощення доступу до реєстру. Якщо вам
+потрібні якісь складні дії з реєстром, рекомендуємо вам отримати файли роїв
+реєстру з гостьової системи за допомогою L<libguestfs(3)> або
+L<guestfish(1)> і обробити їх локально, наприклад за допомогою L<hivex(3)>,
+L<hivexsh(1)> або L<hivexregedit(1)>.
 
 =head1 ПАРАМЕТРИ
 
@@ -88,79 +88,81 @@ L<hivexregedit(1)>.
 
 =item B<--format> raw
 
-Specify the format of disk images given on the command line.  If this is
-omitted then the format is autodetected from the content of the disk image.
+Визначає формат образу диска, назву якого вказано у рядку команди. Якщо
+формат не вказано, його буде визначено автоматично на основі вмісту образу
+диска.
 
-If disk images are requested from libvirt, then this program asks libvirt
-for this information.  In this case, the value of the format parameter is
-ignored.
+Якщо вказаний диск походить з libvirt, ця програма надішле запит щодо даних
+до libvirt. У цьому випадку вказане значення параметра формату буде
+проігноровано.
 
 Якщо ви працюєте із образами дисків гостьових систем у форматі raw із
 ненадійних джерел, вам слід завжди вказувати назву формату.
 
 =item B<--merge>
 
-In merge mode, this merges a textual regedit file into the Windows Registry
-of the virtual machine.  If this flag is I<not> given then virt-win-reg
-displays or exports Registry entries instead.
+У режимі об'єднання програма дописує текстовий файл regedit до реєстру
+Windows віртуальної машини. Якщо цей параметр I<не> вказано, virt-win-reg
+показує або експортує записи реєстру.
 
-Note that I<--merge> is I<unsafe> to use on live virtual machines, and will
-result in disk corruption.  However exporting (without this flag)  is always
-safe.
+Зауважте, що I<--merge> I<не безпечно> використовувати для активних
+віртуальних машин. Використання цього параметра команди для активних
+віртуальних машин призводить до пошкодження вмісту диска. Втім,
+експортування (виконання команди без цього параметра) є завжди безпечним.
 
 =item B<--encoding> UTF-16LE|ASCII
 
-When merging (only), you may need to specify the encoding for strings to be
-used in the hive file.  This is explained in detail in
-L<Win::Hivex::Regedit(3)/ENCODING STRINGS>.
+При об'єднанні (і лише при ньому) у вас може виникнути потреба у визначення
+кодування рядків, які використовуються у файлі рою. Докладніший опис можна
+знайти у розділі L<Win::Hivex::Regedit(3)/ENCODING STRINGS>.
 
-The default is to use UTF-16LE, which should work with recent versions of
-Windows.
+Типово буде використано кодування UTF-16LE, яке має працювати у свіжих
+версіях Windows.
 
 =item B<--unsafe-printable-strings>
 
-When exporting (only), assume strings are UTF-16LE and print them as strings
-instead of hex sequences.  Remove the final zero codepoint from strings if
-present.
+Під час експортування (і лише під час нього) припускати, що рядки записано у
+кодуванні UTF-16LE і виводити їх у форматі текстових рядків, а не
+послідовностей шістнадцяткових чисел. Вилучити завершальний нуль-символ з
+рядків, якщо такий буде виявлено.
 
-This is unsafe and does not preserve the fidelity of strings in the original
-Registry for various reasons:
+Така дія не є безпечною і не надає можливості зберегти точність запису
+початкових рядків реєстру з різних причин:
 
 =over 4
 
 =item *
 
-Assumes the original encoding is UTF-16LE.  ASCII strings and strings in
-other encodings will be corrupted by this transformation.
+Припускається, що початковим кодуванням є UTF-16LE. Рядки ASCII і рядки у
+інших кодуваннях буде пошкоджено під час цього перетворення.
 
 =item *
 
-Assumes that everything which has type 1 or 2 is really a string and that
-everything else is not a string, but the type field in real Registries is
-not reliable.
+Припускається, що усі дані, які належать до типу 1 чи типу 2, є насправді
+рядками і що усі інші дані не є рядками, але визначений тип поля у реєстрах,
+зазвичай, не є надійним джерелом даних.
 
 =item *
 
-Loses information about whether a zero codepoint followed the string in the
-Registry or not.
+Втрачаються дані щодо того, чи завершувався рядок у реєстрі нуль-символом.
 
 =back
 
-This all happens because the Registry itself contains no information about
-how strings are encoded (see L<Win::Hivex::Regedit(3)/ENCODING STRINGS>).
+Усе це є наслідком того, що сам реєстр не містить даних щодо кодування
+рядків у ньому (див. L<Win::Hivex::Regedit(3)/ENCODING STRINGS>).
 
-You should only use this option for quick hacking and debugging of the
-Registry contents, and I<never> use it if the output is going to be passed
-into another program or stored in another Registry.
+Цим параметром слід користуватися лише для найпростіших рішень та
+діагностування вмісту реєстру. I<Ніколи> не користуйтеся ним, якщо виведені
+дані має бути передано іншій програмі або збережено у іншому реєстрі.
 
 =back
 
 =head1 ПІДТРИМУВАНІ СИСТЕМИ
 
-The program currently supports Windows NT-derived guests starting with
-Windows XP through to at least Windows 8.
+У поточній версії цієї програми передбачено підтримку гостьових систем, які
+походять від Windows NT, починаючи з Windows XP і до, принаймні, Windows 8.
 
-The following Registry keys are supported:
+Передбачено підтримку таких ключів реєстру:
 
 =over 4
 
@@ -176,65 +178,68 @@ The following Registry keys are supported:
 
 =item C<HKEY_USERS\I<SID>>
 
-where I<SID> is a Windows User SID (eg. C<S-1-5-18>).
+де I<SID> — SID користувача Windows (наприклад C<S-1-5-18>).
 
 =item C<HKEY_USERS\I<користувач>>
 
-where I<username> is a local user name (this is a libguestfs extension).
+де I<користувач> — назва облікового запису локального користувача (це
+розширення libguestfs).
 
 =back
 
-You can use C<HKLM> as a shorthand for C<HKEY_LOCAL_MACHINE>, and C<HKU> for
-C<HKEY_USERS>.
+Ви можете використовувати C<HKLM> як скорочення від C<HKEY_LOCAL_MACHINE>,
+та C<HKU> як скорочення від C<HKEY_USERS>.
 
-The literal keys C<HKEY_USERS\$SID> and C<HKEY_CURRENT_USER> are not
-supported (there is no "current user").
+Підтримки буквальних ключів C<HKEY_USERS\$SID> і C<HKEY_CURRENT_USER> не
+передбачено (немає «поточного користувача»).
 
 =head2 WINDOWS 8
 
-Windows 8 "fast startup" can prevent virt-win-reg from being able to edit
-the Registry.  See L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST
-STARTUP>.
+«Швидкий запуск» Windows 8 може заважати virt-win-reg редагувати
+реєстр. Див. L<guestfs(3)/ПРИСИПЛЯННЯ WINDOWS  ТА ШВИДКИЙ ЗАПУСК WINDOWS 8>.
 
 =head1 КОДУВАННЯ
 
-C<virt-win-reg> expects that regedit files have already been reencoded in
-the local encoding.  Usually on Linux hosts, this means UTF-8 with
-Unix-style line endings.  Since Windows regedit files are often in UTF-16LE
-with Windows-style line endings, you may need to reencode the whole file
-before or after processing.
+C<virt-win-reg> вважає, що вміст файлів regedit вже перекодовано до
+локального кодування. Зазвичай, у основних системах Linux це означає, що
+використано UTF-8 із символами завершення рядків у стилі Unix. Оскільки
+файли regedit Windows часто записуються у кодуванні UTF-16LE із символами
+завершення рядків у стилі Windows, ймовірно, вам доведеться виконати
+перекодування усього файла до або після обробки.
 
-To reencode a file from Windows format to Linux (before processing it with
-the I<--merge> option), you would do something like this:
+Для перекодування файла з формату Windows до формату Linux (до обробки його
+за допомогою команди з параметром I<--merge>) вам слід зробити щось таке:
 
  iconv -f utf-16le -t utf-8 < win.reg | dos2unix > linux.reg
 
-To go in the opposite direction, after exporting and before sending the file
-to a Windows user, do something like this:
+Щоб виконати зворотне перетворення після експортування і перед надсиланням
+файла користувачеві Windows, слід зробити щось таке:
 
  unix2dos linux.reg | iconv -f utf-8 -t utf-16le > win.reg
 
-For more information about encoding, see L<Win::Hivex::Regedit(3)>.
+Щоб дізнатися більше про кодування, ознайомтеся зі сторінкою підручника щодо
+L<Win::Hivex::Regedit(3)>.
 
-If you are unsure about the current encoding, use the L<file(1)> command.
-Recent versions of Windows regedit.exe produce a UTF-16LE file with
-Windows-style (CRLF) line endings, like this:
+Якщо ви не певні щодо поточного кодування, скористайтеся командою
+L<file(1)>. У свіжих версіях Windows regedit.exe створює файли кодування
+UTF-16LE із символами завершення рядків у стилі Windows (CRLF), ось такі:
 
  $ file software.reg
  software.reg: Little-endian UTF-16 Unicode text, with very long lines,
  with CRLF line terminators
 
-This file would need conversion before you could I<--merge> it.
+Цей файл потребуватиме перетворення, перш ніж ви зможете скористатися для
+нього параметром I<--merge>.
 
 =head1 CurrentControlSet тощо.
 
-Registry keys like C<CurrentControlSet> don’t really exist in the Windows
-Registry at the level of the hive file, and therefore you cannot modify
-these.
+Ключі реєстру, подібні до C<CurrentControlSet>, насправді не існують у
+реєстрі Windows на рівні файла рою, і тому ви не зможете вносити до них
+зміни.
 
-C<CurrentControlSet> is usually an alias for C<ControlSet001>.  In some
-circumstances it might refer to another control set.  The way to find out is
-to look at the C<HKLM\SYSTEM\Select> key:
+Насправді, C<CurrentControlSet> є альтернативною назвою C<ControlSet001>. За
+певних обставин це може бути посиланням на інший керівний набір. Визначити
+набір можна за допомогою ключа C<HKLM\SYSTEM\Select>:
 
  # virt-win-reg WindowsGuest 'HKLM\SYSTEM\Select'
  [HKEY_LOCAL_MACHINE\SYSTEM\Select]
@@ -243,9 +248,9 @@ to look at the C<HKLM\SYSTEM\Select> key:
  "Failed"=dword:00000000
  "LastKnownGood"=dword:00000002
 
-"Current" is the one which Windows will choose when it boots.
+«Поточним» є  той набір, який Windows вибере під час завантаження.
 
-Similarly, other C<Current...> keys in the path may need to be replaced.
+Аналогічно, інші ключі C<Current...> у шляху можуть потребувати заміни.
 
 =head1 ВИЛУЧЕННЯ КЛЮЧІВ ТА ЗНАЧЕНЬ РЕЄСТРУ
 
@@ -262,27 +267,29 @@ Similarly, other C<Current...> keys in the path may need to be replaced.
 
 =head1 ПІДКАЗКИ ЩОДО WINDOWS
 
-Note that some of these tips modify the guest disk image.  The guest I<must>
-be shut off, else you will get disk corruption.
+Зауважте, що у результаті деяких із команд у підказках буде змінено образ
+диска гостьової системи. Гостьову систему I<має> бути вимкнено, щоб
+запобігти пошкодженню даних на диску.
 
-=head2 RUNNING A BATCH SCRIPT WHEN A USER LOGS IN
+=head2 ЗАПУСК ПАКЕТНОГО СКРИПТУ ПІД ЧАС ВХОДУ КОРИСТУВАЧА ДО СИСТЕМИ
 
-Prepare a DOS batch script, VBScript or executable.  Upload this using
-L<guestfish(1)>.  For this example the script is called C<test.bat> and it
-is uploaded into C<C:\>:
+Приготуйте пакетний скрипт DOS (.bat), скрипт VBScript або виконуваний
+файл. Вивантажте його до гостьової системи за допомогою L<guestfish(1)>. У
+цьому прикладі скрипт називається C<test.bat> і його вивантажено до C<C:\>:
 
  guestfish -i -d WindowsGuest upload test.bat /test.bat
 
-Prepare a regedit file containing the registry change:
+Приготуйте файл regedit, який міститиме зміни до реєстру:
 
  cat > test.reg <<'EOF'
  [HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce]
  "Test"="c:\\test.bat"
  EOF
 
-In this example we use the key C<RunOnce> which means that the script will
-run precisely once when the first user logs in.  If you want it to run every
-time a user logs in, replace C<RunOnce> with C<Run>.
+У цьому прикладі ми використовуємо ключ C<RunOnce>, який означає, що скрипт
+буде запущено лише один раз під час першого входу користувача до
+системи. Якщо вам потрібно, щоб скрипт запускався кожного разу, коли
+користувач входить до системи, замініть C<RunOnce> на C<Run>.
 
 Оновіть регістр:
 
@@ -290,24 +297,24 @@ time a user logs in, replace C<RunOnce> with C<Run>.
 
 =head2 ВСТАНОВЛЕННЯ СЛУЖБИ
 
-This section assumes you are familiar with Windows services, and you either
-have a program which handles the Windows Service Control Protocol directly
-or you want to run any program using a service wrapper like SrvAny or the
-free RHSrvAny.
+У цьому розділі ми припускаємо, що ви обізнані із роботою служб Windows і
+маєте програму, яка обробляє протокол керування службами Windows
+безпосередньо або хочете запустити будь-яку програму за допомогою обгортки
+служби, наприклад SrvAny або безкоштовної RHSrvAny.
 
-First upload the program and optionally the service wrapper.  In this case
-the test program is called C<test.exe> and we are using the RHSrvAny
-wrapper:
+Спочатку вивантажте програму і, якщо потрібно, обгортку служби. У нашому
+прикладі тестова програма має назву C<test.exe> і використано обгортку
+RHSrvAny:
 
  guestfish -i -d WindowsGuest <<EOF
    upload rhsrvany.exe /rhsrvany.exe
    upload test.exe /test.exe
  EOF
 
-Prepare a regedit file containing the registry changes.  In this example,
-the first registry change is needed for the service itself or the service
-wrapper (if used).  The second registry change is only needed because I am
-using the RHSrvAny service wrapper.
+Приготуйте файл regedit зі змінами до реєстру. У нашому прикладі перша зміна
+до реєстру потрібна для самої служби або обгортки служби (якщо така
+використовується). Друга зміна потрібна лише через те, що ми використовуємо
+обгортку служби RHSrvAny.
 
  cat > service.reg <<'EOF'
  [HKLM\SYSTEM\ControlSet001\services\RHSrvAny]
@@ -329,20 +336,20 @@ using the RHSrvAny service wrapper.
 
 =item *
 
-For use of C<ControlSet001> see the section above in this manual page.  You
-may need to adjust this according to the control set that is in use by the
-guest.
+Щодо використання C<ControlSet001> див. розділ вище на цій сторінці
+підручника. Ймовірно, вам слід скоригувати цей запис відповідно до керівного
+набору, який використовується вашою гостьовою системою.
 
 =item *
 
-C<"ObjectName"> controls the privileges that the service will have.  An
-alternative is C<"ObjectName"="LocalSystem"> which would be the most
-privileged account.
+C<"ObjectName"> керує правами доступу, які матиме служба. Альтернативою є
+C<"ObjectName"="LocalSystem">, яка надає права доступу найпривілейованішого
+облікового запису.
 
 =item *
 
-For the meaning of the magic numbers, see this Microsoft KB article:
-L<http://support.microsoft.com/kb/103000>.
+Щодо значення «магічних чисел» ознайомтеся із цією статтею бази даних знань
+Microsoft: L<http://support.microsoft.com/kb/103000>.
 
 =back
 
@@ -352,11 +359,12 @@ L<http://support.microsoft.com/kb/103000>.
 
 =head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
 
-Be careful when passing parameters containing C<\> (backslash) in the
-shell.  Usually you will have to use 'single quotes' or double backslashes
-(but not both) to protect them from the shell.
+Будьте обережні із передаванням параметрів, які містять символ C<\>
+(зворотну похилу риску), до командної оболонки. Зазвичай, вам слід
+використати одинарні лапки або подвійні зворотні похилі риски (але не те і
+інше одразу) для захисту від обробки інтерпретатором командної оболонки.
 
-Paths and value names are case-insensitive.
+Регістр символів шляхів і назв значень береться до уваги під час обробки.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 

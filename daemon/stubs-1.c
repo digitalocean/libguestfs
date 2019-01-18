@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -809,6 +809,54 @@ exists_stub (XDR *xdr_in)
   struct guestfs_exists_ret ret;
   ret.existsflag = r;
   reply ((xdrproc_t) &xdr_guestfs_exists_ret, (char *) &ret);
+}
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+
+#define CLEANUP_XDR_FREE_F2FS_EXPAND_ARGS \
+    __attribute__((cleanup(cleanup_xdr_free_f2fs_expand_args)))
+
+static void
+cleanup_xdr_free_f2fs_expand_args (struct guestfs_f2fs_expand_args *argsp)
+{
+  xdr_free ((xdrproc_t) xdr_guestfs_f2fs_expand_args, (char *) argsp);
+}
+
+#else /* !HAVE_ATTRIBUTE_CLEANUP */
+#define CLEANUP_XDR_FREE_F2FS_EXPAND_ARGS
+#endif /* !HAVE_ATTRIBUTE_CLEANUP */
+
+void
+f2fs_expand_stub (XDR *xdr_in)
+{
+  int r;
+  CLEANUP_XDR_FREE_F2FS_EXPAND_ARGS struct guestfs_f2fs_expand_args args;
+  memset (&args, 0, sizeof args);
+  CLEANUP_FREE char *device = NULL;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_f2fs_available ()) {
+    reply_with_unavailable_feature ("f2fs");
+    return;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    return;
+  }
+
+  if (!xdr_guestfs_f2fs_expand_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    return;
+  }
+  RESOLVE_DEVICE (args.device, device, false);
+
+  r = do_f2fs_expand (device);
+  if (r == -1)
+    /* do_f2fs_expand has already called reply_with_error */
+    return;
+
+  reply (NULL, NULL);
 }
 
 #ifdef HAVE_ATTRIBUTE_CLEANUP

@@ -32,7 +32,7 @@ libguestfs з початкових кодів.
 
 =head1 ВИМОГИ
 
-=head2 Настаннови для користувачів Fedora або Red Hat Enterprise Linux (RHEL)
+=head2 Настанови для користувачів Fedora або Red Hat Enterprise Linux (RHEL)
 
 У Fedora для встановлення усіх потрібних пакунків слід користуватися
 L<dnf(8)>:
@@ -180,7 +180,7 @@ I<Обов’язкове>.
 
 I<Обов’язкове>.
 
-=item yajl E<ge> 2.0.4
+=item Jansson E<ge> 2.7
 
 I<Обов’язкове>.
 
@@ -902,5 +902,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

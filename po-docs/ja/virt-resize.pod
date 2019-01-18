@@ -152,9 +152,9 @@ rest of the available space:
 If the expanded partition in the image contains a filesystem or LVM PV, then
 if virt-resize knows how, it will resize the contents, the equivalent of
 calling a command such as L<pvresize(8)>, L<resize2fs(8)>, L<ntfsresize(8)>,
-L<btrfs(8)> or L<xfs_growfs(8)>.  However virt-resize does not know how to
-resize some filesystems, so you would have to online resize them after
-booting the guest.
+L<btrfs(8)>, L<xfs_growfs(8)>, or L<resize.f2fs(8)>.  However virt-resize
+does not know how to resize some filesystems, so you would have to online
+resize them after booting the guest.
 
  # virt-resize --expand /dev/sda2 nbd://example.com outdisk
 
@@ -396,6 +396,10 @@ Please note that libguestfs I<destroys> the existing swap content by
 recreating it with C<mkswap>, so this should not be used when the guest is
 suspended.
 
+=item *
+
+f2fs filesystems, if libguestfs was compiled with support for f2fs.
+
 =back
 
 Note that you cannot use I<--expand> and I<--shrink> together.
@@ -444,6 +448,8 @@ this unless the logical volumes you specify are all in different volume
 groups.
 
 =item B<--machine-readable>
+
+=item B<--machine-readable>=format
 
 このオプションは、他のプログラムにより解析されるときに、よりマシンに易しい出力を作成するために使用されます。以下の L</マシン可読な出力> 参照。
 
@@ -662,6 +668,9 @@ fatal error.
 Versions of the program prior to 1.13.9 did not support the
 I<--machine-readable> option and will return an error.
 
+It is possible to specify a format string for controlling the output; see
+L<guestfs(3)/ADVANCED MACHINE READABLE OUTPUT>.
+
 =head1 注記
 
 =head2 "Partition 1 does not end on cylinder boundary."
@@ -751,7 +760,7 @@ This may be due to either of the following:
 
 There corresponding filesystem is not available in libguestfs, because there
 is no proper package in the host with utilities for it.  This is usually the
-case for C<btrfs>, C<ntfs>, and C<xfs> filesystems.
+case for C<btrfs>, C<ntfs>, C<xfs>, and C<f2fs> filesystems.
 
 Check the results of:
 
@@ -776,7 +785,7 @@ that type of filesystem.
 In both cases, virt-resize will not expand the mentioned filesystem; the
 result (unless I<--unknown-filesystems error> is specified)  is that the
 partitions containing such filesystems will be actually bigger as requested,
-but the filesystems will still be usable at the their older sizes.
+but the filesystems will still be usable at their older sizes.
 
 =head1 代替ツール
 
@@ -806,10 +815,10 @@ documentation for this module in an associated README file.
 
 L<virt-filesystems(1)>, L<virt-df(1)>, L<guestfs(3)>, L<guestfish(1)>,
 L<lvm(8)>, L<pvresize(8)>, L<lvresize(8)>, L<resize2fs(8)>,
-L<ntfsresize(8)>, L<btrfs(8)>, L<xfs_growfs(8)>, L<virsh(1)>, L<parted(8)>,
-L<truncate(1)>, L<fallocate(1)>, L<grub(8)>, L<grub-install(8)>,
-L<virt-rescue(1)>, L<virt-sparsify(1)>, L<virt-alignment-scan(1)>,
-L<http://libguestfs.org/>.
+L<ntfsresize(8)>, L<btrfs(8)>, L<xfs_growfs(8)>, L<resize.f2fs(8)>,
+L<virsh(1)>, L<parted(8)>, L<truncate(1)>, L<fallocate(1)>, L<grub(8)>,
+L<grub-install(8)>, L<virt-rescue(1)>, L<virt-sparsify(1)>,
+L<virt-alignment-scan(1)>, L<http://libguestfs.org/>.
 
 =head1 著者
 

@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1747,6 +1747,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_exists (guestfs_h *g, const char *path);
 #define GUESTFS_HAVE_EXTLINUX 1
 extern GUESTFS_DLL_PUBLIC int guestfs_extlinux (guestfs_h *g, const char *directory);
 
+#define GUESTFS_HAVE_F2FS_EXPAND 1
+extern GUESTFS_DLL_PUBLIC int guestfs_f2fs_expand (guestfs_h *g, const char *device);
+
 #define GUESTFS_HAVE_FALLOCATE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_fallocate (guestfs_h *g, const char *path, int len)
   GUESTFS_DEPRECATED_REPLACED_BY ("fallocate64");
@@ -2143,6 +2146,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_inspect_get_minor_version (guestfs_h *g, c
 #define GUESTFS_HAVE_INSPECT_GET_MOUNTPOINTS 1
 extern GUESTFS_DLL_PUBLIC char **guestfs_inspect_get_mountpoints (guestfs_h *g, const char *root);
 
+#define GUESTFS_HAVE_INSPECT_GET_OSINFO 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_inspect_get_osinfo (guestfs_h *g, const char *root);
+
 #define GUESTFS_HAVE_INSPECT_GET_PACKAGE_FORMAT 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_inspect_get_package_format (guestfs_h *g, const char *root);
 
@@ -2504,6 +2510,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_lvm_clear_filter (guestfs_h *g);
 
 #define GUESTFS_HAVE_LVM_REMOVE_ALL 1
 extern GUESTFS_DLL_PUBLIC int guestfs_lvm_remove_all (guestfs_h *g);
+
+#define GUESTFS_HAVE_LVM_SCAN 1
+extern GUESTFS_DLL_PUBLIC int guestfs_lvm_scan (guestfs_h *g, int activate);
 
 #define GUESTFS_HAVE_LVM_SET_FILTER 1
 extern GUESTFS_DLL_PUBLIC int guestfs_lvm_set_filter (guestfs_h *g, char *const *devices);
@@ -3717,7 +3726,8 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_vgs (guestfs_h *g);
 extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_vg_list *guestfs_vgs_full (guestfs_h *g);
 
 #define GUESTFS_HAVE_VGSCAN 1
-extern GUESTFS_DLL_PUBLIC int guestfs_vgscan (guestfs_h *g);
+extern GUESTFS_DLL_PUBLIC int guestfs_vgscan (guestfs_h *g)
+  GUESTFS_DEPRECATED_REPLACED_BY ("lvm_scan");
 
 #define GUESTFS_HAVE_VGUUID 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_vguuid (guestfs_h *g, const char *vgname);
@@ -4458,6 +4468,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_EQUAL 1
 #define LIBGUESTFS_HAVE_EXISTS 1
 #define LIBGUESTFS_HAVE_EXTLINUX 1
+#define LIBGUESTFS_HAVE_F2FS_EXPAND 1
 #define LIBGUESTFS_HAVE_FALLOCATE 1
 #define LIBGUESTFS_HAVE_FALLOCATE64 1
 #define LIBGUESTFS_HAVE_FEATURE_AVAILABLE 1
@@ -4558,6 +4569,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_INSPECT_GET_MAJOR_VERSION 1
 #define LIBGUESTFS_HAVE_INSPECT_GET_MINOR_VERSION 1
 #define LIBGUESTFS_HAVE_INSPECT_GET_MOUNTPOINTS 1
+#define LIBGUESTFS_HAVE_INSPECT_GET_OSINFO 1
 #define LIBGUESTFS_HAVE_INSPECT_GET_PACKAGE_FORMAT 1
 #define LIBGUESTFS_HAVE_INSPECT_GET_PACKAGE_MANAGEMENT 1
 #define LIBGUESTFS_HAVE_INSPECT_GET_PRODUCT_NAME 1
@@ -4650,6 +4662,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_LVM_CANONICAL_LV_NAME 1
 #define LIBGUESTFS_HAVE_LVM_CLEAR_FILTER 1
 #define LIBGUESTFS_HAVE_LVM_REMOVE_ALL 1
+#define LIBGUESTFS_HAVE_LVM_SCAN 1
 #define LIBGUESTFS_HAVE_LVM_SET_FILTER 1
 #define LIBGUESTFS_HAVE_LVREMOVE 1
 #define LIBGUESTFS_HAVE_LVRENAME 1

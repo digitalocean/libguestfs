@@ -236,6 +236,23 @@ Display help on special FUSE options (see I<-o> below).
 L<virt-inspector(1)> コードを使用すると、 オペレーティングシステムを判定するためにディスクを検査します。
 また、実際の仮想マシンにマウントすることと同じように ファイルシステムをマウントします。
 
+=item B<--key> SELECTOR
+
+Specify a key for LUKS, to automatically open a LUKS device when using the
+inspection.  C<SELECTOR> can be in one of the following formats:
+
+=over 4
+
+=item B<--key> C<DEVICE>:key:KEY_STRING
+
+Use the specified C<KEY_STRING> as passphrase.
+
+=item B<--key> C<DEVICE>:file:FILENAME
+
+Read the passphrase from F<FILENAME>.
+
+=back
+
 =item B<--keys-from-stdin>
 
 Read key or passphrase parameters from stdin.  The default is to try to read
@@ -416,5 +433,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2018 Red Hat Inc.
+Copyright (C) 2009-2019 Red Hat Inc.
 

@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2018 Red Hat Inc.
+ * Copyright (C) 2011-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,4 +22,4 @@
 type tmp_place =
 | Directory of string | Block_device of string | Prebuilt_file of string
 
-val run : string -> string -> Cmdline.check_t -> bool -> string option -> string option -> string list -> string option -> string option -> string list -> unit
+val run : string -> string -> Cmdline.check_t -> bool -> string option -> string option -> string list -> string option -> string option -> string list -> Tools_utils.key_store -> unit

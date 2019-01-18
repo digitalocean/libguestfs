@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -464,6 +464,9 @@ static PyMethodDef methods[] = {
 #ifdef GUESTFS_HAVE_EXTLINUX
   { (char *) "extlinux", guestfs_int_py_extlinux, METH_VARARGS, NULL },
 #endif
+#ifdef GUESTFS_HAVE_F2FS_EXPAND
+  { (char *) "f2fs_expand", guestfs_int_py_f2fs_expand, METH_VARARGS, NULL },
+#endif
 #ifdef GUESTFS_HAVE_FALLOCATE
   { (char *) "fallocate", guestfs_int_py_fallocate, METH_VARARGS, NULL },
 #endif
@@ -763,6 +766,9 @@ static PyMethodDef methods[] = {
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_MOUNTPOINTS
   { (char *) "inspect_get_mountpoints", guestfs_int_py_inspect_get_mountpoints, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_INSPECT_GET_OSINFO
+  { (char *) "inspect_get_osinfo", guestfs_int_py_inspect_get_osinfo, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_INSPECT_GET_PACKAGE_FORMAT
   { (char *) "inspect_get_package_format", guestfs_int_py_inspect_get_package_format, METH_VARARGS, NULL },
@@ -1120,6 +1126,9 @@ static PyMethodDef methods[] = {
 #endif
 #ifdef GUESTFS_HAVE_LVM_REMOVE_ALL
   { (char *) "lvm_remove_all", guestfs_int_py_lvm_remove_all, METH_VARARGS, NULL },
+#endif
+#ifdef GUESTFS_HAVE_LVM_SCAN
+  { (char *) "lvm_scan", guestfs_int_py_lvm_scan, METH_VARARGS, NULL },
 #endif
 #ifdef GUESTFS_HAVE_LVM_SET_FILTER
   { (char *) "lvm_set_filter", guestfs_int_py_lvm_set_filter, METH_VARARGS, NULL },

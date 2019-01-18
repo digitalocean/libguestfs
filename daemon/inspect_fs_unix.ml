@@ -1,5 +1,5 @@
 (* guestfs-inspection
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -140,9 +140,11 @@ and distro_of_os_release_id = function
   | "debian" -> Some DISTRO_DEBIAN
   | "fedora" -> Some DISTRO_FEDORA
   | "frugalware" -> Some DISTRO_FRUGALWARE
+  | "kali" -> Some DISTRO_KALI_LINUX
   | "mageia" -> Some DISTRO_MAGEIA
   | "neokylin" -> Some DISTRO_NEOKYLIN
   | "opensuse" -> Some DISTRO_OPENSUSE
+  | s when String.is_prefix s "opensuse-" -> Some DISTRO_OPENSUSE
   | "pld" -> Some DISTRO_PLD_LINUX
   | "rhel" -> Some DISTRO_RHEL
   | "sles" | "sled" -> Some DISTRO_SLES

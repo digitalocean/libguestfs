@@ -1,7 +1,7 @@
 
 =head1 НАЗВА
 
-guestfs-golang - How to use libguestfs from Go
+guestfs-golang — як використовувати libguestfs з Go
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -24,33 +24,34 @@ guestfs-golang - How to use libguestfs from Go
 
 =head1 ОПИС
 
-This manual page documents how to call libguestfs from the Go programming
-language.  This page just documents the differences from the C API and gives
-some examples.  If you are not familiar with using libguestfs, you also need
-to read L<guestfs(3)>.
+На цій сторінці підручника наведено документацію щодо викликів libguestfs з
+коду мовою програмування Go. На сторінці задокументовано відмінності від
+програмного інтерфейсу C та подано декілька прикладів. Якщо ви не дуже
+знайомі із користуванням libguestfs, вам також слід прочитати підручник з
+L<guestfs(3)>.
 
 =head2 ІМПОРТУВАННЯ МОДУЛЯ
 
-The module is called C<guestfs>.  The full package name to import is
+Модуль називається C<guestfs>. Повна назва пакунка для імпортування —
 C<libguestfs.org/guestfs>.
 
 =head2 СТВОРЕННЯ І ЗАКРИТТЯ ДЕСКРИПТОРА
 
-Use either C<guestfs.Create> or C<guestfs.Create_flags> to create the
-handle.  The handle is closed implicitly if it is garbage collected.
-However it is probably a good idea to close it explicitly, either by calling
-S<C<g.Close ()>> or by deferring the same.
+Скористайтеся C<guestfs.Create> або C<guestfs.Create_flags> для створення
+дескриптора. Дескриптор буде закрито неявним чином під час збирання
+сміття. Втім, ймовірно, непогано було б закривати його явним чином шляхом
+виклику S<C<g.Close ()>> або відклавши ту саму команду.
 
 =head2 ПОМИЛКИ
 
-C<guestfs.Create> and C<guestfs.Create_flags> return a simple C<*error>,
-which is really just a C C<errno> wrapped up in the appropriate golang
-struct.
+C<guestfs.Create> і C<guestfs.Create_flags> повертають простий C<*error>,
+який насправді є простим C<errno> з C, загорнутим у відповідну структуру
+golang.
 
-All other calls return a C<*GuestfsError> which (if non-nil) is a richer
-struct that contains the error string from libguestfs, the errno (if
-available) and the operation which failed.  This can also be converted to a
-string for display.
+Усі інші виклики повертають C<*GuestfsError>, яка є (якщо вона непорожня)
+ширшою структурою, яка містить рядок помилки від libguestfs, номер помилки
+(якщо доступний) та дані щодо дії, яка призвела до помилки. Ці дані також
+можна перетворити на рядок для показу.
 
 =head2 ОБМЕЖЕННЯ
 
@@ -62,7 +63,7 @@ string for display.
 
 =item *
 
-UUIDs are not returned in structures.
+UUID не повертаються у структурах.
 
 =back
 

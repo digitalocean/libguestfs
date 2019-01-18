@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ val blkdiscard_available : unit -> bool
 val blkdiscardzeroes_available : unit -> bool
 val btrfs_available : unit -> bool
 val extlinux_available : unit -> bool
+val f2fs_available : unit -> bool
 val fstrim_available : unit -> bool
 val gdisk_available : unit -> bool
 val grub_available : unit -> bool

@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ module IntSet = Set.Make(struct let compare = compare type t = int end)
 
 (* Conversion mode, either normal (copying) or [--in-place]. *)
 type conversion_mode =
-  | Copying of overlay list * target list
+  | Copying of overlay list
   | In_place
 
 (* Mountpoint stats, used for free space estimation. *)
@@ -47,6 +47,8 @@ type mpstat = {
 }
 
 let () = Random.self_init ()
+
+let sum = List.fold_left (+^) 0L
 
 let rec main () =
   (* Handle the command line. *)
@@ -81,8 +83,7 @@ let rec main () =
     if not cmdline.in_place then (
       check_host_free_space ();
       let overlays = create_overlays source.s_disks in
-      let targets = init_targets cmdline output source overlays in
-      Copying (overlays, targets)
+      Copying overlays
     )
     else In_place in
 
@@ -92,18 +93,18 @@ let rec main () =
   );
 
   let g = open_guestfs ~identifier:"v2v" () in
-  g#set_memsize (g#get_memsize () * 20 / 5);
+  g#set_memsize (g#get_memsize () * 14 / 5);
   (* The network is only used by the unconfigure_vmware () function. *)
   g#set_network true;
   (match conversion_mode with
-   | Copying (overlays, _) -> populate_overlays g overlays
+   | Copying overlays -> populate_overlays g overlays
    | In_place -> populate_disks g source.s_disks
   );
 
   g#launch ();
 
   (* Decrypt the disks. *)
-  inspect_decrypt g;
+  inspect_decrypt g cmdline.ks;
 
   (* Inspection - this also mounts up the filesystems. *)
   (match conversion_mode with
@@ -114,12 +115,14 @@ let rec main () =
 
   let mpstats = get_mpstats g in
   check_guest_free_space mpstats;
-  let conversion_mode =
-    match conversion_mode with
-    | Copying (overlays, targets) ->
-       let targets = check_target_free_space mpstats source targets output in
-       Copying (overlays, targets)
-    | In_place -> In_place in
+
+  (* Estimate space required on target for each disk.  Note this is a max. *)
+  (match conversion_mode with
+   | Copying overlays ->
+      message (f_"Estimating space required on target for each disk");
+      estimate_target_size mpstats overlays
+   | In_place -> ()
+  );
 
   (* Conversion. *)
   let guestcaps =
@@ -154,28 +157,48 @@ let rec main () =
   (* Copy overlays to target (for [--in-place] this does nothing). *)
   (match conversion_mode with
    | In_place -> ()
-   | Copying (overlays, targets) ->
-       let target_firmware =
-         get_target_firmware inspect guestcaps source output in
+   | Copying overlays ->
+      (* Print copy size estimate and stop. *)
+      if cmdline.print_estimate then (
+        print_estimate overlays;
+        exit 0
+      );
 
-       message (f_"Assigning disks to buses");
-       let target_buses =
-         Target_bus_assignment.target_bus_assignment source targets
-                                                     guestcaps in
-       debug "%s" (string_of_target_buses target_buses);
+      message (f_"Assigning disks to buses");
+      let target_buses =
+        Target_bus_assignment.target_bus_assignment source guestcaps in
+      debug "%s" (string_of_target_buses target_buses);
 
-       let targets =
-         if not cmdline.do_copy then targets
-         else copy_targets cmdline targets input output in
+      let target_firmware =
+        get_target_firmware inspect guestcaps source output in
 
-       (* Create output metadata. *)
-       message (f_"Creating output metadata");
-       output#create_metadata source targets target_buses guestcaps inspect
-                              target_firmware;
+      message (f_"Initializing the target %s") output#as_options;
+      let targets =
+        (* Decide the format for each output disk. *)
+        let target_formats = get_target_formats cmdline output overlays in
+        let target_files =
+          output#prepare_targets source
+                                 (List.combine target_formats overlays)
+                                 target_buses guestcaps
+                                 inspect target_firmware in
+        List.map (
+          fun (target_file, target_format, target_overlay) ->
+            { target_file; target_format; target_overlay }
+        ) (List.combine3 target_files target_formats overlays) in
 
-       if cmdline.debug_overlays then preserve_overlays overlays source.s_name;
+      (* Perform the copy. *)
+      if cmdline.do_copy then
+        copy_targets cmdline targets input output;
 
-       delete_target_on_exit := false  (* Don't delete target on exit. *)
+      (* Create output metadata. *)
+      message (f_"Creating output metadata");
+      output#create_metadata source targets
+                             target_buses guestcaps
+                             inspect target_firmware;
+
+      if cmdline.debug_overlays then preserve_overlays overlays source.s_name;
+
+      delete_target_on_exit := false  (* Don't delete target on exit. *)
   );
   message (f_"Finishing off")
 
@@ -243,24 +266,7 @@ and set_source_name cmdline source =
 
 (* Map networks and bridges. *)
 and set_source_networks_and_bridges cmdline source =
-  let nics = List.map (
-    fun ({ s_vnet_type = t; s_vnet = vnet } as nic) ->
-      try
-        (* Look for a --network or --bridge parameter which names this
-         * network/bridge (eg. --network in:out).
-         *)
-        let new_name = NetworkMap.find (t, Some vnet) cmdline.network_map in
-        { nic with s_vnet = new_name }
-      with Not_found ->
-        try
-          (* Not found, so look for a default mapping (eg. --network out). *)
-          let new_name = NetworkMap.find (t, None) cmdline.network_map in
-          { nic with s_vnet = new_name }
-        with Not_found ->
-          (* Not found, so return the original NIC unchanged. *)
-          nic
-  ) source.s_nics in
-
+  let nics = List.map (Networks.map cmdline.network_map) source.s_nics in
   { source with s_nics = nics }
 
 and overlay_dir = (open_guestfs ())#get_cachedir ()
@@ -315,55 +321,22 @@ and create_overlays src_disks =
        * It could be RHBZ#1283588 or some other problem with qemu.
        *)
       if vsize = 0L then
-        error (f_"guest disk %s appears to be zero bytes in size.\n\nThere could be several reasons for this:\n\nCheck that the guest doesn't really have a zero-sized disk.  virt-v2v cannot convert such a guest.\n\nIf you are converting a guest from an ssh source and the guest has a disk on a block device (eg. on a host partition or host LVM LV), then conversions of this type are not supported.  See \"XEN OR SSH CONVERSIONS FROM BLOCK DEVICES\" in the virt-v2v(1) manual for a workaround.")
+        error (f_"guest disk %s appears to be zero bytes in size.\n\nThere could be several reasons for this:\n\nCheck that the guest doesn't really have a zero-sized disk.  virt-v2v cannot convert such a guest.\n\nIf you are converting a guest from an ssh source and the guest has a disk on a block device (eg. on a host partition or host LVM LV), then conversions of this type are not supported.  See the virt-v2v-input-xen(1) manual for a workaround.")
               sd;
 
+      (* Function 'estimate_target_size' replaces the
+       * ov_stats.target_estimated_size field.
+       * Function 'actual_target_size' may replace the
+       * ov_stats.target_actual_size field.
+       *)
       { ov_overlay_file = overlay_file; ov_sd = sd;
-        ov_virtual_size = vsize; ov_source = source }
-  ) src_disks
-
-(* Work out where we will write the final output.  Do this early
- * just so we can display errors to the user before doing too much
- * work.
- *)
-and init_targets cmdline output source overlays =
-  message (f_"Initializing the target %s") output#as_options;
-  let targets =
-    List.map (
-      fun ov ->
-        (* What output format should we use? *)
-        let format =
-          match cmdline.output_format, ov.ov_source.s_format with
-          | Some format, _ -> format    (* -of overrides everything *)
-          | None, Some format -> format (* same as backing format *)
-          | None, None ->
-            error (f_"disk %s (%s) has no defined format.\n\nThe input metadata did not define the disk format (eg. raw/qcow2/etc) of this disk, and so virt-v2v will try to autodetect the format when reading it.\n\nHowever because the input format was not defined, we do not know what output format you want to use.  You have two choices: either define the original format in the source metadata, or use the ‘-of’ option to force the output format.") ov.ov_sd ov.ov_source.s_qemu_uri in
-
-        (* What really happens here is that the call to #disk_create
-         * below fails if the format is not raw or qcow2.  We would
-         * have to extend libguestfs to support further formats, which
-         * is trivial, but we'd want to check that the files being
-         * created by qemu-img really work.  In any case, fail here,
-         * early, not below, later.
-         *)
-        if format <> "raw" && format <> "qcow2" then
-          error (f_"output format should be ‘raw’ or ‘qcow2’.\n\nUse the ‘-of <format>’ option to select a different output format for the converted guest.\n\nOther output formats are not supported at the moment, although might be considered in future.");
-
-        (* Only allow compressed with qcow2. *)
-        if cmdline.compressed && format <> "qcow2" then
-          error (f_"the --compressed flag is only allowed when the output format is qcow2 (-of qcow2)");
-
-        (* output#prepare_targets will fill in the target_file field.
-         * estimate_target_size will fill in the target_estimated_size field.
-         * actual_target_size will fill in the target_actual_size field.
-         *)
-        { target_file = TargetFile ""; target_format = format;
+        ov_virtual_size = vsize; ov_source = source;
+        ov_stats = {
           target_estimated_size = None;
           target_actual_size = None;
-          target_overlay = ov }
-    ) overlays in
-
-  output#prepare_targets source targets
+        }
+      }
+  ) src_disks
 
 (* Populate guestfs handle with qcow2 overlays. *)
 and populate_overlays g overlays =
@@ -520,9 +493,7 @@ and do_fstrim g inspect =
  *     sdb has 3/4 of total virtual size, so it gets a saving of 3 * 1.35 / 4
  *     sdb final estimate size = 3 - (3*1.35/4) = 1.9875 GB
  *)
-and estimate_target_size mpstats targets =
-  let sum = List.fold_left (+^) 0L in
-
+and estimate_target_size mpstats overlays =
   (* (1) *)
   let fs_total_size =
     sum (
@@ -533,13 +504,11 @@ and estimate_target_size mpstats targets =
 
   (* (2) *)
   let source_total_size =
-    sum (List.map (fun t -> t.target_overlay.ov_virtual_size) targets) in
+    sum (List.map (fun ov -> ov.ov_virtual_size) overlays) in
   debug "estimate_target_size: source_total_size = %Ld [%s]"
         source_total_size (human_size source_total_size);
 
-  if source_total_size = 0L then     (* Avoid divide by zero error. *)
-    targets
-  else (
+  if source_total_size > 0L then ( (* Avoids divide by zero error below. *)
     (* (3) Store the ratio as a float to avoid overflows later. *)
     let ratio =
       Int64.to_float fs_total_size /. Int64.to_float source_total_size in
@@ -573,8 +542,8 @@ and estimate_target_size mpstats targets =
           scaled_saving (human_size scaled_saving);
 
     (* (5) *)
-    let targets = List.map (
-      fun ({ target_overlay = ov } as t) ->
+    List.iter (
+      fun ov ->
         let size = ov.ov_virtual_size in
         let proportion =
           Int64.to_float size /. Int64.to_float source_total_size in
@@ -582,19 +551,9 @@ and estimate_target_size mpstats targets =
           size -^ Int64.of_float (proportion *. Int64.to_float scaled_saving) in
         debug "estimate_target_size: %s: %Ld [%s]"
               ov.ov_sd estimated_size (human_size estimated_size);
-        { t with target_estimated_size = Some estimated_size }
-    ) targets in
-
-    targets
+        ov.ov_stats.target_estimated_size <- Some estimated_size
+    ) overlays
   )
-
-(* Estimate space required on target for each disk.  Note this is a max. *)
-and check_target_free_space mpstats source targets output =
-  message (f_"Estimating space required on target for each disk");
-  let targets = estimate_target_size mpstats targets in
-
-  output#check_target_free_space source targets;
-  targets
 
 (* Conversion. *)
 and do_convert g inspect source output rcaps =
@@ -626,6 +585,61 @@ and do_convert g inspect source output rcaps =
   );
 
   guestcaps
+
+(* Decide the format for each output disk.  Output modes can
+ * override this, followed by command line -of option, followed
+ * by source disk format.
+ *)
+and get_target_formats cmdline output overlays =
+  List.map (
+    fun ov ->
+      let format =
+        match output#override_output_format ov with
+        | Some format -> format
+        | None ->
+           match cmdline.output_format with
+           | Some format -> format
+           | None ->
+              match ov.ov_source.s_format with
+              | Some format -> format
+              | None ->
+                 error (f_"disk %s (%s) has no defined format.\n\nThe input metadata did not define the disk format (eg. raw/qcow2/etc) of this disk, and so virt-v2v will try to autodetect the format when reading it.\n\nHowever because the input format was not defined, we do not know what output format you want to use.  You have two choices: either define the original format in the source metadata, or use the ‘-of’ option to force the output format.") ov.ov_sd ov.ov_source.s_qemu_uri in
+
+      (* What really happens here is that the call to #disk_create
+       * below fails if the format is not raw or qcow2.  We would
+       * have to extend libguestfs to support further formats, which
+       * is trivial, but we'd want to check that the files being
+       * created by qemu-img really work.  In any case, fail here,
+       * early, not below, later.
+       *)
+      if format <> "raw" && format <> "qcow2" then
+        error (f_"output format should be ‘raw’ or ‘qcow2’.\n\nUse the ‘-of <format>’ option to select a different output format for the converted guest.\n\nOther output formats are not supported at the moment, although might be considered in future.");
+
+      (* Only allow compressed with qcow2. *)
+      if cmdline.compressed && format <> "qcow2" then
+        error (f_"the --compressed flag is only allowed when the output format is qcow2 (-of qcow2)");
+
+      format
+  ) overlays
+
+and print_estimate overlays =
+  let estimates =
+    List.map (
+      fun { ov_overlay_file } ->
+        Measure_disk.measure ~format:"qcow2" ov_overlay_file
+    ) overlays in
+  let total = sum estimates in
+
+  match machine_readable () with
+  | None ->
+     List.iteri (fun i e -> printf "disk %d: %Ld\n" (i+1) e) estimates;
+     printf "total: %Ld\n" total
+  | Some {pr} ->
+     let json = [
+       "disks", JSON.List (List.map (fun i -> JSON.Int i) estimates);
+       "total", JSON.Int total
+     ] in
+     pr "%s\n" (JSON.string_of_doc ~fmt:JSON.Indented json)
 
 (* Does the guest require UEFI on the target? *)
 and get_target_firmware inspect guestcaps source output =
@@ -669,7 +683,7 @@ and copy_targets cmdline targets input output =
     )
   );
   let nr_disks = List.length targets in
-  List.mapi (
+  List.iteri (
     fun i t ->
       (match t.target_file with
        | TargetFile s ->
@@ -679,6 +693,7 @@ and copy_targets cmdline targets input output =
           message (f_"Copying disk %d/%d to qemu URI %s (%s)")
                   (i+1) nr_disks s t.target_format
       );
+      debug "%s" (string_of_overlay t.target_overlay);
       debug "%s" (string_of_target t);
 
       (* We noticed that qemu sometimes corrupts the qcow2 file on
@@ -744,10 +759,8 @@ and copy_targets cmdline targets input output =
         error (f_"qemu-img command failed, see earlier errors");
       let end_time = gettimeofday () in
 
-      (* Calculate the actual size on the target, returns an updated
-       * target structure.
-       *)
-      let t = actual_target_size t in
+      (* Calculate the actual size on the target. *)
+      actual_target_size t.target_file t.target_overlay.ov_stats;
 
       (* If verbose, print the virtual and real copying rates. *)
       let elapsed_time = end_time -. start_time in
@@ -759,7 +772,7 @@ and copy_targets cmdline targets input output =
         eprintf "virtual copying rate: %.1f M bits/sec\n%!"
           (mbps t.target_overlay.ov_virtual_size elapsed_time);
 
-        match t.target_actual_size with
+        match t.target_overlay.ov_stats.target_actual_size with
         | None -> ()
         | Some actual ->
            eprintf "real copying rate: %.1f M bits/sec\n%!"
@@ -771,7 +784,8 @@ and copy_targets cmdline targets input output =
        * accuracy of the estimate.
        *)
       if verbose () then (
-        match t.target_estimated_size, t.target_actual_size with
+        let ds = t.target_overlay.ov_stats in
+        match ds.target_estimated_size, ds.target_actual_size with
         | None, None | None, Some _ | Some _, None | Some _, Some 0L -> ()
         | Some estimate, Some actual ->
           let pc =
@@ -784,21 +798,19 @@ and copy_targets cmdline targets input output =
             pc;
           if pc < 0. then eprintf " ! ESTIMATE TOO LOW !";
           eprintf "\n%!";
-      );
-
-      t
+      )
   ) targets
 
 (* Update the target_actual_size field in the target structure. *)
-and actual_target_size target =
-  match target.target_file with
+and actual_target_size target_file disk_stats =
+  match target_file with
   | TargetFile filename ->
      let size =
        (* Ignore errors because we want to avoid failures after copying. *)
        try Some (du filename)
        with Failure _ | Invalid_argument _ -> None in
-     { target with target_actual_size = size }
-  | TargetURI _ -> target
+     disk_stats.target_actual_size <- size
+  | TargetURI _ -> ()
 
 (* Save overlays if --debug-overlays option was used. *)
 and preserve_overlays overlays src_name =

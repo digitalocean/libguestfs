@@ -3,7 +3,7 @@
  *          from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,5 +32,4 @@ and uefi_flags = uefi_flag list
 and uefi_flag = UEFI_FLAG_SECURE_BOOT_REQUIRED
 
 val uefi_aarch64_firmware : uefi_firmware list
-val uefi_i386_firmware : uefi_firmware list
 val uefi_x86_64_firmware : uefi_firmware list

@@ -95,6 +95,7 @@ libguestfs_la_SOURCES = \
 	info.c \
 	inspect-apps.c \
 	inspect-icon.c \
+	inspect-osinfo.c \
 	journal.c \
 	launch.c \
 	launch-direct.c \
@@ -141,7 +142,7 @@ libguestfs_la_CFLAGS = \
 	$(PCRE_CFLAGS) \
 	$(LIBVIRT_CFLAGS) \
 	$(LIBXML2_CFLAGS) \
-	$(YAJL_CFLAGS)
+	$(JANSSON_CFLAGS)
 
 libguestfs_la_LIBADD = \
 	../common/errnostring/liberrnostring.la \
@@ -152,7 +153,7 @@ libguestfs_la_LIBADD = \
 	$(PCRE_LIBS) \
 	$(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
 	$(SELINUX_LIBS) \
-	$(YAJL_LIBS) \
+	$(JANSSON_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(GETADDRINFO_LIB) \
 	$(HOSTENT_LIB) \

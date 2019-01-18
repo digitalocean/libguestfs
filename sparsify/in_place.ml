@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2018 Red Hat Inc.
+ * Copyright (C) 2011-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ open Cmdline
 
 module G = Guestfs
 
-let run disk format ignores zeroes =
+let run disk format ignores zeroes ks =
   (* Connect to libguestfs. *)
   let g = open_guestfs () in
 
@@ -49,7 +49,10 @@ let run disk format ignores zeroes =
 
   g#add_drive ?format ~discard:"enable" disk;
 
-  if not (quiet ()) then Progress.set_up_progress_bar ~machine_readable:(machine_readable ()) g;
+  if not (quiet ()) then (
+    let machine_readable = machine_readable () <> None in
+    Progress.set_up_progress_bar ~machine_readable g
+  );
   g#launch ();
 
   (* If discard is not supported in the appliance, we must return exit
@@ -59,7 +62,7 @@ let run disk format ignores zeroes =
     error ~exit_code:3 (f_"discard/trim is not supported");
 
   (* Decrypt the disks. *)
-  inspect_decrypt g;
+  inspect_decrypt g ks;
 
   (* Discard non-ignored filesystems that we are able to mount, and
    * selected swap partitions.

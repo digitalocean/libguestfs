@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -5525,6 +5525,30 @@ public class GuestFS {
 
   /**
    * <p>
+   * expand a f2fs filesystem
+   * </p><p>
+   * This expands a f2fs filesystem to match the size of the
+   * underlying device.
+   * </p><p>
+   * This function depends on the feature "f2fs".  See also {@link #feature_available}.
+   * </p>
+   * @since 1.39.3
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void f2fs_expand (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("f2fs_expand: handle is closed");
+
+    _f2fs_expand (g, device);
+  }
+
+  private native void _f2fs_expand (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
    * preallocate a file in the guest filesystem
    * </p><p>
    * This command preallocates a file (containing zero bytes)
@@ -8561,6 +8585,9 @@ public class GuestFS {
    * "gentoo"
    * Gentoo.
    * </p><p>
+   * "kalilinux"
+   * Kali Linux.
+   * </p><p>
    * "linuxmint"
    * Linux Mint.
    * </p><p>
@@ -9020,6 +9047,35 @@ public class GuestFS {
   }
 
   private native String[] _inspect_get_mountpoints (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * get a possible osinfo short ID corresponding to this operating system
+   * </p><p>
+   * This function returns a possible short ID for libosinfo
+   * corresponding to the guest.
+   * </p><p>
+   * *Note:* The returned ID is only a guess by libguestfs,
+   * and nothing ensures that it actually exists in
+   * osinfo-db.
+   * </p><p>
+   * If no ID could not be determined, then the string
+   * "unknown" is returned.
+   * </p>
+   * @since 1.39.1
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public String inspect_get_osinfo (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_osinfo: handle is closed");
+
+    return _inspect_get_osinfo (g, root);
+  }
+
+  private native String _inspect_get_osinfo (long g, String root)
     throws LibGuestFSException;
 
   /**
@@ -12741,8 +12797,8 @@ public class GuestFS {
    * underlying "device" respectively.
    * </p><p>
    * If this block device contains LVM volume groups, then
-   * calling "g.vgscan" followed by "g.vg_activate_all" will
-   * make them visible.
+   * calling "g.lvm_scan" with the "activate" parameter
+   * "true" will make them visible.
    * </p><p>
    * Use "g.list_dm_devices" to list all device mapper
    * devices.
@@ -12914,6 +12970,38 @@ public class GuestFS {
   }
 
   private native void _lvm_remove_all (long g)
+    throws LibGuestFSException;
+
+  /**
+   * <p>
+   * scan for LVM physical volumes, volume groups and logical volumes
+   * </p><p>
+   * This scans all block devices and rebuilds the list of
+   * LVM physical volumes, volume groups and logical volumes.
+   * </p><p>
+   * If the "activate" parameter is "true" then newly found
+   * volume groups and logical volumes are activated, meaning
+   * the LV /dev/VG/LV devices become visible.
+   * </p><p>
+   * When a libguestfs handle is launched it scans for
+   * existing devices, so you do not normally need to use
+   * this API. However it is useful when you have added a new
+   * device or deleted an existing device (such as when the
+   * "g.luks_open" API is used).
+   * </p>
+   * @since 1.39.8
+   * @throws LibGuestFSException If there is a libguestfs error.
+   */
+  public void lvm_scan (boolean activate)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lvm_scan: handle is closed");
+
+    _lvm_scan (g, activate);
+  }
+
+  private native void _lvm_scan (long g, boolean activate)
     throws LibGuestFSException;
 
   /**
@@ -21047,9 +21135,10 @@ public class GuestFS {
    * LVM physical volumes, volume groups and logical volumes.
    * </p>
    * @since 1.3.2
+   * @deprecated In new code, use {@link #lvm_scan} instead
    * @throws LibGuestFSException If there is a libguestfs error.
    */
-  public void vgscan ()
+  @Deprecated public void vgscan ()
     throws LibGuestFSException
   {
     if (g == 0)

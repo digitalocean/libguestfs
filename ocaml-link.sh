@@ -1,7 +1,7 @@
 #!/bin/bash -
 # Script used to link OCaml programs.
 # ocaml-link.sh.  Generated from ocaml-link.sh.in by configure.
-# (C) Copyright 2015-2018 Red Hat Inc.
+# (C) Copyright 2015-2019 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

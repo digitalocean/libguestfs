@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1453,6 +1453,49 @@ guestfs_int_ruby_inspect_get_major_version (VALUE gv, VALUE rootv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.inspect_get_osinfo(root) -> string
+ *
+ * get a possible osinfo short ID corresponding to this operating system
+ *
+ * This function returns a possible short ID for libosinfo
+ * corresponding to the guest.
+ * 
+ * *Note:* The returned ID is only a guess by libguestfs,
+ * and nothing ensures that it actually exists in
+ * osinfo-db.
+ * 
+ * If no ID could not be determined, then the string
+ * "unknown" is returned.
+ *
+ *
+ * [Since] Added in version 1.39.1.
+ *
+ * [C API] For the C API documentation for this function, see
+ *         {guestfs_inspect_get_osinfo}[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_osinfo].
+ */
+VALUE
+guestfs_int_ruby_inspect_get_osinfo (VALUE gv, VALUE rootv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "inspect_get_osinfo");
+
+  const char *root = StringValueCStr (rootv);
+
+  char *r;
+
+  r = guestfs_inspect_get_osinfo (g, root);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
 }
 
 /*

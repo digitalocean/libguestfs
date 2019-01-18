@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -5246,18 +5246,6 @@ zeroes.  This prevents the underlying device from becoming non-sparse
 or growing unnecessarily." };
 
   { defaults with
-    name = "vgscan"; added = (1, 3, 2);
-    style = RErr, [], [];
-    tests = [
-      InitEmpty, Always, TestRun (
-        [["vgscan"]]), []
-    ];
-    shortdesc = "rescan for LVM physical volumes, volume groups and logical volumes";
-    longdesc = "\
-This rescans all block devices and rebuilds the list of LVM
-physical volumes, volume groups and logical volumes." };
-
-  { defaults with
     name = "part_del"; added = (1, 3, 2);
     style = RErr, [String (Device, "device"); Int "partnum"], [];
     tests = [
@@ -5660,8 +5648,8 @@ Reads and writes to this block device are decrypted from and
 encrypted to the underlying C<device> respectively.
 
 If this block device contains LVM volume groups, then
-calling C<guestfs_vgscan> followed by C<guestfs_vg_activate_all>
-will make them visible.
+calling C<guestfs_lvm_scan> with the C<activate>
+parameter C<true> will make them visible.
 
 Use C<guestfs_list_dm_devices> to list all device mapper
 devices." };
@@ -9213,6 +9201,7 @@ All data will be zeroed, but metadata and the like is preserved." };
   { defaults with
     name = "part_get_mbr_part_type"; added = (1, 29, 32);
     style = RString (RPlainString, "partitiontype"), [String (Device, "device"); Int "partnum"], [];
+    impl = OCaml "Parted.part_get_mbr_part_type";
     tests = [
       InitEmpty, Always, TestResultString (
         [["part_init"; "/dev/sda"; "mbr"];
@@ -9707,5 +9696,36 @@ commands like C<guestfs_resize2fs>.
 When growing a partition you will want to grow the filesystem
 afterwards, but when shrinking, you need to shrink the filesystem
 before the partition." };
+
+  { defaults with
+    name = "f2fs_expand"; added = (1, 39, 3);
+    style = RErr, [String (Device, "device")], [];
+    optional = Some "f2fs";
+    shortdesc = "expand a f2fs filesystem";
+    longdesc = "\
+This expands a f2fs filesystem to match the size of the underlying
+device." };
+
+  { defaults with
+    name = "lvm_scan"; added = (1, 39, 8);
+    style = RErr, [Bool "activate"], [];
+    tests = [
+      InitEmpty, Always, TestRun (
+        [["lvm_scan"; "true"]]), []
+    ];
+    shortdesc = "scan for LVM physical volumes, volume groups and logical volumes";
+    longdesc = "\
+This scans all block devices and rebuilds the list of LVM
+physical volumes, volume groups and logical volumes.
+
+If the C<activate> parameter is C<true> then newly found
+volume groups and logical volumes are activated, meaning
+the LV F</dev/VG/LV> devices become visible.
+
+When a libguestfs handle is launched it scans for existing
+devices, so you do not normally need to use this API.  However
+it is useful when you have added a new device or deleted an
+existing device (such as when the C<guestfs_luks_open> API
+is used)." };
 
 ]

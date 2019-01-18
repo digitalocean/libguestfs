@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -51,6 +51,16 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs_protocol.h"
+
+#include "libxml2-writer-macros.h"
+
+/* This macro is used by the macros in "libxml2-writer-macros.h"
+ * when an error occurs.
+ */
+#define xml_error(fn)                                                   \
+  perrorf (g, _("%s:%d: error constructing libvirt XML near call to \"%s\""), \
+           __FILE__, __LINE__, (fn));                                   \
+  return -1;
 
 /* Fixes for Mac OS X */
 #ifndef SOCK_CLOEXEC
@@ -116,7 +126,6 @@ struct backend_libvirt_data {
   char *selinux_label;
   char *selinux_imagelabel;
   bool selinux_norelabel_disks;
-  char *network_bridge;
   char name[DOMAIN_NAME_LEN];   /* random name */
   bool is_kvm;                  /* false = qemu, true = kvm (from capabilities)*/
   struct version libvirt_version; /* libvirt version */
@@ -157,7 +166,6 @@ static int is_blk (const char *path);
 static void ignore_errors (void *ignore, virErrorPtr ignore2);
 static void set_socket_create_context (guestfs_h *g);
 static void clear_socket_create_context (guestfs_h *g);
-static int check_bridge_exists (guestfs_h *g, const char *brname);
 
 #if HAVE_LIBSELINUX
 static void selinux_warning (guestfs_h *g, const char *func, const char *selinux_op, const char *data);
@@ -370,7 +378,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   conn = guestfs_int_open_libvirt_connection (g, libvirt_uri, 0);
   if (!conn) {
     libvirt_error (g, _("could not connect to libvirt (URI = %s)"),
-		   libvirt_uri ? : "NULL");
+                   libvirt_uri ? : "NULL");
     goto cleanup;
   }
 
@@ -438,16 +446,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
     guestfs_get_backend_setting (g, "internal_libvirt_imagelabel");
   data->selinux_norelabel_disks =
     guestfs_int_get_backend_setting_bool (g, "internal_libvirt_norelabel_disks");
-  if (g->enable_network) {
-    data->network_bridge =
-      guestfs_get_backend_setting (g, "network_bridge");
-    if (!data->network_bridge)
-      data->network_bridge = safe_strdup (g, "virbr0");
-  }
   guestfs_pop_error_handler (g);
-
-  if (g->enable_network && check_bridge_exists (g, data->network_bridge) == -1)
-    goto cleanup;
 
   /* Locate and/or build the appliance. */
   TRACE0 (launch_build_libvirt_appliance_start);
@@ -608,12 +607,12 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   dom = virDomainCreateXML (conn, (char *) xml, VIR_DOMAIN_START_AUTODESTROY);
   if (!dom) {
     libvirt_error (g, _(
-			"could not create appliance through libvirt.\n"
-			"\n"
-			"Try running qemu directly without libvirt using this environment variable:\n"
-			"export LIBGUESTFS_BACKEND=direct\n"
-			"\n"
-			"Original error from libvirt"));
+                        "could not create appliance through libvirt.\n"
+                        "\n"
+                        "Try running qemu directly without libvirt using this environment variable:\n"
+                        "export LIBGUESTFS_BACKEND=direct\n"
+                        "\n"
+                        "Original error from libvirt"));
     goto cleanup;
   }
 
@@ -956,79 +955,6 @@ static int construct_libvirt_xml_disk_source_hosts (guestfs_h *g, xmlTextWriterP
 static int construct_libvirt_xml_disk_source_seclabel (guestfs_h *g, const struct backend_libvirt_data *data, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_appliance (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 
-/* These macros make it easier to write XML, but they also make a lot
- * of assumptions:
- *
- * - The xmlTextWriterPtr is called 'xo'.  It is used implicitly.
- *
- * - The guestfs handle is called 'g'.  It is used implicitly for errors.
- *
- * - It is safe to 'return -1' on failure.  This is OK provided you
- *   always use CLEANUP_* macros.
- *
- * - All the "bad" casting is hidden inside the macros.
- */
-
-/* <element */
-#define start_element(element)						\
-  if (xmlTextWriterStartElement (xo, BAD_CAST (element)) == -1) {	\
-    xml_error ("xmlTextWriterStartElement");				\
-    return -1;								\
-  }									\
-  do
-
-/* finish current </element> */
-#define end_element()				\
-  while (0);					\
-  do {						\
-    if (xmlTextWriterEndElement (xo) == -1) {	\
-      xml_error ("xmlTextWriterEndElement");	\
-      return -1;				\
-    }						\
-  } while (0)
-
-/* key=value attribute of the current element. */
-#define attribute(key,value)                                            \
-  if (xmlTextWriterWriteAttribute (xo, BAD_CAST (key), BAD_CAST (value)) == -1){ \
-    xml_error ("xmlTextWriterWriteAttribute");                          \
-    return -1;                                                          \
-  }
-
-/* key=value, but value is a printf-style format string. */
-#define attribute_format(key,fs,...)                                    \
-  if (xmlTextWriterWriteFormatAttribute (xo, BAD_CAST (key),            \
-                                         fs, ##__VA_ARGS__) == -1) {    \
-    xml_error ("xmlTextWriterWriteFormatAttribute");                    \
-    return -1;                                                          \
-  }
-
-/* attribute with namespace. */
-#define attribute_ns(prefix,key,namespace_uri,value)                    \
-  if (xmlTextWriterWriteAttributeNS (xo, BAD_CAST (prefix),             \
-                                     BAD_CAST (key), BAD_CAST (namespace_uri), \
-                                     BAD_CAST (value)) == -1) {         \
-    xml_error ("xmlTextWriterWriteAttribute");                          \
-    return -1;                                                          \
-  }
-
-/* A string, eg. within an element. */
-#define string(str)						\
-  if (xmlTextWriterWriteString (xo, BAD_CAST (str)) == -1) {	\
-    xml_error ("xmlTextWriterWriteString");			\
-    return -1;							\
-  }
-
-/* A string, using printf-style formatting. */
-#define string_format(fs,...)                                           \
-  if (xmlTextWriterWriteFormatString (xo, fs, ##__VA_ARGS__) == -1) {   \
-    xml_error ("xmlTextWriterWriteFormatString");                       \
-    return -1;                                                          \
-  }
-
-#define xml_error(fn)                                                   \
-  perrorf (g, _("%s:%d: error constructing libvirt XML near call to \"%s\""), \
-	   __FILE__, __LINE__, (fn));
-
 static xmlChar *
 construct_libvirt_xml (guestfs_h *g, const struct libvirt_xml_params *params)
 {
@@ -1116,10 +1042,7 @@ construct_libvirt_xml_name (guestfs_h *g,
                             const struct libvirt_xml_params *params,
                             xmlTextWriterPtr xo)
 {
-  start_element ("name") {
-    string (params->data->name);
-  } end_element ();
-
+  single_element ("name", params->data->name);
   return 0;
 }
 
@@ -1150,17 +1073,12 @@ construct_libvirt_xml_cpu (guestfs_h *g,
           attribute ("fallback", "allow");
         } end_element ();
       }
-      else {
-        start_element ("model") {
-          string (cpu_model);
-        } end_element ();
-      }
+      else
+        single_element ("model", cpu_model);
     } end_element ();
   }
 
-  start_element ("vcpu") {
-    string_format ("%d", g->smp);
-  } end_element ();
+  single_element_format ("vcpu", "%d", g->smp);
 
   start_element ("clock") {
     attribute ("offset", "utc");
@@ -1216,29 +1134,18 @@ construct_libvirt_xml_boot (guestfs_h *g,
 
     if (params->data->uefi_code) {
       start_element ("loader") {
-	attribute ("readonly", "yes");
-	attribute ("type", "pflash");
-	string (params->data->uefi_code);
+        attribute ("readonly", "yes");
+        attribute ("type", "pflash");
+        string (params->data->uefi_code);
       } end_element ();
 
-      if (params->data->uefi_vars) {
-	start_element ("nvram") {
-	  string (params->data->uefi_vars);
-	} end_element ();
-      }
+      if (params->data->uefi_vars)
+        single_element ("nvram", params->data->uefi_vars);
     }
 
-    start_element ("kernel") {
-      string (params->kernel);
-    } end_element ();
-
-    start_element ("initrd") {
-      string (params->initrd);
-    } end_element ();
-
-    start_element ("cmdline") {
-      string (cmdline);
-    } end_element ();
+    single_element ("kernel", params->kernel);
+    single_element ("initrd", params->initrd);
+    single_element ("cmdline", cmdline);
 
 #if defined(__i386__) || defined(__x86_64__)
     if (g->verbose) {
@@ -1273,12 +1180,8 @@ construct_libvirt_xml_seclabel (guestfs_h *g,
       attribute ("type", "static");
       attribute ("model", "selinux");
       attribute ("relabel", "yes");
-      start_element ("label") {
-        string (params->data->selinux_label);
-      } end_element ();
-      start_element ("imagelabel") {
-        string (params->data->selinux_imagelabel);
-      } end_element ();
+      single_element ("label", params->data->selinux_label);
+      single_element ("imagelabel", params->data->selinux_imagelabel);
     } end_element ();
   }
 
@@ -1291,10 +1194,7 @@ construct_libvirt_xml_lifecycle (guestfs_h *g,
                                  const struct libvirt_xml_params *params,
                                  xmlTextWriterPtr xo)
 {
-  start_element ("on_reboot") {
-    string ("destroy");
-  } end_element ();
-
+  single_element ("on_reboot", "destroy");
   return 0;
 }
 
@@ -1312,20 +1212,14 @@ construct_libvirt_xml_devices (guestfs_h *g,
     /* Path to hypervisor.  Only write this if the user has changed the
      * default, otherwise allow libvirt to choose the best one.
      */
-    if (is_custom_hv (g)) {
-      start_element ("emulator") {
-        string (g->hv);
-      } end_element ();
-    }
+    if (is_custom_hv (g))
+      single_element ("emulator", g->hv);
 #if defined(__arm__)
     /* Hopefully temporary hack to make ARM work (otherwise libvirt
      * chooses to run /usr/bin/qemu-kvm).
      */
-    else {
-      start_element ("emulator") {
-        string (QEMU);
-      } end_element ();
-    }
+    else
+      single_element ("emulator", QEMU);
 #endif
 
     /* Add a random number generator (backend for virtio-rng).  This
@@ -1384,7 +1278,7 @@ construct_libvirt_xml_devices (guestfs_h *g,
         attribute ("path", params->data->console_path);
       } end_element ();
       start_element ("target") {
-	attribute ("type", "sclp");
+        attribute ("type", "sclp");
         attribute ("port", "0");
       } end_element ();
     } end_element ();
@@ -1402,19 +1296,6 @@ construct_libvirt_xml_devices (guestfs_h *g,
         attribute ("name", "org.libguestfs.channel.0");
       } end_element ();
     } end_element ();
-
-    /* Connect to libvirt bridge (see: RHBZ#1148012). */
-    if (g->enable_network) {
-      start_element ("interface") {
-        attribute ("type", "bridge");
-        start_element ("source") {
-          attribute ("bridge", params->data->network_bridge);
-        } end_element ();
-        start_element ("model") {
-          attribute ("type", "virtio");
-        } end_element ();
-      } end_element ();
-    }
 
     /* Libvirt adds some devices by default.  Indicate to libvirt
      * that we don't want them.
@@ -1596,11 +1477,8 @@ construct_libvirt_xml_disk (guestfs_h *g,
         return -1;
     }
 
-    if (drv->disk_label) {
-      start_element ("serial") {
-        string (drv->disk_label);
-      } end_element ();
-    }
+    if (drv->disk_label)
+      single_element ("serial", drv->disk_label);
 
     if (construct_libvirt_xml_disk_address (g, xo, drv_index) == -1)
       return -1;
@@ -1823,6 +1701,27 @@ construct_libvirt_xml_qemu_cmdline (guestfs_h *g,
       attribute ("value", tmpdir);
     } end_element ();
 
+    /* Workaround because libvirt user networking cannot specify "net="
+     * parameter.
+     */
+    if (g->enable_network) {
+      start_element ("qemu:arg") {
+        attribute ("value", "-netdev");
+      } end_element ();
+
+      start_element ("qemu:arg") {
+        attribute ("value", "user,id=usernet,net=169.254.0.0/16");
+      } end_element ();
+
+      start_element ("qemu:arg") {
+        attribute ("value", "-device");
+      } end_element ();
+
+      start_element ("qemu:arg") {
+        attribute ("value", VIRTIO_DEVICE_NAME ("virtio-net") ",netdev=usernet");
+      } end_element ();
+    }
+
     /* The qemu command line arguments requested by the caller. */
     for (hp = g->hv_params; hp; hp = hp->next) {
       start_element ("qemu:arg") {
@@ -1849,10 +1748,9 @@ construct_libvirt_xml_secret (guestfs_h *g,
   start_element ("secret") {
     attribute ("ephemeral", "yes");
     attribute ("private", "yes");
-    start_element ("description") {
-      string_format ("guestfs secret associated with %s %s",
-                     data->name, drv->src.u.path);
-    } end_element ();
+    single_element_format ("description",
+                           "guestfs secret associated with %s %s",
+                           data->name, drv->src.u.path);
   } end_element ();
 
   return 0;
@@ -2060,49 +1958,6 @@ is_blk (const char *path)
   return S_ISBLK (statbuf.st_mode);
 }
 
-static int
-is_dir (const char *path)
-{
-  struct stat statbuf;
-
-  if (stat (path, &statbuf) == -1)
-    return 0;
-  return S_ISDIR (statbuf.st_mode);
-}
-
-/* Used to check the network_bridge exists, or give a useful error
- * message.
- */
-static int
-check_bridge_exists (guestfs_h *g, const char *brname)
-{
-  CLEANUP_FREE char *path = NULL;
-
-  /* If this doesn't look like Linux, give up. */
-  if (!is_dir ("/sys/class/net"))
-    return 0;
-
-  /* Does the interface exist and is it a bridge? */
-  path = safe_asprintf (g, "/sys/class/net/%s/bridge", brname);
-  if (is_dir (path))
-    return 0;
-
-  error (g,
-         _("bridge ‘%s’ not found.  Try running:\n"
-           "\n"
-           "  brctl show\n"
-           "\n"
-           "to get a list of bridges on the host, and then selecting the\n"
-           "bridge you wish the appliance network to connect to using:\n"
-           "\n"
-           "  export LIBGUESTFS_BACKEND_SETTINGS=network_bridge=<bridge name>\n"
-           "\n"
-           "You may also need to allow the bridge in /etc/qemu/bridge.conf.\n"
-           "For further information see guestfs(3)."),
-	 brname);
-  return -1;
-}
-
 static void
 ignore_errors (void *ignore, virErrorPtr ignore2)
 {
@@ -2147,9 +2002,6 @@ shutdown_libvirt (guestfs_h *g, void *datav, int check_for_errors)
   data->selinux_label = NULL;
   free (data->selinux_imagelabel);
   data->selinux_imagelabel = NULL;
-
-  free (data->network_bridge);
-  data->network_bridge = NULL;
 
   for (i = 0; i < data->nr_secrets; ++i)
     free (data->secrets[i].secret);

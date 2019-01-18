@@ -1,5 +1,5 @@
 /* virt-p2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,160 +42,6 @@
 static void notify_ui_callback (int type, const char *data);
 static void run_command (const char *stage, const char *command);
 
-void
-update_config_from_kernel_cmdline (struct config *config, char **cmdline)
-{
-  const char *p;
-
-  p = get_cmdline_key (cmdline, "p2v.server");
-  if (p) {
-    free (config->server);
-    config->server = strdup (p);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.port");
-  if (p) {
-    if (sscanf (p, "%d", &config->port) != 1)
-      error (EXIT_FAILURE, 0,
-             "cannot parse p2v.port from kernel command line");
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.username");
-  if (p) {
-    free (config->username);
-    config->username = strdup (p);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.password");
-  if (p) {
-    free (config->password);
-    config->password = strdup (p);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.identity");
-  if (p) {
-    free (config->identity_url);
-    config->identity_url = strdup (p);
-    config->identity_file_needs_update = 1;
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.sudo");
-  if (p)
-    config->sudo = 1;
-
-  p = get_cmdline_key (cmdline, "p2v.name");
-  if (p) {
-    free (config->guestname);
-    config->guestname = strdup (p);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.vcpus");
-  if (p) {
-    if (sscanf (p, "%d", &config->vcpus) != 1)
-      error (EXIT_FAILURE, 0,
-             "cannot parse p2v.vcpus from kernel command line");
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.memory");
-  if (p) {
-    char mem_code;
-
-    if (sscanf (p, "%" SCNu64 "%c", &config->memory, &mem_code) != 2)
-      error (EXIT_FAILURE, 0,
-             "cannot parse p2v.memory from kernel command line");
-    config->memory *= 1024;
-    if (mem_code == 'M' || mem_code == 'm'
-        || mem_code == 'G' || mem_code == 'g')
-      config->memory *= 1024;
-    if (mem_code == 'G' || mem_code == 'g')
-      config->memory *= 1024;
-    if (mem_code != 'M' && mem_code != 'm'
-        && mem_code != 'G' && mem_code != 'g')
-      error (EXIT_FAILURE, 0,
-             "p2v.memory on kernel command line must be followed by 'G' or 'M'");
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.disks");
-  if (p) {
-    CLEANUP_FREE char *t;
-
-    t = strdup (p);
-    guestfs_int_free_string_list (config->disks);
-    config->disks = guestfs_int_split_string (',', t);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.removable");
-  if (p) {
-    CLEANUP_FREE char *t;
-
-    t = strdup (p);
-    guestfs_int_free_string_list (config->removable);
-    config->removable = guestfs_int_split_string (',', t);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.interfaces");
-  if (p) {
-    CLEANUP_FREE char *t;
-
-    t = strdup (p);
-    guestfs_int_free_string_list (config->interfaces);
-    config->interfaces = guestfs_int_split_string (',', t);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.network");
-  if (p) {
-    CLEANUP_FREE char *t;
-
-    t = strdup (p);
-    guestfs_int_free_string_list (config->network_map);
-    config->network_map = guestfs_int_split_string (',', t);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.o");
-  if (p) {
-    free (config->output);
-    config->output = strdup (p);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.oa");
-  if (p) {
-    if (STREQ (p, "sparse"))
-      config->output_allocation = OUTPUT_ALLOCATION_SPARSE;
-    else if (STREQ (p, "preallocated"))
-      config->output_allocation = OUTPUT_ALLOCATION_PREALLOCATED;
-    else
-      fprintf (stderr, "%s: warning: don't know what p2v.oa=%s means\n",
-               getprogname (), p);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.oc");
-  if (p) {
-    free (config->output_connection);
-    config->output_connection = strdup (p);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.of");
-  if (p) {
-    free (config->output_format);
-    config->output_format = strdup (p);
-  }
-
-  p = get_cmdline_key (cmdline, "p2v.os");
-  if (p) {
-    free (config->output_storage);
-    config->output_storage = strdup (p);
-  }
-
-  /* Undocumented command line parameter used for testing command line
-   * parsing.
-   */
-  p = get_cmdline_key (cmdline, "p2v.dump_config_and_exit");
-  if (p) {
-    print_config (config, stdout);
-    exit (EXIT_SUCCESS);
-  }
-}
-
 /* Perform conversion using the kernel method. */
 void
 kernel_conversion (struct config *config, char **cmdline, int cmdline_source)
@@ -216,7 +62,7 @@ kernel_conversion (struct config *config, char **cmdline, int cmdline_source)
 
       error (EXIT_FAILURE, 0,
              "error opening control connection to %s:%d: %s",
-             config->server, config->port, err);
+             config->remote.server, config->remote.port, err);
     }
   }
 

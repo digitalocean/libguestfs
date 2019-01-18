@@ -22,4 +22,34 @@ $TEST_FUNCTIONS
 skip_if_skipped
 
 $top_srcdir/podcheck.pl virt-v2v.pod virt-v2v \
-  --ignore=--debug-overlay,--ic,--if,--it,--no-trim,--oa,--oc,--of,--on,--os,--vmtype
+  --ignore=\
+--debug-overlay,\
+--ic,\
+--if,\
+--io,\
+--ip,\
+--it,\
+--no-trim,\
+--password-file,\
+--oa,\
+--oc,\
+--of,\
+--on,\
+--oo,\
+--op,\
+--os,\
+--vddk-config,\
+--vddk-cookie,\
+--vddk-libdir,\
+--vddk-nfchostport,\
+--vddk-port,\
+--vddk-snapshot,\
+--vddk-thumbprint,\
+--vddk-transports,\
+--vdsm-compat,\
+--vdsm-image-uuid,\
+--vdsm-ovf-flavour,\
+--vdsm-ovf-output,\
+--vdsm-vm-uuid,\
+--vdsm-vol-uuid,\
+--vmtype

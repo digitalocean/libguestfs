@@ -1420,6 +1420,11 @@ struct guestfs_extlinux_args {
 };
 typedef struct guestfs_extlinux_args guestfs_extlinux_args;
 
+struct guestfs_f2fs_expand_args {
+	char *device;
+};
+typedef struct guestfs_f2fs_expand_args guestfs_f2fs_expand_args;
+
 struct guestfs_fallocate_args {
 	char *path;
 	int len;
@@ -2824,6 +2829,11 @@ struct guestfs_lvm_canonical_lv_name_ret {
 	char *lv;
 };
 typedef struct guestfs_lvm_canonical_lv_name_ret guestfs_lvm_canonical_lv_name_ret;
+
+struct guestfs_lvm_scan_args {
+	bool_t activate;
+};
+typedef struct guestfs_lvm_scan_args guestfs_lvm_scan_args;
 
 struct guestfs_lvm_set_filter_args {
 	struct {
@@ -4604,6 +4614,7 @@ enum guestfs_procedure {
 	GUESTFS_PROC_EQUAL = 93,
 	GUESTFS_PROC_EXISTS = 36,
 	GUESTFS_PROC_EXTLINUX = 400,
+	GUESTFS_PROC_F2FS_EXPAND = 505,
 	GUESTFS_PROC_FALLOCATE = 169,
 	GUESTFS_PROC_FALLOCATE64 = 252,
 	GUESTFS_PROC_FGREP = 153,
@@ -4766,6 +4777,7 @@ enum guestfs_procedure {
 	GUESTFS_PROC_LVM_CANONICAL_LV_NAME = 277,
 	GUESTFS_PROC_LVM_CLEAR_FILTER = 256,
 	GUESTFS_PROC_LVM_REMOVE_ALL = 48,
+	GUESTFS_PROC_LVM_SCAN = 506,
 	GUESTFS_PROC_LVM_SET_FILTER = 255,
 	GUESTFS_PROC_LVREMOVE = 77,
 	GUESTFS_PROC_LVRENAME = 219,
@@ -4977,7 +4989,7 @@ enum guestfs_procedure {
 	GUESTFS_PROC_ZGREPI = 160,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 504
+#define GUESTFS_MAX_PROC_NR 506
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -5245,6 +5257,7 @@ extern  bool_t xdr_guestfs_equal_ret (XDR *, guestfs_equal_ret*);
 extern  bool_t xdr_guestfs_exists_args (XDR *, guestfs_exists_args*);
 extern  bool_t xdr_guestfs_exists_ret (XDR *, guestfs_exists_ret*);
 extern  bool_t xdr_guestfs_extlinux_args (XDR *, guestfs_extlinux_args*);
+extern  bool_t xdr_guestfs_f2fs_expand_args (XDR *, guestfs_f2fs_expand_args*);
 extern  bool_t xdr_guestfs_fallocate_args (XDR *, guestfs_fallocate_args*);
 extern  bool_t xdr_guestfs_fallocate64_args (XDR *, guestfs_fallocate64_args*);
 extern  bool_t xdr_guestfs_fgrep_args (XDR *, guestfs_fgrep_args*);
@@ -5486,6 +5499,7 @@ extern  bool_t xdr_guestfs_lvcreate_args (XDR *, guestfs_lvcreate_args*);
 extern  bool_t xdr_guestfs_lvcreate_free_args (XDR *, guestfs_lvcreate_free_args*);
 extern  bool_t xdr_guestfs_lvm_canonical_lv_name_args (XDR *, guestfs_lvm_canonical_lv_name_args*);
 extern  bool_t xdr_guestfs_lvm_canonical_lv_name_ret (XDR *, guestfs_lvm_canonical_lv_name_ret*);
+extern  bool_t xdr_guestfs_lvm_scan_args (XDR *, guestfs_lvm_scan_args*);
 extern  bool_t xdr_guestfs_lvm_set_filter_args (XDR *, guestfs_lvm_set_filter_args*);
 extern  bool_t xdr_guestfs_lvremove_args (XDR *, guestfs_lvremove_args*);
 extern  bool_t xdr_guestfs_lvrename_args (XDR *, guestfs_lvrename_args*);
@@ -5963,6 +5977,7 @@ extern bool_t xdr_guestfs_equal_ret ();
 extern bool_t xdr_guestfs_exists_args ();
 extern bool_t xdr_guestfs_exists_ret ();
 extern bool_t xdr_guestfs_extlinux_args ();
+extern bool_t xdr_guestfs_f2fs_expand_args ();
 extern bool_t xdr_guestfs_fallocate_args ();
 extern bool_t xdr_guestfs_fallocate64_args ();
 extern bool_t xdr_guestfs_fgrep_args ();
@@ -6204,6 +6219,7 @@ extern bool_t xdr_guestfs_lvcreate_args ();
 extern bool_t xdr_guestfs_lvcreate_free_args ();
 extern bool_t xdr_guestfs_lvm_canonical_lv_name_args ();
 extern bool_t xdr_guestfs_lvm_canonical_lv_name_ret ();
+extern bool_t xdr_guestfs_lvm_scan_args ();
 extern bool_t xdr_guestfs_lvm_set_filter_args ();
 extern bool_t xdr_guestfs_lvremove_args ();
 extern bool_t xdr_guestfs_lvrename_args ();

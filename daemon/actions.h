@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -331,6 +331,7 @@ extern char **do_egrepi (const char *regex, const char *path);
 extern int do_equal (const char *file1, const char *file2);
 extern int do_exists (const char *path);
 extern int do_extlinux (const char *directory);
+extern int do_f2fs_expand (const char *device);
 extern int do_fallocate (const char *path, int len);
 extern int do_fallocate64 (const char *path, int64_t len);
 extern char **do_fgrep (const char *pattern, const char *path);
@@ -493,6 +494,7 @@ extern int do_lvcreate_free (const char *logvol, const char *volgroup, int perce
 extern char *do_lvm_canonical_lv_name (const char *lvname);
 extern int do_lvm_clear_filter (void);
 extern int do_lvm_remove_all (void);
+extern int do_lvm_scan (int activate);
 extern int do_lvm_set_filter (char *const *devices);
 extern int do_lvremove (const char *device);
 extern int do_lvrename (const char *logvol, const char *newlogvol);

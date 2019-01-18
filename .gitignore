@@ -48,6 +48,7 @@ Makefile.in
 /AUTHORS
 /autom4te.cache
 /bash/guestunmount
+/bash/libguestfs-test-tool
 /bash/virt-builder
 /bash/virt-cat
 /bash/virt-copy-in
@@ -112,7 +113,6 @@ Makefile.in
 /builder/virt-index-validate
 /builder/virt-index-validate.1
 /builder/*.xz
-/builder/yajl_tests
 /cat/stamp-virt-*.pod
 /cat/virt-cat
 /cat/virt-cat.1
@@ -145,6 +145,8 @@ Makefile.in
 /common/mltools/.depend
 /common/mltools/getopt_tests
 /common/mltools/JSON_tests
+/common/mltools/JSON_parser_tests
+/common/mltools/machine_readable_tests
 /common/mltools/tools_utils_tests
 /common/mltools/oUnit-*
 /common/mlutils/.depend
@@ -431,10 +433,13 @@ Makefile.in
 /ocaml/t/*.bc
 /ocaml/t/*.opt
 /p2v/about-authors.c
+/p2v/config.c
 /p2v/dependencies.archlinux
 /p2v/dependencies.debian
 /p2v/dependencies.redhat
 /p2v/dependencies.suse
+/p2v/kernel-config.c
+/p2v/p2v-config.h
 /p2v/stamp-test-virt-p2v-pxe-data-files
 /p2v/stamp-test-virt-p2v-pxe-hostkey
 /p2v/stamp-test-virt-p2v-pxe-kernel
@@ -456,6 +461,7 @@ Makefile.in
 /p2v/virt-p2v.1
 /p2v/virt-p2v.i686
 /p2v/virt-p2v.img
+/p2v/virt-p2v-kernel-config.pod
 /p2v/virt-p2v-make-disk
 /p2v/virt-p2v-make-disk.1
 /p2v/virt-p2v-make-kickstart
@@ -672,12 +678,13 @@ Makefile.in
 /utils/qemu-boot/qemu-boot
 /utils/qemu-speed-test/qemu-speed-test
 /v2v/.depend
+/v2v/config.ml
 /v2v/oUnit-*
+/v2v/output_rhv_upload_*_source.ml
 /v2v/real-*.d/
 /v2v/real-*.img
 /v2v/real-*.xml
-/v2v/stamp-virt-v2v.pod
-/v2v/stamp-virt-v2v-copy-to-local.pod
+/v2v/stamp-virt-v2v*.pod
 /v2v/test-harness/.depend
 /v2v/test-harness/META
 /v2v/test-harness/stamp-virt-v2v-test-harness.pod
@@ -690,6 +697,12 @@ Makefile.in
 /v2v/virt-v2v.1
 /v2v/virt-v2v-copy-to-local
 /v2v/virt-v2v-copy-to-local.1
+/v2v/virt-v2v-input-vmware.1
+/v2v/virt-v2v-input-xen.1
+/v2v/virt-v2v-output-local.1
+/v2v/virt-v2v-output-openstack.1
+/v2v/virt-v2v-output-rhv.1
+/v2v/virt-v2v-support.1
 /v2v/windows.vmdk
 /website/*.html
 /website/README.txt

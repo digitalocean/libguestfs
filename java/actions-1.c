@@ -4,7 +4,7 @@
  *          and from the code in the generator/ subdirectory.
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -631,6 +631,30 @@ Java_com_redhat_et_libguestfs_GuestFS__1exists  (JNIEnv *env, jobject obj, jlong
 
  ret_error:
   return -1;
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1f2fs_1expand  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
+  r = guestfs_f2fs_expand (g, device);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    goto ret_error;
+  }
+  return;
+
+ ret_error:
+  return;
 }
 
 

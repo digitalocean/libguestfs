@@ -1,5 +1,5 @@
 (* virt-sysprep
- * Copyright (C) 2012-2018 Red Hat Inc.
+ * Copyright (C) 2012-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ let rec set_hostname (g : Guestfs.guestfs) root hostname =
     update_etc_machine_info g hostname;
     true
 
-  | "linux", ("debian"|"ubuntu"), _ ->
+  | "linux", ("debian"|"ubuntu"|"kalilinux"), _ ->
     let old_hostname = read_etc_hostname g in
     update_etc_hostname g hostname;
     replace_host_in_etc_hosts g old_hostname hostname;

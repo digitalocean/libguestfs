@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,20 @@ module G = Guestfs
 let augeas_reload g =
   g#aug_load ();
   debug_augeas_errors g
+
+let rec install_local g { i_package_format = package_format } packages =
+  if packages <> [] then (
+    match package_format with
+    | "rpm" ->
+      let cmd = [ "rpm"; "--upgrade"; "-v" ] @ packages in
+      let cmd = Array.of_list cmd in
+      ignore (g#command cmd)
+    | format ->
+      error (f_"don’t know how to install packages using %s: packages: %s")
+        format (String.concat " " packages)
+    (* Reload Augeas in case anything changed. *)
+    augeas_reload g
+  )
 
 let rec remove g inspect packages =
   if packages <> [] then (

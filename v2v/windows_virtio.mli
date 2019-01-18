@@ -1,5 +1,5 @@
 (* virt-v2v
- * Copyright (C) 2009-2018 Red Hat Inc.
+ * Copyright (C) 2009-2019 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,10 @@ val install_drivers
     reflecting what devices are now required by the guest, either
     virtio devices if we managed to install those, or legacy devices
     if we didn't. *)
+
+val install_linux_tools : Guestfs.guestfs -> Types.inspect -> unit
+(** installs QEMU Guest Agent on Linux guest OS from the driver directory or
+    driver ISO. It is not fatal if we fail to install the agent. *)
 
 (**/**)
 

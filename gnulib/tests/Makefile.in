@@ -97,6 +97,7 @@ am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
+pkglibexecdir = $(libexecdir)/@PACKAGE@
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -125,18 +126,19 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-fcntl-safer$(EXEEXT) test-fcntl$(EXEEXT) \
 	test-fdopen$(EXEEXT) test-fdopendir$(EXEEXT) \
 	test-fgetc$(EXEEXT) test-filevercmp$(EXEEXT) \
-	test-float$(EXEEXT) test-fnmatch$(EXEEXT) test-fpending.sh \
-	test-fputc$(EXEEXT) test-fread$(EXEEXT) test-fstat$(EXEEXT) \
-	test-fstatat$(EXEEXT) test-ftell.sh test-ftell2.sh \
-	test-ftell3$(EXEEXT) test-ftello.sh test-ftello2.sh \
-	test-ftello3$(EXEEXT) test-ftello4.sh test-ftruncate.sh \
-	test-futimens$(EXEEXT) test-fwrite$(EXEEXT) \
-	test-getaddrinfo$(EXEEXT) test-getcwd-lgpl$(EXEEXT) \
-	test-getcwd.sh test-getdelim$(EXEEXT) \
-	test-getdtablesize$(EXEEXT) test-getline$(EXEEXT) \
-	test-getopt-gnu$(EXEEXT) test-getopt-posix$(EXEEXT) \
-	test-getprogname$(EXEEXT) test-getsockname$(EXEEXT) \
-	test-getsockopt$(EXEEXT) test-gettimeofday$(EXEEXT) \
+	test-float$(EXEEXT) test-fnmatch-h$(EXEEXT) \
+	test-fnmatch$(EXEEXT) test-fpending.sh test-fputc$(EXEEXT) \
+	test-fread$(EXEEXT) test-fstat$(EXEEXT) test-fstatat$(EXEEXT) \
+	test-ftell.sh test-ftell2.sh test-ftell3$(EXEEXT) \
+	test-ftello.sh test-ftello2.sh test-ftello3$(EXEEXT) \
+	test-ftello4.sh test-ftruncate.sh test-futimens$(EXEEXT) \
+	test-fwrite$(EXEEXT) test-getaddrinfo$(EXEEXT) \
+	test-getcwd-lgpl$(EXEEXT) test-getcwd.sh \
+	test-getdelim$(EXEEXT) test-getdtablesize$(EXEEXT) \
+	test-getline$(EXEEXT) test-getopt-gnu$(EXEEXT) \
+	test-getopt-posix$(EXEEXT) test-getprogname$(EXEEXT) \
+	test-getsockname$(EXEEXT) test-getsockopt$(EXEEXT) \
+	test-gettimeofday$(EXEEXT) test-glob-h$(EXEEXT) \
 	test-glob$(EXEEXT) test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
 	test-iconv$(EXEEXT) test-ignore-value$(EXEEXT) \
 	test-inet_ntop$(EXEEXT) test-inet_pton$(EXEEXT) \
@@ -146,21 +148,22 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-langinfo$(EXEEXT) test-limits-h$(EXEEXT) \
 	test-listen$(EXEEXT) test-locale$(EXEEXT) \
 	test-localeconv$(EXEEXT) test-localename$(EXEEXT) \
-	test-rwlock1$(EXEEXT) test-lock$(EXEEXT) test-lseek.sh \
-	test-lstat$(EXEEXT) test-malloca$(EXEEXT) test-mbrtowc1.sh \
-	test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh \
-	test-mbrtowc5.sh test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
+	test-rwlock1$(EXEEXT) test-lock$(EXEEXT) test-once1$(EXEEXT) \
+	test-once2$(EXEEXT) test-lseek.sh test-lstat$(EXEEXT) \
+	test-malloca$(EXEEXT) test-mbrtowc1.sh test-mbrtowc2.sh \
+	test-mbrtowc3.sh test-mbrtowc4.sh test-mbrtowc5.sh \
+	test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
 	test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh \
 	test-mbrtowc-w32-5.sh test-mbsinit.sh test-mbsrtowcs1.sh \
 	test-mbsrtowcs2.sh test-mbsrtowcs3.sh test-mbsrtowcs4.sh \
 	test-memchr$(EXEEXT) test-memmem$(EXEEXT) \
-	test-memrchr$(EXEEXT) test-nanosleep$(EXEEXT) \
-	test-netdb$(EXEEXT) test-netinet_in$(EXEEXT) \
-	test-nonblocking-pipe.sh test-nonblocking-socket.sh \
-	test-nonblocking$(EXEEXT) test-open$(EXEEXT) \
-	test-openat-safer$(EXEEXT) test-openat$(EXEEXT) \
-	test-pathmax$(EXEEXT) test-perror.sh test-perror2$(EXEEXT) \
-	test-pipe$(EXEEXT) test-pipe2$(EXEEXT) \
+	test-memrchr$(EXEEXT) test-mkdir$(EXEEXT) \
+	test-nanosleep$(EXEEXT) test-netdb$(EXEEXT) \
+	test-netinet_in$(EXEEXT) test-nonblocking-pipe.sh \
+	test-nonblocking-socket.sh test-nonblocking$(EXEEXT) \
+	test-open$(EXEEXT) test-openat-safer$(EXEEXT) \
+	test-openat$(EXEEXT) test-pathmax$(EXEEXT) test-perror.sh \
+	test-perror2$(EXEEXT) test-pipe$(EXEEXT) test-pipe2$(EXEEXT) \
 	test-posix_spawn_file_actions_addclose$(EXEEXT) \
 	test-posix_spawn_file_actions_adddup2$(EXEEXT) \
 	test-posix_spawn_file_actions_addopen$(EXEEXT) $(am__EXEEXT_1) \
@@ -170,7 +173,8 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-raise$(EXEEXT) test-rawmemchr$(EXEEXT) \
 	test-read-file$(EXEEXT) test-read$(EXEEXT) \
 	test-readlink$(EXEEXT) test-readlinkat$(EXEEXT) \
-	test-rmdir$(EXEEXT) test-sched$(EXEEXT) test-select$(EXEEXT) \
+	test-rmdir$(EXEEXT) test-sched$(EXEEXT) \
+	test-scratch-buffer$(EXEEXT) test-select$(EXEEXT) \
 	test-select-in.sh test-select-out.sh test-setenv$(EXEEXT) \
 	test-setlocale1.sh test-setlocale2.sh test-setsockopt$(EXEEXT) \
 	test-sigaction$(EXEEXT) test-signal-h$(EXEEXT) \
@@ -195,17 +199,18 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-unistd$(EXEEXT) test-unlink$(EXEEXT) \
 	test-unlinkat$(EXEEXT) test-unsetenv$(EXEEXT) \
 	test-usleep$(EXEEXT) test-utime-h$(EXEEXT) test-utime$(EXEEXT) \
-	test-utimens$(EXEEXT) test-vasnprintf$(EXEEXT) \
-	test-vasprintf$(EXEEXT) test-vc-list-files-git.sh \
-	test-vc-list-files-cvs.sh test-verify$(EXEEXT) test-verify.sh \
-	test-vsnprintf$(EXEEXT) test-wchar$(EXEEXT) test-wcrtomb.sh \
-	test-wcrtomb-w32-1.sh test-wcrtomb-w32-2.sh \
-	test-wcrtomb-w32-3.sh test-wcrtomb-w32-4.sh \
-	test-wcrtomb-w32-5.sh test-wctype-h$(EXEEXT) \
-	test-write$(EXEEXT) test-xalloc-die.sh test-xstrtol.sh \
-	test-xstrtoll.sh test-xstrtoumax.sh test-xvasprintf$(EXEEXT)
+	test-utimens$(EXEEXT) test-utimensat$(EXEEXT) \
+	test-vasnprintf$(EXEEXT) test-vasprintf$(EXEEXT) \
+	test-vc-list-files-git.sh test-vc-list-files-cvs.sh \
+	test-verify$(EXEEXT) test-verify.sh test-vsnprintf$(EXEEXT) \
+	test-wchar$(EXEEXT) test-wcrtomb.sh test-wcrtomb-w32-1.sh \
+	test-wcrtomb-w32-2.sh test-wcrtomb-w32-3.sh \
+	test-wcrtomb-w32-4.sh test-wcrtomb-w32-5.sh \
+	test-wctype-h$(EXEEXT) test-write$(EXEEXT) test-xalloc-die.sh \
+	test-xstrtol.sh test-xstrtoll.sh test-xstrtoumax.sh \
+	test-xvasprintf$(EXEEXT)
 XFAIL_TESTS =
-noinst_PROGRAMS =
+noinst_PROGRAMS = test-localcharset$(EXEEXT)
 check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-alloca-opt$(EXEEXT) test-areadlink$(EXEEXT) \
 	test-areadlinkat$(EXEEXT) test-argmatch$(EXEEXT) \
@@ -222,18 +227,19 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-fcntl$(EXEEXT) test-fdopen$(EXEEXT) \
 	test-fdopendir$(EXEEXT) test-fgetc$(EXEEXT) \
 	test-filevercmp$(EXEEXT) test-float$(EXEEXT) \
-	test-fnmatch$(EXEEXT) test-fpending$(EXEEXT) \
-	test-fputc$(EXEEXT) test-fread$(EXEEXT) test-fstat$(EXEEXT) \
-	test-fstatat$(EXEEXT) test-ftell$(EXEEXT) test-ftell3$(EXEEXT) \
-	test-ftello$(EXEEXT) test-ftello3$(EXEEXT) \
-	test-ftello4$(EXEEXT) test-ftruncate$(EXEEXT) \
-	test-futimens$(EXEEXT) test-fwrite$(EXEEXT) \
-	test-getaddrinfo$(EXEEXT) test-getcwd-lgpl$(EXEEXT) \
-	test-getcwd$(EXEEXT) test-getdelim$(EXEEXT) \
-	test-getdtablesize$(EXEEXT) test-getline$(EXEEXT) \
-	test-getopt-gnu$(EXEEXT) test-getopt-posix$(EXEEXT) \
-	test-getprogname$(EXEEXT) test-getsockname$(EXEEXT) \
-	test-getsockopt$(EXEEXT) test-gettimeofday$(EXEEXT) \
+	test-fnmatch-h$(EXEEXT) test-fnmatch$(EXEEXT) \
+	test-fpending$(EXEEXT) test-fputc$(EXEEXT) test-fread$(EXEEXT) \
+	test-fstat$(EXEEXT) test-fstatat$(EXEEXT) test-ftell$(EXEEXT) \
+	test-ftell3$(EXEEXT) test-ftello$(EXEEXT) \
+	test-ftello3$(EXEEXT) test-ftello4$(EXEEXT) \
+	test-ftruncate$(EXEEXT) test-futimens$(EXEEXT) \
+	test-fwrite$(EXEEXT) test-getaddrinfo$(EXEEXT) \
+	test-getcwd-lgpl$(EXEEXT) test-getcwd$(EXEEXT) \
+	test-getdelim$(EXEEXT) test-getdtablesize$(EXEEXT) \
+	test-getline$(EXEEXT) test-getopt-gnu$(EXEEXT) \
+	test-getopt-posix$(EXEEXT) test-getprogname$(EXEEXT) \
+	test-getsockname$(EXEEXT) test-getsockopt$(EXEEXT) \
+	test-gettimeofday$(EXEEXT) test-glob-h$(EXEEXT) \
 	test-glob$(EXEEXT) test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
 	test-iconv$(EXEEXT) test-ignore-value$(EXEEXT) \
 	test-inet_ntop$(EXEEXT) test-inet_pton$(EXEEXT) \
@@ -243,14 +249,14 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-langinfo$(EXEEXT) test-limits-h$(EXEEXT) \
 	test-listen$(EXEEXT) test-locale$(EXEEXT) \
 	test-localeconv$(EXEEXT) test-localename$(EXEEXT) \
-	test-rwlock1$(EXEEXT) test-lock$(EXEEXT) test-lseek$(EXEEXT) \
-	test-lstat$(EXEEXT) test-malloca$(EXEEXT) \
-	test-mbrtowc$(EXEEXT) test-mbrtowc-w32$(EXEEXT) \
-	test-mbsinit$(EXEEXT) test-mbsrtowcs$(EXEEXT) \
-	test-memchr$(EXEEXT) test-memmem$(EXEEXT) \
-	test-memrchr$(EXEEXT) test-nanosleep$(EXEEXT) \
-	test-netdb$(EXEEXT) test-netinet_in$(EXEEXT) \
-	test-nonblocking-pipe-main$(EXEEXT) \
+	test-rwlock1$(EXEEXT) test-lock$(EXEEXT) test-once1$(EXEEXT) \
+	test-once2$(EXEEXT) test-lseek$(EXEEXT) test-lstat$(EXEEXT) \
+	test-malloca$(EXEEXT) test-mbrtowc$(EXEEXT) \
+	test-mbrtowc-w32$(EXEEXT) test-mbsinit$(EXEEXT) \
+	test-mbsrtowcs$(EXEEXT) test-memchr$(EXEEXT) \
+	test-memmem$(EXEEXT) test-memrchr$(EXEEXT) test-mkdir$(EXEEXT) \
+	test-nanosleep$(EXEEXT) test-netdb$(EXEEXT) \
+	test-netinet_in$(EXEEXT) test-nonblocking-pipe-main$(EXEEXT) \
 	test-nonblocking-pipe-child$(EXEEXT) \
 	test-nonblocking-socket-main$(EXEEXT) \
 	test-nonblocking-socket-child$(EXEEXT) \
@@ -267,7 +273,8 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-raise$(EXEEXT) test-rawmemchr$(EXEEXT) \
 	test-read-file$(EXEEXT) test-read$(EXEEXT) \
 	test-readlink$(EXEEXT) test-readlinkat$(EXEEXT) \
-	test-rmdir$(EXEEXT) test-sched$(EXEEXT) test-select$(EXEEXT) \
+	test-rmdir$(EXEEXT) test-sched$(EXEEXT) \
+	test-scratch-buffer$(EXEEXT) test-select$(EXEEXT) \
 	test-select-fd$(EXEEXT) test-select-stdin$(EXEEXT) \
 	test-setenv$(EXEEXT) test-setlocale1$(EXEEXT) \
 	test-setlocale2$(EXEEXT) test-setsockopt$(EXEEXT) \
@@ -293,15 +300,15 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-unistd$(EXEEXT) test-unlink$(EXEEXT) \
 	test-unlinkat$(EXEEXT) test-unsetenv$(EXEEXT) \
 	test-usleep$(EXEEXT) test-utime-h$(EXEEXT) test-utime$(EXEEXT) \
-	test-utimens$(EXEEXT) test-vasnprintf$(EXEEXT) \
-	test-vasprintf$(EXEEXT) test-verify$(EXEEXT) \
-	test-vsnprintf$(EXEEXT) test-wchar$(EXEEXT) \
-	test-wcrtomb$(EXEEXT) test-wcrtomb-w32$(EXEEXT) \
-	test-wctype-h$(EXEEXT) test-write$(EXEEXT) \
-	test-xalloc-die$(EXEEXT) test-xstrtol$(EXEEXT) \
-	test-xstrtoul$(EXEEXT) test-xstrtoll$(EXEEXT) \
-	test-xstrtoull$(EXEEXT) test-xstrtoumax$(EXEEXT) \
-	test-xvasprintf$(EXEEXT)
+	test-utimens$(EXEEXT) test-utimensat$(EXEEXT) \
+	test-vasnprintf$(EXEEXT) test-vasprintf$(EXEEXT) \
+	test-verify$(EXEEXT) test-vsnprintf$(EXEEXT) \
+	test-wchar$(EXEEXT) test-wcrtomb$(EXEEXT) \
+	test-wcrtomb-w32$(EXEEXT) test-wctype-h$(EXEEXT) \
+	test-write$(EXEEXT) test-xalloc-die$(EXEEXT) \
+	test-xstrtol$(EXEEXT) test-xstrtoul$(EXEEXT) \
+	test-xstrtoll$(EXEEXT) test-xstrtoull$(EXEEXT) \
+	test-xstrtoumax$(EXEEXT) test-xvasprintf$(EXEEXT)
 EXTRA_PROGRAMS = test-verify-try$(EXEEXT)
 @POSIX_SPAWN_PORTED_TRUE@am__append_1 = test-posix_spawn1 test-posix_spawn2
 @POSIX_SPAWN_PORTED_TRUE@am__append_2 = test-posix_spawn1 test-posix_spawn2
@@ -324,11 +331,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/clock_time.m4 \
 	$(top_srcdir)/m4/close-stream.m4 $(top_srcdir)/m4/close.m4 \
 	$(top_srcdir)/m4/closedir.m4 $(top_srcdir)/m4/closeout.m4 \
-	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/configmake.m4 \
-	$(top_srcdir)/m4/ctype.m4 $(top_srcdir)/m4/cycle-check.m4 \
-	$(top_srcdir)/m4/d-ino.m4 $(top_srcdir)/m4/d-type.m4 \
-	$(top_srcdir)/m4/dirent_h.m4 $(top_srcdir)/m4/dirfd.m4 \
-	$(top_srcdir)/m4/dirname.m4 \
+	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/ctype.m4 \
+	$(top_srcdir)/m4/cycle-check.m4 $(top_srcdir)/m4/d-ino.m4 \
+	$(top_srcdir)/m4/d-type.m4 $(top_srcdir)/m4/dirent_h.m4 \
+	$(top_srcdir)/m4/dirfd.m4 $(top_srcdir)/m4/dirname.m4 \
 	$(top_srcdir)/m4/double-slash-root.m4 $(top_srcdir)/m4/dup.m4 \
 	$(top_srcdir)/m4/dup2.m4 $(top_srcdir)/m4/dup3.m4 \
 	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/environ.m4 \
@@ -341,12 +347,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fdopen.m4 $(top_srcdir)/m4/fdopendir.m4 \
 	$(top_srcdir)/m4/filenamecat.m4 $(top_srcdir)/m4/flexmember.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
-	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
-	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/ftell.m4 \
-	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
-	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/fnmatch_h.m4 $(top_srcdir)/m4/fpending.m4 \
+	$(top_srcdir)/m4/fpieee.m4 $(top_srcdir)/m4/fseeko.m4 \
+	$(top_srcdir)/m4/fstat.m4 $(top_srcdir)/m4/fstatat.m4 \
+	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
+	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
+	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
 	$(top_srcdir)/m4/getcwd-abort-bug.m4 \
 	$(top_srcdir)/m4/getcwd-path-max.m4 $(top_srcdir)/m4/getcwd.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
@@ -354,17 +360,17 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getlogin_r.m4 $(top_srcdir)/m4/getopt.m4 \
 	$(top_srcdir)/m4/getpagesize.m4 \
 	$(top_srcdir)/m4/getprogname.m4 $(top_srcdir)/m4/gettime.m4 \
-	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
-	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glob.m4 \
+	$(top_srcdir)/m4/glob_h.m4 $(top_srcdir)/m4/gnu-make.m4 \
 	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 \
 	$(top_srcdir)/m4/guestfs-find-db-tool.m4 \
 	$(top_srcdir)/m4/guestfs-ocaml-gettext.m4 \
-	$(top_srcdir)/m4/hard-locale.m4 \
 	$(top_srcdir)/m4/host-cpu-c-abi.m4 $(top_srcdir)/m4/hostent.m4 \
 	$(top_srcdir)/m4/human.m4 $(top_srcdir)/m4/i-ring.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
+	$(top_srcdir)/m4/intl-thread-locale.m4 \
 	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
 	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
 	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
@@ -389,20 +395,20 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
 	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
 	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/minmax.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mkstemps.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/mkdir.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mkstemps.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
 	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
 	$(top_srcdir)/m4/nonblocking.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
-	$(top_srcdir)/m4/open-cloexec.m4 $(top_srcdir)/m4/open.m4 \
-	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
-	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
-	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
-	$(top_srcdir)/m4/posix_spawn.m4 $(top_srcdir)/m4/pread.m4 \
-	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/priv-set.m4 \
+	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/open-cloexec.m4 \
+	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
+	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
+	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
+	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/posix_spawn.m4 \
+	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
+	$(top_srcdir)/m4/priv-set.m4 \
 	$(top_srcdir)/m4/pthread_rwlock_rdlock.m4 \
 	$(top_srcdir)/m4/pthread_sigmask.m4 \
 	$(top_srcdir)/m4/ptsname_r.m4 $(top_srcdir)/m4/putenv.m4 \
@@ -416,6 +422,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/sched_h.m4 \
 	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
 	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sh-filename.m4 \
 	$(top_srcdir)/m4/sig_atomic_t.m4 $(top_srcdir)/m4/sigaction.m4 \
 	$(top_srcdir)/m4/signal_h.m4 \
 	$(top_srcdir)/m4/signalblocking.m4 \
@@ -449,18 +456,19 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
 	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utime.m4 \
 	$(top_srcdir)/m4/utime_h.m4 $(top_srcdir)/m4/utimecmp.m4 \
-	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
-	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
-	$(top_srcdir)/m4/vsnprintf.m4 $(top_srcdir)/m4/wait-process.m4 \
-	$(top_srcdir)/m4/waitpid.m4 $(top_srcdir)/m4/warn-on-use.m4 \
-	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
-	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
-	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
-	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
-	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xgetcwd.m4 $(top_srcdir)/m4/xsize.m4 \
-	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/m4/guestfs-progs.m4 \
+	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimensat.m4 \
+	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
+	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/vsnprintf.m4 \
+	$(top_srcdir)/m4/wait-process.m4 $(top_srcdir)/m4/waitpid.m4 \
+	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
+	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
+	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
+	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
+	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
+	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xgetcwd.m4 \
+	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
+	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
+	$(top_srcdir)/m4/guestfs-progs.m4 \
 	$(top_srcdir)/m4/guestfs-c.m4 \
 	$(top_srcdir)/m4/guestfs-libraries.m4 \
 	$(top_srcdir)/m4/guestfs-fuse.m4 \
@@ -479,6 +487,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/guestfs-lua.m4 \
 	$(top_srcdir)/m4/guestfs-golang.m4 \
 	$(top_srcdir)/m4/guestfs-gobject.m4 \
+	$(top_srcdir)/m4/guestfs-v2v.m4 \
 	$(top_srcdir)/m4/guestfs-bash-completion.m4 \
 	$(top_srcdir)/m4/guestfs-misc.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -503,7 +512,8 @@ am__dirstamp = $(am__leading_dot)dirstamp
 am_libtests_a_OBJECTS = dtotimespec.$(OBJEXT) fatal-signal.$(OBJEXT) \
 	imaxtostr.$(OBJEXT) inttostr.$(OBJEXT) offtostr.$(OBJEXT) \
 	uinttostr.$(OBJEXT) umaxtostr.$(OBJEXT) localename.$(OBJEXT) \
-	priv-set.$(OBJEXT) sig-handler.$(OBJEXT) statat.$(OBJEXT) \
+	localename-table.$(OBJEXT) priv-set.$(OBJEXT) \
+	sig-handler.$(OBJEXT) statat.$(OBJEXT) \
 	glthread/thread.$(OBJEXT) timespec-add.$(OBJEXT) \
 	timespec-sub.$(OBJEXT) unlinkdir.$(OBJEXT) utimecmp.$(OBJEXT) \
 	wait-process.$(OBJEXT)
@@ -689,6 +699,11 @@ test_fnmatch_OBJECTS = test-fnmatch.$(OBJEXT)
 test_fnmatch_LDADD = $(LDADD)
 test_fnmatch_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
+test_fnmatch_h_SOURCES = test-fnmatch-h.c
+test_fnmatch_h_OBJECTS = test-fnmatch-h.$(OBJEXT)
+test_fnmatch_h_LDADD = $(LDADD)
+test_fnmatch_h_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
 test_fpending_SOURCES = test-fpending.c
 test_fpending_OBJECTS = test-fpending.$(OBJEXT)
 test_fpending_LDADD = $(LDADD)
@@ -804,6 +819,11 @@ test_glob_OBJECTS = test-glob.$(OBJEXT)
 test_glob_LDADD = $(LDADD)
 test_glob_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
+test_glob_h_SOURCES = test-glob-h.c
+test_glob_h_OBJECTS = test-glob-h.$(OBJEXT)
+test_glob_h_LDADD = $(LDADD)
+test_glob_h_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
 test_hash_SOURCES = test-hash.c
 test_hash_OBJECTS = test-hash.$(OBJEXT)
 test_hash_LDADD = $(LDADD)
@@ -871,6 +891,11 @@ test_limits_h_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 test_listen_SOURCES = test-listen.c
 test_listen_OBJECTS = test-listen.$(OBJEXT)
 test_listen_DEPENDENCIES = $(am__DEPENDENCIES_2)
+test_localcharset_SOURCES = test-localcharset.c
+test_localcharset_OBJECTS = test-localcharset.$(OBJEXT)
+test_localcharset_LDADD = $(LDADD)
+test_localcharset_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
 test_locale_SOURCES = test-locale.c
 test_locale_OBJECTS = test-locale.$(OBJEXT)
 test_locale_LDADD = $(LDADD)
@@ -938,6 +963,11 @@ test_memrchr_OBJECTS = test-memrchr.$(OBJEXT)
 test_memrchr_LDADD = $(LDADD)
 test_memrchr_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
+test_mkdir_SOURCES = test-mkdir.c
+test_mkdir_OBJECTS = test-mkdir.$(OBJEXT)
+test_mkdir_LDADD = $(LDADD)
+test_mkdir_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
 test_nanosleep_SOURCES = test-nanosleep.c
 test_nanosleep_OBJECTS = test-nanosleep.$(OBJEXT)
 test_nanosleep_DEPENDENCIES = $(am__DEPENDENCIES_2) \
@@ -977,6 +1007,12 @@ test_nonblocking_socket_main_OBJECTS =  \
 	test-nonblocking-socket-main.$(OBJEXT)
 test_nonblocking_socket_main_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	$(am__DEPENDENCIES_1)
+am_test_once1_OBJECTS = test-once.$(OBJEXT)
+test_once1_OBJECTS = $(am_test_once1_OBJECTS)
+test_once1_DEPENDENCIES = $(am__DEPENDENCIES_2)
+am_test_once2_OBJECTS = test-once.$(OBJEXT)
+test_once2_OBJECTS = $(am_test_once2_OBJECTS)
+test_once2_DEPENDENCIES = $(am__DEPENDENCIES_2)
 test_open_SOURCES = test-open.c
 test_open_OBJECTS = test-open.$(OBJEXT)
 test_open_LDADD = $(LDADD)
@@ -1107,6 +1143,11 @@ test_sched_OBJECTS = test-sched.$(OBJEXT)
 test_sched_LDADD = $(LDADD)
 test_sched_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
+am_test_scratch_buffer_OBJECTS = test-scratch-buffer.$(OBJEXT)
+test_scratch_buffer_OBJECTS = $(am_test_scratch_buffer_OBJECTS)
+test_scratch_buffer_LDADD = $(LDADD)
+test_scratch_buffer_DEPENDENCIES = libtests.a \
+	../../gnulib/lib/libgnu.la libtests.a $(am__DEPENDENCIES_1)
 test_select_SOURCES = test-select.c
 test_select_OBJECTS = test-select.$(OBJEXT)
 test_select_DEPENDENCIES = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_1)
@@ -1355,6 +1396,10 @@ test_utimens_SOURCES = test-utimens.c
 test_utimens_OBJECTS = test-utimens.$(OBJEXT)
 test_utimens_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+test_utimensat_SOURCES = test-utimensat.c
+test_utimensat_OBJECTS = test-utimensat.$(OBJEXT)
+test_utimensat_DEPENDENCIES = $(am__DEPENDENCIES_2) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 test_vasnprintf_SOURCES = test-vasnprintf.c
 test_vasnprintf_OBJECTS = test-vasnprintf.$(OBJEXT)
 test_vasnprintf_LDADD = $(LDADD)
@@ -1451,13 +1496,14 @@ am__depfiles_remade = ./$(DEPDIR)/anytostr.Po ./$(DEPDIR)/at-func.Po \
 	./$(DEPDIR)/getsockopt.Po ./$(DEPDIR)/imaxtostr.Po \
 	./$(DEPDIR)/inet_pton.Po ./$(DEPDIR)/inttostr.Po \
 	./$(DEPDIR)/isblank.Po ./$(DEPDIR)/listen.Po \
-	./$(DEPDIR)/localename.Po ./$(DEPDIR)/mbtowc.Po \
-	./$(DEPDIR)/nanosleep.Po ./$(DEPDIR)/offtostr.Po \
-	./$(DEPDIR)/pipe.Po ./$(DEPDIR)/priv-set.Po \
-	./$(DEPDIR)/pthread_sigmask.Po ./$(DEPDIR)/putenv.Po \
-	./$(DEPDIR)/rmdir.Po ./$(DEPDIR)/setlocale.Po \
-	./$(DEPDIR)/setsockopt.Po ./$(DEPDIR)/sig-handler.Po \
-	./$(DEPDIR)/sigaction.Po ./$(DEPDIR)/sigprocmask.Po \
+	./$(DEPDIR)/localename-table.Po ./$(DEPDIR)/localename.Po \
+	./$(DEPDIR)/mbtowc.Po ./$(DEPDIR)/nanosleep.Po \
+	./$(DEPDIR)/offtostr.Po ./$(DEPDIR)/pipe.Po \
+	./$(DEPDIR)/priv-set.Po ./$(DEPDIR)/pthread_sigmask.Po \
+	./$(DEPDIR)/putenv.Po ./$(DEPDIR)/rmdir.Po \
+	./$(DEPDIR)/setlocale.Po ./$(DEPDIR)/setsockopt.Po \
+	./$(DEPDIR)/sig-handler.Po ./$(DEPDIR)/sigaction.Po \
+	./$(DEPDIR)/sigprocmask.Po \
 	./$(DEPDIR)/spawn_faction_addclose.Po \
 	./$(DEPDIR)/spawn_faction_adddup2.Po \
 	./$(DEPDIR)/spawn_faction_addopen.Po \
@@ -1486,46 +1532,49 @@ am__depfiles_remade = ./$(DEPDIR)/anytostr.Po ./$(DEPDIR)/at-func.Po \
 	./$(DEPDIR)/test-fcntl.Po ./$(DEPDIR)/test-fdopen.Po \
 	./$(DEPDIR)/test-fdopendir.Po ./$(DEPDIR)/test-fgetc.Po \
 	./$(DEPDIR)/test-filevercmp.Po ./$(DEPDIR)/test-float.Po \
-	./$(DEPDIR)/test-fnmatch.Po ./$(DEPDIR)/test-fpending.Po \
-	./$(DEPDIR)/test-fputc.Po ./$(DEPDIR)/test-fread.Po \
-	./$(DEPDIR)/test-fstat.Po ./$(DEPDIR)/test-fstatat.Po \
-	./$(DEPDIR)/test-ftell.Po ./$(DEPDIR)/test-ftell3.Po \
-	./$(DEPDIR)/test-ftello.Po ./$(DEPDIR)/test-ftello3.Po \
-	./$(DEPDIR)/test-ftello4.Po ./$(DEPDIR)/test-ftruncate.Po \
-	./$(DEPDIR)/test-futimens.Po ./$(DEPDIR)/test-fwrite.Po \
-	./$(DEPDIR)/test-getaddrinfo.Po \
+	./$(DEPDIR)/test-fnmatch-h.Po ./$(DEPDIR)/test-fnmatch.Po \
+	./$(DEPDIR)/test-fpending.Po ./$(DEPDIR)/test-fputc.Po \
+	./$(DEPDIR)/test-fread.Po ./$(DEPDIR)/test-fstat.Po \
+	./$(DEPDIR)/test-fstatat.Po ./$(DEPDIR)/test-ftell.Po \
+	./$(DEPDIR)/test-ftell3.Po ./$(DEPDIR)/test-ftello.Po \
+	./$(DEPDIR)/test-ftello3.Po ./$(DEPDIR)/test-ftello4.Po \
+	./$(DEPDIR)/test-ftruncate.Po ./$(DEPDIR)/test-futimens.Po \
+	./$(DEPDIR)/test-fwrite.Po ./$(DEPDIR)/test-getaddrinfo.Po \
 	./$(DEPDIR)/test-getcwd-lgpl.Po ./$(DEPDIR)/test-getcwd.Po \
 	./$(DEPDIR)/test-getdelim.Po ./$(DEPDIR)/test-getdtablesize.Po \
 	./$(DEPDIR)/test-getline.Po ./$(DEPDIR)/test-getopt-gnu.Po \
 	./$(DEPDIR)/test-getopt-posix.Po \
 	./$(DEPDIR)/test-getprogname.Po \
 	./$(DEPDIR)/test-getsockname.Po ./$(DEPDIR)/test-getsockopt.Po \
-	./$(DEPDIR)/test-gettimeofday.Po ./$(DEPDIR)/test-glob.Po \
-	./$(DEPDIR)/test-hash.Po ./$(DEPDIR)/test-i-ring.Po \
-	./$(DEPDIR)/test-iconv.Po ./$(DEPDIR)/test-ignore-value.Po \
-	./$(DEPDIR)/test-inet_ntop.Po ./$(DEPDIR)/test-inet_pton.Po \
-	./$(DEPDIR)/test-intprops.Po ./$(DEPDIR)/test-inttostr.Po \
-	./$(DEPDIR)/test-inttypes.Po ./$(DEPDIR)/test-ioctl.Po \
-	./$(DEPDIR)/test-isatty.Po ./$(DEPDIR)/test-isblank.Po \
-	./$(DEPDIR)/test-langinfo.Po ./$(DEPDIR)/test-limits-h.Po \
-	./$(DEPDIR)/test-listen.Po ./$(DEPDIR)/test-locale.Po \
+	./$(DEPDIR)/test-gettimeofday.Po ./$(DEPDIR)/test-glob-h.Po \
+	./$(DEPDIR)/test-glob.Po ./$(DEPDIR)/test-hash.Po \
+	./$(DEPDIR)/test-i-ring.Po ./$(DEPDIR)/test-iconv.Po \
+	./$(DEPDIR)/test-ignore-value.Po ./$(DEPDIR)/test-inet_ntop.Po \
+	./$(DEPDIR)/test-inet_pton.Po ./$(DEPDIR)/test-intprops.Po \
+	./$(DEPDIR)/test-inttostr.Po ./$(DEPDIR)/test-inttypes.Po \
+	./$(DEPDIR)/test-ioctl.Po ./$(DEPDIR)/test-isatty.Po \
+	./$(DEPDIR)/test-isblank.Po ./$(DEPDIR)/test-langinfo.Po \
+	./$(DEPDIR)/test-limits-h.Po ./$(DEPDIR)/test-listen.Po \
+	./$(DEPDIR)/test-localcharset.Po ./$(DEPDIR)/test-locale.Po \
 	./$(DEPDIR)/test-localeconv.Po ./$(DEPDIR)/test-localename.Po \
 	./$(DEPDIR)/test-lock.Po ./$(DEPDIR)/test-lseek.Po \
 	./$(DEPDIR)/test-lstat.Po ./$(DEPDIR)/test-malloca.Po \
 	./$(DEPDIR)/test-mbrtowc-w32.Po ./$(DEPDIR)/test-mbrtowc.Po \
 	./$(DEPDIR)/test-mbsinit.Po ./$(DEPDIR)/test-mbsrtowcs.Po \
 	./$(DEPDIR)/test-memchr.Po ./$(DEPDIR)/test-memmem.Po \
-	./$(DEPDIR)/test-memrchr.Po ./$(DEPDIR)/test-nanosleep.Po \
-	./$(DEPDIR)/test-netdb.Po ./$(DEPDIR)/test-netinet_in.Po \
+	./$(DEPDIR)/test-memrchr.Po ./$(DEPDIR)/test-mkdir.Po \
+	./$(DEPDIR)/test-nanosleep.Po ./$(DEPDIR)/test-netdb.Po \
+	./$(DEPDIR)/test-netinet_in.Po \
 	./$(DEPDIR)/test-nonblocking-pipe-child.Po \
 	./$(DEPDIR)/test-nonblocking-pipe-main.Po \
 	./$(DEPDIR)/test-nonblocking-socket-child.Po \
 	./$(DEPDIR)/test-nonblocking-socket-main.Po \
-	./$(DEPDIR)/test-nonblocking.Po ./$(DEPDIR)/test-open.Po \
-	./$(DEPDIR)/test-openat-safer.Po ./$(DEPDIR)/test-openat.Po \
-	./$(DEPDIR)/test-pathmax.Po ./$(DEPDIR)/test-perror.Po \
-	./$(DEPDIR)/test-perror2.Po ./$(DEPDIR)/test-pipe.Po \
-	./$(DEPDIR)/test-pipe2.Po ./$(DEPDIR)/test-posix_spawn1.Po \
+	./$(DEPDIR)/test-nonblocking.Po ./$(DEPDIR)/test-once.Po \
+	./$(DEPDIR)/test-open.Po ./$(DEPDIR)/test-openat-safer.Po \
+	./$(DEPDIR)/test-openat.Po ./$(DEPDIR)/test-pathmax.Po \
+	./$(DEPDIR)/test-perror.Po ./$(DEPDIR)/test-perror2.Po \
+	./$(DEPDIR)/test-pipe.Po ./$(DEPDIR)/test-pipe2.Po \
+	./$(DEPDIR)/test-posix_spawn1.Po \
 	./$(DEPDIR)/test-posix_spawn2.Po \
 	./$(DEPDIR)/test-posix_spawn_file_actions_addclose.Po \
 	./$(DEPDIR)/test-posix_spawn_file_actions_adddup2.Po \
@@ -1539,6 +1588,7 @@ am__depfiles_remade = ./$(DEPDIR)/anytostr.Po ./$(DEPDIR)/at-func.Po \
 	./$(DEPDIR)/test-read.Po ./$(DEPDIR)/test-readlink.Po \
 	./$(DEPDIR)/test-readlinkat.Po ./$(DEPDIR)/test-rmdir.Po \
 	./$(DEPDIR)/test-rwlock1.Po ./$(DEPDIR)/test-sched.Po \
+	./$(DEPDIR)/test-scratch-buffer.Po \
 	./$(DEPDIR)/test-select-fd.Po ./$(DEPDIR)/test-select-stdin.Po \
 	./$(DEPDIR)/test-select.Po ./$(DEPDIR)/test-setenv.Po \
 	./$(DEPDIR)/test-setlocale1.Po ./$(DEPDIR)/test-setlocale2.Po \
@@ -1566,20 +1616,21 @@ am__depfiles_remade = ./$(DEPDIR)/anytostr.Po ./$(DEPDIR)/at-func.Po \
 	./$(DEPDIR)/test-unlink.Po ./$(DEPDIR)/test-unlinkat.Po \
 	./$(DEPDIR)/test-unsetenv.Po ./$(DEPDIR)/test-usleep.Po \
 	./$(DEPDIR)/test-utime-h.Po ./$(DEPDIR)/test-utime.Po \
-	./$(DEPDIR)/test-utimens.Po ./$(DEPDIR)/test-vasnprintf.Po \
-	./$(DEPDIR)/test-vasprintf.Po ./$(DEPDIR)/test-verify-try.Po \
-	./$(DEPDIR)/test-verify.Po ./$(DEPDIR)/test-vsnprintf.Po \
-	./$(DEPDIR)/test-wchar.Po ./$(DEPDIR)/test-wcrtomb-w32.Po \
-	./$(DEPDIR)/test-wcrtomb.Po ./$(DEPDIR)/test-wctype-h.Po \
-	./$(DEPDIR)/test-write.Po ./$(DEPDIR)/test-xalloc-die.Po \
-	./$(DEPDIR)/test-xstrtol.Po ./$(DEPDIR)/test-xstrtoll.Po \
-	./$(DEPDIR)/test-xstrtoul.Po ./$(DEPDIR)/test-xstrtoull.Po \
-	./$(DEPDIR)/test-xstrtoumax.Po ./$(DEPDIR)/test-xvasprintf.Po \
-	./$(DEPDIR)/timespec-add.Po ./$(DEPDIR)/timespec-sub.Po \
-	./$(DEPDIR)/uinttostr.Po ./$(DEPDIR)/umaxtostr.Po \
-	./$(DEPDIR)/unlink.Po ./$(DEPDIR)/unlinkat.Po \
-	./$(DEPDIR)/unlinkdir.Po ./$(DEPDIR)/unsetenv.Po \
-	./$(DEPDIR)/usleep.Po ./$(DEPDIR)/utimecmp.Po \
+	./$(DEPDIR)/test-utimens.Po ./$(DEPDIR)/test-utimensat.Po \
+	./$(DEPDIR)/test-vasnprintf.Po ./$(DEPDIR)/test-vasprintf.Po \
+	./$(DEPDIR)/test-verify-try.Po ./$(DEPDIR)/test-verify.Po \
+	./$(DEPDIR)/test-vsnprintf.Po ./$(DEPDIR)/test-wchar.Po \
+	./$(DEPDIR)/test-wcrtomb-w32.Po ./$(DEPDIR)/test-wcrtomb.Po \
+	./$(DEPDIR)/test-wctype-h.Po ./$(DEPDIR)/test-write.Po \
+	./$(DEPDIR)/test-xalloc-die.Po ./$(DEPDIR)/test-xstrtol.Po \
+	./$(DEPDIR)/test-xstrtoll.Po ./$(DEPDIR)/test-xstrtoul.Po \
+	./$(DEPDIR)/test-xstrtoull.Po ./$(DEPDIR)/test-xstrtoumax.Po \
+	./$(DEPDIR)/test-xvasprintf.Po ./$(DEPDIR)/timespec-add.Po \
+	./$(DEPDIR)/timespec-sub.Po ./$(DEPDIR)/uinttostr.Po \
+	./$(DEPDIR)/umaxtostr.Po ./$(DEPDIR)/unlink.Po \
+	./$(DEPDIR)/unlinkat.Po ./$(DEPDIR)/unlinkdir.Po \
+	./$(DEPDIR)/unsetenv.Po ./$(DEPDIR)/usleep.Po \
+	./$(DEPDIR)/utimecmp.Po ./$(DEPDIR)/utimensat.Po \
 	./$(DEPDIR)/vsnprintf.Po ./$(DEPDIR)/wait-process.Po \
 	./$(DEPDIR)/waitpid.Po ./$(DEPDIR)/wcrtomb.Po \
 	./$(DEPDIR)/wctob.Po ./$(DEPDIR)/wctomb.Po \
@@ -1614,26 +1665,29 @@ SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-dup3.c test-environ.c test-errno.c test-fchdir.c \
 	test-fcntl.c test-fcntl-h.c test-fcntl-safer.c test-fdopen.c \
 	test-fdopendir.c test-fgetc.c test-filevercmp.c test-float.c \
-	test-fnmatch.c test-fpending.c test-fputc.c test-fread.c \
-	test-fstat.c test-fstatat.c test-ftell.c test-ftell3.c \
-	test-ftello.c test-ftello3.c test-ftello4.c test-ftruncate.c \
-	test-futimens.c test-fwrite.c test-getaddrinfo.c test-getcwd.c \
-	test-getcwd-lgpl.c test-getdelim.c test-getdtablesize.c \
-	test-getline.c test-getopt-gnu.c test-getopt-posix.c \
-	test-getprogname.c test-getsockname.c test-getsockopt.c \
-	test-gettimeofday.c test-glob.c test-hash.c test-i-ring.c \
+	test-fnmatch.c test-fnmatch-h.c test-fpending.c test-fputc.c \
+	test-fread.c test-fstat.c test-fstatat.c test-ftell.c \
+	test-ftell3.c test-ftello.c test-ftello3.c test-ftello4.c \
+	test-ftruncate.c test-futimens.c test-fwrite.c \
+	test-getaddrinfo.c test-getcwd.c test-getcwd-lgpl.c \
+	test-getdelim.c test-getdtablesize.c test-getline.c \
+	test-getopt-gnu.c test-getopt-posix.c test-getprogname.c \
+	test-getsockname.c test-getsockopt.c test-gettimeofday.c \
+	test-glob.c test-glob-h.c test-hash.c test-i-ring.c \
 	test-iconv.c test-ignore-value.c test-inet_ntop.c \
 	test-inet_pton.c test-intprops.c test-inttostr.c \
 	test-inttypes.c test-ioctl.c test-isatty.c test-isblank.c \
-	test-langinfo.c test-limits-h.c test-listen.c test-locale.c \
-	test-localeconv.c test-localename.c test-lock.c test-lseek.c \
-	test-lstat.c test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
+	test-langinfo.c test-limits-h.c test-listen.c \
+	test-localcharset.c test-locale.c test-localeconv.c \
+	test-localename.c test-lock.c test-lseek.c test-lstat.c \
+	test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
 	test-mbsinit.c test-mbsrtowcs.c test-memchr.c test-memmem.c \
-	test-memrchr.c test-nanosleep.c test-netdb.c test-netinet_in.c \
-	test-nonblocking.c test-nonblocking-pipe-child.c \
-	test-nonblocking-pipe-main.c test-nonblocking-socket-child.c \
-	test-nonblocking-socket-main.c test-open.c test-openat.c \
-	test-openat-safer.c test-pathmax.c test-perror.c \
+	test-memrchr.c test-mkdir.c test-nanosleep.c test-netdb.c \
+	test-netinet_in.c test-nonblocking.c \
+	test-nonblocking-pipe-child.c test-nonblocking-pipe-main.c \
+	test-nonblocking-socket-child.c test-nonblocking-socket-main.c \
+	$(test_once1_SOURCES) $(test_once2_SOURCES) test-open.c \
+	test-openat.c test-openat-safer.c test-pathmax.c test-perror.c \
 	test-perror2.c test-pipe.c test-pipe2.c test-posix_spawn1.c \
 	test-posix_spawn2.c test-posix_spawn_file_actions_addclose.c \
 	test-posix_spawn_file_actions_adddup2.c \
@@ -1642,23 +1696,24 @@ SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-pthread_sigmask2.c test-ptsname_r.c \
 	test-quotearg-simple.c test-raise.c test-rawmemchr.c \
 	test-read.c test-read-file.c test-readlink.c test-readlinkat.c \
-	test-rmdir.c test-rwlock1.c test-sched.c test-select.c \
-	test-select-fd.c test-select-stdin.c test-setenv.c \
-	test-setlocale1.c test-setlocale2.c test-setsockopt.c \
-	test-sigaction.c test-signal-h.c test-sigprocmask.c \
-	test-sleep.c test-snprintf.c test-sockets.c test-spawn.c \
-	test-stat.c test-stat-time.c test-statat.c test-stdalign.c \
-	test-stdbool.c test-stddef.c test-stdint.c test-stdio.c \
-	test-stdlib.c test-strchrnul.c test-strerror.c \
-	test-strerror_r.c test-string.c test-strnlen.c test-strtoll.c \
-	test-strtoull.c test-strtoumax.c test-symlink.c \
-	test-symlinkat.c test-sys_ioctl.c test-sys_select.c \
-	test-sys_socket.c test-sys_stat.c test-sys_time.c \
-	test-sys_types.c test-sys_uio.c test-sys_wait.c \
-	test-thread_create.c test-thread_self.c test-time.c \
-	test-timespec.c test-tls.c test-ttyname_r.c test-unistd.c \
-	test-unlink.c test-unlinkat.c test-unsetenv.c test-usleep.c \
-	test-utime.c test-utime-h.c test-utimens.c test-vasnprintf.c \
+	test-rmdir.c test-rwlock1.c test-sched.c \
+	$(test_scratch_buffer_SOURCES) test-select.c test-select-fd.c \
+	test-select-stdin.c test-setenv.c test-setlocale1.c \
+	test-setlocale2.c test-setsockopt.c test-sigaction.c \
+	test-signal-h.c test-sigprocmask.c test-sleep.c \
+	test-snprintf.c test-sockets.c test-spawn.c test-stat.c \
+	test-stat-time.c test-statat.c test-stdalign.c test-stdbool.c \
+	test-stddef.c test-stdint.c test-stdio.c test-stdlib.c \
+	test-strchrnul.c test-strerror.c test-strerror_r.c \
+	test-string.c test-strnlen.c test-strtoll.c test-strtoull.c \
+	test-strtoumax.c test-symlink.c test-symlinkat.c \
+	test-sys_ioctl.c test-sys_select.c test-sys_socket.c \
+	test-sys_stat.c test-sys_time.c test-sys_types.c \
+	test-sys_uio.c test-sys_wait.c test-thread_create.c \
+	test-thread_self.c test-time.c test-timespec.c test-tls.c \
+	test-ttyname_r.c test-unistd.c test-unlink.c test-unlinkat.c \
+	test-unsetenv.c test-usleep.c test-utime.c test-utime-h.c \
+	test-utimens.c test-utimensat.c test-vasnprintf.c \
 	test-vasprintf.c test-verify.c test-verify-try.c \
 	test-vsnprintf.c test-wchar.c test-wcrtomb.c \
 	test-wcrtomb-w32.c test-wctype-h.c test-write.c \
@@ -1676,26 +1731,29 @@ DIST_SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-dup3.c test-environ.c test-errno.c test-fchdir.c \
 	test-fcntl.c test-fcntl-h.c test-fcntl-safer.c test-fdopen.c \
 	test-fdopendir.c test-fgetc.c test-filevercmp.c test-float.c \
-	test-fnmatch.c test-fpending.c test-fputc.c test-fread.c \
-	test-fstat.c test-fstatat.c test-ftell.c test-ftell3.c \
-	test-ftello.c test-ftello3.c test-ftello4.c test-ftruncate.c \
-	test-futimens.c test-fwrite.c test-getaddrinfo.c test-getcwd.c \
-	test-getcwd-lgpl.c test-getdelim.c test-getdtablesize.c \
-	test-getline.c test-getopt-gnu.c test-getopt-posix.c \
-	test-getprogname.c test-getsockname.c test-getsockopt.c \
-	test-gettimeofday.c test-glob.c test-hash.c test-i-ring.c \
+	test-fnmatch.c test-fnmatch-h.c test-fpending.c test-fputc.c \
+	test-fread.c test-fstat.c test-fstatat.c test-ftell.c \
+	test-ftell3.c test-ftello.c test-ftello3.c test-ftello4.c \
+	test-ftruncate.c test-futimens.c test-fwrite.c \
+	test-getaddrinfo.c test-getcwd.c test-getcwd-lgpl.c \
+	test-getdelim.c test-getdtablesize.c test-getline.c \
+	test-getopt-gnu.c test-getopt-posix.c test-getprogname.c \
+	test-getsockname.c test-getsockopt.c test-gettimeofday.c \
+	test-glob.c test-glob-h.c test-hash.c test-i-ring.c \
 	test-iconv.c test-ignore-value.c test-inet_ntop.c \
 	test-inet_pton.c test-intprops.c test-inttostr.c \
 	test-inttypes.c test-ioctl.c test-isatty.c test-isblank.c \
-	test-langinfo.c test-limits-h.c test-listen.c test-locale.c \
-	test-localeconv.c test-localename.c test-lock.c test-lseek.c \
-	test-lstat.c test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
+	test-langinfo.c test-limits-h.c test-listen.c \
+	test-localcharset.c test-locale.c test-localeconv.c \
+	test-localename.c test-lock.c test-lseek.c test-lstat.c \
+	test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
 	test-mbsinit.c test-mbsrtowcs.c test-memchr.c test-memmem.c \
-	test-memrchr.c test-nanosleep.c test-netdb.c test-netinet_in.c \
-	test-nonblocking.c test-nonblocking-pipe-child.c \
-	test-nonblocking-pipe-main.c test-nonblocking-socket-child.c \
-	test-nonblocking-socket-main.c test-open.c test-openat.c \
-	test-openat-safer.c test-pathmax.c test-perror.c \
+	test-memrchr.c test-mkdir.c test-nanosleep.c test-netdb.c \
+	test-netinet_in.c test-nonblocking.c \
+	test-nonblocking-pipe-child.c test-nonblocking-pipe-main.c \
+	test-nonblocking-socket-child.c test-nonblocking-socket-main.c \
+	$(test_once1_SOURCES) $(test_once2_SOURCES) test-open.c \
+	test-openat.c test-openat-safer.c test-pathmax.c test-perror.c \
 	test-perror2.c test-pipe.c test-pipe2.c test-posix_spawn1.c \
 	test-posix_spawn2.c test-posix_spawn_file_actions_addclose.c \
 	test-posix_spawn_file_actions_adddup2.c \
@@ -1704,23 +1762,24 @@ DIST_SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-pthread_sigmask2.c test-ptsname_r.c \
 	test-quotearg-simple.c test-raise.c test-rawmemchr.c \
 	test-read.c test-read-file.c test-readlink.c test-readlinkat.c \
-	test-rmdir.c test-rwlock1.c test-sched.c test-select.c \
-	test-select-fd.c test-select-stdin.c test-setenv.c \
-	test-setlocale1.c test-setlocale2.c test-setsockopt.c \
-	test-sigaction.c test-signal-h.c test-sigprocmask.c \
-	test-sleep.c test-snprintf.c test-sockets.c test-spawn.c \
-	test-stat.c test-stat-time.c test-statat.c test-stdalign.c \
-	test-stdbool.c test-stddef.c test-stdint.c test-stdio.c \
-	test-stdlib.c test-strchrnul.c test-strerror.c \
-	test-strerror_r.c test-string.c test-strnlen.c test-strtoll.c \
-	test-strtoull.c test-strtoumax.c test-symlink.c \
-	test-symlinkat.c test-sys_ioctl.c test-sys_select.c \
-	test-sys_socket.c test-sys_stat.c test-sys_time.c \
-	test-sys_types.c test-sys_uio.c test-sys_wait.c \
-	test-thread_create.c test-thread_self.c test-time.c \
-	test-timespec.c test-tls.c test-ttyname_r.c test-unistd.c \
-	test-unlink.c test-unlinkat.c test-unsetenv.c test-usleep.c \
-	test-utime.c test-utime-h.c test-utimens.c test-vasnprintf.c \
+	test-rmdir.c test-rwlock1.c test-sched.c \
+	$(test_scratch_buffer_SOURCES) test-select.c test-select-fd.c \
+	test-select-stdin.c test-setenv.c test-setlocale1.c \
+	test-setlocale2.c test-setsockopt.c test-sigaction.c \
+	test-signal-h.c test-sigprocmask.c test-sleep.c \
+	test-snprintf.c test-sockets.c test-spawn.c test-stat.c \
+	test-stat-time.c test-statat.c test-stdalign.c test-stdbool.c \
+	test-stddef.c test-stdint.c test-stdio.c test-stdlib.c \
+	test-strchrnul.c test-strerror.c test-strerror_r.c \
+	test-string.c test-strnlen.c test-strtoll.c test-strtoull.c \
+	test-strtoumax.c test-symlink.c test-symlinkat.c \
+	test-sys_ioctl.c test-sys_select.c test-sys_socket.c \
+	test-sys_stat.c test-sys_time.c test-sys_types.c \
+	test-sys_uio.c test-sys_wait.c test-thread_create.c \
+	test-thread_self.c test-time.c test-timespec.c test-tls.c \
+	test-ttyname_r.c test-unistd.c test-unlink.c test-unlinkat.c \
+	test-unsetenv.c test-usleep.c test-utime.c test-utime-h.c \
+	test-utimens.c test-utimensat.c test-vasnprintf.c \
 	test-vasprintf.c test-verify.c test-verify-try.c \
 	test-vsnprintf.c test-wchar.c test-wcrtomb.c \
 	test-wcrtomb-w32.c test-wctype-h.c test-write.c \
@@ -2001,7 +2060,6 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
 ACL_LIBS = @ACL_LIBS@
 ALLOCA = @ALLOCA@
@@ -2092,7 +2150,6 @@ GHC = @GHC@
 GIO_CFLAGS = @GIO_CFLAGS@
 GIO_LIBS = @GIO_LIBS@
 GJS = @GJS@
-GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
 GMSGFMT = @GMSGFMT@
 GMSGFMT_015 = @GMSGFMT_015@
@@ -2133,6 +2190,7 @@ GNULIB_FFSL = @GNULIB_FFSL@
 GNULIB_FFSLL = @GNULIB_FFSLL@
 GNULIB_FGETC = @GNULIB_FGETC@
 GNULIB_FGETS = @GNULIB_FGETS@
+GNULIB_FNMATCH = @GNULIB_FNMATCH@
 GNULIB_FOPEN = @GNULIB_FOPEN@
 GNULIB_FPRINTF = @GNULIB_FPRINTF@
 GNULIB_FPRINTF_POSIX = @GNULIB_FPRINTF_POSIX@
@@ -2166,12 +2224,14 @@ GNULIB_GETLOADAVG = @GNULIB_GETLOADAVG@
 GNULIB_GETLOGIN = @GNULIB_GETLOGIN@
 GNULIB_GETLOGIN_R = @GNULIB_GETLOGIN_R@
 GNULIB_GETPAGESIZE = @GNULIB_GETPAGESIZE@
+GNULIB_GETPASS = @GNULIB_GETPASS@
 GNULIB_GETPEERNAME = @GNULIB_GETPEERNAME@
 GNULIB_GETSOCKNAME = @GNULIB_GETSOCKNAME@
 GNULIB_GETSOCKOPT = @GNULIB_GETSOCKOPT@
 GNULIB_GETSUBOPT = @GNULIB_GETSUBOPT@
 GNULIB_GETTIMEOFDAY = @GNULIB_GETTIMEOFDAY@
 GNULIB_GETUSERSHELL = @GNULIB_GETUSERSHELL@
+GNULIB_GLOB = @GNULIB_GLOB@
 GNULIB_GL_UNISTD_H_GETOPT = @GNULIB_GL_UNISTD_H_GETOPT@
 GNULIB_GRANTPT = @GNULIB_GRANTPT@
 GNULIB_GROUP_MEMBER = @GNULIB_GROUP_MEMBER@
@@ -2190,6 +2250,7 @@ GNULIB_LINK = @GNULIB_LINK@
 GNULIB_LINKAT = @GNULIB_LINKAT@
 GNULIB_LISTEN = @GNULIB_LISTEN@
 GNULIB_LOCALECONV = @GNULIB_LOCALECONV@
+GNULIB_LOCALENAME = @GNULIB_LOCALENAME@
 GNULIB_LOCALTIME = @GNULIB_LOCALTIME@
 GNULIB_LSEEK = @GNULIB_LSEEK@
 GNULIB_LSTAT = @GNULIB_LSTAT@
@@ -2261,6 +2322,7 @@ GNULIB_POSIX_SPAWNATTR_SETSCHEDPOLICY = @GNULIB_POSIX_SPAWNATTR_SETSCHEDPOLICY@
 GNULIB_POSIX_SPAWNATTR_SETSIGDEFAULT = @GNULIB_POSIX_SPAWNATTR_SETSIGDEFAULT@
 GNULIB_POSIX_SPAWNATTR_SETSIGMASK = @GNULIB_POSIX_SPAWNATTR_SETSIGMASK@
 GNULIB_POSIX_SPAWNP = @GNULIB_POSIX_SPAWNP@
+GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR@
 GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
 GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
 GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
@@ -2475,6 +2537,7 @@ HAVE_DECL_STRSIGNAL = @HAVE_DECL_STRSIGNAL@
 HAVE_DECL_STRTOIMAX = @HAVE_DECL_STRTOIMAX@
 HAVE_DECL_STRTOK_R = @HAVE_DECL_STRTOK_R@
 HAVE_DECL_STRTOUMAX = @HAVE_DECL_STRTOUMAX@
+HAVE_DECL_TRUNCATE = @HAVE_DECL_TRUNCATE@
 HAVE_DECL_TTYNAME_R = @HAVE_DECL_TTYNAME_R@
 HAVE_DECL_UNSETENV = @HAVE_DECL_UNSETENV@
 HAVE_DECL_VSNPRINTF = @HAVE_DECL_VSNPRINTF@
@@ -2497,6 +2560,9 @@ HAVE_FDOPENDIR = @HAVE_FDOPENDIR@
 HAVE_FEATURES_H = @HAVE_FEATURES_H@
 HAVE_FFSL = @HAVE_FFSL@
 HAVE_FFSLL = @HAVE_FFSLL@
+HAVE_FNMATCH = @HAVE_FNMATCH@
+HAVE_FNMATCH_H = @HAVE_FNMATCH_H@
+HAVE_FREELOCALE = @HAVE_FREELOCALE@
 HAVE_FSEEKO = @HAVE_FSEEKO@
 HAVE_FSTATAT = @HAVE_FSTATAT@
 HAVE_FSYNC = @HAVE_FSYNC@
@@ -2509,10 +2575,15 @@ HAVE_GETHOSTNAME = @HAVE_GETHOSTNAME@
 HAVE_GETLOGIN = @HAVE_GETLOGIN@
 HAVE_GETOPT_H = @HAVE_GETOPT_H@
 HAVE_GETPAGESIZE = @HAVE_GETPAGESIZE@
+HAVE_GETPASS = @HAVE_GETPASS@
 HAVE_GETSUBOPT = @HAVE_GETSUBOPT@
 HAVE_GETTIMEOFDAY = @HAVE_GETTIMEOFDAY@
+HAVE_GLOB = @HAVE_GLOB@
+HAVE_GLOB_H = @HAVE_GLOB_H@
+HAVE_GLOB_PATTERN_P = @HAVE_GLOB_PATTERN_P@
 HAVE_GRANTPT = @HAVE_GRANTPT@
 HAVE_GROUP_MEMBER = @HAVE_GROUP_MEMBER@
+HAVE_IMAXDIV_T = @HAVE_IMAXDIV_T@
 HAVE_INTTYPES_H = @HAVE_INTTYPES_H@
 HAVE_ISBLANK = @HAVE_ISBLANK@
 HAVE_ISWBLANK = @HAVE_ISWBLANK@
@@ -2552,6 +2623,7 @@ HAVE_MSVC_INVALID_PARAMETER_HANDLER = @HAVE_MSVC_INVALID_PARAMETER_HANDLER@
 HAVE_NANOSLEEP = @HAVE_NANOSLEEP@
 HAVE_NETDB_H = @HAVE_NETDB_H@
 HAVE_NETINET_IN_H = @HAVE_NETINET_IN_H@
+HAVE_NEWLOCALE = @HAVE_NEWLOCALE@
 HAVE_NL_LANGINFO = @HAVE_NL_LANGINFO@
 HAVE_OPENAT = @HAVE_OPENAT@
 HAVE_OPENDIR = @HAVE_OPENDIR@
@@ -2564,6 +2636,7 @@ HAVE_POSIX_OPENPT = @HAVE_POSIX_OPENPT@
 HAVE_POSIX_SIGNALBLOCKING = @HAVE_POSIX_SIGNALBLOCKING@
 HAVE_POSIX_SPAWN = @HAVE_POSIX_SPAWN@
 HAVE_POSIX_SPAWNATTR_T = @HAVE_POSIX_SPAWNATTR_T@
+HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR = @HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR@
 HAVE_POSIX_SPAWN_FILE_ACTIONS_T = @HAVE_POSIX_SPAWN_FILE_ACTIONS_T@
 HAVE_PREAD = @HAVE_PREAD@
 HAVE_PSELECT = @HAVE_PSELECT@
@@ -2634,7 +2707,6 @@ HAVE_SYS_TYPES_H = @HAVE_SYS_TYPES_H@
 HAVE_SYS_UIO_H = @HAVE_SYS_UIO_H@
 HAVE_TIMEGM = @HAVE_TIMEGM@
 HAVE_TIMEZONE_T = @HAVE_TIMEZONE_T@
-HAVE_TRUNCATE = @HAVE_TRUNCATE@
 HAVE_TYPE_VOLATILE_SIG_ATOMIC_T = @HAVE_TYPE_VOLATILE_SIG_ATOMIC_T@
 HAVE_TZSET = @HAVE_TZSET@
 HAVE_UNISTD_H = @HAVE_UNISTD_H@
@@ -2717,6 +2789,8 @@ INTROSPECTION_LIBS = @INTROSPECTION_LIBS@
 INTROSPECTION_MAKEFILE = @INTROSPECTION_MAKEFILE@
 INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
 INTROSPECTION_TYPELIBDIR = @INTROSPECTION_TYPELIBDIR@
+JANSSON_CFLAGS = @JANSSON_CFLAGS@
+JANSSON_LIBS = @JANSSON_LIBS@
 JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
@@ -2801,7 +2875,9 @@ NEXT_AS_FIRST_DIRECTIVE_DIRENT_H = @NEXT_AS_FIRST_DIRECTIVE_DIRENT_H@
 NEXT_AS_FIRST_DIRECTIVE_ERRNO_H = @NEXT_AS_FIRST_DIRECTIVE_ERRNO_H@
 NEXT_AS_FIRST_DIRECTIVE_FCNTL_H = @NEXT_AS_FIRST_DIRECTIVE_FCNTL_H@
 NEXT_AS_FIRST_DIRECTIVE_FLOAT_H = @NEXT_AS_FIRST_DIRECTIVE_FLOAT_H@
+NEXT_AS_FIRST_DIRECTIVE_FNMATCH_H = @NEXT_AS_FIRST_DIRECTIVE_FNMATCH_H@
 NEXT_AS_FIRST_DIRECTIVE_GETOPT_H = @NEXT_AS_FIRST_DIRECTIVE_GETOPT_H@
+NEXT_AS_FIRST_DIRECTIVE_GLOB_H = @NEXT_AS_FIRST_DIRECTIVE_GLOB_H@
 NEXT_AS_FIRST_DIRECTIVE_INTTYPES_H = @NEXT_AS_FIRST_DIRECTIVE_INTTYPES_H@
 NEXT_AS_FIRST_DIRECTIVE_LANGINFO_H = @NEXT_AS_FIRST_DIRECTIVE_LANGINFO_H@
 NEXT_AS_FIRST_DIRECTIVE_LIMITS_H = @NEXT_AS_FIRST_DIRECTIVE_LIMITS_H@
@@ -2835,7 +2911,9 @@ NEXT_DIRENT_H = @NEXT_DIRENT_H@
 NEXT_ERRNO_H = @NEXT_ERRNO_H@
 NEXT_FCNTL_H = @NEXT_FCNTL_H@
 NEXT_FLOAT_H = @NEXT_FLOAT_H@
+NEXT_FNMATCH_H = @NEXT_FNMATCH_H@
 NEXT_GETOPT_H = @NEXT_GETOPT_H@
+NEXT_GLOB_H = @NEXT_GLOB_H@
 NEXT_INTTYPES_H = @NEXT_INTTYPES_H@
 NEXT_LANGINFO_H = @NEXT_LANGINFO_H@
 NEXT_LIMITS_H = @NEXT_LIMITS_H@
@@ -2957,9 +3035,11 @@ REPLACE_FCNTL = @REPLACE_FCNTL@
 REPLACE_FDOPEN = @REPLACE_FDOPEN@
 REPLACE_FDOPENDIR = @REPLACE_FDOPENDIR@
 REPLACE_FFLUSH = @REPLACE_FFLUSH@
+REPLACE_FNMATCH = @REPLACE_FNMATCH@
 REPLACE_FOPEN = @REPLACE_FOPEN@
 REPLACE_FPRINTF = @REPLACE_FPRINTF@
 REPLACE_FPURGE = @REPLACE_FPURGE@
+REPLACE_FREELOCALE = @REPLACE_FREELOCALE@
 REPLACE_FREOPEN = @REPLACE_FREOPEN@
 REPLACE_FSEEK = @REPLACE_FSEEK@
 REPLACE_FSEEKO = @REPLACE_FSEEKO@
@@ -2978,7 +3058,10 @@ REPLACE_GETGROUPS = @REPLACE_GETGROUPS@
 REPLACE_GETLINE = @REPLACE_GETLINE@
 REPLACE_GETLOGIN_R = @REPLACE_GETLOGIN_R@
 REPLACE_GETPAGESIZE = @REPLACE_GETPAGESIZE@
+REPLACE_GETPASS = @REPLACE_GETPASS@
 REPLACE_GETTIMEOFDAY = @REPLACE_GETTIMEOFDAY@
+REPLACE_GLOB = @REPLACE_GLOB@
+REPLACE_GLOB_PATTERN_P = @REPLACE_GLOB_PATTERN_P@
 REPLACE_GMTIME = @REPLACE_GMTIME@
 REPLACE_INET_NTOP = @REPLACE_INET_NTOP@
 REPLACE_INET_PTON = @REPLACE_INET_PTON@
@@ -3011,6 +3094,7 @@ REPLACE_MKNOD = @REPLACE_MKNOD@
 REPLACE_MKSTEMP = @REPLACE_MKSTEMP@
 REPLACE_MKTIME = @REPLACE_MKTIME@
 REPLACE_NANOSLEEP = @REPLACE_NANOSLEEP@
+REPLACE_NEWLOCALE = @REPLACE_NEWLOCALE@
 REPLACE_NL_LANGINFO = @REPLACE_NL_LANGINFO@
 REPLACE_NULL = @REPLACE_NULL@
 REPLACE_OBSTACK_PRINTF = @REPLACE_OBSTACK_PRINTF@
@@ -3020,6 +3104,7 @@ REPLACE_OPENDIR = @REPLACE_OPENDIR@
 REPLACE_PERROR = @REPLACE_PERROR@
 REPLACE_POPEN = @REPLACE_POPEN@
 REPLACE_POSIX_SPAWN = @REPLACE_POSIX_SPAWN@
+REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR@
 REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
 REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2 = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
 REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN = @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
@@ -3141,6 +3226,7 @@ UTIME_H = @UTIME_H@
 VALGRIND = @VALGRIND@
 VERSION = @VERSION@
 VERSION_SCRIPT_FLAGS = @VERSION_SCRIPT_FLAGS@
+VIRT_V2V_NBDKIT_PYTHON_PLUGIN = @VIRT_V2V_NBDKIT_PYTHON_PLUGIN@
 WARN_CFLAGS = @WARN_CFLAGS@
 WCHAR_T_SUFFIX = @WCHAR_T_SUFFIX@
 WERROR_CFLAGS = @WERROR_CFLAGS@
@@ -3156,8 +3242,6 @@ XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 XMLLINT = @XMLLINT@
 XZCAT = @XZCAT@
 YACC = @YACC@
-YAJL_CFLAGS = @YAJL_CFLAGS@
-YAJL_LIBS = @YAJL_LIBS@
 YARA_CFLAGS = @YARA_CFLAGS@
 YARA_LIBS = @YARA_LIBS@
 YFLAGS = @YFLAGS@
@@ -3206,7 +3290,6 @@ install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
 libvirt_ro_uri = @libvirt_ro_uri@
-lispdir = @lispdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
@@ -3217,7 +3300,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -3226,7 +3308,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = 1.9.6 foreign subdir-objects
+AUTOMAKE_OPTIONS = 1.11 foreign subdir-objects
 SUBDIRS = .
 TESTS_ENVIRONMENT = EXEEXT='@EXEEXT@' srcdir='$(srcdir)' \
 	LOCALE_FR='@LOCALE_FR@' LOCALE_FR_UTF8='@LOCALE_FR_UTF8@' \
@@ -3264,41 +3346,42 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	signature.h macros.h fdopen.c test-fdopen.c signature.h \
 	macros.h test-fdopendir.c signature.h macros.h test-fgetc.c \
 	signature.h macros.h test-filevercmp.c macros.h test-float.c \
-	macros.h test-fnmatch.c signature.h macros.h test-fpending.c \
-	test-fpending.sh macros.h fpucw.h test-fputc.c signature.h \
-	macros.h test-fread.c signature.h macros.h test-fstat.c \
-	signature.h macros.h test-fstatat.c test-lstat.h test-stat.h \
-	signature.h macros.h test-ftell.c test-ftell.sh test-ftell2.sh \
-	test-ftell3.c signature.h macros.h test-ftello.c \
-	test-ftello.sh test-ftello2.sh test-ftello3.c test-ftello4.c \
-	test-ftello4.sh signature.h macros.h ftruncate.c \
-	test-ftruncate.c test-ftruncate.sh signature.h macros.h nap.h \
-	test-futimens.h test-utimens-common.h test-futimens.c \
-	signature.h macros.h test-fwrite.c signature.h macros.h \
-	signature.h test-getaddrinfo.c test-getcwd-lgpl.c signature.h \
-	macros.h test-getcwd.c test-getcwd.sh test-getdelim.c \
-	signature.h macros.h test-getdtablesize.c signature.h macros.h \
-	test-getline.c signature.h macros.h macros.h signature.h \
-	test-getopt-gnu.c test-getopt-main.h test-getopt.h \
-	test-getopt_long.h macros.h signature.h test-getopt-posix.c \
-	test-getopt-main.h test-getopt.h getpagesize.c \
-	test-getprogname.c getsockname.c w32sock.h test-getsockname.c \
-	signature.h macros.h getsockopt.c w32sock.h test-getsockopt.c \
-	signature.h macros.h signature.h test-gettimeofday.c \
-	test-glob.c signature.h macros.h test-hash.c macros.h \
-	test-i-ring.c macros.h test-iconv.c signature.h macros.h \
-	test-ignore-value.c test-inet_ntop.c signature.h macros.h \
-	inet_pton.c test-inet_pton.c signature.h macros.h \
-	test-intprops.c macros.h anytostr.c inttostr.h macros.h \
-	test-inttostr.c test-inttypes.c test-ioctl.c signature.h \
-	macros.h test-isatty.c signature.h macros.h isblank.c \
-	test-isblank.c signature.h macros.h langinfo.in.h \
-	test-langinfo.c test-limits-h.c listen.c w32sock.h \
-	test-listen.c signature.h macros.h test-locale.c \
-	test-localeconv.c signature.h macros.h localename.h \
+	macros.h test-fnmatch-h.c test-fnmatch.c signature.h macros.h \
+	test-fpending.c test-fpending.sh macros.h fpucw.h test-fputc.c \
+	signature.h macros.h test-fread.c signature.h macros.h \
+	test-fstat.c signature.h macros.h test-fstatat.c test-lstat.h \
+	test-stat.h signature.h macros.h test-ftell.c test-ftell.sh \
+	test-ftell2.sh test-ftell3.c signature.h macros.h \
+	test-ftello.c test-ftello.sh test-ftello2.sh test-ftello3.c \
+	test-ftello4.c test-ftello4.sh signature.h macros.h \
+	ftruncate.c test-ftruncate.c test-ftruncate.sh signature.h \
+	macros.h nap.h test-futimens.h test-utimens-common.h \
+	test-futimens.c signature.h macros.h test-fwrite.c signature.h \
+	macros.h signature.h test-getaddrinfo.c test-getcwd-lgpl.c \
+	signature.h macros.h test-getcwd.c test-getcwd.sh \
+	test-getdelim.c signature.h macros.h test-getdtablesize.c \
+	signature.h macros.h test-getline.c signature.h macros.h \
+	macros.h signature.h test-getopt-gnu.c test-getopt-main.h \
+	test-getopt.h test-getopt_long.h macros.h signature.h \
+	test-getopt-posix.c test-getopt-main.h test-getopt.h \
+	getpagesize.c test-getprogname.c getsockname.c w32sock.h \
+	test-getsockname.c signature.h macros.h getsockopt.c w32sock.h \
+	test-getsockopt.c signature.h macros.h signature.h \
+	test-gettimeofday.c test-glob-h.c macros.h test-glob.c \
+	signature.h macros.h test-hash.c macros.h test-i-ring.c \
+	macros.h test-iconv.c signature.h macros.h test-ignore-value.c \
+	test-inet_ntop.c signature.h macros.h inet_pton.c \
+	test-inet_pton.c signature.h macros.h test-intprops.c macros.h \
+	anytostr.c inttostr.h macros.h test-inttostr.c test-inttypes.c \
+	test-ioctl.c signature.h macros.h test-isatty.c signature.h \
+	macros.h isblank.c test-isblank.c signature.h macros.h \
+	langinfo.in.h test-langinfo.c test-limits-h.c listen.c \
+	w32sock.h test-listen.c signature.h macros.h \
+	test-localcharset.c test-locale.c test-localeconv.c \
+	signature.h macros.h localename-table.h localename.h \
 	test-localename.c macros.h test-rwlock1.c test-lock.c \
-	test-lseek.c test-lseek.sh signature.h macros.h test-lstat.h \
-	test-lstat.c signature.h macros.h test-malloca.c \
+	test-once.c test-lseek.c test-lseek.sh signature.h macros.h \
+	test-lstat.h test-lstat.c signature.h macros.h test-malloca.c \
 	test-mbrtowc1.sh test-mbrtowc2.sh test-mbrtowc3.sh \
 	test-mbrtowc4.sh test-mbrtowc5.sh test-mbrtowc.c \
 	test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
@@ -3310,22 +3393,23 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	mbtowc-impl.h mbtowc.c test-memchr.c zerosize-ptr.h \
 	signature.h macros.h test-memmem.c signature.h null-ptr.h \
 	zerosize-ptr.h macros.h test-memrchr.c zerosize-ptr.h \
-	signature.h macros.h nanosleep.c test-nanosleep.c signature.h \
-	macros.h test-netdb.c test-netinet_in.c \
-	test-nonblocking-pipe.sh test-nonblocking-pipe-main.c \
-	test-nonblocking-pipe-child.c test-nonblocking-pipe.h \
+	signature.h macros.h test-mkdir.h test-mkdir.c signature.h \
+	macros.h nanosleep.c test-nanosleep.c signature.h macros.h \
+	test-netdb.c test-netinet_in.c test-nonblocking-pipe.sh \
+	test-nonblocking-pipe-main.c test-nonblocking-pipe-child.c \
+	test-nonblocking-pipe.h test-nonblocking-writer.h \
+	test-nonblocking-reader.h test-nonblocking-misc.h macros.h \
+	test-nonblocking-socket.sh test-nonblocking-socket-main.c \
+	test-nonblocking-socket-child.c test-nonblocking-socket.h \
 	test-nonblocking-writer.h test-nonblocking-reader.h \
-	test-nonblocking-misc.h macros.h test-nonblocking-socket.sh \
-	test-nonblocking-socket-main.c test-nonblocking-socket-child.c \
-	test-nonblocking-socket.h test-nonblocking-writer.h \
-	test-nonblocking-reader.h test-nonblocking-misc.h \
-	socket-server.h socket-client.h macros.h test-nonblocking.c \
-	macros.h test-open.h test-open.c signature.h macros.h \
-	test-openat-safer.c macros.h test-openat.c test-open.h \
-	signature.h macros.h test-pathmax.c macros.h signature.h \
-	test-perror.c test-perror2.c test-perror.sh pipe.c test-pipe.c \
-	signature.h macros.h test-pipe2.c signature.h macros.h \
-	spawn_int.h spawni.c spawn_faction_addclose.c spawn_int.h \
+	test-nonblocking-misc.h socket-server.h socket-client.h \
+	macros.h test-nonblocking.c macros.h test-open.h test-open.c \
+	signature.h macros.h test-openat-safer.c macros.h \
+	test-openat.c test-open.h signature.h macros.h test-pathmax.c \
+	macros.h signature.h test-perror.c test-perror2.c \
+	test-perror.sh pipe.c test-pipe.c signature.h macros.h \
+	test-pipe2.c signature.h macros.h spawn_int.h spawni.c \
+	spawn_faction_addclose.c spawn_int.h \
 	test-posix_spawn_file_actions_addclose.c signature.h macros.h \
 	spawn_faction_adddup2.c spawn_int.h \
 	test-posix_spawn_file_actions_adddup2.c signature.h macros.h \
@@ -3347,22 +3431,23 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	test-readlink.c signature.h macros.h test-readlink.h \
 	test-readlinkat.c signature.h macros.h rmdir.c test-rmdir.h \
 	test-rmdir.c signature.h macros.h root-uid.h sched.in.h \
-	test-sched.c macros.h signature.h test-select.c test-select.h \
-	test-select-fd.c test-select-in.sh test-select-out.sh \
-	test-select-stdin.c test-setenv.c signature.h macros.h \
-	setlocale.c test-setlocale1.sh test-setlocale1.c \
-	test-setlocale2.sh test-setlocale2.c signature.h macros.h \
-	setsockopt.c w32sock.h test-setsockopt.c signature.h macros.h \
-	sig-handler.h sigaction.c test-sigaction.c signature.h \
-	macros.h test-signal-h.c sigprocmask.c test-sigprocmask.c \
-	signature.h macros.h test-sleep.c signature.h macros.h \
-	_Noreturn.h arg-nonnull.h c++defs.h warn-on-use.h \
-	test-snprintf.c signature.h macros.h test-sockets.c spawn.in.h \
-	test-spawn.c test-stat.h test-stat.c signature.h macros.h \
-	test-stat-time.c macros.h nap.h test-statat.c test-stdalign.c \
-	macros.h test-stdbool.c test-stddef.c test-stdint.c \
-	test-stdio.c test-stdlib.c test-sys_wait.h test-strchrnul.c \
-	signature.h macros.h test-strerror.c signature.h macros.h \
+	test-sched.c test-scratch-buffer.c macros.h macros.h \
+	signature.h test-select.c test-select.h test-select-fd.c \
+	test-select-in.sh test-select-out.sh test-select-stdin.c \
+	test-setenv.c signature.h macros.h setlocale.c \
+	test-setlocale1.sh test-setlocale1.c test-setlocale2.sh \
+	test-setlocale2.c signature.h macros.h setsockopt.c w32sock.h \
+	test-setsockopt.c signature.h macros.h sig-handler.h \
+	sigaction.c test-sigaction.c signature.h macros.h \
+	test-signal-h.c sigprocmask.c test-sigprocmask.c signature.h \
+	macros.h test-sleep.c signature.h macros.h _Noreturn.h \
+	arg-nonnull.h c++defs.h warn-on-use.h test-snprintf.c \
+	signature.h macros.h test-sockets.c spawn.in.h test-spawn.c \
+	test-stat.h test-stat.c signature.h macros.h test-stat-time.c \
+	macros.h nap.h test-statat.c test-stdalign.c macros.h \
+	test-stdbool.c test-stddef.c test-stdint.c test-stdio.c \
+	test-stdlib.c test-sys_wait.h test-strchrnul.c signature.h \
+	macros.h test-strerror.c signature.h macros.h \
 	test-strerror_r.c signature.h macros.h test-string.c \
 	test-strnlen.c zerosize-ptr.h signature.h macros.h \
 	test-strtoll.c signature.h macros.h test-strtoull.c \
@@ -3383,6 +3468,8 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	test-utime-h.c test-utime.c nap.h test-utimens-common.h \
 	macros.h utimecmp.h nap.h test-futimens.h test-lutimens.h \
 	test-utimens.h test-utimens-common.h test-utimens.c macros.h \
+	at-func.c utimensat.c nap.h test-lutimens.h test-utimens.h \
+	test-utimens-common.h test-utimensat.c signature.h macros.h \
 	test-vasnprintf.c macros.h test-vasprintf.c signature.h \
 	macros.h test-vc-list-files-git.sh test-vc-list-files-cvs.sh \
 	test-verify.c test-verify-try.c test-verify.sh vsnprintf.c \
@@ -3419,8 +3506,8 @@ AM_CPPFLAGS = \
 LDADD = libtests.a ../../gnulib/lib/libgnu.la libtests.a $(LIBTESTS_LIBDEPS)
 libtests_a_SOURCES = dtotimespec.c fatal-signal.h fatal-signal.c \
 	imaxtostr.c inttostr.c offtostr.c uinttostr.c umaxtostr.c \
-	localename.c priv-set.c sig-handler.c statat.c \
-	glthread/thread.h glthread/thread.c timespec-add.c \
+	localename.c localename-table.c priv-set.c sig-handler.c \
+	statat.c glthread/thread.h glthread/thread.c timespec-add.c \
 	timespec-sub.c unlinkdir.c utimecmp.c wait-process.h \
 	wait-process.c glthread/yield.h
 libtests_a_LIBADD = $(gltests_LIBOBJS)
@@ -3434,8 +3521,8 @@ EXTRA_libtests_a_SOURCES = bind.c btowc.c fdopen.c ftruncate.c \
 	spawnattr_setflags.c spawnattr_setsigmask.c spawnp.c \
 	pthread_sigmask.c putenv.c rmdir.c setlocale.c setsockopt.c \
 	sigaction.c sigprocmask.c unlink.c at-func.c unlinkat.c \
-	unsetenv.c usleep.c vsnprintf.c waitpid.c wcrtomb.c wctob.c \
-	wctomb.c
+	unsetenv.c usleep.c at-func.c utimensat.c vsnprintf.c \
+	waitpid.c wcrtomb.c wctob.c wctomb.c
 AM_LIBTOOLFLAGS = --preserve-dup-deps
 test_accept_LDADD = $(LDADD) @LIBSOCKET@
 test_accept4_LDADD = $(LDADD) @LIBSOCKET@
@@ -3462,6 +3549,10 @@ test_listen_LDADD = $(LDADD) @LIBSOCKET@
 test_localename_LDADD = $(LDADD) @INTL_MACOSX_LIBS@ $(LIBTHREAD)
 test_rwlock1_LDADD = $(LDADD) @LIBMULTITHREAD@ @YIELD_LIB@
 test_lock_LDADD = $(LDADD) @LIBMULTITHREAD@ @YIELD_LIB@
+test_once1_SOURCES = test-once.c
+test_once1_LDADD = $(LDADD) @LIBTHREAD@
+test_once2_SOURCES = test-once.c
+test_once2_LDADD = $(LDADD) @LIBMULTITHREAD@
 test_nanosleep_LDADD = $(LDADD) $(LIB_NANOSLEEP)
 test_nonblocking_pipe_main_LDADD = $(LDADD) @LIBINTL@
 test_nonblocking_socket_main_LDADD = $(LDADD) $(LIBSOCKET) @LIBINTL@
@@ -3474,6 +3565,7 @@ test_pthread_sigmask1_LDADD = $(LDADD) @LIB_PTHREAD_SIGMASK@
 test_pthread_sigmask2_LDADD = $(LDADD) @LIB_PTHREAD_SIGMASK@ @LIBMULTITHREAD@
 test_quotearg_simple_LDADD = $(LDADD) @LIBINTL@
 test_readlinkat_LDADD = $(LDADD) @LIBINTL@
+test_scratch_buffer_SOURCES = test-scratch-buffer.c
 test_select_LDADD = $(LDADD) @LIB_SELECT@ @LIBSOCKET@ $(INET_PTON_LIB)
 test_select_fd_LDADD = $(LDADD) @LIB_SELECT@
 test_select_stdin_LDADD = $(LDADD) @LIB_SELECT@
@@ -3509,6 +3601,7 @@ test_tls_LDADD = $(LDADD) @LIBMULTITHREAD@ @YIELD_LIB@
 test_unlinkat_LDADD = $(LDADD) @LIBINTL@
 test_utime_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) $(LIB_NANOSLEEP) @LIBINTL@
 test_utimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) $(LIB_NANOSLEEP) @LIBINTL@
+test_utimensat_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) $(LIB_NANOSLEEP) @LIBINTL@
 test_xalloc_die_LDADD = $(LDADD) @LIBINTL@
 test_xstrtol_LDADD = $(LDADD) @LIBINTL@
 test_xstrtoul_LDADD = $(LDADD) @LIBINTL@
@@ -3740,6 +3833,10 @@ test-fnmatch$(EXEEXT): $(test_fnmatch_OBJECTS) $(test_fnmatch_DEPENDENCIES) $(EX
 	@rm -f test-fnmatch$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_fnmatch_OBJECTS) $(test_fnmatch_LDADD) $(LIBS)
 
+test-fnmatch-h$(EXEEXT): $(test_fnmatch_h_OBJECTS) $(test_fnmatch_h_DEPENDENCIES) $(EXTRA_test_fnmatch_h_DEPENDENCIES) 
+	@rm -f test-fnmatch-h$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_fnmatch_h_OBJECTS) $(test_fnmatch_h_LDADD) $(LIBS)
+
 test-fpending$(EXEEXT): $(test_fpending_OBJECTS) $(test_fpending_DEPENDENCIES) $(EXTRA_test_fpending_DEPENDENCIES) 
 	@rm -f test-fpending$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_fpending_OBJECTS) $(test_fpending_LDADD) $(LIBS)
@@ -3844,6 +3941,10 @@ test-glob$(EXEEXT): $(test_glob_OBJECTS) $(test_glob_DEPENDENCIES) $(EXTRA_test_
 	@rm -f test-glob$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_glob_OBJECTS) $(test_glob_LDADD) $(LIBS)
 
+test-glob-h$(EXEEXT): $(test_glob_h_OBJECTS) $(test_glob_h_DEPENDENCIES) $(EXTRA_test_glob_h_DEPENDENCIES) 
+	@rm -f test-glob-h$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_glob_h_OBJECTS) $(test_glob_h_LDADD) $(LIBS)
+
 test-hash$(EXEEXT): $(test_hash_OBJECTS) $(test_hash_DEPENDENCIES) $(EXTRA_test_hash_DEPENDENCIES) 
 	@rm -f test-hash$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_hash_OBJECTS) $(test_hash_LDADD) $(LIBS)
@@ -3904,6 +4005,10 @@ test-listen$(EXEEXT): $(test_listen_OBJECTS) $(test_listen_DEPENDENCIES) $(EXTRA
 	@rm -f test-listen$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_listen_OBJECTS) $(test_listen_LDADD) $(LIBS)
 
+test-localcharset$(EXEEXT): $(test_localcharset_OBJECTS) $(test_localcharset_DEPENDENCIES) $(EXTRA_test_localcharset_DEPENDENCIES) 
+	@rm -f test-localcharset$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_localcharset_OBJECTS) $(test_localcharset_LDADD) $(LIBS)
+
 test-locale$(EXEEXT): $(test_locale_OBJECTS) $(test_locale_DEPENDENCIES) $(EXTRA_test_locale_DEPENDENCIES) 
 	@rm -f test-locale$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_locale_OBJECTS) $(test_locale_LDADD) $(LIBS)
@@ -3960,6 +4065,10 @@ test-memrchr$(EXEEXT): $(test_memrchr_OBJECTS) $(test_memrchr_DEPENDENCIES) $(EX
 	@rm -f test-memrchr$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_memrchr_OBJECTS) $(test_memrchr_LDADD) $(LIBS)
 
+test-mkdir$(EXEEXT): $(test_mkdir_OBJECTS) $(test_mkdir_DEPENDENCIES) $(EXTRA_test_mkdir_DEPENDENCIES) 
+	@rm -f test-mkdir$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_mkdir_OBJECTS) $(test_mkdir_LDADD) $(LIBS)
+
 test-nanosleep$(EXEEXT): $(test_nanosleep_OBJECTS) $(test_nanosleep_DEPENDENCIES) $(EXTRA_test_nanosleep_DEPENDENCIES) 
 	@rm -f test-nanosleep$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_nanosleep_OBJECTS) $(test_nanosleep_LDADD) $(LIBS)
@@ -3991,6 +4100,14 @@ test-nonblocking-socket-child$(EXEEXT): $(test_nonblocking_socket_child_OBJECTS)
 test-nonblocking-socket-main$(EXEEXT): $(test_nonblocking_socket_main_OBJECTS) $(test_nonblocking_socket_main_DEPENDENCIES) $(EXTRA_test_nonblocking_socket_main_DEPENDENCIES) 
 	@rm -f test-nonblocking-socket-main$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_nonblocking_socket_main_OBJECTS) $(test_nonblocking_socket_main_LDADD) $(LIBS)
+
+test-once1$(EXEEXT): $(test_once1_OBJECTS) $(test_once1_DEPENDENCIES) $(EXTRA_test_once1_DEPENDENCIES) 
+	@rm -f test-once1$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_once1_OBJECTS) $(test_once1_LDADD) $(LIBS)
+
+test-once2$(EXEEXT): $(test_once2_OBJECTS) $(test_once2_DEPENDENCIES) $(EXTRA_test_once2_DEPENDENCIES) 
+	@rm -f test-once2$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_once2_OBJECTS) $(test_once2_LDADD) $(LIBS)
 
 test-open$(EXEEXT): $(test_open_OBJECTS) $(test_open_DEPENDENCIES) $(EXTRA_test_open_DEPENDENCIES) 
 	@rm -f test-open$(EXEEXT)
@@ -4103,6 +4220,10 @@ test-rwlock1$(EXEEXT): $(test_rwlock1_OBJECTS) $(test_rwlock1_DEPENDENCIES) $(EX
 test-sched$(EXEEXT): $(test_sched_OBJECTS) $(test_sched_DEPENDENCIES) $(EXTRA_test_sched_DEPENDENCIES) 
 	@rm -f test-sched$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_sched_OBJECTS) $(test_sched_LDADD) $(LIBS)
+
+test-scratch-buffer$(EXEEXT): $(test_scratch_buffer_OBJECTS) $(test_scratch_buffer_DEPENDENCIES) $(EXTRA_test_scratch_buffer_DEPENDENCIES) 
+	@rm -f test-scratch-buffer$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_scratch_buffer_OBJECTS) $(test_scratch_buffer_LDADD) $(LIBS)
 
 test-select$(EXEEXT): $(test_select_OBJECTS) $(test_select_DEPENDENCIES) $(EXTRA_test_select_DEPENDENCIES) 
 	@rm -f test-select$(EXEEXT)
@@ -4324,6 +4445,10 @@ test-utimens$(EXEEXT): $(test_utimens_OBJECTS) $(test_utimens_DEPENDENCIES) $(EX
 	@rm -f test-utimens$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_utimens_OBJECTS) $(test_utimens_LDADD) $(LIBS)
 
+test-utimensat$(EXEEXT): $(test_utimensat_OBJECTS) $(test_utimensat_DEPENDENCIES) $(EXTRA_test_utimensat_DEPENDENCIES) 
+	@rm -f test-utimensat$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_utimensat_OBJECTS) $(test_utimensat_LDADD) $(LIBS)
+
 test-vasnprintf$(EXEEXT): $(test_vasnprintf_OBJECTS) $(test_vasnprintf_DEPENDENCIES) $(EXTRA_test_vasnprintf_DEPENDENCIES) 
 	@rm -f test-vasnprintf$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_vasnprintf_OBJECTS) $(test_vasnprintf_LDADD) $(LIBS)
@@ -4415,6 +4540,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inttostr.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/isblank.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/listen.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/localename-table.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/localename.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mbtowc.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nanosleep.Po@am__quote@ # am--include-marker
@@ -4478,6 +4604,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fgetc.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-filevercmp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-float.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fnmatch-h.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fnmatch.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fpending.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fputc.Po@am__quote@ # am--include-marker
@@ -4504,6 +4631,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-getsockname.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-getsockopt.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-gettimeofday.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-glob-h.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-glob.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-hash.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-i-ring.Po@am__quote@ # am--include-marker
@@ -4520,6 +4648,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-langinfo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-limits-h.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-listen.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-localcharset.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-locale.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-localeconv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-localename.Po@am__quote@ # am--include-marker
@@ -4534,6 +4663,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-memchr.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-memmem.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-memrchr.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-mkdir.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-nanosleep.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-netdb.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-netinet_in.Po@am__quote@ # am--include-marker
@@ -4542,6 +4672,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-nonblocking-socket-child.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-nonblocking-socket-main.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-nonblocking.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-once.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-open.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-openat-safer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-openat.Po@am__quote@ # am--include-marker
@@ -4570,6 +4701,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-rmdir.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-rwlock1.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-sched.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-scratch-buffer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-select-fd.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-select-stdin.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-select.Po@am__quote@ # am--include-marker
@@ -4625,6 +4757,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-utime-h.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-utime.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-utimens.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-utimensat.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-vasnprintf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-vasprintf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-verify-try.Po@am__quote@ # am--include-marker
@@ -4652,6 +4785,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unsetenv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/usleep.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utimecmp.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utimensat.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vsnprintf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wait-process.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/waitpid.Po@am__quote@ # am--include-marker
@@ -5188,6 +5322,13 @@ test-float.log: test-float$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-fnmatch-h.log: test-fnmatch-h$(EXEEXT)
+	@p='test-fnmatch-h$(EXEEXT)'; \
+	b='test-fnmatch-h'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-fnmatch.log: test-fnmatch$(EXEEXT)
 	@p='test-fnmatch$(EXEEXT)'; \
 	b='test-fnmatch'; \
@@ -5384,6 +5525,13 @@ test-gettimeofday.log: test-gettimeofday$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-glob-h.log: test-glob-h$(EXEEXT)
+	@p='test-glob-h$(EXEEXT)'; \
+	b='test-glob-h'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-glob.log: test-glob$(EXEEXT)
 	@p='test-glob$(EXEEXT)'; \
 	b='test-glob'; \
@@ -5531,6 +5679,20 @@ test-lock.log: test-lock$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-once1.log: test-once1$(EXEEXT)
+	@p='test-once1$(EXEEXT)'; \
+	b='test-once1'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-once2.log: test-once2$(EXEEXT)
+	@p='test-once2$(EXEEXT)'; \
+	b='test-once2'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-lseek.sh.log: test-lseek.sh
 	@p='test-lseek.sh'; \
 	b='test-lseek.sh'; \
@@ -5674,6 +5836,13 @@ test-memmem.log: test-memmem$(EXEEXT)
 test-memrchr.log: test-memrchr$(EXEEXT)
 	@p='test-memrchr$(EXEEXT)'; \
 	b='test-memrchr'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-mkdir.log: test-mkdir$(EXEEXT)
+	@p='test-mkdir$(EXEEXT)'; \
+	b='test-mkdir'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -5905,6 +6074,13 @@ test-rmdir.log: test-rmdir$(EXEEXT)
 test-sched.log: test-sched$(EXEEXT)
 	@p='test-sched$(EXEEXT)'; \
 	b='test-sched'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-scratch-buffer.log: test-scratch-buffer$(EXEEXT)
+	@p='test-scratch-buffer$(EXEEXT)'; \
+	b='test-scratch-buffer'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -6308,6 +6484,13 @@ test-utimens.log: test-utimens$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-utimensat.log: test-utimensat$(EXEEXT)
+	@p='test-utimensat$(EXEEXT)'; \
+	b='test-utimensat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test-vasnprintf.log: test-vasnprintf$(EXEEXT)
 	@p='test-vasnprintf$(EXEEXT)'; \
 	b='test-vasnprintf'; \
@@ -6600,6 +6783,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/inttostr.Po
 	-rm -f ./$(DEPDIR)/isblank.Po
 	-rm -f ./$(DEPDIR)/listen.Po
+	-rm -f ./$(DEPDIR)/localename-table.Po
 	-rm -f ./$(DEPDIR)/localename.Po
 	-rm -f ./$(DEPDIR)/mbtowc.Po
 	-rm -f ./$(DEPDIR)/nanosleep.Po
@@ -6663,6 +6847,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/test-fgetc.Po
 	-rm -f ./$(DEPDIR)/test-filevercmp.Po
 	-rm -f ./$(DEPDIR)/test-float.Po
+	-rm -f ./$(DEPDIR)/test-fnmatch-h.Po
 	-rm -f ./$(DEPDIR)/test-fnmatch.Po
 	-rm -f ./$(DEPDIR)/test-fpending.Po
 	-rm -f ./$(DEPDIR)/test-fputc.Po
@@ -6689,6 +6874,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/test-getsockname.Po
 	-rm -f ./$(DEPDIR)/test-getsockopt.Po
 	-rm -f ./$(DEPDIR)/test-gettimeofday.Po
+	-rm -f ./$(DEPDIR)/test-glob-h.Po
 	-rm -f ./$(DEPDIR)/test-glob.Po
 	-rm -f ./$(DEPDIR)/test-hash.Po
 	-rm -f ./$(DEPDIR)/test-i-ring.Po
@@ -6705,6 +6891,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/test-langinfo.Po
 	-rm -f ./$(DEPDIR)/test-limits-h.Po
 	-rm -f ./$(DEPDIR)/test-listen.Po
+	-rm -f ./$(DEPDIR)/test-localcharset.Po
 	-rm -f ./$(DEPDIR)/test-locale.Po
 	-rm -f ./$(DEPDIR)/test-localeconv.Po
 	-rm -f ./$(DEPDIR)/test-localename.Po
@@ -6719,6 +6906,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/test-memchr.Po
 	-rm -f ./$(DEPDIR)/test-memmem.Po
 	-rm -f ./$(DEPDIR)/test-memrchr.Po
+	-rm -f ./$(DEPDIR)/test-mkdir.Po
 	-rm -f ./$(DEPDIR)/test-nanosleep.Po
 	-rm -f ./$(DEPDIR)/test-netdb.Po
 	-rm -f ./$(DEPDIR)/test-netinet_in.Po
@@ -6727,6 +6915,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/test-nonblocking-socket-child.Po
 	-rm -f ./$(DEPDIR)/test-nonblocking-socket-main.Po
 	-rm -f ./$(DEPDIR)/test-nonblocking.Po
+	-rm -f ./$(DEPDIR)/test-once.Po
 	-rm -f ./$(DEPDIR)/test-open.Po
 	-rm -f ./$(DEPDIR)/test-openat-safer.Po
 	-rm -f ./$(DEPDIR)/test-openat.Po
@@ -6755,6 +6944,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/test-rmdir.Po
 	-rm -f ./$(DEPDIR)/test-rwlock1.Po
 	-rm -f ./$(DEPDIR)/test-sched.Po
+	-rm -f ./$(DEPDIR)/test-scratch-buffer.Po
 	-rm -f ./$(DEPDIR)/test-select-fd.Po
 	-rm -f ./$(DEPDIR)/test-select-stdin.Po
 	-rm -f ./$(DEPDIR)/test-select.Po
@@ -6810,6 +7000,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/test-utime-h.Po
 	-rm -f ./$(DEPDIR)/test-utime.Po
 	-rm -f ./$(DEPDIR)/test-utimens.Po
+	-rm -f ./$(DEPDIR)/test-utimensat.Po
 	-rm -f ./$(DEPDIR)/test-vasnprintf.Po
 	-rm -f ./$(DEPDIR)/test-vasprintf.Po
 	-rm -f ./$(DEPDIR)/test-verify-try.Po
@@ -6837,6 +7028,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/unsetenv.Po
 	-rm -f ./$(DEPDIR)/usleep.Po
 	-rm -f ./$(DEPDIR)/utimecmp.Po
+	-rm -f ./$(DEPDIR)/utimensat.Po
 	-rm -f ./$(DEPDIR)/vsnprintf.Po
 	-rm -f ./$(DEPDIR)/wait-process.Po
 	-rm -f ./$(DEPDIR)/waitpid.Po
@@ -6905,6 +7097,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/inttostr.Po
 	-rm -f ./$(DEPDIR)/isblank.Po
 	-rm -f ./$(DEPDIR)/listen.Po
+	-rm -f ./$(DEPDIR)/localename-table.Po
 	-rm -f ./$(DEPDIR)/localename.Po
 	-rm -f ./$(DEPDIR)/mbtowc.Po
 	-rm -f ./$(DEPDIR)/nanosleep.Po
@@ -6968,6 +7161,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/test-fgetc.Po
 	-rm -f ./$(DEPDIR)/test-filevercmp.Po
 	-rm -f ./$(DEPDIR)/test-float.Po
+	-rm -f ./$(DEPDIR)/test-fnmatch-h.Po
 	-rm -f ./$(DEPDIR)/test-fnmatch.Po
 	-rm -f ./$(DEPDIR)/test-fpending.Po
 	-rm -f ./$(DEPDIR)/test-fputc.Po
@@ -6994,6 +7188,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/test-getsockname.Po
 	-rm -f ./$(DEPDIR)/test-getsockopt.Po
 	-rm -f ./$(DEPDIR)/test-gettimeofday.Po
+	-rm -f ./$(DEPDIR)/test-glob-h.Po
 	-rm -f ./$(DEPDIR)/test-glob.Po
 	-rm -f ./$(DEPDIR)/test-hash.Po
 	-rm -f ./$(DEPDIR)/test-i-ring.Po
@@ -7010,6 +7205,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/test-langinfo.Po
 	-rm -f ./$(DEPDIR)/test-limits-h.Po
 	-rm -f ./$(DEPDIR)/test-listen.Po
+	-rm -f ./$(DEPDIR)/test-localcharset.Po
 	-rm -f ./$(DEPDIR)/test-locale.Po
 	-rm -f ./$(DEPDIR)/test-localeconv.Po
 	-rm -f ./$(DEPDIR)/test-localename.Po
@@ -7024,6 +7220,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/test-memchr.Po
 	-rm -f ./$(DEPDIR)/test-memmem.Po
 	-rm -f ./$(DEPDIR)/test-memrchr.Po
+	-rm -f ./$(DEPDIR)/test-mkdir.Po
 	-rm -f ./$(DEPDIR)/test-nanosleep.Po
 	-rm -f ./$(DEPDIR)/test-netdb.Po
 	-rm -f ./$(DEPDIR)/test-netinet_in.Po
@@ -7032,6 +7229,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/test-nonblocking-socket-child.Po
 	-rm -f ./$(DEPDIR)/test-nonblocking-socket-main.Po
 	-rm -f ./$(DEPDIR)/test-nonblocking.Po
+	-rm -f ./$(DEPDIR)/test-once.Po
 	-rm -f ./$(DEPDIR)/test-open.Po
 	-rm -f ./$(DEPDIR)/test-openat-safer.Po
 	-rm -f ./$(DEPDIR)/test-openat.Po
@@ -7060,6 +7258,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/test-rmdir.Po
 	-rm -f ./$(DEPDIR)/test-rwlock1.Po
 	-rm -f ./$(DEPDIR)/test-sched.Po
+	-rm -f ./$(DEPDIR)/test-scratch-buffer.Po
 	-rm -f ./$(DEPDIR)/test-select-fd.Po
 	-rm -f ./$(DEPDIR)/test-select-stdin.Po
 	-rm -f ./$(DEPDIR)/test-select.Po
@@ -7115,6 +7314,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/test-utime-h.Po
 	-rm -f ./$(DEPDIR)/test-utime.Po
 	-rm -f ./$(DEPDIR)/test-utimens.Po
+	-rm -f ./$(DEPDIR)/test-utimensat.Po
 	-rm -f ./$(DEPDIR)/test-vasnprintf.Po
 	-rm -f ./$(DEPDIR)/test-vasprintf.Po
 	-rm -f ./$(DEPDIR)/test-verify-try.Po
@@ -7142,6 +7342,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/unsetenv.Po
 	-rm -f ./$(DEPDIR)/usleep.Po
 	-rm -f ./$(DEPDIR)/utimecmp.Po
+	-rm -f ./$(DEPDIR)/utimensat.Po
 	-rm -f ./$(DEPDIR)/vsnprintf.Po
 	-rm -f ./$(DEPDIR)/wait-process.Po
 	-rm -f ./$(DEPDIR)/waitpid.Po
@@ -7274,6 +7475,7 @@ spawn.h: spawn.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) 
 	      -e 's/@''GNULIB_POSIX_SPAWN''@/$(GNULIB_POSIX_SPAWN)/g' \
 	      -e 's/@''GNULIB_POSIX_SPAWNP''@/$(GNULIB_POSIX_SPAWNP)/g' \
 	      -e 's/@''GNULIB_POSIX_SPAWN_FILE_ACTIONS_INIT''@/$(GNULIB_POSIX_SPAWN_FILE_ACTIONS_INIT)/g' \
+	      -e 's/@''GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR''@/$(GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR)/g' \
 	      -e 's/@''GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE''@/$(GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE)/g' \
 	      -e 's/@''GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2''@/$(GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2)/g' \
 	      -e 's/@''GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN''@/$(GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN)/g' \
@@ -7295,7 +7497,9 @@ spawn.h: spawn.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) 
 	      -e 's|@''HAVE_POSIX_SPAWN''@|$(HAVE_POSIX_SPAWN)|g' \
 	      -e 's|@''HAVE_POSIX_SPAWNATTR_T''@|$(HAVE_POSIX_SPAWNATTR_T)|g' \
 	      -e 's|@''HAVE_POSIX_SPAWN_FILE_ACTIONS_T''@|$(HAVE_POSIX_SPAWN_FILE_ACTIONS_T)|g' \
+	      -e 's|@''HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR''@|$(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR)|g' \
 	      -e 's|@''REPLACE_POSIX_SPAWN''@|$(REPLACE_POSIX_SPAWN)|g' \
+	      -e 's|@''REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR''@|$(REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR)|g' \
 	      -e 's|@''REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE''@|$(REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE)|g' \
 	      -e 's|@''REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2''@|$(REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2)|g' \
 	      -e 's|@''REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN''@|$(REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN)|g' \
