@@ -7,7 +7,7 @@ Subject: Fix /sbin/reboot requirements
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/appliance/packagelist.in b/appliance/packagelist.in
-index 8ded258..d02846d 100644
+index 8d2e9d4..d47e2d2 100644
 --- a/appliance/packagelist.in
 +++ b/appliance/packagelist.in
 @@ -96,8 +96,8 @@ dnl iproute has been renamed to iproute2

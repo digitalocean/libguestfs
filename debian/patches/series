@@ -9,5 +9,6 @@
 0009-Fix-sbin-reboot-requirements.patch
 0010-Add-fdisk-to-appliance-list.patch
 0013-Add-libtinfo-to-guestfsd-fixes-FTBFS-on-architecture.patch
-0014-Disable-v2v-test-harness.patch
+0012-Disable-v2v-test-harness.patch
 0013-Fix-up-perl-path-in-installed-scripts.patch
+0014-Fix-.depend-generation-for-out-of-tree-build.patch

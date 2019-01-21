@@ -32,17 +32,17 @@ index 04fbae6..00679ec 100755
  # Example showing how to inspect a virtual machine disk.
  
 diff --git a/tools/virt-list-filesystems b/tools/virt-list-filesystems
-index 271f34a..85488e3 100755
+index 691f857..5a09623 100755
 --- a/tools/virt-list-filesystems
 +++ b/tools/virt-list-filesystems
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
  # virt-list-filesystems
- # Copyright (C) 2009-2018 Red Hat Inc.
+ # Copyright (C) 2009-2019 Red Hat Inc.
  #
 diff --git a/tools/virt-list-partitions b/tools/virt-list-partitions
-index 4514172..73069d8 100755
+index ea45785..4a2edfe 100755
 --- a/tools/virt-list-partitions
 +++ b/tools/virt-list-partitions
 @@ -1,4 +1,4 @@
@@ -52,14 +52,14 @@ index 4514172..73069d8 100755
  # Copyright (C) 2010 Red Hat Inc.
  #
 diff --git a/tools/virt-tar b/tools/virt-tar
-index 2d5c8b0..98de0c4 100755
+index d20dc19..d275d4b 100755
 --- a/tools/virt-tar
 +++ b/tools/virt-tar
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env perl
 +#!/usr/bin/perl
  # virt-tar
- # Copyright (C) 2009-2018 Red Hat Inc.
+ # Copyright (C) 2009-2019 Red Hat Inc.
  #
 diff --git a/tools/virt-win-reg b/tools/virt-win-reg
 index 1a936c5..0fd4546 100755

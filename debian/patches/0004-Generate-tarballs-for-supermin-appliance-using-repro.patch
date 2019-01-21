@@ -1,14 +1,13 @@
 From: Hilko Bengen <bengen@debian.org>
 Date: Sat, 14 Feb 2015 14:17:09 +0100
-Subject: Generate tarballs for supermin appliance using reproducible
- timestamp
+Subject: Generate tarballs for supermin appliance using reproducible timestamp
 
 ---
  appliance/Makefile.am | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/appliance/Makefile.am b/appliance/Makefile.am
-index 6cba8d1..c37c086 100644
+index fc424b1..77b2e84 100644
 --- a/appliance/Makefile.am
 +++ b/appliance/Makefile.am
 @@ -92,7 +92,7 @@ supermin.d/daemon.tar.gz: ../daemon/guestfsd guestfs_shadow.aug

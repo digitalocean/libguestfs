@@ -7,7 +7,7 @@ Subject: perl: Fix out-of-tree build by generating symlinks
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/perl/Makefile.am b/perl/Makefile.am
-index d1fbccf..91add8d 100644
+index 49bf6cc..b49da00 100644
 --- a/perl/Makefile.am
 +++ b/perl/Makefile.am
 @@ -57,9 +57,11 @@ all-local: Build
