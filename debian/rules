@@ -134,8 +134,11 @@ override_dh_install:
 
 	erlang-depends -perlang-guestfs
 
-	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -X/usr/lib/go- -Xpackages.orig -Xetc/php.d \
-	    --fail-missing
+	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -X/usr/lib/go- -Xpackages.orig -Xetc/php.d
+
+override_dh_missing:
+	dh_missing --fail-missing \
+		-X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -X/usr/lib/go- -Xpackages.orig -Xetc/php.d
 
 # Add packages (except essential packages) from appliance packagelist
 # to libguestfs* dependencies
@@ -156,6 +159,10 @@ override_dh_shlibdeps:
 # "{pre,post}inst-has-useless-call-to-ldconfig"
 override_dh_makeshlibs:
 	dh_makeshlibs -X/jni/ -X/python2/ -X/python3/
+# Workaround for
+# dwz: debian/ruby-guestfs/usr/lib/x86_64-linux-gnu/ruby/vendor_ruby/2.5.0/_guestfs.so: DWARF version 0 unhandled
+override_dh_dwz:
+	dh_dwz -X/vendor_ruby/
 
 %:
 	dh $@ \
