@@ -17,6 +17,8 @@ usr/bin/libguestfs-test-tool
 usr/share/man/man1/libguestfs-test-tool*
 usr/share/man/*/man1/libguestfs-test-tool*
 
+usr/share/bash-completion/completions/libguestfs-test-tool
+
 usr/share/doc/libguestfs/example-*.xml
 usr/share/doc/libguestfs/virt-inspector.rng
 
