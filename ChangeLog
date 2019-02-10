@@ -1,3 +1,129 @@
+commit 91698a8500d19e06811133bfab27d1e1e65a583e
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Thu Feb 7 14:45:14 2019 +0000
+
+    Version 1.40.2.
+
+commit c7b374a757821bbd8f369fa268a75485163b52d7
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 6 15:19:53 2019 +0100
+
+    inspect: revamp icon extraction for *SUSE guests
+    
+    Newer versions do not have the 24px distributor.png icon; OTOH they have
+    the 48px version, so look for that one before the 24px one.
+    
+    Also, bump the size limit to 10K, as newer versions of the icon are
+    bigger than 3K.
+    
+    (cherry picked from commit f41a75cea67dc3f2e18700303fac5d7078b3291a)
+
+commit 8e62f30293737472ec6b9a2a238bb1206b2fbf4e
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 6 15:15:08 2019 +0100
+
+    inspect: factor out find_png helper function
+    
+    Isolate the code for looking for a PNG file among a specified list from
+    the icon_ubuntu implementation, and switch that function to it.
+    
+    This is just code refactoring, with no behaviour changes.
+    
+    (cherry picked from commit 6ff95acc72b02c4df0520e8cae7190447e4b2da5)
+
+commit 178d9d821af6ee25f9f5141c20e4de42315de25f
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Wed Feb 6 15:05:51 2019 +0100
+
+    inspect: bump size limit for Mageia guests
+    
+    Newer versions of the logo in Cauldron are almost 3K, so bump the limit
+    to 10K for now.
+    
+    (cherry picked from commit 032b8d4c72ab233922482871403c2d9fe2f4a75b)
+
+commit cc83aae48dbda40afa1b1652bd1a53dc9dd61573
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 29 15:07:18 2019 +0100
+
+    v2v: linux: use NEVR for querying RPM packages (RHBZ#1669395)
+    
+    Use NEVR when querying RPM for the list of files of a package, instead
+    of ENVR.  Also, use the epoch only when non-zero, and version of RPM
+    supports it.
+    
+    The approach is basically copied from what supermin does in its RPM
+    package handler.
+    
+    (cherry picked from commit 5eafd1273132b79018ddb72426b128f0fb8a39f4)
+
+commit 76797064449a99351ca44586b16a50c5b74c0a47
+Author: Richard W.M. Jones <rjones@redhat.com>
+Date:   Mon Jan 21 15:59:45 2019 +0000
+
+    build: Reduce -Wformat-overflow=2 to =1.
+    
+    GCC 9 gives this error:
+    
+    qemuopts.c: In function 'qemuopts_to_config_channel':
+    qemuopts.c:987:29: error: '%.*s' directive output between 0 and 2147483647 bytes may exceed minimum required size of 4095 [-Werror=format-overflow=]
+      987 |             fprintf (fp, "  %.*s = ", (int) k, values[j]);
+          |                             ^~~~
+    qemuopts.c:987:26: note: assuming directive output of 1 byte
+      987 |             fprintf (fp, "  %.*s = ", (int) k, values[j]);
+          |                          ^~~~~~~~~~~
+    
+    See discussion at the following GCC bug:
+    
+    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=88993
+    (cherry picked from commit b26bd778b58b78eb59503413fd5b41ac23725690)
+
+commit d5dc8fba74edb39bede2e42316f3bd0e9c26c24c
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 22 13:04:59 2019 +0100
+
+    python: change types for RBufferOut/FBuffer with Python 3 (RHBZ#1661871)
+    
+    So far RBufferOut return values, and FBuffer struct fields are 'str' on
+    all the versions of Python.  Python 3 distinguishes between 'str'
+    (unicode strings), and 'bytes', with 'str' no more able to hold
+    arbitrary data.
+    
+    For this reason, switch the return value of RBufferOut functions, and
+    FBuffer struct fields to bytes on Python 3: while this is a potentially
+    incompatibile change, this is the only way to handle safely sequences
+    of arbitrary bytes.
+    
+    (cherry picked from commit 0ee02e0117527b86a31b2a88a14994ce7f15571f)
+
+commit c18957e0ea4233e2237e68c7d5e647cbde69e764
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Tue Jan 22 12:43:11 2019 +0100
+
+    python: fix call of Python handlers of events
+    
+    Make sure to reference the arguments, to make sure they are kept alive
+    during the function call; this is visible when setting an event handler
+    for the CLOSE event, and testing it with Python 3.
+    
+    This does not seem to create a memory leak e.g. with Python 2.
+    
+    Also, switch away from the quasi-internal PyEval_CallObject to the
+    public PyObject_CallObject, which takes care of doing safety checks.
+    
+    (cherry picked from commit 85235aec837716f1ddb2926b9a59a02543195500)
+
+commit 53a7f2ffec1f7b014db4909371e0c1b1576ba10a
+Author: Pino Toscano <ptoscano@redhat.com>
+Date:   Fri Jan 18 13:22:26 2019 +0100
+
+    build: integrate ocaml-link.sh with automake silent rules
+    
+    In case either the silent rules are disabled, or V=1 is set, print the
+    full command line that is executed.
+    
+    (cherry picked from commit a8006afaf545d5188f592d8583f9dc373ded7671)
+
 commit 1f026244ba5891a00617f4ab8c41b8680ff8c497
 Author: Richard W.M. Jones <rjones@redhat.com>
 Date:   Thu Jan 17 12:06:36 2019 +0000

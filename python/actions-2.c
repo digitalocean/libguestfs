@@ -1443,7 +1443,11 @@ guestfs_int_py_internal_test_rbufferout (PyObject *self, PyObject *args)
     goto out;
   }
 
+#if PY_MAJOR_VERSION >= 3
+  py_r = PyBytes_FromStringAndSize (r, size);
+#else
   py_r = guestfs_int_py_fromstringsize (r, size);
+#endif
   free (r);
   if (py_r == NULL) goto out;
 
