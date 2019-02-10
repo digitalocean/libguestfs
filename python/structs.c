@@ -1264,7 +1264,11 @@ guestfs_int_py_put_xattr (struct guestfs_xattr *xattr)
   if (value == NULL)
     goto err;
   PyDict_SetItemString (dict, "attrname", value);
+#if PY_MAJOR_VERSION >= 3
+  value = PyBytes_FromStringAndSize (xattr->attrval, xattr->attrval_len);
+#else
   value = guestfs_int_py_fromstringsize (xattr->attrval, xattr->attrval_len);
+#endif
   if (value == NULL)
     goto err;
   PyDict_SetItemString (dict, "attrval", value);

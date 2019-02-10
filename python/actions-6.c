@@ -1402,7 +1402,11 @@ guestfs_int_py_lgetxattr (PyObject *self, PyObject *args)
     goto out;
   }
 
+#if PY_MAJOR_VERSION >= 3
+  py_r = PyBytes_FromStringAndSize (r, size);
+#else
   py_r = guestfs_int_py_fromstringsize (r, size);
+#endif
   free (r);
   if (py_r == NULL) goto out;
 
@@ -2011,7 +2015,11 @@ guestfs_int_py_pread_device (PyObject *self, PyObject *args)
     goto out;
   }
 
+#if PY_MAJOR_VERSION >= 3
+  py_r = PyBytes_FromStringAndSize (r, size);
+#else
   py_r = guestfs_int_py_fromstringsize (r, size);
+#endif
   free (r);
   if (py_r == NULL) goto out;
 

@@ -43,6 +43,14 @@ while true ; do
   esac
 done
 
+# Integration with silent rules of automake: print the full command
+# line option in verbose mode.
+if [ x"${V:-0}" = x1 ]; then
+  echo "$@" \
+     -runtime-variant _pic \
+     -linkpkg \
+     -cclib "' $cclib'"
+fi
 # NB -cclib must come last.
 exec "$@" \
      -runtime-variant _pic \
