@@ -1,0 +1,31 @@
+From 6c6155efa734281f2c1eb78f2c004d8efd63e2a2 Mon Sep 17 00:00:00 2001
+From: Andrew James <ajames@digitalocean.com>
+Date: Fri, 12 Jul 2019 14:25:01 -0600
+Subject: [PATCH] Relax supermin version to 4.1
+
+---
+ m4/guestfs-appliance.m4 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/m4/guestfs-appliance.m4
++++ b/m4/guestfs-appliance.m4
+@@ -64,7 +64,7 @@ AC_ARG_WITH([supermin-extra-options],
+ AC_SUBST([SUPERMIN_EXTRA_OPTIONS])
+ 
+ if test "x$ENABLE_APPLIANCE" = "xyes"; then
+-    supermin_major_min=5
++    supermin_major_min=4
+     supermin_minor_min=1
+     supermin_min=$supermin_major_min.$supermin_minor_min
+ 
+--- a/configure
++++ b/configure
+@@ -65431,7 +65431,7 @@ fi
+ 
+ 
+ if test "x$ENABLE_APPLIANCE" = "xyes"; then
+-    supermin_major_min=5
++    supermin_major_min=4
+     supermin_minor_min=1
+     supermin_min=$supermin_major_min.$supermin_minor_min
+ 
