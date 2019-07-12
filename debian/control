@@ -29,26 +29,26 @@ Build-Depends: debhelper (>= 9),
   qemu-utils,
   genisoimage, pkg-config,
   erlang-dev,
-  dh-lua,
-  dh-ocaml, ocaml-nox, ocaml-findlib, libpcre-ocaml-dev, libgettext-ocaml-dev,
-  python (>= 2.6.6-3~), python-all-dev (>= 2.6.6-3~), python3-all-dev,
-  dh-python,
-  default-jdk,
-  gem2deb, rake, libjs-jquery,
+# dh-lua,
+  ocaml-nox, ocaml-findlib, libpcre-ocaml-dev, libgettext-ocaml-dev,
+# python (>= 2.6.6-3~), python-all-dev (>= 2.6.6-3~), python3-all-dev,
+# dh-python,
+# default-jdk,
+# gem2deb, rake, libjs-jquery,
   libmodule-build-perl,
   libtest-pod-coverage-perl, libextutils-command-perl, libintl-perl, libtest-pod-perl,
   libstring-shellquote-perl,
   libsys-virt-perl, libwin-hivex-perl,
   libfuse-dev, fuse,
-  libglib2.0-dev, gjs [!s390x] <!nocheck>, gobject-introspection, libgirepository1.0-dev,
-  libgtk2.0-dev,
+# libglib2.0-dev, gjs [!s390x] <!nocheck>, gobject-introspection, libgirepository1.0-dev,
+# libgtk2.0-dev,
   db-util,
   netpbm, icoutils,
   po4a,
   curl,
   flex, bison,
   golang-go [i386 amd64 armel armhf arm64 mips mipsel mips64el ppc64el],
-  dh-php, php-all-dev | php5-dev,
+# dh-php, php-all-dev | php5-dev,
 # for testing (make quickcheck)
   linux-image-amd64 [amd64],
   linux-image-686-pae [i386] | linux-image-586 [i386] | linux-image-486 [i386],
@@ -346,154 +346,154 @@ Description: guest disk image management system - tools
  virt-filesystems, virt-inspector, virt-ls, virt-make-fs, virt-rescue,
  virt-resize, virt-tar, and virt-win-reg.
 
-Package: python-guestfs
-Section: python
-Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, libguestfs0 (= ${binary:Version})
-Provides: python-libguestfs
-Conflicts: python-libguestfs, libguestfs-dev (<< 1:1.14.9-1~)
-Description: guest disk image management system - Python bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains the Python bindings.
- 
-Package: python3-guestfs
-Section: python
-Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
-Breaks: python-guestfs (<< 1:1.22.2-1~)
-Description: guest disk image management system - Python 3 bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains the Python 3 bindings.
-
-Package: libguestfs-perl
-Section: perl
-Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
- ${perl:Depends},
- libxml-xpath-perl,
- libwin-hivex-perl,
- libsys-virt-perl,
-Description: guest disk image management system - Perl bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains the Perl bindings.
- 
-Package: libguestfs-ocaml
-Section: ocaml
-Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
- ${ocaml:Depends}
-Provides: ${ocaml:Provides}
-Description: guest disk image management system - OCaml bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package includes the OCaml shared runtime stub libraries.
- 
-Package: libguestfs-ocaml-dev
-Section: ocaml
-Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends},
- libguestfs0 (= ${binary:Version}),
- libguestfs-dev (= ${binary:Version}), 
- ${ocaml:Depends}
-Provides: ${ocaml:Provides}
-Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
-Description: guest disk image management system - OCaml development files
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains all the files needed to develop OCaml programs
- which use OCaml bindings to libguestfs.
-
-Package: erlang-guestfs
-Section: interpreters
-Architecture: linux-any
-Depends: ${erlang-base:Depends}, ${erlang-abi:Depends}, ${shlibs:Depends}, ${misc:Depends}
-Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
-Description: guest disk image management system - Erlang bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains Erlang bindings to libguestfs.
-
-Package: libguestfs-java
-Section: java
-Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: libguestfs-dev (<< 1:1.15.15-1~)
-Description: guest disk image management system - Java bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains Java bindings to libguestfs.
-
-Package: ruby-guestfs
-Section: ruby
-XB-Ruby-Versions: ${ruby:Versions}
-Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ruby | ruby-interpreter
-Conflicts: libguestfs-dev (<< 1:1.15.15-1~)
-Description: guest disk image management system - Ruby bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains Ruby bindings to libguestfs.
-
-Package: libguestfs-gobject-1.0-0
-Section: libs
-Architecture: linux-any
-Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
-Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Conflicts: libguestfs0 (<< 1:1.14.9-1~)
-Description: guest disk image management system - GObject bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains the GObject bindings.
-
-Package: libguestfs-gobject-dev
-Section: libdevel
-Architecture: linux-any
-Multi-Arch: same
-Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), gir1.2-guestfs-1.0 (= ${binary:Version}), ${misc:Depends}
-Conflicts: libguestfs0 (<< 1:1.14.9-1~)
-Description: guest disk image management system - GObject development headers
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains the development headers and documentation for
- the GObject bindings.
-
-Package: gir1.2-guestfs-1.0
-Section: introspection
-Architecture: linux-any
-Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${gir:Depends}, ${misc:Depends}
-Conflicts: libguestfs0 (<< 1:1.14.9-1~)
-Description: guest disk image management system - GObject introspection files
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains the GObject introspection data.
-
-Package: lua-guestfs
-Architecture: linux-any
-Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Provides: ${lua:Provides}
-XB-Lua-Versions: ${lua:Versions}
-Description: guest disk image management system - Lua bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains the Lua bindings.
+#Package: python-guestfs
+#Section: python
+#Architecture: linux-any
+#Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, libguestfs0 (= ${binary:Version})
+#Provides: python-libguestfs
+#Conflicts: python-libguestfs, libguestfs-dev (<< 1:1.14.9-1~)
+#Description: guest disk image management system - Python bindings
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains the Python bindings.
+# 
+#Package: python3-guestfs
+#Section: python
+#Architecture: linux-any
+#Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
+#Breaks: python-guestfs (<< 1:1.22.2-1~)
+#Description: guest disk image management system - Python 3 bindings
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains the Python 3 bindings.
+#
+#Package: libguestfs-perl
+#Section: perl
+#Architecture: linux-any
+#Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
+# ${perl:Depends},
+# libxml-xpath-perl,
+# libwin-hivex-perl,
+# libsys-virt-perl,
+#Description: guest disk image management system - Perl bindings
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains the Perl bindings.
+# 
+#Package: libguestfs-ocaml
+#Section: ocaml
+#Architecture: linux-any
+#Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
+# ${ocaml:Depends}
+#Provides: ${ocaml:Provides}
+#Description: guest disk image management system - OCaml bindings
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package includes the OCaml shared runtime stub libraries.
+# 
+#Package: libguestfs-ocaml-dev
+#Section: ocaml
+#Architecture: linux-any
+#Depends: ${shlibs:Depends}, ${misc:Depends},
+# libguestfs0 (= ${binary:Version}),
+# libguestfs-dev (= ${binary:Version}), 
+# ${ocaml:Depends}
+#Provides: ${ocaml:Provides}
+#Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
+#Description: guest disk image management system - OCaml development files
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains all the files needed to develop OCaml programs
+# which use OCaml bindings to libguestfs.
+#
+#Package: erlang-guestfs
+#Section: interpreters
+#Architecture: linux-any
+#Depends: ${erlang-base:Depends}, ${erlang-abi:Depends}, ${shlibs:Depends}, ${misc:Depends}
+#Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
+#Description: guest disk image management system - Erlang bindings
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains Erlang bindings to libguestfs.
+#
+#Package: libguestfs-java
+#Section: java
+#Architecture: linux-any
+#Depends: ${shlibs:Depends}, ${misc:Depends}
+#Conflicts: libguestfs-dev (<< 1:1.15.15-1~)
+#Description: guest disk image management system - Java bindings
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains Java bindings to libguestfs.
+#
+#Package: ruby-guestfs
+#Section: ruby
+#XB-Ruby-Versions: ${ruby:Versions}
+#Architecture: linux-any
+#Depends: ${shlibs:Depends}, ${misc:Depends}, ruby | ruby-interpreter
+#Conflicts: libguestfs-dev (<< 1:1.15.15-1~)
+#Description: guest disk image management system - Ruby bindings
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains Ruby bindings to libguestfs.
+#
+#Package: libguestfs-gobject-1.0-0
+#Section: libs
+#Architecture: linux-any
+#Multi-Arch: same
+#Pre-Depends: ${misc:Pre-Depends}
+#Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+#Conflicts: libguestfs0 (<< 1:1.14.9-1~)
+#Description: guest disk image management system - GObject bindings
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains the GObject bindings.
+#
+#Package: libguestfs-gobject-dev
+#Section: libdevel
+#Architecture: linux-any
+#Multi-Arch: same
+#Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), gir1.2-guestfs-1.0 (= ${binary:Version}), ${misc:Depends}
+#Conflicts: libguestfs0 (<< 1:1.14.9-1~)
+#Description: guest disk image management system - GObject development headers
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains the development headers and documentation for
+# the GObject bindings.
+#
+#Package: gir1.2-guestfs-1.0
+#Section: introspection
+#Architecture: linux-any
+#Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${gir:Depends}, ${misc:Depends}
+#Conflicts: libguestfs0 (<< 1:1.14.9-1~)
+#Description: guest disk image management system - GObject introspection files
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains the GObject introspection data.
+#
+#Package: lua-guestfs
+#Architecture: linux-any
+#Multi-Arch: same
+#Pre-Depends: ${misc:Pre-Depends}
+#Depends: ${shlibs:Depends}, ${misc:Depends}
+#Provides: ${lua:Provides}
+#XB-Lua-Versions: ${lua:Versions}
+#Description: guest disk image management system - Lua bindings
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains the Lua bindings.
 
 Package: golang-guestfs-dev
 Section: devel
@@ -505,12 +505,12 @@ Description: guest disk image management system - Golang bindings
  .
  This package contains source for the Golang bindings.
 
-Package: php-guestfs
-Section: php
-Architecture: linux-any
-Depends: ${shlibs:Depends}, ${php:Depends}, ${misc:Depends},
-Description: guest disk image management system - PHP bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains the PHP bindings.
+#Package: php-guestfs
+#Section: php
+#Architecture: linux-any
+#Depends: ${shlibs:Depends}, ${php:Depends}, ${misc:Depends},
+#Description: guest disk image management system - PHP bindings
+# The libguestfs library allows accessing and modifying guest disk
+# images.
+# .
+# This package contains the PHP bindings.
