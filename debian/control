@@ -3,7 +3,8 @@ Section: libs
 Priority: optional
 Maintainer: Debian Libvirt Maintainers <pkg-libvirt-maintainers@lists.alioth.debian.org>
 Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>, Hilko Bengen <bengen@debian.org>
-Build-Depends: debhelper (>= 10),
+Build-Depends: debhelper (>= 9),
+  dh-autoreconf,
   po-debconf, bash-completion,
   supermin (>= 5),
   libreadline-dev, libaugeas-dev (>= 1.0.0), libselinux1-dev, libhivex-ocaml-dev, libvirt-dev (>= 1.2.20),
@@ -108,7 +109,7 @@ Build-Depends: debhelper (>= 10),
   zerofree,
   zfs-fuse [i386 amd64 armel armhf powerpc ppc64el sparc],
 Homepage: http://libguestfs.org
-Standards-Version: 4.2.1
+Standards-Version: 3.9.8
 Vcs-Git: https://salsa.debian.org/libvirt-team/libguestfs.git
 Vcs-Browser: https://salsa.debian.org/libvirt-team/libguestfs
 XS-Ruby-Versions: all
