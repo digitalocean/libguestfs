@@ -25,19 +25,15 @@
 # export DH_VERBOSE=1
 include /usr/share/dpkg/architecture.mk
 
-PYTHON_VERSIONS := $(shell pyversions --installed; py3versions --installed)
-RUBY_VERSIONS   := $(shell find /usr/bin/ -name 'ruby[12]*' \
-			| xargs -n1 readlink -f | xargs -r -n1 basename)
-LUA_VERSIONS    := $(shell find /usr/bin/ -name 'lua5.?' \
-			| xargs -n1 readlink -f | xargs -r -n1 basename)
-PHP_VERSIONS    := $(subst -config,,\
-			$(shell find /usr/bin -name 'php-config?*' \
-				| xargs -r -n1 basename))
+PYTHON_VERSIONS := ""
+RUBY_VERSIONS   := ""
+LUA_VERSIONS    := ""
+PHP_VERSIONS    := ""
 
 # Determine the number of builds needed due to script language version
 # variants
-BUILD_COUNT := $(lastword $(sort $(foreach lang,PYTHON RUBY LUA PHP,$(words $($(lang)_VERSIONS)))))
-BUILDS := $(foreach n,$(wordlist 1,$(BUILD_COUNT),1 2 3 4 5 6 7 8 9),$(n))
+BUILD_COUNT := 1
+BUILDS := 1
 
 QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
 		    | sed -r \
@@ -49,90 +45,58 @@ QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
 # Run "make quickcheck" only on these architectures
 QUICKCHECK_ARCHITECTURES := amd64
 
-# Template for generating dh_{clean,configure,build,test} overrides.
-# $1 is replaced with the build number.
-define DH_AUTO_TEMPLATE
 override_dh_auto_clean::
-	dh_auto_clean --builddir=$(CURDIR)/debian/build-$1
+	dh_auto_clean --builddir=$(CURDIR)/debian/build
 
-$(CURDIR)/debian/build-$1/config.status::
-	dh_auto_configure --builddir=$(CURDIR)/debian/build-$1 \
+$(CURDIR)/debian/build/config.status::
+	dh_auto_configure --builddir=$(CURDIR)/debian/build \
 		-- \
 		--disable-gnulib-tests     \
-		--with-readline	           \
+		--without-readline         \
 		--disable-haskell          \
 		--with-guestfs-path=/usr/lib/$(DEB_HOST_MULTIARCH)/guestfs \
 		--with-qemu=qemu-system-$(QEMU_CPU) \
 		$(if $(findstring powerpcspe,$(DEB_HOST_GNU_CPU)),\
 			--with-qemu-options="-M ppce500 -cpu e500v2") \
 		--with-supermin-extra-options='--use-installed' \
-		$(if $(findstring $1,$(BUILD_COUNT)),\
-			--enable-install-daemon \
-			--with-java=/usr/lib/jvm/default-java \
-			JNI_INSTALL_DIR='$$$${libdir}/jni' \
-			,\
-			--with-java=no --without-java \
-			--disable-fuse \
-			--disable-ocaml \
-			--disable-perl \
-			--disable-erlang \
-			--disable-gobject) \
-		$(if $(word $1,$(RUBY_VERSIONS)),\
-			RUBY=$(word $1,$(RUBY_VERSIONS)) \
-			RAKE="$(word $1,$(RUBY_VERSIONS)) -S rake" \
-			,\
-			--disable-ruby) \
-		$(if $(word $1,$(PYTHON_VERSIONS)),\
-			PYTHON=$(word $1,$(PYTHON_VERSIONS)) \
-			,\
-			--disable-python) \
-		$(if $(word $1,$(LUA_VERSIONS)),\
-			LUA=$(word $1,$(LUA_VERSIONS)) \
-			,\
-			--disable-lua) \
-		$(if $(word $1,$(PHP_VERSIONS)),\
-			PHP=$(word $1,$(PHP_VERSIONS)) \
-			PHPIZE=$(subst php,phpize,$(word $1,$(PHP_VERSIONS))) \
-			,\
-			--disable-php)
+		--enable-install-daemon \
+		--with-java=no --without-java \
+		--disable-fuse \
+		--disable-ocaml \
+		--disable-perl \
+		--disable-erlang \
+		--disable-gobject \
+		--disable-ruby \
+		--disable-python \
+		--disable-lua \
+		--disable-php
 
-override_dh_auto_configure:: $(CURDIR)/debian/build-$1/config.status
+override_dh_auto_configure:: $(CURDIR)/debian/build/config.status
 
-$(CURDIR)/debian/build-$1/build-stamp:
-	dh_auto_build --builddir=$(CURDIR)/debian/build-$1 \
+$(CURDIR)/debian/build/build-stamp:
+	dh_auto_build --builddir=$(CURDIR)/debian/build \
 		-- INSTALLDIRS=vendor LD_RUN_PATH=""
 	touch $$@
 
-override_dh_auto_build:: $(CURDIR)/debian/build-$1/build-stamp
-
-endef
-
-$(foreach build,$(BUILDS),$(eval $(call DH_AUTO_TEMPLATE,$(build))))
-
-output_template:
-	$(foreach build,$(BUILDS),$(info $(call DH_AUTO_TEMPLATE,$(build))))
+override_dh_auto_build:: $(CURDIR)/debian/build/build-stamp
 
 # Just run the test on the last build.
 override_dh_auto_test:
 ifneq "" "$(findstring $(DEB_HOST_ARCH),$(QUICKCHECK_ARCHITECTURES))"
 	printenv
-	unset XDG_RUNTIME_DIR; make -C $(CURDIR)/debian/build-$(BUILD_COUNT) quickcheck
+	unset XDG_RUNTIME_DIR; make -C $(CURDIR)/debian/build quickcheck
 endif
 
 # Installation needs to happen in order because only the last build
 # contains all features.
 override_dh_auto_install:
-	set -e; for build in $(BUILDS); do \
-		dh_auto_install --builddir=$(CURDIR)/debian/build-$$build \
+	dh_auto_install --builddir=$(CURDIR)/debian/build \
 			-- INSTALLDIRS=vendor; \
-	done
 
 override_dh_install:
 # Split the supermin appliance packages list into subpackages, so the
 # main libguestfs0 can avoid depending on everything.
 	debian/split-appliance.sh
-
-	erlang-depends -perlang-guestfs
 
 	dh_install -X.la -X.so.owner -Xbindtests -X/usr/lib/go/ -X/usr/lib/go- -Xpackages.orig -Xetc/php.d \
 	    --fail-missing
@@ -158,6 +122,4 @@ override_dh_makeshlibs:
 	dh_makeshlibs -X/jni/ -X/python2/ -X/python3/
 
 %:
-	dh $@ \
-	   --without=python-support \
-	   --with=ocaml,python2,python3,bash-completion,ruby,gir,lua,php
+	dh $@ --without=python-support
