@@ -12,3 +12,4 @@
 0014-Disable-v2v-test-harness.patch
 0013-Fix-up-perl-path-in-installed-scripts.patch
 0016-relax-supermin-version-for-trusty.patch
+0017-python-oneliner-for-realpath.patch
