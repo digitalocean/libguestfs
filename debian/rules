@@ -62,6 +62,7 @@ $(CURDIR)/debian/build/config.status::
 		--enable-install-daemon \
 		--with-java=no --without-java \
 		--disable-fuse \
+		--disable-libvirt \
 		--disable-ocaml \
 		--disable-perl \
 		--disable-erlang \
