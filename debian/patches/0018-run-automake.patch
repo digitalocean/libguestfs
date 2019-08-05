@@ -1,0 +1,770 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -671,10 +671,11 @@ am__DIST_COMMON = $(srcdir)/Makefile.in
+ 	$(top_srcdir)/php/extension/php-for-tests.sh.in \
+ 	$(top_srcdir)/python/t/tests_helper.py.in \
+ 	$(top_srcdir)/ruby/ext/guestfs/extconf.rb.in \
+-	$(top_srcdir)/website/index.html.in COPYING COPYING.LIB \
+-	ChangeLog README TODO build-aux/config.guess \
+-	build-aux/config.rpath build-aux/config.sub \
+-	build-aux/install-sh build-aux/ltmain.sh build-aux/missing
++	$(top_srcdir)/website/index.html.in AUTHORS COPYING \
++	COPYING.LIB ChangeLog README TODO build-aux/config.guess \
++	build-aux/config.rpath build-aux/config.sub build-aux/depcomp \
++	build-aux/install-sh build-aux/ltmain.sh build-aux/missing \
++	build-aux/ylwrap
+ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+ distdir = $(PACKAGE)-$(VERSION)
+ top_distdir = $(distdir)
+--- a/appliance/Makefile.in
++++ b/appliance/Makefile.in
+@@ -2124,13 +2124,14 @@ export TEST_FUNCTIONS := \
+ supermin.d/base.tar.gz supermin.d/packages: stamp-supermin
+ stamp-supermin: make.sh packagelist supermin.d/excludefiles
+ 	rm -f $@ supermin.d/base.tar.gz supermin.d/packages
+-	./make.sh
++	GZIP=-n ./make.sh
+ 	$(MAKE) \
+ 	  supermin.d/daemon.tar.gz \
+ 	  supermin.d/excludefiles \
+ 	  supermin.d/hostfiles \
+ 	  supermin.d/init.tar.gz \
+-	  supermin.d/udev-rules.tar.gz
++	  supermin.d/udev-rules.tar.gz \
++	  GZIP=-n
+ 	touch $@
+ 
+ clean-supermin-appliance:
+@@ -2158,7 +2159,7 @@ supermin.d/daemon.tar.gz: ../daemon/gues
+ 	mkdir -p tmp-d$(DAEMON_SUPERMIN_DIR) tmp-d/etc tmp-d/usr/share/guestfs
+ 	ln ../daemon/guestfsd tmp-d$(DAEMON_SUPERMIN_DIR)/guestfsd
+ 	ln $(srcdir)/guestfs_shadow.aug tmp-d/usr/share/guestfs/guestfs_shadow.aug
+-	( cd tmp-d && tar zcf - * ) > $@-t
++	( cd tmp-d && tar --mtime=$(abs_top_srcdir)/ChangeLog -zcf - * ) > $@-t
+ 	rm -r tmp-d
+ 	mv $@-t $@
+ 
+@@ -2179,7 +2180,7 @@ supermin.d/hostfiles: hostfiles.in Makef
+ 
+ supermin.d/init.tar.gz: init
+ 	rm -f $@ $@-t
+-	( cd $(srcdir) && tar zcf - init ) > $@-t
++	( cd $(srcdir) && tar --mtime=$(abs_top_srcdir)/ChangeLog -zcf - init ) > $@-t
+ 	mv $@-t $@
+ 
+ # We should put this file in /lib/udev/rules.d, but put it in /etc so
+@@ -2189,7 +2190,7 @@ supermin.d/udev-rules.tar.gz: 99-guestfs
+ 	rm -rf tmp-u
+ 	mkdir -p tmp-u/etc/udev/rules.d
+ 	for f in $^; do ln $$f tmp-u/etc/udev/rules.d/$$(basename $$f); done
+-	( cd tmp-u && tar zcf - etc ) > $@-t
++	( cd tmp-u && tar --mtime=$(abs_top_srcdir)/ChangeLog -zcf - etc ) > $@-t
+ 	rm -r tmp-u
+ 	mv $@-t $@
+ 
+--- a/daemon/Makefile.in
++++ b/daemon/Makefile.in
+@@ -408,7 +408,8 @@ guestfsd_DEPENDENCIES = ../common/errnos
+ 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+ 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+ 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
++	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
++	$(am__DEPENDENCIES_1)
+ AM_V_lt = $(am__v_lt_@AM_V@)
+ am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+ am__v_lt_0 = --silent
+@@ -2272,7 +2273,8 @@ guestfsd_LDADD = \
+ 	$(TSK_LIBS) \
+ 	$(RPC_LIBS) \
+ 	$(YARA_LIBS) \
+-	$(OCAML_LIBS)
++	$(OCAML_LIBS) \
++	$(LIBTINFO_LIBS)
+ 
+ guestfsd_CPPFLAGS = \
+ 	-I$(shell $(OCAMLC) -where) \
+--- a/docs/Makefile.in
++++ b/docs/Makefile.in
+@@ -2038,7 +2038,7 @@ stamp-guestfs-hacking.pod: guestfs-hacki
+ 
+ internal-documentation.pod: $(source_files:%=$(top_srcdir)/%)
+ 	rm -f $@ $@-t
+-	./make-internal-documentation.pl \
++	$(srcdir)/make-internal-documentation.pl \
+ 	    --srcdir $(top_srcdir) \
+ 	    -o $@-t \
+ 	    $(source_files)
+--- a/golang/Makefile.in
++++ b/golang/Makefile.in
+@@ -2342,9 +2342,11 @@ export TEST_FUNCTIONS := \
+ 	abs_top_builddir="$(abs_top_builddir)"
+ 
+ @HAVE_GOLANG_TRUE@pkg/$(GOOS)_$(GOARCH)/$(pkg).a: src/$(pkg)/guestfs.go
++@HAVE_GOLANG_TRUE@	-[ $(srcdir) != $(builddir) ] && ln -s $(abs_srcdir)/src $(builddir)/src
+ @HAVE_GOLANG_TRUE@	$(top_builddir)/run $(GOLANG) install $(pkg)
+ 
+ clean-local:
++	-[ $(srcdir) != $(builddir) ] && rm -f $(builddir)/src
+ 	rm -rf pkg
+ 
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+--- a/perl/Makefile.in
++++ b/perl/Makefile.in
+@@ -2307,9 +2307,11 @@ export TEST_FUNCTIONS := \
+ 
+ @HAVE_PERL_TRUE@clean-local: Build
+ @HAVE_PERL_TRUE@	./Build clean
++@HAVE_PERL_TRUE@	if [ $(srcdir) != $(builddir) ]; then find -type l | xargs rm -f ; fi
+ 
+ @HAVE_PERL_TRUE@Build: Build.PL
+-@HAVE_PERL_TRUE@	$(PERL) $(srcdir)/Build.PL --prefix "@prefix@"
++@HAVE_PERL_TRUE@	if [ $(srcdir) != $(builddir) ]; then cp -rsft $(builddir) $(abs_srcdir)/. ; fi
++@HAVE_PERL_TRUE@	$(PERL) ./Build.PL --prefix "@prefix@"
+ 
+ @HAVE_PERL_TRUE@install-data-hook: Build
+ @HAVE_PERL_TRUE@	./Build install --destdir "$(DESTDIR)" --installdirs $(INSTALLDIRS)
+--- a/php/Makefile.in
++++ b/php/Makefile.in
+@@ -2308,26 +2308,16 @@ export TEST_FUNCTIONS := \
+ 
+ # In theory: EXTRA_LIBS="-lguestfs"  In fact this doesn't work
+ # and we need to add the library to EXTRA_LDFLAGS.
+-@HAVE_PHP_TRUE@all: check-builddir-equals-srcdir extension/config.h
++@HAVE_PHP_TRUE@all: extension/config.h
+ @HAVE_PHP_TRUE@	$(MAKE) -C extension \
+ @HAVE_PHP_TRUE@	  EXTRA_INCLUDES="-I$(abs_srcdir)/../common/utils -I$(abs_srcdir)/../lib" \
+-@HAVE_PHP_TRUE@	  EXTRA_LDFLAGS="-L$(abs_srcdir)/../lib/.libs -lguestfs" \
++@HAVE_PHP_TRUE@	  EXTRA_LDFLAGS="-L$(abs_builddir)/../lib/.libs -lguestfs" \
+ @HAVE_PHP_TRUE@	  EXTRA_CFLAGS="-DGUESTFS_PRIVATE=1" \
+ @HAVE_PHP_TRUE@	  all
+ 
+-# It looks like this is going to be very hard to make work, so
+-# disallow it for now.
+-@HAVE_PHP_TRUE@check-builddir-equals-srcdir:
+-@HAVE_PHP_TRUE@	@if [ $(builddir) != $(srcdir) ]; then \
+-@HAVE_PHP_TRUE@	  echo "***"; \
+-@HAVE_PHP_TRUE@	  echo "PHP cannot be built with builddir != srcdir"; \
+-@HAVE_PHP_TRUE@	  echo "Use ./configure --disable-php"; \
+-@HAVE_PHP_TRUE@	  echo "***"; \
+-@HAVE_PHP_TRUE@	  exit 1; \
+-@HAVE_PHP_TRUE@	fi
+-
+ @HAVE_PHP_TRUE@extension/config.h: extension/config.m4 ../config.status
+-@HAVE_PHP_TRUE@	cd extension && phpize
++@HAVE_PHP_TRUE@	if [ $(srcdir) != $(builddir) ]; then cp -rsft $(builddir)/extension $(abs_srcdir)/extension/.; fi
++@HAVE_PHP_TRUE@	cd extension && $(PHPIZE)
+ @HAVE_PHP_TRUE@	cd extension && ./configure --prefix=$(prefix) --libdir=$(libdir)
+ @HAVE_PHP_TRUE@	test -f "$@" && touch -- $@
+ 
+@@ -2340,9 +2330,14 @@ export TEST_FUNCTIONS := \
+ @HAVE_PHP_TRUE@	rm -f extension/tests/*.out
+ @HAVE_PHP_TRUE@	rm -f extension/tests/*.php
+ @HAVE_PHP_TRUE@	rm -f extension/tests/*.sh
++@HAVE_PHP_TRUE@	if [ $(srcdir) != $(builddir) ]; then rm -rf extension; fi
+ 
+ @HAVE_PHP_TRUE@install-data-hook:
+-@HAVE_PHP_TRUE@	$(MAKE) -C extension INSTALL_ROOT=$(DESTDIR) install
++@HAVE_PHP_TRUE@	$(MAKE) -C extension \
++@HAVE_PHP_TRUE@	  EXTRA_INCLUDES="-I$(abs_srcdir)/../common/utils -I$(abs_srcdir)/../lib" \
++@HAVE_PHP_TRUE@	  EXTRA_LDFLAGS="-L$(abs_builddir)/../lib/.libs -lguestfs" \
++@HAVE_PHP_TRUE@	  EXTRA_CFLAGS="-DGUESTFS_PRIVATE=1" \
++@HAVE_PHP_TRUE@	  INSTALL_ROOT=$(DESTDIR) install
+ 
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+--- a/po/Makefile.in
++++ b/po/Makefile.in
+@@ -1639,9 +1639,9 @@ MSGID_BUGS_ADDRESS = https://bugzilla.re
+ # Languages.
+ # Don't use LINGUAS (uppercase) as Gentoo defines it (RHBZ#804464).
+ linguas := ca cs de en_GB es eu fr gu hi ja kn ml mr nl or pa pl pt_BR ru ta te tg uk zh_CN
+-POTFILES := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES)
+-POTFILES_PL := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES-pl)
+-POTFILES_ML := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES-ml)
++POTFILES := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES | xargs stat -c %n 2>/dev/null)
++POTFILES_PL := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES-pl | xargs stat -c %n 2>/dev/null)
++POTFILES_ML := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES-ml | xargs stat -c %n 2>/dev/null)
+ POFILES := $(linguas:%=%.po)
+ GMOFILES := $(linguas:%=%.gmo)
+ EXTRA_DIST = \
+@@ -1663,8 +1663,7 @@ EXTRA_DIST = \
+ @HAVE_GNU_GETTEXT_TRUE@	--copyright-holder='$(COPYRIGHT_HOLDER)' \
+ @HAVE_GNU_GETTEXT_TRUE@	--package-name="$(PACKAGE_NAME)" \
+ @HAVE_GNU_GETTEXT_TRUE@	--package-version="$(PACKAGE_VERSION)" \
+-@HAVE_GNU_GETTEXT_TRUE@	--msgid-bugs-address="$(MSGID_BUGS_ADDRESS)" \
+-@HAVE_GNU_GETTEXT_TRUE@	--directory=$(top_srcdir)
++@HAVE_GNU_GETTEXT_TRUE@	--msgid-bugs-address="$(MSGID_BUGS_ADDRESS)"
+ 
+ 
+ # For explanation, see
+@@ -1951,11 +1950,9 @@ export TEST_FUNCTIONS := \
+ @HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	$(OCAML_GETTEXT) --action extract --extract-pot $@-t $(POTFILES_ML)
+ @HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	 \
+ @HAVE_GNU_GETTEXT_TRUE@@HAVE_OCAML_GETTEXT_TRUE@	$(FIX_CHARSET) $@-t
+-@HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) \
+-@HAVE_GNU_GETTEXT_TRUE@	  --files-from=$(abs_srcdir)/POTFILES
++@HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) $(POTFILES)
+ @HAVE_GNU_GETTEXT_TRUE@	$(FIX_CHARSET) $@-t
+-@HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) --language=Perl \
+-@HAVE_GNU_GETTEXT_TRUE@	  --files-from=$(abs_srcdir)/POTFILES-pl
++@HAVE_GNU_GETTEXT_TRUE@	$(XGETTEXT) -j -o $@-t $(XGETTEXT_ARGS) --language=Perl $(POTFILES_PL)
+ @HAVE_GNU_GETTEXT_TRUE@	mv $@-t $@
+ 
+ @HAVE_GNU_GETTEXT_TRUE@%.po: $(DOMAIN).pot
+--- a/v2v/test-harness/Makefile.in
++++ b/v2v/test-harness/Makefile.in
+@@ -72,8 +72,6 @@
+ 
+ # 'common-rules.mk' should be included in every Makefile.am.
+ # cf. 'subdir-rules.mk'
+-
+-
+ VPATH = @srcdir@
+ am__is_gnu_make = { \
+   if test -z '$(MAKELEVEL)'; then \
+@@ -147,9 +145,6 @@ PRE_UNINSTALL = :
+ POST_UNINSTALL = :
+ build_triplet = @build@
+ host_triplet = @host@
+-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@am__append_1 = *.cmo *.cma
+-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@am__append_2 = *.cmx *.cmxa
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@am__append_3 = $(top_builddir)/website/virt-v2v-test-harness.1.html
+ subdir = v2v/test-harness
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
+@@ -327,16 +322,6 @@ mkinstalldirs = $(install_sh) -d
+ CONFIG_HEADER = $(top_builddir)/config.h
+ CONFIG_CLEAN_FILES = META
+ CONFIG_CLEAN_VPATH_FILES =
+-LIBRARIES = $(noinst_LIBRARIES)
+-AM_V_AR = $(am__v_AR_@AM_V@)
+-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
+-am__v_AR_0 = @echo "  AR      " $@;
+-am__v_AR_1 = 
+-libv2vth_a_AR = $(AR) $(ARFLAGS)
+-libv2vth_a_LIBADD =
+-am__libv2vth_a_SOURCES_DIST = dummy.c
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@am_libv2vth_a_OBJECTS = libv2vth_a-dummy.$(OBJEXT)
+-libv2vth_a_OBJECTS = $(am_libv2vth_a_OBJECTS)
+ AM_V_P = $(am__v_P_@AM_V@)
+ am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
+ am__v_P_0 = false
+@@ -349,94 +334,16 @@ AM_V_at = $(am__v_at_@AM_V@)
+ am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+ am__v_at_0 = @
+ am__v_at_1 = 
+-DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+-depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
+-am__maybe_remake_depfiles = depfiles
+-am__depfiles_remade = ./$(DEPDIR)/libv2vth_a-dummy.Po
+-am__mv = mv -f
+-AM_V_lt = $(am__v_lt_@AM_V@)
+-am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+-am__v_lt_0 = --silent
+-am__v_lt_1 = 
+-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+-LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+-	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+-	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+-	$(AM_CFLAGS) $(CFLAGS)
+-AM_V_CC = $(am__v_CC_@AM_V@)
+-am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+-am__v_CC_0 = @echo "  CC      " $@;
+-am__v_CC_1 = 
+-CCLD = $(CC)
+-LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+-AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+-am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+-am__v_CCLD_0 = @echo "  CCLD    " $@;
+-am__v_CCLD_1 = 
+-SOURCES = $(libv2vth_a_SOURCES)
+-DIST_SOURCES = $(am__libv2vth_a_SOURCES_DIST)
++SOURCES =
++DIST_SOURCES =
+ am__can_run_installinfo = \
+   case $$AM_UPDATE_INFO_DIR in \
+     n|no|NO) false;; \
+     *) (install-info --version) >/dev/null 2>&1;; \
+   esac
+-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+-am__vpath_adj = case $$p in \
+-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+-    *) f=$$p;; \
+-  esac;
+-am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+-am__install_max = 40
+-am__nobase_strip_setup = \
+-  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+-am__nobase_strip = \
+-  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+-am__nobase_list = $(am__nobase_strip_setup); \
+-  for p in $$list; do echo "$$p $$p"; done | \
+-  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+-  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+-    if (++n[$$2] == $(am__install_max)) \
+-      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+-    END { for (dir in files) print dir, files[dir] }'
+-am__base_list = \
+-  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+-  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+-am__uninstall_files_from_dir = { \
+-  test -z "$$files" \
+-    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+-    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+-         $(am__cd) "$$dir" && rm -f $$files; }; \
+-  }
+-man1dir = $(mandir)/man1
+-am__installdirs = "$(DESTDIR)$(man1dir)"
+-NROFF = nroff
+-MANS = $(man_MANS)
+-DATA = $(noinst_DATA)
+ am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
+-# Read a list of newline-separated strings from the standard input,
+-# and print each of them once, without duplicates.  Input order is
+-# *not* preserved.
+-am__uniquify_input = $(AWK) '\
+-  BEGIN { nonempty = 0; } \
+-  { items[$$0] = 1; nonempty = 1; } \
+-  END { if (nonempty) { for (i in items) print i; }; } \
+-'
+-# Make sure the list of sources is unique.  This is necessary because,
+-# e.g., the same source file might be shared among _SOURCES variables
+-# for different programs/libraries.
+-am__define_uniq_tagged_files = \
+-  list='$(am__tagged_files)'; \
+-  unique=`for i in $$list; do \
+-    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+-  done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ am__DIST_COMMON = $(srcdir)/META.in $(srcdir)/Makefile.in \
+-	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/common-rules.mk \
+-	$(top_srcdir)/subdir-rules.mk
++	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk
+ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+ pkglibexecdir = @pkglibexecdir@
+ ACLOCAL = @ACLOCAL@
+@@ -1738,68 +1645,10 @@ SOURCES_MLI = \
+ SOURCES_ML = \
+ 	v2v_test_harness.ml
+ 
+-
+-# -I $(top_builddir)/lib/.libs is a hack which forces corresponding -L
+-# option to be passed to gcc, so we don't try linking against an
+-# installed copy of libguestfs.
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@OCAMLPACKAGES = \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-package str,unix,libvirt \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/common/utils/.libs \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/lib/.libs \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/gnulib/lib/.libs \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/ocaml \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/common/mlstdutils \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/common/mlxml \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/common/mltools \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I $(top_builddir)/v2v
+-
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) -ccopt '$(CFLAGS)'
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@BOBJECTS = \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(SOURCES_ML:.ml=.cmo) \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(libv2vth_a_OBJECTS)
+-
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@XOBJECTS = $(BOBJECTS:.cmo=.cmx)
+-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@noinst_DATA = v2v_test_harness.cma \
+-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	META \
+-@HAVE_OCAMLOPT_FALSE@@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(am__append_3)
+-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@noinst_DATA = v2v_test_harness.cmxa \
+-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	META \
+-@HAVE_OCAMLOPT_TRUE@@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(am__append_3)
+-
+-# We have to recompile *.c files with -fPIC.  Do that by building an
+-# uninstalled library.
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@noinst_LIBRARIES = libv2vth.a
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@libv2vth_a_CPPFLAGS = \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-DGUESTFS_PRIVATE=1 \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I$(top_srcdir)/common/utils -I$(top_builddir)/common/utils \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I$(top_srcdir)/lib -I$(top_builddir)/lib \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
+-
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@libv2vth_a_CFLAGS = \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(LIBXML2_CFLAGS) \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	-fPIC
+-
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@libv2vth_a_SOURCES = \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	dummy.c
+-
+-
+-# Run ocamlfind to perform the install.  ocamlfind refuses to install
+-# the package if it is already installed, so remove the old package
+-# first.
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@data_hook_files = META \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	*.so *.a *.cmi \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(srcdir)/*.mli \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(am__append_1) \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(am__append_2)
+-
+-# Manual pages and HTML files for the website.
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@man_MANS = virt-v2v-test-harness.1
+ all: all-am
+ 
+ .SUFFIXES:
+-.SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo .c .lo .o .obj
++.SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly .po .gmo
+ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
+ 	@for dep in $?; do \
+ 	  case '$(am__configure_deps)' in \
+@@ -1833,166 +1682,17 @@ $(am__aclocal_m4_deps):
+ META: $(top_builddir)/config.status $(srcdir)/META.in
+ 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+ 
+-clean-noinstLIBRARIES:
+-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+-
+-libv2vth.a: $(libv2vth_a_OBJECTS) $(libv2vth_a_DEPENDENCIES) $(EXTRA_libv2vth_a_DEPENDENCIES) 
+-	$(AM_V_at)-rm -f libv2vth.a
+-	$(AM_V_AR)$(libv2vth_a_AR) libv2vth.a $(libv2vth_a_OBJECTS) $(libv2vth_a_LIBADD)
+-	$(AM_V_at)$(RANLIB) libv2vth.a
+-
+-mostlyclean-compile:
+-	-rm -f *.$(OBJEXT)
+-
+-distclean-compile:
+-	-rm -f *.tab.c
+-
+-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libv2vth_a-dummy.Po@am__quote@ # am--include-marker
+-
+-$(am__depfiles_remade):
+-	@$(MKDIR_P) $(@D)
+-	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
+-
+-am--depfiles: $(am__depfiles_remade)
+-
+-.c.o:
+-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+-
+-.c.obj:
+-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+-
+-.c.lo:
+-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+-@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+-
+-libv2vth_a-dummy.o: dummy.c
+-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -MT libv2vth_a-dummy.o -MD -MP -MF $(DEPDIR)/libv2vth_a-dummy.Tpo -c -o libv2vth_a-dummy.o `test -f 'dummy.c' || echo '$(srcdir)/'`dummy.c
+-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libv2vth_a-dummy.Tpo $(DEPDIR)/libv2vth_a-dummy.Po
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dummy.c' object='libv2vth_a-dummy.o' libtool=no @AMDEPBACKSLASH@
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -c -o libv2vth_a-dummy.o `test -f 'dummy.c' || echo '$(srcdir)/'`dummy.c
+-
+-libv2vth_a-dummy.obj: dummy.c
+-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -MT libv2vth_a-dummy.obj -MD -MP -MF $(DEPDIR)/libv2vth_a-dummy.Tpo -c -o libv2vth_a-dummy.obj `if test -f 'dummy.c'; then $(CYGPATH_W) 'dummy.c'; else $(CYGPATH_W) '$(srcdir)/dummy.c'; fi`
+-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libv2vth_a-dummy.Tpo $(DEPDIR)/libv2vth_a-dummy.Po
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dummy.c' object='libv2vth_a-dummy.obj' libtool=no @AMDEPBACKSLASH@
+-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libv2vth_a_CPPFLAGS) $(CPPFLAGS) $(libv2vth_a_CFLAGS) $(CFLAGS) -c -o libv2vth_a-dummy.obj `if test -f 'dummy.c'; then $(CYGPATH_W) 'dummy.c'; else $(CYGPATH_W) '$(srcdir)/dummy.c'; fi`
+-
+ mostlyclean-libtool:
+ 	-rm -f *.lo
+ 
+ clean-libtool:
+ 	-rm -rf .libs _libs
+-install-man1: $(man_MANS)
+-	@$(NORMAL_INSTALL)
+-	@list1=''; \
+-	list2='$(man_MANS)'; \
+-	test -n "$(man1dir)" \
+-	  && test -n "`echo $$list1$$list2`" \
+-	  || exit 0; \
+-	echo " $(MKDIR_P) '$(DESTDIR)$(man1dir)'"; \
+-	$(MKDIR_P) "$(DESTDIR)$(man1dir)" || exit 1; \
+-	{ for i in $$list1; do echo "$$i"; done;  \
+-	if test -n "$$list2"; then \
+-	  for i in $$list2; do echo "$$i"; done \
+-	    | sed -n '/\.1[a-z]*$$/p'; \
+-	fi; \
+-	} | while read p; do \
+-	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+-	  echo "$$d$$p"; echo "$$p"; \
+-	done | \
+-	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+-	sed 'N;N;s,\n, ,g' | { \
+-	list=; while read file base inst; do \
+-	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+-	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+-	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst" || exit $$?; \
+-	  fi; \
+-	done; \
+-	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+-	while read files; do \
+-	  test -z "$$files" || { \
+-	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man1dir)'"; \
+-	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man1dir)" || exit $$?; }; \
+-	done; }
+-
+-uninstall-man1:
+-	@$(NORMAL_UNINSTALL)
+-	@list=''; test -n "$(man1dir)" || exit 0; \
+-	files=`{ for i in $$list; do echo "$$i"; done; \
+-	l2='$(man_MANS)'; for i in $$l2; do echo "$$i"; done | \
+-	  sed -n '/\.1[a-z]*$$/p'; \
+-	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+-	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
+-
+-ID: $(am__tagged_files)
+-	$(am__define_uniq_tagged_files); mkid -fID $$unique
+-tags: tags-am
+-TAGS: tags
+-
+-tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
+-	set x; \
+-	here=`pwd`; \
+-	$(am__define_uniq_tagged_files); \
+-	shift; \
+-	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
+-	  test -n "$$unique" || unique=$$empty_fix; \
+-	  if test $$# -gt 0; then \
+-	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+-	      "$$@" $$unique; \
+-	  else \
+-	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+-	      $$unique; \
+-	  fi; \
+-	fi
+-ctags: ctags-am
++tags TAGS:
+ 
+-CTAGS: ctags
+-ctags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
+-	$(am__define_uniq_tagged_files); \
+-	test -z "$(CTAGS_ARGS)$$unique" \
+-	  || $(CTAGS) $(CTAGSFLAGS) $(AM_CTAGSFLAGS) $(CTAGS_ARGS) \
+-	     $$unique
+-
+-GTAGS:
+-	here=`$(am__cd) $(top_builddir) && pwd` \
+-	  && $(am__cd) $(top_srcdir) \
+-	  && gtags -i $(GTAGS_ARGS) "$$here"
+-cscopelist: cscopelist-am
+-
+-cscopelist-am: $(am__tagged_files)
+-	list='$(am__tagged_files)'; \
+-	case "$(srcdir)" in \
+-	  [\\/]* | ?:[\\/]*) sdir="$(srcdir)" ;; \
+-	  *) sdir=$(subdir)/$(srcdir) ;; \
+-	esac; \
+-	for i in $$list; do \
+-	  if test -f "$$i"; then \
+-	    echo "$(subdir)/$$i"; \
+-	  else \
+-	    echo "$$sdir/$$i"; \
+-	  fi; \
+-	done >> $(top_builddir)/cscope.files
++ctags CTAGS:
++
++cscope cscopelist:
+ 
+-distclean-tags:
+-	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
+ 
+ distdir: $(BUILT_SOURCES)
+ 	$(MAKE) $(AM_MAKEFLAGS) distdir-am
+@@ -2029,11 +1729,8 @@ distdir-am: $(DISTFILES)
+ 	done
+ check-am: all-am
+ check: check-am
+-all-am: Makefile $(LIBRARIES) $(MANS) $(DATA)
++all-am: Makefile
+ installdirs:
+-	for dir in "$(DESTDIR)$(man1dir)"; do \
+-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+-	done
+ install: install-am
+ install-exec: install-exec-am
+ install-data: install-data-am
+@@ -2066,18 +1763,13 @@ distclean-generic:
+ maintainer-clean-generic:
+ 	@echo "This command is intended for maintainers to use"
+ 	@echo "it deletes files that may require special tools to rebuild."
+-@HAVE_OCAML_FALSE@install-data-hook:
+-@HAVE_OCAML_PKG_LIBVIRT_FALSE@install-data-hook:
+ clean: clean-am
+ 
+-clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
+-	mostlyclean-am
++clean-am: clean-generic clean-libtool mostlyclean-am
+ 
+ distclean: distclean-am
+-		-rm -f ./$(DEPDIR)/libv2vth_a-dummy.Po
+ 	-rm -f Makefile
+-distclean-am: clean-am distclean-compile distclean-generic \
+-	distclean-tags
++distclean-am: clean-am distclean-generic
+ 
+ dvi: dvi-am
+ 
+@@ -2091,9 +1783,8 @@ info: info-am
+ 
+ info-am:
+ 
+-install-data-am: install-man
+-	@$(NORMAL_INSTALL)
+-	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
++install-data-am:
++
+ install-dvi: install-dvi-am
+ 
+ install-dvi-am:
+@@ -2108,7 +1799,7 @@ install-info: install-info-am
+ 
+ install-info-am:
+ 
+-install-man: install-man1
++install-man:
+ 
+ install-pdf: install-pdf-am
+ 
+@@ -2121,14 +1812,12 @@ install-ps-am:
+ installcheck-am:
+ 
+ maintainer-clean: maintainer-clean-am
+-		-rm -f ./$(DEPDIR)/libv2vth_a-dummy.Po
+ 	-rm -f Makefile
+ maintainer-clean-am: distclean-am maintainer-clean-generic
+ 
+ mostlyclean: mostlyclean-am
+ 
+-mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+-	mostlyclean-libtool
++mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+ 
+ pdf: pdf-am
+ 
+@@ -2138,26 +1827,21 @@ ps: ps-am
+ 
+ ps-am:
+ 
+-uninstall-am: uninstall-man
+-
+-uninstall-man: uninstall-man1
++uninstall-am:
+ 
+-.MAKE: install-am install-data-am install-strip
++.MAKE: install-am install-strip
+ 
+-.PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am clean \
+-	clean-generic clean-libtool clean-noinstLIBRARIES \
+-	cscopelist-am ctags ctags-am distclean distclean-compile \
+-	distclean-generic distclean-libtool distclean-tags distdir dvi \
+-	dvi-am html html-am info info-am install install-am \
+-	install-data install-data-am install-data-hook install-dvi \
++.PHONY: all all-am check check-am clean clean-generic clean-libtool \
++	cscopelist-am ctags-am distclean distclean-generic \
++	distclean-libtool distdir dvi dvi-am html html-am info info-am \
++	install install-am install-data install-data-am install-dvi \
+ 	install-dvi-am install-exec install-exec-am install-html \
+ 	install-html-am install-info install-info-am install-man \
+-	install-man1 install-pdf install-pdf-am install-ps \
+-	install-ps-am install-strip installcheck installcheck-am \
+-	installdirs maintainer-clean maintainer-clean-generic \
+-	mostlyclean mostlyclean-compile mostlyclean-generic \
+-	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+-	uninstall-am uninstall-man uninstall-man1
++	install-pdf install-pdf-am install-ps install-ps-am \
++	install-strip installcheck installcheck-am installdirs \
++	maintainer-clean maintainer-clean-generic mostlyclean \
++	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
++	tags-am uninstall uninstall-am
+ 
+ .PRECIOUS: Makefile
+ 
+@@ -2214,40 +1898,40 @@ export TEST_FUNCTIONS := \
+ 	abs_top_srcdir="$(abs_top_srcdir)" \
+ 	abs_top_builddir="$(abs_top_builddir)"
+ 
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@v2v_test_harness.cma: $(BOBJECTS)
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) $^ -o v2v_test_harness $(LIBXML2_LIBS)
++#v2v_test_harness.cma: $(BOBJECTS)
++#	$(OCAMLMKLIB) $^ -o v2v_test_harness $(LIBXML2_LIBS)
+ 
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@v2v_test_harness.cmxa: $(XOBJECTS)
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) $^ -o v2v_test_harness $(LIBXML2_LIBS)
++#v2v_test_harness.cmxa: $(XOBJECTS)
++#	$(OCAMLMKLIB) $^ -o v2v_test_harness $(LIBXML2_LIBS)
+ 
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@v2v_test_harness.cmi: $(top_builddir)/ocaml/guestfs.cmi
++#v2v_test_harness.cmi: $(top_builddir)/ocaml/guestfs.cmi
+ 
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@install-data-hook:
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	mkdir -p $(DESTDIR)$(OCAMLLIB)
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	mkdir -p $(DESTDIR)$(OCAMLLIB)/stublibs
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	rm -rf $(DESTDIR)$(OCAMLLIB)/v2v_test_harness
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	rm -rf $(DESTDIR)$(OCAMLLIB)/stublibs/dllv2v_test_harness.so*
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) install \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  v2v_test_harness \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  $(data_hook_files)
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	rm $(DESTDIR)$(OCAMLLIB)/v2v_test_harness/libv2vth.a
+-
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@virt-v2v-test-harness.1 $(top_builddir)/website/virt-v2v-test-harness.1.html: stamp-virt-v2v-test-harness.pod
+-
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@stamp-virt-v2v-test-harness.pod: virt-v2v-test-harness.pod
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(PODWRAPPER) \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  --man virt-v2v-test-harness.1 \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  --html $(top_builddir)/website/virt-v2v-test-harness.1.html \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  --license LGPLv2+ \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  --warning safe \
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	  $<
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	touch $@
++#install-data-hook:
++#	mkdir -p $(DESTDIR)$(OCAMLLIB)
++#	mkdir -p $(DESTDIR)$(OCAMLLIB)/stublibs
++#	rm -rf $(DESTDIR)$(OCAMLLIB)/v2v_test_harness
++#	rm -rf $(DESTDIR)$(OCAMLLIB)/stublibs/dllv2v_test_harness.so*
++#	$(OCAMLFIND) install \
++#	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
++#	  v2v_test_harness \
++#	  $(data_hook_files)
++#	rm $(DESTDIR)$(OCAMLLIB)/v2v_test_harness/libv2vth.a
++
++#virt-v2v-test-harness.1 $(top_builddir)/website/virt-v2v-test-harness.1.html: stamp-virt-v2v-test-harness.pod
++
++#stamp-virt-v2v-test-harness.pod: virt-v2v-test-harness.pod
++#	$(PODWRAPPER) \
++#	  --man virt-v2v-test-harness.1 \
++#	  --html $(top_builddir)/website/virt-v2v-test-harness.1.html \
++#	  --license LGPLv2+ \
++#	  --warning safe \
++#	  $<
++#	touch $@
+ 
+ # Dependencies.
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@.depend: $(srcdir)/*.mli $(srcdir)/*.ml
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@	$(top_builddir)/ocaml-dep.sh -I .. $^
+-@HAVE_OCAML_PKG_LIBVIRT_TRUE@@HAVE_OCAML_TRUE@-include .depend
++#.depend: $(srcdir)/*.mli $(srcdir)/*.ml
++#	$(top_builddir)/ocaml-dep.sh -I .. $^
++#-include .depend
+ 
+ .PHONY: docs
+ 
