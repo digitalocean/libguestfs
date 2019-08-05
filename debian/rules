@@ -43,7 +43,7 @@ QEMU_CPU := $(shell echo $(DEB_HOST_GNU_CPU) \
 			-e 's,arm.*,arm,')
 
 # Run "make quickcheck" only on these architectures
-QUICKCHECK_ARCHITECTURES := amd64
+QUICKCHECK_ARCHITECTURES := #amd64
 
 override_dh_auto_clean::
 	dh_auto_clean --builddir=$(CURDIR)/debian/build
@@ -81,7 +81,6 @@ $(CURDIR)/debian/build/build-stamp:
 
 override_dh_auto_build:: $(CURDIR)/debian/build/build-stamp
 
-# Just run the test on the last build.
 override_dh_auto_test:
 ifneq "" "$(findstring $(DEB_HOST_ARCH),$(QUICKCHECK_ARCHITECTURES))"
 	printenv
