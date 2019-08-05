@@ -77,7 +77,7 @@ override_dh_auto_configure:: $(CURDIR)/debian/build/config.status
 $(CURDIR)/debian/build/build-stamp:
 	dh_auto_build --builddir=$(CURDIR)/debian/build \
 		-- INSTALLDIRS=vendor LD_RUN_PATH=""
-	touch $$@
+	touch $@
 
 override_dh_auto_build:: $(CURDIR)/debian/build/build-stamp
 
