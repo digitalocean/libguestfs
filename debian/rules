@@ -61,7 +61,7 @@ $(CURDIR)/debian/build/config.status::
 		--with-supermin-extra-options='--use-installed' \
 		--enable-install-daemon \
 		--with-java=no --without-java \
-		--disable-fuse \
+		--enable-fuse \
 		--disable-libvirt \
 		--disable-ocaml \
 		--disable-perl \
