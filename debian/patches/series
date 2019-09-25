@@ -12,8 +12,8 @@
 0014-Disable-v2v-test-harness.patch
 0013-Fix-up-perl-path-in-installed-scripts.patch
 0017-python-oneliner-for-realpath.patch
-0018-run-automake.patch
 0001-golang-return-error-interface-instead-of-struct.patch
 0002-golang-mv-struct-type-defs-to-separate-package.patch
 0003-golang-add-comment-to-disable-go-linting.patch
 0004-golang-use-CamelCase-for-exported-types.patch
+0018-run-automake.patch
