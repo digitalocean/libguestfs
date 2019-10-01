@@ -180,6 +180,8 @@ Suggests: libguestfs-gfs2,
  libguestfs-rescue,
  libguestfs-rsync,
  libguestfs-zfs,
+Replaces: libguestfs,
+Conflicts: libguestfs,
 Description: guest disk image management system - shared library
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
