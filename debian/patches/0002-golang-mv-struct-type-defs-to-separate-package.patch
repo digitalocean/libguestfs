@@ -1,0 +1,373 @@
+From c3bd1f5120ac7efc385161c875dfcf275721fe78 Mon Sep 17 00:00:00 2001
+From: Jenni Griesmann <jennikaul@gmail.com>
+Date: Mon, 12 Aug 2019 19:22:41 +0000
+Subject: [PATCH 2/4] golang: mv struct type defs to separate package
+
+Moving the struct definitions to their own package
+allows clients to generate an interface for mocking out
+libguestfs calls without including dependencies on libguestfs.h
+and cgo.
+---
+ .gitignore                                    |   1 +
+ generator/Makefile.am                         |   1 +
+ generator/golang.ml                           | 166 +++++++++++-------
+ generator/golang.mli                          |   1 +
+ generator/main.ml                             |   2 +
+ golang/Makefile.am                            |   3 +-
+ .../guestfs/guestfs_070_optargs_test.go       |  48 ++---
+ 7 files changed, 131 insertions(+), 91 deletions(-)
+
+--- a/.gitignore
++++ b/.gitignore
+@@ -339,6 +339,7 @@ Makefile.in
+ /gobject/guestfs-gobject.3
+ /gobject/stamp-guestfs-gobject.pod
+ /golang/bindtests.go
++/golang/src/libguestfs.org/guestfs/defs/
+ /golang/examples/guestfs-golang.3
+ /golang/examples/stamp-guestfs-golang.pod
+ /golang/pkg
+--- a/generator/Makefile.am
++++ b/generator/Makefile.am
+@@ -206,6 +206,7 @@ stamp-generator: generator
+ 	mkdir -p $(top_srcdir)/gobject/src
+ 	mkdir -p $(top_srcdir)/gobject/include
+ 	mkdir -p $(top_srcdir)/gobject/include/guestfs-gobject
++	mkdir -p $(top_srcdir)/golang/src/libguestfs.org/guestfs/defs
+ 	cd $(top_srcdir) && $(abs_builddir)/generator
+ 	touch $@
+ 
+--- a/generator/golang.ml
++++ b/generator/golang.ml
+@@ -33,7 +33,73 @@ open Events
+ 
+ let generate_header = generate_header ~inputs:["generator/golang.ml"]
+ 
+-let generate_golang_go () =
++let generate_golang_structs () =
++  generate_header CStyle LGPLv2plus;
++
++  pr "\
++package defs
++";
++  (* Structures type definitions. *)
++  List.iter (
++    fun { s_camel_name = name; s_name = c_name; s_cols = cols } ->
++      let go_name = String.capitalize_ascii name in
++      pr "\n";
++      pr "type %s struct {\n" go_name;
++      List.iter (
++        function
++        | n, FChar -> pr "    %s byte\n" n
++        | n, FString -> pr "    %s string\n" n
++        | n, FBuffer -> pr "    %s []byte\n" n
++        | n, FUInt32 -> pr "    %s uint32\n" n
++        | n, FInt32 -> pr "    %s int32\n" n
++        | n, FUInt64 -> pr "    %s uint64\n" n
++        | n, FInt64 -> pr "    %s int64\n" n
++        | n, FBytes -> pr "    %s uint64\n" n
++        | n, FUUID -> pr "    %s [32]byte\n" n
++        | n, FOptPercent -> pr "    %s float32\n" n
++      ) (
++        List.map (
++          function l_name, t -> (String.capitalize_ascii l_name), t
++        ) cols;
++      );
++      pr "}\n";
++      pr "\n";
++  ) external_structs;
++
++  (* Optional arguments get combined into structs *)
++  List.iter (
++    fun ({ name; shortdesc; style = ret, args, optargs }) ->
++      (* If it has optional arguments, pass them in a struct
++       * after the required arguments.
++       *)
++      let go_name = String.capitalize_ascii name in
++      if optargs <> [] then (
++        pr "\n";
++        pr "/* Struct carrying optional arguments for %s */\n" go_name;
++        pr "type Optargs%s struct {\n" go_name;
++        List.iter (
++          fun optarg ->
++            let cn = String.capitalize_ascii (name_of_optargt optarg) in
++            pr "    /* %s field is ignored unless %s_is_set == true */\n"
++              cn cn;
++            pr "    %s_is_set bool\n" cn;
++            match optarg with
++            | OBool _ ->
++              pr "    %s bool\n" cn
++            | OInt _ ->
++              pr "    %s int\n" cn
++            | OInt64 _ ->
++              pr "    %s int64\n" cn
++            | OString _ ->
++              pr "    %s string\n" cn
++            | OStringList _ ->
++              pr "    %s []string\n" cn
++        ) optargs;
++        pr "}\n";
++      );
++  ) (actions |> external_functions |> sort);
++
++and generate_golang_go () =
+   generate_header CStyle LGPLv2plus;
+ 
+   pr "\
+@@ -60,6 +126,8 @@ import (
+     \"runtime\"
+     \"syscall\"
+     \"unsafe\"
++
++    \"libguestfs.org/guestfs/defs\"
+ )
+ 
+ /* Handle. */
+@@ -201,54 +269,44 @@ func return_hashtable (argv **C.char) ma
+ /* XXX Events/callbacks not yet implemented. */
+ ";
+ 
+-  (* Structures. *)
++  (* Structure helper functions. *)
+   List.iter (
+     fun { s_camel_name = name; s_name = c_name; s_cols = cols } ->
++      let go_name = String.capitalize_ascii name in
++      let capital_cols = List.map (
++          function l_name, t -> String.capitalize_ascii l_name
++      ) cols in
+       pr "\n";
+-      pr "type %s struct {\n" name;
+-      List.iter (
+-        function
+-        | n, FChar -> pr "    %s byte\n" n
+-        | n, FString -> pr "    %s string\n" n
+-        | n, FBuffer -> pr "    %s []byte\n" n
+-        | n, FUInt32 -> pr "    %s uint32\n" n
+-        | n, FInt32 -> pr "    %s int32\n" n
+-        | n, FUInt64 -> pr "    %s uint64\n" n
+-        | n, FInt64 -> pr "    %s int64\n" n
+-        | n, FBytes -> pr "    %s uint64\n" n
+-        | n, FUUID -> pr "    %s [32]byte\n" n
+-        | n, FOptPercent -> pr "    %s float32\n" n
+-      ) cols;
+-      pr "}\n";
+-      pr "\n";
+-      pr "func return_%s (c *C.struct_guestfs_%s) *%s {\n" name c_name name;
+-      pr "    r := %s{}\n" name;
+-      List.iter (
++      pr "func return_%s (c *C.struct_guestfs_%s) *defs.%s {\n" go_name c_name name;
++      pr "    r := defs.%s{}\n" go_name;
++      List.iter2 (
++        function cap_n ->
+         function
+-        | n, FChar -> pr "    r.%s = byte (c.%s)\n" n n
+-        | n, FString -> pr "    r.%s = C.GoString (c.%s)\n" n n
++        | n, FChar -> pr "    r.%s = byte (c.%s)\n" cap_n n
++        | n, FString -> pr "    r.%s = C.GoString (c.%s)\n" cap_n n
+         | n, FBuffer ->
+           pr "    r.%s = C.GoBytes (unsafe.Pointer (c.%s), C.int (c.%s_len))\n"
+-            n n n
+-        | n, FUInt32 -> pr "    r.%s = uint32 (c.%s)\n" n n
+-        | n, FInt32 -> pr "    r.%s = int32 (c.%s)\n" n n
+-        | n, FUInt64 -> pr "    r.%s = uint64 (c.%s)\n" n n
+-        | n, FInt64 -> pr "    r.%s = int64 (c.%s)\n" n n
+-        | n, FBytes -> pr "    r.%s = uint64 (c.%s)\n" n n
+-        | n, FOptPercent -> pr "    r.%s = float32 (c.%s)\n" n n
++            cap_n n n
++        | n, FUInt32 -> pr "    r.%s = uint32 (c.%s)\n" cap_n n
++        | n, FInt32 -> pr "    r.%s = int32 (c.%s)\n" cap_n n
++        | n, FUInt64 -> pr "    r.%s = uint64 (c.%s)\n" cap_n n
++        | n, FInt64 -> pr "    r.%s = int64 (c.%s)\n" cap_n n
++        | n, FBytes -> pr "    r.%s = uint64 (c.%s)\n" cap_n n
++        | n, FOptPercent -> pr "    r.%s = float32 (c.%s)\n" cap_n n
+         | n, FUUID ->
+-          pr "    // XXX doesn't work XXX r.%s = C.GoBytes (c.%s, len (c.%s))\n" n n n;
+-          pr "    r.%s = [32]byte{}\n" n
+-      ) cols;
++          pr "    // XXX doesn't work XXX r.%s = C.GoBytes (c.%s, len (c.%s))\n" cap_n n n;
++          pr "    r.%s = [32]byte{}\n" cap_n
++      ) capital_cols cols;
++
+       pr "    return &r\n";
+       pr "}\n";
+       pr "\n";
+-      pr "func return_%s_list (c *C.struct_guestfs_%s_list) *[]%s {\n"
+-        name c_name name;
++      pr "func return_%s_list (c *C.struct_guestfs_%s_list) *[]defs.%s {\n"
++        name c_name go_name;
+       pr "    nrelems := int (c.len)\n";
+       pr "    ptr := uintptr (unsafe.Pointer (c.val))\n";
+       pr "    elemsize := unsafe.Sizeof (*c.val)\n";
+-      pr "    r := make ([]%s, nrelems)\n" name;
++      pr "    r := make ([]defs.%s, nrelems)\n" go_name;
+       pr "    for i := 0; i < nrelems; i++ {\n";
+       pr "        r[i] = *return_%s ((*C.struct_guestfs_%s) (unsafe.Pointer (ptr)))\n"
+         name c_name;
+@@ -263,34 +321,6 @@ func return_hashtable (argv **C.char) ma
+     fun ({ name; shortdesc; style = (ret, args, optargs) } as f) ->
+       let go_name = String.capitalize_ascii name in
+ 
+-      (* If it has optional arguments, pass them in a struct
+-       * after the required arguments.
+-       *)
+-      if optargs <> [] then (
+-        pr "\n";
+-        pr "/* Struct carrying optional arguments for %s */\n" go_name;
+-        pr "type Optargs%s struct {\n" go_name;
+-        List.iter (
+-          fun optarg ->
+-            let cn = String.capitalize_ascii (name_of_optargt optarg) in
+-            pr "    /* %s field is ignored unless %s_is_set == true */\n"
+-              cn cn;
+-            pr "    %s_is_set bool\n" cn;
+-            match optarg with
+-            | OBool _ ->
+-              pr "    %s bool\n" cn
+-            | OInt _ ->
+-              pr "    %s int\n" cn
+-            | OInt64 _ ->
+-              pr "    %s int64\n" cn
+-            | OString _ ->
+-              pr "    %s string\n" cn
+-            | OStringList _ ->
+-              pr "    %s []string\n" cn
+-        ) optargs;
+-        pr "}\n";
+-      );
+-
+       pr "\n";
+       pr "/* %s : %s */\n" name shortdesc;
+       pr "func (g *Guestfs) %s" go_name;
+@@ -315,7 +345,7 @@ func return_hashtable (argv **C.char) ma
+       if optargs <> [] then (
+         if !comma then pr ", ";
+         comma := true;
+-        pr "optargs *Optargs%s" go_name
++        pr "optargs *defs.Optargs%s" go_name
+       );
+       pr ")";
+ 
+@@ -332,11 +362,11 @@ func return_hashtable (argv **C.char) ma
+         | RStringList _ -> pr " ([]string, error)"; "nil, "
+         | RStruct (_, sn) ->
+           let sn = camel_name_of_struct sn in
+-          pr " (*%s, error)" sn;
+-          sprintf "&%s{}, " sn
++          pr " (*defs.%s, error)" sn;
++          sprintf "&defs.%s{}, " sn
+         | RStructList (_, sn) ->
+           let sn = camel_name_of_struct sn in
+-          pr " (*[]%s, error)" sn;
++          pr " (*[]defs.%s, error)" sn;
+           "nil, "
+         | RHashtable _ -> pr " (map[string]string, error)"; "nil, "
+         | RBufferOut _ -> pr " ([]byte, error)"; "nil, " in
+--- a/generator/golang.mli
++++ b/generator/golang.mli
+@@ -17,3 +17,4 @@
+  *)
+ 
+ val generate_golang_go : unit -> unit
++val generate_golang_structs : unit -> unit
+--- a/generator/main.ml
++++ b/generator/main.ml
+@@ -301,6 +301,8 @@ Run it from the top source directory usi
+   output_to "lua/bindtests.lua"
+             Bindtests.generate_lua_bindtests;
+ 
++  output_to "golang/src/libguestfs.org/guestfs/defs/defs.go"
++            Golang.generate_golang_structs;
+   output_to "golang/src/libguestfs.org/guestfs/guestfs.go"
+             Golang.generate_golang_go;
+   output_to "golang/bindtests.go"
+--- a/golang/Makefile.am
++++ b/golang/Makefile.am
+@@ -22,6 +22,7 @@ pkg = libguestfs.org/guestfs
+ 
+ source_files = \
+ 	src/$(pkg)/guestfs.go \
++	src/$(pkg)/defs/defs.go \
+ 	src/$(pkg)/guestfs_*_test.go
+ 
+ generator_built = \
+@@ -48,7 +49,7 @@ golangsrcdir = $(GOROOT)/src/pkg/$(pkg)
+ golangpkg_DATA = \
+ 	pkg/$(GOOS)_$(GOARCH)/$(pkg).a
+ 
+-pkg/$(GOOS)_$(GOARCH)/$(pkg).a: src/$(pkg)/guestfs.go
++pkg/$(GOOS)_$(GOARCH)/$(pkg).a: src/$(pkg)/guestfs.go src/$(pkg)/defs/defs.go
+ 	-[ $(srcdir) != $(builddir) ] && ln -s $(abs_srcdir)/src $(builddir)/src
+ 	$(top_builddir)/run $(GOLANG) install $(pkg)
+ 
+--- a/golang/src/libguestfs.org/guestfs/guestfs_070_optargs_test.go
++++ b/golang/src/libguestfs.org/guestfs/guestfs_070_optargs_test.go
+@@ -18,43 +18,47 @@
+ 
+ package guestfs
+ 
+-import "testing"
++import (
++	"testing"
+ 
+-func Test070Optargs (t *testing.T) {
+-	g, errno := Create ()
++	"libguestfs.org/guestfs/defs"
++)
++
++func Test070Optargs(t *testing.T) {
++	g, errno := Create()
+ 	if errno != nil {
+-		t.Errorf ("could not create handle: %s", errno)
++		t.Errorf("could not create handle: %s", errno)
+ 	}
+-	defer g.Close ()
+-	err := g.Add_drive ("/dev/null", nil)
++	defer g.Close()
++	err := g.Add_drive("/dev/null", nil)
+ 	if err != nil {
+-		t.Errorf ("%s", err)
++		t.Errorf("%s", err)
+ 	}
+-	err = g.Add_drive ("/dev/null", &OptargsAdd_drive{
++	err = g.Add_drive("/dev/null", &defs.OptargsAdd_drive{
+ 		Readonly_is_set: true,
+-		Readonly: true,
++		Readonly:        true,
+ 	})
+ 	if err != nil {
+-		t.Errorf ("%s", err)
++		t.Errorf("%s", err)
+ 	}
+-	err = g.Add_drive ("/dev/null", &OptargsAdd_drive{
++	err = g.Add_drive("/dev/null", &defs.OptargsAdd_drive{
+ 		Readonly_is_set: true,
+-		Readonly: true,
+-		Format_is_set: true,
+-		Format: "raw",
++		Readonly:        true,
++		Format_is_set:   true,
++		Format:          "raw",
+ 	})
+ 	if err != nil {
+-		t.Errorf ("%s", err)
++		t.Errorf("%s", err)
+ 	}
+-	err = g.Add_drive ("/dev/null", &OptargsAdd_drive{
++	err = g.Add_drive("/dev/null", &defs.OptargsAdd_drive{
+ 		Readonly_is_set: true,
+-		Readonly: true,
+-		Format_is_set: true,
+-		Format: "raw",
+-		Iface_is_set: true,
+-		Iface: "virtio",
++		Readonly:        true,
++		Format_is_set:   true,
++		Format:          "raw",
++		Iface_is_set:    true,
++		Iface:           "virtio",
+ 	})
+ 	if err != nil {
+-		t.Errorf ("%s", err)
++		t.Errorf("%s", err)
+ 	}
+ }
