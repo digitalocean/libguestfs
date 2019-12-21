@@ -112,6 +112,11 @@ $(foreach build,$(BUILDS),$(eval $(call DH_AUTO_TEMPLATE,$(build))))
 output_template:
 	$(foreach build,$(BUILDS),$(info $(call DH_AUTO_TEMPLATE,$(build))))
 
+# Special Makefile magic ends here
+
+override_dh_autoreconf:
+	dh_autoreconf -- debian/dh-autoreconf.sh
+
 # Just run the test on the last build.
 override_dh_auto_test:
 ifneq "" "$(findstring $(DEB_HOST_ARCH),$(QUICKCHECK_ARCHITECTURES))"
