@@ -30,7 +30,7 @@ Build-Depends: debhelper (>= 12),
   erlang-dev,
   dh-lua,
   dh-ocaml, ocaml-nox, ocaml-findlib, libpcre-ocaml-dev, libgettext-ocaml-dev,
-  python (>= 2.6.6-3~), python-all-dev (>= 2.6.6-3~), python3-all-dev,
+  python3-all-dev,
   dh-python,
   default-jdk,
   gem2deb, rake, libjs-jquery,
@@ -345,18 +345,6 @@ Description: guest disk image management system - tools
  virt-filesystems, virt-inspector, virt-ls, virt-make-fs, virt-rescue,
  virt-resize, virt-tar, and virt-win-reg.
 
-Package: python-guestfs
-Section: python
-Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, libguestfs0 (= ${binary:Version})
-Provides: python-libguestfs
-Conflicts: python-libguestfs, libguestfs-dev (<< 1:1.14.9-1~)
-Description: guest disk image management system - Python bindings
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- This package contains the Python bindings.
- 
 Package: python3-guestfs
 Section: python
 Architecture: linux-any

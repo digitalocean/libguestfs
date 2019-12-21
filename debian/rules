@@ -25,7 +25,7 @@
 # export DH_VERBOSE=1
 include /usr/share/dpkg/architecture.mk
 
-PYTHON_VERSIONS := $(shell pyversions --installed; py3versions --installed)
+PYTHON_VERSIONS := $(shell py3versions --installed)
 RUBY_VERSIONS   := $(shell find /usr/bin/ -name 'ruby[12]*' \
 			| xargs -n1 readlink -f | xargs -r -n1 basename)
 LUA_VERSIONS    := $(shell find /usr/bin/ -name 'lua5.?' \
@@ -148,8 +148,6 @@ override_dh_php:
 	dh_php -p php-guestfs
 override_dh_python3:
 	dh_python3 -p python3-guestfs
-override_dh_python2:
-	dh_python2 -p python-guestfs -V 2.6-
 override_dh_shlibdeps:
 	dh_shlibdeps
 # Add libraries needed by guestfsd to libguestfs0 dependencies
@@ -158,7 +156,7 @@ override_dh_shlibdeps:
 # Workaround for Lintian warning
 # "{pre,post}inst-has-useless-call-to-ldconfig"
 override_dh_makeshlibs:
-	dh_makeshlibs -X/jni/ -X/python2/ -X/python3/
+	dh_makeshlibs -X/jni/ -X/python3/
 # Workaround for
 # dwz: debian/ruby-guestfs/usr/lib/x86_64-linux-gnu/ruby/vendor_ruby/2.5.0/_guestfs.so: DWARF version 0 unhandled
 override_dh_dwz:
@@ -167,4 +165,4 @@ override_dh_dwz:
 %:
 	dh $@ \
 	   --without=python-support \
-	   --with=ocaml,python2,python3,bash-completion,ruby,gir,lua,php
+	   --with=ocaml,python3,bash-completion,ruby,gir,lua,php
