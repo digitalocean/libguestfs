@@ -34,6 +34,9 @@ PHP_VERSIONS    := $(subst -config,,\
 			$(shell find /usr/bin -name 'php-config?*' \
 				| xargs -r -n1 basename))
 
+# Use private Go build cache
+export GOCACHE = $(CURDIR)/debian/gocache
+
 # Determine the number of builds needed due to script language version
 # variants
 BUILD_COUNT := $(lastword $(sort $(foreach lang,PYTHON RUBY LUA PHP,$(words $($(lang)_VERSIONS)))))
